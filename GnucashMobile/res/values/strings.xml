@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Gnucash</string>
+    <string name="add_account">Add Account</string>
+    <string name="edit_accounts">Edit Accounts</string>
+    <string name="info_details">Info</string>
+    <string name="settings">Settings</string>
+    <string name="export_ofx">Export OFX</string>
+
+</resources>

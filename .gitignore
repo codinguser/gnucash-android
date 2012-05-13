@@ -1,0 +1,7 @@
+*.apk
+.DS_Store
+.metadata
+.settings
+gen
+bin
+dist

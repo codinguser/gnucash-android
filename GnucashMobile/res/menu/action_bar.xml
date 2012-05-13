@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+    <item android:id="@+id/add_account"
+          android:icon="@drawable/content_new"
+          android:title="@string/add_account"
+          android:showAsAction="always"/>
+    
+    <item android:id="@+id/edit_accounts"
+          android:icon="@drawable/content_edit"
+          android:title="@string/edit_accounts"
+          android:showAsAction="ifRoom"/>
+    
+    <item android:id="@+id/export"
+          android:icon="@drawable/content_import_export"
+          android:title="@string/export_ofx"
+          android:showAsAction="ifRoom"/>
+    
+    <item android:id="@+id/settings"
+          android:icon="@drawable/action_settings"
+          android:title="@string/settings"
+          android:showAsAction="never"/>
+    
+    <item android:id="@+id/info"
+          android:icon="@drawable/action_about"
+          android:title="@string/info_details" 
+          android:showAsAction="never"/>
+
+</menu>
