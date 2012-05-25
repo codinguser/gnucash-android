@@ -51,7 +51,6 @@
             android:layout_weight="2"
             android:singleLine="true"
             android:ellipsize="end"
-            android:background="?android:attr/activatedBackgroundIndicator"
             android:text="@string/label_account_name"                 
             style="@style/ListItemText" /> 
                    
