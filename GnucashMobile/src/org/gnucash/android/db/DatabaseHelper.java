@@ -45,7 +45,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	public static final String KEY_TYPE = "type";
 	
 	public static final String KEY_AMOUNT = "amount";
-	public static final String KEY_ACCOUNT_UID = "account_id";
+	public static final String KEY_ACCOUNT_UID = "account_uid";
 	public static final String KEY_DESCRIPTION = "description";
 	public static final String KEY_TIMESTAMP = "timestamp";
 	
@@ -54,18 +54,19 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	
 	private static final String ACCOUNTS_TABLE_CREATE = "create table " + ACCOUNTS_TABLE_NAME + " ("
 			+ KEY_ROW_ID + " integer primary key autoincrement, "
-			+ KEY_UID + " varchar(255) not null, "
-			+ KEY_NAME + " varchar(255) not null, "
-			+ KEY_TYPE + " varchar(255));";
+			+ KEY_UID 	+ " varchar(255) not null, "
+			+ KEY_NAME 	+ " varchar(255) not null, "
+			+ KEY_TYPE 	+ " varchar(255));";
 	
 	private static final String TRANSACTIONS_TABLE_CREATE = "create table " + TRANSACTIONS_TABLE_NAME + " ("
 			+ KEY_ROW_ID + " integer primary key autoincrement, "
-			+ KEY_UID + " varchar(255) not null, "			
-			+ KEY_NAME + " varchar(255), "
-			+ KEY_TYPE + " varchar(255) not null, "
-			+ KEY_AMOUNT + " real not null, "
-			+ KEY_DESCRIPTION + " text, "
-			+ KEY_TIMESTAMP + " integer not null, "
+			+ KEY_UID 	+ " varchar(255) not null, "			
+			+ KEY_NAME 	+ " varchar(255), "
+			+ KEY_TYPE 	+ " varchar(255) not null, "
+			+ KEY_AMOUNT + " double not null, "
+			+ KEY_DESCRIPTION 	+ " text, "
+			+ KEY_TIMESTAMP 	+ " integer not null, "
+			+ KEY_ACCOUNT_UID 	+ " varchar(255) not null, "
 			+ "FOREIGN KEY (" + KEY_ACCOUNT_UID + ") REFERENCES " + ACCOUNTS_TABLE_NAME + " (" + KEY_UID + ")"
 			+ ");";
 	
@@ -85,11 +86,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		Log.i(TAG, "Upgrading database from version " 
 				+ oldVersion + " to " + newVersion
 				+ " which will destroy all old data");
+		
 		if (oldVersion < newVersion){
-			//TODO:
+			
 		} else {
-			Log.i(TAG, "Cannot downgrade database");
-			//Don't know how to downgrade. Cross fingers and hope for the best.
+			Log.i(TAG, "Cannot downgrade database.");
+			/*
+			db.execSQL("DROP TABLE IF EXISTS " + TRANSACTIONS_TABLE_NAME);
+			db.execSQL("DROP TABLE IF EXISTS " + ACCOUNTS_TABLE_NAME);
+			onCreate(db);
+			*/
 		}
 	}
 

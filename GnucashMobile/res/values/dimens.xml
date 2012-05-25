@@ -23,24 +23,10 @@
  Boston, MA  02110-1301,  USA       gnu@gnu.org
 -->
 
-<menu xmlns:android="http://schemas.android.com/apk/res/android" >
-    <item android:id="@+id/menu_add_account"
-          android:icon="@drawable/content_new"
-          android:title="@string/add_account"
-          android:showAsAction="always"/>
+<resources>
+    <dimen name="add_button_padding">3dp</dimen>
     
-    <item android:id="@+id/menu_edit_accounts"
-          android:icon="@drawable/content_edit"
-          android:title="@string/edit_accounts"
-          android:showAsAction="never"/>   
-              
-    <item android:id="@+id/menu_export"
-          android:icon="@drawable/content_import_export"
-          android:title="@string/export_ofx"
-          android:showAsAction="never"/>
-    
-    <item android:id="@+id/menu_settings"
-          android:icon="@drawable/action_settings"
-          android:title="@string/settings"
-          android:showAsAction="never"/>    
-</menu>
+    <dimen name="text_size_small">14sp</dimen>
+    <dimen name="text_size_medium">18sp</dimen>
+    <dimen name="text_size_large">18sp</dimen>
+</resources>

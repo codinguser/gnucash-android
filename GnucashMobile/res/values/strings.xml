@@ -1,10 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+ Written By: Ngewi Fet <ngewif@gmail.com>
+ Copyright (c) 2012 Ngewi Fet
+ 
+ This file is part of Gnucash for Android
+ 
+ Gnucash for Android is free software; you can redistribute it and/or
+ modify it under the terms of the GNU General Public License as
+ published by the Free Software Foundation; either version 2 of
+ the License, or (at your option) any later version.
+ 
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+ 
+ You should have received a copy of the GNU General Public License
+ along with this program; if not, contact:
+ 
+ Free Software Foundation           Voice:  +1-617-542-5942
+ 51 Franklin Street, Fifth Floor    Fax:    +1-617-542-2652
+ Boston, MA  02110-1301,  USA       gnu@gnu.org
+-->
+
 <resources>
     <string name="app_name">Gnucash</string>
-    <string name="add_account">Add Account</string>
+    <string name="add_account">Create Account</string>
     <string name="edit_accounts">Edit Accounts</string>
     <string name="info_details">Info</string>
     <string name="settings">Settings</string>
     <string name="export_ofx">Export OFX</string>
+    <string name="add_transaction_icon_description">Add a new transaction to an account</string>
+    <string name="no_accounts">No accounts to display</string>
+    <string name="label_account_name">Account name</string>
+    <string name="btn_cancel">Cancel</string>
+    <string name="btn_save">Save</string>
+    <string name="no_transactions_to_display">No transactions to display</string>
 
 </resources>

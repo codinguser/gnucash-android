@@ -137,7 +137,7 @@ public class Account {
 	public void setTransactions(List<Transaction> transactionsList){
 		this.mTransactionsList = transactionsList;
 	}
-	
+		
 	/**
 	 * Removes <code>transaction</code> from this account
 	 * @param transaction {@link Transaction} to be removed from account
@@ -152,6 +152,14 @@ public class Account {
 	 */
 	public List<Transaction> getTransactions(){
 		return mTransactionsList;
+	}
+	
+	/**
+	 * Returns the number of transactions in this account
+	 * @return Number transactions in account
+	 */
+	public int getTransactionCount(){
+		return mTransactionsList.size();
 	}
 	
 	/**

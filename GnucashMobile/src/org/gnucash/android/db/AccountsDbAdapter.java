@@ -128,7 +128,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 	 * @param c Cursor pointing to account record in database
 	 * @return {@link Account} object constructed from database record
 	 */
-	private Account buildAccountInstance(Cursor c){
+	public Account buildAccountInstance(Cursor c){
 		Account account = new Account(c.getString(DatabaseAdapter.COLUMN_NAME));
 		String uid = c.getString(DatabaseAdapter.COLUMN_UID);
 		account.setUID(uid);
