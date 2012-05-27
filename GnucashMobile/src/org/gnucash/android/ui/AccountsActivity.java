@@ -25,11 +25,8 @@
 package org.gnucash.android.ui;
 
 import org.gnucash.android.R;
-import org.gnucash.android.data.Account;
-import org.gnucash.android.db.AccountsDbAdapter;
 
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.view.View;
@@ -37,7 +34,6 @@ import android.view.View;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
-import com.actionbarsherlock.view.MenuItem;
 
 /**
  * Displays the list of accounts and summary of transactions
@@ -46,11 +42,13 @@ import com.actionbarsherlock.view.MenuItem;
  */
 public class AccountsActivity extends SherlockFragmentActivity {
 	
+	private static final String FRAGMENT_ACCOUNTS_LIST = "accounts_list";
+
 	static final int DIALOG_ADD_ACCOUNT = 0x01;
 	
 	protected static final String TAG = "AccountsActivity";
 
-	private AccountsDbAdapter mAccountsDbAdapter;
+//	private AccountsDbAdapter mAccountsDbAdapter;
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -59,16 +57,9 @@ public class AccountsActivity extends SherlockFragmentActivity {
         
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();      
-        fragmentTransaction.add(R.id.fragment_container, new AccountsListFragment(), "accounts_list");
-        mAccountsDbAdapter = new AccountsDbAdapter(this.getApplicationContext());
-        
+        fragmentTransaction.add(R.id.fragment_container, new AccountsListFragment(), FRAGMENT_ACCOUNTS_LIST);
+ 
         fragmentTransaction.commit();
-    }
-    
-    @Override
-    protected void onDestroy() {
-    	super.onDestroy();
-    	mAccountsDbAdapter.close();
     }
     
     @Override
@@ -77,42 +68,11 @@ public class AccountsActivity extends SherlockFragmentActivity {
         inflater.inflate(R.menu.action_bar, menu);
         return true;
     }
-    
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-    	switch (item.getItemId()) {
-		case R.id.menu_add_account:
-			showDialog();
-			return true;
 
-		default:
-			return false; //propagate processing to fragments
-		}
-    }
-    
-    public void showDialog(){
-    	
-    	FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-    	Fragment prev = getSupportFragmentManager().findFragmentByTag("add_account_dialog");
-    	if (prev != null){
-    		ft.remove(prev);
-    	}
-    	
-    	ft.addToBackStack(null);
-    	
-    	AddAccountDialogFragment addAccountFragment = AddAccountDialogFragment.newInstance();    	
-    	addAccountFragment.show(ft, "add_account_dialog");
-    }
+	public void onNewAccountClick(View v) {
+		AccountsListFragment accountFragment = (AccountsListFragment) getSupportFragmentManager().findFragmentByTag(FRAGMENT_ACCOUNTS_LIST);
+		if (accountFragment != null)
+			accountFragment.showAddAccountDialog();
+	}
 
-    public void onNewAccountClick(View v){
-    	showDialog();
-    }
-    
-	public void addAccount(String name) {
-		mAccountsDbAdapter.addAccount(new Account(name));
-	}
-	
-	public AccountsDbAdapter getAccountsDbAdapter(){
-		return mAccountsDbAdapter;
-	}
 }

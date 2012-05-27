@@ -63,7 +63,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 	/**
 	 * Adds an account to the database. 
 	 * If an account already exists in the database with the same unique ID, 
-	 * then just update that account.
+	 * then just update that account. 
 	 * @param account {@link Account} to be inserted to database
 	 * @return Database row ID of the inserted account
 	 */
@@ -81,8 +81,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 		} else {
 			Log.d(TAG, "Adding new account to db");
 			rowId = mDb.insert(DatabaseHelper.ACCOUNTS_TABLE_NAME, null, contentValues);
-		}	
-		
+		}			
 		return rowId;
 	}
 	
@@ -102,7 +101,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 	 * the account with id <code>accountReassignId</code> before deleting the account.
 	 * @param rowIdToDelete
 	 * @param accountReassignId
-	 * @return
+	 * @return <code>true</code> if deletion was successful, <code>false</code> otherwise.
 	 */
 	public boolean transactionPreservingDelete(long rowIdToDelete, long accountReassignId){
 		Cursor transactionsCursor = mDb.query(DatabaseHelper.TRANSACTIONS_TABLE_NAME, 

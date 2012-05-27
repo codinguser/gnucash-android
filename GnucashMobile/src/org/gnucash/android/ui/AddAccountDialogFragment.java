@@ -8,6 +8,7 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager.LayoutParams;
 import android.widget.Button;
 import android.widget.EditText;
 
@@ -17,10 +18,15 @@ public class AddAccountDialogFragment extends SherlockDialogFragment {
 	private Button mSaveButton;
 	private Button mCancelButton;
 	private EditText mNameEditText;
+	private View.OnClickListener mListener;
 	
-	static public AddAccountDialogFragment newInstance(){
-		AddAccountDialogFragment f = new AddAccountDialogFragment();
-
+	public AddAccountDialogFragment(View.OnClickListener listener) {
+		mListener = listener;
+	}
+	
+	static public AddAccountDialogFragment newInstance(View.OnClickListener listener){
+		AddAccountDialogFragment f = new AddAccountDialogFragment(listener);
+		
 		return f;
 	}
 	
@@ -39,17 +45,13 @@ public class AddAccountDialogFragment extends SherlockDialogFragment {
 		mSaveButton = (Button) v.findViewById(R.id.btn_save);
 		mCancelButton = (Button) v.findViewById(R.id.btn_cancel);
 		mNameEditText = (EditText) v.findViewById(R.id.edit_text_account_name);
-		
+		mNameEditText.requestFocus();
+        getDialog().getWindow().setSoftInputMode(
+                LayoutParams.SOFT_INPUT_STATE_VISIBLE);
 		
 		mNameEditText.addTextChangedListener(new NameFieldWatcher());
-		mSaveButton.setOnClickListener(new View.OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				((AccountsActivity) getActivity()).addAccount(mNameEditText.getText().toString());
-				AddAccountDialogFragment.this.dismiss();
-			}
-		});
+		
+		mSaveButton.setOnClickListener(mListener);
 		
 		mCancelButton.setOnClickListener(new View.OnClickListener() {
 			
@@ -59,6 +61,10 @@ public class AddAccountDialogFragment extends SherlockDialogFragment {
 			}
 		});
 		return v;
+	}
+	
+	public String getEnteredName(){
+		return mNameEditText.getText().toString();
 	}
 	
 	private class NameFieldWatcher implements TextWatcher {
