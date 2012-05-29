@@ -34,6 +34,9 @@
         android:layout_height="50dp"
         android:layout_margin="10dp"
         android:ems="15" 
+        android:inputType="textCapWords"
+        android:singleLine="true"
+        android:ellipsize="start"
         android:hint="@string/label_account_name">
         <requestFocus />
     </EditText>

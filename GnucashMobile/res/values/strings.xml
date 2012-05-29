@@ -36,5 +36,7 @@
     <string name="btn_cancel">Cancel</string>
     <string name="btn_save">Save</string>
     <string name="no_transactions_to_display">No transactions to display</string>
+    <string name="label_transaction_name">Transaction name</string>
+    <string name="label_transaction_amount">- $1.99</string>
 
 </resources>

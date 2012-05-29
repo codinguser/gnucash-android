@@ -25,6 +25,7 @@
 package org.gnucash.android.ui;
 
 import org.gnucash.android.R;
+import org.gnucash.android.util.OnAccountSelectedListener;
 
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
@@ -37,42 +38,90 @@ import com.actionbarsherlock.view.MenuInflater;
 
 /**
  * Displays the list of accounts and summary of transactions
+ * 
  * @author Ngewi Fet <ngewif@gmail.com>
- *
+ * 
  */
-public class AccountsActivity extends SherlockFragmentActivity {
-	
-	private static final String FRAGMENT_ACCOUNTS_LIST = "accounts_list";
+public class AccountsActivity extends SherlockFragmentActivity implements OnAccountSelectedListener {
 
+	private static final String FRAGMENT_ACCOUNTS_LIST 		= "accounts_list";
+	private static final String FRAGMENT_TRANSACTIONS_LIST 	= "transactions_list";
+	private static final String FRAGMENT_NEW_TRANSACTION 	= "new_transaction";
+	
 	static final int DIALOG_ADD_ACCOUNT = 0x01;
-	
-	protected static final String TAG = "AccountsActivity";
 
-//	private AccountsDbAdapter mAccountsDbAdapter;
-	
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);        
-        setContentView(R.layout.activity_accounts);
-        
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();      
-        fragmentTransaction.add(R.id.fragment_container, new AccountsListFragment(), FRAGMENT_ACCOUNTS_LIST);
- 
-        fragmentTransaction.commit();
-    }
-    
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-    	MenuInflater inflater = getSupportMenuInflater();
-        inflater.inflate(R.menu.action_bar, menu);
-        return true;
-    }
+	protected static final String TAG = "AccountsActivity";	
+
+
+	// private AccountsDbAdapter mAccountsDbAdapter;
+
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_accounts);
+
+		FragmentManager fragmentManager = getSupportFragmentManager();
+
+		AccountsListFragment accountsListFragment = (AccountsListFragment) fragmentManager
+				.findFragmentByTag(FRAGMENT_ACCOUNTS_LIST);
+
+		if (accountsListFragment == null) {
+			FragmentTransaction fragmentTransaction = fragmentManager
+					.beginTransaction();
+			fragmentTransaction.add(R.id.fragment_container,
+					new AccountsListFragment(), FRAGMENT_ACCOUNTS_LIST);
+
+			fragmentTransaction.commit();
+		}
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		MenuInflater inflater = getSupportMenuInflater();
+		inflater.inflate(R.menu.action_bar, menu);
+		return true;
+	}
 
 	public void onNewAccountClick(View v) {
-		AccountsListFragment accountFragment = (AccountsListFragment) getSupportFragmentManager().findFragmentByTag(FRAGMENT_ACCOUNTS_LIST);
+		AccountsListFragment accountFragment = (AccountsListFragment) getSupportFragmentManager()
+				.findFragmentByTag(FRAGMENT_ACCOUNTS_LIST);
 		if (accountFragment != null)
 			accountFragment.showAddAccountDialog();
+	}
+
+	@Override
+	public void accountSelected(long accountRowId) {
+		FragmentManager fragmentManager = getSupportFragmentManager();
+		FragmentTransaction fragmentTransaction = fragmentManager
+				.beginTransaction();
+		TransactionsListFragment transactionsFragment = new TransactionsListFragment();
+		Bundle args = new Bundle();
+		args.putLong(TransactionsListFragment.SELECTED_ACCOUNT_ID, accountRowId);		
+		transactionsFragment.setArguments(args);
+		
+		fragmentTransaction.replace(R.id.fragment_container,
+				transactionsFragment, FRAGMENT_TRANSACTIONS_LIST);
+
+		fragmentTransaction.addToBackStack(null);
+		fragmentTransaction.commit();
+
+	}
+	
+	@Override
+	public void createNewTransaction(long accountRowId) {
+		FragmentManager fragmentManager = getSupportFragmentManager();
+		FragmentTransaction fragmentTransaction = fragmentManager
+				.beginTransaction();
+		NewTransactionFragment newTransactionFragment = new NewTransactionFragment();
+		Bundle args = new Bundle();
+		args.putLong(TransactionsListFragment.SELECTED_ACCOUNT_ID, accountRowId);		
+		newTransactionFragment.setArguments(args);
+		
+		fragmentTransaction.replace(R.id.fragment_container,
+				newTransactionFragment, FRAGMENT_NEW_TRANSACTION);
+
+		fragmentTransaction.addToBackStack(null);
+		fragmentTransaction.commit();
 	}
 
 }

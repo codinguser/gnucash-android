@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <EditText
+        android:id="@+id/input_transaction_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/label_transaction_name"
+        android:minHeight="?android:attr/listPreferredItemHeight"
+        android:ems="10" 
+        style="@style/ListItemText">
+		
+        <requestFocus />
+    </EditText>
+
+    <EditText
+        android:id="@+id/input_transaction_amount"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="?android:attr/listPreferredItemHeight"
+        android:ems="10"
+        android:hint="@string/label_transaction_amount"
+        android:inputType="numberDecimal" />
+
+    <DatePicker
+        android:id="@+id/input_transaction_date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <Spinner
+        android:id="@+id/accounts_spinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+</LinearLayout>

@@ -14,18 +14,18 @@ import android.widget.EditText;
 
 import com.actionbarsherlock.app.SherlockDialogFragment;
 
-public class AddAccountDialogFragment extends SherlockDialogFragment {
+public class NewAccountDialogFragment extends SherlockDialogFragment {
 	private Button mSaveButton;
 	private Button mCancelButton;
 	private EditText mNameEditText;
 	private View.OnClickListener mListener;
 	
-	public AddAccountDialogFragment(View.OnClickListener listener) {
+	public NewAccountDialogFragment(View.OnClickListener listener) {
 		mListener = listener;
 	}
 	
-	static public AddAccountDialogFragment newInstance(View.OnClickListener listener){
-		AddAccountDialogFragment f = new AddAccountDialogFragment(listener);
+	static public NewAccountDialogFragment newInstance(View.OnClickListener listener){
+		NewAccountDialogFragment f = new NewAccountDialogFragment(listener);
 		
 		return f;
 	}
@@ -39,7 +39,7 @@ public class AddAccountDialogFragment extends SherlockDialogFragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		View v = inflater.inflate(R.layout.dialog_add_account, container, false);
+		View v = inflater.inflate(R.layout.dialog_new_account, container, false);
 		getDialog().setTitle(R.string.add_account);	
 		setStyle(STYLE_NORMAL, R.style.Sherlock___Theme_Dialog);
 		mSaveButton = (Button) v.findViewById(R.id.btn_save);
@@ -57,7 +57,7 @@ public class AddAccountDialogFragment extends SherlockDialogFragment {
 			
 			@Override
 			public void onClick(View v) {
-				AddAccountDialogFragment.this.dismiss();			
+				NewAccountDialogFragment.this.dismiss();			
 			}
 		});
 		return v;
@@ -72,9 +72,9 @@ public class AddAccountDialogFragment extends SherlockDialogFragment {
 		@Override
 		public void afterTextChanged(Editable s) {
 			if (s.length() > 0)
-				AddAccountDialogFragment.this.mSaveButton.setEnabled(true);
+				NewAccountDialogFragment.this.mSaveButton.setEnabled(true);
 			else
-				AddAccountDialogFragment.this.mSaveButton.setEnabled(false);
+				NewAccountDialogFragment.this.mSaveButton.setEnabled(false);
 		}
 
 		@Override

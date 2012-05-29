@@ -31,6 +31,7 @@
     <item android:id="@+id/menu_edit_accounts"
           android:icon="@drawable/content_edit"
           android:title="@string/edit_accounts"
-          android:showAsAction="never"/>   
+          android:showAsAction="never" 
+          android:orderInCategory="1"/>   
               
 </menu>

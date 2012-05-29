@@ -63,10 +63,11 @@
            style="@style/ListItemSubTitle" />      
     </LinearLayout>
 
-    <ImageView android:id="@+id/icon_add_transaction" 
+    <ImageView android:id="@+id/btn_new_transaction" 
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" 
         android:background="@drawable/content_new"  
+        android:clickable="true"
         android:contentDescription="@string/add_transaction_icon_description"/>
         
 </LinearLayout>

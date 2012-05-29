@@ -30,9 +30,12 @@ import java.util.Locale;
 import org.gnucash.android.R;
 import org.gnucash.android.data.Account;
 import org.gnucash.android.db.AccountsDbAdapter;
+import org.gnucash.android.db.DatabaseAdapter;
 import org.gnucash.android.db.DatabaseCursorLoader;
 import org.gnucash.android.db.DatabaseHelper;
+import org.gnucash.android.util.OnAccountSelectedListener;
 
+import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -44,6 +47,8 @@ import android.support.v4.widget.SimpleCursorAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.actionbarsherlock.app.SherlockListFragment;
@@ -57,8 +62,10 @@ public class AccountsListFragment extends SherlockListFragment implements
 	private static final int DIALOG_ADD_ACCOUNT = 0x10;
 	
 	SimpleCursorAdapter mCursorAdapter;
-	AddAccountDialogFragment mAddAccountFragment;
+	NewAccountDialogFragment mAddAccountFragment;
 	private AccountsDbAdapter mAccountsDbAdapter;	
+	private OnAccountSelectedListener mAccountSelectedListener;	
+	
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -74,7 +81,7 @@ public class AccountsListFragment extends SherlockListFragment implements
 		
 		setHasOptionsMenu(true);
 		mCursorAdapter = new AccountsCursorAdapter(getActivity()
-				.getApplicationContext(), R.layout.item_accounts, null,
+				.getApplicationContext(), R.layout.list_item_account, null,
 				new String[] { DatabaseHelper.KEY_NAME },
 				new int[] { R.id.account_name }, 0);
 
@@ -83,6 +90,27 @@ public class AccountsListFragment extends SherlockListFragment implements
 		
 	}
 
+	@Override
+	public void onAttach(Activity activity) {
+		super.onAttach(activity);
+		try {
+			mAccountSelectedListener = (OnAccountSelectedListener) activity;
+		} catch (ClassCastException e) {
+			throw new ClassCastException(activity.toString() + " must implement OnArticleSelectedListener");
+		}
+	
+	}
+	
+	@Override
+	public void onListItemClick(ListView l, View v, int position, long id) {
+		super.onListItemClick(l, v, position, id);
+		mAccountSelectedListener.accountSelected(id);
+	}
+	
+	public void onNewTransactionClick(View v){
+		mAccountSelectedListener.createNewTransaction(getSelectedItemId());
+	}
+	
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 		inflater.inflate(R.menu.acccount_actions, menu);
@@ -126,7 +154,7 @@ public class AccountsListFragment extends SherlockListFragment implements
 
 		ft.addToBackStack(null);
 
-		mAddAccountFragment = AddAccountDialogFragment
+		mAddAccountFragment = NewAccountDialogFragment
 				.newInstance(this);
 		mAddAccountFragment.setTargetFragment(this, DIALOG_ADD_ACCOUNT);
 		mAddAccountFragment.show(ft, "add_account_dialog");
@@ -143,7 +171,7 @@ public class AccountsListFragment extends SherlockListFragment implements
 				String[] from, int[] to, int flags) {
 			super(context, layout, c, from, to, flags);
 		}
-
+		
 		@Override
 		public void bindView(View v, Context context, Cursor cursor) {
 			// perform the default binding
@@ -152,8 +180,7 @@ public class AccountsListFragment extends SherlockListFragment implements
 			// add a summary of transactions to the account view
 			TextView summary = (TextView) v
 					.findViewById(R.id.transactions_summary);
-			Account acc = new AccountsDbAdapter(context)
-					.buildAccountInstance(cursor);
+			Account acc = mAccountsDbAdapter.buildAccountInstance(cursor);
 			double balance = acc.getBalance();
 			int count = acc.getTransactionCount();
 			String statement = "";
@@ -171,11 +198,22 @@ public class AccountsListFragment extends SherlockListFragment implements
 				String formattedAmount = currencyformatter.format(balance);
 				statement = count + pluralizedText + formattedAmount;
 			}
-			summary.setText(statement);
+			summary.setText(statement);		
+			
+			ImageView newTrans = (ImageView) v.findViewById(R.id.btn_new_transaction);
+			final long accountId = cursor.getLong(DatabaseAdapter.COLUMN_ROW_ID);
+			newTrans.setOnClickListener(new View.OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					mAccountSelectedListener.createNewTransaction(accountId);
+				}
+			});
 		}
 	}
 
 	private static final class AccountsCursorLoader extends DatabaseCursorLoader {
+		//TODO: close this account adapter somewhere
 		AccountsDbAdapter accountsDbAdapter;
 
 		public AccountsCursorLoader(Context context) {

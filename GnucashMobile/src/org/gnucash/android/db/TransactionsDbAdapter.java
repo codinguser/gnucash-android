@@ -130,6 +130,20 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 	}
 	
 	/**
+	 * Returns a cursor to a set of all transactions for the account with ID <code>accountID</code>
+	 * @param accountUID ID of the account whose transactions are to be retrieved
+	 * @return Cursor holding set of transactions for particular account
+	 */
+	public Cursor fetchAllTransactionsForAccount(long accountID){
+		Cursor cursor = mDb.query(DatabaseHelper.TRANSACTIONS_TABLE_NAME, 
+				null, 
+				DatabaseHelper.KEY_ROW_ID + " = '" + accountID + "'", 
+				null, null, null, null);
+		
+		return cursor;
+	}
+	
+	/**
 	 * Returns list of all transactions for account with UID <code>accountUID</code>
 	 * @param accountUID UID of account whose transactions are to be retrieved
 	 * @return List of {@link Transaction}s for account with UID <code>accountUID</code>
@@ -154,7 +168,7 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 	 * @param c Cursor pointing to transaction record in database
 	 * @return {@link Transaction} object constructed from database record
 	 */
-	private Transaction buildTransactionInstance(Cursor c){
+	public Transaction buildTransactionInstance(Cursor c){
 		Transaction transaction = new Transaction(c.getDouble(DatabaseAdapter.COLUMN_AMOUNT), 
 				c.getString(DatabaseAdapter.COLUMN_NAME));
 		transaction.setUID(c.getString(DatabaseAdapter.COLUMN_UID));

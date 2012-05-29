@@ -28,10 +28,12 @@
     <item android:id="@+id/menu_export"
           android:icon="@drawable/content_import_export"
           android:title="@string/export_ofx"
-          android:showAsAction="never"/>
+          android:showAsAction="never"
+          android:orderInCategory="3"/>
     
     <item android:id="@+id/menu_settings"
           android:icon="@drawable/action_settings"
           android:title="@string/settings"
-          android:showAsAction="never"/>    
+          android:showAsAction="never"
+          android:orderInCategory="4"/>    
 </menu>
