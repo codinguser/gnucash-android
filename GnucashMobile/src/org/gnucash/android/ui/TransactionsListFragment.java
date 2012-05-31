@@ -99,19 +99,17 @@ public class TransactionsListFragment extends SherlockListFragment implements Lo
 	}
 */	
 	protected static class TransactionsCursorLoader extends DatabaseCursorLoader {
-		private TransactionsDbAdapter mTransactionsAdapter;
 		private long mAccountUid; 
 		
 		public TransactionsCursorLoader(Context context, long accountID) {
-			super(context);
-			mTransactionsAdapter = new TransactionsDbAdapter(context);
+			super(context);			
 			this.mAccountUid = accountID;
 		}
 		
 		@Override
 		public Cursor loadInBackground() {
-			return mTransactionsAdapter.fetchAllTransactionsForAccount(mAccountUid);
-		}
-		
+			mDatabaseAdapter = new TransactionsDbAdapter(mContext);
+			return ((TransactionsDbAdapter) mDatabaseAdapter).fetchAllTransactionsForAccount(mAccountUid);
+		}		
 	}
 }

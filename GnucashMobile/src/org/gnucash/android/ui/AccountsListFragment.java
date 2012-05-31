@@ -59,6 +59,8 @@ import com.actionbarsherlock.view.MenuItem;
 public class AccountsListFragment extends SherlockListFragment implements
 		LoaderCallbacks<Cursor>, View.OnClickListener {
 
+	protected static final String FRAGMENT_NEW_ACCOUNT = "new_account_dialog";
+
 	private static final int DIALOG_ADD_ACCOUNT = 0x10;
 	
 	SimpleCursorAdapter mCursorAdapter;
@@ -85,11 +87,10 @@ public class AccountsListFragment extends SherlockListFragment implements
 				new String[] { DatabaseHelper.KEY_NAME },
 				new int[] { R.id.account_name }, 0);
 
-		setListAdapter(mCursorAdapter);
+		setListAdapter(mCursorAdapter);	
 		getLoaderManager().initLoader(0, null, this);
-		
 	}
-
+	
 	@Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
@@ -130,9 +131,9 @@ public class AccountsListFragment extends SherlockListFragment implements
 			return true;
 		}
 	}
-
+	
 	@Override
-	public void onDestroy() {
+	public void onDestroyView() {
 		super.onDestroy();
 		mAccountsDbAdapter.close();
 	}
@@ -142,12 +143,15 @@ public class AccountsListFragment extends SherlockListFragment implements
 		getLoaderManager().restartLoader(0, null, this);
 	}
 	
+	/**
+	 * Show dialog for creating a new {@link Account}
+	 */
 	public void showAddAccountDialog() {
 
 		FragmentTransaction ft = getSherlockActivity()
 				.getSupportFragmentManager().beginTransaction();
 		Fragment prev = getSherlockActivity().getSupportFragmentManager()
-				.findFragmentByTag("add_account_dialog");
+				.findFragmentByTag(FRAGMENT_NEW_ACCOUNT);
 		if (prev != null) {
 			ft.remove(prev);
 		}
@@ -157,9 +161,12 @@ public class AccountsListFragment extends SherlockListFragment implements
 		mAddAccountFragment = NewAccountDialogFragment
 				.newInstance(this);
 		mAddAccountFragment.setTargetFragment(this, DIALOG_ADD_ACCOUNT);
-		mAddAccountFragment.show(ft, "add_account_dialog");
+		mAddAccountFragment.show(ft, FRAGMENT_NEW_ACCOUNT);
 	}
 
+	/**
+	 * Handles creation of new account from the new account dialog
+	 */
 	@Override
 	public void onClick(View v) {		
 		addAccount(mAddAccountFragment.getEnteredName());
@@ -214,16 +221,16 @@ public class AccountsListFragment extends SherlockListFragment implements
 
 	private static final class AccountsCursorLoader extends DatabaseCursorLoader {
 		//TODO: close this account adapter somewhere
-		AccountsDbAdapter accountsDbAdapter;
-
+//		AccountsDbAdapter accountsDbAdapter;
+		
 		public AccountsCursorLoader(Context context) {
-			super(context);
-			accountsDbAdapter = new AccountsDbAdapter(context);
+			super(context);		
 		}
 
 		@Override
-		public Cursor loadInBackground() {
-			return accountsDbAdapter.fetchAllAccounts();
+		public Cursor loadInBackground() {			
+			mDatabaseAdapter = new AccountsDbAdapter(mContext);			
+			return ((AccountsDbAdapter) mDatabaseAdapter).fetchAllAccounts();
 		}
 	}
 

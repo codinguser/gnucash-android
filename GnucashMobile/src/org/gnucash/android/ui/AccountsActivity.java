@@ -104,7 +104,6 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
 
 		fragmentTransaction.addToBackStack(null);
 		fragmentTransaction.commit();
-
 	}
 	
 	@Override

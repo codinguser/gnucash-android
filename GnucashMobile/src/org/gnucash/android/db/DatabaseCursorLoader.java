@@ -30,9 +30,12 @@ import android.support.v4.content.AsyncTaskLoader;
 
 public abstract class DatabaseCursorLoader extends AsyncTaskLoader<Cursor> {
 	private Cursor mCursor = null;
+	protected DatabaseAdapter mDatabaseAdapter = null;
+	protected Context mContext = null;
 	
 	public DatabaseCursorLoader(Context context) {
 		super(context);
+		mContext = context;
 	}
 
 	public abstract Cursor loadInBackground();
@@ -90,7 +93,7 @@ public abstract class DatabaseCursorLoader extends AsyncTaskLoader<Cursor> {
 		
 		onStopLoading();
 
-        // At this point we can release the resources associated with 'apps'
+        // At this point we can release the resources associated with 'mCursor'
         // if needed.
         if (mCursor != null) {
             onReleaseResources(mCursor);
@@ -105,5 +108,8 @@ public abstract class DatabaseCursorLoader extends AsyncTaskLoader<Cursor> {
      */
 	protected void onReleaseResources(Cursor c) {
 		c.close();
+		if (mDatabaseAdapter != null){
+			mDatabaseAdapter.close();
+		}
 	}
 }

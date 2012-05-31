@@ -62,11 +62,18 @@
            android:text="@string/no_transactions_to_display"           
            style="@style/ListItemSubTitle" />      
     </LinearLayout>
-
+	
+    <View android:layout_width="1dp"
+        android:layout_height="40dp"
+        android:background="@android:color/darker_gray"
+        android:layout_marginRight="10dp"
+        />
+    
     <ImageView android:id="@+id/btn_new_transaction" 
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" 
         android:background="@drawable/content_new"  
+        android:padding="2dp"
         android:clickable="true"
         android:contentDescription="@string/add_transaction_icon_description"/>
         
