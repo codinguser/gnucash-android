@@ -89,6 +89,10 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
 			accountFragment.showAddAccountDialog();
 	}
 
+	public void onNewTransactionClick(View v){
+		createNewTransaction(0);
+	}
+	
 	@Override
 	public void accountSelected(long accountRowId) {
 		FragmentManager fragmentManager = getSupportFragmentManager();

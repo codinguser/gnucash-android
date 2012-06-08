@@ -48,7 +48,7 @@ public class Transaction {
 	private String mDescription = "";
 	private String mAccountUID = null;
 	
-	private Date mTimestamp;
+	private long mTimestamp;
 	private TransactionType mType = TransactionType.DEBIT;
 	
 	/**
@@ -82,7 +82,7 @@ public class Transaction {
 	 */
 	private void initDefaults(){
 		this.mAmount = 0;
-		this.mTimestamp = new Date();
+		this.mTimestamp = System.currentTimeMillis();
 		this.mType = TransactionType.DEBIT;
 		mTransactionUID = UUID.randomUUID().toString();
 		
@@ -142,14 +142,18 @@ public class Transaction {
 	 * @param timestamp Time when transaction occurred as {@link Date}
 	 */
 	public void setTime(Date timestamp){
-		this.mTimestamp = timestamp;
+		this.mTimestamp = timestamp.getTime();
+	}
+	
+	public void setTime(long timeInMillis) {
+		this.mTimestamp = timeInMillis;
 	}
 	
 	/**
-	 * Returns time when transaction occured
-	 * @return {@link Date} object for time when transaction occured
+	 * Returns the time of transaction in milliseconds
+	 * @return Time when transaction occured in milliseconds 
 	 */
-	public Date getTime(){
+	public long getTimeMillis(){
 		return mTimestamp;
 	}
 	
@@ -244,4 +248,5 @@ public class Transaction {
 		
 		return transaction;
 	}
+
 }

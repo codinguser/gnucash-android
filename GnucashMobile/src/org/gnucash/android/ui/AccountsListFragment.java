@@ -87,8 +87,8 @@ public class AccountsListFragment extends SherlockListFragment implements
 				new String[] { DatabaseHelper.KEY_NAME },
 				new int[] { R.id.account_name }, 0);
 
-		setListAdapter(mCursorAdapter);	
 		getLoaderManager().initLoader(0, null, this);
+		setListAdapter(mCursorAdapter);	
 	}
 	
 	@Override
@@ -106,11 +106,7 @@ public class AccountsListFragment extends SherlockListFragment implements
 	public void onListItemClick(ListView l, View v, int position, long id) {
 		super.onListItemClick(l, v, position, id);
 		mAccountSelectedListener.accountSelected(id);
-	}
-	
-	public void onNewTransactionClick(View v){
-		mAccountSelectedListener.createNewTransaction(getSelectedItemId());
-	}
+	}	
 	
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -189,7 +185,7 @@ public class AccountsListFragment extends SherlockListFragment implements
 					.findViewById(R.id.transactions_summary);
 			Account acc = mAccountsDbAdapter.buildAccountInstance(cursor);
 			double balance = acc.getBalance();
-			int count = acc.getTransactionCount();
+			int count = acc.getTransactionCount();			
 			String statement = "";
 			if (count == 0) {
 				statement = "No transactions on this account";

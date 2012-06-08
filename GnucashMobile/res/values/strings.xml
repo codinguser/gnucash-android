@@ -36,7 +36,14 @@
     <string name="btn_cancel">Cancel</string>
     <string name="btn_save">Save</string>
     <string name="no_transactions_to_display">No transactions to display</string>
-    <string name="label_transaction_name">Transaction name</string>
-    <string name="label_transaction_amount">- $1.99</string>
+    <string name="label_transaction_name">Name</string>
+    <string name="label_transaction_amount">Amount </string>
+    <string name="add_transaction">New transaction</string>
+    <string name="label_no_transactions">No transactions to display</string>
+    <string name="transaction_description">Description</string>
+    <string name="label_date">DATE</string>
+    <string name="label_account">Account</string>
+    <string name="debit">DEBIT</string>
+    <string name="credit">CREDIT</string>
 
 </resources>

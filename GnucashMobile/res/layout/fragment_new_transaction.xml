@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:padding="15dp"
     android:orientation="vertical" >
 
     <EditText
@@ -11,28 +12,105 @@
         android:hint="@string/label_transaction_name"
         android:minHeight="?android:attr/listPreferredItemHeight"
         android:ems="10" 
+        android:layout_marginBottom="10dp"
+        android:inputType="textCapWords"
         style="@style/ListItemText">
 		
         <requestFocus />
     </EditText>
 
-    <EditText
-        android:id="@+id/input_transaction_amount"
+    <LinearLayout 
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"        
+        >
+	    <EditText
+	        android:id="@+id/input_transaction_amount"
+	        android:layout_width="0dp"
+	        android:layout_weight="1"
+	        android:layout_height="wrap_content"
+	        android:minHeight="?android:attr/listPreferredItemHeight"
+	        android:ems="10"
+	        android:layout_marginBottom="10dp"
+	        android:hint="@string/label_transaction_amount"
+	        android:inputType="numberSigned"
+	        android:textColor="@color/debit_red"
+	        style="@style/ListItemText" />
+	    
+	    <ToggleButton android:id="@+id/input_transaction_type"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:minHeight="?android:attr/listPreferredItemHeight"
+	        android:minWidth="100dp"
+	        android:textOn="@string/debit"
+	        android:textOff="@string/credit"
+	        android:textAppearance="?android:attr/textAppearanceMedium"
+	        android:textColor="@color/debit_red"
+	        android:checked="true" />
+	</LinearLayout>
+	
+    <LinearLayout android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" >
+        
+        <TextView
+            android:id="@+id/label_timeanddate"
+            android:text="@string/label_date"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:layout_marginBottom="-8dip"
+            style="@style/TextAppearance.EditTransaction_LabelSmall" />
+	    <LinearLayout
+	        android:layout_height="wrap_content"
+	        android:layout_width="fill_parent"
+	        android:layout_marginBottom="10dp"
+	        android:orientation="horizontal">
+	        
+	        <TextView android:id="@+id/input_date"
+		        android:layout_width="0dp"
+		        android:layout_weight="1" 
+		        android:layout_height="wrap_content"
+		        android:gravity="center"
+		        android:minHeight="?android:attr/listPreferredItemHeight"        
+		        style="@android:style/Widget.DeviceDefault.Spinner"
+		        android:textSize="22dp" />
+	        
+	        <TextView android:id="@+id/input_time"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:minHeight="?android:attr/listPreferredItemHeight"        
+		        style="@android:style/Widget.DeviceDefault.Spinner"
+		        android:gravity="center"
+		        android:textSize="22dp"
+		        android:minWidth="120dp" />    
+		</LinearLayout>
+    </LinearLayout>
+    
+    <EditText android:id="@+id/input_description"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:minHeight="?android:attr/listPreferredItemHeight"
-        android:ems="10"
-        android:hint="@string/label_transaction_amount"
-        android:inputType="numberDecimal" />
-
-    <DatePicker
-        android:id="@+id/input_transaction_date"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-
-    <Spinner
-        android:id="@+id/accounts_spinner"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:singleLine="false"
+        android:layout_marginBottom="10dp"
+        android:hint="@string/transaction_description"
+        android:inputType="textMultiLine"
+        android:lines="2"
+        android:gravity="top"
+        />
+    <LinearLayout android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" >
+        
+		<TextView
+		    android:id="@+id/label_account"
+		    android:text="@string/label_account"
+		    android:layout_height="wrap_content"
+		    android:layout_width="wrap_content"
+		    android:layout_marginBottom="-8dip"
+		    style="@style/TextAppearance.EditTransaction_LabelSmall" />
+	    <Spinner
+	        android:id="@+id/input_accounts_spinner"        
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content" 
+	        android:minHeight="?android:attr/listPreferredItemHeight" />
+    </LinearLayout>
 
 </LinearLayout>

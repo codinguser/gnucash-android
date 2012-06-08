@@ -50,4 +50,23 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:padding">18dp</item>
     </style>
+    
+    <style name="TextAppearance" parent="android:TextAppearance">
+    </style>
+    
+    <style name="TextAppearance.EditTransaction_Small">
+        <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">#FFAAAAAA</item>
+        <item name="android:textAllCaps">true</item>
+    </style>
+    
+    <style name="TextAppearance.EditTransaction_LabelSmall" parent="TextAppearance.EditTransaction_Small">
+        <item name="android:minHeight">24dp</item>
+        <item name="android:layout_width">144dp</item>
+        <item name="android:layout_marginRight">16dp</item>
+        <item name="android:paddingLeft">8dp</item>
+        <item name="android:paddingRight">8dp</item>
+        <item name="android:layout_marginBottom">-12dp</item>
+    </style>
 </resources>

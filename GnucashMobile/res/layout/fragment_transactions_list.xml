@@ -44,12 +44,12 @@
 		    android:layout_width="match_parent"
 		    android:layout_height="wrap_content"
 		    android:gravity="center" 
-		    android:text="@string/no_accounts"		    
+		    android:text="@string/label_no_transactions"		    
 		    style="@style/ListItem"/>
         <Button
-            android:id="@+id/add_account_button"
+            android:id="@+id/add_transaction_button"
             style="@style/ButtonStyle"
-            android:onClick="onNewAccountClick"
-            android:text="@string/add_account" />
+            android:onClick="onNewTransactionClick"
+            android:text="@string/add_transaction" />
     </LinearLayout>
 </LinearLayout>

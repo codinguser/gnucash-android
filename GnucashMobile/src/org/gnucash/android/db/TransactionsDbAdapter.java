@@ -25,7 +25,6 @@
 package org.gnucash.android.db;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import org.gnucash.android.data.Transaction;
@@ -62,9 +61,12 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 	public long addTransaction(Transaction transaction){
 		ContentValues contentValues = new ContentValues();
 		contentValues.put(DatabaseHelper.KEY_NAME, transaction.getName());
+		contentValues.put(DatabaseHelper.KEY_AMOUNT, transaction.getAmount());
 		contentValues.put(DatabaseHelper.KEY_TYPE, transaction.getTransactionType().name());
 		contentValues.put(DatabaseHelper.KEY_UID, transaction.getUID());
 		contentValues.put(DatabaseHelper.KEY_ACCOUNT_UID, transaction.getAccountUID());
+		contentValues.put(DatabaseHelper.KEY_TIMESTAMP, transaction.getTimeMillis());
+		contentValues.put(DatabaseHelper.KEY_DESCRIPTION, transaction.getDescription());
 		
 		long rowId = -1;
 		if ((rowId = fetchTransactionWithUID(transaction.getUID())) > 0){
@@ -158,7 +160,7 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 		while (c.moveToNext()) {
 			transactionsList.add(buildTransactionInstance(c));
 		}
-		
+		c.close();
 		return transactionsList;
 	}
 	
@@ -173,7 +175,7 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 				c.getString(DatabaseAdapter.COLUMN_NAME));
 		transaction.setUID(c.getString(DatabaseAdapter.COLUMN_UID));
 		transaction.setAccountUID(c.getString(DatabaseAdapter.COLUMN_ACCOUNT_UID));
-		transaction.setTime(new Date(c.getLong(DatabaseAdapter.COLUMN_TIMESTAMP)));
+		transaction.setTime(c.getLong(DatabaseAdapter.COLUMN_TIMESTAMP));
 		
 		return transaction;
 	}
