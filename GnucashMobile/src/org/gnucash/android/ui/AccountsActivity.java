@@ -30,6 +30,7 @@ import org.gnucash.android.util.OnAccountSelectedListener;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.View;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
@@ -94,15 +95,16 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
 	}
 	
 	@Override
-	public void accountSelected(long accountRowId) {
+	public void accountSelected(long accountRowId, String accountName) {
 		FragmentManager fragmentManager = getSupportFragmentManager();
 		FragmentTransaction fragmentTransaction = fragmentManager
 				.beginTransaction();
 		TransactionsListFragment transactionsFragment = new TransactionsListFragment();
 		Bundle args = new Bundle();
 		args.putLong(TransactionsListFragment.SELECTED_ACCOUNT_ID, accountRowId);		
+		args.putString(TransactionsListFragment.SELECTED_ACCOUNT_NAME, accountName);
 		transactionsFragment.setArguments(args);
-		
+		Log.i(TAG, "Opening transactions for account " + accountName);
 		fragmentTransaction.replace(R.id.fragment_container,
 				transactionsFragment, FRAGMENT_TRANSACTIONS_LIST);
 

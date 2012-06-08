@@ -203,6 +203,7 @@ public class NewTransactionFragment extends SherlockFragment implements
 		String name = ((TextView)getView().findViewById(R.id.input_transaction_name)).getText().toString();
 		String amountString = ((TextView)getView().findViewById(R.id.input_transaction_amount)).getText().toString();
 		double amount = Double.parseDouble(stripCurrencyFormatting(amountString))/100;
+		amount *= mTransactionTypeButton.isChecked() ? -1 : 1; //set negative for debit
 		Calendar cal = new GregorianCalendar(
 				mDate.get(Calendar.YEAR), 
 				mDate.get(Calendar.MONTH), 
@@ -272,7 +273,7 @@ public class NewTransactionFragment extends SherlockFragment implements
 		@Override
 		public void afterTextChanged(Editable s) {
 			String cleanString = stripCurrencyFormatting(s.toString());
-			if (cleanString.isEmpty())
+			if (cleanString.length() == 0)
 				return;
 
 			double parsed = Double.parseDouble(cleanString);

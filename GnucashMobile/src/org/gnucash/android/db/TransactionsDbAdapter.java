@@ -137,12 +137,16 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 	 * @return Cursor holding set of transactions for particular account
 	 */
 	public Cursor fetchAllTransactionsForAccount(long accountID){
-		Cursor cursor = mDb.query(DatabaseHelper.TRANSACTIONS_TABLE_NAME, 
-				null, 
+		Cursor c = mDb.query(DatabaseHelper.ACCOUNTS_TABLE_NAME, 
+				new String[] {DatabaseHelper.KEY_UID}, 
 				DatabaseHelper.KEY_ROW_ID + " = '" + accountID + "'", 
 				null, null, null, null);
+		String uid = null;
+		if (c != null && c.moveToFirst()){
+			uid = c.getString(0);
+		}
 		
-		return cursor;
+		return fetchAllTransactionsForAccount(uid);		
 	}
 	
 	/**

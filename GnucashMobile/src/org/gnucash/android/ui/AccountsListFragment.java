@@ -24,11 +24,9 @@
 
 package org.gnucash.android.ui;
 
-import java.text.NumberFormat;
-import java.util.Locale;
-
 import org.gnucash.android.R;
 import org.gnucash.android.data.Account;
+import org.gnucash.android.data.Transaction;
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.DatabaseAdapter;
 import org.gnucash.android.db.DatabaseCursorLoader;
@@ -44,6 +42,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.SimpleCursorAdapter;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -63,6 +62,8 @@ public class AccountsListFragment extends SherlockListFragment implements
 
 	private static final int DIALOG_ADD_ACCOUNT = 0x10;
 	
+	protected static final String TAG = "AccountsListFragment";
+	
 	SimpleCursorAdapter mCursorAdapter;
 	NewAccountDialogFragment mAddAccountFragment;
 	private AccountsDbAdapter mAccountsDbAdapter;	
@@ -79,13 +80,16 @@ public class AccountsListFragment extends SherlockListFragment implements
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-		mAccountsDbAdapter = new AccountsDbAdapter(getActivity().getApplicationContext());
+		mAccountsDbAdapter = new AccountsDbAdapter(getActivity());
+		
+		getSherlockActivity().getSupportActionBar().setTitle(R.string.title_accounts);
 		
 		setHasOptionsMenu(true);
-		mCursorAdapter = new AccountsCursorAdapter(getActivity()
-				.getApplicationContext(), R.layout.list_item_account, null,
+		mCursorAdapter = new AccountsCursorAdapter(
+				getActivity(), 
+				R.layout.list_item_account, null,
 				new String[] { DatabaseHelper.KEY_NAME },
-				new int[] { R.id.account_name }, 0);
+				new int[] { R.id.account_name });
 
 		getLoaderManager().initLoader(0, null, this);
 		setListAdapter(mCursorAdapter);	
@@ -105,7 +109,9 @@ public class AccountsListFragment extends SherlockListFragment implements
 	@Override
 	public void onListItemClick(ListView l, View v, int position, long id) {
 		super.onListItemClick(l, v, position, id);
-		mAccountSelectedListener.accountSelected(id);
+		TextView tv = (TextView) v.findViewById(R.id.account_name);
+		String name = tv.getText().toString();
+		mAccountSelectedListener.accountSelected(id, name);
 	}	
 	
 	@Override
@@ -171,8 +177,8 @@ public class AccountsListFragment extends SherlockListFragment implements
 	
 	private class AccountsCursorAdapter extends SimpleCursorAdapter {
 		public AccountsCursorAdapter(Context context, int layout, Cursor c,
-				String[] from, int[] to, int flags) {
-			super(context, layout, c, from, to, flags);
+				String[] from, int[] to) {
+			super(context, layout, c, from, to, 0);
 		}
 		
 		@Override
@@ -195,10 +201,8 @@ public class AccountsListFragment extends SherlockListFragment implements
 
 				// TODO: Allow the user to set locale, or get it from phone
 				// location
-				NumberFormat currencyformatter = NumberFormat
-						.getCurrencyInstance(Locale.getDefault());
 
-				String formattedAmount = currencyformatter.format(balance);
+				String formattedAmount = Transaction.getFormattedAmount(balance);
 				statement = count + pluralizedText + formattedAmount;
 			}
 			summary.setText(statement);		
@@ -232,18 +236,20 @@ public class AccountsListFragment extends SherlockListFragment implements
 
 	@Override
 	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-		return new AccountsCursorLoader(this.getActivity()
-				.getApplicationContext());
+		Log.d(TAG, "Creating the accounts loader");
+		return new AccountsCursorLoader(this.getActivity());
 	}
 
 	@Override
 	public void onLoadFinished(Loader<Cursor> loaderCursor, Cursor cursor) {
+		Log.d(TAG, "Accounts loader finished. Swapping in cursor");
 		mCursorAdapter.swapCursor(cursor);
 		mCursorAdapter.notifyDataSetChanged();
 	}
 
 	@Override
 	public void onLoaderReset(Loader<Cursor> arg0) {
+		Log.d(TAG, "Resetting the accounts loader");
 		mCursorAdapter.swapCursor(null);
 	}
 

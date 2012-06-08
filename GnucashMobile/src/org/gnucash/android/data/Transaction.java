@@ -24,6 +24,8 @@
 
 package org.gnucash.android.data;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.Date;
 import java.util.UUID;
 
@@ -103,6 +105,18 @@ public class Transaction {
 	 */
 	public double getAmount() {
 		return mAmount;
+	}
+	
+	/**
+	 * Returns the transaction properly formatted for display
+	 * @return Properly formatted string amount
+	 */
+	public static String getFormattedAmount(double amount){
+		DecimalFormat formatter = (DecimalFormat)NumberFormat.getCurrencyInstance();
+		String symbol = formatter.getCurrency().getSymbol();
+		formatter.setNegativePrefix("-" + symbol); 
+		formatter.setNegativeSuffix("");
+		return formatter.format(amount);
 	}
 	
 	/**

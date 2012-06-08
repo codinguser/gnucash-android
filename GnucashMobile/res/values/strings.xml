@@ -45,5 +45,7 @@
     <string name="label_account">Account</string>
     <string name="debit">DEBIT</string>
     <string name="credit">CREDIT</string>
+    <string name="title_accounts">Accounts</string>
+    <string name="title_transactions">Transactions</string>
 
 </resources>

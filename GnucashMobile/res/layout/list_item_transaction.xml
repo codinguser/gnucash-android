@@ -45,7 +45,10 @@
             android:layout_height="match_parent"
             android:singleLine="true"
             android:ellipsize="end"
-            android:text="@string/label_transaction_amount"                 
+            android:text="@string/label_transaction_amount"         
+            android:minWidth="100dp"   
+            android:gravity="right"  
+            android:layout_marginRight="12dp"   
             style="@style/ListItemText" /> 
 	
 </LinearLayout>
