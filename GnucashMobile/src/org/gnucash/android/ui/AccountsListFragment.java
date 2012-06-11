@@ -76,7 +76,7 @@ public class AccountsListFragment extends SherlockListFragment implements
 		return inflater.inflate(R.layout.fragment_accounts_list, container,
 				false);
 	}
-
+	
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
@@ -90,9 +90,9 @@ public class AccountsListFragment extends SherlockListFragment implements
 				R.layout.list_item_account, null,
 				new String[] { DatabaseHelper.KEY_NAME },
 				new int[] { R.id.account_name });
-
+						
+		setListAdapter(mCursorAdapter);
 		getLoaderManager().initLoader(0, null, this);
-		setListAdapter(mCursorAdapter);	
 	}
 	
 	@Override
@@ -142,7 +142,7 @@ public class AccountsListFragment extends SherlockListFragment implements
 	
 	public void addAccount(String name) {
 		mAccountsDbAdapter.addAccount(new Account(name));			
-		getLoaderManager().restartLoader(0, null, this);
+		getLoaderManager().restartLoader(0, null, this);		
 	}
 	
 	/**
@@ -220,8 +220,6 @@ public class AccountsListFragment extends SherlockListFragment implements
 	}
 
 	private static final class AccountsCursorLoader extends DatabaseCursorLoader {
-		//TODO: close this account adapter somewhere
-//		AccountsDbAdapter accountsDbAdapter;
 		
 		public AccountsCursorLoader(Context context) {
 			super(context);		
@@ -229,21 +227,24 @@ public class AccountsListFragment extends SherlockListFragment implements
 
 		@Override
 		public Cursor loadInBackground() {			
-			mDatabaseAdapter = new AccountsDbAdapter(mContext);			
-			return ((AccountsDbAdapter) mDatabaseAdapter).fetchAllAccounts();
+			mDatabaseAdapter = new AccountsDbAdapter(getContext());	
+			Cursor cursor = ((AccountsDbAdapter) mDatabaseAdapter).fetchAllAccounts();		
+			if (cursor != null)
+				registerContentObserver(cursor);
+			return cursor;
 		}
 	}
 
 	@Override
 	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 		Log.d(TAG, "Creating the accounts loader");
-		return new AccountsCursorLoader(this.getActivity());
+		return new AccountsCursorLoader(this.getActivity().getApplicationContext());		
 	}
 
 	@Override
 	public void onLoadFinished(Loader<Cursor> loaderCursor, Cursor cursor) {
 		Log.d(TAG, "Accounts loader finished. Swapping in cursor");
-		mCursorAdapter.swapCursor(cursor);
+		mCursorAdapter.swapCursor(cursor);		
 		mCursorAdapter.notifyDataSetChanged();
 	}
 

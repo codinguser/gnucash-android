@@ -31,21 +31,26 @@ import android.support.v4.content.AsyncTaskLoader;
 public abstract class DatabaseCursorLoader extends AsyncTaskLoader<Cursor> {
 	private Cursor mCursor = null;
 	protected DatabaseAdapter mDatabaseAdapter = null;
-	protected Context mContext = null;
+	protected final ForceLoadContentObserver mObserver;
 	
 	public DatabaseCursorLoader(Context context) {
 		super(context);
-		mContext = context;
+		mObserver = new ForceLoadContentObserver();
 	}
 
 	public abstract Cursor loadInBackground();
 
+	protected void registerContentObserver(Cursor cursor){
+		cursor.registerContentObserver(mObserver);
+	}
+	
 	@Override
 	public void deliverResult(Cursor data) {
 		if (isReset()) {
 			if (data != null) {
 				onReleaseResources(data);
 			}
+			return;
 		}
 
 		Cursor oldCursor = mCursor;
@@ -55,7 +60,7 @@ public abstract class DatabaseCursorLoader extends AsyncTaskLoader<Cursor> {
 			super.deliverResult(data);
 		}
 
-		if (oldCursor != null) {
+		if (oldCursor != null && oldCursor != data && !oldCursor.isClosed()) {
 			onReleaseResources(oldCursor);
 		}
 	}
@@ -95,10 +100,10 @@ public abstract class DatabaseCursorLoader extends AsyncTaskLoader<Cursor> {
 
         // At this point we can release the resources associated with 'mCursor'
         // if needed.
-        if (mCursor != null) {
-            onReleaseResources(mCursor);
-            mCursor = null;
+        if (mCursor != null && !mCursor.isClosed()) {
+            onReleaseResources(mCursor);           
         }	
+        mCursor = null;
 	}
 	
 	/**
@@ -108,7 +113,7 @@ public abstract class DatabaseCursorLoader extends AsyncTaskLoader<Cursor> {
      */
 	protected void onReleaseResources(Cursor c) {
 		if (c != null)
-			c.close();
+			c.close();		
 		
 		if (mDatabaseAdapter != null){
 			mDatabaseAdapter.close();

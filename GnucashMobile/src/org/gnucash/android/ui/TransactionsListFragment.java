@@ -153,7 +153,7 @@ public class TransactionsListFragment extends SherlockListFragment implements Lo
 		
 		@Override
 		public Cursor loadInBackground() {
-			mDatabaseAdapter = new TransactionsDbAdapter(mContext);
+			mDatabaseAdapter = new TransactionsDbAdapter(getContext());
 			return ((TransactionsDbAdapter) mDatabaseAdapter).fetchAllTransactionsForAccount(accountID);
 		}		
 	}

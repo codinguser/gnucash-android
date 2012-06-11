@@ -47,7 +47,7 @@
             android:ellipsize="end"
             android:text="@string/label_transaction_amount"         
             android:minWidth="100dp"   
-            android:gravity="right"  
+            android:gravity="right|center_vertical"  
             android:layout_marginRight="12dp"   
             style="@style/ListItemText" /> 
 	
