@@ -29,15 +29,15 @@
 	android:gravity="center_vertical"
 	android:paddingLeft="5dp"
 	android:paddingRight="12dp"
-    android:orientation="horizontal" >
-    <!--   
+    android:orientation="horizontal">
+       
     <CheckBox android:text=""
         android:id="@+id/list_checkbox"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:visibility="gone"
         android:checked="false" />
-    -->
+    
     <LinearLayout
 	    android:layout_width="0dp"
 	    android:layout_height="match_parent"
@@ -51,7 +51,7 @@
             android:layout_weight="2"
             android:singleLine="true"
             android:ellipsize="end"
-            android:text="@string/label_account_name"                 
+            android:text="@string/label_account_name"              
             style="@style/ListItemText" /> 
                    
        <TextView android:id="@+id/transactions_summary"
@@ -63,7 +63,9 @@
            style="@style/ListItemSubTitle" />      
     </LinearLayout>
 	
-    <View android:layout_width="1dp"
+    <View
+        android:id="@+id/vertical_line" 
+        android:layout_width="1dp"
         android:layout_height="40dp"
         android:background="@android:color/darker_gray"
         android:layout_marginRight="10dp"

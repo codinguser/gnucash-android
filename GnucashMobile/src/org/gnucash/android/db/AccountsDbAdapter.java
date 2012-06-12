@@ -90,7 +90,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 	 * @param rowId Database id of the account record to be deleted
 	 * @return <code>true</code> if deletion was successful, <code>false</code> otherwise.
 	 */
-	protected boolean deleteAccount(long rowId){
+	public boolean deleteAccount(long rowId){
 		Log.d(TAG, "Delete account with rowId: " + rowId);
 		return deleteRecord(DatabaseHelper.ACCOUNTS_TABLE_NAME, rowId);
 	}
@@ -143,7 +143,8 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 	 * @return Database row ID of account with UID <code>uid</code>
 	 */
 	public long fetchAccountWithUID(String uid){
-		Cursor cursor = mDb.query(DatabaseHelper.ACCOUNTS_TABLE_NAME, new String[] {DatabaseHelper.KEY_UID}, 
+		Cursor cursor = mDb.query(DatabaseHelper.ACCOUNTS_TABLE_NAME, 
+				new String[] {DatabaseHelper.KEY_ROW_ID, DatabaseHelper.KEY_UID}, 
 				DatabaseHelper.KEY_UID + " = '" + uid + "'", null, null, null, null);
 		long result = -1;
 		if (cursor != null && cursor.moveToFirst()){

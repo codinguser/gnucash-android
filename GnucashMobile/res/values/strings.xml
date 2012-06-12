@@ -47,5 +47,11 @@
     <string name="credit">CREDIT</string>
     <string name="title_accounts">Accounts</string>
     <string name="title_transactions">Transactions</string>
+    <string name="delete">Delete</string>
+    <string name="alert_dialog_ok_delete">Delete</string>
+    <string name="alert_dialog_cancel">Cancel</string>
+    <string name="notify_account_deleted">1 account has been deleted</string>
+    <string name="title_confirm_delete">Confirm delete</string>
+    <string name="delete_confirmation_message">All transactions in this account will also be deleted</string>
 
 </resources>

@@ -88,7 +88,7 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 	 */
 	public long fetchTransactionWithUID(String uid){
 		Cursor cursor = mDb.query(DatabaseHelper.TRANSACTIONS_TABLE_NAME, 
-				new String[] {DatabaseHelper.KEY_UID}, 
+				new String[] {DatabaseHelper.KEY_ROW_ID, DatabaseHelper.KEY_UID}, 
 				DatabaseHelper.KEY_UID + " = '" + uid + "'", 
 				null, null, null, null);
 		long result = -1;
@@ -158,7 +158,7 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 		Cursor c = fetchAllTransactionsForAccount(accountUID);
 		ArrayList<Transaction> transactionsList = new ArrayList<Transaction>();
 		
-		if (c == null || (c.getCount() <= 0))
+		if (c == null || (c.getCount() < 0))
 			return transactionsList;
 		
 		while (c.moveToNext()) {

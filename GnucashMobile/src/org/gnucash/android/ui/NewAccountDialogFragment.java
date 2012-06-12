@@ -25,6 +25,8 @@
 package org.gnucash.android.ui;
 
 import org.gnucash.android.R;
+import org.gnucash.android.data.Account;
+import org.gnucash.android.db.AccountsDbAdapter;
 
 import android.os.Bundle;
 import android.text.Editable;
@@ -42,14 +44,16 @@ public class NewAccountDialogFragment extends SherlockDialogFragment {
 	private Button mSaveButton;
 	private Button mCancelButton;
 	private EditText mNameEditText;
-	private View.OnClickListener mListener;
+	private AccountsDbAdapter mDbAdapter;
+	private long mSelectedId = 0;
+	private Account mAccount = null;
 	
-	public NewAccountDialogFragment(View.OnClickListener listener) {
-		mListener = listener;
+	public NewAccountDialogFragment(AccountsDbAdapter dbAdapter) {		
+		mDbAdapter = dbAdapter;
 	}
 	
-	static public NewAccountDialogFragment newInstance(View.OnClickListener listener){
-		NewAccountDialogFragment f = new NewAccountDialogFragment(listener);
+	static public NewAccountDialogFragment newInstance(AccountsDbAdapter dbAdapter){
+		NewAccountDialogFragment f = new NewAccountDialogFragment(dbAdapter);
 		
 		return f;
 	}
@@ -57,7 +61,8 @@ public class NewAccountDialogFragment extends SherlockDialogFragment {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
+		mSelectedId = getArguments().getLong(TransactionsListFragment.SELECTED_ACCOUNT_ID);
+				
 	}
 	
 	@Override
@@ -72,10 +77,27 @@ public class NewAccountDialogFragment extends SherlockDialogFragment {
 		mNameEditText.requestFocus();
         getDialog().getWindow().setSoftInputMode(
                 LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+        
+        mNameEditText.addTextChangedListener(new NameFieldWatcher());
+		       
+        if (mSelectedId != 0) {
+        	mAccount = mDbAdapter.getAccount(mSelectedId);
+        	mNameEditText.setText(mAccount.getName());        	
+        }
 		
-		mNameEditText.addTextChangedListener(new NameFieldWatcher());
-		
-		mSaveButton.setOnClickListener(mListener);
+		mSaveButton.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				if (mAccount == null)
+					mAccount = new Account(getEnteredName());
+				else
+					mAccount.setName(getEnteredName());
+				mDbAdapter.addAccount(mAccount);
+				((AccountsListFragment)getTargetFragment()).refreshList();				
+				dismiss();				
+			}
+		});
 		
 		mCancelButton.setOnClickListener(new View.OnClickListener() {
 			
