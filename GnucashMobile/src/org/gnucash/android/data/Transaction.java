@@ -60,9 +60,9 @@ public class Transaction {
 	 * @param name Name of the transaction
 	 */
 	public Transaction(double amount, String name) {
-		initDefaults();
-		this.mAmount = amount;
+		initDefaults();		
 		this.mName = name;
+		setAmount(amount); //takes care of setting the type for us
 	}
 	
 	/**

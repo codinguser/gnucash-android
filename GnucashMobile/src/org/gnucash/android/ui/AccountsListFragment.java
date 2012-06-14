@@ -89,13 +89,13 @@ public class AccountsListFragment extends SherlockListFragment implements
 	 */
 	private long mSelectedItemId = -1;
 	
-	private ActionMode.Callback mActionModCallbacks = new Callback() {
+	private ActionMode.Callback mActionModeCallbacks = new Callback() {
 		
 		@Override
 		public boolean onCreateActionMode(ActionMode mode, Menu menu) {
 			MenuInflater inflater = mode.getMenuInflater();
 	        inflater.inflate(R.menu.account_context_menu, menu);
-	        mode.setTitle("1 account selected");
+	        mode.setTitle("1 selected");
 	        return true;
 		}
 
@@ -173,13 +173,9 @@ public class AccountsListFragment extends SherlockListFragment implements
 	}
 	
 	@Override
-	public void onActivityCreated(Bundle savedInstanceState) {
-		super.onActivityCreated(savedInstanceState);
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
 		mAccountsDbAdapter = new AccountsDbAdapter(getActivity());
-		
-		getSherlockActivity().getSupportActionBar().setTitle(R.string.title_accounts);
-		
-		setHasOptionsMenu(true);
 		mCursorAdapter = new AccountsCursorAdapter(
 				getActivity().getApplicationContext(), 
 				R.layout.list_item_account, null,
@@ -187,6 +183,16 @@ public class AccountsListFragment extends SherlockListFragment implements
 				new int[] { R.id.account_name });
 						
 		setListAdapter(mCursorAdapter);
+	}
+	
+	@Override
+	public void onActivityCreated(Bundle savedInstanceState) {
+		super.onActivityCreated(savedInstanceState);
+		
+		getSherlockActivity().getSupportActionBar().setTitle(R.string.title_accounts);
+		
+		setHasOptionsMenu(true);
+		
 		ListView lv = getListView();
 		lv.setOnItemLongClickListener(this);
 		lv.setChoiceMode(ListView.CHOICE_MODE_SINGLE);		
@@ -225,7 +231,7 @@ public class AccountsListFragment extends SherlockListFragment implements
 			mInEditMode = true;
 			mSelectedItemId = id;
 	        // Start the CAB using the ActionMode.Callback defined above
-	        mActionMode = getSherlockActivity().startActionMode(mActionModCallbacks);
+	        mActionMode = getSherlockActivity().startActionMode(mActionModeCallbacks);
 	             
 	        selectItem(position);
 	        return true;
@@ -308,7 +314,7 @@ public class AccountsListFragment extends SherlockListFragment implements
 	}
 	
 	@Override
-	public void onDestroyView() {
+	public void onDestroy() {
 		super.onDestroy();
 		mAccountsDbAdapter.close();
 	}	
@@ -410,7 +416,6 @@ public class AccountsListFragment extends SherlockListFragment implements
 	public void onLoadFinished(Loader<Cursor> loaderCursor, Cursor cursor) {
 		Log.d(TAG, "Accounts loader finished. Swapping in cursor");
 		mCursorAdapter.swapCursor(cursor);
-		setListAdapter(mCursorAdapter);
 		mCursorAdapter.notifyDataSetChanged();
 	}
 

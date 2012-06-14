@@ -5,4 +5,6 @@ public interface OnAccountSelectedListener {
 	public void accountSelected(long accountRowId, String accountName);
 	
 	public void createNewTransaction(long accountRowId);
+	
+	public void editTransaction(long transactionId);
 }

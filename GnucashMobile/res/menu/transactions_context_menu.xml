@@ -23,16 +23,15 @@
  Boston, MA  02110-1301,  USA       gnu@gnu.org
 -->
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
-    <item android:id="@+id/context_menu_edit_accounts"
-          android:icon="@drawable/content_edit"
-          android:title="@string/edit_accounts"
+    <item android:id="@+id/context_menu_move_transactions"
+          android:icon="@drawable/content_copy"
+          android:title="@string/menu_move"
           android:showAsAction="always" 
-          android:orderInCategory="1"/> 
-          
+          android:orderInCategory="1" /> 
+            
 	<item android:id="@+id/context_menu_delete"
           android:icon="@drawable/content_discard"
           android:title="@string/menu_delete"
           android:showAsAction="always"
-          android:orderInCategory="2"/>    
-
+          android:orderInCategory="2"/> 
 </menu>

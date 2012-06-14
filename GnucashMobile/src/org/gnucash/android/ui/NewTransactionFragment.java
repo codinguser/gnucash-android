@@ -71,13 +71,20 @@ public class NewTransactionFragment extends SherlockFragment implements
 	OnDateSetListener, OnTimeSetListener {
 	
 	private TransactionsDbAdapter mTransactionsDbAdapter;
+	private long mTransactionId = 0;
+	private Transaction mTransaction;
+	
+	public static final String SELECTED_TRANSACTION_ID = "selected_transaction_id";
+	
 	final static SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat("dd MMM yyyy");
 	final static SimpleDateFormat TIME_FORMATTER = new SimpleDateFormat("HH:mm");
 	
 	private ToggleButton mTransactionTypeButton;
-	private TextView mDateTextView;
-	private TextView mTimeTextView;	
+	private EditText mNameEditText;
 	private EditText mAmountEditText;
+	private EditText mDescriptionEditText;
+	private TextView mDateTextView;
+	private TextView mTimeTextView;		
 	private Calendar mDate;
 	private Calendar mTime;
 	private Spinner mAccountsSpinner;
@@ -101,24 +108,13 @@ public class NewTransactionFragment extends SherlockFragment implements
 		mTransactionsDbAdapter = new TransactionsDbAdapter(getActivity());
 		View v = getView();
 		
+		mNameEditText = (EditText)getView().findViewById(R.id.input_transaction_name);
+		mDescriptionEditText = (EditText)getView().findViewById(R.id.input_description);
 		mDateTextView = (TextView) v.findViewById(R.id.input_date);
 		mTimeTextView = (TextView) v.findViewById(R.id.input_time);
 		mAmountEditText = (EditText) v.findViewById(R.id.input_transaction_amount);
 		mAccountsSpinner = (Spinner) v.findViewById(R.id.input_accounts_spinner);
 		mTransactionTypeButton = (ToggleButton) v.findViewById(R.id.input_transaction_type);
-		
-		bindViews();
-		setListeners();
-	}
-
-	/**
-	 * Binds the various views to the appropriate text
-	 */
-	private void bindViews() {
-		Date time = new Date(System.currentTimeMillis()); 
-		mDateTextView.setText(DATE_FORMATTER.format(time));
-		mTimeTextView.setText(TIME_FORMATTER.format(time));
-		mTime = mDate = Calendar.getInstance();
 		
 		String[] from = new String[] {DatabaseHelper.KEY_NAME};
 		int[] to = new int[] {android.R.id.text1};
@@ -134,6 +130,48 @@ public class NewTransactionFragment extends SherlockFragment implements
 		mCursorAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		mAccountsSpinner.setAdapter(mCursorAdapter);
 		
+		mTransactionId = getArguments().getLong(SELECTED_TRANSACTION_ID);
+		mTransaction = mTransactionsDbAdapter.getTransaction(mTransactionId);
+		
+		setListeners();
+		if (mTransaction == null)
+			initalizeViews();
+		else
+			initializeViewsWithTransaction();
+		
+	}
+
+	private void initializeViewsWithTransaction(){
+				
+		mNameEditText.setText(mTransaction.getName());
+		mTransactionTypeButton.setChecked(mTransaction.getTransactionType() == TransactionType.DEBIT);
+		mAmountEditText.setText(Double.toString(mTransaction.getAmount()));
+		mDescriptionEditText.setText(mTransaction.getDescription());
+		mDateTextView.setText(DATE_FORMATTER.format(mTransaction.getTimeMillis()));
+		mTimeTextView.setText(TIME_FORMATTER.format(mTransaction.getTimeMillis()));
+		mTime = mDate = Calendar.getInstance();
+				
+		final long accountId = mAccountsDbAdapter.fetchAccountWithUID(mTransaction.getAccountUID());
+		final int count = mCursorAdapter.getCount();
+		for (int pos = 0; pos < count; pos++) {
+			if (mCursorAdapter.getItemId(pos) == accountId)
+				mAccountsSpinner.setSelection(pos);
+		}
+		
+		ActionBar actionBar = getSherlockActivity().getSupportActionBar();
+		actionBar.setHomeButtonEnabled(true);
+		actionBar.setTitle(R.string.edit_transaction);
+	}
+	
+	/**
+	 * Binds the various views to the appropriate text
+	 */
+	private void initalizeViews() {
+		Date time = new Date(System.currentTimeMillis()); 
+		mDateTextView.setText(DATE_FORMATTER.format(time));
+		mTimeTextView.setText(TIME_FORMATTER.format(time));
+		mTime = mDate = Calendar.getInstance();
+				
 		final long accountId = getArguments().getLong(TransactionsListFragment.SELECTED_ACCOUNT_ID);
 		final int count = mCursorAdapter.getCount();
 		for (int pos = 0; pos < count; pos++) {
@@ -200,8 +238,9 @@ public class NewTransactionFragment extends SherlockFragment implements
 	}
 	
 	private void saveNewTransaction() {
-		String name = ((TextView)getView().findViewById(R.id.input_transaction_name)).getText().toString();
-		String amountString = ((TextView)getView().findViewById(R.id.input_transaction_amount)).getText().toString();
+		String name = mNameEditText.getText().toString();
+		String description = mDescriptionEditText.getText().toString();
+		String amountString = mAmountEditText.getText().toString();
 		double amount = Double.parseDouble(stripCurrencyFormatting(amountString))/100;
 		amount *= mTransactionTypeButton.isChecked() ? -1 : 1; //set negative for debit
 		Calendar cal = new GregorianCalendar(
@@ -215,11 +254,19 @@ public class NewTransactionFragment extends SherlockFragment implements
 		long accountID = mAccountsSpinner.getSelectedItemId();
 		Account account = mAccountsDbAdapter.getAccount(accountID);
 		String type = mTransactionTypeButton.getText().toString();
-		Transaction transaction = new Transaction(amount, name, TransactionType.valueOf(type));
-		transaction.setAccountUID(account.getUID());
-		transaction.setTime(cal.getTimeInMillis());
 		
-		mTransactionsDbAdapter.addTransaction(transaction);
+		if (mTransaction != null){
+			mTransaction.setAmount(amount);
+			mTransaction.setName(name);
+			mTransaction.setTransactionType(TransactionType.valueOf(type));
+		} else {
+			mTransaction = new Transaction(amount, name, TransactionType.valueOf(type));
+		}
+		mTransaction.setAccountUID(account.getUID());
+		mTransaction.setTime(cal.getTimeInMillis());
+		mTransaction.setDescription(description);
+		
+		mTransactionsDbAdapter.addTransaction(mTransaction);
 		mTransactionsDbAdapter.close();
 		
 		getSherlockActivity().onBackPressed();

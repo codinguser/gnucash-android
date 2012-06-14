@@ -180,9 +180,13 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 		transaction.setUID(c.getString(DatabaseAdapter.COLUMN_UID));
 		transaction.setAccountUID(c.getString(DatabaseAdapter.COLUMN_ACCOUNT_UID));
 		transaction.setTime(c.getLong(DatabaseAdapter.COLUMN_TIMESTAMP));
-		
+		transaction.setDescription(c.getString(DatabaseAdapter.COLUMN_DESCRIPTION));
 		return transaction;
 	}
 	
+	public boolean deleteTransaction(long rowId){
+		Log.d(TAG, "Delete transaction with record Id: " + rowId);
+		return deleteRecord(DatabaseHelper.TRANSACTIONS_TABLE_NAME, rowId);
+	}
 	
 }

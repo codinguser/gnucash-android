@@ -84,17 +84,29 @@
 		        android:minWidth="120dp" />    
 		</LinearLayout>
     </LinearLayout>
-    
-    <EditText android:id="@+id/input_description"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:singleLine="false"
-        android:layout_marginBottom="10dp"
-        android:hint="@string/transaction_description"
-        android:inputType="textMultiLine"
-        android:lines="2"
-        android:gravity="top"
-        />
+   <LinearLayout
+	        android:layout_height="wrap_content"
+	        android:layout_width="match_parent"
+	        android:orientation="vertical">
+	        
+	        <TextView
+	            android:id="@+id/label_description"
+	            android:text="@string/label_description"
+	            android:layout_height="wrap_content"
+	            android:layout_width="wrap_content"
+	            android:layout_marginBottom="-8dip"
+	            style="@style/TextAppearance.EditTransaction_LabelSmall" />
+	        
+		    <EditText android:id="@+id/input_description"
+		        android:layout_width="match_parent"
+		        android:layout_height="wrap_content"
+		        android:singleLine="false"
+		        android:layout_marginBottom="10dp"
+		        android:hint="@string/transaction_description"
+		        android:inputType="textMultiLine"
+		        android:gravity="top"
+		        />
+   </LinearLayout>
     <LinearLayout android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical" >

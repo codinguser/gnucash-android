@@ -129,4 +129,19 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
 		fragmentTransaction.commit();
 	}
 
+	public void editTransaction(long transactionId){
+		FragmentManager fragmentManager = getSupportFragmentManager();
+		FragmentTransaction fragmentTransaction = fragmentManager
+				.beginTransaction();
+		NewTransactionFragment newTransactionFragment = new NewTransactionFragment();
+		Bundle args = new Bundle();
+		args.putLong(NewTransactionFragment.SELECTED_TRANSACTION_ID, transactionId);		
+		newTransactionFragment.setArguments(args);
+		
+		fragmentTransaction.replace(R.id.fragment_container,
+				newTransactionFragment, FRAGMENT_NEW_TRANSACTION);
+
+		fragmentTransaction.addToBackStack(null);
+		fragmentTransaction.commit();
+	}
 }
