@@ -23,27 +23,56 @@
  Boston, MA  02110-1301,  USA       gnu@gnu.org
 -->
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
+	<LinearLayout android:id="@+id/transactions_sum_bar"
+		android:layout_width="match_parent" 
+		android:layout_height="wrap_content"
+		android:layout_alignParentBottom="true"
+		android:background="@drawable/abs__ab_bottom_solid_light_holo"
+		android:orientation="horizontal"
+		android:minHeight="50dp"
+		style="@style/ListItem">
+        	    
+		<TextView  
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			android:gravity="left|center_vertical"
+			android:layout_weight="1"
+			android:layout_marginLeft="20dp"
+			android:text="@string/label_transactions_total" 
+			style="@style/ListItemText" />
+		
+		<TextView android:id="@+id/transactions_sum"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:gravity="right|center_vertical"
+			android:layout_marginRight="12dp" 
+			android:text="0.00"
+			style="@style/ListItemText" />
+		
+	</LinearLayout>	
+	
     <ListView android:id="@id/android:list"        
         android:layout_width="match_parent"
-        android:layout_height="0dp"	
-        android:layout_weight="1"
+        android:layout_height="match_parent"	
+        android:layout_above="@id/transactions_sum_bar"
         android:drawSelectorOnTop="false"/>
     
 	<LinearLayout
         android:id="@id/android:empty"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_above="@id/transactions_sum_bar"
         android:gravity="center"
         android:orientation="vertical">
 		<TextView 
 		    android:layout_width="match_parent"
 		    android:layout_height="wrap_content"
-		    android:gravity="center" 
+		    android:gravity="center" 		    
 		    android:text="@string/label_no_transactions"		    
 		    style="@style/ListItem"/>
         <Button
@@ -52,4 +81,5 @@
             android:onClick="onNewTransactionClick"
             android:text="@string/add_transaction" />
     </LinearLayout>
-</LinearLayout>
+    
+</RelativeLayout>

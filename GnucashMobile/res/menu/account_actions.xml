@@ -27,6 +27,12 @@
           android:icon="@drawable/content_new"
           android:title="@string/add_account"
           android:showAsAction="always"/>
+    
+        <item android:id="@+id/menu_export"
+          android:icon="@drawable/content_import_export"
+          android:title="@string/export_ofx"
+          android:showAsAction="never"
+          android:orderInCategory="3"/>
 <!--       
     <item android:id="@+id/menu_edit_accounts"
           android:icon="@drawable/content_edit"

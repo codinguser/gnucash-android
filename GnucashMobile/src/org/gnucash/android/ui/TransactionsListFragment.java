@@ -141,6 +141,15 @@ public class TransactionsListFragment extends SherlockListFragment implements
 		super.onActivityCreated(savedInstanceState);
 		String title = getArguments().getString(TransactionsListFragment.SELECTED_ACCOUNT_NAME);
 		getSherlockActivity().getSupportActionBar().setTitle(title);
+		
+		double sum = mTransactionsDbAdapter.getTransactionsSum(mAccountID);		
+		TextView sumTextView = (TextView) getView().findViewById(R.id.transactions_sum);
+		sumTextView.setText(Transaction.getFormattedAmount(sum));
+		if (sum < 0)
+			sumTextView.setTextColor(getResources().getColor(R.color.debit_red));
+		else
+			sumTextView.setTextColor(getResources().getColor(R.color.credit_green));
+		
 		setHasOptionsMenu(true);
 		getListView().setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);		
 		getLoaderManager().initLoader(0, null, this);
@@ -239,7 +248,9 @@ public class TransactionsListFragment extends SherlockListFragment implements
 	}
 	
 	private void deselectAllItems() {
-		for (int position : mSelectedIds.keySet()) {
+		Integer[] selectedItemPositions = new Integer[mSelectedIds.size()];
+		mSelectedIds.keySet().toArray(selectedItemPositions);
+		for (int position : selectedItemPositions) {
 			deselectItem(position);
 		}
 	}

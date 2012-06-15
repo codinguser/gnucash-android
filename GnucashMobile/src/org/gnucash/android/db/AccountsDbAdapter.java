@@ -180,4 +180,23 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 		Log.v(TAG, "Fetching all accounts from db");
 		return fetchAllRecords(DatabaseHelper.ACCOUNTS_TABLE_NAME);
 	}
+
+	/**
+	 * Return the record ID for the account with UID <code>accountUID</code>
+	 * @param accountUID String Unique ID of the account
+	 * @return Record ID belonging to account UID
+	 */
+	public long getId(String accountUID){
+		long id = -1;
+		Cursor c = mDb.query(DatabaseHelper.ACCOUNTS_TABLE_NAME, 
+				new String[]{DatabaseHelper.KEY_ROW_ID, DatabaseHelper.KEY_UID}, 
+				DatabaseHelper.KEY_UID + "=" + accountUID, 
+				null, null, null, null);
+		if (c != null && c.moveToFirst()){
+			id = c.getLong(DatabaseAdapter.COLUMN_ROW_ID);
+			c.close();
+		}
+		return id;
+	}
+	
 }

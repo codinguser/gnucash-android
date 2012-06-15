@@ -137,16 +137,7 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 	 * @return Cursor holding set of transactions for particular account
 	 */
 	public Cursor fetchAllTransactionsForAccount(long accountID){
-		Cursor c = mDb.query(DatabaseHelper.ACCOUNTS_TABLE_NAME, 
-				new String[] {DatabaseHelper.KEY_UID}, 
-				DatabaseHelper.KEY_ROW_ID + " = '" + accountID + "'", 
-				null, null, null, null);
-		String uid = null;
-		if (c != null && c.moveToFirst()){
-			uid = c.getString(0);
-		}
-		
-		return fetchAllTransactionsForAccount(uid);		
+		return fetchAllTransactionsForAccount(getAccountUID(accountID));	
 	}
 	
 	/**
@@ -189,4 +180,58 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 		return deleteRecord(DatabaseHelper.TRANSACTIONS_TABLE_NAME, rowId);
 	}
 	
+	public int getTransactionsCount(long accountId){
+		Cursor cursor = fetchAllTransactionsForAccount(accountId);
+		int count = 0;
+		if (cursor == null)
+			return count;
+		else {
+			count = cursor.getCount();
+			cursor.close();
+		}
+		return count;
+	}
+	
+	/**
+	 * Returns the sum of transactions belonging to the account with id <code>accountId</code>
+	 * @param accountId Record ID of the account
+	 * @return Sum of transactions belonging to the account
+	 */
+	public double getTransactionsSum(long accountId){
+		Cursor c = mDb.query(DatabaseHelper.TRANSACTIONS_TABLE_NAME, 
+				new String[]{DatabaseHelper.KEY_AMOUNT}, 
+				DatabaseHelper.KEY_ACCOUNT_UID + "= '" + getAccountUID(accountId) + "'", 
+				null, null, null, null);
+		
+		if (c == null)
+			return 0;
+		
+		double amountSum = 0;
+		
+		while(c.moveToNext()){
+			amountSum += c.getDouble(0);
+		}
+		c.close();
+		
+		return amountSum;
+	}
+	
+	/**
+	 * Returns an account UID of the account with record id <code>accountRowID</code>
+	 * @param acountRowID Record ID of account as long paramenter
+	 * @return String containing UID of account
+	 */
+	public String getAccountUID(long acountRowID){
+		String uid = null;
+		Cursor c = mDb.query(DatabaseHelper.ACCOUNTS_TABLE_NAME, 
+				new String[]{DatabaseHelper.KEY_UID}, 
+				DatabaseHelper.KEY_ROW_ID + "=" + acountRowID, 
+				null, null, null, null);
+		if (c != null && c.moveToFirst()){
+			uid = c.getString(0);
+			c.close();
+		}
+		return uid;
+	}
+
 }

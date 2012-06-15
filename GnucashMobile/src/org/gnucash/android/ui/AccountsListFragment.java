@@ -31,6 +31,7 @@ import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.DatabaseAdapter;
 import org.gnucash.android.db.DatabaseCursorLoader;
 import org.gnucash.android.db.DatabaseHelper;
+import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.util.OnAccountSelectedListener;
 
 import android.app.Activity;
@@ -74,7 +75,7 @@ public class AccountsListFragment extends SherlockListFragment implements
 	
 	protected static final String TAG = "AccountsListFragment";
 	
-	SimpleCursorAdapter mCursorAdapter;
+	AccountsCursorAdapter mCursorAdapter;
 	NewAccountDialogFragment mAddAccountFragment;
 	private AccountsDbAdapter mAccountsDbAdapter;	
 	private OnAccountSelectedListener mAccountSelectedListener;	
@@ -304,8 +305,12 @@ public class AccountsListFragment extends SherlockListFragment implements
 			showAddAccountDialog(0);
 			return true;
 
-		default:
+		case R.id.menu_export:
+			
 			return true;
+			
+		default:
+			return false;
 		}
 	}
 	
@@ -317,6 +322,7 @@ public class AccountsListFragment extends SherlockListFragment implements
 	public void onDestroy() {
 		super.onDestroy();
 		mAccountsDbAdapter.close();
+		mCursorAdapter.close();
 	}	
 	
 	/**
@@ -347,11 +353,18 @@ public class AccountsListFragment extends SherlockListFragment implements
 	}
 
 	private class AccountsCursorAdapter extends SimpleCursorAdapter {
+		TransactionsDbAdapter transactionsDBAdapter;
+		
 		public AccountsCursorAdapter(Context context, int layout, Cursor c,
 				String[] from, int[] to) {
 			super(context, layout, c, from, to, 0);
+			transactionsDBAdapter = new TransactionsDbAdapter(context);
 		}
 
+		public void close(){
+			transactionsDBAdapter.close();
+		}
+		
 		@Override
 		public void bindView(View v, Context context, Cursor cursor) {
 			// perform the default binding
@@ -360,9 +373,9 @@ public class AccountsListFragment extends SherlockListFragment implements
 			// add a summary of transactions to the account view
 			TextView summary = (TextView) v
 					.findViewById(R.id.transactions_summary);
-			Account acc = mAccountsDbAdapter.buildAccountInstance(cursor);
-			double balance = acc.getBalance();
-			int count = acc.getTransactionCount();			
+			final long accountId = cursor.getLong(DatabaseAdapter.COLUMN_ROW_ID);
+			double balance = transactionsDBAdapter.getTransactionsSum(accountId);
+			int count = transactionsDBAdapter.getTransactionsCount(accountId);
 			String statement = "";
 			if (count == 0) {
 				statement = "No transactions on this account";
@@ -379,7 +392,6 @@ public class AccountsListFragment extends SherlockListFragment implements
 			summary.setText(statement);		
 			
 			ImageView newTrans = (ImageView) v.findViewById(R.id.btn_new_transaction);
-			final long accountId = cursor.getLong(DatabaseAdapter.COLUMN_ROW_ID);
 			newTrans.setOnClickListener(new View.OnClickListener() {
 				
 				@Override
