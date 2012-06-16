@@ -150,8 +150,7 @@ public class TransactionsListFragment extends SherlockListFragment implements
 		else
 			sumTextView.setTextColor(getResources().getColor(R.color.credit_green));
 		
-		setHasOptionsMenu(true);
-		getListView().setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);		
+		setHasOptionsMenu(true);		
 		getLoaderManager().initLoader(0, null, this);
 	}
 

@@ -195,8 +195,7 @@ public class AccountsListFragment extends SherlockListFragment implements
 		setHasOptionsMenu(true);
 		
 		ListView lv = getListView();
-		lv.setOnItemLongClickListener(this);
-		lv.setChoiceMode(ListView.CHOICE_MODE_SINGLE);		
+		lv.setOnItemLongClickListener(this);	
 		getLoaderManager().initLoader(0, null, this);		
 	}
 	
