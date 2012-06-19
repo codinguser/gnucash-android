@@ -38,7 +38,9 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:text="@string/label_transaction_name"                 
+            android:text="@string/label_transaction_name"                     
+	        android:singleLine="true"
+	        android:ellipsize="end"                
             style="@style/ListItemText" /> 
      
 	<TextView android:id="@+id/transaction_amount" 

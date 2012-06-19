@@ -25,7 +25,7 @@
 package org.gnucash.android.ui;
 
 import org.gnucash.android.R;
-import org.gnucash.android.util.OnAccountSelectedListener;
+import org.gnucash.android.util.OnItemClickedListener;
 
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
@@ -43,7 +43,7 @@ import com.actionbarsherlock.view.MenuInflater;
  * @author Ngewi Fet <ngewif@gmail.com>
  * 
  */
-public class AccountsActivity extends SherlockFragmentActivity implements OnAccountSelectedListener {
+public class AccountsActivity extends SherlockFragmentActivity implements OnItemClickedListener {
 
 	private static final String FRAGMENT_ACCOUNTS_LIST 		= "accounts_list";
 	private static final String FRAGMENT_TRANSACTIONS_LIST 	= "transactions_list";
@@ -83,6 +83,10 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
 		return true;
 	}
 
+	/**
+	 * Opens a dialog fragment to create a new account
+	 * @param v View which triggered this callback
+	 */
 	public void onNewAccountClick(View v) {
 		AccountsListFragment accountFragment = (AccountsListFragment) getSupportFragmentManager()
 				.findFragmentByTag(FRAGMENT_ACCOUNTS_LIST);
@@ -90,6 +94,11 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
 			accountFragment.showAddAccountDialog(0);
 	}
 
+	/**
+	 * Opens a fragment to create a new transaction. 
+	 * Is called from the XML views
+	 * @param v View which triggered this method
+	 */
 	public void onNewTransactionClick(View v){
 		createNewTransaction(0);
 	}
@@ -144,4 +153,5 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
 		fragmentTransaction.addToBackStack(null);
 		fragmentTransaction.commit();
 	}
+
 }

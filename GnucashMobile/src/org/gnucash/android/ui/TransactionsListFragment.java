@@ -32,7 +32,7 @@ import org.gnucash.android.db.DatabaseAdapter;
 import org.gnucash.android.db.DatabaseCursorLoader;
 import org.gnucash.android.db.DatabaseHelper;
 import org.gnucash.android.db.TransactionsDbAdapter;
-import org.gnucash.android.util.OnAccountSelectedListener;
+import org.gnucash.android.util.OnItemClickedListener;
 
 import android.app.Activity;
 import android.content.Context;
@@ -60,6 +60,8 @@ import com.actionbarsherlock.view.MenuItem;
 public class TransactionsListFragment extends SherlockListFragment implements 
 	LoaderCallbacks<Cursor> {
 
+	private static final String SAVED_SELECTED_ITEMS = "selected_items";
+
 	protected static final String TAG = "TransactionsListFragment";
 	
 	public static final String SELECTED_ACCOUNT_ID = "selected_account_id";
@@ -70,8 +72,8 @@ public class TransactionsListFragment extends SherlockListFragment implements
 	private boolean mInEditMode = false;
 	private long mAccountID;
 	private HashMap<Integer, Long> mSelectedIds = new HashMap<Integer, Long>();
-	
-	private OnAccountSelectedListener mTransactionEditListener;
+
+	private OnItemClickedListener mTransactionEditListener;
 	
 	private ActionMode.Callback mActionModeCallbacks = new ActionMode.Callback() {
 		
@@ -135,6 +137,20 @@ public class TransactionsListFragment extends SherlockListFragment implements
 			Bundle savedInstanceState) {
 		return inflater.inflate(R.layout.fragment_transactions_list, container, false);		
 	}
+		
+	@Override
+	public void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		
+		int[] selectedPositions = new int[mSelectedIds.size()];
+		int i = 0;
+		for (Integer id : mSelectedIds.keySet()) {
+			if (id == null)
+				continue;
+			selectedPositions[i++] = id;			
+		}
+		outState.putIntArray(SAVED_SELECTED_ITEMS, selectedPositions);
+	}
 	
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {		
@@ -149,11 +165,12 @@ public class TransactionsListFragment extends SherlockListFragment implements
 			sumTextView.setTextColor(getResources().getColor(R.color.debit_red));
 		else
 			sumTextView.setTextColor(getResources().getColor(R.color.credit_green));
-		
+			
 		setHasOptionsMenu(true);		
-		getLoaderManager().initLoader(0, null, this);
+		refreshList();
+		
 	}
-
+	
 	public void refreshList(){
 		getLoaderManager().restartLoader(0, null, this);
 	}
@@ -162,7 +179,7 @@ public class TransactionsListFragment extends SherlockListFragment implements
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
 		try {
-			 mTransactionEditListener = (OnAccountSelectedListener) activity;
+			 mTransactionEditListener = (OnItemClickedListener) activity;
 		} catch (ClassCastException e) {
 			throw new ClassCastException(activity.toString() + " must implement OnAccountSelectedListener");
 		}	
@@ -212,7 +229,7 @@ public class TransactionsListFragment extends SherlockListFragment implements
 	public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
 		Log.d(TAG, "Transactions loader finished. Swapping in cursor");
 		mCursorAdapter.swapCursor(cursor);
-		mCursorAdapter.notifyDataSetChanged();
+		mCursorAdapter.notifyDataSetChanged();		
 	}
 
 	@Override

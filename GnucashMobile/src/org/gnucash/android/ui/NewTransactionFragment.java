@@ -42,6 +42,7 @@ import org.gnucash.android.db.TransactionsDbAdapter;
 
 import android.app.DatePickerDialog.OnDateSetListener;
 import android.app.TimePickerDialog.OnTimeSetListener;
+import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
@@ -52,6 +53,7 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.DatePicker;
@@ -90,6 +92,8 @@ public class NewTransactionFragment extends SherlockFragment implements
 	private Spinner mAccountsSpinner;
 	private AccountsDbAdapter mAccountsDbAdapter;
 	private SimpleCursorAdapter mCursorAdapter; 
+	
+	private MenuItem mSaveMenuItem;
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -145,7 +149,8 @@ public class NewTransactionFragment extends SherlockFragment implements
 				
 		mNameEditText.setText(mTransaction.getName());
 		mTransactionTypeButton.setChecked(mTransaction.getTransactionType() == TransactionType.DEBIT);
-		mAmountEditText.setText(Double.toString(mTransaction.getAmount()));
+		//multiply to balance out division by the TextWatcher attached to this view
+		mAmountEditText.setText(Double.toString(mTransaction.getAmount() * 10)); 
 		mDescriptionEditText.setText(mTransaction.getDescription());
 		mDateTextView.setText(DATE_FORMATTER.format(mTransaction.getTimeMillis()));
 		mTimeTextView.setText(TIME_FORMATTER.format(mTransaction.getTimeMillis()));
@@ -160,6 +165,7 @@ public class NewTransactionFragment extends SherlockFragment implements
 		
 		ActionBar actionBar = getSherlockActivity().getSupportActionBar();
 		actionBar.setHomeButtonEnabled(true);
+		actionBar.setDisplayHomeAsUpEnabled(true);
 		actionBar.setTitle(R.string.edit_transaction);
 	}
 	
@@ -184,7 +190,11 @@ public class NewTransactionFragment extends SherlockFragment implements
 	 * Sets click listeners for the dismiss buttons
 	 */
 	private void setListeners() {
-		mAmountEditText.addTextChangedListener(new AmountInputWatcher());
+		ValidationsWatcher validations = new ValidationsWatcher();
+		mAmountEditText.addTextChangedListener(validations);
+		mNameEditText.addTextChangedListener(validations);
+		
+		mAmountEditText.addTextChangedListener(new AmountInputFormatter());
 		
 		mTransactionTypeButton.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 			
@@ -225,18 +235,6 @@ public class NewTransactionFragment extends SherlockFragment implements
 		});
 	}	
 	
-	@Override
-	public void onDestroyView() {
-		super.onDestroyView();
-		mAccountsDbAdapter.close();
-		mTransactionsDbAdapter.close();
-	}
-	
-	@Override
-	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-		inflater.inflate(R.menu.new_transaction_actions, menu);
-	}
-	
 	private void saveNewTransaction() {
 		String name = mNameEditText.getText().toString();
 		String description = mDescriptionEditText.getText().toString();
@@ -269,14 +267,31 @@ public class NewTransactionFragment extends SherlockFragment implements
 		mTransactionsDbAdapter.addTransaction(mTransaction);
 		mTransactionsDbAdapter.close();
 		
-		getSherlockActivity().onBackPressed();
+		getSherlockActivity().getSupportFragmentManager().popBackStack();
+		InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+		imm.hideSoftInputFromWindow(mNameEditText.getWindowToken(), 0);
+	}
+
+	@Override
+	public void onDestroyView() {
+		super.onDestroyView();
+		mAccountsDbAdapter.close();
+		mTransactionsDbAdapter.close();
+	}
+	
+	@Override
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+		inflater.inflate(R.menu.new_transaction_actions, menu);
+		mSaveMenuItem = menu.findItem(R.id.menu_save);
+		//only initially enable if we are editing a transaction
+		mSaveMenuItem.setEnabled(mTransactionId > 0);
 	}
 	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.menu_cancel:
-			getSherlockActivity().onBackPressed();
+			getSherlockActivity().getSupportFragmentManager().popBackStack();
 			return true;
 			
 		case R.id.menu_save:
@@ -314,7 +329,32 @@ public class NewTransactionFragment extends SherlockFragment implements
 		return s.replaceAll(regex, "");
 	}
 	
-	private class AmountInputWatcher implements TextWatcher {
+	private class ValidationsWatcher implements TextWatcher {
+
+		@Override
+		public void afterTextChanged(Editable s) {
+			boolean valid = (mNameEditText.getText().length() > 0) && 
+					(mAmountEditText.getText().length() > 0);
+			mSaveMenuItem.setEnabled(valid);
+		}
+
+		@Override
+		public void beforeTextChanged(CharSequence s, int start, int count,
+				int after) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void onTextChanged(CharSequence s, int start, int before,
+				int count) {
+			// TODO Auto-generated method stub
+			
+		}
+		
+	}
+	
+	private class AmountInputFormatter implements TextWatcher {
 		private String current = null;
 		
 		@Override

@@ -32,7 +32,7 @@ import org.gnucash.android.db.DatabaseAdapter;
 import org.gnucash.android.db.DatabaseCursorLoader;
 import org.gnucash.android.db.DatabaseHelper;
 import org.gnucash.android.db.TransactionsDbAdapter;
-import org.gnucash.android.util.OnAccountSelectedListener;
+import org.gnucash.android.util.OnItemClickedListener;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -78,7 +78,7 @@ public class AccountsListFragment extends SherlockListFragment implements
 	AccountsCursorAdapter mCursorAdapter;
 	NewAccountDialogFragment mAddAccountFragment;
 	private AccountsDbAdapter mAccountsDbAdapter;	
-	private OnAccountSelectedListener mAccountSelectedListener;	
+	private OnItemClickedListener mAccountSelectedListener;	
 	private boolean mInEditMode = false;
 	private ActionMode mActionMode = null;
 	private int mSelectedViewPosition = -1;
@@ -203,7 +203,7 @@ public class AccountsListFragment extends SherlockListFragment implements
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
 		try {
-			mAccountSelectedListener = (OnAccountSelectedListener) activity;
+			mAccountSelectedListener = (OnItemClickedListener) activity;
 		} catch (ClassCastException e) {
 			throw new ClassCastException(activity.toString() + " must implement OnAccountSelectedListener");
 		}	

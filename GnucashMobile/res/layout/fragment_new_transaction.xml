@@ -15,8 +15,7 @@
         android:layout_marginBottom="10dp"
         android:inputType="textCapWords"
         style="@style/ListItemText">
-		
-        <requestFocus />
+
     </EditText>
 
     <LinearLayout 
