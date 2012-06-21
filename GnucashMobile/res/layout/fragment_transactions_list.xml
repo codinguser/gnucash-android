@@ -43,15 +43,14 @@
 			android:gravity="left|center_vertical"
 			android:layout_weight="1"
 			android:layout_marginLeft="20dp"
-			android:text="@string/label_transactions_total" 
+			android:text="@string/label_transactions_total" 			
 			style="@style/ListItemText" />
 		
 		<TextView android:id="@+id/transactions_sum"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:gravity="right|center_vertical"
-			android:layout_marginRight="12dp" 
-			android:text="0.00"
+			android:layout_marginRight="@dimen/edge_padding"			
 			style="@style/ListItemText" />
 		
 	</LinearLayout>	

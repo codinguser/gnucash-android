@@ -114,6 +114,7 @@ public class Transaction {
 	public static String getFormattedAmount(double amount){
 		DecimalFormat formatter = (DecimalFormat)NumberFormat.getCurrencyInstance();
 		String symbol = formatter.getCurrency().getSymbol();
+		// TODO: Allow the user to set locale, or get it from current location
 		formatter.setNegativePrefix("-" + symbol); 
 		formatter.setNegativeSuffix("");
 		return formatter.format(amount);

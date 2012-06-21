@@ -51,6 +51,7 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockListFragment;
 import com.actionbarsherlock.view.ActionMode;
 import com.actionbarsherlock.view.Menu;
@@ -60,17 +61,18 @@ import com.actionbarsherlock.view.MenuItem;
 public class TransactionsListFragment extends SherlockListFragment implements 
 	LoaderCallbacks<Cursor> {
 
-	private static final String SAVED_SELECTED_ITEMS = "selected_items";
-
 	protected static final String TAG = "TransactionsListFragment";
-	
+
+	private static final String SAVED_SELECTED_ITEMS = "selected_items";	
 	public static final String SELECTED_ACCOUNT_ID = "selected_account_id";
 	public static final String SELECTED_ACCOUNT_NAME = "selected_account_name";
+	
 	private TransactionsDbAdapter mTransactionsDbAdapter;
 	private SimpleCursorAdapter mCursorAdapter;
 	private ActionMode mActionMode = null;
 	private boolean mInEditMode = false;
 	private long mAccountID;
+	
 	private HashMap<Integer, Long> mSelectedIds = new HashMap<Integer, Long>();
 
 	private OnItemClickedListener mTransactionEditListener;
@@ -115,6 +117,8 @@ public class TransactionsListFragment extends SherlockListFragment implements
 			}
 		}
 	};
+
+	private TextView mSumTextView;
 	
 	@Override
  	public void onCreate(Bundle savedInstanceState) {		
@@ -156,16 +160,10 @@ public class TransactionsListFragment extends SherlockListFragment implements
 	public void onActivityCreated(Bundle savedInstanceState) {		
 		super.onActivityCreated(savedInstanceState);
 		String title = getArguments().getString(TransactionsListFragment.SELECTED_ACCOUNT_NAME);
-		getSherlockActivity().getSupportActionBar().setTitle(title);
-		
-		double sum = mTransactionsDbAdapter.getTransactionsSum(mAccountID);		
-		TextView sumTextView = (TextView) getView().findViewById(R.id.transactions_sum);
-		sumTextView.setText(Transaction.getFormattedAmount(sum));
-		if (sum < 0)
-			sumTextView.setTextColor(getResources().getColor(R.color.debit_red));
-		else
-			sumTextView.setTextColor(getResources().getColor(R.color.credit_green));
-			
+		ActionBar aBar = getSherlockActivity().getSupportActionBar();
+		aBar.setTitle(title);
+		aBar.setDisplayHomeAsUpEnabled(true);
+
 		setHasOptionsMenu(true);		
 		refreshList();
 		
@@ -173,6 +171,15 @@ public class TransactionsListFragment extends SherlockListFragment implements
 	
 	public void refreshList(){
 		getLoaderManager().restartLoader(0, null, this);
+		
+		double sum = mTransactionsDbAdapter.getTransactionsSum(mAccountID);		
+		mSumTextView = (TextView) getView().findViewById(R.id.transactions_sum);
+		mSumTextView.setText(Transaction.getFormattedAmount(sum));
+		if (sum < 0)
+			mSumTextView.setTextColor(getResources().getColor(R.color.debit_red));
+		else
+			mSumTextView.setTextColor(getResources().getColor(R.color.credit_green));
+			
 	}
 			
 	@Override

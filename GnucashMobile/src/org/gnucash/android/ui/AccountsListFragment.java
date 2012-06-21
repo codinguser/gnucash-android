@@ -58,6 +58,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockDialogFragment;
 import com.actionbarsherlock.app.SherlockListFragment;
 import com.actionbarsherlock.view.ActionMode;
@@ -190,7 +191,9 @@ public class AccountsListFragment extends SherlockListFragment implements
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 		
-		getSherlockActivity().getSupportActionBar().setTitle(R.string.title_accounts);
+		ActionBar actionbar = getSherlockActivity().getSupportActionBar();
+		actionbar.setTitle(R.string.title_accounts);
+		actionbar.setDisplayHomeAsUpEnabled(false);
 		
 		setHasOptionsMenu(true);
 		
@@ -373,22 +376,12 @@ public class AccountsListFragment extends SherlockListFragment implements
 			TextView summary = (TextView) v
 					.findViewById(R.id.transactions_summary);
 			final long accountId = cursor.getLong(DatabaseAdapter.COLUMN_ROW_ID);
+			
 			double balance = transactionsDBAdapter.getTransactionsSum(accountId);
-			int count = transactionsDBAdapter.getTransactionsCount(accountId);
-			String statement = "";
-			if (count == 0) {
-				statement = "No transactions on this account";
-			} else {
-				String pluralizedText = count != 1 ? " transactions totalling "
-						: " transaction totalling ";
-
-				// TODO: Allow the user to set locale, or get it from phone
-				// location
-
-				String formattedAmount = Transaction.getFormattedAmount(balance);
-				statement = count + pluralizedText + formattedAmount;
-			}
-			summary.setText(statement);		
+			summary.setText(Transaction.getFormattedAmount(balance));
+			int fontColor = balance < 0 ? getResources().getColor(R.color.debit_red) : 
+				getResources().getColor(R.color.credit_green);
+			summary.setTextColor(fontColor);
 			
 			ImageView newTrans = (ImageView) v.findViewById(R.id.btn_new_transaction);
 			newTrans.setOnClickListener(new View.OnClickListener() {
