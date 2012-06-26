@@ -25,6 +25,7 @@
 package org.gnucash.android.ui;
 
 import java.text.NumberFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Currency;
@@ -50,6 +51,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -219,7 +221,15 @@ public class NewTransactionFragment extends SherlockFragment implements
 			@Override
 			public void onClick(View v) {
 				FragmentTransaction ft = getFragmentManager().beginTransaction();
-				DialogFragment newFragment = new DatePickerDialogFragment(NewTransactionFragment.this);
+				 
+				long dateMillis = 0;				
+				try {
+					Date date = DATE_FORMATTER.parse(mDateTextView.getText().toString());
+					dateMillis = date.getTime();
+				} catch (ParseException e) {
+					Log.e(getTag(), "Error converting input time to Date object");
+				}
+				DialogFragment newFragment = new DatePickerDialogFragment(NewTransactionFragment.this, dateMillis);
 				newFragment.show(ft, "date_dialog");
 			}
 		});
@@ -229,7 +239,14 @@ public class NewTransactionFragment extends SherlockFragment implements
 			@Override
 			public void onClick(View v) {
 				FragmentTransaction ft = getFragmentManager().beginTransaction();
-				DialogFragment fragment = new TimePickerDialogFragment(NewTransactionFragment.this);
+				long timeMillis = 0;				
+				try {
+					Date date = TIME_FORMATTER.parse(mTimeTextView.getText().toString());
+					timeMillis = date.getTime();
+				} catch (ParseException e) {
+					Log.e(getTag(), "Error converting input time to Date object");
+				}
+				DialogFragment fragment = new TimePickerDialogFragment(NewTransactionFragment.this, timeMillis);
 				fragment.show(ft, "time_dialog");
 			}
 		});

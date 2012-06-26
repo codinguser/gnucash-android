@@ -25,6 +25,7 @@
 package org.gnucash.android.ui;
 
 import java.util.Calendar;
+import java.util.GregorianCalendar;
 
 import android.app.Dialog;
 import android.app.TimePickerDialog;
@@ -38,14 +39,20 @@ public class TimePickerDialogFragment extends DialogFragment {
 	public TimePickerDialogFragment() {
 		// nothing to see here, move along
 	}
+	Calendar mCurrentTime = null;
 	
-	public TimePickerDialogFragment(OnTimeSetListener listener){
+	public TimePickerDialogFragment(OnTimeSetListener listener, long timeMillis){
 		mListener = listener;
+		if (timeMillis > 0){
+			mCurrentTime = new GregorianCalendar();
+			mCurrentTime.setTimeInMillis(timeMillis);
+		}
 	}
 	
 	@Override
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
-		Calendar cal = Calendar.getInstance();
+		Calendar cal = mCurrentTime == null ? Calendar.getInstance() : mCurrentTime;
+		
 		int hour = cal.get(Calendar.HOUR_OF_DAY);
 		int minute = cal.get(Calendar.MINUTE);
 		

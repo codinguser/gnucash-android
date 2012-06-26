@@ -25,6 +25,7 @@
 package org.gnucash.android.ui;
 
 import java.util.Calendar;
+import java.util.GregorianCalendar;
 
 import android.app.DatePickerDialog;
 import android.app.DatePickerDialog.OnDateSetListener;
@@ -35,17 +36,22 @@ import android.support.v4.app.DialogFragment;
 public class DatePickerDialogFragment extends DialogFragment {
 
 	private OnDateSetListener mDateSetListener;
-
+	private Calendar mDate;
+	
 	public DatePickerDialogFragment() {
 		// nothing to see here, move along
 	}
 	
-	public DatePickerDialogFragment(OnDateSetListener callback) {
+	public DatePickerDialogFragment(OnDateSetListener callback, long dateMillis) {
 		mDateSetListener = (OnDateSetListener) callback;
+		if (dateMillis > 0){
+			mDate = new GregorianCalendar();
+			mDate.setTimeInMillis(dateMillis);
+		}
 	}
 
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
-		Calendar cal = Calendar.getInstance();
+		Calendar cal = mDate == null ? Calendar.getInstance() : mDate;
 		
 		return new DatePickerDialog(getActivity(),
 				mDateSetListener, cal.get(Calendar.YEAR), 
