@@ -339,10 +339,9 @@ public class NewTransactionFragment extends SherlockFragment implements
 	}
 	
 	private static String stripCurrencyFormatting(String s){
-
-		//TODO: Generalize the code. Works only for $
 		String symbol = Currency.getInstance(Locale.getDefault()).getSymbol();
-		String regex = "[" + symbol + ",.-]";
+		//if in scientific notation, do not remove the period
+		String regex = s.contains("E") ? "[" + symbol + ",-]" : "[" + symbol + ",.-]";
 		return s.replaceAll(regex, "");
 	}
 	
