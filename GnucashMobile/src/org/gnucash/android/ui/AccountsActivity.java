@@ -45,9 +45,9 @@ import com.actionbarsherlock.view.MenuInflater;
  */
 public class AccountsActivity extends SherlockFragmentActivity implements OnItemClickedListener {
 
-	private static final String FRAGMENT_ACCOUNTS_LIST 		= "accounts_list";
-	private static final String FRAGMENT_TRANSACTIONS_LIST 	= "transactions_list";
-	private static final String FRAGMENT_NEW_TRANSACTION 	= "new_transaction";
+	public static final String FRAGMENT_ACCOUNTS_LIST 		= "accounts_list";
+	public static final String FRAGMENT_TRANSACTIONS_LIST 	= "transactions_list";
+	public static final String FRAGMENT_NEW_TRANSACTION 	= "new_transaction";
 	
 	static final int DIALOG_ADD_ACCOUNT = 0x01;
 
