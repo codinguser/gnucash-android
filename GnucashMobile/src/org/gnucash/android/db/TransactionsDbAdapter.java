@@ -180,6 +180,10 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 		return deleteRecord(DatabaseHelper.TRANSACTIONS_TABLE_NAME, rowId);
 	}
 	
+	public boolean deleteTransaction(String uid){
+		return mDb.delete(DatabaseHelper.TRANSACTIONS_TABLE_NAME, 
+				DatabaseHelper.KEY_UID + "='" + uid + "'", null) > 0;
+	}
 	public int getTransactionsCount(long accountId){
 		Cursor cursor = fetchAllTransactionsForAccount(accountId);
 		int count = 0;

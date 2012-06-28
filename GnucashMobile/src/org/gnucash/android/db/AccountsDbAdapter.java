@@ -26,6 +26,7 @@ package org.gnucash.android.db;
 
 import org.gnucash.android.data.Account;
 import org.gnucash.android.data.Account.AccountType;
+import org.gnucash.android.data.Transaction;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -81,18 +82,37 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 		} else {
 			Log.d(TAG, "Adding new account to db");
 			rowId = mDb.insert(DatabaseHelper.ACCOUNTS_TABLE_NAME, null, contentValues);
-		}			
+		}
+		
+		//now add transactions if there are any
+		if (rowId > 0){
+			for (Transaction t : account.getTransactions()) {
+				mTransactionsAdapter.addTransaction(t);
+			}
+		}
 		return rowId;
 	}
 	
 	/**
 	 * Deletes an account with database id <code>rowId</code>
+	 * All the transactions in the account will also be deleted
 	 * @param rowId Database id of the account record to be deleted
 	 * @return <code>true</code> if deletion was successful, <code>false</code> otherwise.
 	 */
-	public boolean deleteAccount(long rowId){
+	public boolean destructiveDeleteAccount(long rowId){
 		Log.d(TAG, "Delete account with rowId: " + rowId);
-		return deleteRecord(DatabaseHelper.ACCOUNTS_TABLE_NAME, rowId);
+		boolean result = false;
+		//first remove all transactions for the account
+		Cursor c = mTransactionsAdapter.fetchAllTransactionsForAccount(rowId);
+		if (c == null)
+			return result; 
+		
+		while (c.moveToNext()){
+			long id = c.getLong(DatabaseAdapter.COLUMN_ROW_ID);
+			result &= mTransactionsAdapter.deleteTransaction(id);
+		}
+		result &= deleteRecord(DatabaseHelper.ACCOUNTS_TABLE_NAME, rowId);
+		return result;
 	}
 	
 	/**
@@ -118,7 +138,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 					null);
 			transactionsCursor.close();
 		}
-		return deleteAccount(rowIdToDelete);
+		return destructiveDeleteAccount(rowIdToDelete);
 	}
 	
 	/**
@@ -173,6 +193,16 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 	}
 	
 	/**
+	 * Returns the {@link Account} object populated with data from the database
+	 * for the record with UID <code>uid</code>
+	 * @param uid Unique ID of the account to be retrieved
+	 * @return {@link Account} object for unique ID <code>uid</code>
+	 */
+	public Account getAccount(String uid){
+		return getAccount(getId(uid));
+	}	
+	
+	/**
 	 * Returns a cursor to all account records in the database
 	 * @return {@link Cursor} to all account records
 	 */
@@ -190,7 +220,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 		long id = -1;
 		Cursor c = mDb.query(DatabaseHelper.ACCOUNTS_TABLE_NAME, 
 				new String[]{DatabaseHelper.KEY_ROW_ID, DatabaseHelper.KEY_UID}, 
-				DatabaseHelper.KEY_UID + "=" + accountUID, 
+				DatabaseHelper.KEY_UID + "='" + accountUID + "'", 
 				null, null, null, null);
 		if (c != null && c.moveToFirst()){
 			id = c.getLong(DatabaseAdapter.COLUMN_ROW_ID);
@@ -199,4 +229,11 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 		return id;
 	}
 	
+	/**
+	 * Deletes all accounts and their transactions from the database
+	 */
+	public void deleteAllAccounts(){
+		mDb.delete(DatabaseHelper.ACCOUNTS_TABLE_NAME, null, null);
+		mDb.delete(DatabaseHelper.TRANSACTIONS_TABLE_NAME, null, null);
+	}
 }

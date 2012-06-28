@@ -80,8 +80,8 @@ public class NewTransactionFragment extends SherlockFragment implements
 	
 	public static final String SELECTED_TRANSACTION_ID = "selected_transaction_id";
 	
-	final static SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat("dd MMM yyyy");
-	final static SimpleDateFormat TIME_FORMATTER = new SimpleDateFormat("HH:mm");
+	public final static SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat("dd MMM yyyy");
+	public final static SimpleDateFormat TIME_FORMATTER = new SimpleDateFormat("HH:mm");
 	
 	private ToggleButton mTransactionTypeButton;
 	private EditText mNameEditText;
@@ -338,7 +338,7 @@ public class NewTransactionFragment extends SherlockFragment implements
 		mTime.set(Calendar.MINUTE, minute);
 	}
 	
-	private static String stripCurrencyFormatting(String s){
+	public static String stripCurrencyFormatting(String s){
 		String symbol = Currency.getInstance(Locale.getDefault()).getSymbol();
 		//if in scientific notation, do not remove the period
 		String regex = s.contains("E") ? "[" + symbol + ",-]" : "[" + symbol + ",.-]";

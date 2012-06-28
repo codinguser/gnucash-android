@@ -126,6 +126,7 @@ public class Account {
 	 * @param transaction {@link Transaction} to be added to the account
 	 */
 	public void addTransaction(Transaction transaction){
+		transaction.setAccountUID(getUID());
 		mTransactionsList.add(transaction);
 	}
 	
@@ -135,6 +136,9 @@ public class Account {
 	 * @param transactionsList List of transactions to be set.
 	 */
 	public void setTransactions(List<Transaction> transactionsList){
+		for (Transaction transaction : transactionsList) {
+			transaction.setAccountUID(getUID());
+		}
 		this.mTransactionsList = transactionsList;
 	}
 		
