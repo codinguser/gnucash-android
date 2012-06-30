@@ -24,6 +24,9 @@
 
 package org.gnucash.android.db;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.gnucash.android.data.Account;
 import org.gnucash.android.data.Account.AccountType;
 import org.gnucash.android.data.Transaction;
@@ -36,7 +39,7 @@ import android.util.Log;
 /**
  * Manages persistence of {@link Account}s in the database
  * Handles adding, modifying and deleting of account records.
- * @author Ngewi Fet <ngewif@gmail.com
+ * @author Ngewi Fet <ngewif@gmail.com>
  *
  */
 public class AccountsDbAdapter extends DatabaseAdapter {
@@ -201,6 +204,24 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 	public Account getAccount(String uid){
 		return getAccount(getId(uid));
 	}	
+	
+	/**
+	 * Returns a list of all account objects in the system
+	 * @return List of {@link Account}s in the database
+	 */
+	public List<Account> getAllAccounts(){
+		ArrayList<Account> accounts = new ArrayList<Account>();
+		Cursor c = fetchAllAccounts();
+		
+		if (c == null)
+			return accounts;
+		
+		while(c.moveToNext()){
+			accounts.add(buildAccountInstance(c));
+		}
+		c.close();
+		return accounts;
+	}
 	
 	/**
 	 * Returns a cursor to all account records in the database

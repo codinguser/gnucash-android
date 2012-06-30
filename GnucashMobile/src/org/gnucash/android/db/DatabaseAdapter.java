@@ -54,6 +54,7 @@ public class DatabaseAdapter {
 	public static final int COLUMN_DESCRIPTION 	= 5;
 	public static final int COLUMN_TIMESTAMP 	= 6;
 	public static final int COLUMN_ACCOUNT_UID 	= 7;
+	public static final int COLUMN_EXPORTED 	= 8;
 	
 	/**
 	 * {@link DatabaseHelper} for creating and opening the database

@@ -27,6 +27,7 @@ package org.gnucash.android.db;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.gnucash.android.data.Account;
 import org.gnucash.android.data.Transaction;
 
 import android.content.ContentValues;
@@ -67,6 +68,7 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 		contentValues.put(DatabaseHelper.KEY_ACCOUNT_UID, transaction.getAccountUID());
 		contentValues.put(DatabaseHelper.KEY_TIMESTAMP, transaction.getTimeMillis());
 		contentValues.put(DatabaseHelper.KEY_DESCRIPTION, transaction.getDescription());
+		contentValues.put(DatabaseHelper.KEY_EXPORTED, transaction.isExported() ? 1 : 0);
 		
 		long rowId = -1;
 		if ((rowId = fetchTransactionWithUID(transaction.getUID())) > 0){
@@ -172,6 +174,7 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 		transaction.setAccountUID(c.getString(DatabaseAdapter.COLUMN_ACCOUNT_UID));
 		transaction.setTime(c.getLong(DatabaseAdapter.COLUMN_TIMESTAMP));
 		transaction.setDescription(c.getString(DatabaseAdapter.COLUMN_DESCRIPTION));
+		transaction.setExported(c.getInt(DatabaseAdapter.COLUMN_EXPORTED) == 1);
 		return transaction;
 	}
 	
@@ -184,6 +187,7 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 		return mDb.delete(DatabaseHelper.TRANSACTIONS_TABLE_NAME, 
 				DatabaseHelper.KEY_UID + "='" + uid + "'", null) > 0;
 	}
+	
 	public int getTransactionsCount(long accountId){
 		Cursor cursor = fetchAllTransactionsForAccount(accountId);
 		int count = 0;
@@ -219,7 +223,42 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 		
 		return amountSum;
 	}
+		
+	/**
+	 * Marks an account record as exported
+	 * @param accountUID Unique ID of the record to be marked as exported
+	 * @return Number of records marked as exported
+	 */
+	public int markAsExported(String accountUID){
+		ContentValues contentValues = new ContentValues();
+		contentValues.put(DatabaseHelper.KEY_EXPORTED, 1);
+		
+		return mDb.update(DatabaseHelper.TRANSACTIONS_TABLE_NAME, 
+				contentValues, 
+				DatabaseHelper.KEY_UID + "='" + accountUID + "'", 
+				null);
+	}
 	
+	/**
+	 * Returns list of all accounts which have not been exported yet
+	 * @return List of {@link Account}s which have not been exported
+	 */
+	public List<Transaction> getNonExportedTransactionsForAccount(String accountUID){
+		Cursor c = mDb.query(DatabaseHelper.TRANSACTIONS_TABLE_NAME, 
+				null, 
+				DatabaseHelper.KEY_EXPORTED + "= 0 AND " + 
+				DatabaseHelper.KEY_ACCOUNT_UID + "= '" + accountUID + "'", 
+				null, null, null, null);
+		ArrayList<Transaction> transactionsList = new ArrayList<Transaction>();
+		if (c == null)
+			return transactionsList;
+		
+		while (c.moveToNext()){
+			transactionsList.add(buildTransactionInstance(c));
+		}
+		return transactionsList;
+	}
+
 	/**
 	 * Returns an account UID of the account with record id <code>accountRowID</code>
 	 * @param acountRowID Record ID of account as long paramenter

@@ -34,20 +34,21 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	private static final String TAG = "DatabaseHelper";
 	
 	private static final String DATABASE_NAME = "gnucash_db";
-	private static final int DATABASE_VERSION = 1;
+	private static final int DATABASE_VERSION = 2;
 	
 	public static final String ACCOUNTS_TABLE_NAME = "accounts";
 	public static final String TRANSACTIONS_TABLE_NAME = "transactions";
 	
-	public static final String KEY_ROW_ID = "_id";
-	public static final String KEY_NAME = "name";
-	public static final String KEY_UID 	= "uid";
-	public static final String KEY_TYPE = "type";
+	public static final String KEY_ROW_ID 	= "_id";
+	public static final String KEY_NAME 	= "name";
+	public static final String KEY_UID 		= "uid";
+	public static final String KEY_TYPE 	= "type";
 	
 	public static final String KEY_AMOUNT = "amount";
-	public static final String KEY_ACCOUNT_UID = "account_uid";
-	public static final String KEY_DESCRIPTION = "description";
-	public static final String KEY_TIMESTAMP = "timestamp";
+	public static final String KEY_ACCOUNT_UID 	= "account_uid";
+	public static final String KEY_DESCRIPTION 	= "description";
+	public static final String KEY_TIMESTAMP 	= "timestamp";
+	public static final String KEY_EXPORTED		= "is_exported";
 	
 	//if you modify the order of the columns, 
 	//make sure to modify the indices in DatabaseAdapter
@@ -67,6 +68,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			+ KEY_DESCRIPTION 	+ " text, "
 			+ KEY_TIMESTAMP 	+ " integer not null, "
 			+ KEY_ACCOUNT_UID 	+ " varchar(255) not null, "
+			+ KEY_EXPORTED 		+ " tinyint not null default 0, "
 			+ "FOREIGN KEY (" + KEY_ACCOUNT_UID + ") REFERENCES " + ACCOUNTS_TABLE_NAME + " (" + KEY_UID + ")"
 			+ ");";
 	
@@ -88,7 +90,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				+ " which will destroy all old data");
 		
 		if (oldVersion < newVersion){
-			
+			if (oldVersion == 1 && newVersion == 2){
+				Log.i("DatabaseHelper", "Upgrading database to version 2");
+				String addColumnSql = "ALTER TABLE " + TRANSACTIONS_TABLE_NAME + 
+									" ADD COLUMN " + KEY_EXPORTED + " tinyint default 0";
+				db.execSQL(addColumnSql);
+			}
 		} else {
 			Log.i(TAG, "Cannot downgrade database.");
 			/*

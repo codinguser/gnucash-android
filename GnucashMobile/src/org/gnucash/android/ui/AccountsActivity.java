@@ -79,7 +79,7 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnItem
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getSupportMenuInflater();
-		inflater.inflate(R.menu.action_bar, menu);
+		inflater.inflate(R.menu.global_actions, menu);
 		return true;
 	}
 

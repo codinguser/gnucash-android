@@ -49,7 +49,7 @@ public class Transaction {
 	private String mName;
 	private String mDescription = "";
 	private String mAccountUID = null;
-	
+	private int mIsExported = 0;
 	private long mTimestamp;
 	private TransactionType mType = TransactionType.DEBIT;
 	
@@ -213,7 +213,14 @@ public class Transaction {
 		return mAccountUID;
 	}
 	
-
+	public void setExported(boolean isExported){
+		mIsExported = isExported ? 1 : 0;
+	}
+	
+	public boolean isExported(){
+		return mIsExported == 1;
+	}
+	
 	/**
 	 * Set the account UID of the account to which this transaction belongs
 	 * @param accountUID the UID of the account which owns this transaction
@@ -222,18 +229,17 @@ public class Transaction {
 		this.mAccountUID = accountUID;
 	}
 	
-
 	/**
 	 * Converts transaction to XML DOM corresponding to OFX Statement transaction and 
 	 * returns the element node for the transaction
 	 * @param doc XML document to which transaction should be added
 	 * @return Element in DOM corresponding to transaction
 	 */
-	public Element toXml(Document doc){
-		Element transaction = doc.createElement("STMTTRN");
+	public Element toXml(Document doc){		
+		Element transactionNode = doc.createElement("STMTTRN");
 		Element type = doc.createElement("TRNTYPE");
 		type.appendChild(doc.createTextNode(mType.toString()));
-		transaction.appendChild(type);
+		transactionNode.appendChild(type);
 
 /* TODO Remove references to expenses
 		Element datePosted = doc.createElement("DTPOSTED");
@@ -247,21 +253,21 @@ public class Transaction {
 */		
 		Element amount = doc.createElement("TRNAMT");
 		amount.appendChild(doc.createTextNode(Double.toString(mAmount)));
-		transaction.appendChild(amount);
+		transactionNode.appendChild(amount);
 		
 		Element transID = doc.createElement("FITID");
 		transID.appendChild(doc.createTextNode(mTransactionUID));
-		transaction.appendChild(transID);
+		transactionNode.appendChild(transID);
 		
 		Element name = doc.createElement("NAME");
 		name.appendChild(doc.createTextNode(mName));
-		transaction.appendChild(name);
+		transactionNode.appendChild(name);
 		
 		Element memo = doc.createElement("MEMO");
 		memo.appendChild(doc.createTextNode(mDescription));
-		transaction.appendChild(memo);
+		transactionNode.appendChild(memo);
 		
-		return transaction;
+		return transactionNode;
 	}
 
 }

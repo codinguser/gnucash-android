@@ -41,6 +41,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -71,7 +72,7 @@ public class AccountsListFragment extends SherlockListFragment implements
 		LoaderCallbacks<Cursor>, OnItemLongClickListener {
 
 	protected static final String FRAGMENT_NEW_ACCOUNT = "new_account_dialog";
-
+	protected static final String FRAGMENT_EXPORT_OFX  = "export_ofx";
 	private static final int DIALOG_ADD_ACCOUNT = 0x10;
 	
 	protected static final String TAG = "AccountsListFragment";
@@ -308,7 +309,7 @@ public class AccountsListFragment extends SherlockListFragment implements
 			return true;
 
 		case R.id.menu_export:
-			
+			showExportDialog();
 			return true;
 			
 		default:
@@ -354,6 +355,19 @@ public class AccountsListFragment extends SherlockListFragment implements
 		mAddAccountFragment.show(ft, FRAGMENT_NEW_ACCOUNT);
 	}
 
+	public void showExportDialog(){
+		FragmentTransaction ft = getFragmentManager().beginTransaction();
+	    Fragment prev = getFragmentManager().findFragmentByTag("dialog");
+	    if (prev != null) {
+	        ft.remove(prev);
+	    }
+	    ft.addToBackStack(null);
+
+	    // Create and show the dialog.
+	    DialogFragment exportFragment = new ExportDialogFragment();
+	    exportFragment.show(ft, FRAGMENT_EXPORT_OFX);
+	}
+	
 	private class AccountsCursorAdapter extends SimpleCursorAdapter {
 		TransactionsDbAdapter transactionsDBAdapter;
 		
