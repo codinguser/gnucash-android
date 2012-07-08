@@ -116,7 +116,8 @@ public class TransactionsFragmentTest extends
 		mSolo.clickOnActionBarItem(R.id.menu_add_transaction);
 		mSolo.waitForText("Description");
 		
-		validateNewTransactionFields();
+		//TODO: do i need this? 
+		//validateNewTransactionFields();
 		
 		//validate creation of transaction
 				mSolo.enterText(0, "Lunch");

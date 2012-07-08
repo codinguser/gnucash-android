@@ -31,6 +31,7 @@ import org.gnucash.android.ui.AccountsActivity;
 import org.gnucash.android.ui.ExportDialogFragment;
 
 import android.test.ActivityInstrumentationTestCase2;
+import android.widget.Spinner;
 
 import com.jayway.android.robotium.solo.Solo;
 
@@ -53,11 +54,15 @@ public class OfxExportTest extends
 		mSolo.clickOnActionBarItem(R.id.menu_export);
 		
 		mSolo.waitForText("Export OFX");
+		Spinner spinner = mSolo.getCurrentSpinners().get(0);
+		mSolo.clickOnView(spinner);
+		mSolo.clickOnText("SD Card");
 		mSolo.clickOnText("Export");
 		
 		String filename = ExportDialogFragment.buildExportFilename();
 		
-		File file = new File(getActivity().getExternalFilesDir(null), filename);
+//		File file = new File(getActivity().getExternalFilesDir(null), filename);
+		File file = new File(getActivity().getExternalFilesDir(null) + "/" + filename);
 		assertNotNull(file);
 		assertTrue(file.exists());
 	}	
