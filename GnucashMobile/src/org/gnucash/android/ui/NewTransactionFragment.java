@@ -152,7 +152,7 @@ public class NewTransactionFragment extends SherlockFragment implements
 		mNameEditText.setText(mTransaction.getName());
 		mTransactionTypeButton.setChecked(mTransaction.getTransactionType() == TransactionType.DEBIT);
 		//multiply to balance out division by the TextWatcher attached to this view
-		mAmountEditText.setText(Double.toString(mTransaction.getAmount() * 10)); 
+		mAmountEditText.setText(Double.toString(mTransaction.getAmount())); 
 		mDescriptionEditText.setText(mTransaction.getDescription());
 		mDateTextView.setText(DATE_FORMATTER.format(mTransaction.getTimeMillis()));
 		mTimeTextView.setText(TIME_FORMATTER.format(mTransaction.getTimeMillis()));

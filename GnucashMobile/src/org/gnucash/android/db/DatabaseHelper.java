@@ -68,7 +68,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			+ KEY_DESCRIPTION 	+ " text, "
 			+ KEY_TIMESTAMP 	+ " integer not null, "
 			+ KEY_ACCOUNT_UID 	+ " varchar(255) not null, "
-			+ KEY_EXPORTED 		+ " tinyint not null default 0, "
+			+ KEY_EXPORTED 		+ " tinyint default 0, "
 			+ "FOREIGN KEY (" + KEY_ACCOUNT_UID + ") REFERENCES " + ACCOUNTS_TABLE_NAME + " (" + KEY_UID + ")"
 			+ ");";
 	

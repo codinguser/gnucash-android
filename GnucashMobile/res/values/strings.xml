@@ -64,7 +64,7 @@
     <string name="label_export_choice">By default, only new transactions since last export will be exported. Check this option to export all transactions</string>
     <string name="error_exporting">Error exporting OFX data</string>
     <string-array name="export_destinations">
-        <item >Email&#8230;</item>
+        <item >Share file&#8230;</item>
         <item >SD Card</item>
     </string-array>
     <string name="btn_export">Export</string>

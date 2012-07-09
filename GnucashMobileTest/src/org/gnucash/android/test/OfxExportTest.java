@@ -30,6 +30,7 @@ import org.gnucash.android.R;
 import org.gnucash.android.ui.AccountsActivity;
 import org.gnucash.android.ui.ExportDialogFragment;
 
+import android.os.Environment;
 import android.test.ActivityInstrumentationTestCase2;
 import android.widget.Spinner;
 
@@ -62,7 +63,7 @@ public class OfxExportTest extends
 		String filename = ExportDialogFragment.buildExportFilename();
 		
 //		File file = new File(getActivity().getExternalFilesDir(null), filename);
-		File file = new File(getActivity().getExternalFilesDir(null) + "/" + filename);
+		File file = new File(Environment.getExternalStorageDirectory() + "/" + filename);
 		assertNotNull(file);
 		assertTrue(file.exists());
 	}	

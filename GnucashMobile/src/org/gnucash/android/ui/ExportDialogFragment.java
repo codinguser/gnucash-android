@@ -55,6 +55,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v4.app.DialogFragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -134,22 +135,22 @@ public class ExportDialogFragment extends DialogFragment {
 					break;
 
 				case 1:
-//					
-//					File src = new File(mFilePath);
-//					File dst = new File(Environment.getExternalStorageDirectory() + "/" + buildExportFilename());
-//					try {
-//						copyFile(src, dst);
-//					} catch (IOException e) {
-//						Toast.makeText(getActivity(), 
-//								"Could not write OFX file to :\n" + dst.getAbsolutePath(), 
-//								Toast.LENGTH_LONG).show();		
-//						e.printStackTrace();
-//						break;
-//					}
-//					
+					
+					File src = new File(mFilePath);
+					File dst = new File(Environment.getExternalStorageDirectory() + "/" + buildExportFilename());
+					try {
+						copyFile(src, dst);
+					} catch (IOException e) {
+						Toast.makeText(getActivity(), 
+								"Could not write OFX file to :\n" + dst.getAbsolutePath(), 
+								Toast.LENGTH_LONG).show();		
+						e.printStackTrace();
+						break;
+					}
+					
 					//file already exists, just let the user know
 					Toast.makeText(getActivity(), 
-							"OFX file exported to:\n" + mFilePath, 
+							"OFX file exported to:\n" + dst.getAbsolutePath(), 
 							Toast.LENGTH_LONG).show();					
 					break;
 					
