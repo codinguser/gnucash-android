@@ -61,7 +61,7 @@ public class Transaction {
 	 */
 	public Transaction(double amount, String name) {
 		initDefaults();		
-		this.mName = name;
+		setName(name);
 		setAmount(amount); //takes care of setting the type for us
 	}
 	
@@ -133,7 +133,7 @@ public class Transaction {
 	 * @param name String containing name of transaction to set
 	 */
 	public void setName(String name) {
-		this.mName = name;
+		this.mName = name.trim();
 	}
 
 	/**

@@ -25,6 +25,7 @@
 package org.gnucash.android.db;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.gnucash.android.data.Account;
@@ -221,6 +222,19 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 		}
 		c.close();
 		return accounts;
+	}
+	
+	public List<Account> getExportableAccounts(){
+		List<Account> accountsList = getAllAccounts();
+		Iterator<Account> it = accountsList.iterator();
+		
+		while (it.hasNext()){
+			Account account = it.next();
+			
+			if (account.hasUnexportedTransactions() == false)
+				it.remove();
+		}
+		return accountsList;
 	}
 	
 	/**

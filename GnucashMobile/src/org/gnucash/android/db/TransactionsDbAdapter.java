@@ -235,7 +235,7 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 		
 		return mDb.update(DatabaseHelper.TRANSACTIONS_TABLE_NAME, 
 				contentValues, 
-				DatabaseHelper.KEY_UID + "='" + accountUID + "'", 
+				DatabaseHelper.KEY_ACCOUNT_UID + "='" + accountUID + "'", 
 				null);
 	}
 	

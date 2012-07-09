@@ -75,7 +75,7 @@ public class OfxFormatter {
 	 */
 	public OfxFormatter(Context context, boolean exportAll) {
 		AccountsDbAdapter dbAdapter = new AccountsDbAdapter(context);
-		mAccountsList = dbAdapter.getAllAccounts();
+		mAccountsList = exportAll ? dbAdapter.getAllAccounts() : dbAdapter.getExportableAccounts();
 		dbAdapter.close();
 		mExportAll = exportAll;
 		mContext = context;
@@ -115,7 +115,10 @@ public class OfxFormatter {
 		parent.appendChild(bankmsgs);		
 		
 		TransactionsDbAdapter transactionsDbAdapter = new TransactionsDbAdapter(mContext);
-		for (Account account : mAccountsList) {				
+		for (Account account : mAccountsList) {		
+			if (account.getTransactionCount() == 0)
+				continue; 
+			
 			Element currency = doc.createElement("CURDEF");
 			currency.appendChild(doc.createTextNode(Currency.getInstance(Locale.getDefault()).getCurrencyCode()));						
 			

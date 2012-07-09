@@ -66,7 +66,7 @@ public class Account {
 	 * @param name Name of the account
 	 */
 	public Account(String name) {
-		this.mName = name;
+		setName(name);
 		this.mUID = UUID.randomUUID().toString();
 		this.mUID.replaceAll("-", "");
 		this.mUID.replaceAll(":", "");
@@ -77,7 +77,7 @@ public class Account {
 	 * @param name String name of the account
 	 */
 	public void setName(String name) {
-		this.mName = name;
+		this.mName = name.trim();
 	}
 
 	/**
@@ -164,6 +164,19 @@ public class Account {
 	 */
 	public int getTransactionCount(){
 		return mTransactionsList.size();
+	}
+	
+	/**
+	 * Returns true if there is atleast one transaction in the account
+	 * which has not yet been exported
+	 * @return <code>true</code> if there are unexported transactions, <code>false</code> otherwise.
+	 */
+	public boolean hasUnexportedTransactions(){
+		for (Transaction transaction : mTransactionsList) {
+			if (transaction.isExported() == false)
+				return true;			
+		}
+		return false;
 	}
 	
 	/**
