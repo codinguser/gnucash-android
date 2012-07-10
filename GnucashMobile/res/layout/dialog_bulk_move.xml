@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+ Written By: Ngewi Fet <ngewif@gmail.com>
+ Copyright (c) 2012 Ngewi Fet
+ 
+ This file is part of Gnucash for Android
+ 
+ Gnucash for Android is free software; you can redistribute it and/or
+ modify it under the terms of the GNU General Public License as
+ published by the Free Software Foundation; either version 2 of
+ the License, or (at your option) any later version.
+ 
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+ 
+ You should have received a copy of the GNU General Public License
+ along with this program; if not, contact:
+ 
+ Free Software Foundation           Voice:  +1-617-542-5942
+ 51 Franklin Street, Fifth Floor    Fax:    +1-617-542-2652
+ Boston, MA  02110-1301,  USA       gnu@gnu.org
+-->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+    
+    <TextView
+        android:text="@string/label_export_destination"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_marginBottom="-8dip"
+        style="@style/TextAppearance.EditTransaction_LabelSmall" />
+
+    <Spinner android:id="@+id/accounts_list_spinner"
+        android:layout_height="wrap_content" 
+        android:layout_width="match_parent"
+        android:padding="10dp"
+        android:minHeight="?android:attr/listPreferredItemHeight" 
+        />
+    
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:orientation="horizontal" >
+
+        <Button
+            android:id="@+id/btn_cancel"
+            android:layout_width="0dp"            
+            android:layout_height="wrap_content"
+            android:padding="12dp"
+            android:layout_weight="1"       
+            android:drawableLeft="@drawable/navigation_cancel"     
+            android:text="@string/btn_cancel" />
+
+        <Button
+            android:id="@+id/btn_move"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:padding="12dp"
+            android:layout_weight="1"
+            android:drawableLeft="@drawable/content_copy"                        
+            android:text="@string/btn_move" />       
+    </LinearLayout>
+</LinearLayout>

@@ -38,6 +38,10 @@ import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.SimpleCursorAdapter;
@@ -66,6 +70,8 @@ public class TransactionsListFragment extends SherlockListFragment implements
 	private static final String SAVED_SELECTED_ITEMS = "selected_items";	
 	public static final String SELECTED_ACCOUNT_ID = "selected_account_id";
 	public static final String SELECTED_ACCOUNT_NAME = "selected_account_name";
+	
+	public static final String SELECTED_TRANSACTION_IDS = "selected_transactions";
 	
 	private TransactionsDbAdapter mTransactionsDbAdapter;
 	private SimpleCursorAdapter mCursorAdapter;
@@ -101,7 +107,8 @@ public class TransactionsListFragment extends SherlockListFragment implements
 		public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
 			switch (item.getItemId()) {
 			case R.id.context_menu_move_transactions:
-				//TODO: Move transactions to another account
+				showBulkMoveDialog();
+				mode.finish();
 				return true;
 
 			case R.id.context_menu_delete:
@@ -308,6 +315,29 @@ public class TransactionsListFragment extends SherlockListFragment implements
 			return;
 		else
 			mActionMode.finish();
+	}
+	
+	
+	protected void showBulkMoveDialog(){
+		FragmentManager manager = getActivity().getSupportFragmentManager();
+		FragmentTransaction ft = manager.beginTransaction();
+	    Fragment prev = manager.findFragmentByTag("bulk_move_dialog");
+	    if (prev != null) {
+	        ft.remove(prev);
+	    }
+	    ft.addToBackStack(null);
+
+	    // Create and show the dialog.
+	    DialogFragment bulkMoveFragment = new BulkMoveDialogFragment();
+	    Bundle args = new Bundle();
+	    long[] selectedIds = new long[mSelectedIds.size()]; 
+	    int i = 0;
+	    for (long l : mSelectedIds.values()) {
+			selectedIds[i++] = l;			
+		}
+	    args.putLongArray(SELECTED_TRANSACTION_IDS, selectedIds);
+	    bulkMoveFragment.setArguments(args);
+	    bulkMoveFragment.show(ft, "bulk_move_dialog");
 	}
 	
 	protected class TransactionsCursorAdapter extends SimpleCursorAdapter {

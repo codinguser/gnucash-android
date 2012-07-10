@@ -69,5 +69,7 @@
         <item>Share file&#8230;</item>
         <item>SD Card</item>
     </string-array>
+    <string name="btn_move">Move</string>
+    <string name="title_move_transactions">Move transactions</string>
 
 </resources>

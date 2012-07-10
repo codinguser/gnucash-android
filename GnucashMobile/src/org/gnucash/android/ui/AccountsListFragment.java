@@ -356,8 +356,9 @@ public class AccountsListFragment extends SherlockListFragment implements
 	}
 
 	public void showExportDialog(){
-		FragmentTransaction ft = getFragmentManager().beginTransaction();
-	    Fragment prev = getFragmentManager().findFragmentByTag("dialog");
+		FragmentManager manager = getSherlockActivity().getSupportFragmentManager();
+		FragmentTransaction ft = manager.beginTransaction();
+	    Fragment prev = manager.findFragmentByTag("dialog");
 	    if (prev != null) {
 	        ft.remove(prev);
 	    }

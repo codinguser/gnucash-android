@@ -178,11 +178,21 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 		return transaction;
 	}
 	
+	/**
+	 * Deletes transaction record with id <code>rowId</code>
+	 * @param rowId Long database record id
+	 * @return <code>true</code> if deletion was successful, <code>false</code> otherwise
+	 */
 	public boolean deleteTransaction(long rowId){
 		Log.d(TAG, "Delete transaction with record Id: " + rowId);
 		return deleteRecord(DatabaseHelper.TRANSACTIONS_TABLE_NAME, rowId);
 	}
 	
+	/**
+	 * Deletes transaction record with unique ID <code>uid</code>
+	 * @param uid String unique ID of transaction
+	 * @return <code>true</code> if deletion was successful, <code>false</code> otherwise
+	 */
 	public boolean deleteTransaction(String uid){
 		return mDb.delete(DatabaseHelper.TRANSACTIONS_TABLE_NAME, 
 				DatabaseHelper.KEY_UID + "='" + uid + "'", null) > 0;
@@ -196,6 +206,30 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 		return mDb.delete(DatabaseHelper.TRANSACTIONS_TABLE_NAME, null, null);
 	}
 	
+	/**
+	 * Assigns transaction with id <code>rowId</code> to account with id <code>accountId</code>
+	 * @param rowId Record ID of the transaction to be assigned
+	 * @param accountId Record Id of the account to which the transaction will be assigned
+	 * @return Number of transactions affected
+	 */
+	public int moveTranscation(long rowId, long accountId){
+		Log.i(TAG, "Moving transaction " + rowId + " to account " + accountId);
+		String accountUID = getAccountUID(accountId);
+		ContentValues contentValue = new ContentValues();
+		contentValue.put(DatabaseHelper.KEY_ACCOUNT_UID, accountUID);
+		
+		return mDb.update(DatabaseHelper.TRANSACTIONS_TABLE_NAME, 
+				contentValue, 
+				DatabaseHelper.KEY_ROW_ID + "=" + rowId, 
+				null);
+	}
+
+	
+	/**
+	 * Returns the number of transactions belonging to account with id <code>accountId</code>
+	 * @param accountId Long ID of account
+	 * @return Number of transactions assigned to account with id <code>accountId</code>
+	 */
 	public int getTransactionsCount(long accountId){
 		Cursor cursor = fetchAllTransactionsForAccount(accountId);
 		int count = 0;
