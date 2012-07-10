@@ -23,62 +23,87 @@
  Boston, MA  02110-1301,  USA       gnu@gnu.org
 -->
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:padding="@dimen/edge_padding"
-    android:orientation="vertical" >
-    
-    <TextView
-        android:text="@string/label_export_destination"
-        android:layout_height="wrap_content"
-        android:layout_width="wrap_content"
-        android:layout_marginBottom="-8dip"
-        style="@style/TextAppearance.EditTransaction_LabelSmall" />
-
-    <Spinner android:id="@+id/spinner_export_destination"
-        android:layout_height="wrap_content" 
-        android:layout_width="match_parent"
-        style="@style/ListItem"
-        android:layout_marginBottom="20dp" />
-       
-    <CheckBox android:id="@+id/checkbox_export_all"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="@string/export_all_transactions"        
-        />
-    <TextView
-        android:text="@string/label_export_choice"
-        android:layout_height="wrap_content"
-        android:layout_width="wrap_content"
-        android:layout_marginBottom="-8dip"
-        android:padding="10dp"
-        android:textAppearance="?android:attr/textAppearanceSmall" />
-        <!--  style="@style/TextAppearance.EditTransaction_LabelSmall" /> -->
-        
-	<LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="10dp"
-        android:orientation="horizontal" >
-
-        <Button
-            android:id="@+id/btn_cancel"
-            android:layout_width="0dp"            
-            android:layout_height="wrap_content"
-            android:padding="14dp"
-            android:layout_weight="1"       
-            android:drawableLeft="@drawable/navigation_cancel"     
-            android:text="@string/btn_cancel" />
-
-        <Button
-            android:id="@+id/btn_save"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:padding="14dp"
-            android:layout_weight="1"
-            android:drawableLeft="@drawable/navigation_accept"
-            android:text="@string/btn_export" />       
-    </LinearLayout>        
-</LinearLayout>
+    android:layout_height="match_parent">
+	<LinearLayout 
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content"
+	    android:padding="@dimen/edge_padding"
+	    android:orientation="vertical" >
+	    
+	    <TextView
+	        android:text="@string/label_export_destination"
+	        android:layout_height="wrap_content"
+	        android:layout_width="wrap_content"
+	        android:layout_marginBottom="-8dip"
+	        style="@style/TextAppearance.EditTransaction_LabelSmall" />
+	
+	    <Spinner android:id="@+id/spinner_export_destination"
+	        android:layout_height="wrap_content" 
+	        android:layout_width="match_parent"
+	        style="@style/ListItem"
+	        android:layout_marginBottom="20dp" />
+	       
+	    <CheckBox android:id="@+id/checkbox_export_all"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:textAppearance="?android:attr/textAppearanceLarge"
+	        android:text="@string/export_all_transactions"        
+	        />
+	    <TextView
+	        android:text="@string/label_export_choice"
+	        android:layout_height="wrap_content"
+	        android:layout_width="wrap_content"
+	        android:layout_marginTop="-8dp"        
+	        android:paddingLeft="10dp"
+	        android:paddingRight="10dp"
+	        android:paddingBottom="10dp"
+	        android:textAppearance="?android:attr/textAppearanceSmall" />
+	        <!--  style="@style/TextAppearance.EditTransaction_LabelSmall" /> -->
+	    
+	    <CheckBox android:id="@+id/checkbox_post_export_delete"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_marginTop="10dp"
+	        android:textAppearance="?android:attr/textAppearanceLarge"
+	        android:text="@string/confirm_post_export_delete"        
+	        />    
+	        
+	    <TextView
+	        android:text="@string/label_delete_after_export"
+	        android:layout_height="wrap_content"
+	        android:layout_width="wrap_content"
+	        android:layout_marginBottom="-8dp"
+	        android:layout_marginTop="-8dp"
+	        android:paddingLeft="10dp"
+	        android:paddingRight="10dp"
+	        android:paddingBottom="10dp"
+	        android:textAppearance="?android:attr/textAppearanceSmall" />
+	    
+		<LinearLayout
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:padding="10dp"
+	        android:orientation="horizontal" >
+	
+	        <Button
+	            android:id="@+id/btn_cancel"
+	            android:layout_width="0dp"            
+	            android:layout_height="wrap_content"
+	            android:padding="12dp"
+	            android:layout_weight="1"       
+	            android:drawableLeft="@drawable/navigation_cancel"     
+	            android:text="@string/btn_cancel" />
+	
+	        <Button
+	            android:id="@+id/btn_save"
+	            android:layout_width="0dp"
+	            android:layout_height="wrap_content"
+	            android:padding="12dp"
+	            android:layout_weight="1"
+	            android:drawableLeft="@drawable/navigation_accept"                        
+	            android:text="@string/btn_export" />       
+	    </LinearLayout>        
+	</LinearLayout>
+</ScrollView>

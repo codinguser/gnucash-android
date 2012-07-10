@@ -62,11 +62,12 @@
     <string name="title_export_dialog">Export OFX</string>
     <string name="export_all_transactions">Export all transactions</string>
     <string name="label_export_choice">By default, only new transactions since last export will be exported. Check this option to export all transactions</string>
-    <string name="error_exporting">Error exporting OFX data</string>
-    <string-array name="export_destinations">
-        <item >Share file&#8230;</item>
-        <item >SD Card</item>
-    </string-array>
+    <string name="error_exporting">Error exporting OFX data</string>    
     <string name="btn_export">Export</string>
+    <string name="confirm_post_export_delete">Delete after export</string>
+    <string name="label_delete_after_export">All exported transactions will be deleted when exporting is completed</string><string-array name="export_destinations">
+        <item>Share file&#8230;</item>
+        <item>SD Card</item>
+    </string-array>
 
 </resources>

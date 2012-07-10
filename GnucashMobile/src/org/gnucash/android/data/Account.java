@@ -67,9 +67,7 @@ public class Account {
 	 */
 	public Account(String name) {
 		setName(name);
-		this.mUID = UUID.randomUUID().toString();
-		this.mUID.replaceAll("-", "");
-		this.mUID.replaceAll(":", "");
+		this.mUID = generateUID();
 	}
 
 	/**
@@ -86,6 +84,22 @@ public class Account {
 	 */
 	public String getName() {
 		return mName;
+	}
+	
+	/**
+	 * Generates a unique ID for the account that includes the 
+	 * name and a random string. This represents the ACCTID in the exported OFX
+	 * and should have a maximum of 22 alphanumeric characters
+	 * @return Generated Unique ID string
+	 */
+	protected String generateUID(){
+		String uuid = UUID.randomUUID().toString();
+		uuid = uuid.substring(uuid.lastIndexOf("-"));
+		String name = mName.toLowerCase().replace(" ", "-");
+		if (name.length() > 9)
+			name = name.substring(0, 10);
+		uuid = name + uuid;		
+		return uuid;
 	}
 	
 	/**

@@ -53,9 +53,6 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnItem
 
 	protected static final String TAG = "AccountsActivity";	
 
-
-	// private AccountsDbAdapter mAccountsDbAdapter;
-
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);

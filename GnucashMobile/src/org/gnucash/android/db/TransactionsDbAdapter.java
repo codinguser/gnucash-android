@@ -188,6 +188,14 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 				DatabaseHelper.KEY_UID + "='" + uid + "'", null) > 0;
 	}
 	
+	/**
+	 * Deletes all transactions in the database
+	 * @return Number of affected transaction records
+	 */
+	public int deleteAllTransactions(){
+		return mDb.delete(DatabaseHelper.TRANSACTIONS_TABLE_NAME, null, null);
+	}
+	
 	public int getTransactionsCount(long accountId){
 		Cursor cursor = fetchAllTransactionsForAccount(accountId);
 		int count = 0;

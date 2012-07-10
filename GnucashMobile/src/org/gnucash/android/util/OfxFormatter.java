@@ -130,7 +130,7 @@ public class OfxFormatter {
 			Element acctId = doc.createElement("ACCTID");
 			acctId.appendChild(doc.createTextNode(account.getUID()));
 			
-			Element accttype = doc.createElement("ACCTTPYE");
+			Element accttype = doc.createElement("ACCTTYPE");
 			accttype.appendChild(doc.createTextNode(account.getAccountType().toString()));
 			
 			Element bankFrom = doc.createElement("BANKACCTFROM");

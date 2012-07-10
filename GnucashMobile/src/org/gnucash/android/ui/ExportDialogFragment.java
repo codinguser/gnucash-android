@@ -46,6 +46,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import org.gnucash.android.R;
+import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.util.OfxFormatter;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -57,6 +58,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -71,10 +73,73 @@ public class ExportDialogFragment extends DialogFragment {
 		
 	Spinner mDestinationSpinner;
 	CheckBox mExportAllCheckBox;
+	CheckBox mDeleteAllCheckBox;
 	Button mSaveButton;
 	Button mCancelButton;
 	
 	String mFilePath;
+	
+	protected class ExportClickListener implements View.OnClickListener {
+
+		@Override
+		public void onClick(View v) {
+			boolean exportAll = mExportAllCheckBox.isChecked();
+			Document document = null;				
+			try {
+				document = exportOfx(exportAll);
+				writeToExternalStorage(document);
+			} catch (Exception e) {
+				Log.e(getTag(), e.getMessage());
+				Toast.makeText(getActivity(), R.string.error_exporting,
+						Toast.LENGTH_LONG).show();
+				dismiss();
+				return;
+			}
+			
+			int position = mDestinationSpinner.getSelectedItemPosition();
+			switch (position) {
+			case 0:					
+				shareFile(mFilePath);				
+				break;
+
+			case 1:				
+				File src = new File(mFilePath);
+				File dst = new File(Environment.getExternalStorageDirectory() + "/" + buildExportFilename());
+				try {
+					copyFile(src, dst);
+				} catch (IOException e) {
+					Toast.makeText(getActivity(), 
+							"Could not write OFX file to :\n" + dst.getAbsolutePath(), 
+							Toast.LENGTH_LONG).show();		
+					e.printStackTrace();
+					break;
+				}
+				
+				//file already exists, just let the user know
+				Toast.makeText(getActivity(), 
+						"OFX file exported to:\n" + dst.getAbsolutePath(), 
+						Toast.LENGTH_LONG).show();					
+				break;
+				
+			default:
+				break;
+			}
+			
+			if (mDeleteAllCheckBox.isChecked()){
+				TransactionsDbAdapter trxnAdapter = new TransactionsDbAdapter(getActivity());
+				trxnAdapter.deleteAllTransactions();
+				trxnAdapter.close();
+			}
+			
+			Fragment f = getActivity()
+			.getSupportFragmentManager()
+			.findFragmentByTag(AccountsActivity.FRAGMENT_ACCOUNTS_LIST);
+		
+			((AccountsListFragment)f).refreshList();
+			dismiss();
+		}
+		
+	}
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -99,6 +164,8 @@ public class ExportDialogFragment extends DialogFragment {
 		mDestinationSpinner.setAdapter(adapter);
 		
 		mExportAllCheckBox = (CheckBox) v.findViewById(R.id.checkbox_export_all);
+		mDeleteAllCheckBox = (CheckBox) v.findViewById(R.id.checkbox_post_export_delete);
+		
 		mSaveButton = (Button) v.findViewById(R.id.btn_save);
 		mCancelButton = (Button) v.findViewById(R.id.btn_cancel);
 		
@@ -110,56 +177,7 @@ public class ExportDialogFragment extends DialogFragment {
 			}
 		});
 		
-		mSaveButton.setOnClickListener(new View.OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				boolean exportAll = mExportAllCheckBox.isChecked();
-				Document document = null;				
-				try {
-					document = exportOfx(exportAll);
-					writeToExternalStorage(document);
-				} catch (Exception e) {
-					Log.e(getTag(), e.getMessage());
-					Toast.makeText(getActivity(), R.string.error_exporting,
-							Toast.LENGTH_LONG).show();
-					dismiss();
-					return;
-				}
-				
-				int position = mDestinationSpinner.getSelectedItemPosition();
-				switch (position) {
-				case 0:					
-					shareFile(mFilePath);
-					
-					break;
-
-				case 1:
-					
-					File src = new File(mFilePath);
-					File dst = new File(Environment.getExternalStorageDirectory() + "/" + buildExportFilename());
-					try {
-						copyFile(src, dst);
-					} catch (IOException e) {
-						Toast.makeText(getActivity(), 
-								"Could not write OFX file to :\n" + dst.getAbsolutePath(), 
-								Toast.LENGTH_LONG).show();		
-						e.printStackTrace();
-						break;
-					}
-					
-					//file already exists, just let the user know
-					Toast.makeText(getActivity(), 
-							"OFX file exported to:\n" + dst.getAbsolutePath(), 
-							Toast.LENGTH_LONG).show();					
-					break;
-					
-				default:
-					break;
-				}
-				dismiss();
-			}
-		});
+		mSaveButton.setOnClickListener(new ExportClickListener());
 	}
 	
 	private void writeToExternalStorage(Document doc) throws IOException{
