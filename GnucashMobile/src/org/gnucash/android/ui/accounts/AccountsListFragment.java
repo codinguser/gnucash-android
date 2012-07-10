@@ -22,7 +22,7 @@
  * Boston, MA  02110-1301,  USA       gnu@gnu.org
  */
 
-package org.gnucash.android.ui;
+package org.gnucash.android.ui.accounts;
 
 import org.gnucash.android.R;
 import org.gnucash.android.data.Account;
@@ -32,6 +32,7 @@ import org.gnucash.android.db.DatabaseAdapter;
 import org.gnucash.android.db.DatabaseCursorLoader;
 import org.gnucash.android.db.DatabaseHelper;
 import org.gnucash.android.db.TransactionsDbAdapter;
+import org.gnucash.android.ui.transactions.TransactionsListFragment;
 import org.gnucash.android.util.OnItemClickedListener;
 
 import android.app.Activity;

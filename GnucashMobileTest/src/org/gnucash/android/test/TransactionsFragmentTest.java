@@ -32,9 +32,9 @@ import org.gnucash.android.data.Transaction;
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.DatabaseAdapter;
 import org.gnucash.android.db.TransactionsDbAdapter;
-import org.gnucash.android.ui.AccountsActivity;
-import org.gnucash.android.ui.AccountsListFragment;
-import org.gnucash.android.ui.NewTransactionFragment;
+import org.gnucash.android.ui.MainActivity;
+import org.gnucash.android.ui.accounts.AccountsListFragment;
+import org.gnucash.android.ui.transactions.NewTransactionFragment;
 
 import android.database.Cursor;
 import android.support.v4.app.Fragment;
@@ -44,14 +44,14 @@ import android.widget.Spinner;
 import com.jayway.android.robotium.solo.Solo;
 
 public class TransactionsFragmentTest extends
-		ActivityInstrumentationTestCase2<AccountsActivity> {
+		ActivityInstrumentationTestCase2<MainActivity> {
 	private static final String DUMMY_ACCOUNT_UID = "transactions-account";
 	private static final String DUMMY_ACCOUNT_NAME = "Transactions Account";
 	private Solo mSolo;
 	private Transaction mTransaction;
 	
 	public TransactionsFragmentTest() {
-		super(AccountsActivity.class);
+		super(MainActivity.class);
 	}
 
 	@Override
@@ -79,7 +79,7 @@ public class TransactionsFragmentTest extends
 	private void validateTransactionListDisplayed(){
 		Fragment fragment = getActivity()
 				.getSupportFragmentManager()
-				.findFragmentByTag(AccountsActivity.FRAGMENT_TRANSACTIONS_LIST);
+				.findFragmentByTag(MainActivity.FRAGMENT_TRANSACTIONS_LIST);
 		
 		assertNotNull(fragment);
 	}
@@ -204,7 +204,7 @@ public class TransactionsFragmentTest extends
 	private void refreshAccountsList(){
 		Fragment fragment = getActivity()
 				.getSupportFragmentManager()
-				.findFragmentByTag(AccountsActivity.FRAGMENT_ACCOUNTS_LIST);
+				.findFragmentByTag(MainActivity.FRAGMENT_ACCOUNTS_LIST);
 		assertNotNull(fragment);
 		((AccountsListFragment) fragment).refreshList();		
 	}

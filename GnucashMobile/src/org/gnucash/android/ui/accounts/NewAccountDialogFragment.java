@@ -22,11 +22,12 @@
  * Boston, MA  02110-1301,  USA       gnu@gnu.org
  */
 
-package org.gnucash.android.ui;
+package org.gnucash.android.ui.accounts;
 
 import org.gnucash.android.R;
 import org.gnucash.android.data.Account;
 import org.gnucash.android.db.AccountsDbAdapter;
+import org.gnucash.android.ui.transactions.TransactionsListFragment;
 
 import android.os.Bundle;
 import android.text.Editable;

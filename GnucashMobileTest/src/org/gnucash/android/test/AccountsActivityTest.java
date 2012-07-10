@@ -31,8 +31,8 @@ import org.gnucash.android.data.Account;
 import org.gnucash.android.data.Transaction;
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.TransactionsDbAdapter;
-import org.gnucash.android.ui.AccountsActivity;
-import org.gnucash.android.ui.AccountsListFragment;
+import org.gnucash.android.ui.MainActivity;
+import org.gnucash.android.ui.accounts.AccountsListFragment;
 
 import android.support.v4.app.Fragment;
 import android.test.ActivityInstrumentationTestCase2;
@@ -41,12 +41,12 @@ import android.widget.TextView;
 
 import com.jayway.android.robotium.solo.Solo;
 
-public class AccountsActivityTest extends ActivityInstrumentationTestCase2<AccountsActivity> {
+public class AccountsActivityTest extends ActivityInstrumentationTestCase2<MainActivity> {
 	private static final String DUMMY_ACCOUNT_NAME = "Test account";
 	private Solo mSolo;
 	
 	public AccountsActivityTest() {		
-		super(AccountsActivity.class);
+		super(MainActivity.class);
 	}
 
 	protected void setUp() throws Exception {
@@ -62,7 +62,7 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
 		//there should exist a listview of accounts
 		Fragment fragment = getActivity()
 				.getSupportFragmentManager()
-				.findFragmentByTag(AccountsActivity.FRAGMENT_ACCOUNTS_LIST);
+				.findFragmentByTag(MainActivity.FRAGMENT_ACCOUNTS_LIST);
 		assertNotNull(fragment);
 		assertNotNull(mSolo.getCurrentListViews().get(0));		
 	}
@@ -86,7 +86,7 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
 	public void testEditAccount(){
 		Fragment fragment = getActivity()
 				.getSupportFragmentManager()
-				.findFragmentByTag(AccountsActivity.FRAGMENT_ACCOUNTS_LIST);
+				.findFragmentByTag(MainActivity.FRAGMENT_ACCOUNTS_LIST);
 		((AccountsListFragment) fragment).refreshList();
 		
 		mSolo.waitForText(DUMMY_ACCOUNT_NAME);
@@ -112,7 +112,7 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
 	public void testDisplayTransactionsList(){	
 		Fragment fragment = getActivity()
 				.getSupportFragmentManager()
-				.findFragmentByTag(AccountsActivity.FRAGMENT_ACCOUNTS_LIST);
+				.findFragmentByTag(MainActivity.FRAGMENT_ACCOUNTS_LIST);
 		((AccountsListFragment) fragment).refreshList();
 		
 		mSolo.waitForText(DUMMY_ACCOUNT_NAME);
@@ -121,7 +121,7 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
 		
 		fragment = getActivity()
 				.getSupportFragmentManager()
-				.findFragmentByTag(AccountsActivity.FRAGMENT_TRANSACTIONS_LIST);
+				.findFragmentByTag(MainActivity.FRAGMENT_TRANSACTIONS_LIST);
 		assertNotNull(fragment);
 		
 		assertNotNull(mSolo.getCurrentListViews());
@@ -141,7 +141,7 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
 		
 		Fragment fragment = getActivity()
 				.getSupportFragmentManager()
-				.findFragmentByTag(AccountsActivity.FRAGMENT_ACCOUNTS_LIST);
+				.findFragmentByTag(MainActivity.FRAGMENT_ACCOUNTS_LIST);
 		assertNotNull(fragment);
 		
 		((AccountsListFragment) fragment).refreshList();

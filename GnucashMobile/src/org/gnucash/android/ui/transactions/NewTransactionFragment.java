@@ -22,7 +22,7 @@
  * Boston, MA  02110-1301,  USA       gnu@gnu.org
  */
 
-package org.gnucash.android.ui;
+package org.gnucash.android.ui.transactions;
 
 import java.text.NumberFormat;
 import java.text.ParseException;
@@ -40,6 +40,8 @@ import org.gnucash.android.data.Transaction.TransactionType;
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.DatabaseHelper;
 import org.gnucash.android.db.TransactionsDbAdapter;
+import org.gnucash.android.ui.DatePickerDialogFragment;
+import org.gnucash.android.ui.TimePickerDialogFragment;
 
 import android.app.DatePickerDialog.OnDateSetListener;
 import android.app.TimePickerDialog.OnTimeSetListener;

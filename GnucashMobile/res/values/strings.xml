@@ -71,5 +71,6 @@
     </string-array>
     <string name="btn_move">Move</string>
     <string name="title_move_transactions">Move transactions</string>
+    <string name="label_move_destination">Destination Account</string>
 
 </resources>

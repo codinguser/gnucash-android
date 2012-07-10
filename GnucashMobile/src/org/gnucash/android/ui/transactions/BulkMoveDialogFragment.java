@@ -22,12 +22,13 @@
  * Boston, MA  02110-1301,  USA       gnu@gnu.org
  */
 
-package org.gnucash.android.ui;
+package org.gnucash.android.ui.transactions;
 
 import org.gnucash.android.R;
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.DatabaseHelper;
 import org.gnucash.android.db.TransactionsDbAdapter;
+import org.gnucash.android.ui.MainActivity;
 
 import android.database.Cursor;
 import android.os.Bundle;
@@ -108,7 +109,7 @@ public class BulkMoveDialogFragment extends DialogFragment {
 				
 				Fragment f = getActivity()
 						.getSupportFragmentManager()
-						.findFragmentByTag(AccountsActivity.FRAGMENT_TRANSACTIONS_LIST);
+						.findFragmentByTag(MainActivity.FRAGMENT_TRANSACTIONS_LIST);
 					
 				((TransactionsListFragment)f).refreshList();
 				dismiss();

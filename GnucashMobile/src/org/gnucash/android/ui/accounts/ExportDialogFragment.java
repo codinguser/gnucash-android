@@ -22,7 +22,7 @@
  * Boston, MA  02110-1301,  USA       gnu@gnu.org
  */
 
-package org.gnucash.android.ui;
+package org.gnucash.android.ui.accounts;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -47,6 +47,7 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.gnucash.android.R;
 import org.gnucash.android.db.TransactionsDbAdapter;
+import org.gnucash.android.ui.MainActivity;
 import org.gnucash.android.util.OfxFormatter;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -133,7 +134,7 @@ public class ExportDialogFragment extends DialogFragment {
 			
 			Fragment f = getActivity()
 			.getSupportFragmentManager()
-			.findFragmentByTag(AccountsActivity.FRAGMENT_ACCOUNTS_LIST);
+			.findFragmentByTag(MainActivity.FRAGMENT_ACCOUNTS_LIST);
 		
 			((AccountsListFragment)f).refreshList();
 			dismiss();

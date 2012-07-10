@@ -25,6 +25,9 @@
 package org.gnucash.android.ui;
 
 import org.gnucash.android.R;
+import org.gnucash.android.ui.accounts.AccountsListFragment;
+import org.gnucash.android.ui.transactions.NewTransactionFragment;
+import org.gnucash.android.ui.transactions.TransactionsListFragment;
 import org.gnucash.android.util.OnItemClickedListener;
 
 import android.os.Bundle;
@@ -43,7 +46,7 @@ import com.actionbarsherlock.view.MenuInflater;
  * @author Ngewi Fet <ngewif@gmail.com>
  * 
  */
-public class AccountsActivity extends SherlockFragmentActivity implements OnItemClickedListener {
+public class MainActivity extends SherlockFragmentActivity implements OnItemClickedListener {
 
 	public static final String FRAGMENT_ACCOUNTS_LIST 		= "accounts_list";
 	public static final String FRAGMENT_TRANSACTIONS_LIST 	= "transactions_list";
@@ -51,7 +54,7 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnItem
 	
 	static final int DIALOG_ADD_ACCOUNT = 0x01;
 
-	protected static final String TAG = "AccountsActivity";	
+	protected static final String TAG = "MainActivity";	
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {

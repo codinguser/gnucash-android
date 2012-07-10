@@ -29,10 +29,11 @@
     android:orientation="vertical" >
     
     <TextView
-        android:text="@string/label_export_destination"
+        android:text="@string/label_move_destination"
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
         android:layout_marginBottom="-8dip"
+        android:layout_marginTop="10dp"
         style="@style/TextAppearance.EditTransaction_LabelSmall" />
 
     <Spinner android:id="@+id/accounts_list_spinner"
