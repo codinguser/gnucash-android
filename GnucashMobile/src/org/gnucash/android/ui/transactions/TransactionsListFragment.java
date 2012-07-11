@@ -316,8 +316,7 @@ public class TransactionsListFragment extends SherlockListFragment implements
 		else
 			mActionMode.finish();
 	}
-	
-	
+		
 	protected void showBulkMoveDialog(){
 		FragmentManager manager = getActivity().getSupportFragmentManager();
 		FragmentTransaction ft = manager.beginTransaction();

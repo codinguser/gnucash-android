@@ -61,19 +61,16 @@ public class TransactionsFragmentTest extends
 		Account account = new Account(DUMMY_ACCOUNT_NAME);
 		account.setUID(DUMMY_ACCOUNT_UID);
 		
-		AccountsDbAdapter adapter = new AccountsDbAdapter(getActivity());
-		adapter.addAccount(account);
-		adapter.close();
-		
 		mTransaction = new Transaction(9.99, "Pizza");
 		mTransaction.setAccountUID(DUMMY_ACCOUNT_UID);
 		mTransaction.setDescription("What up?");
 		mTransaction.setTime(System.currentTimeMillis());
 		
-		TransactionsDbAdapter dbAdapter = new TransactionsDbAdapter(getActivity());
-		dbAdapter.addTransaction(mTransaction);
-		dbAdapter.close();
+		account.addTransaction(mTransaction);
 		
+		AccountsDbAdapter adapter = new AccountsDbAdapter(getActivity());
+		adapter.addAccount(account);
+		adapter.close();
 	}
 	
 	private void validateTransactionListDisplayed(){
@@ -92,11 +89,12 @@ public class TransactionsFragmentTest extends
 	}
 	
 	private void validateNewTransactionFields(){
-		String expectedValue = NewTransactionFragment.DATE_FORMATTER.format(new Date(System.currentTimeMillis()));
+		long timeMillis = System.currentTimeMillis();
+		String expectedValue = NewTransactionFragment.DATE_FORMATTER.format(new Date(timeMillis));
 		String actualValue = mSolo.getText(5).getText().toString();
 		assertEquals(expectedValue, actualValue);
 		
-		expectedValue = NewTransactionFragment.TIME_FORMATTER.format(new Date(System.currentTimeMillis()));
+		expectedValue = NewTransactionFragment.TIME_FORMATTER.format(new Date(timeMillis));
 		actualValue = mSolo.getText(6).getText().toString();
 		assertEquals(expectedValue, actualValue);
 		Spinner spinner = mSolo.getCurrentSpinners().get(0);
@@ -113,14 +111,14 @@ public class TransactionsFragmentTest extends
 		mSolo.waitForText(DUMMY_ACCOUNT_NAME);		
 		validateTransactionListDisplayed();
 		
-		mSolo.clickOnActionBarItem(R.id.menu_add_transaction);
+//		mSolo.clickOnActionBarItem(R.id.menu_add_transaction);
+		mSolo.clickOnImage(2);
 		mSolo.waitForText("Description");
 		
-		//TODO: do i need this? 
-		//validateNewTransactionFields();
+		validateNewTransactionFields();
 		
 		//validate creation of transaction
-				mSolo.enterText(0, "Lunch");
+		mSolo.enterText(0, "Lunch");
 		mSolo.enterText(1, "899");
 		//check that the amount is correctly converted in the input field
 		String actualValue = mSolo.getEditText(1).getText().toString();
@@ -128,7 +126,8 @@ public class TransactionsFragmentTest extends
 		
 		int transactionsCount = getTranscationCount();
 		
-		mSolo.clickOnActionBarItem(R.id.menu_save);	
+//		mSolo.clickOnActionBarItem(R.id.menu_save);	
+		mSolo.clickOnImage(3);
 		mSolo.waitForText(DUMMY_ACCOUNT_NAME);
 		validateTransactionListDisplayed();
 		

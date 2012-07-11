@@ -38,6 +38,7 @@ import android.support.v4.widget.SimpleCursorAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager.LayoutParams;
 import android.widget.Button;
 import android.widget.Spinner;
 
@@ -54,6 +55,7 @@ public class BulkMoveDialogFragment extends DialogFragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {		
 		View v = inflater.inflate(R.layout.dialog_bulk_move, container, false);
+		
 		mDestinationAccountSpinner = (Spinner) v.findViewById(R.id.accounts_list_spinner);
 		mOkButton = (Button) v.findViewById(R.id.btn_move);
 		mCancelButton = (Button) v.findViewById(R.id.btn_cancel);
@@ -63,10 +65,14 @@ public class BulkMoveDialogFragment extends DialogFragment {
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-		getDialog().setTitle(R.string.title_move_transactions);
+		getDialog().getWindow().setLayout(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
 		
 		mTransactionIds = getArguments().getLongArray(TransactionsListFragment.SELECTED_TRANSACTION_IDS);
 		
+		String title = getActivity().getString(R.string.title_move_transactions, 
+				mTransactionIds.length);
+		getDialog().setTitle(title);
+	
 		mAccountsDbAdapter = new AccountsDbAdapter(getActivity());
 		Cursor cursor = mAccountsDbAdapter.fetchAllAccounts();
 		

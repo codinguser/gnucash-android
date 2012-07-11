@@ -27,6 +27,9 @@ package org.gnucash.android.test;
 import java.io.File;
 
 import org.gnucash.android.R;
+import org.gnucash.android.data.Account;
+import org.gnucash.android.data.Transaction;
+import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.ui.MainActivity;
 import org.gnucash.android.ui.accounts.ExportDialogFragment;
 
@@ -47,8 +50,19 @@ public class OfxExportTest extends
 	
 	@Override
 	protected void setUp() throws Exception {
-		mSolo = new Solo(getInstrumentation(), getActivity());
 		super.setUp();
+		mSolo = new Solo(getInstrumentation(), getActivity());	
+		
+		Account account = new Account("Exportable");		
+		Transaction transaction = new Transaction(9.99, "Pizza");		
+		transaction.setDescription("What up?");
+		transaction.setTime(System.currentTimeMillis());
+		
+		account.addTransaction(transaction);
+		
+		AccountsDbAdapter adapter = new AccountsDbAdapter(getActivity());
+		adapter.addAccount(account);
+		adapter.close();		
 	}
 	
 	public void testOfxExport(){
@@ -57,12 +71,13 @@ public class OfxExportTest extends
 		mSolo.waitForText("Export OFX");
 		Spinner spinner = mSolo.getCurrentSpinners().get(0);
 		mSolo.clickOnView(spinner);
-		mSolo.clickOnText("SD Card");
-		mSolo.clickOnText("Export");
+		String[] options = getActivity().getResources().getStringArray(R.array.export_destinations);	
+		mSolo.clickOnText(options[1]);
+		mSolo.clickOnButton(3);
+		mSolo.waitForDialogToClose(10000);
 		
 		String filename = ExportDialogFragment.buildExportFilename();
 		
-//		File file = new File(getActivity().getExternalFilesDir(null), filename);
 		File file = new File(Environment.getExternalStorageDirectory() + "/" + filename);
 		assertNotNull(file);
 		assertTrue(file.exists());
@@ -74,7 +89,10 @@ public class OfxExportTest extends
 	
 	@Override
 	protected void tearDown() throws Exception {
-		// TODO Auto-generated method stub
+		AccountsDbAdapter adapter = new AccountsDbAdapter(getActivity());
+		adapter.deleteAllAccounts();
+		adapter.close();
+		mSolo.finishOpenedActivities();
 		super.tearDown();
 	}
 }

@@ -112,7 +112,7 @@ public class ExportDialogFragment extends DialogFragment {
 					Toast.makeText(getActivity(), 
 							"Could not write OFX file to :\n" + dst.getAbsolutePath(), 
 							Toast.LENGTH_LONG).show();		
-					e.printStackTrace();
+					Log.e(getTag(), e.getMessage());
 					break;
 				}
 				

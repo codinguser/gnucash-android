@@ -68,7 +68,8 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<MainA
 	}
 	
 	public void testCreateAccount(){
-		mSolo.clickOnActionBarItem(R.id.menu_add_account);
+//		mSolo.clickOnActionBarItem(R.id.menu_add_account);
+		mSolo.clickOnImage(1);
 		mSolo.waitForText("Create");
 		mSolo.enterText(0, "New Account");
 		
