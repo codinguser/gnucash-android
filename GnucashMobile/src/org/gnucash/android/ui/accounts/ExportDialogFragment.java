@@ -201,13 +201,13 @@ public class ExportDialogFragment extends DialogFragment {
 	
 	private void shareFile(String path){
 		Intent shareIntent = new Intent(Intent.ACTION_SEND);
-		shareIntent.setType("multipart/x-ofx");
+		shareIntent.setType("multipart/xml");
 		shareIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse("file://"+ path));
 		shareIntent.putExtra(Intent.EXTRA_SUBJECT, "Gnucash OFX export");
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyy.MM.dd HH:mm");
 		shareIntent.putExtra(Intent.EXTRA_TEXT, "Gnucash accounts export from " 
 							+ formatter.format(new Date(System.currentTimeMillis())));
-		startActivity(Intent.createChooser(shareIntent, "Sharing OFX file..."));	
+		startActivity(Intent.createChooser(shareIntent, getString(R.string.title_share_ofx_with)));	
 	}
 	
 	public static void copyFile(File src, File dst) throws IOException

@@ -25,5 +25,5 @@
 <resources>
     <color name="debit_red">#c11b17</color>
     <color name="credit_green">#4cc552</color>
-    
+    <color name="light_gray">#FFAAAAAA</color>
 </resources>

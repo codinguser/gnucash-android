@@ -25,7 +25,8 @@
 
 <resources>
     <dimen name="add_button_padding">3dp</dimen>
-    
+    <dimen name="dialog_padding">10dp</dimen>
+    <dimen name="hint_margin">-8dp</dimen>
     <dimen name="text_size_small">14sp</dimen>
     <dimen name="text_size_medium">18sp</dimen>
     <dimen name="text_size_large">18sp</dimen>

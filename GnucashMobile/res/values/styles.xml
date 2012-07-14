@@ -23,7 +23,7 @@
  Boston, MA  02110-1301,  USA       gnu@gnu.org
 -->
 
-<resources>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
     <style name="ListItemContainerBase">
         <item name="android:minHeight">?android:attr/listPreferredItemHeight</item>
     </style>
@@ -68,5 +68,18 @@
         <item name="android:paddingLeft">8dp</item>
         <item name="android:paddingRight">8dp</item>
         <item name="android:layout_marginBottom">-12dp</item>
+    </style>
+    
+    <style name="TextAppearance.Hint">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingLeft">@dimen/dialog_padding</item>
+        <item name="android:paddingRight">@dimen/dialog_padding</item>
+        <item name="android:paddingBottom">@dimen/dialog_padding</item>
+        <item name="android:layout_marginTop">@dimen/hint_margin</item>
+        <item name="android:layout_marginBottom">@dimen/hint_margin</item>
+        <item name="android:textColor">@color/light_gray</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
     </style>
 </resources>

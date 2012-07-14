@@ -61,11 +61,11 @@
     <string name="label_export_destination">Export Destination</string>
     <string name="title_export_dialog">Export OFX</string>
     <string name="export_all_transactions">Export all transactions</string>
-    <string name="label_export_choice">By default, only new transactions since last export will be exported. Check this option to export all transactions</string>
+    <string name="hint_export_choice">By default, only new transactions since last export will be exported. Check this option to export all transactions</string>
     <string name="error_exporting">Error exporting OFX data</string>    
     <string name="btn_export">Export</string>
     <string name="confirm_post_export_delete">Delete after export</string>
-    <string name="label_delete_after_export">All exported transactions will be deleted when exporting is completed</string>
+    <string name="hint_delete_after_export">All exported transactions will be deleted when exporting is completed</string>
     
     <string-array name="export_destinations">
         <item>Share file&#8230;</item>
@@ -75,5 +75,6 @@
     <string name="title_move_transactions">Move %1$d transactions</string>
     <string name="label_move_destination">Destination Account</string>
     <string name="permission_access_sdcard">Access SD Card</string>
+    <string name="title_share_ofx_with">Share OFX export with...</string>
 
 </resources>
