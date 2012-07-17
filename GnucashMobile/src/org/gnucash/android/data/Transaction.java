@@ -24,6 +24,8 @@
 
 package org.gnucash.android.data;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Date;
@@ -44,7 +46,7 @@ public class Transaction {
 	 */
 	public enum TransactionType {DEBIT, CREDIT};
 	
-	private double mAmount;
+	private BigDecimal mAmount;
 	private String mTransactionUID;
 	private String mName;
 	private String mDescription = "";
@@ -59,7 +61,25 @@ public class Transaction {
 	 * @param amount Amount for the transaction
 	 * @param name Name of the transaction
 	 */
-	public Transaction(double amount, String name) {
+	public Transaction(BigDecimal amount, String name) {
+		initDefaults();		
+		setName(name);
+		setAmount(amount); //takes care of setting the type for us
+	}
+	
+	public Transaction(double amount, String name){
+		initDefaults();
+		setName(name);
+		setAmount(amount);
+	}
+	
+	/**
+	 * Overloaded constructor. Creates a new transaction instance with the 
+	 * provided data and initializes the rest to default values. 
+	 * @param amount Amount for the transaction
+	 * @param name Name of the transaction
+	 */
+	public Transaction(String amount, String name) {
 		initDefaults();		
 		setName(name);
 		setAmount(amount); //takes care of setting the type for us
@@ -72,9 +92,9 @@ public class Transaction {
 	 * @param name Name of the transaction
 	 * @param type Type of transaction
 	 */
-	public Transaction(double amount, String name, TransactionType type){
+	public Transaction(BigDecimal amount, String name, TransactionType type){
 		initDefaults();
-		this.mAmount = amount;		
+		setAmount(amount);		
 		this.mType = type;
 		this.mName = name;
 	}
@@ -83,7 +103,7 @@ public class Transaction {
 	 * Initializes the different fields to their default values.
 	 */
 	private void initDefaults(){
-		this.mAmount = 0;
+		setAmount(new BigDecimal(0));
 		this.mTimestamp = System.currentTimeMillis();
 		this.mType = TransactionType.DEBIT;
 		mTransactionUID = UUID.randomUUID().toString();
@@ -94,16 +114,31 @@ public class Transaction {
 	 * Set the amount of this transaction
 	 * @param mAmount Amount of the transaction
 	 */
-	public void setAmount(double amount) {
+	public void setAmount(BigDecimal amount) {
 		this.mAmount = amount;
-		mType = amount < 0 ? TransactionType.DEBIT : TransactionType.CREDIT; 
+		this.mAmount.setScale(2, RoundingMode.HALF_EVEN);
+		mType = amount.doubleValue() < 0 ? TransactionType.DEBIT : TransactionType.CREDIT; 
 	}
 
+	/**
+	 * Set the amount of this transaction
+	 * @param mAmount Amount of the transaction
+	 */
+	public void setAmount(String amount) {
+		this.mAmount = new BigDecimal(amount);
+		this.mAmount = mAmount.setScale(2, RoundingMode.HALF_EVEN);
+		mType = this.mAmount.doubleValue() < 0 ? TransactionType.DEBIT : TransactionType.CREDIT; 
+	}
+	
+	public void setAmount(double amount){
+		setAmount(new BigDecimal(amount));
+	}
+	
 	/**
 	 * Returns the amount involved in this transaction
 	 * @return Amount in the transaction
 	 */
-	public double getAmount() {
+	public BigDecimal getAmount() {
 		return mAmount;
 	}
 	
@@ -252,7 +287,7 @@ public class Transaction {
 		transaction.appendChild(dateUser);
 */		
 		Element amount = doc.createElement("TRNAMT");
-		amount.appendChild(doc.createTextNode(Double.toString(mAmount)));
+		amount.appendChild(doc.createTextNode(mAmount.toPlainString()));
 		transactionNode.appendChild(amount);
 		
 		Element transID = doc.createElement("FITID");

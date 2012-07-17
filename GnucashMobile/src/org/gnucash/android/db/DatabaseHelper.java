@@ -34,7 +34,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	private static final String TAG = "DatabaseHelper";
 	
 	private static final String DATABASE_NAME = "gnucash_db";
-	private static final int DATABASE_VERSION = 2;
+	private static final int DATABASE_VERSION = 3;
 	
 	public static final String ACCOUNTS_TABLE_NAME = "accounts";
 	public static final String TRANSACTIONS_TABLE_NAME = "transactions";
@@ -44,7 +44,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	public static final String KEY_UID 		= "uid";
 	public static final String KEY_TYPE 	= "type";
 	
-	public static final String KEY_AMOUNT = "amount";
+	public static final String KEY_AMOUNT 	= "amount";
 	public static final String KEY_ACCOUNT_UID 	= "account_uid";
 	public static final String KEY_DESCRIPTION 	= "description";
 	public static final String KEY_TIMESTAMP 	= "timestamp";
@@ -64,7 +64,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			+ KEY_UID 	+ " varchar(255) not null, "			
 			+ KEY_NAME 	+ " varchar(255), "
 			+ KEY_TYPE 	+ " varchar(255) not null, "
-			+ KEY_AMOUNT + " double not null, "
+			+ KEY_AMOUNT + " varchar(255) not null, "
 			+ KEY_DESCRIPTION 	+ " text, "
 			+ KEY_TIMESTAMP 	+ " integer not null, "
 			+ KEY_ACCOUNT_UID 	+ " varchar(255) not null, "
@@ -90,8 +90,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				+ " which will destroy all old data");
 		
 		if (oldVersion < newVersion){
-			if (oldVersion == 1 && newVersion == 2){
-				Log.i("DatabaseHelper", "Upgrading database to version 2");
+			Log.i("DatabaseHelper", "Upgrading database to version " + newVersion);
+			if (oldVersion == 1 && newVersion == 2){				
 				String addColumnSql = "ALTER TABLE " + TRANSACTIONS_TABLE_NAME + 
 									" ADD COLUMN " + KEY_EXPORTED + " tinyint default 0";
 				db.execSQL(addColumnSql);

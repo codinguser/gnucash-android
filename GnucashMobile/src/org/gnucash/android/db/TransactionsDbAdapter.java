@@ -62,7 +62,7 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 	public long addTransaction(Transaction transaction){
 		ContentValues contentValues = new ContentValues();
 		contentValues.put(DatabaseHelper.KEY_NAME, transaction.getName());
-		contentValues.put(DatabaseHelper.KEY_AMOUNT, transaction.getAmount());
+		contentValues.put(DatabaseHelper.KEY_AMOUNT, transaction.getAmount().toPlainString());
 		contentValues.put(DatabaseHelper.KEY_TYPE, transaction.getTransactionType().name());
 		contentValues.put(DatabaseHelper.KEY_UID, transaction.getUID());
 		contentValues.put(DatabaseHelper.KEY_ACCOUNT_UID, transaction.getAccountUID());
@@ -168,7 +168,7 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 	 * @return {@link Transaction} object constructed from database record
 	 */
 	public Transaction buildTransactionInstance(Cursor c){
-		Transaction transaction = new Transaction(c.getDouble(DatabaseAdapter.COLUMN_AMOUNT), 
+		Transaction transaction = new Transaction(c.getString(DatabaseAdapter.COLUMN_AMOUNT), 
 				c.getString(DatabaseAdapter.COLUMN_NAME));
 		transaction.setUID(c.getString(DatabaseAdapter.COLUMN_UID));
 		transaction.setAccountUID(c.getString(DatabaseAdapter.COLUMN_ACCOUNT_UID));

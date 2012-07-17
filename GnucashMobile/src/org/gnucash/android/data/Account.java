@@ -24,6 +24,7 @@
 
 package org.gnucash.android.data;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -198,11 +199,10 @@ public class Account {
 	 * It takes into account debit and credit amounts
 	 * @return Aggregate amount of all transactions in account.
 	 */
-	public double getBalance(){
-		double balance = 0;
+	public BigDecimal getBalance(){
+		BigDecimal balance = new BigDecimal(0);
 		for (Transaction transx : mTransactionsList) {
-			balance += transx.getAmount();
-		}
+			balance.add(transx.getAmount());		}
 		return balance;
 	}
 	

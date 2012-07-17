@@ -24,14 +24,15 @@
 
 package org.gnucash.android.ui.transactions;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Currency;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.Locale;
 
 import org.gnucash.android.R;
 import org.gnucash.android.data.Account;
@@ -88,6 +89,7 @@ public class NewTransactionFragment extends SherlockFragment implements
 	private ToggleButton mTransactionTypeButton;
 	private EditText mNameEditText;
 	private EditText mAmountEditText;
+	private TextView mCurrencyTextView;
 	private EditText mDescriptionEditText;
 	private TextView mDateTextView;
 	private TextView mTimeTextView;		
@@ -120,7 +122,8 @@ public class NewTransactionFragment extends SherlockFragment implements
 		mDescriptionEditText = (EditText)getView().findViewById(R.id.input_description);
 		mDateTextView = (TextView) v.findViewById(R.id.input_date);
 		mTimeTextView = (TextView) v.findViewById(R.id.input_time);
-		mAmountEditText = (EditText) v.findViewById(R.id.input_transaction_amount);
+		mAmountEditText = (EditText) v.findViewById(R.id.input_transaction_amount);		
+		mCurrencyTextView = (TextView) v.findViewById(R.id.currency_symbol);
 		mAccountsSpinner = (Spinner) v.findViewById(R.id.input_accounts_spinner);
 		mTransactionTypeButton = (ToggleButton) v.findViewById(R.id.input_transaction_type);
 		
@@ -153,8 +156,7 @@ public class NewTransactionFragment extends SherlockFragment implements
 				
 		mNameEditText.setText(mTransaction.getName());
 		mTransactionTypeButton.setChecked(mTransaction.getTransactionType() == TransactionType.DEBIT);
-		//multiply to balance out division by the TextWatcher attached to this view
-		mAmountEditText.setText(Double.toString(mTransaction.getAmount())); 
+		mAmountEditText.setText(mTransaction.getAmount().toPlainString()); 
 		mDescriptionEditText.setText(mTransaction.getDescription());
 		mDateTextView.setText(DATE_FORMATTER.format(mTransaction.getTimeMillis()));
 		mTimeTextView.setText(TIME_FORMATTER.format(mTransaction.getTimeMillis()));
@@ -177,6 +179,7 @@ public class NewTransactionFragment extends SherlockFragment implements
 	 * Binds the various views to the appropriate text
 	 */
 	private void initalizeViews() {
+//		mAmountEditText.setText("0");
 		Date time = new Date(System.currentTimeMillis()); 
 		mDateTextView.setText(DATE_FORMATTER.format(time));
 		mTimeTextView.setText(TIME_FORMATTER.format(time));
@@ -207,14 +210,20 @@ public class NewTransactionFragment extends SherlockFragment implements
 				if (isChecked){
 					int red = getResources().getColor(R.color.debit_red);
 					mTransactionTypeButton.setTextColor(red);
-					mAmountEditText.setTextColor(red);					
+					mAmountEditText.setTextColor(red);		
+					mCurrencyTextView.setTextColor(red);
 				}
 				else {
 					int green = getResources().getColor(R.color.credit_green);
 					mTransactionTypeButton.setTextColor(green);
 					mAmountEditText.setTextColor(green);
+					mCurrencyTextView.setTextColor(green);
 				}
-				mAmountEditText.setText(mAmountEditText.getText().toString()); //trigger an edit to update the number sign
+				String amountText = mAmountEditText.getText().toString();
+				if (amountText.length() > 0){
+					BigDecimal decimal = new BigDecimal(amountText);
+					mAmountEditText.setText(decimal.negate().toPlainString()); //trigger an edit to update the number sign
+				} 
 			}
 		});
 
@@ -258,8 +267,7 @@ public class NewTransactionFragment extends SherlockFragment implements
 		String name = mNameEditText.getText().toString();
 		String description = mDescriptionEditText.getText().toString();
 		String amountString = mAmountEditText.getText().toString();
-		double amount = Double.parseDouble(stripCurrencyFormatting(amountString))/100;
-		amount *= mTransactionTypeButton.isChecked() ? -1 : 1; //set negative for debit
+		BigDecimal amount = new BigDecimal(stripCurrencyFormatting(amountString)).divide(new BigDecimal(100));		
 		Calendar cal = new GregorianCalendar(
 				mDate.get(Calendar.YEAR), 
 				mDate.get(Calendar.MONTH), 
@@ -341,10 +349,7 @@ public class NewTransactionFragment extends SherlockFragment implements
 	}
 	
 	public static String stripCurrencyFormatting(String s){
-		String symbol = Currency.getInstance(Locale.getDefault()).getSymbol();
-		//if in scientific notation, do not remove the period
-		String regex = s.contains("E") ? "[" + symbol + ",-]" : "[" + symbol + ",.-]";
-		return s.replaceAll(regex, "");
+		return s.replace(".", "").replace(",", "");
 	}
 	
 	private class ValidationsWatcher implements TextWatcher {
@@ -376,33 +381,30 @@ public class NewTransactionFragment extends SherlockFragment implements
 		private String current = null;
 		
 		@Override
-		public void afterTextChanged(Editable s) {
+		public void afterTextChanged(Editable s) {	
+						
 			String cleanString = stripCurrencyFormatting(s.toString());
 			if (cleanString.length() == 0)
 				return;
-
-			double parsed = Double.parseDouble(cleanString);
-
+			
+			BigDecimal amount = new BigDecimal(cleanString).divide(new BigDecimal(100), 2, RoundingMode.HALF_EVEN);
+			if (mTransactionTypeButton.isChecked() && amount.doubleValue() > 0) 
+				amount = amount.negate();
+			DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance();
+			formatter.setMinimumFractionDigits(2);
+			formatter.setMaximumFractionDigits(2);
+			current = formatter.format(amount.doubleValue());
 			mAmountEditText.removeTextChangedListener(this);
-
-			String formattedString = NumberFormat.getCurrencyInstance().format(
-					(parsed / 100));
-
-			String prefix = mTransactionTypeButton.isChecked() ? " - " : "";
-
-			current = prefix + formattedString;
 			mAmountEditText.setText(current);
 			mAmountEditText.setSelection(current.length());
-
 			mAmountEditText.addTextChangedListener(this);
-
+			
 		}
 
 		@Override
 		public void beforeTextChanged(CharSequence s, int start, int count,
 				int after) {
 			// nothing to see here, move along
-			
 		}
 
 		@Override

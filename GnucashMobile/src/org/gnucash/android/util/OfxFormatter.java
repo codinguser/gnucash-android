@@ -142,7 +142,7 @@ public class OfxFormatter {
 			
 			
 			//================= BEGIN ACCOUNT BALANCE INFO =================================
-			String balance = Double.toString(account.getBalance());
+			String balance = account.getBalance().toPlainString();
 			String formattedCurrentTimeString = getFormattedCurrentTime();
 			
 			Element balanceAmount = doc.createElement("BALAMT");

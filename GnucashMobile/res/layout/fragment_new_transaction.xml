@@ -24,12 +24,30 @@
 	
 	    <LinearLayout 
 	        android:layout_width="match_parent"
-	        android:layout_height="wrap_content"        
-	        >
+	        android:layout_height="wrap_content" >
+<!-- 	        
+	        <TextView android:id="@+id/sign" 
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:minHeight="?android:attr/listPreferredItemHeight"		       
+		        android:layout_marginBottom="10dp" 
+		        android:textColor="@color/debit_red"
+		        style="@style/ListItemText"
+	            android:text="-" />
+-->	        
+	        <TextView android:id="@+id/currency_symbol" 
+	            android:layout_width="wrap_content"	            
+	            android:layout_height="wrap_content"
+	            android:minHeight="?android:attr/listPreferredItemHeight"		       		        	        
+		        android:textColor="@color/debit_red"
+		        android:gravity="right"
+		        style="@style/ListItemText"
+	            android:text="$" />
+	        
 		    <EditText
 		        android:id="@+id/input_transaction_amount"
 		        android:layout_width="0dp"
-		        android:layout_weight="1"
+		        android:layout_weight="3"
 		        android:layout_height="wrap_content"
 		        android:minHeight="?android:attr/listPreferredItemHeight"
 		        android:ems="10"
@@ -40,7 +58,8 @@
 		        style="@style/ListItemText" />
 		    
 		    <ToggleButton android:id="@+id/input_transaction_type"
-		        android:layout_width="wrap_content"
+		        android:layout_width="0dp"
+		        android:layout_weight="2"
 		        android:layout_height="wrap_content"
 		        android:minHeight="?android:attr/listPreferredItemHeight"
 		        android:minWidth="100dp"
