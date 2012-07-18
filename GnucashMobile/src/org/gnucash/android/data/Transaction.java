@@ -25,10 +25,9 @@
 package org.gnucash.android.data;
 
 import java.math.BigDecimal;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
 import java.util.Currency;
 import java.util.Date;
+import java.util.Locale;
 import java.util.UUID;
 
 import org.w3c.dom.Document;
@@ -137,7 +136,7 @@ public class Transaction {
 	}
 	
 	public void setCurrency(Currency currency){		
-		mAmount.setCurrency(currency);
+		mAmount = mAmount.withCurrency(currency);
 	}
 	
 	public void setAmount(double amount, Currency currency){
@@ -156,13 +155,8 @@ public class Transaction {
 	 * Returns the transaction properly formatted for display
 	 * @return Properly formatted string amount
 	 */
-	public static String getFormattedAmount(double amount){
-		DecimalFormat formatter = (DecimalFormat)NumberFormat.getCurrencyInstance();
-		String symbol = formatter.getCurrency().getSymbol();
-		// TODO: Allow the user to set locale, or get it from current location
-		formatter.setNegativePrefix("-" + symbol); 
-		formatter.setNegativeSuffix("");
-		return formatter.format(amount);
+	public String getFormattedAmount(){		
+		return mAmount.formattedString(Locale.getDefault());		
 	}
 	
 	/**

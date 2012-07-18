@@ -29,8 +29,11 @@ import java.math.MathContext;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.text.ParseException;
 import java.util.Currency;
 import java.util.Locale;
+
+import android.util.Log;
 
 /**
  * Money represents a money amount and a corresponding currency.
@@ -61,6 +64,11 @@ public class Money implements Comparable<Money>{
 		this.mCurrency = currency;
 	}
 	
+	public Money(String amount, String currencyCode){
+		setAmount(amount);
+		setCurrency(Currency.getInstance(currencyCode));
+	}
+	
 	public Money(BigDecimal amount, Currency currency, MathContext context){
 		setAmount(amount);
 		setCurrency(currency);
@@ -70,7 +78,7 @@ public class Money implements Comparable<Money>{
 	
 	public Money(String amount){
 		init();
-		setAmount(amount);
+		setAmount(parse(amount));
 	}
 	
 	public Money(double amount){
@@ -90,12 +98,15 @@ public class Money implements Comparable<Money>{
 		return mCurrency;
 	}
 
+	public Money withCurrency(Currency currency){
+		return new Money(mAmount, currency);
+	}
 	/**
 	 * @param mCurrency the mCurrency to set
 	 */
-	public Money setCurrency(Currency currency) {
+	private void setCurrency(Currency currency) {
 		//TODO: Do a conversion of the value as well in the future
-		return new Money(mAmount, currency);
+		mCurrency = currency;
 	}
 
 	/**
@@ -114,8 +125,11 @@ public class Money implements Comparable<Money>{
 	}
 	
 	public String formattedString(Locale locale){
-		DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance(locale);			
-		return formatter.format(asDouble());
+		DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance(locale);	
+		formatter.setMinimumFractionDigits(DECIMAL_PLACES);
+		formatter.setMaximumFractionDigits(DECIMAL_PLACES);
+		
+		return formatter.format(asDouble()) + " " + mCurrency.getSymbol();
 	}
 	
 	public Money negate(){
@@ -125,44 +139,40 @@ public class Money implements Comparable<Money>{
 	/**
 	 * @param amount the mAmount to set
 	 */
-	public Money setAmount(BigDecimal amount) {		
-		return new Money(amount.setScale(DECIMAL_PLACES, ROUNDING_MODE), mCurrency);
+	private void setAmount(BigDecimal amount) {	
+		mAmount = amount.setScale(DECIMAL_PLACES, ROUNDING_MODE);
 	}
 	
-	public Money setAmount(String amount){
-		return setAmount(new BigDecimal(amount));
+	private void setAmount(String amount){
+		setAmount(new BigDecimal(amount));
 	}
 	
-	public Money setAmount(double amount){
-		return setAmount(new BigDecimal(amount));
+	private void setAmount(double amount){
+		setAmount(new BigDecimal(amount));
 	}
 	
 	public Money add(Money money){
 		if (!mCurrency.equals(money.mCurrency))
 			throw new IllegalArgumentException("Only Money with same currency can be added");
 		
-		Money result = new Money();
 		BigDecimal bigD = mAmount.add(money.mAmount);
-		result.setAmount(bigD);
-		return result;
+		return new Money(bigD, mCurrency);
 	}
 
 	public Money subtract(Money money){
 		if (!mCurrency.equals(money.mCurrency))
 			throw new IllegalArgumentException("Operation can only be performed on money with same currency");
-		Money result = new Money();
-		BigDecimal bigD = mAmount.subtract(money.mAmount);
-		result.setAmount(bigD);
-		return result;
+		
+		BigDecimal bigD = mAmount.subtract(money.mAmount);		
+		return new Money(bigD, mCurrency);
 	}
 	
 	public Money divide(Money divisor){
 		if (!mCurrency.equals(divisor.mCurrency))
 			throw new IllegalArgumentException("Operation can only be performed on money with same currency");
-		Money result = new Money();
-		BigDecimal bigD = mAmount.divide(divisor.mAmount);
-		result.setAmount(bigD);
-		return result;
+		
+		BigDecimal bigD = mAmount.divide(divisor.mAmount);		
+		return new Money(bigD, mCurrency);
 	}
 	
 	public Money divide(int divisor){
@@ -173,10 +183,9 @@ public class Money implements Comparable<Money>{
 	public Money multiply(Money money){
 		if (!mCurrency.equals(money.mCurrency))
 			throw new IllegalArgumentException("Operation can only be performed on money with same currency");
-		Money result = new Money();
-		BigDecimal bigD = mAmount.multiply(money.mAmount);
-		result.setAmount(bigD);
-		return result;
+		
+		BigDecimal bigD = mAmount.multiply(money.mAmount);		
+		return new Money(bigD, mCurrency);
 	}
 	
 	public Money multiply(int factor){
@@ -194,7 +203,7 @@ public class Money implements Comparable<Money>{
 	
 	@Override
 	public String toString() {
-		return mAmount.setScale(DECIMAL_PLACES, ROUNDING_MODE).toPlainString() + " " + mCurrency.getCurrencyCode();
+		return mAmount.setScale(DECIMAL_PLACES, ROUNDING_MODE).toPlainString() + " " + mCurrency.getSymbol();
 	}
 		
 	@Override
@@ -234,5 +243,17 @@ public class Money implements Comparable<Money>{
 		if (!mCurrency.equals(another.mCurrency))
 			throw new IllegalArgumentException("Cannot compare different currencies yet");
 		return mAmount.compareTo(another.mAmount);
+	}
+
+	public static String parse(String formattedAmount){
+		DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance();
+		String result = formattedAmount;
+		try {
+			result = formatter.parse(formattedAmount).toString();
+			
+		} catch (ParseException e) {
+			Log.e("Money", "Could not parse the amount");			
+		}
+		return result;
 	}
 }

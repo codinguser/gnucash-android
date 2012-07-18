@@ -159,7 +159,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 		account.setUID(uid);
 		account.setAccountType(AccountType.valueOf(c.getString(DatabaseAdapter.COLUMN_TYPE)));
 		account.setTransactions(mTransactionsAdapter.getAllTransactionsForAccount(uid));
-		account.setCurrency(Currency.getInstance(c.getString(DatabaseAdapter.COLUMN_CURRENCY_CODE)));
+		account.setCurrency(Currency.getInstance(c.getString(DatabaseAdapter.COLUMN_ACCOUNT_CURRENCY_CODE)));
 		return account;
 	}
 		

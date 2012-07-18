@@ -204,6 +204,11 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 		return currencyCode;
 	}
 	
+	public String getCurrencyCode(long accountId){
+		String accountUID = getAccountUID(accountId);
+		return getCurrencyCode(accountUID);
+	}
+	
 	/**
 	 * Deletes transaction record with id <code>rowId</code>
 	 * @param rowId Long database record id
@@ -272,19 +277,22 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 	 * @param accountId Record ID of the account
 	 * @return Sum of transactions belonging to the account
 	 */
-	public double getTransactionsSum(long accountId){
+	public Money getTransactionsSum(long accountId){
 		Cursor c = mDb.query(DatabaseHelper.TRANSACTIONS_TABLE_NAME, 
 				new String[]{DatabaseHelper.KEY_AMOUNT}, 
 				DatabaseHelper.KEY_ACCOUNT_UID + "= '" + getAccountUID(accountId) + "'", 
 				null, null, null, null);
 		
-		if (c == null)
-			return 0;
+		String currencyCode = getCurrencyCode(accountId);
 		
-		double amountSum = 0;
+		if (c == null)
+			return new Money("0", currencyCode);
+		
+		
+		Money amountSum = new Money("0", currencyCode);
 		
 		while(c.moveToNext()){
-			amountSum += c.getDouble(0);
+			amountSum = amountSum.add(new Money(c.getString(0), currencyCode));
 		}
 		c.close();
 		

@@ -27,7 +27,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical" >
-
+    
     <EditText
         android:id="@+id/edit_text_account_name"
         android:layout_width="match_parent"
@@ -40,6 +40,12 @@
         android:hint="@string/label_account_name">
         <requestFocus />
     </EditText>
+    
+    <Spinner android:id="@+id/input_currency_spinner"
+        android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_margin="10dp"		
+        />
     
     <LinearLayout
         android:layout_width="match_parent"

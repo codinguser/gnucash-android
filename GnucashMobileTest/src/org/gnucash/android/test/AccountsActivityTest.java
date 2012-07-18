@@ -34,6 +34,7 @@ import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.ui.MainActivity;
 import org.gnucash.android.ui.accounts.AccountsListFragment;
 
+import android.os.Build;
 import android.support.v4.app.Fragment;
 import android.test.ActivityInstrumentationTestCase2;
 import android.widget.ListView;
@@ -68,8 +69,11 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<MainA
 	}
 	
 	public void testCreateAccount(){
-//		mSolo.clickOnActionBarItem(R.id.menu_add_account);
-		mSolo.clickOnImage(1);
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH)
+			mSolo.clickOnActionBarItem(R.id.menu_add_account);
+		else
+			mSolo.clickOnImage(1);
+		
 		mSolo.waitForText("Create");
 		mSolo.enterText(0, "New Account");
 		
@@ -102,6 +106,7 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<MainA
 		mSolo.enterText(0, editedAccountName);
 		
 		mSolo.clickOnButton(1);
+		
 		mSolo.waitForDialogToClose(1000);
 		
 		ListView lv = mSolo.getCurrentListViews().get(0);
@@ -149,7 +154,10 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<MainA
 		
 		mSolo.clickLongOnText("TO BE DELETED");
 		
+		mSolo.waitForText(getActivity().getString(R.string.edit_accounts));
+		
 		mSolo.clickOnImage(2);
+		
 		mSolo.clickOnText("Delete");
 		
 		mSolo.waitForDialogToClose(1000);

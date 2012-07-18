@@ -45,6 +45,12 @@
         <item name="android:textSize">@dimen/text_size_small</item>
     </style>
     
+    <style name="Dropdown.TextView" parent="@style/Widget.Sherlock.Spinner.DropDown.ActionBar">
+        <item name="android:textSize">22dp</item>
+        <item name="android:minHeight">?android:attr/listPreferredItemHeight</item>
+        <item name="android:textAppearance">?android:attr/textAppearanceLarge</item>
+    </style>
+    
     <style name="ButtonStyle">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>

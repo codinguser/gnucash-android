@@ -24,6 +24,10 @@
 
 package org.gnucash.android.db;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -38,6 +42,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	
 	public static final String ACCOUNTS_TABLE_NAME 		= "accounts";
 	public static final String TRANSACTIONS_TABLE_NAME 	= "transactions";
+	public static final String CURRENCIES_TABLE_NAME 	= "currencies";
 	
 	public static final String KEY_ROW_ID 	= "_id";
 	public static final String KEY_NAME 	= "name";
@@ -53,6 +58,57 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	
 	//if you modify the order of the columns, 
 	//make sure to modify the indices in DatabaseAdapter
+	
+	public static final LinkedHashMap<String, String> TOP_CURRENCIES_MAP = new LinkedHashMap<String, String>() {
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = -80009596835057456L;
+
+		{
+			//the big guys
+			put("USD", "US Dollar");
+			put("EUR", "Euro");
+			put("GBP", "British Pound");
+			put("CHF", "Swiss Franc");
+			
+			//the rest alphabetically
+			put("AUD", "Australian Dollar");
+			put("BRL", "Brazilian Real");
+			put("XAF", "Central African CFA franc");
+			put("CAD", "Canadian Dollar");
+			put("CLP", "Chilean Peso");
+			put("CNY", "Chinese Yuan");
+			put("CZK", "Czech Koruna");
+			put("DKK", "Danish Krone");
+			put("FJD", "Fijian Dollar");
+			put("HNL", "Honduran Lempira");
+			put("HKD", "Hong Kong Dollar");
+			put("HUF", "Hungarian Forint");
+			put("ISK", "Iceland Krona");
+			put("INR", "Indian rupee");
+			put("IDR", "Indonesian Rupiah");
+			put("ILS", "Israeli New Shekel");
+			put("JPY", "Japanese Yen");
+			put("KRW", "Korean Won");
+			put("LVL", "Latvian Lats");
+			put("MYR", "Malaysian Ringgit");
+			put("MXN", "Mexican Peso");
+			put("NZD", "New Zealand Dollar");
+			put("NOK", "Norwegian Krone");
+			put("PKR", "Pakistan Rupee");
+			put("PHP", "Philippine Peso");
+			put("PLN", "Polish Zloty");
+			put("RUB", "Russion Ruble");
+			put("SGD", "Singapore Dollar");
+			put("ZAR", "South African Rand");
+			put("SEK", "Swedish Krona");
+			put("TWD", "New Taiwan Dollar");
+			put("THB", "Thai Baht");
+			put("TRY", "Turkish Lira");
+		}
+	};
 	
 	private static final String ACCOUNTS_TABLE_CREATE = "create table " + ACCOUNTS_TABLE_NAME + " ("
 			+ KEY_ROW_ID + " integer primary key autoincrement, "
@@ -74,8 +130,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			+ "FOREIGN KEY (" + KEY_ACCOUNT_UID + ") REFERENCES " + ACCOUNTS_TABLE_NAME + " (" + KEY_UID + ")"
 			+ ");";
 	
+	private static final String CURRENCIES_TABLE_CREATE = "create table " + CURRENCIES_TABLE_NAME + "("
+			+ KEY_ROW_ID + " integer primary key autoincrement, " 			
+			+ KEY_CURRENCY_CODE 	+ " varchar(255) not null, "
+			+ KEY_NAME 	+ " varchar(255) not null);";
+	
 	public DatabaseHelper(Context context){
-		super(context, DATABASE_NAME, null, DATABASE_VERSION);
+		super(context, DATABASE_NAME, null, DATABASE_VERSION);		
 	}
 	
 	@Override
@@ -83,6 +144,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		Log.i(TAG, "Creating gnucash database tables");
 		db.execSQL(ACCOUNTS_TABLE_CREATE);
 		db.execSQL(TRANSACTIONS_TABLE_CREATE);
+		db.execSQL(CURRENCIES_TABLE_CREATE);
+		populateCurrencies(db);
 	}
 
 	@Override
@@ -110,4 +173,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		}
 	}
 
+	private void populateCurrencies(SQLiteDatabase db){
+		for (Map.Entry<String, String> entry : TOP_CURRENCIES_MAP.entrySet()) {
+			ContentValues cv = new ContentValues();
+			cv.put(KEY_CURRENCY_CODE, entry.getKey());
+			cv.put(KEY_NAME, entry.getValue());
+			
+			db.insert(CURRENCIES_TABLE_NAME, null, cv);
+		}
+	}
 }

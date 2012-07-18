@@ -28,6 +28,7 @@ import java.util.Date;
 
 import org.gnucash.android.R;
 import org.gnucash.android.data.Account;
+import org.gnucash.android.data.Money;
 import org.gnucash.android.data.Transaction;
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.DatabaseAdapter;
@@ -140,19 +141,18 @@ public class TransactionsFragmentTest extends
 		assertEquals(transaction.getName(), name);
 		
 		String amountString = mSolo.getEditText(1).getText().toString();
-		double amount = Double.parseDouble(NewTransactionFragment.stripCurrencyFormatting(amountString))/100;
-		amount *= mSolo.getCurrentToggleButtons().get(0).isChecked() ? -1 : 1; //set negative for debit
+		Money amount = new Money(amountString);
 		assertEquals(transaction.getAmount(), amount);
 		
 		String description = mSolo.getEditText(2).getText().toString();
 		assertEquals(transaction.getDescription(), description);
 		
 		String expectedValue = NewTransactionFragment.DATE_FORMATTER.format(transaction.getTimeMillis());
-		String actualValue = mSolo.getText(5).getText().toString();
+		String actualValue = mSolo.getText(6).getText().toString();
 		assertEquals(expectedValue, actualValue);
 		
 		expectedValue = NewTransactionFragment.TIME_FORMATTER.format(transaction.getTimeMillis());
-		actualValue = mSolo.getText(6).getText().toString();
+		actualValue = mSolo.getText(7).getText().toString();
 		assertEquals(expectedValue, actualValue);
 		Spinner spinner = mSolo.getCurrentSpinners().get(0);
 		

@@ -24,9 +24,11 @@
 
 package org.gnucash.android.ui.accounts;
 
+import java.util.Locale;
+
 import org.gnucash.android.R;
 import org.gnucash.android.data.Account;
-import org.gnucash.android.data.Transaction;
+import org.gnucash.android.data.Money;
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.DatabaseAdapter;
 import org.gnucash.android.db.DatabaseCursorLoader;
@@ -393,9 +395,9 @@ public class AccountsListFragment extends SherlockListFragment implements
 					.findViewById(R.id.transactions_summary);
 			final long accountId = cursor.getLong(DatabaseAdapter.COLUMN_ROW_ID);
 			
-			double balance = transactionsDBAdapter.getTransactionsSum(accountId);
-			summary.setText(Transaction.getFormattedAmount(balance));
-			int fontColor = balance < 0 ? getResources().getColor(R.color.debit_red) : 
+			Money balance = transactionsDBAdapter.getTransactionsSum(accountId);
+			summary.setText(balance.formattedString(Locale.getDefault()));
+			int fontColor = balance.isNegative() ? getResources().getColor(R.color.debit_red) : 
 				getResources().getColor(R.color.credit_green);
 			summary.setTextColor(fontColor);
 			

@@ -31,8 +31,10 @@ import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Currency;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.Locale;
 
 import org.gnucash.android.R;
 import org.gnucash.android.data.Account;
@@ -157,7 +159,8 @@ public class NewTransactionFragment extends SherlockFragment implements
 				
 		mNameEditText.setText(mTransaction.getName());
 		mTransactionTypeButton.setChecked(mTransaction.getTransactionType() == TransactionType.DEBIT);
-		mAmountEditText.setText(mTransaction.getAmount().toPlainString()); 
+		mAmountEditText.setText(mTransaction.getAmount().toPlainString());
+		mCurrencyTextView.setText(mTransaction.getAmount().getCurrency().getSymbol());
 		mDescriptionEditText.setText(mTransaction.getDescription());
 		mDateTextView.setText(DATE_FORMATTER.format(mTransaction.getTimeMillis()));
 		mTimeTextView.setText(TIME_FORMATTER.format(mTransaction.getTimeMillis()));
@@ -170,6 +173,10 @@ public class NewTransactionFragment extends SherlockFragment implements
 				mAccountsSpinner.setSelection(pos);
 		}
 		
+		String code = mTransactionsDbAdapter.getCurrencyCode(accountId);
+		Currency accountCurrency = Currency.getInstance(code);
+		mCurrencyTextView.setText(accountCurrency.getSymbol());
+		
 		ActionBar actionBar = getSherlockActivity().getSupportActionBar();
 		actionBar.setHomeButtonEnabled(true);
 		actionBar.setDisplayHomeAsUpEnabled(true);
@@ -180,18 +187,28 @@ public class NewTransactionFragment extends SherlockFragment implements
 	 * Binds the various views to the appropriate text
 	 */
 	private void initalizeViews() {
-//		mAmountEditText.setText("0");
 		Date time = new Date(System.currentTimeMillis()); 
 		mDateTextView.setText(DATE_FORMATTER.format(time));
 		mTimeTextView.setText(TIME_FORMATTER.format(time));
 		mTime = mDate = Calendar.getInstance();
 				
+		//TODO select the right account even from button
 		final long accountId = getArguments().getLong(TransactionsListFragment.SELECTED_ACCOUNT_ID);
 		final int count = mCursorAdapter.getCount();
 		for (int pos = 0; pos < count; pos++) {
 			if (mCursorAdapter.getItemId(pos) == accountId)
 				mAccountsSpinner.setSelection(pos);
 		}
+		
+		String code;
+		if (accountId == 0)
+			code = Currency.getInstance(Locale.getDefault()).getCurrencyCode();
+		else
+			code = mTransactionsDbAdapter.getCurrencyCode(accountId);
+		
+			
+		Currency accountCurrency = Currency.getInstance(code);
+		mCurrencyTextView.setText(accountCurrency.getSymbol());
 	}
 	
 	/**
@@ -222,8 +239,8 @@ public class NewTransactionFragment extends SherlockFragment implements
 				}
 				String amountText = mAmountEditText.getText().toString();
 				if (amountText.length() > 0){
-					BigDecimal decimal = new BigDecimal(amountText);
-					mAmountEditText.setText(decimal.negate().toPlainString()); //trigger an edit to update the number sign
+					Money money = new Money(amountText).negate();
+					mAmountEditText.setText(money.toPlainString()); //trigger an edit to update the number sign
 				} 
 			}
 		});
@@ -397,6 +414,7 @@ public class NewTransactionFragment extends SherlockFragment implements
 			formatter.setMinimumFractionDigits(2);
 			formatter.setMaximumFractionDigits(2);
 			current = formatter.format(amount.doubleValue());
+			
 			mAmountEditText.removeTextChangedListener(this);
 			mAmountEditText.setText(current);
 			mAmountEditText.setSelection(current.length());

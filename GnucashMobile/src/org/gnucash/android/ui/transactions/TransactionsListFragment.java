@@ -25,9 +25,10 @@
 package org.gnucash.android.ui.transactions;
 
 import java.util.HashMap;
+import java.util.Locale;
 
 import org.gnucash.android.R;
-import org.gnucash.android.data.Transaction;
+import org.gnucash.android.data.Money;
 import org.gnucash.android.db.DatabaseAdapter;
 import org.gnucash.android.db.DatabaseCursorLoader;
 import org.gnucash.android.db.DatabaseHelper;
@@ -179,10 +180,10 @@ public class TransactionsListFragment extends SherlockListFragment implements
 	public void refreshList(){
 		getLoaderManager().restartLoader(0, null, this);
 		
-		double sum = mTransactionsDbAdapter.getTransactionsSum(mAccountID);		
+		Money sum = mTransactionsDbAdapter.getTransactionsSum(mAccountID);		
 		mSumTextView = (TextView) getView().findViewById(R.id.transactions_sum);
-		mSumTextView.setText(Transaction.getFormattedAmount(sum));
-		if (sum < 0)
+		mSumTextView.setText(sum.formattedString(Locale.getDefault()));
+		if (sum.isNegative())
 			mSumTextView.setTextColor(getResources().getColor(R.color.debit_red));
 		else
 			mSumTextView.setTextColor(getResources().getColor(R.color.credit_green));
@@ -374,12 +375,14 @@ public class TransactionsListFragment extends SherlockListFragment implements
 		public void bindView(View view, Context context, Cursor cursor) {
 			super.bindView(view, context, cursor);			
 			
-			double amount = cursor.getDouble(DatabaseAdapter.COLUMN_AMOUNT);
+			Money amount = new Money(
+					cursor.getString(DatabaseAdapter.COLUMN_AMOUNT), 
+					mTransactionsDbAdapter.getCurrencyCode(mAccountID));
 			
 			TextView tramount = (TextView) view.findViewById(R.id.transaction_amount);
-			tramount.setText(Transaction.getFormattedAmount(amount));
+			tramount.setText(amount.formattedString(Locale.getDefault()));
 			
-			if (amount < 0)
+			if (amount.isNegative())
 				tramount.setTextColor(getResources().getColor(R.color.debit_red));
 			else
 				tramount.setTextColor(getResources().getColor(R.color.credit_green));
