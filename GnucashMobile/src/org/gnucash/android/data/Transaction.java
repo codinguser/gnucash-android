@@ -25,9 +25,9 @@
 package org.gnucash.android.data;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.util.Currency;
 import java.util.Date;
 import java.util.UUID;
 
@@ -36,7 +36,7 @@ import org.w3c.dom.Element;
 
 /**
  * Data model representation of a transaction
- * @author ngewif
+ * @author Ngewi Fet <ngewif@gmail.com>
  *
  */
 public class Transaction {
@@ -46,7 +46,7 @@ public class Transaction {
 	 */
 	public enum TransactionType {DEBIT, CREDIT};
 	
-	private BigDecimal mAmount;
+	private Money mAmount;
 	private String mTransactionUID;
 	private String mName;
 	private String mDescription = "";
@@ -61,7 +61,7 @@ public class Transaction {
 	 * @param amount Amount for the transaction
 	 * @param name Name of the transaction
 	 */
-	public Transaction(BigDecimal amount, String name) {
+	public Transaction(Money amount, String name) {
 		initDefaults();		
 		setName(name);
 		setAmount(amount); //takes care of setting the type for us
@@ -92,7 +92,7 @@ public class Transaction {
 	 * @param name Name of the transaction
 	 * @param type Type of transaction
 	 */
-	public Transaction(BigDecimal amount, String name, TransactionType type){
+	public Transaction(Money amount, String name, TransactionType type){
 		initDefaults();
 		setAmount(amount);		
 		this.mType = type;
@@ -103,7 +103,7 @@ public class Transaction {
 	 * Initializes the different fields to their default values.
 	 */
 	private void initDefaults(){
-		setAmount(new BigDecimal(0));
+		setAmount(new Money());
 		this.mTimestamp = System.currentTimeMillis();
 		this.mType = TransactionType.DEBIT;
 		mTransactionUID = UUID.randomUUID().toString();
@@ -114,10 +114,9 @@ public class Transaction {
 	 * Set the amount of this transaction
 	 * @param mAmount Amount of the transaction
 	 */
-	public void setAmount(BigDecimal amount) {
+	public void setAmount(Money amount) {
 		this.mAmount = amount;
-		this.mAmount.setScale(2, RoundingMode.HALF_EVEN);
-		mType = amount.doubleValue() < 0 ? TransactionType.DEBIT : TransactionType.CREDIT; 
+		mType = amount.isNegative() ? TransactionType.DEBIT : TransactionType.CREDIT; 
 	}
 
 	/**
@@ -125,20 +124,31 @@ public class Transaction {
 	 * @param mAmount Amount of the transaction
 	 */
 	public void setAmount(String amount) {
-		this.mAmount = new BigDecimal(amount);
-		this.mAmount = mAmount.setScale(2, RoundingMode.HALF_EVEN);
-		mType = this.mAmount.doubleValue() < 0 ? TransactionType.DEBIT : TransactionType.CREDIT; 
+		this.mAmount = new Money(amount);
+	}
+	
+	public void setAmount(String amount, String currencyCode){
+		this.mAmount = new Money(new BigDecimal(amount),
+								 Currency.getInstance(currencyCode));
 	}
 	
 	public void setAmount(double amount){
-		setAmount(new BigDecimal(amount));
+		setAmount(new Money(amount));
+	}
+	
+	public void setCurrency(Currency currency){		
+		mAmount.setCurrency(currency);
+	}
+	
+	public void setAmount(double amount, Currency currency){
+		this.mAmount = new Money(new BigDecimal(amount), currency);
 	}
 	
 	/**
 	 * Returns the amount involved in this transaction
 	 * @return Amount in the transaction
 	 */
-	public BigDecimal getAmount() {
+	public Money getAmount() {
 		return mAmount;
 	}
 	

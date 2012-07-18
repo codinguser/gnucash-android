@@ -34,17 +34,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	private static final String TAG = "DatabaseHelper";
 	
 	private static final String DATABASE_NAME = "gnucash_db";
-	private static final int DATABASE_VERSION = 3;
+	private static final int DATABASE_VERSION = 1;
 	
-	public static final String ACCOUNTS_TABLE_NAME = "accounts";
-	public static final String TRANSACTIONS_TABLE_NAME = "transactions";
+	public static final String ACCOUNTS_TABLE_NAME 		= "accounts";
+	public static final String TRANSACTIONS_TABLE_NAME 	= "transactions";
 	
 	public static final String KEY_ROW_ID 	= "_id";
 	public static final String KEY_NAME 	= "name";
 	public static final String KEY_UID 		= "uid";
 	public static final String KEY_TYPE 	= "type";
+	public static final String KEY_CURRENCY_CODE = "currency_code";
 	
-	public static final String KEY_AMOUNT 	= "amount";
+	public static final String KEY_AMOUNT 		= "amount";
 	public static final String KEY_ACCOUNT_UID 	= "account_uid";
 	public static final String KEY_DESCRIPTION 	= "description";
 	public static final String KEY_TIMESTAMP 	= "timestamp";
@@ -57,7 +58,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			+ KEY_ROW_ID + " integer primary key autoincrement, "
 			+ KEY_UID 	+ " varchar(255) not null, "
 			+ KEY_NAME 	+ " varchar(255) not null, "
-			+ KEY_TYPE 	+ " varchar(255));";
+			+ KEY_TYPE 	+ " varchar(255), "
+			+ KEY_CURRENCY_CODE + " varchar(255));";
 	
 	private static final String TRANSACTIONS_TABLE_CREATE = "create table " + TRANSACTIONS_TABLE_NAME + " ("
 			+ KEY_ROW_ID + " integer primary key autoincrement, "
@@ -90,12 +92,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				+ " which will destroy all old data");
 		
 		if (oldVersion < newVersion){
+			/*
 			Log.i("DatabaseHelper", "Upgrading database to version " + newVersion);
 			if (oldVersion == 1 && newVersion == 2){				
 				String addColumnSql = "ALTER TABLE " + TRANSACTIONS_TABLE_NAME + 
 									" ADD COLUMN " + KEY_EXPORTED + " tinyint default 0";
 				db.execSQL(addColumnSql);
 			}
+			*/
 		} else {
 			Log.i(TAG, "Cannot downgrade database.");
 			/*

@@ -26,7 +26,9 @@ package org.gnucash.android.data;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Currency;
 import java.util.List;
+import java.util.Locale;
 import java.util.UUID;
 
 import org.w3c.dom.Document;
@@ -55,6 +57,8 @@ public class Account {
 	 */
 	private String mName;
 	
+	private Currency mCurrency; 
+	
 	private AccountType mAccountType = AccountType.CHECKING;
 	
 	/**
@@ -69,8 +73,16 @@ public class Account {
 	public Account(String name) {
 		setName(name);
 		this.mUID = generateUID();
+		this.mCurrency = Currency.getInstance(Locale.getDefault());
 	}
 
+	public Account(String name, Currency currency){
+		setName(name);
+		this.mUID = generateUID();
+		this.mCurrency = currency;
+	}
+	
+	
 	/**
 	 * Sets the name of the account
 	 * @param name String name of the account
@@ -95,6 +107,12 @@ public class Account {
 	 */
 	protected String generateUID(){
 		String uuid = UUID.randomUUID().toString();
+		
+		if (mName == null || mName.length() == 0){
+			//if we do not have a name, return pure random
+			return uuid.substring(0, 22);
+		}
+		
 		uuid = uuid.substring(uuid.lastIndexOf("-"));
 		String name = mName.toLowerCase().replace(" ", "-");
 		if (name.length() > 9)
@@ -142,6 +160,7 @@ public class Account {
 	 */
 	public void addTransaction(Transaction transaction){
 		transaction.setAccountUID(getUID());
+		transaction.setCurrency(mCurrency);
 		mTransactionsList.add(transaction);
 	}
 	
@@ -202,10 +221,26 @@ public class Account {
 	public BigDecimal getBalance(){
 		BigDecimal balance = new BigDecimal(0);
 		for (Transaction transx : mTransactionsList) {
-			balance.add(transx.getAmount());		}
+			balance.add(transx.getAmount().asBigDecimal());		}
 		return balance;
 	}
 	
+	/**
+	 * @return the mCurrency
+	 */
+	public Currency getCurrency() {
+		return mCurrency;
+	}
+
+	/**
+	 * @param mCurrency the mCurrency to set
+	 */
+	public void setCurrency(Currency mCurrency) {		
+		this.mCurrency = mCurrency;
+		//TODO: Maybe at some time t, this method should convert all 
+		//transaction values to the corresponding value in the new currency
+	}
+
 	/**
 	 * Converts this account's transactions into XML and adds them to the DOM document
 	 * @param doc XML DOM document for the OFX data

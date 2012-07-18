@@ -36,6 +36,7 @@ import java.util.GregorianCalendar;
 
 import org.gnucash.android.R;
 import org.gnucash.android.data.Account;
+import org.gnucash.android.data.Money;
 import org.gnucash.android.data.Transaction;
 import org.gnucash.android.data.Transaction.TransactionType;
 import org.gnucash.android.db.AccountsDbAdapter;
@@ -267,7 +268,8 @@ public class NewTransactionFragment extends SherlockFragment implements
 		String name = mNameEditText.getText().toString();
 		String description = mDescriptionEditText.getText().toString();
 		String amountString = mAmountEditText.getText().toString();
-		BigDecimal amount = new BigDecimal(stripCurrencyFormatting(amountString)).divide(new BigDecimal(100));		
+		BigDecimal amountBigd = new BigDecimal(stripCurrencyFormatting(amountString)).divide(new BigDecimal(100));
+		
 		Calendar cal = new GregorianCalendar(
 				mDate.get(Calendar.YEAR), 
 				mDate.get(Calendar.MONTH), 
@@ -278,6 +280,7 @@ public class NewTransactionFragment extends SherlockFragment implements
 		
 		long accountID = mAccountsSpinner.getSelectedItemId();
 		Account account = mAccountsDbAdapter.getAccount(accountID);
+		Money amount = new Money(amountBigd, account.getCurrency());
 		String type = mTransactionTypeButton.getText().toString();
 		
 		if (mTransaction != null){
@@ -387,7 +390,7 @@ public class NewTransactionFragment extends SherlockFragment implements
 			if (cleanString.length() == 0)
 				return;
 			
-			BigDecimal amount = new BigDecimal(cleanString).divide(new BigDecimal(100), 2, RoundingMode.HALF_EVEN);
+			BigDecimal amount = new BigDecimal(cleanString).setScale(2, RoundingMode.HALF_EVEN).divide(new BigDecimal(100), 2, RoundingMode.HALF_EVEN);
 			if (mTransactionTypeButton.isChecked() && amount.doubleValue() > 0) 
 				amount = amount.negate();
 			DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance();

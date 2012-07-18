@@ -24,10 +24,13 @@
 
 package org.gnucash.android.db;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Currency;
 import java.util.List;
 
 import org.gnucash.android.data.Account;
+import org.gnucash.android.data.Money;
 import org.gnucash.android.data.Transaction;
 
 import android.content.ContentValues;
@@ -151,7 +154,7 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 		Cursor c = fetchAllTransactionsForAccount(accountUID);
 		ArrayList<Transaction> transactionsList = new ArrayList<Transaction>();
 		
-		if (c == null || (c.getCount() < 0))
+		if (c == null || (c.getCount() <= 0))
 			return transactionsList;
 		
 		while (c.moveToNext()) {
@@ -167,15 +170,38 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 	 * @param c Cursor pointing to transaction record in database
 	 * @return {@link Transaction} object constructed from database record
 	 */
-	public Transaction buildTransactionInstance(Cursor c){
-		Transaction transaction = new Transaction(c.getString(DatabaseAdapter.COLUMN_AMOUNT), 
+	public Transaction buildTransactionInstance(Cursor c){		
+		String accountUID = c.getString(DatabaseAdapter.COLUMN_ACCOUNT_UID);
+		Currency currency = Currency.getInstance(getCurrencyCode(accountUID));
+		String amount = c.getString(DatabaseAdapter.COLUMN_AMOUNT);
+		Transaction transaction = new Transaction(new Money(new BigDecimal(amount), currency), 
 				c.getString(DatabaseAdapter.COLUMN_NAME));
 		transaction.setUID(c.getString(DatabaseAdapter.COLUMN_UID));
-		transaction.setAccountUID(c.getString(DatabaseAdapter.COLUMN_ACCOUNT_UID));
+		transaction.setAccountUID(accountUID);
 		transaction.setTime(c.getLong(DatabaseAdapter.COLUMN_TIMESTAMP));
 		transaction.setDescription(c.getString(DatabaseAdapter.COLUMN_DESCRIPTION));
 		transaction.setExported(c.getInt(DatabaseAdapter.COLUMN_EXPORTED) == 1);
+				
 		return transaction;
+	}
+
+	/**
+	 * @param accountUID
+	 * @return
+	 */
+	protected String getCurrencyCode(String accountUID) {
+		Cursor cursor = mDb.query(DatabaseHelper.ACCOUNTS_TABLE_NAME, 
+				new String[] {DatabaseHelper.KEY_CURRENCY_CODE}, 
+				DatabaseHelper.KEY_UID + "= '" + accountUID + "'", 
+				null, null, null, null);
+		
+		if (cursor == null || cursor.getCount() <= 0)
+			return "";
+					
+		cursor.moveToNext();
+		String currencyCode = cursor.getString(0);
+		cursor.close();
+		return currencyCode;
 	}
 	
 	/**
@@ -223,7 +249,6 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 				DatabaseHelper.KEY_ROW_ID + "=" + rowId, 
 				null);
 	}
-
 	
 	/**
 	 * Returns the number of transactions belonging to account with id <code>accountId</code>

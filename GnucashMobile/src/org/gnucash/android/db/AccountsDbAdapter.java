@@ -25,6 +25,7 @@
 package org.gnucash.android.db;
 
 import java.util.ArrayList;
+import java.util.Currency;
 import java.util.Iterator;
 import java.util.List;
 
@@ -77,6 +78,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 		contentValues.put(DatabaseHelper.KEY_NAME, account.getName());
 		contentValues.put(DatabaseHelper.KEY_TYPE, account.getAccountType().name());
 		contentValues.put(DatabaseHelper.KEY_UID, account.getUID());
+		contentValues.put(DatabaseHelper.KEY_CURRENCY_CODE, account.getCurrency().getCurrencyCode());
 		
 		long rowId = -1;
 		if ((rowId = fetchAccountWithUID(account.getUID())) > 0){
@@ -157,7 +159,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 		account.setUID(uid);
 		account.setAccountType(AccountType.valueOf(c.getString(DatabaseAdapter.COLUMN_TYPE)));
 		account.setTransactions(mTransactionsAdapter.getAllTransactionsForAccount(uid));
-		
+		account.setCurrency(Currency.getInstance(c.getString(DatabaseAdapter.COLUMN_CURRENCY_CODE)));
 		return account;
 	}
 		
