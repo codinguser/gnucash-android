@@ -78,7 +78,7 @@ public class OfxExportTest extends
 		
 		String filename = ExportDialogFragment.buildExportFilename();
 		
-		File file = new File(Environment.getExternalStorageDirectory() + "/" + filename);
+		File file = new File(Environment.getExternalStorageDirectory() + "/gnucash/" + filename);
 		assertNotNull(file);
 		assertTrue(file.exists());
 	}	

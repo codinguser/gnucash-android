@@ -105,7 +105,9 @@ public class ExportDialogFragment extends DialogFragment {
 
 			case 1:				
 				File src = new File(mFilePath);
-				File dst = new File(Environment.getExternalStorageDirectory() + "/" + buildExportFilename());
+				new File(Environment.getExternalStorageDirectory() + "/gnucash/").mkdirs();
+				File dst = new File(Environment.getExternalStorageDirectory() + "/gnucash/" + buildExportFilename());
+				
 				try {
 					copyFile(src, dst);
 				} catch (IOException e) {
