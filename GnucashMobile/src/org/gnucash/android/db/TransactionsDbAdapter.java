@@ -352,4 +352,16 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 		return uid;
 	}
 
+	public long getAccountID(String accountUID){
+		long id = -1;
+		Cursor c = mDb.query(DatabaseHelper.ACCOUNTS_TABLE_NAME, 
+				new String[]{DatabaseHelper.KEY_ROW_ID}, 
+				DatabaseHelper.KEY_UID + "='" + accountUID + "'", 
+				null, null, null, null);
+		if (c != null && c.moveToFirst()){
+			id = c.getLong(0);
+			c.close();
+		}
+		return id;
+	}
 }

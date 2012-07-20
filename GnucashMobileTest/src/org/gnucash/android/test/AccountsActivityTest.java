@@ -34,6 +34,7 @@ import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.ui.MainActivity;
 import org.gnucash.android.ui.accounts.AccountsListFragment;
 
+import android.content.Intent;
 import android.os.Build;
 import android.support.v4.app.Fragment;
 import android.test.ActivityInstrumentationTestCase2;
@@ -172,6 +173,33 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<MainA
 		
 		accDbAdapter.close();
 		transDbAdapter.close();
+	}
+	
+	public void testIntentAccountCreation(){
+		Intent intent = new Intent(Intent.ACTION_INSERT);
+		intent.putExtra(Intent.EXTRA_TITLE, "Intent Account");
+		intent.putExtra(Intent.EXTRA_UID, "intent-account");
+		intent.putExtra(Account.EXTRA_CURRENCY_CODE, "EUR");
+		intent.setType(Account.MIME_TYPE);
+		getActivity().sendBroadcast(intent);
+		
+		//give time for the account to be created
+		synchronized (mSolo) {
+			try {
+				mSolo.wait(2000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+				
+		AccountsDbAdapter dbAdapter = new AccountsDbAdapter(getActivity());
+		Account account = dbAdapter.getAccount("intent-account");
+		dbAdapter.close();
+		assertNotNull(account);
+		assertEquals("Intent Account", account.getName());
+		assertEquals("intent-account", account.getUID());
+		assertEquals("EUR", account.getCurrency().getCurrencyCode());
 	}
 	
 	protected void tearDown() throws Exception {

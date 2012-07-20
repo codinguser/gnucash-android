@@ -45,6 +45,10 @@ public class Transaction {
 	 */
 	public enum TransactionType {DEBIT, CREDIT};
 	
+	public static final String MIME_TYPE 			= "vnd.android.cursor.item/vnd.org.gnucash.android.transaction";
+	public static final String EXTRA_ACCOUNT_UID 	= "org.gnucash.android.extra.account_uid";
+	public static final String EXTRA_AMOUNT 		= "org.gnucash.android.extra.amount";
+	
 	private Money mAmount;
 	private String mTransactionUID;
 	private String mName;

@@ -83,6 +83,7 @@
     <string name="choose_currency">Choose default currency</string>
     <string name="title_default_currency">Default currency</string>
     <string name="summary_default_currency">Default currency to assign to new accounts</string>
+    <string name="permission_record_transactions">Enables recording transactions in Gnucash for Android</string><string name="permission_create_accounts">Enables creation of accounts in Gnucash for Android</string>
     <string-array name="currency_names">
         <item>Afghani</item>
 		<item>Algerian Dinar</item>
@@ -437,5 +438,7 @@
 		<item>ZMK</item>
 		<item>ZWL</item>
 		<item>PLN</item>
-    </string-array>   	
+    </string-array>
+	
+	   	
 </resources>

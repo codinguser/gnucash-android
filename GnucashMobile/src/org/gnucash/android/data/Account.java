@@ -28,7 +28,6 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Currency;
 import java.util.List;
-import java.util.Locale;
 import java.util.UUID;
 
 import org.gnucash.android.ui.MainActivity;
@@ -42,6 +41,8 @@ import org.w3c.dom.Element;
  */
 public class Account {
 
+	public static final String MIME_TYPE = "vnd.android.cursor.item/vnd.org.gnucash.android.account";
+	
 	/**
 	 * The type of account
 	 *
@@ -66,6 +67,8 @@ public class Account {
 	 * List of transactions in this account
 	 */
 	private List<Transaction> mTransactionsList = new ArrayList<Transaction>();
+
+	public static final String EXTRA_CURRENCY_CODE 	= "org.gnucash.extra.currency_code";
 	
 	/**
 	 * Constructor

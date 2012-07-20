@@ -248,7 +248,7 @@ public class Money implements Comparable<Money>{
 	}
 
 	public static String parse(String formattedAmount){
-		DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance();
+		DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance(Locale.getDefault());
 		String result = formattedAmount;
 		try {
 			result = formatter.parse(formattedAmount).toString();

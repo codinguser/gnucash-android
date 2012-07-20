@@ -6,6 +6,9 @@
 
     <uses-sdk android:minSdkVersion="8" android:targetSdkVersion="15" />
 
+    <uses-permission android:name="org.gnucash.android.permission.RECORD_TRANSACTION" />
+    <uses-permission android:name="org.gnucash.android.permission.CREATE_ACCOUNT" />
+    
     <instrumentation
         android:name="android.test.InstrumentationTestRunner"
         android:targetPackage="org.gnucash.android" />

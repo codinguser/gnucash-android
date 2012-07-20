@@ -29,9 +29,18 @@
     android:versionName="1.0" >
 
     <uses-sdk android:minSdkVersion="8" android:targetSdkVersion="15"/>
+    <permission android:name="org.gnucash.android.permission.CREATE_ACCOUNT" 
+        android:protectionLevel="dangerous" />
+    <permission android:name="org.gnucash.android.permission.RECORD_TRANSACTION" 
+        android:protectionLevel="dangerous" />
+    
+    <uses-permission android:label="@string/permission_record_transactions"
+        android:name="org.gnucash.android.permission.RECORD_TRANSACTION" />
+    <uses-permission android:label="@string/permission_create_accounts"
+        android:name="org.gnucash.android.permission.CREATE_ACCOUNT" />
     <uses-permission android:label="@string/permission_access_sdcard"
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-
+	    
     <application
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name" 
@@ -46,6 +55,24 @@
             </intent-filter>
         </activity>
         <activity android:name=".ui.settings.SettingsActivity"></activity>
+        <receiver android:name=".receivers.TransactionRecorder"
+            android:label="Records transactions received through intents"
+            android:permission="org.gnucash.android.permission.RECORD_TRANSACTION">
+            <intent-filter>
+                <action android:name="android.intent.action.INSERT" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="vnd.android.cursor.item/vnd.org.gnucash.android.transaction"/>
+            </intent-filter>
+        </receiver>
+        <receiver android:name=".receivers.AccountCreator"
+            android:label="Creates new accounts"
+            android:permission="org.gnucash.android.permission.CREATE_ACCOUNT" android:enabled="true" android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.INSERT" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="vnd.android.cursor.item/vnd.org.gnucash.android.account"/>
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

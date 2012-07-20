@@ -25,6 +25,7 @@
 package org.gnucash.android.test;
 
 import java.util.Date;
+import java.util.List;
 
 import org.gnucash.android.R;
 import org.gnucash.android.data.Account;
@@ -37,6 +38,7 @@ import org.gnucash.android.ui.MainActivity;
 import org.gnucash.android.ui.accounts.AccountsListFragment;
 import org.gnucash.android.ui.transactions.NewTransactionFragment;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.support.v4.app.Fragment;
 import android.test.ActivityInstrumentationTestCase2;
@@ -122,8 +124,9 @@ public class TransactionsFragmentTest extends
 		mSolo.enterText(0, "Lunch");
 		mSolo.enterText(1, "899");
 		//check that the amount is correctly converted in the input field
-		String actualValue = mSolo.getEditText(1).getText().toString();
-		assertEquals(new Money("-8.99").toPlainString(), actualValue);
+		String value = mSolo.getEditText(1).getText().toString();
+		double actualValue = Double.parseDouble(Money.parse(value));
+		assertEquals(-8.99, actualValue);
 		
 		int transactionsCount = getTranscationCount();
 		
@@ -198,6 +201,42 @@ public class TransactionsFragmentTest extends
 		accAdapter.close();
 		adapter.close();
 		
+	}
+	
+	public void testIntentTransactionRecording(){
+		TransactionsDbAdapter trxnAdapter = new TransactionsDbAdapter(getActivity());
+		int beforeCount = trxnAdapter.getTransactionsCount(trxnAdapter.getAccountID(DUMMY_ACCOUNT_UID));
+		Intent transactionIntent = new Intent(Intent.ACTION_INSERT);
+		transactionIntent.setType(Transaction.MIME_TYPE);
+		transactionIntent.putExtra(Intent.EXTRA_TITLE, "Power intents");
+		transactionIntent.putExtra(Intent.EXTRA_TEXT, "Intents for sale");
+		transactionIntent.putExtra(Transaction.EXTRA_AMOUNT, 4.99);
+		transactionIntent.putExtra(Transaction.EXTRA_ACCOUNT_UID, DUMMY_ACCOUNT_UID);
+		
+		getActivity().sendBroadcast(transactionIntent);
+		
+		synchronized (mSolo) {
+			try {
+				mSolo.wait(2000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		int afterCount = trxnAdapter.getTransactionsCount(trxnAdapter.getAccountID(DUMMY_ACCOUNT_UID));
+		
+		assertEquals(beforeCount + 1, afterCount);
+		
+		List<Transaction> transactions = trxnAdapter.getAllTransactionsForAccount(DUMMY_ACCOUNT_UID);
+		
+		for (Transaction transaction : transactions) {
+			if (transaction.getName().equals("Power intents")){
+				assertEquals("Intents for sale", transaction.getDescription());
+				assertEquals(4.99, transaction.getAmount().asDouble());
+			}
+		}
+		
+		trxnAdapter.close();
 	}
 	
 	private void refreshAccountsList(){
