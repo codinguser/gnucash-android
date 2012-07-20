@@ -34,7 +34,6 @@ import java.util.Calendar;
 import java.util.Currency;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.Locale;
 
 import org.gnucash.android.R;
 import org.gnucash.android.data.Account;
@@ -45,6 +44,7 @@ import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.DatabaseHelper;
 import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.ui.DatePickerDialogFragment;
+import org.gnucash.android.ui.MainActivity;
 import org.gnucash.android.ui.TimePickerDialogFragment;
 
 import android.app.DatePickerDialog.OnDateSetListener;
@@ -202,7 +202,7 @@ public class NewTransactionFragment extends SherlockFragment implements
 		
 		String code;
 		if (accountId == 0)
-			code = Currency.getInstance(Locale.getDefault()).getCurrencyCode();
+			code = MainActivity.DEFAULT_CURRENCY_CODE;
 		else
 			code = mTransactionsDbAdapter.getCurrencyCode(accountId);
 		

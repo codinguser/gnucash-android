@@ -24,12 +24,17 @@
 
 package org.gnucash.android.ui;
 
+import java.util.Currency;
+import java.util.Locale;
+
 import org.gnucash.android.R;
 import org.gnucash.android.ui.accounts.AccountsListFragment;
 import org.gnucash.android.ui.transactions.NewTransactionFragment;
 import org.gnucash.android.ui.transactions.TransactionsListFragment;
 import org.gnucash.android.util.OnItemClickedListener;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -39,6 +44,7 @@ import android.view.View;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
+import com.actionbarsherlock.view.MenuItem;
 
 /**
  * Displays the list of accounts and summary of transactions
@@ -51,7 +57,8 @@ public class MainActivity extends SherlockFragmentActivity implements OnItemClic
 	public static final String FRAGMENT_ACCOUNTS_LIST 		= "accounts_list";
 	public static final String FRAGMENT_TRANSACTIONS_LIST 	= "transactions_list";
 	public static final String FRAGMENT_NEW_TRANSACTION 	= "new_transaction";
-	
+
+	public static String DEFAULT_CURRENCY_CODE;
 	static final int DIALOG_ADD_ACCOUNT = 0x01;
 
 	protected static final String TAG = "MainActivity";	
@@ -61,6 +68,10 @@ public class MainActivity extends SherlockFragmentActivity implements OnItemClic
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_accounts);
 
+		SharedPreferences prefs = getPreferences(MODE_PRIVATE);
+		String currencyCode = prefs.getString(getString(R.string.pref_default_currency), Currency.getInstance(Locale.getDefault()).getCurrencyCode());
+		DEFAULT_CURRENCY_CODE = currencyCode;		
+		
 		FragmentManager fragmentManager = getSupportFragmentManager();
 
 		AccountsListFragment accountsListFragment = (AccountsListFragment) fragmentManager
@@ -82,7 +93,28 @@ public class MainActivity extends SherlockFragmentActivity implements OnItemClic
 		inflater.inflate(R.menu.global_actions, menu);
 		return true;
 	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case android.R.id.home:
+	        FragmentManager fm = getSupportFragmentManager();
+	        if (fm.getBackStackEntryCount() > 0) {
+	            fm.popBackStack();
+	        }
+	        return true;
 
+		default:
+			return false;
+		}
+	}
+
+	@Override
+	protected void onActivityResult(int arg0, int arg1, Intent arg2) {
+		// TODO Auto-generated method stub
+		super.onActivityResult(arg0, arg1, arg2);
+	}
+	
 	/**
 	 * Opens a dialog fragment to create a new account
 	 * @param v View which triggered this callback

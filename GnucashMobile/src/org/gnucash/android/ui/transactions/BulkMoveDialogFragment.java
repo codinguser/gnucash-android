@@ -41,6 +41,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager.LayoutParams;
 import android.widget.Button;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 public class BulkMoveDialogFragment extends DialogFragment {
 
@@ -49,6 +50,7 @@ public class BulkMoveDialogFragment extends DialogFragment {
 	Button mCancelButton; 
 	
 	long[] mTransactionIds = null;
+	long mOriginAccountId = -1;
 	private AccountsDbAdapter mAccountsDbAdapter;
 	
 	@Override
@@ -68,6 +70,7 @@ public class BulkMoveDialogFragment extends DialogFragment {
 		getDialog().getWindow().setLayout(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
 		
 		mTransactionIds = getArguments().getLongArray(TransactionsListFragment.SELECTED_TRANSACTION_IDS);
+		mOriginAccountId = getArguments().getLong(TransactionsListFragment.ORIGIN_ACCOUNT_ID);
 		
 		String title = getActivity().getString(R.string.title_move_transactions, 
 				mTransactionIds.length);
@@ -106,10 +109,15 @@ public class BulkMoveDialogFragment extends DialogFragment {
 					dismiss();
 				}
 				
-				long accountId = mDestinationAccountSpinner.getSelectedItemId();
+				long dstAccountId = mDestinationAccountSpinner.getSelectedItemId();
 				TransactionsDbAdapter trxnAdapter = new TransactionsDbAdapter(getActivity());
+				if (!trxnAdapter.getCurrencyCode(dstAccountId).equals(trxnAdapter.getCurrencyCode(mOriginAccountId))){
+					Toast.makeText(getActivity(), R.string.toast_incompatible_currency, Toast.LENGTH_LONG).show();
+					return;
+				}
+				
 				for (long trxnId : mTransactionIds) {
-					trxnAdapter.moveTranscation(trxnId, accountId);
+					trxnAdapter.moveTranscation(trxnId, dstAccountId);
 				}
 				trxnAdapter.close();
 				

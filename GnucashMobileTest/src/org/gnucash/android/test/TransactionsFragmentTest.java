@@ -92,11 +92,11 @@ public class TransactionsFragmentTest extends
 	private void validateNewTransactionFields(){
 		long timeMillis = System.currentTimeMillis();
 		String expectedValue = NewTransactionFragment.DATE_FORMATTER.format(new Date(timeMillis));
-		String actualValue = mSolo.getText(5).getText().toString();
+		String actualValue = mSolo.getText(6).getText().toString();
 		assertEquals(expectedValue, actualValue);
 		
 		expectedValue = NewTransactionFragment.TIME_FORMATTER.format(new Date(timeMillis));
-		actualValue = mSolo.getText(6).getText().toString();
+		actualValue = mSolo.getText(7).getText().toString();
 		assertEquals(expectedValue, actualValue);
 		Spinner spinner = mSolo.getCurrentSpinners().get(0);
 		
@@ -123,7 +123,7 @@ public class TransactionsFragmentTest extends
 		mSolo.enterText(1, "899");
 		//check that the amount is correctly converted in the input field
 		String actualValue = mSolo.getEditText(1).getText().toString();
-		assertEquals(" - $8.99", actualValue);
+		assertEquals(new Money("-8.99").toPlainString(), actualValue);
 		
 		int transactionsCount = getTranscationCount();
 		

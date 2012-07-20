@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
 
+import org.gnucash.android.ui.MainActivity;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -73,7 +74,7 @@ public class Account {
 	public Account(String name) {
 		setName(name);
 		this.mUID = generateUID();
-		this.mCurrency = Currency.getInstance(Locale.getDefault());
+		this.mCurrency = Currency.getInstance(MainActivity.DEFAULT_CURRENCY_CODE);
 	}
 
 	public Account(String name, Currency currency){

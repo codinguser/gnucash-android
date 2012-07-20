@@ -26,7 +26,6 @@ package org.gnucash.android.util;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Currency;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -120,7 +119,7 @@ public class OfxFormatter {
 				continue; 
 			
 			Element currency = doc.createElement("CURDEF");
-			currency.appendChild(doc.createTextNode(Currency.getInstance(Locale.getDefault()).getCurrencyCode()));						
+			currency.appendChild(doc.createTextNode(account.getCurrency().getCurrencyCode()));						
 			
 			//================= BEGIN BANK ACCOUNT INFO (BANKACCTFROM) =================================
 			

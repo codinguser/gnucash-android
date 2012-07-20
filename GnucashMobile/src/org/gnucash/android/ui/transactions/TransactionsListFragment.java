@@ -73,6 +73,8 @@ public class TransactionsListFragment extends SherlockListFragment implements
 	public static final String SELECTED_ACCOUNT_NAME = "selected_account_name";
 	
 	public static final String SELECTED_TRANSACTION_IDS = "selected_transactions";
+
+	public static final String ORIGIN_ACCOUNT_ID = "origin_acccount_id";
 	
 	private TransactionsDbAdapter mTransactionsDbAdapter;
 	private SimpleCursorAdapter mCursorAdapter;
@@ -330,6 +332,7 @@ public class TransactionsListFragment extends SherlockListFragment implements
 	    // Create and show the dialog.
 	    DialogFragment bulkMoveFragment = new BulkMoveDialogFragment();
 	    Bundle args = new Bundle();
+	    args.putLong(ORIGIN_ACCOUNT_ID, mAccountID);
 	    long[] selectedIds = new long[mSelectedIds.size()]; 
 	    int i = 0;
 	    for (long l : mSelectedIds.values()) {

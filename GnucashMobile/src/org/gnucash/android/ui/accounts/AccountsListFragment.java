@@ -34,6 +34,7 @@ import org.gnucash.android.db.DatabaseAdapter;
 import org.gnucash.android.db.DatabaseCursorLoader;
 import org.gnucash.android.db.DatabaseHelper;
 import org.gnucash.android.db.TransactionsDbAdapter;
+import org.gnucash.android.ui.settings.SettingsActivity;
 import org.gnucash.android.ui.transactions.TransactionsListFragment;
 import org.gnucash.android.util.OnItemClickedListener;
 
@@ -42,6 +43,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
@@ -203,7 +205,8 @@ public class AccountsListFragment extends SherlockListFragment implements
 		
 		ListView lv = getListView();
 		lv.setOnItemLongClickListener(this);	
-		getLoaderManager().initLoader(0, null, this);		
+		getLoaderManager().initLoader(0, null, this);
+		
 	}
 	
 	@Override
@@ -313,6 +316,10 @@ public class AccountsListFragment extends SherlockListFragment implements
 
 		case R.id.menu_export:
 			showExportDialog();
+			return true;
+			
+		case R.id.menu_settings:
+			startActivity(new Intent(getActivity(), SettingsActivity.class));
 			return true;
 			
 		default:

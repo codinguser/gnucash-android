@@ -33,6 +33,8 @@ import java.text.ParseException;
 import java.util.Currency;
 import java.util.Locale;
 
+import org.gnucash.android.ui.MainActivity;
+
 import android.util.Log;
 
 /**
@@ -87,7 +89,7 @@ public class Money implements Comparable<Money>{
 	}
 	
 	private void init(){
-		mCurrency = Currency.getInstance(Locale.getDefault());
+		mCurrency = Currency.getInstance(MainActivity.DEFAULT_CURRENCY_CODE);
 		mAmount = new BigDecimal(0).setScale(DEFAULT_DECIMAL_PLACES, DEFAULT_ROUNDING_MODE);
 	}
 
