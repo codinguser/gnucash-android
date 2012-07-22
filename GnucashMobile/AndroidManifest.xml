@@ -29,14 +29,24 @@
     android:versionName="1.0" >
 
     <uses-sdk android:minSdkVersion="8" android:targetSdkVersion="15"/>
+    
+    <permission-group 
+        android:name="org.gnucash.android.permission.group.GNUCASH"
+        android:label="@string/label_permission_group" 
+        android:description="@string/description_permission_group" />
+    
     <permission android:name="org.gnucash.android.permission.CREATE_ACCOUNT" 
+        android:label="@string/label_permission_create_account"
+        android:permissionGroup="org.gnucash.android.permission.group.GNUCASH"
         android:protectionLevel="dangerous" />
     <permission android:name="org.gnucash.android.permission.RECORD_TRANSACTION" 
+        android:label="@string/label_permission_record_transaction"
+        android:permissionGroup="org.gnucash.android.permission.group.GNUCASH"
         android:protectionLevel="dangerous" />
     
-    <uses-permission android:label="@string/permission_record_transactions"
+    <uses-permission android:label="@string/label_permission_record_transactions"
         android:name="org.gnucash.android.permission.RECORD_TRANSACTION" />
-    <uses-permission android:label="@string/permission_create_accounts"
+    <uses-permission android:label="@string/label_permission_create_accounts"
         android:name="org.gnucash.android.permission.CREATE_ACCOUNT" />
     <uses-permission android:label="@string/permission_access_sdcard"
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
