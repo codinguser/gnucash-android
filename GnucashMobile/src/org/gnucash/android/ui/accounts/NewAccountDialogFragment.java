@@ -33,6 +33,7 @@ import org.gnucash.android.data.Account;
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.ui.MainActivity;
 import org.gnucash.android.ui.transactions.TransactionsListFragment;
+import org.gnucash.android.ui.widget.Configuration;
 
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -111,9 +112,11 @@ public class NewAccountDialogFragment extends SherlockDialogFragment {
 								
 				String curCode = mCurrencyCodes.get(mCurrencySpinner.getSelectedItemPosition());
 				mAccount.setCurrency(Currency.getInstance(curCode));
-				mDbAdapter.addAccount(mAccount);
+				long id = mDbAdapter.addAccount(mAccount);
 				
-				((AccountsListFragment)getTargetFragment()).refreshList();				
+				((AccountsListFragment)getTargetFragment()).refreshList();
+				
+				Configuration.updateAllWidgets(getActivity().getApplicationContext(), id);
 				dismiss();				
 			}
 		});

@@ -33,6 +33,7 @@ import org.gnucash.android.db.DatabaseAdapter;
 import org.gnucash.android.db.DatabaseCursorLoader;
 import org.gnucash.android.db.DatabaseHelper;
 import org.gnucash.android.db.TransactionsDbAdapter;
+import org.gnucash.android.ui.widget.Configuration;
 import org.gnucash.android.util.OnItemClickedListener;
 
 import android.app.Activity;
@@ -112,6 +113,7 @@ public class TransactionsListFragment extends SherlockListFragment implements
 			case R.id.context_menu_move_transactions:
 				showBulkMoveDialog();
 				mode.finish();
+				Configuration.updateAllWidgets(getActivity(), mAccountID);
 				return true;
 
 			case R.id.context_menu_delete:
@@ -120,6 +122,7 @@ public class TransactionsListFragment extends SherlockListFragment implements
 				}				
 				refreshList();
 				mode.finish();
+				Configuration.updateAllWidgets(getActivity(), mAccountID);
 				return true;
 				
 			default:

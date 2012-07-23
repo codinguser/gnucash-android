@@ -23,13 +23,12 @@
  Boston, MA  02110-1301,  USA       gnu@gnu.org
 -->
 
-<resources>
-    <dimen name="add_button_padding">3dp</dimen>
-    <dimen name="dialog_padding">10dp</dimen>
-    <dimen name="hint_margin">-8dp</dimen>
-    <dimen name="text_size_small">14sp</dimen>
-    <dimen name="text_size_medium">18sp</dimen>
-    <dimen name="text_size_large">18sp</dimen>
-    <dimen name="edge_padding">12dp</dimen>
-    <dimen name="widget_margin">8dp</dimen>
-</resources>
+<appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+    android:minWidth="270dp"
+    android:minHeight="56dp"
+    android:updatePeriodMillis="86400000"
+    android:previewImage="@drawable/widget_preview"
+    android:initialLayout="@layout/widget_4x1"
+    android:configure="org.gnucash.android.ui.widget.Configuration"
+    android:resizeMode="horizontal">    
+</appwidget-provider>

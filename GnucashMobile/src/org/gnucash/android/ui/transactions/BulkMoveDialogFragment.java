@@ -29,6 +29,7 @@ import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.DatabaseHelper;
 import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.ui.MainActivity;
+import org.gnucash.android.ui.widget.Configuration;
 
 import android.database.Cursor;
 import android.os.Bundle;
@@ -125,6 +126,7 @@ public class BulkMoveDialogFragment extends DialogFragment {
 						.getSupportFragmentManager()
 						.findFragmentByTag(MainActivity.FRAGMENT_TRANSACTIONS_LIST);
 					
+				Configuration.updateAllWidgets(getActivity(), mOriginAccountId);
 				((TransactionsListFragment)f).refreshList();
 				dismiss();
 			}			

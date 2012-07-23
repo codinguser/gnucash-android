@@ -46,6 +46,7 @@ import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.ui.DatePickerDialogFragment;
 import org.gnucash.android.ui.MainActivity;
 import org.gnucash.android.ui.TimePickerDialogFragment;
+import org.gnucash.android.ui.widget.Configuration;
 
 import android.app.DatePickerDialog.OnDateSetListener;
 import android.app.TimePickerDialog.OnTimeSetListener;
@@ -313,6 +314,9 @@ public class NewTransactionFragment extends SherlockFragment implements
 		
 		mTransactionsDbAdapter.addTransaction(mTransaction);
 		mTransactionsDbAdapter.close();
+		
+		//update widgets if any
+		Configuration.updateAllWidgets(getActivity().getApplicationContext(), accountID);
 		
 		getSherlockActivity().getSupportFragmentManager().popBackStack();
 		InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);

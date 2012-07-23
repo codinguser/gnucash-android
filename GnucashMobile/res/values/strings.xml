@@ -89,6 +89,7 @@
     <string name="description_permission_group">Record transactions in GnuCash, read GnuCash data</string>
     <string name="label_permission_record_transaction">record transactions</string>
     <string name="label_permission_create_account">create accounts</string>
+    <string name="label_display_account">Display account</string>
     <string-array name="currency_names">
         <item>Afghani</item>
 		<item>Algerian Dinar</item>
@@ -444,5 +445,6 @@
 		<item>ZWL</item>
 		<item>PLN</item>
     </string-array>
+	
   	
 </resources>

@@ -24,6 +24,7 @@
 
 package org.gnucash.android.data;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Currency;
 import java.util.List;
@@ -222,7 +223,7 @@ public class Account {
 	 * @return Aggregate amount of all transactions in account.
 	 */
 	public Money getBalance(){
-		Money balance = new Money();
+		Money balance = new Money(new BigDecimal(0), this.mCurrency);
 		for (Transaction transx : mTransactionsList) {
 			balance = balance.add(transx.getAmount());		
 		}
