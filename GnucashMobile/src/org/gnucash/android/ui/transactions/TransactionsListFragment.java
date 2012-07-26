@@ -113,7 +113,7 @@ public class TransactionsListFragment extends SherlockListFragment implements
 			case R.id.context_menu_move_transactions:
 				showBulkMoveDialog();
 				mode.finish();
-				WidgetConfigurationActivity.updateAllWidgets(getActivity(), mAccountID);
+				WidgetConfigurationActivity.updateAllWidgets(getActivity());
 				return true;
 
 			case R.id.context_menu_delete:
@@ -122,7 +122,7 @@ public class TransactionsListFragment extends SherlockListFragment implements
 				}				
 				refreshList();
 				mode.finish();
-				WidgetConfigurationActivity.updateAllWidgets(getActivity(), mAccountID);
+				WidgetConfigurationActivity.updateAllWidgets(getActivity());
 				return true;
 				
 			default:

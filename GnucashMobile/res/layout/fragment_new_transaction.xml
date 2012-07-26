@@ -18,9 +18,7 @@
 	        android:ems="10" 
 	        android:layout_marginBottom="10dp"
 	        android:inputType="textCapWords"
-	        style="@style/ListItemText">
-	
-	    </EditText>
+	        style="@style/ListItemText" />
 	
 	    <LinearLayout 
 	        android:layout_width="match_parent"
@@ -104,7 +102,7 @@
 		        
 		        <TextView
 		            android:id="@+id/label_description"
-		            android:text="@string/label_description"
+		            android:text="@string/label_transaction_description"
 		            android:layout_height="wrap_content"
 		            android:layout_width="wrap_content"
 		            android:layout_marginBottom="-8dip"
@@ -115,7 +113,7 @@
 			        android:layout_height="wrap_content"
 			        android:singleLine="false"
 			        android:layout_marginBottom="10dp"
-			        android:hint="@string/transaction_description"
+			        android:hint="@string/label_transaction_description"
 			        android:inputType="textMultiLine"
 			        android:gravity="top"
 			        />

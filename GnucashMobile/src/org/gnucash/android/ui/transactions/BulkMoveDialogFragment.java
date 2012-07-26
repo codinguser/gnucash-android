@@ -125,7 +125,7 @@ public class BulkMoveDialogFragment extends DialogFragment {
 						.getSupportFragmentManager()
 						.findFragmentByTag(TransactionsActivity.FRAGMENT_TRANSACTIONS_LIST);
 					
-				WidgetConfigurationActivity.updateAllWidgets(getActivity(), mOriginAccountId);
+				WidgetConfigurationActivity.updateAllWidgets(getActivity());
 				((TransactionsListFragment)f).refreshList();
 				dismiss();
 			}			

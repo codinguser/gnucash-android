@@ -314,8 +314,8 @@ public class NewTransactionFragment extends SherlockFragment implements
 		mTransactionsDbAdapter.addTransaction(mTransaction);
 		mTransactionsDbAdapter.close();
 		
-		//update widgets if any
-		WidgetConfigurationActivity.updateAllWidgets(getActivity().getApplicationContext(), accountID);
+		//update widgets, if any
+		WidgetConfigurationActivity.updateAllWidgets(getActivity().getApplicationContext());
 		
 		InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
 		imm.hideSoftInputFromWindow(mNameEditText.getWindowToken(), 0);

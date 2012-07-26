@@ -36,7 +36,7 @@
     <string name="btn_cancel">Cancel</string>
     <string name="btn_save">Save</string>
     <string name="no_transactions_to_display">No transactions to display</string>
-    <string name="label_transaction_name">Name</string>
+    <string name="label_transaction_name">Description</string>
     <string name="label_transaction_amount">Amount </string>
     <string name="add_transaction">New transaction</string>
     <string name="label_no_transactions">No transactions to display</string>
@@ -54,7 +54,7 @@
     <string name="title_confirm_delete">Confirm delete</string>
     <string name="delete_confirmation_message">All transactions in this account will also be deleted</string>
     <string name="edit_transaction">Edit Transaction</string>
-    <string name="label_description">DESCRIPTION</string>
+    <string name="label_transaction_description">Note</string>
     <string name="menu_move">MOVE</string>
     <string name="selected">selected</string>
     <string name="label_transactions_total">Total sum:</string>
@@ -455,6 +455,7 @@
 	    <item>Entertainment</item>
 	    <item>Insurance</item>
 	</string-array>
+	<string name="error_no_accounts">No accounts exist in Gnucash.\nCreate an account before adding a widget</string>
 	
   	
 </resources>

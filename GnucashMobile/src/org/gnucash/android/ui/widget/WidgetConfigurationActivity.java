@@ -51,6 +51,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.RemoteViews;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 public class WidgetConfigurationActivity extends Activity {
 	private AccountsDbAdapter mAccountsDbAdapter;
@@ -65,6 +66,8 @@ public class WidgetConfigurationActivity extends Activity {
 	public void onCreate(Bundle savedInstanceState) {		
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.widget_configuration);
+		setResult(RESULT_CANCELED);
+		
 		mAccountsSpinner = (Spinner) findViewById(R.id.input_accounts_spinner);
 		mOkButton = (Button) findViewById(R.id.btn_save);
 		mCancelButton = (Button) findViewById(R.id.btn_cancel);
@@ -74,6 +77,11 @@ public class WidgetConfigurationActivity extends Activity {
 		mAccountsDbAdapter = new AccountsDbAdapter(this);
 		Cursor cursor = mAccountsDbAdapter.fetchAllAccounts();
 		
+		if (cursor.getCount() <= 0){
+			Toast.makeText(this, R.string.error_no_accounts, Toast.LENGTH_LONG).show();
+			finish();
+		}
+			
 		mCursorAdapter = new SimpleCursorAdapter(this, 
 				android.R.layout.simple_spinner_item, 
 				cursor,
@@ -83,7 +91,6 @@ public class WidgetConfigurationActivity extends Activity {
 		mCursorAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		mAccountsSpinner.setAdapter(mCursorAdapter);
 		
-		setResult(RESULT_CANCELED);
 		bindListeners();
 	}
 
@@ -129,6 +136,8 @@ public class WidgetConfigurationActivity extends Activity {
 	}
 
 	/**
+	 * Updates the widget with id <code>appWidgetId</code> with information from the 
+	 * account with record ID <code>accountId</code>
 	 * @param appWidgetManager
 	 */
 	public static void updateWidget(Context context, int appWidgetId, long accountId) {
@@ -167,7 +176,7 @@ public class WidgetConfigurationActivity extends Activity {
 		appWidgetManager.updateAppWidget(appWidgetId, views);
 	}
 			
-	public static void updateAllWidgets(Context context, long accountId){
+	public static void updateAllWidgets(Context context){
 		Log.i("WidgetConfigruation", "Updating all widgets");
 		AppWidgetManager widgetManager = AppWidgetManager.getInstance(context);
 		ComponentName componentName = new ComponentName(context, TransactionAppWidgetProvider.class);
@@ -179,16 +188,8 @@ public class WidgetConfigurationActivity extends Activity {
             		.getLong(TransactionsListFragment.SELECTED_ACCOUNT_ID + widgetId, -1);
             
 			if (accId < 0)
-				accId = accountId;
+				continue;
 			updateWidget(context, widgetId, accId);
 		}
-		/*
-		Intent intent = new Intent(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
-		intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, appWidgetIds);
-		intent.setClass(context, TransactionAppWidgetProvider.class);
-//		intent.setData(Uri.parse(intent.toUri(Intent.URI_INTENT_SCHEME)));
-		context.sendBroadcast(intent);
-		*/
-		
 	}
 }

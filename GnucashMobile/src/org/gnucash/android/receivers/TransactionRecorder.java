@@ -66,9 +66,7 @@ public class TransactionRecorder extends BroadcastReceiver {
 		TransactionsDbAdapter transacionsDbAdapter = new TransactionsDbAdapter(context);
 		transacionsDbAdapter.addTransaction(transaction);
 		
-		long accountId = transacionsDbAdapter.getAccountID(accountUID);
-		if (accountId > 0)
-			WidgetConfigurationActivity.updateAllWidgets(context, accountId);
+		WidgetConfigurationActivity.updateAllWidgets(context);
 
 		transacionsDbAdapter.close();
 	}

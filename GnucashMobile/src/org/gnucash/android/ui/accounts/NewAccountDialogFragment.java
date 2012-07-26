@@ -111,11 +111,11 @@ public class NewAccountDialogFragment extends SherlockDialogFragment {
 								
 				String curCode = mCurrencyCodes.get(mCurrencySpinner.getSelectedItemPosition());
 				mAccount.setCurrency(Currency.getInstance(curCode));
-				long id = mDbAdapter.addAccount(mAccount);
+				mDbAdapter.addAccount(mAccount);
 				
 				((AccountsListFragment)getTargetFragment()).refreshList();
 				
-				WidgetConfigurationActivity.updateAllWidgets(getActivity().getApplicationContext(), id);
+				WidgetConfigurationActivity.updateAllWidgets(getActivity().getApplicationContext());
 				dismiss();				
 			}
 		});

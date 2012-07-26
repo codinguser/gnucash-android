@@ -62,8 +62,8 @@ public class TransactionAppWidgetProvider extends AppWidgetProvider {
 		Editor editor = PreferenceManager.getDefaultSharedPreferences(context).edit();
 		
 		for (int appWidgetId : appWidgetIds) {
-			editor.remove(TransactionsListFragment.SELECTED_ACCOUNT_ID + appWidgetId);
-			editor.commit();
+			editor.remove(TransactionsListFragment.SELECTED_ACCOUNT_ID + appWidgetId);			
 		}
+		editor.commit();
 	}
 }
