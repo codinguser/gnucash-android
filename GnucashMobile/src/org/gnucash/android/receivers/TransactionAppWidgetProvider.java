@@ -25,11 +25,12 @@
 package org.gnucash.android.receivers;
 
 import org.gnucash.android.ui.transactions.TransactionsListFragment;
-import org.gnucash.android.ui.widget.Configuration;
+import org.gnucash.android.ui.widget.WidgetConfigurationActivity;
 
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
+import android.content.SharedPreferences.Editor;
 import android.preference.PreferenceManager;
 
 public class TransactionAppWidgetProvider extends AppWidgetProvider {
@@ -37,6 +38,7 @@ public class TransactionAppWidgetProvider extends AppWidgetProvider {
 	@Override
 	public void onUpdate(Context context, AppWidgetManager appWidgetManager,
 			int[] appWidgetIds) {
+		super.onUpdate(context, appWidgetManager, appWidgetIds);
 		final int N = appWidgetIds.length;
 
         // Perform this loop procedure for each App Widget that belongs to this provider
@@ -50,7 +52,18 @@ public class TransactionAppWidgetProvider extends AppWidgetProvider {
             if (accountId <= 0)
             	return;
             
-            Configuration.updateWidget(context, appWidgetId, accountId);            
+            WidgetConfigurationActivity.updateWidget(context, appWidgetId, accountId);            
         }
+	}
+	
+	@Override
+	public void onDeleted(Context context, int[] appWidgetIds) {
+		super.onDeleted(context, appWidgetIds);		
+		Editor editor = PreferenceManager.getDefaultSharedPreferences(context).edit();
+		
+		for (int appWidgetId : appWidgetIds) {
+			editor.remove(TransactionsListFragment.SELECTED_ACCOUNT_ID + appWidgetId);
+			editor.commit();
+		}
 	}
 }

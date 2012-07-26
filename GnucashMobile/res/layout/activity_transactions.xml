@@ -23,37 +23,9 @@
  Boston, MA  02110-1301,  USA       gnu@gnu.org
 -->
 
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/fragment_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
-
-    <LinearLayout
-        android:id="@+id/transactions_summary_bar"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true" >
-
-        <Button
-            android:id="@+id/add_preference_button"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:onClick="onAddNewPreferenceClick"
-            android:text="" />
-    </LinearLayout>
-
-    <ListView
-        android:id="@id/android:list"
-        android:layout_width="fill_parent"
-        android:layout_height="0dip"
-        android:layout_above="@id/transactions_summary_bar"
-        android:drawSelectorOnTop="false" />
-
-    <TextView
-        android:id="@id/android:empty"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_above="@id/transactions_summary_bar"
-        android:gravity="center_horizontal|center_vertical"
-        android:text="@string/no_transactions_to_display" />
-
-</RelativeLayout>
+    
+</FrameLayout>

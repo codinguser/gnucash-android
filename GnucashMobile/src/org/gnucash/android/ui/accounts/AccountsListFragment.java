@@ -35,8 +35,9 @@ import org.gnucash.android.db.DatabaseCursorLoader;
 import org.gnucash.android.db.DatabaseHelper;
 import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.ui.settings.SettingsActivity;
+import org.gnucash.android.ui.transactions.TransactionsActivity;
 import org.gnucash.android.ui.transactions.TransactionsListFragment;
-import org.gnucash.android.util.OnItemClickedListener;
+import org.gnucash.android.util.OnAccountClickedListener;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -85,7 +86,7 @@ public class AccountsListFragment extends SherlockListFragment implements
 	AccountsCursorAdapter mCursorAdapter;
 	NewAccountDialogFragment mAddAccountFragment;
 	private AccountsDbAdapter mAccountsDbAdapter;	
-	private OnItemClickedListener mAccountSelectedListener;	
+	private OnAccountClickedListener mAccountSelectedListener;	
 	private boolean mInEditMode = false;
 	private ActionMode mActionMode = null;
 	private int mSelectedViewPosition = -1;
@@ -205,15 +206,14 @@ public class AccountsListFragment extends SherlockListFragment implements
 		
 		ListView lv = getListView();
 		lv.setOnItemLongClickListener(this);	
-		getLoaderManager().initLoader(0, null, this);
-		
+		getLoaderManager().initLoader(0, null, this);		
 	}
 	
 	@Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
 		try {
-			mAccountSelectedListener = (OnItemClickedListener) activity;
+			mAccountSelectedListener = (OnAccountClickedListener) activity;
 		} catch (ClassCastException e) {
 			throw new ClassCastException(activity.toString() + " must implement OnAccountSelectedListener");
 		}	
@@ -401,6 +401,7 @@ public class AccountsListFragment extends SherlockListFragment implements
 			TextView summary = (TextView) v
 					.findViewById(R.id.transactions_summary);
 			final long accountId = cursor.getLong(DatabaseAdapter.COLUMN_ROW_ID);
+			final String accountName = cursor.getString(DatabaseAdapter.COLUMN_NAME);
 			
 			Money balance = transactionsDBAdapter.getTransactionsSum(accountId);
 			summary.setText(balance.formattedString(Locale.getDefault()));
@@ -413,7 +414,11 @@ public class AccountsListFragment extends SherlockListFragment implements
 				
 				@Override
 				public void onClick(View v) {
-					mAccountSelectedListener.createNewTransaction(accountId);
+					Intent intent = new Intent(getActivity(), TransactionsActivity.class);
+					intent.setAction(Intent.ACTION_INSERT_OR_EDIT);
+					intent.putExtra(TransactionsListFragment.SELECTED_ACCOUNT_ID, accountId);
+					intent.putExtra(TransactionsListFragment.SELECTED_ACCOUNT_NAME, accountName);
+					getActivity().startActivity(intent);
 				}
 			});
 		}

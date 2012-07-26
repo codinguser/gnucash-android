@@ -47,7 +47,6 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.gnucash.android.R;
 import org.gnucash.android.db.TransactionsDbAdapter;
-import org.gnucash.android.ui.MainActivity;
 import org.gnucash.android.util.OfxFormatter;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -136,7 +135,7 @@ public class ExportDialogFragment extends DialogFragment {
 			
 			Fragment f = getActivity()
 			.getSupportFragmentManager()
-			.findFragmentByTag(MainActivity.FRAGMENT_ACCOUNTS_LIST);
+			.findFragmentByTag(AccountsActivity.FRAGMENT_ACCOUNTS_LIST);
 		
 			((AccountsListFragment)f).refreshList();
 			dismiss();

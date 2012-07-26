@@ -30,7 +30,7 @@ import org.gnucash.android.R;
 import org.gnucash.android.data.Account;
 import org.gnucash.android.data.Transaction;
 import org.gnucash.android.db.AccountsDbAdapter;
-import org.gnucash.android.ui.MainActivity;
+import org.gnucash.android.ui.accounts.AccountsActivity;
 import org.gnucash.android.ui.accounts.ExportDialogFragment;
 
 import android.os.Environment;
@@ -40,12 +40,12 @@ import android.widget.Spinner;
 import com.jayway.android.robotium.solo.Solo;
 
 public class OfxExportTest extends
-		ActivityInstrumentationTestCase2<MainActivity> {
+		ActivityInstrumentationTestCase2<AccountsActivity> {
 
 	private Solo mSolo;
 	
 	public OfxExportTest() {
-		super(MainActivity.class);
+		super(AccountsActivity.class);
 	}
 	
 	@Override

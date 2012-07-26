@@ -33,8 +33,8 @@ import org.gnucash.android.db.DatabaseAdapter;
 import org.gnucash.android.db.DatabaseCursorLoader;
 import org.gnucash.android.db.DatabaseHelper;
 import org.gnucash.android.db.TransactionsDbAdapter;
-import org.gnucash.android.ui.widget.Configuration;
-import org.gnucash.android.util.OnItemClickedListener;
+import org.gnucash.android.ui.widget.WidgetConfigurationActivity;
+import org.gnucash.android.util.OnTransactionClickedListener;
 
 import android.app.Activity;
 import android.content.Context;
@@ -85,7 +85,7 @@ public class TransactionsListFragment extends SherlockListFragment implements
 	
 	private HashMap<Integer, Long> mSelectedIds = new HashMap<Integer, Long>();
 
-	private OnItemClickedListener mTransactionEditListener;
+	private OnTransactionClickedListener mTransactionEditListener;
 	
 	private ActionMode.Callback mActionModeCallbacks = new ActionMode.Callback() {
 		
@@ -113,7 +113,7 @@ public class TransactionsListFragment extends SherlockListFragment implements
 			case R.id.context_menu_move_transactions:
 				showBulkMoveDialog();
 				mode.finish();
-				Configuration.updateAllWidgets(getActivity(), mAccountID);
+				WidgetConfigurationActivity.updateAllWidgets(getActivity(), mAccountID);
 				return true;
 
 			case R.id.context_menu_delete:
@@ -122,7 +122,7 @@ public class TransactionsListFragment extends SherlockListFragment implements
 				}				
 				refreshList();
 				mode.finish();
-				Configuration.updateAllWidgets(getActivity(), mAccountID);
+				WidgetConfigurationActivity.updateAllWidgets(getActivity(), mAccountID);
 				return true;
 				
 			default:
@@ -181,7 +181,7 @@ public class TransactionsListFragment extends SherlockListFragment implements
 		refreshList();
 		
 	}
-	
+		
 	public void refreshList(){
 		getLoaderManager().restartLoader(0, null, this);
 		
@@ -199,7 +199,7 @@ public class TransactionsListFragment extends SherlockListFragment implements
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
 		try {
-			 mTransactionEditListener = (OnItemClickedListener) activity;
+			 mTransactionEditListener = (OnTransactionClickedListener) activity;
 		} catch (ClassCastException e) {
 			throw new ClassCastException(activity.toString() + " must implement OnAccountSelectedListener");
 		}	

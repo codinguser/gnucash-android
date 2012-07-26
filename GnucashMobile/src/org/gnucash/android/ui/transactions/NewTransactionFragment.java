@@ -44,9 +44,9 @@ import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.DatabaseHelper;
 import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.ui.DatePickerDialogFragment;
-import org.gnucash.android.ui.MainActivity;
 import org.gnucash.android.ui.TimePickerDialogFragment;
-import org.gnucash.android.ui.widget.Configuration;
+import org.gnucash.android.ui.accounts.AccountsActivity;
+import org.gnucash.android.ui.widget.WidgetConfigurationActivity;
 
 import android.app.DatePickerDialog.OnDateSetListener;
 import android.app.TimePickerDialog.OnTimeSetListener;
@@ -108,7 +108,18 @@ public class NewTransactionFragment extends SherlockFragment implements
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		return inflater.inflate(R.layout.fragment_new_transaction, container, false);
+		View v = inflater.inflate(R.layout.fragment_new_transaction, container, false);
+		
+		mNameEditText = (EditText) v.findViewById(R.id.input_transaction_name);
+		mDescriptionEditText = (EditText) v.findViewById(R.id.input_description);
+		mDateTextView = (TextView) v.findViewById(R.id.input_date);
+		mTimeTextView = (TextView) v.findViewById(R.id.input_time);
+		mAmountEditText = (EditText) v.findViewById(R.id.input_transaction_amount);		
+		mCurrencyTextView = (TextView) v.findViewById(R.id.currency_symbol);
+		mAccountsSpinner = (Spinner) v.findViewById(R.id.input_accounts_spinner);
+		mTransactionTypeButton = (ToggleButton) v.findViewById(R.id.input_transaction_type);
+		
+		return v;
 	}
 	
 	@Override
@@ -120,17 +131,7 @@ public class NewTransactionFragment extends SherlockFragment implements
 		actionBar.setTitle(R.string.add_transaction);
 		
 		mTransactionsDbAdapter = new TransactionsDbAdapter(getActivity());
-		View v = getView();
-		
-		mNameEditText = (EditText)getView().findViewById(R.id.input_transaction_name);
-		mDescriptionEditText = (EditText)getView().findViewById(R.id.input_description);
-		mDateTextView = (TextView) v.findViewById(R.id.input_date);
-		mTimeTextView = (TextView) v.findViewById(R.id.input_time);
-		mAmountEditText = (EditText) v.findViewById(R.id.input_transaction_amount);		
-		mCurrencyTextView = (TextView) v.findViewById(R.id.currency_symbol);
-		mAccountsSpinner = (Spinner) v.findViewById(R.id.input_accounts_spinner);
-		mTransactionTypeButton = (ToggleButton) v.findViewById(R.id.input_transaction_type);
-		
+				
 		String[] from = new String[] {DatabaseHelper.KEY_NAME};
 		int[] to = new int[] {android.R.id.text1};
 		mAccountsDbAdapter = new AccountsDbAdapter(getActivity());
@@ -201,10 +202,8 @@ public class NewTransactionFragment extends SherlockFragment implements
 				mAccountsSpinner.setSelection(pos);
 		}
 		
-		String code;
-		if (accountId == 0)
-			code = MainActivity.DEFAULT_CURRENCY_CODE;
-		else
+		String code = AccountsActivity.DEFAULT_CURRENCY_CODE;
+		if (accountId != 0)
 			code = mTransactionsDbAdapter.getCurrencyCode(accountId);
 		
 			
@@ -316,11 +315,11 @@ public class NewTransactionFragment extends SherlockFragment implements
 		mTransactionsDbAdapter.close();
 		
 		//update widgets if any
-		Configuration.updateAllWidgets(getActivity().getApplicationContext(), accountID);
+		WidgetConfigurationActivity.updateAllWidgets(getActivity().getApplicationContext(), accountID);
 		
-		getSherlockActivity().getSupportFragmentManager().popBackStack();
 		InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
 		imm.hideSoftInputFromWindow(mNameEditText.getWindowToken(), 0);
+		getSherlockActivity().getSupportFragmentManager().popBackStack();
 	}
 
 	@Override

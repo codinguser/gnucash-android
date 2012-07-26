@@ -30,7 +30,7 @@ import java.util.Currency;
 import java.util.List;
 import java.util.UUID;
 
-import org.gnucash.android.ui.MainActivity;
+import org.gnucash.android.ui.accounts.AccountsActivity;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -77,7 +77,7 @@ public class Account {
 	public Account(String name) {
 		setName(name);
 		this.mUID = generateUID();
-		this.mCurrency = Currency.getInstance(MainActivity.DEFAULT_CURRENCY_CODE);
+		this.mCurrency = Currency.getInstance(AccountsActivity.DEFAULT_CURRENCY_CODE);
 	}
 
 	public Account(String name, Currency currency){

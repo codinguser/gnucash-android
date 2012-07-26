@@ -34,10 +34,11 @@ import org.gnucash.android.data.Transaction;
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.DatabaseAdapter;
 import org.gnucash.android.db.TransactionsDbAdapter;
-import org.gnucash.android.ui.MainActivity;
-import org.gnucash.android.ui.accounts.AccountsListFragment;
 import org.gnucash.android.ui.transactions.NewTransactionFragment;
+import org.gnucash.android.ui.transactions.TransactionsActivity;
+import org.gnucash.android.ui.transactions.TransactionsListFragment;
 
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.support.v4.app.Fragment;
@@ -46,21 +47,19 @@ import android.widget.Spinner;
 
 import com.jayway.android.robotium.solo.Solo;
 
-public class TransactionsFragmentTest extends
-		ActivityInstrumentationTestCase2<MainActivity> {
+public class TransactionsActivityTest extends
+		ActivityInstrumentationTestCase2<TransactionsActivity> {
 	private static final String DUMMY_ACCOUNT_UID = "transactions-account";
 	private static final String DUMMY_ACCOUNT_NAME = "Transactions Account";
 	private Solo mSolo;
 	private Transaction mTransaction;
 	
-	public TransactionsFragmentTest() {
-		super(MainActivity.class);
+	public TransactionsActivityTest() {
+		super(TransactionsActivity.class);		
 	}
-
+	
 	@Override
-	protected void setUp() throws Exception {
-		mSolo = new Solo(getInstrumentation(), getActivity());	
-		
+	protected void setUp() throws Exception {		
 		Account account = new Account(DUMMY_ACCOUNT_NAME);
 		account.setUID(DUMMY_ACCOUNT_UID);
 		
@@ -69,17 +68,25 @@ public class TransactionsFragmentTest extends
 		mTransaction.setDescription("What up?");
 		mTransaction.setTime(System.currentTimeMillis());
 		
-		account.addTransaction(mTransaction);
+		account.addTransaction(mTransaction);		
 		
-		AccountsDbAdapter adapter = new AccountsDbAdapter(getActivity());
-		adapter.addAccount(account);
+		Context context = getInstrumentation().getTargetContext();
+		AccountsDbAdapter adapter = new AccountsDbAdapter(context);
+		long id = adapter.addAccount(account);
 		adapter.close();
+		
+
+		Intent intent = new Intent(Intent.ACTION_VIEW);
+		intent.putExtra(TransactionsListFragment.SELECTED_ACCOUNT_ID, id);
+		setActivityIntent(intent);
+		
+		mSolo = new Solo(getInstrumentation(), getActivity());			
 	}
 	
 	private void validateTransactionListDisplayed(){
 		Fragment fragment = getActivity()
 				.getSupportFragmentManager()
-				.findFragmentByTag(MainActivity.FRAGMENT_TRANSACTIONS_LIST);
+				.findFragmentByTag(TransactionsActivity.FRAGMENT_TRANSACTIONS_LIST);
 		
 		assertNotNull(fragment);
 	}
@@ -106,12 +113,8 @@ public class TransactionsFragmentTest extends
 		assertEquals(DUMMY_ACCOUNT_NAME, actualValue);
 	}
 	
-	public void testAddTransaction(){
-		refreshAccountsList();
-		
-		//open transactions
-		mSolo.clickOnText(DUMMY_ACCOUNT_NAME);
-		mSolo.waitForText(DUMMY_ACCOUNT_NAME);		
+	public void testAddTransaction(){	
+		mSolo.waitForText(DUMMY_ACCOUNT_NAME);
 		validateTransactionListDisplayed();
 		
 //		mSolo.clickOnActionBarItem(R.id.menu_add_transaction);
@@ -163,11 +166,8 @@ public class TransactionsFragmentTest extends
 		assertEquals(transaction.getAccountUID(), actualValue);
 	}
 	
-	public void testEditTransaction(){
-		refreshAccountsList();
-		
+	public void testEditTransaction(){		
 		//open transactions
-		mSolo.clickOnText(DUMMY_ACCOUNT_NAME);
 		mSolo.waitForText(DUMMY_ACCOUNT_NAME);
 		
 		validateTransactionListDisplayed();
@@ -185,9 +185,6 @@ public class TransactionsFragmentTest extends
 	}
 	
 	public void testDeleteTransaction(){
-		refreshAccountsList();
-		
-		mSolo.clickOnText(DUMMY_ACCOUNT_NAME);
 		mSolo.waitForText(DUMMY_ACCOUNT_NAME);
 		
 		mSolo.clickOnCheckBox(0);
@@ -238,15 +235,7 @@ public class TransactionsFragmentTest extends
 		
 		trxnAdapter.close();
 	}
-	
-	private void refreshAccountsList(){
-		Fragment fragment = getActivity()
-				.getSupportFragmentManager()
-				.findFragmentByTag(MainActivity.FRAGMENT_ACCOUNTS_LIST);
-		assertNotNull(fragment);
-		((AccountsListFragment) fragment).refreshList();		
-	}
-	
+
 	@Override
 	protected void tearDown() throws Exception {	
 		AccountsDbAdapter adapter = new AccountsDbAdapter(getActivity());

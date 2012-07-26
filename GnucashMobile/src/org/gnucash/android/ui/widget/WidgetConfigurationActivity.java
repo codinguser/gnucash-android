@@ -31,7 +31,7 @@ import org.gnucash.android.data.Account;
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.DatabaseHelper;
 import org.gnucash.android.receivers.TransactionAppWidgetProvider;
-import org.gnucash.android.ui.MainActivity;
+import org.gnucash.android.ui.transactions.TransactionsActivity;
 import org.gnucash.android.ui.transactions.TransactionsListFragment;
 
 import android.app.Activity;
@@ -52,7 +52,7 @@ import android.widget.Button;
 import android.widget.RemoteViews;
 import android.widget.Spinner;
 
-public class Configuration extends Activity {
+public class WidgetConfigurationActivity extends Activity {
 	private AccountsDbAdapter mAccountsDbAdapter;
 	private SimpleCursorAdapter mCursorAdapter;
 	private int mAppWidgetId;
@@ -100,13 +100,17 @@ public class Configuration extends Activity {
 				            AppWidgetManager.INVALID_APPWIDGET_ID);
 				}
 				
-				SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(Configuration.this);
+				if (mAppWidgetId == AppWidgetManager.INVALID_APPWIDGET_ID)
+					return;
+				
+				SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(WidgetConfigurationActivity.this);
 				Editor editor = prefs.edit();
 				editor.putLong(TransactionsListFragment.SELECTED_ACCOUNT_ID + mAppWidgetId, 
-						mAccountsSpinner.getSelectedItemId());				
+						mAccountsSpinner.getSelectedItemId());	
+				
 				editor.commit();	
 				
-				updateWidget(Configuration.this, mAppWidgetId, mAccountsSpinner.getSelectedItemId());
+				updateWidget(WidgetConfigurationActivity.this, mAppWidgetId, mAccountsSpinner.getSelectedItemId());
 						
 				Intent resultValue = new Intent();
 				resultValue.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, mAppWidgetId);
@@ -135,6 +139,9 @@ public class Configuration extends Activity {
 		Account account = accountsDbAdapter.getAccount(accountId);
 		accountsDbAdapter.close();
 		
+		if (account == null)
+			return;
+		
 		RemoteViews views = new RemoteViews(context.getPackageName(),
 				R.layout.widget_4x1);
 		views.setTextViewText(R.id.account_name, account.getName());
@@ -143,18 +150,16 @@ public class Configuration extends Activity {
 		int color = account.getBalance().isNegative() ? R.color.debit_red : R.color.credit_green;
 		views.setTextColor(R.id.transactions_summary, context.getResources().getColor(color));
 		
-		//TODO: start account list activity
-		Intent accountViewIntent = new Intent(context, MainActivity.class);
-		accountViewIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-		accountViewIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+		Intent accountViewIntent = new Intent(context, TransactionsActivity.class);
+		accountViewIntent.setAction(Intent.ACTION_VIEW);
+		accountViewIntent.putExtra(TransactionsListFragment.SELECTED_ACCOUNT_ID, accountId);
 		PendingIntent accountPendingIntent = PendingIntent
 				.getActivity(context, 0, accountViewIntent, 0);
 		views.setOnClickPendingIntent(R.id.widget_layout, accountPendingIntent);
 		
-		//TODO: Start new transaction activity
-		Intent newTransactionIntent = new Intent(context, MainActivity.class);
-		newTransactionIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-		newTransactionIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+		Intent newTransactionIntent = new Intent(context, TransactionsActivity.class);
+		newTransactionIntent.setAction(Intent.ACTION_INSERT_OR_EDIT);
+		newTransactionIntent.putExtra(TransactionsListFragment.SELECTED_ACCOUNT_ID, accountId);		
 		PendingIntent pendingIntent = PendingIntent
 				.getActivity(context, 0, newTransactionIntent, 0);	            
 		views.setOnClickPendingIntent(R.id.btn_new_transaction, pendingIntent);

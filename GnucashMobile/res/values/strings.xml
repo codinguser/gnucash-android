@@ -86,7 +86,7 @@
     <string name="label_permission_record_transactions">Enables recording transactions in Gnucash for Android</string>
     <string name="label_permission_create_accounts">Enables creation of accounts in Gnucash for Android</string>
     <string name="label_permission_group">Your GnuCash data</string>
-    <string name="description_permission_group">Record transactions in GnuCash, read GnuCash data</string>
+    <string name="description_permission_group">Read and modify GnuCash data</string>
     <string name="label_permission_record_transaction">record transactions</string>
     <string name="label_permission_create_account">create accounts</string>
     <string name="label_display_account">Display account</string>

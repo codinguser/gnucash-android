@@ -22,23 +22,21 @@
  * Boston, MA  02110-1301,  USA       gnu@gnu.org
  */
 
-package org.gnucash.android.ui;
+package org.gnucash.android.ui.accounts;
 
 import java.util.Currency;
 import java.util.Locale;
 
 import org.gnucash.android.R;
-import org.gnucash.android.ui.accounts.AccountsListFragment;
-import org.gnucash.android.ui.transactions.NewTransactionFragment;
+import org.gnucash.android.ui.transactions.TransactionsActivity;
 import org.gnucash.android.ui.transactions.TransactionsListFragment;
-import org.gnucash.android.util.OnItemClickedListener;
+import org.gnucash.android.util.OnAccountClickedListener;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.util.Log;
 import android.view.View;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
@@ -52,16 +50,14 @@ import com.actionbarsherlock.view.MenuItem;
  * @author Ngewi Fet <ngewif@gmail.com>
  * 
  */
-public class MainActivity extends SherlockFragmentActivity implements OnItemClickedListener {
+public class AccountsActivity extends SherlockFragmentActivity implements OnAccountClickedListener {
 
-	public static final String FRAGMENT_ACCOUNTS_LIST 		= "accounts_list";
-	public static final String FRAGMENT_TRANSACTIONS_LIST 	= "transactions_list";
-	public static final String FRAGMENT_NEW_TRANSACTION 	= "new_transaction";
+	public static final String FRAGMENT_ACCOUNTS_LIST 	= "accounts_list";
+	
+	public static String DEFAULT_CURRENCY_CODE 	= "USD";
+	static final int DIALOG_ADD_ACCOUNT 		= 0x01;
 
-	public static String DEFAULT_CURRENCY_CODE;
-	static final int DIALOG_ADD_ACCOUNT = 0x01;
-
-	protected static final String TAG = "MainActivity";	
+	protected static final String TAG = "AccountsActivity";	
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -126,64 +122,16 @@ public class MainActivity extends SherlockFragmentActivity implements OnItemClic
 			accountFragment.showAddAccountDialog(0);
 	}
 
-	/**
-	 * Opens a fragment to create a new transaction. 
-	 * Is called from the XML views
-	 * @param v View which triggered this method
-	 */
-	public void onNewTransactionClick(View v){
-		createNewTransaction(0);
-	}
-	
 	@Override
 	public void accountSelected(long accountRowId, String accountName) {
-		FragmentManager fragmentManager = getSupportFragmentManager();
-		FragmentTransaction fragmentTransaction = fragmentManager
-				.beginTransaction();
-		TransactionsListFragment transactionsFragment = new TransactionsListFragment();
-		Bundle args = new Bundle();
-		args.putLong(TransactionsListFragment.SELECTED_ACCOUNT_ID, accountRowId);		
-		args.putString(TransactionsListFragment.SELECTED_ACCOUNT_NAME, accountName);
-		transactionsFragment.setArguments(args);
-		Log.i(TAG, "Opening transactions for account " + accountName);
-		fragmentTransaction.replace(R.id.fragment_container,
-				transactionsFragment, FRAGMENT_TRANSACTIONS_LIST);
-
-		fragmentTransaction.addToBackStack(null);
-		fragmentTransaction.commit();
+		Intent intent = new Intent(this, TransactionsActivity.class);
+		intent.setAction(Intent.ACTION_VIEW);
+		intent.putExtra(TransactionsListFragment.SELECTED_ACCOUNT_ID, accountRowId);
+		intent.putExtra(TransactionsListFragment.SELECTED_ACCOUNT_NAME, accountName);
+		
+		startActivity(intent);
 	}
 	
-	@Override
-	public void createNewTransaction(long accountRowId) {
-		FragmentManager fragmentManager = getSupportFragmentManager();
-		FragmentTransaction fragmentTransaction = fragmentManager
-				.beginTransaction();
-		NewTransactionFragment newTransactionFragment = new NewTransactionFragment();
-		Bundle args = new Bundle();
-		args.putLong(TransactionsListFragment.SELECTED_ACCOUNT_ID, accountRowId);		
-		newTransactionFragment.setArguments(args);
-		
-		fragmentTransaction.replace(R.id.fragment_container,
-				newTransactionFragment, FRAGMENT_NEW_TRANSACTION);
-
-		fragmentTransaction.addToBackStack(null);
-		fragmentTransaction.commit();
-	}
-
-	public void editTransaction(long transactionId){
-		FragmentManager fragmentManager = getSupportFragmentManager();
-		FragmentTransaction fragmentTransaction = fragmentManager
-				.beginTransaction();
-		NewTransactionFragment newTransactionFragment = new NewTransactionFragment();
-		Bundle args = new Bundle();
-		args.putLong(NewTransactionFragment.SELECTED_TRANSACTION_ID, transactionId);		
-		newTransactionFragment.setArguments(args);
-		
-		fragmentTransaction.replace(R.id.fragment_container,
-				newTransactionFragment, FRAGMENT_NEW_TRANSACTION);
-
-		fragmentTransaction.addToBackStack(null);
-		fragmentTransaction.commit();
-	}
+	
 
 }

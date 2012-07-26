@@ -31,7 +31,8 @@ import org.gnucash.android.data.Account;
 import org.gnucash.android.data.Money;
 import org.gnucash.android.data.Transaction;
 import org.gnucash.android.db.TransactionsDbAdapter;
-import org.gnucash.android.ui.MainActivity;
+import org.gnucash.android.ui.accounts.AccountsActivity;
+import org.gnucash.android.ui.widget.WidgetConfigurationActivity;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -50,7 +51,7 @@ public class TransactionRecorder extends BroadcastReceiver {
 		double amountDouble = args.getDouble(Transaction.EXTRA_AMOUNT, 0);
 		String currencyCode = args.getString(Account.EXTRA_CURRENCY_CODE);
 		if (currencyCode == null)
-			currencyCode = MainActivity.DEFAULT_CURRENCY_CODE;
+			currencyCode = AccountsActivity.DEFAULT_CURRENCY_CODE;
 		
 		String accountUID = args.getString(Transaction.EXTRA_ACCOUNT_UID);
 		if (accountUID == null)
@@ -64,6 +65,11 @@ public class TransactionRecorder extends BroadcastReceiver {
 		
 		TransactionsDbAdapter transacionsDbAdapter = new TransactionsDbAdapter(context);
 		transacionsDbAdapter.addTransaction(transaction);
+		
+		long accountId = transacionsDbAdapter.getAccountID(accountUID);
+		if (accountId > 0)
+			WidgetConfigurationActivity.updateAllWidgets(context, accountId);
+
 		transacionsDbAdapter.close();
 	}
 
