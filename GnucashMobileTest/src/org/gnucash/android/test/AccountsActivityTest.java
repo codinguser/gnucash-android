@@ -35,8 +35,11 @@ import org.gnucash.android.ui.accounts.AccountsActivity;
 import org.gnucash.android.ui.accounts.AccountsListFragment;
 import org.gnucash.android.ui.transactions.TransactionsActivity;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences.Editor;
 import android.os.Build;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.test.ActivityInstrumentationTestCase2;
 import android.widget.ListView;
@@ -53,6 +56,11 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
 	}
 
 	protected void setUp() throws Exception {
+		Context context = getInstrumentation().getTargetContext();
+		Editor editor = PreferenceManager.getDefaultSharedPreferences(context).edit();
+		editor.putBoolean(context.getString(R.string.key_first_run), false);
+		editor.commit();
+		
 		mSolo = new Solo(getInstrumentation(), getActivity());	
 		
 		AccountsDbAdapter adapter = new AccountsDbAdapter(getActivity());
@@ -127,7 +135,10 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
 		mSolo.clickOnText(DUMMY_ACCOUNT_NAME);
 		mSolo.waitForText(DUMMY_ACCOUNT_NAME);
 		
-		fragment = getActivity()
+		String classname = mSolo.getAllOpenedActivities().get(1).getComponentName().getClassName();
+		assertEquals(TransactionsActivity.class.getName(), classname);
+		
+		fragment = ((TransactionsActivity)mSolo.getAllOpenedActivities().get(1))
 				.getSupportFragmentManager()
 				.findFragmentByTag(TransactionsActivity.FRAGMENT_TRANSACTIONS_LIST);
 		assertNotNull(fragment);

@@ -209,6 +209,20 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 	}	
 	
 	/**
+	 * Returns the name of the account with id <code>accountID</code>
+	 * @param accountID Database ID of the account record
+	 * @return Name of the account 
+	 */
+	public String getName(long accountID) {
+		String name = null;
+		Cursor c = fetchRecord(DatabaseHelper.ACCOUNTS_TABLE_NAME, accountID);
+		if (c != null && c.moveToFirst()){
+			name = c.getString(DatabaseAdapter.COLUMN_NAME);
+		}
+		return name;
+	}
+	
+	/**
 	 * Returns a list of all account objects in the system
 	 * @return List of {@link Account}s in the database
 	 */
@@ -273,4 +287,6 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 		mDb.delete(DatabaseHelper.ACCOUNTS_TABLE_NAME, null, null);
 		mDb.delete(DatabaseHelper.TRANSACTIONS_TABLE_NAME, null, null);
 	}
+
+
 }

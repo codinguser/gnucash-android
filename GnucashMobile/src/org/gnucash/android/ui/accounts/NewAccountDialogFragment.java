@@ -131,12 +131,6 @@ public class NewAccountDialogFragment extends SherlockDialogFragment {
 	}
 	
 	@Override
-	public void onDestroyView() {		
-		super.onDestroyView();
-		mDbAdapter.close();
-	}
-	
-	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 		

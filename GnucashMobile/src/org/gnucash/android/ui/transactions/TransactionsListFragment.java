@@ -29,6 +29,7 @@ import java.util.Locale;
 
 import org.gnucash.android.R;
 import org.gnucash.android.data.Money;
+import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.DatabaseAdapter;
 import org.gnucash.android.db.DatabaseCursorLoader;
 import org.gnucash.android.db.DatabaseHelper;
@@ -71,7 +72,6 @@ public class TransactionsListFragment extends SherlockListFragment implements
 
 	private static final String SAVED_SELECTED_ITEMS = "selected_items";	
 	public static final String SELECTED_ACCOUNT_ID = "selected_account_id";
-	public static final String SELECTED_ACCOUNT_NAME = "selected_account_name";
 	
 	public static final String SELECTED_TRANSACTION_IDS = "selected_transactions";
 
@@ -140,7 +140,7 @@ public class TransactionsListFragment extends SherlockListFragment implements
 		Bundle args = getArguments();
 		mAccountID = args.getLong(SELECTED_ACCOUNT_ID);	
 
-		mTransactionsDbAdapter = new TransactionsDbAdapter(getActivity().getApplicationContext());
+		mTransactionsDbAdapter = new TransactionsDbAdapter(getActivity());
 		mCursorAdapter = new TransactionsCursorAdapter(
 				getActivity().getApplicationContext(), 
 				R.layout.list_item_transaction, null, 
@@ -172,9 +172,14 @@ public class TransactionsListFragment extends SherlockListFragment implements
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {		
 		super.onActivityCreated(savedInstanceState);
-		String title = getArguments().getString(TransactionsListFragment.SELECTED_ACCOUNT_NAME);
+		
+		//we have already a database open which is cached, so little overhead
+		AccountsDbAdapter accAdapter = new AccountsDbAdapter(getActivity());
+		String name = accAdapter.getName(mAccountID);
+		accAdapter.close();
+		
 		ActionBar aBar = getSherlockActivity().getSupportActionBar();
-		aBar.setTitle(title);
+		aBar.setTitle(name);
 		aBar.setDisplayHomeAsUpEnabled(true);
 
 		setHasOptionsMenu(true);		

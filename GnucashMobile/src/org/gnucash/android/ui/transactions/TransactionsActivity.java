@@ -21,7 +21,6 @@ public class TransactionsActivity extends SherlockFragmentActivity implements On
 	public static final String FRAGMENT_NEW_TRANSACTION 	= "new_transaction";	
 	
 	private long mAccountId 	= 0;
-	private String mAccountName = "";
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -30,12 +29,9 @@ public class TransactionsActivity extends SherlockFragmentActivity implements On
 
 		final Intent intent = getIntent();
 		mAccountId = intent.getLongExtra(
-				TransactionsListFragment.SELECTED_ACCOUNT_ID, -1);
-		mAccountName = intent
-				.getStringExtra(TransactionsListFragment.SELECTED_ACCOUNT_NAME);		
+				TransactionsListFragment.SELECTED_ACCOUNT_ID, -1);	
 		
 		showTransactionsList();
-		setTitle(mAccountName);
 		
 		if (intent.getAction().equals(Intent.ACTION_INSERT_OR_EDIT)) {			
 			long transactionId = intent.getLongExtra(
@@ -85,10 +81,8 @@ public class TransactionsActivity extends SherlockFragmentActivity implements On
 			Bundle args = new Bundle();
 			args.putLong(TransactionsListFragment.SELECTED_ACCOUNT_ID,
 					mAccountId);
-			args.putString(TransactionsListFragment.SELECTED_ACCOUNT_NAME,
-					mAccountName);
 			transactionsListFragment.setArguments(args);
-			Log.i(TAG, "Opening transactions for account " + mAccountName);
+			Log.i(TAG, "Opening transactions for account id " +  mAccountId);
 
 			fragmentTransaction.add(R.id.fragment_container,
 					transactionsListFragment, FRAGMENT_TRANSACTIONS_LIST);

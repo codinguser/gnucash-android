@@ -210,6 +210,12 @@ public class AccountsListFragment extends SherlockListFragment implements
 	}
 	
 	@Override
+	public void onResume() {	
+		super.onResume();
+		refreshList();
+	}
+	
+	@Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
 		try {
@@ -401,7 +407,6 @@ public class AccountsListFragment extends SherlockListFragment implements
 			TextView summary = (TextView) v
 					.findViewById(R.id.transactions_summary);
 			final long accountId = cursor.getLong(DatabaseAdapter.COLUMN_ROW_ID);
-			final String accountName = cursor.getString(DatabaseAdapter.COLUMN_NAME);
 			
 			Money balance = transactionsDBAdapter.getTransactionsSum(accountId);
 			summary.setText(balance.formattedString(Locale.getDefault()));
@@ -417,7 +422,6 @@ public class AccountsListFragment extends SherlockListFragment implements
 					Intent intent = new Intent(getActivity(), TransactionsActivity.class);
 					intent.setAction(Intent.ACTION_INSERT_OR_EDIT);
 					intent.putExtra(TransactionsListFragment.SELECTED_ACCOUNT_ID, accountId);
-					intent.putExtra(TransactionsListFragment.SELECTED_ACCOUNT_NAME, accountName);
 					getActivity().startActivity(intent);
 				}
 			});

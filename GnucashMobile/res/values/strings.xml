@@ -90,6 +90,9 @@
     <string name="label_permission_record_transaction">record transactions</string>
     <string name="label_permission_create_account">create accounts</string>
     <string name="label_display_account">Display account</string>
+    <string name="btn_create_accounts">Create Accounts</string>
+    <string name="title_default_accounts">Select accounts to create</string>
+    <string name="key_first_run">key_first_run</string>
     <string-array name="currency_names">
         <item>Afghani</item>
 		<item>Algerian Dinar</item>
@@ -445,6 +448,13 @@
 		<item>ZWL</item>
 		<item>PLN</item>
     </string-array>
+	<string-array name="default_accounts">
+	    <item>Expenses</item>
+	    <item>Income</item>
+	    <item>Assets</item>	    
+	    <item>Entertainment</item>
+	    <item>Insurance</item>
+	</string-array>
 	
   	
 </resources>
