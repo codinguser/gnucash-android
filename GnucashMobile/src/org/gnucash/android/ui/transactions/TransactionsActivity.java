@@ -51,7 +51,8 @@ public class TransactionsActivity extends SherlockFragmentActivity implements On
 	        FragmentManager fm = getSupportFragmentManager();
 	        if (fm.getBackStackEntryCount() > 0) {
 	            fm.popBackStack();
-	        }
+	        } else
+	        	finish();
 	        return true;
 
 		default:

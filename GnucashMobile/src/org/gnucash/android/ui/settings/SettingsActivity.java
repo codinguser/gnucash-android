@@ -71,6 +71,7 @@ public class SettingsActivity extends SherlockPreferenceActivity{
 			ActionBar actionBar = ((SherlockPreferenceActivity) getActivity()).getSupportActionBar();
 			actionBar.setHomeButtonEnabled(true);
 			actionBar.setDisplayHomeAsUpEnabled(true);
+						
 		}		
 	}
 }

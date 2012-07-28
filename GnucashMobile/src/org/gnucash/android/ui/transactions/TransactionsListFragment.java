@@ -70,8 +70,8 @@ public class TransactionsListFragment extends SherlockListFragment implements
 
 	protected static final String TAG = "TransactionsListFragment";
 
-	private static final String SAVED_SELECTED_ITEMS = "selected_items";	
-	public static final String SELECTED_ACCOUNT_ID = "selected_account_id";
+	private static final String SAVED_SELECTED_ITEMS 	= "selected_items";	
+	public static final String SELECTED_ACCOUNT_ID 		= "selected_account_id";
 	
 	public static final String SELECTED_TRANSACTION_IDS = "selected_transactions";
 
@@ -318,7 +318,6 @@ public class TransactionsListFragment extends SherlockListFragment implements
 		mInEditMode = true;
         // Start the CAB using the ActionMode.Callback defined above
         mActionMode = getSherlockActivity().startActionMode(mActionModeCallbacks);
-
 	}
 	
 	private void stopActionMode(){
