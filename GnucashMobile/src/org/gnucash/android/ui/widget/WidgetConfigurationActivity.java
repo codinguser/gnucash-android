@@ -69,8 +69,8 @@ public class WidgetConfigurationActivity extends Activity {
 		setResult(RESULT_CANCELED);
 		
 		mAccountsSpinner = (Spinner) findViewById(R.id.input_accounts_spinner);
-		mOkButton = (Button) findViewById(R.id.btn_save);
-		mCancelButton = (Button) findViewById(R.id.btn_cancel);
+		mOkButton 		= (Button) findViewById(R.id.btn_save);
+		mCancelButton 	= (Button) findViewById(R.id.btn_cancel);
 		
 		String[] from = new String[] {DatabaseHelper.KEY_NAME};
 		int[] to = new int[] {android.R.id.text1};
@@ -94,6 +94,12 @@ public class WidgetConfigurationActivity extends Activity {
 		bindListeners();
 	}
 
+	@Override
+	protected void onDestroy() {		
+		super.onDestroy();
+		mAccountsDbAdapter.close();
+	}
+	
 	private void bindListeners() {
 		mOkButton.setOnClickListener(new View.OnClickListener() {
 			
@@ -107,17 +113,18 @@ public class WidgetConfigurationActivity extends Activity {
 				            AppWidgetManager.INVALID_APPWIDGET_ID);
 				}
 				
-				if (mAppWidgetId == AppWidgetManager.INVALID_APPWIDGET_ID)
+				if (mAppWidgetId == AppWidgetManager.INVALID_APPWIDGET_ID){
+					finish();
 					return;
+				}					
 				
+				long accountId = mAccountsSpinner.getSelectedItemId();
 				SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(WidgetConfigurationActivity.this);
 				Editor editor = prefs.edit();
-				editor.putLong(TransactionsListFragment.SELECTED_ACCOUNT_ID + mAppWidgetId, 
-						mAccountsSpinner.getSelectedItemId());	
-				
+				editor.putLong(TransactionsListFragment.SELECTED_ACCOUNT_ID + mAppWidgetId, accountId);					
 				editor.commit();	
 				
-				updateWidget(WidgetConfigurationActivity.this, mAppWidgetId, mAccountsSpinner.getSelectedItemId());
+				updateWidget(WidgetConfigurationActivity.this, mAppWidgetId, accountId);
 						
 				Intent resultValue = new Intent();
 				resultValue.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, mAppWidgetId);
@@ -161,16 +168,18 @@ public class WidgetConfigurationActivity extends Activity {
 		
 		Intent accountViewIntent = new Intent(context, TransactionsActivity.class);
 		accountViewIntent.setAction(Intent.ACTION_VIEW);
+		accountViewIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
 		accountViewIntent.putExtra(TransactionsListFragment.SELECTED_ACCOUNT_ID, accountId);
 		PendingIntent accountPendingIntent = PendingIntent
-				.getActivity(context, 0, accountViewIntent, 0);
+				.getActivity(context, appWidgetId, accountViewIntent, 0);
 		views.setOnClickPendingIntent(R.id.widget_layout, accountPendingIntent);
 		
 		Intent newTransactionIntent = new Intent(context, TransactionsActivity.class);
 		newTransactionIntent.setAction(Intent.ACTION_INSERT_OR_EDIT);
+		newTransactionIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
 		newTransactionIntent.putExtra(TransactionsListFragment.SELECTED_ACCOUNT_ID, accountId);		
 		PendingIntent pendingIntent = PendingIntent
-				.getActivity(context, 0, newTransactionIntent, 0);	            
+				.getActivity(context, appWidgetId, newTransactionIntent, 0);	            
 		views.setOnClickPendingIntent(R.id.btn_new_transaction, pendingIntent);
 		
 		appWidgetManager.updateAppWidget(appWidgetId, views);
@@ -183,13 +192,13 @@ public class WidgetConfigurationActivity extends Activity {
 		int[] appWidgetIds = widgetManager.getAppWidgetIds(componentName);
 		
 		for (int widgetId : appWidgetIds) {
-			long accId = PreferenceManager
+			long accountId = PreferenceManager
             		.getDefaultSharedPreferences(context)
             		.getLong(TransactionsListFragment.SELECTED_ACCOUNT_ID + widgetId, -1);
             
-			if (accId < 0)
+			if (accountId < 0)
 				continue;
-			updateWidget(context, widgetId, accId);
+			updateWidget(context, widgetId, accountId);
 		}
 	}
 }

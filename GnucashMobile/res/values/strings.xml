@@ -462,6 +462,7 @@
 	<string name="title_license">License</string>
 	<string name="summary_licence_details">Details to the application license</string>
 	<string name="key_license">app_license</string>
+	<string name="label_widget_configuration">Select Account</string>
 	
   	
 </resources>
