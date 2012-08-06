@@ -273,6 +273,23 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 	}
 	
 	/**
+	 * Returns the total number of transactions in the database
+	 * regardless of what account they belong to
+	 * @return Number of transaction in the database
+	 */
+	public int getAllTransactionsCount(){
+		Cursor cursor = fetchAllRecords(DatabaseHelper.TRANSACTIONS_TABLE_NAME);
+		int count = 0;
+		if (cursor == null)
+			return count;
+		else {
+			count = cursor.getCount();
+			cursor.close();
+		}
+		return count;
+	}
+	
+	/**
 	 * Returns the sum of transactions belonging to the account with id <code>accountId</code>
 	 * @param accountId Record ID of the account
 	 * @return Sum of transactions belonging to the account

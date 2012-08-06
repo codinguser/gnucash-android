@@ -22,7 +22,7 @@
  * Boston, MA  02110-1301,  USA       gnu@gnu.org
  */
 
-package org.gnucash.android.test;
+package org.gnucash.android.test.ui;
 
 import java.util.Date;
 import java.util.List;
@@ -117,8 +117,8 @@ public class TransactionsActivityTest extends
 		mSolo.waitForText(DUMMY_ACCOUNT_NAME);
 		validateTransactionListDisplayed();
 		
-//		mSolo.clickOnActionBarItem(R.id.menu_add_transaction);
-		mSolo.clickOnImage(2);
+		mSolo.clickOnActionBarItem(R.id.menu_add_transaction);
+//		mSolo.clickOnImage(2);
 		mSolo.waitForText("Description");
 		
 		validateNewTransactionFields();
@@ -133,8 +133,8 @@ public class TransactionsActivityTest extends
 		
 		int transactionsCount = getTranscationCount();
 		
-//		mSolo.clickOnActionBarItem(R.id.menu_save);	
-		mSolo.clickOnImage(3);
+		mSolo.clickOnActionBarItem(R.id.menu_save);	
+//		mSolo.clickOnImage(3);
 		mSolo.waitForText(DUMMY_ACCOUNT_NAME);
 		validateTransactionListDisplayed();
 		
@@ -197,6 +197,34 @@ public class TransactionsActivityTest extends
 		
 		accAdapter.close();
 		adapter.close();
+		
+	}
+	
+	public void testBulkMoveTransactions(){
+		Account account = new Account("Target");
+		AccountsDbAdapter accountsDbAdapter = new AccountsDbAdapter(getActivity());
+		accountsDbAdapter.addAccount(account);
+		
+		int beforeOriginCount = accountsDbAdapter.getAccount(DUMMY_ACCOUNT_UID).getTransactionCount();
+		
+		mSolo.waitForText(DUMMY_ACCOUNT_NAME);
+		
+		validateTransactionListDisplayed();
+		
+		mSolo.clickOnCheckBox(0);
+		mSolo.clickOnImage(1);
+		
+		mSolo.pressSpinnerItem(0, 1);
+		mSolo.clickOnButton(1);
+//		mSolo.clickOnText(getActivity().getString(R.string.menu_move));
+		
+		int targetCount = accountsDbAdapter.getAccount(account.getUID()).getTransactionCount();		
+		assertEquals(1, targetCount);
+		
+		int afterOriginCount = accountsDbAdapter.getAccount(DUMMY_ACCOUNT_UID).getTransactionCount();
+		assertEquals(beforeOriginCount-1, afterOriginCount);
+		
+		accountsDbAdapter.close();
 		
 	}
 	

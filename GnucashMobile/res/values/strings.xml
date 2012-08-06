@@ -463,6 +463,7 @@
 	<string name="summary_licence_details">Details to the application license</string>
 	<string name="key_license">app_license</string>
 	<string name="label_widget_configuration">Select Account</string>
+	<string name="toast_no_transactions_to_export">There are no transactions available to export</string>
 	
   	
 </resources>

@@ -122,8 +122,12 @@ public class Money implements Comparable<Money>{
 		return mAmount.doubleValue();
 	}
 	
+	/**
+	 * An alias for {@link #toPlainString()}
+	 * @return Money formatted as a string (excludes the currency)
+	 */
 	public String asString(){
-		return mAmount.toPlainString();
+		return toPlainString();
 	}
 	
 	public String formattedString(Locale locale){

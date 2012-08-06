@@ -100,7 +100,6 @@ public class OfxFormatter {
 	 * @param parent Parent node for all expenses in report
 	 */
 	public void toXml(Document doc, Element parent){
-		
 		Element transactionUid = doc.createElement("TRNUID");		
 		//unsolicited because the data exported is not as a result of a request
 		transactionUid.appendChild(doc.createTextNode(UNSOLICITED_TRANSACTION_ID));

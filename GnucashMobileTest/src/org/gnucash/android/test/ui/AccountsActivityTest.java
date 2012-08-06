@@ -22,8 +22,9 @@
  * Boston, MA  02110-1301,  USA       gnu@gnu.org
  */
 
-package org.gnucash.android.test;
+package org.gnucash.android.test.ui;
 
+import java.util.Currency;
 import java.util.List;
 
 import org.gnucash.android.R;
@@ -65,6 +66,7 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
 		
 		AccountsDbAdapter adapter = new AccountsDbAdapter(getActivity());
 		Account account = new Account(DUMMY_ACCOUNT_NAME);
+		account.setCurrency(Currency.getInstance("USD"));
 		adapter.addAccount(account);
 		adapter.close();
 	}
@@ -87,6 +89,10 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
 		mSolo.waitForText("Create");
 		mSolo.enterText(0, "New Account");
 		
+		//this depends on the strings resource for currencies
+		//the euro is on position 48. If list changes, fix this test
+		int position = mSolo.getCurrentSpinners().get(0).getSelectedItemPosition();
+		mSolo.pressSpinnerItem(0, 48 - position);
 		mSolo.clickOnButton(1);
 		
 		mSolo.waitForDialogToClose(1000);
@@ -96,6 +102,15 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
 				.findViewById(R.id.account_name);
 		
 		assertEquals(v.getText().toString(), "New Account");
+		AccountsDbAdapter accAdapter = new AccountsDbAdapter(getActivity());
+		
+		List<Account> accounts = accAdapter.getAllAccounts();
+		Account newestAccount = accounts.get(accounts.size()-1);
+		
+		assertEquals(newestAccount.getName(), "New Account");
+		assertEquals(newestAccount.getCurrency().getCurrencyCode(), "EUR");	
+		
+		accAdapter.close();		
 	}
 	
 	public void testEditAccount(){
@@ -115,6 +130,11 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
 		mSolo.clearEditText(0);
 		mSolo.enterText(0, editedAccountName);
 		
+		//this depends on the strings resource for currencies
+		//the Euro is on position 48. If list changes, fix this test
+		int position = mSolo.getCurrentSpinners().get(0).getSelectedItemPosition();
+		mSolo.pressSpinnerItem(0, 48 - position);
+		
 		mSolo.clickOnButton(1);
 		
 		mSolo.waitForDialogToClose(1000);
@@ -123,6 +143,15 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
 		TextView tv = (TextView) lv.getChildAt(lv.getCount() - 1)
 				.findViewById(R.id.account_name);		
 		assertEquals(editedAccountName, tv.getText().toString());
+		
+		AccountsDbAdapter accAdapter = new AccountsDbAdapter(getActivity());
+		
+		List<Account> accounts = accAdapter.getAllAccounts();
+		Account latest = accounts.get(accounts.size()-1);
+		
+		assertEquals(latest.getName(), "Edited Account");
+		assertEquals(latest.getCurrency().getCurrencyCode(), "EUR");	
+		accAdapter.close();
 	}
 	
 	public void testDisplayTransactionsList(){	
