@@ -120,6 +120,7 @@ public class OfxExportTest extends
 		mSolo.clickOnView(spinner);
 		String[] options = getActivity().getResources().getStringArray(R.array.export_destinations);	
 		mSolo.clickOnText(options[1]);
+		mSolo.clickOnCheckBox(0);
 		mSolo.clickOnButton(3);
 		
 		//the file name is time-based (down to the minute), so we cache it here, 
@@ -132,12 +133,12 @@ public class OfxExportTest extends
 		File file = new File(Environment.getExternalStorageDirectory() + "/gnucash/" + filename);
 		assertNotNull(file);
 		assertTrue(file.exists());
-		//there should be something in the file (boilerplate xml)
+		//there should be something in the file (OFX headers, etc)
 		assertTrue(file.length() > 0);
 		
 		//if this is not deleted, we cannot be certain that the next test will pass on its own merits
 		boolean isDeleted = file.delete();
-		assertTrue(isDeleted);
+		assertTrue(isDeleted);		
 	}
 	
 	public void testExportAlreadyExportedTransactions(){

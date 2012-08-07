@@ -79,12 +79,6 @@ public class Account {
 	private List<Transaction> mTransactionsList = new ArrayList<Transaction>();
 
 	/**
-	 * Default currency code (according ISO 4217) to use for creating accounts
-	 * This is typically initialized to the currency of the device default locale
-	 */
-	public static String DEFAULT_CURRENCY_CODE 	= "USD";
-
-	/**
 	 * An extra key for passing the currency code (according ISO 4217) in an intent
 	 */
 	public static final String EXTRA_CURRENCY_CODE 	= "org.gnucash.extra.currency_code";
@@ -97,7 +91,7 @@ public class Account {
 	public Account(String name) {
 		setName(name);
 		this.mUID = generateUID();
-		this.mCurrency = Currency.getInstance(Account.DEFAULT_CURRENCY_CODE);
+		this.mCurrency = Currency.getInstance(Money.DEFAULT_CURRENCY_CODE);
 	}
 	
 	/**

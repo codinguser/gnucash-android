@@ -22,6 +22,7 @@ import java.util.Locale;
 
 import org.gnucash.android.R;
 import org.gnucash.android.data.Account;
+import org.gnucash.android.data.Money;
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.ui.transactions.TransactionsActivity;
 import org.gnucash.android.ui.transactions.TransactionsListFragment;
@@ -69,7 +70,7 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
 
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 		String currencyCode = prefs.getString(getString(R.string.pref_default_currency), Currency.getInstance(Locale.getDefault()).getCurrencyCode());
-		Account.DEFAULT_CURRENCY_CODE = currencyCode;		
+		Money.DEFAULT_CURRENCY_CODE = currencyCode;		
 		
 		boolean firstRun = prefs.getBoolean(getString(R.string.key_first_run), true);
 		if (firstRun){

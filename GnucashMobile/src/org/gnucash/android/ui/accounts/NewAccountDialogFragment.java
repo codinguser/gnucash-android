@@ -22,6 +22,7 @@ import java.util.List;
 
 import org.gnucash.android.R;
 import org.gnucash.android.data.Account;
+import org.gnucash.android.data.Money;
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.ui.transactions.TransactionsListFragment;
 import org.gnucash.android.ui.widget.WidgetConfigurationActivity;
@@ -131,7 +132,7 @@ public class NewAccountDialogFragment extends SherlockDialogFragment {
 		arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		mCurrencySpinner.setAdapter(arrayAdapter);
 		
-		String currencyCode = PreferenceManager.getDefaultSharedPreferences(getActivity()).getString(getString(R.string.pref_default_currency), Account.DEFAULT_CURRENCY_CODE);
+		String currencyCode = PreferenceManager.getDefaultSharedPreferences(getActivity()).getString(getString(R.string.pref_default_currency), Money.DEFAULT_CURRENCY_CODE);
 		if (mSelectedId != 0){
 			//if we are editing an account instead of creating one
 			currencyCode = mAccount.getCurrency().getCurrencyCode();

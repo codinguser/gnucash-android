@@ -193,7 +193,7 @@ public class NewTransactionFragment extends SherlockFragment implements
 				mAccountsSpinner.setSelection(pos);
 		}
 		
-		String code = Account.DEFAULT_CURRENCY_CODE;
+		String code = Money.DEFAULT_CURRENCY_CODE;
 		if (accountId != 0)
 			code = mTransactionsDbAdapter.getCurrencyCode(accountId);
 		

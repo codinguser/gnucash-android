@@ -42,7 +42,7 @@ public class TransactionRecorder extends BroadcastReceiver {
 		double amountDouble = args.getDouble(Transaction.EXTRA_AMOUNT, 0);
 		String currencyCode = args.getString(Account.EXTRA_CURRENCY_CODE);
 		if (currencyCode == null)
-			currencyCode = Account.DEFAULT_CURRENCY_CODE;
+			currencyCode = Money.DEFAULT_CURRENCY_CODE;
 		
 		String accountUID = args.getString(Transaction.EXTRA_ACCOUNT_UID);
 		if (accountUID == null)

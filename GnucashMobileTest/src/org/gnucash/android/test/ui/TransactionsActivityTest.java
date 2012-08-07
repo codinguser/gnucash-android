@@ -121,7 +121,7 @@ public class TransactionsActivityTest extends
 		mSolo.enterText(1, "899");
 		//check that the amount is correctly converted in the input field
 		String value = mSolo.getEditText(1).getText().toString();
-		double actualValue = Double.parseDouble(Money.parse(value));
+		double actualValue = Double.parseDouble(Money.parseToString(value));
 		assertEquals(-8.99, actualValue);
 		
 		int transactionsCount = getTranscationCount();
