@@ -16,12 +16,13 @@
 -->
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
-    <Preference android:summary="@string/app_version" android:key="@string/key_build_version" android:title="@string/title_build_version"/>
+    <Preference android:key="@string/key_about" android:summary="@string/summary_about_gnucash"/><Preference android:summary="@string/app_version" android:key="@string/key_build_version" android:title="@string/title_build_version"/>
     <Preference android:summary="@string/summary_licence_details" 
         android:title="@string/title_license" 
         android:key="@string/key_license">
         <intent android:action="android.intent.action.VIEW"
-        	android:data="http://www.gnu.org/licenses/gpl-2.0.html" />
-	</Preference>    
+        	android:data="http://www.apache.org/licenses/LICENSE-2.0.html" />
+	</Preference>
+        
 
 </PreferenceScreen>
