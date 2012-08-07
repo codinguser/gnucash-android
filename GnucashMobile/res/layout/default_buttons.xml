@@ -27,7 +27,7 @@
         android:layout_height="wrap_content"
         android:padding="14dp"
         android:layout_weight="1"       
-        android:drawableLeft="@drawable/navigation_cancel"     
+        android:drawableLeft="@drawable/navigation_cancel_holo_light"     
         android:text="@string/btn_cancel" />
 
     <Button
@@ -36,6 +36,6 @@
         android:layout_height="wrap_content"
         android:padding="14dp"
         android:layout_weight="1"        
-        android:drawableLeft="@drawable/navigation_accept"
+        android:drawableLeft="@drawable/navigation_accept_holo_light"
         android:text="@string/btn_save" />       
 </LinearLayout>

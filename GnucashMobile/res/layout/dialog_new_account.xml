@@ -38,7 +38,8 @@
 		android:layout_height="wrap_content"
 		android:layout_margin="10dp"		
         />
-    
+        <include layout="@layout/default_buttons"/>
+<!--  
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -64,5 +65,5 @@
             android:drawableLeft="@drawable/navigation_accept"
             android:text="@string/btn_save" />       
     </LinearLayout>
-    
+    -->
 </LinearLayout>

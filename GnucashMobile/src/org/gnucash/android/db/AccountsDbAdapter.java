@@ -210,6 +210,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 		Cursor c = fetchRecord(DatabaseHelper.ACCOUNTS_TABLE_NAME, accountID);
 		if (c != null && c.moveToFirst()){
 			name = c.getString(DatabaseAdapter.COLUMN_NAME);
+			c.close();
 		}
 		return name;
 	}

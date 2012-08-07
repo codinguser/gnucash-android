@@ -34,30 +34,7 @@
         android:layout_width="match_parent"        
         android:minHeight="?android:attr/listPreferredItemHeight"
         />
-    
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingTop="10dp"
-        android:paddingBottom="10dp"
-        android:orientation="horizontal" >
+      
+    <include layout="@layout/default_buttons"/>
 
-        <Button
-            android:id="@+id/btn_cancel"
-            android:layout_width="0dp"            
-            android:layout_height="wrap_content"
-            android:padding="12dp"
-            android:layout_weight="1"       
-            android:drawableLeft="@drawable/navigation_cancel"     
-            android:text="@string/btn_cancel" />
-
-        <Button
-            android:id="@+id/btn_move"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:padding="12dp"
-            android:layout_weight="1"
-            android:drawableLeft="@drawable/content_copy"                        
-            android:text="@string/btn_move" />       
-    </LinearLayout>
 </LinearLayout>

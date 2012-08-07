@@ -51,7 +51,7 @@
 	        android:layout_height="wrap_content"
 	        android:layout_marginRight="@dimen/edge_padding"
 	        android:layout_marginLeft="@dimen/edge_padding"
-	        android:src="@drawable/content_new"
+	        android:src="@drawable/content_new_holo_light"
 	        android:background="@drawable/appwidget_bg_clickable"
 	        android:contentDescription="@string/add_transaction_icon_description"/>
 	</LinearLayout>        

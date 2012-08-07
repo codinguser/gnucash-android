@@ -161,6 +161,7 @@ public class ExportDialogFragment extends DialogFragment {
 		mDeleteAllCheckBox = (CheckBox) v.findViewById(R.id.checkbox_post_export_delete);
 		
 		mSaveButton = (Button) v.findViewById(R.id.btn_save);
+		mSaveButton.setText(R.string.btn_export);
 		mCancelButton = (Button) v.findViewById(R.id.btn_cancel);
 		
 		mCancelButton.setOnClickListener(new View.OnClickListener() {

@@ -109,8 +109,9 @@ public class TransactionsActivityTest extends
 		mSolo.waitForText(DUMMY_ACCOUNT_NAME);
 		validateTransactionListDisplayed();
 		
-		mSolo.clickOnActionBarItem(R.id.menu_add_transaction);
-//		mSolo.clickOnImage(2);
+		//Android 2.2 cannot handle this for some reason, use image instead
+//		mSolo.clickOnActionBarItem(R.id.menu_add_transaction);
+		mSolo.clickOnImage(2);
 		mSolo.waitForText("Description");
 		
 		validateNewTransactionFields();
@@ -125,12 +126,13 @@ public class TransactionsActivityTest extends
 		
 		int transactionsCount = getTranscationCount();
 		
-		mSolo.clickOnActionBarItem(R.id.menu_save);	
-//		mSolo.clickOnImage(3);
+		//Android 2.2 cannot handle this for some reason
+//		mSolo.clickOnActionBarItem(R.id.menu_save);	
+		mSolo.clickOnImage(3);
 		mSolo.waitForText(DUMMY_ACCOUNT_NAME);
 		validateTransactionListDisplayed();
 		
-		assertEquals(getTranscationCount(), transactionsCount + 1);
+		assertEquals(transactionsCount + 1, getTranscationCount());
 	}
 	
 	private void validateEditTransactionFields(Transaction transaction){

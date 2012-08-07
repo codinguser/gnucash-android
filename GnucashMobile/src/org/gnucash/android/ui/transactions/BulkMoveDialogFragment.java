@@ -51,7 +51,9 @@ public class BulkMoveDialogFragment extends DialogFragment {
 		View v = inflater.inflate(R.layout.dialog_bulk_move, container, false);
 		
 		mDestinationAccountSpinner = (Spinner) v.findViewById(R.id.accounts_list_spinner);
-		mOkButton = (Button) v.findViewById(R.id.btn_move);
+		mOkButton = (Button) v.findViewById(R.id.btn_save);
+		mOkButton.setText(R.string.btn_move);
+		
 		mCancelButton = (Button) v.findViewById(R.id.btn_cancel);
 		return v;
 	}

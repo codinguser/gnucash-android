@@ -37,11 +37,6 @@ public class OfxExportTest extends
 
 	private Solo mSolo;
 	
-	/**
-	 * For these tests, this is the expected file size for a normal OFX export
-	 */
-	private long EXPECTED_FILE_SIZE = 990;
-	
 	public OfxExportTest() {
 		super(AccountsActivity.class);
 	}
@@ -61,13 +56,6 @@ public class OfxExportTest extends
 		AccountsDbAdapter adapter = new AccountsDbAdapter(getActivity());
 		adapter.addAccount(account);
 		adapter.close();	
-		
-		//need atleast 60 seconds between tests becuase the exported file names 
-		//differ only in the timestamp. So to verify that each file is really
-		//created from independent stamps, we make sure the timestamp is different
-		synchronized (this) {
-			wait(60000);
-		}		
 	}
 	
 	/**
@@ -96,7 +84,10 @@ public class OfxExportTest extends
 		File file = new File(Environment.getExternalStorageDirectory() + "/gnucash/" + filename);
 		assertNotNull(file);
 		assertTrue(file.exists());
-		assertEquals(EXPECTED_FILE_SIZE, file.length());
+		
+		//if this is not deleted, we cannot be certain that the next test will pass on its own merits
+		boolean isDeleted = file.delete();
+		assertTrue(isDeleted);
 	}	
 	
 	public void testDeleteTransactionsAfterExport(){
@@ -141,8 +132,12 @@ public class OfxExportTest extends
 		File file = new File(Environment.getExternalStorageDirectory() + "/gnucash/" + filename);
 		assertNotNull(file);
 		assertTrue(file.exists());
-		assertTrue(file.length() < EXPECTED_FILE_SIZE);
+		//there should be something in the file (boilerplate xml)
 		assertTrue(file.length() > 0);
+		
+		//if this is not deleted, we cannot be certain that the next test will pass on its own merits
+		boolean isDeleted = file.delete();
+		assertTrue(isDeleted);
 	}
 	
 	public void testExportAlreadyExportedTransactions(){
@@ -169,11 +164,14 @@ public class OfxExportTest extends
 		assertNotNull(file);
 		//the file will exist but not contain any account information
 		assertTrue(file.exists());
-		assertEquals(EXPECTED_FILE_SIZE, file.length());
+
+		//if this is not deleted, we cannot be certain that the next test will pass on its own merits
+		boolean isDeleted = file.delete();
+		assertTrue(isDeleted);		
 	}
 	
 	public void testValidityOfExport(){
-		//TODO: Validate with an XML schema if possible
+		//TODO: Validate exported file contents with an XML schema, if possible
 	}
 	
 	@Override
