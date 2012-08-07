@@ -1,25 +1,17 @@
 /*
- * Written By: Ngewi Fet <ngewif@gmail.com>
- * Copyright (c) 2012 Ngewi Fet
+ * Copyright (c) 2012 Ngewi Fet <ngewif@gmail.com>
  *
- * This file is part of Gnucash for Android
- * 
- * Gnucash for Android is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation; either version 2 of
- * the License, or (at your option) any later version.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, contact:
- *
- * Free Software Foundation           Voice:  +1-617-542-5942
- * 51 Franklin Street, Fifth Floor    Fax:    +1-617-542-2652
- * Boston, MA  02110-1301,  USA       gnu@gnu.org
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package org.gnucash.android.data;
@@ -30,27 +22,38 @@ import java.util.Currency;
 import java.util.List;
 import java.util.UUID;
 
-import org.gnucash.android.ui.accounts.AccountsActivity;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 /**
- * An account within which many {@link Transaction}s occur
+ * An account represents a transaction account in with {@link Transaction}s may be recorded
+ * Accounts have different types as specified by {@link AccountType} and also a currency with
+ * which transactions may be recorded in the account
+ * By default, an account is made an {@link AccountType#CHECKING} and the default currency is
+ * the currency of the Locale of the device on which the software is running. US Dollars is used
+ * if the platform locale cannot be determined.
+ * 
  * @author Ngewi Fet <ngewif@gmail.com>
- *
+ * @see AccountType
  */
 public class Account {
 
+	/**
+	 * The MIME type for accounts in GnucashMobile
+	 * This is used when sending intents from third-party applications
+	 */
 	public static final String MIME_TYPE = "vnd.android.cursor.item/vnd.org.gnucash.android.account";
 	
 	/**
 	 * The type of account
-	 *
+	 * This are the different types specified by the OFX format and 
+	 * they are currently not used except for exporting
 	 */
 	public enum AccountType {CHECKING, SAVINGS, MONEYMRKT, CREDITLINE};
 	
 	/**
-	 * Account ID
+	 * Unique Identifier of the account
+	 * It is generated when the account is created and can be set a posteriori as well
 	 */
 	private String mUID;
 	
@@ -59,8 +62,15 @@ public class Account {
 	 */
 	private String mName;
 	
+	/**
+	 * Currency used by transactions in this account
+	 */
 	private Currency mCurrency; 
 	
+	/**
+	 * Type of account
+	 * Defaults to {@link AccountType#CHECKING}
+	 */
 	private AccountType mAccountType = AccountType.CHECKING;
 	
 	/**
@@ -68,25 +78,39 @@ public class Account {
 	 */
 	private List<Transaction> mTransactionsList = new ArrayList<Transaction>();
 
+	/**
+	 * Default currency code (according ISO 4217) to use for creating accounts
+	 * This is typically initialized to the currency of the device default locale
+	 */
+	public static String DEFAULT_CURRENCY_CODE 	= "USD";
+
+	/**
+	 * An extra key for passing the currency code (according ISO 4217) in an intent
+	 */
 	public static final String EXTRA_CURRENCY_CODE 	= "org.gnucash.extra.currency_code";
 	
 	/**
 	 * Constructor
+	 * Creates a new account with the default currency and a generated unique ID
 	 * @param name Name of the account
 	 */
 	public Account(String name) {
 		setName(name);
 		this.mUID = generateUID();
-		this.mCurrency = Currency.getInstance(AccountsActivity.DEFAULT_CURRENCY_CODE);
+		this.mCurrency = Currency.getInstance(Account.DEFAULT_CURRENCY_CODE);
 	}
-
+	
+	/**
+	 * Overloaded constructor
+	 * @param name Name of the account
+	 * @param currency {@link Currency} to be used by transactions in this account
+	 */
 	public Account(String name, Currency currency){
 		setName(name);
 		this.mUID = generateUID();
 		this.mCurrency = currency;
 	}
-	
-	
+
 	/**
 	 * Sets the name of the account
 	 * @param name String name of the account
@@ -104,9 +128,8 @@ public class Account {
 	}
 	
 	/**
-	 * Generates a unique ID for the account that includes the 
-	 * name and a random string. This represents the ACCTID in the exported OFX
-	 * and should have a maximum of 22 alphanumeric characters
+	 * Generates a unique ID for the account based on the name and a random string. 
+	 * This represents the ACCTID in the exported OFX and should have a maximum of 22 alphanumeric characters
 	 * @return Generated Unique ID string
 	 */
 	protected String generateUID(){
@@ -160,6 +183,9 @@ public class Account {
 
 	/**
 	 * Adds a transaction to this account
+	 * The currency of the transaction will be set to the currency of the account
+	 * if they are not the same. The currency value conversion is performed, just 
+	 * a different currecy is assigned to the same value amount in the transaction.
 	 * @param transaction {@link Transaction} to be added to the account
 	 */
 	public void addTransaction(Transaction transaction){
@@ -169,13 +195,16 @@ public class Account {
 	}
 	
 	/**
-	 * Sets a list of transactions for this acccount.
-	 * Overrides any previous transactions with those in the list
-	 * @param transactionsList List of transactions to be set.
+	 * Sets a list of transactions for this account.
+	 * Overrides any previous transactions with those in the list.
+	 * The account UID and currency of the transactions will be set to the unique ID 
+	 * and currency of the account respectively
+	 * @param transactionsList List of {@link Transaction}s to be set.
 	 */
 	public void setTransactions(List<Transaction> transactionsList){
 		for (Transaction transaction : transactionsList) {
 			transaction.setAccountUID(getUID());
+			transaction.setCurrency(mCurrency);
 		}
 		this.mTransactionsList = transactionsList;
 	}
@@ -205,7 +234,7 @@ public class Account {
 	}
 	
 	/**
-	 * Returns true if there is atleast one transaction in the account
+	 * Returns true if there is at least one transaction in the account
 	 * which has not yet been exported
 	 * @return <code>true</code> if there are unexported transactions, <code>false</code> otherwise.
 	 */
@@ -220,7 +249,7 @@ public class Account {
 	/**
 	 * Returns the aggregate of all transactions in this account.
 	 * It takes into account debit and credit amounts
-	 * @return Aggregate amount of all transactions in account.
+	 * @return {@link Money} aggregate amount of all transactions in account.
 	 */
 	public Money getBalance(){
 		Money balance = new Money(new BigDecimal(0), this.mCurrency);
@@ -238,6 +267,7 @@ public class Account {
 	}
 
 	/**
+	 * Sets the currency to be used by this account
 	 * @param mCurrency the mCurrency to set
 	 */
 	public void setCurrency(Currency mCurrency) {		
@@ -249,7 +279,7 @@ public class Account {
 	/**
 	 * Converts this account's transactions into XML and adds them to the DOM document
 	 * @param doc XML DOM document for the OFX data
-	 * @param parent Node to which to add this account's transactions
+	 * @param parent Parent node to which to add this account's transactions in XML
 	 */
 	public void toXml(Document doc, Element parent, boolean allTransactions){
 		for (Transaction transaction : mTransactionsList) {

@@ -1,25 +1,17 @@
 /*
- * Written By: Ngewi Fet <ngewif@gmail.com>
- * Copyright (c) 2012 Ngewi Fet
+ * Copyright (c) 2012 Ngewi Fet <ngewif@gmail.com>
  *
- * This file is part of Gnucash for Android
- * 
- * Gnucash for Android is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation; either version 2 of
- * the License, or (at your option) any later version.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, contact:
- *
- * Free Software Foundation           Voice:  +1-617-542-5942
- * 51 Franklin Street, Fifth Floor    Fax:    +1-617-542-2652
- * Boston, MA  02110-1301,  USA       gnu@gnu.org
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package org.gnucash.android.db;
@@ -60,19 +52,22 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			+ KEY_UID 	+ " varchar(255) not null, "
 			+ KEY_NAME 	+ " varchar(255) not null, "
 			+ KEY_TYPE 	+ " varchar(255), "
-			+ KEY_CURRENCY_CODE + " varchar(255));";
+			+ KEY_CURRENCY_CODE + " varchar(255), "
+			+ "UNIQUE (" + KEY_UID + ")"	
+			+ ");";
 	
 	private static final String TRANSACTIONS_TABLE_CREATE = "create table " + TRANSACTIONS_TABLE_NAME + " ("
-			+ KEY_ROW_ID + " integer primary key autoincrement, "
-			+ KEY_UID 	+ " varchar(255) not null, "			
-			+ KEY_NAME 	+ " varchar(255), "
-			+ KEY_TYPE 	+ " varchar(255) not null, "
-			+ KEY_AMOUNT + " varchar(255) not null, "
+			+ KEY_ROW_ID 	+ " integer primary key autoincrement, "
+			+ KEY_UID 		+ " varchar(255) not null, "			
+			+ KEY_NAME 		+ " varchar(255), "
+			+ KEY_TYPE 		+ " varchar(255) not null, "
+			+ KEY_AMOUNT 	+ " varchar(255) not null, "
 			+ KEY_DESCRIPTION 	+ " text, "
 			+ KEY_TIMESTAMP 	+ " integer not null, "
 			+ KEY_ACCOUNT_UID 	+ " varchar(255) not null, "
 			+ KEY_EXPORTED 		+ " tinyint default 0, "
-			+ "FOREIGN KEY (" + KEY_ACCOUNT_UID + ") REFERENCES " + ACCOUNTS_TABLE_NAME + " (" + KEY_UID + ")"
+			+ "FOREIGN KEY (" 	+ KEY_ACCOUNT_UID + ") REFERENCES " + ACCOUNTS_TABLE_NAME + " (" + KEY_UID + "), "
+			+ "UNIQUE (" 		+ KEY_UID + ") " 
 			+ ");";
 
 	public DatabaseHelper(Context context){

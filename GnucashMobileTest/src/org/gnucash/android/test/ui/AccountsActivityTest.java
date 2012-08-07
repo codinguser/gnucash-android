@@ -1,25 +1,17 @@
 /*
- * Written By: Ngewi Fet <ngewif@gmail.com>
- * Copyright (c) 2012 Ngewi Fet
+ * Copyright (c) 2012 Ngewi Fet <ngewif@gmail.com>
  *
- * This file is part of Gnucash for Android
- * 
- * Gnucash for Android is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation; either version 2 of
- * the License, or (at your option) any later version.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, contact:
- *
- * Free Software Foundation           Voice:  +1-617-542-5942
- * 51 Franklin Street, Fifth Floor    Fax:    +1-617-542-2652
- * Boston, MA  02110-1301,  USA       gnu@gnu.org
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package org.gnucash.android.test.ui;
@@ -90,9 +82,9 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
 		mSolo.enterText(0, "New Account");
 		
 		//this depends on the strings resource for currencies
-		//the euro is on position 48. If list changes, fix this test
+		//the Swiss franc is on position 144. If list changes, fix this test
 		int position = mSolo.getCurrentSpinners().get(0).getSelectedItemPosition();
-		mSolo.pressSpinnerItem(0, 48 - position);
+		mSolo.pressSpinnerItem(0, 144 - position);
 		mSolo.clickOnButton(1);
 		
 		mSolo.waitForDialogToClose(1000);
@@ -108,7 +100,7 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
 		Account newestAccount = accounts.get(accounts.size()-1);
 		
 		assertEquals(newestAccount.getName(), "New Account");
-		assertEquals(newestAccount.getCurrency().getCurrencyCode(), "EUR");	
+		assertEquals(newestAccount.getCurrency().getCurrencyCode(), "CHF");	
 		
 		accAdapter.close();		
 	}
@@ -131,9 +123,9 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
 		mSolo.enterText(0, editedAccountName);
 		
 		//this depends on the strings resource for currencies
-		//the Euro is on position 48. If list changes, fix this test
+		//the Swiss franc is on position 144. If list changes, fix this test
 		int position = mSolo.getCurrentSpinners().get(0).getSelectedItemPosition();
-		mSolo.pressSpinnerItem(0, 48 - position);
+		mSolo.pressSpinnerItem(0, 144 - position);
 		
 		mSolo.clickOnButton(1);
 		
@@ -150,7 +142,7 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
 		Account latest = accounts.get(accounts.size()-1);
 		
 		assertEquals(latest.getName(), "Edited Account");
-		assertEquals(latest.getCurrency().getCurrencyCode(), "EUR");	
+		assertEquals(latest.getCurrency().getCurrencyCode(), "CHF");	
 		accAdapter.close();
 	}
 	
