@@ -33,7 +33,7 @@ import android.util.Log;
 /**
  * Manages persistence of {@link Transaction}s in the database
  * Handles adding, modifying and deleting of transaction records.
- * @author Ngewi Fet <ngewif@gmail.com 
+ * @author Ngewi Fet <ngewif@gmail.com> 
  * 
  */
 public class TransactionsDbAdapter extends DatabaseAdapter {
@@ -50,7 +50,7 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 	/**
 	 * Adds an transaction to the database. 
 	 * If a transaction already exists in the database with the same unique ID, 
-	 * then just update that transaction.
+	 * then the record will just be updated instead
 	 * @param transaction {@link Transaction} to be inserted to database
 	 * @return Database row ID of the inserted transaction
 	 */
@@ -178,17 +178,20 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 	}
 
 	/**
-	 * @param accountUID
-	 * @return
+	 * Returns the currency code (according to the ISO 4217 standard) of the account 
+	 * with unique Identifier <code>accountUID</code>
+	 * @param accountUID Unique Identifier of the account
+	 * @return Currency code of the account
+	 * @see #getCurrencyCode(long)
 	 */
-	protected String getCurrencyCode(String accountUID) {
+	public String getCurrencyCode(String accountUID) {
 		Cursor cursor = mDb.query(DatabaseHelper.ACCOUNTS_TABLE_NAME, 
 				new String[] {DatabaseHelper.KEY_CURRENCY_CODE}, 
 				DatabaseHelper.KEY_UID + "= '" + accountUID + "'", 
 				null, null, null, null);
 		
 		if (cursor == null || cursor.getCount() <= 0)
-			return "";
+			return null;
 					
 		cursor.moveToNext();
 		String currencyCode = cursor.getString(0);
@@ -196,6 +199,13 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 		return currencyCode;
 	}
 	
+	/**
+	 * Returns the currency code (ISO 4217) used by the account with id <code>accountId</code>
+	 * If you do not have the database record Id, you can call {@link #getAccountID(String)} instead.
+	 * @param accountId Database record id of the account 
+	 * @return Currency code of the account with Id <code>accountId</code>
+	 * @see #getCurrencyCode(String)
+	 */
 	public String getCurrencyCode(long accountId){
 		String accountUID = getAccountUID(accountId);
 		return getCurrencyCode(accountUID);
@@ -361,6 +371,11 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 		return uid;
 	}
 
+	/**
+	 * Returns the database row Id of the account with unique Identifier <code>accountUID</code>
+	 * @param accountUID Unique identifier of the account
+	 * @return Database row ID of the account
+	 */
 	public long getAccountID(String accountUID){
 		long id = -1;
 		Cursor c = mDb.query(DatabaseHelper.ACCOUNTS_TABLE_NAME, 

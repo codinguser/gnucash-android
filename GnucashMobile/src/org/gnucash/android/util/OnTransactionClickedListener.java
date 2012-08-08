@@ -16,9 +16,25 @@
 
 package org.gnucash.android.util;
 
+/**
+ * Interface for implemented by activities which wish to be notified when
+ * an action has been requested on a transaction (either creation or edit)
+ * This is typically used for Fragment-to-Activity communication
+ * 
+ * @author Ngewi Fet <ngewif@gmail.com>
+ *
+ */
 public interface OnTransactionClickedListener {
 
+	/**
+	 * Callback for creating a new transaction
+	 * @param accountRowId Database row ID of the account in which to create the new transaction
+	 */
 	public void createNewTransaction(long accountRowId);
 	
+	/**
+	 * Callback request to edit a transaction
+	 * @param transactionId Database row Id of the transaction to be edited
+	 */
 	public void editTransaction(long transactionId);	
 }

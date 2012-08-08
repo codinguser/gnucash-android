@@ -36,11 +36,11 @@ public class DatabaseAdapter {
 	protected static final String TAG = "DatabaseAdapter";
 	
 	//Column indices for the various columns in the database tables
-	//row_id, uid, name and type are common to both tables
-	public static final int COLUMN_ROW_ID = 0;
-	public static final int COLUMN_UID 	= 1;
-	public static final int COLUMN_NAME = 2;
-	public static final int COLUMN_TYPE = 3;
+	//row_id, uid, name and type are common to both tables 	
+	public static final int COLUMN_ROW_ID 	= 0;
+	public static final int COLUMN_UID 		= 1;
+	public static final int COLUMN_NAME 	= 2;
+	public static final int COLUMN_TYPE 	= 3;
 	
 	public static final int COLUMN_AMOUNT 		= 4;
 	public static final int COLUMN_DESCRIPTION 	= 5;
@@ -48,8 +48,8 @@ public class DatabaseAdapter {
 	public static final int COLUMN_ACCOUNT_UID 	= 7;
 	public static final int COLUMN_EXPORTED 	= 8;
 	
-	public static final int COLUMN_CURRENCY_CODE = 1;
-	public static final int COLUMN_ACCOUNT_CURRENCY_CODE = 4;
+	public static final int COLUMN_CURRENCY_CODE 			= 1;
+	public static final int COLUMN_ACCOUNT_CURRENCY_CODE 	= 4;
 	
 	/**
 	 * {@link DatabaseHelper} for creating and opening the database

@@ -21,32 +21,104 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+/**
+ * Helper class for managing the SQLite database.
+ * Creates the database and handles upgrades
+ * @author Ngewi Fet <ngewif@gmail.com>
+ *
+ */
 public class DatabaseHelper extends SQLiteOpenHelper {
 	
+	/**
+	 * Tag for logging
+	 */
 	private static final String TAG = "DatabaseHelper";
 	
+	/**
+	 * Name of the database
+	 */
 	private static final String DATABASE_NAME = "gnucash_db";
+	
+	/**
+	 * Database version.
+	 * With any change to the database schema, this number must increase
+	 */
 	private static final int DATABASE_VERSION = 1;
 	
+	/**
+	 * Name of accounts table
+	 */
 	public static final String ACCOUNTS_TABLE_NAME 		= "accounts";
-	public static final String TRANSACTIONS_TABLE_NAME 	= "transactions";
-	public static final String CURRENCIES_TABLE_NAME 	= "currencies";
 	
+	/**
+	 * Name of transactions table
+	 */
+	public static final String TRANSACTIONS_TABLE_NAME 	= "transactions";
+	
+	/**
+	 * Name of the row ID of database records
+	 * All tables in the database have this column as the first.
+	 * The name must be prefixed with an underscore to allow for Android optimizations
+	 */
 	public static final String KEY_ROW_ID 	= "_id";
+	
+	/**
+	 * Name column in the database.
+	 * Currently used by all tables
+	 */
 	public static final String KEY_NAME 	= "name";
+	
+	/**
+	 * Unique Identifier.
+	 */
 	public static final String KEY_UID 		= "uid";
+	
+	/**
+	 * Type database column
+	 */
 	public static final String KEY_TYPE 	= "type";
+	
+	/**
+	 * Currency code database column. 
+	 * Acceptable currency codes are specified by the ISO 4217 standard
+	 */
 	public static final String KEY_CURRENCY_CODE = "currency_code";
 	
+	/**
+	 * Transaction amount database column
+	 */
 	public static final String KEY_AMOUNT 		= "amount";
+	
+	/**
+	 * Account unique identifier database column
+	 * This associates transactions to accounts
+	 */
 	public static final String KEY_ACCOUNT_UID 	= "account_uid";
+	
+	/**
+	 * Transaction description database column
+	 */
 	public static final String KEY_DESCRIPTION 	= "description";
+	
+	/**
+	 * Transaction timestamp database column
+	 * Entries in this column indicate when the transaction was created
+	 */
 	public static final String KEY_TIMESTAMP 	= "timestamp";
+	
+	/**
+	 * Flag for exported transactions in the database
+	 */
 	public static final String KEY_EXPORTED		= "is_exported";
 	
-	//if you modify the order of the columns, 
+	/**********************************************************************************************************
+	//if you modify the order of the columns (i.e. the way they are created), 
 	//make sure to modify the indices in DatabaseAdapter
-
+	**********************************************************************************************************/
+	
+	/**
+	 * SQL statement to create the accounts table in the database
+	 */
 	private static final String ACCOUNTS_TABLE_CREATE = "create table " + ACCOUNTS_TABLE_NAME + " ("
 			+ KEY_ROW_ID + " integer primary key autoincrement, "
 			+ KEY_UID 	+ " varchar(255) not null, "
@@ -56,6 +128,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			+ "UNIQUE (" + KEY_UID + ")"	
 			+ ");";
 	
+	/**
+	 * SQL statement to create the transactions table in the database
+	 */
 	private static final String TRANSACTIONS_TABLE_CREATE = "create table " + TRANSACTIONS_TABLE_NAME + " ("
 			+ KEY_ROW_ID 	+ " integer primary key autoincrement, "
 			+ KEY_UID 		+ " varchar(255) not null, "			
@@ -70,6 +145,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			+ "UNIQUE (" 		+ KEY_UID + ") " 
 			+ ");";
 
+	/**
+	 * Constructor
+	 * @param context Application context
+	 */
 	public DatabaseHelper(Context context){
 		super(context, DATABASE_NAME, null, DATABASE_VERSION);		
 	}

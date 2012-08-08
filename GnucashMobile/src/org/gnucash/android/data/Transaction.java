@@ -25,29 +25,77 @@ import java.util.UUID;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import android.content.Intent;
+
 /**
- * Data model representation of a transaction
+ * Represents a financial transaction, either credit or debit.
+ * Transactions belong to accounts and each have the unique identifier of the account to which they belong.
+ * The default type is a debit, unless otherwise specified.
  * @author Ngewi Fet <ngewif@gmail.com>
- *
  */
 public class Transaction {
 	/**
 	 * Type of transaction, a credit or a debit
-	 * 
 	 */
 	public enum TransactionType {DEBIT, CREDIT};
 	
+	/**
+	 * Mime type for transactions in Gnucash. 
+	 * Used for recording transactions through intents
+	 */
 	public static final String MIME_TYPE 			= "vnd.android.cursor.item/vnd.org.gnucash.android.transaction";
+	
+	/**
+	 * Key for passing the account unique Identifier as an argument through an {@link Intent}
+	 */
 	public static final String EXTRA_ACCOUNT_UID 	= "org.gnucash.android.extra.account_uid";
+	
+	/**
+	 * Key for identifying the amount of the transaction through an Intent
+	 */
 	public static final String EXTRA_AMOUNT 		= "org.gnucash.android.extra.amount";
 	
+	/**
+	 * {@link Money} value of this transaction
+	 */
 	private Money mAmount;
+	
+	/**
+	 * Unique identifier of the transaction. 
+	 * This is automatically generated when the transaction is created.
+	 */
 	private String mTransactionUID;
+	
+	/**
+	 * Name describing the transaction
+	 */
 	private String mName;
+	
+	/**
+	 * An extra note giving details about the transaction
+	 */
 	private String mDescription = "";
+	
+	/**
+	 * Unique Identifier of the account to which this transaction belongs
+	 */
 	private String mAccountUID = null;
+	
+	/**
+	 * Flag indicating if this transaction has been exported before or not
+	 * The transactions are typically exported as bank statement in the OFX format
+	 */
 	private int mIsExported = 0;
+	
+	/**
+	 * Timestamp when this transaction occured
+	 */
 	private long mTimestamp;
+	
+	/**
+	 * Type of transaction, either credit or debit
+	 * @see TransactionType
+	 */
 	private TransactionType mType = TransactionType.DEBIT;
 	
 	/**
@@ -62,6 +110,12 @@ public class Transaction {
 		setAmount(amount); //takes care of setting the type for us
 	}
 	
+	/**
+	 * Overloaded constructor. Creates a new transaction instance with the 
+	 * provided data and initializes the rest to default values. 
+	 * @param amount Amount for the transaction as double
+	 * @param name Name of the transaction
+	 */
 	public Transaction(double amount, String name){
 		initDefaults();
 		setName(name);
@@ -107,7 +161,7 @@ public class Transaction {
 	
 	/**
 	 * Set the amount of this transaction
-	 * @param mAmount Amount of the transaction
+	 * @param amount Amount of the transaction
 	 */
 	public void setAmount(Money amount) {
 		this.mAmount = amount;
@@ -116,32 +170,52 @@ public class Transaction {
 
 	/**
 	 * Set the amount of this transaction
-	 * @param mAmount Amount of the transaction
+	 * @param amount Amount of the transaction
 	 */
 	public void setAmount(String amount) {
 		this.mAmount = new Money(amount);
 	}
 	
+	/**
+	 * Sets the amount and currency of the transaction
+	 * @param amount String containing number value of transaction amount
+	 * @param currencyCode ISO 4217 currency code
+	 */
 	public void setAmount(String amount, String currencyCode){
 		this.mAmount = new Money(new BigDecimal(amount),
 								 Currency.getInstance(currencyCode));
 	}
 	
+	/**
+	 * Sets the amount of the transaction
+	 * @param amount Amount value of the transaction
+	 */
 	public void setAmount(double amount){
 		setAmount(new Money(amount));
 	}
 	
+	/**
+	 * Sets the currency of the transaction
+	 * The currency remains in the object model and is not persisted to the database
+	 * Transactions always use the currency of their accounts
+	 * @param currency {@link Currency} of the transaction value
+	 */
 	public void setCurrency(Currency currency){		
 		mAmount = mAmount.withCurrency(currency);
 	}
 	
+	/**
+	 * Sets the amount of the transaction
+	 * @param amount Amount value of the transaction
+	 * @param currency {@link Currency} of the transaction
+	 */
 	public void setAmount(double amount, Currency currency){
 		this.mAmount = new Money(new BigDecimal(amount), currency);
 	}
 	
 	/**
 	 * Returns the amount involved in this transaction
-	 * @return Amount in the transaction
+	 * @return {@link Money} amount in the transaction
 	 */
 	public Money getAmount() {
 		return mAmount;
@@ -195,13 +269,17 @@ public class Transaction {
 		this.mTimestamp = timestamp.getTime();
 	}
 	
+	/**
+	 * Sets the time when the transaction occurred
+	 * @param timeInMillis Time in milliseconds
+	 */
 	public void setTime(long timeInMillis) {
 		this.mTimestamp = timeInMillis;
 	}
 	
 	/**
 	 * Returns the time of transaction in milliseconds
-	 * @return Time when transaction occured in milliseconds 
+	 * @return Time when transaction occurred in milliseconds 
 	 */
 	public long getTimeMillis(){
 		return mTimestamp;
@@ -248,10 +326,18 @@ public class Transaction {
 		return mAccountUID;
 	}
 	
+	/**
+	 * Sets the exported flag on the transaction
+	 * @param isExported <code>true</code> if the transaction has been exported, <code>false</code> otherwise
+	 */
 	public void setExported(boolean isExported){
 		mIsExported = isExported ? 1 : 0;
 	}
 	
+	/**
+	 * Returns <code>true</code> if the transaction has been exported, <code>false</code> otherwise
+	 * @return <code>true</code> if the transaction has been exported, <code>false</code> otherwise
+	 */
 	public boolean isExported(){
 		return mIsExported == 1;
 	}
@@ -276,7 +362,7 @@ public class Transaction {
 		type.appendChild(doc.createTextNode(mType.toString()));
 		transactionNode.appendChild(type);
 
-/* TODO Remove references to expenses
+/* TODO Include the date posted as the time of the transaction
 		Element datePosted = doc.createElement("DTPOSTED");
 		datePosted.appendChild(doc.createTextNode(Expenses.getFormattedCurrentTime(mTimestamp.getTime())));
 		transaction.appendChild(datePosted);

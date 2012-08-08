@@ -20,18 +20,53 @@ import android.content.Context;
 import android.database.Cursor;
 import android.support.v4.content.AsyncTaskLoader;
 
+/**
+ * Abstract base class for asynchronously loads records from a database and manages the cursor.
+ * In order to use this class, you must subclass it and implement the
+ * {@link #loadInBackground()} method to load the particular records from the database.
+ * Ideally, the database has {@link DatabaseAdapter} which is used for managing access to the 
+ * records from the database
+ * @author Ngewi Fet <ngewif@gmail.com>
+ * @see DatabaseAdapter
+ */
 public abstract class DatabaseCursorLoader extends AsyncTaskLoader<Cursor> {
+	/**
+	 * Cursor which will hold the loaded data set.
+	 * The cursor will be returned from the {@link #loadInBackground()} method
+	 */
 	private Cursor mCursor = null;
+	
+	/**
+	 * {@link DatabaseAdapter} which will be used to load the records from the database
+	 */
 	protected DatabaseAdapter mDatabaseAdapter = null;
+	
+	/**
+	 * A content observer which monitors the cursor and provides notifications when
+	 * the dataset backing the cursor changes. You need to register the oberserver on
+	 * your cursor using {@link #registerContentObserver(Cursor)}
+	 */
 	protected final ForceLoadContentObserver mObserver;
 	
+	/**
+	 * Constructor
+	 * Initializes the content observer
+	 * @param context Application context
+	 */
 	public DatabaseCursorLoader(Context context) {
 		super(context);
 		mObserver = new ForceLoadContentObserver();
 	}
 
+	/**
+	 * Asynchronously loads the results from the database. 
+	 */
 	public abstract Cursor loadInBackground();
 
+	/**
+	 * Registers the content observer for the cursor. 
+	 * @param cursor {@link Cursor} whose content is to be observed for changes
+	 */
 	protected void registerContentObserver(Cursor cursor){
 		cursor.registerContentObserver(mObserver);
 	}

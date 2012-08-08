@@ -38,6 +38,9 @@ import android.content.Context;
  */
 public class OfxFormatter {
 
+	/**
+	 * A date formatter used when creating file names for the exported data
+	 */
 	public final static SimpleDateFormat ofxDateFormatter = new SimpleDateFormat("yyyyMMddHHmmss");
 	
 	/**
@@ -56,7 +59,15 @@ public class OfxFormatter {
 	 */
 	private List<Account> mAccountsList;
 	
+	/**
+	 * Flag indicating whether to ignore the 'exported' on transactions
+	 * If set to true, then all transactions will be exported, regardless of whether they were exported previously
+	 */
 	private boolean mExportAll = false;
+	
+	/**
+	 * Reference to the application context
+	 */
 	private Context mContext;
 	
 	/**
@@ -72,10 +83,20 @@ public class OfxFormatter {
 		mContext = context;
 	}
 	
+	/**
+	 * Returns the current time formatted using the pattern in {@link #ofxDateFormatter}
+	 * @return Current time as a formatted string
+	 * @see #getFormattedCurrentTime(long)
+	 */
 	public static String getFormattedCurrentTime(){
 		return getFormattedCurrentTime(System.currentTimeMillis());
 	}
 	
+	/**
+	 * Returns a formatted string representation of time in <code>milliseconds</code>
+	 * @param milliseconds Long value representing the time to be formatted
+	 * @return Formatted string representation of time in <code>milliseconds</code>
+	 */
 	public static String getFormattedCurrentTime(long milliseconds){
 		Date date = new Date(milliseconds);
 		String dateString = ofxDateFormatter.format(date);
@@ -88,7 +109,7 @@ public class OfxFormatter {
 	
 	/**
 	 * Converts all expenses into OFX XML format and adds them to the XML document
-	 * @param doc DOM document of the OFX expenses
+	 * @param doc DOM document of the OFX expenses.
 	 * @param parent Parent node for all expenses in report
 	 */
 	public void toXml(Document doc, Element parent){

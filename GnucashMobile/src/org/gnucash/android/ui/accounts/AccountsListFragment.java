@@ -225,9 +225,7 @@ public class AccountsListFragment extends SherlockListFragment implements
 			selectItem(position);
 			return;
 		}
-		TextView tv = (TextView) v.findViewById(R.id.account_name);
-		String name = tv.getText().toString();
-		mAccountSelectedListener.accountSelected(id, name);
+		mAccountSelectedListener.accountSelected(id);
 	}	
 	
 	@Override

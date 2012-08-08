@@ -55,9 +55,7 @@ import com.actionbarsherlock.view.MenuItem;
 public class AccountsActivity extends SherlockFragmentActivity implements OnAccountClickedListener {
 
 	public static final String FRAGMENT_ACCOUNTS_LIST 	= "accounts_list";
-	
-	static final int DIALOG_ADD_ACCOUNT 		= 0x01;
-
+		
 	protected static final String TAG = "AccountsActivity";	
 	
 	private ArrayList<Integer> mSelectedDefaultAccounts = new ArrayList<Integer>();
@@ -184,10 +182,9 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
 		mDefaultAccountsDialog = builder.create();
 		mDefaultAccountsDialog.show();		
 	}
-	
-	
+		
 	@Override
-	public void accountSelected(long accountRowId, String accountName) {
+	public void accountSelected(long accountRowId) {
 		Intent intent = new Intent(this, TransactionsActivity.class);
 		intent.setAction(Intent.ACTION_VIEW);
 		intent.putExtra(TransactionsListFragment.SELECTED_ACCOUNT_ID, accountRowId);

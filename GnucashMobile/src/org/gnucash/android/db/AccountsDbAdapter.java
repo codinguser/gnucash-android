@@ -44,7 +44,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 	private TransactionsDbAdapter mTransactionsAdapter;
 	
 	/**
-	 * Creates new instance
+	 * Constructor. Creates a new adapter instance using the application context
 	 * @param context Application context
 	 */
 	public AccountsDbAdapter(Context context) {
@@ -233,6 +233,10 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 		return accounts;
 	}
 	
+	/**
+	 * Returns a list of accounts which have transactions that have not been exported yet
+	 * @return List of {@link Account}s with unexported transactions
+	 */
 	public List<Account> getExportableAccounts(){
 		List<Account> accountsList = getAllAccounts();
 		Iterator<Account> it = accountsList.iterator();
