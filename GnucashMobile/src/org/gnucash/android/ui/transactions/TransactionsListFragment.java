@@ -188,8 +188,7 @@ public class TransactionsListFragment extends SherlockListFragment implements
 		if (sum.isNegative())
 			mSumTextView.setTextColor(getResources().getColor(R.color.debit_red));
 		else
-			mSumTextView.setTextColor(getResources().getColor(R.color.credit_green));
-			
+			mSumTextView.setTextColor(getResources().getColor(R.color.credit_green));			
 	}
 			
 	@Override

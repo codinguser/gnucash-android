@@ -21,6 +21,7 @@ import java.util.List;
 
 import org.gnucash.android.R;
 import org.gnucash.android.data.Account;
+import org.gnucash.android.data.Money;
 import org.gnucash.android.data.Transaction;
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.TransactionsDbAdapter;
@@ -41,6 +42,7 @@ import android.widget.TextView;
 import com.jayway.android.robotium.solo.Solo;
 
 public class AccountsActivityTest extends ActivityInstrumentationTestCase2<AccountsActivity> {
+	private static final String DUMMY_ACCOUNT_CURRENCY_CODE = "USD";
 	private static final String DUMMY_ACCOUNT_NAME = "Test account";
 	private Solo mSolo;
 	
@@ -58,7 +60,7 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
 		
 		AccountsDbAdapter adapter = new AccountsDbAdapter(getActivity());
 		Account account = new Account(DUMMY_ACCOUNT_NAME);
-		account.setCurrency(Currency.getInstance("USD"));
+		account.setCurrency(Currency.getInstance(DUMMY_ACCOUNT_CURRENCY_CODE));
 		adapter.addAccount(account);
 		adapter.close();
 	}
@@ -81,26 +83,22 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
 		mSolo.waitForText("Create");
 		mSolo.enterText(0, "New Account");
 		
-		//this depends on the strings resource for currencies
-		//the Swiss franc is on position 144. If list changes, fix this test
-		int position = mSolo.getCurrentSpinners().get(0).getSelectedItemPosition();
-		mSolo.pressSpinnerItem(0, 144 - position);
-		mSolo.clickOnButton(1);
+		mSolo.clickOnText(getActivity().getString(R.string.btn_save));
 		
 		mSolo.waitForDialogToClose(1000);
 		ListView lv = mSolo.getCurrentListViews().get(0);
 		assertNotNull(lv);
-		TextView v = (TextView) lv.getChildAt(lv.getCount() - 1)
+		TextView v = (TextView) lv.getChildAt(0) //accounts are sorted alphabetically
 				.findViewById(R.id.account_name);
 		
-		assertEquals(v.getText().toString(), "New Account");
+		assertEquals("New Account", v.getText().toString());
 		AccountsDbAdapter accAdapter = new AccountsDbAdapter(getActivity());
 		
 		List<Account> accounts = accAdapter.getAllAccounts();
-		Account newestAccount = accounts.get(accounts.size()-1);
+		Account newestAccount = accounts.get(0);
 		
-		assertEquals(newestAccount.getName(), "New Account");
-		assertEquals(newestAccount.getCurrency().getCurrencyCode(), "CHF");	
+		assertEquals("New Account", newestAccount.getName());		
+		assertEquals(Money.DEFAULT_CURRENCY_CODE, newestAccount.getCurrency().getCurrencyCode());	
 		
 		accAdapter.close();		
 	}
@@ -121,28 +119,22 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
 		
 		mSolo.clearEditText(0);
 		mSolo.enterText(0, editedAccountName);
-		
-		//this depends on the strings resource for currencies
-		//the Swiss franc is on position 144. If list changes, fix this test
-		int position = mSolo.getCurrentSpinners().get(0).getSelectedItemPosition();
-		mSolo.pressSpinnerItem(0, 144 - position);
-		
-		mSolo.clickOnButton(1);
-		
-		mSolo.waitForDialogToClose(1000);
+				
+		mSolo.clickOnText(getActivity().getString(R.string.btn_save));
+		mSolo.waitForDialogToClose(2000);
 		
 		ListView lv = mSolo.getCurrentListViews().get(0);
-		TextView tv = (TextView) lv.getChildAt(lv.getCount() - 1)
+		TextView tv = (TextView) lv.getChildAt(0)
 				.findViewById(R.id.account_name);		
 		assertEquals(editedAccountName, tv.getText().toString());
 		
 		AccountsDbAdapter accAdapter = new AccountsDbAdapter(getActivity());
 		
 		List<Account> accounts = accAdapter.getAllAccounts();
-		Account latest = accounts.get(accounts.size()-1);
+		Account latest = accounts.get(0);  //will be the first due to alphabetical sorting
 		
 		assertEquals(latest.getName(), "Edited Account");
-		assertEquals(latest.getCurrency().getCurrencyCode(), "CHF");	
+		assertEquals(DUMMY_ACCOUNT_CURRENCY_CODE, latest.getCurrency().getCurrencyCode());	
 		accAdapter.close();
 	}
 	
@@ -234,6 +226,7 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
 		assertEquals("intent-account", account.getUID());
 		assertEquals("EUR", account.getCurrency().getCurrencyCode());
 	}
+	
 	
 	protected void tearDown() throws Exception {
 		AccountsDbAdapter adapter = new AccountsDbAdapter(getActivity());

@@ -67,7 +67,8 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
 		setContentView(R.layout.activity_accounts);
 
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-		String currencyCode = prefs.getString(getString(R.string.pref_default_currency), Currency.getInstance(Locale.getDefault()).getCurrencyCode());
+		String currencyCode = prefs.getString(getString(R.string.pref_default_currency), 
+				Currency.getInstance(Locale.getDefault()).getCurrencyCode());		
 		Money.DEFAULT_CURRENCY_CODE = currencyCode;		
 		
 		boolean firstRun = prefs.getBoolean(getString(R.string.key_first_run), true);

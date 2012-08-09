@@ -16,8 +16,10 @@
 
 package org.gnucash.android.test.ui;
 
+import java.util.Currency;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import org.gnucash.android.R;
 import org.gnucash.android.data.Account;
@@ -54,7 +56,7 @@ public class TransactionsActivityTest extends
 	protected void setUp() throws Exception {		
 		Account account = new Account(DUMMY_ACCOUNT_NAME);
 		account.setUID(DUMMY_ACCOUNT_UID);
-		
+		account.setCurrency(Currency.getInstance(Locale.getDefault()));
 		mTransaction = new Transaction(9.99, "Pizza");
 		mTransaction.setAccountUID(DUMMY_ACCOUNT_UID);
 		mTransaction.setDescription("What up?");
@@ -121,7 +123,7 @@ public class TransactionsActivityTest extends
 		mSolo.enterText(1, "899");
 		//check that the amount is correctly converted in the input field
 		String value = mSolo.getEditText(1).getText().toString();
-		double actualValue = Double.parseDouble(Money.parseToString(value));
+		double actualValue = Money.parseToDecimal(value).doubleValue();
 		assertEquals(-8.99, actualValue);
 		
 		int transactionsCount = getTranscationCount();
@@ -208,9 +210,15 @@ public class TransactionsActivityTest extends
 		mSolo.clickOnCheckBox(0);
 		mSolo.clickOnImage(1);
 		
-		mSolo.pressSpinnerItem(0, 1);
+		mSolo.waitForDialogToClose(2000);
+		
+		Spinner spinner = mSolo.getCurrentSpinners().get(0);
+		mSolo.clickOnView(spinner);
+		mSolo.clickOnText("Target");
 		mSolo.clickOnButton(1);
 //		mSolo.clickOnText(getActivity().getString(R.string.menu_move));
+		
+		mSolo.waitForDialogToClose(2000);
 		
 		int targetCount = accountsDbAdapter.getAccount(account.getUID()).getTransactionCount();		
 		assertEquals(1, targetCount);

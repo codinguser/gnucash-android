@@ -130,7 +130,7 @@ public class Money implements Comparable<Money>{
 	 */
 	public Money(String amount){
 		init();
-		setAmount(parseToString(amount));
+		setAmount(parseToDecimal(amount));
 	}
 	
 	/**
@@ -244,7 +244,7 @@ public class Money implements Comparable<Money>{
 	 * @param amount {@link String} amount to be set
 	 */
 	private void setAmount(String amount){
-		setAmount(new BigDecimal(amount));
+		setAmount(parseToDecimal(amount));
 	}
 	
 	/**
@@ -416,11 +416,12 @@ public class Money implements Comparable<Money>{
 	 * @param formattedAmount Formatted String amount
 	 * @return String amount formatted in the default locale
 	 */
-	public static String parseToString(String formattedAmount){
-		DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance(Locale.getDefault());
-		String result = formattedAmount;
+	public static BigDecimal parseToDecimal(String formattedAmount){
+		DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance(Locale.getDefault());		
+		formatter.setParseBigDecimal(true);
+		BigDecimal result = null;
 		try {
-			result = formatter.parse(formattedAmount).toString();
+			result = (BigDecimal) formatter.parse(formattedAmount);
 			
 		} catch (ParseException e) {
 			Log.e("Money", "Could not parse the amount");			

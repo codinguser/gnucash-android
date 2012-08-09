@@ -105,6 +105,9 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 	 */
 	public Transaction getTransaction(long rowId){
 		Transaction transaction = null;
+		if (rowId <= 0)
+			return transaction;
+		
 		Log.v(TAG, "Fetching transaction with id " + rowId);
 		Cursor c =	fetchRecord(DatabaseHelper.TRANSACTIONS_TABLE_NAME, rowId);
 		if (c != null && c.moveToFirst()){
@@ -123,7 +126,7 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 		Cursor cursor = mDb.query(DatabaseHelper.TRANSACTIONS_TABLE_NAME, 
 				null, 
 				DatabaseHelper.KEY_ACCOUNT_UID + " = '" + accountUID + "'", 
-				null, null, null, null);
+				null, null, null, DatabaseHelper.KEY_TIMESTAMP + " DESC");
 		
 		return cursor;
 	}
@@ -304,9 +307,11 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 		
 		String currencyCode = getCurrencyCode(accountId);
 		
-		if (c == null)
-			return new Money("0", currencyCode);
+		if (currencyCode == null)
+			currencyCode = Money.DEFAULT_CURRENCY_CODE;
 		
+		if (c == null || c.getCount() <= 0)
+			return new Money("0", currencyCode);		
 		
 		Money amountSum = new Money("0", currencyCode);
 		
@@ -355,14 +360,14 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 
 	/**
 	 * Returns an account UID of the account with record id <code>accountRowID</code>
-	 * @param acountRowID Record ID of account as long paramenter
+	 * @param accountRowID Record ID of account as long paramenter
 	 * @return String containing UID of account
 	 */
-	public String getAccountUID(long acountRowID){
+	public String getAccountUID(long accountRowID){
 		String uid = null;
 		Cursor c = mDb.query(DatabaseHelper.ACCOUNTS_TABLE_NAME, 
 				new String[]{DatabaseHelper.KEY_UID}, 
-				DatabaseHelper.KEY_ROW_ID + "=" + acountRowID, 
+				DatabaseHelper.KEY_ROW_ID + "=" + accountRowID, 
 				null, null, null, null);
 		if (c != null && c.moveToFirst()){
 			uid = c.getString(0);

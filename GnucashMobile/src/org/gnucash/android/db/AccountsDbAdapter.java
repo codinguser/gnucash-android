@@ -16,9 +16,9 @@
 
 package org.gnucash.android.db;
 
-import java.util.ArrayList;
 import java.util.Currency;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.gnucash.android.data.Account;
@@ -220,7 +220,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 	 * @return List of {@link Account}s in the database
 	 */
 	public List<Account> getAllAccounts(){
-		ArrayList<Account> accounts = new ArrayList<Account>();
+		LinkedList<Account> accounts = new LinkedList<Account>();
 		Cursor c = fetchAllAccounts();
 		
 		if (c == null)
@@ -256,7 +256,10 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 	 */
 	public Cursor fetchAllAccounts(){
 		Log.v(TAG, "Fetching all accounts from db");
-		return fetchAllRecords(DatabaseHelper.ACCOUNTS_TABLE_NAME);
+		Cursor cursor = mDb.query(DatabaseHelper.ACCOUNTS_TABLE_NAME, 
+				null, null, null, null, null, 
+				DatabaseHelper.KEY_NAME + " ASC");
+		return cursor;
 	}
 
 	/**

@@ -61,7 +61,7 @@
 		        android:ems="10"
 		        android:layout_marginBottom="10dp"
 		        android:hint="@string/label_transaction_amount"
-		        android:inputType="numberSigned"
+		        android:inputType="number"
 		        android:textColor="@color/debit_red"
 		        style="@style/ListItemText" />
 		    

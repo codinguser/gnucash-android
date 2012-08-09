@@ -42,7 +42,11 @@ public class MoneyTest extends TestCase {
 	}
 
 	public void testCreation(){
-		Money temp = new Money("12.25");
+		String amount = "12.25";
+		if (Locale.getDefault().equals(Locale.GERMANY)) 
+			amount = "12,25";
+		
+		Money temp = new Money(amount);
 		assertEquals(12.25, temp.asDouble());
 		
 		temp = new Money(9.95);
@@ -54,8 +58,11 @@ public class MoneyTest extends TestCase {
 		
 		assertEquals(decimal, temp.asBigDecimal());
 		assertEquals(currency, temp.getCurrency());
-	
-		temp = new Money("15.50","USD");
+		
+		amount = "15.50";
+		if (Locale.getDefault().equals(Locale.GERMANY)) 
+			amount = "15,50";
+		temp = new Money(amount,"USD");
 		assertEquals(15.50, temp.asDouble());
 		assertEquals(temp.getCurrency().getCurrencyCode(), "USD");		
 	}
@@ -147,8 +154,8 @@ public class MoneyTest extends TestCase {
 		assertEquals(money.asString(), money.toPlainString());
 		assertEquals("15.75", money.asString());
 		
-		assertEquals("15,75 €", money.formattedString(Locale.GERMAN));		
-		assertEquals("15.75 €", money.formattedString(Locale.US));
+		assertEquals("15,75 Û", money.formattedString(Locale.GERMAN));		
+		assertEquals("15.75 Û", money.formattedString(Locale.US));
 		
 		//always prints with 2 decimal places only
 		Money some = new Money(9.7469);

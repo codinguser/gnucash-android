@@ -95,6 +95,7 @@ public class NewTransactionFragment extends SherlockFragment implements
 	private SimpleCursorAdapter mCursorAdapter; 
 	
 	private MenuItem mSaveMenuItem;
+	private Cursor mCursor;
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -119,18 +120,17 @@ public class NewTransactionFragment extends SherlockFragment implements
 		setHasOptionsMenu(true);
 		ActionBar actionBar = getSherlockActivity().getSupportActionBar();
 		actionBar.setHomeButtonEnabled(true);
+		actionBar.setDisplayHomeAsUpEnabled(true);
 		actionBar.setTitle(R.string.add_transaction);
 		
-		mTransactionsDbAdapter = new TransactionsDbAdapter(getActivity());
-				
 		String[] from = new String[] {DatabaseHelper.KEY_NAME};
 		int[] to = new int[] {android.R.id.text1};
 		mAccountsDbAdapter = new AccountsDbAdapter(getActivity());
-		Cursor cursor = mAccountsDbAdapter.fetchAllAccounts();
+		mCursor = mAccountsDbAdapter.fetchAllAccounts();
 		
 		mCursorAdapter = new SimpleCursorAdapter(getActivity(), 
 				android.R.layout.simple_spinner_item, 
-				cursor,
+				mCursor,
 				from,
 				to, 
 				0);
@@ -138,6 +138,7 @@ public class NewTransactionFragment extends SherlockFragment implements
 		mAccountsSpinner.setAdapter(mCursorAdapter);
 		
 		mTransactionId = getArguments().getLong(SELECTED_TRANSACTION_ID);
+		mTransactionsDbAdapter = new TransactionsDbAdapter(getActivity());
 		mTransaction = mTransactionsDbAdapter.getTransaction(mTransactionId);
 		
 		setListeners();
@@ -185,7 +186,6 @@ public class NewTransactionFragment extends SherlockFragment implements
 		mTimeTextView.setText(TIME_FORMATTER.format(time));
 		mTime = mDate = Calendar.getInstance();
 				
-		//TODO select the right account even from button
 		final long accountId = getArguments().getLong(TransactionsListFragment.SELECTED_ACCOUNT_ID);
 		final int count = mCursorAdapter.getCount();
 		for (int pos = 0; pos < count; pos++) {
@@ -276,7 +276,9 @@ public class NewTransactionFragment extends SherlockFragment implements
 		String name = mNameEditText.getText().toString();
 		String description = mDescriptionEditText.getText().toString();
 		String amountString = mAmountEditText.getText().toString();
-		BigDecimal amountBigd = new BigDecimal(stripCurrencyFormatting(amountString)).divide(new BigDecimal(100));
+		BigDecimal amountBigd = new BigDecimal(stripCurrencyFormatting(amountString))
+									.setScale(2, RoundingMode.HALF_EVEN)
+									.divide(new BigDecimal(100), 2, RoundingMode.HALF_EVEN);;
 		
 		Calendar cal = new GregorianCalendar(
 				mDate.get(Calendar.YEAR), 
@@ -308,14 +310,14 @@ public class NewTransactionFragment extends SherlockFragment implements
 		//update widgets, if any
 		WidgetConfigurationActivity.updateAllWidgets(getActivity().getApplicationContext());
 		
-		InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-		imm.hideSoftInputFromWindow(mNameEditText.getWindowToken(), 0);
 		getSherlockActivity().getSupportFragmentManager().popBackStack();
 	}
 
 	@Override
 	public void onDestroyView() {
 		super.onDestroyView();
+		if (mCursor != null)
+			mCursor.close();
 		mAccountsDbAdapter.close();
 		mTransactionsDbAdapter.close();
 	}
@@ -330,6 +332,10 @@ public class NewTransactionFragment extends SherlockFragment implements
 	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
+		//hide the keyboard if it is visible
+		InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+		imm.hideSoftInputFromWindow(mNameEditText.getWindowToken(), 0);
+		
 		switch (item.getItemId()) {
 		case R.id.menu_cancel:
 			getSherlockActivity().getSupportFragmentManager().popBackStack();
@@ -363,7 +369,8 @@ public class NewTransactionFragment extends SherlockFragment implements
 	}
 	
 	public static String stripCurrencyFormatting(String s){
-		return s.replace(".", "").replace(",", "");
+		//remove all currency formatting and anything else which is not a number
+		return s.replace(".", "").replace(",", "").replaceAll("\\D*", "");
 	}
 	
 	private class ValidationsWatcher implements TextWatcher {
@@ -401,7 +408,9 @@ public class NewTransactionFragment extends SherlockFragment implements
 			if (cleanString.length() == 0)
 				return;
 			
-			BigDecimal amount = new BigDecimal(cleanString).setScale(2, RoundingMode.HALF_EVEN).divide(new BigDecimal(100), 2, RoundingMode.HALF_EVEN);
+			BigDecimal amount = new BigDecimal(cleanString)
+									.setScale(2, RoundingMode.HALF_EVEN)
+									.divide(new BigDecimal(100), 2, RoundingMode.HALF_EVEN);
 			if (mTransactionTypeButton.isChecked() && amount.doubleValue() > 0) 
 				amount = amount.negate();
 			DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance();
