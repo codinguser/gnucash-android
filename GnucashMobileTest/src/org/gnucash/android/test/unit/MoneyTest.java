@@ -154,8 +154,9 @@ public class MoneyTest extends TestCase {
 		assertEquals(money.asString(), money.toPlainString());
 		assertEquals("15.75", money.asString());
 		
-		assertEquals("15,75 Û", money.formattedString(Locale.GERMAN));		
-		assertEquals("15.75 Û", money.formattedString(Locale.US));
+		// the unicode for Euro symbol is \u20AC
+		assertEquals("15,75 \u20AC", money.formattedString(Locale.GERMAN));		
+		assertEquals("15.75 \u20AC", money.formattedString(Locale.US));
 		
 		//always prints with 2 decimal places only
 		Money some = new Money(9.7469);
