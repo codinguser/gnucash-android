@@ -24,6 +24,13 @@ import android.content.Context;
 import android.content.SharedPreferences.Editor;
 import android.preference.PreferenceManager;
 
+/**
+ * {@link AppWidgetProvider} which is responsible for managing widgets on the homescreen
+ * It receives broadcasts related to updating and deleting widgets
+ * Widgets can also be updated manually by calling {@link WidgetConfigurationActivity#updateAllWidgets(Context)}
+ * @author Ngewi Fet <ngewif@gmail.com>
+ *
+ */
 public class TransactionAppWidgetProvider extends AppWidgetProvider {
 
 	@Override
@@ -55,6 +62,6 @@ public class TransactionAppWidgetProvider extends AppWidgetProvider {
 		for (int appWidgetId : appWidgetIds) {
 			editor.remove(TransactionsListFragment.SELECTED_ACCOUNT_ID + appWidgetId);			
 		}
-		editor.commit();
+		editor.commit();		
 	}
 }

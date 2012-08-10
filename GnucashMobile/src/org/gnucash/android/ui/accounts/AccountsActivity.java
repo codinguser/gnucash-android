@@ -47,18 +47,43 @@ import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 
 /**
- * Displays the list of accounts and summary of transactions
- * 
+ * Manages actions related to accounts, displaying, exporting and creating new accounts
+ * The various actions are implemented as Fragments which are then added to this activity
  * @author Ngewi Fet <ngewif@gmail.com>
  * 
  */
 public class AccountsActivity extends SherlockFragmentActivity implements OnAccountClickedListener {
 
+	/**
+	 * Tag used for identifying the account list fragment when it is added to this activity
+	 */
 	public static final String FRAGMENT_ACCOUNTS_LIST 	= "accounts_list";
 		
+	/**
+	 * Tag used for identifying the account export fragment
+	 */
+	protected static final String FRAGMENT_EXPORT_OFX  = "export_ofx";
+
+	/**
+	 * Tag for identifying the "New account" fragment
+	 */
+	protected static final String FRAGMENT_NEW_ACCOUNT = "new_account_dialog";
+
+	/**
+	 * Logging tag
+	 */
 	protected static final String TAG = "AccountsActivity";	
 	
+	/**
+	 * Stores the indices of accounts which have been selected by the user for creation from the dialog.
+	 * The account names are stored as string resources and the selected indices are then used to choose which accounts to create
+	 * The dialog for creating default accounts is only shown when the app is started for the first time.
+	 */
 	private ArrayList<Integer> mSelectedDefaultAccounts = new ArrayList<Integer>();
+	
+	/**
+	 * Dialog which is shown to the user on first start prompting the user to create some accounts
+	 */
 	private AlertDialog mDefaultAccountsDialog;
 	
 	@Override
@@ -113,12 +138,6 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
 		}
 	}
 
-	@Override
-	protected void onActivityResult(int arg0, int arg1, Intent arg2) {
-		// TODO Auto-generated method stub
-		super.onActivityResult(arg0, arg1, arg2);
-	}
-	
 	/**
 	 * Opens a dialog fragment to create a new account
 	 * @param v View which triggered this callback
@@ -130,6 +149,10 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
 			accountFragment.showAddAccountDialog(0);
 	}
 
+	/**
+	 * Creates the default accounts which have the selected by the user.
+	 * The indices of the default accounts is stored in {@link #mSelectedDefaultAccounts}
+	 */
 	private void createDefaultAccounts(){
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		boolean[] checkedDefaults = new boolean[]{true, true, false, false, false};
@@ -193,6 +216,10 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
 		startActivity(intent);
 	}
 	
+	/**
+	 * Removes the flag indicating that the app is being run for the first time. 
+	 * This is called every time the app is started because the next time won't be the first time
+	 */
 	private void removeFirstRunFlag(){
 		Editor editor = PreferenceManager.getDefaultSharedPreferences(this).edit();
 		editor.putBoolean(getString(R.string.key_first_run), false);

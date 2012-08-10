@@ -150,8 +150,10 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 		String uid = c.getString(DatabaseAdapter.COLUMN_UID);
 		account.setUID(uid);
 		account.setAccountType(AccountType.valueOf(c.getString(DatabaseAdapter.COLUMN_TYPE)));
+		//make sure the account currency is set before setting the transactions
+		//else the transactions end up with a different currency from the account
+		account.setCurrency(Currency.getInstance(c.getString(DatabaseAdapter.COLUMN_CURRENCY_CODE)));
 		account.setTransactions(mTransactionsAdapter.getAllTransactionsForAccount(uid));
-		account.setCurrency(Currency.getInstance(c.getString(DatabaseAdapter.COLUMN_ACCOUNT_CURRENCY_CODE)));
 		return account;
 	}
 		

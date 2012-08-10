@@ -45,6 +45,11 @@ import android.widget.RemoteViews;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+/**
+ * Activity for configuration which account to diplay on a widget. 
+ * The activity is opened each time a widget is added to the homescreen
+ * @author Ngewi Fet <ngewif@gmail.com>
+ */
 public class WidgetConfigurationActivity extends Activity {
 	private AccountsDbAdapter mAccountsDbAdapter;
 	private SimpleCursorAdapter mCursorAdapter;
@@ -92,6 +97,9 @@ public class WidgetConfigurationActivity extends Activity {
 		mAccountsDbAdapter.close();
 	}
 	
+	/**
+	 * Sets click listeners for the buttons in the dialog
+	 */
 	private void bindListeners() {
 		mOkButton.setOnClickListener(new View.OnClickListener() {
 			
@@ -176,7 +184,11 @@ public class WidgetConfigurationActivity extends Activity {
 		
 		appWidgetManager.updateAppWidget(appWidgetId, views);
 	}
-			
+	
+	/**
+	 * Updates all widgets belonging to the application
+	 * @param context Application context
+	 */
 	public static void updateAllWidgets(Context context){
 		Log.i("WidgetConfigruation", "Updating all widgets");
 		AppWidgetManager widgetManager = AppWidgetManager.getInstance(context);

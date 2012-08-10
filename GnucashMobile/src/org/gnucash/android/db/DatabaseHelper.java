@@ -124,7 +124,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			+ KEY_UID 	+ " varchar(255) not null, "
 			+ KEY_NAME 	+ " varchar(255) not null, "
 			+ KEY_TYPE 	+ " varchar(255), "
-			+ KEY_CURRENCY_CODE + " varchar(255), "
+			+ KEY_CURRENCY_CODE + " varchar(255) not null, "
 			+ "UNIQUE (" + KEY_UID + ")"	
 			+ ");";
 	
@@ -132,11 +132,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	 * SQL statement to create the transactions table in the database
 	 */
 	private static final String TRANSACTIONS_TABLE_CREATE = "create table " + TRANSACTIONS_TABLE_NAME + " ("
-			+ KEY_ROW_ID 	+ " integer primary key autoincrement, "
-			+ KEY_UID 		+ " varchar(255) not null, "			
-			+ KEY_NAME 		+ " varchar(255), "
-			+ KEY_TYPE 		+ " varchar(255) not null, "
-			+ KEY_AMOUNT 	+ " varchar(255) not null, "
+			+ KEY_ROW_ID 		+ " integer primary key autoincrement, "
+			+ KEY_UID 			+ " varchar(255) not null, "			
+			+ KEY_NAME 			+ " varchar(255), "
+			+ KEY_TYPE 			+ " varchar(255) not null, "
+			+ KEY_AMOUNT 		+ " varchar(255) not null, "
 			+ KEY_DESCRIPTION 	+ " text, "
 			+ KEY_TIMESTAMP 	+ " integer not null, "
 			+ KEY_ACCOUNT_UID 	+ " varchar(255) not null, "

@@ -31,6 +31,17 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
+/**
+ * Broadcast receiver responsible for creating transactions received through {@link Intent}s
+ * In order to create a transaction through Intents, broadcast an intent with the arguments needed to 
+ * create the transaction. Transactions are strongly bound to {@link Account}s and it is recommended to 
+ * create an Account for your transactions. The transactions will be associated to the account using a unique
+ * Identifier passed as {@link Transaction#EXTRA_ACCOUNT_UID}
+ * <p>Remember to declare the appropriate permissions in order to create transactions with Intents. 
+ * The required permission is "org.gnucash.android.permission.RECORD_TRANSACTION"</p>
+ * @author Ngewi Fet <ngewif@gmail.com>
+ * @see AccountCreator
+ */
 public class TransactionRecorder extends BroadcastReceiver {
 
 	@Override

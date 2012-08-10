@@ -25,15 +25,37 @@ import android.app.Dialog;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 
+/**
+ * Fragment for displaying a date picker dialog
+ * @author Ngewi Fet <ngewif@gmail.com>
+ *
+ */
 public class DatePickerDialogFragment extends DialogFragment {
 
+	/**
+	 * Listener to notify of events in the dialog
+	 */
 	private OnDateSetListener mDateSetListener;
+	
+	/**
+	 * Date selected in the dialog or to which the dialog is initialized
+	 */
 	private Calendar mDate;
 	
+	/**
+	 * Default Constructor
+	 * Is required for when the device is rotated while the dialog is open.
+	 * If this constructor is not present, the app will crash
+	 */
 	public DatePickerDialogFragment() {
-		// nothing to see here, move along
+		//nothing to see here, move along
 	}
 	
+	/**
+	 * Overloaded constructor
+	 * @param callback Listener to notify when the date is set and the dialog is closed
+	 * @param dateMillis Time in milliseconds to which to initialize the dialog
+	 */
 	public DatePickerDialogFragment(OnDateSetListener callback, long dateMillis) {
 		mDateSetListener = (OnDateSetListener) callback;
 		if (dateMillis > 0){
@@ -42,6 +64,9 @@ public class DatePickerDialogFragment extends DialogFragment {
 		}
 	}
 
+	/**
+	 * Creates and returns an Android {@link DatePickerDialog}
+	 */
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
 		Calendar cal = mDate == null ? Calendar.getInstance() : mDate;
 		

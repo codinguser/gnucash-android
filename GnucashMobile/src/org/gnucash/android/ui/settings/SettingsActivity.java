@@ -28,8 +28,17 @@ import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockPreferenceActivity;
 import com.actionbarsherlock.view.MenuItem;
 
+/**
+ * Activity for displaying settings and information about the application
+ * @author Ngewi Fet <ngewif@gmail.com>
+ *
+ */
 public class SettingsActivity extends SherlockPreferenceActivity{
 
+	/**
+	 * Constructs the headers to display in the header list when the Settings activity is first opened
+	 * Only available on Honeycomb and above
+	 */
 	@Override
 	public void onBuildHeaders(List<Header> target) {
 		loadHeadersFromResource(R.xml.preference_headers, target);
@@ -66,6 +75,11 @@ public class SettingsActivity extends SherlockPreferenceActivity{
 		}
 	}
 	
+	/**
+	 * Fragment for displaying general preferences
+	 * @author Ngewi Fet <ngewif@gmail.com>
+	 *
+	 */
 	public static class GeneralPreferenceFragment extends PreferenceFragment{
 		
 		@Override
@@ -78,6 +92,11 @@ public class SettingsActivity extends SherlockPreferenceActivity{
 		}		
 	}
 	
+	/**
+	 * Fragment for displaying information about the application
+	 * @author Ngewi
+	 *
+	 */
 	public static class AboutPreferenceFragment extends PreferenceFragment{
 		
 		@Override

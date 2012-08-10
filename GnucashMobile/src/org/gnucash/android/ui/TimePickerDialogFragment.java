@@ -24,14 +24,36 @@ import android.app.TimePickerDialog.OnTimeSetListener;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 
+/**
+ * Fragment for displaying a time choose dialog
+ * @author Ngewi Fet <ngewif@gmail.com>
+ *
+ */
 public class TimePickerDialogFragment extends DialogFragment {
+	/**
+	 * Listener to notify when the time is set
+	 */
 	private OnTimeSetListener mListener = null;
 	
+	/**
+	 * Current time to initialize the dialog to, or to notify the listener of.
+	 */
+	Calendar mCurrentTime = null;
+	
+	/**
+	 * Default constructor
+	 * Is required for when the device is rotated while the dialog is open.
+	 * If this constructor is not present, the app will crash
+	 */
 	public TimePickerDialogFragment() {
 		// nothing to see here, move along
 	}
-	Calendar mCurrentTime = null;
 	
+	/**
+	 * Overloaded constructor
+	 * @param listener {@link OnTimeSetListener} to notify when the time has been set
+	 * @param timeMillis Time in milliseconds to initialize the dialog to
+	 */
 	public TimePickerDialogFragment(OnTimeSetListener listener, long timeMillis){
 		mListener = listener;
 		if (timeMillis > 0){
@@ -40,6 +62,9 @@ public class TimePickerDialogFragment extends DialogFragment {
 		}
 	}
 	
+	/**
+	 * Creates and returns an Android {@link TimePickerDialog}
+	 */
 	@Override
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
 		Calendar cal = mCurrentTime == null ? Calendar.getInstance() : mCurrentTime;

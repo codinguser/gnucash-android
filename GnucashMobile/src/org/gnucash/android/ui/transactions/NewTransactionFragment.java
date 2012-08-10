@@ -26,9 +26,9 @@ import java.util.Calendar;
 import java.util.Currency;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.Locale;
 
 import org.gnucash.android.R;
-import org.gnucash.android.data.Account;
 import org.gnucash.android.data.Money;
 import org.gnucash.android.data.Transaction;
 import org.gnucash.android.data.Transaction.TransactionType;
@@ -158,7 +158,9 @@ public class NewTransactionFragment extends SherlockFragment implements
 		mDescriptionEditText.setText(mTransaction.getDescription());
 		mDateTextView.setText(DATE_FORMATTER.format(mTransaction.getTimeMillis()));
 		mTimeTextView.setText(TIME_FORMATTER.format(mTransaction.getTimeMillis()));
-		mTime = mDate = Calendar.getInstance();
+		Calendar cal = GregorianCalendar.getInstance();
+		cal.setTimeInMillis(mTransaction.getTimeMillis());
+		mDate = mTime = cal;
 				
 		final long accountId = mAccountsDbAdapter.fetchAccountWithUID(mTransaction.getAccountUID());
 		final int count = mCursorAdapter.getCount();
@@ -273,13 +275,6 @@ public class NewTransactionFragment extends SherlockFragment implements
 	}	
 	
 	private void saveNewTransaction() {
-		String name = mNameEditText.getText().toString();
-		String description = mDescriptionEditText.getText().toString();
-		String amountString = mAmountEditText.getText().toString();
-		BigDecimal amountBigd = new BigDecimal(stripCurrencyFormatting(amountString))
-									.setScale(2, RoundingMode.HALF_EVEN)
-									.divide(new BigDecimal(100), 2, RoundingMode.HALF_EVEN);;
-		
 		Calendar cal = new GregorianCalendar(
 				mDate.get(Calendar.YEAR), 
 				mDate.get(Calendar.MONTH), 
@@ -287,11 +282,14 @@ public class NewTransactionFragment extends SherlockFragment implements
 				mTime.get(Calendar.HOUR_OF_DAY), 
 				mTime.get(Calendar.MINUTE), 
 				mTime.get(Calendar.SECOND));
+		String name = mNameEditText.getText().toString();
+		String description = mDescriptionEditText.getText().toString();
+		BigDecimal amountBigd = parseInputToDecimal(mAmountEditText.getText().toString());
 		
-		long accountID = mAccountsSpinner.getSelectedItemId();
-		Account account = mAccountsDbAdapter.getAccount(accountID);
-		Money amount = new Money(amountBigd, account.getCurrency());
-		String type = mTransactionTypeButton.getText().toString();
+		long accountID 	= mAccountsSpinner.getSelectedItemId();
+		Currency currency = Currency.getInstance(mTransactionsDbAdapter.getCurrencyCode(accountID));
+		Money amount 	= new Money(amountBigd, currency);
+		String type 	= mTransactionTypeButton.getText().toString();
 		
 		if (mTransaction != null){
 			mTransaction.setAmount(amount);
@@ -300,7 +298,7 @@ public class NewTransactionFragment extends SherlockFragment implements
 		} else {
 			mTransaction = new Transaction(amount, name, TransactionType.valueOf(type));
 		}
-		mTransaction.setAccountUID(account.getUID());
+		mTransaction.setAccountUID(mTransactionsDbAdapter.getAccountUID(accountID));
 		mTransaction.setTime(cal.getTimeInMillis());
 		mTransaction.setDescription(description);
 		
@@ -370,9 +368,19 @@ public class NewTransactionFragment extends SherlockFragment implements
 	
 	public static String stripCurrencyFormatting(String s){
 		//remove all currency formatting and anything else which is not a number
-		return s.replace(".", "").replace(",", "").replaceAll("\\D*", "");
+		return s.trim().replaceAll("\\D*", "");
 	}
 	
+	public BigDecimal parseInputToDecimal(String amountString){
+		String clean = stripCurrencyFormatting(amountString);
+		BigDecimal amount = new BigDecimal(clean).setScale(2,
+				RoundingMode.HALF_EVEN).divide(new BigDecimal(100), 2,
+				RoundingMode.HALF_EVEN);
+		if (mTransactionTypeButton.isChecked() && amount.doubleValue() > 0)
+			amount = amount.negate();
+		return amount;
+	}
+
 	private class ValidationsWatcher implements TextWatcher {
 
 		@Override
@@ -399,21 +407,19 @@ public class NewTransactionFragment extends SherlockFragment implements
 	}
 	
 	private class AmountInputFormatter implements TextWatcher {
-		private String current = null;
+		private String current = "0";
 		
 		@Override
 		public void afterTextChanged(Editable s) {	
 						
-			String cleanString = stripCurrencyFormatting(s.toString());
-			if (cleanString.length() == 0)
+//			String cleanString = stripCurrencyFormatting(s.toString());
+//			if (cleanString.length() == 0)
+//				return;
+			if (s.length() == 0)
 				return;
 			
-			BigDecimal amount = new BigDecimal(cleanString)
-									.setScale(2, RoundingMode.HALF_EVEN)
-									.divide(new BigDecimal(100), 2, RoundingMode.HALF_EVEN);
-			if (mTransactionTypeButton.isChecked() && amount.doubleValue() > 0) 
-				amount = amount.negate();
-			DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance();
+			BigDecimal amount = parseInputToDecimal(s.toString());
+			DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance(Locale.getDefault());
 			formatter.setMinimumFractionDigits(2);
 			formatter.setMaximumFractionDigits(2);
 			current = formatter.format(amount.doubleValue());

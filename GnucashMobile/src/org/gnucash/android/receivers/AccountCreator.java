@@ -27,6 +27,16 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
+/**
+ * Broadcast receiver responsible for creating {@link Account}s received through intents.
+ * In order to create an <code>Account</code>, you need to broadcast an {@link Intent} with arguments 
+ * for the name, currency and optionally, a unique identifier for the account (which should be unique to Gnucash) 
+ * of the Account to be created. Also remember to set the right mime type so that Android can properly route the Intent
+ * <b>Note</b> This Broadcast receiver requires the permission "org.gnucash.android.permission.CREATE_ACCOUNT" 
+ * in order to be able to use Intents to create accounts. So remember to declare it in your manifest
+ * @author Ngewi Fet <ngewif@gmail.com>
+ * @see {@link Account#EXTRA_CURRENCY_CODE}, {@link Account#MIME_TYPE} {@link Intent#EXTRA_TITLE}, {@link Intent#EXTRA_UID}
+ */
 public class AccountCreator extends BroadcastReceiver {
 
 	@Override

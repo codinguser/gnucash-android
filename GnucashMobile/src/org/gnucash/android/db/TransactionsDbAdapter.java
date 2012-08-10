@@ -169,8 +169,10 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 		String accountUID = c.getString(DatabaseAdapter.COLUMN_ACCOUNT_UID);
 		Currency currency = Currency.getInstance(getCurrencyCode(accountUID));
 		String amount = c.getString(DatabaseAdapter.COLUMN_AMOUNT);
-		Transaction transaction = new Transaction(new Money(new BigDecimal(amount), currency), 
-				c.getString(DatabaseAdapter.COLUMN_NAME));
+		Money moneyAmount = new Money(new BigDecimal(amount), currency);
+		String name   = c.getString(DatabaseAdapter.COLUMN_NAME);
+		
+		Transaction transaction = new Transaction(moneyAmount, name);
 		transaction.setUID(c.getString(DatabaseAdapter.COLUMN_UID));
 		transaction.setAccountUID(accountUID);
 		transaction.setTime(c.getLong(DatabaseAdapter.COLUMN_TIMESTAMP));
@@ -196,7 +198,7 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 		if (cursor == null || cursor.getCount() <= 0)
 			return null;
 					
-		cursor.moveToNext();
+		cursor.moveToFirst();
 		String currencyCode = cursor.getString(0);
 		cursor.close();
 		return currencyCode;
@@ -304,11 +306,9 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 				new String[]{DatabaseHelper.KEY_AMOUNT}, 
 				DatabaseHelper.KEY_ACCOUNT_UID + "= '" + getAccountUID(accountId) + "'", 
 				null, null, null, null);
-		
+
+		//transactions will have the currency of the account
 		String currencyCode = getCurrencyCode(accountId);
-		
-		if (currencyCode == null)
-			currencyCode = Money.DEFAULT_CURRENCY_CODE;
 		
 		if (c == null || c.getCount() <= 0)
 			return new Money("0", currencyCode);		

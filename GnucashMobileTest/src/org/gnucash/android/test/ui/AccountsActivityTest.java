@@ -65,6 +65,7 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
 		adapter.close();
 	}
 
+	
 	public void testDisplayAccountsList(){		
 		//there should exist a listview of accounts
 		Fragment fragment = getActivity()
@@ -213,7 +214,6 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
 			try {
 				mSolo.wait(2000);
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}

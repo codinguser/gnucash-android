@@ -53,6 +53,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ImageView;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -66,21 +67,60 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 
+/**
+ * Fragment for displaying the list of accounts in the database
+ * @author Ngewi Fet <ngewif@gmail.com>
+ *
+ */
 public class AccountsListFragment extends SherlockListFragment implements
 		LoaderCallbacks<Cursor>, OnItemLongClickListener {
 
-	protected static final String FRAGMENT_NEW_ACCOUNT = "new_account_dialog";
-	protected static final String FRAGMENT_EXPORT_OFX  = "export_ofx";
+	/**
+	 * Request code passed when displaying the "Add Account" dialog. 
+	 */
 	private static final int DIALOG_ADD_ACCOUNT = 0x10;
 	
+	/**
+	 * Logging tag
+	 */
 	protected static final String TAG = "AccountsListFragment";
 	
-	AccountsCursorAdapter mCursorAdapter;
+	/**
+	 * {@link ListAdapter} for the accounts which will be bound to the list
+	 */
+	AccountsCursorAdapter mAccountsCursorAdapter;
+	
+	/**
+	 * Dialog fragment for adding new accounts
+	 */
 	NewAccountDialogFragment mAddAccountFragment;
+	
+	/**
+	 * Database adapter for loading Account records from the database
+	 */
 	private AccountsDbAdapter mAccountsDbAdapter;	
-	private OnAccountClickedListener mAccountSelectedListener;	
+	
+	/**
+	 * Listener to be notified when an account is clicked
+	 */
+	private OnAccountClickedListener mAccountSelectedListener;
+	
+	/**
+	 * Flag to indicate if the fragment is in edit mode
+	 * Edit mode means an account has been selected (through long press) and the 
+	 * context action bar (CAB) is activated
+	 */
 	private boolean mInEditMode = false;
+	
+	/**
+	 * Android action mode 
+	 * Is not null only when an accoun is selected and the Context ActionBar (CAB) is activated
+	 */
 	private ActionMode mActionMode = null;
+	
+	/**
+	 * Position which has been selected in the ListView
+	 */
 	private int mSelectedViewPosition = -1;
 	
 	/**
@@ -90,6 +130,9 @@ public class AccountsListFragment extends SherlockListFragment implements
 	 */
 	private long mSelectedItemId = -1;
 	
+	/**
+	 * Callbacks for the CAB menu
+	 */
 	private ActionMode.Callback mActionModeCallbacks = new Callback() {
 		
 		@Override
@@ -129,6 +172,13 @@ public class AccountsListFragment extends SherlockListFragment implements
 		}
 	};
 
+	/**
+	 * Delete confirmation dialog
+	 * Is displayed when deleting an account which has transactions. 
+	 * If an account has no transactions, it is deleted immediately with no confirmation required
+	 * @author Ngewi Fet <ngewif@gmail.com>
+	 *
+	 */
 	public static class MyAlertDialogFragment extends SherlockDialogFragment {
 
         public static MyAlertDialogFragment newInstance(int title, long id) {
@@ -177,13 +227,13 @@ public class AccountsListFragment extends SherlockListFragment implements
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		mAccountsDbAdapter = new AccountsDbAdapter(getActivity());
-		mCursorAdapter = new AccountsCursorAdapter(
+		mAccountsCursorAdapter = new AccountsCursorAdapter(
 				getActivity().getApplicationContext(), 
 				R.layout.list_item_account, null,
 				new String[] { DatabaseHelper.KEY_NAME },
 				new int[] { R.id.account_name });
 						
-		setListAdapter(mCursorAdapter);
+		setListAdapter(mAccountsCursorAdapter);
 	}
 	
 	@Override
@@ -331,7 +381,7 @@ public class AccountsListFragment extends SherlockListFragment implements
 	public void onDestroy() {
 		super.onDestroy();
 		mAccountsDbAdapter.close();
-		mCursorAdapter.close();
+		mAccountsCursorAdapter.close();
 	}	
 	
 	/**
@@ -340,7 +390,7 @@ public class AccountsListFragment extends SherlockListFragment implements
 	public void showAddAccountDialog(long accountId) {
 		FragmentManager manager = getSherlockActivity().getSupportFragmentManager();
 		FragmentTransaction ft = manager.beginTransaction();
-		Fragment prev = manager.findFragmentByTag(FRAGMENT_NEW_ACCOUNT);
+		Fragment prev = manager.findFragmentByTag(AccountsActivity.FRAGMENT_NEW_ACCOUNT);
 		
 		if (prev != null) {
 			ft.remove(prev);
@@ -358,13 +408,13 @@ public class AccountsListFragment extends SherlockListFragment implements
 			//if we were editing, stop before going somewhere else
 			mActionMode.finish(); 
 		}
-		mAddAccountFragment.show(ft, FRAGMENT_NEW_ACCOUNT);
+		mAddAccountFragment.show(ft, AccountsActivity.FRAGMENT_NEW_ACCOUNT);
 	}
 
 	public void showExportDialog(){
 		FragmentManager manager = getSherlockActivity().getSupportFragmentManager();
 		FragmentTransaction ft = manager.beginTransaction();
-	    Fragment prev = manager.findFragmentByTag(FRAGMENT_EXPORT_OFX);
+	    Fragment prev = manager.findFragmentByTag(AccountsActivity.FRAGMENT_EXPORT_OFX);
 	    if (prev != null) {
 	        ft.remove(prev);
 	    }
@@ -372,7 +422,7 @@ public class AccountsListFragment extends SherlockListFragment implements
 
 	    // Create and show the dialog.
 	    DialogFragment exportFragment = new ExportDialogFragment();
-	    exportFragment.show(ft, FRAGMENT_EXPORT_OFX);
+	    exportFragment.show(ft, AccountsActivity.FRAGMENT_EXPORT_OFX);
 	}
 	
 	private class AccountsCursorAdapter extends SimpleCursorAdapter {
@@ -443,14 +493,14 @@ public class AccountsListFragment extends SherlockListFragment implements
 	@Override
 	public void onLoadFinished(Loader<Cursor> loaderCursor, Cursor cursor) {
 		Log.d(TAG, "Accounts loader finished. Swapping in cursor");
-		mCursorAdapter.swapCursor(cursor);
-		mCursorAdapter.notifyDataSetChanged();
+		mAccountsCursorAdapter.swapCursor(cursor);
+		mAccountsCursorAdapter.notifyDataSetChanged();
 	}
 
 	@Override
 	public void onLoaderReset(Loader<Cursor> arg0) {
 		Log.d(TAG, "Resetting the accounts loader");
-		mCursorAdapter.swapCursor(null);
+		mAccountsCursorAdapter.swapCursor(null);
 	}	
 
 }

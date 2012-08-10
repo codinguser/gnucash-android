@@ -1,5 +1,6 @@
 package org.gnucash.android.test.db;
 
+import java.util.Currency;
 import java.util.List;
 
 import org.gnucash.android.data.Account;
@@ -39,5 +40,19 @@ public class AccountsDbAdapterTest extends AndroidTestCase {
 		assertEquals(BRAVO_ACCOUNT_NAME, accountsList.get(1).getName());
 	}
 	
-	
+	public void testTransactionsHaveSameCurrencyAsAccount(){
+		Account acc1 = new Account("Japanese", Currency.getInstance("JPY"));
+		acc1.setUID("simile");
+		Transaction trx = new Transaction(2.50, "Underground");
+		Transaction term = new Transaction("3.49", "Tube");
+		acc1.addTransaction(trx);
+		acc1.addTransaction(term);
+		
+		mAdapter.addAccount(acc1);
+		
+		Account account = mAdapter.getAccount("simile");
+		for (Transaction t : account.getTransactions()) {
+			assertEquals("JPY", t.getAmount().getCurrency().getCurrencyCode());
+		}
+	}
 }

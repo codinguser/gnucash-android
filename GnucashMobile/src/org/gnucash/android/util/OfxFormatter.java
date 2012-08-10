@@ -41,7 +41,7 @@ public class OfxFormatter {
 	/**
 	 * A date formatter used when creating file names for the exported data
 	 */
-	public final static SimpleDateFormat ofxDateFormatter = new SimpleDateFormat("yyyyMMddHHmmss");
+	public final static SimpleDateFormat OFX_DATE_FORMATTER = new SimpleDateFormat("yyyyMMddHHmmss");
 	
 	/**
 	 * ID which will be used as the bank ID for OFX from this app
@@ -84,7 +84,7 @@ public class OfxFormatter {
 	}
 	
 	/**
-	 * Returns the current time formatted using the pattern in {@link #ofxDateFormatter}
+	 * Returns the current time formatted using the pattern in {@link #OFX_DATE_FORMATTER}
 	 * @return Current time as a formatted string
 	 * @see #getFormattedCurrentTime(long)
 	 */
@@ -99,7 +99,7 @@ public class OfxFormatter {
 	 */
 	public static String getFormattedCurrentTime(long milliseconds){
 		Date date = new Date(milliseconds);
-		String dateString = ofxDateFormatter.format(date);
+		String dateString = OFX_DATE_FORMATTER.format(date);
 		TimeZone tz = Calendar.getInstance().getTimeZone();
 		int offset = tz.getRawOffset();
 		int hours   = (int) (( offset / (1000*60*60)) % 24);
