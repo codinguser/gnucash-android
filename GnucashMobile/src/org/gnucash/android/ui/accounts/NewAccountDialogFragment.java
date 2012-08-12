@@ -41,22 +41,66 @@ import android.widget.Spinner;
 
 import com.actionbarsherlock.app.SherlockDialogFragment;
 
+/**
+ * Dialog fragment used for creating and editing accounts
+ * @author Ngewi Fet <ngewif@gmail.com>
+ */
 public class NewAccountDialogFragment extends SherlockDialogFragment {
+	/**
+	 * Really? You want documentation for this too?
+	 */
 	private Button mSaveButton;
+	
+	/**
+	 * Come on! It's a button, what else should I say?
+	 */
 	private Button mCancelButton;
+	
+	/**
+	 * EditText for the name of the account to be created/edited
+	 */
 	private EditText mNameEditText;
+	
+	/**
+	 * Spinner for selecting the currency of the account
+	 * Currencies listed are those specified by ISO 4217
+	 */
 	private Spinner mCurrencySpinner;
 	
+	/**
+	 * Accounts database adapter
+	 */
 	private AccountsDbAdapter mDbAdapter;
+	
+	/**
+	 * List of all currency codes (ISO 4217) supported by the app
+	 */
 	private List<String> mCurrencyCodes;
 	
-	private long mSelectedId = 0;
+	/**
+	 * Record ID of the account which was selected
+	 * This is used if we are editing an account instead of creating one
+	 */
+	private long mSelectedAccountId = 0;
+	
+	/**
+	 * Reference to account object which will be created at end of dialog
+	 */
 	private Account mAccount = null;
 	
+	/**
+	 * Default constructor
+	 * Required, else the app crashes on screen rotation
+	 */
 	public NewAccountDialogFragment() {
-		
+		//nothing to see here, move along
 	}
 	
+	/**
+	 * Construct a new instance of the dialog
+	 * @param dbAdapter {@link AccountsDbAdapter} for saving the account
+	 * @return New instance of the dialog fragment
+	 */
 	static public NewAccountDialogFragment newInstance(AccountsDbAdapter dbAdapter){
 		NewAccountDialogFragment f = new NewAccountDialogFragment();
 		f.mDbAdapter = dbAdapter;
@@ -66,10 +110,12 @@ public class NewAccountDialogFragment extends SherlockDialogFragment {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		mSelectedId = getArguments().getLong(TransactionsListFragment.SELECTED_ACCOUNT_ID);
-				
+		mSelectedAccountId = getArguments().getLong(TransactionsListFragment.SELECTED_ACCOUNT_ID);				
 	}
 	
+	/**
+	 * Inflates the dialog view and retrieves references to the dialog elements
+	 */
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
@@ -86,8 +132,8 @@ public class NewAccountDialogFragment extends SherlockDialogFragment {
         
         mNameEditText.addTextChangedListener(new NameFieldWatcher());
 		       
-        if (mSelectedId != 0) {
-        	mAccount = mDbAdapter.getAccount(mSelectedId);
+        if (mSelectedAccountId != 0) {
+        	mAccount = mDbAdapter.getAccount(mSelectedAccountId);
         	mNameEditText.setText(mAccount.getName());        	
         }
 		
@@ -122,6 +168,9 @@ public class NewAccountDialogFragment extends SherlockDialogFragment {
 		return v;
 	}
 	
+	/**
+	 * Initializes the values of the views in the dialog
+	 */
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
@@ -133,7 +182,7 @@ public class NewAccountDialogFragment extends SherlockDialogFragment {
 		
 		String currencyCode = Money.DEFAULT_CURRENCY_CODE;
 		
-		if (mSelectedId != 0){
+		if (mSelectedAccountId != 0){
 			//if we are editing an account instead of creating one
 			currencyCode = mAccount.getCurrency().getCurrencyCode();
 		}
@@ -144,12 +193,25 @@ public class NewAccountDialogFragment extends SherlockDialogFragment {
 		}		
 	}
 	
+	/**
+	 * Retrieves the name of the account which has been entered in the EditText
+	 * @return
+	 */
 	public String getEnteredName(){
 		return mNameEditText.getText().toString();
 	}
 	
+	/**
+	 * Validation text field watcher which enables the save button only when an account
+	 * name has been provided
+	 * @author Ngewi Fet <ngewif@gmail.com>
+	 *
+	 */
 	private class NameFieldWatcher implements TextWatcher {
 
+		/**
+		 * Enable text if an account name has been entered, disable it otherwise
+		 */
 		@Override
 		public void afterTextChanged(Editable s) {
 			if (s.length() > 0)

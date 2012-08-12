@@ -61,16 +61,49 @@ import android.widget.CheckBox;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+/**
+ * Dialog fragment for exporting account information as OFX files.
+ * @author Ngewi Fet <ngewif@gmail.com>
+ */
 public class ExportDialogFragment extends DialogFragment {
 		
+	/**
+	 * Spinner for selecting destination for the exported file.
+	 * The destination could either be SD card, or another application which
+	 * accepts files, like Google Drive.
+	 */
 	Spinner mDestinationSpinner;
+	
+	/**
+	 * Checkbox indicating that all transactions should be exported,
+	 * regardless of whether they have been exported previously or not
+	 */
 	CheckBox mExportAllCheckBox;
+	
+	/**
+	 * Checkbox for deleting all transactions after exporting them
+	 */
 	CheckBox mDeleteAllCheckBox;
+	
+	/**
+	 * Save button for saving the exported files
+	 */
 	Button mSaveButton;
+	
+	/**
+	 * Cancels the export dialog
+	 */
 	Button mCancelButton;
 	
+	/**
+	 * File path for saving the OFX files
+	 */
 	String mFilePath;
 	
+	/**
+	 * Click listener for positive button in the dialog.
+	 * @author Ngewi Fet <ngewif@gmail.com>
+	 */
 	protected class ExportClickListener implements View.OnClickListener {
 
 		@Override
@@ -149,6 +182,9 @@ public class ExportDialogFragment extends DialogFragment {
 		bindViews();
 	}
 
+	/**
+	 * Collects references to the UI elements and binds click listeners
+	 */
 	private void bindViews(){
 		View v = getView();
 		mDestinationSpinner = (Spinner) v.findViewById(R.id.spinner_export_destination);
@@ -175,6 +211,11 @@ public class ExportDialogFragment extends DialogFragment {
 		mSaveButton.setOnClickListener(new ExportClickListener());
 	}
 	
+	/**
+	 * Writes the OFX document <code>doc</code> to external storage
+	 * @param Document containing OFX file data
+	 * @throws IOException if file could not be saved
+	 */
 	private void writeToExternalStorage(Document doc) throws IOException{
 		File file = new File(mFilePath);
 		
@@ -183,6 +224,9 @@ public class ExportDialogFragment extends DialogFragment {
 		
 	}
 	
+	/**
+	 * Callback for when the activity chooser dialog is completed
+	 */
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		//TODO: fix the exception which is thrown on return
@@ -193,6 +237,11 @@ public class ExportDialogFragment extends DialogFragment {
 		}
 	}
 	
+	/**
+	 * Starts an intent chooser to allow the user to select an activity to receive
+	 * the exported OFX file
+	 * @param path String path to the file on disk
+	 */
 	private void shareFile(String path){
 		Intent shareIntent = new Intent(Intent.ACTION_SEND);
 		shareIntent.setType("multipart/xml");
@@ -204,6 +253,12 @@ public class ExportDialogFragment extends DialogFragment {
 		startActivity(Intent.createChooser(shareIntent, getString(R.string.title_share_ofx_with)));	
 	}
 	
+	/**
+	 * Copies a file from <code>src</code> to <code>dst</code>
+	 * @param src Absolute path to the source file
+	 * @param dst Absolute path to the destination file 
+	 * @throws IOException if the file could not be copied
+	 */
 	public static void copyFile(File src, File dst) throws IOException
 	{
 		//TODO: Make this asynchronous at some time, t in the future.
@@ -222,6 +277,10 @@ public class ExportDialogFragment extends DialogFragment {
 	    }
 	}
 	
+	/**
+	 * Builds a file name based on the current time stamp for the exported file
+	 * @return String containing the file name
+	 */
 	public static String buildExportFilename(){
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd_HHmm");
 		String filename = formatter.format(
@@ -230,6 +289,13 @@ public class ExportDialogFragment extends DialogFragment {
 		return filename;
 	}
 	
+	/**
+	 * Exports transactions in the database to the OFX format.
+	 * The accounts are written to a DOM document and returned
+	 * @param exportAll Flag to export all transactions or only the new ones since last export
+	 * @return DOM {@link Document} containing the OFX file information
+	 * @throws ParserConfigurationException
+	 */
 	protected Document exportOfx(boolean exportAll) throws ParserConfigurationException{		
 		DocumentBuilderFactory docFactory = DocumentBuilderFactory
 				.newInstance();
@@ -248,6 +314,11 @@ public class ExportDialogFragment extends DialogFragment {
 		return document;
 	}
 	
+	/**
+	 * Writes out the file held in <code>document</code> to <code>outputWriter</code>
+	 * @param document {@link Document} containing the OFX document structure
+	 * @param outputWriter {@link Writer} to use in writing the file to stream
+	 */
 	public void write(Document document, Writer outputWriter){
 		try {
 			TransformerFactory transformerFactory = TransformerFactory

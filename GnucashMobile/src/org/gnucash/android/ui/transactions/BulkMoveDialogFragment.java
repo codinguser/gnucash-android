@@ -35,16 +35,45 @@ import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+/**
+ * Dialog fragment for moving transactions from one account to another
+ * @author Ngewi Fet <ngewif@gmail.com>
+ */
 public class BulkMoveDialogFragment extends DialogFragment {
 
+	/**
+	 * Spinner for selecting the account to move the transactions to
+	 */
 	Spinner mDestinationAccountSpinner; 
+	
+	/**
+	 * Dialog positive button. Ok to moving the transactions
+	 */
 	Button mOkButton; 
+	
+	/**
+	 * Cancel button
+	 */
 	Button mCancelButton; 
 	
+	/**
+	 * Record IDs of the transactions to be moved
+	 */
 	long[] mTransactionIds = null;
+	
+	/**
+	 * Account from which to move the transactions
+	 */
 	long mOriginAccountId = -1;
+	
+	/**
+	 * Accounts database adapter
+	 */
 	private AccountsDbAdapter mAccountsDbAdapter;
 	
+	/**
+	 * Creates the view and retrieves references to the dialog elements
+	 */
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {		
@@ -63,13 +92,14 @@ public class BulkMoveDialogFragment extends DialogFragment {
 		super.onActivityCreated(savedInstanceState);
 		getDialog().getWindow().setLayout(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
 		
-		mTransactionIds = getArguments().getLongArray(TransactionsListFragment.SELECTED_TRANSACTION_IDS);
-		mOriginAccountId = getArguments().getLong(TransactionsListFragment.ORIGIN_ACCOUNT_ID);
+		Bundle args = getArguments();
+		mTransactionIds = args.getLongArray(TransactionsListFragment.SELECTED_TRANSACTION_IDS);
+		mOriginAccountId = args.getLong(TransactionsListFragment.ORIGIN_ACCOUNT_ID);
 		
 		String title = getActivity().getString(R.string.title_move_transactions, 
 				mTransactionIds.length);
 		getDialog().setTitle(title);
-	
+		
 		mAccountsDbAdapter = new AccountsDbAdapter(getActivity());
 		Cursor cursor = mAccountsDbAdapter.fetchAllAccounts();
 		
@@ -86,6 +116,9 @@ public class BulkMoveDialogFragment extends DialogFragment {
 		setListeners();
 	}
 	
+	/**
+	 * Binds click listeners for the dialog buttons
+	 */
 	protected void setListeners(){
 		mCancelButton.setOnClickListener(new View.OnClickListener() {
 			

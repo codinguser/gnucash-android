@@ -283,6 +283,15 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 	}
 	
 	/**
+	 * Returns currency code of account with database ID <code>id</code>
+	 * @param id Record ID of the account to be removed
+	 * @return Currency code of the account
+	 */
+	public String getCurrency(long id){
+		return mTransactionsAdapter.getCurrencyCode(id);
+	}
+	
+	/**
 	 * Deletes all accounts and their transactions from the database
 	 */
 	public void deleteAllAccounts(){

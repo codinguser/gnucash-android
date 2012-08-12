@@ -293,6 +293,12 @@ public class AccountsListFragment extends SherlockListFragment implements
 	        return true;
 		}
 
+	/**
+	 * Delete the account with record ID <code>rowId</code>
+	 * It shows the delete confirmation dialog if the account has transactions,
+	 * else deletes the account immediately
+	 * @param rowId The record ID of the account
+	 */
 	public void tryDeleteAccount(long rowId){
 		Account acc = mAccountsDbAdapter.getAccount(rowId);
 		if (acc.getTransactionCount() > 0){
@@ -302,6 +308,10 @@ public class AccountsListFragment extends SherlockListFragment implements
 		}
 	}
 	
+	/**
+	 * Deletes an account and show a {@link Toast} notification on success
+	 * @param rowId Record ID of the account to be deleted
+	 */
 	protected void deleteAccount(long rowId){		
 
 		boolean deleted = mAccountsDbAdapter.destructiveDeleteAccount(rowId);
@@ -311,12 +321,20 @@ public class AccountsListFragment extends SherlockListFragment implements
 		refreshList();	
 	}
 
+	/**
+	 * Shows the delete confirmation dialog
+	 * @param id Record ID of account to be deleted after confirmation
+	 */
 	public void showConfirmationDialog(long id){
 		MyAlertDialogFragment alertFragment = MyAlertDialogFragment.newInstance(R.string.title_confirm_delete, id);
 		alertFragment.setTargetFragment(this, 0);
 		alertFragment.show(getSherlockActivity().getSupportFragmentManager(), "dialog");
 	}
 	
+	/**
+	 * Finish the edit mode and dismisses the Contextual ActionBar
+	 * Any selected (highlighted) accounts are deselected
+	 */
 	public void finishEditMode(){
 		mInEditMode = false;
 		deselectPreviousSelectedItem();
@@ -324,6 +342,12 @@ public class AccountsListFragment extends SherlockListFragment implements
 		mSelectedItemId = -1;
 	}
 	
+	/**
+	 * Highlights the item at <code>position</code> in the ListView.
+	 * Android has facilities for managing list selection but the highlighting 
+	 * is not reliable when using the ActionBar on pre-Honeycomb devices-
+	 * @param position Position of item to be highlighted
+	 */
 	private void selectItem(int position){
 		deselectPreviousSelectedItem();		
 		ListView lv = getListView();	
@@ -334,6 +358,11 @@ public class AccountsListFragment extends SherlockListFragment implements
         mSelectedViewPosition = position;
 	}
 	
+	/**
+	 * De-selects the previously selected item in a ListView.
+	 * Only one account entry can be highlighted at a time, so the previously selected
+	 * one is deselected. 
+	 */
 	private void deselectPreviousSelectedItem(){
 		if (mSelectedViewPosition >= 0){
 			getListView().setItemChecked(mSelectedViewPosition, false);
@@ -373,10 +402,17 @@ public class AccountsListFragment extends SherlockListFragment implements
 		}
 	}
 	
+	/**
+	 * Refreshes the list by restarting the {@link DatabaseCursorLoader} associated
+	 * with the ListView
+	 */
 	public void refreshList(){
 		getLoaderManager().restartLoader(0, null, this);
 	}
 	
+	/**
+	 * Closes any open database adapters used by the list
+	 */
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
@@ -411,6 +447,9 @@ public class AccountsListFragment extends SherlockListFragment implements
 		mAddAccountFragment.show(ft, AccountsActivity.FRAGMENT_NEW_ACCOUNT);
 	}
 
+	/**
+	 * Displays the dialog for exporting transactions in OFX
+	 */
 	public void showExportDialog(){
 		FragmentManager manager = getSherlockActivity().getSupportFragmentManager();
 		FragmentTransaction ft = manager.beginTransaction();
@@ -425,6 +464,11 @@ public class AccountsListFragment extends SherlockListFragment implements
 	    exportFragment.show(ft, AccountsActivity.FRAGMENT_EXPORT_OFX);
 	}
 	
+	/**
+	 * Overrides the {@link SimpleCursorAdapter} to provide custom binding of the 
+	 * information from the database to the views
+	 * @author Ngewi Fet <ngewif@gmail.com>
+	 */
 	private class AccountsCursorAdapter extends SimpleCursorAdapter {
 		TransactionsDbAdapter transactionsDBAdapter;
 		
@@ -468,6 +512,11 @@ public class AccountsListFragment extends SherlockListFragment implements
 		}
 	}
 
+	/**
+	 * Extends {@link DatabaseCursorLoader} for loading of {@link Account} from the 
+	 * database asynchronously
+	 * @author Ngewi Fet <ngewif@gmail.com>
+	 */
 	private static final class AccountsCursorLoader extends DatabaseCursorLoader {
 		
 		public AccountsCursorLoader(Context context) {

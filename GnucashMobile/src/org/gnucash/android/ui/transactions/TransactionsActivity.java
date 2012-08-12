@@ -17,6 +17,7 @@
 package org.gnucash.android.ui.transactions;
 
 import org.gnucash.android.R;
+import org.gnucash.android.data.Account;
 import org.gnucash.android.util.OnTransactionClickedListener;
 
 import android.content.Intent;
@@ -29,13 +30,32 @@ import android.view.View;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.MenuItem;
 
-public class TransactionsActivity extends SherlockFragmentActivity implements OnTransactionClickedListener{
+/**
+ * Activing for displaying, creating and editing transactions
+ * @author Ngewi Fet <ngewif@gmail.com>
+ */
+public class TransactionsActivity extends SherlockFragmentActivity implements 
+	OnTransactionClickedListener{
 
+	/**
+	 * Logging tag
+	 */
 	protected static final String TAG = "AccountsActivity";
 	
+	/**
+	 * Tag for {@link TransactionsListFragment}
+	 * Can be used to check if the fragment is currently loaded
+	 */
 	public static final String FRAGMENT_TRANSACTIONS_LIST 	= "transactions_list";
+	
+	/**
+	 * Tag for {@link NewTransactionFragment}
+	 */
 	public static final String FRAGMENT_NEW_TRANSACTION 	= "new_transaction";	
 	
+	/**
+	 * Database ID of {@link Account} whose transactions are displayed 
+	 */
 	private long mAccountId 	= 0;
 	
 	@Override
@@ -84,7 +104,10 @@ public class TransactionsActivity extends SherlockFragmentActivity implements On
 	public void onNewTransactionClick(View v){
 		createNewTransaction(mAccountId);
 	}
-		
+	
+	/**
+	 * Show list of transactions. Loads {@link TransactionsListFragment} 
+	 */
 	protected void showTransactionsList(){
 		FragmentManager fragmentManager = getSupportFragmentManager();
 

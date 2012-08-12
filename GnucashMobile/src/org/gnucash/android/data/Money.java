@@ -218,7 +218,7 @@ public class Money implements Comparable<Money>{
 		formatter.setMinimumFractionDigits(DECIMAL_PLACES);
 		formatter.setMaximumFractionDigits(DECIMAL_PLACES);
 		
-		return formatter.format(asDouble()) + " " + mCurrency.getSymbol();
+		return formatter.format(asDouble()) + " " + mCurrency.getSymbol(locale);
 	}
 	
 	/**

@@ -39,7 +39,9 @@ import org.gnucash.android.ui.DatePickerDialogFragment;
 import org.gnucash.android.ui.TimePickerDialogFragment;
 import org.gnucash.android.ui.widget.WidgetConfigurationActivity;
 
+import android.app.DatePickerDialog;
 import android.app.DatePickerDialog.OnDateSetListener;
+import android.app.TimePickerDialog;
 import android.app.TimePickerDialog.OnTimeSetListener;
 import android.content.Context;
 import android.database.Cursor;
@@ -54,6 +56,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.DatePicker;
@@ -69,34 +73,120 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 
+/**
+ * Fragment for creating or editing transactions
+ * @author Ngewi Fet <ngewif@gmail.com>
+ */
 public class NewTransactionFragment extends SherlockFragment implements 
 	OnDateSetListener, OnTimeSetListener {
 	
+	/**
+	 * Transactions database adapter
+	 */
 	private TransactionsDbAdapter mTransactionsDbAdapter;
+	
+	/**
+	 * Holds database ID of transaction to be edited (if in edit mode)
+	 */
 	private long mTransactionId = 0;
+	
+	/**
+	 * Transaction to be created/updated
+	 */
 	private Transaction mTransaction;
 	
+	/**
+	 * Arguments key for database ID of transaction. 
+	 * Is used to pass a transaction ID into a bundle or intent
+	 */
 	public static final String SELECTED_TRANSACTION_ID = "selected_transaction_id";
 	
+	/**
+	 * Formats a {@link Date} object into a date string of the format dd MMM yyyy e.g. 18 July 2012
+	 */
 	public final static SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat("dd MMM yyyy");
+	
+	/**
+	 * Formats a {@link Date} object to time string of format HH:mm e.g. 15:25
+	 */
 	public final static SimpleDateFormat TIME_FORMATTER = new SimpleDateFormat("HH:mm");
 	
+	/**
+	 * Button for setting the transaction type, either credit or debit
+	 */
 	private ToggleButton mTransactionTypeButton;
+	
+	/**
+	 * Input field for the transaction name (description)
+	 */
 	private EditText mNameEditText;
+	
+	/**
+	 * Input field for the transaction amount
+	 */
 	private EditText mAmountEditText;
+	
+	/**
+	 * Field for the transaction currency.
+	 * The transaction uses the currency of the account
+	 */
 	private TextView mCurrencyTextView;
+	
+	/**
+	 * Input field for the transaction description (note)
+	 */
 	private EditText mDescriptionEditText;
+	
+	/**
+	 * Input field for the transaction date
+	 */
 	private TextView mDateTextView;
+	
+	/**
+	 * Input field for the transaction time
+	 */
 	private TextView mTimeTextView;		
+	
+	/**
+	 * {@link Calendar} for holding the set date
+	 */
 	private Calendar mDate;
+	
+	/**
+	 * {@link Calendar} object holding the set time
+	 */
 	private Calendar mTime;
+	
+	/**
+	 * Spinner for selecting the account for the transaction
+	 */
 	private Spinner mAccountsSpinner;
+	
+	/**
+	 * Accounts database adapter. 
+	 * Used for getting list of transactions to populate the {@link #mAccountsSpinner}
+	 */
 	private AccountsDbAdapter mAccountsDbAdapter;
+	
+	/**
+	 * Cursor adapter for {@link #mAccountsSpinner}
+	 */
 	private SimpleCursorAdapter mCursorAdapter; 
 	
+	/**
+	 * ActionBar Menu item for saving the transaction
+	 * A transaction needs atleast a name and amount, only then is the save menu item enabled
+	 */
 	private MenuItem mSaveMenuItem;
+	
+	/**
+	 * Cursor for accounts list spinner
+	 */
 	private Cursor mCursor;
 	
+	/**
+	 * Create the view and retrieve references to the UI elements
+	 */
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
@@ -136,7 +226,21 @@ public class NewTransactionFragment extends SherlockFragment implements
 				0);
 		mCursorAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		mAccountsSpinner.setAdapter(mCursorAdapter);
-		
+		mAccountsSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
+
+			@Override
+			public void onItemSelected(AdapterView<?> parent, View view,
+					int position, long id) {
+				String currencyCode = mAccountsDbAdapter.getCurrency(id);
+				Currency currency = Currency.getInstance(currencyCode);
+				mCurrencyTextView.setText(currency.getSymbol(Locale.getDefault()));
+			}
+
+			@Override
+			public void onNothingSelected(AdapterView<?> parent) {
+				// nothing to see here, move along				
+			}
+		});
 		mTransactionId = getArguments().getLong(SELECTED_TRANSACTION_ID);
 		mTransactionsDbAdapter = new TransactionsDbAdapter(getActivity());
 		mTransaction = mTransactionsDbAdapter.getTransaction(mTransactionId);
@@ -149,12 +253,16 @@ public class NewTransactionFragment extends SherlockFragment implements
 		
 	}
 
+	/**
+	 * Initialize views in the fragment with information from a transaction.
+	 * This method is called if the fragment is used for editing a transaction
+	 */
 	private void initializeViewsWithTransaction(){
 				
 		mNameEditText.setText(mTransaction.getName());
 		mTransactionTypeButton.setChecked(mTransaction.getTransactionType() == TransactionType.DEBIT);
 		mAmountEditText.setText(mTransaction.getAmount().toPlainString());
-		mCurrencyTextView.setText(mTransaction.getAmount().getCurrency().getSymbol());
+		mCurrencyTextView.setText(mTransaction.getAmount().getCurrency().getSymbol(Locale.getDefault()));
 		mDescriptionEditText.setText(mTransaction.getDescription());
 		mDateTextView.setText(DATE_FORMATTER.format(mTransaction.getTimeMillis()));
 		mTimeTextView.setText(TIME_FORMATTER.format(mTransaction.getTimeMillis()));
@@ -180,7 +288,7 @@ public class NewTransactionFragment extends SherlockFragment implements
 	}
 	
 	/**
-	 * Binds the various views to the appropriate text
+	 * Initialize views with default data for new transactions
 	 */
 	private void initalizeViews() {
 		Date time = new Date(System.currentTimeMillis()); 
@@ -201,11 +309,11 @@ public class NewTransactionFragment extends SherlockFragment implements
 		
 			
 		Currency accountCurrency = Currency.getInstance(code);
-		mCurrencyTextView.setText(accountCurrency.getSymbol());
+		mCurrencyTextView.setText(accountCurrency.getSymbol(Locale.getDefault()));
 	}
 	
 	/**
-	 * Sets click listeners for the dismiss buttons
+	 * Sets click listeners for the dialog buttons
 	 */
 	private void setListeners() {
 		ValidationsWatcher validations = new ValidationsWatcher();
@@ -274,6 +382,10 @@ public class NewTransactionFragment extends SherlockFragment implements
 		});
 	}	
 	
+	/**
+	 * Collects information from the fragment views and uses it to create 
+	 * and save a transaction
+	 */
 	private void saveNewTransaction() {
 		Calendar cal = new GregorianCalendar(
 				mDate.get(Calendar.YEAR), 
@@ -348,6 +460,9 @@ public class NewTransactionFragment extends SherlockFragment implements
 		}
 	}
 
+	/**
+	 * Callback when the date is set in the {@link DatePickerDialog}
+	 */
 	@Override
 	public void onDateSet(DatePicker view, int year, int monthOfYear,
 			int dayOfMonth) {
@@ -358,6 +473,9 @@ public class NewTransactionFragment extends SherlockFragment implements
 		mDate.set(Calendar.DAY_OF_MONTH, dayOfMonth);
 	}
 
+	/**
+	 * Callback when the time is set in the {@link TimePickerDialog}
+	 */
 	@Override
 	public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
 		Calendar cal = new GregorianCalendar(0, 0, 0, hourOfDay, minute);
@@ -366,11 +484,22 @@ public class NewTransactionFragment extends SherlockFragment implements
 		mTime.set(Calendar.MINUTE, minute);
 	}
 	
+	/**
+	 * Strips formatting from a currency string.
+	 * All non-digit information is removed
+	 * @param s String to be stripped
+	 * @return Stripped string with all non-digits removed
+	 */
 	public static String stripCurrencyFormatting(String s){
 		//remove all currency formatting and anything else which is not a number
 		return s.trim().replaceAll("\\D*", "");
 	}
 	
+	/**
+	 * Parse an input string into a {@link BigDecimal}
+	 * @param amountString String with amount information
+	 * @return BigDecimal with the amount parsed from <code>amountString</code>
+	 */
 	public BigDecimal parseInputToDecimal(String amountString){
 		String clean = stripCurrencyFormatting(amountString);
 		BigDecimal amount = new BigDecimal(clean).setScale(2,
@@ -381,6 +510,12 @@ public class NewTransactionFragment extends SherlockFragment implements
 		return amount;
 	}
 
+	/**
+	 * Validates that the name and amount of the transaction is provided
+	 * before enabling the save button
+	 * @author Ngewi Fet <ngewif@gmail.com>
+	 *
+	 */
 	private class ValidationsWatcher implements TextWatcher {
 
 		@Override
@@ -406,6 +541,13 @@ public class NewTransactionFragment extends SherlockFragment implements
 		
 	}
 	
+	/**
+	 * Captures input string in the amount input field and parses it into a formatted amount
+	 * The amount input field allows numbers to be input sequentially and they are parsed
+	 * into a string with 2 decimal places. This means inputting 245 will result in the amount
+	 * of 2.45
+	 * @author Ngewi Fet <ngewif@gmail.com>
+	 */
 	private class AmountInputFormatter implements TextWatcher {
 		private String current = "0";
 		

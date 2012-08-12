@@ -57,16 +57,38 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 
+/**
+ * List Fragment for displaying list of transactions for an account
+ * @author Ngewi Fet <ngewif@gmail.com>
+ *
+ */
 public class TransactionsListFragment extends SherlockListFragment implements 
 	LoaderCallbacks<Cursor> {
 
+	/**
+	 * Logging tag
+	 */
 	protected static final String TAG = "TransactionsListFragment";
 
+	/**
+	 * Key for passing list of selected items as an argument in a bundle or intent
+	 */
 	private static final String SAVED_SELECTED_ITEMS 	= "selected_items";	
+	
+	/**
+	 * Key for passing the selected account ID as an argument in a bundle or intent
+	 * This is the account whose transactions are to be displayed
+	 */
 	public static final String SELECTED_ACCOUNT_ID 		= "selected_account_id";
 	
+	/**
+	 * Key for passing list of IDs selected transactions as an argument in a bundle or intent
+	 */
 	public static final String SELECTED_TRANSACTION_IDS = "selected_transactions";
 
+	/**
+	 * Key for the origin account as argument when moving accounts
+	 */
 	public static final String ORIGIN_ACCOUNT_ID = "origin_acccount_id";
 	
 	private TransactionsDbAdapter mTransactionsDbAdapter;
@@ -75,10 +97,19 @@ public class TransactionsListFragment extends SherlockListFragment implements
 	private boolean mInEditMode = false;
 	private long mAccountID;
 	
+	/**
+	 * Selected (checked) transactions in the list when entering ActionMode
+	 */
 	private HashMap<Integer, Long> mSelectedIds = new HashMap<Integer, Long>();
 
+	/**
+	 * Callback listener for editing transactions
+	 */
 	private OnTransactionClickedListener mTransactionEditListener;
 	
+	/**
+	 * Callbacks for the menu items in the Context ActionBar (CAB) in action mode
+	 */
 	private ActionMode.Callback mActionModeCallbacks = new ActionMode.Callback() {
 		
 		@Override
@@ -123,6 +154,9 @@ public class TransactionsListFragment extends SherlockListFragment implements
 		}
 	};
 
+	/**
+	 * Text view displaying the sum of the accounts
+	 */
 	private TextView mSumTextView;
 	
 	@Override
@@ -254,6 +288,10 @@ public class TransactionsListFragment extends SherlockListFragment implements
 		mCursorAdapter.swapCursor(null);		
 	}
 
+	/**
+	 * Finishes the edit mode in the transactions list. 
+	 * Edit mode is started when at least one transaction is selected
+	 */
 	public void finishEditMode(){
 		mInEditMode = false;
 		deselectAllItems();
@@ -261,6 +299,10 @@ public class TransactionsListFragment extends SherlockListFragment implements
 		mSelectedIds.clear();
 	}
 	
+	/**
+	 * Sets the title of the Context ActionBar when in action mode. 
+	 * It sets the number highlighted items
+	 */
 	public void setActionModeTitle(){
 		int count = mSelectedIds.size();
 		if (count > 0){			
@@ -268,6 +310,10 @@ public class TransactionsListFragment extends SherlockListFragment implements
 		}
 	}
 	
+	/**
+	 * Selects a transaction in the list of transaction
+	 * @param position Position of the item which was selected
+	 */
 	private void selectItem(int position){		
 		ListView lv = getListView();	
 		lv.setItemChecked(position, true);
@@ -279,6 +325,9 @@ public class TransactionsListFragment extends SherlockListFragment implements
         mSelectedIds.put(position, id);
 	}
 	
+	/**
+	 * Deselects all selected items
+	 */
 	private void deselectAllItems() {
 		Integer[] selectedItemPositions = new Integer[mSelectedIds.size()];
 		mSelectedIds.keySet().toArray(selectedItemPositions);
@@ -287,6 +336,10 @@ public class TransactionsListFragment extends SherlockListFragment implements
 		}
 	}
 	
+	/**
+	 * Deselects an item at <code>position</code>
+	 * @param position
+	 */
 	private void deselectItem(int position){
 		if (position >= 0){
 			getListView().setItemChecked(position, false);
@@ -302,6 +355,10 @@ public class TransactionsListFragment extends SherlockListFragment implements
 		}
 	}
 	
+	/**
+	 * Starts action mode and activates the Context ActionBar (CAB)
+	 * Action mode is initiated as soon as at least one transaction is selected (highlighted)
+	 */
 	private void startActionMode(){
 		if (mActionMode != null) {
             return;
@@ -311,6 +368,9 @@ public class TransactionsListFragment extends SherlockListFragment implements
         mActionMode = getSherlockActivity().startActionMode(mActionModeCallbacks);
 	}
 	
+	/**
+	 * Stops action mode and deselects all selected transactions
+	 */
 	private void stopActionMode(){
 		if (mSelectedIds.size() > 0)
 			return;
@@ -318,6 +378,9 @@ public class TransactionsListFragment extends SherlockListFragment implements
 			mActionMode.finish();
 	}
 		
+	/**
+	 * Prepares and displays the dialog for bulk moving transactions to another account
+	 */
 	protected void showBulkMoveDialog(){
 		FragmentManager manager = getActivity().getSupportFragmentManager();
 		FragmentTransaction ft = manager.beginTransaction();
@@ -341,6 +404,10 @@ public class TransactionsListFragment extends SherlockListFragment implements
 	    bulkMoveFragment.show(ft, "bulk_move_dialog");
 	}
 	
+	/**
+	 * Extends a simple cursor adapter to bind transaction attributes to views 
+	 * @author Ngewi Fet <ngewif@gmail.com>
+	 */
 	protected class TransactionsCursorAdapter extends SimpleCursorAdapter {
 		
 		public TransactionsCursorAdapter(Context context, int layout, Cursor c,
@@ -391,6 +458,10 @@ public class TransactionsListFragment extends SherlockListFragment implements
 		}
 	}
 	
+	/**
+	 * {@link DatabaseCursorLoader} for loading transactions asynchronously from the database
+	 * @author Ngewi Fet <ngewif@gmail.com>
+	 */
 	protected static class TransactionsCursorLoader extends DatabaseCursorLoader {
 		private long accountID; 
 		
