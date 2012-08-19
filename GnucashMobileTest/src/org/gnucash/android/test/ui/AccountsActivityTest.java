@@ -166,7 +166,7 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
 		Account acc = new Account("TO BE DELETED");
 		acc.setUID("to-be-deleted");
 		
-		Transaction transaction = new Transaction(5.99, "hats");
+		Transaction transaction = new Transaction("5.99", "hats");
 		transaction.setAccountUID("to-be-deleted");
 		acc.addTransaction(transaction);
 		AccountsDbAdapter accDbAdapter = new AccountsDbAdapter(getActivity());

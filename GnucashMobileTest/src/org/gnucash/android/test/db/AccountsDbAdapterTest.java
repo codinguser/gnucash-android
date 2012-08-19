@@ -20,13 +20,13 @@ public class AccountsDbAdapterTest extends AndroidTestCase {
 		super.setUp();
 		mAdapter = new AccountsDbAdapter(getContext());
 		Account first = new Account(ALPHA_ACCOUNT_NAME);
-		Transaction t1 = new Transaction(2.99, "T800");
+		Transaction t1 = new Transaction("2.99", "T800");
 		t1.setAccountUID(first.getUID());
-		Transaction t2 = new Transaction(4.99, "T1000");
+		Transaction t2 = new Transaction("4.99", "T1000");
 		t2.setAccountUID(first.getUID());
 		
 		Account second = new Account(BRAVO_ACCOUNT_NAME);
-		Transaction t = new Transaction(9.99, "buyout");
+		Transaction t = new Transaction("9.99", "buyout");
 		t.setAccountUID(second.getUID());
 		
 		mAdapter.addAccount(second);
@@ -43,7 +43,7 @@ public class AccountsDbAdapterTest extends AndroidTestCase {
 	public void testTransactionsHaveSameCurrencyAsAccount(){
 		Account acc1 = new Account("Japanese", Currency.getInstance("JPY"));
 		acc1.setUID("simile");
-		Transaction trx = new Transaction(2.50, "Underground");
+		Transaction trx = new Transaction("2.50", "Underground");
 		Transaction term = new Transaction("3.49", "Tube");
 		acc1.addTransaction(trx);
 		acc1.addTransaction(term);

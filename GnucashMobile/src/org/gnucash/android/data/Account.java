@@ -81,7 +81,7 @@ public class Account {
 	/**
 	 * An extra key for passing the currency code (according ISO 4217) in an intent
 	 */
-	public static final String EXTRA_CURRENCY_CODE 	= "org.gnucash.extra.currency_code";
+	public static final String EXTRA_CURRENCY_CODE 	= "org.gnucash.android.extra.currency_code";
 	
 	/**
 	 * Constructor

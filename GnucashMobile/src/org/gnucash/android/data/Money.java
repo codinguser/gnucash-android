@@ -20,19 +20,20 @@ import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.Currency;
 import java.util.Locale;
-
-
-import android.util.Log;
 
 /**
  * Money represents a money amount and a corresponding currency.
  * Money internally uses {@link BigDecimal} to represent the amounts, which enables it 
  * to maintain high precision afforded by BigDecimal. Money objects are immutable and
  * most operations return new Money objects.
+ * Money String constructors should not be passed any locale-formatted numbers. Only
+ * {@link Locale#US} is supported e.g. "2.45" will be parsed as 2.45 meanwhile 
+ * "2,45" will be parsed to 245 although that could be a decimal in {@link Locale#GERMAN}
  * 
  * @author Ngewi Fet<ngewif@gmail.com>
  *
@@ -132,17 +133,7 @@ public class Money implements Comparable<Money>{
 		init();
 		setAmount(parseToDecimal(amount));
 	}
-	
-	/**
-	 * Overloaded constructor. 
-	 * Initializes the currency to that specified by {@link Money#DEFAULT_CURRENCY_CODE}
-	 * @param amount Value associated with this Money object
-	 */
-	public Money(double amount){
-		init();
-		setAmount(amount);
-	}
-	
+
 	/**
 	 * Initializes the amount and currency to their default values
 	 * @see {@link Money#DEFAULT_CURRENCY_CODE}, {@link #DEFAULT_ROUNDING_MODE}, {@link #DEFAULT_DECIMAL_PLACES}
@@ -245,15 +236,7 @@ public class Money implements Comparable<Money>{
 	 */
 	private void setAmount(String amount){
 		setAmount(parseToDecimal(amount));
-	}
-	
-	/**
-	 * Sets the amount value of this <code>Money</code> object
-	 * @param amount Double amount to be set
-	 */
-	private void setAmount(double amount){
-		setAmount(new BigDecimal(amount));
-	}
+	}	
 	
 	/**
 	 * Returns a new <code>Money</code> object whose value is the sum of the values of 
@@ -412,20 +395,24 @@ public class Money implements Comparable<Money>{
 	}
 
 	/**
-	 * Parses a Locale specific string into a number in the default Locale
-	 * @param formattedAmount Formatted String amount
+	 * Parses a Locale specific string into a number using format for {@link Locale#US}
+	 * @param amountString Formatted String amount
 	 * @return String amount formatted in the default locale
 	 */
-	public static BigDecimal parseToDecimal(String formattedAmount){
-		DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance(Locale.getDefault());		
-		formatter.setParseBigDecimal(true);
-		BigDecimal result = null;
+	public static BigDecimal parseToDecimal(String amountString){	
+		char separator = new DecimalFormatSymbols(Locale.US).getGroupingSeparator();
+		amountString = amountString.replace(Character.toString(separator), "");
+		NumberFormat formatter = NumberFormat.getInstance(Locale.US);		
+		if (formatter instanceof DecimalFormat) {
+		     ((DecimalFormat)formatter).setParseBigDecimal(true);		     
+		 }
+		BigDecimal result = null; //new BigDecimal(0);
 		try {
-			result = (BigDecimal) formatter.parse(formattedAmount);
+			result = (BigDecimal) formatter.parse(amountString);
 			
 		} catch (ParseException e) {
-			Log.e("Money", "Could not parse the amount");			
+			e.printStackTrace();		
 		}
-		return result;
+		return result;		
 	}
 }

@@ -109,19 +109,7 @@ public class Transaction {
 		setName(name);
 		setAmount(amount); //takes care of setting the type for us
 	}
-	
-	/**
-	 * Overloaded constructor. Creates a new transaction instance with the 
-	 * provided data and initializes the rest to default values. 
-	 * @param amount Amount for the transaction as double
-	 * @param name Name of the transaction
-	 */
-	public Transaction(double amount, String name){
-		initDefaults();
-		setName(name);
-		setAmount(amount);
-	}
-	
+
 	/**
 	 * Overloaded constructor. Creates a new transaction instance with the 
 	 * provided data and initializes the rest to default values. 
@@ -185,15 +173,7 @@ public class Transaction {
 		this.mAmount = new Money(new BigDecimal(amount),
 								 Currency.getInstance(currencyCode));
 	}
-	
-	/**
-	 * Sets the amount of the transaction
-	 * @param amount Amount value of the transaction
-	 */
-	public void setAmount(double amount){
-		setAmount(new Money(amount));
-	}
-	
+
 	/**
 	 * Sets the currency of the transaction
 	 * The currency remains in the object model and is not persisted to the database

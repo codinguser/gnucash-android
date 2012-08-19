@@ -60,7 +60,7 @@ public class TransactionsActivityTest extends
 		Account account = new Account(DUMMY_ACCOUNT_NAME);
 		account.setUID(DUMMY_ACCOUNT_UID);
 		account.setCurrency(Currency.getInstance(Locale.getDefault()));
-		mTransaction = new Transaction(9.99, TRANSACTION_NAME);
+		mTransaction = new Transaction("9.99", TRANSACTION_NAME);
 		mTransaction.setAccountUID(DUMMY_ACCOUNT_UID);
 		mTransaction.setDescription("What up?");
 		mTransaction.setTime(mTransactionTimeMillis);
