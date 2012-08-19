@@ -19,6 +19,7 @@ public class AccountsDbAdapterTest extends AndroidTestCase {
 	protected void setUp() throws Exception {		
 		super.setUp();
 		mAdapter = new AccountsDbAdapter(getContext());
+		mAdapter.deleteAllAccounts();
 		Account first = new Account(ALPHA_ACCOUNT_NAME);
 		Transaction t1 = new Transaction("2.99", "T800");
 		t1.setAccountUID(first.getUID());
@@ -35,6 +36,7 @@ public class AccountsDbAdapterTest extends AndroidTestCase {
 	
 	public void testAlphabeticalSorting(){
 		List<Account> accountsList = mAdapter.getAllAccounts();
+		assertEquals(2, accountsList.size());
 		//bravo was saved first, but alpha should be first alphabetically
 		assertEquals(ALPHA_ACCOUNT_NAME, accountsList.get(0).getName());
 		assertEquals(BRAVO_ACCOUNT_NAME, accountsList.get(1).getName());
@@ -54,5 +56,12 @@ public class AccountsDbAdapterTest extends AndroidTestCase {
 		for (Transaction t : account.getTransactions()) {
 			assertEquals("JPY", t.getAmount().getCurrency().getCurrencyCode());
 		}
+	}
+	
+	@Override
+	protected void tearDown() throws Exception {
+		super.tearDown();
+		mAdapter.deleteAllAccounts();
+		mAdapter.close();
 	}
 }

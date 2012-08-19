@@ -200,15 +200,14 @@ public class Money implements Comparable<Money>{
 	/**
 	 * Returns a string representation of the Money object formatted according to 
 	 * the <code>locale</code> and includes the currency symbol. 
-	 * The output precision is limited to {@link #DECIMAL_PLACES}
+	 * The output precision is limited to {@link #DECIMAL_PLACES}.
 	 * @param locale Locale to use when formatting the object
 	 * @return String containing formatted Money representation
 	 */
 	public String formattedString(Locale locale){
-		DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance(locale);	
+		NumberFormat formatter = NumberFormat.getInstance(locale);
 		formatter.setMinimumFractionDigits(DECIMAL_PLACES);
 		formatter.setMaximumFractionDigits(DECIMAL_PLACES);
-		
 		return formatter.format(asDouble()) + " " + mCurrency.getSymbol(locale);
 	}
 	

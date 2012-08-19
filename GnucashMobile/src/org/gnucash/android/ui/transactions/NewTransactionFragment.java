@@ -502,6 +502,7 @@ public class NewTransactionFragment extends SherlockFragment implements
 	 */
 	public BigDecimal parseInputToDecimal(String amountString){
 		String clean = stripCurrencyFormatting(amountString);
+		//all amounts are input to 2 decimal places, so after removing decimal separator, divide by 100
 		BigDecimal amount = new BigDecimal(clean).setScale(2,
 				RoundingMode.HALF_EVEN).divide(new BigDecimal(100), 2,
 				RoundingMode.HALF_EVEN);

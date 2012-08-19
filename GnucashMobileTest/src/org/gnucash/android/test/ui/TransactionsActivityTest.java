@@ -16,6 +16,8 @@
 
 package org.gnucash.android.test.ui;
 
+import java.text.NumberFormat;
+import java.text.ParseException;
 import java.util.Currency;
 import java.util.Date;
 import java.util.List;
@@ -43,6 +45,7 @@ import com.jayway.android.robotium.solo.Solo;
 
 public class TransactionsActivityTest extends
 		ActivityInstrumentationTestCase2<TransactionsActivity> {
+	private static final String TRANSACTION_AMOUNT = "9.99";
 	private static final String TRANSACTION_NAME = "Pizza";
 	private static final String DUMMY_ACCOUNT_UID = "transactions-account";
 	private static final String DUMMY_ACCOUNT_NAME = "Transactions Account";
@@ -60,7 +63,7 @@ public class TransactionsActivityTest extends
 		Account account = new Account(DUMMY_ACCOUNT_NAME);
 		account.setUID(DUMMY_ACCOUNT_UID);
 		account.setCurrency(Currency.getInstance(Locale.getDefault()));
-		mTransaction = new Transaction("9.99", TRANSACTION_NAME);
+		mTransaction = new Transaction(TRANSACTION_AMOUNT, TRANSACTION_NAME);
 		mTransaction.setAccountUID(DUMMY_ACCOUNT_UID);
 		mTransaction.setDescription("What up?");
 		mTransaction.setTime(mTransactionTimeMillis);
@@ -125,8 +128,8 @@ public class TransactionsActivityTest extends
 		mSolo.enterText(1, "899");
 		//check that the amount is correctly converted in the input field
 		String value = mSolo.getEditText(1).getText().toString();
-		double actualValue = Money.parseToDecimal(value).doubleValue();
-		assertEquals(-8.99, actualValue);
+		String expectedValue = NumberFormat.getInstance().format(-8.99); 
+		assertEquals(expectedValue, value);
 		
 		int transactionsCount = getTranscationCount();
 		
@@ -145,7 +148,13 @@ public class TransactionsActivityTest extends
 		assertEquals(transaction.getName(), name);
 		
 		String amountString = mSolo.getEditText(1).getText().toString();
-		Money amount = new Money(amountString);
+		NumberFormat formatter = NumberFormat.getInstance();
+		try {
+			amountString = formatter.parse(amountString).toString();
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		Money amount = new Money(amountString, Currency.getInstance(Locale.getDefault()).getCurrencyCode());
 		assertEquals(transaction.getAmount(), amount);
 		
 		String description = mSolo.getEditText(2).getText().toString();
@@ -235,6 +244,7 @@ public class TransactionsActivityTest extends
 	
 	public void testBulkMoveTransactions(){
 		Account account = new Account("Target");
+		account.setCurrency(Currency.getInstance(Locale.getDefault()));
 		AccountsDbAdapter accountsDbAdapter = new AccountsDbAdapter(getActivity());
 		accountsDbAdapter.addAccount(account);
 		
