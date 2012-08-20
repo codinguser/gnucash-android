@@ -18,7 +18,6 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="@dimen/edge_padding"
     android:orientation="vertical" >
     
     <TextView
@@ -27,14 +26,17 @@
         android:layout_width="wrap_content"
         android:layout_marginBottom="-8dp"
         android:layout_marginTop="5dp"
+        android:layout_marginLeft="@dimen/dialog_padding"
         style="@style/TextAppearance.EditTransaction_LabelSmall" />
 
     <Spinner android:id="@+id/accounts_list_spinner"
         android:layout_height="wrap_content" 
-        android:layout_width="match_parent"        
+        android:layout_width="match_parent"    
+        android:layout_marginLeft="@dimen/dialog_padding"
+        android:layout_marginRight="@dimen/dialog_padding"  	      
         android:minHeight="?android:attr/listPreferredItemHeight"
-        />
+        android:layout_margin="@dimen/dialog_padding" />
       
-    <include layout="@layout/default_buttons"/>
+    <include layout="@layout/default_buttons" />
 
 </LinearLayout>

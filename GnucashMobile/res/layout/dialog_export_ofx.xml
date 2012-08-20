@@ -21,7 +21,7 @@
 	<LinearLayout 
 	    android:layout_width="match_parent"
 	    android:layout_height="wrap_content"
-	    android:padding="@dimen/edge_padding"
+	    android:layout_marginTop="@dimen/dialog_padding"
 	    android:orientation="vertical" >
 	    
 	    <TextView
@@ -29,33 +29,38 @@
 	        android:layout_height="wrap_content"
 	        android:layout_width="wrap_content"
 	        android:layout_marginBottom="-8dip"
+	        android:layout_marginLeft="@dimen/dialog_padding"
 	        style="@style/TextAppearance.EditTransaction_LabelSmall" />
 	
 	    <Spinner android:id="@+id/spinner_export_destination"
 	        android:layout_height="wrap_content" 
 	        android:layout_width="match_parent"
 	        style="@style/ListItem"
+	        android:layout_marginLeft="@dimen/dialog_padding"
+	        android:layout_marginRight="@dimen/dialog_padding"
 	        android:layout_marginBottom="20dp" />
 	       
 	    <CheckBox android:id="@+id/checkbox_export_all"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
+	        android:layout_marginLeft="10dp"
 	        android:textAppearance="?android:attr/textAppearanceMedium"
 	        android:text="@string/export_all_transactions"        
 	        />
-	    <TextView
+	    <TextView android:layout_marginLeft="@dimen/dialog_padding"
 	        android:text="@string/hint_export_choice"
 	        style="@style/TextAppearance.Hint" />
 	    
 	    <CheckBox android:id="@+id/checkbox_post_export_delete"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
-	        android:layout_marginTop="10dp"
+	        android:layout_marginTop="@dimen/dialog_padding"
+	        android:layout_marginLeft="@dimen/dialog_padding"
 	        android:textAppearance="?android:attr/textAppearanceMedium"
 	        android:text="@string/confirm_post_export_delete"        
 	        />    
 	        
-	    <TextView
+	    <TextView android:layout_marginLeft="@dimen/dialog_padding"
 	        android:text="@string/hint_delete_after_export"
 	        style="@style/TextAppearance.Hint" />
     	

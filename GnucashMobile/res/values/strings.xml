@@ -33,7 +33,7 @@
     <string name="add_transaction">New transaction</string>
     <string name="label_no_transactions">No transactions to display</string>
     <string name="transaction_description">Description</string>
-    <string name="label_date">DATE</string>
+    <string name="label_timeanddate">DATE &amp; TIME</string>
     <string name="label_account">Account</string>
     <string name="debit">DEBIT</string>
     <string name="credit">CREDIT</string>

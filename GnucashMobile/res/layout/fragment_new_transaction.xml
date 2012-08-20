@@ -22,7 +22,7 @@
 	<LinearLayout 
 	    android:layout_width="match_parent"
 	    android:layout_height="wrap_content"
-	    android:padding="15dp"
+	    android:padding="@dimen/dialog_padding"
 	    android:orientation="vertical" >
 	
 	    <EditText
@@ -32,8 +32,8 @@
 	        android:hint="@string/label_transaction_name"
 	        android:minHeight="?android:attr/listPreferredItemHeight"
 	        android:ems="10" 
-	        android:layout_marginBottom="10dp"
-	        android:inputType="textCapWords"
+	        android:layout_marginBottom="@dimen/dialog_padding"
+	        android:inputType="textCapSentences"
 	        style="@style/ListItemText" />
 	
 	    <LinearLayout 
@@ -44,7 +44,7 @@
 	            android:id="@+id/currency_symbol"	            
 	            android:layout_width="wrap_content"
 	            android:layout_height="match_parent"
-	            android:layout_marginBottom="10dp"
+	            android:layout_marginBottom="@dimen/dialog_padding"
 	            android:paddingRight="5dp"
 	            android:gravity="center|right"
 	            android:textColor="@color/debit_red"
@@ -59,7 +59,7 @@
 		        android:layout_height="wrap_content"
 		        android:minHeight="?android:attr/listPreferredItemHeight"
 		        android:ems="10"
-		        android:layout_marginBottom="10dp"
+		        android:layout_marginBottom="@dimen/dialog_padding"
 		        android:hint="@string/label_transaction_amount"
 		        android:inputType="number"
 		        android:textColor="@color/debit_red"
@@ -84,7 +84,7 @@
 	        
 	        <TextView
 	            android:id="@+id/label_timeanddate"
-	            android:text="@string/label_date"
+	            android:text="@string/label_timeanddate"
 	            android:layout_height="wrap_content"
 	            android:layout_width="wrap_content"
 	            android:layout_marginBottom="-8dip"
@@ -93,7 +93,7 @@
 		    <LinearLayout
 		        android:layout_height="wrap_content"
 		        android:layout_width="fill_parent"
-		        android:layout_marginBottom="10dp"
+		        android:layout_marginBottom="@dimen/dialog_padding"
 		        android:orientation="horizontal">
 		        
 		        <TextView android:id="@+id/input_date"
@@ -128,7 +128,7 @@
 			        android:layout_width="match_parent"
 			        android:layout_height="wrap_content"
 			        android:singleLine="false"
-			        android:layout_marginBottom="10dp"
+			        android:layout_marginBottom="@dimen/dialog_padding"
 			        android:hint="@string/label_transaction_description"
 			        android:inputType="textMultiLine"
 			        android:gravity="top"

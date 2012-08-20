@@ -226,6 +226,39 @@ public class TransactionsActivityTest extends
 		mSolo.waitForText("Pasta");
 	}
 	
+	public void testToggleTransactionType(){
+		mSolo.waitForText(DUMMY_ACCOUNT_NAME);
+		
+		validateTransactionListDisplayed();
+		mSolo.clickOnText(TRANSACTION_NAME);
+		mSolo.waitForText("Note");
+		
+		validateEditTransactionFields(mTransaction);
+		
+		mSolo.clickOnButton("CREDIT");
+		String amountString = mSolo.getEditText(1).getText().toString();
+		NumberFormat formatter = NumberFormat.getInstance();
+		try {
+			amountString = formatter.parse(amountString).toString();
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		Money amount = new Money(amountString, Currency.getInstance(Locale.getDefault()).getCurrencyCode());
+		assertEquals("-9.99", amount.toPlainString());
+		
+		//save the transaction, should now be a debit
+		mSolo.clickOnImage(3);
+		
+		mSolo.waitForText(DUMMY_ACCOUNT_NAME);
+		
+		TransactionsDbAdapter adapter = new TransactionsDbAdapter(getActivity());
+		List<Transaction> transactions = adapter.getAllTransactionsForAccount(DUMMY_ACCOUNT_UID);
+		
+		assertEquals(1, transactions.size());
+		Transaction trx = transactions.get(0);
+		assertTrue(trx.getAmount().isNegative());
+	}
+	
 	public void testDeleteTransaction(){
 		mSolo.waitForText(DUMMY_ACCOUNT_NAME);
 		

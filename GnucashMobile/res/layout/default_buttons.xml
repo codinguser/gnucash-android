@@ -16,26 +16,36 @@
 -->
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:padding="10dp"
-    android:orientation="horizontal" >
+    android:layout_height="match_parent"
+    android:paddingTop="5dp"
+    android:divider="?android:attr/dividerHorizontal"
+    android:showDividers="middle">
 
-    <Button
-        android:id="@+id/btn_cancel"
-        android:layout_width="0dp"            
-        android:layout_height="wrap_content"
-        android:padding="14dp"
-        android:layout_weight="1"       
-        android:drawableLeft="@drawable/navigation_cancel_holo_light"     
-        android:text="@string/btn_cancel" />
+    <!-- placeholder, allows the divider to be displayed -->
+    <View android:layout_width="match_parent"
+        android:layout_height="0dp" />
 
-    <Button
-        android:id="@+id/btn_save"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:padding="14dp"
-        android:layout_weight="1"        
-        android:drawableLeft="@drawable/navigation_accept_holo_light"
-        android:text="@string/btn_save" />       
+    <LinearLayout style="?android:attr/buttonBarStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"        
+        android:orientation="horizontal">
+
+        <Button android:id="@+id/btn_cancel"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:drawableLeft="@drawable/navigation_cancel_holo_light"
+            android:text="@string/btn_cancel" />
+
+        <Button android:id="@+id/btn_save"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:drawableLeft="@drawable/navigation_accept_holo_light"
+            android:text="@string/btn_save" />
+    </LinearLayout>
 </LinearLayout>

@@ -36,34 +36,8 @@
     <Spinner android:id="@+id/input_currency_spinner"
         android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:layout_margin="10dp"		
-        />
-        <include layout="@layout/default_buttons"/>
-<!--  
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="10dp"
-        android:orientation="horizontal" >
+		android:layout_margin="10dp"		/>
+       
+    <include layout="@layout/default_buttons"/>
 
-        <Button
-            android:id="@+id/btn_cancel"
-            android:layout_width="0dp"            
-            android:layout_height="wrap_content"
-            android:padding="14dp"
-            android:layout_weight="1"       
-            android:drawableLeft="@drawable/navigation_cancel"     
-            android:text="@string/btn_cancel" />
-
-        <Button
-            android:id="@+id/btn_save"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:padding="14dp"
-            android:layout_weight="1"
-            android:enabled="false" 
-            android:drawableLeft="@drawable/navigation_accept"
-            android:text="@string/btn_save" />       
-    </LinearLayout>
-    -->
 </LinearLayout>

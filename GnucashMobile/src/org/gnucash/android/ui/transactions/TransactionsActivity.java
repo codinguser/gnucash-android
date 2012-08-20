@@ -20,12 +20,14 @@ import org.gnucash.android.R;
 import org.gnucash.android.data.Account;
 import org.gnucash.android.util.OnTransactionClickedListener;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.MenuItem;
@@ -84,6 +86,8 @@ public class TransactionsActivity extends SherlockFragmentActivity implements
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case android.R.id.home:
+			InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+			imm.hideSoftInputFromWindow(findViewById(android.R.id.content).getWindowToken(), 0);
 	        FragmentManager fm = getSupportFragmentManager();
 	        if (fm.getBackStackEntryCount() > 0) {
 	            fm.popBackStack();

@@ -23,5 +23,5 @@
     <dimen name="text_size_medium">18sp</dimen>
     <dimen name="text_size_large">18sp</dimen>
     <dimen name="edge_padding">12dp</dimen>
-    <dimen name="widget_margin">8dp</dimen>
+    <dimen name="widget_margin">8dp</dimen>    
 </resources>

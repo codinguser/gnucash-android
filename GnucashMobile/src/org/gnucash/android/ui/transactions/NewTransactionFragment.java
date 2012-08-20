@@ -340,7 +340,7 @@ public class NewTransactionFragment extends SherlockFragment implements
 				}
 				String amountText = mAmountEditText.getText().toString();
 				if (amountText.length() > 0){
-					Money money = new Money(amountText).negate();
+					Money money = new Money(stripCurrencyFormatting(amountText)).divide(100).negate();
 					mAmountEditText.setText(money.toPlainString()); //trigger an edit to update the number sign
 				} 
 			}
@@ -444,7 +444,7 @@ public class NewTransactionFragment extends SherlockFragment implements
 	public boolean onOptionsItemSelected(MenuItem item) {
 		//hide the keyboard if it is visible
 		InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-		imm.hideSoftInputFromWindow(mNameEditText.getWindowToken(), 0);
+		imm.hideSoftInputFromWindow(mNameEditText.getApplicationWindowToken(), 0);
 		
 		switch (item.getItemId()) {
 		case R.id.menu_cancel:
