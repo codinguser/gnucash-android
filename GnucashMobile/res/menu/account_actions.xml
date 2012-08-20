@@ -22,7 +22,7 @@
           android:showAsAction="always"/>
     
         <item android:id="@+id/menu_export"
-          android:icon="@drawable/content_import_export_holo_dark"
+          android:icon="@drawable/content_import_export_holo_light"
           android:title="@string/export_ofx"
           android:showAsAction="never"
           android:orderInCategory="3"/>            
