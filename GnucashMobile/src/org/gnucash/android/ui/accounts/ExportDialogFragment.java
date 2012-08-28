@@ -244,7 +244,7 @@ public class ExportDialogFragment extends DialogFragment {
 	 */
 	private void shareFile(String path){
 		Intent shareIntent = new Intent(Intent.ACTION_SEND);
-		shareIntent.setType("multipart/xml");
+		shareIntent.setType("application/xml");
 		shareIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse("file://"+ path));
 		shareIntent.putExtra(Intent.EXTRA_SUBJECT, "Gnucash OFX export");
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyy.MM.dd HH:mm");
