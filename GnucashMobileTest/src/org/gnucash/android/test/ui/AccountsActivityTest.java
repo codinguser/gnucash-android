@@ -185,7 +185,7 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
 		
 		mSolo.clickOnImage(2);
 		
-		mSolo.clickOnText("Delete");
+		mSolo.clickOnText(getActivity().getString(R.string.alert_dialog_ok_delete));
 		
 		mSolo.waitForDialogToClose(1000);
 		

@@ -235,7 +235,7 @@ public class TransactionsActivityTest extends
 		
 		validateEditTransactionFields(mTransaction);
 		
-		mSolo.clickOnButton("CREDIT");
+		mSolo.clickOnButton(getActivity().getString(R.string.label_credit));
 		String amountString = mSolo.getEditText(1).getText().toString();
 		NumberFormat formatter = NumberFormat.getInstance();
 		try {
