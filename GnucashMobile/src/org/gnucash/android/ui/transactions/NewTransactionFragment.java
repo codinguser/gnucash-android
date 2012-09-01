@@ -211,7 +211,7 @@ public class NewTransactionFragment extends SherlockFragment implements
 		ActionBar actionBar = getSherlockActivity().getSupportActionBar();
 		actionBar.setHomeButtonEnabled(true);
 		actionBar.setDisplayHomeAsUpEnabled(true);
-		actionBar.setTitle(R.string.add_transaction);
+		actionBar.setTitle(R.string.title_add_transaction);
 		
 		String[] from = new String[] {DatabaseHelper.KEY_NAME};
 		int[] to = new int[] {android.R.id.text1};
@@ -284,7 +284,7 @@ public class NewTransactionFragment extends SherlockFragment implements
 		ActionBar actionBar = getSherlockActivity().getSupportActionBar();
 		actionBar.setHomeButtonEnabled(true);
 		actionBar.setDisplayHomeAsUpEnabled(true);
-		actionBar.setTitle(R.string.edit_transaction);
+		actionBar.setTitle(R.string.title_edit_transaction);
 	}
 	
 	/**
@@ -401,14 +401,13 @@ public class NewTransactionFragment extends SherlockFragment implements
 		long accountID 	= mAccountsSpinner.getSelectedItemId();
 		Currency currency = Currency.getInstance(mTransactionsDbAdapter.getCurrencyCode(accountID));
 		Money amount 	= new Money(amountBigd, currency);
-		String type 	= mTransactionTypeButton.getText().toString();
-		
+		TransactionType type = mTransactionTypeButton.isChecked() ? TransactionType.DEBIT : TransactionType.CREDIT;
 		if (mTransaction != null){
 			mTransaction.setAmount(amount);
 			mTransaction.setName(name);
-			mTransaction.setTransactionType(TransactionType.valueOf(type));
+			mTransaction.setTransactionType(type);
 		} else {
-			mTransaction = new Transaction(amount, name, TransactionType.valueOf(type));
+			mTransaction = new Transaction(amount, name, type);
 		}
 		mTransaction.setAccountUID(mTransactionsDbAdapter.getAccountUID(accountID));
 		mTransaction.setTime(cal.getTimeInMillis());

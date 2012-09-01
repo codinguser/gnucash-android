@@ -71,8 +71,8 @@
 		        android:layout_weight="2"
 		        android:layout_height="wrap_content"
 		        android:minHeight="?android:attr/listPreferredItemHeight"		        
-		        android:textOn="@string/debit"
-		        android:textOff="@string/credit"
+		        android:textOn="@string/label_debit"
+		        android:textOff="@string/label_credit"
 		        android:textAppearance="?android:attr/textAppearanceMedium"
 		        android:textColor="@color/debit_red"
 		        android:checked="true" />

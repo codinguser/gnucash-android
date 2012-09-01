@@ -316,7 +316,7 @@ public class AccountsListFragment extends SherlockListFragment implements
 
 		boolean deleted = mAccountsDbAdapter.destructiveDeleteAccount(rowId);
 		if (deleted){
-			Toast.makeText(getActivity(), R.string.notify_account_deleted, Toast.LENGTH_SHORT).show();
+			Toast.makeText(getActivity(), R.string.toast_account_deleted, Toast.LENGTH_SHORT).show();
 		}
 		refreshList();	
 	}

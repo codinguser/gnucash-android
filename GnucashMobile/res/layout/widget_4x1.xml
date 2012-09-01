@@ -53,6 +53,6 @@
 	        android:layout_marginLeft="@dimen/edge_padding"
 	        android:src="@drawable/content_new_holo_light"
 	        android:background="@drawable/appwidget_bg_clickable"
-	        android:contentDescription="@string/add_transaction_icon_description"/>
+	        android:contentDescription="@string/description_add_transaction_icon"/>
 	</LinearLayout>        
 </FrameLayout>

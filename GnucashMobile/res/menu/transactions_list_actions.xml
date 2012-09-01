@@ -18,6 +18,6 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
     <item android:id="@+id/menu_add_transaction"
           android:icon="@drawable/content_new_holo_dark"
-          android:title="@string/add_transaction"
+          android:title="@string/title_add_transaction"
           android:showAsAction="always"/>
 </menu>

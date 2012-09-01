@@ -181,7 +181,7 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
 		
 		mSolo.clickLongOnText("TO BE DELETED");
 		
-		mSolo.waitForText(getActivity().getString(R.string.edit_accounts));
+		mSolo.waitForText(getActivity().getString(R.string.title_edit_account));
 		
 		mSolo.clickOnImage(2);
 		

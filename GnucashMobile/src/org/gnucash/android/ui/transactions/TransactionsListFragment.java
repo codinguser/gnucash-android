@@ -306,7 +306,7 @@ public class TransactionsListFragment extends SherlockListFragment implements
 	public void setActionModeTitle(){
 		int count = mSelectedIds.size();
 		if (count > 0){			
-			mActionMode.setTitle(count + " " + getResources().getString(R.string.selected));
+			mActionMode.setTitle(getResources().getString(R.string.title_selected, count));
 		}
 	}
 	

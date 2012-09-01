@@ -18,12 +18,12 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
     <item android:id="@+id/menu_add_account"
           android:icon="@drawable/content_new_holo_dark"
-          android:title="@string/add_account"
+          android:title="@string/title_add_account"
           android:showAsAction="always"/>
     
         <item android:id="@+id/menu_export"
           android:icon="@drawable/content_import_export_holo_light"
-          android:title="@string/export_ofx"
+          android:title="@string/menu_export_ofx"
           android:showAsAction="never"
           android:orderInCategory="3"/>            
 </menu>

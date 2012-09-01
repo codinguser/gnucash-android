@@ -42,6 +42,6 @@
             android:id="@+id/add_account_button"
             style="@style/ButtonStyle"
             android:onClick="onNewAccountClick"
-            android:text="@string/add_account" />
+            android:text="@string/title_add_account" />
     </LinearLayout>
 </LinearLayout>

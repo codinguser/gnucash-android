@@ -120,7 +120,7 @@ public class NewAccountDialogFragment extends SherlockDialogFragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		View v = inflater.inflate(R.layout.dialog_new_account, container, false);
-		getDialog().setTitle(R.string.add_account);	
+		getDialog().setTitle(R.string.title_add_account);	
 		setStyle(STYLE_NORMAL, R.style.Sherlock___Theme_Dialog);
 		mSaveButton = (Button) v.findViewById(R.id.btn_save);
 		mCancelButton = (Button) v.findViewById(R.id.btn_cancel);
@@ -134,7 +134,8 @@ public class NewAccountDialogFragment extends SherlockDialogFragment {
 		       
         if (mSelectedAccountId != 0) {
         	mAccount = mDbAdapter.getAccount(mSelectedAccountId);
-        	mNameEditText.setText(mAccount.getName());        	
+        	mNameEditText.setText(mAccount.getName());  
+        	getDialog().setTitle(R.string.title_edit_account);	
         }
 		
 		mSaveButton.setOnClickListener(new View.OnClickListener() {

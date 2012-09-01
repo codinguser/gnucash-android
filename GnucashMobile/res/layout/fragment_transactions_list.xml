@@ -70,7 +70,7 @@
             android:id="@+id/add_transaction_button"
             style="@style/ButtonStyle"
             android:onClick="onNewTransactionClick"
-            android:text="@string/add_transaction" />
+            android:text="@string/title_add_transaction" />
     </LinearLayout>
     
 </RelativeLayout>

@@ -45,7 +45,7 @@
 	        android:layout_height="wrap_content"
 	        android:layout_marginLeft="10dp"
 	        android:textAppearance="?android:attr/textAppearanceMedium"
-	        android:text="@string/export_all_transactions"        
+	        android:text="@string/option_export_all_transactions"        
 	        />
 	    <TextView android:layout_marginLeft="@dimen/dialog_padding"
 	        android:text="@string/hint_export_choice"
@@ -57,7 +57,7 @@
 	        android:layout_marginTop="@dimen/dialog_padding"
 	        android:layout_marginLeft="@dimen/dialog_padding"
 	        android:textAppearance="?android:attr/textAppearanceMedium"
-	        android:text="@string/confirm_post_export_delete"        
+	        android:text="@string/option_delete_after_export"        
 	        />    
 	        
 	    <TextView android:layout_marginLeft="@dimen/dialog_padding"

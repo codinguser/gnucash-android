@@ -56,6 +56,6 @@
         android:background="@drawable/content_new_holo_light"  
         android:padding="2dp"
         android:clickable="true"
-        android:contentDescription="@string/add_transaction_icon_description"/>
+        android:contentDescription="@string/description_add_transaction_icon"/>
         
 </LinearLayout>
