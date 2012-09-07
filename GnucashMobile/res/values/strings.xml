@@ -460,4 +460,6 @@
 	<string name="title_about_gnucash">About Gnucash</string>
 	<string name="summary_about_gnucash">GnucashMobile is a mobile finance expense tracker application for Android.\nIt enables flexible tracking of expenses on-the-go which can be exported to the Open Financial eXchange (OFX) format and imported into Gnucash for the desktop.</string>
 	<string name="title_about">About</string>
+	<string name="toast_error_exporting">Could not write OFX file to :\n</string>
+	<string name="toast_ofx_exported_to">OFX file exported to:\n</string>
 </resources>

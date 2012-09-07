@@ -136,7 +136,7 @@ public class ExportDialogFragment extends DialogFragment {
 					copyFile(src, dst);
 				} catch (IOException e) {
 					Toast.makeText(getActivity(), 
-							"Could not write OFX file to :\n" + dst.getAbsolutePath(), 
+							getString(R.string.toast_error_exporting_ofx) + dst.getAbsolutePath(), 
 							Toast.LENGTH_LONG).show();		
 					Log.e(getTag(), e.getMessage());
 					break;
@@ -144,7 +144,7 @@ public class ExportDialogFragment extends DialogFragment {
 				
 				//file already exists, just let the user know
 				Toast.makeText(getActivity(), 
-						"OFX file exported to:\n" + dst.getAbsolutePath(), 
+						getString(R.string.toast_ofx_exported_to) + dst.getAbsolutePath(), 
 						Toast.LENGTH_LONG).show();					
 				break;
 				
