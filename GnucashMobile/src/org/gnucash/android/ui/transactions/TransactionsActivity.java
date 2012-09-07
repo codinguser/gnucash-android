@@ -18,6 +18,7 @@ package org.gnucash.android.ui.transactions;
 
 import org.gnucash.android.R;
 import org.gnucash.android.data.Account;
+import org.gnucash.android.ui.accounts.AccountsActivity;
 import org.gnucash.android.util.OnTransactionClickedListener;
 
 import android.content.Context;
@@ -91,8 +92,14 @@ public class TransactionsActivity extends SherlockFragmentActivity implements
 	        FragmentManager fm = getSupportFragmentManager();
 	        if (fm.getBackStackEntryCount() > 0) {
 	            fm.popBackStack();
-	        } else
+	        } else {
+	        	Intent accountsActivityIntent = new Intent(this, AccountsActivity.class);
+	        	accountsActivityIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+	        	accountsActivityIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+	        	startActivity(accountsActivityIntent);
+	        	overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
 	        	finish();
+	        }
 	        return true;
 
 		default:

@@ -156,6 +156,7 @@ public class WidgetConfigurationActivity extends Activity {
 		accountsDbAdapter.close();
 		
 		if (account == null){
+			Log.i("WidgetConfiguration", "Account not found, updating widget " + appWidgetId);
 			//if account has been deleted, let the user know
 			RemoteViews views = new RemoteViews(context.getPackageName(),
 					R.layout.widget_4x1);
@@ -164,9 +165,9 @@ public class WidgetConfigurationActivity extends Activity {
 			views.setOnClickPendingIntent(R.id.widget_layout, null);
 			views.setOnClickPendingIntent(R.id.btn_new_transaction, null);
 			appWidgetManager.updateAppWidget(appWidgetId, views);
-			Editor editor = PreferenceManager
-    		.getDefaultSharedPreferences(context).edit();
-			editor.remove(TransactionsListFragment.SELECTED_ACCOUNT_ID + appWidgetId);    		
+			Editor editor = PreferenceManager.getDefaultSharedPreferences(context).edit();
+			editor.remove(TransactionsListFragment.SELECTED_ACCOUNT_ID + appWidgetId);
+			editor.commit();
 			return;
 		}
 		
