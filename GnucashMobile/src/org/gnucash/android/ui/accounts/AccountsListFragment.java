@@ -29,6 +29,7 @@ import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.ui.settings.SettingsActivity;
 import org.gnucash.android.ui.transactions.TransactionsActivity;
 import org.gnucash.android.ui.transactions.TransactionsListFragment;
+import org.gnucash.android.ui.widget.WidgetConfigurationActivity;
 import org.gnucash.android.util.OnAccountClickedListener;
 
 import android.app.Activity;
@@ -179,10 +180,10 @@ public class AccountsListFragment extends SherlockListFragment implements
 	 * @author Ngewi Fet <ngewif@gmail.com>
 	 *
 	 */
-	public static class MyAlertDialogFragment extends SherlockDialogFragment {
+	public static class DeleteConfirmationDialogFragment extends SherlockDialogFragment {
 
-        public static MyAlertDialogFragment newInstance(int title, long id) {
-            MyAlertDialogFragment frag = new MyAlertDialogFragment();
+        public static DeleteConfirmationDialogFragment newInstance(int title, long id) {
+            DeleteConfirmationDialogFragment frag = new DeleteConfirmationDialogFragment();
             Bundle args = new Bundle();
             args.putInt("title", title);
             args.putLong(TransactionsListFragment.SELECTED_ACCOUNT_ID, id);
@@ -313,10 +314,10 @@ public class AccountsListFragment extends SherlockListFragment implements
 	 * @param rowId Record ID of the account to be deleted
 	 */
 	protected void deleteAccount(long rowId){		
-
 		boolean deleted = mAccountsDbAdapter.destructiveDeleteAccount(rowId);
 		if (deleted){
 			Toast.makeText(getActivity(), R.string.toast_account_deleted, Toast.LENGTH_SHORT).show();
+			WidgetConfigurationActivity.updateAllWidgets(getActivity().getApplicationContext());
 		}
 		refreshList();	
 	}
@@ -326,7 +327,7 @@ public class AccountsListFragment extends SherlockListFragment implements
 	 * @param id Record ID of account to be deleted after confirmation
 	 */
 	public void showConfirmationDialog(long id){
-		MyAlertDialogFragment alertFragment = MyAlertDialogFragment.newInstance(R.string.title_confirm_delete, id);
+		DeleteConfirmationDialogFragment alertFragment = DeleteConfirmationDialogFragment.newInstance(R.string.title_confirm_delete, id);
 		alertFragment.setTargetFragment(this, 0);
 		alertFragment.show(getSherlockActivity().getSupportFragmentManager(), "dialog");
 	}

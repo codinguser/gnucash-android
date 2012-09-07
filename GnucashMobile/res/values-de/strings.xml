@@ -6,7 +6,7 @@
     <string name="title_settings">Einstellungen</string>
     <string name="menu_export_ofx">OFX-Datei exportieren</string>
     <string name="description_add_transaction_icon">Neue Buchung in ein Konto</string>
-    <string name="no_accounts">Keine Konten vorhanden</string>
+    <string name="label_no_accounts">Keine Konten vorhanden</string>
     <string name="label_account_name">Kontoname</string>
     <string name="btn_cancel">Abbrechen</string>
     <string name="btn_save">Speichern</string>
@@ -24,7 +24,7 @@
     <string name="menu_delete">L&#246;schen</string>
     <string name="alert_dialog_ok_delete">L&#246;schen</string>
     <string name="alert_dialog_cancel">Abbrechen</string>
-    <string name="toast_account_deleted">Ein Konto wurde gel&#246;scht</string>
+    <string name="toast_account_deleted">Das Konto wurde gelöscht</string>
     <string name="title_confirm_delete">L&#246;schen best&#228;tigen</string>
     <string name="delete_confirmation_message">Alle Buchungen dieses Kontos werden gel&#246;scht</string>
     <string name="title_edit_transaction">Buchung bearbeiten</string>

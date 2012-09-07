@@ -34,7 +34,7 @@
 		<TextView 
 		    android:layout_width="match_parent"
 		    android:layout_height="wrap_content" 
-		    android:text="@string/no_accounts"
+		    android:text="@string/label_no_accounts"
 		    style="@style/ListItem"/>
         <Button
             android:id="@+id/add_preference_button"

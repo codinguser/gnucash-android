@@ -99,7 +99,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 	 */
 	public boolean destructiveDeleteAccount(long rowId){
 		Log.d(TAG, "Delete account with rowId: " + rowId);
-		boolean result = false;
+		boolean result = true;
 		//first remove all transactions for the account
 		Cursor c = mTransactionsAdapter.fetchAllTransactionsForAccount(rowId);
 		if (c == null)

@@ -155,8 +155,20 @@ public class WidgetConfigurationActivity extends Activity {
 		Account account = accountsDbAdapter.getAccount(accountId);
 		accountsDbAdapter.close();
 		
-		if (account == null)
+		if (account == null){
+			//if account has been deleted, let the user know
+			RemoteViews views = new RemoteViews(context.getPackageName(),
+					R.layout.widget_4x1);
+			views.setTextViewText(R.id.account_name, context.getString(R.string.toast_account_deleted));
+			views.setTextViewText(R.id.transactions_summary, "");
+			views.setOnClickPendingIntent(R.id.widget_layout, null);
+			views.setOnClickPendingIntent(R.id.btn_new_transaction, null);
+			appWidgetManager.updateAppWidget(appWidgetId, views);
+			Editor editor = PreferenceManager
+    		.getDefaultSharedPreferences(context).edit();
+			editor.remove(TransactionsListFragment.SELECTED_ACCOUNT_ID + appWidgetId);    		
 			return;
+		}
 		
 		RemoteViews views = new RemoteViews(context.getPackageName(),
 				R.layout.widget_4x1);
