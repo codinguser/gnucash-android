@@ -86,10 +86,10 @@ public class OfxFormatter {
 	/**
 	 * Returns the current time formatted using the pattern in {@link #OFX_DATE_FORMATTER}
 	 * @return Current time as a formatted string
-	 * @see #getFormattedCurrentTime(long)
+	 * @see #getOfxFormattedTime(long)
 	 */
 	public static String getFormattedCurrentTime(){
-		return getFormattedCurrentTime(System.currentTimeMillis());
+		return getOfxFormattedTime(System.currentTimeMillis());
 	}
 	
 	/**
@@ -97,7 +97,7 @@ public class OfxFormatter {
 	 * @param milliseconds Long value representing the time to be formatted
 	 * @return Formatted string representation of time in <code>milliseconds</code>
 	 */
-	public static String getFormattedCurrentTime(long milliseconds){
+	public static String getOfxFormattedTime(long milliseconds){
 		Date date = new Date(milliseconds);
 		String dateString = OFX_DATE_FORMATTER.format(date);
 		TimeZone tz = Calendar.getInstance().getTimeZone();

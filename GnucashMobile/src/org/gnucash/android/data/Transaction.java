@@ -22,6 +22,7 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.UUID;
 
+import org.gnucash.android.util.OfxFormatter;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -342,16 +343,15 @@ public class Transaction {
 		type.appendChild(doc.createTextNode(mType.toString()));
 		transactionNode.appendChild(type);
 
-/* TODO Include the date posted as the time of the transaction
 		Element datePosted = doc.createElement("DTPOSTED");
-		datePosted.appendChild(doc.createTextNode(Expenses.getFormattedCurrentTime(mTimestamp.getTime())));
-		transaction.appendChild(datePosted);
+		datePosted.appendChild(doc.createTextNode(OfxFormatter.getOfxFormattedTime(mTimestamp)));
+		transactionNode.appendChild(datePosted);
 		
 		Element dateUser = doc.createElement("DTUSER");
 		dateUser.appendChild(doc.createTextNode(
-				Expenses.getFormattedCurrentTime(mTimestamp.getTime())));
-		transaction.appendChild(dateUser);
-*/		
+				OfxFormatter.getOfxFormattedTime(mTimestamp)));
+		transactionNode.appendChild(dateUser);
+		
 		Element amount = doc.createElement("TRNAMT");
 		amount.appendChild(doc.createTextNode(mAmount.toPlainString()));
 		transactionNode.appendChild(amount);
