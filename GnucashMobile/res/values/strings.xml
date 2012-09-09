@@ -462,4 +462,6 @@
 	<string name="title_about">About</string>
 	<string name="toast_error_exporting">Could not write OFX file to :\n</string>
 	<string name="toast_ofx_exported_to">OFX file exported to:\n</string>
+	<string name="title_export_email">Gnucash OFX export</string>
+	<string name="description_export_email">Gnucash OFX Export von </string>
 </resources>
