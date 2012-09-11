@@ -16,6 +16,8 @@
 
 package org.gnucash.android.ui.transactions;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 
@@ -40,6 +42,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.SimpleCursorAdapter;
+import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -409,6 +412,7 @@ public class TransactionsListFragment extends SherlockListFragment implements
 	 * @author Ngewi Fet <ngewif@gmail.com>
 	 */
 	protected class TransactionsCursorAdapter extends SimpleCursorAdapter {
+		private long mPreviousTimestamp;
 		
 		public TransactionsCursorAdapter(Context context, int layout, Cursor c,
 				String[] from, int[] to) {
@@ -419,7 +423,7 @@ public class TransactionsListFragment extends SherlockListFragment implements
 		public View getView(int position, View convertView, ViewGroup parent) {
 			View view = super.getView(position, convertView, parent);
 			final int itemPosition = position;
-			CheckBox checkbox = (CheckBox) view.findViewById(R.id.checkbox);
+			CheckBox checkbox = (CheckBox) view.findViewById(R.id.checkbox);			
 			checkbox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 				
 				@Override
@@ -449,12 +453,41 @@ public class TransactionsListFragment extends SherlockListFragment implements
 			
 			TextView tramount = (TextView) view.findViewById(R.id.transaction_amount);
 			tramount.setText(amount.formattedString(Locale.getDefault()));
-			
+						
 			if (amount.isNegative())
 				tramount.setTextColor(getResources().getColor(R.color.debit_red));
 			else
 				tramount.setTextColor(getResources().getColor(R.color.credit_green));
 			
+			TextView trNote = (TextView) view.findViewById(R.id.transaction_note);
+			String description = cursor.getString(DatabaseAdapter.COLUMN_DESCRIPTION);
+			if (description == null || description.length() == 0)
+				trNote.setVisibility(View.GONE);
+			else {
+				trNote.setVisibility(View.VISIBLE);
+				trNote.setText(description);
+			}
+			
+			TextView dateHeader = (TextView) view.findViewById(R.id.date_section_header);
+			long transactionTime = cursor.getLong(DatabaseAdapter.COLUMN_TIMESTAMP);
+			boolean sameDay = isSameDay(mPreviousTimestamp, transactionTime);
+			if (sameDay)
+				dateHeader.setVisibility(View.GONE);
+			else {
+				java.text.DateFormat format = DateFormat.getLongDateFormat(getActivity());
+				String dateString = format.format(new Date(transactionTime));
+				dateHeader.setText(dateString);
+				dateHeader.setVisibility(View.VISIBLE);
+			}
+			mPreviousTimestamp = transactionTime;
+		}
+		
+		private boolean isSameDay(long timeMillis1, long timeMillis2){
+			Date date1 = new Date(timeMillis1);
+			Date date2 = new Date(timeMillis2);
+			
+			SimpleDateFormat fmt = new SimpleDateFormat("yyyyMMdd");
+			return fmt.format(date1).equals(fmt.format(date2));
 		}
 	}
 	
