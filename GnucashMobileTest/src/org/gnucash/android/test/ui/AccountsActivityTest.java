@@ -186,6 +186,8 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
 		mSolo.clickOnImage(2);
 		
 		mSolo.clickOnText(getActivity().getString(R.string.alert_dialog_ok_delete));
+		//FIXME: deletion fails often because the confirmation dialog cannot be confirmed
+		//we could also click on the button position, but it is different pre and post 4.0
 		
 		mSolo.waitForDialogToClose(1000);
 		
