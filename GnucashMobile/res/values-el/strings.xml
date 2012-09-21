@@ -17,72 +17,72 @@
 
 <resources>
     <string name="app_name">GnuCash</string>
-    <string name="title_add_account">Create Account</string>
-    <string name="title_edit_account">Edit Account</string>
-    <string name="info_details">Info</string>
-    <string name="title_settings">Settings</string>
-    <string name="menu_export_ofx">Export OFX</string>
-    <string name="description_add_transaction_icon">Add a new transaction to an account</string>
-    <string name="label_no_accounts">No accounts to display</string>
-    <string name="label_account_name">Account name</string>
-    <string name="btn_cancel">Cancel</string>
-    <string name="btn_save">Save</string>
-    <string name="label_no_transactions_to_display">No transactions to display</string>
-    <string name="label_transaction_name">Description</string>
-    <string name="label_transaction_amount">Amount</string>
-    <string name="title_add_transaction">New transaction</string>
-    <string name="label_no_transactions">No transactions to display</string>
-    <string name="label_timeanddate">DATE &amp; TIME</string>
-    <string name="label_account">Account</string>
-    <string name="label_debit">DEBIT</string>
-    <string name="label_credit">CREDIT</string>
-    <string name="title_accounts">Accounts</string>
-    <string name="title_transactions">Transactions</string>
-    <string name="menu_delete">DELETE</string>
-    <string name="alert_dialog_ok_delete">Delete</string>
-    <string name="alert_dialog_cancel">Cancel</string>
-    <string name="toast_account_deleted">Account deleted</string>
-    <string name="title_confirm_delete">Confirm delete</string>
-    <string name="delete_confirmation_message">All transactions in this account will also be deleted</string>
-    <string name="title_edit_transaction">Edit Transaction</string>
-    <string name="label_transaction_description">Note</string>
-    <string name="menu_move">MOVE</string>
-    <string name="title_selected">%1$d selected</string>
-    <string name="label_transactions_total">Total sum:</string>
-    <string name="label_export_destination">Export Destination</string>
-    <string name="title_export_dialog">Export OFX</string>
-    <string name="option_export_all_transactions">Export all transactions</string>
-    <string name="hint_export_choice">By default, only new transactions since last export will be exported. Check this option to export all transactions</string>
-    <string name="error_exporting">Error exporting OFX data</string>    
-    <string name="btn_export">Export</string>
-    <string name="option_delete_after_export">Delete after export</string>
-    <string name="hint_delete_after_export">All exported transactions will be deleted when exporting is completed</string>
-    <string name="title_settings">Settings</string>
+    <string name="title_add_account">Δημιουργία Λογαριασμού</string>
+    <string name="title_edit_account">Επεξεργασία Λογαριασμού</string>
+    <string name="info_details">Πληροφορίες</string>
+    <string name="title_settings">Ρυθμίσεις</string>
+    <string name="menu_export_ofx">Εξαγωγή OFX</string>
+    <string name="description_add_transaction_icon">Προσθήκη μιας νέας συναλλαγής σε ένα λογαριασμό</string>
+    <string name="label_no_accounts">Δεν υπάρχουν λογαριασμοί για εμφάνιση</string>
+    <string name="label_account_name">Όνομα λογαριασμού</string>
+    <string name="btn_cancel">Ακύρωση</string>
+    <string name="btn_save">Αποθήκευση</string>
+    <string name="label_no_transactions_to_display">Δεν υπάρχουν συναλλαγές για εμφάνιση</string>
+    <string name="label_transaction_name">Περιγραφή</string>
+    <string name="label_transaction_amount">Ποσό</string>
+    <string name="title_add_transaction">Νέα συναλλαγή</string>
+    <string name="label_no_transactions">Δεν υπάρχουν συναλλαγές για εμφάνιση</string>
+    <string name="label_timeanddate">ΗΜΕΡΟΜΗΝΙΑ &amp; ΩΡΑ</string>
+    <string name="label_account">Λογιαριασμός</string>
+    <string name="label_debit">ΧΡΕΩΣΗ</string>
+    <string name="label_credit">ΠΙΣΤΩΣΗ</string>
+    <string name="title_accounts">Λογαριασμοί</string>
+    <string name="title_transactions">Συναλλαγές</string>
+    <string name="menu_delete">ΔΙΑΓΡΑΦΗ</string>
+    <string name="alert_dialog_ok_delete">Διαγραφή</string>
+    <string name="alert_dialog_cancel">Ακύρωση</string>
+    <string name="toast_account_deleted">Ο λογαριασμός διαγράφηκε</string>
+    <string name="title_confirm_delete">Επιβεβαίωση διαγραφής</string>
+    <string name="delete_confirmation_message">Όλες οι συναλλαγές αυτού λογαριασμού θα διαγραφούν επίσης.</string>
+    <string name="title_edit_transaction">Επεξεργασία Συναλλαγής</string>
+    <string name="label_transaction_description">Σημείωση</string>
+    <string name="menu_move">ΜΕΤΑΚΙΝΗΣΗ</string>
+    <string name="title_selected">%1$d επιλέχθηκε</string>
+    <string name="label_transactions_total">Συνολικό άρθροισμα:</string>
+    <string name="label_export_destination">Προορισμός Εξαγωγής</string>
+    <string name="title_export_dialog">Εξαγωγή OFX</string>
+    <string name="option_export_all_transactions">Εξαγωγή όλων των συναλλαγών</string>
+    <string name="hint_export_choice">Προεπιλεγμένα, μόνο οι νέες συναλλαγές από τη τελευταία εξαγωγή θα εξαχθούν. Ενεργοποίησε αυτή την επιλογή για την εξαγωγή όλων των συναλλαγών</string>
+    <string name="error_exporting">Σφάλμα εξαγωγής δεδομένων OFX</string>    
+    <string name="btn_export">Εξαγωγή</string>
+    <string name="option_delete_after_export">Διαγραφή μετά την εξαγωγή</string>
+    <string name="hint_delete_after_export">Όλες οι συναλλαγές που εξάγονται, θα διαγραφούν με την ολοκλήρωση της εξαγωγής</string>
+    <string name="title_settings">Ρυθμίσεις</string>
     <string-array name="export_destinations">
-        <item>Share file&#8230;</item>
-        <item>SD Card</item>
+        <item>Μοίρασμα αρχείου&#8230;</item>
+        <item>Κάρτα SD</item>
     </string-array>
-    <string name="btn_move">Move</string>
-    <string name="title_move_transactions">Move %1$d transaction(s)</string>
-    <string name="label_move_destination">Destination Account</string>
-    <string name="permission_access_sdcard">Access SD Card</string>
-    <string name="title_share_ofx_with">Share OFX export with&#8230;</string>
+    <string name="btn_move">Μετακίνηση</string>
+    <string name="title_move_transactions">Μετακίνησε %1$d συναλλαγή(ες)</string>
+    <string name="label_move_destination">Λογιαριασμός Προορισμού</string>
+    <string name="permission_access_sdcard">Πρόσβαση κάρτας SD</string>
+    <string name="title_share_ofx_with">Μοίρασμα εξαγωγής OFX με&#8230;</string>
     <string name="key_default_currency">default_currency</string>
-    <string name="toast_incompatible_currency">Cannot move transactions.\nThe destination account uses a different currency from origin account</string>
-    <string name="header_general_settings">General</string>
-    <string name="header_about_gnucash">About</string>
-    <string name="title_choose_currency">Choose default currency</string>
-    <string name="title_default_currency">Default currency</string>
-    <string name="summary_default_currency">Default currency to assign to new accounts</string>
-    <string name="label_permission_record_transactions">Enables recording transactions in Gnucash for Android</string>
-    <string name="label_permission_create_accounts">Enables creation of accounts in Gnucash for Android</string>
-    <string name="label_permission_group">Your GnuCash data</string>
-    <string name="description_permission_group">Read and modify Gnucash data</string>
-    <string name="label_permission_record_transaction">record transactions</string>
-    <string name="label_permission_create_account">create accounts</string>
-    <string name="label_display_account">Display account</string>
-    <string name="btn_create_accounts">Create Accounts</string>
-    <string name="title_default_accounts">Select accounts to create</string>
+    <string name="toast_incompatible_currency">Αδυναμία μετακίνησης	συναλλαγών.\nΟ λογαριασμός προορισμού χρησιμοποιεί διαφορετικό νόμισμα από το λογαριασμό προέλευσης</string>
+    <string name="header_general_settings">Γενικές</string>
+    <string name="header_about_gnucash">Περί</string>
+    <string name="title_choose_currency">Προεπιλογή νομίσματος</string>
+    <string name="title_default_currency">Προεπιλεγμένο νόμισμα</string>
+    <string name="summary_default_currency">Προεπιλεγμένο νόμισμα για νέους λογαριασμούς</string>
+    <string name="label_permission_record_transactions">Ενεργοποίηση καταγραφής	συναλλαγών στο Gnucash για Android</string>
+    <string name="label_permission_create_accounts">Ενεργοποίηση δημιουργίας λογαριασμών στο Gnucash για Android</string>
+    <string name="label_permission_group">Τα δεδομένα σας στο GnuCash</string>
+    <string name="description_permission_group">Ανάγνωση και επεξεργασία δεδομένων Gnucash</string>
+    <string name="label_permission_record_transaction">εγγραφή συναλλαγών</string>
+    <string name="label_permission_create_account">δημιουργία λογαριασμών</string>
+    <string name="label_display_account">Εμφάνιση λογαριασμού</string>
+    <string name="btn_create_accounts">Δημιουργία Λογαριασμών</string>
+    <string name="title_default_accounts">Επιλογή λογαριασμών για δημιουργία</string>
     <string name="key_first_run">key_first_run</string>
     <string-array name="currency_names">
         <item>Afghani</item>
@@ -113,7 +113,7 @@
 		<item>CFA Franc BEAC</item>
 		<item>CFP Franc</item>
 		<item>Chilean Peso</item>
-		<item>Testing currency</item>
+		<item>Δοκιμαστικό νόμισμα</item>
 		<item>Colombian Peso</item>
 		<item>Comoro Franc</item>
 		<item>Congolese Franc</item>
@@ -134,7 +134,7 @@
 		<item>Egyptian Pound</item>
 		<item>El Salvador Colon</item>
 		<item>Ethiopian Birr</item>
-		<item>Euro</item>
+		<item>Ευρώ</item>
 		<item>Falkland Islands Pound</item>
 		<item>Fiji Dollar</item>
 		<item>Forint</item>
@@ -248,7 +248,7 @@
 		<item>Unidad de Valor Real</item>
 		<item>Unidades de fomento</item>
 		<item>Uruguay Peso en Unidades Indexadas (URUIURUI)</item>
-		<item>US Dollar</item>
+		<item>Δολάριο ΗΠΑ</item>
 		<item>Uzbekistan Sum</item>
 		<item>Vatu</item>
 		<item>WIR Euro</item>
@@ -440,28 +440,33 @@
 		<item>PLN</item>
     </string-array>
 	<string-array name="default_accounts">
-	    <item>Expenses</item>
-	    <item>Income</item>
-	    <item>Assets</item>	    
-	    <item>Entertainment</item>
-	    <item>Insurance</item>
+	    <item>Έξοδα</item>
+	    <item>Έσοδα</item>
+	    <item>Πάγια</item>	    
+	    <item>Διασκέδαση</item>
+	    <item>Ασφάλεια</item>
 	</string-array>
-	<string name="error_no_accounts">No accounts exist in Gnucash.\nCreate an account before adding a widget</string>
+	<string name="error_no_accounts">Δεν υπάρχουν λογαριασμοί στο
+	Gnucash.\nΔημιουργήστε ενα λογαριασμό πριν προσθέσετε ένα widget</string>
 	<string name="key_build_version">build_version</string>
-	<string name="title_build_version">Build version</string>
-	<string name="app_version">1.0.beta1</string>
-	<string name="title_license">License</string>
-	<string name="summary_licence_details">Apache License v2.0. Click for details</string>
-	<string name="title_general_prefs">General</string>
+	<string name="title_build_version">Έκδοση</string>
+	<string name="app_version">1.0.beta2</string>
+	<string name="title_license">Άδεια χρήσης</string>
+	<string name="summary_licence_details">Άδεια χρήσης Apache v2.0. Επιλέξτε για λεπτομέρειες</string>
+	<string name="title_general_prefs">Γενικά</string>
 	<string name="key_license">app_license</string>
-	<string name="label_widget_configuration">Select Account</string>
-	<string name="toast_no_transactions_to_export">There are no transactions available to export</string>
+	<string name="label_widget_configuration">Επιλογή Λογαριασμού</string>
+	<string name="toast_no_transactions_to_export">Δεν υπάρχουν διαθέσιμες συναλλαγές για εξαγωγή</string>
 	<string name="key_about">about_gnucash</string>
-	<string name="title_about_gnucash">About Gnucash</string>
-	<string name="summary_about_gnucash">GnucashMobile is a mobile finance expense tracker application for Android.\nIt enables flexible tracking of expenses on-the-go which can be exported to the Open Financial eXchange (OFX) format and imported into Gnucash for the desktop.</string>
-	<string name="title_about">About</string>
-	<string name="toast_error_exporting">Could not write OFX file to :\n</string>
-	<string name="toast_ofx_exported_to">OFX file exported to:\n</string>
-	<string name="title_export_email">Gnucash OFX export</string>
-	<string name="description_export_email">Gnucash OFX Export von </string>
+	<string name="title_about_gnucash">Περί Gnucash</string>
+	<string name="summary_about_gnucash">Το GnucashMobile είναι μια εφαρμογή
+	παρακολούθησης εξόδων για κινητά Android.\nΕπιτρέπει ευέλικτη παρακολούθηση
+	εξόδων εν κινήσει τα οποία μπορούν να εξαχθούν σε μορφή Open Financial
+	eXchange (OFX) και να εισαχθούν στην εφαρμογή Gnucash για τον
+	υπολογιστή.</string>
+	<string name="title_about">Περί</string>
+	<string name="toast_error_exporting">Αδυναμία εγγραφής αρχείου OFX σε :\n</string>
+	<string name="toast_ofx_exported_to">Αρχείο OFX εξήχθη σε:\n</string>
+	<string name="title_export_email">Εξαγωγή Gnucash OFX</string>
+	<string name="description_export_email">Εξαγωγή Gnucash OFX προς </string>
 </resources>
