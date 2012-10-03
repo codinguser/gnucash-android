@@ -319,9 +319,9 @@ public class TransactionsListFragment extends SherlockListFragment implements
 	 */
 	private void selectItem(int position){		
 		ListView lv = getListView();	
-		lv.setItemChecked(position, true);
-		View v = lv.getChildAt(position);
-		
+		lv.setItemChecked(position, true);		
+		View v = lv.getChildAt(position -  lv.getFirstVisiblePosition());
+
 		v.setSelected(true);
         v.setBackgroundColor(getResources().getColor(R.color.abs__holo_blue_light));
         long id = lv.getItemIdAtPosition(position);
@@ -345,8 +345,9 @@ public class TransactionsListFragment extends SherlockListFragment implements
 	 */
 	private void deselectItem(int position){
 		if (position >= 0){
-			getListView().setItemChecked(position, false);
-			View v = getListView().getChildAt(position);
+			ListView listView = getListView();
+			listView.setItemChecked(position, false);
+			View v = getListView().getChildAt(position - listView.getFirstVisiblePosition());
 			if (v == null){
 				//if we just deleted a row, then the previous position is invalid
 				return;

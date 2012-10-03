@@ -353,7 +353,7 @@ public class AccountsListFragment extends SherlockListFragment implements
 		deselectPreviousSelectedItem();		
 		ListView lv = getListView();	
 		lv.setItemChecked(position, true);
-		View v = lv.getChildAt(position);
+		View v = lv.getChildAt(position - lv.getFirstVisiblePosition());
 		v.setSelected(true);
         v.setBackgroundColor(getResources().getColor(R.color.abs__holo_blue_light));
         mSelectedViewPosition = position;
@@ -366,8 +366,9 @@ public class AccountsListFragment extends SherlockListFragment implements
 	 */
 	private void deselectPreviousSelectedItem(){
 		if (mSelectedViewPosition >= 0){
-			getListView().setItemChecked(mSelectedViewPosition, false);
-			View v = getListView().getChildAt(mSelectedViewPosition);
+			ListView lv = getListView();
+			lv.setItemChecked(mSelectedViewPosition, false);
+			View v = getListView().getChildAt(mSelectedViewPosition - lv.getFirstVisiblePosition());
 			if (v == null){
 				//if we just deleted a row, then the previous position is invalid
 				return;
