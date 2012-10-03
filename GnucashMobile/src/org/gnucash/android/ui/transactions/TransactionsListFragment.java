@@ -405,15 +405,14 @@ public class TransactionsListFragment extends SherlockListFragment implements
 	    args.putLongArray(SELECTED_TRANSACTION_IDS, selectedIds);
 	    bulkMoveFragment.setArguments(args);
 	    bulkMoveFragment.show(ft, "bulk_move_dialog");
-	}
+	}	
 	
 	/**
 	 * Extends a simple cursor adapter to bind transaction attributes to views 
 	 * @author Ngewi Fet <ngewif@gmail.com>
 	 */
 	protected class TransactionsCursorAdapter extends SimpleCursorAdapter {
-		private long mPreviousTimestamp;
-		
+				
 		public TransactionsCursorAdapter(Context context, int layout, Cursor c,
 				String[] from, int[] to) {
 			super(context, layout, c, from, to, 0);
@@ -468,18 +467,30 @@ public class TransactionsListFragment extends SherlockListFragment implements
 				trNote.setText(description);
 			}
 			
-			TextView dateHeader = (TextView) view.findViewById(R.id.date_section_header);
 			long transactionTime = cursor.getLong(DatabaseAdapter.COLUMN_TIMESTAMP);
-			boolean sameDay = isSameDay(mPreviousTimestamp, transactionTime);
-			if (sameDay)
-				dateHeader.setVisibility(View.GONE);
-			else {
+			int position = cursor.getPosition();
+						
+			boolean hasSectionHeader = false;
+			if (position == 0){
+				hasSectionHeader = true;
+			} else {
+				cursor.moveToPosition(position - 1);
+				long previousTimestamp = cursor.getLong(DatabaseAdapter.COLUMN_TIMESTAMP);
+				cursor.moveToPosition(position);				
+				//has header if two consecutive transactions were not on same day
+				hasSectionHeader = !isSameDay(previousTimestamp, transactionTime);
+			}
+			
+			TextView dateHeader = (TextView) view.findViewById(R.id.date_section_header);
+			
+			if (hasSectionHeader){
 				java.text.DateFormat format = DateFormat.getLongDateFormat(getActivity());
 				String dateString = format.format(new Date(transactionTime));
 				dateHeader.setText(dateString);
 				dateHeader.setVisibility(View.VISIBLE);
+			} else {
+				dateHeader.setVisibility(View.GONE);
 			}
-			mPreviousTimestamp = transactionTime;
 		}
 		
 		private boolean isSameDay(long timeMillis1, long timeMillis2){

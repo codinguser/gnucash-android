@@ -275,11 +275,11 @@ public class Account {
 	 * @param doc XML DOM document for the OFX data
 	 * @param parent Parent node to which to add this account's transactions in XML
 	 */
-	public void toXml(Document doc, Element parent, boolean allTransactions){
+	public void toOfx(Document doc, Element parent, boolean allTransactions){
 		for (Transaction transaction : mTransactionsList) {
 			if (!allTransactions && transaction.isExported())
 				continue;
-			parent.appendChild(transaction.toXml(doc));
+			parent.appendChild(transaction.toOfx(doc));
 		}
 	}
 }

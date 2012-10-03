@@ -304,12 +304,12 @@ public class ExportDialogFragment extends DialogFragment {
 		Document document = docBuilder.newDocument();
 		Element root = document.createElement("OFX");
 		
-		ProcessingInstruction pi = document.createProcessingInstruction("OFX", "OFXHEADER=\"200\" VERSION=\"211\" SECURITY=\"NONE\" OLDFILEUID=\"NONE\" NEWFILEUID=\"NONE\"");
+		ProcessingInstruction pi = document.createProcessingInstruction("OFX", OfxFormatter.OFX_HEADER);
 		document.appendChild(pi);		
 		document.appendChild(root);
 		
 		OfxFormatter exporter = new OfxFormatter(getActivity(), exportAll);
-		exporter.toXml(document, root);
+		exporter.toOfx(document, root);
 		
 		return document;
 	}

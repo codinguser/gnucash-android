@@ -69,6 +69,11 @@ public class OfxFormatter {
 	 * Reference to the application context
 	 */
 	private Context mContext;
+
+	/**
+	 * Header for OFX documents
+	 */
+	public static final String OFX_HEADER = "OFXHEADER=\"200\" VERSION=\"211\" SECURITY=\"NONE\" ENCODING=\"UTF-8\" OLDFILEUID=\"NONE\" NEWFILEUID=\"NONE\"";
 	
 	/**
 	 * Builds an XML representation of the {@link Account}s and {@link Transaction}s in the database 
@@ -112,7 +117,7 @@ public class OfxFormatter {
 	 * @param doc DOM document of the OFX expenses.
 	 * @param parent Parent node for all expenses in report
 	 */
-	public void toXml(Document doc, Element parent){
+	public void toOfx(Document doc, Element parent){
 		Element transactionUid = doc.createElement("TRNUID");		
 		//unsolicited because the data exported is not as a result of a request
 		transactionUid.appendChild(doc.createTextNode(UNSOLICITED_TRANSACTION_ID));
@@ -192,7 +197,7 @@ public class OfxFormatter {
 			statementTransactionResponse.appendChild(statementTransactions);
 			
 			//add account details (transactions) to the XML document			
-			account.toXml(doc, bankTransactionsList, mExportAll);
+			account.toOfx(doc, bankTransactionsList, mExportAll);
 			
 			//mark as exported
 			transactionsDbAdapter.markAsExported(account.getUID());
