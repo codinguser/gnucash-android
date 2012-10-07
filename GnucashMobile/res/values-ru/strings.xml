@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
  Copyright (c) 2012 Ngewi Fet <ngewif@gmail.com>
- Copyright (c) 2012 Kjell Thomas Pedersen <kjelltp@gmail.com>
+ Copyright (c) 2012 Alexander Galanin <al@galanin.nnov.ru>
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -17,73 +17,73 @@
 -->
 
 <resources>
-    <string name="app_name">GnuCash</string>
-    <string name="title_add_account">Opprette konto</string>
-    <string name="title_edit_account">Editere konto</string>
-    <string name="info_details">Informasjon</string>
-    <string name="title_settings">Innstillinger</string>
-    <string name="menu_export_ofx">Eksport OFX</string>
-    <string name="description_add_transaction_icon">Legge til ny konto transaksjon</string>
-    <string name="label_no_accounts">Ingen konti å vise</string>
-    <string name="label_account_name">Kontonavn</string>
-    <string name="btn_cancel">Avbryt</string>
-    <string name="btn_save">Lagre</string>
-    <string name="label_no_transactions_to_display">Ingen transaksjoner å vise</string>
-    <string name="label_transaction_name">Beskrivelse</string>
-    <string name="label_transaction_amount">Beløp</string>
-    <string name="title_add_transaction">Ny transaksjon</string>
-    <string name="label_no_transactions">Ingen transaksjoner å vise</string>
-    <string name="label_timeanddate">DATO &amp; TID</string>
-    <string name="label_account">Konto</string>
-    <string name="label_debit">DEBET</string>
-    <string name="label_credit">KREDIT</string>
-    <string name="title_accounts">Kontoer</string>
-    <string name="title_transactions">Transaksjoner</string>
-    <string name="menu_delete">SLETT</string>
-    <string name="alert_dialog_ok_delete">Slett</string>
-    <string name="alert_dialog_cancel">Avbryt</string>
-    <string name="toast_account_deleted">Konto slettet</string>
-    <string name="title_confirm_delete">Bekreft sletting</string>
-    <string name="delete_confirmation_message">Alle transaksjoner tilhørende denne kontoen vil også bli slettet</string>
-    <string name="title_edit_transaction">Rediger Transaksjon</string>
-    <string name="label_transaction_description">Notat</string>
-    <string name="menu_move">FLYTT</string>
-    <string name="title_selected">%1$d valgt</string>
-    <string name="label_transactions_total">Totalt beløp:</string>
-    <string name="label_export_destination">Export Mottaker</string>
-    <string name="title_export_dialog">Eksportere OFX</string>
-    <string name="option_export_all_transactions">Eksportere alle transaksjoner</string>
-    <string name="hint_export_choice">Standard vil kun nye transaksjoner siden siste eksportering bli eksportert.  Merk dette valget for å eksportere alle transaksjonene</string>
-    <string name="error_exporting">Feil ved eksportering av OFX data</string>    
-    <string name="btn_export">Eksporter</string>
-    <string name="option_delete_after_export">Slette etter eksportering</string>
-    <string name="hint_delete_after_export">Alle eksporterte transaksjoner vil bli slettet etter eksportering</string>
-    <string name="title_settings">Instillinger</string>
+    <string name="app_name">Gnucash</string>
+    <string name="title_add_account">Создать счёт</string>
+    <string name="title_edit_account">Редактировать счёт</string>
+    <string name="info_details">Информация</string>
+    <string name="title_settings">Настройки</string>
+    <string name="menu_export_ofx">Экспортировать OFX</string>
+    <string name="description_add_transaction_icon">Добавить к счёту новую транзакцию</string>
+    <string name="label_no_accounts">Нет счетов</string>
+    <string name="label_account_name">Имя счёта</string>
+    <string name="btn_cancel">Отмена</string>
+    <string name="btn_save">Сохранить</string>
+    <string name="label_no_transactions_to_display">Нет транзакций</string>
+    <string name="label_transaction_name">Описание</string>
+    <string name="label_transaction_amount">Сумма</string>
+    <string name="title_add_transaction">Новая транзакция</string>
+    <string name="label_no_transactions">Нет транзакций</string>
+    <string name="label_timeanddate">ДАТА &amp; ВРЕМЯ</string>
+    <string name="label_account">Счёт</string>
+    <string name="label_debit">ДЕБЕТ</string>
+    <string name="label_credit">КРЕДИТ</string>
+    <string name="title_accounts">Счета</string>
+    <string name="title_transactions">Транзакции</string>
+    <string name="menu_delete">УДАЛИТЬ</string>
+    <string name="alert_dialog_ok_delete">Удалить</string>
+    <string name="alert_dialog_cancel">Отмена</string>
+    <string name="toast_account_deleted">Счёт удалён</string>
+    <string name="title_confirm_delete">Подтвердите удаление</string>
+    <string name="delete_confirmation_message">Все транзакции этого счёта будут удалены</string>
+    <string name="title_edit_transaction">Редактировать транзакцию</string>
+    <string name="label_transaction_description">Замечание</string>
+    <string name="menu_move">ПЕРЕНЕСТИ</string>
+    <string name="title_selected">%1$d выбрано</string>
+    <string name="label_transactions_total">Общая сумма:</string>
+    <string name="label_export_destination">Экспортировать в</string>
+    <string name="title_export_dialog">Экспорт OFX</string>
+    <string name="option_export_all_transactions">Экспортировать все</string>
+    <string name="hint_export_choice">По умолчанию только экспортируются новые транзакции с момента прошлого экспорта. Выберите этот пункт чтобы экспортировать все.</string>
+    <string name="error_exporting">Ошибка при экспорте OFX</string>    
+    <string name="btn_export">Экспорт</string>
+    <string name="option_delete_after_export">Удалить после экспорта</string>
+    <string name="hint_delete_after_export">Все экспортированные транзакции будут удалены по завершении экспорта.</string>
+    <string name="title_settings">Настройки</string>
     <string-array name="export_destinations">
-        <item>Delt fil&#8230;</item>
-        <item>SD Minnekort</item>
+        <item>Отправить файл&#8230;</item>
+        <item>Карта памяти</item>
     </string-array>
-    <string name="btn_move">Flytt</string>
-    <string name="title_move_transactions">Flytt %1$d transaksjoner</string>
-    <string name="label_move_destination">Til Konto</string>
-    <string name="permission_access_sdcard">Aksessere Minnekort</string>
-    <string name="title_share_ofx_with">Del OFX eksport med&#8230;</string>
+    <string name="btn_move">Перенести</string>
+    <string name="title_move_transactions">Перенести %1$d транзакци(ю,и,й)</string>
+    <string name="label_move_destination">Счёт-получатель</string>
+    <string name="permission_access_sdcard">Доступ к карте памяти</string>
+    <string name="title_share_ofx_with">Отправить OFX&#8230;</string>
     <string name="key_default_currency">default_currency</string>
-    <string name="toast_incompatible_currency">Kan ikke flytte transaksjonen(e).\nMottaker konto har en annen valuta</string>
-    <string name="header_general_settings">Generelt</string>
-    <string name="header_about_gnucash">Om</string>
-    <string name="title_choose_currency">Velg standard valuta</string>
-    <string name="title_default_currency">Standard valuta</string>
-    <string name="summary_default_currency">Standard valuta for nye konti</string>
-    <string name="label_permission_record_transactions">Aktiverer inspilling av transaksjoner i Gnucash for Android</string>
-    <string name="label_permission_create_accounts">Aktiverer oppretting av konti i Gnucash for Android</string>
-    <string name="label_permission_group">Dine GnuCash data</string>
-    <string name="description_permission_group">Lese og endre Gnucash data</string>
-    <string name="label_permission_record_transaction">spille inn transaksjoner</string>
-    <string name="label_permission_create_account">opprette konto</string>
-    <string name="label_display_account">Vis konto</string>
-    <string name="btn_create_accounts">Opprette konti</string>
-    <string name="title_default_accounts">Velg kontoene som skal opprettes</string>
+    <string name="toast_incompatible_currency">Невозможно перенести транзакции.\nСчёт-получатель использует другую валюту.ю</string>
+    <string name="header_general_settings">Общие</string>
+    <string name="header_about_gnucash">О программе</string>
+    <string name="title_choose_currency">Выберите валюту по умолчанию</string>
+    <string name="title_default_currency">Валюта по умолчанию</string>
+    <string name="summary_default_currency">Валюта для новых счетов</string>
+    <string name="label_permission_record_transactions">Запись транзакций в Gnucash для Android</string>
+    <string name="label_permission_create_accounts">Создание счетов в Gnucash для Android</string>
+    <string name="label_permission_group">Ваши данные Gnucash</string>
+    <string name="description_permission_group">Чтение и модификация данных Gnucash</string>
+    <string name="label_permission_record_transaction">запись транзакций</string>
+    <string name="label_permission_create_account">создание счетов</string>
+    <string name="label_display_account">Показать счёт</string>
+    <string name="btn_create_accounts">Создать счета</string>
+    <string name="title_default_accounts">Выберите счета для создания</string>
     <string name="key_first_run">key_first_run</string>
     <string-array name="currency_names">
         <item>Afghani</item>
@@ -192,7 +192,7 @@
 		<item>New Zealand Dollar</item>
 		<item>Ngultrum</item>
 		<item>North Korean Won</item>
-		<item>Norske Kroner</item>
+		<item>Norwegian Krone</item>
 		<item>Nuevo Sol</item>
 		<item>Ouguiya</item>
 		<item>Pa’anga</item>
@@ -212,7 +212,7 @@
 		<item>Riel</item>
 		<item>Rufiyaa</item>
 		<item>Rupiah</item>
-		<item>Russian Ruble</item>
+		<item>Российский рубль</item>
 		<item>Rwanda Franc</item>
 		<item>Saint Helena Pound</item>
 		<item>Saudi Riyal</item>
@@ -441,30 +441,28 @@
 		<item>PLN</item>
     </string-array>
 	<string-array name="default_accounts">
-	    <item>Utgifter</item>
-	    <item>Inntekter</item>
-	    <item>Eiendeler</item>	    
-	    <item>Underholdning</item>
-	    <item>Forsikringer</item>
+	    <item>Расходы</item>
+	    <item>Доходы</item>
+	    <item>Активы</item>	    
+	    <item>Развлечения</item>
+	    <item>Страховка</item>
 	</string-array>
-	<string name="error_no_accounts">Ingen kontoer finnes i Gnucash.\nOpprett en konto før du legger til en widget</string>
+	<string name="error_no_accounts">Нет счетов в Gnucash.\nСначала создайте счета, а потом добавляйте виджет.</string>
 	<string name="key_build_version">build_version</string>
-	<string name="title_build_version">Bygg version</string>
+	<string name="title_build_version">Версия сборки</string>
 	<string name="app_version">1.0.beta2</string>
-	<string name="title_license">Lisens</string>
-	<string name="summary_licence_details">Apache Lisens v2.0. Klikk for detaljer.</string>
-	<string name="title_general_prefs">Generelt</string>
+	<string name="title_license">Лицензия</string>
+	<string name="summary_licence_details">Apache License v2.0. Нажмите, чтобы просмотреть.</string>
+	<string name="title_general_prefs">Общие</string>
 	<string name="key_license">app_license</string>
-	<string name="label_widget_configuration">Velg konto</string>
-	<string name="toast_no_transactions_to_export">Ingen transaksjoner å eksportere</string>
+        <string name="label_widget_configuration">Выберите счёт</string>
+	<string name="toast_no_transactions_to_export">Нет транзакций для экспорта</string>
 	<string name="key_about">about_gnucash</string>
-	<string name="title_about_gnucash">Om Gnucash</string>
-	<string name="summary_about_gnucash">GnucashMobile er en mobil regnskapsfører for Android.\nDen gir 
-muligheten til raskt og fleksibelt logge transaksjoner som kan eksporteres til OFX (Open Financial eXchange) 
-format og importeres i regnskapsprogrammet GnuCash for PC.</string> 
-	<string name="title_about">Om</string>
-	<string name="toast_error_exporting">Kunne ikke lagre OFX fil til :\n</string>
-	<string name="toast_ofx_exported_to">OFX fil eksportert til:\n</string>
-	<string name="title_export_email">Gnucash OFX eksportering</string>
-	<string name="description_export_email">Gnucash OFX eksportering til </string>
+	<string name="title_about_gnucash">О Gnucash</string>
+        <string name="summary_about_gnucash">Gnucash - программа учёта финансов для Android.\nОна позволяет легко отслеживать расходы и передавать информацию в Gnucash для рабочей станции посредством файлов формата OFX (Open Financial eXchange).</string>
+	<string name="title_about">О программе</string>
+	<string name="toast_error_exporting">Не могу записать файл OFX в :\n</string>
+	<string name="toast_ofx_exported_to">Файл OFX экспортирован в:\n</string>
+	<string name="title_export_email">Экспорт OFX-файла из Gnucash</string>
+	<string name="description_export_email">OFX-файл, экспортированный из Gnucash</string>
 </resources>
