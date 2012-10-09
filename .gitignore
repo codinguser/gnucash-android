@@ -6,3 +6,4 @@ gen
 bin
 dist
 target
+gen-external-apklibs
