@@ -34,7 +34,7 @@ import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.MenuItem;
 
 /**
- * Activing for displaying, creating and editing transactions
+ * Activity for displaying, creating and editing transactions
  * @author Ngewi Fet <ngewif@gmail.com>
  */
 public class TransactionsActivity extends SherlockFragmentActivity implements 

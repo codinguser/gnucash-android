@@ -16,6 +16,8 @@
 
 package org.gnucash.android.ui.transactions;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 
@@ -40,6 +42,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.SimpleCursorAdapter;
+import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -316,9 +319,9 @@ public class TransactionsListFragment extends SherlockListFragment implements
 	 */
 	private void selectItem(int position){		
 		ListView lv = getListView();	
-		lv.setItemChecked(position, true);
-		View v = lv.getChildAt(position);
-		
+		lv.setItemChecked(position, true);		
+		View v = lv.getChildAt(position -  lv.getFirstVisiblePosition());
+
 		v.setSelected(true);
         v.setBackgroundColor(getResources().getColor(R.color.abs__holo_blue_light));
         long id = lv.getItemIdAtPosition(position);
@@ -342,8 +345,9 @@ public class TransactionsListFragment extends SherlockListFragment implements
 	 */
 	private void deselectItem(int position){
 		if (position >= 0){
-			getListView().setItemChecked(position, false);
-			View v = getListView().getChildAt(position);
+			ListView listView = getListView();
+			listView.setItemChecked(position, false);
+			View v = getListView().getChildAt(position - listView.getFirstVisiblePosition());
 			if (v == null){
 				//if we just deleted a row, then the previous position is invalid
 				return;
@@ -402,14 +406,14 @@ public class TransactionsListFragment extends SherlockListFragment implements
 	    args.putLongArray(SELECTED_TRANSACTION_IDS, selectedIds);
 	    bulkMoveFragment.setArguments(args);
 	    bulkMoveFragment.show(ft, "bulk_move_dialog");
-	}
+	}	
 	
 	/**
 	 * Extends a simple cursor adapter to bind transaction attributes to views 
 	 * @author Ngewi Fet <ngewif@gmail.com>
 	 */
 	protected class TransactionsCursorAdapter extends SimpleCursorAdapter {
-		
+				
 		public TransactionsCursorAdapter(Context context, int layout, Cursor c,
 				String[] from, int[] to) {
 			super(context, layout, c, from, to, 0);
@@ -419,7 +423,7 @@ public class TransactionsListFragment extends SherlockListFragment implements
 		public View getView(int position, View convertView, ViewGroup parent) {
 			View view = super.getView(position, convertView, parent);
 			final int itemPosition = position;
-			CheckBox checkbox = (CheckBox) view.findViewById(R.id.checkbox);
+			CheckBox checkbox = (CheckBox) view.findViewById(R.id.checkbox);			
 			checkbox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 				
 				@Override
@@ -449,12 +453,53 @@ public class TransactionsListFragment extends SherlockListFragment implements
 			
 			TextView tramount = (TextView) view.findViewById(R.id.transaction_amount);
 			tramount.setText(amount.formattedString(Locale.getDefault()));
-			
+						
 			if (amount.isNegative())
 				tramount.setTextColor(getResources().getColor(R.color.debit_red));
 			else
 				tramount.setTextColor(getResources().getColor(R.color.credit_green));
 			
+			TextView trNote = (TextView) view.findViewById(R.id.transaction_note);
+			String description = cursor.getString(DatabaseAdapter.COLUMN_DESCRIPTION);
+			if (description == null || description.length() == 0)
+				trNote.setVisibility(View.GONE);
+			else {
+				trNote.setVisibility(View.VISIBLE);
+				trNote.setText(description);
+			}
+			
+			long transactionTime = cursor.getLong(DatabaseAdapter.COLUMN_TIMESTAMP);
+			int position = cursor.getPosition();
+						
+			boolean hasSectionHeader = false;
+			if (position == 0){
+				hasSectionHeader = true;
+			} else {
+				cursor.moveToPosition(position - 1);
+				long previousTimestamp = cursor.getLong(DatabaseAdapter.COLUMN_TIMESTAMP);
+				cursor.moveToPosition(position);				
+				//has header if two consecutive transactions were not on same day
+				hasSectionHeader = !isSameDay(previousTimestamp, transactionTime);
+			}
+			
+			TextView dateHeader = (TextView) view.findViewById(R.id.date_section_header);
+			
+			if (hasSectionHeader){
+				java.text.DateFormat format = DateFormat.getLongDateFormat(getActivity());
+				String dateString = format.format(new Date(transactionTime));
+				dateHeader.setText(dateString);
+				dateHeader.setVisibility(View.VISIBLE);
+			} else {
+				dateHeader.setVisibility(View.GONE);
+			}
+		}
+		
+		private boolean isSameDay(long timeMillis1, long timeMillis2){
+			Date date1 = new Date(timeMillis1);
+			Date date2 = new Date(timeMillis2);
+			
+			SimpleDateFormat fmt = new SimpleDateFormat("yyyyMMdd");
+			return fmt.format(date1).equals(fmt.format(date2));
 		}
 	}
 	

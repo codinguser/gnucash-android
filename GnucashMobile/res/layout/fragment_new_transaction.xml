@@ -130,7 +130,7 @@
 			        android:singleLine="false"
 			        android:layout_marginBottom="@dimen/dialog_padding"
 			        android:hint="@string/label_transaction_description"
-			        android:inputType="textMultiLine"
+			        android:inputType="textMultiLine|textCapSentences"
 			        android:gravity="top"
 			        />
 	   </LinearLayout>

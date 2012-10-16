@@ -337,7 +337,7 @@ public class Transaction {
 	 * @param doc XML document to which transaction should be added
 	 * @return Element in DOM corresponding to transaction
 	 */
-	public Element toXml(Document doc){		
+	public Element toOfx(Document doc){		
 		Element transactionNode = doc.createElement("STMTTRN");
 		Element type = doc.createElement("TRNTYPE");
 		type.appendChild(doc.createTextNode(mType.toString()));
@@ -364,9 +364,11 @@ public class Transaction {
 		name.appendChild(doc.createTextNode(mName));
 		transactionNode.appendChild(name);
 		
-		Element memo = doc.createElement("MEMO");
-		memo.appendChild(doc.createTextNode(mDescription));
-		transactionNode.appendChild(memo);
+		if (mDescription != null && mDescription.length() > 0){
+			Element memo = doc.createElement("MEMO");
+			memo.appendChild(doc.createTextNode(mDescription));
+			transactionNode.appendChild(memo);
+		}
 		
 		return transactionNode;
 	}
