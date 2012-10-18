@@ -450,7 +450,6 @@
 	<string name="error_no_accounts">Ingen kontoer finnes i Gnucash.\nOpprett en konto før du legger til en widget</string>
 	<string name="key_build_version">build_version</string>
 	<string name="title_build_version">Bygg version</string>
-	<string name="app_version">1.0.beta2</string>
 	<string name="title_license">Lisens</string>
 	<string name="summary_licence_details">Apache Lisens v2.0. Klikk for detaljer.</string>
 	<string name="title_general_prefs">Generelt</string>

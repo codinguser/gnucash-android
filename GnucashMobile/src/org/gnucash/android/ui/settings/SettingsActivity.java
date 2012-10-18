@@ -22,12 +22,15 @@ import org.gnucash.android.R;
 import org.gnucash.android.data.Money;
 
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockPreferenceActivity;
@@ -54,6 +57,20 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
 	protected void onCreate(Bundle savedInstanceState) {		
 		super.onCreate(savedInstanceState);
 		
+		//retrieve version from Manifest and set it
+		String version = null;
+		try {
+			version = getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
+			SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+			Editor editor = sharedPrefs.edit();
+			editor.putString(getString(R.string.key_build_version), version);
+			editor.commit();
+		} catch (NameNotFoundException e) {
+			Log.e("SettingsActivity", "Could not set version preference");
+			e.printStackTrace();
+		}
+		
+		
 		ActionBar actionBar = getSupportActionBar();
 		actionBar.setTitle(R.string.title_settings);
 		actionBar.setHomeButtonEnabled(true);
@@ -63,6 +80,10 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
 			addPreferencesFromResource(R.xml.fragment_general_preferences);
 			addPreferencesFromResource(R.xml.fragment_about_preferences);
 			setDefaultCurrencyListener();
+			SharedPreferences manager = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+			String versionName = manager.getString(getString(R.string.key_build_version), "");
+			Preference pref = findPreference(getString(R.string.key_build_version));
+			pref.setSummary(versionName);
 		}		
 	}
 		
@@ -87,9 +108,8 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
 		}
 	}
 	
-
 	@Override
-	public boolean onPreferenceChange(Preference preference, Object newValue) {
+ 	public boolean onPreferenceChange(Preference preference, Object newValue) {
 		preference.setSummary(newValue.toString());
 		if (preference.getKey().equals(getString(R.string.key_default_currency))){
 			Money.DEFAULT_CURRENCY_CODE = newValue.toString();
@@ -163,5 +183,14 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
 			actionBar.setTitle(R.string.title_about_gnucash);
 						
 		}		
+		
+		@Override
+		public void onResume() {
+			super.onResume();
+			SharedPreferences manager = PreferenceManager.getDefaultSharedPreferences(getActivity());
+			String versionName = manager.getString(getString(R.string.key_build_version), "");
+			Preference pref = findPreference(getString(R.string.key_build_version));
+			pref.setSummary(versionName);
+		}
 	}
 }
