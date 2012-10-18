@@ -450,7 +450,6 @@
 	<string name="error_no_accounts">Non esiste alcun conto in Gnucash.\nCreare un conto prima di aggiungere il widget</string>
 	<string name="key_build_version">build_version</string>
 	<string name="title_build_version">Versione build</string>
-	<string name="app_version">1.0.beta2</string>
 	<string name="title_license">Licenza</string>
 	<string name="summary_licence_details">Apache License v2.0. Fare clic per i dettagli</string>
 	<string name="title_general_prefs">Generale</string>

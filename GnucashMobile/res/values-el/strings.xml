@@ -451,7 +451,6 @@
 	Gnucash.\nΔημιουργήστε ενα λογαριασμό πριν προσθέσετε ένα widget</string>
 	<string name="key_build_version">build_version</string>
 	<string name="title_build_version">Έκδοση</string>
-	<string name="app_version">1.0.beta2</string>
 	<string name="title_license">Άδεια χρήσης</string>
 	<string name="summary_licence_details">Άδεια χρήσης Apache v2.0. Επιλέξτε για λεπτομέρειες</string>
 	<string name="title_general_prefs">Γενικά</string>
