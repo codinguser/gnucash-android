@@ -71,14 +71,14 @@
     <string name="key_default_currency">default_currency</string>
     <string name="toast_incompatible_currency">Αδυναμία μετακίνησης	συναλλαγών.\nΟ λογαριασμός προορισμού χρησιμοποιεί διαφορετικό νόμισμα από το λογαριασμό προέλευσης</string>
     <string name="header_general_settings">Γενικές</string>
-    <string name="header_about_gnucash">Περί</string>
+    <string name="header_about_gnucash">Πληροφορίες</string>
     <string name="title_choose_currency">Προεπιλογή νομίσματος</string>
     <string name="title_default_currency">Προεπιλεγμένο νόμισμα</string>
     <string name="summary_default_currency">Προεπιλεγμένο νόμισμα για νέους λογαριασμούς</string>
-    <string name="label_permission_record_transactions">Ενεργοποίηση καταγραφής	συναλλαγών στο Gnucash για Android</string>
-    <string name="label_permission_create_accounts">Ενεργοποίηση δημιουργίας λογαριασμών στο Gnucash για Android</string>
+    <string name="label_permission_record_transactions">Ενεργοποίηση καταγραφής	συναλλαγών στο GnuCash για Android</string>
+    <string name="label_permission_create_accounts">Ενεργοποίηση δημιουργίας λογαριασμών στο GnuCash για Android</string>
     <string name="label_permission_group">Τα δεδομένα σας στο GnuCash</string>
-    <string name="description_permission_group">Ανάγνωση και επεξεργασία δεδομένων Gnucash</string>
+    <string name="description_permission_group">Ανάγνωση και επεξεργασία δεδομένων GnuCash</string>
     <string name="label_permission_record_transaction">εγγραφή συναλλαγών</string>
     <string name="label_permission_create_account">δημιουργία λογαριασμών</string>
     <string name="label_display_account">Εμφάνιση λογαριασμού</string>
@@ -442,13 +442,13 @@
     </string-array>
 	<string-array name="default_accounts">
 	    <item>Έξοδα</item>
-	    <item>Έσοδα</item>
+	    <item>Εισόδημα</item>
 	    <item>Πάγια</item>	    
 	    <item>Διασκέδαση</item>
 	    <item>Ασφάλεια</item>
 	</string-array>
 	<string name="error_no_accounts">Δεν υπάρχουν λογαριασμοί στο
-	Gnucash.\nΔημιουργήστε ενα λογαριασμό πριν προσθέσετε ένα widget</string>
+	GnuCash.\nΔημιουργήστε ενα λογαριασμό πριν προσθέσετε ένα widget</string>
 	<string name="key_build_version">build_version</string>
 	<string name="title_build_version">Έκδοση</string>
 	<string name="title_license">Άδεια χρήσης</string>
@@ -458,15 +458,15 @@
 	<string name="label_widget_configuration">Επιλογή Λογαριασμού</string>
 	<string name="toast_no_transactions_to_export">Δεν υπάρχουν διαθέσιμες συναλλαγές για εξαγωγή</string>
 	<string name="key_about">about_gnucash</string>
-	<string name="title_about_gnucash">Περί Gnucash</string>
-	<string name="summary_about_gnucash">Το GnucashMobile είναι μια εφαρμογή
+	<string name="title_about_gnucash">Πληροφορίες για GnuCash</string>
+	<string name="summary_about_gnucash">Το GnuCash είναι μια εφαρμογή
 	παρακολούθησης εξόδων για κινητά Android.\nΕπιτρέπει ευέλικτη παρακολούθηση
 	εξόδων εν κινήσει τα οποία μπορούν να εξαχθούν σε μορφή Open Financial
-	eXchange (OFX) και να εισαχθούν στην εφαρμογή Gnucash για τον
+	eXchange (OFX) και να εισαχθούν στην εφαρμογή GnuCash για τον
 	υπολογιστή.</string>
-	<string name="title_about">Περί</string>
+	<string name="title_about">Πληροφορίες</string>
 	<string name="toast_error_exporting">Αδυναμία εγγραφής αρχείου OFX σε :\n</string>
 	<string name="toast_ofx_exported_to">Αρχείο OFX εξήχθη σε:\n</string>
-	<string name="title_export_email">Εξαγωγή Gnucash OFX</string>
-	<string name="description_export_email">Εξαγωγή Gnucash OFX προς </string>
+	<string name="title_export_email">Εξαγωγή GnuCash OFX</string>
+	<string name="description_export_email">Εξαγωγή GnuCash OFX προς </string>
 </resources>
