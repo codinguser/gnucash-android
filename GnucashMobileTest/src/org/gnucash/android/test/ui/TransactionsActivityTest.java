@@ -142,6 +142,22 @@ public class TransactionsActivityTest extends
 		assertEquals(transactionsCount + 1, getTranscationCount());
 	}
 	
+	public void testAddTransactionShouldRequireAmount(){
+		mSolo.waitForText(DUMMY_ACCOUNT_NAME);
+		validateTransactionListDisplayed();
+		
+		TransactionsDbAdapter adapter = new TransactionsDbAdapter(getActivity());
+		int beforeCount = adapter.getTransactionsCount(adapter.getAccountID(DUMMY_ACCOUNT_UID));
+		mSolo.clickOnImage(2);
+		mSolo.waitForText("Description");
+		mSolo.enterText(0, "Lunch");
+		assertEquals(false, mSolo.getImage(3).isEnabled());
+		mSolo.clickOnActionBarItem(R.id.btn_save);
+		
+		int afterCount = adapter.getTransactionsCount(adapter.getAccountID(DUMMY_ACCOUNT_UID));
+		assertEquals(beforeCount, afterCount);
+	}
+	
 	private void validateEditTransactionFields(Transaction transaction){
 		
 		String name = mSolo.getEditText(0).getText().toString();
