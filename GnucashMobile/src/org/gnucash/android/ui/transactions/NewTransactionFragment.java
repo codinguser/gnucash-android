@@ -520,8 +520,7 @@ public class NewTransactionFragment extends SherlockFragment implements
 
 		@Override
 		public void afterTextChanged(Editable s) {
-			boolean valid = (mNameEditText.getText().length() > 0) && 
-					(mAmountEditText.getText().length() > 0);
+			boolean valid = (mAmountEditText.getText().length() > 0);
 			mSaveMenuItem.setEnabled(valid);
 		}
 
