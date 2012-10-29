@@ -18,18 +18,27 @@ package org.gnucash.android.ui.transactions;
 
 import org.gnucash.android.R;
 import org.gnucash.android.data.Account;
+import org.gnucash.android.db.AccountsDbAdapter;
+import org.gnucash.android.db.DatabaseAdapter;
+import org.gnucash.android.db.DatabaseHelper;
 import org.gnucash.android.ui.accounts.AccountsActivity;
 import org.gnucash.android.util.OnTransactionClickedListener;
 
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.widget.ResourceCursorAdapter;
+import android.support.v4.widget.SimpleCursorAdapter;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.SpinnerAdapter;
 
+import com.actionbarsherlock.app.ActionBar;
+import com.actionbarsherlock.app.ActionBar.OnNavigationListener;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.MenuItem;
 
@@ -60,17 +69,74 @@ public class TransactionsActivity extends SherlockFragmentActivity implements
 	 * Database ID of {@link Account} whose transactions are displayed 
 	 */
 	private long mAccountId 	= 0;
-	
+		
+	private OnNavigationListener mOnNavigationListener = new OnNavigationListener() {
+
+		  @Override
+		  public boolean onNavigationItemSelected(int position, long itemId) {
+		    //only when the transaction activity is opened for the 1st time
+		    long accountId = mAccountId == 0 ? itemId : mAccountId;
+		    mAccountId = 0;
+		    
+		    FragmentManager fragmentManager = getSupportFragmentManager();
+
+			TransactionsListFragment transactionsListFragment = (TransactionsListFragment) fragmentManager
+					.findFragmentByTag(FRAGMENT_TRANSACTIONS_LIST);
+
+			if (transactionsListFragment == null) {
+				FragmentTransaction fragmentTransaction = fragmentManager
+						.beginTransaction();
+				transactionsListFragment = new TransactionsListFragment();
+				Bundle args = new Bundle();
+				args.putLong(TransactionsListFragment.SELECTED_ACCOUNT_ID,
+						accountId);
+				transactionsListFragment.setArguments(args);
+				Log.i(TAG, "Opening transactions for account id " +  accountId);
+
+				fragmentTransaction.add(R.id.fragment_container,
+						transactionsListFragment, FRAGMENT_TRANSACTIONS_LIST);
+							
+				fragmentTransaction.commit();
+			} else
+				transactionsListFragment.refreshList(accountId);
+		    return true;
+		  }
+	};
+		
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_transactions);
-
+		
 		final Intent intent = getIntent();
 		mAccountId = intent.getLongExtra(
 				TransactionsListFragment.SELECTED_ACCOUNT_ID, -1);	
 		
-		showTransactionsList();
+		AccountsDbAdapter accountsDbAdapter = new AccountsDbAdapter(this);
+		Cursor accountsCursor = accountsDbAdapter.fetchAllAccounts();
+		SpinnerAdapter mSpinnerAdapter = new SimpleCursorAdapter(
+				getSupportActionBar().getThemedContext(),
+				R.layout.sherlock_spinner_item,
+				accountsCursor,
+				new String[]{DatabaseHelper.KEY_NAME},
+				new int[]{android.R.id.text1},
+				0);
+		((ResourceCursorAdapter) mSpinnerAdapter).setDropDownViewResource(R.layout.sherlock_spinner_dropdown_item);
+		
+		ActionBar actionBar = getSupportActionBar();
+		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+		actionBar.setListNavigationCallbacks(mSpinnerAdapter, mOnNavigationListener);
+		
+		int i = 0;
+		while(accountsCursor.moveToNext()){
+			long id = accountsCursor.getLong(DatabaseAdapter.COLUMN_ROW_ID);
+			if (mAccountId == id){
+				actionBar.setSelectedNavigationItem(i);				
+				break;
+			}
+			++i;
+		}
+		
 		
 		if (intent.getAction().equals(Intent.ACTION_INSERT_OR_EDIT)) {			
 			long transactionId = intent.getLongExtra(
@@ -106,7 +172,7 @@ public class TransactionsActivity extends SherlockFragmentActivity implements
 			return false;
 		}
 	}
-	
+		
 	/**
 	 * Opens a fragment to create a new transaction. 
 	 * Is called from the XML views

@@ -79,21 +79,6 @@
                 <groupId>com.jayway.maven.plugins.android.generation2</groupId>
                 <artifactId>android-maven-plugin</artifactId>
                 <extensions>true</extensions>                
-                <executions>
-				    <execution>
-				        <id>startEmulator</id>
-				        <phase>initialize</phase>				        
-				        <goals>
-				            <goal>emulator-start</goal>
-				        </goals>
-				    </execution>
-				</executions>                
-				<configuration>
-                    <emulator>
-			            <avd>Nexus</avd>
-			            <wait>90000</wait>
-			        </emulator>
-                </configuration>
             </plugin>
         </plugins>
     </build>
