@@ -212,7 +212,7 @@ public class NewTransactionFragment extends SherlockFragment implements
 		ActionBar actionBar = getSherlockActivity().getSupportActionBar();
 		actionBar.setHomeButtonEnabled(true);
 		actionBar.setDisplayHomeAsUpEnabled(true);
-		actionBar.setTitle(R.string.title_add_transaction);
+		actionBar.setDisplayShowTitleEnabled(false);
 		
 		String[] from = new String[] {DatabaseHelper.KEY_NAME};
 		int[] to = new int[] {android.R.id.text1};
@@ -301,13 +301,9 @@ public class NewTransactionFragment extends SherlockFragment implements
 		if (typePref.equals("CREDIT")){
 			mTransactionTypeButton.setChecked(false);
 		}
-		
+				
 		final long accountId = getArguments().getLong(TransactionsListFragment.SELECTED_ACCOUNT_ID);
-		final int count = mCursorAdapter.getCount();
-		for (int pos = 0; pos < count; pos++) {
-			if (mCursorAdapter.getItemId(pos) == accountId)
-				mAccountsSpinner.setSelection(pos);
-		}
+		refreshSelectedAccount(accountId);
 		
 		String code = Money.DEFAULT_CURRENCY_CODE;
 		if (accountId != 0)
@@ -316,6 +312,15 @@ public class NewTransactionFragment extends SherlockFragment implements
 			
 		Currency accountCurrency = Currency.getInstance(code);
 		mCurrencyTextView.setText(accountCurrency.getSymbol(Locale.getDefault()));
+	}
+	
+	public void refreshSelectedAccount(long accountId){
+		for (int pos = 0; pos < mCursorAdapter.getCount(); pos++) {
+			if (mCursorAdapter.getItemId(pos) == accountId){
+				mAccountsSpinner.setSelection(pos);				
+				break;
+			}
+		}
 	}
 	
 	/**

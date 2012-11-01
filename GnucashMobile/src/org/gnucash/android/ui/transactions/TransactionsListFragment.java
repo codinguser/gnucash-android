@@ -202,7 +202,6 @@ public class TransactionsListFragment extends SherlockListFragment implements
 		super.onActivityCreated(savedInstanceState);
 		
 		ActionBar aBar = getSherlockActivity().getSupportActionBar();
-//		aBar.setTitle(name);
 		aBar.setDisplayShowTitleEnabled(false);
 		aBar.setDisplayHomeAsUpEnabled(true);
 
@@ -215,7 +214,7 @@ public class TransactionsListFragment extends SherlockListFragment implements
 		mAccountID = accountId;
 		refreshList();
 	}
-		
+	
 	public void refreshList(){
 		getLoaderManager().restartLoader(0, null, this);
 		
@@ -236,6 +235,12 @@ public class TransactionsListFragment extends SherlockListFragment implements
 		} catch (ClassCastException e) {
 			throw new ClassCastException(activity.toString() + " must implement OnAccountSelectedListener");
 		}	
+	}
+	
+	@Override
+	public void onResume() {
+		super.onResume();
+		((TransactionsActivity)getSherlockActivity()).updateNavigationSelection();
 	}
 	
 	@Override
