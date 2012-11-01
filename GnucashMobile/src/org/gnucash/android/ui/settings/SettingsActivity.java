@@ -28,7 +28,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
-import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
@@ -69,8 +68,7 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
 			Log.e("SettingsActivity", "Could not set version preference");
 			e.printStackTrace();
 		}
-		
-		
+				
 		ActionBar actionBar = getSupportActionBar();
 		actionBar.setTitle(R.string.title_settings);
 		actionBar.setHomeButtonEnabled(true);
@@ -78,6 +76,7 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
 		
 		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB){
 			addPreferencesFromResource(R.xml.fragment_general_preferences);
+			addPreferencesFromResource(R.xml.fragment_transaction_preferences);
 			addPreferencesFromResource(R.xml.fragment_about_preferences);
 			setDefaultCurrencyListener();
 			SharedPreferences manager = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
@@ -125,72 +124,5 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
 		pref.setSummary(defaultCurrency);
 		pref.setOnPreferenceChangeListener(this);
 	}
-	
-	/**
-	 * Fragment for displaying general preferences
-	 * @author Ngewi Fet <ngewif@gmail.com>
-	 *
-	 */
-	public static class GeneralPreferenceFragment extends PreferenceFragment implements OnPreferenceChangeListener{
-		
-		@Override
-		public void onCreate(Bundle savedInstanceState) {
-			super.onCreate(savedInstanceState);
-			
-			addPreferencesFromResource(R.xml.fragment_general_preferences);
-			ActionBar actionBar = ((SherlockPreferenceActivity) getActivity()).getSupportActionBar();
-			actionBar.setHomeButtonEnabled(true);
-			actionBar.setDisplayHomeAsUpEnabled(true);
-			actionBar.setTitle(R.string.title_general_prefs);
-			
-		}	
-		
-		@Override
-		public void onResume() {
-			super.onResume();
-			SharedPreferences manager = PreferenceManager.getDefaultSharedPreferences(getActivity());
-			String defaultCurrency = manager.getString(getString(R.string.key_default_currency), Money.DEFAULT_CURRENCY_CODE);
-			Preference pref = findPreference(getString(R.string.key_default_currency));
-			pref.setSummary(defaultCurrency);
-			pref.setOnPreferenceChangeListener(this);
-		}
 
-		@Override
-		public boolean onPreferenceChange(Preference preference, Object newValue) {
-			preference.setSummary(newValue.toString());
-			if (preference.getKey().equals(getString(R.string.key_default_currency))){
-				Money.DEFAULT_CURRENCY_CODE = newValue.toString();
-			}
-			return true;
-		}
-
-	}
-	
-	/**
-	 * Fragment for displaying information about the application
-	 * @author Ngewi Fet <ngewif@gmail.com>
-	 *
-	 */
-	public static class AboutPreferenceFragment extends PreferenceFragment{
-		
-		@Override
-		public void onCreate(Bundle savedInstanceState) {
-			super.onCreate(savedInstanceState);
-			addPreferencesFromResource(R.xml.fragment_about_preferences);
-			ActionBar actionBar = ((SherlockPreferenceActivity) getActivity()).getSupportActionBar();
-			actionBar.setHomeButtonEnabled(true);
-			actionBar.setDisplayHomeAsUpEnabled(true);
-			actionBar.setTitle(R.string.title_about_gnucash);
-						
-		}		
-		
-		@Override
-		public void onResume() {
-			super.onResume();
-			SharedPreferences manager = PreferenceManager.getDefaultSharedPreferences(getActivity());
-			String versionName = manager.getString(getString(R.string.key_build_version), "");
-			Preference pref = findPreference(getString(R.string.key_build_version));
-			pref.setSummary(versionName);
-		}
-	}
 }

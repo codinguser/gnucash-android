@@ -73,7 +73,7 @@ public class OfxFormatter {
 	/**
 	 * Header for OFX documents
 	 */
-	public static final String OFX_HEADER = "OFXHEADER=\"200\" VERSION=\"211\" SECURITY=\"NONE\" ENCODING=\"UTF-8\" OLDFILEUID=\"NONE\" NEWFILEUID=\"NONE\"";
+	public static final String OFX_HEADER = "OFXHEADER=\"200\" VERSION=\"211\" SECURITY=\"NONE\" OLDFILEUID=\"NONE\" NEWFILEUID=\"NONE\"";
 	
 	/**
 	 * Builds an XML representation of the {@link Account}s and {@link Transaction}s in the database 
