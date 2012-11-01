@@ -41,7 +41,7 @@
 	  </dependency>
 	  <dependency>
 		  <groupId>com.actionbarsherlock</groupId>
-		  <artifactId>library</artifactId>
+		  <artifactId>actionbarsherlock</artifactId>
 		  <version>${abs.version}</version>
 		  <type>apklib</type>
 	  </dependency>

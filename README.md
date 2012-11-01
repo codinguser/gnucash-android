@@ -3,19 +3,24 @@
 Gnucash Mobile for Android is companion application for desktop Gnucash designed for Android.
 It allows you to record transactions on-the-go and export them in the OFX format and later import the data into Gnucash for the desktop. You can create multiple accounts for transactions in Gnucash.
 
-The application supports Android 2.2 (API level 8) and above. 
+The application supports Android 2.2 Froyo (API level 8) and above. 
 
 
 # Installation
 
 There are different ways to get the Gnucash app for Android.
 
-You can also build and install the Gnucash for Android application from source. This is of particular interest for those who want to contribute or those who wish to live on the bleeding edge. 
 
 ### App Store
-Coming soon. Stay tuned….
+
+Gnucash for Android is now available in the Google Play Store
+<a href="http://play.google.com/store/apps/details?id=org.gnucash.android">
+  <img alt="Android app on Google Play" src="http://developer.android.com/images/brand/en_generic_rgb_wo_60.png" />
+</a>
 
 ### Eclipse
+
+You can also build and install the Gnucash for Android application from source. This is of particular interest for those who want to contribute or those who wish to live on the bleeding edge. 
 
 The Android SDK primarily supports Eclipse for development and consequently, all the subprojects in the GnucashMobile folder are Eclipse Android projects. In order to compile the application, you need to import the com_actionbarsherlock and GnucashMobile projects into your eclipse workspace. Then you can just invoke "Run as Android application" from eclipse in order to build and install the application on your Android device.
 
