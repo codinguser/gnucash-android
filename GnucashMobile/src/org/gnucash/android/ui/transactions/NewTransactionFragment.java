@@ -46,6 +46,7 @@ import android.app.TimePickerDialog.OnTimeSetListener;
 import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.SimpleCursorAdapter;
@@ -296,6 +297,11 @@ public class NewTransactionFragment extends SherlockFragment implements
 		mTimeTextView.setText(TIME_FORMATTER.format(time));
 		mTime = mDate = Calendar.getInstance();
 				
+		String typePref = PreferenceManager.getDefaultSharedPreferences(getActivity()).getString(getString(R.string.key_default_transaction_type), "DEBIT");
+		if (typePref.equals("CREDIT")){
+			mTransactionTypeButton.setChecked(false);
+		}
+		
 		final long accountId = getArguments().getLong(TransactionsListFragment.SELECTED_ACCOUNT_ID);
 		final int count = mCursorAdapter.getCount();
 		for (int pos = 0; pos < count; pos++) {
@@ -520,8 +526,7 @@ public class NewTransactionFragment extends SherlockFragment implements
 
 		@Override
 		public void afterTextChanged(Editable s) {
-			boolean valid = (mNameEditText.getText().length() > 0) && 
-					(mAmountEditText.getText().length() > 0);
+			boolean valid = (mAmountEditText.getText().length() > 0);
 			mSaveMenuItem.setEnabled(valid);
 		}
 

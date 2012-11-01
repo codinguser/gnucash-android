@@ -75,10 +75,10 @@
     <string name="title_choose_currency">Standaard munteenheid kiezen</string>
     <string name="title_default_currency">Standaard munteenheid</string>
     <string name="summary_default_currency">Standaard munteenheid voor nieuwe dagboeken</string>
-    <string name="label_permission_record_transactions">Staat het bewaren van transacties in Gnucash for Android toe</string>
-    <string name="label_permission_create_accounts">Staat het aanmaken van dagboeken in Gnucash for Android toe</string>
+    <string name="label_permission_record_transactions">Staat het bewaren van transacties in GnuCash for Android toe</string>
+    <string name="label_permission_create_accounts">Staat het aanmaken van dagboeken in GnuCash for Android toe</string>
     <string name="label_permission_group">Uw GnuCash data</string>
-    <string name="description_permission_group">Gnucash data lezen en bewerken</string>
+    <string name="description_permission_group">GnuCash data lezen en bewerken</string>
     <string name="label_permission_record_transaction">Transacties bewaren</string>
     <string name="label_permission_create_account">Dagboeken aanmaken</string>
     <string name="label_display_account">Dagboek tonen</string>
@@ -462,6 +462,16 @@
 	<string name="title_about">Over</string>
 	<string name="toast_error_exporting">Fout bij het schrijven van de OFX data naar bestand :\n</string>
 	<string name="toast_ofx_exported_to">OFX data ge&#235;exporteerd naar:\n</string>
-	<string name="title_export_email">Gnucash OFX export</string>
-	<string name="description_export_email">Gnucash OFX Export van </string>
+	<string name="title_export_email">GnuCash OFX export</string>
+	<string name="description_export_email">GnuCash OFX Export van </string>
+	<string name="header_transaction_settings">Transacties</string>
+	<string name="title_transaction_preferences">Transaction Preferences</string>
+	<string name="title_account_preferences">Account Preferences</string>
+	<string name="key_default_transaction_type">default_transaction_type</string>
+	<string name="title_default_transaction_type">Default Transaction Type</string>
+	<string name="summary_default_transaction_type">The type of transaction to use by default, CREDIT or DEBIT</string>
+	<string-array name="transaction_types">
+		<item>CREDIT</item>
+		<item>DEBIT</item>
+	</string-array>
 </resources>
