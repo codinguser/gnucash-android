@@ -2,6 +2,7 @@
 <!--
  Copyright (c) 2012 Ngewi Fet <ngewif@gmail.com>
  Copyright (c) 2012 Kjell Thomas Pedersen <kjelltp@gmail.com>
+ Copyright (c) 2012 Sigurd Gartmann <sigurdga-github@sigurdga.no>
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -18,13 +19,13 @@
 
 <resources>
     <string name="app_name">GnuCash</string>
-    <string name="title_add_account">Opprette konto</string>
-    <string name="title_edit_account">Editere konto</string>
+    <string name="title_add_account">Opprett konto</string>
+    <string name="title_edit_account">Rediger konto</string>
     <string name="info_details">Informasjon</string>
     <string name="title_settings">Innstillinger</string>
     <string name="menu_export_ofx">Eksport OFX</string>
-    <string name="description_add_transaction_icon">Legge til ny konto transaksjon</string>
-    <string name="label_no_accounts">Ingen konti å vise</string>
+    <string name="description_add_transaction_icon">Legg til ny kontotransaksjon</string>
+    <string name="label_no_accounts">Ingen kontoer å vise</string>
     <string name="label_account_name">Kontonavn</string>
     <string name="btn_cancel">Avbryt</string>
     <string name="btn_save">Lagre</string>
@@ -45,45 +46,45 @@
     <string name="toast_account_deleted">Konto slettet</string>
     <string name="title_confirm_delete">Bekreft sletting</string>
     <string name="delete_confirmation_message">Alle transaksjoner tilhørende denne kontoen vil også bli slettet</string>
-    <string name="title_edit_transaction">Rediger Transaksjon</string>
+    <string name="title_edit_transaction">Rediger transaksjon</string>
     <string name="label_transaction_description">Notat</string>
     <string name="menu_move">FLYTT</string>
     <string name="title_selected">%1$d valgt</string>
     <string name="label_transactions_total">Totalt beløp:</string>
-    <string name="label_export_destination">Export Mottaker</string>
-    <string name="title_export_dialog">Eksportere OFX</string>
-    <string name="option_export_all_transactions">Eksportere alle transaksjoner</string>
-    <string name="hint_export_choice">Standard vil kun nye transaksjoner siden siste eksportering bli eksportert.  Merk dette valget for å eksportere alle transaksjonene</string>
-    <string name="error_exporting">Feil ved eksportering av OFX data</string>    
+    <string name="label_export_destination">Eksportmottaker</string>
+    <string name="title_export_dialog">Eksporter OFX</string>
+    <string name="option_export_all_transactions">Eksporter alle transaksjoner</string>
+    <string name="hint_export_choice">Som standard vil kun nye transaksjoner siden siste eksportering bli eksportert.  Merk dette valget for å eksportere alle transaksjonene</string>
+    <string name="error_exporting">Feil ved eksportering av OFX-data</string>    
     <string name="btn_export">Eksporter</string>
-    <string name="option_delete_after_export">Slette etter eksportering</string>
+    <string name="option_delete_after_export">Slett etter eksportering</string>
     <string name="hint_delete_after_export">Alle eksporterte transaksjoner vil bli slettet etter eksportering</string>
-    <string name="title_settings">Instillinger</string>
+    <string name="title_settings">Innstillinger</string>
     <string-array name="export_destinations">
         <item>Delt fil&#8230;</item>
-        <item>SD Minnekort</item>
+        <item>SD-kort</item>
     </string-array>
     <string name="btn_move">Flytt</string>
     <string name="title_move_transactions">Flytt %1$d transaksjoner</string>
-    <string name="label_move_destination">Til Konto</string>
-    <string name="permission_access_sdcard">Aksessere Minnekort</string>
-    <string name="title_share_ofx_with">Del OFX eksport med&#8230;</string>
+    <string name="label_move_destination">Til konto</string>
+    <string name="permission_access_sdcard">Aksesser minnekort</string>
+    <string name="title_share_ofx_with">Del OFX-eksport med&#8230;</string>
     <string name="key_default_currency">default_currency</string>
-    <string name="toast_incompatible_currency">Kan ikke flytte transaksjonen(e).\nMottaker konto har en annen valuta</string>
+    <string name="toast_incompatible_currency">Kan ikke flytte transaksjonen(e).\nMottakerkonto har en annen valuta</string>
     <string name="header_general_settings">Generelt</string>
     <string name="header_about_gnucash">Om</string>
-    <string name="title_choose_currency">Velg standard valuta</string>
-    <string name="title_default_currency">Standard valuta</string>
-    <string name="summary_default_currency">Standard valuta for nye konti</string>
-    <string name="label_permission_record_transactions">Aktiverer inspilling av transaksjoner i Gnucash for Android</string>
+    <string name="title_choose_currency">Velg standardvaluta</string>
+    <string name="title_default_currency">Standardvaluta</string>
+    <string name="summary_default_currency">Standardvaluta for nye kontoer</string>
+    <string name="label_permission_record_transactions">Aktiverer innspilling av transaksjoner i Gnucash for Android</string>
     <string name="label_permission_create_accounts">Aktiverer oppretting av konti i Gnucash for Android</string>
-    <string name="label_permission_group">Dine GnuCash data</string>
-    <string name="description_permission_group">Lese og endre Gnucash data</string>
-    <string name="label_permission_record_transaction">spille inn transaksjoner</string>
-    <string name="label_permission_create_account">opprette konto</string>
+    <string name="label_permission_group">Dine GnuCash-data</string>
+    <string name="description_permission_group">Lese og endre Gnucash-data</string>
+    <string name="label_permission_record_transaction">spill inn transaksjoner</string>
+    <string name="label_permission_create_account">opprett konto</string>
     <string name="label_display_account">Vis konto</string>
-    <string name="btn_create_accounts">Opprette konti</string>
-    <string name="title_default_accounts">Velg kontoene som skal opprettes</string>
+    <string name="btn_create_accounts">Opprette kontoer</string>
+    <string name="title_default_accounts">Velg kontoer som skal opprettes</string>
     <string name="key_first_run">key_first_run</string>
     <string-array name="currency_names">
         <item>Afghani</item>
@@ -125,7 +126,7 @@
 		<item>Cuban Peso</item>
 		<item>Czech Koruna</item>
 		<item>Dalasi</item>
-		<item>Danish Krone</item>
+		<item>Danske kroner</item>
 		<item>Denar</item>
 		<item>Djibouti Franc</item>
 		<item>Dobra</item>
@@ -192,7 +193,7 @@
 		<item>New Zealand Dollar</item>
 		<item>Ngultrum</item>
 		<item>North Korean Won</item>
-		<item>Norske Kroner</item>
+		<item>Norske kroner</item>
 		<item>Nuevo Sol</item>
 		<item>Ouguiya</item>
 		<item>Pa’anga</item>
@@ -203,7 +204,7 @@
 		<item>Peso Uruguayo</item>
 		<item>Philippine Peso</item>
 		<item>Platinum</item>
-		<item>Pound Sterling</item>
+		<item>Engelske pund</item>
 		<item>Pula</item>
 		<item>Qatari Rial</item>
 		<item>Quetzal</item>
@@ -230,14 +231,14 @@
 		<item>Sucre</item>
 		<item>Sudanese Pound</item>
 		<item>Surinam Dollar</item>
-		<item>Swedish Krona</item>
+		<item>Svenske kroner</item>
 		<item>Swiss Franc</item>
 		<item>Syrian Pound</item>
 		<item>Taka</item>
 		<item>Tala</item>
 		<item>Tanzanian Shilling</item>
 		<item>Tenge</item>
-		<item>No currency</item>
+		<item>Uten valuta</item>
 		<item>Trinidad and Tobago Dollar</item>
 		<item>Tugrik</item>
 		<item>Tunisian Dinar</item>
@@ -249,7 +250,7 @@
 		<item>Unidad de Valor Real</item>
 		<item>Unidades de fomento</item>
 		<item>Uruguay Peso en Unidades Indexadas (URUIURUI)</item>
-		<item>US Dollar</item>
+		<item>Amerikanske dollar</item>
 		<item>Uzbekistan Sum</item>
 		<item>Vatu</item>
 		<item>WIR Euro</item>
@@ -449,7 +450,7 @@
 	</string-array>
 	<string name="error_no_accounts">Ingen kontoer finnes i Gnucash.\nOpprett en konto før du legger til en widget</string>
 	<string name="key_build_version">build_version</string>
-	<string name="title_build_version">Bygg version</string>
+	<string name="title_build_version">Byggversion</string>
 	<string name="title_license">Lisens</string>
 	<string name="summary_licence_details">Apache Lisens v2.0. Klikk for detaljer.</string>
 	<string name="title_general_prefs">Generelt</string>
@@ -459,14 +460,14 @@
 	<string name="key_about">about_gnucash</string>
 	<string name="title_about_gnucash">Om Gnucash</string>
 	<string name="summary_about_gnucash">GnucashMobile er en mobil regnskapsfører for Android.\nDen gir 
-muligheten til raskt og fleksibelt logge transaksjoner som kan eksporteres til OFX (Open Financial eXchange) 
+muligheten til å raskt og fleksibelt logge transaksjoner som kan eksporteres til OFX (Open Financial eXchange)-
 format og importeres i regnskapsprogrammet GnuCash for PC.</string> 
 	<string name="title_about">Om</string>
-	<string name="toast_error_exporting">Kunne ikke lagre OFX fil til :\n</string>
-	<string name="toast_ofx_exported_to">OFX fil eksportert til:\n</string>
-	<string name="title_export_email">Gnucash OFX eksportering</string>
-	<string name="description_export_email">Gnucash OFX eksportering til </string>
-	<string name="header_transaction_settings">Transaksjoner</string>
+	<string name="toast_error_exporting">Kunne ikke lagre OFX-fil til :\n</string>
+	<string name="toast_ofx_exported_to">OFX-fil eksportert til:\n</string>
+	<string name="title_export_email">Gnucash OFX-eksportering</string>
+	<string name="description_export_email">Gnucash OFX-eksportering til </string>
+	<string name="header_transaction_settings">Transazione</string>
 	<string name="title_transaction_preferences">Transaction Preferences</string>
 	<string name="title_account_preferences">Account Preferences</string>
 	<string name="key_default_transaction_type">default_transaction_type</string>
