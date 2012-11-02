@@ -464,4 +464,14 @@
 	<string name="toast_ofx_exported_to">Fichier OFX export&#233; en:\n</string>
 	<string name="title_export_email">Gnucash OFX export</string>
 	<string name="description_export_email">Gnucash OFX Export von </string>
+	<string name="header_transaction_settings">Transactions</string>
+	<string name="title_transaction_preferences">Transaction Preferences</string>
+	<string name="title_account_preferences">Account Preferences</string>
+	<string name="key_default_transaction_type">default_transaction_type</string>
+	<string name="title_default_transaction_type">Default Transaction Type</string>
+	<string name="summary_default_transaction_type">The type of transaction to use by default, CREDIT or DEBIT</string>
+	<string-array name="transaction_types">
+		<item>CREDIT</item>
+		<item>DEBIT</item>
+	</string-array>
 </resources>

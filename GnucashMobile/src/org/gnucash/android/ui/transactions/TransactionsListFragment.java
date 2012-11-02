@@ -23,7 +23,6 @@ import java.util.Locale;
 
 import org.gnucash.android.R;
 import org.gnucash.android.data.Money;
-import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.DatabaseAdapter;
 import org.gnucash.android.db.DatabaseCursorLoader;
 import org.gnucash.android.db.DatabaseHelper;
@@ -202,20 +201,20 @@ public class TransactionsListFragment extends SherlockListFragment implements
 	public void onActivityCreated(Bundle savedInstanceState) {		
 		super.onActivityCreated(savedInstanceState);
 		
-		//we have already a database open which is cached, so little overhead
-		AccountsDbAdapter accAdapter = new AccountsDbAdapter(getActivity());
-		String name = accAdapter.getName(mAccountID);
-		accAdapter.close();
-		
 		ActionBar aBar = getSherlockActivity().getSupportActionBar();
-		aBar.setTitle(name);
+		aBar.setDisplayShowTitleEnabled(false);
 		aBar.setDisplayHomeAsUpEnabled(true);
 
 		setHasOptionsMenu(true);		
 		refreshList();
 		
 	}
-		
+	
+	public void refreshList(long accountId){
+		mAccountID = accountId;
+		refreshList();
+	}
+	
 	public void refreshList(){
 		getLoaderManager().restartLoader(0, null, this);
 		
@@ -236,6 +235,12 @@ public class TransactionsListFragment extends SherlockListFragment implements
 		} catch (ClassCastException e) {
 			throw new ClassCastException(activity.toString() + " must implement OnAccountSelectedListener");
 		}	
+	}
+	
+	@Override
+	public void onResume() {
+		super.onResume();
+		((TransactionsActivity)getSherlockActivity()).updateNavigationSelection();
 	}
 	
 	@Override

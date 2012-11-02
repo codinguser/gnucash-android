@@ -15,10 +15,11 @@
  limitations under the License.
 -->
 <preference-headers xmlns:android="http://schemas.android.com/apk/res/android">
-    <header android:fragment="org.gnucash.android.ui.settings.SettingsActivity$GeneralPreferenceFragment"
-        android:icon="@drawable/action_settings_holo_light"
-        android:title="@string/header_general_settings" />
-    <header android:fragment="org.gnucash.android.ui.settings.SettingsActivity$AboutPreferenceFragment"
+    <header android:fragment="org.gnucash.android.ui.settings.GeneralPreferenceFragment"        
+        android:title="@string/header_general_settings" />    
+    <header android:fragment="org.gnucash.android.ui.settings.TransactionsPreferenceFragment" 
+        android:title="@string/header_transaction_settings" />
+    <header android:fragment="org.gnucash.android.ui.settings.AboutPreferenceFragment"
         android:icon="@drawable/action_about_holo_light"
         android:title="@string/header_about_gnucash" />
 </preference-headers>
