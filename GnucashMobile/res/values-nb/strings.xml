@@ -467,14 +467,14 @@ format og importeres i regnskapsprogrammet GnuCash for PC.</string>
 	<string name="toast_ofx_exported_to">OFX-fil eksportert til:\n</string>
 	<string name="title_export_email">Gnucash OFX-eksportering</string>
 	<string name="description_export_email">Gnucash OFX-eksportering til </string>
-	<string name="header_transaction_settings">Transazione</string>
-	<string name="title_transaction_preferences">Transaction Preferences</string>
-	<string name="title_account_preferences">Account Preferences</string>
+	<string name="header_transaction_settings">Transaksjoner</string>
+	<string name="title_transaction_preferences">Transaksjonsinnstillinger</string>
+	<string name="title_account_preferences">Kontoinnstillinger</string>
 	<string name="key_default_transaction_type">default_transaction_type</string>
-	<string name="title_default_transaction_type">Default Transaction Type</string>
-	<string name="summary_default_transaction_type">The type of transaction to use by default, CREDIT or DEBIT</string>
+	<string name="title_default_transaction_type">Standard transaksjonstype</string>
+	<string name="summary_default_transaction_type">Transaksjonstypen som skal brukes som standard, KREDIT eller DEBET</string>
 	<string-array name="transaction_types">
-		<item>CREDIT</item>
-		<item>DEBIT</item>
+		<item>KREDIT</item>
+		<item>DEBET</item>
 	</string-array>
 </resources>
