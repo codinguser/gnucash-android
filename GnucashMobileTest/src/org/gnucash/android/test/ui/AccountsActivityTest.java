@@ -191,7 +191,7 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
 		
 		mSolo.waitForDialogToClose(1000);
 		
-		long id = accDbAdapter.fetchAccountWithUID("to-be-deleted");
+		long id = accDbAdapter.getAccountID("to-be-deleted");
 		assertEquals(-1, id);
 		
 		TransactionsDbAdapter transDbAdapter = new TransactionsDbAdapter(getActivity());

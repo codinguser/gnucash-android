@@ -82,18 +82,19 @@ public class TransactionsActivity extends SherlockFragmentActivity implements
 	private OnNavigationListener mTransactionListNavigationListener = new OnNavigationListener() {
 
 		  @Override
-		  public boolean onNavigationItemSelected(int position, long itemId) {
-		    mAccountId = itemId;
-		    
+		  public boolean onNavigationItemSelected(int position, long itemId) {		    
+			mAccountId = itemId;
 		    FragmentManager fragmentManager = getSupportFragmentManager();
-
-			NewTransactionFragment newTransactionFragment = (NewTransactionFragment) fragmentManager
-					.findFragmentByTag(TransactionsActivity.FRAGMENT_NEW_TRANSACTION);			
-			if (newTransactionFragment != null){
-				newTransactionFragment.refreshSelectedAccount(itemId);
-				return true;
-			}
-			
+		    
+		    //inform new accounts fragment that account was changed
+		    NewTransactionFragment newTransactionsFragment = (NewTransactionFragment) fragmentManager
+					.findFragmentByTag(FRAGMENT_NEW_TRANSACTION);	
+		    if (newTransactionsFragment != null){
+		    	newTransactionsFragment.onAccountChanged(itemId);
+		    	//if we do not return, the transactions list fragment could also be found (although it's not visible)
+		    	return true; 
+		    }
+		    
 			TransactionsListFragment transactionsListFragment = (TransactionsListFragment) fragmentManager
 					.findFragmentByTag(FRAGMENT_TRANSACTIONS_LIST);						
 			if (transactionsListFragment != null) {
@@ -183,7 +184,7 @@ public class TransactionsActivity extends SherlockFragmentActivity implements
 		Cursor accountsCursor = mAccountsDbAdapter.fetchAllAccounts();
 		accountsCursor.moveToFirst();
 		do {
-			long id = accountsCursor.getLong(DatabaseAdapter.COLUMN_ROW_ID);
+			long id = accountsCursor.getLong(DatabaseAdapter.COLUMN_ROW_ID);			
 			if (mAccountId == id) {
 				getSupportActionBar().setSelectedNavigationItem(i);
 				break;
@@ -220,6 +221,14 @@ public class TransactionsActivity extends SherlockFragmentActivity implements
 	protected void onDestroy() {
 		super.onDestroy();
 		mAccountsDbAdapter.close();
+	}
+	
+	/**
+	 * Returns the database row ID of the current account
+	 * @return Database row ID of the current account
+	 */
+	public long getCurrentAccountID(){
+		return mAccountId;
 	}
 	
 	/**

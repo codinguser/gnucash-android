@@ -106,10 +106,7 @@ public class TransactionsActivityTest extends
 		expectedValue = NewTransactionFragment.TIME_FORMATTER.format(new Date(mTransactionTimeMillis));
 		actualValue = mSolo.getText(7).getText().toString();
 		assertEquals(expectedValue, actualValue);
-		Spinner spinner = mSolo.getCurrentSpinners().get(0);
 		
-		actualValue = ((Cursor)spinner.getSelectedItem()).getString(DatabaseAdapter.COLUMN_NAME);
-		assertEquals(DUMMY_ACCOUNT_NAME, actualValue);
 	}
 	
 	public void testAddTransaction(){	
@@ -183,10 +180,6 @@ public class TransactionsActivityTest extends
 		expectedValue = NewTransactionFragment.TIME_FORMATTER.format(transaction.getTimeMillis());
 		actualValue = mSolo.getText(7).getText().toString();
 		assertEquals(expectedValue, actualValue);
-		Spinner spinner = mSolo.getCurrentSpinners().get(0);
-		
-		actualValue = ((Cursor)spinner.getSelectedItem()).getString(DatabaseAdapter.COLUMN_UID);		
-		assertEquals(transaction.getAccountUID(), actualValue);
 	}
 	
 	public void testOpenTransactionEditShouldNotModifyTransaction(){

@@ -73,7 +73,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 		contentValues.put(DatabaseHelper.KEY_CURRENCY_CODE, account.getCurrency().getCurrencyCode());
 		
 		long rowId = -1;
-		if ((rowId = fetchAccountWithUID(account.getUID())) > 0){
+		if ((rowId = getAccountID(account.getUID())) > 0){
 			//if account already exists, then just update
 			Log.d(TAG, "Updating existing account");
 			mDb.update(DatabaseHelper.ACCOUNTS_TABLE_NAME, contentValues, DatabaseHelper.KEY_ROW_ID + " = " + rowId, null);
@@ -162,7 +162,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 	 * @param uid Unique Identifier of account to be retrieved
 	 * @return Database row ID of account with UID <code>uid</code>
 	 */
-	public long fetchAccountWithUID(String uid){
+	public long getAccountID(String uid){
 		Cursor cursor = mDb.query(DatabaseHelper.ACCOUNTS_TABLE_NAME, 
 				new String[] {DatabaseHelper.KEY_ROW_ID, DatabaseHelper.KEY_UID}, 
 				DatabaseHelper.KEY_UID + " = '" + uid + "'", null, null, null, null);

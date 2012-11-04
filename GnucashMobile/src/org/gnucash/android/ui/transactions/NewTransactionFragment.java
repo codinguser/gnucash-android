@@ -33,7 +33,6 @@ import org.gnucash.android.data.Money;
 import org.gnucash.android.data.Transaction;
 import org.gnucash.android.data.Transaction.TransactionType;
 import org.gnucash.android.db.AccountsDbAdapter;
-import org.gnucash.android.db.DatabaseHelper;
 import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.ui.DatePickerDialogFragment;
 import org.gnucash.android.ui.TimePickerDialogFragment;
@@ -44,12 +43,10 @@ import android.app.DatePickerDialog.OnDateSetListener;
 import android.app.TimePickerDialog;
 import android.app.TimePickerDialog.OnTimeSetListener;
 import android.content.Context;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.widget.SimpleCursorAdapter;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -57,13 +54,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.ToggleButton;
@@ -157,34 +151,13 @@ public class NewTransactionFragment extends SherlockFragment implements
 	 * {@link Calendar} object holding the set time
 	 */
 	private Calendar mTime;
-	
-	/**
-	 * Spinner for selecting the account for the transaction
-	 */
-	private Spinner mAccountsSpinner;
-	
-	/**
-	 * Accounts database adapter. 
-	 * Used for getting list of transactions to populate the {@link #mAccountsSpinner}
-	 */
-	private AccountsDbAdapter mAccountsDbAdapter;
-	
-	/**
-	 * Cursor adapter for {@link #mAccountsSpinner}
-	 */
-	private SimpleCursorAdapter mCursorAdapter; 
-	
+
 	/**
 	 * ActionBar Menu item for saving the transaction
 	 * A transaction needs atleast a name and amount, only then is the save menu item enabled
 	 */
 	private MenuItem mSaveMenuItem;
-	
-	/**
-	 * Cursor for accounts list spinner
-	 */
-	private Cursor mCursor;
-	
+
 	/**
 	 * Create the view and retrieve references to the UI elements
 	 */
@@ -199,7 +172,6 @@ public class NewTransactionFragment extends SherlockFragment implements
 		mTimeTextView = (TextView) v.findViewById(R.id.input_time);
 		mAmountEditText = (EditText) v.findViewById(R.id.input_transaction_amount);		
 		mCurrencyTextView = (TextView) v.findViewById(R.id.currency_symbol);
-		mAccountsSpinner = (Spinner) v.findViewById(R.id.input_accounts_spinner);
 		mTransactionTypeButton = (ToggleButton) v.findViewById(R.id.input_transaction_type);
 		
 		return v;
@@ -214,34 +186,6 @@ public class NewTransactionFragment extends SherlockFragment implements
 		actionBar.setDisplayHomeAsUpEnabled(true);
 		actionBar.setDisplayShowTitleEnabled(false);
 		
-		String[] from = new String[] {DatabaseHelper.KEY_NAME};
-		int[] to = new int[] {android.R.id.text1};
-		mAccountsDbAdapter = new AccountsDbAdapter(getActivity());
-		mCursor = mAccountsDbAdapter.fetchAllAccounts();
-		
-		mCursorAdapter = new SimpleCursorAdapter(getActivity(), 
-				android.R.layout.simple_spinner_item, 
-				mCursor,
-				from,
-				to, 
-				0);
-		mCursorAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-		mAccountsSpinner.setAdapter(mCursorAdapter);
-		mAccountsSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
-
-			@Override
-			public void onItemSelected(AdapterView<?> parent, View view,
-					int position, long id) {
-				String currencyCode = mAccountsDbAdapter.getCurrency(id);
-				Currency currency = Currency.getInstance(currencyCode);
-				mCurrencyTextView.setText(currency.getSymbol(Locale.getDefault()));
-			}
-
-			@Override
-			public void onNothingSelected(AdapterView<?> parent) {
-				// nothing to see here, move along				
-			}
-		});
 		mTransactionId = getArguments().getLong(SELECTED_TRANSACTION_ID);
 		mTransactionsDbAdapter = new TransactionsDbAdapter(getActivity());
 		mTransaction = mTransactionsDbAdapter.getTransaction(mTransactionId);
@@ -271,21 +215,11 @@ public class NewTransactionFragment extends SherlockFragment implements
 		cal.setTimeInMillis(mTransaction.getTimeMillis());
 		mDate = mTime = cal;
 				
-		final long accountId = mAccountsDbAdapter.fetchAccountWithUID(mTransaction.getAccountUID());
-		final int count = mCursorAdapter.getCount();
-		for (int pos = 0; pos < count; pos++) {
-			if (mCursorAdapter.getItemId(pos) == accountId)
-				mAccountsSpinner.setSelection(pos);
-		}
 		
+		final long accountId = mTransactionsDbAdapter.getAccountID(mTransaction.getAccountUID());
 		String code = mTransactionsDbAdapter.getCurrencyCode(accountId);
 		Currency accountCurrency = Currency.getInstance(code);
 		mCurrencyTextView.setText(accountCurrency.getSymbol());
-		
-		ActionBar actionBar = getSherlockActivity().getSupportActionBar();
-		actionBar.setHomeButtonEnabled(true);
-		actionBar.setDisplayHomeAsUpEnabled(true);
-		actionBar.setTitle(R.string.title_edit_transaction);
 	}
 	
 	/**
@@ -303,24 +237,12 @@ public class NewTransactionFragment extends SherlockFragment implements
 		}
 				
 		final long accountId = getArguments().getLong(TransactionsListFragment.SELECTED_ACCOUNT_ID);
-		refreshSelectedAccount(accountId);
-		
 		String code = Money.DEFAULT_CURRENCY_CODE;
 		if (accountId != 0)
 			code = mTransactionsDbAdapter.getCurrencyCode(accountId);
 		
-			
 		Currency accountCurrency = Currency.getInstance(code);
 		mCurrencyTextView.setText(accountCurrency.getSymbol(Locale.getDefault()));
-	}
-	
-	public void refreshSelectedAccount(long accountId){
-		for (int pos = 0; pos < mCursorAdapter.getCount(); pos++) {
-			if (mCursorAdapter.getItemId(pos) == accountId){
-				mAccountsSpinner.setSelection(pos);				
-				break;
-			}
-		}
 	}
 	
 	/**
@@ -393,6 +315,14 @@ public class NewTransactionFragment extends SherlockFragment implements
 		});
 	}	
 	
+	public void onAccountChanged(long newAccountId){
+		AccountsDbAdapter accountsDbAdapter = new AccountsDbAdapter(getActivity());
+		String currencyCode = accountsDbAdapter.getCurrency(newAccountId);
+		Currency currency = Currency.getInstance(currencyCode);
+		mCurrencyTextView.setText(currency.getSymbol(Locale.getDefault()));
+		accountsDbAdapter.close();
+	}
+	
 	/**
 	 * Collects information from the fragment views and uses it to create 
 	 * and save a transaction
@@ -409,7 +339,7 @@ public class NewTransactionFragment extends SherlockFragment implements
 		String description = mDescriptionEditText.getText().toString();
 		BigDecimal amountBigd = parseInputToDecimal(mAmountEditText.getText().toString());
 		
-		long accountID 	= mAccountsSpinner.getSelectedItemId();
+		long accountID 	= ((TransactionsActivity) getSherlockActivity()).getCurrentAccountID(); //mAccountsSpinner.getSelectedItemId();
 		Currency currency = Currency.getInstance(mTransactionsDbAdapter.getCurrencyCode(accountID));
 		Money amount 	= new Money(amountBigd, currency);
 		TransactionType type = mTransactionTypeButton.isChecked() ? TransactionType.DEBIT : TransactionType.CREDIT;
@@ -430,15 +360,18 @@ public class NewTransactionFragment extends SherlockFragment implements
 		//update widgets, if any
 		WidgetConfigurationActivity.updateAllWidgets(getActivity().getApplicationContext());
 		
-		getSherlockActivity().getSupportFragmentManager().popBackStack();
+		if (getActivity().getSupportFragmentManager().getBackStackEntryCount() == 0){
+			//means we got here directly from the accounts list activity, need to finish
+			getActivity().finish();
+		} else {
+			//go back to transactions list
+			getSherlockActivity().getSupportFragmentManager().popBackStack();
+		}
 	}
 
 	@Override
 	public void onDestroyView() {
 		super.onDestroyView();
-		if (mCursor != null)
-			mCursor.close();
-		mAccountsDbAdapter.close();
 		mTransactionsDbAdapter.close();
 	}
 	
@@ -562,11 +495,7 @@ public class NewTransactionFragment extends SherlockFragment implements
 		private String current = "0";
 		
 		@Override
-		public void afterTextChanged(Editable s) {	
-						
-//			String cleanString = stripCurrencyFormatting(s.toString());
-//			if (cleanString.length() == 0)
-//				return;
+		public void afterTextChanged(Editable s) {
 			if (s.length() == 0)
 				return;
 			

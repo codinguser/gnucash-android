@@ -206,8 +206,6 @@ public class TransactionsListFragment extends SherlockListFragment implements
 		aBar.setDisplayHomeAsUpEnabled(true);
 
 		setHasOptionsMenu(true);		
-		refreshList();
-		
 	}
 	
 	public void refreshList(long accountId){
@@ -240,7 +238,8 @@ public class TransactionsListFragment extends SherlockListFragment implements
 	@Override
 	public void onResume() {
 		super.onResume();
-		((TransactionsActivity)getSherlockActivity()).updateNavigationSelection();
+		((TransactionsActivity)getSherlockActivity()).updateNavigationSelection();		
+		refreshList(((TransactionsActivity)getActivity()).getCurrentAccountID());
 	}
 	
 	@Override
