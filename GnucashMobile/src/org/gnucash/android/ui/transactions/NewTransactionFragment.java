@@ -66,6 +66,7 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
+import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import com.actionbarsherlock.app.ActionBar;
@@ -164,6 +165,11 @@ public class NewTransactionFragment extends SherlockFragment implements
 	private Spinner mAccountsSpinner;
 	
 	/**
+	 * Spinner for selecting the account to split the transaction with
+	 */
+	private Spinner mSplitAccountSpinner;
+	
+	/**
 	 * Accounts database adapter. 
 	 * Used for getting list of transactions to populate the {@link #mAccountsSpinner}
 	 */
@@ -200,6 +206,7 @@ public class NewTransactionFragment extends SherlockFragment implements
 		mAmountEditText = (EditText) v.findViewById(R.id.input_transaction_amount);		
 		mCurrencyTextView = (TextView) v.findViewById(R.id.currency_symbol);
 		mAccountsSpinner = (Spinner) v.findViewById(R.id.input_accounts_spinner);
+		mSplitAccountSpinner = (Spinner) v.findViewById(R.id.input_split_accounts_spinner);
 		mTransactionTypeButton = (ToggleButton) v.findViewById(R.id.input_transaction_type);
 		
 		return v;
@@ -226,7 +233,7 @@ public class NewTransactionFragment extends SherlockFragment implements
 				to, 
 				0);
 		mCursorAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-		mAccountsSpinner.setAdapter(mCursorAdapter);
+		mAccountsSpinner.setAdapter(mCursorAdapter);		
 		mAccountsSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
 
 			@Override
@@ -242,6 +249,9 @@ public class NewTransactionFragment extends SherlockFragment implements
 				// nothing to see here, move along				
 			}
 		});
+		
+		mSplitAccountSpinner.setAdapter(mCursorAdapter);
+		
 		mTransactionId = getArguments().getLong(SELECTED_TRANSACTION_ID);
 		mTransactionsDbAdapter = new TransactionsDbAdapter(getActivity());
 		mTransaction = mTransactionsDbAdapter.getTransaction(mTransactionId);
@@ -272,10 +282,14 @@ public class NewTransactionFragment extends SherlockFragment implements
 		mDate = mTime = cal;
 				
 		final long accountId = mAccountsDbAdapter.fetchAccountWithUID(mTransaction.getAccountUID());
-		final int count = mCursorAdapter.getCount();
-		for (int pos = 0; pos < count; pos++) {
-			if (mCursorAdapter.getItemId(pos) == accountId)
-				mAccountsSpinner.setSelection(pos);
+		refreshSelectedAccount(accountId);
+		
+		String splitAccountUID = mTransaction.getSplitAccountUID();		
+		if (splitAccountUID != null){
+			final long splitAccountId = mAccountsDbAdapter.fetchAccountWithUID(splitAccountUID);
+			refreshSelectedSplitAccount(splitAccountId);
+		} else {
+			refreshSelectedSplitAccount(accountId);
 		}
 		
 		String code = mTransactionsDbAdapter.getCurrencyCode(accountId);
@@ -304,6 +318,7 @@ public class NewTransactionFragment extends SherlockFragment implements
 				
 		final long accountId = getArguments().getLong(TransactionsListFragment.SELECTED_ACCOUNT_ID);
 		refreshSelectedAccount(accountId);
+		refreshSelectedSplitAccount(accountId);
 		
 		String code = Money.DEFAULT_CURRENCY_CODE;
 		if (accountId != 0)
@@ -315,11 +330,26 @@ public class NewTransactionFragment extends SherlockFragment implements
 	}
 	
 	public void refreshSelectedAccount(long accountId){
+		long previousAccountId = mAccountsSpinner.getSelectedItemId();
 		for (int pos = 0; pos < mCursorAdapter.getCount(); pos++) {
 			if (mCursorAdapter.getItemId(pos) == accountId){
 				mAccountsSpinner.setSelection(pos);				
 				break;
 			}
+		}
+		
+		//if accountId and split account Id were the same, then make them the same.
+		//this avoid users inadvertently creating split transactions
+		long splitAccountId = mSplitAccountSpinner.getSelectedItemId();
+		if (previousAccountId == splitAccountId){
+			refreshSelectedSplitAccount(accountId);
+		}
+	}
+	
+	public void refreshSelectedSplitAccount(long splitAccountId){
+		for (int pos = 0; pos < mCursorAdapter.getCount(); pos++) {
+			if (mCursorAdapter.getItemId(pos) == splitAccountId)
+				mSplitAccountSpinner.setSelection(pos);
 		}
 	}
 	
@@ -408,8 +438,10 @@ public class NewTransactionFragment extends SherlockFragment implements
 		String name = mNameEditText.getText().toString();
 		String description = mDescriptionEditText.getText().toString();
 		BigDecimal amountBigd = parseInputToDecimal(mAmountEditText.getText().toString());
-		
+				
 		long accountID 	= mAccountsSpinner.getSelectedItemId();
+		long splitAccountId = mSplitAccountSpinner.getSelectedItemId();
+		
 		Currency currency = Currency.getInstance(mTransactionsDbAdapter.getCurrencyCode(accountID));
 		Money amount 	= new Money(amountBigd, currency);
 		TransactionType type = mTransactionTypeButton.isChecked() ? TransactionType.DEBIT : TransactionType.CREDIT;
@@ -421,6 +453,9 @@ public class NewTransactionFragment extends SherlockFragment implements
 			mTransaction = new Transaction(amount, name, type);
 		}
 		mTransaction.setAccountUID(mTransactionsDbAdapter.getAccountUID(accountID));
+		if(splitAccountId != accountID){
+			mTransaction.setSplitAccountUID(mTransactionsDbAdapter.getAccountUID(splitAccountId));
+		}
 		mTransaction.setTime(cal.getTimeInMillis());
 		mTransaction.setDescription(description);
 		

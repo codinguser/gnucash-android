@@ -246,6 +246,7 @@ public class Account {
 	 * @return {@link Money} aggregate amount of all transactions in account.
 	 */
 	public Money getBalance(){
+		//TODO: Consider split transactions
 		Money balance = new Money(new BigDecimal(0), this.mCurrency);
 		for (Transaction transx : mTransactionsList) {
 			balance = balance.add(transx.getAmount());		

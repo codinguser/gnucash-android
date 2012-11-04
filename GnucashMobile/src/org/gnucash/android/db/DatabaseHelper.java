@@ -43,7 +43,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	 * Database version.
 	 * With any change to the database schema, this number must increase
 	 */
-	private static final int DATABASE_VERSION = 1;
+	private static final int DATABASE_VERSION = 2;
 	
 	/**
 	 * Name of accounts table
@@ -96,6 +96,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	public static final String KEY_ACCOUNT_UID 	= "account_uid";
 	
 	/**
+	 * Account with which this transaction is split
+	 */
+	public static final String KEY_SPLIT_ACCOUNT_UID 	= "split_account_uid";
+	
+	/**
 	 * Transaction description database column
 	 */
 	public static final String KEY_DESCRIPTION 	= "description";
@@ -139,9 +144,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			+ KEY_AMOUNT 		+ " varchar(255) not null, "
 			+ KEY_DESCRIPTION 	+ " text, "
 			+ KEY_TIMESTAMP 	+ " integer not null, "
-			+ KEY_ACCOUNT_UID 	+ " varchar(255) not null, "
+			+ KEY_ACCOUNT_UID 	+ " varchar(255) not null, "			
 			+ KEY_EXPORTED 		+ " tinyint default 0, "
+			+ KEY_SPLIT_ACCOUNT_UID 	+ " varchar(255), "
 			+ "FOREIGN KEY (" 	+ KEY_ACCOUNT_UID + ") REFERENCES " + ACCOUNTS_TABLE_NAME + " (" + KEY_UID + "), "
+			+ "FOREIGN KEY (" 	+ KEY_SPLIT_ACCOUNT_UID + ") REFERENCES " + ACCOUNTS_TABLE_NAME + " (" + KEY_UID + "), "
 			+ "UNIQUE (" 		+ KEY_UID + ") " 
 			+ ");";
 
@@ -166,15 +173,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				+ oldVersion + " to " + newVersion
 				+ " which will destroy all old data");
 		
-		if (oldVersion < newVersion){
-			/*
-			Log.i("DatabaseHelper", "Upgrading database to version " + newVersion);
-			if (oldVersion == 1 && newVersion == 2){				
+		if (oldVersion < newVersion){			
+			Log.i(TAG, "Upgrading database to version " + newVersion);
+			if (oldVersion == 1 && newVersion == 2){		
+				Log.i(TAG, "Adding column for splitting transactions");
 				String addColumnSql = "ALTER TABLE " + TRANSACTIONS_TABLE_NAME + 
-									" ADD COLUMN " + KEY_EXPORTED + " tinyint default 0";
+									" ADD COLUMN " + KEY_SPLIT_ACCOUNT_UID + " varchar(255) default 0";
 				db.execSQL(addColumnSql);
 			}
-			*/
+			
 		} else {
 			Log.i(TAG, "Cannot downgrade database.");
 			/*

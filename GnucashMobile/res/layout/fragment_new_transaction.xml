@@ -136,6 +136,7 @@
 	   </LinearLayout>
 	    <LinearLayout android:layout_width="match_parent"
 	        android:layout_height="wrap_content"
+	        android:layout_marginBottom="@dimen/dialog_padding"
 	        android:orientation="vertical" >
 	        
 			<TextView
@@ -151,6 +152,22 @@
 		        android:layout_height="wrap_content" 
 		        android:minHeight="?android:attr/listPreferredItemHeight" />
 	    </LinearLayout>
-	
+		<LinearLayout android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:orientation="vertical" >
+	        
+			<TextView
+			    android:id="@+id/label_split_account"
+			    android:text="@string/label_split_account"
+			    android:layout_height="wrap_content"
+			    android:layout_width="wrap_content"
+			    android:layout_marginBottom="-8dip"
+			    style="@style/TextAppearance.EditTransaction_LabelSmall" />
+		    <Spinner
+		        android:id="@+id/input_split_accounts_spinner"        
+		        android:layout_width="match_parent"
+		        android:layout_height="wrap_content" 
+		        android:minHeight="?android:attr/listPreferredItemHeight" />
+	    </LinearLayout>
 	</LinearLayout>
 </ScrollView>

@@ -83,6 +83,12 @@ public class Transaction {
 	private String mAccountUID = null;
 	
 	/**
+	 * Unique Identifier of the account with which this transaction is split.
+	 * This value is null by default for transactions which are not split
+	 */
+	private String mSplitAccountUID = null;
+	
+	/**
 	 * Flag indicating if this transaction has been exported before or not
 	 * The transactions are typically exported as bank statement in the OFX format
 	 */
@@ -298,6 +304,23 @@ public class Transaction {
 	public String getUID() {
 		return mTransactionUID;
 	}
+
+	/**
+	 * Returns the Unique Identifier of account with which this transaction is split
+	 * @return Unique Identifier of account with which this transaction is split
+	 */
+	public String getSplitAccountUID() {
+		return mSplitAccountUID;
+	}
+
+	/**
+	 * Sets the account UID with which to split this transaction
+	 * @param splitAccountUID Unique Identifier to set
+	 */
+	public void setSplitAccountUID(String splitAccountUID) {
+		this.mSplitAccountUID = splitAccountUID;
+	}
+	
 
 	/**
 	 * Returns UID of account to which this transaction belongs

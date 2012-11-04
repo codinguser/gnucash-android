@@ -456,6 +456,13 @@ public class TransactionsListFragment extends SherlockListFragment implements
 					cursor.getString(DatabaseAdapter.COLUMN_AMOUNT), 
 					mTransactionsDbAdapter.getCurrencyCode(mAccountID));
 			
+			//negate any transactions if they only belong to this account as split
+			String splitAccountUID = cursor.getString(DatabaseAdapter.COLUMN_SPLIT_ACCOUNT_UID);
+			if (splitAccountUID != null 
+					&& mTransactionsDbAdapter.isSameAccount(mAccountID, splitAccountUID)){
+				amount = amount.negate();				
+			}
+				
 			TextView tramount = (TextView) view.findViewById(R.id.transaction_amount);
 			tramount.setText(amount.formattedString(Locale.getDefault()));
 						

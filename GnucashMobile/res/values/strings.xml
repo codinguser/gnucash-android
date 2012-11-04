@@ -473,4 +473,5 @@
 		<item>CREDIT</item>
 		<item>DEBIT</item>
 	</string-array>
+	<string name="label_split_account">Split with account</string>
 </resources>

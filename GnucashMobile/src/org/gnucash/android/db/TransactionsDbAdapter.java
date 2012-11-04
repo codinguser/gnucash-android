@@ -28,6 +28,7 @@ import org.gnucash.android.data.Transaction;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteStatement;
 import android.util.Log;
 
 /**
@@ -64,6 +65,7 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 		contentValues.put(DatabaseHelper.KEY_TIMESTAMP, transaction.getTimeMillis());
 		contentValues.put(DatabaseHelper.KEY_DESCRIPTION, transaction.getDescription());
 		contentValues.put(DatabaseHelper.KEY_EXPORTED, transaction.isExported() ? 1 : 0);
+		contentValues.put(DatabaseHelper.KEY_SPLIT_ACCOUNT_UID, transaction.getSplitAccountUID());
 		
 		long rowId = -1;
 		if ((rowId = fetchTransactionWithUID(transaction.getUID())) > 0){
@@ -119,13 +121,15 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 	
 	/**
 	 * Returns a cursor to a set of all transactions for the account with UID <code>accountUID</code>
+	 * or for which this account is the split account i.e <code>accountUID</code> is split account UID
 	 * @param accountUID UID of the account whose transactions are to be retrieved
 	 * @return Cursor holding set of transactions for particular account
 	 */
 	public Cursor fetchAllTransactionsForAccount(String accountUID){
 		Cursor cursor = mDb.query(DatabaseHelper.TRANSACTIONS_TABLE_NAME, 
 				null, 
-				DatabaseHelper.KEY_ACCOUNT_UID + " = '" + accountUID + "'", 
+				"(" + DatabaseHelper.KEY_ACCOUNT_UID + " = '" + accountUID + "') "
+				+ "OR (" + DatabaseHelper.KEY_SPLIT_ACCOUNT_UID + " = '" + accountUID + "' )", 
 				null, null, null, DatabaseHelper.KEY_TIMESTAMP + " DESC");
 		
 		return cursor;
@@ -133,6 +137,7 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 	
 	/**
 	 * Returns a cursor to a set of all transactions for the account with ID <code>accountID</code>
+	 * * or for which this account is the split account in a double entry
 	 * @param accountUID ID of the account whose transactions are to be retrieved
 	 * @return Cursor holding set of transactions for particular account
 	 */
@@ -153,6 +158,12 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 			return transactionsList;
 		
 		while (c.moveToNext()) {
+			Transaction transaction = buildTransactionInstance(c);
+			String splitAccountUID = transaction.getSplitAccountUID();
+			//negate split transactions for the split account
+			if (splitAccountUID != null && splitAccountUID.equals(accountUID)){
+				transaction.setAmount(transaction.getAmount().negate());
+			}
 			transactionsList.add(buildTransactionInstance(c));
 		}
 		c.close();
@@ -178,7 +189,8 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 		transaction.setTime(c.getLong(DatabaseAdapter.COLUMN_TIMESTAMP));
 		transaction.setDescription(c.getString(DatabaseAdapter.COLUMN_DESCRIPTION));
 		transaction.setExported(c.getInt(DatabaseAdapter.COLUMN_EXPORTED) == 1);
-				
+		transaction.setSplitAccountUID(c.getString(DatabaseAdapter.COLUMN_SPLIT_ACCOUNT_UID));
+		
 		return transaction;
 	}
 
@@ -284,16 +296,11 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 	 * regardless of what account they belong to
 	 * @return Number of transaction in the database
 	 */
-	public int getAllTransactionsCount(){
-		Cursor cursor = fetchAllRecords(DatabaseHelper.TRANSACTIONS_TABLE_NAME);
-		int count = 0;
-		if (cursor == null)
-			return count;
-		else {
-			count = cursor.getCount();
-			cursor.close();
-		}
-		return count;
+	public long getAllTransactionsCount(){
+		String sql = "SELECT COUNT(*) FROM " + DatabaseHelper.TRANSACTIONS_TABLE_NAME;		
+		SQLiteStatement statement = mDb.compileStatement(sql);
+	    long count = statement.simpleQueryForLong();
+	    return count;
 	}
 	
 	/**
@@ -302,10 +309,11 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 	 * @return Sum of transactions belonging to the account
 	 */
 	public Money getTransactionsSum(long accountId){
-		Cursor c = mDb.query(DatabaseHelper.TRANSACTIONS_TABLE_NAME, 
-				new String[]{DatabaseHelper.KEY_AMOUNT}, 
-				DatabaseHelper.KEY_ACCOUNT_UID + "= '" + getAccountUID(accountId) + "'", 
-				null, null, null, null);
+		Cursor c = fetchAllTransactionsForAccount(accountId); 
+//		mDb.query(DatabaseHelper.TRANSACTIONS_TABLE_NAME, 
+//				new String[]{DatabaseHelper.KEY_AMOUNT}, 
+//				DatabaseHelper.KEY_ACCOUNT_UID + "= '" + getAccountUID(accountId) + "'", 
+//				null, null, null, null);
 
 		//transactions will have the currency of the account
 		String currencyCode = getCurrencyCode(accountId);
@@ -316,11 +324,26 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 		Money amountSum = new Money("0", currencyCode);
 		
 		while(c.moveToNext()){
-			amountSum = amountSum.add(new Money(c.getString(0), currencyCode));
+			Money money = new Money(c.getString(DatabaseAdapter.COLUMN_AMOUNT), currencyCode);
+			if (c.getString(DatabaseAdapter.COLUMN_SPLIT_ACCOUNT_UID) != null){
+				amountSum = amountSum.add(money.negate());
+			} else {
+				amountSum = amountSum.add(money);
+			}
 		}
 		c.close();
 		
 		return amountSum;
+	}
+	
+	/**
+	 * Returns true if <code>rowId</code> and <code>accountUID</code> belong to the same account
+	 * @param rowId Database record ID
+	 * @param accountUID Unique Identifier string of the account
+	 * @return <code>true</code> if both are properties of the same account, <code>false</code> otherwise
+	 */
+	public boolean isSameAccount(long rowId, String accountUID){
+		return getAccountID(accountUID) == rowId;
 	}
 		
 	/**
