@@ -360,13 +360,7 @@ public class NewTransactionFragment extends SherlockFragment implements
 		//update widgets, if any
 		WidgetConfigurationActivity.updateAllWidgets(getActivity().getApplicationContext());
 		
-		if (getActivity().getSupportFragmentManager().getBackStackEntryCount() == 0){
-			//means we got here directly from the accounts list activity, need to finish
-			getActivity().finish();
-		} else {
-			//go back to transactions list
-			getSherlockActivity().getSupportFragmentManager().popBackStack();
-		}
+		finish();
 	}
 
 	@Override
@@ -391,7 +385,7 @@ public class NewTransactionFragment extends SherlockFragment implements
 		
 		switch (item.getItemId()) {
 		case R.id.menu_cancel:
-			getSherlockActivity().getSupportFragmentManager().popBackStack();
+			finish();
 			return true;
 			
 		case R.id.menu_save:
@@ -403,6 +397,20 @@ public class NewTransactionFragment extends SherlockFragment implements
 		}
 	}
 
+	/**
+	 * Finishes the fragment appropriately.
+	 * Depends on how the fragment was loaded, it might have a backstack or not
+	 */
+	private void finish() {
+		if (getActivity().getSupportFragmentManager().getBackStackEntryCount() == 0){
+			//means we got here directly from the accounts list activity, need to finish
+			getActivity().finish();
+		} else {
+			//go back to transactions list
+			getSherlockActivity().getSupportFragmentManager().popBackStack();
+		}
+	}
+	
 	/**
 	 * Callback when the date is set in the {@link DatePickerDialog}
 	 */

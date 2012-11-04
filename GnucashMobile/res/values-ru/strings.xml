@@ -464,14 +464,14 @@
 	<string name="toast_ofx_exported_to">Файл OFX экспортирован в:\n</string>
 	<string name="title_export_email">Экспорт OFX-файла из Gnucash</string>
 	<string name="description_export_email">OFX-файл, экспортированный из Gnucash</string>
-	<string name="header_transaction_settings">транзакций</string>
-	<string name="title_transaction_preferences">Transaction Preferences</string>
-	<string name="title_account_preferences">Account Preferences</string>
+	<string name="header_transaction_settings">Транзакции</string>
+	<string name="title_transaction_preferences">Свойства транзакции</string>
+	<string name="title_account_preferences">Свойства счёта</string>
 	<string name="key_default_transaction_type">default_transaction_type</string>
-	<string name="title_default_transaction_type">Default Transaction Type</string>
-	<string name="summary_default_transaction_type">The type of transaction to use by default, CREDIT or DEBIT</string>
+	<string name="title_default_transaction_type">Тип транзакции по умолчанию</string>
+	<string name="summary_default_transaction_type">Тип транзакции по умолчанию: ДЕБЕТ или КРЕДИТ</string>
 	<string-array name="transaction_types">
-		<item>CREDIT</item>
-		<item>DEBIT</item>
+	    <item>КРЕДИТ</item>
+	    <item>ДЕБЕТ</item>
 	</string-array>
 </resources>
