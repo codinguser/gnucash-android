@@ -464,13 +464,13 @@
 	<string name="title_export_email">Exportaci&#243;n OFX de Gnucash</string>
 	<string name="description_export_email">Exportaci&#243;n OFX de Gnucash</string>
 	<string name="header_transaction_settings">Transacciones</string>
-	<string name="title_transaction_preferences">Transaction Preferences</string>
-	<string name="title_account_preferences">Account Preferences</string>
+	<string name="title_transaction_preferences">Preferencias de transacciones</string>
+	<string name="title_account_preferences">Preferencias de cuentas</string>
 	<string name="key_default_transaction_type">default_transaction_type</string>
-	<string name="title_default_transaction_type">Default Transaction Type</string>
-	<string name="summary_default_transaction_type">The type of transaction to use by default, CREDIT or DEBIT</string>
+	<string name="title_default_transaction_type">Tipo de transacci&#243;n por defecto</string>
+	<string name="summary_default_transaction_type">El tipo de transacci&#243;n que usar por defecto: ABONO o CARGO</string>
 	<string-array name="transaction_types">
-		<item>CREDIT</item>
-		<item>DEBIT</item>
+		<item>ABONO</item>
+		<item>CARGO</item>
 	</string-array>
 </resources>
