@@ -468,7 +468,7 @@
 	<string name="title_account_preferences">Preferencias de cuentas</string>
 	<string name="key_default_transaction_type">default_transaction_type</string>
 	<string name="title_default_transaction_type">Tipo de transacci&#243;n por defecto</string>
-	<string name="summary_default_transaction_type">El tipo de transacci&#243;n que usar por defecto: ABONO o CARGO</string>
+	<string name="summary_default_transaction_type">El tipo de transacci&#243;n a utilizar por defecto: ABONO o CARGO</string>
 	<string-array name="transaction_types">
 		<item>ABONO</item>
 		<item>CARGO</item>
