@@ -35,8 +35,8 @@
     <string name="label_no_transactions">No hay transacciones</string>
     <string name="label_timeanddate">FECHA &amp; HORA</string>
     <string name="label_account">Cuenta</string>
-    <string name="label_debit">D&#201;BITO</string>
-    <string name="label_credit">CR&#201;DITO</string>
+    <string name="label_debit">CARGO</string>
+    <string name="label_credit">ABONO</string>
     <string name="title_accounts">Cuentas</string>
     <string name="title_transactions">Transacciones</string>
     <string name="menu_delete">BORRAR</string>
