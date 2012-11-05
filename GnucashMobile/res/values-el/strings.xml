@@ -470,13 +470,14 @@
 	<string name="title_export_email">Εξαγωγή GnuCash OFX</string>
 	<string name="description_export_email">Εξαγωγή GnuCash OFX προς </string>
 	<string name="header_transaction_settings">Συναλλαγές</string>
-	<string name="title_transaction_preferences">Transaction Preferences</string>
-	<string name="title_account_preferences">Account Preferences</string>
+	<string name="header_transaction_settings">Κινήσεις</string>
+	<string name="title_transaction_preferences">Προτιμήσεις Κινήσεων</string>
+	<string name="title_account_preferences">Προτιμήσεις Λογαριασμών</string>
 	<string name="key_default_transaction_type">default_transaction_type</string>
-	<string name="title_default_transaction_type">Default Transaction Type</string>
-	<string name="summary_default_transaction_type">The type of transaction to use by default, CREDIT or DEBIT</string>
+	<string name="title_default_transaction_type">Προεπιλογή Τύπου Κίνησης</string>
+	<string name="summary_default_transaction_type">Ο προεπιλεγμένος τύπος κίνησης, ΠΙΣΤΩΣΗ ή ΧΡΕΩΣΗ</string>
 	<string-array name="transaction_types">
-		<item>CREDIT</item>
-		<item>DEBIT</item>
-	</string-array>
+		<item>ΠΙΣΤΩΣΗ</item>
+		<item>ΧΡΕΩΣΗ</item>
+	</string-array>	
 </resources>
