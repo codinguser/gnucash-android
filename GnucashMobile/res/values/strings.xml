@@ -43,7 +43,7 @@
     <string name="alert_dialog_cancel">Cancel</string>
     <string name="toast_account_deleted">Account deleted</string>
     <string name="title_confirm_delete">Confirm delete</string>
-    <string name="delete_confirmation_message">All transactions in this account will also be deleted</string>
+    <string name="delete_account_confirmation_message">All transactions in this account will also be deleted</string>
     <string name="title_edit_transaction">Edit Transaction</string>
     <string name="label_transaction_description">Note</string>
     <string name="menu_move">MOVE</string>
@@ -473,4 +473,6 @@
 		<item>CREDIT</item>
 		<item>DEBIT</item>
 	</string-array>
+	<string name="delete_all_transactions_confirmation_message">Are you sure you want to delete ALL transactions?</string>
+	<string name="delete_transaction_confirmation_message">Are you sure you want to delete this transaction?</string>
 </resources>

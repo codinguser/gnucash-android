@@ -198,7 +198,7 @@ public class AccountsListFragment extends SherlockListFragment implements
             
             return new AlertDialog.Builder(getActivity())
                     .setIcon(android.R.drawable.ic_delete)
-                    .setTitle(title).setMessage(R.string.delete_confirmation_message)
+                    .setTitle(title).setMessage(R.string.delete_account_confirmation_message)
                     .setPositiveButton(R.string.alert_dialog_ok_delete,
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int whichButton) {

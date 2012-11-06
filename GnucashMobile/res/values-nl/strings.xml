@@ -44,7 +44,7 @@
     <string name="alert_dialog_cancel">Annuleren</string>
     <string name="toast_account_deleted">Het dagboek werd verwijderd</string>
     <string name="title_confirm_delete">Verwijderen bevestigen</string>
-    <string name="delete_confirmation_message">Alle transacties in dit dagboek zullen ook verwijderd worden</string>
+    <string name="delete_account_confirmation_message">Alle transacties in dit dagboek zullen ook verwijderd worden</string>
     <string name="title_edit_transaction">Transactie bewerken</string>
     <string name="label_transaction_description">Opmerking</string>
     <string name="menu_move">Verplaatsen</string>
@@ -474,4 +474,6 @@
 		<item>CREDIT</item>
 		<item>DEBIT</item>
 	</string-array>
+	<string name="delete_all_transactions_confirmation_message">Are you sure you want to delete ALL transactions?</string>
+	<string name="delete_transaction_confirmation_message">Are you sure you want to delete this transaction?</string>
 </resources>

@@ -43,7 +43,7 @@
   <string name="alert_dialog_cancel">Cancelar</string>
   <string name="toast_account_deleted">Conta deletada</string>
   <string name="title_confirm_delete">Confirmação exclusão</string>
-  <string name="delete_confirmation_message">Todas as transações nesta conta também serão deletadas</string>
+  <string name="delete_account_confirmation_message">Todas as transações nesta conta também serão deletadas</string>
   <string name="title_edit_transaction">Editar Transação</string>
   <string name="label_transaction_description">Nota</string>
   <string name="menu_move">MOVER</string>
@@ -472,4 +472,6 @@
     <item>CRÉDITO</item>
     <item>DÉBITO</item>
   </string-array>
+  <string name="delete_all_transactions_confirmation_message">Are you sure you want to delete ALL transactions?</string>
+  <string name="delete_transaction_confirmation_message">Are you sure you want to delete this transaction?</string>
 </resources>
