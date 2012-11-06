@@ -105,6 +105,7 @@ public class OfxExportTest extends
 		mSolo.clickOnButton(3);
 		mSolo.waitForDialogToClose(10000);
 		
+		mSolo.clickOnText(getActivity().getString(R.string.alert_dialog_ok_delete));
 		TransactionsDbAdapter transAdapter = new TransactionsDbAdapter(getActivity());
 		assertEquals(0, transAdapter.getAllTransactionsCount());
 		

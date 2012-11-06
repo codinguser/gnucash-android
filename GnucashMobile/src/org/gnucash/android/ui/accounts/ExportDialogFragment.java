@@ -38,7 +38,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import org.gnucash.android.R;
-import org.gnucash.android.db.TransactionsDbAdapter;
+import org.gnucash.android.ui.transactions.TransactionsDeleteConfirmationDialog;
 import org.gnucash.android.util.OfxFormatter;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -153,16 +153,13 @@ public class ExportDialogFragment extends DialogFragment {
 			}
 			
 			if (mDeleteAllCheckBox.isChecked()){
-				TransactionsDbAdapter trxnAdapter = new TransactionsDbAdapter(getActivity());
-				trxnAdapter.deleteAllTransactions();
-				trxnAdapter.close();
+				Fragment currentFragment = getActivity().getSupportFragmentManager()
+						.findFragmentByTag(AccountsActivity.FRAGMENT_ACCOUNTS_LIST);
+				TransactionsDeleteConfirmationDialog alertFragment = TransactionsDeleteConfirmationDialog.newInstance(R.string.title_confirm_delete, 0);
+				alertFragment.setTargetFragment(currentFragment, 0);
+				alertFragment.show(getActivity().getSupportFragmentManager(), "transactions_delete_confirmation_dialog");
 			}
 			
-			Fragment f = getActivity()
-			.getSupportFragmentManager()
-			.findFragmentByTag(AccountsActivity.FRAGMENT_ACCOUNTS_LIST);
-		
-			((AccountsListFragment)f).refreshList();
 			dismiss();
 		}
 		

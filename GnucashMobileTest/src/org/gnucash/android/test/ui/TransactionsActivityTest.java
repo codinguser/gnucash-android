@@ -28,7 +28,6 @@ import org.gnucash.android.data.Account;
 import org.gnucash.android.data.Money;
 import org.gnucash.android.data.Transaction;
 import org.gnucash.android.db.AccountsDbAdapter;
-import org.gnucash.android.db.DatabaseAdapter;
 import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.ui.transactions.NewTransactionFragment;
 import org.gnucash.android.ui.transactions.TransactionsActivity;
@@ -36,7 +35,6 @@ import org.gnucash.android.ui.transactions.TransactionsListFragment;
 
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
 import android.support.v4.app.Fragment;
 import android.test.ActivityInstrumentationTestCase2;
 import android.widget.Spinner;
