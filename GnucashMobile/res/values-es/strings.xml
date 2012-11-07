@@ -473,6 +473,6 @@
 		<item>ABONO</item>
 		<item>CARGO</item>
 	</string-array>
-	<string name="delete_all_transactions_confirmation_message">Are you sure you want to delete ALL transactions?</string>
-	<string name="delete_transaction_confirmation_message">Are you sure you want to delete this transaction?</string>
+	<string name="delete_all_transactions_confirmation_message">&#191;Est&#225;s seguro de que quieres borrar TODAS las transacciones?</string>
+	<string name="delete_transaction_confirmation_message">&#191;Est&#225;s seguro de que quieres borrar esta transacci&#243;n?</string>
 </resources>
