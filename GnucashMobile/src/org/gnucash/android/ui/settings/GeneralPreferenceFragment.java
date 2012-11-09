@@ -57,6 +57,14 @@ public class GeneralPreferenceFragment extends PreferenceFragment implements OnP
 		Preference pref = findPreference(getString(R.string.key_default_currency));
 		pref.setSummary(defaultCurrency);
 		pref.setOnPreferenceChangeListener(this);
+		
+		String keyDefaultEmail = getString(R.string.key_default_export_email);		
+		pref = findPreference(keyDefaultEmail);
+		String defaultEmail = manager.getString(keyDefaultEmail, null);
+		if (defaultEmail != null && !defaultEmail.trim().isEmpty()){
+			pref.setSummary(defaultEmail);			
+		}
+		pref.setOnPreferenceChangeListener(this);
 	}
 
 	@Override
@@ -64,6 +72,13 @@ public class GeneralPreferenceFragment extends PreferenceFragment implements OnP
 		preference.setSummary(newValue.toString());
 		if (preference.getKey().equals(getString(R.string.key_default_currency))){
 			Money.DEFAULT_CURRENCY_CODE = newValue.toString();
+		}
+		
+		if (preference.getKey().equals(getString(R.string.key_default_export_email))){
+			String emailSetting = newValue.toString();
+			if (emailSetting == null || emailSetting.trim().isEmpty()){
+				preference.setSummary(R.string.summary_default_export_email);
+			}					
 		}
 		return true;
 	}
