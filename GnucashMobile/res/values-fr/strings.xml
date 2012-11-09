@@ -465,11 +465,11 @@
 	<string name="title_export_email">Gnucash OFX export</string>
 	<string name="description_export_email">Gnucash OFX Export von </string>
 	<string name="header_transaction_settings">Transactions</string>
-	<string name="title_transaction_preferences">Transaction Preferences</string>
-	<string name="title_account_preferences">Account Preferences</string>
+	<string name="title_transaction_preferences">Préférences des transactions</string>
+	<string name="title_account_preferences">Préférences du compte</string>
 	<string name="key_default_transaction_type">default_transaction_type</string>
-	<string name="title_default_transaction_type">Default Transaction Type</string>
-	<string name="summary_default_transaction_type">The type of transaction to use by default, CREDIT or DEBIT</string>
+	<string name="title_default_transaction_type">Type de transaction par défaut</string>
+	<string name="summary_default_transaction_type">Le type de transaction à utiliser par défaut, CREDIT ou DEBIT</string>
 	<string-array name="transaction_types">
 		<item>CREDIT</item>
 		<item>DEBIT</item>

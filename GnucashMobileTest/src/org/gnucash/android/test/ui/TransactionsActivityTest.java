@@ -35,9 +35,15 @@ import org.gnucash.android.ui.transactions.TransactionsListFragment;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.test.ActivityInstrumentationTestCase2;
+import android.view.View;
 import android.widget.Spinner;
+import android.widget.TextView;
+import android.widget.ToggleButton;
 
 import com.jayway.android.robotium.solo.Solo;
 
@@ -98,43 +104,15 @@ public class TransactionsActivityTest extends
 	
 	private void validateNewTransactionFields(){
 		String expectedValue = NewTransactionFragment.DATE_FORMATTER.format(new Date(mTransactionTimeMillis));
-		String actualValue = mSolo.getText(6).getText().toString();
+		TextView dateView = (TextView) mSolo.getView(R.id.input_date);//(TextView) getActivity().findViewById(R.id.input_date);
+		String actualValue = dateView.getText().toString();
 		assertEquals(expectedValue, actualValue);
 		
 		expectedValue = NewTransactionFragment.TIME_FORMATTER.format(new Date(mTransactionTimeMillis));
-		actualValue = mSolo.getText(7).getText().toString();
+		TextView timeView = (TextView) mSolo.getView(R.id.input_time); //(TextView) getActivity().findViewById(R.id.input_time);
+		actualValue = timeView.getText().toString();
 		assertEquals(expectedValue, actualValue);
 		
-	}
-	
-	public void testAddTransaction(){	
-		mSolo.waitForText(DUMMY_ACCOUNT_NAME);
-		validateTransactionListDisplayed();
-		
-		//Android 2.2 cannot handle this for some reason, use image instead
-//		mSolo.clickOnActionBarItem(R.id.menu_add_transaction);
-		mSolo.clickOnImage(2);
-		mSolo.waitForText("Description");
-		
-		validateNewTransactionFields();
-		
-		//validate creation of transaction
-		mSolo.enterText(0, "Lunch");
-		mSolo.enterText(1, "899");
-		//check that the amount is correctly converted in the input field
-		String value = mSolo.getEditText(1).getText().toString();
-		String expectedValue = NumberFormat.getInstance().format(-8.99); 
-		assertEquals(expectedValue, value);
-		
-		int transactionsCount = getTranscationCount();
-		
-		//Android 2.2 cannot handle this for some reason
-//		mSolo.clickOnActionBarItem(R.id.menu_save);	
-		mSolo.clickOnImage(3);
-		mSolo.waitForText(DUMMY_ACCOUNT_NAME);
-		validateTransactionListDisplayed();
-		
-		assertEquals(transactionsCount + 1, getTranscationCount());
 	}
 	
 	public void testAddTransactionShouldRequireAmount(){
@@ -143,10 +121,13 @@ public class TransactionsActivityTest extends
 		
 		TransactionsDbAdapter adapter = new TransactionsDbAdapter(getActivity());
 		int beforeCount = adapter.getTransactionsCount(adapter.getAccountID(DUMMY_ACCOUNT_UID));
-		mSolo.clickOnImage(2);
+		mSolo.clickOnActionBarItem(R.id.menu_add_transaction);
 		mSolo.waitForText("Description");
 		mSolo.enterText(0, "Lunch");
-		assertEquals(false, mSolo.getImage(3).isEnabled());
+		
+		//verify that only text does not enable save button
+		View saveButtonView = mSolo.getView(R.id.menu_save);				
+		assertFalse(saveButtonView.isEnabled());//mSolo.getImage(3).isEnabled());
 		mSolo.clickOnActionBarItem(R.id.btn_save);
 		
 		int afterCount = adapter.getTransactionsCount(adapter.getAccountID(DUMMY_ACCOUNT_UID));
@@ -172,49 +153,46 @@ public class TransactionsActivityTest extends
 		assertEquals(transaction.getDescription(), description);
 		
 		String expectedValue = NewTransactionFragment.DATE_FORMATTER.format(transaction.getTimeMillis());
-		String actualValue = mSolo.getText(6).getText().toString();
+		TextView dateView = (TextView) mSolo.getView(R.id.input_date);
+		String actualValue = dateView.getText().toString(); //mSolo.getText(6).getText().toString();
 		assertEquals(expectedValue, actualValue);
 		
 		expectedValue = NewTransactionFragment.TIME_FORMATTER.format(transaction.getTimeMillis());
-		actualValue = mSolo.getText(7).getText().toString();
+		TextView timeView = (TextView) mSolo.getView(R.id.input_time);
+		actualValue = timeView.getText().toString();// mSolo.getText(7).getText().toString();
 		assertEquals(expectedValue, actualValue);
 	}
 	
-	public void testOpenTransactionEditShouldNotModifyTransaction(){
-		mSolo.waitForText(DUMMY_ACCOUNT_NAME);
-		
-		validateTransactionListDisplayed();
-		
-		mSolo.clickOnText(TRANSACTION_NAME);
-		mSolo.waitForText("Note");
-		
-		validateNewTransactionFields();
-		
-		mSolo.clickOnActionBarItem(R.id.menu_save);
-		
-		mSolo.waitForText(DUMMY_ACCOUNT_NAME);
-		
-		TransactionsDbAdapter adapter = new TransactionsDbAdapter(getActivity());
-		List<Transaction> transactions = adapter.getAllTransactionsForAccount(DUMMY_ACCOUNT_UID);
-		
-		assertEquals(1, transactions.size());
-		Transaction trx = transactions.get(0);
-		assertEquals(TRANSACTION_NAME, trx.getName());
-		assertEquals(trx.getAccountUID(), DUMMY_ACCOUNT_UID);
-		Date expectedDate = new Date(mTransactionTimeMillis);
-		Date trxDate = new Date(trx.getTimeMillis());
-		assertEquals(NewTransactionFragment.DATE_FORMATTER.format(expectedDate), 
-				NewTransactionFragment.DATE_FORMATTER.format(trxDate));
-		assertEquals(NewTransactionFragment.TIME_FORMATTER.format(expectedDate), 
-				NewTransactionFragment.TIME_FORMATTER.format(trxDate));
-		
-		//FIXME: for some reason, the expected time is higher (in the future) than the actual time
-		//this should not be the case since the transaction was created with the expected time
-		//I guess it has to do with the time precision and the fact that the time is repeatedly 
-		//converted to Date objects and back. But just validating the printable date and time should be ok
-//		assertEquals(mTransactionTimeMillis, trx.getTimeMillis());
-	}
-	
+	public void testAddTransaction(){	
+			mSolo.waitForText(DUMMY_ACCOUNT_NAME);
+			validateTransactionListDisplayed();
+			
+			//Android 2.2 cannot handle this for some reason, use image instead
+			mSolo.clickOnActionBarItem(R.id.menu_add_transaction);
+//			mSolo.clickOnImage(2);
+			mSolo.waitForText("Description");
+			
+			validateNewTransactionFields();
+			
+			//validate creation of transaction
+			mSolo.enterText(0, "Lunch");
+			mSolo.enterText(1, "899");
+			//check that the amount is correctly converted in the input field
+			String value = mSolo.getEditText(1).getText().toString();
+			String expectedValue = NumberFormat.getInstance().format(-8.99); 
+			assertEquals(expectedValue, value);
+			
+			int transactionsCount = getTranscationCount();
+			
+			//Android 2.2 cannot handle this for some reason
+			mSolo.clickOnActionBarItem(R.id.menu_save);	
+//			mSolo.clickOnImage(3);
+			mSolo.waitForText(DUMMY_ACCOUNT_NAME);
+			validateTransactionListDisplayed();
+			
+			assertEquals(transactionsCount + 1, getTranscationCount());
+		}
+
 	public void testEditTransaction(){		
 		//open transactions
 		mSolo.waitForText(DUMMY_ACCOUNT_NAME);
@@ -233,6 +211,33 @@ public class TransactionsActivityTest extends
 		mSolo.waitForText("Pasta");
 	}
 	
+	public void testDefaultTransactionType(){
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+		Editor editor = prefs.edit();
+		editor.putString(getActivity().getString(R.string.key_default_transaction_type), "CREDIT");
+		editor.commit();
+		
+		mSolo.clickOnActionBarItem(R.id.menu_add_transaction);
+		mSolo.waitForText(getActivity().getString(R.string.label_transaction_name));
+		
+//		ToggleButton transactionTypeButton = (ToggleButton) mSolo.getView(R.id.input_transaction_type); 
+		ToggleButton transactionTypeButton = (ToggleButton) mSolo.getButton(0);
+		assertTrue(transactionTypeButton.isChecked() == false);
+		
+		mSolo.clickOnActionBarItem(R.id.menu_cancel);
+		
+		//now validate the other case 
+		editor = prefs.edit();
+		editor.putString(getActivity().getString(R.string.key_default_transaction_type), "DEBIT");
+		editor.commit();
+		
+		mSolo.clickOnActionBarItem(R.id.menu_add_transaction);
+		mSolo.waitForText(getActivity().getString(R.string.label_transaction_name));
+		
+		transactionTypeButton = (ToggleButton) mSolo.getButton(0);
+		assertTrue(transactionTypeButton.isChecked());
+	}
+
 	public void testToggleTransactionType(){
 		mSolo.waitForText(DUMMY_ACCOUNT_NAME);
 		
@@ -254,7 +259,8 @@ public class TransactionsActivityTest extends
 		assertEquals("-9.99", amount.toPlainString());
 		
 		//save the transaction, should now be a debit
-		mSolo.clickOnImage(3);
+//		mSolo.clickOnImage(3);
+		mSolo.clickOnActionBarItem(R.id.menu_save);
 		
 		mSolo.waitForText(DUMMY_ACCOUNT_NAME);
 		
@@ -266,10 +272,45 @@ public class TransactionsActivityTest extends
 		assertTrue(trx.getAmount().isNegative());
 	}
 	
+	public void testOpenTransactionEditShouldNotModifyTransaction(){
+			mSolo.waitForText(DUMMY_ACCOUNT_NAME);
+			
+			validateTransactionListDisplayed();
+			
+			mSolo.clickOnText(TRANSACTION_NAME);
+			mSolo.waitForText("Note");
+			
+			validateNewTransactionFields();
+			
+			mSolo.clickOnActionBarItem(R.id.menu_save);
+			
+			mSolo.waitForText(DUMMY_ACCOUNT_NAME);
+			
+			TransactionsDbAdapter adapter = new TransactionsDbAdapter(getActivity());
+			List<Transaction> transactions = adapter.getAllTransactionsForAccount(DUMMY_ACCOUNT_UID);
+			
+			assertEquals(1, transactions.size());
+			Transaction trx = transactions.get(0);
+			assertEquals(TRANSACTION_NAME, trx.getName());
+			assertEquals(trx.getAccountUID(), DUMMY_ACCOUNT_UID);
+			Date expectedDate = new Date(mTransactionTimeMillis);
+			Date trxDate = new Date(trx.getTimeMillis());
+			assertEquals(NewTransactionFragment.DATE_FORMATTER.format(expectedDate), 
+					NewTransactionFragment.DATE_FORMATTER.format(trxDate));
+			assertEquals(NewTransactionFragment.TIME_FORMATTER.format(expectedDate), 
+					NewTransactionFragment.TIME_FORMATTER.format(trxDate));
+			
+			//FIXME: for some reason, the expected time is higher (in the future) than the actual time
+			//this should not be the case since the transaction was created with the expected time
+			//I guess it has to do with the time precision and the fact that the time is repeatedly 
+			//converted to Date objects and back. But just validating the printable date and time should be ok
+	//		assertEquals(mTransactionTimeMillis, trx.getTimeMillis());
+		}
+
 	public void testDeleteTransaction(){
 		mSolo.waitForText(DUMMY_ACCOUNT_NAME);
 		
-		mSolo.clickOnCheckBox(0);
+		mSolo.clickOnCheckBox(0);		
 		mSolo.clickOnImage(2);
 		
 		AccountsDbAdapter accAdapter = new AccountsDbAdapter(getActivity());
@@ -295,7 +336,9 @@ public class TransactionsActivityTest extends
 		validateTransactionListDisplayed();
 		
 		mSolo.clickOnCheckBox(0);
-		mSolo.clickOnImage(1);
+		mSolo.waitForText(getActivity().getString(R.string.title_selected, 1));
+		//initiate bulk move
+		mSolo.clickOnImage(1);		
 		
 		mSolo.waitForDialogToClose(2000);
 		

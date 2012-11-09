@@ -473,6 +473,6 @@
 		<item>Haben</item>
 		<item>Soll</item>
 	</string-array>
-	<string name="delete_all_transactions_confirmation_message">Are you sure you want to delete ALL transactions?</string>
-	<string name="delete_transaction_confirmation_message">Are you sure you want to delete this transaction?</string>
+	<string name="delete_all_transactions_confirmation_message">Wollen Sie wirklich ALLE Buchungen l&#246;schen?</string>
+	<string name="delete_transaction_confirmation_message">Wollen Sie wirklich diese Buchung l&#246;schen?</string>
 </resources>

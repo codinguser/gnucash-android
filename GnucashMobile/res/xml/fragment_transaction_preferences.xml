@@ -15,5 +15,5 @@
  limitations under the License.
 -->
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-    <ListPreference android:title="@string/title_default_transaction_type" android:entryValues="@array/transaction_types" android:entries="@array/transaction_types" android:key="@string/key_default_transaction_type" android:summary="@string/summary_default_transaction_type"/>
+    <ListPreference android:title="@string/title_default_transaction_type" android:entryValues="@array/key_transaction_type_values" android:entries="@array/transaction_types" android:key="@string/key_default_transaction_type" android:summary="@string/summary_default_transaction_type"/>
 </PreferenceScreen>

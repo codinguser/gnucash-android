@@ -53,17 +53,22 @@ public class TransactionsPreferenceFragment extends PreferenceFragment implement
 		
 		SharedPreferences manager = PreferenceManager.getDefaultSharedPreferences(getActivity());
 		String defaultTransactionType = manager.getString(getString(R.string.key_default_transaction_type), "DEBIT");
-		Preference pref = findPreference(getString(R.string.key_default_transaction_type));
-		pref.setSummary(defaultTransactionType);
+		Preference pref = findPreference(getString(R.string.key_default_transaction_type));		
+		setLocalizedSummary(pref, defaultTransactionType);
 		pref.setOnPreferenceChangeListener(this);
 	}
 
 
 	@Override
 	public boolean onPreferenceChange(Preference preference, Object newValue) {
-		preference.setSummary(newValue.toString());		
+		setLocalizedSummary(preference, newValue.toString());
 		return true;
 	}
 	
+	private void setLocalizedSummary(Preference preference, String value){
+		String localizedLabel = value.equals("DEBIT") ? getString(R.string.label_debit) : getActivity().getString(R.string.label_credit);
+		Preference pref = findPreference(getString(R.string.key_default_transaction_type));
+		pref.setSummary(localizedLabel);
+	}
 	
 }
