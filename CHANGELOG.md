@@ -1,10 +1,12 @@
 Change Log
 ===============================================================================
+
 Version 1.0.2 *(2012-11-09)*
 ----------------------------
-Fixed: Default transaction type setting not working for non-English locales
-Added new default settings for exporting
-Improved French and German translations
+
+* Fixed: Default transaction type setting not working for non-English locales
+* Added new default settings for exporting
+* Improved French and German translations
 
 
 Version 1.0.1 *(2012-11-05)*
