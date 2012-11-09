@@ -479,4 +479,12 @@ format og importeres i regnskapsprogrammet GnuCash for PC.</string>
 	</string-array>
 	<string name="delete_all_transactions_confirmation_message">Are you sure you want to delete ALL transactions?</string>
 	<string name="delete_transaction_confirmation_message">Are you sure you want to delete this transaction?</string>
+	<string name="title_export_preference_category">Export</string>
+	<string name="key_export_all_transactions">export_all_transactions</string>
+	<string name="title_export_all_transactions">Always export all transactions</string>
+	<string name="key_delete_transactions_after_export">delete_transactions_after_export</string>
+	<string name="title_always_delete_exported_transactions">Always delete all exported transactions</string>
+	<string name="key_default_export_email">export_email_target</string>
+	<string name="title_default_export_email">Default export email</string>
+	<string name="summary_default_export_email">The default email address to send exports to. You can still change this when you export.</string>	
 </resources>

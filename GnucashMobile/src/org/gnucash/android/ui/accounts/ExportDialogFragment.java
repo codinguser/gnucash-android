@@ -46,9 +46,11 @@ import org.w3c.dom.ProcessingInstruction;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.preference.PreferenceManager;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -182,7 +184,7 @@ public class ExportDialogFragment extends DialogFragment {
 	/**
 	 * Collects references to the UI elements and binds click listeners
 	 */
-	private void bindViews(){
+	private void bindViews(){		
 		View v = getView();
 		mDestinationSpinner = (Spinner) v.findViewById(R.id.spinner_export_destination);
 		ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getActivity(),
@@ -190,8 +192,12 @@ public class ExportDialogFragment extends DialogFragment {
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);		
 		mDestinationSpinner.setAdapter(adapter);
 		
+		SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
 		mExportAllCheckBox = (CheckBox) v.findViewById(R.id.checkbox_export_all);
+		mExportAllCheckBox.setChecked(sharedPrefs.getBoolean(getString(R.string.key_export_all_transactions), false));
+		
 		mDeleteAllCheckBox = (CheckBox) v.findViewById(R.id.checkbox_post_export_delete);
+		mDeleteAllCheckBox.setChecked(sharedPrefs.getBoolean(getString(R.string.key_delete_transactions_after_export), false));
 		
 		mSaveButton = (Button) v.findViewById(R.id.btn_save);
 		mSaveButton.setText(R.string.btn_export);
@@ -240,10 +246,15 @@ public class ExportDialogFragment extends DialogFragment {
 	 * @param path String path to the file on disk
 	 */
 	private void shareFile(String path){
+		String defaultEmail = PreferenceManager.getDefaultSharedPreferences(getActivity())
+												.getString(getString(R.string.key_default_export_email), null);
 		Intent shareIntent = new Intent(Intent.ACTION_SEND);
 		shareIntent.setType("application/xml");
 		shareIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse("file://"+ path));
 		shareIntent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.title_export_email));
+		if (defaultEmail != null && defaultEmail.trim().length() > 0){
+			shareIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{defaultEmail});
+		}			
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyy.MM.dd HH:mm");
 		shareIntent.putExtra(Intent.EXTRA_TEXT, getString(R.string.description_export_email) 
 							+ formatter.format(new Date(System.currentTimeMillis())));
