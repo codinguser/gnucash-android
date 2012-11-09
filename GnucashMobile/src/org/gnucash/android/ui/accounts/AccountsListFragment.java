@@ -140,7 +140,7 @@ public class AccountsListFragment extends SherlockListFragment implements
 		public boolean onCreateActionMode(ActionMode mode, Menu menu) {
 			MenuInflater inflater = mode.getMenuInflater();
 	        inflater.inflate(R.menu.account_context_menu, menu);
-	        mode.setTitle("1 selected");
+	        mode.setTitle(getString(R.string.title_selected, 1));
 	        return true;
 		}
 

@@ -473,6 +473,10 @@
 		<item>CREDIT</item>
 		<item>DEBIT</item>
 	</string-array>
+	<string-array name="key_transaction_type_values">
+		<item>CREDIT</item>
+		<item>DEBIT</item>
+	</string-array>
 	<string name="delete_all_transactions_confirmation_message">Are you sure you want to delete ALL transactions?</string>
 	<string name="delete_transaction_confirmation_message">Are you sure you want to delete this transaction?</string>
 </resources>

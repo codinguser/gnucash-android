@@ -28,6 +28,7 @@ import org.gnucash.android.ui.accounts.ExportDialogFragment;
 
 import android.os.Environment;
 import android.test.ActivityInstrumentationTestCase2;
+import android.widget.Button;
 import android.widget.Spinner;
 
 import com.jayway.android.robotium.solo.Solo;
@@ -91,8 +92,10 @@ public class OfxExportTest extends
 	}	
 	
 	public void testDeleteTransactionsAfterExport(){
-		mSolo.clickOnActionBarItem(R.id.menu_export);
+		TransactionsDbAdapter transAdapter = new TransactionsDbAdapter(getActivity());
+		assertTrue(transAdapter.getAllTransactionsCount() != 0);
 		
+		mSolo.clickOnActionBarItem(R.id.menu_export);		
 		mSolo.waitForText("Export OFX");
 		Spinner spinner = mSolo.getCurrentSpinners().get(0);
 		mSolo.clickOnView(spinner);
@@ -102,11 +105,15 @@ public class OfxExportTest extends
 		//check to delete after export
 		mSolo.clickOnCheckBox(1);
 		
-		mSolo.clickOnButton(3);
-		mSolo.waitForDialogToClose(10000);
+		Button b = (Button) mSolo.getView(R.id.btn_save);
+		mSolo.clickOnView(b);
+		mSolo.waitForDialogToClose(2000);
 		
-		mSolo.clickOnText(getActivity().getString(R.string.alert_dialog_ok_delete));
-		TransactionsDbAdapter transAdapter = new TransactionsDbAdapter(getActivity());
+		//confirm delete
+		Button deleteButton = (Button) mSolo.getView(android.R.id.button1);
+		mSolo.clickOnView(deleteButton);
+		mSolo.waitForDialogToClose(1000);
+		
 		assertEquals(0, transAdapter.getAllTransactionsCount());
 		
 		transAdapter.close();

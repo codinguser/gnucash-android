@@ -36,6 +36,7 @@ import android.os.Build;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.test.ActivityInstrumentationTestCase2;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -81,7 +82,7 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
 		else
 			mSolo.clickOnImage(1);
 		
-		mSolo.waitForText("Create");
+		mSolo.waitForText(getActivity().getString(R.string.title_add_account));
 		mSolo.enterText(0, "New Account");
 		
 		mSolo.clickOnText(getActivity().getString(R.string.btn_save));
@@ -139,6 +140,49 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
 		accAdapter.close();
 	}
 	
+	public void testDeleteAccount(){		
+			Account acc = new Account("TO BE DELETED");
+			acc.setUID("to-be-deleted");
+			
+			Transaction transaction = new Transaction("5.99", "hats");
+			transaction.setAccountUID("to-be-deleted");
+			acc.addTransaction(transaction);
+			AccountsDbAdapter accDbAdapter = new AccountsDbAdapter(getActivity());
+			accDbAdapter.addAccount(acc);		
+			
+			Fragment fragment = getActivity()
+					.getSupportFragmentManager()
+					.findFragmentByTag(AccountsActivity.FRAGMENT_ACCOUNTS_LIST);
+			assertNotNull(fragment);
+			
+			((AccountsListFragment) fragment).refreshList();
+			
+			mSolo.clickLongOnText("TO BE DELETED");
+							
+			mSolo.clickOnImage(2);
+			//robotium and Sherloock context actionbar don't play nice
+	//		mSolo.clickOnActionBarItem(R.id.context_menu_delete);
+						
+			String deleteConfirm = getActivity().getString(R.string.alert_dialog_ok_delete);
+			Button b = mSolo.getButton(deleteConfirm);
+			mSolo.clickOnView(b);
+			//FIXME: deletion fails often because the confirmation dialog cannot be confirmed
+			//we could also click on the button position, but it is different pre and post 4.0
+			
+			mSolo.waitForDialogToClose(1000);
+			
+			long id = accDbAdapter.getAccountID("to-be-deleted");
+			assertEquals(-1, id);
+			
+			TransactionsDbAdapter transDbAdapter = new TransactionsDbAdapter(getActivity());
+			List<Transaction> transactions = transDbAdapter.getAllTransactionsForAccount("to-be-deleted");
+			
+			assertEquals(0, transactions.size());
+			
+			accDbAdapter.close();
+			transDbAdapter.close();
+		}
+
 	public void testDisplayTransactionsList(){	
 		Fragment fragment = getActivity()
 				.getSupportFragmentManager()
@@ -162,47 +206,6 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
 		
 	}
 		
-	public void testDeleteAccount(){		
-		Account acc = new Account("TO BE DELETED");
-		acc.setUID("to-be-deleted");
-		
-		Transaction transaction = new Transaction("5.99", "hats");
-		transaction.setAccountUID("to-be-deleted");
-		acc.addTransaction(transaction);
-		AccountsDbAdapter accDbAdapter = new AccountsDbAdapter(getActivity());
-		accDbAdapter.addAccount(acc);		
-		
-		Fragment fragment = getActivity()
-				.getSupportFragmentManager()
-				.findFragmentByTag(AccountsActivity.FRAGMENT_ACCOUNTS_LIST);
-		assertNotNull(fragment);
-		
-		((AccountsListFragment) fragment).refreshList();
-		
-		mSolo.clickLongOnText("TO BE DELETED");
-		
-		mSolo.waitForText(getActivity().getString(R.string.title_edit_account));
-		
-		mSolo.clickOnImage(2);
-		
-		mSolo.clickOnText(getActivity().getString(R.string.alert_dialog_ok_delete));
-		//FIXME: deletion fails often because the confirmation dialog cannot be confirmed
-		//we could also click on the button position, but it is different pre and post 4.0
-		
-		mSolo.waitForDialogToClose(1000);
-		
-		long id = accDbAdapter.getAccountID("to-be-deleted");
-		assertEquals(-1, id);
-		
-		TransactionsDbAdapter transDbAdapter = new TransactionsDbAdapter(getActivity());
-		List<Transaction> transactions = transDbAdapter.getAllTransactionsForAccount("to-be-deleted");
-		
-		assertEquals(0, transactions.size());
-		
-		accDbAdapter.close();
-		transDbAdapter.close();
-	}
-	
 	public void testIntentAccountCreation(){
 		Intent intent = new Intent(Intent.ACTION_INSERT);
 		intent.putExtra(Intent.EXTRA_TITLE, "Intent Account");
