@@ -97,8 +97,16 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
 		if (locale.getCountry().equals("UK")) {
 		    locale = new Locale(locale.getLanguage(), "GB");
 		}
-		String currencyCode = prefs.getString(getString(R.string.key_default_currency), 
-				Currency.getInstance(locale).getCurrencyCode());		
+		String currencyCode = null;
+		try { //there are some strange locales out there
+			currencyCode = prefs.getString(getString(R.string.key_default_currency), 
+					Currency.getInstance(locale).getCurrencyCode());
+		} catch (Exception e) {
+			Log.e(TAG, e.getMessage());
+			currencyCode = "USD"; //just use USD and let the user choose
+		}
+			
+		
 		Money.DEFAULT_CURRENCY_CODE = currencyCode;		
 		
 		boolean firstRun = prefs.getBoolean(getString(R.string.key_first_run), true);

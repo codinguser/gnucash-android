@@ -287,7 +287,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 	 * @param id Record ID of the account to be removed
 	 * @return Currency code of the account
 	 */
-	public String getCurrency(long id){
+	public String getCurrencyCode(long id){
 		return mTransactionsAdapter.getCurrencyCode(id);
 	}
 	

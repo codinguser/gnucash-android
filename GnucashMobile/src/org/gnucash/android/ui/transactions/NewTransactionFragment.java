@@ -317,7 +317,7 @@ public class NewTransactionFragment extends SherlockFragment implements
 	
 	public void onAccountChanged(long newAccountId){
 		AccountsDbAdapter accountsDbAdapter = new AccountsDbAdapter(getActivity());
-		String currencyCode = accountsDbAdapter.getCurrency(newAccountId);
+		String currencyCode = accountsDbAdapter.getCurrencyCode(newAccountId);
 		Currency currency = Currency.getInstance(currencyCode);
 		mCurrencyTextView.setText(currency.getSymbol(Locale.getDefault()));
 		accountsDbAdapter.close();
