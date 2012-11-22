@@ -317,7 +317,7 @@ public class NewTransactionFragment extends SherlockFragment implements
 	
 	public void onAccountChanged(long newAccountId){
 		AccountsDbAdapter accountsDbAdapter = new AccountsDbAdapter(getActivity());
-		String currencyCode = accountsDbAdapter.getCurrency(newAccountId);
+		String currencyCode = accountsDbAdapter.getCurrencyCode(newAccountId);
 		Currency currency = Currency.getInstance(currencyCode);
 		mCurrencyTextView.setText(currency.getSymbol(Locale.getDefault()));
 		accountsDbAdapter.close();
@@ -473,7 +473,10 @@ public class NewTransactionFragment extends SherlockFragment implements
 		@Override
 		public void afterTextChanged(Editable s) {
 			boolean valid = (mAmountEditText.getText().length() > 0);
-			mSaveMenuItem.setEnabled(valid);
+			
+			//JellyBean 4.2 calls onActivityCreated before creating the menu
+			if (mSaveMenuItem != null)
+				mSaveMenuItem.setEnabled(valid);
 		}
 
 		@Override

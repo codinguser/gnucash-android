@@ -464,15 +464,15 @@
 	<string name="toast_ofx_exported_to">File OFX esportato in:\n</string>
 	<string name="title_export_email">Esportazione file OFX di Gnucash</string>
 	<string name="description_export_email">Esportazione OFX di Gnucash con </string>
-	<string name="header_transaction_settings">Transazione</string>
-	<string name="title_transaction_preferences">Transaction Preferences</string>
-	<string name="title_account_preferences">Account Preferences</string>
+	<string name="header_transaction_settings">Transazioni</string>
+	<string name="title_transaction_preferences">Preferenza della transazione</string>
+	<string name="title_account_preferences">Preferenze del conto</string>
 	<string name="key_default_transaction_type">default_transaction_type</string>
-	<string name="title_default_transaction_type">Default Transaction Type</string>
-	<string name="summary_default_transaction_type">The type of transaction to use by default, CREDIT or DEBIT</string>
+	<string name="title_default_transaction_type">Tipo di transazione predefinita</string>
+	<string name="summary_default_transaction_type">Il tipo di transazione da usare come predefinita, CREDITO o DEBITO</string>
 	<string-array name="transaction_types">
-		<item>CREDIT</item>
-		<item>DEBIT</item>
+	 	<item>CREDITO</item>
+	 	<item>DEBITO</item>
 	</string-array>
 	<string name="delete_all_transactions_confirmation_message">Are you sure you want to delete ALL transactions?</string>
 	<string name="delete_transaction_confirmation_message">Are you sure you want to delete this transaction?</string>
