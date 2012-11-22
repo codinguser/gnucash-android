@@ -5,6 +5,7 @@ Version 1.0.3 *(2012-11-23)*
 ----------------------------
 
 * Fixed: Crash when determining currency for en_UK which is not an ISO 3611 country
+* Fixed: Crashes on Android 4.2 when editing transactions
 * Improved: Better handle rotation when creating transactions
 * Improved: Spanish & Italian translations
 

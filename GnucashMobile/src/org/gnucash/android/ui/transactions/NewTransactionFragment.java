@@ -473,7 +473,10 @@ public class NewTransactionFragment extends SherlockFragment implements
 		@Override
 		public void afterTextChanged(Editable s) {
 			boolean valid = (mAmountEditText.getText().length() > 0);
-			mSaveMenuItem.setEnabled(valid);
+			
+			//JellyBean 4.2 calls onActivityCreated before creating the menu
+			if (mSaveMenuItem != null)
+				mSaveMenuItem.setEnabled(valid);
 		}
 
 		@Override
