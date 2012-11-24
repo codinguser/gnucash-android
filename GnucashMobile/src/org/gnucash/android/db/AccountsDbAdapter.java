@@ -265,6 +265,19 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 	}
 
 	/**
+	 * Returns a Cursor set of accounts which fulfill <code>condition</code>
+	 * @param condition SQL WHERE statement without the 'WHERE' itself
+	 * @return Cursor set of accounts which fulfill <code>condition</code>
+	 */
+	public Cursor fetchAccounts(String condition){
+		Log.v(TAG, "Fetching all accounts from db where " + condition);
+		Cursor cursor = mDb.query(DatabaseHelper.ACCOUNTS_TABLE_NAME, 
+				null, condition, null, null, null, 
+				DatabaseHelper.KEY_NAME + " ASC");
+		return cursor;
+	}
+	
+	/**
 	 * Return the record ID for the account with UID <code>accountUID</code>
 	 * @param accountUID String Unique ID of the account
 	 * @return Record ID belonging to account UID

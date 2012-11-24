@@ -69,7 +69,6 @@
     <string name="label_move_destination">Til konto</string>
     <string name="permission_access_sdcard">Aksesser minnekort</string>
     <string name="title_share_ofx_with">Del OFX-eksport med&#8230;</string>
-    <string name="key_default_currency">default_currency</string>
     <string name="toast_incompatible_currency">Kan ikke flytte transaksjonen(e).\nMottakerkonto har en annen valuta</string>
     <string name="header_general_settings">Generelt</string>
     <string name="header_about_gnucash">Om</string>
@@ -85,7 +84,6 @@
     <string name="label_display_account">Vis konto</string>
     <string name="btn_create_accounts">Opprette kontoer</string>
     <string name="title_default_accounts">Velg kontoer som skal opprettes</string>
-    <string name="key_first_run">key_first_run</string>
     <string-array name="currency_names">
         <item>Afghani</item>
 		<item>Algerian Dinar</item>
@@ -263,184 +261,6 @@
 		<item>Zimbabwe Dollar</item>
 		<item>Zloty</item>
     </string-array>
-    
-	<string-array name="currency_codes">
-        <item>AFN</item>
-		<item>DZD</item>
-		<item>ARS</item>
-		<item>AMD</item>
-		<item>AWG</item>
-		<item>AUD</item>
-		<item>AZN</item>
-		<item>BSD</item>
-		<item>BHD</item>
-		<item>THB</item>
-		<item>PAB</item>
-		<item>BBD</item>
-		<item>BYR</item>
-		<item>BZD</item>
-		<item>BMD</item>
-		<item>VEF</item>
-		<item>BOB</item>
-		<item>BRL</item>
-		<item>BND</item>
-		<item>BGN</item>
-		<item>BIF</item>
-		<item>CAD</item>
-		<item>CVE</item>
-		<item>KYD</item>
-		<item>XOF</item>
-		<item>XAF</item>
-		<item>XPF</item>
-		<item>CLP</item>
-		<item>XTS</item>
-		<item>COP</item>
-		<item>KMF</item>
-		<item>CDF</item>
-		<item>BAM</item>
-		<item>NIO</item>
-		<item>CRC</item>
-		<item>HRK</item>
-		<item>CUP</item>
-		<item>CZK</item>
-		<item>GMD</item>
-		<item>DKK</item>
-		<item>MKD</item>
-		<item>DJF</item>
-		<item>STD</item>
-		<item>DOP</item>
-		<item>VND</item>
-		<item>XCD</item>
-		<item>EGP</item>
-		<item>SVC</item>
-		<item>ETB</item>
-		<item>EUR</item>
-		<item>FKP</item>
-		<item>FJD</item>
-		<item>HUF</item>
-		<item>GHS</item>
-		<item>GIP</item>
-		<item>XAU</item>
-		<item>HTG</item>
-		<item>PYG</item>
-		<item>GNF</item>
-		<item>GYD</item>
-		<item>HKD</item>
-		<item>UAH</item>
-		<item>ISK</item>
-		<item>INR</item>
-		<item>IRR</item>
-		<item>IQD</item>
-		<item>JMD</item>
-		<item>JOD</item>
-		<item>KES</item>
-		<item>PGK</item>
-		<item>LAK</item>
-		<item>KWD</item>
-		<item>MWK</item>
-		<item>AOA</item>
-		<item>MMK</item>
-		<item>GEL</item>
-		<item>LVL</item>
-		<item>LBP</item>
-		<item>ALL</item>
-		<item>HNL</item>
-		<item>SLL</item>
-		<item>LRD</item>
-		<item>LYD</item>
-		<item>SZL</item>
-		<item>LTL</item>
-		<item>LSL</item>
-		<item>MGA</item>
-		<item>MYR</item>
-		<item>MUR</item>
-		<item>MXN</item>
-		<item>MXV</item>
-		<item>MDL</item>
-		<item>MAD</item>
-		<item>MZN</item>
-		<item>BOV</item>
-		<item>NGN</item>
-		<item>ERN</item>
-		<item>NAD</item>
-		<item>NPR</item>
-		<item>ANG</item>
-		<item>ILS</item>
-		<item>RON</item>
-		<item>TWD</item>
-		<item>NZD</item>
-		<item>BTN</item>
-		<item>KPW</item>
-		<item>NOK</item>
-		<item>PEN</item>
-		<item>MRO</item>
-		<item>TOP</item>
-		<item>PKR</item>
-		<item>XPD</item>
-		<item>MOP</item>
-		<item>CUC</item>
-		<item>UYU</item>
-		<item>PHP</item>
-		<item>XPT</item>
-		<item>GBP</item>
-		<item>BWP</item>
-		<item>QAR</item>
-		<item>GTQ</item>
-		<item>ZAR</item>
-		<item>OMR</item>
-		<item>KHR</item>
-		<item>MVR</item>
-		<item>IDR</item>
-		<item>RUB</item>
-		<item>RWF</item>
-		<item>SHP</item>
-		<item>SAR</item>
-		<item>XDR</item>
-		<item>RSD</item>
-		<item>SCR</item>
-		<item>XAG</item>
-		<item>SGD</item>
-		<item>SBD</item>
-		<item>KGS</item>
-		<item>SOS</item>
-		<item>TJS</item>
-		<item>SSP</item>
-		<item>LKR</item>
-		<item>XSU</item>
-		<item>SDG</item>
-		<item>SRD</item>
-		<item>SEK</item>
-		<item>CHF</item>
-		<item>SYP</item>
-		<item>BDT</item>
-		<item>WST</item>
-		<item>TZS</item>
-		<item>KZT</item>
-		<item>XXX</item>
-		<item>TTD</item>
-		<item>MNT</item>
-		<item>TND</item>
-		<item>TRY</item>
-		<item>TMT</item>
-		<item>AED</item>
-		<item>UGX</item>
-		<item>XFU</item>
-		<item>COU</item>
-		<item>CLF</item>
-		<item>UYI</item>
-		<item>USD</item>
-		<item>UZS</item>
-		<item>VUV</item>
-		<item>CHE</item>
-		<item>CHW</item>
-		<item>KRW</item>
-		<item>YER</item>
-		<item>JPY</item>
-		<item>CNY</item>
-		<item>ZMK</item>
-		<item>ZWL</item>
-		<item>PLN</item>
-    </string-array>
 	<string-array name="default_accounts">
 	    <item>Utgifter</item>
 	    <item>Inntekter</item>
@@ -449,15 +269,12 @@
 	    <item>Forsikringer</item>
 	</string-array>
 	<string name="error_no_accounts">Ingen kontoer finnes i Gnucash.\nOpprett en konto før du legger til en widget</string>
-	<string name="key_build_version">build_version</string>
 	<string name="title_build_version">Byggversion</string>
 	<string name="title_license">Lisens</string>
 	<string name="summary_licence_details">Apache Lisens v2.0. Klikk for detaljer.</string>
 	<string name="title_general_prefs">Generelt</string>
-	<string name="key_license">app_license</string>
 	<string name="label_widget_configuration">Velg konto</string>
 	<string name="toast_no_transactions_to_export">Ingen transaksjoner å eksportere</string>
-	<string name="key_about">about_gnucash</string>
 	<string name="title_about_gnucash">Om Gnucash</string>
 	<string name="summary_about_gnucash">GnucashMobile er en mobil regnskapsfører for Android.\nDen gir 
 muligheten til å raskt og fleksibelt logge transaksjoner som kan eksporteres til OFX (Open Financial eXchange)-
@@ -470,7 +287,6 @@ format og importeres i regnskapsprogrammet GnuCash for PC.</string>
 	<string name="header_transaction_settings">Transaksjoner</string>
 	<string name="title_transaction_preferences">Transaksjonsinnstillinger</string>
 	<string name="title_account_preferences">Kontoinnstillinger</string>
-	<string name="key_default_transaction_type">default_transaction_type</string>
 	<string name="title_default_transaction_type">Standard transaksjonstype</string>
 	<string name="summary_default_transaction_type">Transaksjonstypen som skal brukes som standard, KREDIT eller DEBET</string>
 	<string-array name="transaction_types">
@@ -480,11 +296,8 @@ format og importeres i regnskapsprogrammet GnuCash for PC.</string>
 	<string name="delete_all_transactions_confirmation_message">Are you sure you want to delete ALL transactions?</string>
 	<string name="delete_transaction_confirmation_message">Are you sure you want to delete this transaction?</string>
 	<string name="title_export_preference_category">Export</string>
-	<string name="key_export_all_transactions">export_all_transactions</string>
 	<string name="title_export_all_transactions">Always export all transactions</string>
-	<string name="key_delete_transactions_after_export">delete_transactions_after_export</string>
 	<string name="title_always_delete_exported_transactions">Always delete all exported transactions</string>
-	<string name="key_default_export_email">export_email_target</string>
 	<string name="title_default_export_email">Default export email</string>
 	<string name="summary_default_export_email">The default email address to send exports to. You can still change this when you export.</string>	
 </resources>

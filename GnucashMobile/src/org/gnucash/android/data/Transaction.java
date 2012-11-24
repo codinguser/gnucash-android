@@ -83,6 +83,12 @@ public class Transaction {
 	private String mAccountUID = null;
 	
 	/**
+	 * Unique Identifier of the account which is used for double entry of this transaction
+	 * This value is null by default for transactions not using double entry
+	 */
+	private String mDoubleEntryAccountUID = null;
+	
+	/**
 	 * Flag indicating if this transaction has been exported before or not
 	 * The transactions are typically exported as bank statement in the OFX format
 	 */
@@ -298,6 +304,23 @@ public class Transaction {
 	public String getUID() {
 		return mTransactionUID;
 	}
+
+	/**
+	 * Returns the Unique Identifier of account with which this transaction is double entered
+	 * @return Unique Identifier of account with which this transaction is double entered
+	 */
+	public String getDoubleEntryAccountUID() {
+		return mDoubleEntryAccountUID;
+	}
+
+	/**
+	 * Sets the account UID with which to double enter this transaction
+	 * @param doubleEntryAccountUID Unique Identifier to set
+	 */
+	public void setDoubleEntryAccountUID(String doubleEntryAccountUID) {
+		this.mDoubleEntryAccountUID = doubleEntryAccountUID;
+	}
+	
 
 	/**
 	 * Returns UID of account to which this transaction belongs

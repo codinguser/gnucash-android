@@ -21,7 +21,7 @@
         android:dialogTitle="@string/title_choose_currency" 
         android:title="@string/title_default_currency" 
         android:entries="@array/currency_names" 
-        android:entryValues="@array/currency_codes"/>
+        android:entryValues="@array/currency_codes"/><CheckBoxPreference android:summary="@string/summary_use_double_entry" android:key="@string/key_use_double_entry" android:title="@string/title_use_double_entry"/>
     <PreferenceCategory android:title="@string/title_export_preference_category">
         <EditTextPreference android:title="@string/title_default_export_email" 
             android:key="@string/key_default_export_email" 
@@ -31,6 +31,7 @@
         <CheckBoxPreference android:summary="@string/hint_delete_after_export" android:key="@string/key_delete_transactions_after_export" android:title="@string/title_always_delete_exported_transactions"/>
         
     </PreferenceCategory>
+    
     
 
 </PreferenceScreen>

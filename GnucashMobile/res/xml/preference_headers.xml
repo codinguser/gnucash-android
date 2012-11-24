@@ -20,6 +20,5 @@
     <header android:fragment="org.gnucash.android.ui.settings.TransactionsPreferenceFragment" 
         android:title="@string/header_transaction_settings" />
     <header android:fragment="org.gnucash.android.ui.settings.AboutPreferenceFragment"
-        android:icon="@drawable/action_about_holo_light"
         android:title="@string/header_about_gnucash" />
 </preference-headers>

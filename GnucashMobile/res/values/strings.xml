@@ -487,4 +487,8 @@
 	<string name="key_default_export_email">export_email_target</string>
 	<string name="title_default_export_email">Default export email</string>
 	<string name="summary_default_export_email">The default email address to send exports to. You can still change this when you export.</string>
+	<string name="label_double_entry_account">Transfer from</string>
+	<string name="key_use_double_entry">use_double_entry</string>
+	<string name="summary_use_double_entry">All transactions will involve two accounts: source and destination accounts</string>
+	<string name="title_use_double_entry">Activate Double Entry</string>
 </resources>
