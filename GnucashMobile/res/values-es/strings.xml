@@ -68,7 +68,6 @@
     <string name="label_move_destination">Cuenta Destino</string>
     <string name="permission_access_sdcard">Acceder a la tarjeta SD</string>
     <string name="title_share_ofx_with">Compartir exportaci&#243;n OFX con&#8230;</string>
-    <string name="key_default_currency">default_currency</string>
     <string name="toast_incompatible_currency">No se pueden mover las transacciones.\nLa cuenta destino utiliza una divisa distinta a la de la cuenta de origen</string>
     <string name="header_general_settings">General</string>
     <string name="header_about_gnucash">Acerca de</string>
@@ -84,7 +83,6 @@
     <string name="label_display_account">Mostrar cuentas</string>
     <string name="btn_create_accounts">Crear Cuentas</string>
     <string name="title_default_accounts">Seleccionar cuentas a crear</string>
-    <string name="key_first_run">key_first_run</string>
     <string-array name="currency_names">
         <item>Afgani</item>
 		<item>Dinar Argelino</item>
@@ -447,15 +445,12 @@
 	    <item>Seguros</item>
 	</string-array>
 	<string name="error_no_accounts">No hay cuentas en Gnucash.\nCrea una cuenta antes de a&#241;adir un widget</string>
-	<string name="key_build_version">build_version</string>
 	<string name="title_build_version">Versi&#243;n de compilaci&#243;n</string>
 	<string name="title_license">Licencia</string>
 	<string name="summary_licence_details">Apache License v2.0. Clic para m&#225;s detalles</string>
 	<string name="title_general_prefs">General</string>
-	<string name="key_license">app_license</string>
 	<string name="label_widget_configuration">Seleccionar Cuenta</string>
 	<string name="toast_no_transactions_to_export">No hay transacciones disponibles para exportar</string>
-	<string name="key_about">about_gnucash</string>
 	<string name="title_about_gnucash">Acerca de Gnucash</string>
 	<string name="summary_about_gnucash">GnucashMobile es una aplicaci&#243;n de registro de gastos financieros para Android.\nPermite un registro flexible de gastos en cualquier lugar que luego pueden ser exportados al formato Open Financial eXchange (OFX) e importados en la aplicaci&#243;n Gnucash para el escritorio.</string>
 	<string name="title_about">About</string>
@@ -466,7 +461,6 @@
 	<string name="header_transaction_settings">Transacciones</string>
 	<string name="title_transaction_preferences">Preferencias de transacciones</string>
 	<string name="title_account_preferences">Preferencias de cuentas</string>
-	<string name="key_default_transaction_type">default_transaction_type</string>
 	<string name="title_default_transaction_type">Tipo de transacci&#243;n por defecto</string>
 	<string name="summary_default_transaction_type">El tipo de transacci&#243;n a utilizar por defecto: ABONO o CARGO</string>
 	<string-array name="transaction_types">
@@ -476,11 +470,8 @@
 	<string name="delete_all_transactions_confirmation_message">&#191;Est&#225;s seguro de que quieres borrar TODAS las transacciones?</string>
 	<string name="delete_transaction_confirmation_message">&#191;Est&#225;s seguro de que quieres borrar esta transacci&#243;n?</string>
 	<string name="title_export_preference_category">Exportaci&#243;n</string>
-	<string name="key_export_all_transactions">export_all_transactions</string>
 	<string name="title_export_all_transactions">Exportar siempre todas las transacciones</string>
-	<string name="key_delete_transactions_after_export">delete_transactions_after_export</string>
 	<string name="title_always_delete_exported_transactions">Borrar siempre todas las transacciones exportadas</string>
-	<string name="key_default_export_email">export_email_target</string>
 	<string name="title_default_export_email">Correo electr&#243;nico por defecto para exportar</string>
 	<string name="summary_default_export_email">La direcci&#243;n de correo electr&#243;nico a la que enviar las exportaciones por defecto. Puedes cambiarla en cada exportaci&#243;n.</string>
 </resources>
