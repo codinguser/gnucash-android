@@ -22,6 +22,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.gnucash.android.data.Account;
+import org.gnucash.android.data.Money;
 import org.gnucash.android.data.Account.AccountType;
 import org.gnucash.android.data.Transaction;
 
@@ -275,6 +276,38 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 				null, condition, null, null, null, 
 				DatabaseHelper.KEY_NAME + " ASC");
 		return cursor;
+	}
+	
+	/**
+	 * Returns the balance of all accounts with each transaction counted only once
+	 * This does not take into account the currencies and double entry 
+	 * transactions are not considered as well.
+	 * @return Balance of all accounts in the database
+	 * @see AccountsDbAdapter#getDoubleEntryAccountsBalance()
+	 */
+	public Money getAllAccountsBalance(){
+		return mTransactionsAdapter.getAllTransactionsSum();
+	}
+	
+	/**
+	 * Returns the balance for all transactions while taking double entry into consideration
+	 * This means that double transactions will be counted twice
+	 * @return Total balance of the accounts while using double entry
+	 */
+	public Money getDoubleEntryAccountsBalance(){
+		Cursor c = mDb.query(DatabaseHelper.ACCOUNTS_TABLE_NAME, 
+				new String[]{DatabaseHelper.KEY_ROW_ID}, 
+				null, null, null, null, null);
+		Money totalSum = new Money();
+		if (c != null){
+			while (c.moveToNext()) {
+				long id = c.getLong(DatabaseAdapter.COLUMN_ROW_ID);
+				Money sum = mTransactionsAdapter.getTransactionsSum(id);
+				totalSum = totalSum.add(sum);
+			}
+			c.close();
+		}
+		return totalSum;
 	}
 	
 	/**

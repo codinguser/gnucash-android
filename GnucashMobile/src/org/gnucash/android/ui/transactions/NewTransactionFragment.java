@@ -18,10 +18,10 @@ package org.gnucash.android.ui.transactions;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Currency;
 import java.util.Date;
@@ -119,12 +119,12 @@ public class NewTransactionFragment extends SherlockFragment implements
 	/**
 	 * Formats a {@link Date} object into a date string of the format dd MMM yyyy e.g. 18 July 2012
 	 */
-	public final static SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat("dd MMM yyyy");
+	public final static DateFormat DATE_FORMATTER = DateFormat.getDateInstance();
 	
 	/**
 	 * Formats a {@link Date} object to time string of format HH:mm e.g. 15:25
 	 */
-	public final static SimpleDateFormat TIME_FORMATTER = new SimpleDateFormat("HH:mm");
+	public final static DateFormat TIME_FORMATTER = DateFormat.getTimeInstance();
 	
 	/**
 	 * Button for setting the transaction type, either credit or debit
@@ -219,22 +219,11 @@ public class NewTransactionFragment extends SherlockFragment implements
 		mUseDoubleEntry = sharedPrefs.getBoolean(getString(R.string.key_use_double_entry), false);
 		if (mUseDoubleEntry == false){
 			getView().findViewById(R.id.layout_double_entry).setVisibility(View.GONE);
-//			mTransferAccountSpinner.setVisibility(View.GONE);
 		}
 		
-		String[] from = new String[] {DatabaseHelper.KEY_NAME};
-		int[] to = new int[] {android.R.id.text1};
+		//updateTransferAccountsList must only be called after creating mAccountsDbAdapter
 		mAccountsDbAdapter = new AccountsDbAdapter(getActivity());
-		long accountId = ((TransactionsActivity)getActivity()).getCurrentAccountID();
-		String conditions = "(" + DatabaseHelper.KEY_ROW_ID + " != " + accountId + ") AND " + "(" +
-							DatabaseHelper.KEY_CURRENCY_CODE + " = '" + mAccountsDbAdapter.getCurrencyCode(accountId) + "')";
-		mCursor = mAccountsDbAdapter.fetchAccounts(conditions);
-		
-		mCursorAdapter = new SimpleCursorAdapter(getActivity(), 
-				android.R.layout.simple_spinner_item, 
-				mCursor, from, to, 0);
-		mCursorAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-		mTransferAccountSpinner.setAdapter(mCursorAdapter);
+		updateTransferAccountsList();
 		
 		mTransactionId = getArguments().getLong(SELECTED_TRANSACTION_ID);
 		mTransactionsDbAdapter = new TransactionsDbAdapter(getActivity());
@@ -307,6 +296,21 @@ public class NewTransactionFragment extends SherlockFragment implements
 		}
 		Currency accountCurrency = Currency.getInstance(code);
 		mCurrencyTextView.setText(accountCurrency.getSymbol(Locale.getDefault()));
+	}
+	
+	private void updateTransferAccountsList(){
+		long accountId = ((TransactionsActivity)getActivity()).getCurrentAccountID();
+		String conditions = "(" + DatabaseHelper.KEY_ROW_ID + " != " + accountId + ") AND " + "(" +
+							DatabaseHelper.KEY_CURRENCY_CODE + " = '" + mAccountsDbAdapter.getCurrencyCode(accountId) + "')";
+		mCursor = mAccountsDbAdapter.fetchAccounts(conditions);
+		
+		String[] from = new String[] {DatabaseHelper.KEY_NAME};
+		int[] to = new int[] {android.R.id.text1};
+		mCursorAdapter = new SimpleCursorAdapter(getActivity(), 
+				android.R.layout.simple_spinner_item, 
+				mCursor, from, to, 0);
+		mCursorAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);		
+		mTransferAccountSpinner.setAdapter(mCursorAdapter);
 	}
 	
 	/**
@@ -399,6 +403,8 @@ public class NewTransactionFragment extends SherlockFragment implements
 		Currency currency = Currency.getInstance(currencyCode);
 		mCurrencyTextView.setText(currency.getSymbol(Locale.getDefault()));
 		accountsDbAdapter.close();
+		
+		updateTransferAccountsList();
 	}
 	
 	/**

@@ -491,4 +491,5 @@
 	<string name="key_use_double_entry">use_double_entry</string>
 	<string name="summary_use_double_entry">All transactions will involve two accounts: source and destination accounts</string>
 	<string name="title_use_double_entry">Activate Double Entry</string>
+	<string name="account_balance">Balance</string>
 </resources>

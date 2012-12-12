@@ -135,6 +135,16 @@ public class Money implements Comparable<Money>{
 	}
 
 	/**
+	 * Overloaded constructor. 
+	 * Initializes the currency to that specified by {@link Money#DEFAULT_CURRENCY_CODE}
+	 * @param amount Value associated with this Money object
+	 */
+	public Money(BigDecimal amount){
+		init();
+		setAmount(amount);
+	}
+	
+	/**
 	 * Initializes the amount and currency to their default values
 	 * @see {@link Money#DEFAULT_CURRENCY_CODE}, {@link #DEFAULT_ROUNDING_MODE}, {@link #DEFAULT_DECIMAL_PLACES}
 	 */

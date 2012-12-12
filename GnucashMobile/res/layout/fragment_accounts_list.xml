@@ -15,21 +15,27 @@
  limitations under the License.
 -->
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
+    <include layout="@layout/transactions_sum_bar" 
+        android:id="@+id/transactions_sum_bar" />
+    
     <ListView android:id="@id/android:list"        
         android:layout_width="match_parent"
-        android:layout_height="0dp"	
-        android:layout_weight="1"
+        android:layout_height="match_parent"	
+        android:layout_above="@id/transactions_sum_bar"
+        android:listSelector="@drawable/abs__list_selector_holo_light"
+        android:drawSelectorOnTop="false"
         />
     
 	<LinearLayout
         android:id="@id/android:empty"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_above="@id/transactions_sum_bar"
         android:gravity="center"
         android:orientation="vertical">
 		<TextView 
@@ -44,4 +50,4 @@
             android:onClick="onNewAccountClick"
             android:text="@string/title_add_account" />
     </LinearLayout>
-</LinearLayout>
+</RelativeLayout>

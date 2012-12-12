@@ -40,6 +40,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -220,8 +221,11 @@ public class AccountsListFragment extends SherlockListFragment implements
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		return inflater.inflate(R.layout.fragment_accounts_list, container,
+		View v = inflater.inflate(R.layout.fragment_accounts_list, container,
 				false);
+		TextView sumlabelTextView = (TextView) v.findViewById(R.id.label_sum);		
+		sumlabelTextView.setText(R.string.account_balance);
+		return v;
 	}
 	
 	@Override
@@ -246,7 +250,7 @@ public class AccountsListFragment extends SherlockListFragment implements
 		actionbar.setDisplayHomeAsUpEnabled(false);
 		
 		setHasOptionsMenu(true);
-		
+				
 		ListView lv = getListView();
 		lv.setOnItemLongClickListener(this);	
 		getLoaderManager().initLoader(0, null, this);		
@@ -410,6 +414,22 @@ public class AccountsListFragment extends SherlockListFragment implements
 	 */
 	public void refreshList(){
 		getLoaderManager().restartLoader(0, null, this);
+		
+		boolean doubleEntryActive = PreferenceManager.getDefaultSharedPreferences(getActivity())
+				.getBoolean(getString(R.string.key_use_double_entry), false);
+		
+		TextView tv = (TextView) getView().findViewById(R.id.transactions_sum);	
+		Money balance = null; 
+		if (doubleEntryActive){
+			balance = mAccountsDbAdapter.getDoubleEntryAccountsBalance();
+		} else {
+			balance = mAccountsDbAdapter.getAllAccountsBalance();
+		}
+		tv.setText(balance.formattedString(Locale.getDefault()));
+		if (balance.isNegative())
+			tv.setTextColor(getResources().getColor(R.color.debit_red));
+		else
+			tv.setTextColor(getResources().getColor(R.color.credit_green));
 	}
 	
 	/**

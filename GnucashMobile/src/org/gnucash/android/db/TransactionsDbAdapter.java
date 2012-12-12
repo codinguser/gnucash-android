@@ -339,6 +339,25 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 	}
 	
 	/**
+	 * Returns the balance of all accounts with each transaction counted only once
+	 * This does not take into account the currencies and double entry 
+	 * transactions are not considered as well.
+	 * @return Balance of all accounts in the database
+	 * @see AccountsDbAdapter#getDoubleEntryAccountsBalance()
+	 */
+	public Money getAllTransactionsSum(){
+		String query = "SELECT TOTAL(" + DatabaseHelper.KEY_AMOUNT +") FROM " + DatabaseHelper.TRANSACTIONS_TABLE_NAME;
+		Cursor c = mDb.rawQuery(query, null); 
+//				new String[]{DatabaseHelper.KEY_AMOUNT, DatabaseHelper.TRANSACTIONS_TABLE_NAME});
+		double result = 0;
+		if (c != null && c.moveToFirst()){
+			result = c.getDouble(0);	
+		}
+		c.close();
+		return new Money(new BigDecimal(result));	
+	}
+	
+	/**
 	 * Returns true if <code>rowId</code> and <code>accountUID</code> belong to the same account
 	 * @param rowId Database record ID
 	 * @param accountUID Unique Identifier string of the account

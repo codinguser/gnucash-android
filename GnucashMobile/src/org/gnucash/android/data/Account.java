@@ -49,7 +49,7 @@ public class Account {
 	 * This are the different types specified by the OFX format and 
 	 * they are currently not used except for exporting
 	 */
-	public enum AccountType {CHECKING, SAVINGS, MONEYMRKT, CREDITLINE};
+	public enum AccountType {CASH, BANK, CREDIT_CARD, ASSET, LIABILITY, INCOME, EXPENSE, EQUITY, CURRENCY, STOCK, MUTUAL_FUND};
 	
 	/**
 	 * Unique Identifier of the account
@@ -71,7 +71,7 @@ public class Account {
 	 * Type of account
 	 * Defaults to {@link AccountType#CHECKING}
 	 */
-	private AccountType mAccountType = AccountType.CHECKING;
+	private AccountType mAccountType = AccountType.CASH;
 	
 	/**
 	 * List of transactions in this account
