@@ -474,7 +474,7 @@ public class NewTransactionFragment extends SherlockFragment implements
 	
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-		inflater.inflate(R.menu.new_transaction_actions, menu);
+		inflater.inflate(R.menu.default_save_actions, menu);
 		mSaveMenuItem = menu.findItem(R.id.menu_save);
 		//only initially enable if we are editing a transaction
 		mSaveMenuItem.setEnabled(mTransactionId > 0);

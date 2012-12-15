@@ -76,11 +76,6 @@ import com.actionbarsherlock.view.MenuItem;
  */
 public class AccountsListFragment extends SherlockListFragment implements
 		LoaderCallbacks<Cursor>, OnItemLongClickListener {
-
-	/**
-	 * Request code passed when displaying the "Add Account" dialog. 
-	 */
-	private static final int DIALOG_ADD_ACCOUNT = 0x10;
 	
 	/**
 	 * Logging tag
@@ -95,7 +90,7 @@ public class AccountsListFragment extends SherlockListFragment implements
 	/**
 	 * Dialog fragment for adding new accounts
 	 */
-	NewAccountDialogFragment mAddAccountFragment;
+	AddAccountFragment mAddAccountFragment;
 	
 	/**
 	 * Database adapter for loading Account records from the database
@@ -154,8 +149,9 @@ public class AccountsListFragment extends SherlockListFragment implements
 		@Override
 		public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
 			switch (item.getItemId()) {
-			case R.id.context_menu_edit_accounts:
-				showAddAccountDialog(mSelectedItemId);
+			case R.id.context_menu_edit_accounts:				
+				showAddAccountFragment(mSelectedItemId);
+				mode.finish();
 				return true;
 
 			case R.id.context_menu_delete:
@@ -285,18 +281,19 @@ public class AccountsListFragment extends SherlockListFragment implements
 	
 	@Override
 	public boolean onItemLongClick(AdapterView<?> parent, View view, int position,
-				long id) {
-			if (mActionMode != null) {
-	            return false;
-	        }		
-			mInEditMode = true;
-			mSelectedItemId = id;
-	        // Start the CAB using the ActionMode.Callback defined above
-	        mActionMode = getSherlockActivity().startActionMode(mActionModeCallbacks);
-	             
-	        selectItem(position);
-	        return true;
+			long id) {
+		if (mActionMode != null) {
+			return false;
 		}
+		mInEditMode = true;
+		mSelectedItemId = id;
+		// Start the CAB using the ActionMode.Callback defined above
+		mActionMode = getSherlockActivity().startActionMode(
+				mActionModeCallbacks);
+
+		selectItem(position);
+		return true;
+	}
 
 	/**
 	 * Delete the account with record ID <code>rowId</code>
@@ -392,7 +389,7 @@ public class AccountsListFragment extends SherlockListFragment implements
 		switch (item.getItemId()) {
 
 		case R.id.menu_add_account:
-			showAddAccountDialog(0);
+			showAddAccountFragment(0);
 			return true;
 
 		case R.id.menu_export:
@@ -441,34 +438,24 @@ public class AccountsListFragment extends SherlockListFragment implements
 		mAccountsDbAdapter.close();
 		mAccountsCursorAdapter.close();
 	}	
-	
-	/**
-	 * Show dialog for creating a new {@link Account}
-	 */
-	public void showAddAccountDialog(long accountId) {
-		FragmentManager manager = getSherlockActivity().getSupportFragmentManager();
-		FragmentTransaction ft = manager.beginTransaction();
-		Fragment prev = manager.findFragmentByTag(AccountsActivity.FRAGMENT_NEW_ACCOUNT);
-		
-		if (prev != null) {
-			ft.remove(prev);
-		}
 
-		ft.addToBackStack(null);
-
-		mAddAccountFragment = NewAccountDialogFragment.newInstance(mAccountsDbAdapter);
+	public void showAddAccountFragment(long accountId) {
+		FragmentManager fragmentManager = getSherlockActivity().getSupportFragmentManager();
+		FragmentTransaction fragmentTransaction = fragmentManager
+				.beginTransaction();
+						
 		Bundle args = new Bundle();
 		args.putLong(TransactionsListFragment.SELECTED_ACCOUNT_ID, accountId);
-		mAddAccountFragment.setArguments(args);
+		AddAccountFragment newAccountFragment = AddAccountFragment.newInstance(mAccountsDbAdapter);	
+		newAccountFragment.setArguments(args);
 		
-		mAddAccountFragment.setTargetFragment(this, DIALOG_ADD_ACCOUNT);
-		if (mActionMode != null){
-			//if we were editing, stop before going somewhere else
-			mActionMode.finish(); 
-		}
-		mAddAccountFragment.show(ft, AccountsActivity.FRAGMENT_NEW_ACCOUNT);
+		fragmentTransaction.replace(R.id.fragment_container,
+				newAccountFragment, AccountsActivity.FRAGMENT_NEW_ACCOUNT);
+		
+		fragmentTransaction.addToBackStack(null);
+		fragmentTransaction.commit();
 	}
-
+	
 	/**
 	 * Displays the dialog for exporting transactions in OFX
 	 */

@@ -297,4 +297,5 @@
 	<string name="title_always_delete_exported_transactions">Borrar siempre todas las transacciones exportadas</string>
 	<string name="title_default_export_email">Correo electr&#243;nico por defecto para exportar</string>
 	<string name="summary_default_export_email">La direcci&#243;n de correo electr&#243;nico a la que enviar las exportaciones por defecto. Puedes cambiarla en cada exportaci&#243;n.</string>
+	<string name="toast_no_account_name_entered">Please enter an account name</string>
 </resources>

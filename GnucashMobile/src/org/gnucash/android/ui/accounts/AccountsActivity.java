@@ -159,7 +159,7 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
 		AccountsListFragment accountFragment = (AccountsListFragment) getSupportFragmentManager()
 				.findFragmentByTag(FRAGMENT_ACCOUNTS_LIST);
 		if (accountFragment != null)
-			accountFragment.showAddAccountDialog(0);
+			accountFragment.showAddAccountFragment(0);
 	}
 
 	/**

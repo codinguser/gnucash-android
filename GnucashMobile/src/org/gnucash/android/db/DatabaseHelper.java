@@ -96,6 +96,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	public static final String KEY_ACCOUNT_UID 	= "account_uid";
 	
 	/**
+	 * UID of the parent account
+	 */
+	public static final String KEY_PARENT_ACCOUNT_UID = "parent_account_uid";
+	
+	/**
 	 * Account which the origin account this transaction in double entry mode
 	 */
 	public static final String KEY_DOUBLE_ENTRY_ACCOUNT_UID 	= "double_account_uid";
@@ -128,8 +133,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			+ KEY_ROW_ID + " integer primary key autoincrement, "
 			+ KEY_UID 	+ " varchar(255) not null, "
 			+ KEY_NAME 	+ " varchar(255) not null, "
-			+ KEY_TYPE 	+ " varchar(255), "
+			+ KEY_TYPE 	+ " varchar(255), "			
 			+ KEY_CURRENCY_CODE + " varchar(255) not null, "
+			+ KEY_PARENT_ACCOUNT_UID + " varchar(255), "
 			+ "UNIQUE (" + KEY_UID + ")"	
 			+ ");";
 	
@@ -180,7 +186,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				Log.i(TAG, "Adding column for splitting transactions");
 				String addColumnSql = "ALTER TABLE " + TRANSACTIONS_TABLE_NAME + 
 									" ADD COLUMN " + KEY_DOUBLE_ENTRY_ACCOUNT_UID + " varchar(255)";
+				
+				String addParentAccountSql = "ALTER TABLE " + ACCOUNTS_TABLE_NAME + 
+						" ADD COLUMN " + KEY_PARENT_ACCOUNT_UID + " varchar(255)";
+	
 				db.execSQL(addColumnSql);
+				db.execSQL(addParentAccountSql);
 			}
 			
 		} else {

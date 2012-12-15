@@ -297,4 +297,5 @@
 	<string name="title_always_delete_exported_transactions">Always delete all exported transactions</string>
 	<string name="title_default_export_email">Default export email</string>
 	<string name="summary_default_export_email">The default email address to send exports to. You can still change this when you export.</string>
+	<string name="toast_no_account_name_entered">Please enter an account name</string>
 </resources>

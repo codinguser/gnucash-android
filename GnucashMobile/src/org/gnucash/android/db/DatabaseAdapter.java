@@ -52,6 +52,7 @@ public class DatabaseAdapter {
 	
 	//columns specific to accounts
 	public static final int COLUMN_CURRENCY_CODE = 4;
+	public static final int COLUMN_PARENT_ACCOUNT_UID = 5;
 	
 	/**
 	 * {@link DatabaseHelper} for creating and opening the database

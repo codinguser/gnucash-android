@@ -20,6 +20,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Currency;
 import java.util.List;
+import java.util.Locale;
 import java.util.UUID;
 
 import org.w3c.dom.Document;
@@ -49,7 +50,8 @@ public class Account {
 	 * This are the different types specified by the OFX format and 
 	 * they are currently not used except for exporting
 	 */
-	public enum AccountType {CASH, BANK, CREDIT_CARD, ASSET, LIABILITY, INCOME, EXPENSE, EQUITY, CURRENCY, STOCK, MUTUAL_FUND};
+	public enum AccountType {CASH, BANK, CREDIT_CARD, ASSET, LIABILITY, INCOME, EXPENSE, EQUITY, CURRENCY, STOCK, MUTUAL_FUND,
+		CHECKING, SAVINGS, MONEYMRKT, CREDITLINE};
 	
 	/**
 	 * Unique Identifier of the account
@@ -77,6 +79,11 @@ public class Account {
 	 * List of transactions in this account
 	 */
 	private List<Transaction> mTransactionsList = new ArrayList<Transaction>();
+
+	/**
+	 * Account UID of the parent account
+	 */
+	private String mParentAccountUID;
 
 	/**
 	 * An extra key for passing the currency code (according ISO 4217) in an intent
@@ -135,7 +142,7 @@ public class Account {
 		}
 		
 		uuid = uuid.substring(uuid.lastIndexOf("-"));
-		String name = mName.toLowerCase().replace(" ", "-");
+		String name = mName.toLowerCase(Locale.US).replace(" ", "-");
 		if (name.length() > 9)
 			name = name.substring(0, 10);
 		uuid = name + uuid;		
@@ -271,6 +278,14 @@ public class Account {
 		//transaction values to the corresponding value in the new currency
 	}
 
+	public void setParentUID(String parentUID){
+		mParentAccountUID = parentUID;
+	}
+	
+	public String getParentUID() {
+		return mParentAccountUID;
+		
+	}
 	/**
 	 * Converts this account's transactions into XML and adds them to the DOM document
 	 * @param doc XML DOM document for the OFX data
