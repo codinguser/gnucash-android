@@ -147,10 +147,19 @@ public class AddAccountFragment extends SherlockFragment {
 		mSelectedAccountId = getArguments().getLong(TransactionsListFragment.SELECTED_ACCOUNT_ID);
 		if (mSelectedAccountId > 0) {
         	mAccount = mAccountsDbAdapter.getAccount(mSelectedAccountId);
-        	mNameEditText.setText(mAccount.getName());
         	getSherlockActivity().getSupportActionBar().setTitle(R.string.title_edit_account);
-        }
+		}
 		return view;
+	}
+	
+	private void setParentAccountSelection(String parentUID){
+		long parentId = mAccountsDbAdapter.getAccountID(parentUID);
+		for (int pos = 0; pos < mCursorAdapter.getCount(); pos++) {
+			if (mCursorAdapter.getItemId(pos) == parentId){
+				mParentAccountSpinner.setSelection(pos);				
+				break;
+			}
+		}
 	}
 	
 	/**
@@ -160,8 +169,10 @@ public class AddAccountFragment extends SherlockFragment {
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 		
-		ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, getResources().getStringArray(R.array.currency_names));
-		
+		ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(
+				getActivity(), 
+				android.R.layout.simple_spinner_item, 
+				getResources().getStringArray(R.array.currency_names));		
 		arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		mCurrencySpinner.setAdapter(arrayAdapter);
 		
@@ -177,7 +188,18 @@ public class AddAccountFragment extends SherlockFragment {
 			mCurrencySpinner.setSelection(mCurrencyCodes.indexOf(currencyCode));
 		}	
 		
-		loadParentAccountList();
+		loadParentAccountList();		
+
+		if (mSelectedAccountId > 0) {
+        	mNameEditText.setText(mAccount.getName());
+        	String parentUID = mAccount.getParentUID();
+        	if (parentUID != null){
+        		mParentCheckBox.setChecked(true);
+        		mParentAccountSpinner.setEnabled(true);
+        		setParentAccountSelection(parentUID);
+        	}        	
+        }
+		
 	}
 	
 	@Override
@@ -202,7 +224,8 @@ public class AddAccountFragment extends SherlockFragment {
 	}
 	
 	private void loadParentAccountList(){
-		mCursor = mAccountsDbAdapter.fetchAllAccounts();
+		String condition = DatabaseHelper.KEY_ROW_ID + "!=" + mSelectedAccountId;
+		mCursor = mAccountsDbAdapter.fetchAccounts(condition);
 		
 		String[] from = new String[] {DatabaseHelper.KEY_NAME};
 		int[] to = new int[] {android.R.id.text1};
@@ -253,14 +276,17 @@ public class AddAccountFragment extends SherlockFragment {
 				.getSelectedItemPosition());
 		mAccount.setCurrency(Currency.getInstance(curCode));
 
-		if (mAccountsDbAdapter == null)
-			mAccountsDbAdapter = new AccountsDbAdapter(getActivity());
-		mAccountsDbAdapter.addAccount(mAccount);
-
 		if (mParentCheckBox.isChecked()){
 			long id = mParentAccountSpinner.getSelectedItemId();
 			mAccount.setParentUID(mAccountsDbAdapter.getAccountUID(id));
+		} else {
+			mAccount.setParentUID(null);
 		}
+		
+		if (mAccountsDbAdapter == null)
+			mAccountsDbAdapter = new AccountsDbAdapter(getActivity());
+		mAccountsDbAdapter.addAccount(mAccount);
+		
 		WidgetConfigurationActivity.updateAllWidgets(getActivity()
 				.getApplicationContext());
 		finish();

@@ -443,8 +443,8 @@
 	    <item>Expenses</item>
 	    <item>Income</item>
 	    <item>Assets</item>	    
-	    <item>Entertainment</item>
-	    <item>Insurance</item>
+	    <item>Equity</item>
+	    <item>Liabilities</item>
 	</string-array>
 	<string name="error_no_accounts">No accounts exist in GnuCash.\nCreate an account before adding a widget</string>
 	<string name="key_build_version">build_version</string>

@@ -263,8 +263,8 @@
 	    <item>Ausgaben</item>
 	    <item>Einkommen</item>
 	    <item>Aktiva</item>	    
-	    <item>Unterhaltung</item>
-	    <item>Versicherung</item>
+	    <item>Equity</item>
+	    <item>Liabilities</item>
 	</string-array>
 	<string name="error_no_accounts">Keine Konten vorhanden.\nSie m&#252;ssen einen Konto erstellen um Widgets zu anzuf&#252;gen</string>
 	<string name="title_build_version">Version</string>

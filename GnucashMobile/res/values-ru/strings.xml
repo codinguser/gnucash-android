@@ -264,8 +264,8 @@
 	    <item>Расходы</item>
 	    <item>Доходы</item>
 	    <item>Активы</item>	    
-	    <item>Развлечения</item>
-	    <item>Страховка</item>
+	    <item>Equity</item>
+	    <item>Liabilities</item>
 	</string-array>
 	<string name="error_no_accounts">Нет счетов в Gnucash.\nСначала создайте счета, а потом добавляйте виджет.</string>
 	<string name="title_build_version">Версия сборки</string>

@@ -264,8 +264,8 @@
 	    <item>D&#233;pense</item>
 	    <item>Revenu</item>
 	    <item>Actif</item>	    
-	    <item>Divertissement</item>
-	    <item>Assurance</item>
+	    <item>Equity</item>
+	    <item>Liabilities</item>
 	</string-array>
 	<string name="error_no_accounts">Aucun compte &#233;xistant dans Gnucash.\nCr&#233;er un compte avant d\'ajouter un widget</string>
 	<string name="title_build_version">Version logiciel</string>

@@ -264,8 +264,8 @@
 	    <item>Uscite</item>
 	    <item>Entrate</item>
 	    <item>Capitali</item>	    
-	    <item>Intrattenimento</item>
-	    <item>Assicurazione</item>
+	    <item>Equity</item>
+	    <item>Liabilities</item>
 	</string-array>
 	<string name="error_no_accounts">Non esiste alcun conto in Gnucash.\nCreare un conto prima di aggiungere il widget</string>
 	<string name="title_build_version">Versione build</string>

@@ -265,8 +265,8 @@
 	    <item>Utgifter</item>
 	    <item>Inntekter</item>
 	    <item>Eiendeler</item>	    
-	    <item>Underholdning</item>
-	    <item>Forsikringer</item>
+	    <item>Equity</item>
+	    <item>Liabilities</item>
 	</string-array>
 	<string name="error_no_accounts">Ingen kontoer finnes i Gnucash.\nOpprett en konto før du legger til en widget</string>
 	<string name="title_build_version">Byggversion</string>

@@ -264,8 +264,8 @@
 	    <item>Uitgaven</item>
 	    <item>Inkomsten</item>
 	    <item>Activa</item>	    
-	    <item>Ontspanning</item>
-	    <item>Verzekering</item>
+	    <item>Equity</item>
+	    <item>Liabilities</item>
 	</string-array>
 	<string name="error_no_accounts">Geen dagboeken beschikbaar.\nU moet een dagboek aanmaken alvorens een widget toe te voegen</string>
 	<string name="title_build_version">Versie</string>

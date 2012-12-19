@@ -264,8 +264,8 @@
 	    <item>Gastos</item>
 	    <item>Ingresos</item>
 	    <item>Activos</item>	    
-	    <item>Entretenimiento</item>
-	    <item>Seguros</item>
+	    <item>Equity</item>
+	    <item>Liabilities</item>
 	</string-array>
 	<string name="error_no_accounts">No hay cuentas en Gnucash.\nCrea una cuenta antes de a&#241;adir un widget</string>
 	<string name="title_build_version">Versi&#243;n de compilaci&#243;n</string>

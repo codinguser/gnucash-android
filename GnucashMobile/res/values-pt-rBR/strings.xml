@@ -263,8 +263,8 @@
     <item>Despesas</item>
     <item>Receitas</item>
     <item>Ativos</item>
-    <item>Diversão</item>
-    <item>Seguros</item>
+    <item>Equity</item>
+	<item>Liabilities</item>
   </string-array>
   <string name="error_no_accounts">Não existem contas no GnuCash.\nCriar uma conta antes de adicionar um widget</string>
   <string name="title_build_version">Versão de compilação</string>

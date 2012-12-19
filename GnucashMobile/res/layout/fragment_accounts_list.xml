@@ -21,7 +21,8 @@
     android:orientation="vertical" >
 
     <include layout="@layout/transactions_sum_bar" 
-        android:id="@+id/transactions_sum_bar" />
+        android:id="@+id/transactions_sum_bar" 
+        android:visibility="gone" />
     
     <ListView android:id="@id/android:list"        
         android:layout_width="match_parent"

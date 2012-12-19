@@ -264,8 +264,8 @@
 	    <item>Έξοδα</item>
 	    <item>Εισόδημα</item>
 	    <item>Πάγια</item>	    
-	    <item>Διασκέδαση</item>
-	    <item>Ασφάλεια</item>
+	    <item>Equity</item>
+	    <item>Liabilities</item>
 	</string-array>
 	<string name="error_no_accounts">Δεν υπάρχουν λογαριασμοί στο
 	GnuCash.\nΔημιουργήστε ενα λογαριασμό πριν προσθέσετε ένα widget</string>
