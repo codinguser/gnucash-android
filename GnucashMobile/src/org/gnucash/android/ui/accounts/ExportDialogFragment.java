@@ -16,11 +16,14 @@
 
 package org.gnucash.android.ui.accounts;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.StringWriter;
 import java.io.Writer;
 import java.nio.channels.FileChannel;
 import java.text.SimpleDateFormat;
@@ -222,9 +225,25 @@ public class ExportDialogFragment extends DialogFragment {
 	private void writeToExternalStorage(Document doc) throws IOException{
 		File file = new File(mFilePath);
 		
-		FileWriter writer = new FileWriter(file);
-		write(doc, writer);
+//		FileWriter writer = new FileWriter(file);
+		BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), "UTF-8"));
+		boolean useSgmlHeader = PreferenceManager.getDefaultSharedPreferences(getActivity())
+				.getBoolean(getString(R.string.key_sgml_ofx_header), false);
+
+		//if we want SGML OFX headers, write first to string and then prepend header
+		if (useSgmlHeader){		
+			StringWriter stringWriter = new StringWriter();
+			write(doc, stringWriter);
+			
+			StringBuffer stringBuffer = new StringBuffer(OfxFormatter.OFX_SGML_HEADER);
+			stringBuffer.append('\n');
+			writer.write(stringBuffer.toString());
+		} else {
+			write(doc, writer);
+		}
 		
+		writer.flush();
+		writer.close();
 	}
 	
 	/**
