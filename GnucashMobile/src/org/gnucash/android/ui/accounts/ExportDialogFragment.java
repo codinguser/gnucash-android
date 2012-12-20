@@ -20,7 +20,6 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.StringWriter;
@@ -45,6 +44,7 @@ import org.gnucash.android.ui.transactions.TransactionsDeleteConfirmationDialog;
 import org.gnucash.android.util.OfxFormatter;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.w3c.dom.ProcessingInstruction;
 
 import android.app.Activity;
@@ -231,15 +231,16 @@ public class ExportDialogFragment extends DialogFragment {
 				.getBoolean(getString(R.string.key_sgml_ofx_header), false);
 
 		//if we want SGML OFX headers, write first to string and then prepend header
-		if (useSgmlHeader){		
+		if (useSgmlHeader){
+			Node ofxNode = doc.getElementsByTagName("OFX").item(0);
 			StringWriter stringWriter = new StringWriter();
-			write(doc, stringWriter);
+			write(ofxNode, stringWriter, true);
 			
 			StringBuffer stringBuffer = new StringBuffer(OfxFormatter.OFX_SGML_HEADER);
 			stringBuffer.append('\n');
-			writer.write(stringBuffer.toString());
+			writer.write(stringBuffer.toString() + stringWriter.toString());
 		} else {
-			write(doc, writer);
+			write(doc, writer, false);
 		}
 		
 		writer.flush();
@@ -346,16 +347,19 @@ public class ExportDialogFragment extends DialogFragment {
 	 * @param document {@link Document} containing the OFX document structure
 	 * @param outputWriter {@link Writer} to use in writing the file to stream
 	 */
-	public void write(Document document, Writer outputWriter){
+	public void write(Node node, Writer outputWriter, boolean omitXmlDeclaration){
 		try {
 			TransformerFactory transformerFactory = TransformerFactory
 					.newInstance();
 			Transformer transformer = transformerFactory.newTransformer();
-			DOMSource source = new DOMSource(document);
+			DOMSource source = new DOMSource(node);
 			StreamResult result = new StreamResult(outputWriter);
 			
 			transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
 			transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+			if (omitXmlDeclaration) {
+				transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+			}
 			
 			transformer.transform(source, result);
 		} catch (TransformerConfigurationException txconfigException) {
