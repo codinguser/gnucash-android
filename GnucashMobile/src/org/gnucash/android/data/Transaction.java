@@ -22,6 +22,7 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.UUID;
 
+import org.gnucash.android.data.Account.OfxAccountType;
 import org.gnucash.android.util.OfxFormatter;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -391,6 +392,24 @@ public class Transaction {
 			Element memo = doc.createElement("MEMO");
 			memo.appendChild(doc.createTextNode(mDescription));
 			transactionNode.appendChild(memo);
+		}
+		
+		if (mDoubleEntryAccountUID != null && mDoubleEntryAccountUID.length() > 0){
+			Element bankId = doc.createElement("BANKID");
+			bankId.appendChild(doc.createTextNode(OfxFormatter.APP_ID));
+			
+			Element acctId = doc.createElement("ACCTID");
+			acctId.appendChild(doc.createTextNode(mDoubleEntryAccountUID));
+			
+			Element accttype = doc.createElement("ACCTTYPE");
+			accttype.appendChild(doc.createTextNode(OfxAccountType.CHECKING.toString()));
+			
+			Element bankAccountTo = doc.createElement("BANKACCTTO");
+			bankAccountTo.appendChild(bankId);
+			bankAccountTo.appendChild(acctId);
+			bankAccountTo.appendChild(accttype);
+			
+			transactionNode.appendChild(bankAccountTo);
 		}
 		
 		return transactionNode;

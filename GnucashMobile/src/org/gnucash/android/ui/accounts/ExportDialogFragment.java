@@ -106,6 +106,11 @@ public class ExportDialogFragment extends DialogFragment {
 	String mFilePath;
 	
 	/**
+	 * Tag for logging
+	 */
+	private static final String TAG = "ExportDialogFragment";
+	
+	/**
 	 * Click listener for positive button in the dialog.
 	 * @author Ngewi Fet <ngewif@gmail.com>
 	 */
@@ -119,7 +124,7 @@ public class ExportDialogFragment extends DialogFragment {
 				document = exportOfx(exportAll);
 				writeToExternalStorage(document);
 			} catch (Exception e) {
-				Log.e(getTag(), e.getMessage());
+				Log.e(TAG, e.getMessage());
 				Toast.makeText(getActivity(), R.string.error_exporting,
 						Toast.LENGTH_LONG).show();
 				dismiss();
@@ -143,7 +148,7 @@ public class ExportDialogFragment extends DialogFragment {
 					Toast.makeText(getActivity(), 
 							getString(R.string.toast_error_exporting_ofx) + dst.getAbsolutePath(), 
 							Toast.LENGTH_LONG).show();		
-					Log.e(getTag(), e.getMessage());
+					Log.e(TAG, e.getMessage());
 					break;
 				}
 				

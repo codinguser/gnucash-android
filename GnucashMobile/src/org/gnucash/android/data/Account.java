@@ -50,9 +50,11 @@ public class Account {
 	 * This are the different types specified by the OFX format and 
 	 * they are currently not used except for exporting
 	 */
-	public enum AccountType {CASH, BANK, CREDIT_CARD, ASSET, LIABILITY, INCOME, EXPENSE, EQUITY, CURRENCY, STOCK, MUTUAL_FUND,
-		CHECKING, SAVINGS, MONEYMRKT, CREDITLINE};
+	public enum AccountType {CASH, BANK, CREDIT_CARD, ASSET, LIABILITY, INCOME, EXPENSE, 
+		EQUITY, CURRENCY, STOCK, MUTUAL_FUND, CHECKING, SAVINGS, MONEYMRKT, CREDITLINE};
 	
+	public enum OfxAccountType {CHECKING, SAVINGS, MONEYMRKT, CREDITLINE };
+		
 	/**
 	 * Unique Identifier of the account
 	 * It is generated when the account is created and can be set a posteriori as well
@@ -278,14 +280,56 @@ public class Account {
 		//transaction values to the corresponding value in the new currency
 	}
 
+	/**
+	 * Sets the Unique Account Identifier of the parent account
+	 * @param parentUID String Unique ID of parent account
+	 */
 	public void setParentUID(String parentUID){
 		mParentAccountUID = parentUID;
 	}
 	
+	/**
+	 * Returns the Unique Account Identifier of the parent account
+	 * @return String Unique ID of parent account
+	 */
 	public String getParentUID() {
 		return mParentAccountUID;
 		
 	}
+
+	/**
+	 * Maps the <code>accountType</code> to the corresponding account type.
+	 * <code>accountType</code> have corresponding values to GnuCash desktop
+	 * @param accountType {@link AccountType} of an account
+	 * @return Corresponding {@link OfxAccountType} for the <code>accountType</code>
+	 * @see AccountType
+	 * @see OfxAccountType
+	 */
+	public OfxAccountType ofxAccountTypeMapping(AccountType accountType){
+		switch (accountType) {
+		case CREDITLINE:
+			return OfxAccountType.CREDITLINE;
+			
+		case CASH:
+		case INCOME:
+		case EXPENSE:
+		case CURRENCY:
+			return OfxAccountType.CHECKING;
+			
+		case BANK:
+		case ASSET:
+			return OfxAccountType.SAVINGS;
+			
+		case MUTUAL_FUND:
+		case STOCK:
+		case EQUITY:
+			return OfxAccountType.MONEYMRKT;
+
+		default:
+			return OfxAccountType.CHECKING;
+		}
+	}
+	
 	/**
 	 * Converts this account's transactions into XML and adds them to the DOM document
 	 * @param doc XML DOM document for the OFX data
@@ -295,7 +339,9 @@ public class Account {
 		for (Transaction transaction : mTransactionsList) {
 			if (!allTransactions && transaction.isExported())
 				continue;
+			
 			parent.appendChild(transaction.toOfx(doc));
 		}
 	}
+
 }
