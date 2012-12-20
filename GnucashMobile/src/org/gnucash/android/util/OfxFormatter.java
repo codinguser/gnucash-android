@@ -78,7 +78,7 @@ public class OfxFormatter {
 	/**
 	 * SGML header for OFX. Used for compatibility with desktop GnuCash
 	 */
-	public static final String OFX_SGML_HEADER = "ENCODING:UTF-8 \nOFXHEADER:100 \nDATA:OFXSGML \nVERSION:211 \nSECURITY:NONE \nCHARSET:UTF-8 \nCOMPRESSION:NONE \nOLDFILEUID:NONE \nNEWFILEUID:NONE";
+	public static final String OFX_SGML_HEADER = "ENCODING:UTF-8\nOFXHEADER:100\nDATA:OFXSGML\nVERSION:211\nSECURITY:NONE\nCHARSET:UTF-8\nCOMPRESSION:NONE\nOLDFILEUID:NONE\nNEWFILEUID:NONE";
 	
 	/**
 	 * Builds an XML representation of the {@link Account}s and {@link Transaction}s in the database 
