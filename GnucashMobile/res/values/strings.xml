@@ -495,4 +495,7 @@
 	<string name="toast_no_account_name_entered">Please enter an account name</string>
 	<string name="label_account_currency">Currency</string>
 	<string name="label_parent_account">Parent account</string>
+	<string name="key_sgml_ofx_header">sgml_ofx_header</string>
+	<string name="title_sgml_ofx_header">Use SGML for OFX header</string>
+	<string name="summary_sgml_ofx_header">Allows GnuCash desktop to correctly detect encoding of OFX file. Useful for non-Latin character sets.</string>
 </resources>
