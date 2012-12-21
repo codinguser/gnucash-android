@@ -16,4 +16,5 @@
 -->
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <ListPreference android:title="@string/title_default_transaction_type" android:entryValues="@array/key_transaction_type_values" android:entries="@array/transaction_types" android:key="@string/key_default_transaction_type" android:summary="@string/summary_default_transaction_type"/>
+    <CheckBoxPreference android:summary="@string/summary_use_double_entry" android:key="@string/key_use_double_entry" android:title="@string/title_use_double_entry"/>
 </PreferenceScreen>
