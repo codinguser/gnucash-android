@@ -78,7 +78,8 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 		if ((rowId = getAccountID(account.getUID())) > 0){
 			//if account already exists, then just update
 			Log.d(TAG, "Updating existing account");
-			mDb.update(DatabaseHelper.ACCOUNTS_TABLE_NAME, contentValues, DatabaseHelper.KEY_ROW_ID + " = " + rowId, null);
+			mDb.update(DatabaseHelper.ACCOUNTS_TABLE_NAME, contentValues, 
+					DatabaseHelper.KEY_ROW_ID + " = " + rowId, null);
 		} else {
 			Log.d(TAG, "Adding new account to db");
 			rowId = mDb.insert(DatabaseHelper.ACCOUNTS_TABLE_NAME, null, contentValues);

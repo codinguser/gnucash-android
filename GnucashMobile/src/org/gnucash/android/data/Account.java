@@ -52,7 +52,7 @@ public class Account {
 	 * they are currently not used except for exporting
 	 */
 	public enum AccountType {CASH, BANK, CREDIT_CARD, ASSET, LIABILITY, INCOME, EXPENSE, 
-		EQUITY, CURRENCY, STOCK, MUTUAL_FUND, CHECKING, SAVINGS, MONEYMRKT, CREDITLINE};
+							PAYABLE, RECEIVABLE, EQUITY, CURRENCY, STOCK, MUTUAL_FUND};
 	
 	public enum OfxAccountType {CHECKING, SAVINGS, MONEYMRKT, CREDITLINE };
 		
@@ -314,15 +314,16 @@ public class Account {
 	 * @see AccountType
 	 * @see OfxAccountType
 	 */
-	public OfxAccountType ofxAccountTypeMapping(AccountType accountType){
+	public static OfxAccountType convertToOfxAccountType(AccountType accountType){
 		switch (accountType) {
-		case CREDITLINE:
+		case CREDIT_CARD:
 			return OfxAccountType.CREDITLINE;
 			
 		case CASH:
 		case INCOME:
 		case EXPENSE:
-		case CURRENCY:
+		case PAYABLE:
+		case RECEIVABLE:
 			return OfxAccountType.CHECKING;
 			
 		case BANK:
@@ -332,6 +333,7 @@ public class Account {
 		case MUTUAL_FUND:
 		case STOCK:
 		case EQUITY:
+		case CURRENCY:
 			return OfxAccountType.MONEYMRKT;
 
 		default:
@@ -357,7 +359,8 @@ public class Account {
 		acctId.appendChild(doc.createTextNode(mUID));
 		
 		Element accttype = doc.createElement("ACCTTYPE");
-		accttype.appendChild(doc.createTextNode(mAccountType.toString()));
+		String ofxAccountType = convertToOfxAccountType(mAccountType).toString();
+		accttype.appendChild(doc.createTextNode(ofxAccountType));
 		
 		Element bankFrom = doc.createElement("BANKACCTFROM");
 		bankFrom.appendChild(bankId);

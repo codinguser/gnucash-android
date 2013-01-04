@@ -23,6 +23,7 @@ import java.util.Locale;
 import java.util.UUID;
 
 import org.gnucash.android.app.GnuCashApplication;
+import org.gnucash.android.data.Account.OfxAccountType;
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.util.OfxFormatter;
 import org.w3c.dom.Document;
@@ -409,7 +410,8 @@ public class Transaction {
 			
 			Element accttype = doc.createElement("ACCTTYPE");			
 			AccountsDbAdapter acctDbAdapter = new AccountsDbAdapter(GnuCashApplication.getAppContext());
-			accttype.appendChild(doc.createTextNode(acctDbAdapter.getAccountType(doubleAccountUID).toString()));
+			OfxAccountType ofxAccountType = Account.convertToOfxAccountType(acctDbAdapter.getAccountType(doubleAccountUID));
+			accttype.appendChild(doc.createTextNode(ofxAccountType.toString()));
 			acctDbAdapter.close();
 			
 			Element bankAccountTo = doc.createElement("BANKACCTTO");

@@ -16,6 +16,9 @@
 
 package org.gnucash.android.db;
 
+import org.gnucash.android.data.Account.AccountType;
+
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -176,8 +179,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 		Log.i(TAG, "Upgrading database from version " 
-				+ oldVersion + " to " + newVersion
-				+ " which will destroy all old data");
+				+ oldVersion + " to " + newVersion);
 		
 		if (oldVersion < newVersion){
 			//introducing double entry accounting
@@ -187,6 +189,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				String addColumnSql = "ALTER TABLE " + TRANSACTIONS_TABLE_NAME + 
 									" ADD COLUMN " + KEY_DOUBLE_ENTRY_ACCOUNT_UID + " varchar(255)";
 				
+				//introducing sub accounts
+				Log.i(TAG, "Adding column for parent accounts");
 				String addParentAccountSql = "ALTER TABLE " + ACCOUNTS_TABLE_NAME + 
 						" ADD COLUMN " + KEY_PARENT_ACCOUNT_UID + " varchar(255)";
 	
@@ -194,13 +198,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				db.execSQL(addParentAccountSql);
 			}
 			
+			//update account types to GnuCash account types
+			//since all were previously CHECKING, now all will be CASH
+			Log.i(TAG, "Converting account types to GnuCash compatible types");
+			ContentValues cv = new ContentValues();
+			cv.put(KEY_TYPE, AccountType.CASH.toString());
+			db.update(ACCOUNTS_TABLE_NAME, cv, null, null);
+				
 		} else {
 			Log.i(TAG, "Cannot downgrade database.");
-			/*
-			db.execSQL("DROP TABLE IF EXISTS " + TRANSACTIONS_TABLE_NAME);
-			db.execSQL("DROP TABLE IF EXISTS " + ACCOUNTS_TABLE_NAME);
-			onCreate(db);
-			*/
 		}
 	}
 
