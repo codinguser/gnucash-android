@@ -133,7 +133,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			+ KEY_ROW_ID + " integer primary key autoincrement, "
 			+ KEY_UID 	+ " varchar(255) not null, "
 			+ KEY_NAME 	+ " varchar(255) not null, "
-			+ KEY_TYPE 	+ " varchar(255), "			
+			+ KEY_TYPE 	+ " varchar(255) not null, "			
 			+ KEY_CURRENCY_CODE + " varchar(255) not null, "
 			+ KEY_PARENT_ACCOUNT_UID + " varchar(255), "
 			+ "UNIQUE (" + KEY_UID + ")"	

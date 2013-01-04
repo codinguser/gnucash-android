@@ -161,7 +161,7 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 		while (c.moveToNext()) {
 			Transaction transaction = buildTransactionInstance(c);
 			String doubleEntryAccountUID = transaction.getDoubleEntryAccountUID();
-			//negate double entry transactions for the origin account
+			//negate double entry transactions for the transfer account
 			if (doubleEntryAccountUID != null && doubleEntryAccountUID.equals(accountUID)){
 				transaction.setAmount(transaction.getAmount().negate());
 			}
@@ -179,6 +179,7 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 	 */
 	public Transaction buildTransactionInstance(Cursor c){		
 		String accountUID = c.getString(DatabaseAdapter.COLUMN_ACCOUNT_UID);
+		String doubleAccountUID = c.getString(DatabaseAdapter.COLUMN_DOUBLE_ENTRY_ACCOUNT_UID);
 		Currency currency = Currency.getInstance(getCurrencyCode(accountUID));
 		String amount = c.getString(DatabaseAdapter.COLUMN_AMOUNT);
 		Money moneyAmount = new Money(new BigDecimal(amount), currency);
@@ -190,7 +191,7 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 		transaction.setTime(c.getLong(DatabaseAdapter.COLUMN_TIMESTAMP));
 		transaction.setDescription(c.getString(DatabaseAdapter.COLUMN_DESCRIPTION));
 		transaction.setExported(c.getInt(DatabaseAdapter.COLUMN_EXPORTED) == 1);
-		transaction.setDoubleEntryAccountUID(c.getString(DatabaseAdapter.COLUMN_DOUBLE_ENTRY_ACCOUNT_UID));
+		transaction.setDoubleEntryAccountUID(doubleAccountUID);
 		
 		return transaction;
 	}

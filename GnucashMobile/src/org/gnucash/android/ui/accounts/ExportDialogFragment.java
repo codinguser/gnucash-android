@@ -27,6 +27,7 @@ import java.io.Writer;
 import java.nio.channels.FileChannel;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -165,7 +166,8 @@ public class ExportDialogFragment extends DialogFragment {
 			if (mDeleteAllCheckBox.isChecked()){
 				Fragment currentFragment = getActivity().getSupportFragmentManager()
 						.findFragmentByTag(AccountsActivity.FRAGMENT_ACCOUNTS_LIST);
-				TransactionsDeleteConfirmationDialog alertFragment = TransactionsDeleteConfirmationDialog.newInstance(R.string.title_confirm_delete, 0);
+				TransactionsDeleteConfirmationDialog alertFragment = 
+						TransactionsDeleteConfirmationDialog.newInstance(R.string.title_confirm_delete, 0);
 				alertFragment.setTargetFragment(currentFragment, 0);
 				alertFragment.show(getActivity().getSupportFragmentManager(), "transactions_delete_confirmation_dialog");
 			}
@@ -280,9 +282,10 @@ public class ExportDialogFragment extends DialogFragment {
 		if (defaultEmail != null && defaultEmail.trim().length() > 0){
 			shareIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{defaultEmail});
 		}			
-		SimpleDateFormat formatter = new SimpleDateFormat("yyyy.MM.dd HH:mm");
+		SimpleDateFormat formatter = (SimpleDateFormat) SimpleDateFormat.getDateTimeInstance();
+		
 		shareIntent.putExtra(Intent.EXTRA_TEXT, getString(R.string.description_export_email) 
-							+ formatter.format(new Date(System.currentTimeMillis())));
+							+ " " + formatter.format(new Date(System.currentTimeMillis())));
 		startActivity(Intent.createChooser(shareIntent, getString(R.string.title_share_ofx_with)));	
 	}
 	
@@ -315,7 +318,7 @@ public class ExportDialogFragment extends DialogFragment {
 	 * @return String containing the file name
 	 */
 	public static String buildExportFilename(){
-		SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd_HHmm");
+		SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd_HHmm", Locale.US);
 		String filename = formatter.format(
 				new Date(System.currentTimeMillis())) 
 				+ "_gnucash_all.ofx";

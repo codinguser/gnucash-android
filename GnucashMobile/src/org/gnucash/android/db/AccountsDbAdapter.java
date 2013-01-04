@@ -244,6 +244,24 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 	}
 	
 	/**
+	 * Returns the {@link AccountType} of the account with unique ID <code>uid</code>
+	 * @param uid Unique ID of the account
+	 * @return {@link AccountType} of the account
+	 */
+	public AccountType getAccountType(String uid){
+		String type = null;
+		Cursor c = mDb.query(DatabaseHelper.ACCOUNTS_TABLE_NAME, 
+				new String[]{DatabaseHelper.KEY_TYPE}, 
+				DatabaseHelper.KEY_UID + "='" + uid + "'", 
+				null, null, null, null);
+		if (c != null && c.moveToFirst()){
+			type = c.getString(0); //0 because we requested only the type column
+			c.close();
+		}
+		return AccountType.valueOf(type);
+	}
+	
+	/**
 	 * Returns the name of the account with id <code>accountID</code>
 	 * @param accountID Database ID of the account record
 	 * @return Name of the account 
@@ -376,6 +394,16 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 	 */
 	public String getCurrencyCode(long id){
 		return mTransactionsAdapter.getCurrencyCode(id);
+	}
+	
+	/**
+	 * Returns the currency code of account with database ID
+	 * @param accountUID Unique Identifier of the account
+	 * @return ISO 4217 currency code of the account
+	 * @see #getCurrencyCode(long) 
+	 */
+	public String getCurrencyCode(String accountUID){
+		return getCurrencyCode(getAccountID(accountUID));
 	}
 	
 	/**

@@ -181,7 +181,7 @@ public class NewTransactionFragment extends SherlockFragment implements
 	/**
 	 * Spinner for selecting the transfer account
 	 */
-	private Spinner mTransferAccountSpinner;
+	private Spinner mDoubleAccountSpinner;
 
 	private boolean mUseDoubleEntry;  
 	
@@ -200,7 +200,7 @@ public class NewTransactionFragment extends SherlockFragment implements
 		mAmountEditText = (EditText) v.findViewById(R.id.input_transaction_amount);		
 		mCurrencyTextView = (TextView) v.findViewById(R.id.currency_symbol);
 		mTransactionTypeButton = (ToggleButton) v.findViewById(R.id.input_transaction_type);
-		mTransferAccountSpinner = (Spinner) v.findViewById(R.id.input_double_entry_accounts_spinner);
+		mDoubleAccountSpinner = (Spinner) v.findViewById(R.id.input_double_entry_accounts_spinner);
 		
 		return v;
 	}
@@ -300,8 +300,12 @@ public class NewTransactionFragment extends SherlockFragment implements
 	
 	private void updateTransferAccountsList(){
 		long accountId = ((TransactionsActivity)getActivity()).getCurrentAccountID();
-		String conditions = "(" + DatabaseHelper.KEY_ROW_ID + " != " + accountId + ") AND " + "(" +
-							DatabaseHelper.KEY_CURRENCY_CODE + " = '" + mAccountsDbAdapter.getCurrencyCode(accountId) + "')";
+		
+		//TODO: we'll leave out the currency condition for now, maybe look at this in the future
+//		String conditions = "(" + DatabaseHelper.KEY_ROW_ID + " != " + accountId + ") AND " + "(" +
+//							DatabaseHelper.KEY_CURRENCY_CODE + " = '" + mAccountsDbAdapter.getCurrencyCode(accountId) + "')";
+		
+		String conditions = "(" + DatabaseHelper.KEY_ROW_ID + " != " + accountId + ")";
 		mCursor = mAccountsDbAdapter.fetchAccounts(conditions);
 		
 		String[] from = new String[] {DatabaseHelper.KEY_NAME};
@@ -310,7 +314,7 @@ public class NewTransactionFragment extends SherlockFragment implements
 				android.R.layout.simple_spinner_item, 
 				mCursor, from, to, 0);
 		mCursorAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);		
-		mTransferAccountSpinner.setAdapter(mCursorAdapter);
+		mDoubleAccountSpinner.setAdapter(mCursorAdapter);
 	}
 	
 	/**
@@ -386,7 +390,7 @@ public class NewTransactionFragment extends SherlockFragment implements
 	private void setSelectedTransferAccount(long accountId){
 		for (int pos = 0; pos < mCursorAdapter.getCount(); pos++) {
 			if (mCursorAdapter.getItemId(pos) == accountId){
-				mTransferAccountSpinner.setSelection(pos);				
+				mDoubleAccountSpinner.setSelection(pos);				
 				break;
 			}
 		}
@@ -441,7 +445,7 @@ public class NewTransactionFragment extends SherlockFragment implements
 		
 		//set the double account
 		if (mUseDoubleEntry){
-			long doubleAccountId = mTransferAccountSpinner.getSelectedItemId();
+			long doubleAccountId = mDoubleAccountSpinner.getSelectedItemId();
 			//negate the transaction before saving if we are in the double account
 			if (isInDoubleAccount()){
 				mTransaction.setAmount(amount.negate());
