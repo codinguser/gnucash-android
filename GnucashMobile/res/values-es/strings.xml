@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
- Copyright (c) 2012 Ngewi Fet <ngewif@gmail.com>
- Copyright (c) 2012 Jorge Martínez López <jorgeml@gmail.com>
+ Copyright (c) 2013 Ngewi Fet <ngewif@gmail.com>
+ Copyright (c) 2013 Jorge Martínez López <jorgeml@gmail.com>
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -53,7 +53,7 @@
     <string name="label_export_destination">Destino de la exportaci&#243;n</string>
     <string name="title_export_dialog">Exportar OFX</string>
     <string name="option_export_all_transactions">Exportar todas las transacciones</string>
-    <string name="hint_export_choice">Por defecto solo las nuevas transacciones desde la &#250;ltima exportaci&#243;n ser&#225;n exportadas. Selecciona esta opci&#243;n para exportar todas las transacciones</string>
+    <string name="hint_export_choice">Por defecto solo las nuevas transacciones desde la &#250;ltima exportaci&#243;n ser&#225;n exportadas. Seleccione esta opci&#243;n para exportar todas las transacciones</string>
     <string name="error_exporting">Error exportando datos OFX</string>    
     <string name="btn_export">Exportar</string>
     <string name="option_delete_after_export">Borrar despu&#233;s de exportar</string>
@@ -76,7 +76,7 @@
     <string name="summary_default_currency">Divisa por defecto para las nuevas cuentas</string>
     <string name="label_permission_record_transactions">Permite almacenar transacciones en Gnucash para Android</string>
     <string name="label_permission_create_accounts">Permite crear cuentas en Gnucash para Android</string>
-    <string name="label_permission_group">Tus datos GnuCash</string>
+    <string name="label_permission_group">Sus datos GnuCash</string>
     <string name="description_permission_group">Leer y modificar datos Gnucash</string>
     <string name="label_permission_record_transaction">almacenar transacciones</string>
     <string name="label_permission_create_account">crear cuentas</string>
@@ -267,7 +267,7 @@
 	    <item>Entretenimiento</item>
 	    <item>Seguros</item>
 	</string-array>
-	<string name="error_no_accounts">No hay cuentas en Gnucash.\nCrea una cuenta antes de a&#241;adir un widget</string>
+	<string name="error_no_accounts">No hay cuentas en Gnucash.\nCree una cuenta antes de a&#241;adir un widget</string>
 	<string name="title_build_version">Versi&#243;n de compilaci&#243;n</string>
 	<string name="title_license">Licencia</string>
 	<string name="summary_licence_details">Apache License v2.0. Clic para m&#225;s detalles</string>
@@ -290,11 +290,14 @@
 		<item>ABONO</item>
 		<item>CARGO</item>
 	</string-array>
-	<string name="delete_all_transactions_confirmation_message">&#191;Est&#225;s seguro de que quieres borrar TODAS las transacciones?</string>
-	<string name="delete_transaction_confirmation_message">&#191;Est&#225;s seguro de que quieres borrar esta transacci&#243;n?</string>
+	<string name="delete_all_transactions_confirmation_message">&#191;Borrar TODAS las transacciones?</string>
+	<string name="delete_transaction_confirmation_message">&#191;Borrar esta transacci&#243;n?</string>
 	<string name="title_export_preference_category">Exportaci&#243;n</string>
 	<string name="title_export_all_transactions">Exportar siempre todas las transacciones</string>
 	<string name="title_always_delete_exported_transactions">Borrar siempre todas las transacciones exportadas</string>
 	<string name="title_default_export_email">Correo electr&#243;nico por defecto para exportar</string>
-	<string name="summary_default_export_email">La direcci&#243;n de correo electr&#243;nico a la que enviar las exportaciones por defecto. Puedes cambiarla en cada exportaci&#243;n.</string>
+	<string name="summary_default_export_email">La direcci&#243;n de correo electr&#243;nico a la que enviar las exportaciones por defecto. Se puede cambiar en cada exportaci&#243;n.</string>
+	<string name="key_sgml_ofx_header">sgml_ofx_header</string>
+	<string name="title_sgml_ofx_header">Usar SGML para el encabezado OFX</string>
+	<string name="summary_sgml_ofx_header">Permite a la versi&#243;n de escritorio de GnuCash detectar correctamente la codificaci&#243;n del archivo OFX. &#218;til para conjuntos de caracteres no latinos.</string>
 </resources>
