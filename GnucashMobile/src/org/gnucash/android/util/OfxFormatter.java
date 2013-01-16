@@ -41,7 +41,7 @@ public class OfxFormatter {
 	/**
 	 * A date formatter used when creating file names for the exported data
 	 */
-	public final static SimpleDateFormat OFX_DATE_FORMATTER = new SimpleDateFormat("yyyyMMddHHmmss");
+	public final static SimpleDateFormat OFX_DATE_FORMATTER = new SimpleDateFormat("yyyyMMddHHmmss", Locale.US);
 	
 	/**
 	 * ID which will be used as the bank ID for OFX from this app
@@ -139,70 +139,9 @@ public class OfxFormatter {
 		for (Account account : mAccountsList) {		
 			if (account.getTransactionCount() == 0)
 				continue; 
-			
-			Element currency = doc.createElement("CURDEF");
-			currency.appendChild(doc.createTextNode(account.getCurrency().getCurrencyCode()));						
-			
-			//================= BEGIN BANK ACCOUNT INFO (BANKACCTFROM) =================================
-			
-			Element bankId = doc.createElement("BANKID");
-			bankId.appendChild(doc.createTextNode(APP_ID));
-			
-			Element acctId = doc.createElement("ACCTID");
-			acctId.appendChild(doc.createTextNode(account.getUID()));
-			
-			Element accttype = doc.createElement("ACCTTYPE");
-			accttype.appendChild(doc.createTextNode(account.getAccountType().toString()));
-			
-			Element bankFrom = doc.createElement("BANKACCTFROM");
-			bankFrom.appendChild(bankId);
-			bankFrom.appendChild(acctId);
-			bankFrom.appendChild(accttype);
-			
-			//================= END BANK ACCOUNT INFO ============================================
-			
-			
-			//================= BEGIN ACCOUNT BALANCE INFO =================================
-			String balance = account.getBalance().toPlainString();
-			String formattedCurrentTimeString = getFormattedCurrentTime();
-			
-			Element balanceAmount = doc.createElement("BALAMT");
-			balanceAmount.appendChild(doc.createTextNode(balance));			
-			Element dtasof = doc.createElement("DTASOF");
-			dtasof.appendChild(doc.createTextNode(formattedCurrentTimeString));
-			
-			Element ledgerBalance = doc.createElement("LEDGERBAL");
-			ledgerBalance.appendChild(balanceAmount);
-			ledgerBalance.appendChild(dtasof);
-			
-			//================= END ACCOUNT BALANCE INFO =================================
-			
-			
-			//================= BEGIN TIME PERIOD INFO =================================
-			
-			Element dtstart = doc.createElement("DTSTART");			
-			dtstart.appendChild(doc.createTextNode(formattedCurrentTimeString));
-			
-			Element dtend = doc.createElement("DTEND");
-			dtend.appendChild(doc.createTextNode(formattedCurrentTimeString));
-			
-			Element bankTransactionsList = doc.createElement("BANKTRANLIST");
-			bankTransactionsList.appendChild(dtstart);
-			bankTransactionsList.appendChild(dtend);
-			
-			//================= END TIME PERIOD INFO =================================
-			
-						
-			Element statementTransactions = doc.createElement("STMTRS");
-			statementTransactions.appendChild(currency);
-			statementTransactions.appendChild(bankFrom);
-			statementTransactions.appendChild(bankTransactionsList);
-			statementTransactions.appendChild(ledgerBalance);
-			
-			statementTransactionResponse.appendChild(statementTransactions);
-			
+	
 			//add account details (transactions) to the XML document			
-			account.toOfx(doc, bankTransactionsList, mExportAll);
+			account.toOfx(doc, statementTransactionResponse, mExportAll);
 			
 			//mark as exported
 			transactionsDbAdapter.markAsExported(account.getUID());

@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
 
+import org.gnucash.android.util.OfxFormatter;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -336,12 +337,76 @@ public class Account {
 	 * @param parent Parent node to which to add this account's transactions in XML
 	 */
 	public void toOfx(Document doc, Element parent, boolean allTransactions){
+		Element currency = doc.createElement("CURDEF");
+		currency.appendChild(doc.createTextNode(mCurrency.getCurrencyCode()));						
+		
+		//================= BEGIN BANK ACCOUNT INFO (BANKACCTFROM) =================================
+		
+		Element bankId = doc.createElement("BANKID");
+		bankId.appendChild(doc.createTextNode(OfxFormatter.APP_ID));
+		
+		Element acctId = doc.createElement("ACCTID");
+		acctId.appendChild(doc.createTextNode(mUID));
+		
+		Element accttype = doc.createElement("ACCTTYPE");
+		accttype.appendChild(doc.createTextNode(mAccountType.toString()));
+		
+		Element bankFrom = doc.createElement("BANKACCTFROM");
+		bankFrom.appendChild(bankId);
+		bankFrom.appendChild(acctId);
+		bankFrom.appendChild(accttype);
+		
+		//================= END BANK ACCOUNT INFO ============================================
+		
+		
+		//================= BEGIN ACCOUNT BALANCE INFO =================================
+		String balance = getBalance().toPlainString();
+		String formattedCurrentTimeString = OfxFormatter.getFormattedCurrentTime();
+		
+		Element balanceAmount = doc.createElement("BALAMT");
+		balanceAmount.appendChild(doc.createTextNode(balance));			
+		Element dtasof = doc.createElement("DTASOF");
+		dtasof.appendChild(doc.createTextNode(formattedCurrentTimeString));
+		
+		Element ledgerBalance = doc.createElement("LEDGERBAL");
+		ledgerBalance.appendChild(balanceAmount);
+		ledgerBalance.appendChild(dtasof);
+		
+		//================= END ACCOUNT BALANCE INFO =================================
+		
+		
+		//================= BEGIN TIME PERIOD INFO =================================
+		
+		Element dtstart = doc.createElement("DTSTART");			
+		dtstart.appendChild(doc.createTextNode(formattedCurrentTimeString));
+		
+		Element dtend = doc.createElement("DTEND");
+		dtend.appendChild(doc.createTextNode(formattedCurrentTimeString));
+		
+		//================= END TIME PERIOD INFO =================================
+		
+		
+		//================= BEGIN TRANSACTIONS LIST =================================
+		Element bankTransactionsList = doc.createElement("BANKTRANLIST");
+		bankTransactionsList.appendChild(dtstart);
+		bankTransactionsList.appendChild(dtend);
+		
 		for (Transaction transaction : mTransactionsList) {
 			if (!allTransactions && transaction.isExported())
 				continue;
 			
-			parent.appendChild(transaction.toOfx(doc));
-		}
+			bankTransactionsList.appendChild(transaction.toOfx(doc, mUID));
+		}		
+		//================= END TRANSACTIONS LIST =================================
+					
+		Element statementTransactions = doc.createElement("STMTRS");
+		statementTransactions.appendChild(currency);
+		statementTransactions.appendChild(bankFrom);
+		statementTransactions.appendChild(bankTransactionsList);
+		statementTransactions.appendChild(ledgerBalance);
+		
+		parent.appendChild(statementTransactions);
+				
 	}
 
 }

@@ -379,6 +379,16 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 	}
 	
 	/**
+	 * Returns the currency code of account with database ID
+	 * @param accountUID Unique Identifier of the account
+	 * @return ISO 4217 currency code of the account
+	 * @see #getCurrencyCode(long) 
+	 */
+	public String getCurrencyCode(String accountUID){
+		return getCurrencyCode(getAccountID(accountUID));
+	}
+	
+	/**
 	 * Deletes all accounts and their transactions from the database
 	 */
 	public void deleteAllAccounts(){

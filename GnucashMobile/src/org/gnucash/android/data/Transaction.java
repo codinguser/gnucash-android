@@ -22,7 +22,8 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.UUID;
 
-import org.gnucash.android.data.Account.OfxAccountType;
+import org.gnucash.android.app.GnuCashApplication;
+import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.util.OfxFormatter;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -357,11 +358,13 @@ public class Transaction {
 	
 	/**
 	 * Converts transaction to XML DOM corresponding to OFX Statement transaction and 
-	 * returns the element node for the transaction
+	 * returns the element node for the transaction.
+	 * The Unique ID of the account is needed in order to properly export double entry transactions
 	 * @param doc XML document to which transaction should be added
+	 * @param accountUID Unique Identifier of the account which called the method.
 	 * @return Element in DOM corresponding to transaction
 	 */
-	public Element toOfx(Document doc){		
+	public Element toOfx(Document doc, String accountUID){		
 		Element transactionNode = doc.createElement("STMTTRN");
 		Element type = doc.createElement("TRNTYPE");
 		type.appendChild(doc.createTextNode(mType.toString()));
@@ -402,7 +405,12 @@ public class Transaction {
 			acctId.appendChild(doc.createTextNode(mDoubleEntryAccountUID));
 			
 			Element accttype = doc.createElement("ACCTTYPE");
-			accttype.appendChild(doc.createTextNode(OfxAccountType.CHECKING.toString()));
+			//select the proper account as the double account
+			String doubleAccountUID = mDoubleEntryAccountUID.equals(accountUID) ? mAccountUID : mDoubleEntryAccountUID;
+			AccountsDbAdapter acctDbAdapter = new AccountsDbAdapter(GnuCashApplication.getAppContext());
+			Account account = acctDbAdapter.getAccount(doubleAccountUID);
+			acctDbAdapter.close();
+			accttype.appendChild(doc.createTextNode(account.getAccountType().toString()));
 			
 			Element bankAccountTo = doc.createElement("BANKACCTTO");
 			bankAccountTo.appendChild(bankId);

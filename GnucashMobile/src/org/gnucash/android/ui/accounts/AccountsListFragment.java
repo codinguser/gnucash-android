@@ -40,7 +40,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -411,7 +410,9 @@ public class AccountsListFragment extends SherlockListFragment implements
 	 */
 	public void refreshList(){
 		getLoaderManager().restartLoader(0, null, this);
-		
+				
+/*
+		//TODO: Figure out a way to display account balances
 		boolean doubleEntryActive = PreferenceManager.getDefaultSharedPreferences(getActivity())
 				.getBoolean(getString(R.string.key_use_double_entry), false);
 		
@@ -427,6 +428,7 @@ public class AccountsListFragment extends SherlockListFragment implements
 			tv.setTextColor(getResources().getColor(R.color.debit_red));
 		else
 			tv.setTextColor(getResources().getColor(R.color.credit_green));
+*/
 	}
 	
 	/**

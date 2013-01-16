@@ -497,5 +497,5 @@
 	<string name="label_parent_account">Parent account</string>
 	<string name="key_sgml_ofx_header">sgml_ofx_header</string>
 	<string name="title_sgml_ofx_header">Use SGML for OFX header</string>
-	<string name="summary_sgml_ofx_header">Allows GnuCash desktop to correctly detect encoding of OFX file. Useful for non-Latin character sets.</string>
+	<string name="summary_sgml_ofx_header">Enables better encoding support in desktop GnuCash. Deactivate if you are not exporting to desktop GnuCash</string>
 </resources>
