@@ -145,7 +145,7 @@ public class Account {
 		}
 		
 		uuid = uuid.substring(uuid.lastIndexOf("-"));
-		String name = mName.toLowerCase(Locale.US).replace(" ", "-");
+		String name = mName.replaceAll("[^A-Za-z0-9]", "").toLowerCase(Locale.US);
 		if (name.length() > 9)
 			name = name.substring(0, 10);
 		uuid = name + uuid;		

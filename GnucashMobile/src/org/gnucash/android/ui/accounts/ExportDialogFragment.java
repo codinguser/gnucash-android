@@ -234,11 +234,13 @@ public class ExportDialogFragment extends DialogFragment {
 		
 //		FileWriter writer = new FileWriter(file);
 		BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), "UTF-8"));
-		boolean useSgmlHeader = PreferenceManager.getDefaultSharedPreferences(getActivity())
-				.getBoolean(getString(R.string.key_sgml_ofx_header), false);
+		boolean useXmlHeader = PreferenceManager.getDefaultSharedPreferences(getActivity())
+				.getBoolean(getString(R.string.key_xml_ofx_header), false);
 
 		//if we want SGML OFX headers, write first to string and then prepend header
-		if (useSgmlHeader){
+		if (useXmlHeader){
+			write(doc, writer, false);
+		} else {			
 			Node ofxNode = doc.getElementsByTagName("OFX").item(0);
 			StringWriter stringWriter = new StringWriter();
 			write(ofxNode, stringWriter, true);
@@ -246,8 +248,6 @@ public class ExportDialogFragment extends DialogFragment {
 			StringBuffer stringBuffer = new StringBuffer(OfxFormatter.OFX_SGML_HEADER);
 			stringBuffer.append('\n');
 			writer.write(stringBuffer.toString() + stringWriter.toString());
-		} else {
-			write(doc, writer, false);
 		}
 		
 		writer.flush();

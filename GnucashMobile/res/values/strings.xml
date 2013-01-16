@@ -495,7 +495,7 @@
 	<string name="toast_no_account_name_entered">Please enter an account name</string>
 	<string name="label_account_currency">Currency</string>
 	<string name="label_parent_account">Parent account</string>
-	<string name="key_sgml_ofx_header">sgml_ofx_header</string>
-	<string name="title_sgml_ofx_header">Use SGML for OFX header</string>
-	<string name="summary_sgml_ofx_header">Enables better encoding support in desktop GnuCash. Deactivate if you are not exporting to desktop GnuCash</string>
+	<string name="key_xml_ofx_header">xml_ofx_header</string>
+	<string name="title_xml_ofx_header">Use XML OFX header</string>
+	<string name="summary_xml_ofx_header">Enable this option when exporting to third-party application other than GnuCash for desktop</string>
 </resources>

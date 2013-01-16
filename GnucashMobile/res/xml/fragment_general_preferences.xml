@@ -29,7 +29,7 @@
             android:inputType="textEmailAddress"/>
         <CheckBoxPreference android:summary="@string/hint_export_choice" android:key="@string/key_export_all_transactions" android:title="@string/title_export_all_transactions"/>
         <CheckBoxPreference android:summary="@string/hint_delete_after_export" android:key="@string/key_delete_transactions_after_export" android:title="@string/title_always_delete_exported_transactions"/>
-        <CheckBoxPreference android:title="@string/title_sgml_ofx_header" android:key="@string/key_sgml_ofx_header" android:summary="@string/summary_sgml_ofx_header"/>
+        <CheckBoxPreference android:key="@string/key_xml_ofx_header" android:summary="@string/summary_xml_ofx_header" android:title="@string/title_xml_ofx_header"/>
         
     </PreferenceCategory>
     

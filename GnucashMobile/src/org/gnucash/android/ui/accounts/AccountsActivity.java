@@ -23,6 +23,7 @@ import java.util.Locale;
 import org.gnucash.android.R;
 import org.gnucash.android.data.Account;
 import org.gnucash.android.data.Money;
+import org.gnucash.android.data.Account.AccountType;
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.ui.transactions.TransactionsActivity;
 import org.gnucash.android.ui.transactions.TransactionsListFragment;
@@ -192,7 +193,33 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
 				String[] defaultAccounts = getResources().getStringArray(R.array.default_accounts);
 				for (int index : mSelectedDefaultAccounts) {
 					String name = defaultAccounts[index];
-					dbAdapter.addAccount(new Account(name));
+					Account account = new Account(name);
+					
+					//these indices are bound to the order in which the accounts occur in strings.xml
+					switch (index) {
+					case 0:
+						account.setAccountType(AccountType.EXPENSE);
+						break;
+						
+					case 1:
+						account.setAccountType(AccountType.INCOME);
+						break;
+						
+					case 2:
+						account.setAccountType(AccountType.ASSET);
+						break;
+					case 3:
+						account.setAccountType(AccountType.EQUITY);
+						break;
+					case 4:
+						account.setAccountType(AccountType.LIABILITY);
+						break;
+						
+					default:
+						account.setAccountType(AccountType.CASH);
+						break;
+					}
+					dbAdapter.addAccount(account);
 				}
 				
 				dbAdapter.close();

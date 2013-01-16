@@ -296,8 +296,5 @@
 	<string name="title_export_all_transactions">Exportar siempre todas las transacciones</string>
 	<string name="title_always_delete_exported_transactions">Borrar siempre todas las transacciones exportadas</string>
 	<string name="title_default_export_email">Correo electr&#243;nico por defecto para exportar</string>
-	<string name="summary_default_export_email">La direcci&#243;n de correo electr&#243;nico a la que enviar las exportaciones por defecto. Se puede cambiar en cada exportaci&#243;n.</string>
-	<string name="key_sgml_ofx_header">sgml_ofx_header</string>
-	<string name="title_sgml_ofx_header">Usar SGML para el encabezado OFX</string>
-	<string name="summary_sgml_ofx_header">Permite a la versi&#243;n de escritorio de GnuCash detectar correctamente la codificaci&#243;n del archivo OFX. &#218;til para conjuntos de caracteres no latinos.</string>
+	<string name="summary_default_export_email">La direcci&#243;n de correo electr&#243;nico a la que enviar las exportaciones por defecto. Se puede cambiar en cada exportaci&#243;n.</string>	
 </resources>
