@@ -78,7 +78,8 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 		if ((rowId = getAccountID(account.getUID())) > 0){
 			//if account already exists, then just update
 			Log.d(TAG, "Updating existing account");
-			mDb.update(DatabaseHelper.ACCOUNTS_TABLE_NAME, contentValues, DatabaseHelper.KEY_ROW_ID + " = " + rowId, null);
+			mDb.update(DatabaseHelper.ACCOUNTS_TABLE_NAME, contentValues, 
+					DatabaseHelper.KEY_ROW_ID + " = " + rowId, null);
 		} else {
 			Log.d(TAG, "Adding new account to db");
 			rowId = mDb.insert(DatabaseHelper.ACCOUNTS_TABLE_NAME, null, contentValues);
@@ -241,6 +242,24 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 			c.close();
 		}
 		return uid;
+	}
+	
+	/**
+	 * Returns the {@link AccountType} of the account with unique ID <code>uid</code>
+	 * @param uid Unique ID of the account
+	 * @return {@link AccountType} of the account
+	 */
+	public AccountType getAccountType(String uid){
+		String type = null;
+		Cursor c = mDb.query(DatabaseHelper.ACCOUNTS_TABLE_NAME, 
+				new String[]{DatabaseHelper.KEY_TYPE}, 
+				DatabaseHelper.KEY_UID + "='" + uid + "'", 
+				null, null, null, null);
+		if (c != null && c.moveToFirst()){
+			type = c.getString(0); //0 because we requested only the type column
+			c.close();
+		}
+		return AccountType.valueOf(type);
 	}
 	
 	/**

@@ -52,7 +52,7 @@ public class Account {
 	 * they are currently not used except for exporting
 	 */
 	public enum AccountType {CASH, BANK, CREDIT_CARD, ASSET, LIABILITY, INCOME, EXPENSE, 
-		EQUITY, CURRENCY, STOCK, MUTUAL_FUND, CHECKING, SAVINGS, MONEYMRKT, CREDITLINE};
+							PAYABLE, RECEIVABLE, EQUITY, CURRENCY, STOCK, MUTUAL_FUND};
 	
 	public enum OfxAccountType {CHECKING, SAVINGS, MONEYMRKT, CREDITLINE };
 		
@@ -187,13 +187,20 @@ public class Account {
 
 	/**
 	 * Adds a transaction to this account
-	 * The currency of the transaction will be set to the currency of the account
+	 * <p>The currency of the transaction will be set to the currency of the account
 	 * if they are not the same. The currency value conversion is performed, just 
-	 * a different currecy is assigned to the same value amount in the transaction.
+	 * a different currency is assigned to the same value amount in the transaction.</p>
+	 * <p>
+	 * If the transaction has no account Unique ID, it will be set to the UID of this account.
+	 * Some transactions already have the account UID and double account UID set. In that case,
+	 * nothing is changed
+	 * </p>
 	 * @param transaction {@link Transaction} to be added to the account
 	 */
 	public void addTransaction(Transaction transaction){
-		transaction.setAccountUID(getUID());
+		//some double transactions may already an account UID. Set only for those with null
+		if (transaction.getAccountUID() == null)
+			transaction.setAccountUID(getUID());
 		transaction.setCurrency(mCurrency);
 		mTransactionsList.add(transaction);
 	}
@@ -207,7 +214,8 @@ public class Account {
 	 */
 	public void setTransactions(List<Transaction> transactionsList){
 		for (Transaction transaction : transactionsList) {
-			transaction.setAccountUID(getUID());
+			if (transaction.getAccountUID() == null)
+				transaction.setAccountUID(getUID());
 			transaction.setCurrency(mCurrency);
 		}
 		this.mTransactionsList = transactionsList;
@@ -306,15 +314,16 @@ public class Account {
 	 * @see AccountType
 	 * @see OfxAccountType
 	 */
-	public OfxAccountType ofxAccountTypeMapping(AccountType accountType){
+	public static OfxAccountType convertToOfxAccountType(AccountType accountType){
 		switch (accountType) {
-		case CREDITLINE:
+		case CREDIT_CARD:
 			return OfxAccountType.CREDITLINE;
 			
 		case CASH:
 		case INCOME:
 		case EXPENSE:
-		case CURRENCY:
+		case PAYABLE:
+		case RECEIVABLE:
 			return OfxAccountType.CHECKING;
 			
 		case BANK:
@@ -324,6 +333,7 @@ public class Account {
 		case MUTUAL_FUND:
 		case STOCK:
 		case EQUITY:
+		case CURRENCY:
 			return OfxAccountType.MONEYMRKT;
 
 		default:
@@ -349,7 +359,8 @@ public class Account {
 		acctId.appendChild(doc.createTextNode(mUID));
 		
 		Element accttype = doc.createElement("ACCTTYPE");
-		accttype.appendChild(doc.createTextNode(mAccountType.toString()));
+		String ofxAccountType = convertToOfxAccountType(mAccountType).toString();
+		accttype.appendChild(doc.createTextNode(ofxAccountType));
 		
 		Element bankFrom = doc.createElement("BANKACCTFROM");
 		bankFrom.appendChild(bankId);

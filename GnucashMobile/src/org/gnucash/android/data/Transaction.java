@@ -23,6 +23,7 @@ import java.util.Locale;
 import java.util.UUID;
 
 import org.gnucash.android.app.GnuCashApplication;
+import org.gnucash.android.data.Account.OfxAccountType;
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.util.OfxFormatter;
 import org.w3c.dom.Document;
@@ -401,16 +402,17 @@ public class Transaction {
 			Element bankId = doc.createElement("BANKID");
 			bankId.appendChild(doc.createTextNode(OfxFormatter.APP_ID));
 			
-			Element acctId = doc.createElement("ACCTID");
-			acctId.appendChild(doc.createTextNode(mDoubleEntryAccountUID));
-			
-			Element accttype = doc.createElement("ACCTTYPE");
 			//select the proper account as the double account
 			String doubleAccountUID = mDoubleEntryAccountUID.equals(accountUID) ? mAccountUID : mDoubleEntryAccountUID;
+			
+			Element acctId = doc.createElement("ACCTID");
+			acctId.appendChild(doc.createTextNode(doubleAccountUID));
+			
+			Element accttype = doc.createElement("ACCTTYPE");			
 			AccountsDbAdapter acctDbAdapter = new AccountsDbAdapter(GnuCashApplication.getAppContext());
-			Account account = acctDbAdapter.getAccount(doubleAccountUID);
+			OfxAccountType ofxAccountType = Account.convertToOfxAccountType(acctDbAdapter.getAccountType(doubleAccountUID));
+			accttype.appendChild(doc.createTextNode(ofxAccountType.toString()));
 			acctDbAdapter.close();
-			accttype.appendChild(doc.createTextNode(account.getAccountType().toString()));
 			
 			Element bankAccountTo = doc.createElement("BANKACCTTO");
 			bankAccountTo.appendChild(bankId);

@@ -139,7 +139,7 @@ public class OfxFormatter {
 		for (Account account : mAccountsList) {		
 			if (account.getTransactionCount() == 0)
 				continue; 
-	
+			
 			//add account details (transactions) to the XML document			
 			account.toOfx(doc, statementTransactionResponse, mExportAll);
 			

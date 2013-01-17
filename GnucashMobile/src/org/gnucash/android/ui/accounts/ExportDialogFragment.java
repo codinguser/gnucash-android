@@ -282,7 +282,7 @@ public class ExportDialogFragment extends DialogFragment {
 		if (defaultEmail != null && defaultEmail.trim().length() > 0){
 			shareIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{defaultEmail});
 		}			
-		SimpleDateFormat formatter = (SimpleDateFormat) SimpleDateFormat.getDateTimeInstance(); //new SimpleDateFormat("yyyy.MM.dd HH:mm");
+		SimpleDateFormat formatter = (SimpleDateFormat) SimpleDateFormat.getDateTimeInstance();
 		
 		shareIntent.putExtra(Intent.EXTRA_TEXT, getString(R.string.description_export_email) 
 							+ " " + formatter.format(new Date(System.currentTimeMillis())));
