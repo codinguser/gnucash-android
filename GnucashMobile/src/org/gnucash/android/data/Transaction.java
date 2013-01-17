@@ -98,7 +98,7 @@ public class Transaction {
 	private int mIsExported = 0;
 	
 	/**
-	 * Timestamp when this transaction occured
+	 * Timestamp when this transaction occurred
 	 */
 	private long mTimestamp;
 	

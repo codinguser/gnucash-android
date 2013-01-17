@@ -84,7 +84,7 @@ public class Account {
 	private List<Transaction> mTransactionsList = new ArrayList<Transaction>();
 
 	/**
-	 * Account UID of the parent account
+	 * Account UID of the parent account. Can be null
 	 */
 	private String mParentAccountUID;
 
@@ -92,6 +92,12 @@ public class Account {
 	 * An extra key for passing the currency code (according ISO 4217) in an intent
 	 */
 	public static final String EXTRA_CURRENCY_CODE 	= "org.gnucash.android.extra.currency_code";
+	
+	/**
+	 * Extra key for passing the unique ID of the parent account when creating a 
+	 * new account using Intents
+	 */
+	public static final String EXTRA_PARENT_UID 	= "org.gnucash.android.extra.parent_uid";
 	
 	/**
 	 * Constructor
@@ -317,6 +323,7 @@ public class Account {
 	public static OfxAccountType convertToOfxAccountType(AccountType accountType){
 		switch (accountType) {
 		case CREDIT_CARD:
+		case LIABILITY:
 			return OfxAccountType.CREDITLINE;
 			
 		case CASH:

@@ -228,8 +228,6 @@ public class NewTransactionFragment extends SherlockFragment implements
 		mTransactionId = getArguments().getLong(SELECTED_TRANSACTION_ID);
 		mTransactionsDbAdapter = new TransactionsDbAdapter(getActivity());
 		mTransaction = mTransactionsDbAdapter.getTransaction(mTransactionId);
-				
-		mAccountsDbAdapter = new AccountsDbAdapter(getActivity());
 		
 		setListeners();
 		if (mTransaction == null)

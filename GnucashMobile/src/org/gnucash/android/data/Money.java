@@ -38,7 +38,7 @@ import java.util.Locale;
  * @author Ngewi Fet<ngewif@gmail.com>
  *
  */
-public class Money implements Comparable<Money>{
+public final class Money implements Comparable<Money>{
 
 	/**
 	 * Currency of the account
