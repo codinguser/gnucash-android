@@ -293,9 +293,17 @@
 	<string name="delete_all_transactions_confirmation_message">Are you sure you want to delete ALL transactions?</string>
 	<string name="delete_transaction_confirmation_message">Are you sure you want to delete this transaction?</string>
 	<string name="title_export_preference_category">Export</string>
-	<string name="title_export_all_transactions">Always export all transactions</string>
-	<string name="title_always_delete_exported_transactions">Always delete all exported transactions</string>
+	<string name="title_export_all_transactions">Export all transactions</string>
+	<string name="title_always_delete_exported_transactions">Delete exported transactions</string>
 	<string name="title_default_export_email">Default export email</string>
 	<string name="summary_default_export_email">The default email address to send exports to. You can still change this when you export.</string>
+	<string name="label_double_entry_account">Transfer Account</string>
+	<string name="summary_use_double_entry">All transactions will be a transfer from one account to another</string>
+	<string name="title_use_double_entry">Activate Double Entry</string>
+	<string name="account_balance">Balance</string>
 	<string name="toast_no_account_name_entered">Please enter an account name</string>
+	<string name="label_account_currency">Currency</string>
+	<string name="label_parent_account">Parent account</string>
+	<string name="title_xml_ofx_header">Use XML OFX header</string>
+	<string name="summary_xml_ofx_header">Enable this option when exporting to third-party application other than GnuCash for desktop</string>
 </resources>
