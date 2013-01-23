@@ -16,293 +16,302 @@
  limitations under the License.
 -->
 <resources>
-  <string name="app_name">GnuCash</string>
-  <string name="title_add_account">Criar Conta</string>
-  <string name="title_edit_account">Editar Conta</string>
-  <string name="info_details">Info</string>
-  <string name="title_settings">Configurações</string>
-  <string name="menu_export_ofx">Exportar OFX</string>
-  <string name="description_add_transaction_icon">Adicionar nova transação para uma conta</string>
-  <string name="label_no_accounts">Sem contas para apresentar</string>
-  <string name="label_account_name">Nome da conta</string>
-  <string name="btn_cancel">Cancelar</string>
-  <string name="btn_save">Salvar</string>
-  <string name="label_no_transactions_to_display">Sem transações para apresentar</string>
-  <string name="label_transaction_name">Descrição</string>
-  <string name="label_transaction_amount">Valor</string>
-  <string name="title_add_transaction">Nova transação</string>
-  <string name="label_no_transactions">Sem transações para apresentar</string>
-  <string name="label_timeanddate">DATA &amp; HORA</string>
-  <string name="label_account">Conta</string>
-  <string name="label_debit">DÉBITO</string>
-  <string name="label_credit">CRÉDITO</string>
-  <string name="title_accounts">Contas</string>
-  <string name="title_transactions">Transações</string>
-  <string name="menu_delete">DELETAR</string>
-  <string name="alert_dialog_ok_delete">Deletar</string>
-  <string name="alert_dialog_cancel">Cancelar</string>
-  <string name="toast_account_deleted">Conta deletada</string>
-  <string name="title_confirm_delete">Confirmação exclusão</string>
-  <string name="delete_account_confirmation_message">Todas as transações nesta conta também serão deletadas</string>
-  <string name="title_edit_transaction">Editar Transação</string>
-  <string name="label_transaction_description">Nota</string>
-  <string name="menu_move">MOVER</string>
-  <string name="title_selected">%1$d selecionado</string>
-  <string name="label_transactions_total">Total:</string>
-  <string name="label_export_destination">Exportar para:</string>
-  <string name="title_export_dialog">Exportar OFX</string>
-  <string name="option_export_all_transactions">Exportar todas as transações</string>
-  <string name="hint_export_choice">Por padrão, só serão exportadas as transações criadas após o último procedimento de exportar. Selecionar essa opção para exportar todas as transações.</string>
-  <string name="error_exporting">Erro ao exportar os dados OFX</string>
-  <string name="btn_export">Exportar</string>
-  <string name="option_delete_after_export">Deletar após exportar</string>
-  <string name="hint_delete_after_export">Todas as transação exportadas serão deletadas após completar o procedimento de exportar.</string>
-  <string name="title_settings">Configurações</string>
-  <string-array name="export_destinations">
-    <item>Compartilhar arquivo…</item>
-    <item>Cartão SD</item>
-  </string-array>
-  <string name="btn_move">Mover</string>
-  <string name="title_move_transactions">Mover %1$d transação(ões)</string>
-  <string name="label_move_destination">Conta de destino</string>
-  <string name="permission_access_sdcard">Acessar cartão SD</string>
-  <string name="title_share_ofx_with">Compartilhar OFX exportado com&#8230;</string>
-  <string name="toast_incompatible_currency">Não é possível mover as transações. \nA conta de destino usa uma moeda padrão diferente da moeda usada pela conta de origem.</string>
-  <string name="header_general_settings">Geral</string>
-  <string name="header_about_gnucash">Sobre</string>
-  <string name="title_choose_currency">Escolher moeda padrão</string>
-  <string name="title_default_currency">Moeda padrão</string>
-  <string name="summary_default_currency">Moeda padrão para novas contas</string>
-  <string name="label_permission_record_transactions">Habilitar gravação de transação no GnuCash para Android</string>
-  <string name="label_permission_create_accounts">Habilitar a criação de contas no GnuCash para Android</string>
-  <string name="label_permission_group">Seu arquivo GnuCash</string>
-  <string name="description_permission_group">Ler e modificar o arquivo GnuCash</string>
-  <string name="label_permission_record_transaction">gravar transações</string>
-  <string name="label_permission_create_account">criar contas</string>
-  <string name="label_display_account">Mostrar conta</string>
-  <string name="btn_create_accounts">Criar Contas</string>
-  <string name="title_default_accounts">Selecionar contas para criar</string>
-  <string-array name="currency_names">
-    <item>Afegane</item>
-    <item>Dinar Argelino</item>
-    <item>Peso Argentino</item>
-    <item>Dram Armeniano</item>
-    <item>Florim de Aruba</item>
-    <item>Dólar Australiano</item>
-    <item>Manat Azerbaijão</item>
-    <item>Dólar Bahamas</item>
-    <item>Dinar de Bahrein</item>
-    <item>Bath Tailandez</item>
-    <item>Balboa</item>
-    <item>Dólar de Barbados</item>
-    <item>Rublo Belarus</item>
-    <item>Dólar de Belize</item>
-    <item>Dólar de Bermudas</item>
-    <item>Bolivar Forte</item>
-    <item>Boliviano</item>
-    <item>Real Brasileiro</item>
-    <item>Dólar de Brunei</item>
-    <item>Lev Búlgaro</item>
-    <item>Franco de Burundi</item>
-    <item>Dólar Canadense</item>
-    <item>Escudo de Cabo Verde</item>
-    <item>Dólar das Ilhas Cayman</item>
-    <item>Franco CFA BCEAO</item>
-    <item>Franco CFA BEAC</item>
-    <item>Franco CFP</item>
-    <item>Peso Chileno</item>
-    <item>Cotação de teste</item>
-    <item>Peso Colombiano</item>
-    <item>Franco de Comores</item>
-    <item>Franco Congoles</item>
-    <item>Marco Conversível</item>
-    <item>Ouro Cordoba</item>
-    <item>Colon de Costa Rica</item>
-    <item>Kuna Croata</item>
-    <item>Peso Cubano</item>
-    <item>Coroa Tcheca</item>
-    <item>Dalasi</item>
-    <item>Coroa da Dinamarca</item>
-    <item>Dinar Macedonia</item>
-    <item>Franco de Djibuti</item>
-    <item>Dobra de São Tome e Principe</item>
-    <item>Peso Dominicano</item>
-    <item>Dongue</item>
-    <item>Dólar do Caribe Oriental</item>
-    <item>Libra Egípcia</item>
-    <item>Colon de El Salvador</item>
-    <item>Birr da Etiopia</item>
-    <item>Euro</item>
-    <item>Libra das Ilhas Falkland</item>
-    <item>Dólar Fiji</item>
-    <item>Forint</item>
-    <item>Cedi de Gana</item>
-    <item>Libra de Gibraltar</item>
-    <item>Ouro</item>
-    <item>Gourde Haitiano</item>
-    <item>Guarani</item>
-    <item>Franco de Guine</item>
-    <item>Dólar da Guiana</item>
-    <item>Dólar de Hong Kong</item>
-    <item>Hryvnia</item>
-    <item>Coroa da Islandia</item>
-    <item>Rupia Indiana</item>
-    <item>Rial Iraniano</item>
-    <item>Dinar Iraquiano</item>
-    <item>Dólar Jamaicano</item>
-    <item>Dinar Jordaniano</item>
-    <item>Xelim do Quenia</item>
-    <item>Kina</item>
-    <item>Quipe</item>
-    <item>Dinar Kwait</item>
-    <item>Quacha</item>
-    <item>Kwanza</item>
-    <item>Quiate</item>
-    <item>Lari</item>
-    <item>Lat da Letonia</item>
-    <item>Libra do Líbano</item>
-    <item>Lek</item>
-    <item>Lempira</item>
-    <item>Leone</item>
-    <item>Dólar Liberiano</item>
-    <item>Dinar Libia</item>
-    <item>Lilangeni</item>
-    <item>Lita da Lituania</item>
-    <item>Loti</item>
-    <item>Ariary de Madagascar</item>
-    <item>Ringgit da Malasia</item>
-    <item>Rupia de Mauricio</item>
-    <item>Peso Mexicano</item>
-    <item>Unidade Mexicana de Inversão</item>
-    <item>Leu da Moldávia</item>
-    <item>Dirham de Marrocos</item>
-    <item>Nova Metical de Moçambique</item>
-    <item>Mvdol</item>
-    <item>Naira</item>
-    <item>Nakfa</item>
-    <item>Dólar da Namíbia</item>
-    <item>Rupia do Nepal</item>
-    <item>Florim das Antilhas Holandesas</item>
-    <item>Shequl Israelense</item>
-    <item>Novo Leu Romeno</item>
-    <item>Novo Dólar Taiwanes</item>
-    <item>Dólar Neozelandês</item>
-    <item>Ngultrum</item>
-    <item>Won Norte Koreano</item>
-    <item>Krone Noruegues</item>
-    <item>Novo Sol</item>
-    <item>Uguia</item>
-    <item>Paanga</item>
-    <item>Rupia do Paquistão</item>
-    <item>Paladio</item>
-    <item>Pataca</item>
-    <item>Peso conversível</item>
-    <item>Peso Uruguaio</item>
-    <item>Peso Filipino</item>
-    <item>Platina</item>
-    <item>Libra Esterlina</item>
-    <item>Pula</item>
-    <item>Rial do Catar</item>
-    <item>Quetzal</item>
-    <item>Rande</item>
-    <item>Rial de Omã</item>
-    <item>Riel</item>
-    <item>Rufia</item>
-    <item>Rupia da Indonesia</item>
-    <item>Rublo Russo</item>
-    <item>Franco de Ruanda</item>
-    <item>Libra de Santa Helena</item>
-    <item>Rial da Arábia Saudita</item>
-    <item>Direito especial</item>
-    <item>Dinar Sérvio</item>
-    <item>Rupia de Seycheles</item>
-    <item>Prata</item>
-    <item>Dólar de Cingapura</item>
-    <item>Dólar das Ilhas Salomão</item>
-    <item>Som Quirguistão</item>
-    <item>Xelim da Somália</item>
-    <item>Somoni</item>
-    <item>Libra Sul Sudanesa</item>
-    <item>Rupia do Sri Lanka</item>
-    <item>Sucre</item>
-    <item>Nova Libra Sudanesa</item>
-    <item>Dólar do Suriname</item>
-    <item>Coroa Sueca</item>
-    <item>Franco Suiço</item>
-    <item>Libra Siria</item>
-    <item>Taca</item>
-    <item>Tala</item>
-    <item>Xelim da Tanzania</item>
-    <item>Tenge</item>
-    <item>Sem moeda</item>
-    <item>Dólar de Trinidad e Tobago</item>
-    <item>Tugrik</item>
-    <item>Dinar Tunisiano</item>
-    <item>Nova Lira Turca</item>
-    <item>Novo Manat Turcomenistão</item>
-    <item>Dirham EAU</item>
-    <item>Xelim de Uganda</item>
-    <item>UIC-Franc</item>
-    <item>Unidade de Valor Real</item>
-    <item>unidades de fomento</item>
-    <item>Uruguai Peso em Unidades Indexadas</item>
-    <item>Dólar dos EUA</item>
-    <item>Som do Uzbequistão</item>
-    <item>Vatu</item>
-    <item>WIR Euro</item>
-    <item>WIR Franc</item>
-    <item>Won Sul Coreano</item>
-    <item>Rial de Iemen</item>
-    <item>Iene</item>
-    <item>Renmimbi de Iuan</item>
-    <item>Quacha do Zambia</item>
-    <item>Dólar do Zimbabue</item>
-    <item>Zloty</item>
-  </string-array>
-  <string-array name="default_accounts">
-    <item>Despesas</item>
-    <item>Receitas</item>
-    <item>Ativos</item>
-    <item>Equity</item>
-	<item>Liabilities</item>
-  </string-array>
-  <string name="error_no_accounts">Não existem contas no GnuCash.\nCriar uma conta antes de adicionar um widget</string>
-  <string name="title_build_version">Versão de compilação</string>
-  <string name="title_license">Licença</string>
-  <string name="summary_licence_details">Apache License v2.0. Clique para mais detalhes</string>
-  <string name="title_general_prefs">Preferências Gerais</string>
-  <string name="label_widget_configuration">Selecionar Conta</string>
-  <string name="toast_no_transactions_to_export">Não existem transações disponíveis para exportar</string>
-  <string name="title_about_gnucash">Sobre o GnuCash</string>
-  <string name="summary_about_gnucash">GnuCash é um aplicativo para controle de despesas no Android.\nEle proporciona uma forma flexível de registrar despesas on-the-go, que podem ser exportadas para o formato Open Financial eXchange (OFX) e importadas para o Gnucash para desktop.</string>
-  <string name="title_about">Sobre</string>
-  <string name="toast_error_exporting">Não foi possível gravar o arquivo OFX em :\n</string>
-  <string name="toast_ofx_exported_to">Arquivo OFX exportado para:\n</string>
-  <string name="title_export_email">Exportar GnuCash OFX</string>
-  <string name="description_export_email">Exportar GnuCash OFX de</string>
-  <string name="header_transaction_settings">Transações</string>
-  <string name="title_transaction_preferences">Preferências para Transações</string>
-  <string name="title_account_preferences">Preferências para Contas</string>
-  <string name="title_default_transaction_type">Tipo de Transação Padrão</string>
-  <string name="summary_default_transaction_type">O tipo de transação a ser usada por padrão, CRÉDITO ou DÉBITO</string>
-  <string-array name="transaction_types">
-    <item>CRÉDITO</item>
-    <item>DÉBITO</item>
-  </string-array>
-  <string name="delete_all_transactions_confirmation_message">Are you sure you want to delete ALL transactions?</string>
-  <string name="delete_transaction_confirmation_message">Are you sure you want to delete this transaction?</string>
-  <string name="title_export_preference_category">Export</string>
-  <string name="title_export_all_transactions">Export all transactions</string>
-  <string name="title_always_delete_exported_transactions">Delete exported transactions</string>
-  <string name="title_default_export_email">Default export email</string>
-  <string name="summary_default_export_email">The default email address to send exports to. You can still change this when you export.</string>  
- 	<string name="label_double_entry_account">Transfer Account</string>
-	<string name="summary_use_double_entry">All transactions will be a transfer from one account to another</string>
-	<string name="title_use_double_entry">Activate Double Entry</string>
-	<string name="account_balance">Balance</string>
-	<string name="toast_no_account_name_entered">Please enter an account name</string>
-	<string name="label_account_currency">Currency</string>
-	<string name="label_parent_account">Parent account</string>
-	<string name="title_xml_ofx_header">Use XML OFX header</string>
-	<string name="summary_xml_ofx_header">Enable this option when exporting to third-party application other than GnuCash for desktop</string>
+	  <string name="app_name">GnuCash</string>
+	  <string name="title_add_account">Criar Conta</string>
+	  <string name="title_edit_account">Editar Conta</string>
+	  <string name="info_details">Info</string>
+	  <string name="title_settings">Configurações</string>
+	  <string name="menu_export_ofx">Exportar OFX</string>
+	  <string name="description_add_transaction_icon">Adicionar nova transação para uma conta</string>
+	  <string name="label_no_accounts">Sem contas para apresentar</string>
+	  <string name="label_account_name">Nome da conta</string>
+	  <string name="btn_cancel">Cancelar</string>
+	  <string name="btn_save">Salvar</string>
+	  <string name="label_no_transactions_to_display">Sem transações para apresentar</string>
+	  <string name="label_transaction_name">Descrição</string>
+	  <string name="label_transaction_amount">Valor</string>
+	  <string name="title_add_transaction">Nova transação</string>
+	  <string name="label_no_transactions">Sem transações para apresentar</string>
+	  <string name="label_timeanddate">DATA &amp; HORA</string>
+	  <string name="label_account">Conta</string>
+	  <string name="label_debit">DÉBITO</string>
+	  <string name="label_credit">CRÉDITO</string>
+	  <string name="title_accounts">Contas</string>
+	  <string name="title_transactions">Transações</string>
+	  <string name="menu_delete">DELETAR</string>
+	  <string name="alert_dialog_ok_delete">Deletar</string>
+	  <string name="alert_dialog_cancel">Cancelar</string>
+	  <string name="toast_account_deleted">Conta deletada</string>
+	  <string name="title_confirm_delete">Confirmação exclusão</string>
+	  <string name="delete_account_confirmation_message">Todas as transações nesta conta também serão deletadas</string>
+	  <string name="title_edit_transaction">Editar Transação</string>
+	  <string name="label_transaction_description">Nota</string>
+	  <string name="menu_move">MOVER</string>
+	  <string name="title_selected">%1$d selecionado</string>
+	  <string name="label_transactions_total">Total:</string>
+	  <string name="label_export_destination">Exportar para:</string>
+	  <string name="title_export_dialog">Exportar OFX</string>
+	  <string name="option_export_all_transactions">Exportar todas as transações</string>
+	  <string name="hint_export_choice">Por padrão, só serão exportadas as transações criadas após o último procedimento de exportar. Selecionar essa opção para exportar todas as transações.</string>
+	  <string name="error_exporting">Erro ao exportar os dados OFX</string>
+	  <string name="btn_export">Exportar</string>
+	  <string name="option_delete_after_export">Deletar após exportar</string>
+	  <string name="hint_delete_after_export">Todas as transação exportadas serão deletadas após completar o procedimento de exportar.</string>
+	  <string name="title_settings">Configurações</string>
+	  <string-array name="export_destinations">
+	    <item>Compartilhar arquivo…</item>
+	    <item>Cartão SD</item>
+	  </string-array>
+	  <string name="btn_move">Mover</string>
+	  <string name="title_move_transactions">Mover %1$d transação(ões)</string>
+	  <string name="label_move_destination">Conta de destino</string>
+	  <string name="permission_access_sdcard">Acessar cartão SD</string>
+	  <string name="title_share_ofx_with">Compartilhar OFX exportado com&#8230;</string>
+	  <string name="toast_incompatible_currency">Não é possível mover as transações. \nA conta de destino usa uma moeda padrão diferente da moeda usada pela conta de origem.</string>
+	  <string name="header_general_settings">Geral</string>
+	  <string name="header_about_gnucash">Sobre</string>
+	  <string name="title_choose_currency">Escolher moeda padrão</string>
+	  <string name="title_default_currency">Moeda padrão</string>
+	  <string name="summary_default_currency">Moeda padrão para novas contas</string>
+	  <string name="label_permission_record_transactions">Habilitar gravação de transação no GnuCash para Android</string>
+	  <string name="label_permission_create_accounts">Habilitar a criação de contas no GnuCash para Android</string>
+	  <string name="label_permission_group">Seu arquivo GnuCash</string>
+	  <string name="description_permission_group">Ler e modificar o arquivo GnuCash</string>
+	  <string name="label_permission_record_transaction">gravar transações</string>
+	  <string name="label_permission_create_account">criar contas</string>
+	  <string name="label_display_account">Mostrar conta</string>
+	  <string name="btn_create_accounts">Criar Contas</string>
+	  <string name="title_default_accounts">Selecionar contas para criar</string>
+	  <string-array name="currency_names">
+	    <item>Afegane</item>
+	    <item>Dinar Argelino</item>
+	    <item>Peso Argentino</item>
+	    <item>Dram Armeniano</item>
+	    <item>Florim de Aruba</item>
+	    <item>Dólar Australiano</item>
+	    <item>Manat Azerbaijão</item>
+	    <item>Dólar Bahamas</item>
+	    <item>Dinar de Bahrein</item>
+	    <item>Bath Tailandez</item>
+	    <item>Balboa</item>
+	    <item>Dólar de Barbados</item>
+	    <item>Rublo Belarus</item>
+	    <item>Dólar de Belize</item>
+	    <item>Dólar de Bermudas</item>
+	    <item>Bolivar Forte</item>
+	    <item>Boliviano</item>
+	    <item>Real Brasileiro</item>
+	    <item>Dólar de Brunei</item>
+	    <item>Lev Búlgaro</item>
+	    <item>Franco de Burundi</item>
+	    <item>Dólar Canadense</item>
+	    <item>Escudo de Cabo Verde</item>
+	    <item>Dólar das Ilhas Cayman</item>
+	    <item>Franco CFA BCEAO</item>
+	    <item>Franco CFA BEAC</item>
+	    <item>Franco CFP</item>
+	    <item>Peso Chileno</item>
+	    <item>Cotação de teste</item>
+	    <item>Peso Colombiano</item>
+	    <item>Franco de Comores</item>
+	    <item>Franco Congoles</item>
+	    <item>Marco Conversível</item>
+	    <item>Ouro Cordoba</item>
+	    <item>Colon de Costa Rica</item>
+	    <item>Kuna Croata</item>
+	    <item>Peso Cubano</item>
+	    <item>Coroa Tcheca</item>
+	    <item>Dalasi</item>
+	    <item>Coroa da Dinamarca</item>
+	    <item>Dinar Macedonia</item>
+	    <item>Franco de Djibuti</item>
+	    <item>Dobra de São Tome e Principe</item>
+	    <item>Peso Dominicano</item>
+	    <item>Dongue</item>
+	    <item>Dólar do Caribe Oriental</item>
+	    <item>Libra Egípcia</item>
+	    <item>Colon de El Salvador</item>
+	    <item>Birr da Etiopia</item>
+	    <item>Euro</item>
+	    <item>Libra das Ilhas Falkland</item>
+	    <item>Dólar Fiji</item>
+	    <item>Forint</item>
+	    <item>Cedi de Gana</item>
+	    <item>Libra de Gibraltar</item>
+	    <item>Ouro</item>
+	    <item>Gourde Haitiano</item>
+	    <item>Guarani</item>
+	    <item>Franco de Guine</item>
+	    <item>Dólar da Guiana</item>
+	    <item>Dólar de Hong Kong</item>
+	    <item>Hryvnia</item>
+	    <item>Coroa da Islandia</item>
+	    <item>Rupia Indiana</item>
+	    <item>Rial Iraniano</item>
+	    <item>Dinar Iraquiano</item>
+	    <item>Dólar Jamaicano</item>
+	    <item>Dinar Jordaniano</item>
+	    <item>Xelim do Quenia</item>
+	    <item>Kina</item>
+	    <item>Quipe</item>
+	    <item>Dinar Kwait</item>
+	    <item>Quacha</item>
+	    <item>Kwanza</item>
+	    <item>Quiate</item>
+	    <item>Lari</item>
+	    <item>Lat da Letonia</item>
+	    <item>Libra do Líbano</item>
+	    <item>Lek</item>
+	    <item>Lempira</item>
+	    <item>Leone</item>
+	    <item>Dólar Liberiano</item>
+	    <item>Dinar Libia</item>
+	    <item>Lilangeni</item>
+	    <item>Lita da Lituania</item>
+	    <item>Loti</item>
+	    <item>Ariary de Madagascar</item>
+	    <item>Ringgit da Malasia</item>
+	    <item>Rupia de Mauricio</item>
+	    <item>Peso Mexicano</item>
+	    <item>Unidade Mexicana de Inversão</item>
+	    <item>Leu da Moldávia</item>
+	    <item>Dirham de Marrocos</item>
+	    <item>Nova Metical de Moçambique</item>
+	    <item>Mvdol</item>
+	    <item>Naira</item>
+	    <item>Nakfa</item>
+	    <item>Dólar da Namíbia</item>
+	    <item>Rupia do Nepal</item>
+	    <item>Florim das Antilhas Holandesas</item>
+	    <item>Shequl Israelense</item>
+	    <item>Novo Leu Romeno</item>
+	    <item>Novo Dólar Taiwanes</item>
+	    <item>Dólar Neozelandês</item>
+	    <item>Ngultrum</item>
+	    <item>Won Norte Koreano</item>
+	    <item>Krone Noruegues</item>
+	    <item>Novo Sol</item>
+	    <item>Uguia</item>
+	    <item>Paanga</item>
+	    <item>Rupia do Paquistão</item>
+	    <item>Paladio</item>
+	    <item>Pataca</item>
+	    <item>Peso conversível</item>
+	    <item>Peso Uruguaio</item>
+	    <item>Peso Filipino</item>
+	    <item>Platina</item>
+	    <item>Libra Esterlina</item>
+	    <item>Pula</item>
+	    <item>Rial do Catar</item>
+	    <item>Quetzal</item>
+	    <item>Rande</item>
+	    <item>Rial de Omã</item>
+	    <item>Riel</item>
+	    <item>Rufia</item>
+	    <item>Rupia da Indonesia</item>
+	    <item>Rublo Russo</item>
+	    <item>Franco de Ruanda</item>
+	    <item>Libra de Santa Helena</item>
+	    <item>Rial da Arábia Saudita</item>
+	    <item>Direito especial</item>
+	    <item>Dinar Sérvio</item>
+	    <item>Rupia de Seycheles</item>
+	    <item>Prata</item>
+	    <item>Dólar de Cingapura</item>
+	    <item>Dólar das Ilhas Salomão</item>
+	    <item>Som Quirguistão</item>
+	    <item>Xelim da Somália</item>
+	    <item>Somoni</item>
+	    <item>Libra Sul Sudanesa</item>
+	    <item>Rupia do Sri Lanka</item>
+	    <item>Sucre</item>
+	    <item>Nova Libra Sudanesa</item>
+	    <item>Dólar do Suriname</item>
+	    <item>Coroa Sueca</item>
+	    <item>Franco Suiço</item>
+	    <item>Libra Siria</item>
+	    <item>Taca</item>
+	    <item>Tala</item>
+	    <item>Xelim da Tanzania</item>
+	    <item>Tenge</item>
+	    <item>Sem moeda</item>
+	    <item>Dólar de Trinidad e Tobago</item>
+	    <item>Tugrik</item>
+	    <item>Dinar Tunisiano</item>
+	    <item>Nova Lira Turca</item>
+	    <item>Novo Manat Turcomenistão</item>
+	    <item>Dirham EAU</item>
+	    <item>Xelim de Uganda</item>
+	    <item>UIC-Franc</item>
+	    <item>Unidade de Valor Real</item>
+	    <item>unidades de fomento</item>
+	    <item>Uruguai Peso em Unidades Indexadas</item>
+	    <item>Dólar dos EUA</item>
+	    <item>Som do Uzbequistão</item>
+	    <item>Vatu</item>
+	    <item>WIR Euro</item>
+	    <item>WIR Franc</item>
+	    <item>Won Sul Coreano</item>
+	    <item>Rial de Iemen</item>
+	    <item>Iene</item>
+	    <item>Renmimbi de Iuan</item>
+	    <item>Quacha do Zambia</item>
+	    <item>Dólar do Zimbabue</item>
+	    <item>Zloty</item>
+	  </string-array>
+	  <string-array name="default_accounts">
+	    <item>Despesas</item>
+	    <item>Receitas</item>
+	    <item>Ativos</item>
+	    <item>Equity</item>
+		<item>Liabilities</item>
+	  </string-array>
+	  <string name="error_no_accounts">Não existem contas no GnuCash.\nCriar uma conta antes de adicionar um widget</string>
+	  <string name="title_build_version">Versão de compilação</string>
+	  <string name="title_license">Licença</string>
+	  <string name="summary_licence_details">Apache License v2.0. Clique para mais detalhes</string>
+	  <string name="title_general_prefs">Preferências Gerais</string>
+	  <string name="label_widget_configuration">Selecionar Conta</string>
+	  <string name="toast_no_transactions_to_export">Não existem transações disponíveis para exportar</string>
+	  <string name="title_about_gnucash">Sobre o GnuCash</string>
+	  <string name="summary_about_gnucash">GnuCash é um aplicativo para controle de despesas no Android.\nEle proporciona uma forma flexível de registrar despesas on-the-go, que podem ser exportadas para o formato Open Financial eXchange (OFX) e importadas para o Gnucash para desktop.</string>
+	  <string name="title_about">Sobre</string>
+	  <string name="toast_error_exporting">Não foi possível gravar o arquivo OFX em :\n</string>
+	  <string name="toast_ofx_exported_to">Arquivo OFX exportado para:\n</string>
+	  <string name="title_export_email">Exportar GnuCash OFX</string>
+	  <string name="description_export_email">Exportar GnuCash OFX de</string>
+	  <string name="header_transaction_settings">Transações</string>
+	  <string name="title_transaction_preferences">Preferências para Transações</string>
+	  <string name="title_account_preferences">Preferências para Contas</string>
+	  <string name="title_default_transaction_type">Tipo de Transação Padrão</string>
+	  <string name="summary_default_transaction_type">O tipo de transação a ser usada por padrão, CRÉDITO ou DÉBITO</string>
+	  <string-array name="transaction_types">
+	    <item>CRÉDITO</item>
+	    <item>DÉBITO</item>
+	  </string-array>
+	  <string name="delete_all_transactions_confirmation_message">Are you sure you want to delete ALL transactions?</string>
+	  <string name="delete_transaction_confirmation_message">Are you sure you want to delete this transaction?</string>
+	  <string name="title_export_preference_category">Export</string>
+	  <string name="title_export_all_transactions">Export all transactions</string>
+	  <string name="title_always_delete_exported_transactions">Delete exported transactions</string>
+	  <string name="title_default_export_email">Default export email</string>
+	  <string name="summary_default_export_email">The default email address to send exports to. You can still change this when you export.</string>  
+	  <string name="label_double_entry_account">Transfer Account</string>
+	  <string name="summary_use_double_entry">All transactions will be a transfer from one account to another</string>
+	  <string name="title_use_double_entry">Activate Double Entry</string>
+	  <string name="account_balance">Balance</string>
+	  <string name="toast_no_account_name_entered">Please enter an account name</string>
+	  <string name="label_account_currency">Currency</string>
+	  <string name="label_parent_account">Parent account</string>
+	  <string name="title_xml_ofx_header">Use XML OFX header</string>
+	  <string name="summary_xml_ofx_header">Enable this option when exporting to third-party application other than GnuCash for desktop</string>
+	  <string name="title_whats_new">What\'s New</string>
+	  <string name="whats_new">
+	    <b>Version 1.1.0 - 31.01.2013</b>\n\n
+	    - Double entry accounting\n
+	    - Nested accounts\n
+	    - SGML is default OFX export format\n
+	    - Numerous bug fixes\n	        
+	  </string>
+	  <string name="label_dismiss">Dismiss</string>
 </resources>

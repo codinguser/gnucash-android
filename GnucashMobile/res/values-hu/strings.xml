@@ -304,5 +304,14 @@
 	<string name="label_account_currency">Currency</string>
 	<string name="label_parent_account">Parent account</string>
 	<string name="title_xml_ofx_header">Use XML OFX header</string>
-	<string name="summary_xml_ofx_header">Enable this option when exporting to third-party application other than GnuCash for desktop</string>	
+	<string name="summary_xml_ofx_header">Enable this option when exporting to third-party application other than GnuCash for desktop</string>
+	<string name="title_whats_new">What\'s New</string>
+	<string name="whats_new">
+	    <b>Version 1.1.0 - 31.01.2013</b>\n\n
+        - Double entry accounting\n
+        - Nested accounts\n
+        - SGML is default OFX export format\n
+        - Numerous bug fixes\n	        
+	</string>
+	<string name="label_dismiss">Dismiss</string>	
 </resources>
