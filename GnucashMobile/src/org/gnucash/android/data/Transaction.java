@@ -55,6 +55,11 @@ public class Transaction {
 	public static final String EXTRA_ACCOUNT_UID 	= "org.gnucash.android.extra.account_uid";
 	
 	/**
+	 * Key for specifying the double entry account
+	 */
+	public static final String EXTRA_DOUBLE_ACCOUNT_UID = "org.gnucash.android.extra.double_account_uid";
+	
+	/**
 	 * Key for identifying the amount of the transaction through an Intent
 	 */
 	public static final String EXTRA_AMOUNT 		= "org.gnucash.android.extra.amount";
