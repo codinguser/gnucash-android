@@ -263,8 +263,8 @@
 	    <item>Despesas</item>
 	    <item>Receitas</item>
 	    <item>Ativos</item>
-	    <item>Equity</item>
-		<item>Liabilities</item>
+	    <item>Patrimônio líquido</item>
+		<item>Passivos</item>
 	  </string-array>
 	  <string name="error_no_accounts">Não existem contas no GnuCash.\nCriar uma conta antes de adicionar um widget</string>
 	  <string name="title_build_version">Versão de compilação</string>
@@ -309,7 +309,7 @@
 	  <string name="whats_new">
 	    <b>Version 1.1.0 - 31.01.2013</b>\n\n
 	    - Contabilidade por partidas dobradas\n
-	    - Nested accounts\n
+	    - Subcontas\n
 	    - SGML é o formato padrão para exportação de OFX\n
 	    - Diversas correções de bugs\n	        
 	  </string>
