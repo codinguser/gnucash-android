@@ -59,11 +59,14 @@ public class TransactionRecorder extends BroadcastReceiver {
 		if (accountUID == null)
 			accountUID = "uncategorized";
 		
+		String doubleAccountUID = args.getString(Transaction.EXTRA_DOUBLE_ACCOUNT_UID);
+		
 		Money amount = new Money(new BigDecimal(amountDouble), Currency.getInstance(currencyCode));
 		Transaction transaction = new Transaction(amount, name);
 		transaction.setTime(System.currentTimeMillis());
 		transaction.setDescription(note);	
 		transaction.setAccountUID(accountUID);
+		transaction.setDoubleEntryAccountUID(doubleAccountUID);
 		
 		TransactionsDbAdapter transacionsDbAdapter = new TransactionsDbAdapter(context);
 		transacionsDbAdapter.addTransaction(transaction);

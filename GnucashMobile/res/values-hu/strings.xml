@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
  Copyright (c) 2012 Ngewi Fet <ngewif@gmail.com>
- Copyright (c) 2012 Nicolas Barranger <wicowyn@gmail.com>
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -18,71 +17,71 @@
 
 <resources>
     <string name="app_name">GnuCash</string>
-    <string name="title_add_account">Cr&#233;er un compte</string>
-    <string name="title_edit_account">&#233;diter le compte</string>
-    <string name="info_details">Information</string>
-    <string name="title_settings">Param&#232;tres</string>
-    <string name="menu_export_ofx">Exporter en OFX</string>
-    <string name="description_add_transaction_icon">Ajouter une nouvelle transaction &#192; un compte</string>
-    <string name="label_no_accounts">Aucun compte &#192; afficher</string>
-    <string name="label_account_name">Nom de compte</string>
-    <string name="btn_cancel">Annuler</string>
-    <string name="btn_save">Sauvgarder</string>
-    <string name="label_no_transactions_to_display">Aucune transaction &#192; afficher</string>
+    <string name="title_add_account">Create Account</string>
+    <string name="title_edit_account">Edit Account</string>
+    <string name="info_details">Info</string>
+    <string name="title_settings">Settings</string>
+    <string name="menu_export_ofx">Export OFX</string>
+    <string name="description_add_transaction_icon">Add a new transaction to an account</string>
+    <string name="label_no_accounts">No accounts to display</string>
+    <string name="label_account_name">Account name</string>
+    <string name="btn_cancel">Cancel</string>
+    <string name="btn_save">Save</string>
+    <string name="label_no_transactions_to_display">No transactions to display</string>
     <string name="label_transaction_name">Description</string>
-    <string name="label_transaction_amount">Montant</string>
-    <string name="title_add_transaction">Nouvelle transaction</string>
-    <string name="label_no_transactions">Aucune transaction &#192; afficher</string>
-    <string name="label_timeanddate">DATE &amp; HEURE</string>
-    <string name="label_account">Compte</string>
+    <string name="label_transaction_amount">Amount</string>
+    <string name="title_add_transaction">New transaction</string>
+    <string name="label_no_transactions">No transactions to display</string>
+    <string name="label_timeanddate">DATE &amp; TIME</string>
+    <string name="label_account">Account</string>
     <string name="label_debit">DEBIT</string>
     <string name="label_credit">CREDIT</string>
-    <string name="title_accounts">Comptes</string>
+    <string name="title_accounts">Accounts</string>
     <string name="title_transactions">Transactions</string>
-    <string name="menu_delete">SUPPRIMER</string>
-    <string name="alert_dialog_ok_delete">Supprimer</string>
-    <string name="alert_dialog_cancel">Annuler</string>
-    <string name="toast_account_deleted">Compte supprim&#233;</string>
-    <string name="title_confirm_delete">Confirmer la suppression</string>
-    <string name="delete_account_confirmation_message">Toute les transactions dans ce compte seront supprimer</string>
-    <string name="title_edit_transaction">Editer la transaction</string>
+    <string name="menu_delete">DELETE</string>
+    <string name="alert_dialog_ok_delete">Delete</string>
+    <string name="alert_dialog_cancel">Cancel</string>
+    <string name="toast_account_deleted">Account deleted</string>
+    <string name="title_confirm_delete">Confirm delete</string>
+    <string name="delete_account_confirmation_message">All transactions in this account will also be deleted</string>
+    <string name="title_edit_transaction">Edit Transaction</string>
     <string name="label_transaction_description">Note</string>
-    <string name="menu_move">DEPLACER</string>
-    <string name="title_selected">%1$d s&#233;lectionner</string>
-    <string name="label_transactions_total">Total:</string>
-    <string name="label_export_destination">Destination d\'export</string>
-    <string name="title_export_dialog">Exporter en OFX</string>
-    <string name="option_export_all_transactions">Exporter toute les transactions</string>
-    <string name="hint_export_choice">Par d&#233;faut, seul les nouvelles transactions depuis le dernier export seront exporter. Cochez cette option pour exporter toutes les transactions</string>
-    <string name="error_exporting">Erreur lors de l\'export des donn&#233;es en OFX</string>    
-    <string name="btn_export">Exporter</string>
-    <string name="option_delete_after_export">Supprimer apr&#233;s export</string>
-    <string name="hint_delete_after_export">Toutes les transactions export&#233; seront supprimer apr&#233;s l\'export</string>
-    <string name="title_settings">Param&#232;tres</string>
+    <string name="menu_move">MOVE</string>
+    <string name="title_selected">%1$d selected</string>
+    <string name="label_transactions_total">Total sum:</string>
+    <string name="label_export_destination">Export Destination</string>
+    <string name="title_export_dialog">Export OFX</string>
+    <string name="option_export_all_transactions">Export all transactions</string>
+    <string name="hint_export_choice">By default, only new transactions since last export will be exported. Check this option to export all transactions</string>
+    <string name="error_exporting">Error exporting OFX data</string>    
+    <string name="btn_export">Export</string>
+    <string name="option_delete_after_export">Delete after export</string>
+    <string name="hint_delete_after_export">All exported transactions will be deleted when exporting is completed</string>
+    <string name="title_settings">Settings</string>
     <string-array name="export_destinations">
-        <item>Partager le fichier&#8230;</item>
-        <item>Carte SD</item>
+        <item>Share file&#8230;</item>
+        <item>SD Card</item>
     </string-array>
-    <string name="btn_move">D&#233;placer</string>
-    <string name="title_move_transactions">D&#233;placer %1$d transaction(s)</string>
-    <string name="label_move_destination">Compte de destination</string>
-    <string name="permission_access_sdcard">Acc&#233;s carte SD</string>
-    <string name="title_share_ofx_with">Partager l\export en OFX avec&#8230;</string>
-    <string name="toast_incompatible_currency">Impposible de d&#233;placer les transactions.\nLe compte de destination utilise une monnaie diff&#233;rente du compte d\'origine</string>
-    <string name="header_general_settings">G&#233;n&#233;ral</string>
-    <string name="header_about_gnucash">&#192; propos</string>
-    <string name="title_choose_currency">Choisisez une monnaie par d&#233;faut</string>
-    <string name="title_default_currency">Monnaie par d&#233;faut</string>
-    <string name="summary_default_currency">Monnaie par d&#233;faut &#192; assigner aux nouveau comptes</string>
-    <string name="label_permission_record_transactions">Permettre l\'enregistrement des transactions dans Gnucash pour Android</string>
-    <string name="label_permission_create_accounts">Permettre la cr&#233;ation de comptes dans Gnucash pour Android</string>
-    <string name="label_permission_group">Vos donn&#233;es GnuCash</string>
-    <string name="description_permission_group">Lire et modifier les donn&#233;es GnuCash</string>
-    <string name="label_permission_record_transaction">enregistrer les transactions</string>
-    <string name="label_permission_create_account">cr&#233;er les comptes</string>
-    <string name="label_display_account">Afficher le compte</string>
-    <string name="btn_create_accounts">Cr&#233;er les comptes</string>
-    <string name="title_default_accounts">Choisisez les comptes &#192; cr&#233;er</string>
+    <string name="btn_move">Move</string>
+    <string name="title_move_transactions">Move %1$d transaction(s)</string>
+    <string name="label_move_destination">Destination Account</string>
+    <string name="permission_access_sdcard">Access SD Card</string>
+    <string name="title_share_ofx_with">Share OFX export with&#8230;</string>
+    <string name="toast_incompatible_currency">Cannot move transactions.\nThe destination account uses a different currency from origin account</string>
+    <string name="header_general_settings">General</string>
+    <string name="header_about_gnucash">About</string>
+    <string name="title_choose_currency">Choose default currency</string>
+    <string name="title_default_currency">Default currency</string>
+    <string name="summary_default_currency">Default currency to assign to new accounts</string>
+    <string name="label_permission_record_transactions">Enables recording transactions in GnuCash for Android</string>
+    <string name="label_permission_create_accounts">Enables creation of accounts in GnuCash for Android</string>
+    <string name="label_permission_group">Your GnuCash data</string>
+    <string name="description_permission_group">Read and modify GnuCash data</string>
+    <string name="label_permission_record_transaction">record transactions</string>
+    <string name="label_permission_create_account">create accounts</string>
+    <string name="label_display_account">Display account</string>
+    <string name="btn_create_accounts">Create Accounts</string>
+    <string name="title_default_accounts">Select accounts to create</string>
     <string-array name="currency_names">
         <item>Afghani</item>
 		<item>Algerian Dinar</item>
@@ -261,31 +260,31 @@
 		<item>Zloty</item>
     </string-array>
 	<string-array name="default_accounts">
-	    <item>D&#233;pense</item>
-	    <item>Revenu</item>
-	    <item>Actif</item>	    
+	    <item>Expenses</item>
+	    <item>Income</item>
+	    <item>Assets</item>	    
 	    <item>Equity</item>
 	    <item>Liabilities</item>
 	</string-array>
-	<string name="error_no_accounts">Aucun compte &#233;xistant dans Gnucash.\nCr&#233;er un compte avant d\'ajouter un widget</string>
-	<string name="title_build_version">Version logiciel</string>
-	<string name="title_license">Licence</string>
-	<string name="summary_licence_details">Apache License v2.0. Click pour plus de d&#233;tails</string>
-	<string name="title_general_prefs">G&#233;n&#233;ral</string>
-	<string name="label_widget_configuration">Selectionnez un compte</string>
-	<string name="toast_no_transactions_to_export">Il n\'existe pas de transactions disponible pour l\'exportation</string>
-	<string name="title_about_gnucash">&#192; propos de Gnucash</string>
-	<string name="summary_about_gnucash">GnucashMobile est une application mobile de suivis de finance pour Android.\nIl permet un suivi simple des d&#233;penses et qui peut être export&#233; vers le format Open Financial eXchange (OFX) et import&#233;s dans Gnucash pour PC.</string>
-	<string name="title_about">&#192; propos</string>
-	<string name="toast_error_exporting">Impossible d\'&#233;crire un fichier OFX en:\n</string>
-	<string name="toast_ofx_exported_to">Fichier OFX export&#233; en:\n</string>
-	<string name="title_export_email">Gnucash OFX export</string>
-	<string name="description_export_email">Gnucash OFX Export von </string>
+	<string name="error_no_accounts">No accounts exist in GnuCash.\nCreate an account before adding a widget</string>
+	<string name="title_build_version">Build version</string>
+	<string name="title_license">License</string>
+	<string name="summary_licence_details">Apache License v2.0. Click for details</string>
+	<string name="title_general_prefs">General Preferences</string>
+	<string name="label_widget_configuration">Select Account</string>
+	<string name="toast_no_transactions_to_export">There are no transactions available to export</string>
+	<string name="title_about_gnucash">About GnuCash</string>
+	<string name="summary_about_gnucash">Gnucash is a mobile finance expense tracker application for Android.\nIt enables flexible tracking of expenses on-the-go which can be exported to the Open Financial eXchange (OFX) format and imported into GnuCash for the desktop.</string>
+	<string name="title_about">About</string>
+	<string name="toast_error_exporting">Could not write OFX file to :\n</string>
+	<string name="toast_ofx_exported_to">OFX file exported to:\n</string>
+	<string name="title_export_email">GnuCash OFX export</string>
+	<string name="description_export_email">GnuCash OFX Export from </string>
 	<string name="header_transaction_settings">Transactions</string>
-	<string name="title_transaction_preferences">Préférences des transactions</string>
-	<string name="title_account_preferences">Préférences du compte</string>
-	<string name="title_default_transaction_type">Type de transaction par défaut</string>
-	<string name="summary_default_transaction_type">Le type de transaction à utiliser par défaut, CREDIT ou DEBIT</string>
+	<string name="title_transaction_preferences">Transaction Preferences</string>
+	<string name="title_account_preferences">Account Preferences</string>
+	<string name="title_default_transaction_type">Default Transaction Type</string>
+	<string name="summary_default_transaction_type">The type of transaction to use by default, CREDIT or DEBIT</string>
 	<string-array name="transaction_types">
 		<item>CREDIT</item>
 		<item>DEBIT</item>
@@ -296,7 +295,7 @@
 	<string name="title_export_all_transactions">Export all transactions</string>
 	<string name="title_always_delete_exported_transactions">Delete exported transactions</string>
 	<string name="title_default_export_email">Default export email</string>
-	<string name="summary_default_export_email">The default email address to send exports to. You can still change this when you export.</string>
+	<string name="summary_default_export_email">The default email address to send exports to. You can still change this when you export.</string>	
 	<string name="label_double_entry_account">Transfer Account</string>
 	<string name="summary_use_double_entry">All transactions will be a transfer from one account to another</string>
 	<string name="title_use_double_entry">Activate Double Entry</string>
@@ -314,5 +313,5 @@
         - SGML is default OFX export format\n
         - Numerous bug fixes\n	        
 	</string>
-	<string name="label_dismiss">Dismiss</string>
+	<string name="label_dismiss">Dismiss</string>	
 </resources>

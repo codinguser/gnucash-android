@@ -28,6 +28,7 @@ import org.gnucash.android.data.Transaction;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteStatement;
 import android.util.Log;
 
 /**
@@ -64,6 +65,7 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 		contentValues.put(DatabaseHelper.KEY_TIMESTAMP, transaction.getTimeMillis());
 		contentValues.put(DatabaseHelper.KEY_DESCRIPTION, transaction.getDescription());
 		contentValues.put(DatabaseHelper.KEY_EXPORTED, transaction.isExported() ? 1 : 0);
+		contentValues.put(DatabaseHelper.KEY_DOUBLE_ENTRY_ACCOUNT_UID, transaction.getDoubleEntryAccountUID());
 		
 		long rowId = -1;
 		if ((rowId = fetchTransactionWithUID(transaction.getUID())) > 0){
@@ -119,13 +121,16 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 	
 	/**
 	 * Returns a cursor to a set of all transactions for the account with UID <code>accountUID</code>
+	 * or for which this account is the origin account (double entry) 
+	 * i.e <code>accountUID</code> is double entry account UID
 	 * @param accountUID UID of the account whose transactions are to be retrieved
 	 * @return Cursor holding set of transactions for particular account
 	 */
 	public Cursor fetchAllTransactionsForAccount(String accountUID){
 		Cursor cursor = mDb.query(DatabaseHelper.TRANSACTIONS_TABLE_NAME, 
 				null, 
-				DatabaseHelper.KEY_ACCOUNT_UID + " = '" + accountUID + "'", 
+				"(" + DatabaseHelper.KEY_ACCOUNT_UID + " = '" + accountUID + "') "
+				+ "OR (" + DatabaseHelper.KEY_DOUBLE_ENTRY_ACCOUNT_UID + " = '" + accountUID + "' )", 
 				null, null, null, DatabaseHelper.KEY_TIMESTAMP + " DESC");
 		
 		return cursor;
@@ -133,7 +138,8 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 	
 	/**
 	 * Returns a cursor to a set of all transactions for the account with ID <code>accountID</code>
-	 * @param accountUID ID of the account whose transactions are to be retrieved
+	 * or for which this account is the origin account in a double entry
+	 * @param accountID ID of the account whose transactions are to be retrieved
 	 * @return Cursor holding set of transactions for particular account
 	 */
 	public Cursor fetchAllTransactionsForAccount(long accountID){
@@ -153,7 +159,13 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 			return transactionsList;
 		
 		while (c.moveToNext()) {
-			transactionsList.add(buildTransactionInstance(c));
+			Transaction transaction = buildTransactionInstance(c);
+			String doubleEntryAccountUID = transaction.getDoubleEntryAccountUID();
+			//negate double entry transactions for the transfer account
+			if (doubleEntryAccountUID != null && doubleEntryAccountUID.equals(accountUID)){
+				transaction.setAmount(transaction.getAmount().negate());
+			}
+			transactionsList.add(transaction);
 		}
 		c.close();
 		return transactionsList;
@@ -167,6 +179,7 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 	 */
 	public Transaction buildTransactionInstance(Cursor c){		
 		String accountUID = c.getString(DatabaseAdapter.COLUMN_ACCOUNT_UID);
+		String doubleAccountUID = c.getString(DatabaseAdapter.COLUMN_DOUBLE_ENTRY_ACCOUNT_UID);
 		Currency currency = Currency.getInstance(getCurrencyCode(accountUID));
 		String amount = c.getString(DatabaseAdapter.COLUMN_AMOUNT);
 		Money moneyAmount = new Money(new BigDecimal(amount), currency);
@@ -178,7 +191,8 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 		transaction.setTime(c.getLong(DatabaseAdapter.COLUMN_TIMESTAMP));
 		transaction.setDescription(c.getString(DatabaseAdapter.COLUMN_DESCRIPTION));
 		transaction.setExported(c.getInt(DatabaseAdapter.COLUMN_EXPORTED) == 1);
-				
+		transaction.setDoubleEntryAccountUID(doubleAccountUID);
+		
 		return transaction;
 	}
 
@@ -284,16 +298,11 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 	 * regardless of what account they belong to
 	 * @return Number of transaction in the database
 	 */
-	public int getAllTransactionsCount(){
-		Cursor cursor = fetchAllRecords(DatabaseHelper.TRANSACTIONS_TABLE_NAME);
-		int count = 0;
-		if (cursor == null)
-			return count;
-		else {
-			count = cursor.getCount();
-			cursor.close();
-		}
-		return count;
+	public long getAllTransactionsCount(){
+		String sql = "SELECT COUNT(*) FROM " + DatabaseHelper.TRANSACTIONS_TABLE_NAME;		
+		SQLiteStatement statement = mDb.compileStatement(sql);
+	    long count = statement.simpleQueryForLong();
+	    return count;
 	}
 	
 	/**
@@ -302,10 +311,11 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 	 * @return Sum of transactions belonging to the account
 	 */
 	public Money getTransactionsSum(long accountId){
-		Cursor c = mDb.query(DatabaseHelper.TRANSACTIONS_TABLE_NAME, 
-				new String[]{DatabaseHelper.KEY_AMOUNT}, 
-				DatabaseHelper.KEY_ACCOUNT_UID + "= '" + getAccountUID(accountId) + "'", 
-				null, null, null, null);
+		Cursor c = fetchAllTransactionsForAccount(accountId); 
+//		mDb.query(DatabaseHelper.TRANSACTIONS_TABLE_NAME, 
+//				new String[]{DatabaseHelper.KEY_AMOUNT}, 
+//				DatabaseHelper.KEY_ACCOUNT_UID + "= '" + getAccountUID(accountId) + "'", 
+//				null, null, null, null);
 
 		//transactions will have the currency of the account
 		String currencyCode = getCurrencyCode(accountId);
@@ -316,11 +326,46 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 		Money amountSum = new Money("0", currencyCode);
 		
 		while(c.moveToNext()){
-			amountSum = amountSum.add(new Money(c.getString(0), currencyCode));
+			Money money = new Money(c.getString(DatabaseAdapter.COLUMN_AMOUNT), currencyCode);
+			String doubleEntryAccountUID = c.getString(DatabaseAdapter.COLUMN_DOUBLE_ENTRY_ACCOUNT_UID);
+			if (doubleEntryAccountUID != null && doubleEntryAccountUID.equals(getAccountUID(accountId))){
+				amountSum = amountSum.add(money.negate());
+			} else {
+				amountSum = amountSum.add(money);
+			}
 		}
 		c.close();
 		
 		return amountSum;
+	}
+	
+	/**
+	 * Returns the balance of all accounts with each transaction counted only once
+	 * This does not take into account the currencies and double entry 
+	 * transactions are not considered as well.
+	 * @return Balance of all accounts in the database
+	 * @see AccountsDbAdapter#getDoubleEntryAccountsBalance()
+	 */
+	public Money getAllTransactionsSum(){
+		String query = "SELECT TOTAL(" + DatabaseHelper.KEY_AMOUNT +") FROM " + DatabaseHelper.TRANSACTIONS_TABLE_NAME;
+		Cursor c = mDb.rawQuery(query, null); 
+//				new String[]{DatabaseHelper.KEY_AMOUNT, DatabaseHelper.TRANSACTIONS_TABLE_NAME});
+		double result = 0;
+		if (c != null && c.moveToFirst()){
+			result = c.getDouble(0);	
+		}
+		c.close();
+		return new Money(new BigDecimal(result));	
+	}
+	
+	/**
+	 * Returns true if <code>rowId</code> and <code>accountUID</code> belong to the same account
+	 * @param rowId Database record ID
+	 * @param accountUID Unique Identifier string of the account
+	 * @return <code>true</code> if both are properties of the same account, <code>false</code> otherwise
+	 */
+	public boolean isSameAccount(long rowId, String accountUID){
+		return getAccountID(accountUID) == rowId;
 	}
 		
 	/**
