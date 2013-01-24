@@ -264,8 +264,8 @@
 	    <item>Gastos</item>
 	    <item>Ingresos</item>
 	    <item>Activos</item>	    
-	    <item>Equity</item>
-	    <item>Liabilities</item>
+	    <item>Capital</item>
+	    <item>Pasivo</item>
 	</string-array>
 	<string name="error_no_accounts">No hay cuentas en Gnucash.\nCree una cuenta antes de a&#241;adir un widget</string>
 	<string name="title_build_version">Versi&#243;n de compilaci&#243;n</string>
@@ -276,7 +276,7 @@
 	<string name="toast_no_transactions_to_export">No hay transacciones disponibles para exportar</string>
 	<string name="title_about_gnucash">Acerca de Gnucash</string>
 	<string name="summary_about_gnucash">GnucashMobile es una aplicaci&#243;n de registro de gastos financieros para Android.\nPermite un registro flexible de gastos en cualquier lugar que luego pueden ser exportados al formato Open Financial eXchange (OFX) e importados en la aplicaci&#243;n Gnucash para el escritorio.</string>
-	<string name="title_about">About</string>
+	<string name="title_about">Acerca de</string>
 	<string name="toast_error_exporting">No se pudo guardar el archivo OFX en:\n</string>
 	<string name="toast_ofx_exported_to">Archivo OFX exportado a:\n</string>
 	<string name="title_export_email">Exportaci&#243;n OFX de Gnucash</string>
@@ -293,26 +293,26 @@
 	<string name="delete_all_transactions_confirmation_message">&#191;Borrar TODAS las transacciones?</string>
 	<string name="delete_transaction_confirmation_message">&#191;Borrar esta transacci&#243;n?</string>
 	<string name="title_export_preference_category">Exportaci&#243;n</string>
-	<string name="title_export_all_transactions">Export all transactions</string>
-	<string name="title_always_delete_exported_transactions">Delete exported transactions</string>
-	<string name="title_default_export_email">Correo electr&#243;nico por defecto para exportar</string>
+	<string name="title_export_all_transactions">Exportar todas las transacciones</string>
+	<string name="title_always_delete_exported_transactions">Borrar las transacciones exportadas</string>
+	<string name="title_default_export_email">Correo electr&#243;nico para exportar por defecto</string>
 	<string name="summary_default_export_email">La direcci&#243;n de correo electr&#243;nico a la que enviar las exportaciones por defecto. Se puede cambiar en cada exportaci&#243;n.</string>
-	<string name="label_double_entry_account">Transfer Account</string>
-	<string name="summary_use_double_entry">All transactions will be a transfer from one account to another</string>
-	<string name="title_use_double_entry">Activate Double Entry</string>
-	<string name="account_balance">Balance</string>
-	<string name="toast_no_account_name_entered">Please enter an account name</string>
-	<string name="label_account_currency">Currency</string>
-	<string name="label_parent_account">Parent account</string>
-	<string name="title_xml_ofx_header">Use XML OFX header</string>
-	<string name="summary_xml_ofx_header">Enable this option when exporting to third-party application other than GnuCash for desktop</string>
-	<string name="title_whats_new">What\'s New</string>
+	<string name="label_double_entry_account">Transferir Cuenta</string>
+	<string name="summary_use_double_entry">Todas las transacciones ser&#225;n transferidas de una cuenta a otra</string>
+	<string name="title_use_double_entry">Activar Doble Entrada</string>
+	<string name="account_balance">Saldo</string>
+	<string name="toast_no_account_name_entered">Por favor introduzca un nombre para la cuenta</string>
+	<string name="label_account_currency">Divisa</string>
+	<string name="label_parent_account">Cuenta padre</string>
+	<string name="title_xml_ofx_header">Usar cabecera XML OFX</string>
+	<string name="summary_xml_ofx_header">Active esta opci&#243;n para exportar a otras aplicaciones distintas a GnuCash para escritorio</string>
+	<string name="title_whats_new">Novedades</string>
 	<string name="whats_new">
-	    <b>Version 1.1.0 - 31.01.2013</b>\n\n
-        - Double entry accounting\n
-        - Nested accounts\n
-        - SGML is default OFX export format\n
-        - Numerous bug fixes\n	        
+	    <b>Versi&#243;n 1.1.0 - 31.01.2013</b>\n\n
+        - Contabilidad de doble entrada\n
+        - Cuentas anidadas\n
+        - SGML es el formato por defecto para la exportaci&#243;n OFX\n
+        - Varios bugs solucionados\n	        
 	</string>
-	<string name="label_dismiss">Dismiss</string>	
+	<string name="label_dismiss">Cerrar</string>	
 </resources>
