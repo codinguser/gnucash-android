@@ -16,6 +16,9 @@
 
 package org.gnucash.android.db;
 
+import org.gnucash.android.data.Account.AccountType;
+
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -43,7 +46,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	 * Database version.
 	 * With any change to the database schema, this number must increase
 	 */
-	private static final int DATABASE_VERSION = 1;
+	private static final int DATABASE_VERSION = 2;
 	
 	/**
 	 * Name of accounts table
@@ -96,6 +99,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	public static final String KEY_ACCOUNT_UID 	= "account_uid";
 	
 	/**
+	 * UID of the parent account
+	 */
+	public static final String KEY_PARENT_ACCOUNT_UID = "parent_account_uid";
+	
+	/**
+	 * Account which the origin account this transaction in double entry mode
+	 */
+	public static final String KEY_DOUBLE_ENTRY_ACCOUNT_UID 	= "double_account_uid";
+	
+	/**
 	 * Transaction description database column
 	 */
 	public static final String KEY_DESCRIPTION 	= "description";
@@ -123,8 +136,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			+ KEY_ROW_ID + " integer primary key autoincrement, "
 			+ KEY_UID 	+ " varchar(255) not null, "
 			+ KEY_NAME 	+ " varchar(255) not null, "
-			+ KEY_TYPE 	+ " varchar(255), "
+			+ KEY_TYPE 	+ " varchar(255) not null, "			
 			+ KEY_CURRENCY_CODE + " varchar(255) not null, "
+			+ KEY_PARENT_ACCOUNT_UID + " varchar(255), "
 			+ "UNIQUE (" + KEY_UID + ")"	
 			+ ");";
 	
@@ -139,9 +153,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			+ KEY_AMOUNT 		+ " varchar(255) not null, "
 			+ KEY_DESCRIPTION 	+ " text, "
 			+ KEY_TIMESTAMP 	+ " integer not null, "
-			+ KEY_ACCOUNT_UID 	+ " varchar(255) not null, "
+			+ KEY_ACCOUNT_UID 	+ " varchar(255) not null, "			
 			+ KEY_EXPORTED 		+ " tinyint default 0, "
+			+ KEY_DOUBLE_ENTRY_ACCOUNT_UID 	+ " varchar(255), "
 			+ "FOREIGN KEY (" 	+ KEY_ACCOUNT_UID + ") REFERENCES " + ACCOUNTS_TABLE_NAME + " (" + KEY_UID + "), "
+			+ "FOREIGN KEY (" 	+ KEY_DOUBLE_ENTRY_ACCOUNT_UID + ") REFERENCES " + ACCOUNTS_TABLE_NAME + " (" + KEY_UID + "), "
 			+ "UNIQUE (" 		+ KEY_UID + ") " 
 			+ ");";
 
@@ -163,25 +179,34 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 		Log.i(TAG, "Upgrading database from version " 
-				+ oldVersion + " to " + newVersion
-				+ " which will destroy all old data");
+				+ oldVersion + " to " + newVersion);
 		
 		if (oldVersion < newVersion){
-			/*
-			Log.i("DatabaseHelper", "Upgrading database to version " + newVersion);
-			if (oldVersion == 1 && newVersion == 2){				
+			//introducing double entry accounting
+			Log.i(TAG, "Upgrading database to version " + newVersion);
+			if (oldVersion == 1 && newVersion == 2){		
+				Log.i(TAG, "Adding column for splitting transactions");
 				String addColumnSql = "ALTER TABLE " + TRANSACTIONS_TABLE_NAME + 
-									" ADD COLUMN " + KEY_EXPORTED + " tinyint default 0";
+									" ADD COLUMN " + KEY_DOUBLE_ENTRY_ACCOUNT_UID + " varchar(255)";
+				
+				//introducing sub accounts
+				Log.i(TAG, "Adding column for parent accounts");
+				String addParentAccountSql = "ALTER TABLE " + ACCOUNTS_TABLE_NAME + 
+						" ADD COLUMN " + KEY_PARENT_ACCOUNT_UID + " varchar(255)";
+	
 				db.execSQL(addColumnSql);
+				db.execSQL(addParentAccountSql);
 			}
-			*/
+			
+			//update account types to GnuCash account types
+			//since all were previously CHECKING, now all will be CASH
+			Log.i(TAG, "Converting account types to GnuCash compatible types");
+			ContentValues cv = new ContentValues();
+			cv.put(KEY_TYPE, AccountType.CASH.toString());
+			db.update(ACCOUNTS_TABLE_NAME, cv, null, null);
+				
 		} else {
 			Log.i(TAG, "Cannot downgrade database.");
-			/*
-			db.execSQL("DROP TABLE IF EXISTS " + TRANSACTIONS_TABLE_NAME);
-			db.execSQL("DROP TABLE IF EXISTS " + ACCOUNTS_TABLE_NAME);
-			onCreate(db);
-			*/
 		}
 	}
 

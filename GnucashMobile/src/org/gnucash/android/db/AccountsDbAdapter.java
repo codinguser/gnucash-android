@@ -22,6 +22,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.gnucash.android.data.Account;
+import org.gnucash.android.data.Money;
 import org.gnucash.android.data.Account.AccountType;
 import org.gnucash.android.data.Transaction;
 
@@ -71,12 +72,14 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 		contentValues.put(DatabaseHelper.KEY_TYPE, account.getAccountType().name());
 		contentValues.put(DatabaseHelper.KEY_UID, account.getUID());
 		contentValues.put(DatabaseHelper.KEY_CURRENCY_CODE, account.getCurrency().getCurrencyCode());
+		contentValues.put(DatabaseHelper.KEY_PARENT_ACCOUNT_UID, account.getParentUID());
 		
 		long rowId = -1;
 		if ((rowId = getAccountID(account.getUID())) > 0){
 			//if account already exists, then just update
 			Log.d(TAG, "Updating existing account");
-			mDb.update(DatabaseHelper.ACCOUNTS_TABLE_NAME, contentValues, DatabaseHelper.KEY_ROW_ID + " = " + rowId, null);
+			mDb.update(DatabaseHelper.ACCOUNTS_TABLE_NAME, contentValues, 
+					DatabaseHelper.KEY_ROW_ID + " = " + rowId, null);
 		} else {
 			Log.d(TAG, "Adding new account to db");
 			rowId = mDb.insert(DatabaseHelper.ACCOUNTS_TABLE_NAME, null, contentValues);
@@ -149,6 +152,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 		Account account = new Account(c.getString(DatabaseAdapter.COLUMN_NAME));
 		String uid = c.getString(DatabaseAdapter.COLUMN_UID);
 		account.setUID(uid);
+		account.setParentUID(c.getString(DatabaseAdapter.COLUMN_PARENT_ACCOUNT_UID));
 		account.setAccountType(AccountType.valueOf(c.getString(DatabaseAdapter.COLUMN_TYPE)));
 		//make sure the account currency is set before setting the transactions
 		//else the transactions end up with a different currency from the account
@@ -177,6 +181,26 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 	}
 	
 	/**
+	 * Returns the  unique ID of the parent account of the account with unique ID <code>uid</code>
+	 * If the account has no parent, null is returned
+	 * @param uid Unique Identifier of account whose parent is to be returned
+	 * @return DB record UID of the parent account, null if the account has no parent
+	 */
+	public String getParentAccountUID(String uid){
+		Cursor cursor = mDb.query(DatabaseHelper.ACCOUNTS_TABLE_NAME, 
+				new String[] {DatabaseHelper.KEY_ROW_ID, DatabaseHelper.KEY_PARENT_ACCOUNT_UID}, 
+				DatabaseHelper.KEY_UID + " = '" + uid + "'", null, null, null, null);
+		String result = null;
+		if (cursor != null && cursor.moveToFirst()){
+			Log.d(TAG, "Account already exists. Returning existing id");
+			result = cursor.getString(0); //0 because only one row was requested
+
+			cursor.close();
+		}
+		return result;
+	}	
+	
+	/**
 	 * Retrieves an account object from a database with database ID <code>rowId</code>
 	 * @param rowId Identifier of the account record to be retrieved
 	 * @return {@link Account} object corresponding to database record
@@ -191,7 +215,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 		}
 		return account;
 	}
-	
+		
 	/**
 	 * Returns the {@link Account} object populated with data from the database
 	 * for the record with UID <code>uid</code>
@@ -201,6 +225,42 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 	public Account getAccount(String uid){
 		return getAccount(getId(uid));
 	}	
+	
+	/**
+	 * Returns the unique identifier for the account with record ID <code>id</code>
+	 * @param id Database record id of account
+	 * @return Unique identifier string of the account
+	 */
+	public String getAccountUID(long id){
+		String uid = null;
+		Cursor c = mDb.query(DatabaseHelper.ACCOUNTS_TABLE_NAME, 
+				new String[]{DatabaseHelper.KEY_ROW_ID, DatabaseHelper.KEY_UID}, 
+				DatabaseHelper.KEY_ROW_ID + "=" + id, 
+				null, null, null, null);
+		if (c != null && c.moveToFirst()){
+			uid = c.getString(1);
+			c.close();
+		}
+		return uid;
+	}
+	
+	/**
+	 * Returns the {@link AccountType} of the account with unique ID <code>uid</code>
+	 * @param uid Unique ID of the account
+	 * @return {@link AccountType} of the account
+	 */
+	public AccountType getAccountType(String uid){
+		String type = null;
+		Cursor c = mDb.query(DatabaseHelper.ACCOUNTS_TABLE_NAME, 
+				new String[]{DatabaseHelper.KEY_TYPE}, 
+				DatabaseHelper.KEY_UID + "='" + uid + "'", 
+				null, null, null, null);
+		if (c != null && c.moveToFirst()){
+			type = c.getString(0); //0 because we requested only the type column
+			c.close();
+		}
+		return AccountType.valueOf(type);
+	}
 	
 	/**
 	 * Returns the name of the account with id <code>accountID</code>
@@ -265,6 +325,52 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 	}
 
 	/**
+	 * Returns a Cursor set of accounts which fulfill <code>condition</code>
+	 * @param condition SQL WHERE statement without the 'WHERE' itself
+	 * @return Cursor set of accounts which fulfill <code>condition</code>
+	 */
+	public Cursor fetchAccounts(String condition){
+		Log.v(TAG, "Fetching all accounts from db where " + condition);
+		Cursor cursor = mDb.query(DatabaseHelper.ACCOUNTS_TABLE_NAME, 
+				null, condition, null, null, null, 
+				DatabaseHelper.KEY_NAME + " ASC");
+		return cursor;
+	}
+	
+	/**
+	 * Returns the balance of all accounts with each transaction counted only once
+	 * This does not take into account the currencies and double entry 
+	 * transactions are not considered as well.
+	 * @return Balance of all accounts in the database
+	 * @see AccountsDbAdapter#getDoubleEntryAccountsBalance()
+	 */
+	public Money getAllAccountsBalance(){
+		return mTransactionsAdapter.getAllTransactionsSum();
+	}
+	
+	/**
+	 * Returns the balance for all transactions while taking double entry into consideration
+	 * This means that double transactions will be counted twice
+	 * @return Total balance of the accounts while using double entry
+	 */
+	public Money getDoubleEntryAccountsBalance(){
+		//FIXME: This does not take account currency into consideration
+		Cursor c = mDb.query(DatabaseHelper.ACCOUNTS_TABLE_NAME, 
+				new String[]{DatabaseHelper.KEY_ROW_ID}, 
+				null, null, null, null, null);
+		Money totalSum = new Money();
+		if (c != null){
+			while (c.moveToNext()) {
+				long id = c.getLong(DatabaseAdapter.COLUMN_ROW_ID);
+				Money sum = mTransactionsAdapter.getTransactionsSum(id);
+				totalSum = totalSum.add(sum);
+			}
+			c.close();
+		}
+		return totalSum;
+	}
+	
+	/**
 	 * Return the record ID for the account with UID <code>accountUID</code>
 	 * @param accountUID String Unique ID of the account
 	 * @return Record ID belonging to account UID
@@ -289,6 +395,16 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 	 */
 	public String getCurrencyCode(long id){
 		return mTransactionsAdapter.getCurrencyCode(id);
+	}
+	
+	/**
+	 * Returns the currency code of account with database ID
+	 * @param accountUID Unique Identifier of the account
+	 * @return ISO 4217 currency code of the account
+	 * @see #getCurrencyCode(long) 
+	 */
+	public String getCurrencyCode(String accountUID){
+		return getCurrencyCode(getAccountID(accountUID));
 	}
 	
 	/**

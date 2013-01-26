@@ -48,9 +48,11 @@ public class DatabaseAdapter {
 	public static final int COLUMN_TIMESTAMP 	= 6;
 	public static final int COLUMN_ACCOUNT_UID 	= 7;
 	public static final int COLUMN_EXPORTED 	= 8;
+	public static final int COLUMN_DOUBLE_ENTRY_ACCOUNT_UID = 9;
 	
 	//columns specific to accounts
 	public static final int COLUMN_CURRENCY_CODE = 4;
+	public static final int COLUMN_PARENT_ACCOUNT_UID = 5;
 	
 	/**
 	 * {@link DatabaseHelper} for creating and opening the database
