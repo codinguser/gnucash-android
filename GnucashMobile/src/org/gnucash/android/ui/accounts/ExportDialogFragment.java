@@ -16,15 +16,18 @@
 
 package org.gnucash.android.ui.accounts;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.StringWriter;
 import java.io.Writer;
 import java.nio.channels.FileChannel;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -42,6 +45,7 @@ import org.gnucash.android.ui.transactions.TransactionsDeleteConfirmationDialog;
 import org.gnucash.android.util.OfxFormatter;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.w3c.dom.ProcessingInstruction;
 
 import android.app.Activity;
@@ -103,6 +107,11 @@ public class ExportDialogFragment extends DialogFragment {
 	String mFilePath;
 	
 	/**
+	 * Tag for logging
+	 */
+	private static final String TAG = "ExportDialogFragment";
+	
+	/**
 	 * Click listener for positive button in the dialog.
 	 * @author Ngewi Fet <ngewif@gmail.com>
 	 */
@@ -116,7 +125,7 @@ public class ExportDialogFragment extends DialogFragment {
 				document = exportOfx(exportAll);
 				writeToExternalStorage(document);
 			} catch (Exception e) {
-				Log.e(getTag(), e.getMessage());
+				Log.e(TAG, e.getMessage());
 				Toast.makeText(getActivity(), R.string.error_exporting,
 						Toast.LENGTH_LONG).show();
 				dismiss();
@@ -140,7 +149,7 @@ public class ExportDialogFragment extends DialogFragment {
 					Toast.makeText(getActivity(), 
 							getString(R.string.toast_error_exporting_ofx) + dst.getAbsolutePath(), 
 							Toast.LENGTH_LONG).show();		
-					Log.e(getTag(), e.getMessage());
+					Log.e(TAG, e.getMessage());
 					break;
 				}
 				
@@ -157,7 +166,8 @@ public class ExportDialogFragment extends DialogFragment {
 			if (mDeleteAllCheckBox.isChecked()){
 				Fragment currentFragment = getActivity().getSupportFragmentManager()
 						.findFragmentByTag(AccountsActivity.FRAGMENT_ACCOUNTS_LIST);
-				TransactionsDeleteConfirmationDialog alertFragment = TransactionsDeleteConfirmationDialog.newInstance(R.string.title_confirm_delete, 0);
+				TransactionsDeleteConfirmationDialog alertFragment = 
+						TransactionsDeleteConfirmationDialog.newInstance(R.string.title_confirm_delete, 0);
 				alertFragment.setTargetFragment(currentFragment, 0);
 				alertFragment.show(getActivity().getSupportFragmentManager(), "transactions_delete_confirmation_dialog");
 			}
@@ -222,9 +232,26 @@ public class ExportDialogFragment extends DialogFragment {
 	private void writeToExternalStorage(Document doc) throws IOException{
 		File file = new File(mFilePath);
 		
-		FileWriter writer = new FileWriter(file);
-		write(doc, writer);
+//		FileWriter writer = new FileWriter(file);
+		BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), "UTF-8"));
+		boolean useXmlHeader = PreferenceManager.getDefaultSharedPreferences(getActivity())
+				.getBoolean(getString(R.string.key_xml_ofx_header), false);
+
+		//if we want SGML OFX headers, write first to string and then prepend header
+		if (useXmlHeader){
+			write(doc, writer, false);
+		} else {			
+			Node ofxNode = doc.getElementsByTagName("OFX").item(0);
+			StringWriter stringWriter = new StringWriter();
+			write(ofxNode, stringWriter, true);
+			
+			StringBuffer stringBuffer = new StringBuffer(OfxFormatter.OFX_SGML_HEADER);
+			stringBuffer.append('\n');
+			writer.write(stringBuffer.toString() + stringWriter.toString());
+		}
 		
+		writer.flush();
+		writer.close();
 	}
 	
 	/**
@@ -255,9 +282,10 @@ public class ExportDialogFragment extends DialogFragment {
 		if (defaultEmail != null && defaultEmail.trim().length() > 0){
 			shareIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{defaultEmail});
 		}			
-		SimpleDateFormat formatter = new SimpleDateFormat("yyyy.MM.dd HH:mm");
+		SimpleDateFormat formatter = (SimpleDateFormat) SimpleDateFormat.getDateTimeInstance();
+		
 		shareIntent.putExtra(Intent.EXTRA_TEXT, getString(R.string.description_export_email) 
-							+ formatter.format(new Date(System.currentTimeMillis())));
+							+ " " + formatter.format(new Date(System.currentTimeMillis())));
 		startActivity(Intent.createChooser(shareIntent, getString(R.string.title_share_ofx_with)));	
 	}
 	
@@ -290,7 +318,7 @@ public class ExportDialogFragment extends DialogFragment {
 	 * @return String containing the file name
 	 */
 	public static String buildExportFilename(){
-		SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd_HHmm");
+		SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd_HHmm", Locale.US);
 		String filename = formatter.format(
 				new Date(System.currentTimeMillis())) 
 				+ "_gnucash_all.ofx";
@@ -327,16 +355,19 @@ public class ExportDialogFragment extends DialogFragment {
 	 * @param document {@link Document} containing the OFX document structure
 	 * @param outputWriter {@link Writer} to use in writing the file to stream
 	 */
-	public void write(Document document, Writer outputWriter){
+	public void write(Node node, Writer outputWriter, boolean omitXmlDeclaration){
 		try {
 			TransformerFactory transformerFactory = TransformerFactory
 					.newInstance();
 			Transformer transformer = transformerFactory.newTransformer();
-			DOMSource source = new DOMSource(document);
+			DOMSource source = new DOMSource(node);
 			StreamResult result = new StreamResult(outputWriter);
 			
 			transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
 			transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+			if (omitXmlDeclaration) {
+				transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+			}
 			
 			transformer.transform(source, result);
 		} catch (TransformerConfigurationException txconfigException) {

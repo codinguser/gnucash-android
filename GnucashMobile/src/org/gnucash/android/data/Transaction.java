@@ -22,6 +22,9 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.UUID;
 
+import org.gnucash.android.app.GnuCashApplication;
+import org.gnucash.android.data.Account.OfxAccountType;
+import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.util.OfxFormatter;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -50,6 +53,11 @@ public class Transaction {
 	 * Key for passing the account unique Identifier as an argument through an {@link Intent}
 	 */
 	public static final String EXTRA_ACCOUNT_UID 	= "org.gnucash.android.extra.account_uid";
+	
+	/**
+	 * Key for specifying the double entry account
+	 */
+	public static final String EXTRA_DOUBLE_ACCOUNT_UID = "org.gnucash.android.extra.double_account_uid";
 	
 	/**
 	 * Key for identifying the amount of the transaction through an Intent
@@ -83,13 +91,19 @@ public class Transaction {
 	private String mAccountUID = null;
 	
 	/**
+	 * Unique Identifier of the account which is used for double entry of this transaction
+	 * This value is null by default for transactions not using double entry
+	 */
+	private String mDoubleEntryAccountUID = null;
+	
+	/**
 	 * Flag indicating if this transaction has been exported before or not
 	 * The transactions are typically exported as bank statement in the OFX format
 	 */
 	private int mIsExported = 0;
 	
 	/**
-	 * Timestamp when this transaction occured
+	 * Timestamp when this transaction occurred
 	 */
 	private long mTimestamp;
 	
@@ -300,6 +314,23 @@ public class Transaction {
 	}
 
 	/**
+	 * Returns the Unique Identifier of account with which this transaction is double entered
+	 * @return Unique Identifier of account with which this transaction is double entered
+	 */
+	public String getDoubleEntryAccountUID() {
+		return mDoubleEntryAccountUID;
+	}
+
+	/**
+	 * Sets the account UID with which to double enter this transaction
+	 * @param doubleEntryAccountUID Unique Identifier to set
+	 */
+	public void setDoubleEntryAccountUID(String doubleEntryAccountUID) {
+		this.mDoubleEntryAccountUID = doubleEntryAccountUID;
+	}
+	
+
+	/**
 	 * Returns UID of account to which this transaction belongs
 	 * @return the UID of the account to which this transaction belongs
 	 */
@@ -333,11 +364,13 @@ public class Transaction {
 	
 	/**
 	 * Converts transaction to XML DOM corresponding to OFX Statement transaction and 
-	 * returns the element node for the transaction
+	 * returns the element node for the transaction.
+	 * The Unique ID of the account is needed in order to properly export double entry transactions
 	 * @param doc XML document to which transaction should be added
+	 * @param accountUID Unique Identifier of the account which called the method.
 	 * @return Element in DOM corresponding to transaction
 	 */
-	public Element toOfx(Document doc){		
+	public Element toOfx(Document doc, String accountUID){		
 		Element transactionNode = doc.createElement("STMTTRN");
 		Element type = doc.createElement("TRNTYPE");
 		type.appendChild(doc.createTextNode(mType.toString()));
@@ -368,6 +401,30 @@ public class Transaction {
 			Element memo = doc.createElement("MEMO");
 			memo.appendChild(doc.createTextNode(mDescription));
 			transactionNode.appendChild(memo);
+		}
+		
+		if (mDoubleEntryAccountUID != null && mDoubleEntryAccountUID.length() > 0){
+			Element bankId = doc.createElement("BANKID");
+			bankId.appendChild(doc.createTextNode(OfxFormatter.APP_ID));
+			
+			//select the proper account as the double account
+			String doubleAccountUID = mDoubleEntryAccountUID.equals(accountUID) ? mAccountUID : mDoubleEntryAccountUID;
+			
+			Element acctId = doc.createElement("ACCTID");
+			acctId.appendChild(doc.createTextNode(doubleAccountUID));
+			
+			Element accttype = doc.createElement("ACCTTYPE");			
+			AccountsDbAdapter acctDbAdapter = new AccountsDbAdapter(GnuCashApplication.getAppContext());
+			OfxAccountType ofxAccountType = Account.convertToOfxAccountType(acctDbAdapter.getAccountType(doubleAccountUID));
+			accttype.appendChild(doc.createTextNode(ofxAccountType.toString()));
+			acctDbAdapter.close();
+			
+			Element bankAccountTo = doc.createElement("BANKACCTTO");
+			bankAccountTo.appendChild(bankId);
+			bankAccountTo.appendChild(acctId);
+			bankAccountTo.appendChild(accttype);
+			
+			transactionNode.appendChild(bankAccountTo);
 		}
 		
 		return transactionNode;

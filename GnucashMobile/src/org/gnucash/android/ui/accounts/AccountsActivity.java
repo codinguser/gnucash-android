@@ -23,6 +23,7 @@ import java.util.Locale;
 import org.gnucash.android.R;
 import org.gnucash.android.data.Account;
 import org.gnucash.android.data.Money;
+import org.gnucash.android.data.Account.AccountType;
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.ui.transactions.TransactionsActivity;
 import org.gnucash.android.ui.transactions.TransactionsListFragment;
@@ -33,6 +34,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
@@ -105,8 +108,7 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
 			Log.e(TAG, e.getMessage());
 			currencyCode = "USD"; //just use USD and let the user choose
 		}
-			
-		
+					
 		Money.DEFAULT_CURRENCY_CODE = currencyCode;		
 		
 		boolean firstRun = prefs.getBoolean(getString(R.string.key_first_run), true);
@@ -127,8 +129,56 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
 
 			fragmentTransaction.commit();
 		}
+		
+		
+		if (hasNewFeatures()){
+			showWhatsNewDialog();
+		}
 	}
 
+	/**
+	 * Checks if the minor version has been increased and displays the What's New dialog box.
+	 * This is the minor version as per semantic versioning.
+	 * @return <code>true</code> if the minor version has been increased, <code>false</code> otherwise.
+	 */
+	private boolean hasNewFeatures(){
+		try {
+			PackageInfo packageInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+			String versionName = packageInfo.versionName;			
+			int end = versionName.indexOf('.');
+			int currentMinor = Integer.parseInt(versionName.substring(0, end));
+			
+			SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+			int previousMinor = prefs.getInt(getString(R.string.key_previous_minor_version), 0);
+			if (currentMinor > previousMinor){
+				Editor editor = prefs.edit();
+				editor.putInt(getString(R.string.key_previous_minor_version), currentMinor);
+				editor.commit();
+				return true;
+			}
+		} catch (NameNotFoundException e) {
+			//do not show anything in that case
+			e.printStackTrace();			
+		}		
+		return false;
+	}
+	
+	/**
+	 * Show dialog with new features for this version
+	 */
+	private void showWhatsNewDialog(){
+		new AlertDialog.Builder(this)
+		.setTitle(R.string.title_whats_new)
+		.setMessage(R.string.whats_new)
+		.setPositiveButton(R.string.label_dismiss, new DialogInterface.OnClickListener() {
+			
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				dialog.dismiss();
+			}
+		}).show();
+	}
+	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getSupportMenuInflater();
@@ -159,7 +209,7 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
 		AccountsListFragment accountFragment = (AccountsListFragment) getSupportFragmentManager()
 				.findFragmentByTag(FRAGMENT_ACCOUNTS_LIST);
 		if (accountFragment != null)
-			accountFragment.showAddAccountDialog(0);
+			accountFragment.showAddAccountFragment(0);
 	}
 
 	/**
@@ -192,7 +242,33 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
 				String[] defaultAccounts = getResources().getStringArray(R.array.default_accounts);
 				for (int index : mSelectedDefaultAccounts) {
 					String name = defaultAccounts[index];
-					dbAdapter.addAccount(new Account(name));
+					Account account = new Account(name);
+					
+					//these indices are bound to the order in which the accounts occur in strings.xml
+					switch (index) {
+					case 0:
+						account.setAccountType(AccountType.EXPENSE);
+						break;
+						
+					case 1:
+						account.setAccountType(AccountType.INCOME);
+						break;
+						
+					case 2:
+						account.setAccountType(AccountType.ASSET);
+						break;
+					case 3:
+						account.setAccountType(AccountType.EQUITY);
+						break;
+					case 4:
+						account.setAccountType(AccountType.LIABILITY);
+						break;
+						
+					default:
+						account.setAccountType(AccountType.CASH);
+						break;
+					}
+					dbAdapter.addAccount(account);
 				}
 				
 				dbAdapter.close();

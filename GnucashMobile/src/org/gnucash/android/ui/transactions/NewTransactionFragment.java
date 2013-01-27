@@ -18,10 +18,10 @@ package org.gnucash.android.ui.transactions;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Currency;
 import java.util.Date;
@@ -33,6 +33,7 @@ import org.gnucash.android.data.Money;
 import org.gnucash.android.data.Transaction;
 import org.gnucash.android.data.Transaction.TransactionType;
 import org.gnucash.android.db.AccountsDbAdapter;
+import org.gnucash.android.db.DatabaseHelper;
 import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.ui.DatePickerDialogFragment;
 import org.gnucash.android.ui.TimePickerDialogFragment;
@@ -43,10 +44,13 @@ import android.app.DatePickerDialog.OnDateSetListener;
 import android.app.TimePickerDialog;
 import android.app.TimePickerDialog.OnTimeSetListener;
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.widget.SimpleCursorAdapter;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -58,6 +62,7 @@ import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.ToggleButton;
@@ -81,6 +86,21 @@ public class NewTransactionFragment extends SherlockFragment implements
 	private TransactionsDbAdapter mTransactionsDbAdapter;
 	
 	/**
+	 * Accounts database adapter
+	 */
+	private AccountsDbAdapter mAccountsDbAdapter; 
+	
+	/**
+	 * Adapter for transfer account spinner
+	 */
+	private SimpleCursorAdapter mCursorAdapter;
+	
+	/**
+	 * Cursor for transfer account spinner
+	 */
+	private Cursor mCursor;	
+	
+	/**
 	 * Holds database ID of transaction to be edited (if in edit mode)
 	 */
 	private long mTransactionId = 0;
@@ -99,12 +119,12 @@ public class NewTransactionFragment extends SherlockFragment implements
 	/**
 	 * Formats a {@link Date} object into a date string of the format dd MMM yyyy e.g. 18 July 2012
 	 */
-	public final static SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat("dd MMM yyyy");
+	public final static DateFormat DATE_FORMATTER = DateFormat.getDateInstance();
 	
 	/**
 	 * Formats a {@link Date} object to time string of format HH:mm e.g. 15:25
 	 */
-	public final static SimpleDateFormat TIME_FORMATTER = new SimpleDateFormat("HH:mm");
+	public final static DateFormat TIME_FORMATTER = DateFormat.getTimeInstance();
 	
 	/**
 	 * Button for setting the transaction type, either credit or debit
@@ -159,6 +179,13 @@ public class NewTransactionFragment extends SherlockFragment implements
 	private MenuItem mSaveMenuItem;
 
 	/**
+	 * Spinner for selecting the transfer account
+	 */
+	private Spinner mDoubleAccountSpinner;
+
+	private boolean mUseDoubleEntry;  
+	
+	/**
 	 * Create the view and retrieve references to the UI elements
 	 */
 	@Override
@@ -173,6 +200,7 @@ public class NewTransactionFragment extends SherlockFragment implements
 		mAmountEditText = (EditText) v.findViewById(R.id.input_transaction_amount);		
 		mCurrencyTextView = (TextView) v.findViewById(R.id.currency_symbol);
 		mTransactionTypeButton = (ToggleButton) v.findViewById(R.id.input_transaction_type);
+		mDoubleAccountSpinner = (Spinner) v.findViewById(R.id.input_double_entry_accounts_spinner);
 		
 		return v;
 	}
@@ -186,6 +214,17 @@ public class NewTransactionFragment extends SherlockFragment implements
 		actionBar.setDisplayHomeAsUpEnabled(true);
 		actionBar.setDisplayShowTitleEnabled(false);
 		
+
+		SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+		mUseDoubleEntry = sharedPrefs.getBoolean(getString(R.string.key_use_double_entry), false);
+		if (mUseDoubleEntry == false){
+			getView().findViewById(R.id.layout_double_entry).setVisibility(View.GONE);
+		}
+		
+		//updateTransferAccountsList must only be called after creating mAccountsDbAdapter
+		mAccountsDbAdapter = new AccountsDbAdapter(getActivity());
+		updateTransferAccountsList();
+		
 		mTransactionId = getArguments().getLong(SELECTED_TRANSACTION_ID);
 		mTransactionsDbAdapter = new TransactionsDbAdapter(getActivity());
 		mTransaction = mTransactionsDbAdapter.getTransaction(mTransactionId);
@@ -193,11 +232,14 @@ public class NewTransactionFragment extends SherlockFragment implements
 		setListeners();
 		if (mTransaction == null)
 			initalizeViews();
-		else
+		else {
+			if (mUseDoubleEntry && isInDoubleAccount()){
+				mTransaction.setAmount(mTransaction.getAmount().negate());
+			}
 			initializeViewsWithTransaction();
-		
+		}
 	}
-
+	
 	/**
 	 * Initialize views in the fragment with information from a transaction.
 	 * This method is called if the fragment is used for editing a transaction
@@ -215,6 +257,15 @@ public class NewTransactionFragment extends SherlockFragment implements
 		cal.setTimeInMillis(mTransaction.getTimeMillis());
 		mDate = mTime = cal;
 				
+		if (mUseDoubleEntry){			
+			if (isInDoubleAccount()){
+				long accountId = mTransactionsDbAdapter.getAccountID(mTransaction.getAccountUID());
+				setSelectedTransferAccount(accountId);
+			} else {
+				long doubleAccountId = mTransactionsDbAdapter.getAccountID(mTransaction.getDoubleEntryAccountUID());
+				setSelectedTransferAccount(doubleAccountId);
+			}
+		}
 		
 		final long accountId = mTransactionsDbAdapter.getAccountID(mTransaction.getAccountUID());
 		String code = mTransactionsDbAdapter.getCurrencyCode(accountId);
@@ -238,11 +289,30 @@ public class NewTransactionFragment extends SherlockFragment implements
 				
 		final long accountId = getArguments().getLong(TransactionsListFragment.SELECTED_ACCOUNT_ID);
 		String code = Money.DEFAULT_CURRENCY_CODE;
-		if (accountId != 0)
+		if (accountId != 0){
 			code = mTransactionsDbAdapter.getCurrencyCode(accountId);
-		
+		}
 		Currency accountCurrency = Currency.getInstance(code);
 		mCurrencyTextView.setText(accountCurrency.getSymbol(Locale.getDefault()));
+	}
+	
+	private void updateTransferAccountsList(){
+		long accountId = ((TransactionsActivity)getActivity()).getCurrentAccountID();
+		
+		//TODO: we'll leave out the currency condition for now, maybe look at this in the future
+//		String conditions = "(" + DatabaseHelper.KEY_ROW_ID + " != " + accountId + ") AND " + "(" +
+//							DatabaseHelper.KEY_CURRENCY_CODE + " = '" + mAccountsDbAdapter.getCurrencyCode(accountId) + "')";
+		
+		String conditions = "(" + DatabaseHelper.KEY_ROW_ID + " != " + accountId + ")";
+		mCursor = mAccountsDbAdapter.fetchAccounts(conditions);
+		
+		String[] from = new String[] {DatabaseHelper.KEY_NAME};
+		int[] to = new int[] {android.R.id.text1};
+		mCursorAdapter = new SimpleCursorAdapter(getActivity(), 
+				android.R.layout.simple_spinner_item, 
+				mCursor, from, to, 0);
+		mCursorAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);		
+		mDoubleAccountSpinner.setAdapter(mCursorAdapter);
 	}
 	
 	/**
@@ -315,12 +385,28 @@ public class NewTransactionFragment extends SherlockFragment implements
 		});
 	}	
 	
+	private void setSelectedTransferAccount(long accountId){
+		for (int pos = 0; pos < mCursorAdapter.getCount(); pos++) {
+			if (mCursorAdapter.getItemId(pos) == accountId){
+				mDoubleAccountSpinner.setSelection(pos);				
+				break;
+			}
+		}
+	}
+	
+	private boolean isInDoubleAccount(){
+		long accountId = mTransactionsDbAdapter.getAccountID(mTransaction.getAccountUID());
+		return ((TransactionsActivity)getActivity()).getCurrentAccountID() != accountId;
+	}
+
 	public void onAccountChanged(long newAccountId){
 		AccountsDbAdapter accountsDbAdapter = new AccountsDbAdapter(getActivity());
 		String currencyCode = accountsDbAdapter.getCurrencyCode(newAccountId);
 		Currency currency = Currency.getInstance(currencyCode);
 		mCurrencyTextView.setText(currency.getSymbol(Locale.getDefault()));
 		accountsDbAdapter.close();
+		
+		updateTransferAccountsList();
 	}
 	
 	/**
@@ -339,7 +425,7 @@ public class NewTransactionFragment extends SherlockFragment implements
 		String description = mDescriptionEditText.getText().toString();
 		BigDecimal amountBigd = parseInputToDecimal(mAmountEditText.getText().toString());
 		
-		long accountID 	= ((TransactionsActivity) getSherlockActivity()).getCurrentAccountID(); //mAccountsSpinner.getSelectedItemId();
+		long accountID 	= ((TransactionsActivity) getSherlockActivity()).getCurrentAccountID(); 		
 		Currency currency = Currency.getInstance(mTransactionsDbAdapter.getCurrencyCode(accountID));
 		Money amount 	= new Money(amountBigd, currency);
 		TransactionType type = mTransactionTypeButton.isChecked() ? TransactionType.DEBIT : TransactionType.CREDIT;
@@ -350,9 +436,25 @@ public class NewTransactionFragment extends SherlockFragment implements
 		} else {
 			mTransaction = new Transaction(amount, name, type);
 		}
+		
 		mTransaction.setAccountUID(mTransactionsDbAdapter.getAccountUID(accountID));
 		mTransaction.setTime(cal.getTimeInMillis());
 		mTransaction.setDescription(description);
+		
+		//set the double account
+		if (mUseDoubleEntry){
+			long doubleAccountId = mDoubleAccountSpinner.getSelectedItemId();
+			//negate the transaction before saving if we are in the double account
+			if (isInDoubleAccount()){
+				mTransaction.setAmount(amount.negate());
+				mTransaction.setAccountUID(mTransactionsDbAdapter.getAccountUID(doubleAccountId));
+				mTransaction.setDoubleEntryAccountUID(mTransactionsDbAdapter.getAccountUID(accountID));
+			} else {
+				mTransaction.setAccountUID(mTransactionsDbAdapter.getAccountUID(accountID));
+				mTransaction.setDoubleEntryAccountUID(mTransactionsDbAdapter.getAccountUID(doubleAccountId));
+			}
+		}
+		
 		
 		mTransactionsDbAdapter.addTransaction(mTransaction);
 		mTransactionsDbAdapter.close();
@@ -366,12 +468,15 @@ public class NewTransactionFragment extends SherlockFragment implements
 	@Override
 	public void onDestroyView() {
 		super.onDestroyView();
+		if (mCursor != null)
+			mCursor.close();
+		mAccountsDbAdapter.close();		
 		mTransactionsDbAdapter.close();
 	}
 	
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-		inflater.inflate(R.menu.new_transaction_actions, menu);
+		inflater.inflate(R.menu.default_save_actions, menu);
 		mSaveMenuItem = menu.findItem(R.id.menu_save);
 		//only initially enable if we are editing a transaction
 		mSaveMenuItem.setEnabled(mTransactionId > 0);
@@ -448,6 +553,7 @@ public class NewTransactionFragment extends SherlockFragment implements
 	
 	/**
 	 * Parse an input string into a {@link BigDecimal}
+	 * This method expects the amount including the decimal part
 	 * @param amountString String with amount information
 	 * @return BigDecimal with the amount parsed from <code>amountString</code>
 	 */
