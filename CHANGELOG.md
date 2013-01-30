@@ -6,13 +6,13 @@ Version 1.1.0 *(2013-01-31)*
 
 * Feature: Double entry accounting - every transaction is a transfer
 * Feature: Nested accounts
-* Feature: SGML support for OFX exports. Fixes encoding detection problems during imports
+* Feature: SGML support for OFX exports. Exports are now SGML by default 
 * Feature: Display what's new to user after minor/major updates
 * Improved: Reworked UX for creating accounts
 * Improved: Default accounts now match GnuCash desktop accounts
 * Fixed: Crash when creating accounts with special characters in the names
 * Fixed: GnuCash declares itself as launcher application
-
+* Fixed: Encoding of exported OFX not properly detected by GnuCash desktop
 
 Version 1.0.3 *(2012-11-23)*
 ----------------------------
