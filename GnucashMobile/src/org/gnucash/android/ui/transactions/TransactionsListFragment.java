@@ -455,6 +455,13 @@ public class TransactionsListFragment extends SherlockListFragment implements
 					cursor.getString(DatabaseAdapter.COLUMN_AMOUNT), 
 					mTransactionsDbAdapter.getCurrencyCode(mAccountID));
 			
+			//negate any transactions if this account is the origin in double entry
+			String doubleEntryAccountUID = cursor.getString(DatabaseAdapter.COLUMN_DOUBLE_ENTRY_ACCOUNT_UID);
+			if (doubleEntryAccountUID != null 
+					&& mTransactionsDbAdapter.isSameAccount(mAccountID, doubleEntryAccountUID)){
+				amount = amount.negate();				
+			}
+				
 			TextView tramount = (TextView) view.findViewById(R.id.transaction_amount);
 			tramount.setText(amount.formattedString(Locale.getDefault()));
 						

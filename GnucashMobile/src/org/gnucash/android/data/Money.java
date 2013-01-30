@@ -38,7 +38,7 @@ import java.util.Locale;
  * @author Ngewi Fet<ngewif@gmail.com>
  *
  */
-public class Money implements Comparable<Money>{
+public final class Money implements Comparable<Money>{
 
 	/**
 	 * Currency of the account
@@ -134,6 +134,16 @@ public class Money implements Comparable<Money>{
 		setAmount(parseToDecimal(amount));
 	}
 
+	/**
+	 * Overloaded constructor. 
+	 * Initializes the currency to that specified by {@link Money#DEFAULT_CURRENCY_CODE}
+	 * @param amount Value associated with this Money object
+	 */
+	public Money(BigDecimal amount){
+		init();
+		setAmount(amount);
+	}
+	
 	/**
 	 * Initializes the amount and currency to their default values
 	 * @see {@link Money#DEFAULT_CURRENCY_CODE}, {@link #DEFAULT_ROUNDING_MODE}, {@link #DEFAULT_DECIMAL_PLACES}

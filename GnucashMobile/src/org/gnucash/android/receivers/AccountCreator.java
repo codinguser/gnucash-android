@@ -44,16 +44,16 @@ public class AccountCreator extends BroadcastReceiver {
 		Log.i("Gnucash", "Received account creation intent");
 		Bundle args = intent.getExtras();		
 		
-		String uid = args.getString(Intent.EXTRA_UID);
-		
 		Account account = new Account(args.getString(Intent.EXTRA_TITLE));
-		String currencyCode = args.getString(Account.EXTRA_CURRENCY_CODE);
+		account.setParentUID(args.getString(Account.EXTRA_PARENT_UID));
 		
+		String currencyCode = args.getString(Account.EXTRA_CURRENCY_CODE);				
 		if (currencyCode != null){
 			Currency currency = Currency.getInstance(currencyCode);
 			account.setCurrency(currency);
 		}
 		
+		String uid = args.getString(Intent.EXTRA_UID);
 		if (uid != null)
 			account.setUID(uid);
 		
