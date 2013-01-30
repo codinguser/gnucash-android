@@ -7,3 +7,7 @@ bin
 dist
 target
 gen-external-apklibs
+*.iml
+*.ipr
+.idea/
+*.iws
