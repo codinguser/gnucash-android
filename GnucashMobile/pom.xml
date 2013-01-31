@@ -23,7 +23,7 @@
   <description>Gnucash Android mobile application</description>
   
   <parent>
-    <version>1.1.0</version>
+    <version>1.1.1</version>
     <groupId>org.gnucash.android</groupId>
     <artifactId>gnucash-android-parent</artifactId>
   </parent>
