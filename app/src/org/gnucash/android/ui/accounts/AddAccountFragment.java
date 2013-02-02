@@ -26,7 +26,6 @@ import org.gnucash.android.data.Money;
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.DatabaseHelper;
 import org.gnucash.android.ui.transactions.TransactionsListFragment;
-import org.gnucash.android.ui.widget.WidgetConfigurationActivity;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -117,7 +116,10 @@ public class AddAccountFragment extends SherlockFragment {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setHasOptionsMenu(true);		
+		setHasOptionsMenu(true);
+        if (mAccountsDbAdapter == null){
+            mAccountsDbAdapter = new AccountsDbAdapter(getSherlockActivity());
+        }
 	}
 	
 	/**
@@ -216,7 +218,7 @@ public class AddAccountFragment extends SherlockFragment {
 			return true;
 
 		case R.id.menu_cancel:
-			finish();
+			finishFragment();
 			return true;
 		}
 		
@@ -241,7 +243,7 @@ public class AddAccountFragment extends SherlockFragment {
 	 * Finishes the fragment appropriately.
 	 * Depends on how the fragment was loaded, it might have a backstack or not
 	 */
-	private void finish() {
+	private void finishFragment() {
 		InputMethodManager imm = (InputMethodManager) getSherlockActivity().getSystemService(
 			      Context.INPUT_METHOD_SERVICE);
 			imm.hideSoftInputFromWindow(mNameEditText.getWindowToken(), 0);
@@ -286,10 +288,8 @@ public class AddAccountFragment extends SherlockFragment {
 		if (mAccountsDbAdapter == null)
 			mAccountsDbAdapter = new AccountsDbAdapter(getActivity());
 		mAccountsDbAdapter.addAccount(mAccount);
-		
-		WidgetConfigurationActivity.updateAllWidgets(getActivity()
-				.getApplicationContext());
-		finish();
+
+		finishFragment();
 	}
 	
 	/**

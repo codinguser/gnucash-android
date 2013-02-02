@@ -23,6 +23,7 @@ import org.gnucash.android.data.Account;
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.DatabaseHelper;
 import org.gnucash.android.receivers.TransactionAppWidgetProvider;
+import org.gnucash.android.ui.accounts.AccountsActivity;
 import org.gnucash.android.ui.transactions.TransactionsActivity;
 import org.gnucash.android.ui.transactions.TransactionsListFragment;
 
@@ -145,12 +146,14 @@ public class WidgetConfigurationActivity extends Activity {
 	/**
 	 * Updates the widget with id <code>appWidgetId</code> with information from the 
 	 * account with record ID <code>accountId</code>
-	 * @param appWidgetManager
+     * If the account has been deleted, then a notice is posted in the widget
+     * @param appWidgetId ID of the widget to be updated
+     * @param accountId Database ID of the account tied to the widget
 	 */
 	public static void updateWidget(Context context, int appWidgetId, long accountId) {
-		Log.i("WidgetConfigruation", "Updating widget: " + appWidgetId);
+		Log.i("WidgetConfiguration", "Updating widget: " + appWidgetId);
 		AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
-		
+
 		AccountsDbAdapter accountsDbAdapter = new AccountsDbAdapter(context);
 		Account account = accountsDbAdapter.getAccount(accountId);
 		accountsDbAdapter.close();
@@ -162,8 +165,11 @@ public class WidgetConfigurationActivity extends Activity {
 					R.layout.widget_4x1);
 			views.setTextViewText(R.id.account_name, context.getString(R.string.toast_account_deleted));
 			views.setTextViewText(R.id.transactions_summary, "");
-			views.setOnClickPendingIntent(R.id.widget_layout, null);
-			views.setOnClickPendingIntent(R.id.btn_new_transaction, null);
+            //set it to simply open the app
+            PendingIntent pendingIntent = PendingIntent.getActivity(context, 0,
+                    new Intent(context, AccountsActivity.class), 0);
+			views.setOnClickPendingIntent(R.id.widget_layout, pendingIntent);
+			views.setOnClickPendingIntent(R.id.btn_new_transaction, pendingIntent);
 			appWidgetManager.updateAppWidget(appWidgetId, views);
 			Editor editor = PreferenceManager.getDefaultSharedPreferences(context).edit();
 			editor.remove(TransactionsListFragment.SELECTED_ACCOUNT_ID + appWidgetId);
@@ -203,17 +209,17 @@ public class WidgetConfigurationActivity extends Activity {
 	 * @param context Application context
 	 */
 	public static void updateAllWidgets(Context context){
-		Log.i("WidgetConfigruation", "Updating all widgets");
+		Log.i("WidgetConfiguration", "Updating all widgets");
 		AppWidgetManager widgetManager = AppWidgetManager.getInstance(context);
 		ComponentName componentName = new ComponentName(context, TransactionAppWidgetProvider.class);
 		int[] appWidgetIds = widgetManager.getAppWidgetIds(componentName);
-		
+
+        SharedPreferences defaultSharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
 		for (int widgetId : appWidgetIds) {
-			long accountId = PreferenceManager
-            		.getDefaultSharedPreferences(context)
+			long accountId = defaultSharedPrefs
             		.getLong(TransactionsListFragment.SELECTED_ACCOUNT_ID + widgetId, -1);
             
-			if (accountId < 0)
+			if (accountId <= 0)
 				continue;
 			updateWidget(context, widgetId, accountId);
 		}
