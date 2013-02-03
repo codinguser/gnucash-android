@@ -1,5 +1,10 @@
 Change Log
 ===============================================================================
+Version 1.1.2 *(2013-02-03)*
+----------------------------
+* Fixed: Crash upon screen rotation when creating account
+* Fixed: Crash when entering a transaction after deleting an account which has a widget
+
 Version 1.1.1 *(2013-01-31)*
 ----------------------------
 * Updated German and Norwegian (Bokmal) translations
