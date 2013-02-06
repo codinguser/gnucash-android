@@ -158,7 +158,7 @@ public class TransactionsActivity extends SherlockFragmentActivity implements
 	private void setupActionBarNavigation() {
 		// set up spinner adapter for navigation list
 		mAccountsDbAdapter = new AccountsDbAdapter(this);
-		Cursor accountsCursor = mAccountsDbAdapter.fetchAllAccounts();
+		Cursor accountsCursor = mAccountsDbAdapter.fetchAllRecords();
 		mSpinnerAdapter = new SimpleCursorAdapter(getSupportActionBar()
 				.getThemedContext(), R.layout.sherlock_spinner_item,
 				accountsCursor, new String[] { DatabaseHelper.KEY_NAME },
@@ -181,7 +181,7 @@ public class TransactionsActivity extends SherlockFragmentActivity implements
 	public void updateNavigationSelection() {
 		// set the selected item in the spinner
 		int i = 0;
-		Cursor accountsCursor = mAccountsDbAdapter.fetchAllAccounts();
+		Cursor accountsCursor = mAccountsDbAdapter.fetchAllRecords();
 		accountsCursor.moveToFirst();
 		do {
 			long id = accountsCursor.getLong(DatabaseAdapter.COLUMN_ROW_ID);			

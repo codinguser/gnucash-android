@@ -48,7 +48,7 @@ public class TransactionsDbAdapterTest extends AndroidTestCase {
 	protected void tearDown() throws Exception {
 		super.tearDown();
 		AccountsDbAdapter accAdapter = new AccountsDbAdapter(mContext);
-		accAdapter.deleteAllAccounts();
+		accAdapter.deleteAllRecords();
 		accAdapter.close();
 	}
 }

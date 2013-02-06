@@ -87,11 +87,6 @@ public class AccountsListFragment extends SherlockListFragment implements
 	AccountsCursorAdapter mAccountsCursorAdapter;
 	
 	/**
-	 * Dialog fragment for adding new accounts
-	 */
-	AddAccountFragment mAddAccountFragment;
-	
-	/**
 	 * Database adapter for loading Account records from the database
 	 */
 	private AccountsDbAdapter mAccountsDbAdapter;	
@@ -503,7 +498,7 @@ public class AccountsListFragment extends SherlockListFragment implements
 					.findViewById(R.id.transactions_summary);
 			final long accountId = cursor.getLong(DatabaseAdapter.COLUMN_ROW_ID);
 			
-			Money balance = transactionsDBAdapter.getTransactionsSum(accountId);
+			Money balance = mAccountsDbAdapter.getAccountBalance(accountId);//transactionsDBAdapter.getTransactionsSum(accountId);
 			summary.setText(balance.formattedString(Locale.getDefault()));
 			int fontColor = balance.isNegative() ? getResources().getColor(R.color.debit_red) : 
 				getResources().getColor(R.color.credit_green);
@@ -537,7 +532,7 @@ public class AccountsListFragment extends SherlockListFragment implements
 		@Override
 		public Cursor loadInBackground() {			
 			mDatabaseAdapter = new AccountsDbAdapter(getContext());	
-			Cursor cursor = ((AccountsDbAdapter) mDatabaseAdapter).fetchAllAccounts();		
+			Cursor cursor = ((AccountsDbAdapter) mDatabaseAdapter).fetchAllRecords();
 			if (cursor != null)
 				registerContentObserver(cursor);
 			return cursor;

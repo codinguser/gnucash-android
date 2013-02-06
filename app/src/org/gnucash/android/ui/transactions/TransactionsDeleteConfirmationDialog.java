@@ -41,9 +41,9 @@ public class TransactionsDeleteConfirmationDialog extends SherlockDialogFragment
                         public void onClick(DialogInterface dialog, int whichButton) {
                         	TransactionsDbAdapter adapter = new TransactionsDbAdapter(getSherlockActivity());                            
                             if (rowId == 0){
-	                        	adapter.deleteAllTransactions();	                            
+	                        	adapter.deleteAllRecords();
                             } else {
-                            	adapter.deleteTransaction(rowId);
+                            	adapter.deleteRecord(rowId);
                             }
                             adapter.close();
                             if (getTargetFragment() instanceof AccountsListFragment){                            	

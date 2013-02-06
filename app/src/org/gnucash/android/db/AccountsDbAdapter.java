@@ -16,10 +16,7 @@
 
 package org.gnucash.android.db;
 
-import java.util.Currency;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 import org.gnucash.android.data.Account;
 import org.gnucash.android.data.Money;
@@ -52,14 +49,14 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 		super(context);
 		mTransactionsAdapter = new TransactionsDbAdapter(context);
 	}
-	
+
 	@Override
-	public void close() {		
+	public void close() {
 		super.close();
 		mTransactionsAdapter.close();
 	}
-	
-	/**
+
+    /**
 	 * Adds an account to the database. 
 	 * If an account already exists in the database with the same unique ID, 
 	 * then just update that account. 
@@ -110,7 +107,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 		
 		while (c.moveToNext()){
 			long id = c.getLong(DatabaseAdapter.COLUMN_ROW_ID);
-			result &= mTransactionsAdapter.deleteTransaction(id);
+			result &= mTransactionsAdapter.deleteRecord(id);
 		}
 		result &= deleteRecord(DatabaseHelper.ACCOUNTS_TABLE_NAME, rowId);
 		return result;
@@ -283,7 +280,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 	 */
 	public List<Account> getAllAccounts(){
 		LinkedList<Account> accounts = new LinkedList<Account>();
-		Cursor c = fetchAllAccounts();
+		Cursor c = fetchAllRecords();
 		
 		if (c == null)
 			return accounts;
@@ -316,15 +313,27 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 	 * Returns a cursor to all account records in the database
 	 * @return {@link Cursor} to all account records
 	 */
-	public Cursor fetchAllAccounts(){
+    @Override
+	public Cursor fetchAllRecords(){
 		Log.v(TAG, "Fetching all accounts from db");
-		Cursor cursor = mDb.query(DatabaseHelper.ACCOUNTS_TABLE_NAME, 
-				null, null, null, null, null, 
-				DatabaseHelper.KEY_NAME + " ASC");
+		Cursor cursor = mDb.query(DatabaseHelper.ACCOUNTS_TABLE_NAME,
+                null, null, null, null, null,
+                DatabaseHelper.KEY_NAME + " ASC");
 		return cursor;
 	}
 
-	/**
+
+    @Override
+    public Cursor fetchRecord(long rowId) {
+        return fetchRecord(DatabaseHelper.ACCOUNTS_TABLE_NAME, rowId);
+    }
+
+    @Override
+    public boolean deleteRecord(long rowId) {
+        return deleteRecord(DatabaseHelper.ACCOUNTS_TABLE_NAME, rowId);
+    }
+
+    /**
 	 * Returns a Cursor set of accounts which fulfill <code>condition</code>
 	 * @param condition SQL WHERE statement without the 'WHERE' itself
 	 * @return Cursor set of accounts which fulfill <code>condition</code>
@@ -347,16 +356,51 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 	public Money getAllAccountsBalance(){
 		return mTransactionsAdapter.getAllTransactionsSum();
 	}
-	
+
+    /**
+     * Returns the balance of an account while taking sub-accounts into consideration
+     * @return Account Balance of an account including sub-accounts
+     */
+    public Money getAccountBalance(long accountId){
+        List<Long> subAccounts = fetchSubAccounts(accountId);
+        Money balance = Money.createInstance(getCurrencyCode(accountId));
+        for (long id : subAccounts){
+            //recurse because arbitrary nesting depth is allowed
+            balance = balance.add(getAccountBalance(id));
+        }
+        return balance.add(mTransactionsAdapter.getTransactionsSum(accountId));
+    }
+
+    /**
+     * Returns a list of IDs for the sub-accounts for account <code>accountId</code>
+     * @param accountId Account ID whose sub-accounts are to be retrieved
+     * @return List of IDs for the sub-accounts for account <code>accountId</code>
+     */
+    public List<Long> fetchSubAccounts(long accountId){
+        List<Long> subAccounts = new ArrayList<Long>();
+        Cursor cursor = mDb.query(DatabaseHelper.ACCOUNTS_TABLE_NAME,
+                new String[]{DatabaseHelper.KEY_ROW_ID}, DatabaseHelper.KEY_PARENT_ACCOUNT_UID + " = ?",
+                new String[]{getAccountUID(accountId)}, null, null, null);
+
+        if (cursor != null){
+            while (cursor.moveToNext()){
+                subAccounts.add(cursor.getLong(0));
+            }
+            cursor.close();
+        }
+
+        return subAccounts;
+    }
+
 	/**
 	 * Returns the balance for all transactions while taking double entry into consideration
 	 * This means that double transactions will be counted twice
 	 * @return Total balance of the accounts while using double entry
 	 */
 	public Money getDoubleEntryAccountsBalance(){
-		//FIXME: This does not take account currency into consideration
+        //TODO: take currency into consideration
 		Cursor c = mDb.query(DatabaseHelper.ACCOUNTS_TABLE_NAME, 
-				new String[]{DatabaseHelper.KEY_ROW_ID}, 
+				new String[]{DatabaseHelper.KEY_ROW_ID},
 				null, null, null, null, null);
 		Money totalSum = new Money();
 		if (c != null){
@@ -410,9 +454,10 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 	/**
 	 * Deletes all accounts and their transactions from the database
 	 */
-	public void deleteAllAccounts(){
-		mDb.delete(DatabaseHelper.ACCOUNTS_TABLE_NAME, null, null);
+    @Override
+	public int deleteAllRecords(){
 		mDb.delete(DatabaseHelper.TRANSACTIONS_TABLE_NAME, null, null);
+        return mDb.delete(DatabaseHelper.ACCOUNTS_TABLE_NAME, null, null);
 	}
 
 

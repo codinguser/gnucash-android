@@ -31,7 +31,7 @@ import org.w3c.dom.Element;
  * An account represents a transaction account in with {@link Transaction}s may be recorded
  * Accounts have different types as specified by {@link AccountType} and also a currency with
  * which transactions may be recorded in the account
- * By default, an account is made an {@link AccountType#CHECKING} and the default currency is
+ * By default, an account is made an {@link AccountType#CASH} and the default currency is
  * the currency of the Locale of the device on which the software is running. US Dollars is used
  * if the platform locale cannot be determined.
  * 
@@ -74,7 +74,7 @@ public class Account {
 	
 	/**
 	 * Type of account
-	 * Defaults to {@link AccountType#CHECKING}
+	 * Defaults to {@link AccountType#CASH}
 	 */
 	private AccountType mAccountType = AccountType.CASH;
 	

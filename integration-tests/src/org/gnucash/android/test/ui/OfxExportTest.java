@@ -186,7 +186,7 @@ public class OfxExportTest extends
 	@Override
 	protected void tearDown() throws Exception {
 		AccountsDbAdapter adapter = new AccountsDbAdapter(getActivity());
-		adapter.deleteAllAccounts();
+		adapter.deleteAllRecords();
 		adapter.close();
 		mSolo.finishOpenedActivities();
 		super.tearDown();
