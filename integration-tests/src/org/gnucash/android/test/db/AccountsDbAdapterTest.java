@@ -19,7 +19,7 @@ public class AccountsDbAdapterTest extends AndroidTestCase {
 	protected void setUp() throws Exception {		
 		super.setUp();
 		mAdapter = new AccountsDbAdapter(getContext());
-		mAdapter.deleteAllAccounts();
+		mAdapter.deleteAllRecords();
 		Account first = new Account(ALPHA_ACCOUNT_NAME);
 		Transaction t1 = new Transaction("2.99", "T800");
 		t1.setAccountUID(first.getUID());
@@ -61,7 +61,7 @@ public class AccountsDbAdapterTest extends AndroidTestCase {
 	@Override
 	protected void tearDown() throws Exception {
 		super.tearDown();
-		mAdapter.deleteAllAccounts();
+		mAdapter.deleteAllRecords();
 		mAdapter.close();
 	}
 }

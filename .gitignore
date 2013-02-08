@@ -6,8 +6,10 @@ gen
 bin
 dist
 target
+#IntelliJ
 gen-external-apklibs
 *.iml
 *.ipr
 .idea/
 *.iws
+out/

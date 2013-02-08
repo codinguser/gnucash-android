@@ -73,7 +73,7 @@ public class WidgetConfigurationActivity extends Activity {
 		String[] from = new String[] {DatabaseHelper.KEY_NAME};
 		int[] to = new int[] {android.R.id.text1};
 		mAccountsDbAdapter = new AccountsDbAdapter(this);
-		Cursor cursor = mAccountsDbAdapter.fetchAllAccounts();
+		Cursor cursor = mAccountsDbAdapter.fetchAllRecords();
 		
 		if (cursor.getCount() <= 0){
 			Toast.makeText(this, R.string.error_no_accounts, Toast.LENGTH_LONG).show();

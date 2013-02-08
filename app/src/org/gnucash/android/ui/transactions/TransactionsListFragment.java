@@ -143,7 +143,7 @@ public class TransactionsListFragment extends SherlockListFragment implements
 
 			case R.id.context_menu_delete:
 				for (long id : mSelectedIds.values()) {
-					mTransactionsDbAdapter.deleteTransaction(id);					
+					mTransactionsDbAdapter.deleteRecord(id);
 				}				
 				refreshList();
 				mode.finish();

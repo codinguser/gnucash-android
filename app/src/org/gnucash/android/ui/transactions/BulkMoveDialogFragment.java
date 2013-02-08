@@ -101,7 +101,7 @@ public class BulkMoveDialogFragment extends DialogFragment {
 		getDialog().setTitle(title);
 		
 		mAccountsDbAdapter = new AccountsDbAdapter(getActivity());
-		Cursor cursor = mAccountsDbAdapter.fetchAllAccounts();
+		Cursor cursor = mAccountsDbAdapter.fetchAllRecords();
 		
 		String[] from = new String[] {DatabaseHelper.KEY_NAME};
 		int[] to = new int[] {android.R.id.text1};

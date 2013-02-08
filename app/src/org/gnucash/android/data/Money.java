@@ -143,7 +143,16 @@ public final class Money implements Comparable<Money>{
 		init();
 		setAmount(amount);
 	}
-	
+
+    /**
+     * Creates a new Money instance with 0 amount and the <code>currencyCode</code>
+     * @param currencyCode Currency to use for this money instance
+     * @return Money object with value 0 and currency <code>currencyCode</code>
+     */
+    public static Money createInstance(String currencyCode){
+        return new Money("0", currencyCode);
+    }
+
 	/**
 	 * Initializes the amount and currency to their default values
 	 * @see {@link Money#DEFAULT_CURRENCY_CODE}, {@link #DEFAULT_ROUNDING_MODE}, {@link #DEFAULT_DECIMAL_PLACES}
