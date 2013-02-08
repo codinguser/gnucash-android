@@ -226,7 +226,7 @@ public class AccountsListFragment extends SherlockListFragment implements
 				getActivity().getApplicationContext(), 
 				R.layout.list_item_account, null,
 				new String[] { DatabaseHelper.KEY_NAME },
-				new int[] { R.id.account_name });
+				new int[] { R.id.primary_text });
 						
 		setListAdapter(mAccountsCursorAdapter);
 	}
@@ -497,7 +497,16 @@ public class AccountsListFragment extends SherlockListFragment implements
 			TextView summary = (TextView) v
 					.findViewById(R.id.transactions_summary);
 			final long accountId = cursor.getLong(DatabaseAdapter.COLUMN_ROW_ID);
-			
+
+            TextView subAccountTextView = (TextView) v.findViewById(R.id.secondary_text);
+            int subAccountCount = mAccountsDbAdapter.getSubAccountCount(accountId);
+            if (subAccountCount > 0){
+                subAccountTextView.setVisibility(View.VISIBLE);
+                String text = getResources().getQuantityString(R.plurals.label_sub_accounts, subAccountCount, subAccountCount);
+                subAccountTextView.setText(text);
+            } else
+                subAccountTextView.setVisibility(View.GONE);
+
 			Money balance = mAccountsDbAdapter.getAccountBalance(accountId);//transactionsDBAdapter.getTransactionsSum(accountId);
 			summary.setText(balance.formattedString(Locale.getDefault()));
 			int fontColor = balance.isNegative() ? getResources().getColor(R.color.debit_red) : 

@@ -362,7 +362,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
      * @return Account Balance of an account including sub-accounts
      */
     public Money getAccountBalance(long accountId){
-        List<Long> subAccounts = fetchSubAccounts(accountId);
+        List<Long> subAccounts = getSubAccountIds(accountId);
         Money balance = Money.createInstance(getCurrencyCode(accountId));
         for (long id : subAccounts){
             //recurse because arbitrary nesting depth is allowed
@@ -376,7 +376,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
      * @param accountId Account ID whose sub-accounts are to be retrieved
      * @return List of IDs for the sub-accounts for account <code>accountId</code>
      */
-    public List<Long> fetchSubAccounts(long accountId){
+    public List<Long> getSubAccountIds(long accountId){
         List<Long> subAccounts = new ArrayList<Long>();
         Cursor cursor = mDb.query(DatabaseHelper.ACCOUNTS_TABLE_NAME,
                 new String[]{DatabaseHelper.KEY_ROW_ID}, DatabaseHelper.KEY_PARENT_ACCOUNT_UID + " = ?",
@@ -390,6 +390,15 @@ public class AccountsDbAdapter extends DatabaseAdapter {
         }
 
         return subAccounts;
+    }
+
+    /**
+     * Returns the number of accounts for which the account with ID <code>accoundId</code> is a first level parent
+     * @param accountId Database ID of parent account
+     * @return Number of sub accounts
+     */
+    public int getSubAccountCount(long accountId){
+        return getSubAccountIds(accountId).size();
     }
 
 	/**

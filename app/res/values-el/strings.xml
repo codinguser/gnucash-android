@@ -321,4 +321,9 @@
         - Διόρθωση πολυάριθμων σφαλμάτων κώδικα\n        
 	</string>
 	<string name="label_dismiss">Απόρριψη</string>
+    <string name="toast_transanction_amount_required">Enter an amount to save the transaction</string>
+    <plurals name="label_sub_accounts">
+        <item quantity="one">%d sub-account</item>
+        <item quantity="other">%d sub-accounts</item>
+    </plurals>
 </resources>
