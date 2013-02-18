@@ -87,11 +87,6 @@ public class AccountsListFragment extends SherlockListFragment implements
 	AccountsCursorAdapter mAccountsCursorAdapter;
 	
 	/**
-	 * Dialog fragment for adding new accounts
-	 */
-	AddAccountFragment mAddAccountFragment;
-	
-	/**
 	 * Database adapter for loading Account records from the database
 	 */
 	private AccountsDbAdapter mAccountsDbAdapter;	
@@ -231,7 +226,7 @@ public class AccountsListFragment extends SherlockListFragment implements
 				getActivity().getApplicationContext(), 
 				R.layout.list_item_account, null,
 				new String[] { DatabaseHelper.KEY_NAME },
-				new int[] { R.id.account_name });
+				new int[] { R.id.primary_text });
 						
 		setListAdapter(mAccountsCursorAdapter);
 	}
@@ -502,8 +497,17 @@ public class AccountsListFragment extends SherlockListFragment implements
 			TextView summary = (TextView) v
 					.findViewById(R.id.transactions_summary);
 			final long accountId = cursor.getLong(DatabaseAdapter.COLUMN_ROW_ID);
-			
-			Money balance = transactionsDBAdapter.getTransactionsSum(accountId);
+
+            TextView subAccountTextView = (TextView) v.findViewById(R.id.secondary_text);
+            int subAccountCount = mAccountsDbAdapter.getSubAccountCount(accountId);
+            if (subAccountCount > 0){
+                subAccountTextView.setVisibility(View.VISIBLE);
+                String text = getResources().getQuantityString(R.plurals.label_sub_accounts, subAccountCount, subAccountCount);
+                subAccountTextView.setText(text);
+            } else
+                subAccountTextView.setVisibility(View.GONE);
+
+			Money balance = mAccountsDbAdapter.getAccountBalance(accountId);//transactionsDBAdapter.getTransactionsSum(accountId);
 			summary.setText(balance.formattedString(Locale.getDefault()));
 			int fontColor = balance.isNegative() ? getResources().getColor(R.color.debit_red) : 
 				getResources().getColor(R.color.credit_green);
@@ -537,7 +541,7 @@ public class AccountsListFragment extends SherlockListFragment implements
 		@Override
 		public Cursor loadInBackground() {			
 			mDatabaseAdapter = new AccountsDbAdapter(getContext());	
-			Cursor cursor = ((AccountsDbAdapter) mDatabaseAdapter).fetchAllAccounts();		
+			Cursor cursor = ((AccountsDbAdapter) mDatabaseAdapter).fetchAllRecords();
 			if (cursor != null)
 				registerContentObserver(cursor);
 			return cursor;

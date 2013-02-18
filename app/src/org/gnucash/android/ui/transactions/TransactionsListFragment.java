@@ -143,7 +143,7 @@ public class TransactionsListFragment extends SherlockListFragment implements
 
 			case R.id.context_menu_delete:
 				for (long id : mSelectedIds.values()) {
-					mTransactionsDbAdapter.deleteTransaction(id);					
+					mTransactionsDbAdapter.deleteRecord(id);
 				}				
 				refreshList();
 				mode.finish();
@@ -173,7 +173,7 @@ public class TransactionsListFragment extends SherlockListFragment implements
 				getActivity().getApplicationContext(), 
 				R.layout.list_item_transaction, null, 
 				new String[] {DatabaseHelper.KEY_NAME, DatabaseHelper.KEY_AMOUNT}, 
-				new int[] {R.id.transaction_name, R.id.transaction_amount});
+				new int[] {R.id.primary_text, R.id.transaction_amount});
 		setListAdapter(mCursorAdapter);
 	}
 	
@@ -470,7 +470,7 @@ public class TransactionsListFragment extends SherlockListFragment implements
 			else
 				tramount.setTextColor(getResources().getColor(R.color.credit_green));
 			
-			TextView trNote = (TextView) view.findViewById(R.id.transaction_note);
+			TextView trNote = (TextView) view.findViewById(R.id.secondary_text);
 			String description = cursor.getString(DatabaseAdapter.COLUMN_DESCRIPTION);
 			if (description == null || description.length() == 0)
 				trNote.setVisibility(View.GONE);

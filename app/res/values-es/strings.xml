@@ -314,5 +314,10 @@
         - SGML es el formato por defecto para la exportaci&#243;n OFX\n
         - Varios bugs solucionados\n	        
 	</string>
-	<string name="label_dismiss">Cerrar</string>	
+	<string name="label_dismiss">Cerrar</string>
+    <string name="toast_transanction_amount_required">Enter an amount to save the transaction</string>
+    <plurals name="label_sub_accounts">
+        <item quantity="one">%d sub-account</item>
+        <item quantity="other">%d sub-accounts</item>
+    </plurals>
 </resources>
