@@ -82,7 +82,7 @@
     <string name="label_permission_create_account">Dagboeken aanmaken</string>
     <string name="label_display_account">Dagboek tonen</string>
     <string name="btn_create_accounts">Dagboeken aanmaken</string>
-    <string name="title_default_accounts">Te aanmaken dagboeken selecteren</string>
+    <string name="title_default_accounts">Aan te maken dagboeken selecteren</string>
     <string-array name="currency_names">
         <item>Afghani</item>
 		<item>Algerian Dinar</item>
@@ -282,37 +282,37 @@
 	<string name="title_export_email">GnuCash OFX export</string>
 	<string name="description_export_email">GnuCash OFX Export van </string>
 	<string name="header_transaction_settings">Transacties</string>
-	<string name="title_transaction_preferences">Transaction Preferences</string>
-	<string name="title_account_preferences">Account Preferences</string>
-	<string name="title_default_transaction_type">Default Transaction Type</string>
-	<string name="summary_default_transaction_type">The type of transaction to use by default, CREDIT or DEBIT</string>
+	<string name="title_transaction_preferences">Transactie voorkeuren</string>
+	<string name="title_account_preferences">Account voorkeuren</string>
+	<string name="title_default_transaction_type">Standaard Transactietype</string>
+	<string name="summary_default_transaction_type">Het standaard transactietype, CREDIT or DEBIT</string>
 	<string-array name="transaction_types">
 		<item>CREDIT</item>
 		<item>DEBIT</item>
 	</string-array>
-	<string name="delete_all_transactions_confirmation_message">Are you sure you want to delete ALL transactions?</string>
-	<string name="delete_transaction_confirmation_message">Are you sure you want to delete this transaction?</string>
-	<string name="title_export_preference_category">Export</string>
-	<string name="title_export_all_transactions">Export all transactions</string>
-	<string name="title_always_delete_exported_transactions">Delete exported transactions</string>
-	<string name="title_default_export_email">Default export email</string>
+	<string name="delete_all_transactions_confirmation_message">Weet u zeker dat u alle transacties wil verwijderen?</string>
+	<string name="delete_transaction_confirmation_message">Weet u zeker dat u deze transactie wil verwijderen?</string>
+	<string name="title_export_preference_category">Exporteer</string>
+	<string name="title_export_all_transactions">Exporteer alle transacties</string>
+	<string name="title_always_delete_exported_transactions">Verwijder geëxporteerde transacties</string>
+	<string name="title_default_export_email">Standaard export emailadres</string>
 	<string name="summary_default_export_email">The default email address to send exports to. You can still change this when you export.</string>	
-	<string name="label_double_entry_account">Transfer Account</string>
-	<string name="summary_use_double_entry">All transactions will be a transfer from one account to another</string>
+	<string name="label_double_entry_account">Draag Account over</string>
+	<string name="summary_use_double_entry">Alle transacties zullen worden overgedragen van het ene account naar de andere</string>
 	<string name="title_use_double_entry">Activate Double Entry</string>
-	<string name="account_balance">Balance</string>
-	<string name="toast_no_account_name_entered">Please enter an account name</string>
-	<string name="label_account_currency">Currency</string>
+	<string name="account_balance">Saldo</string>
+	<string name="toast_no_account_name_entered">Vul een accountnaam in</string>
+	<string name="label_account_currency">Munteenheid</string>
 	<string name="label_parent_account">Parent account</string>
-	<string name="title_xml_ofx_header">Use XML OFX header</string>
-	<string name="summary_xml_ofx_header">Enable this option when exporting to third-party application other than GnuCash for desktop</string>
-	<string name="title_whats_new">What\'s New</string>
+	<string name="title_xml_ofx_header">Gebruik XML OFX header</string>
+	<string name="summary_xml_ofx_header">Schakel deze optie in als u naar een applicatie anders dan GnuCash wil exporteren</string>
+	<string name="title_whats_new">Nieuw sinds de vorige versie</string>
 	<string name="whats_new">
-	    <b>Version 1.1.0 - 31.01.2013</b>\n\n
+	    <b>Versie 1.1.0 - 31.01.2013</b>\n\n
         - Double entry accounting\n
-        - Nested accounts\n
-        - SGML is default OFX export format\n
-        - Numerous bug fixes\n        
+        - Geneste accounts\n
+        - SGML is standaard OFX export formaat\n
+        - Vele bug fixes\n        
 	</string>
 	<string name="label_dismiss">Dismiss</string>
     <string name="toast_transanction_amount_required">Enter an amount to save the transaction</string>
