@@ -55,7 +55,7 @@
     <string name="option_export_all_transactions">All transacties exporteren</string>
     <string name="hint_export_choice">Aanvinken om alle transacties te exporteren. Anders worden enkel de nieuwe transacties sinds de laatste export ge&#235;xporteerd.</string>
     <string name="error_exporting">Fout tijdens het exporteren van de OFX data</string>    
-    <string name="btn_export">Export</string>
+    <string name="btn_export">Exporteer</string>
     <string name="option_delete_after_export">Verwijderen na exporteren</string>
     <string name="hint_delete_after_export">Alle ge&#235;xporteerde transacties zullen verwijderd worden na de export</string>
     <string name="title_settings">Instellingen</string>
@@ -264,8 +264,8 @@
 	    <item>Uitgaven</item>
 	    <item>Inkomsten</item>
 	    <item>Activa</item>	    
-	    <item>Equity</item>
-	    <item>Liabilities</item>
+	    <item>Eigen Vermogen</item>
+	    <item>Passiva</item>
 	</string-array>
 	<string name="error_no_accounts">Geen dagboeken beschikbaar.\nU moet een dagboek aanmaken alvorens een widget toe te voegen</string>
 	<string name="title_build_version">Versie</string>
@@ -296,10 +296,10 @@
 	<string name="title_export_all_transactions">Exporteer alle transacties</string>
 	<string name="title_always_delete_exported_transactions">Verwijder geëxporteerde transacties</string>
 	<string name="title_default_export_email">Standaard export emailadres</string>
-	<string name="summary_default_export_email">The default email address to send exports to. You can still change this when you export.</string>	
+	<string name="summary_default_export_email">Het standaard emailaddress om geëxporteerde data heen te sturen. U kan dit emailadres nog wijzigen als u exporteerd.</string>	
 	<string name="label_double_entry_account">Draag Account over</string>
 	<string name="summary_use_double_entry">Alle transacties zullen worden overgedragen van het ene account naar de andere</string>
-	<string name="title_use_double_entry">Activate Double Entry</string>
+	<string name="title_use_double_entry">Schake Double Entry in</string>
 	<string name="account_balance">Saldo</string>
 	<string name="toast_no_account_name_entered">Vul een accountnaam in</string>
 	<string name="label_account_currency">Munteenheid</string>
@@ -314,8 +314,8 @@
         - SGML is standaard OFX export formaat\n
         - Vele bug fixes\n        
 	</string>
-	<string name="label_dismiss">Dismiss</string>
-    <string name="toast_transanction_amount_required">Enter an amount to save the transaction</string>
+	<string name="label_dismiss">Wijs af</string>
+    <string name="toast_transanction_amount_required">Vul een bedrag in om de transactie op te slaan.</string>
     <plurals name="label_sub_accounts">
         <item quantity="one">%d sub-account</item>
         <item quantity="other">%d sub-accounts</item>
