@@ -301,7 +301,7 @@
 	<string name="summary_use_double_entry">Todas las transacciones ser&#225;n transferidas de una cuenta a otra</string>
 	<string name="title_use_double_entry">Activar Doble Entrada</string>
 	<string name="account_balance">Saldo</string>
-	<string name="toast_no_account_name_entered">Por favor introduzca un nombre para la cuenta</string>
+	<string name="toast_no_account_name_entered">Enter an account name to create an account</string>
 	<string name="label_account_currency">Divisa</string>
 	<string name="label_parent_account">Cuenta padre</string>
 	<string name="title_xml_ofx_header">Usar cabecera XML OFX</string>

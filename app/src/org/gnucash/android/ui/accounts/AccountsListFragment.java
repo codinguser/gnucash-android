@@ -541,7 +541,7 @@ public class AccountsListFragment extends SherlockListFragment implements
 		@Override
 		public Cursor loadInBackground() {			
 			mDatabaseAdapter = new AccountsDbAdapter(getContext());	
-			Cursor cursor = ((AccountsDbAdapter) mDatabaseAdapter).fetchAllRecords();
+			Cursor cursor = mDatabaseAdapter.fetchAllRecords();
 			if (cursor != null)
 				registerContentObserver(cursor);
 			return cursor;

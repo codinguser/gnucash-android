@@ -301,7 +301,7 @@
 	<string name="summary_use_double_entry">Toutes les transactions seront transf&#233;rer d\'un compte &#224; l\'autre</string>
 	<string name="title_use_double_entry">Activer les doubles entr&#233;es</string>
 	<string name="account_balance">Balance</string>
-	<string name="toast_no_account_name_entered">Veuillez entrer un nom de compte</string>
+	<string name="toast_no_account_name_entered">Enter an account name to create an account</string>
 	<string name="label_account_currency">Monnaie</string>
 	<string name="label_parent_account">Compte parent</string>
 	<string name="title_xml_ofx_header">Utiliser l\'ent&#234;te XML d\'OFX</string>

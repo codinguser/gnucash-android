@@ -307,7 +307,7 @@
 	<string name="summary_use_double_entry">Όλες οι κινήσεις θα μεταφερθούν από τον ένα λογαριασμό στον άλλο.</string>
 	<string name="title_use_double_entry">Ενεργοποίηση Διπλών Λογιστικών Εγγραφών</string>
 	<string name="account_balance">Υπόλοιπο</string>
-	<string name="toast_no_account_name_entered">Παρακαλώ εισάγετε ένα όνομα λογαριασμού</string>
+	<string name="toast_no_account_name_entered">Enter an account name to create an account</string>
 	<string name="label_account_currency">Νόμισμα</string>
 	<string name="label_parent_account">Γονικός λογαριασμός</string>
 	<string name="title_xml_ofx_header">Χρήση κεφαλίδας XML OFX</string>

@@ -266,7 +266,7 @@ public class Account {
 	
 	/**
 	 * Returns the aggregate of all transactions in this account.
-	 * It takes into account debit and credit amounts
+	 * It takes into account debit and credit amounts, it does not however consider sub-accounts
 	 * @return {@link Money} aggregate amount of all transactions in account.
 	 */
 	public Money getBalance(){

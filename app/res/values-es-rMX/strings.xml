@@ -300,7 +300,7 @@
 	<string name="summary_use_double_entry">All transactions will be a transfer from one account to another</string>
 	<string name="title_use_double_entry">Activate Double Entry</string>
 	<string name="account_balance">Balance</string>
-	<string name="toast_no_account_name_entered">Please enter an account name</string>
+	<string name="toast_no_account_name_entered">Enter an account name to create an account</string>
 	<string name="label_account_currency">Currency</string>
 	<string name="label_parent_account">Parent account</string>
 	<string name="title_xml_ofx_header">Use XML OFX header</string>
