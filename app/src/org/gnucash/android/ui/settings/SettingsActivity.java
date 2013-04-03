@@ -18,6 +18,7 @@ package org.gnucash.android.ui.settings;
 
 import java.util.List;
 
+import android.content.Intent;
 import org.gnucash.android.R;
 import org.gnucash.android.data.Money;
 
@@ -34,6 +35,7 @@ import android.util.Log;
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockPreferenceActivity;
 import com.actionbarsherlock.view.MenuItem;
+import org.gnucash.android.ui.accounts.AccountsListFragment;
 
 /**
  * Activity for displaying settings and information about the application
@@ -76,6 +78,7 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
 		
 		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB){
 			addPreferencesFromResource(R.xml.fragment_general_preferences);
+//            addPreferencesFromResource(R.xml.fragment_account_preferences);
 			addPreferencesFromResource(R.xml.fragment_transaction_preferences);
 			addPreferencesFromResource(R.xml.fragment_about_preferences);
 			setDefaultCurrencyListener();
@@ -83,7 +86,8 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
 			String versionName = manager.getString(getString(R.string.key_build_version), "");
 			Preference pref = findPreference(getString(R.string.key_build_version));
 			pref.setSummary(versionName);
-		}		
+
+		}
 	}
 		
 	@Override

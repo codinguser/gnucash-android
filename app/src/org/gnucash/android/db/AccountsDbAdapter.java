@@ -316,8 +316,9 @@ public class AccountsDbAdapter extends DatabaseAdapter {
     @Override
 	public Cursor fetchAllRecords(){
 		Log.v(TAG, "Fetching all accounts from db");
+        String selection =  DatabaseHelper.KEY_TYPE + " != " + "'ROOT'";
 		Cursor cursor = mDb.query(DatabaseHelper.ACCOUNTS_TABLE_NAME,
-                null, null, null, null, null,
+                null, selection, null, null, null,
                 DatabaseHelper.KEY_NAME + " ASC");
 		return cursor;
 	}
@@ -366,7 +367,12 @@ public class AccountsDbAdapter extends DatabaseAdapter {
         Money balance = Money.createInstance(getCurrencyCode(accountId));
         for (long id : subAccounts){
             //recurse because arbitrary nesting depth is allowed
-            balance = balance.add(getAccountBalance(id));
+            Money subBalance = getAccountBalance(id);
+            if (subBalance.getCurrency().equals(balance.getCurrency())){
+                //only add the balances if they are of the same currency
+                //ignore sub accounts of different currency just like GnuCash desktop does
+                balance = balance.add(getAccountBalance(id));
+            }
         }
         return balance.add(mTransactionsAdapter.getTransactionsSum(accountId));
     }

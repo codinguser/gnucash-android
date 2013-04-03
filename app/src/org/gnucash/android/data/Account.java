@@ -52,8 +52,11 @@ public class Account {
 	 * they are currently not used except for exporting
 	 */
 	public enum AccountType {CASH, BANK, CREDIT_CARD, ASSET, LIABILITY, INCOME, EXPENSE, 
-							PAYABLE, RECEIVABLE, EQUITY, CURRENCY, STOCK, MUTUAL_FUND};
-	
+							PAYABLE, RECEIVABLE, EQUITY, CURRENCY, STOCK, MUTUAL_FUND, ROOT};
+
+    /**
+     * Accounts types which are used by the OFX standard
+     */
 	public enum OfxAccountType {CHECKING, SAVINGS, MONEYMRKT, CREDITLINE };
 		
 	/**

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <Preference android:key="@string/key_import_accounts"
+                android:summary="@string/summary_import_accounts"
+                android:title="@string/title_import_accounts" />
+    <Preference android:key="@string/key_delete_all_accounts"
+                android:summary="@string/summary_delete_all_accounts"
+                android:title="@string/title_delete_all_accounts" />
+</PreferenceScreen>

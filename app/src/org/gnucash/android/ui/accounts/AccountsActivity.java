@@ -16,19 +16,6 @@
 
 package org.gnucash.android.ui.accounts;
 
-import java.util.ArrayList;
-import java.util.Currency;
-import java.util.Locale;
-
-import org.gnucash.android.R;
-import org.gnucash.android.data.Account;
-import org.gnucash.android.data.Money;
-import org.gnucash.android.data.Account.AccountType;
-import org.gnucash.android.db.AccountsDbAdapter;
-import org.gnucash.android.ui.transactions.TransactionsActivity;
-import org.gnucash.android.ui.transactions.TransactionsListFragment;
-import org.gnucash.android.util.OnAccountClickedListener;
-
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -43,11 +30,25 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.View;
-
+import android.widget.Toast;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
+import org.gnucash.android.R;
+import org.gnucash.android.data.Account;
+import org.gnucash.android.data.Account.AccountType;
+import org.gnucash.android.data.Money;
+import org.gnucash.android.db.AccountsDbAdapter;
+import org.gnucash.android.ui.transactions.TransactionsActivity;
+import org.gnucash.android.ui.transactions.TransactionsListFragment;
+import org.gnucash.android.util.GnucashAccountXmlHandler;
+import org.gnucash.android.util.OnAccountClickedListener;
+
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.Currency;
+import java.util.Locale;
 
 /**
  * Manages actions related to accounts, displaying, exporting and creating new accounts
@@ -292,16 +293,54 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
 				removeFirstRunFlag();
 			}
 		});
+
+        builder.setNeutralButton(R.string.btn_import_accounts, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                importAccounts();
+                removeFirstRunFlag();
+            }
+        });
+
 		mDefaultAccountsDialog = builder.create();
 		mDefaultAccountsDialog.show();		
 	}
-		
-	@Override
+
+    public void importAccounts() {
+        Intent pickIntent = new Intent(Intent.ACTION_GET_CONTENT);
+        pickIntent.setType("application/octet-stream");
+        Intent chooser = Intent.createChooser(pickIntent, "Select GnuCash account file");
+
+        startActivityForResult(chooser, AccountsListFragment.REQUEST_PICK_ACCOUNTS_FILE);
+
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_CANCELED){
+            return;
+        }
+
+        switch (requestCode){
+            case AccountsListFragment.REQUEST_PICK_ACCOUNTS_FILE:
+                try {
+                    GnucashAccountXmlHandler.parse(this, getContentResolver().openInputStream(data.getData()));
+                    Toast.makeText(this, R.string.toast_success_importing_accounts, Toast.LENGTH_LONG).show();
+                } catch (FileNotFoundException e) {
+                    Toast.makeText(this, R.string.toast_error_importing_accounts, Toast.LENGTH_LONG).show();
+                    e.printStackTrace();
+                }
+                break;
+        }
+    }
+
+    @Override
 	public void accountSelected(long accountRowId) {
 		Intent intent = new Intent(this, TransactionsActivity.class);
 		intent.setAction(Intent.ACTION_VIEW);
 		intent.putExtra(TransactionsListFragment.SELECTED_ACCOUNT_ID, accountRowId);
-		
+
 		startActivity(intent);
 	}
 	
