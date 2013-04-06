@@ -116,23 +116,37 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
 		if (firstRun){
 			createDefaultAccounts();
 		}
-		
-		FragmentManager fragmentManager = getSupportFragmentManager();
 
-		AccountsListFragment accountsListFragment = (AccountsListFragment) fragmentManager
-				.findFragmentByTag(FRAGMENT_ACCOUNTS_LIST);
+        final Intent intent = getIntent();
+        String action = intent.getAction();
+        if (action != null && action.equals(Intent.ACTION_INSERT_OR_EDIT)) {
+            //enter account creation/edit mode if that was specified
+            long accountId = intent.getLongExtra(TransactionsListFragment.SELECTED_ACCOUNT_ID, 0L);
+            if (accountId > 0)
+                showEditAccountFragment(accountId);
+            else {
+                long parentAccountId = intent.getLongExtra(AccountsListFragment.ARG_PARENT_ACCOUNT_ID, 0L);
+                showAddAccountFragment(parentAccountId);
+            }
+        } else {
+            //show the simple accounts list
 
-		if (accountsListFragment == null) {
-			FragmentTransaction fragmentTransaction = fragmentManager
-					.beginTransaction();
-			fragmentTransaction.add(R.id.fragment_container,
-					new AccountsListFragment(), FRAGMENT_ACCOUNTS_LIST);
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            AccountsListFragment accountsListFragment = (AccountsListFragment) fragmentManager
+                    .findFragmentByTag(FRAGMENT_ACCOUNTS_LIST);
 
-			fragmentTransaction.commit();
-		}
-		
-		
-		if (hasNewFeatures()){
+            if (accountsListFragment == null) {
+                FragmentTransaction fragmentTransaction = fragmentManager
+                        .beginTransaction();
+                fragmentTransaction.add(R.id.fragment_container,
+                        new AccountsListFragment(), FRAGMENT_ACCOUNTS_LIST);
+
+                fragmentTransaction.commit();
+            } else
+                accountsListFragment.refreshList();
+        }
+
+        if (hasNewFeatures()){
 			showWhatsNewDialog();
 		}
 	}
@@ -202,6 +216,46 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
 		}
 	}
 
+    /**
+     * Shows form fragment for creating a new account
+     * @param parentAccountId Record ID of the parent account present. Can be 0 for top-level account
+     */
+    private void showAddAccountFragment(long parentAccountId){
+        Bundle args = new Bundle();
+        args.putLong(AccountsListFragment.ARG_PARENT_ACCOUNT_ID, parentAccountId);
+        showAccountFormFragment(args);
+    }
+
+    /**
+     * Shows the form fragment for editing the account with record ID <code>accountId</code>
+     * @param accountId Record ID of the account to be edited
+     */
+    private void showEditAccountFragment(long accountId) {
+        Bundle args = new Bundle();
+        args.putLong(TransactionsListFragment.SELECTED_ACCOUNT_ID, accountId);
+        showAccountFormFragment(args);
+    }
+
+    /**
+     * Shows the form for creating/editing accounts
+     * @param args Arguments to use for initializing the form.
+     *             This could be an account to edit or a preset for the parent account
+     */
+    private void showAccountFormFragment(Bundle args){
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager
+                .beginTransaction();
+
+        AddAccountFragment newAccountFragment = AddAccountFragment.newInstance(null);
+        newAccountFragment.setArguments(args);
+
+        fragmentTransaction.replace(R.id.fragment_container,
+                newAccountFragment, AccountsActivity.FRAGMENT_NEW_ACCOUNT);
+
+        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.commit();
+    }
+
 	/**
 	 * Opens a dialog fragment to create a new account
 	 * @param v View which triggered this callback
@@ -211,6 +265,8 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
 				.findFragmentByTag(FRAGMENT_ACCOUNTS_LIST);
 		if (accountFragment != null)
 			accountFragment.showAddAccountFragment(0);
+        else
+            showAddAccountFragment(0);
 	}
 
 	/**
@@ -306,6 +362,10 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
 		mDefaultAccountsDialog.show();		
 	}
 
+    /**
+     * Starts Intent chooser for selecting a GnuCash accounts file to import.
+     * The accounts are actually imported in onActivityResult
+     */
     public void importAccounts() {
         Intent pickIntent = new Intent(Intent.ACTION_GET_CONTENT);
         pickIntent.setType("application/octet-stream");

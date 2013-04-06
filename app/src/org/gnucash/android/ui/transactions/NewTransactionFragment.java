@@ -290,12 +290,10 @@ public class NewTransactionFragment extends SherlockFragment implements
      */
 	private void updateTransferAccountsList(){
 		long accountId = ((TransactionsActivity)getActivity()).getCurrentAccountID();
-		
-		//TODO: we'll leave out the currency condition for now, maybe look at this in the future
+
 		String conditions = "(" + DatabaseHelper.KEY_ROW_ID + " != " + accountId + ") AND " + "(" +
 							DatabaseHelper.KEY_CURRENCY_CODE + " = '" + mAccountsDbAdapter.getCurrencyCode(accountId) + "')";
-		
-//		String conditions = "(" + DatabaseHelper.KEY_ROW_ID + " != " + accountId + ")";
+
 		mCursor = mAccountsDbAdapter.fetchAccounts(conditions);
 		
 		String[] from = new String[] {DatabaseHelper.KEY_NAME};

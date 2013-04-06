@@ -146,24 +146,10 @@ public class AddAccountFragment extends SherlockFragment {
 			}
 		});
 
-		mSelectedAccountId = getArguments().getLong(TransactionsListFragment.SELECTED_ACCOUNT_ID);
-		if (mSelectedAccountId > 0) {
-        	mAccount = mAccountsDbAdapter.getAccount(mSelectedAccountId);
-        	getSherlockActivity().getSupportActionBar().setTitle(R.string.title_edit_account);
-		}
 		return view;
 	}
 	
-	private void setParentAccountSelection(String parentUID){
-		long parentId = mAccountsDbAdapter.getAccountID(parentUID);
-		for (int pos = 0; pos < mCursorAdapter.getCount(); pos++) {
-			if (mCursorAdapter.getItemId(pos) == parentId){
-				mParentAccountSpinner.setSelection(pos);				
-				break;
-			}
-		}
-	}
-	
+
 	/**
 	 * Initializes the values of the views in the dialog
 	 */
@@ -177,33 +163,80 @@ public class AddAccountFragment extends SherlockFragment {
 				getResources().getStringArray(R.array.currency_names));		
 		arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		mCurrencySpinner.setAdapter(arrayAdapter);
-		
-		String currencyCode = Money.DEFAULT_CURRENCY_CODE;
-		
-		if (mSelectedAccountId != 0){
-			//if we are editing an account instead of creating one
-			currencyCode = mAccount.getCurrency().getCurrencyCode();
-		}
-		mCurrencyCodes = Arrays.asList(getResources().getStringArray(R.array.currency_codes));
-		
-		if (mCurrencyCodes.contains(currencyCode)){
-			mCurrencySpinner.setSelection(mCurrencyCodes.indexOf(currencyCode));
-		}	
-		
-		loadParentAccountList();		
 
-		if (mSelectedAccountId > 0) {
-        	mNameEditText.setText(mAccount.getName());
-        	String parentUID = mAccount.getParentUID();
-        	if (parentUID != null){
-        		mParentCheckBox.setChecked(true);
-        		mParentAccountSpinner.setEnabled(true);
-        		setParentAccountSelection(parentUID);
-        	}        	
+        loadParentAccountList();
+
+        mSelectedAccountId = getArguments().getLong(TransactionsListFragment.SELECTED_ACCOUNT_ID);
+        if (mSelectedAccountId > 0) {
+            mAccount = mAccountsDbAdapter.getAccount(mSelectedAccountId);
+            getSherlockActivity().getSupportActionBar().setTitle(R.string.title_edit_account);
         }
-		
+
+        if (mAccount != null){
+            initializeViewsWithAccount(mAccount);
+        } else {
+            initializeViews();
+        }
 	}
-	
+
+    /**
+     * Initialize view with the properties of <code>account</code>.
+     * This is applicable when editing an account
+     * @param account Account whose fields are used to populate the form
+     */
+    private void initializeViewsWithAccount(Account account){
+        if (account == null)
+            throw new IllegalArgumentException("Account cannot be null");
+
+        String currencyCode = account.getCurrency().getCurrencyCode();
+        setSelectedCurrency(currencyCode);
+
+        mNameEditText.setText(account.getName());
+        long parentAccountId = mAccountsDbAdapter.getAccountID(account.getParentUID());
+        setParentAccountSelection(parentAccountId);
+    }
+
+    /**
+     * Initialize views with defaults for new account
+     */
+    private void initializeViews(){
+        setSelectedCurrency(Money.DEFAULT_CURRENCY_CODE);
+
+        long parentAccountId = getArguments().getLong(AccountsListFragment.ARG_PARENT_ACCOUNT_ID);
+        setParentAccountSelection(parentAccountId);
+
+    }
+
+    /**
+     * Selects the currency with code <code>currencyCode</code> in the spinner
+     * @param currencyCode ISO 4217 currency code to be selected
+     */
+    private void setSelectedCurrency(String currencyCode){
+        mCurrencyCodes = Arrays.asList(getResources().getStringArray(R.array.currency_codes));
+        if (mCurrencyCodes.contains(currencyCode)){
+            mCurrencySpinner.setSelection(mCurrencyCodes.indexOf(currencyCode));
+        }
+    }
+
+    /**
+     * Selects the account with ID <code>parentAccountId</code> in the parent accounts spinner
+     * @param parentAccountId Record ID of parent account to be selected
+     */
+    private void setParentAccountSelection(long parentAccountId){
+        if (parentAccountId > 0){
+            mParentCheckBox.setChecked(true);
+            mParentAccountSpinner.setEnabled(true);
+        } else
+            return;
+
+        for (int pos = 0; pos < mCursorAdapter.getCount(); pos++) {
+            if (mCursorAdapter.getItemId(pos) == parentAccountId){
+                mParentAccountSpinner.setSelection(pos);
+                break;
+            }
+        }
+    }
+
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {		
 		super.onCreateOptionsMenu(menu, inflater);

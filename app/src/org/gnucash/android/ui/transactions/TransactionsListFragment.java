@@ -23,10 +23,7 @@ import java.util.Locale;
 
 import org.gnucash.android.R;
 import org.gnucash.android.data.Money;
-import org.gnucash.android.db.DatabaseAdapter;
-import org.gnucash.android.db.DatabaseCursorLoader;
-import org.gnucash.android.db.DatabaseHelper;
-import org.gnucash.android.db.TransactionsDbAdapter;
+import org.gnucash.android.db.*;
 import org.gnucash.android.ui.widget.WidgetConfigurationActivity;
 import org.gnucash.android.util.OnTransactionClickedListener;
 
@@ -215,8 +212,10 @@ public class TransactionsListFragment extends SherlockListFragment implements
 	
 	public void refreshList(){
 		getLoaderManager().restartLoader(0, null, this);
-		
-		Money sum = mTransactionsDbAdapter.getTransactionsSum(mAccountID);		
+
+        AccountsDbAdapter accountsDbAdapter = new AccountsDbAdapter(getActivity());
+		Money sum = accountsDbAdapter.getAccountBalance(mAccountID);// mTransactionsDbAdapter.getTransactionsSum(mAccountID);
+        accountsDbAdapter.close();
 		mSumTextView = (TextView) getView().findViewById(R.id.transactions_sum);
 		mSumTextView.setText(sum.formattedString(Locale.getDefault()));
 		if (sum.isNegative())

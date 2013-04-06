@@ -19,7 +19,6 @@ package org.gnucash.android.ui.accounts;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -55,11 +54,8 @@ import org.gnucash.android.ui.settings.SettingsActivity;
 import org.gnucash.android.ui.transactions.TransactionsActivity;
 import org.gnucash.android.ui.transactions.TransactionsListFragment;
 import org.gnucash.android.ui.widget.WidgetConfigurationActivity;
-import org.gnucash.android.util.GnucashAccountXmlHandler;
 import org.gnucash.android.util.OnAccountClickedListener;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.Locale;
 
 /**
@@ -70,17 +66,20 @@ import java.util.Locale;
 public class AccountsListFragment extends SherlockListFragment implements
         LoaderCallbacks<Cursor>, OnItemLongClickListener {
 
-    /**
-     * Logging tag
-     */
-    protected static final String TAG = "AccountsListFragment";
     public static final int REQUEST_PICK_ACCOUNTS_FILE = 0x1;
-
-
     /**
      * Menu item ID for import accounts action
      */
     public static final int MENU_IMPORT_ACCOUNTS = 0x11;
+    /**
+     * Key for passing argument for the parent account ID.
+     * When this argument is set, only sub-accounts of the account will be loaded.
+     */
+    public static final String ARG_PARENT_ACCOUNT_ID = "parent_account_id";
+    /**
+     * Logging tag
+     */
+    protected static final String TAG = "AccountsListFragment";
 
     /**
      * {@link ListAdapter} for the accounts which will be bound to the list
@@ -189,7 +188,8 @@ public class AccountsListFragment extends SherlockListFragment implements
         actionbar.setTitle(R.string.title_accounts);
         actionbar.setDisplayHomeAsUpEnabled(false);
 
-        setHasOptionsMenu(true);
+        if (!inSubAcccount())
+            setHasOptionsMenu(true);
 
         ListView lv = getListView();
         lv.setOnItemLongClickListener(this);
@@ -237,6 +237,15 @@ public class AccountsListFragment extends SherlockListFragment implements
 
         selectItem(position);
         return true;
+    }
+
+    /**
+     * Returns true if this fragment is currently rendering sub-accounts. false otherwise
+     * @return true if this fragment is currently rendering sub-accounts. false otherwise
+     */
+    public boolean inSubAcccount(){
+        Bundle args = getArguments();
+        return (args != null) && (args.getLong(ARG_PARENT_ACCOUNT_ID) > 0);
     }
 
     /**
@@ -330,7 +339,7 @@ public class AccountsListFragment extends SherlockListFragment implements
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.account_actions, menu);
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB){
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
             MenuItem item = menu.add(0, MENU_IMPORT_ACCOUNTS, 0, R.string.menu_import_accounts);
             item.setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_NEVER);
         }
@@ -345,7 +354,7 @@ public class AccountsListFragment extends SherlockListFragment implements
                 return true;
 
             case MENU_IMPORT_ACCOUNTS:
-                ((AccountsActivity)getActivity()).importAccounts();
+                ((AccountsActivity) getActivity()).importAccounts();
                 return true;
 
             case R.id.menu_export:
@@ -361,6 +370,11 @@ public class AccountsListFragment extends SherlockListFragment implements
         }
     }
 
+    public void refreshList(long parentAccountId) {
+        getArguments().putLong(ARG_PARENT_ACCOUNT_ID, parentAccountId);
+        refreshList();
+    }
+
     /**
      * Refreshes the list by restarting the {@link DatabaseCursorLoader} associated
      * with the ListView
@@ -368,6 +382,9 @@ public class AccountsListFragment extends SherlockListFragment implements
     public void refreshList() {
         getLoaderManager().restartLoader(0, null, this);
 
+        if (getActivity() instanceof TransactionsActivity){
+            ((TransactionsActivity)getActivity()).updateSubAccountsView();
+        }
 /*
         //TODO: Figure out a way to display account balances per currency
 		boolean doubleEntryActive = PreferenceManager.getDefaultSharedPreferences(getActivity())
@@ -435,7 +452,12 @@ public class AccountsListFragment extends SherlockListFragment implements
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         Log.d(TAG, "Creating the accounts loader");
-        return new AccountsCursorLoader(this.getActivity().getApplicationContext());
+        Bundle fragmentArguments = getArguments();
+        long accountId = fragmentArguments == null ? -1 : fragmentArguments.getLong(ARG_PARENT_ACCOUNT_ID);
+
+        return id < 0 ?
+                new AccountsCursorLoader(this.getActivity().getApplicationContext()) :
+                new AccountsCursorLoader(this.getActivity(), accountId);
     }
 
     @Override
@@ -509,15 +531,26 @@ public class AccountsListFragment extends SherlockListFragment implements
      * @author Ngewi Fet <ngewif@gmail.com>
      */
     private static final class AccountsCursorLoader extends DatabaseCursorLoader {
+        private long mParentAccountId = -1;
 
         public AccountsCursorLoader(Context context) {
             super(context);
         }
 
+        public AccountsCursorLoader(Context context, long parentAccountId) {
+            super(context);
+            mParentAccountId = parentAccountId;
+        }
+
         @Override
         public Cursor loadInBackground() {
             mDatabaseAdapter = new AccountsDbAdapter(getContext());
-            Cursor cursor = mDatabaseAdapter.fetchAllRecords();
+            Cursor cursor;
+            if (mParentAccountId > 0)
+                cursor = ((AccountsDbAdapter) mDatabaseAdapter).fetchSubAccounts(mParentAccountId);
+            else
+                cursor = ((AccountsDbAdapter) mDatabaseAdapter).fetchTopLevelAccounts();
+
             if (cursor != null)
                 registerContentObserver(cursor);
             return cursor;
@@ -568,17 +601,22 @@ public class AccountsListFragment extends SherlockListFragment implements
                     getResources().getColor(R.color.credit_green);
             summary.setTextColor(fontColor);
 
-            ImageView newTrans = (ImageView) v.findViewById(R.id.btn_new_transaction);
-            newTrans.setOnClickListener(new View.OnClickListener() {
+            ImageView newTransactionButton = (ImageView) v.findViewById(R.id.btn_new_transaction);
+            if (inSubAcccount()){
+                newTransactionButton.setVisibility(View.GONE);
+                v.findViewById(R.id.vertical_line).setVisibility(View.GONE);
+            } else {
+                newTransactionButton.setOnClickListener(new View.OnClickListener() {
 
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent(getActivity(), TransactionsActivity.class);
-                    intent.setAction(Intent.ACTION_INSERT_OR_EDIT);
-                    intent.putExtra(TransactionsListFragment.SELECTED_ACCOUNT_ID, accountId);
-                    getActivity().startActivity(intent);
-                }
-            });
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(getActivity(), TransactionsActivity.class);
+                        intent.setAction(Intent.ACTION_INSERT_OR_EDIT);
+                        intent.putExtra(TransactionsListFragment.SELECTED_ACCOUNT_ID, accountId);
+                        getActivity().startActivity(intent);
+                    }
+                });
+            }
         }
     }
 

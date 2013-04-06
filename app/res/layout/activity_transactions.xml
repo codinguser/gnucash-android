@@ -15,9 +15,43 @@
  limitations under the License.
 -->
 
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/fragment_container"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent" >
-    
-</FrameLayout>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:id="@+id/fragment_container"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
+
+    <TextView
+            android:id="@+id/section_header_sub_accounts"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/section_header_height"
+            android:paddingLeft="10dp"
+            android:background="@android:color/darker_gray"
+            android:textColor="@android:color/white"
+            android:visibility="gone"
+            android:text="Sub-Accounts"
+            />
+
+    <FrameLayout android:id="@+id/sub_accounts_container"
+                 android:layout_width="match_parent"
+                 android:layout_height="0dp"
+                 android:layout_weight="1"
+                 android:visibility="gone"/>
+
+    <TextView
+            android:id="@+id/section_header_transactions"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/section_header_height"
+            android:paddingLeft="10dp"
+            android:background="@android:color/darker_gray"
+            android:textColor="@android:color/white"
+            android:text="Transactions"
+            />
+
+    <FrameLayout android:id="@+id/transactions_container"
+                 android:layout_width="match_parent"
+                 android:layout_height="0dp"
+                 android:layout_weight="3"
+                 />
+
+</LinearLayout>

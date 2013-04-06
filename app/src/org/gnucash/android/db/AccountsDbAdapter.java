@@ -399,6 +399,55 @@ public class AccountsDbAdapter extends DatabaseAdapter {
     }
 
     /**
+     * Returns a cursor to the dataset containing sub-accounts of the account with record ID <code>accoundId</code>
+     * @param accountId Record ID of the parent account
+     * @return {@link Cursor} to the sub accounts data set
+     */
+    public Cursor fetchSubAccounts(long accountId){
+        return mDb.query(DatabaseHelper.ACCOUNTS_TABLE_NAME,
+                null,
+                DatabaseHelper.KEY_PARENT_ACCOUNT_UID + " = ?",
+                new String[]{getAccountUID(accountId)},
+                null, null, null);
+    }
+
+    /**
+     * Returns the top level accounts i.e. accounts with no parent or with the GnuCash ROOT account as parent
+     * @return Cursor to the top level accounts
+     */
+    public Cursor fetchTopLevelAccounts(){
+        StringBuilder condition = new StringBuilder("(");
+        condition.append(DatabaseHelper.KEY_PARENT_ACCOUNT_UID + " IS NULL");
+        condition.append(" OR ");
+        condition.append(DatabaseHelper.KEY_PARENT_ACCOUNT_UID + " = ");
+        condition.append("'" + getGnuCashRootAccountUID() + "'");
+        condition.append(")");
+        condition.append(" AND ");
+        condition.append(DatabaseHelper.KEY_TYPE + " != " + "'" + AccountType.ROOT.name() + "'");
+        return fetchAccounts(condition.toString());
+    }
+
+    /**
+     * Returns the GnuCash ROOT account UID.
+     * <p>In GnuCash desktop account structure, there is a root account (which is not visible in the UI) from which
+     * other top level accounts derive. GnuCash Android does not have this ROOT account by default unless the account
+     * structure was imported from GnuCash for desktop. Hence this method also returns <code>null</code> as an
+     * acceptable result.</p>
+     * <p><b>Note:</b> NULL is an acceptable response, be sure to check for it</p>
+     * @return Unique ID of the GnuCash root account.
+     */
+    public String getGnuCashRootAccountUID(){
+        String condition = DatabaseHelper.KEY_TYPE + "= '" + AccountType.ROOT.name() + "'";
+        Cursor cursor =  fetchAccounts(condition);
+        String rootUID = null;
+        if (cursor != null && cursor.moveToFirst()){
+            rootUID = cursor.getString(DatabaseAdapter.COLUMN_UID);
+            cursor.close();
+        }
+        return rootUID;
+    }
+
+    /**
      * Returns the number of accounts for which the account with ID <code>accoundId</code> is a first level parent
      * @param accountId Database ID of parent account
      * @return Number of sub accounts
