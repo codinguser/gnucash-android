@@ -534,21 +534,6 @@
     <string-array name="account_type_entry_values">
         <item>CASH</item>
         <item>BANK</item>
-        <item>CREDIT_CARD</item>
-        <item>ASSET</item>
-        <item>LIABILITY</item>
-        <item>INCOME</item>
-        <item>EXPENSE</item>
-        <item>PAYABLE</item>
-        <item>RECEIVABLE</item>
-        <item>EQUITY</item>
-        <item>CURRENCY</item>
-        <item>STOCK</item>
-        <item>MUTUAL_FUND</item>
-    </string-array>
-    <string-array name="account_type_entries">
-        <item>CASH</item>
-        <item>BANK</item>
         <item>CREDIT CARD</item>
         <item>ASSET</item>
         <item>LIABILITY</item>
@@ -560,5 +545,20 @@
         <item>CURRENCY</item>
         <item>STOCK</item>
         <item>MUTUAL FUND</item>
+    </string-array>
+    <string-array name="account_type_entries">
+        <item>CASH</item>
+        <item>BANK</item>
+        <item>CREDIT_CARD</item>
+        <item>ASSET</item>
+        <item>LIABILITY</item>
+        <item>INCOME</item>
+        <item>EXPENSE</item>
+        <item>PAYABLE</item>
+        <item>RECEIVABLE</item>
+        <item>EQUITY</item>
+        <item>CURRENCY</item>
+        <item>STOCK</item>
+        <item>MUTUAL_FUND</item>
     </string-array>
 </resources>
