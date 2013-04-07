@@ -68,10 +68,6 @@ public class AccountsListFragment extends SherlockListFragment implements
 
     public static final int REQUEST_PICK_ACCOUNTS_FILE = 0x1;
     /**
-     * Menu item ID for import accounts action
-     */
-    public static final int MENU_IMPORT_ACCOUNTS = 0x11;
-    /**
      * Key for passing argument for the parent account ID.
      * When this argument is set, only sub-accounts of the account will be loaded.
      */
@@ -339,10 +335,6 @@ public class AccountsListFragment extends SherlockListFragment implements
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.account_actions, menu);
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
-            MenuItem item = menu.add(0, MENU_IMPORT_ACCOUNTS, 0, R.string.menu_import_accounts);
-            item.setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_NEVER);
-        }
     }
 
     @Override
@@ -351,10 +343,6 @@ public class AccountsListFragment extends SherlockListFragment implements
 
             case R.id.menu_add_account:
                 showAddAccountFragment(0);
-                return true;
-
-            case MENU_IMPORT_ACCOUNTS:
-                ((AccountsActivity) getActivity()).importAccounts();
                 return true;
 
             case R.id.menu_export:

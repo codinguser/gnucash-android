@@ -20,6 +20,8 @@ import java.util.Arrays;
 import java.util.Currency;
 import java.util.List;
 
+import android.app.Activity;
+import android.content.Intent;
 import org.gnucash.android.R;
 import org.gnucash.android.data.Account;
 import org.gnucash.android.data.Money;
@@ -93,7 +95,9 @@ public class AddAccountFragment extends SherlockFragment {
 	private Spinner mParentAccountSpinner;
 
 	private CheckBox mParentCheckBox;
-	
+
+    private Spinner mAccountTypeSpinner;
+
 	/**
 	 * Default constructor
 	 * Required, else the app crashes on screen rotation
@@ -133,7 +137,9 @@ public class AddAccountFragment extends SherlockFragment {
 		mCurrencySpinner = (Spinner) view.findViewById(R.id.input_currency_spinner);
 		mNameEditText = (EditText) view.findViewById(R.id.edit_text_account_name);
 		mNameEditText.requestFocus();
-        
+
+        mAccountTypeSpinner = (Spinner) view.findViewById(R.id.input_account_type_spinner);
+
 		mParentAccountSpinner = (Spinner) view.findViewById(R.id.input_parent_account);
 		mParentAccountSpinner.setEnabled(false);
 		
@@ -165,6 +171,7 @@ public class AddAccountFragment extends SherlockFragment {
 		mCurrencySpinner.setAdapter(arrayAdapter);
 
         loadParentAccountList();
+        loadAccountTypesList();
 
         mSelectedAccountId = getArguments().getLong(TransactionsListFragment.SELECTED_ACCOUNT_ID);
         if (mSelectedAccountId > 0) {
@@ -194,6 +201,10 @@ public class AddAccountFragment extends SherlockFragment {
         mNameEditText.setText(account.getName());
         long parentAccountId = mAccountsDbAdapter.getAccountID(account.getParentUID());
         setParentAccountSelection(parentAccountId);
+
+        String[] accountTypeEntries = getResources().getStringArray(R.array.account_type_entries);
+        int accountTypeIndex = Arrays.asList(accountTypeEntries).indexOf(account.getAccountType().name());
+        mAccountTypeSpinner.setSelection(accountTypeIndex);
     }
 
     /**
@@ -261,7 +272,12 @@ public class AddAccountFragment extends SherlockFragment {
 	private void loadParentAccountList(){
 		String condition = DatabaseHelper.KEY_ROW_ID + "!=" + mSelectedAccountId;
 		mCursor = mAccountsDbAdapter.fetchAccounts(condition);
-		
+		if (mCursor.getCount() <= 0){
+            final View view = getView();
+            view.findViewById(R.id.layout_parent_account).setVisibility(View.GONE);
+            view.findViewById(R.id.label_parent_account).setVisibility(View.GONE);
+        }
+
 		String[] from = new String[] {DatabaseHelper.KEY_NAME};
 		int[] to = new int[] {android.R.id.text1};
 		mCursorAdapter = new SimpleCursorAdapter(
@@ -271,7 +287,17 @@ public class AddAccountFragment extends SherlockFragment {
 		mCursorAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);		
 		mParentAccountSpinner.setAdapter(mCursorAdapter);
 	}
-	
+
+    private void loadAccountTypesList(){
+        String[] accountTypes = getResources().getStringArray(R.array.account_type_entry_values);
+        ArrayAdapter<String> accountTypesAdapter = new ArrayAdapter<String>(
+                getActivity(), android.R.layout.simple_list_item_1, accountTypes);
+
+        accountTypesAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        mAccountTypeSpinner.setAdapter(accountTypesAdapter);
+
+    }
+
 	/**
 	 * Finishes the fragment appropriately.
 	 * Depends on how the fragment was loaded, it might have a backstack or not
@@ -280,8 +306,14 @@ public class AddAccountFragment extends SherlockFragment {
 		InputMethodManager imm = (InputMethodManager) getSherlockActivity().getSystemService(
 			      Context.INPUT_METHOD_SERVICE);
 			imm.hideSoftInputFromWindow(mNameEditText.getWindowToken(), 0);
-			
-		getSherlockActivity().getSupportFragmentManager().popBackStack();			
+
+        final String action = getActivity().getIntent().getAction();
+        if (action != null && action.equals(Intent.ACTION_INSERT_OR_EDIT)){
+            getActivity().setResult(Activity.RESULT_OK);
+            getActivity().finish();
+        } else {
+		    getSherlockActivity().getSupportFragmentManager().popBackStack();
+        }
 	}
 	
 	@Override
@@ -310,6 +342,10 @@ public class AddAccountFragment extends SherlockFragment {
 		String curCode = mCurrencyCodes.get(mCurrencySpinner
 				.getSelectedItemPosition());
 		mAccount.setCurrency(Currency.getInstance(curCode));
+
+        int selectedAccountType = mAccountTypeSpinner.getSelectedItemPosition();
+        String[] accountTypeEntries = getResources().getStringArray(R.array.account_type_entries);
+        mAccount.setAccountType(Account.AccountType.valueOf(accountTypeEntries[selectedAccountType]));
 
 		if (mParentCheckBox.isChecked()){
 			long id = mParentAccountSpinner.getSelectedItemId();

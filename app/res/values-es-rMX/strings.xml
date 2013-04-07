@@ -330,8 +330,24 @@
     <string name="confirm_delete_all_accounts">Are you sure you want to delete all accounts and transactions? \nThis
         operation cannot be undone!
     </string>
+    <string name="label_account_type">Account Type</string>
     <plurals name="label_sub_accounts">
         <item quantity="one">%d sub-account</item>
         <item quantity="other">%d sub-accounts</item>
     </plurals>
+    <string-array name="account_type_entry_values">
+        <item>CASH</item>
+        <item>BANK</item>
+        <item>CREDIT CARD</item>
+        <item>ASSET</item>
+        <item>LIABILITY</item>
+        <item>INCOME</item>
+        <item>EXPENSE</item>
+        <item>PAYABLE</item>
+        <item>RECEIVABLE</item>
+        <item>EQUITY</item>
+        <item>CURRENCY</item>
+        <item>STOCK</item>
+        <item>MUTUAL FUND</item>
+    </string-array>
 </resources>

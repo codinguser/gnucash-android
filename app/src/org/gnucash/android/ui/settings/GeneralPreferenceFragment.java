@@ -53,13 +53,9 @@ public class GeneralPreferenceFragment extends PreferenceFragment implements OnP
 	public void onResume() {
 		super.onResume();
 		SharedPreferences manager = PreferenceManager.getDefaultSharedPreferences(getActivity());
-		String defaultCurrency = manager.getString(getString(R.string.key_default_currency), Money.DEFAULT_CURRENCY_CODE);
-		Preference pref = findPreference(getString(R.string.key_default_currency));
-		pref.setSummary(defaultCurrency);
-		pref.setOnPreferenceChangeListener(this);
 		
 		String keyDefaultEmail = getString(R.string.key_default_export_email);		
-		pref = findPreference(keyDefaultEmail);
+		Preference pref = findPreference(keyDefaultEmail);
 		String defaultEmail = manager.getString(keyDefaultEmail, null);
 		if (defaultEmail != null && !defaultEmail.trim().isEmpty()){
 			pref.setSummary(defaultEmail);			

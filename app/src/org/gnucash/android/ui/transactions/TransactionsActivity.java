@@ -16,6 +16,7 @@
 
 package org.gnucash.android.ui.transactions;
 
+import android.support.v4.app.Fragment;
 import android.widget.TextView;
 import org.gnucash.android.R;
 import org.gnucash.android.data.Account;
@@ -66,9 +67,10 @@ public class TransactionsActivity extends SherlockFragmentActivity implements
 	/**
 	 * Tag for {@link NewTransactionFragment}
 	 */
-	public static final String FRAGMENT_NEW_TRANSACTION 	= "new_transaction";	
-	
-	/**
+	public static final String FRAGMENT_NEW_TRANSACTION 	= "new_transaction";
+    private static final int REQUEST_EDIT_ACCOUNT           = 0x21;
+
+    /**
 	 * Database ID of {@link Account} whose transactions are displayed 
 	 */
 	private long mAccountId 	= 0;
@@ -104,31 +106,36 @@ public class TransactionsActivity extends SherlockFragmentActivity implements
 		    	return true;
 		    }
 
-			TransactionsListFragment transactionsListFragment = (TransactionsListFragment) fragmentManager
-					.findFragmentByTag(FRAGMENT_TRANSACTIONS_LIST);
-			if (transactionsListFragment != null) {
-				transactionsListFragment.refreshList(itemId);
-            }
-
-              AccountsListFragment subAccountsListFragment = (AccountsListFragment) fragmentManager
-                      .findFragmentByTag(AccountsActivity.FRAGMENT_ACCOUNTS_LIST);
-              if (subAccountsListFragment != null) {
-                  subAccountsListFragment.refreshList(itemId);
-              } else {
-                  subAccountsListFragment = new AccountsListFragment();
-                  Bundle args = new Bundle();
-                  args.putLong(AccountsListFragment.ARG_PARENT_ACCOUNT_ID, mAccountId);
-                  subAccountsListFragment.setArguments(args);
-                  FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                  fragmentTransaction.replace(R.id.sub_accounts_container, subAccountsListFragment, AccountsActivity.FRAGMENT_ACCOUNTS_LIST);
-                  fragmentTransaction.commit();
-              }
+              refresh();
 
               return true;
 		  }
 	};
 
-	private AccountsDbAdapter mAccountsDbAdapter;
+    private void refresh() {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        TransactionsListFragment transactionsListFragment = (TransactionsListFragment) fragmentManager
+                .findFragmentByTag(FRAGMENT_TRANSACTIONS_LIST);
+        if (transactionsListFragment != null) {
+            transactionsListFragment.refreshList(mAccountId);
+        }
+
+        AccountsListFragment subAccountsListFragment = (AccountsListFragment) fragmentManager
+                .findFragmentByTag(AccountsActivity.FRAGMENT_ACCOUNTS_LIST);
+        if (subAccountsListFragment != null) {
+            subAccountsListFragment.refreshList(mAccountId);
+        } else {
+            subAccountsListFragment = new AccountsListFragment();
+            Bundle args = new Bundle();
+            args.putLong(AccountsListFragment.ARG_PARENT_ACCOUNT_ID, mAccountId);
+            subAccountsListFragment.setArguments(args);
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.replace(R.id.sub_accounts_container, subAccountsListFragment, AccountsActivity.FRAGMENT_ACCOUNTS_LIST);
+            fragmentTransaction.commit();
+        }
+    }
+
+    private AccountsDbAdapter mAccountsDbAdapter;
 
 	private SpinnerAdapter mSpinnerAdapter;
 				
@@ -185,6 +192,7 @@ public class TransactionsActivity extends SherlockFragmentActivity implements
 		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
 		actionBar.setListNavigationCallbacks(mSpinnerAdapter,
 				mTransactionListNavigationListener);
+        actionBar.setDisplayHomeAsUpEnabled(true);
 		
 		updateNavigationSelection();
 	}
@@ -217,15 +225,17 @@ public class TransactionsActivity extends SherlockFragmentActivity implements
         if (action != null && action.equals(Intent.ACTION_INSERT_OR_EDIT))
             return;
 
-        AccountsDbAdapter accountsDbAdapter = new AccountsDbAdapter(TransactionsActivity.this);
-        if (accountsDbAdapter.getSubAccountCount(mAccountId) > 0) {
-            mSectionHeaderSubAccounts.setVisibility(View.VISIBLE);
+        int subAccountCount = mAccountsDbAdapter.getSubAccountCount(mAccountId);
+        if (subAccountCount > 0) {
             mSubAccountsContainer.setVisibility(View.VISIBLE);
+            mSectionHeaderSubAccounts.setVisibility(View.VISIBLE);
+            String subAccountSectionText = getResources().getQuantityString(
+                    R.plurals.label_sub_accounts, subAccountCount, subAccountCount);
+            mSectionHeaderSubAccounts.setText(subAccountSectionText);
         } else {
             mSectionHeaderSubAccounts.setVisibility(View.GONE);
             mSubAccountsContainer.setVisibility(View.GONE);
         }
-        accountsDbAdapter.close();
     }
 
     @Override
@@ -246,12 +256,28 @@ public class TransactionsActivity extends SherlockFragmentActivity implements
 	        }
 	        return true;
 
-		default:
+            case R.id.menu_edit_account:
+                Intent editAccountIntent = new Intent(this, AccountsActivity.class);
+                editAccountIntent.setAction(Intent.ACTION_INSERT_OR_EDIT);
+                editAccountIntent.putExtra(TransactionsListFragment.SELECTED_ACCOUNT_ID, mAccountId);
+                startActivityForResult(editAccountIntent, REQUEST_EDIT_ACCOUNT);
+                return true;
+
+        default:
 			return false;
 		}
 	}
-		
-	@Override
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == RESULT_CANCELED)
+            return;
+
+        refresh();
+        setupActionBarNavigation();
+    }
+
+    @Override
 	protected void onDestroy() {
 		super.onDestroy();
 		mAccountsDbAdapter.close();
@@ -283,9 +309,12 @@ public class TransactionsActivity extends SherlockFragmentActivity implements
         FragmentTransaction fragmentTransaction = fragmentManager
                 .beginTransaction();
 
-        if (mAccountsDbAdapter.getSubAccountCount(mAccountId) > 0){
+        int subAccountCount = mAccountsDbAdapter.getSubAccountCount(mAccountId);
+        if (subAccountCount > 0){
             mSubAccountsContainer.setVisibility(View.VISIBLE);
             mSectionHeaderSubAccounts.setVisibility(View.VISIBLE);
+            String subAccountSectionText = getResources().getQuantityString(R.plurals.label_sub_accounts, subAccountCount, subAccountCount);
+            mSectionHeaderSubAccounts.setText(subAccountSectionText);
             AccountsListFragment subAccountsListFragment = new AccountsListFragment();
             Bundle args = new Bundle();
             args.putLong(AccountsListFragment.ARG_PARENT_ACCOUNT_ID, mAccountId);
