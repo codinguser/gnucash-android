@@ -27,14 +27,15 @@ import org.gnucash.android.R;
 import org.gnucash.android.db.AccountsDbAdapter;
 
 /**
- * Confirmation dialog for deleting all accounts from the system
+ * Confirmation dialog for deleting all accounts from the system.
+ * This class currently only works with HONEYCOMB and above.
  *
  * @author Ngewi Fet <ngewif@gmail.com>
  */
-public class DeleteAccountsConfirmationDialog extends DialogFragment {
+public class DeleteAllAccountsConfirmationDialog extends DialogFragment {
 
-    public static DeleteAccountsConfirmationDialog newInstance() {
-        DeleteAccountsConfirmationDialog frag = new DeleteAccountsConfirmationDialog();
+    public static DeleteAllAccountsConfirmationDialog newInstance() {
+        DeleteAllAccountsConfirmationDialog frag = new DeleteAllAccountsConfirmationDialog();
         return frag;
     }
 

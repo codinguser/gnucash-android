@@ -16,15 +16,8 @@
 
 package org.gnucash.android.ui.settings;
 
-import java.io.FileNotFoundException;
-import java.util.List;
-
 import android.app.Activity;
 import android.content.Intent;
-import android.widget.Toast;
-import org.gnucash.android.R;
-import org.gnucash.android.data.Money;
-
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.pm.PackageManager.NameNotFoundException;
@@ -34,12 +27,17 @@ import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.PreferenceManager;
 import android.util.Log;
-
+import android.widget.Toast;
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockPreferenceActivity;
 import com.actionbarsherlock.view.MenuItem;
+import org.gnucash.android.R;
+import org.gnucash.android.data.Money;
 import org.gnucash.android.ui.accounts.AccountsListFragment;
 import org.gnucash.android.util.GnucashAccountXmlHandler;
+
+import java.io.FileNotFoundException;
+import java.util.List;
 
 /**
  * Activity for displaying settings and information about the application
@@ -93,6 +91,12 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
 
             pref = findPreference(getString(R.string.key_import_accounts));
             pref.setOnPreferenceClickListener(this);
+
+            pref = findPreference(getString(R.string.key_delete_all_transactions));
+            pref.setOnPreferenceClickListener(this);
+
+            pref = findPreference(getString(R.string.key_delete_all_accounts));
+            pref.setOnPreferenceClickListener(this);
 		}
 	}
 		
@@ -137,10 +141,12 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
 
     @Override
     public boolean onPreferenceClick(Preference preference) {
-        if (preference.getKey().equals(getString(R.string.key_import_accounts))){
+        String key = preference.getKey();
+        if (key.equals(getString(R.string.key_import_accounts))){
             importAccounts();
             return true;
         }
+
         return false;
     }
 

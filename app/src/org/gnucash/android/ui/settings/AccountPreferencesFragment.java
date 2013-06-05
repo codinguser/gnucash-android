@@ -59,10 +59,15 @@ public class AccountPreferencesFragment extends PreferenceFragment {
         preference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                DeleteAccountsConfirmationDialog deleteConfirmationDialog = DeleteAccountsConfirmationDialog.newInstance();
-                deleteConfirmationDialog.show(getFragmentManager(), "account_settings");
+                deleteAllAccounts();
                 return true;
             }
         });
+    }
+
+    public void deleteAllAccounts(){
+        DeleteAllAccountsConfirmationDialog deleteConfirmationDialog = DeleteAllAccountsConfirmationDialog.newInstance();
+        deleteConfirmationDialog.show(getFragmentManager(), "account_settings");
+
     }
 }
