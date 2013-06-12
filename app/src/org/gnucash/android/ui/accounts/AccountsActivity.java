@@ -16,19 +16,6 @@
 
 package org.gnucash.android.ui.accounts;
 
-import java.util.ArrayList;
-import java.util.Currency;
-import java.util.Locale;
-
-import org.gnucash.android.R;
-import org.gnucash.android.data.Account;
-import org.gnucash.android.data.Money;
-import org.gnucash.android.data.Account.AccountType;
-import org.gnucash.android.db.AccountsDbAdapter;
-import org.gnucash.android.ui.transactions.TransactionsActivity;
-import org.gnucash.android.ui.transactions.TransactionsListFragment;
-import org.gnucash.android.util.OnAccountClickedListener;
-
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -43,11 +30,25 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.View;
-
+import android.widget.Toast;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
+import org.gnucash.android.R;
+import org.gnucash.android.data.Account;
+import org.gnucash.android.data.Account.AccountType;
+import org.gnucash.android.data.Money;
+import org.gnucash.android.db.AccountsDbAdapter;
+import org.gnucash.android.ui.transactions.TransactionsActivity;
+import org.gnucash.android.ui.transactions.TransactionsListFragment;
+import org.gnucash.android.util.GnucashAccountXmlHandler;
+import org.gnucash.android.util.OnAccountClickedListener;
+
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.Currency;
+import java.util.Locale;
 
 /**
  * Manages actions related to accounts, displaying, exporting and creating new accounts
@@ -115,23 +116,37 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
 		if (firstRun){
 			createDefaultAccounts();
 		}
-		
-		FragmentManager fragmentManager = getSupportFragmentManager();
 
-		AccountsListFragment accountsListFragment = (AccountsListFragment) fragmentManager
-				.findFragmentByTag(FRAGMENT_ACCOUNTS_LIST);
+        final Intent intent = getIntent();
+        String action = intent.getAction();
+        if (action != null && action.equals(Intent.ACTION_INSERT_OR_EDIT)) {
+            //enter account creation/edit mode if that was specified
+            long accountId = intent.getLongExtra(TransactionsListFragment.SELECTED_ACCOUNT_ID, 0L);
+            if (accountId > 0)
+                showEditAccountFragment(accountId);
+            else {
+                long parentAccountId = intent.getLongExtra(AccountsListFragment.ARG_PARENT_ACCOUNT_ID, 0L);
+                showAddAccountFragment(parentAccountId);
+            }
+        } else {
+            //show the simple accounts list
 
-		if (accountsListFragment == null) {
-			FragmentTransaction fragmentTransaction = fragmentManager
-					.beginTransaction();
-			fragmentTransaction.add(R.id.fragment_container,
-					new AccountsListFragment(), FRAGMENT_ACCOUNTS_LIST);
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            AccountsListFragment accountsListFragment = (AccountsListFragment) fragmentManager
+                    .findFragmentByTag(FRAGMENT_ACCOUNTS_LIST);
 
-			fragmentTransaction.commit();
-		}
-		
-		
-		if (hasNewFeatures()){
+            if (accountsListFragment == null) {
+                FragmentTransaction fragmentTransaction = fragmentManager
+                        .beginTransaction();
+                fragmentTransaction.add(R.id.fragment_container,
+                        new AccountsListFragment(), FRAGMENT_ACCOUNTS_LIST);
+
+                fragmentTransaction.commit();
+            } else
+                accountsListFragment.refreshList();
+        }
+
+        if (hasNewFeatures()){
 			showWhatsNewDialog();
 		}
 	}
@@ -201,6 +216,46 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
 		}
 	}
 
+    /**
+     * Shows form fragment for creating a new account
+     * @param parentAccountId Record ID of the parent account present. Can be 0 for top-level account
+     */
+    private void showAddAccountFragment(long parentAccountId){
+        Bundle args = new Bundle();
+        args.putLong(AccountsListFragment.ARG_PARENT_ACCOUNT_ID, parentAccountId);
+        showAccountFormFragment(args);
+    }
+
+    /**
+     * Shows the form fragment for editing the account with record ID <code>accountId</code>
+     * @param accountId Record ID of the account to be edited
+     */
+    private void showEditAccountFragment(long accountId) {
+        Bundle args = new Bundle();
+        args.putLong(TransactionsListFragment.SELECTED_ACCOUNT_ID, accountId);
+        showAccountFormFragment(args);
+    }
+
+    /**
+     * Shows the form for creating/editing accounts
+     * @param args Arguments to use for initializing the form.
+     *             This could be an account to edit or a preset for the parent account
+     */
+    private void showAccountFormFragment(Bundle args){
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager
+                .beginTransaction();
+
+        AddAccountFragment newAccountFragment = AddAccountFragment.newInstance(null);
+        newAccountFragment.setArguments(args);
+
+        fragmentTransaction.replace(R.id.fragment_container,
+                newAccountFragment, AccountsActivity.FRAGMENT_NEW_ACCOUNT);
+
+        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.commit();
+    }
+
 	/**
 	 * Opens a dialog fragment to create a new account
 	 * @param v View which triggered this callback
@@ -210,6 +265,8 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
 				.findFragmentByTag(FRAGMENT_ACCOUNTS_LIST);
 		if (accountFragment != null)
 			accountFragment.showAddAccountFragment(0);
+        else
+            showAddAccountFragment(0);
 	}
 
 	/**
@@ -292,16 +349,58 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
 				removeFirstRunFlag();
 			}
 		});
+
+        builder.setNeutralButton(R.string.btn_import_accounts, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                importAccounts();
+                removeFirstRunFlag();
+            }
+        });
+
 		mDefaultAccountsDialog = builder.create();
 		mDefaultAccountsDialog.show();		
 	}
-		
-	@Override
+
+    /**
+     * Starts Intent chooser for selecting a GnuCash accounts file to import.
+     * The accounts are actually imported in onActivityResult
+     */
+    public void importAccounts() {
+        Intent pickIntent = new Intent(Intent.ACTION_GET_CONTENT);
+        pickIntent.setType("application/octet-stream");
+        Intent chooser = Intent.createChooser(pickIntent, "Select GnuCash account file");
+
+        startActivityForResult(chooser, AccountsListFragment.REQUEST_PICK_ACCOUNTS_FILE);
+
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_CANCELED){
+            return;
+        }
+
+        switch (requestCode){
+            case AccountsListFragment.REQUEST_PICK_ACCOUNTS_FILE:
+                try {
+                    GnucashAccountXmlHandler.parse(this, getContentResolver().openInputStream(data.getData()));
+                    Toast.makeText(this, R.string.toast_success_importing_accounts, Toast.LENGTH_LONG).show();
+                } catch (FileNotFoundException e) {
+                    Toast.makeText(this, R.string.toast_error_importing_accounts, Toast.LENGTH_LONG).show();
+                    e.printStackTrace();
+                }
+                break;
+        }
+    }
+
+    @Override
 	public void accountSelected(long accountRowId) {
 		Intent intent = new Intent(this, TransactionsActivity.class);
 		intent.setAction(Intent.ACTION_VIEW);
 		intent.putExtra(TransactionsListFragment.SELECTED_ACCOUNT_ID, accountRowId);
-		
+
 		startActivity(intent);
 	}
 	

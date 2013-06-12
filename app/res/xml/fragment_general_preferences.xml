@@ -16,12 +16,6 @@
 -->
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
-    <ListPreference android:summary="@string/summary_default_currency" 
-        android:key="@string/key_default_currency" 
-        android:dialogTitle="@string/title_choose_currency" 
-        android:title="@string/title_default_currency" 
-        android:entries="@array/currency_names" 
-        android:entryValues="@array/currency_codes"/>
     <PreferenceCategory android:title="@string/title_export_preference_category">
         <EditTextPreference android:title="@string/title_default_export_email" 
             android:key="@string/key_default_export_email" 

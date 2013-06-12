@@ -16,7 +16,6 @@
 -->
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
-    <PreferenceCategory android:title="@string/title_about_gnucash"/>
     <Preference android:key="@string/key_about" android:summary="@string/summary_about_gnucash"
                 android:title="@string/title_about"/>
     <Preference android:key="@string/key_build_version" android:title="@string/title_build_version"/>

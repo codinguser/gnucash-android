@@ -316,8 +316,9 @@ public class AccountsDbAdapter extends DatabaseAdapter {
     @Override
 	public Cursor fetchAllRecords(){
 		Log.v(TAG, "Fetching all accounts from db");
+        String selection =  DatabaseHelper.KEY_TYPE + " != " + "'ROOT'";
 		Cursor cursor = mDb.query(DatabaseHelper.ACCOUNTS_TABLE_NAME,
-                null, null, null, null, null,
+                null, selection, null, null, null,
                 DatabaseHelper.KEY_NAME + " ASC");
 		return cursor;
 	}
@@ -362,11 +363,16 @@ public class AccountsDbAdapter extends DatabaseAdapter {
      * @return Account Balance of an account including sub-accounts
      */
     public Money getAccountBalance(long accountId){
-        List<Long> subAccounts = fetchSubAccounts(accountId);
+        List<Long> subAccounts = getSubAccountIds(accountId);
         Money balance = Money.createInstance(getCurrencyCode(accountId));
         for (long id : subAccounts){
             //recurse because arbitrary nesting depth is allowed
-            balance = balance.add(getAccountBalance(id));
+            Money subBalance = getAccountBalance(id);
+            if (subBalance.getCurrency().equals(balance.getCurrency())){
+                //only add the balances if they are of the same currency
+                //ignore sub accounts of different currency just like GnuCash desktop does
+                balance = balance.add(getAccountBalance(id));
+            }
         }
         return balance.add(mTransactionsAdapter.getTransactionsSum(accountId));
     }
@@ -376,7 +382,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
      * @param accountId Account ID whose sub-accounts are to be retrieved
      * @return List of IDs for the sub-accounts for account <code>accountId</code>
      */
-    public List<Long> fetchSubAccounts(long accountId){
+    public List<Long> getSubAccountIds(long accountId){
         List<Long> subAccounts = new ArrayList<Long>();
         Cursor cursor = mDb.query(DatabaseHelper.ACCOUNTS_TABLE_NAME,
                 new String[]{DatabaseHelper.KEY_ROW_ID}, DatabaseHelper.KEY_PARENT_ACCOUNT_UID + " = ?",
@@ -390,6 +396,64 @@ public class AccountsDbAdapter extends DatabaseAdapter {
         }
 
         return subAccounts;
+    }
+
+    /**
+     * Returns a cursor to the dataset containing sub-accounts of the account with record ID <code>accoundId</code>
+     * @param accountId Record ID of the parent account
+     * @return {@link Cursor} to the sub accounts data set
+     */
+    public Cursor fetchSubAccounts(long accountId){
+        return mDb.query(DatabaseHelper.ACCOUNTS_TABLE_NAME,
+                null,
+                DatabaseHelper.KEY_PARENT_ACCOUNT_UID + " = ?",
+                new String[]{getAccountUID(accountId)},
+                null, null, null);
+    }
+
+    /**
+     * Returns the top level accounts i.e. accounts with no parent or with the GnuCash ROOT account as parent
+     * @return Cursor to the top level accounts
+     */
+    public Cursor fetchTopLevelAccounts(){
+        StringBuilder condition = new StringBuilder("(");
+        condition.append(DatabaseHelper.KEY_PARENT_ACCOUNT_UID + " IS NULL");
+        condition.append(" OR ");
+        condition.append(DatabaseHelper.KEY_PARENT_ACCOUNT_UID + " = ");
+        condition.append("'" + getGnuCashRootAccountUID() + "'");
+        condition.append(")");
+        condition.append(" AND ");
+        condition.append(DatabaseHelper.KEY_TYPE + " != " + "'" + AccountType.ROOT.name() + "'");
+        return fetchAccounts(condition.toString());
+    }
+
+    /**
+     * Returns the GnuCash ROOT account UID.
+     * <p>In GnuCash desktop account structure, there is a root account (which is not visible in the UI) from which
+     * other top level accounts derive. GnuCash Android does not have this ROOT account by default unless the account
+     * structure was imported from GnuCash for desktop. Hence this method also returns <code>null</code> as an
+     * acceptable result.</p>
+     * <p><b>Note:</b> NULL is an acceptable response, be sure to check for it</p>
+     * @return Unique ID of the GnuCash root account.
+     */
+    public String getGnuCashRootAccountUID(){
+        String condition = DatabaseHelper.KEY_TYPE + "= '" + AccountType.ROOT.name() + "'";
+        Cursor cursor =  fetchAccounts(condition);
+        String rootUID = null;
+        if (cursor != null && cursor.moveToFirst()){
+            rootUID = cursor.getString(DatabaseAdapter.COLUMN_UID);
+            cursor.close();
+        }
+        return rootUID;
+    }
+
+    /**
+     * Returns the number of accounts for which the account with ID <code>accoundId</code> is a first level parent
+     * @param accountId Database ID of parent account
+     * @return Number of sub accounts
+     */
+    public int getSubAccountCount(long accountId){
+        return getSubAccountIds(accountId).size();
     }
 
 	/**

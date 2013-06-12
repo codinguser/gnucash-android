@@ -52,8 +52,11 @@ public class Account {
 	 * they are currently not used except for exporting
 	 */
 	public enum AccountType {CASH, BANK, CREDIT_CARD, ASSET, LIABILITY, INCOME, EXPENSE, 
-							PAYABLE, RECEIVABLE, EQUITY, CURRENCY, STOCK, MUTUAL_FUND};
-	
+							PAYABLE, RECEIVABLE, EQUITY, CURRENCY, STOCK, MUTUAL_FUND, ROOT};
+
+    /**
+     * Accounts types which are used by the OFX standard
+     */
 	public enum OfxAccountType {CHECKING, SAVINGS, MONEYMRKT, CREDITLINE };
 		
 	/**
@@ -266,7 +269,7 @@ public class Account {
 	
 	/**
 	 * Returns the aggregate of all transactions in this account.
-	 * It takes into account debit and credit amounts
+	 * It takes into account debit and credit amounts, it does not however consider sub-accounts
 	 * @return {@link Money} aggregate amount of all transactions in account.
 	 */
 	public Money getBalance(){
