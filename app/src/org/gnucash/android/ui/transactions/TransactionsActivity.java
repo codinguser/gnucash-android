@@ -106,9 +106,9 @@ public class TransactionsActivity extends SherlockFragmentActivity implements
 		    	return true;
 		    }
 
-              refresh();
+            refresh();
 
-              return true;
+            return true;
 		  }
 	};
 

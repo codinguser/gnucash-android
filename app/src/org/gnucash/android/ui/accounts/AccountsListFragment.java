@@ -23,7 +23,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
@@ -76,6 +75,7 @@ public class AccountsListFragment extends SherlockListFragment implements
      * Logging tag
      */
     protected static final String TAG = "AccountsListFragment";
+    private static final int REQUEST_EDIT_ACCOUNT = 0x10;
 
     /**
      * {@link ListAdapter} for the accounts which will be bound to the list
@@ -133,7 +133,7 @@ public class AccountsListFragment extends SherlockListFragment implements
         public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
             switch (item.getItemId()) {
                 case R.id.context_menu_edit_accounts:
-                    showAddAccountFragment(mSelectedItemId);
+                    openCreateOrEditActivity(mSelectedItemId);
                     mode.finish();
                     return true;
 
@@ -233,6 +233,14 @@ public class AccountsListFragment extends SherlockListFragment implements
 
         selectItem(position);
         return true;
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == Activity.RESULT_CANCELED)
+            return;
+
+        refreshList();
     }
 
     /**
@@ -418,6 +426,18 @@ public class AccountsListFragment extends SherlockListFragment implements
 
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
+    }
+
+    /**
+     * Opens a new activity for creating or editing an account.
+     * If the <code>accountId</code> &lt; 1, then create else edit the account.
+     * @param accountId Long record ID of account to be edited. Pass 0 to create a new account.
+     */
+    public void openCreateOrEditActivity(long accountId){
+        Intent editAccountIntent = new Intent(AccountsListFragment.this.getActivity(), AccountsActivity.class);
+        editAccountIntent.setAction(Intent.ACTION_INSERT_OR_EDIT);
+        editAccountIntent.putExtra(TransactionsListFragment.SELECTED_ACCOUNT_ID, accountId);
+        startActivityForResult(editAccountIntent, REQUEST_EDIT_ACCOUNT);
     }
 
     /**

@@ -1,5 +1,14 @@
 Change Log
 ===============================================================================
+Version 1.2.0 *(2013-06-20)*
+----------------------------
+* Feature: Import GnuCash desktop account structure
+* Feature: Nested display of account hierarchy
+* Feature: Options for deleting all accounts/transactions
+* Feature: Preliminary support for account types
+* Fixed:   Account balance now takes sub-accounts into consideration
+* Fixed:   Support for GnuCash ROOT account (will not be displayed)
+
 Version 1.1.2 *(2013-02-03)*
 ----------------------------
 * Fixed: Crash upon screen rotation when creating account
