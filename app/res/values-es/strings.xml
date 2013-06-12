@@ -30,7 +30,7 @@
     <string name="btn_save">Guardar</string>
     <string name="label_no_transactions_to_display">No hay transacciones que mostrar</string>
     <string name="label_transaction_name">Descripci&#243;n</string>
-    <string name="label_transaction_amount">Cantidad</string>
+    <string name="label_transaction_amount">Importe</string>
     <string name="title_add_transaction">Nueva transacci&#243;n</string>
     <string name="label_no_transactions">No hay transacciones</string>
     <string name="label_timeanddate">FECHA &amp; HORA</string>
@@ -315,43 +315,41 @@
         - Varios bugs solucionados\n	        
 	</string>
 	<string name="label_dismiss">Cerrar</string>
-    <string name="toast_transanction_amount_required">Enter an amount to save the transaction</string>
-    <string name="menu_import_accounts">Import GnuCash Accounts</string>
-    <string name="btn_import_accounts">Import Accounts</string>
-    <string name="toast_error_importing_accounts">An error occurred while importing the GnuCash accounts</string>
-    <string name="toast_success_importing_accounts">GnuCash accounts successfully imported</string>
-    <string name="summary_import_accounts">Import account structure exported from GnuCash desktop</string>
-    <string name="title_import_accounts">Import GnuCash accounts</string>
-    <string name="summary_delete_all_accounts">Delete all accounts in the database. All transactions will be deleted as
-        well.
+    <string name="toast_transanction_amount_required">Introduzca un importe para guardar la transacci&#243;n</string>
+    <string name="menu_import_accounts">Importar cuenta de GnuCash</string>
+    <string name="btn_import_accounts">Importar cuentas</string>
+    <string name="toast_error_importing_accounts">Ocurri&#243; un error al importar las cuentas de GnuCash</string>
+    <string name="toast_success_importing_accounts">Cuentas de GnuCash importadas con &#233;xito</string>
+    <string name="summary_import_accounts">Importas estructura de cuentas exportada desde GnuCash para escritorio</string>
+    <string name="title_import_accounts">Importas cuentas de GnuCash</string>
+    <string name="summary_delete_all_accounts">Borrar todas las cuentas de la base de datos. Se borrar&#225;n tambi&#233;n todas las transacciones.
     </string>
-    <string name="title_delete_all_accounts">Delete all accounts</string>
-    <string name="header_account_settings">Accounts</string>
-    <string name="toast_all_accounts_deleted">All accounts have been successfully deleted</string>
-    <string name="confirm_delete_all_accounts">Are you sure you want to delete all accounts and transactions? \nThis
-        operation cannot be undone!
+    <string name="title_delete_all_accounts">Borrar todas las cuentas</string>
+    <string name="header_account_settings">Cuentas</string>
+    <string name="toast_all_accounts_deleted">Todas las cuentas han sido borradas con &#233;xito</string>
+    <string name="confirm_delete_all_accounts">&#191;Borrar todas la cuentas y transacciones? \nEsta operaci&#243;n no se puede deshacer.
     </string>
-    <string name="label_account_type">Account Type</string>
-    <string name="summary_delete_all_transactions">All transactions in all accounts will be deleted!</string>
-    <string name="title_delete_all_transactions">Delete all transactions</string>
-    <string name="toast_all_transactions_deleted">All transactions successfully deleted!</string>
+    <string name="label_account_type">Tipo de cuenta</string>
+    <string name="summary_delete_all_transactions">Todas las transaccipnes en todas las cuentas ser&#225;n borradas</string>
+    <string name="title_delete_all_transactions">Borrar todas las transacciones</string>
+    <string name="toast_all_transactions_deleted">Todas las transacciones han sido borradas con &#233;xito</string>
     <plurals name="label_sub_accounts">
-        <item quantity="one">%d sub-account</item>
-        <item quantity="other">%d sub-accounts</item>
+        <item quantity="one">%d sub-cuenta</item>
+        <item quantity="other">%d sub-cuentas</item>
     </plurals>
     <string-array name="account_type_entry_values">
-        <item>CASH</item>
-        <item>BANK</item>
-        <item>CREDIT CARD</item>
-        <item>ASSET</item>
-        <item>LIABILITY</item>
-        <item>INCOME</item>
-        <item>EXPENSE</item>
-        <item>PAYABLE</item>
-        <item>RECEIVABLE</item>
-        <item>EQUITY</item>
-        <item>CURRENCY</item>
-        <item>STOCK</item>
-        <item>MUTUAL FUND</item>
+        <item>EFECTIVO</item>
+        <item>BANCO</item>
+        <item>TARJETA DE CR&#201;DITO</item>
+        <item>ACTIVO</item>
+        <item>PASIVO</item>
+        <item>INGRESO</item>
+        <item>GASTO</item>
+        <item>A PAGAR</item>
+        <item>A COBRAR</item>
+        <item>CAPITAL</item>
+        <item>DIVISA</item>
+        <item>ACCIONES</item>
+        <item>FONDOS</item>
     </string-array>
 </resources>
