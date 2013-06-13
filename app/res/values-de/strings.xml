@@ -308,12 +308,14 @@
 	<string name="summary_xml_ofx_header">Dieses Option aktivieren wenn Sie die OFX Dateien für ein anderes Programm als GnuCash auf dem Desktop exportieren</string>
 	<string name="title_whats_new">Neuigkeiten in dieser Version</string>
 	<string name="whats_new">
-	    <b>Version 1.1.0 - 31.01.2013</b>\n\n
-        - Doppelte Buchführung\n
-        - Unterkonten\n
-        - SGML als Standard OFX Export format\n
-        - Behebung von diverse Fehlern\n	        
-	</string>
+        <b>Version 1.2.0 - 20.06.2013</b>\n\n
+        - Import GnuCash desktop account structure\n
+        - Nested display of account hierarchy\n
+        - Options for deleting all accounts/transactions\n
+        - Preliminary support for account types\n
+        - Account balance now takes sub-accounts into consideration\n
+        - Numerous bug fixes\n
+    </string>
 	<string name="label_dismiss">Schließen</string>
     <string name="toast_transanction_amount_required">Geben Sie einen Betrag ein um die Buchung speichern zu können</string>
     <string name="menu_import_accounts">Import GnuCash Accounts</string>

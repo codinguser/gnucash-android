@@ -314,11 +314,13 @@
 	<string name="summary_xml_ofx_header">Ενεργοποίηση αυτής της επιλογής για εξαγωγή σε εφαρμογές τρίτων, εκτός του GnuCash για επιτραπέζιο υπολογιστή.</string>
 	<string name="title_whats_new">Τι νέο υπάρχει</string>
 	<string name="whats_new">
-	    <b>Έκδοση 1.1.0 - 31.01.2013</b>\n\n
-        - Λογιστική διπλών εγγραφών\n
-        - Ένθετοι λογαριασμοί\n
-        - SGML ως προεπιλεγμένη μορφή εξαγωγής OFX\n
-        - Διόρθωση πολυάριθμων σφαλμάτων κώδικα\n        
+        <b>Έκδοση 1.2.0 - 20.06.2013</b>\n\n
+        - Import GnuCash desktop account structure\n
+        - Nested display of account hierarchy\n
+        - Options for deleting all accounts/transactions\n
+        - Preliminary support for account types\n
+        - Account balance now takes sub-accounts into consideration\n
+        - Numerous bug fixes\n
 	</string>
 	<string name="label_dismiss">Απόρριψη</string>
     <string name="toast_transanction_amount_required">Enter an amount to save the transaction</string>

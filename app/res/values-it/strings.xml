@@ -308,11 +308,13 @@
 	<string name="summary_xml_ofx_header">Abilitare questa opzione quando si esporta verso un\'applicazione diversa da GnuCash versione desktop</string>
 	<string name="title_whats_new">Novità</string>
 	<string name="whats_new">
-	    <b>Versione 1.1.0 - 31.01.2013</b>\n\n
-        - Contabilità a partita doppia\n
-        - Conti nidificati\n
-        - SGML è il formato OFX predefinito per l\'esportazione\n
-        - Molte correzioni di bug\n	        
+        <b>Versione 1.2.0 - 20.06.2013</b>\n\n
+        - Import GnuCash desktop account structure\n
+        - Nested display of account hierarchy\n
+        - Options for deleting all accounts/transactions\n
+        - Preliminary support for account types\n
+        - Account balance now takes sub-accounts into consideration\n
+        - Numerous bug fixes\n
 	</string>
 	<string name="label_dismiss">Chiudi</string>
     <string name="toast_transanction_amount_required">Enter an amount to save the transaction</string>
