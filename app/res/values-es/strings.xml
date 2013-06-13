@@ -301,7 +301,7 @@
 	<string name="summary_use_double_entry">Todas las transacciones ser&#225;n transferidas de una cuenta a otra</string>
 	<string name="title_use_double_entry">Activar Doble Entrada</string>
 	<string name="account_balance">Saldo</string>
-	<string name="toast_no_account_name_entered">Enter an account name to create an account</string>
+	<string name="toast_no_account_name_entered">Introduzca un nombre de cuenta para crear una cuenta</string>
 	<string name="label_account_currency">Divisa</string>
 	<string name="label_parent_account">Cuenta padre</string>
 	<string name="title_xml_ofx_header">Usar cabecera XML OFX</string>
@@ -309,12 +309,12 @@
 	<string name="title_whats_new">Novedades</string>
 	<string name="whats_new">
         <b>Versi&#243;n 1.2.0 - 20.06.2013</b>\n\n
-        - Import GnuCash desktop account structure\n
-        - Nested display of account hierarchy\n
-        - Options for deleting all accounts/transactions\n
-        - Preliminary support for account types\n
-        - Account balance now takes sub-accounts into consideration\n
-        - Numerous bug fixes\n
+        - Importa estructuras de cuentas de GnuCash para escritorio\n
+        - Muestra jerarqu&#237;a de cuentas anidada\n
+        - Opciones para eliminar todas las cuentas y transacciones\n
+        - Soporte preliminar de tipo de cuentas\n
+        - El balance de la cuenta tiene en consideraci&#243;n las sub-cuentas\n
+        - Varios bugs solucionados\n
 	</string>
 	<string name="label_dismiss">Cerrar</string>
     <string name="toast_transanction_amount_required">Introduzca un importe para guardar la transacci&#243;n</string>
