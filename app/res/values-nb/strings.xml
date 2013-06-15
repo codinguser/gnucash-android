@@ -1,0 +1,362 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+ Copyright (c) 2012 Ngewi Fet <ngewif@gmail.com>
+ Copyright (c) 2012 Kjell Thomas Pedersen <kjelltp@gmail.com>
+ Copyright (c) 2012 Sigurd Gartmann <sigurdga-github@sigurdga.no>
+ 
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+ 
+    http://www.apache.org/licenses/LICENSE-2.0
+ 
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+
+<resources>
+    <string name="app_name">GnuCash</string>
+    <string name="title_add_account">Opprett konto</string>
+    <string name="title_edit_account">Rediger konto</string>
+    <string name="info_details">Informasjon</string>
+    <string name="title_settings">Innstillinger</string>
+    <string name="menu_export_ofx">Eksport OFX</string>
+    <string name="description_add_transaction_icon">Legg til ny kontotransaksjon</string>
+    <string name="label_no_accounts">Ingen kontoer å vise</string>
+    <string name="label_account_name">Kontonavn</string>
+    <string name="btn_cancel">Avbryt</string>
+    <string name="btn_save">Lagre</string>
+    <string name="label_no_transactions_to_display">Ingen transaksjoner å vise</string>
+    <string name="label_transaction_name">Beskrivelse</string>
+    <string name="label_transaction_amount">Beløp</string>
+    <string name="title_add_transaction">Ny transaksjon</string>
+    <string name="label_no_transactions">Ingen transaksjoner å vise</string>
+    <string name="label_timeanddate">DATO &amp; TID</string>
+    <string name="label_account">Konto</string>
+    <string name="label_debit">DEBET</string>
+    <string name="label_credit">KREDIT</string>
+    <string name="title_accounts">Kontoer</string>
+    <string name="title_transactions">Transaksjoner</string>
+    <string name="menu_delete">SLETT</string>
+    <string name="alert_dialog_ok_delete">Slett</string>
+    <string name="alert_dialog_cancel">Avbryt</string>
+    <string name="toast_account_deleted">Konto slettet</string>
+    <string name="title_confirm_delete">Bekreft sletting</string>
+    <string name="delete_account_confirmation_message">Alle transaksjoner tilhørende denne kontoen vil også bli slettet</string>
+    <string name="title_edit_transaction">Rediger transaksjon</string>
+    <string name="label_transaction_description">Notat</string>
+    <string name="menu_move">FLYTT</string>
+    <string name="title_selected">%1$d valgt</string>
+    <string name="label_transactions_total">Totalt beløp:</string>
+    <string name="label_export_destination">Eksportmottaker</string>
+    <string name="title_export_dialog">Eksporter OFX</string>
+    <string name="option_export_all_transactions">Eksporter alle transaksjoner</string>
+    <string name="hint_export_choice">Som standard vil kun nye transaksjoner siden siste eksportering bli eksportert.  Merk dette valget for å eksportere alle transaksjonene</string>
+    <string name="error_exporting">Feil ved eksportering av OFX-data</string>    
+    <string name="btn_export">Eksporter</string>
+    <string name="option_delete_after_export">Slett etter eksportering</string>
+    <string name="hint_delete_after_export">Alle eksporterte transaksjoner vil bli slettet etter eksportering</string>
+    <string name="title_settings">Innstillinger</string>
+    <string-array name="export_destinations">
+        <item>Delt fil&#8230;</item>
+        <item>SD-kort</item>
+    </string-array>
+    <string name="btn_move">Flytt</string>
+    <string name="title_move_transactions">Flytt %1$d transaksjoner</string>
+    <string name="label_move_destination">Til konto</string>
+    <string name="permission_access_sdcard">Aksesser minnekort</string>
+    <string name="title_share_ofx_with">Del OFX-eksport med&#8230;</string>
+    <string name="toast_incompatible_currency">Kan ikke flytte transaksjonen(e).\nMottakerkonto har en annen valuta</string>
+    <string name="header_general_settings">Generelt</string>
+    <string name="header_about_gnucash">Om</string>
+    <string name="title_choose_currency">Velg standardvaluta</string>
+    <string name="title_default_currency">Standardvaluta</string>
+    <string name="summary_default_currency">Standardvaluta for nye kontoer</string>
+    <string name="label_permission_record_transactions">Aktiverer innspilling av transaksjoner i Gnucash for Android</string>
+    <string name="label_permission_create_accounts">Aktiverer oppretting av konti i Gnucash for Android</string>
+    <string name="label_permission_group">Dine GnuCash-data</string>
+    <string name="description_permission_group">Lese og endre Gnucash-data</string>
+    <string name="label_permission_record_transaction">spill inn transaksjoner</string>
+    <string name="label_permission_create_account">opprett konto</string>
+    <string name="label_display_account">Vis konto</string>
+    <string name="btn_create_accounts">Opprette kontoer</string>
+    <string name="title_default_accounts">Velg kontoer som skal opprettes</string>
+    <string-array name="currency_names">
+        <item>Afghani</item>
+		<item>Algerian Dinar</item>
+		<item>Argentine Peso</item>
+		<item>Armenian Dram</item>
+		<item>Aruban Florin</item>
+		<item>Australian Dollar</item>
+		<item>Azerbaijanian Manat</item>
+		<item>Bahamian Dollar</item>
+		<item>Bahraini Dinar</item>
+		<item>Baht</item>
+		<item>Balboa</item>
+		<item>Barbados Dollar</item>
+		<item>Belarussian Ruble</item>
+		<item>Belize Dollar</item>
+		<item>Bermudian Dollar</item>
+		<item>Bolivar Fuerte</item>
+		<item>Boliviano</item>
+		<item>Brazilian Real</item>
+		<item>Brunei Dollar</item>
+		<item>Bulgarian Lev</item>
+		<item>Burundi Franc</item>
+		<item>Canadian Dollar</item>
+		<item>Cape Verde Escudo</item>
+		<item>Cayman Islands Dollar</item>
+		<item>CFA Franc BCEAO</item>
+		<item>CFA Franc BEAC</item>
+		<item>CFP Franc</item>
+		<item>Chilean Peso</item>
+		<item>Testing currency</item>
+		<item>Colombian Peso</item>
+		<item>Comoro Franc</item>
+		<item>Congolese Franc</item>
+		<item>Convertible Mark</item>
+		<item>Cordoba Oro</item>
+		<item>Costa Rican Colon</item>
+		<item>Croatian Kuna</item>
+		<item>Cuban Peso</item>
+		<item>Czech Koruna</item>
+		<item>Dalasi</item>
+		<item>Danske kroner</item>
+		<item>Denar</item>
+		<item>Djibouti Franc</item>
+		<item>Dobra</item>
+		<item>Dominican Peso</item>
+		<item>Dong</item>
+		<item>East Caribbean Dollar</item>
+		<item>Egyptian Pound</item>
+		<item>El Salvador Colon</item>
+		<item>Ethiopian Birr</item>
+		<item>Euro</item>
+		<item>Falkland Islands Pound</item>
+		<item>Fiji Dollar</item>
+		<item>Forint</item>
+		<item>Ghana Cedi</item>
+		<item>Gibraltar Pound</item>
+		<item>Gold</item>
+		<item>Gourde</item>
+		<item>Guarani</item>
+		<item>Guinea Franc</item>
+		<item>Guyana Dollar</item>
+		<item>Hong Kong Dollar</item>
+		<item>Hryvnia</item>
+		<item>Iceland Krona</item>
+		<item>Indian Rupee</item>
+		<item>Iranian Rial</item>
+		<item>Iraqi Dinar</item>
+		<item>Jamaican Dollar</item>
+		<item>Jordanian Dinar</item>
+		<item>Kenyan Shilling</item>
+		<item>Kina</item>
+		<item>Kip</item>
+		<item>Kuwaiti Dinar</item>
+		<item>Kwacha</item>
+		<item>Kwanza</item>
+		<item>Kyat</item>
+		<item>Lari</item>
+		<item>Latvian Lats</item>
+		<item>Lebanese Pound</item>
+		<item>Lek</item>
+		<item>Lempira</item>
+		<item>Leone</item>
+		<item>Liberian Dollar</item>
+		<item>Libyan Dinar</item>
+		<item>Lilangeni</item>
+		<item>Lithuanian Litas</item>
+		<item>Loti</item>
+		<item>Malagasy Ariary</item>
+		<item>Malaysian Ringgit</item>
+		<item>Mauritius Rupee</item>
+		<item>Mexican Peso</item>
+		<item>Mexican Unidad de Inversion (UDI)</item>
+		<item>Moldovan Leu</item>
+		<item>Moroccan Dirham</item>
+		<item>Mozambique Metical</item>
+		<item>Mvdol</item>
+		<item>Naira</item>
+		<item>Nakfa</item>
+		<item>Namibia Dollar</item>
+		<item>Nepalese Rupee</item>
+		<item>Netherlands Antillean Guilder</item>
+		<item>New Israeli Sheqel</item>
+		<item>New Romanian Leu</item>
+		<item>New Taiwan Dollar</item>
+		<item>New Zealand Dollar</item>
+		<item>Ngultrum</item>
+		<item>North Korean Won</item>
+		<item>Norske kroner</item>
+		<item>Nuevo Sol</item>
+		<item>Ouguiya</item>
+		<item>Pa’anga</item>
+		<item>Pakistan Rupee</item>
+		<item>Palladium</item>
+		<item>Pataca</item>
+		<item>Peso Convertible</item>
+		<item>Peso Uruguayo</item>
+		<item>Philippine Peso</item>
+		<item>Platinum</item>
+		<item>Engelske pund</item>
+		<item>Pula</item>
+		<item>Qatari Rial</item>
+		<item>Quetzal</item>
+		<item>Rand</item>
+		<item>Rial Omani</item>
+		<item>Riel</item>
+		<item>Rufiyaa</item>
+		<item>Rupiah</item>
+		<item>Russian Ruble</item>
+		<item>Rwanda Franc</item>
+		<item>Saint Helena Pound</item>
+		<item>Saudi Riyal</item>
+		<item>SDR (Special Drawing Right)</item>
+		<item>Serbian Dinar</item>
+		<item>Seychelles Rupee</item>
+		<item>Silver</item>
+		<item>Singapore Dollar</item>
+		<item>Solomon Islands Dollar</item>
+		<item>Som</item>
+		<item>Somali Shilling</item>
+		<item>Somoni</item>
+		<item>South Sudanese Pound</item>
+		<item>Sri Lanka Rupee</item>
+		<item>Sucre</item>
+		<item>Sudanese Pound</item>
+		<item>Surinam Dollar</item>
+		<item>Svenske kroner</item>
+		<item>Swiss Franc</item>
+		<item>Syrian Pound</item>
+		<item>Taka</item>
+		<item>Tala</item>
+		<item>Tanzanian Shilling</item>
+		<item>Tenge</item>
+		<item>Uten valuta</item>
+		<item>Trinidad and Tobago Dollar</item>
+		<item>Tugrik</item>
+		<item>Tunisian Dinar</item>
+		<item>Turkish Lira</item>
+		<item>Turkmenistan New Manat</item>
+		<item>UAE Dirham</item>
+		<item>Uganda Shilling</item>
+		<item>UIC-Franc</item>
+		<item>Unidad de Valor Real</item>
+		<item>Unidades de fomento</item>
+		<item>Uruguay Peso en Unidades Indexadas (URUIURUI)</item>
+		<item>Amerikanske dollar</item>
+		<item>Uzbekistan Sum</item>
+		<item>Vatu</item>
+		<item>WIR Euro</item>
+		<item>WIR Franc</item>
+		<item>Won</item>
+		<item>Yemeni Rial</item>
+		<item>Yen</item>
+		<item>Yuan Renminbi</item>
+		<item>Zambian Kwacha</item>
+		<item>Zimbabwe Dollar</item>
+		<item>Zloty</item>
+    </string-array>
+	<string-array name="default_accounts">
+	    <item>Utgifter</item>
+	    <item>Inntekter</item>
+	    <item>Eiendeler</item>	    
+	    <item>Equity</item>
+	    <item>Liabilities</item>
+	</string-array>
+	<string name="error_no_accounts">Ingen kontoer finnes i Gnucash.\nOpprett en konto før du legger til en widget</string>
+	<string name="title_build_version">Byggversion</string>
+	<string name="title_license">Lisens</string>
+	<string name="summary_licence_details">Apache Lisens v2.0. Klikk for detaljer.</string>
+	<string name="title_general_prefs">Generelt</string>
+	<string name="label_widget_configuration">Velg konto</string>
+	<string name="toast_no_transactions_to_export">Ingen transaksjoner å eksportere</string>
+	<string name="title_about_gnucash">Om Gnucash</string>
+	<string name="summary_about_gnucash">GnucashMobile er en mobil regnskapsfører for Android.\nDen gir 
+muligheten til å raskt og fleksibelt logge transaksjoner som kan eksporteres til OFX (Open Financial eXchange)-
+format og importeres i regnskapsprogrammet GnuCash for PC.</string> 
+	<string name="title_about">Om</string>
+	<string name="toast_error_exporting">Kunne ikke lagre OFX-fil til :\n</string>
+	<string name="toast_ofx_exported_to">OFX-fil eksportert til:\n</string>
+	<string name="title_export_email">Gnucash OFX-eksportering</string>
+	<string name="description_export_email">Gnucash OFX-eksportering til </string>
+	<string name="header_transaction_settings">Transaksjoner</string>
+	<string name="title_transaction_preferences">Transaksjonsinnstillinger</string>
+	<string name="title_account_preferences">Kontoinnstillinger</string>
+	<string name="title_default_transaction_type">Standard transaksjonstype</string>
+	<string name="summary_default_transaction_type">Transaksjonstypen som skal brukes som standard, KREDIT eller DEBET</string>
+	<string-array name="transaction_types">
+		<item>KREDIT</item>
+		<item>DEBET</item>
+	</string-array>
+	<string name="delete_all_transactions_confirmation_message">Er du sikker at du vil slette ALLE transaksjonene?</string>
+	<string name="delete_transaction_confirmation_message">Er du sikker at du vil slette denne transaksjonen?</string>
+	<string name="title_export_preference_category">Eksport</string>
+	<string name="title_export_all_transactions">Eksportere alle transaksjoner</string>
+	<string name="title_always_delete_exported_transactions">Slette eksporterte transaksjoner</string>
+	<string name="title_default_export_email">E-post for eksportering</string>
+	<string name="summary_default_export_email">E-post adresse for eksport. Du kan endre denne ved eksportering.</string>	
+	<string name="label_double_entry_account">Overføringskonto</string>
+	<string name="summary_use_double_entry">Alle transaksjoner vil bli overført fra en konto til en annen</string>
+	<string name="title_use_double_entry">Aktiver dobbel bokføring</string>
+	<string name="account_balance">Balanse</string>
+	<string name="toast_no_account_name_entered">Enter an account name to create an account</string>
+	<string name="label_account_currency">Valuta</string>
+	<string name="label_parent_account">Hovedkonto</string>
+	<string name="title_xml_ofx_header">Bruk XML OFX header</string>
+	<string name="summary_xml_ofx_header">Velg denne hvis du skal eksportere til annen programvare enn GnuCash for PC.</string>
+	<string name="title_whats_new">Hva er nytt</string>
+	<string name="whats_new">
+	    <b>Versjon 1.2.0 - 20.06.2013</b>\n\n
+        - Import GnuCash desktop account structure\n
+        - Nested display of account hierarchy\n
+        - Options for deleting all accounts/transactions\n
+        - Preliminary support for account types\n
+        - Account balance now takes sub-accounts into consideration\n
+        - Numerous bug fixes\n
+	</string>
+	<string name="label_dismiss">Ferdig</string>
+    <string name="toast_transanction_amount_required">Enter an amount to save the transaction</string>
+    <string name="menu_import_accounts">Import GnuCash Accounts</string>
+    <string name="btn_import_accounts">Import Accounts</string>
+    <string name="toast_error_importing_accounts">An error occurred while importing the GnuCash accounts</string>
+    <string name="toast_success_importing_accounts">GnuCash accounts successfully imported</string>
+    <string name="summary_import_accounts">Import account structure exported from GnuCash desktop</string>
+    <string name="title_import_accounts">Import GnuCash accounts</string>
+    <string name="summary_delete_all_accounts">Delete all accounts in the database. All transactions will be deleted as
+        well.
+    </string>
+    <string name="title_delete_all_accounts">Delete all accounts</string>
+    <string name="header_account_settings">Accounts</string>
+    <string name="toast_all_accounts_deleted">All accounts have been successfully deleted</string>
+    <string name="confirm_delete_all_accounts">Are you sure you want to delete all accounts and transactions? \nThis
+        operation cannot be undone!
+    </string>
+    <string name="label_account_type">Account Type</string>
+    <string name="summary_delete_all_transactions">All transactions in all accounts will be deleted!</string>
+    <string name="title_delete_all_transactions">Delete all transactions</string>
+    <string name="toast_all_transactions_deleted">All transactions successfully deleted!</string>
+    <plurals name="label_sub_accounts">
+        <item quantity="one">%d sub-account</item>
+        <item quantity="other">%d sub-accounts</item>
+    </plurals>
+    <string-array name="account_type_entry_values">
+        <item>CASH</item>
+        <item>BANK</item>
+        <item>CREDIT CARD</item>
+        <item>ASSET</item>
+        <item>LIABILITY</item>
+        <item>INCOME</item>
+        <item>EXPENSE</item>
+        <item>PAYABLE</item>
+        <item>RECEIVABLE</item>
+        <item>EQUITY</item>
+        <item>CURRENCY</item>
+        <item>STOCK</item>
+        <item>MUTUAL FUND</item>
+    </string-array>
+</resources>

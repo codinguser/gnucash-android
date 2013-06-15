@@ -1,42 +1,45 @@
 # Introduction
 
 Gnucash Mobile for Android is companion application for desktop Gnucash designed for Android.
-It allows you to record transactions on-the-go and export them in the OFX format and later import the data into Gnucash for the desktop. You can create multiple accounts for transactions in Gnucash.
+It allows you to record transactions on-the-go and export them in the OFX format and later import the data into Gnucash for the desktop. You can create multiple accounts for transactions in Gnucash. Double-entry accounting is also supported. 
 
 The application supports Android 2.2 Froyo (API level 8) and above. 
 
 
 # Installation
 
-There are different ways to get the Gnucash app for Android.
+There are different ways to get the Gnucash app for Android; through the app store, or building it yourself.
 
 
 ### App Store
 
-Gnucash for Android is now available in the Google Play Store
 <a href="http://play.google.com/store/apps/details?id=org.gnucash.android">
   <img alt="Android app on Google Play" src="http://developer.android.com/images/brand/en_generic_rgb_wo_60.png" />
 </a>
 
-### Eclipse
 
-You can also build and install the Gnucash for Android application from source. This is of particular interest for those who want to contribute or those who wish to live on the bleeding edge. 
+## Building
 
-The Android SDK primarily supports Eclipse for development and consequently, all the subprojects in the GnucashMobile folder are Eclipse Android projects. In order to compile the application, you need to import the com_actionbarsherlock and GnucashMobile projects into your eclipse workspace. Then you can just invoke "Run as Android application" from eclipse in order to build and install the application on your Android device.
+The build requires [Maven](http://maven.apache.org/download.html)
+v3.0.3+ and the [Android SDK](http://developer.android.com/sdk/index.html)
+to be installed in your development environment. In addition you'll need to set
+the `ANDROID_HOME` environment variable to the location of your SDK:
 
-If you are interested in running the Robotium tests, also import the GnucashTest project into your workspace and run it as "Android JUnit Test".
+    export ANDROID_HOME=/home/roberto/tools/android-sdk
 
-### Maven
+After satisfying those requirements, the build is pretty simple:
 
-Gnucash for Android also supports the Apache Maven build automation tool. 
-This method is more interesting if you do not want to download and install eclipse and the necessary Android plugins. It is especially interesting if you already have maven installed.
-There are a few steps you need in order to get up and running with maven. 
+* Run `mvn clean package` from the `app` directory to build the APK only
+* Run `mvn clean install` from the root directory to build the app and also run
+  the integration tests, this requires a connected Android device or running
+  emulator. (see this [blog post](http://goo.gl/TprMw) for details)
 
-* Download and install [Maven](http://maven.apache.org/download.html) (follow the instructions on the website)
-* Clone the GnucashMobile source using: git clone git://github.com/codinguser/GnucashMobile.git
-* Open a terminal in the GnucashMobile folder and run *mvn clean install*
-(**Note**: If you also want to run the tests, see this [blog post](http://goo.gl/TprMw) for details )
-* To install the application on your phone, switch to the GnucashMobile subfolder and run *mvn android:deploy*
+You might find that your device doesn't let you install your build if you
+already have the version from the Android Market installed.  This is standard
+Android security as it it won't let you directly replace an app that's been
+signed with a different key.  Manually uninstall Gauges from your device and
+you will then be able to install your own built version.
+
 
 #Licence
 Gnucash for Android is free software; you can redistribute it and/or 
