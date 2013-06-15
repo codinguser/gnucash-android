@@ -34,8 +34,8 @@
     <string name="label_no_transactions">No hay transacciones</string>
     <string name="label_timeanddate">FECHA &amp; HORA</string>
     <string name="label_account">Cuenta</string>
-    <string name="label_debit">Adeudar</string>
-    <string name="label_credit">Abonar</string>
+    <string name="label_debit">Cargo</string>
+    <string name="label_credit">Abono</string>
     <string name="title_accounts">Cuentas</string>
     <string name="title_transactions">Transacciones</string>
     <string name="menu_delete">Borrar</string>
@@ -57,7 +57,7 @@
     <string name="btn_export">Exportar</string>
     <string name="option_delete_after_export">Borrar despu&#233;s de exportar</string>
     <string name="hint_delete_after_export">Todas las transacciones ser&#225;n borradas despues de ser exportadas completamente</string>
-    <string name="title_settings">Preferencias</string>
+    <string name="title_settings">Opciones</string>
     <string-array name="export_destinations">
         <item>Compartir archivo&#8230;</item>
         <item>Tarjeta SD</item>
@@ -66,7 +66,7 @@
     <string name="title_move_transactions">Mover %1$d transaccion(es)</string>
     <string name="label_move_destination">Cuenta destino</string>
     <string name="permission_access_sdcard">Acceder tarjeta SD</string>
-    <string name="title_share_ofx_with">Share OFX export with&#8230;</string>
+    <string name="title_share_ofx_with">Compartir exportaci&#243;n OFX con&#8230;</string>
     <string name="toast_incompatible_currency">No se pueden mover las transacciones.\nLa cuenta destino usa una moneda diferente a la cuenta de origen</string>
     <string name="header_general_settings">General</string>
     <string name="header_about_gnucash">Acerca de</string>
@@ -78,7 +78,7 @@
     <string name="label_permission_group">Sus datos de GnuCash</string>
     <string name="description_permission_group">Leer y modificar los datos de GnuCash</string>
     <string name="label_permission_record_transaction">Registrar transacciones</string>
-    <string name="label_permission_create_account">create accounts</string>
+    <string name="label_permission_create_account">Crear cuentas</string>
     <string name="label_display_account">Mostrar cuenta</string>
     <string name="btn_create_accounts">Crear cuentas</string>
     <string name="title_default_accounts">Seleccione la cuenta a crear</string>
@@ -262,9 +262,9 @@
 	<string-array name="default_accounts">
 	    <item>Gastos</item>
 	    <item>Ingresos</item>
-	    <item>Bienes</item>
-	    <item>Equity</item>
-	    <item>Liabilities</item>
+	    <item>Activos</item>
+	    <item>Capital</item>
+	    <item>Pasivos</item>
 	</string-array>
 	<string name="error_no_accounts">No hay cuentas en Gnucash.\nCree una cuenta antes de agregar un widget</string>
 	<string name="title_build_version">Versi&#243;n de compilaci&#243;n</string>
@@ -281,37 +281,37 @@
 	<string name="title_export_email">Exportaci&#243;n OFX de Gnucash</string>
 	<string name="description_export_email">Exportaci&#243;n OFX de Gnucash </string>
 	<string name="header_transaction_settings">Transacciones</string>
-	<string name="title_transaction_preferences">Transaction Preferences</string>
-	<string name="title_account_preferences">Account Preferences</string>
-	<string name="title_default_transaction_type">Default Transaction Type</string>
-	<string name="summary_default_transaction_type">The type of transaction to use by default, CREDIT or DEBIT</string>
+	<string name="title_transaction_preferences">Opciones de transacciones</string>
+	<string name="title_account_preferences">Opciones de cuentas</string>
+	<string name="title_default_transaction_type">Tipo de transacci&#243;n por omisi&#243;n</string>
+	<string name="summary_default_transaction_type">El tipo de transacci&#243;n a utilizar por omisi&#243;n: ABONO o CARGO</string>
 	<string-array name="transaction_types">
-		<item>CREDIT</item>
-		<item>DEBIT</item>
+		<item>ABONO</item>
+		<item>CARGO</item>
 	</string-array>
-	<string name="delete_all_transactions_confirmation_message">Are you sure you want to delete ALL transactions?</string>
-	<string name="delete_transaction_confirmation_message">Are you sure you want to delete this transaction?</string>
-	<string name="title_export_preference_category">Export</string>
-	<string name="title_export_all_transactions">Export all transactions</string>
-	<string name="title_always_delete_exported_transactions">Delete exported transactions</string>
-	<string name="title_default_export_email">Default export email</string>
-	<string name="summary_default_export_email">The default email address to send exports to. You can still change this when you export.</string>	
-	<string name="label_double_entry_account">Transfer Account</string>
-	<string name="summary_use_double_entry">All transactions will be a transfer from one account to another</string>
-	<string name="title_use_double_entry">Activate Double Entry</string>
-	<string name="account_balance">Balance</string>
-	<string name="toast_no_account_name_entered">Please enter an account name</string>
-	<string name="label_account_currency">Currency</string>
-	<string name="label_parent_account">Parent account</string>
-	<string name="title_xml_ofx_header">Use XML OFX header</string>
-	<string name="summary_xml_ofx_header">Enable this option when exporting to third-party application other than GnuCash for desktop</string>
-	<string name="title_whats_new">What\'s New</string>
+	<string name="delete_all_transactions_confirmation_message">&#191;Est&#225; seguro de borrar TODAS las transacciones?</string>
+	<string name="delete_transaction_confirmation_message">&#191;Est&#225; seguro de borrar esta transacci&#243;n?</string>
+	<string name="title_export_preference_category">Exportaci&#243;n</string>
+	<string name="title_export_all_transactions">Exportar todas las transacciones</string>
+	<string name="title_always_delete_exported_transactions">Borrar las transacciones exportadas</string>
+	<string name="title_default_export_email">Correo electr&#243;nico para exportaci&#243;n por omisi&#243;n</string>
+	<string name="summary_default_export_email">La direcci&#243;n de correo electr&#243;nico para enviar las exportaciones por omisi&#243;n. Se puede cambiar en cada exportaci&#243;n.</string>	
+	<string name="label_double_entry_account">Transferir cuenta</string>
+	<string name="summary_use_double_entry">Todas las transacciones ser&#225;n transferidas de una cuenta a otra</string>
+	<string name="title_use_double_entry">Activar doble entrada</string>
+	<string name="account_balance">Saldo</string>
+	<string name="toast_no_account_name_entered">Por favor introduzca un nombre para la cuenta</string>
+	<string name="label_account_currency">Moneda</string>
+	<string name="label_parent_account">Cuenta padre</string>
+	<string name="title_xml_ofx_header">Usar cabecera XML OFX</string>
+	<string name="summary_xml_ofx_header">Active esta opci&#243;n para exportar a otras aplicaciones distintas a GnuCash para escritorio</string>
+	<string name="title_whats_new">&#191;Qu&#233; hay nuevo?</string>
 	<string name="whats_new">
-	    <b>Version 1.1.0 - 31.01.2013</b>\n\n
-        - Double entry accounting\n
-        - Nested accounts\n
-        - SGML is default OFX export format\n
-        - Numerous bug fixes\n	        
+	    <b>Versi&#243;n 1.1.0 - 31.01.2013</b>\n\n
+        - Contabilidad de doble entrada\n
+        - Cuentas anidadas\n
+        - SGML es el formato por omisi&#243;n para la exportaci&#243;n OFX\n
+        - Varios errores solucionados\n
 	</string>
-	<string name="label_dismiss">Dismiss</string>
+	<string name="label_dismiss">Cerrar</string>
 </resources>
