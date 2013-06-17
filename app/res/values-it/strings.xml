@@ -296,7 +296,7 @@
 	<string name="title_export_all_transactions">Esporta tutte le transazioni</string>
 	<string name="title_always_delete_exported_transactions">Elimina le transazioni esportate</string>
 	<string name="title_default_export_email">Email predefinita di esportazione</string>
-	<string name="summary_default_export_email">L\'indirizzo email predefinito a cui inviare i file esportati. É comunque possibile modificare l\'indirizzo quando si esporta.</string>	
+	<string name="summary_default_export_email">L\'indirizzo email predefinito a cui inviare i file esportati. É comunque possibile modificare l\'indirizzo quando si esporta</string>	
 	<string name="label_double_entry_account">Conto di trasferimento</string>
 	<string name="summary_use_double_entry">Tutte le transazioni consisteranno in un trasferimento di denaro da un conto a un altro</string>
 	<string name="title_use_double_entry">Abilita partita doppia</string>
@@ -322,14 +322,14 @@
     <string name="btn_import_accounts">Importa conti</string>
     <string name="toast_error_importing_accounts">Si è verificato un errore nell\'importare i conti di GnuCash</string>
     <string name="toast_success_importing_accounts">I conti di GnuCash sono stati importati correttamente</string>
-    <string name="summary_import_accounts">Importa una struttura dei conti esportata da GnuCash versione dekstop</string>
+    <string name="summary_import_accounts">Importa una struttura dei conti esportata da GnuCash versione desktop</string>
     <string name="title_import_accounts">Importa conti di GnuCash</string>
     <string name="summary_delete_all_accounts">Elimina tutti i conti nel database. Verranno eliminate anche tutte le transazioni.
     </string>
     <string name="title_delete_all_accounts">Elimina tutti i conti</string>
     <string name="header_account_settings">Conti</string>
     <string name="toast_all_accounts_deleted">Tutti i conti sono stati eliminati</string>
-    <string name="confirm_delete_all_accounts">Eliminare davvero tutti iconti e le transazioni? \nQuesta
+    <string name="confirm_delete_all_accounts">Eliminare davvero tutti i conti e le transazioni? \nQuesta
         operazione non può essere annullata!
     </string>
     <string name="label_account_type">Tipo di conto</string>
