@@ -235,7 +235,7 @@
 		<item>Tala</item>
 		<item>Tanzanian Shilling</item>
 		<item>Tenge</item>
-		<item>No currency</item>
+		<item>Χωρίς νόμισμα</item>
 		<item>Trinidad and Tobago Dollar</item>
 		<item>Tugrik</item>
 		<item>Tunisian Dinar</item>
@@ -247,7 +247,7 @@
 		<item>Unidad de Valor Real</item>
 		<item>Unidades de fomento</item>
 		<item>Uruguay Peso en Unidades Indexadas (URUIURUI)</item>
-		<item>Δολάριο ΗΠΑ</item>
+		<item>US Dolar</item>
 		<item>Uzbekistan Sum</item>
 		<item>Vatu</item>
 		<item>WIR Euro</item>
@@ -307,7 +307,8 @@
 	<string name="summary_use_double_entry">Όλες οι κινήσεις θα μεταφερθούν από τον ένα λογαριασμό στον άλλο.</string>
 	<string name="title_use_double_entry">Ενεργοποίηση Διπλών Λογιστικών Εγγραφών</string>
 	<string name="account_balance">Υπόλοιπο</string>
-	<string name="toast_no_account_name_entered">Enter an account name to create an account</string>
+	<string name="toast_no_account_name_entered">Εισαγωγή ονόματος λογαριασμού
+	για τη δημιουργία του</string>
 	<string name="label_account_currency">Νόμισμα</string>
 	<string name="label_parent_account">Γονικός λογαριασμός</string>
 	<string name="title_xml_ofx_header">Χρήση κεφαλίδας XML OFX</string>
@@ -323,43 +324,50 @@
         - Numerous bug fixes\n
 	</string>
 	<string name="label_dismiss">Απόρριψη</string>
-    <string name="toast_transanction_amount_required">Enter an amount to save the transaction</string>
-    <string name="menu_import_accounts">Import GnuCash Accounts</string>
-    <string name="btn_import_accounts">Import Accounts</string>
-    <string name="toast_error_importing_accounts">An error occurred while importing the GnuCash accounts</string>
-    <string name="toast_success_importing_accounts">GnuCash accounts successfully imported</string>
-    <string name="summary_import_accounts">Import account structure exported from GnuCash desktop</string>
-    <string name="title_import_accounts">Import GnuCash accounts</string>
-    <string name="summary_delete_all_accounts">Delete all accounts in the database. All transactions will be deleted as
-        well.
+    <string name="toast_transanction_amount_required">Εισαγωγή ποσού για
+	αποθήκευση κίνησης</string>
+    <string name="menu_import_accounts">Εισαγωγή Λογαριασμών GnuCash</string>
+    <string name="btn_import_accounts">Εισαγωγή Λογαριασμών</string>
+    <string name="toast_error_importing_accounts">Προέκυψε σφάλμα κατά την
+	εισαγωγή λογαριασμών GnuCash</string>
+    <string name="toast_success_importing_accounts">Λογαριασμοί GnuCash
+	εισήχθησαν με επιτυχία</string>
+    <string name="summary_import_accounts">Το εισαγόμενο λογιστικό σχέδιο
+	εξήχθει από το GnuCash για επιτραπέζιους υπολογιστές</string>
+    <string name="title_import_accounts">Εισαγωγή λογαριασμών GnuCash</string>
+    <string name="summary_delete_all_accounts">Διαγραφή όλων των λογαριασμών
+	στη βάση δεδομένων. Όλες οι κινήσεις θα διαγραφούν επίσης.
     </string>
-    <string name="title_delete_all_accounts">Delete all accounts</string>
-    <string name="header_account_settings">Accounts</string>
-    <string name="toast_all_accounts_deleted">All accounts have been successfully deleted</string>
-    <string name="confirm_delete_all_accounts">Are you sure you want to delete all accounts and transactions? \nThis
-        operation cannot be undone!
+    <string name="title_delete_all_accounts">Διαγραφή όλων των λογαριασμών</string>
+    <string name="header_account_settings">Λογαριασμοί</string>
+    <string name="toast_all_accounts_deleted">Όλοι οι λογαριασμοί διαγράφηκαν
+	με επιτυχία</string>
+    <string name="confirm_delete_all_accounts">Σίγουρα θέλετε να διαγράψετε
+	όλους του λογαριασμούς και τις κινήσεις; \nΑυτή η ενέργεια δε μπορεί να αναιρεθεί!
     </string>
-    <string name="label_account_type">Account Type</string>
-    <string name="summary_delete_all_transactions">All transactions in all accounts will be deleted!</string>
-    <string name="title_delete_all_transactions">Delete all transactions</string>
-    <string name="toast_all_transactions_deleted">All transactions successfully deleted!</string>
+    <string name="label_account_type">Τύπος Λογαριασμού</string>
+    <string name="summary_delete_all_transactions">Όλες οι κινήσεις σε όλους
+	τους λογαριασμούς θα διαγραφούν!</string>
+    <string name="title_delete_all_transactions">Διαγραφή όλων των κινήσεων</string>
+    <string name="toast_all_transactions_deleted">Όλες οι κινήσεις διαγράφηκαν
+	με επιτυχία!</string>
     <plurals name="label_sub_accounts">
-        <item quantity="one">%d sub-account</item>
-        <item quantity="other">%d sub-accounts</item>
+        <item quantity="one">%d υπο-λογαριασμός</item>
+        <item quantity="other">%d υπο-λογαριασμοί</item>
     </plurals>
     <string-array name="account_type_entry_values">
-        <item>CASH</item>
-        <item>BANK</item>
-        <item>CREDIT CARD</item>
-        <item>ASSET</item>
-        <item>LIABILITY</item>
-        <item>INCOME</item>
-        <item>EXPENSE</item>
-        <item>PAYABLE</item>
-        <item>RECEIVABLE</item>
-        <item>EQUITY</item>
-        <item>CURRENCY</item>
-        <item>STOCK</item>
-        <item>MUTUAL FUND</item>
+        <item>ΡΕΥΣΤΟ</item>
+        <item>ΤΡΑΠΕΖΑ</item>
+        <item>ΠΙΣΤΩΤΙΚΗ ΚΑΡΤΑ</item>
+        <item>ΠΑΓΙΟ</item>
+        <item>ΠΑΘΗΤΙΚΟ</item>
+        <item>ΕΣΟΔΟ</item>
+        <item>ΕΞΟΔΟ</item>
+        <item>ΠΛΗΡΩΤΕΟ</item>
+        <item>ΕΙΣΠΡΑΚΤΕΟ</item>
+        <item>ΚΑΘΑΡΗ ΑΞΙΑ</item>
+        <item>ΝΟΜΙΣΜΑ</item>
+        <item>ΜΕΤΟΧΗ</item>
+        <item>ΑΜΟΙΒΑΙΟ ΚΕΦΑΛΑΙΟ</item>
     </string-array>
 </resources>
