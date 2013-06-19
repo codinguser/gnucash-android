@@ -555,7 +555,7 @@
     <string-array name="account_type_entries">
         <item>CASH</item>
         <item>BANK</item>
-        <item>CREDIT_CARD</item>
+        <item>CREDIT</item>
         <item>ASSET</item>
         <item>LIABILITY</item>
         <item>INCOME</item>

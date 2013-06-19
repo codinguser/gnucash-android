@@ -51,7 +51,7 @@ public class Account {
 	 * This are the different types specified by the OFX format and 
 	 * they are currently not used except for exporting
 	 */
-	public enum AccountType {CASH, BANK, CREDIT_CARD, ASSET, LIABILITY, INCOME, EXPENSE, 
+	public enum AccountType {CASH, BANK, CREDIT, ASSET, LIABILITY, INCOME, EXPENSE,
 							PAYABLE, RECEIVABLE, EQUITY, CURRENCY, STOCK, MUTUAL_FUND, ROOT};
 
     /**
@@ -325,7 +325,7 @@ public class Account {
 	 */
 	public static OfxAccountType convertToOfxAccountType(AccountType accountType){
 		switch (accountType) {
-		case CREDIT_CARD:
+		case CREDIT:
 		case LIABILITY:
 			return OfxAccountType.CREDITLINE;
 			
