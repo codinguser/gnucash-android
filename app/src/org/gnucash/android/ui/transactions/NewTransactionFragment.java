@@ -28,6 +28,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Locale;
 
+import android.widget.*;
 import org.gnucash.android.R;
 import org.gnucash.android.data.Money;
 import org.gnucash.android.data.Transaction;
@@ -58,14 +59,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
-import android.widget.DatePicker;
-import android.widget.EditText;
-import android.widget.Spinner;
-import android.widget.TextView;
-import android.widget.TimePicker;
-import android.widget.ToggleButton;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockFragment;
@@ -171,12 +165,6 @@ public class NewTransactionFragment extends SherlockFragment implements
 	 * {@link Calendar} object holding the set time
 	 */
 	private Calendar mTime;
-
-	/**
-	 * ActionBar Menu item for saving the transaction
-	 * A transaction needs atleast a name and amount, only then is the save menu item enabled
-	 */
-	private MenuItem mSaveMenuItem;
 
 	/**
 	 * Spinner for selecting the transfer account
@@ -295,15 +283,17 @@ public class NewTransactionFragment extends SherlockFragment implements
 		Currency accountCurrency = Currency.getInstance(code);
 		mCurrencyTextView.setText(accountCurrency.getSymbol(Locale.getDefault()));
 	}
-	
+
+    /**
+     * Updates the list of possible transfer accounts.
+     * Only accounts with the same currency can be transferred to
+     */
 	private void updateTransferAccountsList(){
 		long accountId = ((TransactionsActivity)getActivity()).getCurrentAccountID();
-		
-		//TODO: we'll leave out the currency condition for now, maybe look at this in the future
-//		String conditions = "(" + DatabaseHelper.KEY_ROW_ID + " != " + accountId + ") AND " + "(" +
-//							DatabaseHelper.KEY_CURRENCY_CODE + " = '" + mAccountsDbAdapter.getCurrencyCode(accountId) + "')";
-		
-		String conditions = "(" + DatabaseHelper.KEY_ROW_ID + " != " + accountId + ")";
+
+		String conditions = "(" + DatabaseHelper.KEY_ROW_ID + " != " + accountId + ") AND " + "(" +
+							DatabaseHelper.KEY_CURRENCY_CODE + " = '" + mAccountsDbAdapter.getCurrencyCode(accountId) + "')";
+
 		mCursor = mAccountsDbAdapter.fetchAccounts(conditions);
 		
 		String[] from = new String[] {DatabaseHelper.KEY_NAME};
@@ -319,10 +309,6 @@ public class NewTransactionFragment extends SherlockFragment implements
 	 * Sets click listeners for the dialog buttons
 	 */
 	private void setListeners() {
-		ValidationsWatcher validations = new ValidationsWatcher();
-		mAmountEditText.addTextChangedListener(validations);
-		mNameEditText.addTextChangedListener(validations);
-		
 		mAmountEditText.addTextChangedListener(new AmountInputFormatter());
 		
 		mTransactionTypeButton.setOnCheckedChangeListener(new OnCheckedChangeListener() {
@@ -383,8 +369,12 @@ public class NewTransactionFragment extends SherlockFragment implements
 				fragment.show(ft, "time_dialog");
 			}
 		});
-	}	
-	
+	}
+
+    /**
+     * Updates the spinner to the selected transfer account
+     * @param accountId Database ID of the transfer account
+     */
 	private void setSelectedTransferAccount(long accountId){
 		for (int pos = 0; pos < mCursorAdapter.getCount(); pos++) {
 			if (mCursorAdapter.getItemId(pos) == accountId){
@@ -393,12 +383,21 @@ public class NewTransactionFragment extends SherlockFragment implements
 			}
 		}
 	}
-	
+
+    /**
+     * Returns true if we are editing the transaction from within it's transfer account,
+     * rather than the account in which the transaction was created
+     * @return <code>true</code> if in transfer account, <code>false</code> otherwise
+     */
 	private boolean isInDoubleAccount(){
 		long accountId = mTransactionsDbAdapter.getAccountID(mTransaction.getAccountUID());
 		return ((TransactionsActivity)getActivity()).getCurrentAccountID() != accountId;
 	}
 
+    /**
+     * Callback when the account in the navigation bar is changed by the user
+     * @param newAccountId Database record ID of the newly selected account
+     */
 	public void onAccountChanged(long newAccountId){
 		AccountsDbAdapter accountsDbAdapter = new AccountsDbAdapter(getActivity());
 		String currencyCode = accountsDbAdapter.getCurrencyCode(newAccountId);
@@ -477,9 +476,6 @@ public class NewTransactionFragment extends SherlockFragment implements
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 		inflater.inflate(R.menu.default_save_actions, menu);
-		mSaveMenuItem = menu.findItem(R.id.menu_save);
-		//only initially enable if we are editing a transaction
-		mSaveMenuItem.setEnabled(mTransactionId > 0);
 	}
 	
 	@Override
@@ -494,7 +490,10 @@ public class NewTransactionFragment extends SherlockFragment implements
 			return true;
 			
 		case R.id.menu_save:
-			saveNewTransaction();
+            if (mAmountEditText.getText().length() == 0){
+                Toast.makeText(getActivity(), R.string.toast_transanction_amount_required, Toast.LENGTH_SHORT).show();
+            } else
+			    saveNewTransaction();
 			return true;
 
 		default:
@@ -568,39 +567,7 @@ public class NewTransactionFragment extends SherlockFragment implements
 		return amount;
 	}
 
-	/**
-	 * Validates that the name and amount of the transaction is provided
-	 * before enabling the save button
-	 * @author Ngewi Fet <ngewif@gmail.com>
-	 *
-	 */
-	private class ValidationsWatcher implements TextWatcher {
 
-		@Override
-		public void afterTextChanged(Editable s) {
-			boolean valid = (mAmountEditText.getText().length() > 0);
-			
-			//JellyBean 4.2 calls onActivityCreated before creating the menu
-			if (mSaveMenuItem != null)
-				mSaveMenuItem.setEnabled(valid);
-		}
-
-		@Override
-		public void beforeTextChanged(CharSequence s, int start, int count,
-				int after) {
-			// TODO Auto-generated method stub
-			
-		}
-
-		@Override
-		public void onTextChanged(CharSequence s, int start, int before,
-				int count) {
-			// TODO Auto-generated method stub
-			
-		}
-		
-	}
-	
 	/**
 	 * Captures input string in the amount input field and parses it into a formatted amount
 	 * The amount input field allows numbers to be input sequentially and they are parsed

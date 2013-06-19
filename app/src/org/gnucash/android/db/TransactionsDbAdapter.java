@@ -80,7 +80,7 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 		return rowId;
 	}
 
-	/**
+    /**
 	 * Fetch a transaction from the database which has a unique ID <code>uid</code>
 	 * @param uid Unique Identifier of transaction to be retrieved
 	 * @return Database row ID of transaction with UID <code>uid</code>
@@ -235,7 +235,8 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 	 * @param rowId Long database record id
 	 * @return <code>true</code> if deletion was successful, <code>false</code> otherwise
 	 */
-	public boolean deleteTransaction(long rowId){
+    @Override
+	public boolean deleteRecord(long rowId){
 		Log.d(TAG, "Delete transaction with record Id: " + rowId);
 		return deleteRecord(DatabaseHelper.TRANSACTIONS_TABLE_NAME, rowId);
 	}
@@ -254,8 +255,9 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 	 * Deletes all transactions in the database
 	 * @return Number of affected transaction records
 	 */
-	public int deleteAllTransactions(){
-		return mDb.delete(DatabaseHelper.TRANSACTIONS_TABLE_NAME, null, null);
+    @Override
+	public int deleteAllRecords(){
+		return deleteAllRecords(DatabaseHelper.TRANSACTIONS_TABLE_NAME);
 	}
 	
 	/**
@@ -307,24 +309,22 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 	
 	/**
 	 * Returns the sum of transactions belonging to the account with id <code>accountId</code>
+     * Double entry accounting is taken into account and the balance reflects the transfer transactions.
+     * This means if the accounts are properly balanced, this method should return 0
 	 * @param accountId Record ID of the account
 	 * @return Sum of transactions belonging to the account
 	 */
 	public Money getTransactionsSum(long accountId){
-		Cursor c = fetchAllTransactionsForAccount(accountId); 
-//		mDb.query(DatabaseHelper.TRANSACTIONS_TABLE_NAME, 
-//				new String[]{DatabaseHelper.KEY_AMOUNT}, 
-//				DatabaseHelper.KEY_ACCOUNT_UID + "= '" + getAccountUID(accountId) + "'", 
-//				null, null, null, null);
+		Cursor c = fetchAllTransactionsForAccount(accountId);
 
 		//transactions will have the currency of the account
 		String currencyCode = getCurrencyCode(accountId);
-		
+
+        Money amountSum = new Money("0", currencyCode);
+
 		if (c == null || c.getCount() <= 0)
-			return new Money("0", currencyCode);		
-		
-		Money amountSum = new Money("0", currencyCode);
-		
+			return amountSum;
+
 		while(c.moveToNext()){
 			Money money = new Money(c.getString(DatabaseAdapter.COLUMN_AMOUNT), currencyCode);
 			String doubleEntryAccountUID = c.getString(DatabaseAdapter.COLUMN_DOUBLE_ENTRY_ACCOUNT_UID);
@@ -347,7 +347,9 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 	 * @see AccountsDbAdapter#getDoubleEntryAccountsBalance()
 	 */
 	public Money getAllTransactionsSum(){
-		String query = "SELECT TOTAL(" + DatabaseHelper.KEY_AMOUNT +") FROM " + DatabaseHelper.TRANSACTIONS_TABLE_NAME;
+        //TODO: Take double entry into account
+		String query = "SELECT TOTAL(" + DatabaseHelper.KEY_AMOUNT
+                + ") FROM " + DatabaseHelper.TRANSACTIONS_TABLE_NAME;
 		Cursor c = mDb.rawQuery(query, null); 
 //				new String[]{DatabaseHelper.KEY_AMOUNT, DatabaseHelper.TRANSACTIONS_TABLE_NAME});
 		double result = 0;
@@ -438,4 +440,15 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 		}
 		return id;
 	}
+
+    @Override
+    public Cursor fetchAllRecords() {
+        return fetchAllRecords(DatabaseHelper.TRANSACTIONS_TABLE_NAME);
+    }
+
+    @Override
+    public Cursor fetchRecord(long rowId) {
+        return fetchRecord(DatabaseHelper.TRANSACTIONS_TABLE_NAME, rowId);
+    }
+
 }

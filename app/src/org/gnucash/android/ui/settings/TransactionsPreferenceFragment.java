@@ -16,6 +16,7 @@
 
 package org.gnucash.android.ui.settings;
 
+import com.actionbarsherlock.app.SherlockFragmentActivity;
 import org.gnucash.android.R;
 
 import android.content.SharedPreferences;
@@ -27,6 +28,7 @@ import android.preference.PreferenceManager;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockPreferenceActivity;
+import org.gnucash.android.ui.transactions.TransactionsDeleteConfirmationDialog;
 
 /**
  * Fragment for displaying transaction preferences
@@ -56,6 +58,15 @@ public class TransactionsPreferenceFragment extends PreferenceFragment implement
 		Preference pref = findPreference(getString(R.string.key_default_transaction_type));		
 		setLocalizedSummary(pref, defaultTransactionType);
 		pref.setOnPreferenceChangeListener(this);
+
+        Preference preference = findPreference(getString(R.string.key_delete_all_transactions));
+        preference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                deleteAllTransactions();
+                return true;
+            }
+        });
 	}
 
 
@@ -64,7 +75,21 @@ public class TransactionsPreferenceFragment extends PreferenceFragment implement
 		setLocalizedSummary(preference, newValue.toString());
 		return true;
 	}
-	
+
+    /**
+     * Deletes all transactions in the system
+     */
+    public void deleteAllTransactions(){
+        DeleteAllTransacationsConfirmationDialog deleteTransactionsConfirmationDialog =
+                DeleteAllTransacationsConfirmationDialog.newInstance();
+        deleteTransactionsConfirmationDialog.show(getFragmentManager(), "transaction_settings");
+    }
+
+    /**
+     * Localizes the label for DEBIT/CREDIT in the settings summary
+     * @param preference Preference whose summary is to be localized
+     * @param value New value for the preference summary
+     */
 	private void setLocalizedSummary(Preference preference, String value){
 		String localizedLabel = value.equals("DEBIT") ? getString(R.string.label_debit) : getActivity().getString(R.string.label_credit);
 		Preference pref = findPreference(getString(R.string.key_default_transaction_type));

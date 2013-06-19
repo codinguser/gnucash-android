@@ -55,7 +55,7 @@
     <string name="option_export_all_transactions">All transacties exporteren</string>
     <string name="hint_export_choice">Aanvinken om alle transacties te exporteren. Anders worden enkel de nieuwe transacties sinds de laatste export ge&#235;xporteerd.</string>
     <string name="error_exporting">Fout tijdens het exporteren van de OFX data</string>    
-    <string name="btn_export">Export</string>
+    <string name="btn_export">Exporteer</string>
     <string name="option_delete_after_export">Verwijderen na exporteren</string>
     <string name="hint_delete_after_export">Alle ge&#235;xporteerde transacties zullen verwijderd worden na de export</string>
     <string name="title_settings">Instellingen</string>
@@ -82,7 +82,7 @@
     <string name="label_permission_create_account">Dagboeken aanmaken</string>
     <string name="label_display_account">Dagboek tonen</string>
     <string name="btn_create_accounts">Dagboeken aanmaken</string>
-    <string name="title_default_accounts">Te aanmaken dagboeken selecteren</string>
+    <string name="title_default_accounts">Aan te maken dagboeken selecteren</string>
     <string-array name="currency_names">
         <item>Afghani</item>
 		<item>Algerian Dinar</item>
@@ -264,8 +264,8 @@
 	    <item>Uitgaven</item>
 	    <item>Inkomsten</item>
 	    <item>Activa</item>	    
-	    <item>Equity</item>
-	    <item>Liabilities</item>
+	    <item>Eigen Vermogen</item>
+	    <item>Passiva</item>
 	</string-array>
 	<string name="error_no_accounts">Geen dagboeken beschikbaar.\nU moet een dagboek aanmaken alvorens een widget toe te voegen</string>
 	<string name="title_build_version">Versie</string>
@@ -282,37 +282,78 @@
 	<string name="title_export_email">GnuCash OFX export</string>
 	<string name="description_export_email">GnuCash OFX Export van </string>
 	<string name="header_transaction_settings">Transacties</string>
-	<string name="title_transaction_preferences">Transaction Preferences</string>
-	<string name="title_account_preferences">Account Preferences</string>
-	<string name="title_default_transaction_type">Default Transaction Type</string>
-	<string name="summary_default_transaction_type">The type of transaction to use by default, CREDIT or DEBIT</string>
+	<string name="title_transaction_preferences">Transactie voorkeuren</string>
+	<string name="title_account_preferences">Account voorkeuren</string>
+	<string name="title_default_transaction_type">Standaard Transactietype</string>
+	<string name="summary_default_transaction_type">Het standaard transactietype, CREDIT or DEBIT</string>
 	<string-array name="transaction_types">
 		<item>CREDIT</item>
 		<item>DEBIT</item>
 	</string-array>
-	<string name="delete_all_transactions_confirmation_message">Are you sure you want to delete ALL transactions?</string>
-	<string name="delete_transaction_confirmation_message">Are you sure you want to delete this transaction?</string>
-	<string name="title_export_preference_category">Export</string>
-	<string name="title_export_all_transactions">Export all transactions</string>
-	<string name="title_always_delete_exported_transactions">Delete exported transactions</string>
-	<string name="title_default_export_email">Default export email</string>
-	<string name="summary_default_export_email">The default email address to send exports to. You can still change this when you export.</string>	
-	<string name="label_double_entry_account">Transfer Account</string>
-	<string name="summary_use_double_entry">All transactions will be a transfer from one account to another</string>
-	<string name="title_use_double_entry">Activate Double Entry</string>
-	<string name="account_balance">Balance</string>
-	<string name="toast_no_account_name_entered">Please enter an account name</string>
-	<string name="label_account_currency">Currency</string>
+	<string name="delete_all_transactions_confirmation_message">Weet u zeker dat u alle transacties wil verwijderen?</string>
+	<string name="delete_transaction_confirmation_message">Weet u zeker dat u deze transactie wil verwijderen?</string>
+	<string name="title_export_preference_category">Exporteer</string>
+	<string name="title_export_all_transactions">Exporteer alle transacties</string>
+	<string name="title_always_delete_exported_transactions">Verwijder geëxporteerde transacties</string>
+	<string name="title_default_export_email">Standaard export emailadres</string>
+	<string name="summary_default_export_email">Het standaard emailaddress om geëxporteerde data heen te sturen. U kan dit emailadres nog wijzigen als u exporteerd.</string>	
+	<string name="label_double_entry_account">Draag Account over</string>
+	<string name="summary_use_double_entry">Alle transacties zullen worden overgedragen van het ene account naar de andere</string>
+	<string name="title_use_double_entry">Schake Double Entry in</string>
+	<string name="account_balance">Saldo</string>
+	<string name="toast_no_account_name_entered">Vul een accountnaam in</string>
+	<string name="label_account_currency">Munteenheid</string>
 	<string name="label_parent_account">Parent account</string>
-	<string name="title_xml_ofx_header">Use XML OFX header</string>
-	<string name="summary_xml_ofx_header">Enable this option when exporting to third-party application other than GnuCash for desktop</string>
-	<string name="title_whats_new">What\'s New</string>
+	<string name="title_xml_ofx_header">Gebruik XML OFX header</string>
+	<string name="summary_xml_ofx_header">Schakel deze optie in als u naar een applicatie anders dan GnuCash wil exporteren</string>
+	<string name="title_whats_new">Nieuw sinds de vorige versie</string>
 	<string name="whats_new">
-	    <b>Version 1.1.0 - 31.01.2013</b>\n\n
-        - Double entry accounting\n
-        - Nested accounts\n
-        - SGML is default OFX export format\n
-        - Numerous bug fixes\n        
+	    <b>Versie 1.2.0 - 20.06.2013</b>\n\n
+        - Import GnuCash desktop account structure\n
+        - Nested display of account hierarchy\n
+        - Options for deleting all accounts/transactions\n
+        - Preliminary support for account types\n
+        - Account balance now takes sub-accounts into consideration\n
+        - Numerous bug fixes\n
 	</string>
-	<string name="label_dismiss">Dismiss</string>
+	<string name="label_dismiss">Wijs af</string>
+    <string name="toast_transanction_amount_required">Vul een bedrag in om de transactie op te slaan.</string>
+    <string name="menu_import_accounts">Import GnuCash Accounts</string>
+    <string name="btn_import_accounts">Import Accounts</string>
+    <string name="toast_error_importing_accounts">An error occurred while importing the GnuCash accounts</string>
+    <string name="toast_success_importing_accounts">GnuCash accounts successfully imported</string>
+    <string name="summary_import_accounts">Import account structure exported from GnuCash desktop</string>
+    <string name="title_import_accounts">Import GnuCash accounts</string>
+    <string name="summary_delete_all_accounts">Delete all accounts in the database. All transactions will be deleted as
+        well.
+    </string>
+    <string name="title_delete_all_accounts">Delete all accounts</string>
+    <string name="header_account_settings">Accounts</string>
+    <string name="toast_all_accounts_deleted">All accounts have been successfully deleted</string>
+    <string name="confirm_delete_all_accounts">Are you sure you want to delete all accounts and transactions? \nThis
+        operation cannot be undone!
+    </string>
+    <string name="label_account_type">Account Type</string>
+    <string name="summary_delete_all_transactions">All transactions in all accounts will be deleted!</string>
+    <string name="title_delete_all_transactions">Delete all transactions</string>
+    <string name="toast_all_transactions_deleted">All transactions successfully deleted!</string>
+    <plurals name="label_sub_accounts">
+        <item quantity="one">%d sub-account</item>
+        <item quantity="other">%d sub-accounts</item>
+    </plurals>
+    <string-array name="account_type_entry_values">
+        <item>CASH</item>
+        <item>BANK</item>
+        <item>CREDIT CARD</item>
+        <item>ASSET</item>
+        <item>LIABILITY</item>
+        <item>INCOME</item>
+        <item>EXPENSE</item>
+        <item>PAYABLE</item>
+        <item>RECEIVABLE</item>
+        <item>EQUITY</item>
+        <item>CURRENCY</item>
+        <item>STOCK</item>
+        <item>MUTUAL FUND</item>
+    </string-array>
 </resources>

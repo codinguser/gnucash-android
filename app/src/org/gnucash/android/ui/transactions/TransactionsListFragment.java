@@ -23,10 +23,7 @@ import java.util.Locale;
 
 import org.gnucash.android.R;
 import org.gnucash.android.data.Money;
-import org.gnucash.android.db.DatabaseAdapter;
-import org.gnucash.android.db.DatabaseCursorLoader;
-import org.gnucash.android.db.DatabaseHelper;
-import org.gnucash.android.db.TransactionsDbAdapter;
+import org.gnucash.android.db.*;
 import org.gnucash.android.ui.widget.WidgetConfigurationActivity;
 import org.gnucash.android.util.OnTransactionClickedListener;
 
@@ -143,7 +140,7 @@ public class TransactionsListFragment extends SherlockListFragment implements
 
 			case R.id.context_menu_delete:
 				for (long id : mSelectedIds.values()) {
-					mTransactionsDbAdapter.deleteTransaction(id);					
+					mTransactionsDbAdapter.deleteRecord(id);
 				}				
 				refreshList();
 				mode.finish();
@@ -173,7 +170,7 @@ public class TransactionsListFragment extends SherlockListFragment implements
 				getActivity().getApplicationContext(), 
 				R.layout.list_item_transaction, null, 
 				new String[] {DatabaseHelper.KEY_NAME, DatabaseHelper.KEY_AMOUNT}, 
-				new int[] {R.id.transaction_name, R.id.transaction_amount});
+				new int[] {R.id.primary_text, R.id.transaction_amount});
 		setListAdapter(mCursorAdapter);
 	}
 	
@@ -215,8 +212,10 @@ public class TransactionsListFragment extends SherlockListFragment implements
 	
 	public void refreshList(){
 		getLoaderManager().restartLoader(0, null, this);
-		
-		Money sum = mTransactionsDbAdapter.getTransactionsSum(mAccountID);		
+
+        AccountsDbAdapter accountsDbAdapter = new AccountsDbAdapter(getActivity());
+		Money sum = accountsDbAdapter.getAccountBalance(mAccountID);// mTransactionsDbAdapter.getTransactionsSum(mAccountID);
+        accountsDbAdapter.close();
 		mSumTextView = (TextView) getView().findViewById(R.id.transactions_sum);
 		mSumTextView.setText(sum.formattedString(Locale.getDefault()));
 		if (sum.isNegative())
@@ -470,7 +469,7 @@ public class TransactionsListFragment extends SherlockListFragment implements
 			else
 				tramount.setTextColor(getResources().getColor(R.color.credit_green));
 			
-			TextView trNote = (TextView) view.findViewById(R.id.transaction_note);
+			TextView trNote = (TextView) view.findViewById(R.id.secondary_text);
 			String description = cursor.getString(DatabaseAdapter.COLUMN_DESCRIPTION);
 			if (description == null || description.length() == 0)
 				trNote.setVisibility(View.GONE);

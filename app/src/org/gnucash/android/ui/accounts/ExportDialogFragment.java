@@ -226,7 +226,7 @@ public class ExportDialogFragment extends DialogFragment {
 	
 	/**
 	 * Writes the OFX document <code>doc</code> to external storage
-	 * @param Document containing OFX file data
+	 * @param doc Document containing OFX file data
 	 * @throws IOException if file could not be saved
 	 */
 	private void writeToExternalStorage(Document doc) throws IOException{
@@ -351,9 +351,10 @@ public class ExportDialogFragment extends DialogFragment {
 	}
 	
 	/**
-	 * Writes out the file held in <code>document</code> to <code>outputWriter</code>
-	 * @param document {@link Document} containing the OFX document structure
+	 * Writes out the document held in <code>node</code> to <code>outputWriter</code>
+	 * @param node {@link Node} containing the OFX document structure. Usually the parent node
 	 * @param outputWriter {@link Writer} to use in writing the file to stream
+     * @param omitXmlDeclaration Flag which causes the XML declaration to be omitted
 	 */
 	public void write(Node node, Writer outputWriter, boolean omitXmlDeclaration){
 		try {

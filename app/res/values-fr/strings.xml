@@ -295,24 +295,61 @@
 	<string name="title_export_preference_category">Export</string>
 	<string name="title_export_all_transactions">Exporter toutes les transactions</string>
 	<string name="title_always_delete_exported_transactions">Supprimer les transactions export&#233;s</string>
-	<string name="title_default_export_email">Email par d&#233;faut d\'export</string>
+	<string name="title_default_export_email">Email d\'export par d&#233;faut</string>
 	<string name="summary_default_export_email">Email par d&#233;faut pour les exports. Vous pourrez toujours le changer lors de votre prochain export.</string>
 	<string name="label_double_entry_account">Transfert entre compte</string>
 	<string name="summary_use_double_entry">Toutes les transactions seront transf&#233;rer d\'un compte &#224; l\'autre</string>
 	<string name="title_use_double_entry">Activer les doubles entr&#233;es</string>
 	<string name="account_balance">Balance</string>
-	<string name="toast_no_account_name_entered">Veuillez entrer un nom de compte</string>
+	<string name="toast_no_account_name_entered">Enter an account name to create an account</string>
 	<string name="label_account_currency">Monnaie</string>
 	<string name="label_parent_account">Compte parent</string>
 	<string name="title_xml_ofx_header">Utiliser l\'ent&#234;te XML d\'OFX</string>
-	<string name="summary_xml_ofx_header">Activez cette option lors d\'un export vers une application tierce autre que GnuCash pour bureau</string>
+	<string name="summary_xml_ofx_header">Activez cette option lors d\'un export vers une application tierce autre que GnuCash pour PC</string>
 	<string name="title_whats_new">Quoi de nouveau</string>
 	<string name="whats_new">
-	    <b>Version 1.1.0 - 31.01.2013</b>\n\n
-        - Comptes &#224; double entr&#233;e\n
-        - Imbriquation de comptes\n
-        - SGML est par d&#233;faut le format d\'export OFX\n
-        - Plusieurs correctifs\n	        
+        <b>Version 1.2.0 - 20.06.2013</b>\n\n
+        - Import de l\'organisation des comptes GnuCash pour PC\n
+        - Affichage imbriqu&#233; de la hi&#233;rarchie de compte\n
+        - Options permettant d\'effacer tous les comptes/transactions\n
+        - Le support des types de comptes\n
+        - La solde du compte prend maintenant les sous-comptes en consid&#233;ration\n
+        - Nombreuses corrections de bugs\n
 	</string>
 	<string name="label_dismiss">Passer</string>
+    <string name="toast_transanction_amount_required">Entrez un montant pour sauvgarder la transaction</string>
+    <string name="menu_import_accounts">Importer des comptes GnuCash</string>
+    <string name="btn_import_accounts">Import de comptes</string>
+    <string name="toast_error_importing_accounts">Une &#233;rreur s\'est produite pendant l\'import de vos comptes GnuCash</string>
+    <string name="toast_success_importing_accounts">Comptes GnuCash import&#233;s avec succ&#232;s</string>
+    <string name="summary_import_accounts">Importe l\'organisation d\'un compte export&#233; depuis GnuCash pour PC</string>
+    <string name="title_import_accounts">Importer des comptes GnuCash</string>
+    <string name="summary_delete_all_accounts">Supprimer tous les comptes dans la base de donn&#233;es. Toutes les transactions seront &#233;galement supprim&#233;s.</string>
+    <string name="title_delete_all_accounts">Supprimer tous les comptes</string>
+    <string name="header_account_settings">Comptes</string>
+    <string name="toast_all_accounts_deleted">Tous les comptes ont &#233;t&#233; supprim&#233;s avec succ&#232;s</string>
+    <string name="confirm_delete_all_accounts">Etes-vous s&#251;r de vouloir supprimer tous les comptes et toutes les transactions? \nCette op&#233;ration est d&#233;finitive!</string>
+    <string name="label_account_type">Type de compte</string>
+    <string name="summary_delete_all_transactions">Toutes les transactions sur tous les comptes seront supprim&#233;s!</string>
+    <string name="title_delete_all_transactions">Supprimer toutes les transactions</string>
+    <string name="toast_all_transactions_deleted">Toutes les transactions ont &#233;t&#233; supprim&#233;es avec succ&#232;s!</string>
+    <plurals name="label_sub_accounts">
+        <item quantity="one">%d sous-compte</item>
+        <item quantity="other">%d sous-comptes</item>
+    </plurals>
+    <string-array name="account_type_entry_values">
+        <item>ARGENT</item>
+        <item>BANQUE</item>
+        <item>CARTE DE CREDIT</item>
+        <item>AVOIRS</item>
+        <item>DETTES</item>
+        <item>REVENUS</item>
+        <item>FRAIS</item>
+        <item>PAYABLE</item>
+        <item>RECEVABLE</item>
+        <item>FONDS</item>
+        <item>DEVISES</item>
+        <item>ACTIONS</item>
+        <item>FONDS COMMUNS</item>
+    </string-array>
 </resources>

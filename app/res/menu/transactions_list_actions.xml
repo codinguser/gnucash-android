@@ -20,4 +20,8 @@
           android:icon="@drawable/content_new_holo_dark"
           android:title="@string/title_add_transaction"
           android:showAsAction="always"/>
+    <item android:id="@+id/menu_edit_account"
+          android:icon="@drawable/content_edit_holo_dark"
+          android:title="@string/title_edit_account"
+          android:showAsAction="never|withText" />
 </menu>

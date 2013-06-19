@@ -235,7 +235,7 @@
 		<item>Tala</item>
 		<item>Tanzanian Shilling</item>
 		<item>Tenge</item>
-		<item>No currency</item>
+		<item>Χωρίς νόμισμα</item>
 		<item>Trinidad and Tobago Dollar</item>
 		<item>Tugrik</item>
 		<item>Tunisian Dinar</item>
@@ -247,7 +247,7 @@
 		<item>Unidad de Valor Real</item>
 		<item>Unidades de fomento</item>
 		<item>Uruguay Peso en Unidades Indexadas (URUIURUI)</item>
-		<item>Δολάριο ΗΠΑ</item>
+		<item>US Dolar</item>
 		<item>Uzbekistan Sum</item>
 		<item>Vatu</item>
 		<item>WIR Euro</item>
@@ -307,18 +307,67 @@
 	<string name="summary_use_double_entry">Όλες οι κινήσεις θα μεταφερθούν από τον ένα λογαριασμό στον άλλο.</string>
 	<string name="title_use_double_entry">Ενεργοποίηση Διπλών Λογιστικών Εγγραφών</string>
 	<string name="account_balance">Υπόλοιπο</string>
-	<string name="toast_no_account_name_entered">Παρακαλώ εισάγετε ένα όνομα λογαριασμού</string>
+	<string name="toast_no_account_name_entered">Εισαγωγή ονόματος λογαριασμού
+	για τη δημιουργία του</string>
 	<string name="label_account_currency">Νόμισμα</string>
 	<string name="label_parent_account">Γονικός λογαριασμός</string>
 	<string name="title_xml_ofx_header">Χρήση κεφαλίδας XML OFX</string>
 	<string name="summary_xml_ofx_header">Ενεργοποίηση αυτής της επιλογής για εξαγωγή σε εφαρμογές τρίτων, εκτός του GnuCash για επιτραπέζιο υπολογιστή.</string>
 	<string name="title_whats_new">Τι νέο υπάρχει</string>
 	<string name="whats_new">
-	    <b>Έκδοση 1.1.0 - 31.01.2013</b>\n\n
-        - Λογιστική διπλών εγγραφών\n
-        - Ένθετοι λογαριασμοί\n
-        - SGML ως προεπιλεγμένη μορφή εξαγωγής OFX\n
-        - Διόρθωση πολυάριθμων σφαλμάτων κώδικα\n        
+        <b>Έκδοση 1.2.0 - 20.06.2013</b>\n\n
+        - Import GnuCash desktop account structure\n
+        - Nested display of account hierarchy\n
+        - Options for deleting all accounts/transactions\n
+        - Preliminary support for account types\n
+        - Account balance now takes sub-accounts into consideration\n
+        - Numerous bug fixes\n
 	</string>
 	<string name="label_dismiss">Απόρριψη</string>
+    <string name="toast_transanction_amount_required">Εισαγωγή ποσού για
+	αποθήκευση κίνησης</string>
+    <string name="menu_import_accounts">Εισαγωγή Λογαριασμών GnuCash</string>
+    <string name="btn_import_accounts">Εισαγωγή Λογαριασμών</string>
+    <string name="toast_error_importing_accounts">Προέκυψε σφάλμα κατά την
+	εισαγωγή λογαριασμών GnuCash</string>
+    <string name="toast_success_importing_accounts">Λογαριασμοί GnuCash
+	εισήχθησαν με επιτυχία</string>
+    <string name="summary_import_accounts">Το εισαγόμενο λογιστικό σχέδιο
+	εξήχθει από το GnuCash για επιτραπέζιους υπολογιστές</string>
+    <string name="title_import_accounts">Εισαγωγή λογαριασμών GnuCash</string>
+    <string name="summary_delete_all_accounts">Διαγραφή όλων των λογαριασμών
+	στη βάση δεδομένων. Όλες οι κινήσεις θα διαγραφούν επίσης.
+    </string>
+    <string name="title_delete_all_accounts">Διαγραφή όλων των λογαριασμών</string>
+    <string name="header_account_settings">Λογαριασμοί</string>
+    <string name="toast_all_accounts_deleted">Όλοι οι λογαριασμοί διαγράφηκαν
+	με επιτυχία</string>
+    <string name="confirm_delete_all_accounts">Σίγουρα θέλετε να διαγράψετε
+	όλους του λογαριασμούς και τις κινήσεις; \nΑυτή η ενέργεια δε μπορεί να αναιρεθεί!
+    </string>
+    <string name="label_account_type">Τύπος Λογαριασμού</string>
+    <string name="summary_delete_all_transactions">Όλες οι κινήσεις σε όλους
+	τους λογαριασμούς θα διαγραφούν!</string>
+    <string name="title_delete_all_transactions">Διαγραφή όλων των κινήσεων</string>
+    <string name="toast_all_transactions_deleted">Όλες οι κινήσεις διαγράφηκαν
+	με επιτυχία!</string>
+    <plurals name="label_sub_accounts">
+        <item quantity="one">%d υπο-λογαριασμός</item>
+        <item quantity="other">%d υπο-λογαριασμοί</item>
+    </plurals>
+    <string-array name="account_type_entry_values">
+        <item>ΡΕΥΣΤΟ</item>
+        <item>ΤΡΑΠΕΖΑ</item>
+        <item>ΠΙΣΤΩΤΙΚΗ ΚΑΡΤΑ</item>
+        <item>ΠΑΓΙΟ</item>
+        <item>ΠΑΘΗΤΙΚΟ</item>
+        <item>ΕΣΟΔΟ</item>
+        <item>ΕΞΟΔΟ</item>
+        <item>ΠΛΗΡΩΤΕΟ</item>
+        <item>ΕΙΣΠΡΑΚΤΕΟ</item>
+        <item>ΚΑΘΑΡΗ ΑΞΙΑ</item>
+        <item>ΝΟΜΙΣΜΑ</item>
+        <item>ΜΕΤΟΧΗ</item>
+        <item>ΑΜΟΙΒΑΙΟ ΚΕΦΑΛΑΙΟ</item>
+    </string-array>
 </resources>

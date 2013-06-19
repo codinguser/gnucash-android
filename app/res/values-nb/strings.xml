@@ -54,7 +54,7 @@
     <string name="label_export_destination">Eksportmottaker</string>
     <string name="title_export_dialog">Eksporter OFX</string>
     <string name="option_export_all_transactions">Eksporter alle transaksjoner</string>
-    <string name="hint_export_choice">Som standard vil kun nye transaksjoner siden siste eksportering bli eksportert.  Merk dette valget for å eksportere alle transaksjonene</string>
+    <string name="hint_export_choice">Vanligvis vil kun nye transaksjoner bli eksportert.  Merk dette valget for å eksportere alle transaksjonene</string>
     <string name="error_exporting">Feil ved eksportering av OFX-data</string>    
     <string name="btn_export">Eksporter</string>
     <string name="option_delete_after_export">Slett etter eksportering</string>
@@ -265,8 +265,8 @@
 	    <item>Utgifter</item>
 	    <item>Inntekter</item>
 	    <item>Eiendeler</item>	    
-	    <item>Equity</item>
-	    <item>Liabilities</item>
+	    <item>Egenkapital</item>
+	    <item>Gjeld</item>
 	</string-array>
 	<string name="error_no_accounts">Ingen kontoer finnes i Gnucash.\nOpprett en konto før du legger til en widget</string>
 	<string name="title_build_version">Byggversion</string>
@@ -301,21 +301,60 @@ format og importeres i regnskapsprogrammet GnuCash for PC.</string>
 	<string name="title_default_export_email">E-post for eksportering</string>
 	<string name="summary_default_export_email">E-post adresse for eksport. Du kan endre denne ved eksportering.</string>	
 	<string name="label_double_entry_account">Overføringskonto</string>
-	<string name="summary_use_double_entry">Alle transaksjoner vil bli overført fra en konto til en annen</string>
+	<string name="summary_use_double_entry">Alle transaksjoner vil bli overført til en annen konto</string>
 	<string name="title_use_double_entry">Aktiver dobbel bokføring</string>
 	<string name="account_balance">Balanse</string>
-	<string name="toast_no_account_name_entered">Skriv inn et kontonavn</string>
+	<string name="toast_no_account_name_entered">Navngi kontoen for å opprette den</string>
 	<string name="label_account_currency">Valuta</string>
 	<string name="label_parent_account">Hovedkonto</string>
 	<string name="title_xml_ofx_header">Bruk XML OFX header</string>
 	<string name="summary_xml_ofx_header">Velg denne hvis du skal eksportere til annen programvare enn GnuCash for PC.</string>
 	<string name="title_whats_new">Hva er nytt</string>
 	<string name="whats_new">
-	    <b>Versjon 1.1.0 - 31.01.2013</b>\n\n
-        - Dobbel bokføring\n
-        - Nestede konti\n
-        - SGML er standard OFX format for eksport\n
-        - Mange feilrettinger\n	        
+	    <b>Versjon 1.2.0 - 20.06.2013</b>\n\n
+        - Importering av GnuCash (PC) konto struktur\n
+        - Nestet visning av konto hierarki\n
+        - Valg for sletting av alle transaksjoner/kontoer\n
+        - Foreløpig støtte for kontotyper\n
+        - Konto balanse inkluderer nå underkontoer\n
+        - Mange feilrettinger\n
 	</string>
 	<string name="label_dismiss">Ferdig</string>
+    <string name="toast_transanction_amount_required">Oppgi et beløp for å lagre transaksjonen</string>
+    <string name="menu_import_accounts">Importere GnuCash Kontoer</string>
+    <string name="btn_import_accounts">Importere Kontoer</string>
+    <string name="toast_error_importing_accounts">En feil oppstod ved importering fra GnuCash</string>
+    <string name="toast_success_importing_accounts">GnuCash kontoer importert</string>
+    <string name="summary_import_accounts">Importere kontostruktur eksportert frac GnuCash (PC)</string>
+    <string name="title_import_accounts">Importere GnuCash kontoer</string>
+    <string name="summary_delete_all_accounts">Slette alle kontoer databasen. Alle transaksjoner vil også bli slettet.
+    </string>
+    <string name="title_delete_all_accounts">Slette alle kontoer</string>
+    <string name="header_account_settings">Kontoer</string>
+    <string name="toast_all_accounts_deleted">Alle kontoer ble slettet.</string>
+    <string name="confirm_delete_all_accounts">Er du sikkert at du vil slette alle transaksjoner og kontoer? \nDenne operasjonen kan ikke bli omgjort!
+    </string>
+    <string name="label_account_type">Konto Type</string>
+    <string name="summary_delete_all_transactions">Alle transaksjoner i alle kontoer vil bli slettet!</string>
+    <string name="title_delete_all_transactions">Slette alle transaksjoner</string>
+    <string name="toast_all_transactions_deleted">Alle transaksjoner slettet!</string>
+    <plurals name="label_sub_accounts">
+        <item quantity="one">%d under-konto</item>
+        <item quantity="other">%d under-kontoer</item>
+    </plurals>
+    <string-array name="account_type_entry_values">
+        <item>KONTANTER</item>
+        <item>BANK</item>
+        <item>KREDITTKORT</item>
+        <item>EIENDEL</item>
+        <item>GJELD</item>
+        <item>INNTEKT</item>
+        <item>UTGIFT</item>
+        <item>LEVERANDØRGJELD</item>
+        <item>FORDRING</item>
+        <item>EGENKAPITAL</item>
+        <item>VALUTA</item>
+        <item>AKSJE</item>
+        <item>AKSJEFOND</item>
+    </string-array>
 </resources>

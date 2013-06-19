@@ -17,7 +17,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-		<version>1.1.2</version>
+		<version>1.2.0-SNAPSHOT</version>
 		<groupId>org.gnucash.android</groupId>
 		<artifactId>gnucash-android-parent</artifactId>
 	</parent>
@@ -55,8 +55,8 @@
             <!-- the target apk, which we will test. will automatically be deployed to device in pre-integration-test
             phase. -->
             <groupId>org.gnucash.android</groupId>
-            <artifactId>gnucash-android-app</artifactId>
-            <version>1.1.1-SNAPSHOT</version>
+            <artifactId>gnucash-android</artifactId>
+            <version>1.1.3-SNAPSHOT</version>
             <type>apk</type>       
             <scope>provided</scope>     
         </dependency>
@@ -64,8 +64,8 @@
 		<dependency>
             <!-- optional: compile time dependency, in this case so that we can read from the R.java for example. -->
             <groupId>org.gnucash.android</groupId>
-            <artifactId>gnucash-android-app</artifactId>
-            <version>1.1.1-SNAPSHOT</version>
+            <artifactId>gnucash-android</artifactId>
+            <version>1.1.3-SNAPSHOT</version>
             <scope>provided</scope>
             <type>jar</type>
         </dependency>

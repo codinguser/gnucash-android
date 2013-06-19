@@ -29,7 +29,7 @@ import android.util.Log;
  * @author Ngewi Fet <ngewif@gmail.com>
  *
  */
-public class DatabaseAdapter {
+public abstract class DatabaseAdapter {
 	/**
 	 * Tag for logging
 	 */
@@ -108,7 +108,7 @@ public class DatabaseAdapter {
 	 * @param rowId ID of record to be retrieved
 	 * @return {@link Cursor} to record retrieved
 	 */
-	public Cursor fetchRecord(String tableName, long rowId){
+	protected Cursor fetchRecord(String tableName, long rowId){
 		return mDb.query(tableName, null, DatabaseHelper.KEY_ROW_ID + "=" + rowId, 
 				null, null, null, null);
 	}
@@ -118,7 +118,7 @@ public class DatabaseAdapter {
 	 * @param tableName Name of table in database
 	 * @return {@link Cursor} to all records in table <code>tableName</code>
 	 */
-	public Cursor fetchAllRecords(String tableName){
+	protected Cursor fetchAllRecords(String tableName){
 		return mDb.query(tableName, 
         		null, null, null, null, null, null);
 	}
@@ -129,8 +129,42 @@ public class DatabaseAdapter {
 	 * @param rowId ID of record to be deleted
 	 * @return <code>true</code> if deletion was successful, <code>false</code> otherwise
 	 */
-	public boolean deleteRecord(String tableName, long rowId){
+	protected boolean deleteRecord(String tableName, long rowId){
 		return mDb.delete(tableName, DatabaseHelper.KEY_ROW_ID + "=" + rowId, null) > 0;
 	}
+
+    /**
+     * Deletes all records in the database
+     * @return Number of deleted records
+     */
+    protected int deleteAllRecords(String tableName){
+        return mDb.delete(tableName, null, null);
+    }
+
+    /**
+     * Retrieves record with id <code>rowId</code> from table
+     * @param rowId ID of record to be retrieved
+     * @return {@link Cursor} to record retrieved
+     */
+    public abstract Cursor fetchRecord(long rowId);
+
+    /**
+     * Retrieves all records from database table corresponding to this adapter
+     * @return {@link Cursor} to all records in table
+     */
+    public abstract Cursor fetchAllRecords();
+
+    /**
+     * Deletes record with ID <code>rowID</code> from database table
+     * @param rowId ID of record to be deleted
+     * @return <code>true</code> if deletion was successful, <code>false</code> otherwise
+     */
+    public abstract boolean deleteRecord(long rowId);
+
+    /**
+     * Deletes all records in the database table
+     * @return Count of database records which have been deleted
+     */
+    public abstract int deleteAllRecords();
 
 }

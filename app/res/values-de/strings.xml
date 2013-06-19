@@ -301,18 +301,59 @@
 	<string name="summary_use_double_entry">Alle Buchungen stellen eine Überweisung von einem Konto zu einem anderen dar</string>
 	<string name="title_use_double_entry">Doppelte Buchführung aktivieren</string>
 	<string name="account_balance">Kontostand</string>
-	<string name="toast_no_account_name_entered">Bitte geben Sie einen Kontonamen ein</string>
+	<string name="toast_no_account_name_entered">Geben Sie einen Kontonamen ein um das Konto zu erstellen</string>
 	<string name="label_account_currency">Währung</string>
 	<string name="label_parent_account">Hauptkonto</string>
 	<string name="title_xml_ofx_header">XML OFX header verwenden</string>
 	<string name="summary_xml_ofx_header">Dieses Option aktivieren wenn Sie die OFX Dateien für ein anderes Programm als GnuCash auf dem Desktop exportieren</string>
 	<string name="title_whats_new">Neuigkeiten in dieser Version</string>
 	<string name="whats_new">
-	    <b>Version 1.1.0 - 31.01.2013</b>\n\n
-        - Doppelte Buchführung\n
-        - Unterkonten\n
-        - SGML als Standard OFX Export format\n
-        - Behebung von diverse Fehlern\n	        
-	</string>
+        <b>Version 1.2.0 - 20.06.2013</b>\n\n
+        - Import GnuCash desktop account structure\n
+        - Nested display of account hierarchy\n
+        - Options for deleting all accounts/transactions\n
+        - Preliminary support for account types\n
+        - Account balance now takes sub-accounts into consideration\n
+        - Numerous bug fixes\n
+    </string>
 	<string name="label_dismiss">Schließen</string>
+    <string name="toast_transanction_amount_required">Geben Sie einen Betrag ein um die Buchung speichern zu können</string>
+    <string name="menu_import_accounts">Import GnuCash Accounts</string>
+    <string name="btn_import_accounts">Import Accounts</string>
+    <string name="toast_error_importing_accounts">An error occurred while importing the GnuCash accounts</string>
+    <string name="toast_success_importing_accounts">GnuCash Accounts successfully imported</string>
+    <string name="summary_import_accounts">Import account structure exported from GnuCash desktop</string>
+    <string name="title_import_accounts">Import GnuCash accounts</string>
+    <string name="summary_delete_all_accounts">Delete all accounts in the database. All transactions will be deleted as
+        well.
+    </string>
+    <string name="title_delete_all_accounts">Delete all accounts</string>
+    <string name="header_account_settings">Accounts</string>
+    <string name="toast_all_accounts_deleted">All accounts have been successfully deleted</string>
+    <string name="confirm_delete_all_accounts">Are you sure you want to delete all accounts and transactions? \nThis
+        operation cannot be undone!
+    </string>
+    <string name="label_account_type">Account Type</string>
+    <string name="summary_delete_all_transactions">All transactions in all accounts will be deleted!</string>
+    <string name="title_delete_all_transactions">Delete all transactions</string>
+    <string name="toast_all_transactions_deleted">All transactions successfully deleted!</string>
+    <plurals name="label_sub_accounts">
+        <item quantity="one">%d Unterkonto</item>
+        <item quantity="other">%d Unterkonten</item>
+    </plurals>
+    <string-array name="account_type_entry_values">
+        <item>CASH</item>
+        <item>BANK</item>
+        <item>CREDIT CARD</item>
+        <item>ASSET</item>
+        <item>LIABILITY</item>
+        <item>INCOME</item>
+        <item>EXPENSE</item>
+        <item>PAYABLE</item>
+        <item>RECEIVABLE</item>
+        <item>EQUITY</item>
+        <item>CURRENCY</item>
+        <item>STOCK</item>
+        <item>MUTUAL FUND</item>
+    </string-array>
 </resources>

@@ -493,7 +493,7 @@
 	<string name="summary_use_double_entry">All transactions will be a transfer from one account to another</string>
 	<string name="title_use_double_entry">Activate Double Entry</string>
 	<string name="account_balance">Balance</string>
-	<string name="toast_no_account_name_entered">Please enter an account name</string>
+	<string name="toast_no_account_name_entered">Enter an account name to create an account</string>
 	<string name="label_account_currency">Currency</string>
 	<string name="label_parent_account">Parent account</string>
 	<string name="title_xml_ofx_header">Use XML OFX header</string>
@@ -501,11 +501,70 @@
 	<string name="key_previous_minor_version">previous_minor_version</string>
 	<string name="title_whats_new">What\'s New</string>
 	<string name="whats_new">
-	    <b>Version 1.1.0 - 31.01.2013</b>\n\n
-        - Double entry accounting\n
-        - Nested accounts\n
-        - SGML is default OFX export format\n
+	    <b>Version 1.2.0 - 20.06.2013</b>\n\n
+        - Import GnuCash desktop account structure\n
+        - Nested display of account hierarchy\n
+        - Options for deleting all accounts/transactions\n
+        - Preliminary support for account types\n
+        - Account balance now takes sub-accounts into consideration\n
         - Numerous bug fixes\n	        
 	</string>
 	<string name="label_dismiss">Dismiss</string>
+    <string name="toast_transanction_amount_required">Enter an amount to save the transaction</string>
+    <string name="menu_import_accounts">Import GnuCash Accounts</string>
+    <string name="btn_import_accounts">Import Accounts</string>
+    <string name="toast_error_importing_accounts">An error occurred while importing the GnuCash accounts</string>
+    <string name="toast_success_importing_accounts">GnuCash Accounts successfully imported</string>
+    <string name="key_import_accounts">import_gnucash_accounts</string>
+    <string name="summary_import_accounts">Import account structure exported from GnuCash desktop</string>
+    <string name="title_import_accounts">Import GnuCash accounts</string>
+    <string name="key_delete_all_accounts">delete_all_accounts</string>
+    <string name="summary_delete_all_accounts">Delete all accounts in the database. All transactions will be deleted as
+        well.
+    </string>
+    <string name="title_delete_all_accounts">Delete all accounts</string>
+    <string name="header_account_settings">Accounts</string>
+    <string name="toast_all_accounts_deleted">All accounts have been successfully deleted</string>
+    <string name="confirm_delete_all_accounts">Are you sure you want to delete all accounts and transactions? \nThis
+        operation cannot be undone!
+    </string>
+    <string name="label_account_type">Account Type</string>
+    <string name="key_delete_all_transactions">delete_all_transactions</string>
+    <string name="summary_delete_all_transactions">All transactions in all accounts will be deleted!</string>
+    <string name="title_delete_all_transactions">Delete all transactions</string>
+    <string name="toast_all_transactions_deleted">All transactions successfully deleted!</string>
+    <plurals name="label_sub_accounts">
+        <item quantity="one">%d sub-account</item>
+        <item quantity="other">%d sub-accounts</item>
+    </plurals>
+    <string-array name="account_type_entry_values">
+        <item>CASH</item>
+        <item>BANK</item>
+        <item>CREDIT CARD</item>
+        <item>ASSET</item>
+        <item>LIABILITY</item>
+        <item>INCOME</item>
+        <item>EXPENSE</item>
+        <item>PAYABLE</item>
+        <item>RECEIVABLE</item>
+        <item>EQUITY</item>
+        <item>CURRENCY</item>
+        <item>STOCK</item>
+        <item>MUTUAL FUND</item>
+    </string-array>
+    <string-array name="account_type_entries">
+        <item>CASH</item>
+        <item>BANK</item>
+        <item>CREDIT</item>
+        <item>ASSET</item>
+        <item>LIABILITY</item>
+        <item>INCOME</item>
+        <item>EXPENSE</item>
+        <item>PAYABLE</item>
+        <item>RECEIVABLE</item>
+        <item>EQUITY</item>
+        <item>CURRENCY</item>
+        <item>STOCK</item>
+        <item>MUTUAL_FUND</item>
+    </string-array>
 </resources>

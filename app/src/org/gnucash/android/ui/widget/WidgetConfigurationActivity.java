@@ -20,6 +20,7 @@ import java.util.Locale;
 
 import org.gnucash.android.R;
 import org.gnucash.android.data.Account;
+import org.gnucash.android.data.Money;
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.DatabaseHelper;
 import org.gnucash.android.receivers.TransactionAppWidgetProvider;
@@ -73,7 +74,7 @@ public class WidgetConfigurationActivity extends Activity {
 		String[] from = new String[] {DatabaseHelper.KEY_NAME};
 		int[] to = new int[] {android.R.id.text1};
 		mAccountsDbAdapter = new AccountsDbAdapter(this);
-		Cursor cursor = mAccountsDbAdapter.fetchAllAccounts();
+		Cursor cursor = mAccountsDbAdapter.fetchAllRecords();
 		
 		if (cursor.getCount() <= 0){
 			Toast.makeText(this, R.string.error_no_accounts, Toast.LENGTH_LONG).show();
@@ -156,7 +157,7 @@ public class WidgetConfigurationActivity extends Activity {
 
 		AccountsDbAdapter accountsDbAdapter = new AccountsDbAdapter(context);
 		Account account = accountsDbAdapter.getAccount(accountId);
-		accountsDbAdapter.close();
+
 		
 		if (account == null){
 			Log.i("WidgetConfiguration", "Account not found, updating widget " + appWidgetId);
@@ -180,11 +181,14 @@ public class WidgetConfigurationActivity extends Activity {
 		RemoteViews views = new RemoteViews(context.getPackageName(),
 				R.layout.widget_4x1);
 		views.setTextViewText(R.id.account_name, account.getName());
+        Money accountBalance = accountsDbAdapter.getAccountBalance(accountId);
 		views.setTextViewText(R.id.transactions_summary, 
-				account.getBalance().formattedString(Locale.getDefault()));
+				accountBalance.formattedString(Locale.getDefault()));
 		int color = account.getBalance().isNegative() ? R.color.debit_red : R.color.credit_green;
 		views.setTextColor(R.id.transactions_summary, context.getResources().getColor(color));
-		
+
+        accountsDbAdapter.close();
+
 		Intent accountViewIntent = new Intent(context, TransactionsActivity.class);
 		accountViewIntent.setAction(Intent.ACTION_VIEW);
 		accountViewIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);

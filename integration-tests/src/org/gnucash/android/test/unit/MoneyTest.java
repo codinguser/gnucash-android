@@ -27,7 +27,7 @@ import org.gnucash.android.data.Money;
 public class MoneyTest extends TestCase {
 
 	private static final String CURRENCY_CODE = "EUR";
-	private Money 	money; 
+	private Money 	money;
 	private int 	mHashcode;
 	private double 	amount = 15.75;
 	

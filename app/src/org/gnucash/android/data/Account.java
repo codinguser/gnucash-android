@@ -31,7 +31,7 @@ import org.w3c.dom.Element;
  * An account represents a transaction account in with {@link Transaction}s may be recorded
  * Accounts have different types as specified by {@link AccountType} and also a currency with
  * which transactions may be recorded in the account
- * By default, an account is made an {@link AccountType#CHECKING} and the default currency is
+ * By default, an account is made an {@link AccountType#CASH} and the default currency is
  * the currency of the Locale of the device on which the software is running. US Dollars is used
  * if the platform locale cannot be determined.
  * 
@@ -51,9 +51,12 @@ public class Account {
 	 * This are the different types specified by the OFX format and 
 	 * they are currently not used except for exporting
 	 */
-	public enum AccountType {CASH, BANK, CREDIT_CARD, ASSET, LIABILITY, INCOME, EXPENSE, 
-							PAYABLE, RECEIVABLE, EQUITY, CURRENCY, STOCK, MUTUAL_FUND};
-	
+	public enum AccountType {CASH, BANK, CREDIT, ASSET, LIABILITY, INCOME, EXPENSE,
+							PAYABLE, RECEIVABLE, EQUITY, CURRENCY, STOCK, MUTUAL_FUND, ROOT};
+
+    /**
+     * Accounts types which are used by the OFX standard
+     */
 	public enum OfxAccountType {CHECKING, SAVINGS, MONEYMRKT, CREDITLINE };
 		
 	/**
@@ -74,7 +77,7 @@ public class Account {
 	
 	/**
 	 * Type of account
-	 * Defaults to {@link AccountType#CHECKING}
+	 * Defaults to {@link AccountType#CASH}
 	 */
 	private AccountType mAccountType = AccountType.CASH;
 	
@@ -266,7 +269,7 @@ public class Account {
 	
 	/**
 	 * Returns the aggregate of all transactions in this account.
-	 * It takes into account debit and credit amounts
+	 * It takes into account debit and credit amounts, it does not however consider sub-accounts
 	 * @return {@link Money} aggregate amount of all transactions in account.
 	 */
 	public Money getBalance(){
@@ -322,7 +325,7 @@ public class Account {
 	 */
 	public static OfxAccountType convertToOfxAccountType(AccountType accountType){
 		switch (accountType) {
-		case CREDIT_CARD:
+		case CREDIT:
 		case LIABILITY:
 			return OfxAccountType.CREDITLINE;
 			

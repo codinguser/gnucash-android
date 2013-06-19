@@ -263,7 +263,7 @@
 	<string-array name="default_accounts">
 	    <item>Uscite</item>
 	    <item>Entrate</item>
-	    <item>Beni</item>	    
+	    <item>Attività</item>	    
 	    <item>Capitali</item>
 	    <item>Passività</item>
 	</string-array>
@@ -296,23 +296,63 @@
 	<string name="title_export_all_transactions">Esporta tutte le transazioni</string>
 	<string name="title_always_delete_exported_transactions">Elimina le transazioni esportate</string>
 	<string name="title_default_export_email">Email predefinita di esportazione</string>
-	<string name="summary_default_export_email">L\'indirizzo email predefinito a cui inviare i file esportati. É comunque possibile modificare l\'indirizzo quando si esporta.</string>	
+	<string name="summary_default_export_email">L\'indirizzo email predefinito a cui inviare i file esportati. É comunque possibile modificare l\'indirizzo quando si esporta</string>	
 	<string name="label_double_entry_account">Conto di trasferimento</string>
 	<string name="summary_use_double_entry">Tutte le transazioni consisteranno in un trasferimento di denaro da un conto a un altro</string>
 	<string name="title_use_double_entry">Abilita partita doppia</string>
 	<string name="account_balance">Saldo</string>
-	<string name="toast_no_account_name_entered">Inserire un nome per il conto</string>
+	<string name="toast_no_account_name_entered">Inserire un nome per creare il conto</string>
 	<string name="label_account_currency">Valuta</string>
 	<string name="label_parent_account">Conto principale</string>
 	<string name="title_xml_ofx_header">Usa header XML OFX</string>
 	<string name="summary_xml_ofx_header">Abilitare questa opzione quando si esporta verso un\'applicazione diversa da GnuCash versione desktop</string>
 	<string name="title_whats_new">Novità</string>
 	<string name="whats_new">
-	    <b>Versione 1.1.0 - 31.01.2013</b>\n\n
-        - Contabilità a partita doppia\n
-        - Conti nidificati\n
-        - SGML è il formato OFX predefinito per l\'esportazione\n
-        - Molte correzioni di bug\n	        
+        <b>Versione 1.2.0 - 20.06.2013</b>\n\n
+        - Importazione struttura dei conti da GnuCash desktop\n
+        - Visualizzazione ad albero della struttura dei conti\n
+        - Opzione per eliminare tutti i conti e le transazioni\n
+        - Supporto preliminare per i tipi di conti\n
+        - Il saldo del conto considera ora anche i sotto-conti\n
+        - Molte correzioni di bug\n
 	</string>
 	<string name="label_dismiss">Chiudi</string>
+    <string name="toast_transanction_amount_required">Inserire un importo per salvare la transazione</string>
+    <string name="menu_import_accounts">Importa conti di GnuCash</string>
+    <string name="btn_import_accounts">Importa conti</string>
+    <string name="toast_error_importing_accounts">Si è verificato un errore nell\'importare i conti di GnuCash</string>
+    <string name="toast_success_importing_accounts">I conti di GnuCash sono stati importati correttamente</string>
+    <string name="summary_import_accounts">Importa una struttura dei conti esportata da GnuCash versione desktop</string>
+    <string name="title_import_accounts">Importa conti di GnuCash</string>
+    <string name="summary_delete_all_accounts">Elimina tutti i conti nel database. Verranno eliminate anche tutte le transazioni.
+    </string>
+    <string name="title_delete_all_accounts">Elimina tutti i conti</string>
+    <string name="header_account_settings">Conti</string>
+    <string name="toast_all_accounts_deleted">Tutti i conti sono stati eliminati</string>
+    <string name="confirm_delete_all_accounts">Eliminare davvero tutti i conti e le transazioni? \nQuesta
+        operazione non può essere annullata!
+    </string>
+    <string name="label_account_type">Tipo di conto</string>
+    <string name="summary_delete_all_transactions">Verranno eliminate tutte le transazioni in tutti i conti</string>
+    <string name="title_delete_all_transactions">Elimina tutte le transazioni</string>
+    <string name="toast_all_transactions_deleted">Tutte le transazioni sono state eliminate!</string>
+    <plurals name="label_sub_accounts">
+        <item quantity="one">%d sotto-conto</item>
+        <item quantity="other">%d sotto-conti</item>
+    </plurals>
+    <string-array name="account_type_entry_values">
+        <item>LIQUIDI</item>
+        <item>BANCA</item>
+        <item>CARTA DI CREDITO</item>
+        <item>ATTIVITÀ</item>
+        <item>PASSIVITÀ</item>
+        <item>ENTRATA</item>
+        <item>USCITA</item>
+        <item>PAYABLE</item>
+        <item>RECEIVABLE</item>
+        <item>CAPITALE</item>
+        <item>VALUTA</item>
+        <item>AZIONE</item>
+        <item>FONDO COMUNE</item>
+    </string-array>
 </resources>

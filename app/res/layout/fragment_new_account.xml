@@ -54,8 +54,23 @@
 		android:layout_marginBottom="20dp"
 		style="@style/ListItem"		/>
 
-    
     <TextView
+            android:text="@string/label_account_type"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:layout_marginBottom="-8dip"
+            android:layout_marginLeft="10dp"
+            style="@style/TextAppearance.EditTransaction_LabelSmall" />
+
+    <Spinner android:id="@+id/input_account_type_spinner"
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content"
+             android:layout_marginLeft="10dp"
+             android:layout_marginRight="10dp"
+             android:layout_marginBottom="20dp"
+             style="@style/ListItem"		/>
+    
+    <TextView android:id="@+id/label_parent_account"
 	    android:text="@string/label_parent_account"
 	    android:layout_height="wrap_content"
 	    android:layout_width="wrap_content"
@@ -63,7 +78,7 @@
 	    android:layout_marginBottom="-8dip"
 	    style="@style/TextAppearance.EditTransaction_LabelSmall" />
     
-    <LinearLayout 
+    <LinearLayout android:id="@+id/layout_parent_account"
         android:layout_width="match_parent"
 	    android:layout_height="wrap_content"
 	    style="@style/ListItem"

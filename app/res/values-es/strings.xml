@@ -30,7 +30,7 @@
     <string name="btn_save">Guardar</string>
     <string name="label_no_transactions_to_display">No hay transacciones que mostrar</string>
     <string name="label_transaction_name">Descripci&#243;n</string>
-    <string name="label_transaction_amount">Cantidad</string>
+    <string name="label_transaction_amount">Importe</string>
     <string name="title_add_transaction">Nueva transacci&#243;n</string>
     <string name="label_no_transactions">No hay transacciones</string>
     <string name="label_timeanddate">FECHA &amp; HORA</string>
@@ -301,18 +301,57 @@
 	<string name="summary_use_double_entry">Todas las transacciones ser&#225;n transferidas de una cuenta a otra</string>
 	<string name="title_use_double_entry">Activar Doble Entrada</string>
 	<string name="account_balance">Saldo</string>
-	<string name="toast_no_account_name_entered">Por favor introduzca un nombre para la cuenta</string>
+	<string name="toast_no_account_name_entered">Introduzca un nombre de cuenta para crear una cuenta</string>
 	<string name="label_account_currency">Divisa</string>
 	<string name="label_parent_account">Cuenta padre</string>
 	<string name="title_xml_ofx_header">Usar cabecera XML OFX</string>
 	<string name="summary_xml_ofx_header">Active esta opci&#243;n para exportar a otras aplicaciones distintas a GnuCash para escritorio</string>
 	<string name="title_whats_new">Novedades</string>
 	<string name="whats_new">
-	    <b>Versi&#243;n 1.1.0 - 31.01.2013</b>\n\n
-        - Contabilidad de doble entrada\n
-        - Cuentas anidadas\n
-        - SGML es el formato por defecto para la exportaci&#243;n OFX\n
-        - Varios bugs solucionados\n	        
+        <b>Versi&#243;n 1.2.0 - 20.06.2013</b>\n\n
+        - Importa estructuras de cuentas de GnuCash para escritorio\n
+        - Muestra jerarqu&#237;a de cuentas anidada\n
+        - Opciones para eliminar todas las cuentas y transacciones\n
+        - Soporte preliminar de tipo de cuentas\n
+        - El balance de la cuenta tiene en consideraci&#243;n las sub-cuentas\n
+        - Varios bugs solucionados\n
 	</string>
-	<string name="label_dismiss">Cerrar</string>	
+	<string name="label_dismiss">Cerrar</string>
+    <string name="toast_transanction_amount_required">Introduzca un importe para guardar la transacci&#243;n</string>
+    <string name="menu_import_accounts">Importar cuenta de GnuCash</string>
+    <string name="btn_import_accounts">Importar cuentas</string>
+    <string name="toast_error_importing_accounts">Ocurri&#243; un error al importar las cuentas de GnuCash</string>
+    <string name="toast_success_importing_accounts">Cuentas de GnuCash importadas con &#233;xito</string>
+    <string name="summary_import_accounts">Importas estructura de cuentas exportada desde GnuCash para escritorio</string>
+    <string name="title_import_accounts">Importas cuentas de GnuCash</string>
+    <string name="summary_delete_all_accounts">Borrar todas las cuentas de la base de datos. Se borrar&#225;n tambi&#233;n todas las transacciones.
+    </string>
+    <string name="title_delete_all_accounts">Borrar todas las cuentas</string>
+    <string name="header_account_settings">Cuentas</string>
+    <string name="toast_all_accounts_deleted">Todas las cuentas han sido borradas con &#233;xito</string>
+    <string name="confirm_delete_all_accounts">&#191;Borrar todas la cuentas y transacciones? \nEsta operaci&#243;n no se puede deshacer.
+    </string>
+    <string name="label_account_type">Tipo de cuenta</string>
+    <string name="summary_delete_all_transactions">Todas las transaccipnes en todas las cuentas ser&#225;n borradas</string>
+    <string name="title_delete_all_transactions">Borrar todas las transacciones</string>
+    <string name="toast_all_transactions_deleted">Todas las transacciones han sido borradas con &#233;xito</string>
+    <plurals name="label_sub_accounts">
+        <item quantity="one">%d sub-cuenta</item>
+        <item quantity="other">%d sub-cuentas</item>
+    </plurals>
+    <string-array name="account_type_entry_values">
+        <item>EFECTIVO</item>
+        <item>BANCO</item>
+        <item>TARJETA DE CR&#201;DITO</item>
+        <item>ACTIVO</item>
+        <item>PASIVO</item>
+        <item>INGRESO</item>
+        <item>GASTO</item>
+        <item>A PAGAR</item>
+        <item>A COBRAR</item>
+        <item>CAPITAL</item>
+        <item>DIVISA</item>
+        <item>ACCIONES</item>
+        <item>FONDOS</item>
+    </string-array>
 </resources>
