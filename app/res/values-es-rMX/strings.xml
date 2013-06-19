@@ -42,7 +42,7 @@
     <string name="alert_dialog_ok_delete">Borrar</string>
     <string name="alert_dialog_cancel">Cancelar</string>
     <string name="toast_account_deleted">Cuenta borrada</string>
-    <string name="title_confirm_delete">Confirmar borrado</string>
+    <string name="title_confirm_delete">Confirmaci&#243;n borrado</string>
     <string name="delete_account_confirmation_message">Todas las transacciones en esta cuenta tambi&#233;n ser&#225;n borradas</string>
     <string name="title_edit_transaction">Editar transacci&#243;n</string>
     <string name="label_transaction_description">Descripci&#243;n</string>
@@ -56,8 +56,8 @@
     <string name="error_exporting">Error al exportar los datos OFX</string>
     <string name="btn_export">Exportar</string>
     <string name="option_delete_after_export">Borrar despu&#233;s de exportar</string>
-    <string name="hint_delete_after_export">Todas las transacciones ser&#225;n borradas despues de ser exportadas completamente</string>
-    <string name="title_settings">Preferencias</string>
+    <string name="hint_delete_after_export">Todas las transacciones ser&#225;n borradas despu&#233;s de ser exportadas completamente</string>
+    <string name="title_settings">Opciones</string>
     <string-array name="export_destinations">
         <item>Compartir archivo&#8230;</item>
         <item>Tarjeta SD</item>
@@ -78,7 +78,7 @@
     <string name="label_permission_group">Sus datos de GnuCash</string>
     <string name="description_permission_group">Leer y modificar los datos de GnuCash</string>
     <string name="label_permission_record_transaction">Registrar transacciones</string>
-    <string name="label_permission_create_account">create accounts</string>
+    <string name="label_permission_create_account">Crear cuentas</string>
     <string name="label_display_account">Mostrar cuenta</string>
     <string name="btn_create_accounts">Crear cuentas</string>
     <string name="title_default_accounts">Seleccione la cuenta a crear</string>
@@ -116,7 +116,7 @@
 		<item>Franco Comorono</item>
 		<item>Franco Congol&#233;s</item>
 		<item>Marco Bosnioherzegovino</item>
-		<item>C&#243;rdoba Nicaragüense</item>
+		<item>C&#243;rdoba Nicarag&#252;ense</item>
 		<item>Col&#243;n Costarricense</item>
 		<item>Kuna Croata</item>
 		<item>Peso Cubano</item>
@@ -140,7 +140,7 @@
 		<item>Libra gibraltare&#241;a</item>
 		<item>Oro</item>
 		<item>Gourde</item>
-		<item>Guarani</item>
+		<item>Guaran&#237;</item>
 		<item>Franco guineano</item>
 		<item>D&#243;lar guyan&#233;s</item>
 		<item>D&#243;lar de Hong Kong</item>
@@ -262,9 +262,9 @@
 	<string-array name="default_accounts">
 	    <item>Gastos</item>
 	    <item>Ingresos</item>
-	    <item>Bienes</item>
-	    <item>Equity</item>
-	    <item>Liabilities</item>
+	    <item>Activos</item>
+	    <item>Capital</item>
+	    <item>Pasivos</item>
 	</string-array>
 	<string name="error_no_accounts">No hay cuentas en Gnucash.\nCree una cuenta antes de agregar un widget</string>
 	<string name="title_build_version">Versi&#243;n de compilaci&#243;n</string>
@@ -281,78 +281,76 @@
 	<string name="title_export_email">Exportaci&#243;n OFX de Gnucash</string>
 	<string name="description_export_email">Exportaci&#243;n OFX de Gnucash </string>
 	<string name="header_transaction_settings">Transacciones</string>
-	<string name="title_transaction_preferences">Transaction Preferences</string>
-	<string name="title_account_preferences">Account Preferences</string>
-	<string name="title_default_transaction_type">Default Transaction Type</string>
-	<string name="summary_default_transaction_type">The type of transaction to use by default, CREDIT or DEBIT</string>
+	<string name="title_transaction_preferences">Opciones de transacci&#243;n</string>
+	<string name="title_account_preferences">Opciones de cuenta</string>
+	<string name="title_default_transaction_type">Tipo de transacci&#243;n por omisi&#243;n</string>
+	<string name="summary_default_transaction_type">El tipo de transacci&#243;n a utilizar por omisi&#243;n: ABONO o CARGO</string>
 	<string-array name="transaction_types">
-		<item>CREDIT</item>
-		<item>DEBIT</item>
+		<item>ABONO</item>
+		<item>CARGO</item>
 	</string-array>
-	<string name="delete_all_transactions_confirmation_message">Are you sure you want to delete ALL transactions?</string>
-	<string name="delete_transaction_confirmation_message">Are you sure you want to delete this transaction?</string>
-	<string name="title_export_preference_category">Export</string>
-	<string name="title_export_all_transactions">Export all transactions</string>
-	<string name="title_always_delete_exported_transactions">Delete exported transactions</string>
-	<string name="title_default_export_email">Default export email</string>
-	<string name="summary_default_export_email">The default email address to send exports to. You can still change this when you export.</string>	
-	<string name="label_double_entry_account">Transfer Account</string>
-	<string name="summary_use_double_entry">All transactions will be a transfer from one account to another</string>
-	<string name="title_use_double_entry">Activate Double Entry</string>
-	<string name="account_balance">Balance</string>
-	<string name="toast_no_account_name_entered">Enter an account name to create an account</string>
-	<string name="label_account_currency">Currency</string>
-	<string name="label_parent_account">Parent account</string>
-	<string name="title_xml_ofx_header">Use XML OFX header</string>
-	<string name="summary_xml_ofx_header">Enable this option when exporting to third-party application other than GnuCash for desktop</string>
-	<string name="title_whats_new">What\'s New</string>
+	<string name="delete_all_transactions_confirmation_message">&#191;Est&#225; seguro de borrar TODAS las transacciones?</string>
+	<string name="delete_transaction_confirmation_message">&#191;Est&#225; seguro de borrar esta transacci&#243;n?</string>
+	<string name="title_export_preference_category">Exportaci&#243;n</string>
+	<string name="title_export_all_transactions">Exportar todas las transacciones</string>
+	<string name="title_always_delete_exported_transactions">Borrar las transacciones exportadas</string>
+	<string name="title_default_export_email">Correo electr&#243;nico para exportaci&#243;n por omisi&#243;n</string>
+	<string name="summary_default_export_email">La direcci&#243;n de correo electr&#243;nico para enviar las exportaciones por omisi&#243;n. Se puede cambiar en cada exportaci&#243;n.</string>	
+	<string name="label_double_entry_account">Transferir cuenta</string>
+	<string name="summary_use_double_entry">Todas las transacciones ser&#225;n transferidas de una cuenta a otra</string>
+	<string name="title_use_double_entry">Activar doble entrada</string>
+	<string name="account_balance">Saldo</string>
+	<string name="toast_no_account_name_entered">Por favor introduzca un nombre para la cuenta</string>
+	<string name="label_account_currency">Moneda</string>
+	<string name="label_parent_account">Cuenta padre</string>
+	<string name="title_xml_ofx_header">Usar cabecera XML OFX</string>
+	<string name="summary_xml_ofx_header">Active esta opci&#243;n para exportar a otras aplicaciones distintas a GnuCash para escritorio</string>
+	<string name="title_whats_new">&#191;Qu&#233; hay nuevo?</string>
 	<string name="whats_new">
-        <b>Version 1.2.0 - 20.06.2013</b>\n\n
-        - Import GnuCash desktop account structure\n
-        - Nested display of account hierarchy\n
-        - Options for deleting all accounts/transactions\n
-        - Preliminary support for account types\n
-        - Account balance now takes sub-accounts into consideration\n
-        - Numerous bug fixes\n	        
+        <b>Versi&#243;n 1.2.0 - 20.06.2013</b>\n\n
+        - Importaci&#243;n de estructura de cuentas de GnuCash para escritorio\n
+        - Visualizaci\'on de cuentas jer&#225;rquicas\n
+        - Opciones para eliminaci&#243;n de todas las cuentas/transacciones\n
+        - Soporte preeliminar para tipos de cuentas\n
+        - Saldo de cuenta considera saldos de subcuentas\n
+        - Varios errores solucionados\n
 	</string>
-	<string name="label_dismiss">Dismiss</string>
-    <string name="toast_transanction_amount_required">Enter an amount to save the transaction</string>
-    <string name="menu_import_accounts">Import GnuCash Accounts</string>
-    <string name="btn_import_accounts">Import Accounts</string>
-    <string name="toast_error_importing_accounts">An error occurred while importing the GnuCash accounts</string>
-    <string name="toast_success_importing_accounts">GnuCash accounts successfully imported</string>
-    <string name="summary_import_accounts">Import account structure exported from GnuCash desktop</string>
-    <string name="title_import_accounts">Import GnuCash accounts</string>
-    <string name="summary_delete_all_accounts">Delete all accounts in the database. All transactions will be deleted as
-        well.
+	<string name="label_dismiss">Cerrar</string>
+    <string name="toast_transanction_amount_required">Ingrese el saldo para guardar la transacci&#243;n</string>
+    <string name="menu_import_accounts">Importar cuentas de GnuCash</string>
+    <string name="btn_import_accounts">Importar cuentas</string>
+    <string name="toast_error_importing_accounts">Ocurri&#243; un error al importar cuentas de GnuCash</string>
+    <string name="toast_success_importing_accounts">Cuentas GnuCash importadas exit&#243;samente</string>
+    <string name="summary_import_accounts">Importa una estructura de cuentas exportada desde GnuCash para escritorio</string>
+    <string name="title_import_accounts">Importar cuentas GnuCash</string>
+    <string name="summary_delete_all_accounts">Borrar todas las cuentas de la base de datos. Se borrar&#225;n tambi&#233;n todas las transacciones.
     </string>
-    <string name="title_delete_all_accounts">Delete all accounts</string>
-    <string name="header_account_settings">Accounts</string>
-    <string name="toast_all_accounts_deleted">All accounts have been successfully deleted</string>
-    <string name="confirm_delete_all_accounts">Are you sure you want to delete all accounts and transactions? \nThis
-        operation cannot be undone!
+    <string name="title_delete_all_accounts">Borrar todas las cuentas</string>
+    <string name="header_account_settings">Cuentas</string>
+    <string name="toast_all_accounts_deleted">Todas las cuentas han sido borradas exit&#243;samente</string>
+    <string name="confirm_delete_all_accounts">&#191;Borrar todas la cuentas y transacciones? \n&#161;Esta operaci&#243;n no puede ser revertida!
     </string>
-    <string name="label_account_type">Account Type</string>
-    <string name="summary_delete_all_transactions">All transactions in all accounts will be deleted!</string>
-    <string name="title_delete_all_transactions">Delete all transactions</string>
-    <string name="toast_all_transactions_deleted">All transactions successfully deleted!</string>
+    <string name="label_account_type">Tipo de cuenta</string>
+    <string name="summary_delete_all_transactions">&#161;Todas las transaccipnes en todas las cuentas ser&#225;n borradas!</string>
+    <string name="title_delete_all_transactions">Borrar todas las transacciones</string>
+    <string name="toast_all_transactions_deleted">&#161;Todas las transacciones han sido borradas con exit&#243;samente!</string>
     <plurals name="label_sub_accounts">
-        <item quantity="one">%d sub-account</item>
-        <item quantity="other">%d sub-accounts</item>
+        <item quantity="one">%d subcuenta</item>
+        <item quantity="other">%d subcuentas</item>
     </plurals>
     <string-array name="account_type_entry_values">
-        <item>CASH</item>
-        <item>BANK</item>
-        <item>CREDIT CARD</item>
-        <item>ASSET</item>
-        <item>LIABILITY</item>
-        <item>INCOME</item>
-        <item>EXPENSE</item>
-        <item>PAYABLE</item>
-        <item>RECEIVABLE</item>
-        <item>EQUITY</item>
-        <item>CURRENCY</item>
-        <item>STOCK</item>
-        <item>MUTUAL FUND</item>
+        <item>EFECTIVO</item>
+        <item>BANCO</item>
+        <item>TARJETA DE CR&#201;DITO</item>
+        <item>ACTIVO</item>
+        <item>PASIVO</item>
+        <item>INGRESO</item>
+        <item>GASTO</item>
+        <item>A PAGAR</item>
+        <item>A COBRAR</item>
+        <item>CAPITAL</item>
+        <item>DIVISA</item>
+        <item>ACCIONES</item>
+        <item>FONDOS</item>
     </string-array>
 </resources>
