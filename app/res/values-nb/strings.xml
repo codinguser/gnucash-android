@@ -338,6 +338,7 @@ format og importeres i regnskapsprogrammet GnuCash for PC.</string>
     <string name="summary_delete_all_transactions">Alle transaksjoner i alle kontoer vil bli slettet!</string>
     <string name="title_delete_all_transactions">Slette alle transaksjoner</string>
     <string name="toast_all_transactions_deleted">Alle transaksjoner slettet!</string>
+    <string name="title_progress_importing_accounts">Importing accounts</string>
     <plurals name="label_sub_accounts">
         <item quantity="one">%d under-konto</item>
         <item quantity="other">%d under-kontoer</item>

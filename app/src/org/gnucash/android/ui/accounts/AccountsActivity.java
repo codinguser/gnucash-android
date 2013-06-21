@@ -17,12 +17,16 @@
 package org.gnucash.android.ui.accounts;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
@@ -46,6 +50,7 @@ import org.gnucash.android.util.GnucashAccountXmlHandler;
 import org.gnucash.android.util.OnAccountClickedListener;
 
 import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Currency;
 import java.util.Locale;
@@ -384,15 +389,20 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
 
         switch (requestCode){
             case AccountsListFragment.REQUEST_PICK_ACCOUNTS_FILE:
-                try {
-                    GnucashAccountXmlHandler.parse(this, getContentResolver().openInputStream(data.getData()));
-                    Toast.makeText(this, R.string.toast_success_importing_accounts, Toast.LENGTH_LONG).show();
-                } catch (FileNotFoundException e) {
-                    Toast.makeText(this, R.string.toast_error_importing_accounts, Toast.LENGTH_LONG).show();
-                    e.printStackTrace();
-                }
+                new AccountImporterTask(this).execute(data.getData());
                 break;
         }
+    }
+
+    /**
+     * Starts the AccountsActivity and clears the activity stack
+     * @param context Application context
+     */
+    public static void start(Context context){
+        Intent accountsActivityIntent = new Intent(context, AccountsActivity.class);
+        accountsActivityIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        accountsActivityIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        context.startActivity(accountsActivityIntent);
     }
 
     @Override
@@ -414,4 +424,47 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
 		editor.commit();
 	}
 
+    /**
+     * Imports a GnuCash (desktop) account file and displays a progress dialog.
+     * The AccountsActivity is opened when importing is done.
+     */
+    public static class AccountImporterTask extends AsyncTask<Uri, Void, Boolean>{
+        private final Context context;
+        private ProgressDialog progressDialog;
+
+        public AccountImporterTask(Context context){
+            this.context = context;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressDialog = new ProgressDialog(context);
+            progressDialog.setTitle(R.string.title_progress_importing_accounts);
+            progressDialog.setIndeterminate(true);
+            progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+            progressDialog.show();
+        }
+
+        @Override
+        protected Boolean doInBackground(Uri... uris) {
+            try {
+                GnucashAccountXmlHandler.parse(context, context.getContentResolver().openInputStream(uris[0]));
+            } catch (Exception exception){
+                exception.printStackTrace();
+                return false;
+            }
+            return true;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean importSuccess) {
+            progressDialog.dismiss();
+
+            int message = importSuccess ? R.string.toast_success_importing_accounts : R.string.toast_error_importing_accounts;
+            Toast.makeText(context, message, Toast.LENGTH_LONG).show();
+
+            AccountsActivity.start(context);
+        }
+    }
 }

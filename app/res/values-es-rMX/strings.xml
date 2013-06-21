@@ -334,6 +334,7 @@
     <string name="summary_delete_all_transactions">&#161;Todas las transaccipnes en todas las cuentas ser&#225;n borradas!</string>
     <string name="title_delete_all_transactions">Borrar todas las transacciones</string>
     <string name="toast_all_transactions_deleted">&#161;Todas las transacciones han sido borradas con exit&#243;samente!</string>
+    <string name="title_progress_importing_accounts">Importing accounts</string>
     <plurals name="label_sub_accounts">
         <item quantity="one">%d subcuenta</item>
         <item quantity="other">%d subcuentas</item>
