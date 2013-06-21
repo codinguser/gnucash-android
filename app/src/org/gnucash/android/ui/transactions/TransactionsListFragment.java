@@ -16,17 +16,6 @@
 
 package org.gnucash.android.ui.transactions;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Locale;
-
-import org.gnucash.android.R;
-import org.gnucash.android.data.Money;
-import org.gnucash.android.db.*;
-import org.gnucash.android.ui.widget.WidgetConfigurationActivity;
-import org.gnucash.android.util.OnTransactionClickedListener;
-
 import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
@@ -48,13 +37,26 @@ import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ListView;
 import android.widget.TextView;
-
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockListFragment;
 import com.actionbarsherlock.view.ActionMode;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
+import org.gnucash.android.R;
+import org.gnucash.android.data.Money;
+import org.gnucash.android.db.DatabaseAdapter;
+import org.gnucash.android.db.DatabaseCursorLoader;
+import org.gnucash.android.db.DatabaseHelper;
+import org.gnucash.android.db.TransactionsDbAdapter;
+import org.gnucash.android.ui.accounts.AccountsListFragment;
+import org.gnucash.android.ui.widget.WidgetConfigurationActivity;
+import org.gnucash.android.util.OnTransactionClickedListener;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Locale;
 
 /**
  * List Fragment for displaying list of transactions for an account
@@ -213,15 +215,9 @@ public class TransactionsListFragment extends SherlockListFragment implements
 	public void refreshList(){
 		getLoaderManager().restartLoader(0, null, this);
 
-        AccountsDbAdapter accountsDbAdapter = new AccountsDbAdapter(getActivity());
-		Money sum = accountsDbAdapter.getAccountBalance(mAccountID);// mTransactionsDbAdapter.getTransactionsSum(mAccountID);
-        accountsDbAdapter.close();
-		mSumTextView = (TextView) getView().findViewById(R.id.transactions_sum);
-		mSumTextView.setText(sum.formattedString(Locale.getDefault()));
-		if (sum.isNegative())
-			mSumTextView.setTextColor(getResources().getColor(R.color.debit_red));
-		else
-			mSumTextView.setTextColor(getResources().getColor(R.color.credit_green));			
+        mSumTextView = (TextView) getView().findViewById(R.id.transactions_sum);
+        new AccountsListFragment.AccountBalanceTask(mSumTextView, getActivity()).execute(mAccountID);
+
 	}
 			
 	@Override
@@ -481,7 +477,7 @@ public class TransactionsListFragment extends SherlockListFragment implements
 			long transactionTime = cursor.getLong(DatabaseAdapter.COLUMN_TIMESTAMP);
 			int position = cursor.getPosition();
 						
-			boolean hasSectionHeader = false;
+			boolean hasSectionHeader;
 			if (position == 0){
 				hasSectionHeader = true;
 			} else {

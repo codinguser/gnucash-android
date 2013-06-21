@@ -453,7 +453,15 @@ public class AccountsDbAdapter extends DatabaseAdapter {
      * @return Number of sub accounts
      */
     public int getSubAccountCount(long accountId){
-        return getSubAccountIds(accountId).size();
+        //TODO: at some point when API level 11 and above only is supported, use DatabaseUtils.queryNumEntries
+
+        String queryCount = "SELECT COUNT(*) FROM " + DatabaseHelper.ACCOUNTS_TABLE_NAME + " WHERE "
+                + DatabaseHelper.KEY_PARENT_ACCOUNT_UID + " = ?";
+        Cursor cursor = mDb.rawQuery(queryCount, new String[]{getAccountUID(accountId)});
+        cursor.moveToFirst();
+        int count = cursor.getInt(0);
+        cursor.close();
+        return count;
     }
 
 	/**
@@ -523,6 +531,5 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 		mDb.delete(DatabaseHelper.TRANSACTIONS_TABLE_NAME, null, null);
         return mDb.delete(DatabaseHelper.ACCOUNTS_TABLE_NAME, null, null);
 	}
-
 
 }
