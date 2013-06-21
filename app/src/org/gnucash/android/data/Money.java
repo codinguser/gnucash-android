@@ -80,7 +80,21 @@ public final class Money implements Comparable<Money>{
 	 * otherwise US dollars are used
 	 */
 	public static String DEFAULT_CURRENCY_CODE 	= "USD";
-	
+
+    /**
+     * A zero instance with the currency of the default locale.
+     * This can be used anywhere where a starting amount is required without having to create a new object
+     */
+    public static final Money sDefaultZero = Money.createInstance(Currency.getInstance(Locale.getDefault()).getCurrencyCode());
+
+    /**
+     * Returns a Money instance initialized to the local currency and value 0
+     * @return Money instance of value 0 in locale currency
+     */
+    public static Money getZeroInstance(){
+        return sDefaultZero;
+    }
+
 	/**
 	 * Default constructor
 	 * Initializes the object with an amount of 0 and currency set to the device default locale
@@ -229,7 +243,15 @@ public final class Money implements Comparable<Money>{
 		formatter.setMaximumFractionDigits(DECIMAL_PLACES);
 		return formatter.format(asDouble()) + " " + mCurrency.getSymbol(locale);
 	}
-	
+
+    /**
+     * Equivalent to calling formattedString(Locale.getDefault())
+     * @return String formatted Money representation in default locale
+     */
+    public String formattedString(){
+        return formattedString(Locale.getDefault());
+    }
+
 	/**
 	 * Returns a new Money object whose amount is the negated value of this object amount.
 	 * The original <code>Money</code> object remains unchanged.
