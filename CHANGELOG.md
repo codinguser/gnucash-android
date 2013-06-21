@@ -1,5 +1,10 @@
 Change Log
 ===============================================================================
+Version 1.2.1 *(2013-xx-xx)*
+----------------------------
+* Improved performance for loading list of accounts 
+* Show progress dialog for importing accounts and improve reliability
+
 Version 1.2.0 *(2013-06-20)*
 ----------------------------
 * Feature: Import GnuCash desktop account structure
