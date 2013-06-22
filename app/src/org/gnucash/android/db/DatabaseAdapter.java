@@ -101,7 +101,23 @@ public abstract class DatabaseAdapter {
 		mDbHelper.close();
 		mDb.close();
 	}
-	
+
+    /**
+     * Checks if the database is open
+     * @return <code>true</code> if the database is open, <code>false</code> otherwise
+     */
+    public boolean isOpen(){
+        return mDb.isOpen();
+    }
+
+    /**
+     * Returns the context used to create this adapter
+     * @return Android application context
+     */
+    public Context getContext(){
+        return mContext.getApplicationContext();
+    }
+
 	/**
 	 * Retrieves record with id <code>rowId</code> from table <code>tableName</code>
 	 * @param tableName Name of table where record is found

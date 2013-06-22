@@ -23,6 +23,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
@@ -55,6 +56,7 @@ import org.gnucash.android.ui.transactions.TransactionsListFragment;
 import org.gnucash.android.ui.widget.WidgetConfigurationActivity;
 import org.gnucash.android.util.OnAccountClickedListener;
 
+import java.lang.ref.WeakReference;
 import java.util.Locale;
 
 /**
@@ -589,9 +591,6 @@ public class AccountsListFragment extends SherlockListFragment implements
             // perform the default binding
             super.bindView(v, context, cursor);
 
-            // add a summary of transactions to the account view
-            TextView summary = (TextView) v
-                    .findViewById(R.id.transactions_summary);
             final long accountId = cursor.getLong(DatabaseAdapter.COLUMN_ROW_ID);
 
             TextView subAccountTextView = (TextView) v.findViewById(R.id.secondary_text);
@@ -603,11 +602,10 @@ public class AccountsListFragment extends SherlockListFragment implements
             } else
                 subAccountTextView.setVisibility(View.GONE);
 
-            Money balance = mAccountsDbAdapter.getAccountBalance(accountId);
-            summary.setText(balance.formattedString(Locale.getDefault()));
-            int fontColor = balance.isNegative() ? getResources().getColor(R.color.debit_red) :
-                    getResources().getColor(R.color.credit_green);
-            summary.setTextColor(fontColor);
+            // add a summary of transactions to the account view
+            TextView summary = (TextView) v
+                    .findViewById(R.id.transactions_summary);
+            new AccountBalanceTask(summary, getActivity()).execute(accountId);
 
             ImageView newTransactionButton = (ImageView) v.findViewById(R.id.btn_new_transaction);
             if (inSubAcccount()){
@@ -624,6 +622,48 @@ public class AccountsListFragment extends SherlockListFragment implements
                         getActivity().startActivity(intent);
                     }
                 });
+            }
+        }
+    }
+
+    /**
+     * An asynchronous task for computing the account balance of an account.
+     * This is done asynchronously because in cases of deeply nested accounts,
+     * it can take some time and would block the UI thread otherwise.
+     */
+    public static class AccountBalanceTask extends AsyncTask<Long, Void, Money> {
+        private final WeakReference<TextView> accountBalanceTextViewReference;
+        private final AccountsDbAdapter accountsDbAdapter;
+
+        public AccountBalanceTask(TextView balanceTextView, Context context){
+            accountBalanceTextViewReference = new WeakReference<TextView>(balanceTextView);
+            accountsDbAdapter = new AccountsDbAdapter(context);
+        }
+
+        @Override
+        protected Money doInBackground(Long... params) {
+            //if the view for which we are doing this job is dead, kill the job as well
+            if (accountBalanceTextViewReference == null || accountBalanceTextViewReference.get() == null){
+                cancel(true);
+                accountsDbAdapter.close();
+                return Money.getZeroInstance();
+            }
+            Money balance = accountsDbAdapter.getAccountBalance(params[0]);
+            accountsDbAdapter.close();
+            return balance;
+        }
+
+        @Override
+        protected void onPostExecute(Money balance) {
+            if (accountBalanceTextViewReference != null && balance != null){
+                final Context context = accountsDbAdapter.getContext();
+                final TextView balanceTextView = accountBalanceTextViewReference.get();
+                if (balanceTextView != null){
+                    balanceTextView.setText(balance.formattedString());
+                    int fontColor = balance.isNegative() ? context.getResources().getColor(R.color.debit_red) :
+                            context.getResources().getColor(R.color.credit_green);
+                    balanceTextView.setTextColor(fontColor);
+                }
             }
         }
     }

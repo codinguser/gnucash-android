@@ -336,6 +336,8 @@
     <string name="summary_delete_all_transactions">Verranno eliminate tutte le transazioni in tutti i conti</string>
     <string name="title_delete_all_transactions">Elimina tutte le transazioni</string>
     <string name="toast_all_transactions_deleted">Tutte le transazioni sono state eliminate!</string>
+    <string name="title_progress_importing_accounts">Importing accounts</string>
+    <string name="toast_tap_again_to_confirm_delete">Tap again to confirm. ALL entries will be deleted!!</string>
     <plurals name="label_sub_accounts">
         <item quantity="one">%d sotto-conto</item>
         <item quantity="other">%d sotto-conti</item>

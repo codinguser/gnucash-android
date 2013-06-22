@@ -1,5 +1,11 @@
 Change Log
 ===============================================================================
+Version 1.2.1 *(2013-06-22)*
+----------------------------
+* Fixed: crash when opening Settings on devices with Gingerbread or earlier
+* Improved performance for loading list of accounts and transactions
+* Show progress dialog for importing accounts and improve reliability
+
 Version 1.2.0 *(2013-06-20)*
 ----------------------------
 * Feature: Import GnuCash desktop account structure

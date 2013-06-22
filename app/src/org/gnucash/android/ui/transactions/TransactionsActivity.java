@@ -248,10 +248,7 @@ public class TransactionsActivity extends SherlockFragmentActivity implements
 	        if (fm.getBackStackEntryCount() > 0) {
 	            fm.popBackStack();
 	        } else {
-	        	Intent accountsActivityIntent = new Intent(this, AccountsActivity.class);
-	        	accountsActivityIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-	        	accountsActivityIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-	        	startActivity(accountsActivityIntent);
+	        	AccountsActivity.start(this);
 	        	finish();
 	        }
 	        return true;

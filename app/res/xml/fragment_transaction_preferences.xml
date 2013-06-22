@@ -24,4 +24,7 @@
     <CheckBoxPreference android:summary="@string/summary_use_double_entry"
                         android:key="@string/key_use_double_entry"
                         android:title="@string/title_use_double_entry"/>
+    <Preference android:key="@string/key_delete_all_transactions"
+                android:summary="@string/summary_delete_all_transactions"
+                android:title="@string/title_delete_all_transactions" />
 </PreferenceScreen>
