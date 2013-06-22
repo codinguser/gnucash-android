@@ -1,8 +1,9 @@
 Change Log
 ===============================================================================
-Version 1.2.1 *(2013-xx-xx)*
+Version 1.2.1 *(2013-06-22)*
 ----------------------------
-* Improved performance for loading list of accounts 
+* Fixed: crash when opening Settings on devices with Gingerbread or earlier
+* Improved performance for loading list of accounts and transactions
 * Show progress dialog for importing accounts and improve reliability
 
 Version 1.2.0 *(2013-06-20)*
