@@ -27,18 +27,22 @@ import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Toast;
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockPreferenceActivity;
 import com.actionbarsherlock.view.MenuItem;
 import org.gnucash.android.R;
 import org.gnucash.android.data.Money;
+import org.gnucash.android.db.AccountsDbAdapter;
+import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.ui.accounts.AccountsActivity;
 import org.gnucash.android.ui.accounts.AccountsListFragment;
-import org.gnucash.android.util.GnucashAccountXmlHandler;
 
-import java.io.FileNotFoundException;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * Activity for displaying settings and information about the application
@@ -46,6 +50,21 @@ import java.util.List;
  *
  */
 public class SettingsActivity extends SherlockPreferenceActivity implements OnPreferenceChangeListener, Preference.OnPreferenceClickListener{
+
+    public static final int DOUBLE_TAP_DELAY = 2000;
+    /**
+     * Counts the number of times the preference for deleting all accounts has been clicked.
+     * It is reset every time the SettingsActivity is resumed.
+     * Only useful on devices with API level < 11
+     */
+    private int mDeleteAccountsClickCount;
+
+    /**
+     * Counts the number of times the preference for deleting all transactions has been clicked.
+     * It is reset every time the SettingsActivity is resumed.
+     * Only useful on devices with API level < 11
+     */
+    private int mDeleteTransactionsClickCount;
 
 	/**
 	 * Constructs the headers to display in the header list when the Settings activity is first opened
@@ -100,8 +119,15 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
             pref.setOnPreferenceClickListener(this);
 		}
 	}
-		
-	@Override
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mDeleteAccountsClickCount = 0;
+        mDeleteTransactionsClickCount = 0;
+    }
+
+    @Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case android.R.id.home:		
@@ -148,8 +174,50 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
             return true;
         }
 
+        //since we cannot get a support FragmentManager in the SettingsActivity pre H0NEYCOMB,
+        //we will just use 2 taps within 2 seconds as confirmation
+        if (key.equals(getString(R.string.key_delete_all_accounts))){
+            mDeleteAccountsClickCount++;
+            if (mDeleteAccountsClickCount < 2){
+                Toast.makeText(this, R.string.toast_tap_again_to_confirm_delete, Toast.LENGTH_SHORT).show();
+            } else {
+                AccountsDbAdapter accountsDbAdapter = new AccountsDbAdapter(this);
+                accountsDbAdapter.deleteAllRecords();
+                accountsDbAdapter.close();
+                Toast.makeText(this, R.string.toast_all_accounts_deleted, Toast.LENGTH_LONG).show();
+            }
+            Timer timer = new Timer();
+            timer.schedule(new ResetCounter(), DOUBLE_TAP_DELAY);
+        }
+
+        if (key.equals(getString(R.string.key_delete_all_transactions))){
+            mDeleteTransactionsClickCount++;
+            if (mDeleteTransactionsClickCount < 2){
+                Toast.makeText(this, R.string.toast_tap_again_to_confirm_delete, Toast.LENGTH_SHORT).show();
+            } else {
+                TransactionsDbAdapter transactionsDbAdapter = new TransactionsDbAdapter(this);
+                transactionsDbAdapter.deleteAllRecords();
+                transactionsDbAdapter.close();
+                Toast.makeText(this, R.string.toast_all_transactions_deleted, Toast.LENGTH_LONG).show();
+            }
+            Timer timer = new Timer();
+            timer.schedule(new ResetCounter(), DOUBLE_TAP_DELAY);
+        }
+
         return false;
     }
+
+    /**
+     * Resets the tap counter for preferences which need to be double-tapped
+     */
+    private class ResetCounter extends TimerTask{
+
+        @Override
+        public void run() {
+            mDeleteAccountsClickCount = 0;
+            mDeleteTransactionsClickCount = 0;
+        }
+    };
 
     public void importAccounts() {
         Intent pickIntent = new Intent(Intent.ACTION_GET_CONTENT);

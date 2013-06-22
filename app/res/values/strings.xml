@@ -534,6 +534,7 @@
     <string name="title_delete_all_transactions">Delete all transactions</string>
     <string name="toast_all_transactions_deleted">All transactions successfully deleted!</string>
     <string name="title_progress_importing_accounts">Importing accounts</string>
+    <string name="toast_tap_again_to_confirm_delete">Tap again to confirm. ALL entries will be deleted!!</string>
     <plurals name="label_sub_accounts">
         <item quantity="one">%d sub-account</item>
         <item quantity="other">%d sub-accounts</item>
