@@ -1,5 +1,12 @@
 Change Log
 ===============================================================================
+Version 1.2.2 *(2013-06-23)*
+----------------------------
+* Fixed: bug with importing accounts
+* Fixed: deleting an account renders sub-accounts inaccessible.
+* Fixed: impossible to scroll new accounts screen
+* Updated Brazilian Portuguese translations
+
 Version 1.2.1 *(2013-06-22)*
 ----------------------------
 * Fixed: crash when opening Settings on devices with Gingerbread or earlier

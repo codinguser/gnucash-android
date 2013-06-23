@@ -52,7 +52,7 @@ public class Account {
 	 * they are currently not used except for exporting
 	 */
 	public enum AccountType {CASH, BANK, CREDIT, ASSET, LIABILITY, INCOME, EXPENSE,
-							PAYABLE, RECEIVABLE, EQUITY, CURRENCY, STOCK, MUTUAL_FUND, ROOT};
+							PAYABLE, RECEIVABLE, EQUITY, CURRENCY, STOCK, MUTUAL, ROOT};
 
     /**
      * Accounts types which are used by the OFX standard
@@ -340,7 +340,7 @@ public class Account {
 		case ASSET:
 			return OfxAccountType.SAVINGS;
 			
-		case MUTUAL_FUND:
+		case MUTUAL:
 		case STOCK:
 		case EQUITY:
 		case CURRENCY:
