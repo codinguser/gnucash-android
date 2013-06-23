@@ -90,7 +90,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 		}
 		return rowId;
 	}
-	
+
 	/**
 	 * Deletes an account with database id <code>rowId</code>
 	 * All the transactions in the account will also be deleted
@@ -112,7 +112,26 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 		result &= deleteRecord(DatabaseHelper.ACCOUNTS_TABLE_NAME, rowId);
 		return result;
 	}
-	
+
+    /**
+     * Reassigns all accounts with parent UID <code>oldParentUID</code> to <code>newParentUID</code>
+     * @param oldParentUID Old parent account Unique ID
+     * @param newParentUID Unique ID of new parent account
+     * @return Number of records which are modified
+     */
+    public int reassignParent(String oldParentUID, String newParentUID){
+        ContentValues contentValues = new ContentValues();
+        if (newParentUID == null)
+            contentValues.putNull(DatabaseHelper.KEY_PARENT_ACCOUNT_UID);
+        else
+            contentValues.put(DatabaseHelper.KEY_PARENT_ACCOUNT_UID, newParentUID);
+
+        return mDb.update(DatabaseHelper.ACCOUNTS_TABLE_NAME,
+                contentValues,
+                DatabaseHelper.KEY_PARENT_ACCOUNT_UID + "= '" + oldParentUID + "' ",
+                null);
+    }
+
 	/**
 	 * Deletes an account while preserving the linked transactions
 	 * Reassigns all transactions belonging to the account with id <code>rowId</code> to 
@@ -329,9 +348,16 @@ public class AccountsDbAdapter extends DatabaseAdapter {
         return fetchRecord(DatabaseHelper.ACCOUNTS_TABLE_NAME, rowId);
     }
 
+    /**
+     * Deletes an account and its transactions from the database.
+     * This is equivalent to calling {@link #destructiveDeleteAccount(long)}
+     * @param rowId ID of record to be deleted
+     * @return <code>true</code> if successful, <code>false</code> otherwise
+     */
     @Override
     public boolean deleteRecord(long rowId) {
-        return deleteRecord(DatabaseHelper.ACCOUNTS_TABLE_NAME, rowId);
+        return destructiveDeleteAccount(rowId);
+        //return deleteRecord(DatabaseHelper.ACCOUNTS_TABLE_NAME, rowId);
     }
 
     /**

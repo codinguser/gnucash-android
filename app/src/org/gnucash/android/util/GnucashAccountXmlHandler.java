@@ -136,8 +136,8 @@ public class GnucashAccountXmlHandler extends DefaultHandler {
             xr.parse(new InputSource(bos));
 
         } catch (Exception e) {
-            Toast.makeText(context, R.string.toast_error_importing_accounts, Toast.LENGTH_LONG).show();
             e.printStackTrace();
+            Toast.makeText(context, R.string.toast_error_importing_accounts, Toast.LENGTH_LONG).show();
         }
     }
 }

@@ -567,6 +567,6 @@
         <item>EQUITY</item>
         <item>CURRENCY</item>
         <item>STOCK</item>
-        <item>MUTUAL_FUND</item>
+        <item>MUTUAL</item>
     </string-array>
 </resources>
