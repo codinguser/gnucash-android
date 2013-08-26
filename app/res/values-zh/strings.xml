@@ -66,7 +66,6 @@
     <string name="label_move_destination">目的科目</string>
     <string name="permission_access_sdcard">访问 SD Card</string>
     <string name="title_share_ofx_with">发送OFX到</string>
-    <string name="key_default_currency">默认货币</string>
     <string name="toast_incompatible_currency">不能移动交易。\n两个科目的货币设置不一样。</string>
     <string name="header_general_settings">常规</string>
     <string name="header_about_gnucash">关于</string>
@@ -82,7 +81,6 @@
     <string name="label_display_account">显示科目</string>
     <string name="btn_create_accounts">创建科目</string>
     <string name="title_default_accounts">选择要创建的科目</string>
-    <string name="key_first_run">第一次运行</string>
     <string-array name="currency_names">
         <item>阿富汗尼</item>
         <item>阿尔及利亚第纳尔</item>
@@ -445,15 +443,12 @@
         <item>负债</item>
     </string-array>
     <string name="error_no_accounts">GnuCash文件里没有科目信息.\n使用小部件前需要添加科目</string>
-    <string name="key_build_version">版本</string>
     <string name="title_build_version">版本号</string>
     <string name="title_license">许可</string>
     <string name="summary_licence_details">Apache License v2.0。点击查看明细</string>
     <string name="title_general_prefs">常规</string>
-    <string name="key_license">许可协议</string>
     <string name="label_widget_configuration">选择科目</string>
     <string name="toast_no_transactions_to_export">没有需要导出的交易</string>
-    <string name="key_about">关于gnucash</string>
     <string name="title_about_gnucash">关于GnuCash</string>
     <string name="summary_about_gnucash">Gnucash for android是一个移动版的财务管理软件。提供灵活的跟踪开支的功能，可以导出OFX格式（开放金融交易格式）数据，并导入到桌面版的 GnuCash中。</string>
     <string name="title_about">关于</string>
@@ -464,29 +459,19 @@
     <string name="header_transaction_settings">交易</string>
     <string name="title_transaction_preferences">交易设置</string>
     <string name="title_account_preferences">科目设置</string>
-    <string name="key_default_transaction_type">默认交易类型</string>
     <string name="title_default_transaction_type">默认交易类型</string>
     <string name="summary_default_transaction_type">默认的交易类型，借方或贷方</string>
     <string-array name="transaction_types">
         <item>贷方</item>
         <item>借方</item>
     </string-array>
-    <string-array name="key_transaction_type_values">
-        <item>贷方</item>
-        <item>借方</item>
-    </string-array>
     <string name="delete_all_transactions_confirmation_message">确定删除所有交易？</string>
     <string name="delete_transaction_confirmation_message">确定删除此项交易？</string>
     <string name="title_export_preference_category">导出设置</string>
-    <string name="key_export_all_transactions">导出所有交易</string>
     <string name="title_export_all_transactions">导出所有交易</string>
-    <string name="key_delete_transactions_after_export">导出后删除交易</string>
     <string name="title_always_delete_exported_transactions">删除已导出的交易</string>
-    <string name="key_default_export_email">email地址</string>
     <string name="title_default_export_email">email设置</string>
     <string name="summary_default_export_email">默认发送导出的OFX文件到这个email地址，当然在导出过程时你仍然可以临时变更。</string>
-    <string name="key_use_double_entry">使用双行模式</string>
-    <string name="key_xml_ofx_header">xml_ofx_header</string>
     <string name="label_double_entry_account">交易科目</string>
     <string name="summary_use_double_entry">所有交易会显示成两行，复式簿记</string>
     <string name="title_use_double_entry">使用双行模式</string>
@@ -496,7 +481,6 @@
     <string name="label_parent_account">上级科目</string>
     <string name="title_xml_ofx_header">添加 XML OFX头</string>
     <string name="summary_xml_ofx_header">当导出数据到GnuCash桌面版以外的程序时需要开启这个选项。</string>
-    <string name="key_previous_minor_version">上个版本</string>
     <string name="title_whats_new">新功能</string>
     <string name="whats_new">
 	    <b>Version 1.2.0 - 20.06.2013</b>\n\n
@@ -513,10 +497,8 @@
     <string name="btn_import_accounts">导入科目</string>
     <string name="toast_error_importing_accounts"> 导入 GnuCash 科目中发生错误。</string>
     <string name="toast_success_importing_accounts">GnuCash 科目资料导入完成。</string>
-    <string name="key_import_accounts">导入gnucash科目</string>
     <string name="summary_import_accounts">导入从GnuCash桌面版导出的科目设置</string>
     <string name="title_import_accounts">导入GnuCash科目</string>
-    <string name="key_delete_all_accounts">删除所有科目</string>
     <string name="summary_delete_all_accounts">删除科目资料的同时其下的交易信息也会被删除。
     </string>
     <string name="title_delete_all_accounts">删除所有科目</string>
@@ -525,7 +507,6 @@
     <string name="confirm_delete_all_accounts">确定删除所有科目和交易？ \n这个操作不能撤销！
     </string>
     <string name="label_account_type">帐户类型</string>
-    <string name="key_delete_all_transactions">删除所有交易</string>
     <string name="summary_delete_all_transactions">所有科目的所有的交易信息将被删除！</string>
     <string name="title_delete_all_transactions">删除所有交易</string>
     <string name="toast_all_transactions_deleted">所有交易都已删除</string>
@@ -549,20 +530,5 @@
         <item>货币</item>
         <item>股票</item>
         <item>共同基金</item>
-    </string-array>
-    <string-array name="account_type_entries">
-        <item>CASH</item>
-        <item>BANK</item>
-        <item>CREDIT</item>
-        <item>ASSET</item>
-        <item>LIABILITY</item>
-        <item>INCOME</item>
-        <item>EXPENSE</item>
-        <item>PAYABLE</item>
-        <item>RECEIVABLE</item>
-        <item>EQUITY</item>
-        <item>CURRENCY</item>
-        <item>STOCK</item>
-        <item>MUTUAL</item>
     </string-array>
 </resources>

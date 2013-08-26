@@ -1,5 +1,9 @@
 Change Log
 ===============================================================================
+Version 1.2.x *(2013-06-23)*
+----------------------------
+* Added Chinese language translation
+
 Version 1.2.2 *(2013-06-23)*
 ----------------------------
 * Fixed: bug with importing accounts
