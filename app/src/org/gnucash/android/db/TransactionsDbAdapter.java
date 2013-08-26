@@ -451,4 +451,22 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
         return fetchRecord(DatabaseHelper.TRANSACTIONS_TABLE_NAME, rowId);
     }
 
+    /**
+     * Returns a cursor to transactions whose name (UI: description) start with the <code>prefix</code>
+     * <p>This method is used for autocomplete suggestions when creating new transactions</p>
+     * @param prefix Starting characters of the transaction name
+     * @return Cursor to the data set containing all matching transactions
+     */
+    public Cursor fetchTransactionsStartingWith(String prefix){
+        StringBuffer stringBuffer = new StringBuffer(DatabaseHelper.KEY_NAME)
+                .append(" LIKE '").append(prefix).append("%'");
+        String selection = stringBuffer.toString();
+
+        Cursor c = mDb.query(DatabaseHelper.TRANSACTIONS_TABLE_NAME,
+                new String[]{DatabaseHelper.KEY_ROW_ID, DatabaseHelper.KEY_NAME},
+                selection,
+                null, null, null,
+                DatabaseHelper.KEY_NAME);
+        return c;
+    }
 }

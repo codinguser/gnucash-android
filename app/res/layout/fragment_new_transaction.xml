@@ -25,7 +25,7 @@
 	    android:padding="@dimen/dialog_padding"
 	    android:orientation="vertical" >
 	
-	    <EditText
+	    <AutoCompleteTextView
 	        android:id="@+id/input_transaction_name"
 	        android:layout_width="match_parent"
 	        android:layout_height="wrap_content"

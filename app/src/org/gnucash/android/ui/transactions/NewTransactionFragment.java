@@ -129,7 +129,7 @@ public class NewTransactionFragment extends SherlockFragment implements
 	/**
 	 * Input field for the transaction name (description)
 	 */
-	private EditText mNameEditText;
+	private AutoCompleteTextView mNameEditText;
 	
 	/**
 	 * Input field for the transaction amount
@@ -172,8 +172,8 @@ public class NewTransactionFragment extends SherlockFragment implements
 	 */
 	private Spinner mDoubleAccountSpinner;
 
-	private boolean mUseDoubleEntry;  
-	
+	private boolean mUseDoubleEntry;
+
 	/**
 	 * Create the view and retrieve references to the UI elements
 	 */
@@ -182,7 +182,7 @@ public class NewTransactionFragment extends SherlockFragment implements
 			Bundle savedInstanceState) {
 		View v = inflater.inflate(R.layout.fragment_new_transaction, container, false);
 		
-		mNameEditText = (EditText) v.findViewById(R.id.input_transaction_name);
+		mNameEditText = (AutoCompleteTextView) v.findViewById(R.id.input_transaction_name);
 		mDescriptionEditText = (EditText) v.findViewById(R.id.input_description);
 		mDateTextView = (TextView) v.findViewById(R.id.input_date);
 		mTimeTextView = (TextView) v.findViewById(R.id.input_time);
@@ -202,7 +202,6 @@ public class NewTransactionFragment extends SherlockFragment implements
 		actionBar.setHomeButtonEnabled(true);
 		actionBar.setDisplayHomeAsUpEnabled(true);
 		actionBar.setDisplayShowTitleEnabled(false);
-		
 
 		SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
 		mUseDoubleEntry = sharedPrefs.getBoolean(getString(R.string.key_use_double_entry), false);
@@ -227,9 +226,40 @@ public class NewTransactionFragment extends SherlockFragment implements
 			}
 			initializeViewsWithTransaction();
 		}
+
+        initTransactionNameAutocomplete();
 	}
-	
-	/**
+
+    /**
+     * Initializes the transaction name field for autocompletion with existing transaction names in the database
+     */
+    private void initTransactionNameAutocomplete() {
+        final int[] to = new int[]{android.R.id.text1};
+        final String[] from = new String[]{DatabaseHelper.KEY_NAME};
+
+        SimpleCursorAdapter adapter = new SimpleCursorAdapter(
+                getActivity(), android.R.layout.simple_dropdown_item_1line,
+                null, from, to, 0);
+
+        adapter.setCursorToStringConverter(new SimpleCursorAdapter.CursorToStringConverter() {
+            @Override
+            public CharSequence convertToString(Cursor cursor) {
+                final int colIndex = cursor.getColumnIndexOrThrow(DatabaseHelper.KEY_NAME);
+                return cursor.getString(colIndex);
+            }
+        });
+
+        adapter.setFilterQueryProvider(new FilterQueryProvider() {
+            @Override
+            public Cursor runQuery(CharSequence name) {
+                return mTransactionsDbAdapter.fetchTransactionsStartingWith(name.toString());
+            }
+        });
+
+        mNameEditText.setAdapter(adapter);
+    }
+
+    /**
 	 * Initialize views in the fragment with information from a transaction.
 	 * This method is called if the fragment is used for editing a transaction
 	 */
@@ -355,21 +385,21 @@ public class NewTransactionFragment extends SherlockFragment implements
 		});
 		
 		mTimeTextView.setOnClickListener(new View.OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				FragmentTransaction ft = getFragmentManager().beginTransaction();
-				long timeMillis = 0;				
-				try {
-					Date date = TIME_FORMATTER.parse(mTimeTextView.getText().toString());
-					timeMillis = date.getTime();
-				} catch (ParseException e) {
-					Log.e(getTag(), "Error converting input time to Date object");
-				}
-				DialogFragment fragment = new TimePickerDialogFragment(NewTransactionFragment.this, timeMillis);
-				fragment.show(ft, "time_dialog");
-			}
-		});
+
+            @Override
+            public void onClick(View v) {
+                FragmentTransaction ft = getFragmentManager().beginTransaction();
+                long timeMillis = 0;
+                try {
+                    Date date = TIME_FORMATTER.parse(mTimeTextView.getText().toString());
+                    timeMillis = date.getTime();
+                } catch (ParseException e) {
+                    Log.e(getTag(), "Error converting input time to Date object");
+                }
+                DialogFragment fragment = new TimePickerDialogFragment(NewTransactionFragment.this, timeMillis);
+                fragment.show(ft, "time_dialog");
+            }
+        });
 	}
 
     /**
