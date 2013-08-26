@@ -315,7 +315,7 @@ public class Transaction {
 
 	/**
 	 * Returns the Unique Identifier of account with which this transaction is double entered
-	 * @return Unique Identifier of account with which this transaction is double entered
+	 * @return Unique ID of transfer account or <code>null</code> if it is not a double transaction
 	 */
 	public String getDoubleEntryAccountUID() {
 		return mDoubleEntryAccountUID;

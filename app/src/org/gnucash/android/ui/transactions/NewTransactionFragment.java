@@ -28,6 +28,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Locale;
 
+import android.os.Handler;
 import android.widget.*;
 import org.gnucash.android.R;
 import org.gnucash.android.data.Money;
@@ -378,7 +379,13 @@ public class NewTransactionFragment extends SherlockFragment implements
 	private void setSelectedTransferAccount(long accountId){
 		for (int pos = 0; pos < mCursorAdapter.getCount(); pos++) {
 			if (mCursorAdapter.getItemId(pos) == accountId){
-				mDoubleAccountSpinner.setSelection(pos);				
+                final int position = pos;
+				new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        mDoubleAccountSpinner.setSelection(position);
+                    }
+                }, 100);
 				break;
 			}
 		}

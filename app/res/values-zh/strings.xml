@@ -19,7 +19,6 @@
     <string name="title_add_account">创建科目</string>
     <string name="title_edit_account">修改科目</string>
     <string name="info_details">信息</string>
-    <string name="title_settings">设置</string>
     <string name="menu_export_ofx">导出OFX</string>
     <string name="description_add_transaction_icon">为科目增加交易</string>
     <string name="label_no_accounts">没有要显示的科目</string>
@@ -483,7 +482,6 @@
     <string name="summary_xml_ofx_header">当导出数据到GnuCash桌面版以外的程序时需要开启这个选项。</string>
     <string name="title_whats_new">新功能</string>
     <string name="whats_new">
-	    <b>Version 1.2.0 - 20.06.2013</b>\n\n
         - 导入GnuCash桌面版的资料\n
         - 嵌套科目的显示\n
         - 增加删除所有资料的选项\n

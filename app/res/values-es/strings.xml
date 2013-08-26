@@ -21,7 +21,6 @@
     <string name="title_add_account">Crear Cuenta</string>
     <string name="title_edit_account">Editar Cuenta</string>
     <string name="info_details">Info</string>
-    <string name="title_settings">Ajustes</string>
     <string name="menu_export_ofx">Exportar OFX</string>
     <string name="description_add_transaction_icon">A&#241;adir una nueva transacci&#243;n a una cuenta</string>
     <string name="label_no_accounts">No hay cuentas que mostrar</string>
@@ -308,7 +307,6 @@
 	<string name="summary_xml_ofx_header">Active esta opci&#243;n para exportar a otras aplicaciones distintas a GnuCash para escritorio</string>
 	<string name="title_whats_new">Novedades</string>
 	<string name="whats_new">
-        <b>Versi&#243;n 1.2.0 - 20.06.2013</b>\n\n
         - Importa estructuras de cuentas de GnuCash para escritorio\n
         - Muestra jerarqu&#237;a de cuentas anidada\n
         - Opciones para eliminar todas las cuentas y transacciones\n
