@@ -1,8 +1,10 @@
 Change Log
 ===============================================================================
-Version 1.2.x *(2013-06-23)*
+Version 1.2.3.beta *(2013-08-26)*
 ----------------------------
-* Added Chinese language translation
+* Feature: Added Chinese language translation
+* Feature: Autocomplete transaction descriptions
+* Improved reliability of importing stock accounts
 
 Version 1.2.2 *(2013-06-23)*
 ----------------------------
