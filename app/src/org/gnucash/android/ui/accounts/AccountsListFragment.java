@@ -647,11 +647,9 @@ public class AccountsListFragment extends SherlockListFragment implements
             //if the view for which we are doing this job is dead, kill the job as well
             if (accountBalanceTextViewReference == null || accountBalanceTextViewReference.get() == null){
                 cancel(true);
-                accountsDbAdapter.close();
                 return Money.getZeroInstance();
             }
             Money balance = accountsDbAdapter.getAccountBalance(params[0]);
-            accountsDbAdapter.close();
             return balance;
         }
 

@@ -85,7 +85,7 @@ public final class Money implements Comparable<Money>{
      * A zero instance with the currency of the default locale.
      * This can be used anywhere where a starting amount is required without having to create a new object
      */
-    public static final Money sDefaultZero = Money.createInstance(Currency.getInstance(Locale.getDefault()).getCurrencyCode());
+    private static final Money sDefaultZero = Money.createInstance(Currency.getInstance(Locale.getDefault()).getCurrencyCode());
 
     /**
      * Returns a Money instance initialized to the local currency and value 0

@@ -182,12 +182,13 @@ public class WidgetConfigurationActivity extends Activity {
 				R.layout.widget_4x1);
 		views.setTextViewText(R.id.account_name, account.getName());
         Money accountBalance = accountsDbAdapter.getAccountBalance(accountId);
-		views.setTextViewText(R.id.transactions_summary, 
+
+        views.setTextViewText(R.id.transactions_summary,
 				accountBalance.formattedString(Locale.getDefault()));
 		int color = account.getBalance().isNegative() ? R.color.debit_red : R.color.credit_green;
 		views.setTextColor(R.id.transactions_summary, context.getResources().getColor(color));
 
-        accountsDbAdapter.close();
+
 
 		Intent accountViewIntent = new Intent(context, TransactionsActivity.class);
 		accountViewIntent.setAction(Intent.ACTION_VIEW);

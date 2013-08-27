@@ -1,10 +1,12 @@
 Change Log
 ===============================================================================
-Version 1.2.3.beta *(2013-08-26)*
+Version 1.2.3.beta2 *(2013-08-27)*
 ----------------------------
 * Feature: Added Chinese language translation
 * Feature: Autocomplete transaction descriptions
+* Fixed: crash when creating transactions or updating widget
 * Improved reliability of importing stock accounts
+* Improved speed of loading account balance
 
 Version 1.2.2 *(2013-06-23)*
 ----------------------------

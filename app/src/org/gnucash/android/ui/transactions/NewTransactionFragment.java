@@ -440,7 +440,6 @@ public class NewTransactionFragment extends SherlockFragment implements
 		String currencyCode = accountsDbAdapter.getCurrencyCode(newAccountId);
 		Currency currency = Currency.getInstance(currencyCode);
 		mCurrencyTextView.setText(currency.getSymbol(Locale.getDefault()));
-		accountsDbAdapter.close();
 		
 		updateTransferAccountsList();
 	}
@@ -493,7 +492,6 @@ public class NewTransactionFragment extends SherlockFragment implements
 		
 		
 		mTransactionsDbAdapter.addTransaction(mTransaction);
-		mTransactionsDbAdapter.close();
 		
 		//update widgets, if any
 		WidgetConfigurationActivity.updateAllWidgets(getActivity().getApplicationContext());
