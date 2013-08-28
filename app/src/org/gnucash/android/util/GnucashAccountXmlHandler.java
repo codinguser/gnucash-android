@@ -17,6 +17,7 @@
 package org.gnucash.android.util;
 
 import android.content.Context;
+import android.util.Log;
 import android.widget.Toast;
 import org.gnucash.android.R;
 import org.gnucash.android.data.Account;
@@ -27,7 +28,6 @@ import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import java.io.*;
@@ -50,8 +50,11 @@ public class GnucashAccountXmlHandler extends DefaultHandler {
     public static final String TAG_CURRENCY     = "cmdty:id";
     public static final String TAG_PARENT_UID   = "act:parent";
     public static final String TAG_ACCOUNT      = "gnc:account";
+    public static final String TAG_COMMODITY_SPACE  = "cmdty:space";
+    private static final String NO_CURRENCY_CODE    = "XXX";
 
-    private static final String ERROR_TAG   = "GnuCashAccountImporter";
+    private static final String LOG_TAG = "GnuCashAccountImporter";
+
 
     AccountsDbAdapter mDatabaseAdapter;
     StringBuilder mContent;
@@ -88,27 +91,28 @@ public class GnucashAccountXmlHandler extends DefaultHandler {
             mAccount.setAccountType(Account.AccountType.valueOf(characterString));
         }
 
+        if (qualifiedName.equalsIgnoreCase(TAG_COMMODITY_SPACE)){
+            if (characterString.equalsIgnoreCase("ISO4217")){
+                mISO4217Currency = true;
+            }
+        }
+
         if (qualifiedName.equalsIgnoreCase(TAG_CURRENCY)){
-            if (mAccount != null)
-                mAccount.setCurrency(Currency.getInstance(characterString));
+            if (mAccount != null){
+                String currencyCode = mISO4217Currency ? characterString : NO_CURRENCY_CODE;
+                mAccount.setCurrency(Currency.getInstance(currencyCode));
+            }
         }
 
         if (qualifiedName.equalsIgnoreCase(TAG_PARENT_UID)){
             mAccount.setParentUID(characterString);
         }
 
-        if (qualifiedName.equalsIgnoreCase("cmdty:space")){
-            if (characterString.equalsIgnoreCase("ISO4217")){
-                mISO4217Currency = true;
-            }
-        }
-
         if (qualifiedName.equalsIgnoreCase(TAG_ACCOUNT)){
-            //we only save accounts with ISO 4217 currencies. Ignore all else
-            if (mISO4217Currency)
-                mDatabaseAdapter.addAccount(mAccount);
+            Log.i(LOG_TAG, "Saving account...");
+            mDatabaseAdapter.addAccount(mAccount);
 
-            //reset for next account
+            //reset ISO 4217 flag for next account
             mISO4217Currency = false;
         }
 

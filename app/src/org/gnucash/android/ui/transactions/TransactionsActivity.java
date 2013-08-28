@@ -16,18 +16,6 @@
 
 package org.gnucash.android.ui.transactions;
 
-import android.support.v4.app.Fragment;
-import android.widget.TextView;
-import org.gnucash.android.R;
-import org.gnucash.android.data.Account;
-import org.gnucash.android.db.AccountsDbAdapter;
-import org.gnucash.android.db.DatabaseAdapter;
-import org.gnucash.android.db.DatabaseHelper;
-import org.gnucash.android.ui.accounts.AccountsActivity;
-import org.gnucash.android.ui.accounts.AccountsListFragment;
-import org.gnucash.android.util.OnAccountClickedListener;
-import org.gnucash.android.util.OnTransactionClickedListener;
-
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -40,11 +28,20 @@ import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.SpinnerAdapter;
-
+import android.widget.TextView;
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.ActionBar.OnNavigationListener;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.MenuItem;
+import org.gnucash.android.R;
+import org.gnucash.android.data.Account;
+import org.gnucash.android.db.AccountsDbAdapter;
+import org.gnucash.android.db.DatabaseAdapter;
+import org.gnucash.android.db.DatabaseHelper;
+import org.gnucash.android.ui.accounts.AccountsActivity;
+import org.gnucash.android.ui.accounts.AccountsListFragment;
+import org.gnucash.android.util.OnAccountClickedListener;
+import org.gnucash.android.util.OnTransactionClickedListener;
 
 /**
  * Activity for displaying, creating and editing transactions
@@ -84,6 +81,16 @@ public class TransactionsActivity extends SherlockFragmentActivity implements
 	 */
 	private boolean mActivityRunning = false;
 
+    /**
+     * Account database adapter for manipulating the accounts list in navigation
+     */
+    private AccountsDbAdapter mAccountsDbAdapter;
+
+    /**
+     * Spinner adapter for the action bar navigation list of accounts
+     */
+    private SpinnerAdapter mSpinnerAdapter;
+
     TextView mSectionHeaderSubAccounts;
     TextView mSectionHeaderTransactions;
     View mSubAccountsContainer;
@@ -112,6 +119,9 @@ public class TransactionsActivity extends SherlockFragmentActivity implements
 		  }
 	};
 
+    /**
+     * Refreshes the fragments currently in the transactions activity
+     */
     private void refresh() {
         FragmentManager fragmentManager = getSupportFragmentManager();
         TransactionsListFragment transactionsListFragment = (TransactionsListFragment) fragmentManager
@@ -134,10 +144,6 @@ public class TransactionsActivity extends SherlockFragmentActivity implements
             fragmentTransaction.commit();
         }
     }
-
-    private AccountsDbAdapter mAccountsDbAdapter;
-
-	private SpinnerAdapter mSpinnerAdapter;
 				
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -187,7 +193,6 @@ public class TransactionsActivity extends SherlockFragmentActivity implements
 				new int[] { android.R.id.text1 }, 0);
 		((ResourceCursorAdapter) mSpinnerAdapter)
 				.setDropDownViewResource(R.layout.sherlock_spinner_dropdown_item);
-
 		ActionBar actionBar = getSupportActionBar();
 		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
 		actionBar.setListNavigationCallbacks(mSpinnerAdapter,
@@ -214,7 +219,7 @@ public class TransactionsActivity extends SherlockFragmentActivity implements
 			}
 			++i;
 		} while (accountsCursor.moveToNext());
-
+        accountsCursor.close();
 	}
 
     /**

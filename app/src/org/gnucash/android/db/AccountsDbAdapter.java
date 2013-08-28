@@ -373,31 +373,21 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 		return cursor;
 	}
 	
-	/**
-	 * Returns the balance of all accounts with each transaction counted only once
-	 * This does not take into account the currencies and double entry 
-	 * transactions are not considered as well.
-	 * @return Balance of all accounts in the database
-	 * @see AccountsDbAdapter#getDoubleEntryAccountsBalance()
-	 */
-	public Money getAllAccountsBalance(){
-		return mTransactionsAdapter.getAllTransactionsSum();
-	}
-
     /**
      * Returns the balance of an account while taking sub-accounts into consideration
      * @return Account Balance of an account including sub-accounts
      */
     public Money getAccountBalance(long accountId){
-        List<Long> subAccounts = getSubAccountIds(accountId);
         Money balance = Money.createInstance(getCurrencyCode(accountId));
+
+        List<Long> subAccounts = getSubAccountIds(accountId);
         for (long id : subAccounts){
             //recurse because arbitrary nesting depth is allowed
             Money subBalance = getAccountBalance(id);
             if (subBalance.getCurrency().equals(balance.getCurrency())){
                 //only add the balances if they are of the same currency
                 //ignore sub accounts of different currency just like GnuCash desktop does
-                balance = balance.add(getAccountBalance(id));
+                balance = balance.add(subBalance);
             }
         }
         return balance.add(mTransactionsAdapter.getTransactionsSum(accountId));
@@ -416,7 +406,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 
         if (cursor != null){
             while (cursor.moveToNext()){
-                subAccounts.add(cursor.getLong(0));
+                subAccounts.add(cursor.getLong(DatabaseAdapter.COLUMN_ROW_ID));
             }
             cursor.close();
         }

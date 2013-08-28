@@ -22,7 +22,6 @@
     <string name="title_add_account">Opprett konto</string>
     <string name="title_edit_account">Rediger konto</string>
     <string name="info_details">Informasjon</string>
-    <string name="title_settings">Innstillinger</string>
     <string name="menu_export_ofx">Eksport OFX</string>
     <string name="description_add_transaction_icon">Legg til ny kontotransaksjon</string>
     <string name="label_no_accounts">Ingen kontoer å vise</string>
@@ -311,7 +310,6 @@ format og importeres i regnskapsprogrammet GnuCash for PC.</string>
 	<string name="summary_xml_ofx_header">Velg denne hvis du skal eksportere til annen programvare enn GnuCash for PC.</string>
 	<string name="title_whats_new">Hva er nytt</string>
 	<string name="whats_new">
-	    <b>Versjon 1.2.0 - 20.06.2013</b>\n\n
         - Importering av GnuCash (PC) konto struktur\n
         - Nestet visning av konto hierarki\n
         - Valg for sletting av alle transaksjoner/kontoer\n

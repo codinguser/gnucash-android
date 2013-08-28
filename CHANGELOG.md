@@ -1,5 +1,14 @@
 Change Log
 ===============================================================================
+Version 1.2.3 *(2013-08-28)*
+----------------------------
+* Fixed: crashes when editing/creating transactions
+* Feature: Added Chinese language translation
+* Feature: Autocomplete transaction descriptions
+* Improved reliability of importing stock accounts
+* Improved speed of loading account balance
+* Improved incrased touch target area of "new transaction" button in accounts list view
+
 Version 1.2.2 *(2013-06-23)*
 ----------------------------
 * Fixed: bug with importing accounts

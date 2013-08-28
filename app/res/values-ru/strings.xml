@@ -21,7 +21,6 @@
     <string name="title_add_account">Создать счёт</string>
     <string name="title_edit_account">Редактировать счёт</string>
     <string name="info_details">Информация</string>
-    <string name="title_settings">Настройки</string>
     <string name="menu_export_ofx">Экспортировать OFX</string>
     <string name="description_add_transaction_icon">Добавить к счёту новую проводку</string>
     <string name="label_no_accounts">Нет счетов</string>
@@ -308,7 +307,6 @@
 	<string name="summary_xml_ofx_header">Включите эту опцию, если экспортируете в программы отличные от GnuCash для ПК</string>
 	<string name="title_whats_new">Новости</string>
 	<string name="whats_new">
-	    <b>Версия 1.2.0 - 20.06.2013</b>\n\n
         - Импорт структуры счетов из GnuCash для ПК\n
         - Вложенные счета\n
         - Возможность удалить все счета/проводки\n

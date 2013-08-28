@@ -21,7 +21,6 @@
     <string name="title_add_account">Δημιουργία Λογαριασμού</string>
     <string name="title_edit_account">Επεξεργασία Λογαριασμού</string>
     <string name="info_details">Πληροφορίες</string>
-    <string name="title_settings">Ρυθμίσεις</string>
     <string name="menu_export_ofx">Εξαγωγή OFX</string>
     <string name="description_add_transaction_icon">Προσθήκη μιας νέας συναλλαγής σε ένα λογαριασμό</string>
     <string name="label_no_accounts">Δεν υπάρχουν λογαριασμοί για εμφάνιση</string>
@@ -315,7 +314,6 @@
 	<string name="summary_xml_ofx_header">Ενεργοποίηση αυτής της επιλογής για εξαγωγή σε εφαρμογές τρίτων, εκτός του GnuCash για επιτραπέζιο υπολογιστή.</string>
 	<string name="title_whats_new">Τι νέο υπάρχει</string>
 	<string name="whats_new">
-        <b>Έκδοση 1.2.0 - 20.06.2013</b>\n\n
         - Import GnuCash desktop account structure\n
         - Nested display of account hierarchy\n
         - Options for deleting all accounts/transactions\n

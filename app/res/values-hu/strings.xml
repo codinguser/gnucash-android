@@ -20,7 +20,6 @@
     <string name="title_add_account">Create Account</string>
     <string name="title_edit_account">Edit Account</string>
     <string name="info_details">Info</string>
-    <string name="title_settings">Settings</string>
     <string name="menu_export_ofx">Export OFX</string>
     <string name="description_add_transaction_icon">Add a new transaction to an account</string>
     <string name="label_no_accounts">No accounts to display</string>
@@ -307,7 +306,6 @@
 	<string name="summary_xml_ofx_header">Enable this option when exporting to third-party application other than GnuCash for desktop</string>
 	<string name="title_whats_new">What\'s New</string>
 	<string name="whats_new">
-        <b>Version 1.2.0 - 20.06.2013</b>\n\n
         - Import GnuCash desktop account structure\n
         - Nested display of account hierarchy\n
         - Options for deleting all accounts/transactions\n

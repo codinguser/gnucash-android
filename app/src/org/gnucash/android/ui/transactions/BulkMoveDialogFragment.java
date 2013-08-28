@@ -162,6 +162,5 @@ public class BulkMoveDialogFragment extends DialogFragment {
 	@Override
 	public void onDestroyView() {
 		super.onDestroyView();
-		mAccountsDbAdapter.close();
 	}
 }

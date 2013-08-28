@@ -187,8 +187,17 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
 	 * Show dialog with new features for this version
 	 */
 	private void showWhatsNewDialog(){
-		new AlertDialog.Builder(this)
-		.setTitle(R.string.title_whats_new)
+        StringBuilder releaseTitle = new StringBuilder(getResources().getString(R.string.title_whats_new));
+        PackageInfo packageInfo = null;
+        try {
+            packageInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+        } catch (NameNotFoundException e) {
+            e.printStackTrace();
+        }
+        releaseTitle.append(" - v").append(packageInfo.versionName);
+
+        new AlertDialog.Builder(this)
+		.setTitle(releaseTitle.toString())
 		.setMessage(R.string.whats_new)
 		.setPositiveButton(R.string.label_dismiss, new DialogInterface.OnClickListener() {
 			
