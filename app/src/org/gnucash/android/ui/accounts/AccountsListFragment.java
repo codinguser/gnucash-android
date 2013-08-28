@@ -609,7 +609,7 @@ public class AccountsListFragment extends SherlockListFragment implements
                     .findViewById(R.id.transactions_summary);
             new AccountBalanceTask(summary, getActivity()).execute(accountId);
 
-            ImageView newTransactionButton = (ImageView) v.findViewById(R.id.btn_new_transaction);
+            ImageButton newTransactionButton = (ImageButton) v.findViewById(R.id.btn_new_transaction);
             if (inSubAcccount()){
                 newTransactionButton.setVisibility(View.GONE);
                 v.findViewById(R.id.vertical_line).setVisibility(View.GONE);
@@ -625,6 +625,7 @@ public class AccountsListFragment extends SherlockListFragment implements
                     }
                 });
             }
+            newTransactionButton.setFocusable(false);
         }
     }
 

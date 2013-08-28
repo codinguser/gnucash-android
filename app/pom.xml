@@ -22,7 +22,7 @@
     <description>Gnucash Android companion application</description>
 
     <parent>
-        <version>1.2.3-SNAPSHOT</version>
+        <version>1.2.3</version>
         <groupId>org.gnucash.android</groupId>
         <artifactId>gnucash-android-parent</artifactId>
     </parent>
