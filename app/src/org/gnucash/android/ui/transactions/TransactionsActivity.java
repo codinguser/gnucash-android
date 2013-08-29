@@ -42,6 +42,7 @@ import org.gnucash.android.ui.accounts.AccountsActivity;
 import org.gnucash.android.ui.accounts.AccountsListFragment;
 import org.gnucash.android.util.OnAccountClickedListener;
 import org.gnucash.android.util.OnTransactionClickedListener;
+import org.gnucash.android.util.QualifiedAccountNameCursorAdapter;
 
 /**
  * Activity for displaying, creating and editing transactions
@@ -187,10 +188,8 @@ public class TransactionsActivity extends SherlockFragmentActivity implements
 		// set up spinner adapter for navigation list
 		mAccountsDbAdapter = new AccountsDbAdapter(this);
 		Cursor accountsCursor = mAccountsDbAdapter.fetchAllRecords();
-		mSpinnerAdapter = new SimpleCursorAdapter(getSupportActionBar()
-				.getThemedContext(), R.layout.sherlock_spinner_item,
-				accountsCursor, new String[] { DatabaseHelper.KEY_NAME },
-				new int[] { android.R.id.text1 }, 0);
+		mSpinnerAdapter = new QualifiedAccountNameCursorAdapter(getSupportActionBar().getThemedContext(),
+                R.layout.sherlock_spinner_item, accountsCursor);
 		((ResourceCursorAdapter) mSpinnerAdapter)
 				.setDropDownViewResource(R.layout.sherlock_spinner_dropdown_item);
 		ActionBar actionBar = getSupportActionBar();

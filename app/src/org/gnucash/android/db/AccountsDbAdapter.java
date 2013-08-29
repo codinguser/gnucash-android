@@ -35,6 +35,10 @@ import android.util.Log;
  *
  */
 public class AccountsDbAdapter extends DatabaseAdapter {
+    /**
+     * Separator used for account name hierarchies between parent and child accounts
+     */
+    public static final String ACCOUNT_NAME_SEPARATOR = "::";
 
 	/**
 	 * Transactions database adapter for manipulating transactions associated with accounts
@@ -209,7 +213,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 		String result = null;
 		if (cursor != null && cursor.moveToFirst()){
 			Log.d(TAG, "Account already exists. Returning existing id");
-			result = cursor.getString(0); //0 because only one row was requested
+			result = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.KEY_PARENT_ACCOUNT_UID));
 
 			cursor.close();
 		}
@@ -329,15 +333,19 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 	}
 	
 	/**
-	 * Returns a cursor to all account records in the database
+	 * Returns a cursor to all account records in the database.
+     * GnuCash ROOT accounts are ignored
 	 * @return {@link Cursor} to all account records
 	 */
     @Override
 	public Cursor fetchAllRecords(){
 		Log.v(TAG, "Fetching all accounts from db");
-        String selection =  DatabaseHelper.KEY_TYPE + " != " + "'ROOT'";
+        String selection =  DatabaseHelper.KEY_TYPE + " != ?" ;
 		Cursor cursor = mDb.query(DatabaseHelper.ACCOUNTS_TABLE_NAME,
-                null, selection, null, null, null,
+                null,
+                selection,
+                new String[]{AccountType.ROOT.toString()},
+                null, null,
                 DatabaseHelper.KEY_NAME + " ASC");
 		return cursor;
 	}
@@ -538,7 +546,53 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 	public String getCurrencyCode(String accountUID){
 		return getCurrencyCode(getAccountID(accountUID));
 	}
-	
+
+    public String getAccountName(String accountUID){
+        Cursor cursor = mDb.query(DatabaseHelper.ACCOUNTS_TABLE_NAME,
+                new String[]{DatabaseHelper.KEY_ROW_ID, DatabaseHelper.KEY_NAME},
+                DatabaseHelper.KEY_UID + " = ?",
+                new String[]{accountUID}, null, null, null);
+
+        if (cursor == null || cursor.getCount() < 1){
+            return null;
+        } else {  //account UIDs should be unique
+            cursor.moveToFirst();
+        }
+
+        String accountName = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.KEY_NAME));
+        cursor.close();
+
+        return accountName;
+    }
+
+    /**
+     * Returns the full account name including the account hierarchy (parent accounts)
+     * @param accountUID Unique ID of account
+     * @return Fully qualified (with parent hierarchy) account name
+     */
+    public String getFullyQualifiedAccountName(String accountUID){
+        String accountName = getAccountName(accountUID);
+        String parentAccountUID = getParentAccountUID(accountUID);
+
+        if (parentAccountUID == null || parentAccountUID.equalsIgnoreCase(getGnuCashRootAccountUID())){
+            return accountName;
+        }
+
+        String parentAccountName = getFullyQualifiedAccountName(parentAccountUID);
+
+        return parentAccountName + ACCOUNT_NAME_SEPARATOR + accountName;
+    }
+
+    /**
+     * Overloaded convenience method.
+     * Simply resolves the account UID and calls {@link #getFullyQualifiedAccountName(String)}
+     * @param accountId Database record ID of account
+     * @return Fully qualified (with parent hierarchy) account name
+     */
+    public String getFullyQualifiedAccountName(long accountId){
+        return getFullyQualifiedAccountName(getAccountUID(accountId));
+    }
+
 	/**
 	 * Deletes all accounts and their transactions from the database
 	 */

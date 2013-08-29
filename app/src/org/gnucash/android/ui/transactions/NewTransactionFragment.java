@@ -22,11 +22,7 @@ import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
-import java.util.Calendar;
-import java.util.Currency;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.Locale;
+import java.util.*;
 
 import android.os.Handler;
 import android.widget.*;
@@ -67,6 +63,7 @@ import com.actionbarsherlock.app.SherlockFragment;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
+import org.gnucash.android.util.QualifiedAccountNameCursorAdapter;
 
 /**
  * Fragment for creating or editing transactions
@@ -256,6 +253,17 @@ public class NewTransactionFragment extends SherlockFragment implements
             }
         });
 
+        mNameEditText.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+                mTransaction = mTransactionsDbAdapter.getTransaction(id);
+                mTransaction.setUID(UUID.randomUUID().toString());
+                long accountId = ((TransactionsActivity)getSherlockActivity()).getCurrentAccountID();
+                mTransaction.setAccountUID(mTransactionsDbAdapter.getAccountUID(accountId));
+                initializeViewsWithTransaction();
+            }
+        });
+
         mNameEditText.setAdapter(adapter);
     }
 
@@ -326,12 +334,9 @@ public class NewTransactionFragment extends SherlockFragment implements
 							DatabaseHelper.KEY_CURRENCY_CODE + " = '" + mAccountsDbAdapter.getCurrencyCode(accountId) + "')";
 
 		mCursor = mAccountsDbAdapter.fetchAccounts(conditions);
-		
-		String[] from = new String[] {DatabaseHelper.KEY_NAME};
-		int[] to = new int[] {android.R.id.text1};
-		mCursorAdapter = new SimpleCursorAdapter(getActivity(), 
-				android.R.layout.simple_spinner_item, 
-				mCursor, from, to, 0);
+
+        mCursorAdapter = new QualifiedAccountNameCursorAdapter(getActivity(),
+                android.R.layout.simple_spinner_item, mCursor);
 		mCursorAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);		
 		mDoubleAccountSpinner.setAdapter(mCursorAdapter);
 	}

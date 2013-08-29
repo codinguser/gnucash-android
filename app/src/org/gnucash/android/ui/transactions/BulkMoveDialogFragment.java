@@ -34,6 +34,7 @@ import android.view.WindowManager.LayoutParams;
 import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.Toast;
+import org.gnucash.android.util.QualifiedAccountNameCursorAdapter;
 
 /**
  * Dialog fragment for moving transactions from one account to another
@@ -102,15 +103,9 @@ public class BulkMoveDialogFragment extends DialogFragment {
 		
 		mAccountsDbAdapter = new AccountsDbAdapter(getActivity());
 		Cursor cursor = mAccountsDbAdapter.fetchAllRecords();
-		
-		String[] from = new String[] {DatabaseHelper.KEY_NAME};
-		int[] to = new int[] {android.R.id.text1};
-		SimpleCursorAdapter mCursorAdapter = new SimpleCursorAdapter(getActivity(), 
-				android.R.layout.simple_spinner_item, 
-				cursor,
-				from,
-				to, 
-				0);
+
+		SimpleCursorAdapter mCursorAdapter = new QualifiedAccountNameCursorAdapter(getActivity(),
+                android.R.layout.simple_spinner_item, cursor);
 		mCursorAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		mDestinationAccountSpinner.setAdapter(mCursorAdapter);
 		setListeners();

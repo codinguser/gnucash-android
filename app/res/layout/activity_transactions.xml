@@ -29,7 +29,7 @@
             android:background="@android:color/darker_gray"
             android:textColor="@android:color/white"
             android:visibility="gone"
-            android:text="Sub-Accounts"
+            android:text="@string/section_header_accounts"
             />
 
     <FrameLayout android:id="@+id/sub_accounts_container"
@@ -45,7 +45,7 @@
             android:paddingLeft="10dp"
             android:background="@android:color/darker_gray"
             android:textColor="@android:color/white"
-            android:text="Transactions"
+            android:text="@string/section_header_transactions"
             />
 
     <FrameLayout android:id="@+id/transactions_container"
