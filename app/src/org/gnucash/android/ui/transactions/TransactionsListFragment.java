@@ -29,6 +29,7 @@ import android.support.v4.content.Loader;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.text.format.DateFormat;
 import android.util.Log;
+import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -55,7 +56,6 @@ import org.gnucash.android.util.OnTransactionClickedListener;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Locale;
 
 /**
@@ -97,11 +97,6 @@ public class TransactionsListFragment extends SherlockListFragment implements
 	private ActionMode mActionMode = null;
 	private boolean mInEditMode = false;
 	private long mAccountID;
-	
-	/**
-	 * Selected (checked) transactions in the list when entering ActionMode
-	 */
-	private HashMap<Integer, Long> mSelectedIds = new HashMap<Integer, Long>();
 
 	/**
 	 * Callback listener for editing transactions
@@ -141,7 +136,7 @@ public class TransactionsListFragment extends SherlockListFragment implements
 				return true;
 
 			case R.id.context_menu_delete:
-				for (long id : mSelectedIds.values()) {
+				for (long id : getListView().getCheckedItemIds()) {
 					mTransactionsDbAdapter.deleteRecord(id);
 				}				
 				refreshList();
@@ -181,21 +176,7 @@ public class TransactionsListFragment extends SherlockListFragment implements
 			Bundle savedInstanceState) {
 		return inflater.inflate(R.layout.fragment_transactions_list, container, false);		
 	}
-		
-	@Override
-	public void onSaveInstanceState(Bundle outState) {
-		super.onSaveInstanceState(outState);
-		
-		int[] selectedPositions = new int[mSelectedIds.size()];
-		int i = 0;
-		for (Integer id : mSelectedIds.keySet()) {
-			if (id == null)
-				continue;
-			selectedPositions[i++] = id;			
-		}
-		outState.putIntArray(SAVED_SELECTED_ITEMS, selectedPositions);
-	}
-	
+
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {		
 		super.onActivityCreated(savedInstanceState);
@@ -204,14 +185,22 @@ public class TransactionsListFragment extends SherlockListFragment implements
 		aBar.setDisplayShowTitleEnabled(false);
 		aBar.setDisplayHomeAsUpEnabled(true);
 
+        getListView().setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
 		setHasOptionsMenu(true);		
 	}
-	
+
+    /**
+     * Refresh the list with transactions from account with ID <code>accountId</code>
+     * @param accountId Database ID of account to load transactions from
+     */
 	public void refreshList(long accountId){
 		mAccountID = accountId;
 		refreshList();
 	}
-	
+
+    /**
+     * Reload the list of transactions and recompute account balances
+     */
 	public void refreshList(){
 		getLoaderManager().restartLoader(0, null, this);
 
@@ -296,9 +285,8 @@ public class TransactionsListFragment extends SherlockListFragment implements
 	 */
 	public void finishEditMode(){
 		mInEditMode = false;
-		deselectAllItems();
+		uncheckAllItems();
 		mActionMode = null;
-		mSelectedIds.clear();
 	}
 	
 	/**
@@ -306,57 +294,24 @@ public class TransactionsListFragment extends SherlockListFragment implements
 	 * It sets the number highlighted items
 	 */
 	public void setActionModeTitle(){
-		int count = mSelectedIds.size();
+		int count = getListView().getCheckedItemIds().length; //mSelectedIds.size();
 		if (count > 0){			
 			mActionMode.setTitle(getResources().getString(R.string.title_selected, count));
 		}
 	}
 	
 	/**
-	 * Selects a transaction in the list of transaction
-	 * @param position Position of the item which was selected
+	 * Unchecks all the checked items in the list
 	 */
-	private void selectItem(int position){		
-		ListView lv = getListView();	
-		lv.setItemChecked(position, true);		
-		View v = lv.getChildAt(position -  lv.getFirstVisiblePosition());
+	private void uncheckAllItems() {
+        SparseBooleanArray checkedPositions = getListView().getCheckedItemPositions();
+        ListView listView = getListView();
+        for (int i = 0; i < checkedPositions.size(); i++) {
+            int position = checkedPositions.keyAt(i);
+            listView.setItemChecked(position, false);
+        }
+	}
 
-		v.setSelected(true);
-        v.setBackgroundColor(getResources().getColor(R.color.abs__holo_blue_light));
-        long id = lv.getItemIdAtPosition(position);
-        mSelectedIds.put(position, id);
-	}
-	
-	/**
-	 * Deselects all selected items
-	 */
-	private void deselectAllItems() {
-		Integer[] selectedItemPositions = new Integer[mSelectedIds.size()];
-		mSelectedIds.keySet().toArray(selectedItemPositions);
-		for (int position : selectedItemPositions) {
-			deselectItem(position);
-		}
-	}
-	
-	/**
-	 * Deselects an item at <code>position</code>
-	 * @param position
-	 */
-	private void deselectItem(int position){
-		if (position >= 0){
-			ListView listView = getListView();
-			listView.setItemChecked(position, false);
-			View v = getListView().getChildAt(position - listView.getFirstVisiblePosition());
-			if (v == null){
-				//if we just deleted a row, then the previous position is invalid
-				return;
-			}
-			v.setBackgroundColor(getResources().getColor(android.R.color.transparent));
-			((CheckBox) v.findViewById(R.id.checkbox)).setChecked(false);
-			v.setSelected(false);
-			mSelectedIds.remove(position);
-		}
-	}
 	
 	/**
 	 * Starts action mode and activates the Context ActionBar (CAB)
@@ -372,10 +327,12 @@ public class TransactionsListFragment extends SherlockListFragment implements
 	}
 	
 	/**
-	 * Stops action mode and deselects all selected transactions
+	 * Stops action mode and deselects all selected transactions.
+     * This method only has effect if the number of checked items is greater than 0 and {@link #mActionMode} is not null
 	 */
 	private void stopActionMode(){
-		if (mSelectedIds.size() > 0)
+        int checkedCount = getListView().getCheckedItemIds().length;
+		if (checkedCount > 0 || mActionMode == null)
 			return;
 		else
 			mActionMode.finish();
@@ -397,12 +354,7 @@ public class TransactionsListFragment extends SherlockListFragment implements
 	    DialogFragment bulkMoveFragment = new BulkMoveDialogFragment();
 	    Bundle args = new Bundle();
 	    args.putLong(ORIGIN_ACCOUNT_ID, mAccountID);
-	    long[] selectedIds = new long[mSelectedIds.size()]; 
-	    int i = 0;
-	    for (long l : mSelectedIds.values()) {
-			selectedIds[i++] = l;			
-		}
-	    args.putLongArray(SELECTED_TRANSACTION_IDS, selectedIds);
+	    args.putLongArray(SELECTED_TRANSACTION_IDS, getListView().getCheckedItemIds());
 	    bulkMoveFragment.setArguments(args);
 	    bulkMoveFragment.show(ft, "bulk_move_dialog");
 	}	
@@ -420,26 +372,37 @@ public class TransactionsListFragment extends SherlockListFragment implements
 		
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
-			View view = super.getView(position, convertView, parent);
+			final View view = super.getView(position, convertView, parent);
 			final int itemPosition = position;
-			CheckBox checkbox = (CheckBox) view.findViewById(R.id.checkbox);			
-			checkbox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+			CheckBox checkbox = (CheckBox) view.findViewById(R.id.checkbox);
+            final TextView secondaryText = (TextView) view.findViewById(R.id.secondary_text);
+
+            checkbox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 				
 				@Override
 				public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-					startActionMode();
-					getListView().setItemChecked(itemPosition, isChecked);
-					if (isChecked){
-						selectItem(itemPosition);						
-					} else {
-						deselectItem(itemPosition);
-						stopActionMode();
-					}
-					setActionModeTitle();
+                    getListView().setItemChecked(itemPosition, isChecked);
+                    if (isChecked) {
+                        startActionMode();
+                    } else {
+                        stopActionMode();
+                    }
+                    setActionModeTitle();
 				}
 			});
-			
-			return view;
+
+
+            ListView listView = (ListView) parent;
+            if (mInEditMode && listView.isItemChecked(position)){
+                view.setBackgroundColor(getResources().getColor(R.color.abs__holo_blue_light));
+                secondaryText.setTextColor(getResources().getColor(android.R.color.white));
+            } else {
+                view.setBackgroundColor(getResources().getColor(android.R.color.transparent));
+                secondaryText.setTextColor(getResources().getColor(android.R.color.secondary_text_light_nodisable));
+                checkbox.setChecked(false);
+            }
+
+            return view;
 		}
 		
 		@Override
@@ -530,6 +493,5 @@ public class TransactionsListFragment extends SherlockListFragment implements
 			return c;
 		}		
 	}
-
 
 }
