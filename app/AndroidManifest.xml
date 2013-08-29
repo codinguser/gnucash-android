@@ -17,8 +17,8 @@
 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="org.gnucash.android"
-    android:versionCode="13"
-    android:versionName="1.2.3" >
+    android:versionCode="14"
+    android:versionName="1.2.4.beta" >
 
     <uses-sdk android:minSdkVersion="8" android:targetSdkVersion="15"/>
     
@@ -61,7 +61,7 @@
         </activity>
         <activity android:name=".ui.widget.WidgetConfigurationActivity"
             android:label="@string/label_widget_configuration"
-            android:theme="@style/Theme.Sherlock.Light.Dialog"
+            android:theme="@style/Dialog.WidgetConfiguration"
             android:excludeFromRecents="true">
 		    <intent-filter>
 		        <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE"/>
