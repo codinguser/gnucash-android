@@ -203,13 +203,15 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 	/**
 	 * Returns the  unique ID of the parent account of the account with unique ID <code>uid</code>
 	 * If the account has no parent, null is returned
-	 * @param uid Unique Identifier of account whose parent is to be returned
+	 * @param uid Unique Identifier of account whose parent is to be returned. Should not be null
 	 * @return DB record UID of the parent account, null if the account has no parent
 	 */
 	public String getParentAccountUID(String uid){
 		Cursor cursor = mDb.query(DatabaseHelper.ACCOUNTS_TABLE_NAME, 
 				new String[] {DatabaseHelper.KEY_ROW_ID, DatabaseHelper.KEY_PARENT_ACCOUNT_UID}, 
-				DatabaseHelper.KEY_UID + " = '" + uid + "'", null, null, null, null);
+				DatabaseHelper.KEY_UID + " = ?",
+                new String[]{uid},
+                null, null, null, null);
 		String result = null;
 		if (cursor != null && cursor.moveToFirst()){
 			Log.d(TAG, "Account already exists. Returning existing id");
@@ -432,7 +434,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
                 null,
                 DatabaseHelper.KEY_PARENT_ACCOUNT_UID + " = ?",
                 new String[]{getAccountUID(accountId)},
-                null, null, null);
+                null, null, DatabaseHelper.KEY_NAME + " ASC");
     }
 
     /**
@@ -440,6 +442,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
      * @return Cursor to the top level accounts
      */
     public Cursor fetchTopLevelAccounts(){
+        //condition which selects accounts with no parent, whose UID is not ROOT and whose name is not ROOT
         StringBuilder condition = new StringBuilder("(");
         condition.append(DatabaseHelper.KEY_PARENT_ACCOUNT_UID + " IS NULL");
         condition.append(" OR ");
