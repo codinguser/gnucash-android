@@ -91,6 +91,12 @@ public class Account {
 	 */
 	private String mParentAccountUID;
 
+    /**
+     * Flag for placeholder accounts.
+     * These accounts cannot have transactions
+     */
+    private boolean mPlaceholderAccount;
+
 	/**
 	 * An extra key for passing the currency code (according ISO 4217) in an intent
 	 */
@@ -314,6 +320,23 @@ public class Account {
 		return mParentAccountUID;
 		
 	}
+
+    /**
+     * Returns <code>true</code> if this account is a placeholder account, <code>false</code> otherwise.
+     * @return <code>true</code> if this account is a placeholder account, <code>false</code> otherwise
+     */
+    public boolean isPlaceholderAccount(){
+        return mPlaceholderAccount;
+    }
+
+    /**
+     * Sets the placeholder flag for this account.
+     * Placeholder accounts cannot have transactions
+     * @param isPlaceholder Boolean flag indicating if the account is a placeholder account or not
+     */
+    public void setPlaceHolderFlag(boolean isPlaceholder){
+        mPlaceholderAccount = isPlaceholder;
+    }
 
 	/**
 	 * Maps the <code>accountType</code> to the corresponding account type.

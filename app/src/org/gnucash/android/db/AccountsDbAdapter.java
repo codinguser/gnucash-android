@@ -74,7 +74,8 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 		contentValues.put(DatabaseHelper.KEY_UID, account.getUID());
 		contentValues.put(DatabaseHelper.KEY_CURRENCY_CODE, account.getCurrency().getCurrencyCode());
 		contentValues.put(DatabaseHelper.KEY_PARENT_ACCOUNT_UID, account.getParentUID());
-		
+		contentValues.put(DatabaseHelper.KEY_PLACEHOLDER, account.isPlaceholderAccount() ? 1 : 0);
+
 		long rowId = -1;
 		if ((rowId = getAccountID(account.getUID())) > 0){
 			//if account already exists, then just update
@@ -178,6 +179,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 		//else the transactions end up with a different currency from the account
 		account.setCurrency(Currency.getInstance(c.getString(DatabaseAdapter.COLUMN_CURRENCY_CODE)));
 		account.setTransactions(mTransactionsAdapter.getAllTransactionsForAccount(uid));
+        account.setPlaceHolderFlag(c.getInt(DatabaseAdapter.COLUMN_PLACEHOLDER) == 1);
 		return account;
 	}
 		
@@ -594,6 +596,35 @@ public class AccountsDbAdapter extends DatabaseAdapter {
      */
     public String getFullyQualifiedAccountName(long accountId){
         return getFullyQualifiedAccountName(getAccountUID(accountId));
+    }
+
+    /**
+     * Returns <code>true</code> if the account with unique ID <code>accountUID</code> is a placeholder account.
+     * @param accountUID Unique identifier of the account
+     * @return <code>true</code> if the account is a placeholder account, <code>false</code> otherwise
+     */
+    public boolean isPlaceholderAccount(String accountUID){
+        Cursor cursor = mDb.query(DatabaseHelper.ACCOUNTS_TABLE_NAME,
+                new String[]{DatabaseHelper.KEY_ROW_ID, DatabaseHelper.KEY_PLACEHOLDER},
+                DatabaseHelper.KEY_UID + " = ?",
+                new String[]{accountUID}, null, null, null);
+
+        if (cursor == null || !cursor.moveToFirst()){
+            return false;
+        }
+        boolean isPlaceholder = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.KEY_PLACEHOLDER)) == 1;
+        cursor.close();
+
+        return isPlaceholder;
+    }
+
+    /**
+     * Convenience method, resolves the account unique ID and calls {@link #isPlaceholderAccount(String)}
+     * @param accountId Database row ID of the account
+     * @return <code>true</code> if the account is a placeholder account, <code>false</code> otherwise
+     */
+    public boolean isPlaceholderAccount(long accountId){
+        return isPlaceholderAccount(getAccountUID(accountId));
     }
 
 	/**

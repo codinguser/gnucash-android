@@ -575,8 +575,10 @@ public class AccountsListFragment extends SherlockListFragment implements
                     .findViewById(R.id.transactions_summary);
             new AccountBalanceTask(summary, getActivity()).execute(accountId);
 
+            boolean isPlaceholderAccount = mAccountsDbAdapter.isPlaceholderAccount(accountId);
+
             ImageButton newTransactionButton = (ImageButton) v.findViewById(R.id.btn_new_transaction);
-            if (inSubAcccount()){
+            if (isPlaceholderAccount){
                 newTransactionButton.setVisibility(View.GONE);
                 v.findViewById(R.id.vertical_line).setVisibility(View.GONE);
             } else {

@@ -24,7 +24,6 @@ import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.*;
 
-import android.os.Handler;
 import android.widget.*;
 import org.gnucash.android.R;
 import org.gnucash.android.data.Money;
@@ -90,14 +89,9 @@ public class NewTransactionFragment extends SherlockFragment implements
 	/**
 	 * Cursor for transfer account spinner
 	 */
-	private Cursor mCursor;	
-	
-	/**
-	 * Holds database ID of transaction to be edited (if in edit mode)
-	 */
-	private long mTransactionId = 0;
-	
-	/**
+	private Cursor mCursor;
+
+    /**
 	 * Transaction to be created/updated
 	 */
 	private Transaction mTransaction;
@@ -202,7 +196,7 @@ public class NewTransactionFragment extends SherlockFragment implements
 
 		SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
 		mUseDoubleEntry = sharedPrefs.getBoolean(getString(R.string.key_use_double_entry), false);
-		if (mUseDoubleEntry == false){
+		if (!mUseDoubleEntry){
 			getView().findViewById(R.id.layout_double_entry).setVisibility(View.GONE);
 		}
 		
@@ -210,9 +204,9 @@ public class NewTransactionFragment extends SherlockFragment implements
 		mAccountsDbAdapter = new AccountsDbAdapter(getActivity());
 		updateTransferAccountsList();
 		
-		mTransactionId = getArguments().getLong(SELECTED_TRANSACTION_ID);
+        long transactionId = getArguments().getLong(SELECTED_TRANSACTION_ID);
 		mTransactionsDbAdapter = new TransactionsDbAdapter(getActivity());
-		mTransaction = mTransactionsDbAdapter.getTransaction(mTransactionId);
+		mTransaction = mTransactionsDbAdapter.getTransaction(transactionId);
 		
 		setListeners();
 		if (mTransaction == null)
@@ -330,8 +324,11 @@ public class NewTransactionFragment extends SherlockFragment implements
 	private void updateTransferAccountsList(){
 		long accountId = ((TransactionsActivity)getActivity()).getCurrentAccountID();
 
-		String conditions = "(" + DatabaseHelper.KEY_ROW_ID + " != " + accountId + ") AND " + "(" +
-							DatabaseHelper.KEY_CURRENCY_CODE + " = '" + mAccountsDbAdapter.getCurrencyCode(accountId) + "')";
+		String conditions = "(" + DatabaseHelper.KEY_ROW_ID + " != " + accountId + " AND "
+							+ DatabaseHelper.KEY_CURRENCY_CODE + " = '" + mAccountsDbAdapter.getCurrencyCode(accountId)
+                            + "' AND " + DatabaseHelper.KEY_UID + " != '" + mAccountsDbAdapter.getGnuCashRootAccountUID()
+                            + "' AND " + DatabaseHelper.KEY_PLACEHOLDER + " = 0"
+                            + ")";
 
 		mCursor = mAccountsDbAdapter.fetchAccounts(conditions);
 
@@ -415,12 +412,12 @@ public class NewTransactionFragment extends SherlockFragment implements
 		for (int pos = 0; pos < mCursorAdapter.getCount(); pos++) {
 			if (mCursorAdapter.getItemId(pos) == accountId){
                 final int position = pos;
-				new Handler().postDelayed(new Runnable() {
+                mDoubleAccountSpinner.postDelayed(new Runnable() {
                     @Override
                     public void run() {
                         mDoubleAccountSpinner.setSelection(position);
                     }
-                }, 100);
+                }, 500);
 				break;
 			}
 		}

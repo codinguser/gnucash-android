@@ -95,6 +95,7 @@ public class TransactionsActivity extends SherlockFragmentActivity implements
     TextView mSectionHeaderSubAccounts;
     TextView mSectionHeaderTransactions;
     View mSubAccountsContainer;
+    View mTransactionsContainer;
 
 	private OnNavigationListener mTransactionListNavigationListener = new OnNavigationListener() {
 
@@ -154,6 +155,7 @@ public class TransactionsActivity extends SherlockFragmentActivity implements
         mSectionHeaderSubAccounts = (TextView) findViewById(R.id.section_header_sub_accounts);
         mSectionHeaderTransactions = (TextView) findViewById(R.id.section_header_transactions);
         mSubAccountsContainer = findViewById(R.id.sub_accounts_container);
+        mTransactionsContainer = findViewById(R.id.transactions_container);
 
 		final Intent intent = getIntent();
 		mAccountId = intent.getLongExtra(
@@ -311,7 +313,9 @@ public class TransactionsActivity extends SherlockFragmentActivity implements
                 .beginTransaction();
 
         int subAccountCount = mAccountsDbAdapter.getSubAccountCount(mAccountId);
-        if (subAccountCount > 0){
+        boolean isPlaceholderAccount = mAccountsDbAdapter.isPlaceholderAccount(mAccountId);
+
+        if (subAccountCount > 0 || isPlaceholderAccount){
             mSubAccountsContainer.setVisibility(View.VISIBLE);
             mSectionHeaderSubAccounts.setVisibility(View.VISIBLE);
             String subAccountSectionText = getResources().getQuantityString(R.plurals.label_sub_accounts, subAccountCount, subAccountCount);
@@ -323,16 +327,21 @@ public class TransactionsActivity extends SherlockFragmentActivity implements
             fragmentTransaction.replace(R.id.sub_accounts_container, subAccountsListFragment, AccountsActivity.FRAGMENT_ACCOUNTS_LIST);
         }
 
-        TransactionsListFragment transactionsListFragment = new TransactionsListFragment();
-        Bundle args = new Bundle();
-        args.putLong(TransactionsListFragment.SELECTED_ACCOUNT_ID,
-                mAccountId);
-        transactionsListFragment.setArguments(args);
-        Log.i(TAG, "Opening transactions for account id " +  mAccountId);
+        //only load transactions if it is not a placeholder account
+        if (!isPlaceholderAccount){
+            TransactionsListFragment transactionsListFragment = new TransactionsListFragment();
+            Bundle args = new Bundle();
+            args.putLong(TransactionsListFragment.SELECTED_ACCOUNT_ID,
+                    mAccountId);
+            transactionsListFragment.setArguments(args);
+            Log.i(TAG, "Opening transactions for account id " +  mAccountId);
 
-        fragmentTransaction.replace(R.id.transactions_container,
-                transactionsListFragment, FRAGMENT_TRANSACTIONS_LIST);
-
+            fragmentTransaction.replace(R.id.transactions_container,
+                    transactionsListFragment, FRAGMENT_TRANSACTIONS_LIST);
+        } else {
+            mSectionHeaderTransactions.setVisibility(View.GONE);
+            mTransactionsContainer.setVisibility(View.GONE);
+        }
         fragmentTransaction.commit();
 	}
 	
