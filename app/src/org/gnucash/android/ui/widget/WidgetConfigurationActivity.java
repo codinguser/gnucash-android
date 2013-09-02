@@ -156,7 +156,7 @@ public class WidgetConfigurationActivity extends Activity {
 
 		
 		if (account == null){
-			Log.i("WidgetConfiguration", "Account not found, updating widget " + appWidgetId);
+			Log.i("WidgetConfiguration", "Account not found, resetting widget " + appWidgetId);
 			//if account has been deleted, let the user know
 			RemoteViews views = new RemoteViews(context.getPackageName(),
 					R.layout.widget_4x1);

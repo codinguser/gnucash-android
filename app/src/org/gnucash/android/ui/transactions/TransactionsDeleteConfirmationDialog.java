@@ -10,6 +10,7 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 
 import com.actionbarsherlock.app.SherlockDialogFragment;
+import org.gnucash.android.ui.widget.WidgetConfigurationActivity;
 
 /**
  * Displays a delete confirmation dialog for transactions
@@ -47,7 +48,8 @@ public class TransactionsDeleteConfirmationDialog extends SherlockDialogFragment
                             }
                             if (getTargetFragment() instanceof AccountsListFragment){                            	
                             	((AccountsListFragment)getTargetFragment()).refreshList();
-                            }                                                        
+                            }
+                            WidgetConfigurationActivity.updateAllWidgets(getActivity());
                         }
                     }
                 )

@@ -18,7 +18,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="org.gnucash.android"
     android:versionCode="14"
-    android:versionName="1.2.4.beta" >
+    android:versionName="1.2.4" >
 
     <uses-sdk android:minSdkVersion="8" android:targetSdkVersion="15"/>
     

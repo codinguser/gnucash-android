@@ -25,6 +25,7 @@ import android.os.Bundle;
 import android.widget.Toast;
 import org.gnucash.android.R;
 import org.gnucash.android.db.AccountsDbAdapter;
+import org.gnucash.android.ui.widget.WidgetConfigurationActivity;
 
 /**
  * Confirmation dialog for deleting all accounts from the system.
@@ -52,7 +53,7 @@ public class DeleteAllAccountsConfirmationDialog extends DialogFragment {
                                 accountsDbAdapter.deleteAllRecords();
                                 accountsDbAdapter.close();
                                 Toast.makeText(context, R.string.toast_all_accounts_deleted, Toast.LENGTH_SHORT).show();
-
+                                WidgetConfigurationActivity.updateAllWidgets(context);
                             }
                         }
                 )
