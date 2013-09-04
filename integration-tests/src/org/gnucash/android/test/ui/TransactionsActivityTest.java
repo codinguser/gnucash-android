@@ -16,23 +16,6 @@
 
 package org.gnucash.android.test.ui;
 
-import java.text.NumberFormat;
-import java.text.ParseException;
-import java.util.Currency;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-
-import org.gnucash.android.R;
-import org.gnucash.android.data.Account;
-import org.gnucash.android.data.Money;
-import org.gnucash.android.data.Transaction;
-import org.gnucash.android.db.AccountsDbAdapter;
-import org.gnucash.android.db.TransactionsDbAdapter;
-import org.gnucash.android.ui.transactions.NewTransactionFragment;
-import org.gnucash.android.ui.transactions.TransactionsActivity;
-import org.gnucash.android.ui.transactions.TransactionsListFragment;
-
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -44,8 +27,25 @@ import android.view.View;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.ToggleButton;
-
 import com.jayway.android.robotium.solo.Solo;
+import org.gnucash.android.R;
+import org.gnucash.android.data.Account;
+import org.gnucash.android.data.Money;
+import org.gnucash.android.data.Transaction;
+import org.gnucash.android.db.AccountsDbAdapter;
+import org.gnucash.android.db.TransactionsDbAdapter;
+import org.gnucash.android.ui.transactions.NewTransactionFragment;
+import org.gnucash.android.ui.transactions.TransactionsActivity;
+import org.gnucash.android.ui.transactions.TransactionsListFragment;
+
+import java.text.NumberFormat;
+import java.text.ParseException;
+import java.util.Currency;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+
+import static org.fest.assertions.api.ANDROID.assertThat;
 
 public class TransactionsActivityTest extends
 		ActivityInstrumentationTestCase2<TransactionsActivity> {
@@ -58,35 +58,44 @@ public class TransactionsActivityTest extends
 	private long mTransactionTimeMillis;
 	
 	public TransactionsActivityTest() {
-		super(TransactionsActivity.class);		
+		super(TransactionsActivity.class);
 	}
 	
 	@Override
 	protected void setUp() throws Exception {
-		mTransactionTimeMillis = System.currentTimeMillis();
-		Account account = new Account(DUMMY_ACCOUNT_NAME);
-		account.setUID(DUMMY_ACCOUNT_UID);
-		account.setCurrency(Currency.getInstance(Locale.getDefault()));
-		mTransaction = new Transaction(TRANSACTION_AMOUNT, TRANSACTION_NAME);
-		mTransaction.setAccountUID(DUMMY_ACCOUNT_UID);
-		mTransaction.setDescription("What up?");
-		mTransaction.setTime(mTransactionTimeMillis);
-		
-		account.addTransaction(mTransaction);		
-		
-		Context context = getInstrumentation().getTargetContext();
-		AccountsDbAdapter adapter = new AccountsDbAdapter(context);
-		long id = adapter.addAccount(account);
-		adapter.close();
-		
+        mTransactionTimeMillis = System.currentTimeMillis();
+        Account account = new Account(DUMMY_ACCOUNT_NAME);
+        account.setUID(DUMMY_ACCOUNT_UID);
+        account.setCurrency(Currency.getInstance(Locale.getDefault()));
+        mTransaction = new Transaction(TRANSACTION_AMOUNT, TRANSACTION_NAME);
+        mTransaction.setAccountUID(DUMMY_ACCOUNT_UID);
+        mTransaction.setDescription("What up?");
+        mTransaction.setTime(mTransactionTimeMillis);
 
-		Intent intent = new Intent(Intent.ACTION_VIEW);
-		intent.putExtra(TransactionsListFragment.SELECTED_ACCOUNT_ID, id);
-		setActivityIntent(intent);
-		
-		mSolo = new Solo(getInstrumentation(), getActivity());			
+        account.addTransaction(mTransaction);
+
+        Context context = getInstrumentation().getTargetContext();
+        AccountsDbAdapter adapter = new AccountsDbAdapter(context);
+        long id = adapter.addAccount(account);
+        adapter.close();
+        assertTrue(id > 0);
+
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.putExtra(TransactionsListFragment.SELECTED_ACCOUNT_ID, id);
+        setActivityIntent(intent);
+
+        mSolo = new Solo(getInstrumentation(), getActivity());
 	}
-	
+
+    /**
+     * Finds a view in the action bar and clicks it, since the native methods are not supported by ActionBarSherlock
+     * @param id
+     */
+    private void clickSherlockActionBarItem(int id){
+        View view = mSolo.getView(id);
+        mSolo.clickOnView(view);
+    }
+
 	private void validateTransactionListDisplayed(){
 		Fragment fragment = getActivity()
 				.getSupportFragmentManager()
@@ -104,34 +113,37 @@ public class TransactionsActivityTest extends
 	
 	private void validateNewTransactionFields(){
 		String expectedValue = NewTransactionFragment.DATE_FORMATTER.format(new Date(mTransactionTimeMillis));
-		TextView dateView = (TextView) mSolo.getView(R.id.input_date);//(TextView) getActivity().findViewById(R.id.input_date);
+		TextView dateView = (TextView) mSolo.getView(R.id.input_date);
 		String actualValue = dateView.getText().toString();
 		assertEquals(expectedValue, actualValue);
 		
 		expectedValue = NewTransactionFragment.TIME_FORMATTER.format(new Date(mTransactionTimeMillis));
-		TextView timeView = (TextView) mSolo.getView(R.id.input_time); //(TextView) getActivity().findViewById(R.id.input_time);
+		TextView timeView = (TextView) mSolo.getView(R.id.input_time);
 		actualValue = timeView.getText().toString();
 		assertEquals(expectedValue, actualValue);
 		
 	}
 	
 	public void testAddTransactionShouldRequireAmount(){
-		mSolo.waitForText(DUMMY_ACCOUNT_NAME);
+		mSolo.waitForText(TRANSACTION_NAME);
 		validateTransactionListDisplayed();
 		
 		TransactionsDbAdapter adapter = new TransactionsDbAdapter(getActivity());
 		int beforeCount = adapter.getTransactionsCount(adapter.getAccountID(DUMMY_ACCOUNT_UID));
-		mSolo.clickOnActionBarItem(R.id.menu_add_transaction);
+        clickSherlockActionBarItem(R.id.menu_add_transaction);
 		mSolo.waitForText("Description");
 		mSolo.enterText(0, "Lunch");
-		
-		//verify that only text does not enable save button
-		View saveButtonView = mSolo.getView(R.id.menu_save);				
-		assertFalse(saveButtonView.isEnabled());//mSolo.getImage(3).isEnabled());
-		mSolo.clickOnActionBarItem(R.id.btn_save);
-		
+
+        clickSherlockActionBarItem(R.id.menu_save);
+        String toastAmountRequired = getActivity().getString(R.string.toast_transanction_amount_required);
+		boolean toastFound = mSolo.waitForText(toastAmountRequired);
+        assertTrue(toastFound);
+
 		int afterCount = adapter.getTransactionsCount(adapter.getAccountID(DUMMY_ACCOUNT_UID));
 		assertEquals(beforeCount, afterCount);
+
+        adapter.close();
+        mSolo.goBack();
 	}
 	
 	private void validateEditTransactionFields(Transaction transaction){
@@ -163,33 +175,39 @@ public class TransactionsActivityTest extends
 		assertEquals(expectedValue, actualValue);
 	}
 	
-	public void testAddTransaction(){	
-			mSolo.waitForText(DUMMY_ACCOUNT_NAME);
-			validateTransactionListDisplayed();
-			
-			//Android 2.2 cannot handle this for some reason, use image instead
-			mSolo.clickOnActionBarItem(R.id.menu_add_transaction);
-//			mSolo.clickOnImage(2);
-			mSolo.waitForText("Description");
-			
-			validateNewTransactionFields();
-			
-			//validate creation of transaction
+	public void testAddTransaction(){
+			mSolo.waitForText(TRANSACTION_NAME);
+//            mSolo.waitForFragmentByTag(TransactionsActivity.FRAGMENT_TRANSACTIONS_LIST);
+
+        validateTransactionListDisplayed();
+
+//			mSolo.clickOnActionBarItem(R.id.menu_add_transaction);
+            clickSherlockActionBarItem(R.id.menu_add_transaction);
+
+//			mSolo.waitForView(EditText.class);
+            mSolo.waitForText("New transaction");
+
+//			validateNewTransactionFields();
+
+
+        //validate creation of transaction
 			mSolo.enterText(0, "Lunch");
 			mSolo.enterText(1, "899");
 			//check that the amount is correctly converted in the input field
 			String value = mSolo.getEditText(1).getText().toString();
-			String expectedValue = NumberFormat.getInstance().format(-8.99); 
+			String expectedValue = NumberFormat.getInstance().format(-8.99);
 			assertEquals(expectedValue, value);
-			
+
 			int transactionsCount = getTranscationCount();
-			
+
 			//Android 2.2 cannot handle this for some reason
-			mSolo.clickOnActionBarItem(R.id.menu_save);	
+//			mSolo.clickOnActionBarItem(R.id.menu_save);
 //			mSolo.clickOnImage(3);
+        clickSherlockActionBarItem(R.id.menu_save);
+
 			mSolo.waitForText(DUMMY_ACCOUNT_NAME);
 			validateTransactionListDisplayed();
-			
+
 			assertEquals(transactionsCount + 1, getTranscationCount());
 		}
 
@@ -205,8 +223,8 @@ public class TransactionsActivityTest extends
 		validateEditTransactionFields(mTransaction);
 				
 		mSolo.enterText(0, "Pasta");
-		mSolo.clickOnActionBarItem(R.id.menu_save);
-		
+		clickSherlockActionBarItem(R.id.menu_save);
+
 		//if we see the text, then it was successfully created
 		mSolo.waitForText("Pasta");
 	}
@@ -216,26 +234,27 @@ public class TransactionsActivityTest extends
 		Editor editor = prefs.edit();
 		editor.putString(getActivity().getString(R.string.key_default_transaction_type), "CREDIT");
 		editor.commit();
-		
-		mSolo.clickOnActionBarItem(R.id.menu_add_transaction);
+
+        clickSherlockActionBarItem(R.id.menu_add_transaction);
 		mSolo.waitForText(getActivity().getString(R.string.label_transaction_name));
 		
-//		ToggleButton transactionTypeButton = (ToggleButton) mSolo.getView(R.id.input_transaction_type); 
 		ToggleButton transactionTypeButton = (ToggleButton) mSolo.getButton(0);
-		assertTrue(transactionTypeButton.isChecked() == false);
-		
-		mSolo.clickOnActionBarItem(R.id.menu_cancel);
-		
+		assertThat(transactionTypeButton).isNotChecked();
+
+		clickSherlockActionBarItem(R.id.menu_cancel);
+
 		//now validate the other case 
 		editor = prefs.edit();
 		editor.putString(getActivity().getString(R.string.key_default_transaction_type), "DEBIT");
 		editor.commit();
 		
-		mSolo.clickOnActionBarItem(R.id.menu_add_transaction);
+        clickSherlockActionBarItem(R.id.menu_add_transaction);
 		mSolo.waitForText(getActivity().getString(R.string.label_transaction_name));
 		
 		transactionTypeButton = (ToggleButton) mSolo.getButton(0);
-		assertTrue(transactionTypeButton.isChecked());
+		assertThat(transactionTypeButton).isChecked();
+        clickSherlockActionBarItem(R.id.menu_cancel);
+        mSolo.goBack();
 	}
 
 	public void testToggleTransactionType(){
@@ -257,11 +276,8 @@ public class TransactionsActivityTest extends
 		}
 		Money amount = new Money(amountString, Currency.getInstance(Locale.getDefault()).getCurrencyCode());
 		assertEquals("-9.99", amount.toPlainString());
-		
-		//save the transaction, should now be a debit
-//		mSolo.clickOnImage(3);
-		mSolo.clickOnActionBarItem(R.id.menu_save);
-		
+
+		clickSherlockActionBarItem(R.id.menu_save);
 		mSolo.waitForText(DUMMY_ACCOUNT_NAME);
 		
 		TransactionsDbAdapter adapter = new TransactionsDbAdapter(getActivity());
@@ -270,6 +286,8 @@ public class TransactionsActivityTest extends
 		assertEquals(1, transactions.size());
 		Transaction trx = transactions.get(0);
 		assertTrue(trx.getAmount().isNegative());
+
+        mSolo.goBack();
 	}
 	
 	public void testOpenTransactionEditShouldNotModifyTransaction(){
@@ -278,12 +296,12 @@ public class TransactionsActivityTest extends
 			validateTransactionListDisplayed();
 			
 			mSolo.clickOnText(TRANSACTION_NAME);
-			mSolo.waitForText("Note");
+			mSolo.waitForText("Edit transaction");
 			
 			validateNewTransactionFields();
 			
-			mSolo.clickOnActionBarItem(R.id.menu_save);
-			
+			clickSherlockActionBarItem(R.id.menu_save);
+
 			mSolo.waitForText(DUMMY_ACCOUNT_NAME);
 			
 			TransactionsDbAdapter adapter = new TransactionsDbAdapter(getActivity());
@@ -311,20 +329,21 @@ public class TransactionsActivityTest extends
 		mSolo.waitForText(DUMMY_ACCOUNT_NAME);
 		
 		mSolo.clickOnCheckBox(0);		
-		mSolo.clickOnImage(2);
+		clickSherlockActionBarItem(R.id.context_menu_delete);
 		
-		AccountsDbAdapter accAdapter = new AccountsDbAdapter(getActivity());
-		long id = accAdapter.getId(DUMMY_ACCOUNT_UID);
+		AccountsDbAdapter accountsDbAdapter = new AccountsDbAdapter(getActivity());
+		long id = accountsDbAdapter.getId(DUMMY_ACCOUNT_UID);
 		TransactionsDbAdapter adapter = new TransactionsDbAdapter(getActivity());
 		assertEquals(0, adapter.getTransactionsCount(id));
 		
-		accAdapter.close();
+		accountsDbAdapter.close();
 		adapter.close();
 		
 	}
 	
 	public void testBulkMoveTransactions(){
-		Account account = new Account("Target");
+        String targetAccountName = "Target";
+        Account account = new Account(targetAccountName);
 		account.setCurrency(Currency.getInstance(Locale.getDefault()));
 		AccountsDbAdapter accountsDbAdapter = new AccountsDbAdapter(getActivity());
 		accountsDbAdapter.addAccount(account);
@@ -338,15 +357,16 @@ public class TransactionsActivityTest extends
 		mSolo.clickOnCheckBox(0);
 		mSolo.waitForText(getActivity().getString(R.string.title_selected, 1));
 		//initiate bulk move
-		mSolo.clickOnImage(1);		
+		clickSherlockActionBarItem(R.id.context_menu_move_transactions);
 		
 		mSolo.waitForDialogToClose(2000);
 		
-		Spinner spinner = mSolo.getCurrentSpinners().get(0);
+		Spinner spinner = mSolo.getCurrentViews(Spinner.class).get(0);
 		mSolo.clickOnView(spinner);
-		mSolo.clickOnText("Target");
+        mSolo.sleep(500);
+		mSolo.clickOnText(targetAccountName);
 		mSolo.clickOnButton(1);
-//		mSolo.clickOnText(getActivity().getString(R.string.menu_move));
+//		mSolo.clickOnText(getActivity().getString(R.string.btn_move));
 		
 		mSolo.waitForDialogToClose(2000);
 		
@@ -371,15 +391,9 @@ public class TransactionsActivityTest extends
 		transactionIntent.putExtra(Transaction.EXTRA_ACCOUNT_UID, DUMMY_ACCOUNT_UID);
 		
 		getActivity().sendBroadcast(transactionIntent);
-		
-		synchronized (mSolo) {
-			try {
-				mSolo.wait(2000);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		}
-		
+
+        mSolo.sleep(2000);
+
 		int afterCount = trxnAdapter.getTransactionsCount(trxnAdapter.getAccountID(DUMMY_ACCOUNT_UID));
 		
 		assertEquals(beforeCount + 1, afterCount);

@@ -262,7 +262,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 				DatabaseHelper.KEY_ROW_ID + "=" + id, 
 				null, null, null, null);
 		if (c != null && c.moveToFirst()){
-			uid = c.getString(1);
+			uid = c.getString(c.getColumnIndexOrThrow(DatabaseHelper.KEY_UID));
 			c.close();
 		}
 		return uid;
@@ -348,7 +348,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 		Cursor cursor = mDb.query(DatabaseHelper.ACCOUNTS_TABLE_NAME,
                 null,
                 selection,
-                new String[]{AccountType.ROOT.toString()},
+                new String[]{AccountType.ROOT.name()},
                 null, null,
                 DatabaseHelper.KEY_NAME + " ASC");
 		return cursor;

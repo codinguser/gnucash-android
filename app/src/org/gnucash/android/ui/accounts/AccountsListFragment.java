@@ -655,6 +655,7 @@ public class AccountsListFragment extends SherlockListFragment implements
                     balanceTextView.setTextColor(fontColor);
                 }
             }
+            accountsDbAdapter.close();
         }
     }
 

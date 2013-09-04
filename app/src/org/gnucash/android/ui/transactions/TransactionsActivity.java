@@ -211,15 +211,15 @@ public class TransactionsActivity extends SherlockFragmentActivity implements
 		// set the selected item in the spinner
 		int i = 0;
 		Cursor accountsCursor = mAccountsDbAdapter.fetchAllRecords();
-		accountsCursor.moveToFirst();
-		do {
-			long id = accountsCursor.getLong(DatabaseAdapter.COLUMN_ROW_ID);			
-			if (mAccountId == id) {
-				getSupportActionBar().setSelectedNavigationItem(i);
-				break;
-			}
-			++i;
-		} while (accountsCursor.moveToNext());
+//		boolean cursorMoved = accountsCursor.moveToFirst();
+        while (accountsCursor.moveToNext()) {
+            long id = accountsCursor.getLong(DatabaseAdapter.COLUMN_ROW_ID);
+            if (mAccountId == id) {
+                getSupportActionBar().setSelectedNavigationItem(i);
+                break;
+            }
+            ++i;
+        }
         accountsCursor.close();
 	}
 
