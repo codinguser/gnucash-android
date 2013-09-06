@@ -23,6 +23,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
 
+import android.content.Context;
+import org.gnucash.android.db.AccountsDbAdapter;
+import org.gnucash.android.export.qif.QifHelper;
 import org.gnucash.android.util.OfxFormatter;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -45,7 +48,7 @@ public class Account {
 	 * This is used when sending intents from third-party applications
 	 */
 	public static final String MIME_TYPE = "vnd.android.cursor.item/vnd.org.gnucash.android.account";
-	
+
 	/**
 	 * The type of account
 	 * This are the different types specified by the OFX format and 
@@ -453,4 +456,34 @@ public class Account {
 				
 	}
 
+    /**
+     * Exports the account info and transactions in the QIF format
+     * @param exportAll Flag to determine whether to export all transactions, or only new transactions since last export
+     * @return QIF representation of the account information
+     */
+    public String toQIF(boolean exportAll, Context context) {
+        StringBuffer accountQifBuffer = new StringBuffer();
+        final String newLine = "\n";
+
+        AccountsDbAdapter accountsDbAdapter = new AccountsDbAdapter(context);
+        String fullyQualifiedAccountName = accountsDbAdapter.getFullyQualifiedAccountName(mUID);
+        accountsDbAdapter.close();
+
+        accountQifBuffer.append(QifHelper.ACCOUNT_HEADER).append(newLine);
+        accountQifBuffer.append(QifHelper.ACCOUNT_NAME_PREFIX).append(fullyQualifiedAccountName).append(newLine);
+        accountQifBuffer.append(QifHelper.ENTRY_TERMINATOR).append(newLine);
+
+        String header = QifHelper.getQifHeader(mAccountType);
+        accountQifBuffer.append(header + newLine);
+
+        for (Transaction transaction : mTransactionsList) {
+            //ignore those which are loaded as double transactions.
+            // They will be handled as splits
+            if (!transaction.getAccountUID().equals(mUID))
+                continue;
+
+            accountQifBuffer.append(transaction.toQIF(context) + newLine);
+        }
+        return accountQifBuffer.toString();
+    }
 }

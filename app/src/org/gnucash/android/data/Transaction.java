@@ -22,9 +22,11 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.UUID;
 
+import android.content.Context;
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.data.Account.OfxAccountType;
 import org.gnucash.android.db.AccountsDbAdapter;
+import org.gnucash.android.export.qif.QifHelper;
 import org.gnucash.android.util.OfxFormatter;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -430,4 +432,37 @@ public class Transaction {
 		return transactionNode;
 	}
 
+    /**
+     * Builds a QIF entry representing this transaction
+     * @param context Application context
+     * @return String QIF representation of this transaction
+     */
+    public String toQIF(Context context){
+        final String newLine = "\n";
+
+        AccountsDbAdapter accountsDbAdapter = new AccountsDbAdapter(context);
+
+        StringBuffer transactionQifBuffer = new StringBuffer();
+        transactionQifBuffer.append(QifHelper.DATE_PREFIX + QifHelper.formatDate(mTimestamp) + newLine);
+
+        if (mDoubleEntryAccountUID != null && !mDoubleEntryAccountUID.isEmpty()){
+            String splitAccountFullName = accountsDbAdapter.getFullyQualifiedAccountName(mDoubleEntryAccountUID);
+            transactionQifBuffer.append(QifHelper.SPLIT_CATEGORY_PREFIX + splitAccountFullName + newLine);
+            if (mDescription != null || mDescription.isEmpty()){
+                transactionQifBuffer.append(QifHelper.SPLIT_MEMO_PREFIX + mDescription + newLine);
+            }
+            transactionQifBuffer.append(QifHelper.SPLIT_AMOUNT_PREFIX + mAmount.negate().asString() + newLine);
+        } else {
+            transactionQifBuffer.append(QifHelper.AMOUNT_PREFIX + mAmount.asString() + newLine);
+            if (mDescription != null && !mDescription.isEmpty()){
+                transactionQifBuffer.append(QifHelper.MEMO_PREFIX + mDescription + newLine);
+            }
+            transactionQifBuffer.append(QifHelper.CATEGORY_PREFIX + QifHelper.getImbalanceAccountName(mAmount.getCurrency()) + newLine);
+        }
+
+        transactionQifBuffer.append(QifHelper.ENTRY_TERMINATOR + newLine);
+
+        accountsDbAdapter.close();
+        return transactionQifBuffer.toString();
+    }
 }

@@ -40,7 +40,9 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import android.widget.*;
 import org.gnucash.android.R;
+import org.gnucash.android.export.qif.QifExporter;
 import org.gnucash.android.ui.transactions.TransactionsDeleteConfirmationDialog;
 import org.gnucash.android.util.OfxFormatter;
 import org.w3c.dom.Document;
@@ -61,11 +63,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.Spinner;
-import android.widget.Toast;
 
 /**
  * Dialog fragment for exporting account information as OFX files.
@@ -110,7 +107,11 @@ public class ExportDialogFragment extends DialogFragment {
 	 * Tag for logging
 	 */
 	private static final String TAG = "ExportDialogFragment";
-	
+
+    public enum ExportFormat { QIF, OFX};
+
+    private ExportFormat mExportFormat = ExportFormat.QIF;
+
 	/**
 	 * Click listener for positive button in the dialog.
 	 * @author Ngewi Fet <ngewif@gmail.com>
@@ -119,20 +120,33 @@ public class ExportDialogFragment extends DialogFragment {
 
 		@Override
 		public void onClick(View v) {
-			boolean exportAll = mExportAllCheckBox.isChecked();
-			Document document = null;				
-			try {
-				document = exportOfx(exportAll);
-				writeToExternalStorage(document);
-			} catch (Exception e) {
-				Log.e(TAG, e.getMessage());
-				Toast.makeText(getActivity(), R.string.error_exporting,
-						Toast.LENGTH_LONG).show();
-				dismiss();
-				return;
-			}
-			
-			int position = mDestinationSpinner.getSelectedItemPosition();
+            boolean exportAll = mExportAllCheckBox.isChecked();
+            try {
+                switch (mExportFormat) {
+                    case QIF: {
+                        QifExporter qifExporter = new QifExporter(getActivity(), exportAll);
+                        String qif = qifExporter.generateQIF();
+
+                        writeQifExternalStorage(qif);
+                    }
+                    break;
+
+                    case OFX: {
+                        Document document = exportOfx(exportAll);
+                        writeOfxToExternalStorage(document);
+                    }
+                    break;
+                }
+            } catch (Exception e) {
+                Log.e(TAG, e.getMessage());
+                Toast.makeText(getActivity(), R.string.error_exporting,
+                        Toast.LENGTH_LONG).show();
+                dismiss();
+                return;
+            }
+
+
+            int position = mDestinationSpinner.getSelectedItemPosition();
 			switch (position) {
 			case 0:					
 				shareFile(mFilePath);				
@@ -141,7 +155,7 @@ public class ExportDialogFragment extends DialogFragment {
 			case 1:				
 				File src = new File(mFilePath);
 				new File(Environment.getExternalStorageDirectory() + "/gnucash/").mkdirs();
-				File dst = new File(Environment.getExternalStorageDirectory() + "/gnucash/" + buildExportFilename());
+				File dst = new File(Environment.getExternalStorageDirectory() + "/gnucash/" + buildExportFilename(mExportFormat));
 				
 				try {
 					copyFile(src, dst);
@@ -176,7 +190,19 @@ public class ExportDialogFragment extends DialogFragment {
 		}
 		
 	}
-	
+
+    public void onRadioButtonClicked(View view){
+        switch (view.getId()){
+            case R.id.radio_ofx_format:
+                mExportFormat = ExportFormat.OFX;
+                break;
+            case R.id.radio_qif_format:
+                mExportFormat = ExportFormat.QIF;
+        }
+        mFilePath = buildExportFilename(mExportFormat);
+        return;
+    }
+
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
@@ -186,7 +212,7 @@ public class ExportDialogFragment extends DialogFragment {
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {		
 		super.onActivityCreated(savedInstanceState);
-		mFilePath = getActivity().getExternalFilesDir(null) + "/" + buildExportFilename();
+		mFilePath = getActivity().getExternalFilesDir(null) + "/" + buildExportFilename(mExportFormat);
 		getDialog().setTitle(R.string.menu_export_ofx);
 		bindViews();
 	}
@@ -222,17 +248,41 @@ public class ExportDialogFragment extends DialogFragment {
 		});
 		
 		mSaveButton.setOnClickListener(new ExportClickListener());
+
+        String defaultExportFormat = sharedPrefs.getString(getString(R.string.key_default_export_format), ExportFormat.QIF.name());
+        View.OnClickListener clickListener = new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onRadioButtonClicked(view);
+            }
+        };
+
+        RadioButton ofxRadioButton = (RadioButton) v.findViewById(R.id.radio_ofx_format);
+        ofxRadioButton.setChecked(defaultExportFormat.equalsIgnoreCase(ExportFormat.OFX.name()));
+        ofxRadioButton.setOnClickListener(clickListener);
+
+        RadioButton qifRadioButton = (RadioButton) v.findViewById(R.id.radio_qif_format);
+        qifRadioButton.setChecked(defaultExportFormat.equalsIgnoreCase(ExportFormat.QIF.name()));
+        qifRadioButton.setOnClickListener(clickListener);
 	}
-	
+
+    private void writeQifExternalStorage(String qif) throws IOException {
+        File file = new File(mFilePath);
+
+        BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), "UTF-8"));
+        writer.write(qif);
+
+        writer.flush();
+    }
+
 	/**
 	 * Writes the OFX document <code>doc</code> to external storage
 	 * @param doc Document containing OFX file data
 	 * @throws IOException if file could not be saved
 	 */
-	private void writeToExternalStorage(Document doc) throws IOException{
+	private void writeOfxToExternalStorage(Document doc) throws IOException{
 		File file = new File(mFilePath);
 		
-//		FileWriter writer = new FileWriter(file);
 		BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), "UTF-8"));
 		boolean useXmlHeader = PreferenceManager.getDefaultSharedPreferences(getActivity())
 				.getBoolean(getString(R.string.key_xml_ofx_header), false);
@@ -317,11 +367,19 @@ public class ExportDialogFragment extends DialogFragment {
 	 * Builds a file name based on the current time stamp for the exported file
 	 * @return String containing the file name
 	 */
-	public static String buildExportFilename(){
-		SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd_HHmm", Locale.US);
+	public static String buildExportFilename(ExportFormat format){
+		SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US);
 		String filename = formatter.format(
 				new Date(System.currentTimeMillis())) 
-				+ "_gnucash_all.ofx";
+				+ "_gnucash_all";
+        switch (format) {
+            case QIF:
+                filename += ".qif";
+                break;
+            case OFX:
+                filename += ".ofx";
+                break;
+        }
 		return filename;
 	}
 	

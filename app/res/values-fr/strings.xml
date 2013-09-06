@@ -336,6 +336,8 @@
     <string name="section_header_transactions">Transactions</string>
     <string name="section_header_accounts">Sub-Accounts</string>
     <string name="menu_search_accounts">Search</string>
+    <string name="title_default_export_format">Default Export Format</string>
+    <string name="summary_default_export_format">File format to use by default when exporting transactions</string>
     <plurals name="label_sub_accounts">
         <item quantity="one">%d sous-compte</item>
         <item quantity="other">%d sous-comptes</item>
@@ -354,5 +356,9 @@
         <item>DEVISES</item>
         <item>ACTIONS</item>
         <item>FONDS COMMUNS</item>
+    </string-array>
+    <string-array name="export_formats">
+        <item>QIF</item>
+        <item>OFX</item>
     </string-array>
 </resources>

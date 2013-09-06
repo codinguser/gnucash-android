@@ -536,6 +536,9 @@
     <string name="section_header_transactions">Transactions</string>
     <string name="section_header_accounts">Sub-Accounts</string>
     <string name="menu_search_accounts">Search</string>
+    <string name="title_default_export_format">Default Export Format</string>
+    <string name="key_default_export_format">default_export_format</string>
+    <string name="summary_default_export_format">File format to use by default when exporting transactions</string>
     <plurals name="label_sub_accounts">
         <item quantity="one">%d sub-account</item>
         <item quantity="other">%d sub-accounts</item>
@@ -569,5 +572,13 @@
         <item>CURRENCY</item>
         <item>STOCK</item>
         <item>MUTUAL</item>
+    </string-array>
+    <string-array name="key_export_format_values">
+        <item>QIF</item>
+        <item>OFX</item>
+    </string-array>
+    <string-array name="export_formats">
+        <item>QIF</item>
+        <item>OFX</item>
     </string-array>
 </resources>
