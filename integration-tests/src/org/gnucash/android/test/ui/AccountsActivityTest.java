@@ -26,6 +26,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
+import com.actionbarsherlock.widget.SearchView;
 import com.jayway.android.robotium.solo.Solo;
 import org.gnucash.android.R;
 import org.gnucash.android.data.Account;
@@ -33,6 +34,7 @@ import org.gnucash.android.data.Money;
 import org.gnucash.android.data.Transaction;
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.TransactionsDbAdapter;
+import org.gnucash.android.test.util.ActionBarUtils;
 import org.gnucash.android.ui.accounts.AccountsActivity;
 import org.gnucash.android.ui.accounts.AccountsListFragment;
 import org.gnucash.android.ui.transactions.TransactionsActivity;
@@ -47,8 +49,8 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
 	private static final String DUMMY_ACCOUNT_NAME = "Dummy account";
     public static final String  DUMMY_ACCOUNT_UID   = "dummy-account";
 	private Solo mSolo;
-	
-	public AccountsActivityTest() {		
+
+	public AccountsActivityTest() {
 		super(AccountsActivity.class);
 	}
 
@@ -85,19 +87,40 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
         accountsDbAdapter.close();
 
         //there should exist a listview of accounts
-        Fragment fragment = getActivity()
-                .getSupportFragmentManager()
-                .findFragmentByTag(AccountsActivity.FRAGMENT_ACCOUNTS_LIST);
-        ((AccountsListFragment)fragment).refreshList();
-
+        refreshAccountsList();
         mSolo.waitForText("Acct");
 
-		assertNotNull(fragment);
         ListView accountsListView = mSolo.getCurrentViews(ListView.class).get(0);
 		assertNotNull(accountsListView);
 
         assertEquals(NUMBER_OF_ACCOUNTS + 1, accountsListView.getCount());
 	}
+
+    public void testSearchAccounts(){
+        String SEARCH_ACCOUNT_NAME = "Search Account";
+
+        Account account = new Account(SEARCH_ACCOUNT_NAME);
+        account.setParentUID(DUMMY_ACCOUNT_UID);
+        AccountsDbAdapter accountsDbAdapter = new AccountsDbAdapter(getActivity());
+        accountsDbAdapter.addAccount(account);
+        accountsDbAdapter.close();
+
+        refreshAccountsList();
+
+        //enter search query
+        ActionBarUtils.clickSherlockActionBarItem(mSolo, R.id.menu_search);
+        mSolo.sleep(200);
+        mSolo.enterText(0, "Se");
+
+        boolean accountFound = mSolo.waitForText(SEARCH_ACCOUNT_NAME, 1, 2000);
+        assertTrue(accountFound);
+
+        mSolo.clearEditText(0);
+
+        //the child account should be hidden again
+        accountFound = mSolo.waitForText(SEARCH_ACCOUNT_NAME, 1, 2000);
+        assertFalse(accountFound);
+    }
 
     /**
      * Tests that an account can be created successfully and that the account list is sorted alphabetically.
@@ -298,5 +321,15 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
     private void clickSherlockActionBarItem(int id){
         View view = mSolo.getView(id);
         mSolo.clickOnView(view);
+    }
+
+    /**
+     * Refresh the account list fragment
+     */
+    private void refreshAccountsList(){
+        Fragment fragment = getActivity()
+                .getSupportFragmentManager()
+                .findFragmentByTag(AccountsActivity.FRAGMENT_ACCOUNTS_LIST);
+        ((AccountsListFragment)fragment).refreshList();
     }
 }

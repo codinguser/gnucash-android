@@ -337,6 +337,7 @@
     <string name="toast_tap_again_to_confirm_delete">Tap again to confirm. ALL entries will be deleted!!</string>
     <string name="section_header_transactions">Transactions</string>
     <string name="section_header_accounts">Sub-Accounts</string>
+    <string name="menu_search_accounts">Search</string>
     <plurals name="label_sub_accounts">
         <item quantity="one">%d sub-cuenta</item>
         <item quantity="other">%d sub-cuentas</item>
