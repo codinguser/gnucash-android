@@ -34,6 +34,8 @@
 	        android:ems="10" 
 	        android:layout_marginBottom="@dimen/dialog_padding"
 	        android:inputType="textCapSentences"
+            android:imeOptions="actionNext"
+            android:nextFocusDown="@+id/input_transaction_amount"
 	        style="@style/ListItemText" />
 	
 	    <LinearLayout 
@@ -62,6 +64,7 @@
 		        android:layout_marginBottom="@dimen/dialog_padding"
 		        android:hint="@string/label_transaction_amount"
 		        android:inputType="number"
+                android:nextFocusDown="@+id/input_description"
 		        android:textColor="@color/debit_red"
 		        style="@style/ListItemText" />
 		    

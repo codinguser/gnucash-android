@@ -88,7 +88,6 @@ public class OfxFormatter {
 	public OfxFormatter(Context context, boolean exportAll) {
 		AccountsDbAdapter dbAdapter = new AccountsDbAdapter(context);
 		mAccountsList = exportAll ? dbAdapter.getAllAccounts() : dbAdapter.getExportableAccounts();
-		dbAdapter.close();
 		mExportAll = exportAll;
 		mContext = context;
 	}

@@ -49,6 +49,7 @@ import com.actionbarsherlock.app.SherlockFragment;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
+import org.gnucash.android.util.QualifiedAccountNameCursorAdapter;
 
 /**
  * Fragment used for creating and editing accounts
@@ -163,21 +164,22 @@ public class AddAccountFragment extends SherlockFragment {
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 		
-		ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(
+		ArrayAdapter<String> currencyArrayAdapter = new ArrayAdapter<String>(
 				getActivity(), 
 				android.R.layout.simple_spinner_item, 
 				getResources().getStringArray(R.array.currency_names));		
-		arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-		mCurrencySpinner.setAdapter(arrayAdapter);
-
-        loadParentAccountList();
-        loadAccountTypesList();
+		currencyArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		mCurrencySpinner.setAdapter(currencyArrayAdapter);
 
         mSelectedAccountId = getArguments().getLong(TransactionsListFragment.SELECTED_ACCOUNT_ID);
         if (mSelectedAccountId > 0) {
             mAccount = mAccountsDbAdapter.getAccount(mSelectedAccountId);
             getSherlockActivity().getSupportActionBar().setTitle(R.string.title_edit_account);
         }
+
+        //need to load the cursor adapters for the spinners before initializing the views
+        loadParentAccountList();
+        loadAccountTypesList();
 
         if (mAccount != null){
             initializeViewsWithAccount(mAccount);
@@ -268,26 +270,38 @@ public class AddAccountFragment extends SherlockFragment {
 		
 		return false;
 	}
-	
+
+    /**
+     * Loads the list of possible accounts which can be set as a parent account and initializes the spinner
+     */
 	private void loadParentAccountList(){
-		String condition = DatabaseHelper.KEY_ROW_ID + "!=" + mSelectedAccountId;
+        String condition = null;
+        if (mAccount != null){  //if editing an account
+            // limit cyclic account hierarchies. Still technically possible since we don't forbid descendant accounts
+            condition = "(" + DatabaseHelper.KEY_PARENT_ACCOUNT_UID + " IS NULL "
+                    + " OR " + DatabaseHelper.KEY_PARENT_ACCOUNT_UID + " != '" + mAccount.getUID() + "')"
+                    + " AND " + DatabaseHelper.KEY_ROW_ID + "!=" + mSelectedAccountId;
+            //TODO: Limit all descendants of the account to eliminate the possibility of cyclic hierarchy
+        }
+
 		mCursor = mAccountsDbAdapter.fetchAccounts(condition);
-		if (mCursor.getCount() <= 0){
+		if (mCursor == null || mCursor.getCount() <= 0){
             final View view = getView();
             view.findViewById(R.id.layout_parent_account).setVisibility(View.GONE);
             view.findViewById(R.id.label_parent_account).setVisibility(View.GONE);
         }
 
-		String[] from = new String[] {DatabaseHelper.KEY_NAME};
-		int[] to = new int[] {android.R.id.text1};
-		mCursorAdapter = new SimpleCursorAdapter(
+		mCursorAdapter = new QualifiedAccountNameCursorAdapter(
 				getActivity(), 
 				android.R.layout.simple_spinner_item, 
-				mCursor, from, to, 0);
+				mCursor);
 		mCursorAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);		
 		mParentAccountSpinner.setAdapter(mCursorAdapter);
 	}
 
+    /**
+     * Loads the list of account types into the account type selector spinner
+     */
     private void loadAccountTypesList(){
         String[] accountTypes = getResources().getStringArray(R.array.account_type_entry_values);
         ArrayAdapter<String> accountTypesAdapter = new ArrayAdapter<String>(

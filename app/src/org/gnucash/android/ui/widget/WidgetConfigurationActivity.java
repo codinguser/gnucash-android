@@ -46,6 +46,7 @@ import android.widget.Button;
 import android.widget.RemoteViews;
 import android.widget.Spinner;
 import android.widget.Toast;
+import org.gnucash.android.util.QualifiedAccountNameCursorAdapter;
 
 /**
  * Activity for configuration which account to diplay on a widget. 
@@ -70,9 +71,7 @@ public class WidgetConfigurationActivity extends Activity {
 		mAccountsSpinner = (Spinner) findViewById(R.id.input_accounts_spinner);
 		mOkButton 		= (Button) findViewById(R.id.btn_save);
 		mCancelButton 	= (Button) findViewById(R.id.btn_cancel);
-		
-		String[] from = new String[] {DatabaseHelper.KEY_NAME};
-		int[] to = new int[] {android.R.id.text1};
+
 		mAccountsDbAdapter = new AccountsDbAdapter(this);
 		Cursor cursor = mAccountsDbAdapter.fetchAllRecords();
 		
@@ -81,12 +80,9 @@ public class WidgetConfigurationActivity extends Activity {
 			finish();
 		}
 			
-		mCursorAdapter = new SimpleCursorAdapter(this, 
+		mCursorAdapter = new QualifiedAccountNameCursorAdapter(this,
 				android.R.layout.simple_spinner_item, 
-				cursor,
-				from,
-				to, 
-				0);
+				cursor);
 		mCursorAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		mAccountsSpinner.setAdapter(mCursorAdapter);
 		
@@ -160,7 +156,7 @@ public class WidgetConfigurationActivity extends Activity {
 
 		
 		if (account == null){
-			Log.i("WidgetConfiguration", "Account not found, updating widget " + appWidgetId);
+			Log.i("WidgetConfiguration", "Account not found, resetting widget " + appWidgetId);
 			//if account has been deleted, let the user know
 			RemoteViews views = new RemoteViews(context.getPackageName(),
 					R.layout.widget_4x1);

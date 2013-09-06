@@ -85,4 +85,6 @@
         <item name="android:background">@drawable/selected_background</item>
     </style>
 
+    <style name="Dialog.WidgetConfiguration" parent="android:Theme.Dialog">
+    </style>
 </resources>

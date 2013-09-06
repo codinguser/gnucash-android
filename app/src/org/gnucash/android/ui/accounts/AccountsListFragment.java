@@ -184,13 +184,18 @@ public class AccountsListFragment extends SherlockListFragment implements
 
         ActionBar actionbar = getSherlockActivity().getSupportActionBar();
         actionbar.setTitle(R.string.title_accounts);
-        actionbar.setDisplayHomeAsUpEnabled(false);
+        if (getActivity() instanceof TransactionsActivity){
+            actionbar.setDisplayHomeAsUpEnabled(true);
+        } else {
+            actionbar.setDisplayHomeAsUpEnabled(false);
+        }
 
         if (!inSubAcccount())
             setHasOptionsMenu(true);
 
         ListView lv = getListView();
         lv.setOnItemLongClickListener(this);
+        lv.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
         getLoaderManager().initLoader(0, null, this);
     }
 
@@ -211,11 +216,11 @@ public class AccountsListFragment extends SherlockListFragment implements
     }
 
     @Override
-    public void onListItemClick(ListView l, View v, int position, long id) {
-        super.onListItemClick(l, v, position, id);
+    public void onListItemClick(ListView listView, View view, int position, long id) {
+        super.onListItemClick(listView, view, position, id);
         if (mInEditMode) {
             mSelectedItemId = id;
-            selectItem(position);
+            listView.setItemChecked(position, true);
             return;
         }
         mAccountSelectedListener.accountSelected(id);
@@ -233,7 +238,7 @@ public class AccountsListFragment extends SherlockListFragment implements
         mActionMode = getSherlockActivity().startActionMode(
                 mActionModeCallbacks);
 
-        selectItem(position);
+        getListView().setItemChecked(position, true);
         return true;
     }
 
@@ -303,45 +308,10 @@ public class AccountsListFragment extends SherlockListFragment implements
      */
     public void finishEditMode() {
         mInEditMode = false;
-        deselectPreviousSelectedItem();
+        getListView().setItemChecked(getListView().getCheckedItemPosition(), false);
+//        deselectPreviousSelectedItem();
         mActionMode = null;
         mSelectedItemId = -1;
-    }
-
-    /**
-     * Highlights the item at <code>position</code> in the ListView.
-     * Android has facilities for managing list selection but the highlighting
-     * is not reliable when using the ActionBar on pre-Honeycomb devices-
-     *
-     * @param position Position of item to be highlighted
-     */
-    private void selectItem(int position) {
-        deselectPreviousSelectedItem();
-        ListView lv = getListView();
-        lv.setItemChecked(position, true);
-        View v = lv.getChildAt(position - lv.getFirstVisiblePosition());
-        v.setSelected(true);
-        v.setBackgroundColor(getResources().getColor(R.color.abs__holo_blue_light));
-        mSelectedViewPosition = position;
-    }
-
-    /**
-     * De-selects the previously selected item in a ListView.
-     * Only one account entry can be highlighted at a time, so the previously selected
-     * one is deselected.
-     */
-    private void deselectPreviousSelectedItem() {
-        if (mSelectedViewPosition >= 0) {
-            ListView lv = getListView();
-            lv.setItemChecked(mSelectedViewPosition, false);
-            View v = getListView().getChildAt(mSelectedViewPosition - lv.getFirstVisiblePosition());
-            if (v == null) {
-                //if we just deleted a row, then the previous position is invalid
-                return;
-            }
-            v.setBackgroundColor(getResources().getColor(android.R.color.transparent));
-            v.setSelected(false);
-        }
     }
 
     @Override
@@ -609,8 +579,10 @@ public class AccountsListFragment extends SherlockListFragment implements
                     .findViewById(R.id.transactions_summary);
             new AccountBalanceTask(summary, getActivity()).execute(accountId);
 
+            boolean isPlaceholderAccount = mAccountsDbAdapter.isPlaceholderAccount(accountId);
+
             ImageButton newTransactionButton = (ImageButton) v.findViewById(R.id.btn_new_transaction);
-            if (inSubAcccount()){
+            if (isPlaceholderAccount){
                 newTransactionButton.setVisibility(View.GONE);
                 v.findViewById(R.id.vertical_line).setVisibility(View.GONE);
             } else {
@@ -626,6 +598,23 @@ public class AccountsListFragment extends SherlockListFragment implements
                 });
             }
             newTransactionButton.setFocusable(false);
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            convertView = super.getView(position, convertView, parent);
+            TextView secondaryText = (TextView) convertView.findViewById(R.id.secondary_text);
+
+            ListView listView = (ListView) parent;
+            if (mInEditMode && listView.isItemChecked(position)){
+                convertView.setBackgroundColor(getResources().getColor(R.color.abs__holo_blue_light));
+                secondaryText.setTextColor(getResources().getColor(android.R.color.white));
+            } else {
+                convertView.setBackgroundColor(getResources().getColor(android.R.color.transparent));
+                secondaryText.setTextColor(getResources().getColor(android.R.color.secondary_text_light_nodisable));
+            }
+
+            return convertView;
         }
     }
 
@@ -666,6 +655,7 @@ public class AccountsListFragment extends SherlockListFragment implements
                     balanceTextView.setTextColor(fontColor);
                 }
             }
+            accountsDbAdapter.close();
         }
     }
 

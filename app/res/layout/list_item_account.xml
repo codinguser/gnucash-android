@@ -15,7 +15,7 @@
  limitations under the License.
 -->
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<org.gnucash.android.util.CheckableLinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:layout_width="match_parent"
               android:layout_height="?android:attr/listPreferredItemHeight"
               android:gravity="center_vertical"
@@ -58,4 +58,4 @@
             android:focusable="false"
             android:contentDescription="@string/description_add_transaction_icon"/>
 
-</LinearLayout>
+</org.gnucash.android.util.CheckableLinearLayout>

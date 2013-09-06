@@ -18,11 +18,16 @@ package org.gnucash.android.test.ui;
 
 import java.io.File;
 
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import org.gnucash.android.R;
 import org.gnucash.android.data.Account;
 import org.gnucash.android.data.Transaction;
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.TransactionsDbAdapter;
+import org.gnucash.android.test.util.ActionBarUtils;
 import org.gnucash.android.ui.accounts.AccountsActivity;
 import org.gnucash.android.ui.accounts.ExportDialogFragment;
 
@@ -66,10 +71,11 @@ public class OfxExportTest extends
 	 * Just try rerunning it again.
 	 */
 	public void testOfxExport(){
-		mSolo.clickOnActionBarItem(R.id.menu_export);
-		
+        mSolo.clickOnActionBarItem(R.id.menu_export);
+//		ActionBarUtils.clickSherlockActionBarItem(mSolo, R.id.menu_export);
+
 		mSolo.waitForText("Export OFX");
-		Spinner spinner = mSolo.getCurrentSpinners().get(0);
+		Spinner spinner = mSolo.getCurrentViews(Spinner.class).get(0);
 		mSolo.clickOnView(spinner);
 		String[] options = getActivity().getResources().getStringArray(R.array.export_destinations);	
 		mSolo.clickOnText(options[1]);
@@ -95,9 +101,11 @@ public class OfxExportTest extends
 		TransactionsDbAdapter transAdapter = new TransactionsDbAdapter(getActivity());
 		assertTrue(transAdapter.getAllTransactionsCount() != 0);
 		
-		mSolo.clickOnActionBarItem(R.id.menu_export);		
+        mSolo.clickOnActionBarItem(R.id.menu_export);
+//        ActionBarUtils.clickSherlockActionBarItem(mSolo, R.id.menu_export);
+
 		mSolo.waitForText("Export OFX");
-		Spinner spinner = mSolo.getCurrentSpinners().get(0);
+		Spinner spinner = mSolo.getCurrentViews(Spinner.class).get(0);
 		mSolo.clickOnView(spinner);
 		String[] options = getActivity().getResources().getStringArray(R.array.export_destinations);	
 		mSolo.clickOnText(options[1]);
@@ -105,26 +113,28 @@ public class OfxExportTest extends
 		//check to delete after export
 		mSolo.clickOnCheckBox(1);
 		
-		Button b = (Button) mSolo.getView(R.id.btn_save);
+		Button b = (Button) mSolo.getView(R.id.btn_save); //getActivity().findViewById(R.id.btn_save);
 		mSolo.clickOnView(b);
 		mSolo.waitForDialogToClose(2000);
-		
-		//confirm delete
-		Button deleteButton = (Button) mSolo.getView(android.R.id.button1);
-		mSolo.clickOnView(deleteButton);
+
+        String deleteConfirm = getActivity().getString(R.string.alert_dialog_ok_delete);
+        mSolo.clickOnText(deleteConfirm);
 		mSolo.waitForDialogToClose(1000);
-		
+        mSolo.sleep(1000);
+
 		assertEquals(0, transAdapter.getAllTransactionsCount());
 		
 		transAdapter.close();
+        mSolo.goBack();
 	}
 	
 	public void testShouldIgnoreExportedTransactions(){
 		testOfxExport();
-		mSolo.clickOnActionBarItem(R.id.menu_export);
-		
+        mSolo.clickOnActionBarItem(R.id.menu_export);
+//		ActionBarUtils.clickSherlockActionBarItem(mSolo, R.id.menu_export);
+
 		mSolo.waitForText("Export OFX");
-		Spinner spinner = mSolo.getCurrentSpinners().get(0);
+		Spinner spinner = mSolo.getCurrentViews(Spinner.class).get(0);
 		mSolo.clickOnView(spinner);
 		String[] options = getActivity().getResources().getStringArray(R.array.export_destinations);	
 		mSolo.clickOnText(options[1]);
@@ -151,11 +161,11 @@ public class OfxExportTest extends
 	
 	public void testExportAlreadyExportedTransactions(){
 		testOfxExport();
-		
-		mSolo.clickOnActionBarItem(R.id.menu_export);
-		
+        mSolo.clickOnActionBarItem(R.id.menu_export);
+//		ActionBarUtils.clickSherlockActionBarItem(mSolo, R.id.menu_export);
+
 		mSolo.waitForText("Export OFX");
-		Spinner spinner = mSolo.getCurrentSpinners().get(0);
+		Spinner spinner = mSolo.getCurrentViews(Spinner.class).get(0);
 		mSolo.clickOnView(spinner);
 		String[] options = getActivity().getResources().getStringArray(R.array.export_destinations);	
 		mSolo.clickOnText(options[1]);
