@@ -342,6 +342,7 @@
     <string name="menu_search_accounts">Search</string>
     <string name="title_default_export_format">Default Export Format</string>
     <string name="summary_default_export_format">File format to use by default when exporting transactions</string>
+    <string name="menu_export_transactions">Export transactions...</string>
     <plurals name="label_sub_accounts">
         <item quantity="one">%d sub-account</item>
         <item quantity="other">%d sub-accounts</item>

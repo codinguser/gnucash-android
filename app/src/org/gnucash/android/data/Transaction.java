@@ -26,8 +26,8 @@ import android.content.Context;
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.data.Account.OfxAccountType;
 import org.gnucash.android.db.AccountsDbAdapter;
+import org.gnucash.android.export.ofx.OfxExporter;
 import org.gnucash.android.export.qif.QifHelper;
-import org.gnucash.android.util.OfxFormatter;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -379,12 +379,12 @@ public class Transaction {
 		transactionNode.appendChild(type);
 
 		Element datePosted = doc.createElement("DTPOSTED");
-		datePosted.appendChild(doc.createTextNode(OfxFormatter.getOfxFormattedTime(mTimestamp)));
+		datePosted.appendChild(doc.createTextNode(OfxExporter.getOfxFormattedTime(mTimestamp)));
 		transactionNode.appendChild(datePosted);
 		
 		Element dateUser = doc.createElement("DTUSER");
 		dateUser.appendChild(doc.createTextNode(
-				OfxFormatter.getOfxFormattedTime(mTimestamp)));
+				OfxExporter.getOfxFormattedTime(mTimestamp)));
 		transactionNode.appendChild(dateUser);
 		
 		Element amount = doc.createElement("TRNAMT");
@@ -407,7 +407,7 @@ public class Transaction {
 		
 		if (mDoubleEntryAccountUID != null && mDoubleEntryAccountUID.length() > 0){
 			Element bankId = doc.createElement("BANKID");
-			bankId.appendChild(doc.createTextNode(OfxFormatter.APP_ID));
+			bankId.appendChild(doc.createTextNode(OfxExporter.APP_ID));
 			
 			//select the proper account as the double account
 			String doubleAccountUID = mDoubleEntryAccountUID.equals(accountUID) ? mAccountUID : mDoubleEntryAccountUID;

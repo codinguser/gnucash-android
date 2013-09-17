@@ -25,8 +25,8 @@ import java.util.UUID;
 
 import android.content.Context;
 import org.gnucash.android.db.AccountsDbAdapter;
+import org.gnucash.android.export.ofx.OfxExporter;
 import org.gnucash.android.export.qif.QifHelper;
-import org.gnucash.android.util.OfxFormatter;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -389,7 +389,7 @@ public class Account {
 		//================= BEGIN BANK ACCOUNT INFO (BANKACCTFROM) =================================
 		
 		Element bankId = doc.createElement("BANKID");
-		bankId.appendChild(doc.createTextNode(OfxFormatter.APP_ID));
+		bankId.appendChild(doc.createTextNode(OfxExporter.APP_ID));
 		
 		Element acctId = doc.createElement("ACCTID");
 		acctId.appendChild(doc.createTextNode(mUID));
@@ -408,7 +408,7 @@ public class Account {
 		
 		//================= BEGIN ACCOUNT BALANCE INFO =================================
 		String balance = getBalance().toPlainString();
-		String formattedCurrentTimeString = OfxFormatter.getFormattedCurrentTime();
+		String formattedCurrentTimeString = OfxExporter.getFormattedCurrentTime();
 		
 		Element balanceAmount = doc.createElement("BALAMT");
 		balanceAmount.appendChild(doc.createTextNode(balance));			
