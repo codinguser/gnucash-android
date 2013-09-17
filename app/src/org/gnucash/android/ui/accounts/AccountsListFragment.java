@@ -40,7 +40,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
 import android.widget.AdapterView.OnItemLongClickListener;
-import android.widget.SearchView;
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockDialogFragment;
 import com.actionbarsherlock.app.SherlockListFragment;
@@ -49,7 +48,6 @@ import com.actionbarsherlock.view.ActionMode.Callback;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
-import com.actionbarsherlock.widget.*;
 import org.gnucash.android.R;
 import org.gnucash.android.data.Account;
 import org.gnucash.android.data.Money;
@@ -61,7 +59,6 @@ import org.gnucash.android.ui.widget.WidgetConfigurationActivity;
 import org.gnucash.android.util.OnAccountClickedListener;
 
 import java.lang.ref.WeakReference;
-import java.util.Locale;
 
 /**
  * Fragment for displaying the list of accounts in the database
@@ -312,6 +309,7 @@ public class AccountsListFragment extends SherlockListFragment implements
             mAccountsDbAdapter.reassignParent(accountUID, null);
             Toast.makeText(getActivity(), R.string.toast_account_deleted, Toast.LENGTH_SHORT).show();
             WidgetConfigurationActivity.updateAllWidgets(getActivity().getApplicationContext());
+            getLoaderManager().destroyLoader(0);
         }
         refreshList();
     }
@@ -731,7 +729,15 @@ public class AccountsListFragment extends SherlockListFragment implements
                 cancel(true);
                 return Money.getZeroInstance();
             }
-            Money balance = accountsDbAdapter.getAccountBalance(params[0]);
+            Money balance = Money.getZeroInstance();
+
+            try {
+                balance = accountsDbAdapter.getAccountBalance(params[0]);
+            } catch (IllegalArgumentException ex){
+                //sometimes a load computation has been started and the data set changes.
+                //the account ID may no longer exist. So we catch that exception here and do nothing
+                Log.e(TAG, "Error computing account balance: " + ex);
+            }
             return balance;
         }
 
