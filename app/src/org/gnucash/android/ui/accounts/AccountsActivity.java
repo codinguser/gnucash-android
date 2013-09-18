@@ -49,8 +49,6 @@ import org.gnucash.android.ui.transactions.TransactionsListFragment;
 import org.gnucash.android.util.GnucashAccountXmlHandler;
 import org.gnucash.android.util.OnAccountClickedListener;
 
-import java.io.FileNotFoundException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Currency;
 import java.util.Locale;

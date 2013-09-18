@@ -19,6 +19,7 @@ package org.gnucash.android.ui.accounts;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -32,6 +33,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.SimpleCursorAdapter;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -57,7 +59,6 @@ import org.gnucash.android.ui.widget.WidgetConfigurationActivity;
 import org.gnucash.android.util.OnAccountClickedListener;
 
 import java.lang.ref.WeakReference;
-import java.util.Locale;
 
 /**
  * Fragment for displaying the list of accounts in the database
@@ -65,7 +66,9 @@ import java.util.Locale;
  * @author Ngewi Fet <ngewif@gmail.com>
  */
 public class AccountsListFragment extends SherlockListFragment implements
-        LoaderCallbacks<Cursor>, OnItemLongClickListener {
+        LoaderCallbacks<Cursor>, OnItemLongClickListener,
+        com.actionbarsherlock.widget.SearchView.OnQueryTextListener,
+        com.actionbarsherlock.widget.SearchView.OnCloseListener {
 
     public static final int REQUEST_PICK_ACCOUNTS_FILE = 0x1;
     /**
@@ -102,16 +105,31 @@ public class AccountsListFragment extends SherlockListFragment implements
      * Is not null only when an accoun is selected and the Context ActionBar (CAB) is activated
      */
     private ActionMode mActionMode = null;
-    /**
-     * Position which has been selected in the ListView
-     */
-    private int mSelectedViewPosition = -1;
+
     /**
      * Stores the database ID of the currently selected account when in action mode.
      * This is necessary because getSelectedItemId() does not work properly (by design)
      * in touch mode (which is the majority of devices today)
      */
     private long mSelectedItemId = -1;
+
+    /**
+     * Database record ID of the account whose children will be loaded by the list fragment.
+     * If no parent account is specified, then all top-level accounts are loaded.
+     * <p>This value is set in {@link #inSubAcccount()}, so always call that method first before using this value</p>
+     */
+    private long mParentAccountId = -1;
+
+    /**
+     * Filter for which accounts should be displayed. Used by search interface
+     */
+    private String mCurrentFilter;
+
+    /**
+     * Search view for searching accounts
+     */
+    private com.actionbarsherlock.widget.SearchView mSearchView;
+
     /**
      * Callbacks for the CAB menu
      */
@@ -168,6 +186,11 @@ public class AccountsListFragment extends SherlockListFragment implements
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Bundle args = getArguments();
+        if (args != null)
+            mParentAccountId = args.getLong(ARG_PARENT_ACCOUNT_ID);
+
         mAccountsDbAdapter = new AccountsDbAdapter(getActivity());
         mAccountsCursorAdapter = new AccountsCursorAdapter(
                 getActivity().getApplicationContext(),
@@ -251,12 +274,11 @@ public class AccountsListFragment extends SherlockListFragment implements
     }
 
     /**
-     * Returns true if this fragment is currently rendering sub-accounts. false otherwise
+     * Returns true if this fragment is currently rendering sub-accounts. false otherwise.
      * @return true if this fragment is currently rendering sub-accounts. false otherwise
      */
     public boolean inSubAcccount(){
-        Bundle args = getArguments();
-        return (args != null) && (args.getLong(ARG_PARENT_ACCOUNT_ID) > 0);
+        return mParentAccountId > 0;
     }
 
     /**
@@ -287,6 +309,7 @@ public class AccountsListFragment extends SherlockListFragment implements
             mAccountsDbAdapter.reassignParent(accountUID, null);
             Toast.makeText(getActivity(), R.string.toast_account_deleted, Toast.LENGTH_SHORT).show();
             WidgetConfigurationActivity.updateAllWidgets(getActivity().getApplicationContext());
+            getLoaderManager().destroyLoader(0);
         }
         refreshList();
     }
@@ -309,7 +332,6 @@ public class AccountsListFragment extends SherlockListFragment implements
     public void finishEditMode() {
         mInEditMode = false;
         getListView().setItemChecked(getListView().getCheckedItemPosition(), false);
-//        deselectPreviousSelectedItem();
         mActionMode = null;
         mSelectedItemId = -1;
     }
@@ -317,6 +339,19 @@ public class AccountsListFragment extends SherlockListFragment implements
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.account_actions, menu);
+
+        // Associate searchable configuration with the SearchView
+        SearchManager searchManager =
+                (SearchManager) getActivity().getSystemService(Context.SEARCH_SERVICE);
+        mSearchView =
+                (com.actionbarsherlock.widget.SearchView) menu.findItem(R.id.menu_search).getActionView();
+        if (mSearchView == null)
+            return;
+
+        mSearchView.setSearchableInfo(
+                searchManager.getSearchableInfo(getActivity().getComponentName()));
+        mSearchView.setOnQueryTextListener(this);
+        mSearchView.setOnCloseListener(this);
     }
 
     @Override
@@ -437,9 +472,11 @@ public class AccountsListFragment extends SherlockListFragment implements
         Bundle fragmentArguments = getArguments();
         long accountId = fragmentArguments == null ? -1 : fragmentArguments.getLong(ARG_PARENT_ACCOUNT_ID);
 
-        return id < 0 ?
-                new AccountsCursorLoader(this.getActivity().getApplicationContext()) :
-                new AccountsCursorLoader(this.getActivity(), accountId);
+        if (mCurrentFilter != null){
+            return new AccountsCursorLoader(getActivity(), mCurrentFilter);
+        } else {
+            return new AccountsCursorLoader(this.getActivity(), accountId);
+        }
     }
 
     @Override
@@ -453,6 +490,35 @@ public class AccountsListFragment extends SherlockListFragment implements
     public void onLoaderReset(Loader<Cursor> arg0) {
         Log.d(TAG, "Resetting the accounts loader");
         mAccountsCursorAdapter.swapCursor(null);
+    }
+
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        //nothing to see here, move along
+        return true;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String newText) {
+        String newFilter = !TextUtils.isEmpty(newText) ? newText : null;
+
+        if (mCurrentFilter == null && newFilter == null) {
+            return true;
+        }
+        if (mCurrentFilter != null && mCurrentFilter.equals(newFilter)) {
+            return true;
+        }
+        mCurrentFilter = newFilter;
+        getLoaderManager().restartLoader(0, null, this);
+        return true;
+    }
+
+    @Override
+    public boolean onClose() {
+        if (!TextUtils.isEmpty(mSearchView.getQuery())) {
+            mSearchView.setQuery(null, true);
+        }
+        return true;
     }
 
     /**
@@ -508,30 +574,54 @@ public class AccountsListFragment extends SherlockListFragment implements
 
     /**
      * Extends {@link DatabaseCursorLoader} for loading of {@link Account} from the
-     * database asynchronously
-     *
+     * database asynchronously.
+     * <p>By default it loads only top-level accounts (accounts which have no parent or have GnuCash ROOT account as parent.
+     * By submitting a parent account ID in the constructor parameter, it will load child accounts of that parent.</p>
+     * <p>Class must be static because the Android loader framework requires it to be so</p>
      * @author Ngewi Fet <ngewif@gmail.com>
      */
     private static final class AccountsCursorLoader extends DatabaseCursorLoader {
         private long mParentAccountId = -1;
+        private String mFilter;
 
-        public AccountsCursorLoader(Context context) {
-            super(context);
-        }
-
+        /**
+         * Initializes the loader to load accounts from the database.
+         * If the <code>parentAccountId <= 0</code> then only top-level accounts are loaded.
+         * Else only the child accounts of the <code>parentAccountId</code> will be loaded
+         * @param context Application context
+         * @param parentAccountId Record ID of the parent account
+         */
         public AccountsCursorLoader(Context context, long parentAccountId) {
             super(context);
             mParentAccountId = parentAccountId;
+        }
+
+        /**
+         * Initializes the loader with a filter for account names.
+         * Only accounts whose name match the filter will be loaded.
+         * @param context Application context
+         * @param filter Account name filter string
+         */
+        public AccountsCursorLoader(Context context, String filter){
+            super(context);
+            mFilter = filter;
         }
 
         @Override
         public Cursor loadInBackground() {
             mDatabaseAdapter = new AccountsDbAdapter(getContext());
             Cursor cursor;
-            if (mParentAccountId > 0)
-                cursor = ((AccountsDbAdapter) mDatabaseAdapter).fetchSubAccounts(mParentAccountId);
-            else
-                cursor = ((AccountsDbAdapter) mDatabaseAdapter).fetchTopLevelAccounts();
+
+            if (mFilter != null){
+                StringBuffer queryBuffer = new StringBuffer(DatabaseHelper.KEY_NAME)
+                        .append(" LIKE '%").append(mFilter).append("%'");
+                cursor = ((AccountsDbAdapter)mDatabaseAdapter).fetchAccounts(queryBuffer.toString());
+            } else {
+                if (mParentAccountId > 0)
+                    cursor = ((AccountsDbAdapter) mDatabaseAdapter).fetchSubAccounts(mParentAccountId);
+                else
+                    cursor = ((AccountsDbAdapter) mDatabaseAdapter).fetchTopLevelAccounts();
+            }
 
             if (cursor != null)
                 registerContentObserver(cursor);
@@ -639,7 +729,15 @@ public class AccountsListFragment extends SherlockListFragment implements
                 cancel(true);
                 return Money.getZeroInstance();
             }
-            Money balance = accountsDbAdapter.getAccountBalance(params[0]);
+            Money balance = Money.getZeroInstance();
+
+            try {
+                balance = accountsDbAdapter.getAccountBalance(params[0]);
+            } catch (IllegalArgumentException ex){
+                //sometimes a load computation has been started and the data set changes.
+                //the account ID may no longer exist. So we catch that exception here and do nothing
+                Log.e(TAG, "Error computing account balance: " + ex);
+            }
             return balance;
         }
 
