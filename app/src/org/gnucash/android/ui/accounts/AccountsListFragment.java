@@ -310,6 +310,7 @@ public class AccountsListFragment extends SherlockListFragment implements
             mAccountsDbAdapter.reassignParent(accountUID, null);
             Toast.makeText(getActivity(), R.string.toast_account_deleted, Toast.LENGTH_SHORT).show();
             WidgetConfigurationActivity.updateAllWidgets(getActivity().getApplicationContext());
+            getLoaderManager().destroyLoader(0);
         }
         refreshList();
     }
@@ -729,7 +730,15 @@ public class AccountsListFragment extends SherlockListFragment implements
                 cancel(true);
                 return Money.getZeroInstance();
             }
-            Money balance = accountsDbAdapter.getAccountBalance(params[0]);
+            Money balance = Money.getZeroInstance();
+
+            try {
+                balance = accountsDbAdapter.getAccountBalance(params[0]);
+            } catch (IllegalArgumentException ex){
+                //sometimes a load computation has been started and the data set changes.
+                //the account ID may no longer exist. So we catch that exception here and do nothing
+                Log.e(TAG, "Error computing account balance: " + ex);
+            }
             return balance;
         }
 

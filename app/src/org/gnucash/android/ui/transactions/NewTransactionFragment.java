@@ -163,7 +163,15 @@ public class NewTransactionFragment extends SherlockFragment implements
 	 */
 	private Spinner mDoubleAccountSpinner;
 
+    /**
+     * Flag to note if double entry accounting is in use or not
+     */
 	private boolean mUseDoubleEntry;
+
+    /**
+     * Flag to note if the user has manually edited the amount of the transaction
+     */
+    boolean mAmountManuallyEdited = false;
 
 	/**
 	 * Create the view and retrieve references to the UI elements
@@ -252,6 +260,8 @@ public class NewTransactionFragment extends SherlockFragment implements
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
                 mTransaction = mTransactionsDbAdapter.getTransaction(id);
                 mTransaction.setUID(UUID.randomUUID().toString());
+                mTransaction.setExported(false);
+                mTransaction.setTime(System.currentTimeMillis());
                 long accountId = ((TransactionsActivity)getSherlockActivity()).getCurrentAccountID();
                 mTransaction.setAccountUID(mTransactionsDbAdapter.getAccountUID(accountId));
                 initializeViewsWithTransaction();
@@ -269,7 +279,10 @@ public class NewTransactionFragment extends SherlockFragment implements
 				
 		mNameEditText.setText(mTransaction.getName());
 		mTransactionTypeButton.setChecked(mTransaction.getTransactionType() == TransactionType.DEBIT);
-		mAmountEditText.setText(mTransaction.getAmount().toPlainString());
+		if (!mAmountManuallyEdited){
+            //when autocompleting, only change the amount if the user has not manually changed it already
+            mAmountEditText.setText(mTransaction.getAmount().toPlainString());
+        }
 		mCurrencyTextView.setText(mTransaction.getAmount().getCurrency().getSymbol(Locale.getDefault()));
 		mDescriptionEditText.setText(mTransaction.getDescription());
 		mDateTextView.setText(DATE_FORMATTER.format(mTransaction.getTimeMillis()));
@@ -643,7 +656,7 @@ public class NewTransactionFragment extends SherlockFragment implements
 		public void onTextChanged(CharSequence s, int start, int before,
 				int count) {
 			// nothing to see here, move along
-			
+			mAmountManuallyEdited = true;
 		}
 		
 	}
