@@ -74,6 +74,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 		contentValues.put(DatabaseHelper.KEY_UID, account.getUID());
 		contentValues.put(DatabaseHelper.KEY_CURRENCY_CODE, account.getCurrency().getCurrencyCode());
 		contentValues.put(DatabaseHelper.KEY_PARENT_ACCOUNT_UID, account.getParentUID());
+		contentValues.put(DatabaseHelper.KEY_DOUBLEENTRY_DEFAULT_ACCOUNT_UID, account.getDoubleEntryDefaultUID());
 		contentValues.put(DatabaseHelper.KEY_PLACEHOLDER, account.isPlaceholderAccount() ? 1 : 0);
 
 		long rowId = -1;
@@ -174,6 +175,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 		String uid = c.getString(DatabaseAdapter.COLUMN_UID);
 		account.setUID(uid);
 		account.setParentUID(c.getString(DatabaseAdapter.COLUMN_PARENT_ACCOUNT_UID));
+		account.setDoubleEntryDefaultUID(c.getString(DatabaseAdapter.COLUMN_DOUBLE_DEFAULT_ACCOUNT_UID));
 		account.setAccountType(AccountType.valueOf(c.getString(DatabaseAdapter.COLUMN_TYPE)));
 		//make sure the account currency is set before setting the transactions
 		//else the transactions end up with a different currency from the account
@@ -201,7 +203,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 		}
 		return result;
 	}
-	
+		
 	/**
 	 * Returns the  unique ID of the parent account of the account with unique ID <code>uid</code>
 	 * If the account has no parent, null is returned

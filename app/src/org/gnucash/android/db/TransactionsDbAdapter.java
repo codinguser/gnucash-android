@@ -231,6 +231,41 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 	}
 	
 	/**
+	 * Returns the currency code (according to the ISO 4217 standard) of the account 
+	 * with unique Identifier <code>accountUID</code>
+	 * @param accountUID Unique Identifier of the account
+	 * @return Currency code of the account
+	 * @see #getCurrencyCode(long)
+	 */
+	public String getDoubleDefaultUID(String accountUID) {
+		Cursor cursor = mDb.query(DatabaseHelper.ACCOUNTS_TABLE_NAME, 
+				new String[] {DatabaseHelper.KEY_DOUBLEENTRY_DEFAULT_ACCOUNT_UID}, 
+				DatabaseHelper.KEY_UID + "= '" + accountUID + "'", 
+				null, null, null, null);
+		
+		if (cursor == null || cursor.getCount() <= 0)
+			return null;
+					
+		cursor.moveToFirst();
+		String doubleDefaultAccountUID = cursor.getString(0);
+		cursor.close();
+		return doubleDefaultAccountUID;
+	}
+	
+	/**
+	 * Returns the currency code (ISO 4217) used by the account with id <code>accountId</code>
+	 * If you do not have the database record Id, you can call {@link #getAccountID(String)} instead.
+	 * @param accountId Database record id of the account 
+	 * @return Currency code of the account with Id <code>accountId</code>
+	 * @see #getCurrencyCode(String)
+	 */
+	public long getDoubleDefaultAccountID(long accountId){
+		String accountUID = getAccountUID(accountId);
+		String doubleDefaultAccountUID = getDoubleDefaultUID(accountUID);
+		return ( doubleDefaultAccountUID != null ? getAccountID(doubleDefaultAccountUID) : -1 );
+	}
+	
+	/**
 	 * Deletes transaction record with id <code>rowId</code>
 	 * @param rowId Long database record id
 	 * @return <code>true</code> if deletion was successful, <code>false</code> otherwise

@@ -87,7 +87,7 @@
                       style="@style/ListItem"
                       android:orientation="horizontal" >
 
-            <CheckBox android:id="@+id/checkbox"
+            <CheckBox android:id="@+id/checkbox_parent_account"
                       android:layout_width="wrap_content"
                       android:layout_height="wrap_content"
                       android:focusable="false"        />
@@ -99,5 +99,33 @@
                     android:layout_marginRight="10dp"
                     android:minHeight="?android:attr/listPreferredItemHeight" />
         </LinearLayout>
+
+        <TextView android:id="@+id/label_double_default_account"
+                  android:text="@string/label_double_default_account"
+                  android:layout_height="wrap_content"
+                  android:layout_width="wrap_content"
+                  android:layout_marginLeft="10dp"
+                  android:layout_marginBottom="-8dip"
+                  style="@style/TextAppearance.EditTransaction_LabelSmall" />
+
+        <LinearLayout android:id="@+id/layout_double_default_account"
+                      android:layout_width="match_parent"
+                      android:layout_height="wrap_content"
+                      style="@style/ListItem"
+                      android:orientation="horizontal" >
+
+            <CheckBox android:id="@+id/checkbox_double_default"
+                      android:layout_width="wrap_content"
+                      android:layout_height="wrap_content"
+                      android:focusable="false"        />
+            <Spinner
+                    android:id="@+id/input_double_default_account"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:minHeight="?android:attr/listPreferredItemHeight" />
+        </LinearLayout>
+
     </LinearLayout>
 </ScrollView>
