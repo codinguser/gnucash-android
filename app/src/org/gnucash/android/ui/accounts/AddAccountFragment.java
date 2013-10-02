@@ -30,8 +30,10 @@ import org.gnucash.android.db.DatabaseHelper;
 import org.gnucash.android.ui.transactions.TransactionsListFragment;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -99,6 +101,11 @@ public class AddAccountFragment extends SherlockFragment {
 
     private Spinner mAccountTypeSpinner;
 
+	private CheckBox mDoubleEntryDefaultAccountCheckBox;
+	private Spinner mDoubleEntryDefaultAccountSpinner;
+	private Cursor mDoubleDefaultCursor;
+	private QualifiedAccountNameCursorAdapter mDoubleDefaultCursorAdapter;
+	
 	/**
 	 * Default constructor
 	 * Required, else the app crashes on screen rotation
@@ -144,12 +151,24 @@ public class AddAccountFragment extends SherlockFragment {
 		mParentAccountSpinner = (Spinner) view.findViewById(R.id.input_parent_account);
 		mParentAccountSpinner.setEnabled(false);
 		
-		mParentCheckBox = (CheckBox) view.findViewById(R.id.checkbox);
+		mParentCheckBox = (CheckBox) view.findViewById(R.id.checkbox_parent_account);
 		mParentCheckBox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 			
 			@Override
 			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 				mParentAccountSpinner.setEnabled(isChecked);
+			}
+		});
+
+		mDoubleEntryDefaultAccountSpinner = (Spinner) view.findViewById(R.id.input_double_default_account);
+		mDoubleEntryDefaultAccountSpinner.setEnabled(false);
+		
+		mDoubleEntryDefaultAccountCheckBox = (CheckBox) view.findViewById(R.id.checkbox_double_default);
+		mDoubleEntryDefaultAccountCheckBox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+			
+			@Override
+			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+				mDoubleEntryDefaultAccountSpinner.setEnabled(isChecked);
 			}
 		});
 
@@ -180,7 +199,8 @@ public class AddAccountFragment extends SherlockFragment {
         //need to load the cursor adapters for the spinners before initializing the views
         loadParentAccountList();
         loadAccountTypesList();
-
+		loadDoubleDefaultAccountList();
+		
         if (mAccount != null){
             initializeViewsWithAccount(mAccount);
         } else {
@@ -204,6 +224,14 @@ public class AddAccountFragment extends SherlockFragment {
         long parentAccountId = mAccountsDbAdapter.getAccountID(account.getParentUID());
         setParentAccountSelection(parentAccountId);
 
+		SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+		boolean mUseDoubleEntry = sharedPrefs.getBoolean(getString(R.string.key_use_double_entry), false);
+		
+		if (mUseDoubleEntry) {
+	        long doubleDefaultAccountId = mAccountsDbAdapter.getAccountID(account.getDoubleEntryDefaultUID());
+		    setDoubleDefaultAccountSelection(doubleDefaultAccountId);
+		} 
+		
         String[] accountTypeEntries = getResources().getStringArray(R.array.account_type_entries);
         int accountTypeIndex = Arrays.asList(accountTypeEntries).indexOf(account.getAccountType().name());
         mAccountTypeSpinner.setSelection(accountTypeIndex);
@@ -217,7 +245,7 @@ public class AddAccountFragment extends SherlockFragment {
 
         long parentAccountId = getArguments().getLong(AccountsListFragment.ARG_PARENT_ACCOUNT_ID);
         setParentAccountSelection(parentAccountId);
-
+        setDoubleDefaultAccountSelection(parentAccountId);
     }
 
     /**
@@ -250,6 +278,31 @@ public class AddAccountFragment extends SherlockFragment {
         }
     }
 
+    /**
+     * Selects the account with ID <code>parentAccountId</code> in the parent accounts spinner
+     * @param parentAccountId Record ID of parent account to be selected
+     */
+    private void setDoubleDefaultAccountSelection(long doubleDefaultAccountId){
+        if (doubleDefaultAccountId <= 0){
+            mDoubleEntryDefaultAccountCheckBox.setChecked(false);
+            mDoubleEntryDefaultAccountSpinner.setEnabled(false);
+			return;
+        } 
+		
+		boolean foundAccount = false;
+        for (int pos = 0; pos < mDoubleDefaultCursorAdapter.getCount(); pos++) {
+            if (mDoubleDefaultCursorAdapter.getItemId(pos) == doubleDefaultAccountId){
+                mDoubleEntryDefaultAccountSpinner.setSelection(pos);
+				foundAccount = true;
+                break;
+            }
+        }
+		
+		mDoubleEntryDefaultAccountCheckBox.setChecked(foundAccount);
+		mDoubleEntryDefaultAccountSpinner.setEnabled(foundAccount);
+
+    }
+	
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {		
 		super.onCreateOptionsMenu(menu, inflater);
@@ -296,7 +349,35 @@ public class AddAccountFragment extends SherlockFragment {
 				android.R.layout.simple_spinner_item, 
 				mCursor);
 		mCursorAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);		
-		mParentAccountSpinner.setAdapter(mCursorAdapter);
+		mParentAccountSpinner.setAdapter(mCursorAdapter);			
+	}
+
+    /**
+     * Loads the list of possible accounts which can be set as a parent account and initializes the spinner
+     */
+	private void loadDoubleDefaultAccountList(){
+        String condition = null;
+        if (mAccount != null){  //if editing an account
+            // limit cyclic account hierarchies. Still technically possible since we don't forbid descendant accounts
+            condition = "(" + DatabaseHelper.KEY_DOUBLEENTRY_DEFAULT_ACCOUNT_UID + " IS NULL "
+                    + " OR " + DatabaseHelper.KEY_DOUBLEENTRY_DEFAULT_ACCOUNT_UID + " != '" + mAccount.getUID() + "')"
+                    + " AND " + DatabaseHelper.KEY_ROW_ID + "!=" + mSelectedAccountId;
+            //TODO: Limit all descendants of the account to eliminate the possibility of cyclic hierarchy
+        }
+
+		mDoubleDefaultCursor = mAccountsDbAdapter.fetchAccounts(condition);
+		if (mDoubleDefaultCursor == null || mDoubleDefaultCursor.getCount() <= 0){
+            final View view = getView();
+            view.findViewById(R.id.layout_double_default_account).setVisibility(View.GONE);
+            view.findViewById(R.id.label_double_default_account).setVisibility(View.GONE);
+        }
+
+		mDoubleDefaultCursorAdapter = new QualifiedAccountNameCursorAdapter(
+				getActivity(), 
+				android.R.layout.simple_spinner_item, 
+				mDoubleDefaultCursor);
+		mDoubleDefaultCursorAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);		
+		mDoubleEntryDefaultAccountSpinner.setAdapter(mDoubleDefaultCursorAdapter);			
 	}
 
     /**
@@ -366,6 +447,13 @@ public class AddAccountFragment extends SherlockFragment {
 			mAccount.setParentUID(mAccountsDbAdapter.getAccountUID(id));
 		} else {
 			mAccount.setParentUID(null);
+		}
+		
+		if (mDoubleEntryDefaultAccountCheckBox.isChecked()){
+			long id = mDoubleEntryDefaultAccountSpinner.getSelectedItemId();
+			mAccount.setDoubleEntryDefaultUID(mAccountsDbAdapter.getAccountUID(id));
+		} else {
+			mAccount.setDoubleEntryDefaultUID(null);
 		}
 		
 		if (mAccountsDbAdapter == null)

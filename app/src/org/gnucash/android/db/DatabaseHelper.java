@@ -102,6 +102,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	 * UID of the parent account
 	 */
 	public static final String KEY_PARENT_ACCOUNT_UID = "parent_account_uid";
+
+	/**
+	 * UID of the 
+	 */
+	public static final String KEY_DOUBLEENTRY_DEFAULT_ACCOUNT_UID = "double_default_uid";
 	
 	/**
 	 * Account which the origin account this transaction in double entry mode
@@ -142,6 +147,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			+ KEY_CURRENCY_CODE + " varchar(255) not null, "
 			+ KEY_PARENT_ACCOUNT_UID + " varchar(255), "
             + KEY_PLACEHOLDER + " tinyint default 0, "
+			+ KEY_DOUBLEENTRY_DEFAULT_ACCOUNT_UID + " varchar(255), "
 			+ "UNIQUE (" + KEY_UID + ")"	
 			+ ");";
 	
@@ -187,7 +193,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		if (oldVersion < newVersion){
 			//introducing double entry accounting
 			Log.i(TAG, "Upgrading database to version " + newVersion);
-			if (oldVersion == 1 && newVersion == 2){		
+			if (oldVersion == 1 && newVersion >= 2){		
 				Log.i(TAG, "Adding column for splitting transactions");
 				String addColumnSql = "ALTER TABLE " + TRANSACTIONS_TABLE_NAME + 
 									" ADD COLUMN " + KEY_DOUBLE_ENTRY_ACCOUNT_UID + " varchar(255)";
@@ -199,8 +205,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	
 				db.execSQL(addColumnSql);
 				db.execSQL(addParentAccountSql);
+				
+				// mark the "upgrade" for further processing
+				oldVersion = 2;
 			}
 			
+			//TODO: Move this to the section where this change needs to be added
+			// otherwise it will overwrite all the types for all accounts
 			//update account types to GnuCash account types
 			//since all were previously CHECKING, now all will be CASH
 			Log.i(TAG, "Converting account types to GnuCash compatible types");
@@ -208,15 +219,26 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			cv.put(KEY_TYPE, AccountType.CASH.toString());
 			db.update(ACCOUNTS_TABLE_NAME, cv, null, null);
 
-            if (oldVersion == 2 && newVersion == 3){
+            if (oldVersion == 2 && newVersion >= 3){
                 Log.i(TAG, "Adding flag for placeholder accounts");
                 String addPlaceHolderAccountFlagSql = "ALTER TABLE " + ACCOUNTS_TABLE_NAME +
                         " ADD COLUMN " + KEY_PLACEHOLDER + " tinyint default 0";
 
                 db.execSQL(addPlaceHolderAccountFlagSql);
+				oldVersion = 3;
             }
-		} else {
-			Log.i(TAG, "Cannot downgrade database.");
+            if (oldVersion == 3 && newVersion >= 4){
+                Log.i(TAG, "Adding field for default double entry account");
+                String addDefaultDoubleEntryAccountSql = "ALTER TABLE " + ACCOUNTS_TABLE_NAME +
+                        " ADD COLUMN " + KEY_DOUBLEENTRY_DEFAULT_ACCOUNT_UID + " varchar(255) default 0";
+
+                db.execSQL(addDefaultDoubleEntryAccountSql);
+				oldVersion = 4;
+            }
+		} 
+		
+		if ( oldVersion != newVersion) {
+			Log.i(TAG, "Upgrade for the database failed. The Database is currently at version "+oldVersion);
 		}
 	}
 
