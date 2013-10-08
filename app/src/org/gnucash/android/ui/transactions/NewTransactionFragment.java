@@ -62,6 +62,7 @@ import com.actionbarsherlock.app.SherlockFragment;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
+import java.lang.reflect.Array;
 import org.gnucash.android.util.QualifiedAccountNameCursorAdapter;
 
 /**
@@ -205,7 +206,7 @@ public class NewTransactionFragment extends SherlockFragment implements
 		SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
 		mUseDoubleEntry = sharedPrefs.getBoolean(getString(R.string.key_use_double_entry), false);
 		if (!mUseDoubleEntry){
-			getView().findViewById(R.id.layout_double_entry).setVisibility(View.GONE);
+			getView().findViewById(R.id.layout_double_entry).setVisibility(View.GONE);			
 		}
 		
 		//updateTransferAccountsList must only be called after creating mAccountsDbAdapter
@@ -327,7 +328,15 @@ public class NewTransactionFragment extends SherlockFragment implements
 			code = mTransactionsDbAdapter.getCurrencyCode(accountId);
 		}
 		Currency accountCurrency = Currency.getInstance(code);
-		mCurrencyTextView.setText(accountCurrency.getSymbol(Locale.getDefault()));
+		mCurrencyTextView.setText(accountCurrency.getSymbol(Locale.getDefault()));		
+
+		if( mUseDoubleEntry) {
+			long doubleDefaultAccountID = mTransactionsDbAdapter.getDoubleDefaultAccountID(accountId);
+			if ( doubleDefaultAccountID != -1) {
+				Log.i(TAG, "Setting default transfer accountId: " + doubleDefaultAccountID);
+				setSelectedTransferAccount(doubleDefaultAccountID);
+			}
+		}
 	}
 
     /**
@@ -348,7 +357,7 @@ public class NewTransactionFragment extends SherlockFragment implements
         mCursorAdapter = new QualifiedAccountNameCursorAdapter(getActivity(),
                 android.R.layout.simple_spinner_item, mCursor);
 		mCursorAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);		
-		mDoubleAccountSpinner.setAdapter(mCursorAdapter);
+		mDoubleAccountSpinner.setAdapter(mCursorAdapter);		
 	}
 	
 	/**

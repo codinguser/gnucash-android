@@ -82,6 +82,17 @@ public class Account {
 	private AccountType mAccountType = AccountType.CASH;
 	
 	/**
+	 * When the system runs in double entry mode, in most cases,
+	 * the user intends to work with a "default" account on the other
+	 * side. eg. When adding a "Cash" transaction, the user would want
+	 * to, in most probability, add an expense. To make these interactions
+	 * easier, we accept a "default" account and save it.
+	 * If the user wants further classification, they can either use it
+	 * as a bucket for later classification.
+	 */
+	private String mDoubleEntryDefaultUID;
+
+	/**
 	 * List of transactions in this account
 	 */
 	private List<Transaction> mTransactionsList = new ArrayList<Transaction>();
@@ -338,6 +349,14 @@ public class Account {
         mPlaceholderAccount = isPlaceholder;
     }
 
+	public String getDoubleEntryDefaultUID() {
+		return mDoubleEntryDefaultUID;
+	}
+
+	public void setDoubleEntryDefaultUID(String doubleEntryDefaultUID) {
+		this.mDoubleEntryDefaultUID = doubleEntryDefaultUID;
+	}
+	
 	/**
 	 * Maps the <code>accountType</code> to the corresponding account type.
 	 * <code>accountType</code> have corresponding values to GnuCash desktop
