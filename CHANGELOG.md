@@ -1,5 +1,9 @@
 Change Log
 ===============================================================================
+Version 1.2.6 *(2013-xx-xx)*
+----------------------------
+* Feature: Support for QIF export format
+
 Version 1.2.5 *(2013-09-17)*
 ----------------------------
 * Feature: Search accounts by name
