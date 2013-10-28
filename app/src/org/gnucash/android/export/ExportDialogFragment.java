@@ -201,7 +201,7 @@ public class ExportDialogFragment extends DialogFragment {
             case R.id.radio_qif_format:
                 mExportFormat = ExportFormat.QIF;
         }
-        mFilePath = buildExportFilename(mExportFormat);
+        mFilePath = getActivity().getExternalFilesDir(null) + "/" + buildExportFilename(mExportFormat);
         return;
     }
 
