@@ -285,8 +285,17 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 		}
 		return AccountType.valueOf(type);
 	}
-	
-	/**
+
+    /**
+     * Overloaded method. Resolves the account unique ID from the row ID and makes a call to {@link #getAccountType(String)}
+     * @param accountId Database row ID of the account
+     * @return {@link AccountType} of the account
+     */
+    public AccountType getAccountType(long accountId){
+        return getAccountType(getAccountUID(accountId));
+    }
+
+    /**
 	 * Returns the name of the account with id <code>accountID</code>
 	 * @param accountID Database ID of the account record
 	 * @return Name of the account 

@@ -170,6 +170,7 @@ public class TransactionsActivity extends SherlockFragmentActivity implements
             if (transactionId > 0) {
                 mSectionHeaderTransactions.setText(R.string.title_edit_transaction);
                 args.putLong(NewTransactionFragment.SELECTED_TRANSACTION_ID, transactionId);
+                args.putLong(TransactionsListFragment.SELECTED_ACCOUNT_ID, mAccountId);
             } else {
                 mSectionHeaderTransactions.setText(R.string.title_add_transaction);
                 args.putLong(TransactionsListFragment.SELECTED_ACCOUNT_ID, mAccountId);

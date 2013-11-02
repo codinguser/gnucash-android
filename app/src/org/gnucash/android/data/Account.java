@@ -54,8 +54,28 @@ public class Account {
 	 * This are the different types specified by the OFX format and 
 	 * they are currently not used except for exporting
 	 */
-	public enum AccountType {CASH, BANK, CREDIT, ASSET, LIABILITY, INCOME, EXPENSE,
-							PAYABLE, RECEIVABLE, EQUITY, CURRENCY, STOCK, MUTUAL, ROOT};
+	public enum AccountType {
+        CASH, BANK, CREDIT, ASSET(true), LIABILITY, INCOME, EXPENSE(true),
+        PAYABLE, RECEIVABLE, EQUITY, CURRENCY, STOCK, MUTUAL, ROOT;
+
+        /**
+         * Indicates that this type of account has an inverted state for credits and debits.
+         * Credits decrease the account balance, while debits increase it.
+         */
+        private boolean mInvertedCredit = false;
+
+        private AccountType(boolean invertedCredit){
+            mInvertedCredit = invertedCredit;
+        }
+
+        private AccountType() {
+            //nothing to see here, move along
+        }
+
+        public boolean hasInvertedCredit(){
+            return mInvertedCredit;
+        }
+    };
 
     /**
      * Accounts types which are used by the OFX standard

@@ -26,6 +26,7 @@ import java.util.*;
 
 import android.widget.*;
 import org.gnucash.android.R;
+import org.gnucash.android.data.Account;
 import org.gnucash.android.data.Money;
 import org.gnucash.android.data.Transaction;
 import org.gnucash.android.data.Transaction.TransactionType;
@@ -173,6 +174,12 @@ public class NewTransactionFragment extends SherlockFragment implements
      */
     boolean mAmountManuallyEdited = false;
 
+    /**
+     * The AccountType of the account to which this transaction belongs.
+     * Used for determining the accounting rules for credits and debits
+     */
+    Account.AccountType mAccountType;
+
 	/**
 	 * Create the view and retrieve references to the UI elements
 	 */
@@ -215,8 +222,12 @@ public class NewTransactionFragment extends SherlockFragment implements
         long transactionId = getArguments().getLong(SELECTED_TRANSACTION_ID);
 		mTransactionsDbAdapter = new TransactionsDbAdapter(getActivity());
 		mTransaction = mTransactionsDbAdapter.getTransaction(transactionId);
-		
-		setListeners();
+
+        final long accountId = getArguments().getLong(TransactionsListFragment.SELECTED_ACCOUNT_ID);
+        mAccountType = mAccountsDbAdapter.getAccountType(accountId);
+        toggleTransactionTypeState();
+
+        setListeners();
 		if (mTransaction == null)
 			initalizeViews();
 		else {
@@ -228,6 +239,22 @@ public class NewTransactionFragment extends SherlockFragment implements
 
         initTransactionNameAutocomplete();
 	}
+
+    private void toggleTransactionTypeState() {
+        switch (mAccountType) {
+            case ASSET:
+            case EXPENSE:
+                mTransactionTypeButton.setTextOff(getString(R.string.label_debit));
+                mTransactionTypeButton.setTextOn(getString(R.string.label_credit));
+                break;
+
+            default:
+                mTransactionTypeButton.setTextOff(getString(R.string.label_credit));
+                mTransactionTypeButton.setTextOn(getString(R.string.label_debit));
+                break;
+        }
+        mTransactionTypeButton.invalidate();
+    }
 
     /**
      * Initializes the transaction name field for autocompletion with existing transaction names in the database
@@ -276,7 +303,6 @@ public class NewTransactionFragment extends SherlockFragment implements
 	 * This method is called if the fragment is used for editing a transaction
 	 */
 	private void initializeViewsWithTransaction(){
-				
 		mNameEditText.setText(mTransaction.getName());
 		mTransactionTypeButton.setChecked(mTransaction.getTransactionType() == TransactionType.DEBIT);
 		if (!mAmountManuallyEdited){
@@ -315,11 +341,19 @@ public class NewTransactionFragment extends SherlockFragment implements
 		mDateTextView.setText(DATE_FORMATTER.format(time));
 		mTimeTextView.setText(TIME_FORMATTER.format(time));
 		mTime = mDate = Calendar.getInstance();
-				
+
 		String typePref = PreferenceManager.getDefaultSharedPreferences(getActivity()).getString(getString(R.string.key_default_transaction_type), "DEBIT");
 		if (typePref.equals("CREDIT")){
-			mTransactionTypeButton.setChecked(false);
-		}
+            if (mAccountType == Account.AccountType.ASSET || mAccountType == Account.AccountType.EXPENSE)
+                mTransactionTypeButton.setChecked(false);
+            else
+                mTransactionTypeButton.setChecked(true);
+		} else {
+            if (mAccountType == Account.AccountType.ASSET || mAccountType == Account.AccountType.EXPENSE)
+                mTransactionTypeButton.setChecked(true);
+            else
+                mTransactionTypeButton.setChecked(false);
+        }
 				
 		final long accountId = getArguments().getLong(TransactionsListFragment.SELECTED_ACCOUNT_ID);
 		String code = Money.DEFAULT_CURRENCY_CODE;
@@ -455,7 +489,16 @@ public class NewTransactionFragment extends SherlockFragment implements
 		String currencyCode = accountsDbAdapter.getCurrencyCode(newAccountId);
 		Currency currency = Currency.getInstance(currencyCode);
 		mCurrencyTextView.setText(currency.getSymbol(Locale.getDefault()));
-		
+
+        Account.AccountType previousAccountType = mAccountType;
+        mAccountType = accountsDbAdapter.getAccountType(newAccountId);
+        toggleTransactionTypeState();
+
+        //if the new account has a different credit/debit philosophy as the previous one, then toggle the button
+        if (mAccountType.hasInvertedCredit() != previousAccountType.hasInvertedCredit()){
+            mTransactionTypeButton.toggle();
+        }
+
 		updateTransferAccountsList();
 	}
 	
@@ -478,7 +521,11 @@ public class NewTransactionFragment extends SherlockFragment implements
 		long accountID 	= ((TransactionsActivity) getSherlockActivity()).getCurrentAccountID(); 		
 		Currency currency = Currency.getInstance(mTransactionsDbAdapter.getCurrencyCode(accountID));
 		Money amount 	= new Money(amountBigd, currency);
-		TransactionType type = mTransactionTypeButton.isChecked() ? TransactionType.DEBIT : TransactionType.CREDIT;
+		TransactionType type;
+        if (mAccountType.hasInvertedCredit()){
+            type = amount.isNegative() ? TransactionType.CREDIT : TransactionType.DEBIT;
+        } else
+            type = amount.isNegative() ? TransactionType.DEBIT : TransactionType.CREDIT;
 		if (mTransaction != null){
 			mTransaction.setAmount(amount);
 			mTransaction.setName(name);
