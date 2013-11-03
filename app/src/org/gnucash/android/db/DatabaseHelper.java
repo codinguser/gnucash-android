@@ -46,7 +46,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	 * Database version.
 	 * With any change to the database schema, this number must increase
 	 */
-	private static final int DATABASE_VERSION = 3;
+	private static final int DATABASE_VERSION = 4;
 	
 	/**
 	 * Name of accounts table
@@ -124,7 +124,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	 */
 	public static final String KEY_EXPORTED		= "is_exported";
 
+    /**
+     * Flag for placeholder accounts.
+     * Placeholder accounts cannot directly contain transactions
+     */
     public static final String KEY_PLACEHOLDER  = "is_placeholder";
+
+    /**
+     * This is a key to identify a transaction as part of a recurring transaction series.
+     */
+    public static final String KEY_RECURRENCE_PERIOD = "recurrence_period";
 
 	/**********************************************************************************************************
 	//if you modify the order of the columns (i.e. the way they are created), 
@@ -159,6 +168,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			+ KEY_ACCOUNT_UID 	+ " varchar(255) not null, "			
 			+ KEY_EXPORTED 		+ " tinyint default 0, "
 			+ KEY_DOUBLE_ENTRY_ACCOUNT_UID 	+ " varchar(255), "
+            + KEY_RECURRENCE_PERIOD         + " integer default 0, "
 			+ "FOREIGN KEY (" 	+ KEY_ACCOUNT_UID + ") REFERENCES " + ACCOUNTS_TABLE_NAME + " (" + KEY_UID + "), "
 			+ "FOREIGN KEY (" 	+ KEY_DOUBLE_ENTRY_ACCOUNT_UID + ") REFERENCES " + ACCOUNTS_TABLE_NAME + " (" + KEY_UID + "), "
 			+ "UNIQUE (" 		+ KEY_UID + ") " 
@@ -199,14 +209,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	
 				db.execSQL(addColumnSql);
 				db.execSQL(addParentAccountSql);
-			}
+
+                //update account types to GnuCash account types
+                //since all were previously CHECKING, now all will be CASH
+                Log.i(TAG, "Converting account types to GnuCash compatible types");
+                ContentValues cv = new ContentValues();
+                cv.put(KEY_TYPE, AccountType.CASH.toString());
+                db.update(ACCOUNTS_TABLE_NAME, cv, null, null);
+            }
 			
-			//update account types to GnuCash account types
-			//since all were previously CHECKING, now all will be CASH
-			Log.i(TAG, "Converting account types to GnuCash compatible types");
-			ContentValues cv = new ContentValues();
-			cv.put(KEY_TYPE, AccountType.CASH.toString());
-			db.update(ACCOUNTS_TABLE_NAME, cv, null, null);
 
             if (oldVersion == 2 && newVersion == 3){
                 Log.i(TAG, "Adding flag for placeholder accounts");
@@ -215,9 +226,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
                 db.execSQL(addPlaceHolderAccountFlagSql);
             }
+
+            if (oldVersion == 3 && newVersion == 4){
+                Log.i(TAG, "Updating database to version 4");
+                String addRecurrencePeriod = "ALTER TABLE " + TRANSACTIONS_TABLE_NAME +
+                        " ADD COLUMN " + KEY_RECURRENCE_PERIOD + " integer default 0";
+                db.execSQL(addRecurrencePeriod);
+            }
 		} else {
 			Log.i(TAG, "Cannot downgrade database.");
 		}
 	}
-
 }

@@ -23,6 +23,9 @@ import org.gnucash.android.data.Account;
 import org.gnucash.android.data.Money;
 import org.gnucash.android.data.Transaction;
 import org.gnucash.android.db.TransactionsDbAdapter;
+import org.gnucash.android.export.ofx.OfxExporter;
+import org.gnucash.android.export.qif.QifExporter;
+import org.gnucash.android.export.qif.QifHelper;
 import org.gnucash.android.ui.widget.WidgetConfigurationActivity;
 
 import android.content.BroadcastReceiver;
@@ -46,28 +49,32 @@ public class TransactionRecorder extends BroadcastReceiver {
 
 	@Override
 	public void onReceive(Context context, Intent intent) {
-		Log.i("Gnucash", "Received transaction recording intent");
+		Log.i("TransactionRecorder", "Received transaction recording intent");
 		Bundle args = intent.getExtras();
 		String name = args.getString(Intent.EXTRA_TITLE);
 		String note = args.getString(Intent.EXTRA_TEXT);
-		double amountDouble = args.getDouble(Transaction.EXTRA_AMOUNT, 0);
+		BigDecimal amountBigDecimal = (BigDecimal) args.getSerializable(Transaction.EXTRA_AMOUNT);
 		String currencyCode = args.getString(Account.EXTRA_CURRENCY_CODE);
 		if (currencyCode == null)
 			currencyCode = Money.DEFAULT_CURRENCY_CODE;
 		
 		String accountUID = args.getString(Transaction.EXTRA_ACCOUNT_UID);
-		if (accountUID == null)
-			accountUID = "uncategorized";
+		if (accountUID == null) //if no account was assigned, throw an exception
+			throw new IllegalArgumentException("No account specified for the transaction");
 		
 		String doubleAccountUID = args.getString(Transaction.EXTRA_DOUBLE_ACCOUNT_UID);
-		
-		Money amount = new Money(new BigDecimal(amountDouble), Currency.getInstance(currencyCode));
+        if (doubleAccountUID == null || doubleAccountUID.length() == 0)
+            doubleAccountUID = QifHelper.getImbalanceAccountName(Currency.getInstance(Money.DEFAULT_CURRENCY_CODE));
+		Transaction.TransactionType type = Transaction.TransactionType.valueOf(args.getString(Transaction.EXTRA_TRANSACTION_TYPE));
+
+		Money amount = new Money(amountBigDecimal, Currency.getInstance(currencyCode));
 		Transaction transaction = new Transaction(amount, name);
 		transaction.setTime(System.currentTimeMillis());
 		transaction.setDescription(note);	
 		transaction.setAccountUID(accountUID);
 		transaction.setDoubleEntryAccountUID(doubleAccountUID);
-		
+		transaction.setTransactionType(type);
+
 		TransactionsDbAdapter transacionsDbAdapter = new TransactionsDbAdapter(context);
 		transacionsDbAdapter.addTransaction(transaction);
 		

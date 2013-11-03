@@ -122,6 +122,7 @@ public class GnucashAccountXmlHandler extends DefaultHandler {
 
         if (qualifiedName.equalsIgnoreCase(TAG_CURRENCY)){
             if (mAccount != null){
+                Log.i(LOG_TAG, mAccount.getName() + " account has no currency!");
                 String currencyCode = mISO4217Currency ? characterString : NO_CURRENCY_CODE;
                 mAccount.setCurrency(Currency.getInstance(currencyCode));
             }
@@ -132,7 +133,7 @@ public class GnucashAccountXmlHandler extends DefaultHandler {
         }
 
         if (qualifiedName.equalsIgnoreCase(TAG_ACCOUNT)){
-            Log.i(LOG_TAG, "Saving account...");
+            Log.d(LOG_TAG, "Saving account...");
             mDatabaseAdapter.addAccount(mAccount);
 
             //reset ISO 4217 flag for next account
@@ -148,6 +149,7 @@ public class GnucashAccountXmlHandler extends DefaultHandler {
         if (qualifiedName.equalsIgnoreCase(TAG_SLOT_VALUE)){
             if (mInPlaceHolderSlot){
                 if (characterString.equals("true")){
+                    Log.d(LOG_TAG, "Setting account placeholder flag");
                     mAccount.setPlaceHolderFlag(true);
                 };
                 mInPlaceHolderSlot = false;

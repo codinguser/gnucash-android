@@ -159,6 +159,16 @@ public final class Money implements Comparable<Money>{
 	}
 
     /**
+     * Copy constructor.
+     * Creates a new Money object which is a clone of <code>money</code>
+     * @param money Money instance to be cloned
+     */
+    public Money(Money money){
+        setAmount(money.asBigDecimal());
+        setCurrency(money.getCurrency());
+    }
+
+    /**
      * Creates a new Money instance with 0 amount and the <code>currencyCode</code>
      * @param currencyCode Currency to use for this money instance
      * @return Money object with value 0 and currency <code>currencyCode</code>

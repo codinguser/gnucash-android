@@ -534,15 +534,19 @@
     <string name="title_progress_importing_accounts">Importing accounts</string>
     <string name="toast_tap_again_to_confirm_delete">Tap again to confirm. ALL entries will be deleted!!</string>
     <string name="section_header_transactions">Transactions</string>
-    <string name="section_header_accounts">Sub-Accounts</string>
+    <string name="section_header_subaccounts">Sub-Accounts</string>
     <string name="menu_search_accounts">Search</string>
     <string name="title_default_export_format">Default Export Format</string>
     <string name="key_default_export_format">default_export_format</string>
     <string name="summary_default_export_format">File format to use by default when exporting transactions</string>
     <string name="menu_export_transactions">Export transactions...</string>
+    <string name="label_recurring_transaction">Recurrence</string>
     <!-- This should be the same name used by GnuCash desktop for imbalance accounts -->
     <string name="imbalance_account_name">Imbalance</string>
     <string name="title_progress_exporting_transactions">Exporting transactions</string>
+    <string name="key_recurring_transaction_ids">recurring_transaction_ids</string>
+    <string name="label_no_recurring_transactions">No recurring transactions to display.</string>
+    <string name="toast_recurring_transaction_deleted">Successfully deleted recurring transaction</string>
     <plurals name="label_sub_accounts">
         <item quantity="one">%d sub-account</item>
         <item quantity="other">%d sub-accounts</item>
@@ -584,5 +588,17 @@
     <string-array name="export_formats">
         <item>QIF</item>
         <item>OFX</item>
+    </string-array>
+    <string-array name="recurrence_entries">
+        <item>NONE</item>
+        <item>DAILY</item>
+        <item>WEEKLY</item>
+        <item>MONTHLY</item>
+    </string-array>
+    <string-array name="recurrence_options">
+        <item>0</item>
+        <item>86400000</item>
+        <item>604800000</item>
+        <item>2630000000</item>
     </string-array>
 </resources>

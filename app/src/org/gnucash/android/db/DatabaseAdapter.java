@@ -49,6 +49,7 @@ public abstract class DatabaseAdapter {
 	public static final int COLUMN_ACCOUNT_UID 	= 7;
 	public static final int COLUMN_EXPORTED 	= 8;
 	public static final int COLUMN_DOUBLE_ENTRY_ACCOUNT_UID = 9;
+    public static final int COLUMN_RECURRENCE_PERIOD = 10;
 	
 	//columns indices specific to accounts
 	public static final int COLUMN_CURRENCY_CODE        = 4;

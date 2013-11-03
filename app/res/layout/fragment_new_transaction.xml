@@ -30,8 +30,6 @@
 	        android:layout_width="match_parent"
 	        android:layout_height="wrap_content"
 	        android:hint="@string/label_transaction_name"
-	        android:minHeight="?android:attr/listPreferredItemHeight"
-	        android:ems="10" 
 	        android:layout_marginBottom="@dimen/dialog_padding"
 	        android:inputType="textCapSentences"
             android:imeOptions="actionNext"
@@ -40,7 +38,8 @@
 	
 	    <LinearLayout 
 	        android:layout_width="match_parent"
-	        android:layout_height="wrap_content" >
+	        android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/form_row_bottom_margin">
 			
 			<TextView
 	            android:id="@+id/currency_symbol"	            
@@ -50,7 +49,6 @@
 	            android:paddingRight="5dp"
 	            android:gravity="center|right"
 	            android:textColor="@color/debit_red"
-	            android:minHeight="?android:attr/listPreferredItemHeight"
 	            android:textSize="22dp"           
 	            android:text="$" />
 	       		 
@@ -59,8 +57,6 @@
 		        android:layout_width="0dp"
 		        android:layout_weight="3"
 		        android:layout_height="wrap_content"
-		        android:minHeight="?android:attr/listPreferredItemHeight"
-		        android:ems="10"
 		        android:layout_marginBottom="@dimen/dialog_padding"
 		        android:hint="@string/label_transaction_amount"
 		        android:inputType="number"
@@ -73,7 +69,6 @@
 		        android:layout_width="0dp"
 		        android:layout_weight="2"
 		        android:layout_height="wrap_content"
-		        android:minHeight="?android:attr/listPreferredItemHeight"		        
 		        android:textOn="@string/label_debit"
 		        android:textOff="@string/label_credit"
 		        android:textAppearance="?android:attr/textAppearanceMedium"
@@ -83,7 +78,7 @@
 		
 	    <LinearLayout android:layout_width="match_parent"
 	        android:layout_height="wrap_content"
-	        android:orientation="vertical" >
+	        style="@style/FormRow" >
 	        
 	        <TextView
 	            android:id="@+id/label_timeanddate"
@@ -111,13 +106,13 @@
 		            android:layout_height="wrap_content"
 			        android:gravity="center"
 			        android:minWidth="120dp"       
-			        style="@style/Dropdown.TextView" />    
+			        style="@style/Dropdown.TextView" />
 			</LinearLayout>
 	    </LinearLayout>
 	   <LinearLayout
 		        android:layout_height="wrap_content"
 		        android:layout_width="match_parent"
-		        android:orientation="vertical">
+                style="@style/FormRow">
 		        
 		        <TextView
 		            android:id="@+id/label_description"
@@ -141,7 +136,7 @@
 			android:id="@+id/layout_double_entry"
 		    android:layout_width="match_parent"
 	        android:layout_height="wrap_content"
-	        android:orientation="vertical" >
+            style="@style/FormRow" >
 	        
 			<TextView
 			    android:text="@string/label_double_entry_account"
@@ -152,8 +147,26 @@
 		    <Spinner
 		        android:id="@+id/input_double_entry_accounts_spinner"        
 		        android:layout_width="match_parent"
-		        android:layout_height="wrap_content" 
-		        android:minHeight="?android:attr/listPreferredItemHeight" />
+		        android:layout_height="wrap_content"  />
 	    </LinearLayout>
+
+        <LinearLayout
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                style="@style/FormRow">
+            <TextView
+                    android:id="@+id/label_recurring_transaction"
+                    android:text="@string/label_recurring_transaction"
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:layout_marginBottom="-8dip"
+                    style="@style/TextAppearance.EditTransaction_LabelSmall" />
+
+            <Spinner android:id="@+id/input_recurring_transaction_spinner"
+                     android:layout_width="match_parent"
+                     android:layout_height="wrap_content"
+                     android:layout_marginBottom="@dimen/dialog_padding"
+                    />
+        </LinearLayout>
 	</LinearLayout>
 </ScrollView>

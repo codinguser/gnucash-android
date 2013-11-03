@@ -26,4 +26,9 @@
           android:title="@string/menu_export_transactions"
           android:showAsAction="never"
           android:orderInCategory="3"/>
+
+    <item android:id="@+id/menu_recurring_transactions"
+          android:title="Recurring Transactions"
+          android:showAsAction="never|withText"
+          android:orderInCategory="4" />
 </menu>

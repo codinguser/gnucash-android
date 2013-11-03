@@ -22,7 +22,6 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.UUID;
 
-import android.content.Context;
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.data.Account.OfxAccountType;
 import org.gnucash.android.db.AccountsDbAdapter;
@@ -40,7 +39,8 @@ import android.content.Intent;
  * @author Ngewi Fet <ngewif@gmail.com>
  */
 public class Transaction {
-	/**
+
+    /**
 	 * Type of transaction, a credit or a debit
 	 */
 	public enum TransactionType {DEBIT, CREDIT};
@@ -65,7 +65,13 @@ public class Transaction {
 	 * Key for identifying the amount of the transaction through an Intent
 	 */
 	public static final String EXTRA_AMOUNT 		= "org.gnucash.android.extra.amount";
-	
+
+    /**
+     * Extra key for the transaction type.
+     * This value should typically be set by calling {@link Transaction.TransactionType#name()}
+     */
+    public static final String EXTRA_TRANSACTION_TYPE = "org.gnucash.android.extra.transaction_type";
+
 	/**
 	 * {@link Money} value of this transaction
 	 */
@@ -114,7 +120,14 @@ public class Transaction {
 	 * @see TransactionType
 	 */
 	private TransactionType mType = TransactionType.DEBIT;
-	
+
+    /**
+     * Recurrence period of this transaction.
+     * <p>If this value is set then it means this transaction is a template which will be used to
+     * create a transaction every turn of the recurrence period</p>
+     */
+    private long mRecurrencePeriod = 0;
+
 	/**
 	 * Overloaded constructor. Creates a new transaction instance with the 
 	 * provided data and initializes the rest to default values. 
@@ -152,7 +165,25 @@ public class Transaction {
 		this.mType = type;
 		this.mName = name;
 	}
-	
+
+    /**
+     * Copy constructor.
+     * Creates a new transaction object which is a clone of the parameter.
+     * <p><b>Note:</b> The unique ID of the transaction is not cloned, but a new one is generated.</p>
+     * @param transaction Transaction to be cloned
+     */
+    public Transaction(Transaction transaction){
+        initDefaults();
+        setName(transaction.getName());
+        setDescription(transaction.getDescription());
+        setAmount(transaction.getAmount());
+        setTransactionType(transaction.getTransactionType());
+        setAccountUID(transaction.getAccountUID());
+        setDoubleEntryAccountUID(transaction.getDoubleEntryAccountUID());
+        setExported(transaction.isExported());
+        setTime(transaction.getTimeMillis());
+    }
+
 	/**
 	 * Initializes the different fields to their default values.
 	 */
@@ -169,8 +200,7 @@ public class Transaction {
 	 * @param amount Amount of the transaction
 	 */
 	public void setAmount(Money amount) {
-		this.mAmount = amount;
-		mType = amount.isNegative() ? TransactionType.DEBIT : TransactionType.CREDIT; 
+		this.mAmount = new Money(amount);
 	}
 
 	/**
@@ -307,6 +337,12 @@ public class Transaction {
 		this.mTransactionUID = transactionUID;
 	}
 
+    /**
+     * Resets the UID of this transaction to a newly generated one
+     */
+    public void resetUID(){
+        this.mTransactionUID = UUID.randomUUID().toString();
+    }
 	/**
 	 * Returns unique ID string for transaction
 	 * @return String with Unique ID of transaction
@@ -363,8 +399,24 @@ public class Transaction {
 	public void setAccountUID(String accountUID) {
 		this.mAccountUID = accountUID;
 	}
-	
-	/**
+
+    /**
+     * Returns the recurrence period for this transaction
+     * @return Recurrence period for this transaction in milliseconds
+     */
+    public long getRecurrencePeriod() {
+        return mRecurrencePeriod;
+    }
+
+    /**
+     * Sets the recurrence period for this transaction
+     * @param recurrenceId Recurrence period in milliseconds
+     */
+    public void setRecurrencePeriod(long recurrenceId) {
+        this.mRecurrencePeriod = recurrenceId;
+    }
+
+    /**
 	 * Converts transaction to XML DOM corresponding to OFX Statement transaction and 
 	 * returns the element node for the transaction.
 	 * The Unique ID of the account is needed in order to properly export double entry transactions
@@ -461,4 +513,24 @@ public class Transaction {
         accountsDbAdapter.close();
         return transactionQifBuffer.toString();
     }
+
+    /**
+     * Creates an Intent with arguments from the <code>transaction</code>.
+     * This intent can be broadcast to create a new transaction
+     * @param transaction Transaction used to create intent
+     * @return
+     */
+    public static Intent createIntent(Transaction transaction){
+        Intent intent = new Intent(Intent.ACTION_INSERT);
+        intent.setType(Transaction.MIME_TYPE);
+        intent.putExtra(Intent.EXTRA_TITLE, transaction.getName());
+        intent.putExtra(Intent.EXTRA_TEXT, transaction.getDescription());
+        intent.putExtra(EXTRA_AMOUNT, transaction.getAmount().asBigDecimal());
+        intent.putExtra(EXTRA_ACCOUNT_UID, transaction.getAccountUID());
+        intent.putExtra(EXTRA_DOUBLE_ACCOUNT_UID, transaction.getDoubleEntryAccountUID());
+        intent.putExtra(Account.EXTRA_CURRENCY_CODE, transaction.getAmount().getCurrency().getCurrencyCode());
+        intent.putExtra(EXTRA_TRANSACTION_TYPE, transaction.getTransactionType().name());
+        return intent;
+    }
+
 }

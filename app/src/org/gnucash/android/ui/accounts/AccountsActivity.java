@@ -44,6 +44,7 @@ import org.gnucash.android.data.Account;
 import org.gnucash.android.data.Account.AccountType;
 import org.gnucash.android.data.Money;
 import org.gnucash.android.db.AccountsDbAdapter;
+import org.gnucash.android.ui.transactions.RecurringTransactionsListFragment;
 import org.gnucash.android.ui.transactions.TransactionsActivity;
 import org.gnucash.android.ui.transactions.TransactionsListFragment;
 import org.gnucash.android.util.GnucashAccountXmlHandler;
@@ -223,6 +224,9 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
 	        }
 	        return true;
 
+            case R.id.menu_recurring_transactions:
+                showRecurringTransactionsFragment();
+                return true;
 		default:
 			return false;
 		}
@@ -238,6 +242,22 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
         showAccountFormFragment(args);
     }
 
+    /**
+     * Launches the fragment which lists the recurring transactions in the database
+     */
+    private void showRecurringTransactionsFragment(){
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager
+                .beginTransaction();
+
+        RecurringTransactionsListFragment recurringTransactionsFragment = new RecurringTransactionsListFragment();
+
+        fragmentTransaction.replace(R.id.fragment_container,
+                recurringTransactionsFragment, "fragment_recurring_transactions");
+
+        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.commit();
+    }
     /**
      * Shows the form fragment for editing the account with record ID <code>accountId</code>
      * @param accountId Record ID of the account to be edited

@@ -337,14 +337,17 @@
     <string name="title_progress_importing_accounts">Importing accounts</string>
     <string name="toast_tap_again_to_confirm_delete">Tap again to confirm. ALL entries will be deleted!!</string>
     <string name="section_header_transactions">Transactions</string>
-    <string name="section_header_accounts">Sub-Accounts</string>
+    <string name="section_header_subaccounts">Sub-Accounts</string>
     <string name="menu_search_accounts">Search</string>
     <string name="title_default_export_format">Default Export Format</string>
     <string name="summary_default_export_format">File format to use by default when exporting transactions</string>
     <string name="menu_export_transactions">Export transactions...</string>
+    <string name="label_recurring_transaction">Recurrence</string>
     <!-- This should be the same name used by GnuCash desktop for imbalance accounts -->
     <string name="imbalance_account_name">Imbalance</string>
     <string name="title_progress_exporting_transactions">Exporting transactions</string>
+    <string name="label_no_recurring_transactions">No recurring transactions to display.</string>
+    <string name="toast_recurring_transaction_deleted">Successfully deleted recurring transaction</string>
     <plurals name="label_sub_accounts">
         <item quantity="one">%d sotto-conto</item>
         <item quantity="other">%d sotto-conti</item>
