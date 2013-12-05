@@ -48,7 +48,7 @@
     <string name="title_selected">%1$d 已删除</string>
     <string name="label_transactions_total">合计：</string>
     <string name="label_export_destination">导出到</string>
-    <string name="title_export_dialog">导出OFX</string>
+    <string name="title_export_dialog">Export Transactions</string>
     <string name="option_export_all_transactions">导出所有交易</string>
     <string name="hint_export_choice">默认情况下，自上次导出后新增的交易才会被导出。选择此项后所有的交易都会被导出。</string>
     <string name="error_exporting">导出OFX发生错误</string>

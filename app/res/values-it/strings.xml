@@ -50,7 +50,7 @@
     <string name="title_selected">%1$d selezionate</string>
     <string name="label_transactions_total">Somma totale:</string>
     <string name="label_export_destination">Destinazione di esportazione</string>
-    <string name="title_export_dialog">Esporta OFX</string>
+    <string name="title_export_dialog">Export Transactions</string>
     <string name="option_export_all_transactions">Esporta tutte le transazioni</string>
     <string name="hint_export_choice">Di default, verranno esportate solo le transazioni dall\'ultima esportazione. Selezionare questa opzione per esportare tutte le transazioni</string>
     <string name="error_exporting">Errore nell\'esportazione dei dati OFX</string>    

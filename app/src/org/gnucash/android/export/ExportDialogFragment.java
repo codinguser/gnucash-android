@@ -215,7 +215,7 @@ public class ExportDialogFragment extends DialogFragment {
 	public void onActivityCreated(Bundle savedInstanceState) {		
 		super.onActivityCreated(savedInstanceState);
 		mFilePath = getActivity().getExternalFilesDir(null) + "/" + buildExportFilename(mExportFormat);
-		getDialog().setTitle(R.string.menu_export_ofx);
+		getDialog().setTitle(R.string.title_export_dialog);
 		bindViews();
 	}
 

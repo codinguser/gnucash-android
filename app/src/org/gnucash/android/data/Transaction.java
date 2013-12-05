@@ -451,7 +451,7 @@ public class Transaction {
             if (mDescription != null || mDescription.isEmpty()){
                 transactionQifBuffer.append(QifHelper.SPLIT_MEMO_PREFIX + mDescription + newLine);
             }
-            transactionQifBuffer.append(QifHelper.SPLIT_AMOUNT_PREFIX + mAmount.negate().asString() + newLine);
+            transactionQifBuffer.append(QifHelper.SPLIT_AMOUNT_PREFIX + mAmount.asString() + newLine);
         } else {
             transactionQifBuffer.append(QifHelper.AMOUNT_PREFIX + mAmount.asString() + newLine);
             if (mDescription != null && !mDescription.isEmpty()){
