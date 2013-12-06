@@ -434,33 +434,29 @@ public class Transaction {
 
     /**
      * Builds a QIF entry representing this transaction
-     * @param context Application context
      * @return String QIF representation of this transaction
      */
-    public String toQIF(Context context){
+    public String toQIF(){
         final String newLine = "\n";
 
-        AccountsDbAdapter accountsDbAdapter = new AccountsDbAdapter(context);
+        AccountsDbAdapter accountsDbAdapter = new AccountsDbAdapter(GnuCashApplication.getAppContext());
 
-        StringBuffer transactionQifBuffer = new StringBuffer();
-        transactionQifBuffer.append(QifHelper.DATE_PREFIX + QifHelper.formatDate(mTimestamp) + newLine);
-
-        if (mDoubleEntryAccountUID != null && !mDoubleEntryAccountUID.isEmpty()){
-            String splitAccountFullName = accountsDbAdapter.getFullyQualifiedAccountName(mDoubleEntryAccountUID);
-            transactionQifBuffer.append(QifHelper.SPLIT_CATEGORY_PREFIX + splitAccountFullName + newLine);
-            if (mDescription != null || mDescription.isEmpty()){
-                transactionQifBuffer.append(QifHelper.SPLIT_MEMO_PREFIX + mDescription + newLine);
-            }
-            transactionQifBuffer.append(QifHelper.SPLIT_AMOUNT_PREFIX + mAmount.asString() + newLine);
-        } else {
-            transactionQifBuffer.append(QifHelper.AMOUNT_PREFIX + mAmount.asString() + newLine);
-            if (mDescription != null && !mDescription.isEmpty()){
-                transactionQifBuffer.append(QifHelper.MEMO_PREFIX + mDescription + newLine);
-            }
-            transactionQifBuffer.append(QifHelper.CATEGORY_PREFIX + QifHelper.getImbalanceAccountName(mAmount.getCurrency()) + newLine);
+        //all transactions are double transactions
+        String splitAccountFullName = QifHelper.getImbalanceAccountName(mAmount.getCurrency());
+        if (mDoubleEntryAccountUID != null && mDoubleEntryAccountUID.length() > 0){
+            splitAccountFullName = accountsDbAdapter.getFullyQualifiedAccountName(mDoubleEntryAccountUID);
         }
 
-        transactionQifBuffer.append(QifHelper.ENTRY_TERMINATOR + newLine);
+        StringBuffer transactionQifBuffer = new StringBuffer();
+        transactionQifBuffer.append(QifHelper.DATE_PREFIX).append(QifHelper.formatDate(mTimestamp)).append(newLine);
+        transactionQifBuffer.append(QifHelper.MEMO_PREFIX).append(mName).append(newLine);
+
+        transactionQifBuffer.append(QifHelper.SPLIT_CATEGORY_PREFIX).append(splitAccountFullName).append(newLine);
+        if (mDescription != null && mDescription.length() > 0){
+            transactionQifBuffer.append(QifHelper.SPLIT_MEMO_PREFIX).append(mDescription).append(newLine);
+        }
+        transactionQifBuffer.append(QifHelper.SPLIT_AMOUNT_PREFIX).append(mAmount.asString()).append(newLine);
+        transactionQifBuffer.append(QifHelper.ENTRY_TERMINATOR).append(newLine);
 
         accountsDbAdapter.close();
         return transactionQifBuffer.toString();

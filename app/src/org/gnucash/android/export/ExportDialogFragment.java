@@ -16,55 +16,23 @@
 
 package org.gnucash.android.export;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.nio.channels.FileChannel;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-
-import android.widget.*;
-import org.gnucash.android.R;
-import org.gnucash.android.export.ExportFormat;
-import org.gnucash.android.export.ofx.OfxExporter;
-import org.gnucash.android.export.qif.QifExporter;
-import org.gnucash.android.ui.accounts.AccountsActivity;
-import org.gnucash.android.ui.transactions.TransactionsDeleteConfirmationDialog;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.ProcessingInstruction;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.support.v4.app.DialogFragment;
-import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.*;
+import org.gnucash.android.R;
+
+import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 /**
  * Dialog fragment for exporting account information as OFX files.
@@ -122,72 +90,16 @@ public class ExportDialogFragment extends DialogFragment {
 
 		@Override
 		public void onClick(View v) {
-            boolean exportAll = mExportAllCheckBox.isChecked();
-            try {
-                switch (mExportFormat) {
-                    case QIF: {
-                        QifExporter qifExporter = new QifExporter(getActivity(), exportAll);
-                        String qif = qifExporter.generateQIF();
-
-                        writeQifExternalStorage(qif);
-                    }
-                    break;
-
-                    case OFX: {
-                        Document document = exportOfx(exportAll);
-                        writeOfxToExternalStorage(document);
-                    }
-                    break;
-                }
-            } catch (Exception e) {
-                Log.e(TAG, e.getMessage());
-                Toast.makeText(getActivity(), R.string.error_exporting,
-                        Toast.LENGTH_LONG).show();
-                dismiss();
-                return;
-            }
-
-
+            ExportParams exportParameters = new ExportParams(mExportFormat);
+            exportParameters.setExportAllTransactions(mExportAllCheckBox.isChecked());
+            exportParameters.setTargetFilepath(mFilePath);
             int position = mDestinationSpinner.getSelectedItemPosition();
-			switch (position) {
-			case 0:					
-				shareFile(mFilePath);				
-				break;
+            exportParameters.setExportTarget(position == 0 ? ExportParams.ExportTarget.SHARING : ExportParams.ExportTarget.SD_CARD);
+            exportParameters.setDeleteTransactionsAfterExport(mDeleteAllCheckBox.isChecked());
 
-			case 1:				
-				File src = new File(mFilePath);
-				new File(Environment.getExternalStorageDirectory() + "/gnucash/").mkdirs();
-				File dst = new File(Environment.getExternalStorageDirectory() + "/gnucash/" + buildExportFilename(mExportFormat));
-				
-				try {
-					copyFile(src, dst);
-				} catch (IOException e) {
-					Toast.makeText(getActivity(), 
-							getString(R.string.toast_error_exporting_ofx) + dst.getAbsolutePath(), 
-							Toast.LENGTH_LONG).show();		
-					Log.e(TAG, e.getMessage());
-					break;
-				}
-				
-				//file already exists, just let the user know
-				Toast.makeText(getActivity(), 
-						getString(R.string.toast_ofx_exported_to) + dst.getAbsolutePath(), 
-						Toast.LENGTH_LONG).show();					
-				break;
-				
-			default:
-				break;
-			}
-			
-			if (mDeleteAllCheckBox.isChecked()){
-				Fragment currentFragment = getActivity().getSupportFragmentManager()
-						.findFragmentByTag(AccountsActivity.FRAGMENT_ACCOUNTS_LIST);
-				TransactionsDeleteConfirmationDialog alertFragment = 
-						TransactionsDeleteConfirmationDialog.newInstance(R.string.title_confirm_delete, 0);
-				alertFragment.setTargetFragment(currentFragment, 0);
-				alertFragment.show(getActivity().getSupportFragmentManager(), "transactions_delete_confirmation_dialog");
-			}
-			
+            Log.i(TAG, "Commencing async export of transactions");
+            new ExporterTask(getActivity()).execute(exportParameters);
+
 			dismiss();
 		}
 		
@@ -268,44 +180,7 @@ public class ExportDialogFragment extends DialogFragment {
         qifRadioButton.setOnClickListener(clickListener);
 	}
 
-    private void writeQifExternalStorage(String qif) throws IOException {
-        File file = new File(mFilePath);
 
-        BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), "UTF-8"));
-        writer.write(qif);
-
-        writer.flush();
-    }
-
-	/**
-	 * Writes the OFX document <code>doc</code> to external storage
-	 * @param doc Document containing OFX file data
-	 * @throws IOException if file could not be saved
-	 */
-	private void writeOfxToExternalStorage(Document doc) throws IOException{
-		File file = new File(mFilePath);
-		
-		BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), "UTF-8"));
-		boolean useXmlHeader = PreferenceManager.getDefaultSharedPreferences(getActivity())
-				.getBoolean(getString(R.string.key_xml_ofx_header), false);
-
-		//if we want SGML OFX headers, write first to string and then prepend header
-		if (useXmlHeader){
-			write(doc, writer, false);
-		} else {			
-			Node ofxNode = doc.getElementsByTagName("OFX").item(0);
-			StringWriter stringWriter = new StringWriter();
-			write(ofxNode, stringWriter, true);
-			
-			StringBuffer stringBuffer = new StringBuffer(OfxExporter.OFX_SGML_HEADER);
-			stringBuffer.append('\n');
-			writer.write(stringBuffer.toString() + stringWriter.toString());
-		}
-		
-		writer.flush();
-		writer.close();
-	}
-	
 	/**
 	 * Callback for when the activity chooser dialog is completed
 	 */
@@ -319,52 +194,8 @@ public class ExportDialogFragment extends DialogFragment {
 		}
 	}
 	
-	/**
-	 * Starts an intent chooser to allow the user to select an activity to receive
-	 * the exported OFX file
-	 * @param path String path to the file on disk
-	 */
-	private void shareFile(String path){
-		String defaultEmail = PreferenceManager.getDefaultSharedPreferences(getActivity())
-												.getString(getString(R.string.key_default_export_email), null);
-		Intent shareIntent = new Intent(Intent.ACTION_SEND);
-		shareIntent.setType("application/xml");
-		shareIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse("file://"+ path));
-		shareIntent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.title_export_email));
-		if (defaultEmail != null && defaultEmail.trim().length() > 0){
-			shareIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{defaultEmail});
-		}			
-		SimpleDateFormat formatter = (SimpleDateFormat) SimpleDateFormat.getDateTimeInstance();
-		
-		shareIntent.putExtra(Intent.EXTRA_TEXT, getString(R.string.description_export_email) 
-							+ " " + formatter.format(new Date(System.currentTimeMillis())));
-		startActivity(Intent.createChooser(shareIntent, getString(R.string.title_share_ofx_with)));	
-	}
-	
-	/**
-	 * Copies a file from <code>src</code> to <code>dst</code>
-	 * @param src Absolute path to the source file
-	 * @param dst Absolute path to the destination file 
-	 * @throws IOException if the file could not be copied
-	 */
-	public static void copyFile(File src, File dst) throws IOException
-	{
-		//TODO: Make this asynchronous at some time, t in the future.
-	    FileChannel inChannel = new FileInputStream(src).getChannel();
-	    FileChannel outChannel = new FileOutputStream(dst).getChannel();
-	    try
-	    {
-	        inChannel.transferTo(0, inChannel.size(), outChannel);
-	    }
-	    finally
-	    {
-	        if (inChannel != null)
-	            inChannel.close();
-	        if (outChannel != null)
-	            outChannel.close();
-	    }
-	}
-	
+
+
 	/**
 	 * Builds a file name based on the current time stamp for the exported file
 	 * @return String containing the file name
@@ -383,59 +214,6 @@ public class ExportDialogFragment extends DialogFragment {
                 break;
         }
 		return filename;
-	}
-	
-	/**
-	 * Exports transactions in the database to the OFX format.
-	 * The accounts are written to a DOM document and returned
-	 * @param exportAll Flag to export all transactions or only the new ones since last export
-	 * @return DOM {@link Document} containing the OFX file information
-	 * @throws ParserConfigurationException
-	 */
-	protected Document exportOfx(boolean exportAll) throws ParserConfigurationException{		
-		DocumentBuilderFactory docFactory = DocumentBuilderFactory
-				.newInstance();
-		DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
-
-		Document document = docBuilder.newDocument();
-		Element root = document.createElement("OFX");
-		
-		ProcessingInstruction pi = document.createProcessingInstruction("OFX", OfxExporter.OFX_HEADER);
-		document.appendChild(pi);		
-		document.appendChild(root);
-		
-		OfxExporter exporter = new OfxExporter(getActivity(), exportAll);
-		exporter.toOfx(document, root);
-		
-		return document;
-	}
-	
-	/**
-	 * Writes out the document held in <code>node</code> to <code>outputWriter</code>
-	 * @param node {@link Node} containing the OFX document structure. Usually the parent node
-	 * @param outputWriter {@link Writer} to use in writing the file to stream
-     * @param omitXmlDeclaration Flag which causes the XML declaration to be omitted
-	 */
-	public void write(Node node, Writer outputWriter, boolean omitXmlDeclaration){
-		try {
-			TransformerFactory transformerFactory = TransformerFactory
-					.newInstance();
-			Transformer transformer = transformerFactory.newTransformer();
-			DOMSource source = new DOMSource(node);
-			StreamResult result = new StreamResult(outputWriter);
-			
-			transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
-			transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-			if (omitXmlDeclaration) {
-				transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
-			}
-			
-			transformer.transform(source, result);
-		} catch (TransformerConfigurationException txconfigException) {
-			txconfigException.printStackTrace();
-		} catch (TransformerException tfException) {
-			tfException.printStackTrace();
-		}
 	}
 }
 

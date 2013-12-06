@@ -32,7 +32,7 @@ public class QifExporter {
             if (account.getTransactionCount() == 0)
                 continue;
 
-            qifBuffer.append(account.toQIF(mExportAll, mContext) + "\n");
+            qifBuffer.append(account.toQIF(mExportAll) + "\n");
 
             //mark as exported
             transactionsDbAdapter.markAsExported(account.getUID());

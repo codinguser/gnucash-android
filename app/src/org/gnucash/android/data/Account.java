@@ -24,6 +24,7 @@ import java.util.Locale;
 import java.util.UUID;
 
 import android.content.Context;
+import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.export.ofx.OfxExporter;
 import org.gnucash.android.export.qif.QifHelper;
@@ -402,7 +403,7 @@ public class Account {
 	 * @param doc XML DOM document for the OFX data
 	 * @param parent Parent node to which to add this account's transactions in XML
 	 */
-	public void toOfx(Document doc, Element parent, boolean allTransactions){
+	public void toOfx(Document doc, Element parent, boolean exportAllTransactions){
 		Element currency = doc.createElement("CURDEF");
 		currency.appendChild(doc.createTextNode(mCurrency.getCurrencyCode()));						
 		
@@ -459,7 +460,7 @@ public class Account {
 		bankTransactionsList.appendChild(dtend);
 		
 		for (Transaction transaction : mTransactionsList) {
-			if (!allTransactions && transaction.isExported())
+			if (!exportAllTransactions && transaction.isExported())
 				continue;
 			
 			bankTransactionsList.appendChild(transaction.toOfx(doc, mUID));
@@ -478,14 +479,14 @@ public class Account {
 
     /**
      * Exports the account info and transactions in the QIF format
-     * @param exportAll Flag to determine whether to export all transactions, or only new transactions since last export
+     * @param exportAllTransactions Flag to determine whether to export all transactions, or only new transactions since last export
      * @return QIF representation of the account information
      */
-    public String toQIF(boolean exportAll, Context context) {
+    public String toQIF(boolean exportAllTransactions) {
         StringBuffer accountQifBuffer = new StringBuffer();
         final String newLine = "\n";
 
-        AccountsDbAdapter accountsDbAdapter = new AccountsDbAdapter(context);
+        AccountsDbAdapter accountsDbAdapter = new AccountsDbAdapter(GnuCashApplication.getAppContext());
         String fullyQualifiedAccountName = accountsDbAdapter.getFullyQualifiedAccountName(mUID);
         accountsDbAdapter.close();
 
@@ -502,7 +503,10 @@ public class Account {
             if (!transaction.getAccountUID().equals(mUID))
                 continue;
 
-            accountQifBuffer.append(transaction.toQIF(context) + newLine);
+            if (!exportAllTransactions && transaction.isExported())
+                continue;
+
+            accountQifBuffer.append(transaction.toQIF() + newLine);
         }
         return accountQifBuffer.toString();
     }

@@ -1,5 +1,7 @@
 package org.gnucash.android.export.qif;
 
+import org.gnucash.android.R;
+import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.data.Account;
 
 import java.text.SimpleDateFormat;
@@ -69,6 +71,6 @@ public class QifHelper {
      */
     public static String getImbalanceAccountName(Currency currency){
         //TODO: localize this in the future
-        return "Imbalance-" + currency.getCurrencyCode();
+        return GnuCashApplication.getAppContext().getString(R.string.imbalance_account_name) + "-" + currency.getCurrencyCode();
     }
 }
