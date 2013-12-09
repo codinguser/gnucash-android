@@ -340,6 +340,12 @@
     <string name="section_header_transactions">Transactions</string>
     <string name="section_header_accounts">Sub-Accounts</string>
     <string name="menu_search_accounts">Search</string>
+    <string name="title_default_export_format">Default Export Format</string>
+    <string name="summary_default_export_format">File format to use by default when exporting transactions</string>
+    <string name="menu_export_transactions">Export transactions...</string>
+    <!-- This should be the same name used by GnuCash desktop for imbalance accounts -->
+    <string name="imbalance_account_name">Imbalance</string>
+    <string name="title_progress_exporting_transactions">Exporting transactions</string>
     <plurals name="label_sub_accounts">
         <item quantity="one">%d sub-account</item>
         <item quantity="other">%d sub-accounts</item>
@@ -358,5 +364,9 @@
         <item>CURRENCY</item>
         <item>STOCK</item>
         <item>MUTUAL FUND</item>
+    </string-array>
+    <string-array name="export_formats">
+        <item>QIF</item>
+        <item>OFX</item>
     </string-array>
 </resources>

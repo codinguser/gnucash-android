@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.gnucash.android.util;
+package org.gnucash.android.export.ofx;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -36,7 +36,7 @@ import android.content.Context;
  * Exports the data in the database in OFX format
  * @author Ngewi Fet <ngewi.fet@gmail.com>
  */
-public class OfxFormatter {
+public class OfxExporter {
 
 	/**
 	 * A date formatter used when creating file names for the exported data
@@ -85,7 +85,7 @@ public class OfxFormatter {
 	 * @param context Application context
 	 * @param exportAll Whether all transactions should be exported or only new ones since last export
 	 */
-	public OfxFormatter(Context context, boolean exportAll) {
+	public OfxExporter(Context context, boolean exportAll) {
 		AccountsDbAdapter dbAdapter = new AccountsDbAdapter(context);
 		mAccountsList = exportAll ? dbAdapter.getAllAccounts() : dbAdapter.getExportableAccounts();
 		mExportAll = exportAll;

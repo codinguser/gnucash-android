@@ -52,6 +52,7 @@ import org.gnucash.android.R;
 import org.gnucash.android.data.Account;
 import org.gnucash.android.data.Money;
 import org.gnucash.android.db.*;
+import org.gnucash.android.export.ExportDialogFragment;
 import org.gnucash.android.ui.settings.SettingsActivity;
 import org.gnucash.android.ui.transactions.TransactionsActivity;
 import org.gnucash.android.ui.transactions.TransactionsListFragment;

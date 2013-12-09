@@ -23,7 +23,11 @@ import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
 
-import org.gnucash.android.util.OfxFormatter;
+import android.content.Context;
+import org.gnucash.android.app.GnuCashApplication;
+import org.gnucash.android.db.AccountsDbAdapter;
+import org.gnucash.android.export.ofx.OfxExporter;
+import org.gnucash.android.export.qif.QifHelper;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -45,14 +49,34 @@ public class Account {
 	 * This is used when sending intents from third-party applications
 	 */
 	public static final String MIME_TYPE = "vnd.android.cursor.item/vnd.org.gnucash.android.account";
-	
+
 	/**
 	 * The type of account
 	 * This are the different types specified by the OFX format and 
 	 * they are currently not used except for exporting
 	 */
-	public enum AccountType {CASH, BANK, CREDIT, ASSET, LIABILITY, INCOME, EXPENSE,
-							PAYABLE, RECEIVABLE, EQUITY, CURRENCY, STOCK, MUTUAL, ROOT};
+	public enum AccountType {
+        CASH, BANK, CREDIT, ASSET(true), LIABILITY, INCOME, EXPENSE(true),
+        PAYABLE, RECEIVABLE, EQUITY, CURRENCY, STOCK, MUTUAL, ROOT;
+
+        /**
+         * Indicates that this type of account has an inverted state for credits and debits.
+         * Credits decrease the account balance, while debits increase it.
+         */
+        private boolean mInvertedCredit = false;
+
+        private AccountType(boolean invertedCredit){
+            mInvertedCredit = invertedCredit;
+        }
+
+        private AccountType() {
+            //nothing to see here, move along
+        }
+
+        public boolean hasInvertedCredit(){
+            return mInvertedCredit;
+        }
+    };
 
     /**
      * Accounts types which are used by the OFX standard
@@ -379,14 +403,14 @@ public class Account {
 	 * @param doc XML DOM document for the OFX data
 	 * @param parent Parent node to which to add this account's transactions in XML
 	 */
-	public void toOfx(Document doc, Element parent, boolean allTransactions){
+	public void toOfx(Document doc, Element parent, boolean exportAllTransactions){
 		Element currency = doc.createElement("CURDEF");
 		currency.appendChild(doc.createTextNode(mCurrency.getCurrencyCode()));						
 		
 		//================= BEGIN BANK ACCOUNT INFO (BANKACCTFROM) =================================
 		
 		Element bankId = doc.createElement("BANKID");
-		bankId.appendChild(doc.createTextNode(OfxFormatter.APP_ID));
+		bankId.appendChild(doc.createTextNode(OfxExporter.APP_ID));
 		
 		Element acctId = doc.createElement("ACCTID");
 		acctId.appendChild(doc.createTextNode(mUID));
@@ -405,7 +429,7 @@ public class Account {
 		
 		//================= BEGIN ACCOUNT BALANCE INFO =================================
 		String balance = getBalance().toPlainString();
-		String formattedCurrentTimeString = OfxFormatter.getFormattedCurrentTime();
+		String formattedCurrentTimeString = OfxExporter.getFormattedCurrentTime();
 		
 		Element balanceAmount = doc.createElement("BALAMT");
 		balanceAmount.appendChild(doc.createTextNode(balance));			
@@ -436,7 +460,7 @@ public class Account {
 		bankTransactionsList.appendChild(dtend);
 		
 		for (Transaction transaction : mTransactionsList) {
-			if (!allTransactions && transaction.isExported())
+			if (!exportAllTransactions && transaction.isExported())
 				continue;
 			
 			bankTransactionsList.appendChild(transaction.toOfx(doc, mUID));
@@ -453,4 +477,37 @@ public class Account {
 				
 	}
 
+    /**
+     * Exports the account info and transactions in the QIF format
+     * @param exportAllTransactions Flag to determine whether to export all transactions, or only new transactions since last export
+     * @return QIF representation of the account information
+     */
+    public String toQIF(boolean exportAllTransactions) {
+        StringBuffer accountQifBuffer = new StringBuffer();
+        final String newLine = "\n";
+
+        AccountsDbAdapter accountsDbAdapter = new AccountsDbAdapter(GnuCashApplication.getAppContext());
+        String fullyQualifiedAccountName = accountsDbAdapter.getFullyQualifiedAccountName(mUID);
+        accountsDbAdapter.close();
+
+        accountQifBuffer.append(QifHelper.ACCOUNT_HEADER).append(newLine);
+        accountQifBuffer.append(QifHelper.ACCOUNT_NAME_PREFIX).append(fullyQualifiedAccountName).append(newLine);
+        accountQifBuffer.append(QifHelper.ENTRY_TERMINATOR).append(newLine);
+
+        String header = QifHelper.getQifHeader(mAccountType);
+        accountQifBuffer.append(header + newLine);
+
+        for (Transaction transaction : mTransactionsList) {
+            //ignore those which are loaded as double transactions.
+            // They will be handled as splits
+            if (!transaction.getAccountUID().equals(mUID))
+                continue;
+
+            if (!exportAllTransactions && transaction.isExported())
+                continue;
+
+            accountQifBuffer.append(transaction.toQIF() + newLine);
+        }
+        return accountQifBuffer.toString();
+    }
 }

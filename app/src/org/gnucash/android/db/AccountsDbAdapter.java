@@ -38,7 +38,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
     /**
      * Separator used for account name hierarchies between parent and child accounts
      */
-    public static final String ACCOUNT_NAME_SEPARATOR = "::";
+    public static final String ACCOUNT_NAME_SEPARATOR = ":";
 
 	/**
 	 * Transactions database adapter for manipulating transactions associated with accounts
@@ -285,8 +285,17 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 		}
 		return AccountType.valueOf(type);
 	}
-	
-	/**
+
+    /**
+     * Overloaded method. Resolves the account unique ID from the row ID and makes a call to {@link #getAccountType(String)}
+     * @param accountId Database row ID of the account
+     * @return {@link AccountType} of the account
+     */
+    public AccountType getAccountType(long accountId){
+        return getAccountType(getAccountUID(accountId));
+    }
+
+    /**
 	 * Returns the name of the account with id <code>accountID</code>
 	 * @param accountID Database ID of the account record
 	 * @return Name of the account 
@@ -324,6 +333,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 	 * @return List of {@link Account}s with unexported transactions
 	 */
 	public List<Account> getExportableAccounts(){
+        //TODO: Optimize to use SQL DISTINCT and load only necessary accounts from db
 		List<Account> accountsList = getAllAccounts();
 		Iterator<Account> it = accountsList.iterator();
 		
@@ -552,6 +562,12 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 		return getCurrencyCode(getAccountID(accountUID));
 	}
 
+    /**
+     * Returns the simple name of the account with unique ID <code>accountUID</code>.
+     * @param accountUID Unique identifier of the account
+     * @return Name of the account as String
+     * @see #getFullyQualifiedAccountName(String)
+     */
     public String getAccountName(String accountUID){
         Cursor cursor = mDb.query(DatabaseHelper.ACCOUNTS_TABLE_NAME,
                 new String[]{DatabaseHelper.KEY_ROW_ID, DatabaseHelper.KEY_NAME},

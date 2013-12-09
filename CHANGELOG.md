@@ -1,5 +1,10 @@
 Change Log
 ===============================================================================
+Version 1.2.6 *(2013-12-06)*
+----------------------------
+* Feature: Support for QIF export format
+* Improved: CREDIT/DEBIT meaning now matches GnuCash desktop. Effect on account balance depends on type of account
+
 Version 1.2.5 *(2013-09-17)*
 ----------------------------
 * Feature: Search accounts by name

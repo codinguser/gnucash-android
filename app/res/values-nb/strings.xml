@@ -51,7 +51,7 @@
     <string name="title_selected">%1$d valgt</string>
     <string name="label_transactions_total">Totalt beløp:</string>
     <string name="label_export_destination">Eksportmottaker</string>
-    <string name="title_export_dialog">Eksporter OFX</string>
+    <string name="title_export_dialog">Export Transactions</string>
     <string name="option_export_all_transactions">Eksporter alle transaksjoner</string>
     <string name="hint_export_choice">Vanligvis vil kun nye transaksjoner bli eksportert.  Merk dette valget for å eksportere alle transaksjonene</string>
     <string name="error_exporting">Feil ved eksportering av OFX-data</string>    
@@ -341,6 +341,12 @@ format og importeres i regnskapsprogrammet GnuCash for PC.</string>
     <string name="section_header_transactions">Transactions</string>
     <string name="section_header_accounts">Sub-Accounts</string>
     <string name="menu_search_accounts">Search</string>
+    <string name="title_default_export_format">Default Export Format</string>
+    <string name="summary_default_export_format">File format to use by default when exporting transactions</string>
+    <string name="menu_export_transactions">Export transactions...</string>
+    <!-- This should be the same name used by GnuCash desktop for imbalance accounts -->
+    <string name="imbalance_account_name">Imbalance</string>
+    <string name="title_progress_exporting_transactions">Exporting transactions</string>
     <plurals name="label_sub_accounts">
         <item quantity="one">%d under-konto</item>
         <item quantity="other">%d under-kontoer</item>
@@ -359,5 +365,9 @@ format og importeres i regnskapsprogrammet GnuCash for PC.</string>
         <item>VALUTA</item>
         <item>AKSJE</item>
         <item>AKSJEFOND</item>
+    </string-array>
+    <string-array name="export_formats">
+        <item>QIF</item>
+        <item>OFX</item>
     </string-array>
 </resources>
