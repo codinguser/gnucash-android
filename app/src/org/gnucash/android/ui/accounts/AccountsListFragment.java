@@ -24,6 +24,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Rect;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
@@ -36,6 +37,7 @@ import android.support.v4.widget.SimpleCursorAdapter;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.TouchDelegate;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
@@ -666,9 +668,9 @@ public class AccountsListFragment extends SherlockListFragment implements
                 subAccountTextView.setVisibility(View.GONE);
 
             // add a summary of transactions to the account view
-            TextView summary = (TextView) v
+            TextView accountBalanceTextView = (TextView) v
                     .findViewById(R.id.transactions_summary);
-            new AccountBalanceTask(summary, getActivity()).execute(accountId);
+            new AccountBalanceTask(accountBalanceTextView, getActivity()).execute(accountId);
 
             boolean isPlaceholderAccount = mAccountsDbAdapter.isPlaceholderAccount(accountId);
 
@@ -704,6 +706,25 @@ public class AccountsListFragment extends SherlockListFragment implements
                 convertView.setBackgroundColor(getResources().getColor(android.R.color.transparent));
                 secondaryText.setTextColor(getResources().getColor(android.R.color.secondary_text_light_nodisable));
             }
+
+
+            //increase the touch target area for the add new transaction button
+
+            final View addTransactionButton = convertView.findViewById(R.id.btn_new_transaction);
+            final View parentView = convertView;
+            parentView.post(new Runnable() {
+                @Override
+                public void run() {
+                    final android.graphics.Rect hitRect = new Rect();
+                    float extraPadding = getResources().getDimension(R.dimen.edge_padding);
+                    addTransactionButton.getHitRect(hitRect);
+                    hitRect.right   += extraPadding;
+                    hitRect.bottom  += extraPadding;
+                    hitRect.top     -= extraPadding;
+                    hitRect.left    -= extraPadding;
+                    parentView.setTouchDelegate(new TouchDelegate(hitRect, addTransactionButton));
+                }
+            });
 
             return convertView;
         }

@@ -19,6 +19,7 @@ package org.gnucash.android.ui.transactions;
 import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
@@ -31,6 +32,7 @@ import android.text.format.DateFormat;
 import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
+import android.view.TouchDelegate;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
@@ -401,6 +403,24 @@ public class TransactionsListFragment extends SherlockListFragment implements
                 secondaryText.setTextColor(getResources().getColor(android.R.color.secondary_text_light_nodisable));
                 checkbox.setChecked(false);
             }
+
+            //increase the touch target area for the add new transaction button
+
+            final View checkBoxView = checkbox;
+            final View parentView = view;
+            parentView.post(new Runnable() {
+                @Override
+                public void run() {
+                    float extraPadding = getResources().getDimension(R.dimen.edge_padding);
+                    final android.graphics.Rect hitRect = new Rect();
+                    checkBoxView.getHitRect(hitRect);
+                    hitRect.right   += extraPadding;
+                    hitRect.bottom  += 3*extraPadding;
+                    hitRect.top     -= extraPadding;
+                    hitRect.left    -= 2*extraPadding;
+                    parentView.setTouchDelegate(new TouchDelegate(hitRect, checkBoxView));
+                }
+            });
 
             return view;
 		}

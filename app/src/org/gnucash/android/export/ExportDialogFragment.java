@@ -97,10 +97,10 @@ public class ExportDialogFragment extends DialogFragment {
             exportParameters.setExportTarget(position == 0 ? ExportParams.ExportTarget.SHARING : ExportParams.ExportTarget.SD_CARD);
             exportParameters.setDeleteTransactionsAfterExport(mDeleteAllCheckBox.isChecked());
 
+            dismiss();
+
             Log.i(TAG, "Commencing async export of transactions");
             new ExporterTask(getActivity()).execute(exportParameters);
-
-			dismiss();
 		}
 		
 	}
@@ -126,9 +126,9 @@ public class ExportDialogFragment extends DialogFragment {
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {		
 		super.onActivityCreated(savedInstanceState);
+        bindViews();
 		mFilePath = getActivity().getExternalFilesDir(null) + "/" + buildExportFilename(mExportFormat);
 		getDialog().setTitle(R.string.title_export_dialog);
-		bindViews();
 	}
 
 	/**
@@ -164,6 +164,7 @@ public class ExportDialogFragment extends DialogFragment {
 		mSaveButton.setOnClickListener(new ExportClickListener());
 
         String defaultExportFormat = sharedPrefs.getString(getString(R.string.key_default_export_format), ExportFormat.QIF.name());
+        mExportFormat = ExportFormat.valueOf(defaultExportFormat);
         View.OnClickListener clickListener = new View.OnClickListener() {
             @Override
             public void onClick(View view) {

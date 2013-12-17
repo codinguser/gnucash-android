@@ -1,5 +1,11 @@
 Change Log
 ===============================================================================
+Version 1.2.7 *(2013-12-18)*
+----------------------------
+* Fixed: Export format always defaults to QIF, ignoring user preference
+* Improved: Better responsiveness of add transaction and add account buttons
+* Improved: Russian translation
+
 Version 1.2.6 *(2013-12-06)*
 ----------------------------
 * Feature: Support for QIF export format
