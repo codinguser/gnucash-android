@@ -147,7 +147,7 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
 
                 fragmentTransaction.commit();
             } else
-                accountsListFragment.refreshList();
+                accountsListFragment.refresh();
         }
 
         if (hasNewFeatures()){
@@ -365,7 +365,7 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
 				Fragment fragment = getSupportFragmentManager().findFragmentByTag(FRAGMENT_ACCOUNTS_LIST);
 				if (fragment != null){
 					try{
-						((AccountsListFragment) fragment).refreshList();
+						((AccountsListFragment) fragment).refresh();
 					} catch (ClassCastException e) {
 						Log.e(TAG, e.getMessage());
 					}

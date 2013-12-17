@@ -194,8 +194,8 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 				DatabaseHelper.KEY_UID + " = '" + uid + "'", null, null, null, null);
 		long result = -1;
 		if (cursor != null && cursor.moveToFirst()){
-			Log.d(TAG, "Account already exists. Returning existing id");
-			result = cursor.getLong(0); //0 because only one row was requested
+			Log.v(TAG, "Returning account id");
+			result = cursor.getLong(DatabaseAdapter.COLUMN_ROW_ID);
 
 			cursor.close();
 		}

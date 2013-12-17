@@ -29,6 +29,7 @@
 
     <properties>
         <abs.version>4.4.0</abs.version>
+        <viewpagerindicator.version>2.4.1</viewpagerindicator.version>
     </properties>
 
     <dependencies>
@@ -42,6 +43,12 @@
             <groupId>com.actionbarsherlock</groupId>
             <artifactId>actionbarsherlock</artifactId>
             <version>${abs.version}</version>
+            <type>apklib</type>
+        </dependency>
+        <dependency>
+            <groupId>com.viewpagerindicator</groupId>
+            <artifactId>library</artifactId>
+            <version>${viewpagerindicator.version}</version>
             <type>apklib</type>
         </dependency>
     </dependencies>

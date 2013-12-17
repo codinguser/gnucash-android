@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012 Ngewi Fet <ngewif@gmail.com>
+ * Copyright (c) 2012 - 2014 Ngewi Fet <ngewif@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,6 +55,7 @@ import org.gnucash.android.data.Account;
 import org.gnucash.android.data.Money;
 import org.gnucash.android.db.*;
 import org.gnucash.android.export.ExportDialogFragment;
+import org.gnucash.android.ui.Refreshable;
 import org.gnucash.android.ui.settings.SettingsActivity;
 import org.gnucash.android.ui.transactions.TransactionsActivity;
 import org.gnucash.android.ui.transactions.TransactionsListFragment;
@@ -69,6 +70,7 @@ import java.lang.ref.WeakReference;
  * @author Ngewi Fet <ngewif@gmail.com>
  */
 public class AccountsListFragment extends SherlockListFragment implements
+        Refreshable,
         LoaderCallbacks<Cursor>, OnItemLongClickListener,
         com.actionbarsherlock.widget.SearchView.OnQueryTextListener,
         com.actionbarsherlock.widget.SearchView.OnCloseListener {
@@ -119,7 +121,6 @@ public class AccountsListFragment extends SherlockListFragment implements
     /**
      * Database record ID of the account whose children will be loaded by the list fragment.
      * If no parent account is specified, then all top-level accounts are loaded.
-     * <p>This value is set in {@link #inSubAcccount()}, so always call that method first before using this value</p>
      */
     private long mParentAccountId = -1;
 
@@ -216,8 +217,7 @@ public class AccountsListFragment extends SherlockListFragment implements
             actionbar.setDisplayHomeAsUpEnabled(false);
         }
 
-        if (!inSubAcccount())
-            setHasOptionsMenu(true);
+        setHasOptionsMenu(true);
 
         ListView lv = getListView();
         lv.setOnItemLongClickListener(this);
@@ -228,7 +228,7 @@ public class AccountsListFragment extends SherlockListFragment implements
     @Override
     public void onResume() {
         super.onResume();
-        refreshList();
+        refresh();
     }
 
     @Override
@@ -273,15 +273,7 @@ public class AccountsListFragment extends SherlockListFragment implements
         if (resultCode == Activity.RESULT_CANCELED)
             return;
 
-        refreshList();
-    }
-
-    /**
-     * Returns true if this fragment is currently rendering sub-accounts. false otherwise.
-     * @return true if this fragment is currently rendering sub-accounts. false otherwise
-     */
-    public boolean inSubAcccount(){
-        return mParentAccountId > 0;
+        refresh();
     }
 
     /**
@@ -314,7 +306,7 @@ public class AccountsListFragment extends SherlockListFragment implements
             WidgetConfigurationActivity.updateAllWidgets(getActivity().getApplicationContext());
             getLoaderManager().destroyLoader(0);
         }
-        refreshList();
+        refresh();
     }
 
     /**
@@ -341,20 +333,23 @@ public class AccountsListFragment extends SherlockListFragment implements
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.account_actions, menu);
+        if (mParentAccountId > 0)
+            inflater.inflate(R.menu.sub_account_actions, menu);
+        else {
+            inflater.inflate(R.menu.account_actions, menu);
+            // Associate searchable configuration with the SearchView
+            SearchManager searchManager =
+                    (SearchManager) getActivity().getSystemService(Context.SEARCH_SERVICE);
+            mSearchView =
+                    (com.actionbarsherlock.widget.SearchView) menu.findItem(R.id.menu_search).getActionView();
+            if (mSearchView == null)
+                return;
 
-        // Associate searchable configuration with the SearchView
-        SearchManager searchManager =
-                (SearchManager) getActivity().getSystemService(Context.SEARCH_SERVICE);
-        mSearchView =
-                (com.actionbarsherlock.widget.SearchView) menu.findItem(R.id.menu_search).getActionView();
-        if (mSearchView == null)
-            return;
-
-        mSearchView.setSearchableInfo(
-                searchManager.getSearchableInfo(getActivity().getComponentName()));
-        mSearchView.setOnQueryTextListener(this);
-        mSearchView.setOnCloseListener(this);
+            mSearchView.setSearchableInfo(
+                    searchManager.getSearchableInfo(getActivity().getComponentName()));
+            mSearchView.setOnQueryTextListener(this);
+            mSearchView.setOnCloseListener(this);
+        }
     }
 
     @Override
@@ -362,7 +357,14 @@ public class AccountsListFragment extends SherlockListFragment implements
         switch (item.getItemId()) {
 
             case R.id.menu_add_account:
-                showAddAccountFragment(0);
+                if (mParentAccountId > 0){
+                    Intent addAccountIntent = new Intent(getActivity(), AccountsActivity.class);
+                    addAccountIntent.setAction(Intent.ACTION_INSERT_OR_EDIT);
+                    addAccountIntent.putExtra(AccountsListFragment.ARG_PARENT_ACCOUNT_ID, mParentAccountId);
+                    startActivityForResult(addAccountIntent, REQUEST_EDIT_ACCOUNT);
+                } else {
+                    showAddAccountFragment(mParentAccountId);
+                }
                 return true;
 
             case R.id.menu_export:
@@ -378,21 +380,20 @@ public class AccountsListFragment extends SherlockListFragment implements
         }
     }
 
-    public void refreshList(long parentAccountId) {
+    @Override
+    public void refresh(long parentAccountId) {
         getArguments().putLong(ARG_PARENT_ACCOUNT_ID, parentAccountId);
-        refreshList();
+        refresh();
     }
 
     /**
      * Refreshes the list by restarting the {@link DatabaseCursorLoader} associated
      * with the ListView
      */
-    public void refreshList() {
+    @Override
+    public void refresh() {
         getLoaderManager().restartLoader(0, null, this);
 
-        if (getActivity() instanceof TransactionsActivity){
-            ((TransactionsActivity)getActivity()).updateSubAccountsView();
-        }
 /*
         //TODO: Figure out a way to display account balances per currency
 		boolean doubleEntryActive = PreferenceManager.getDefaultSharedPreferences(getActivity())

@@ -52,6 +52,7 @@ import org.gnucash.android.db.DatabaseAdapter;
 import org.gnucash.android.db.DatabaseCursorLoader;
 import org.gnucash.android.db.DatabaseHelper;
 import org.gnucash.android.db.TransactionsDbAdapter;
+import org.gnucash.android.ui.Refreshable;
 import org.gnucash.android.ui.accounts.AccountsListFragment;
 import org.gnucash.android.ui.widget.WidgetConfigurationActivity;
 import org.gnucash.android.util.OnTransactionClickedListener;
@@ -65,8 +66,8 @@ import java.util.Locale;
  * @author Ngewi Fet <ngewif@gmail.com>
  *
  */
-public class TransactionsListFragment extends SherlockListFragment implements 
-	LoaderCallbacks<Cursor> {
+public class TransactionsListFragment extends SherlockListFragment implements
+        Refreshable, LoaderCallbacks<Cursor> {
 
 	/**
 	 * Logging tag
@@ -141,7 +142,7 @@ public class TransactionsListFragment extends SherlockListFragment implements
 				for (long id : getListView().getCheckedItemIds()) {
 					mTransactionsDbAdapter.deleteRecord(id);
 				}				
-				refreshList();
+				refresh();
 				mode.finish();
 				WidgetConfigurationActivity.updateAllWidgets(getActivity());
 				return true;
@@ -195,15 +196,17 @@ public class TransactionsListFragment extends SherlockListFragment implements
      * Refresh the list with transactions from account with ID <code>accountId</code>
      * @param accountId Database ID of account to load transactions from
      */
-	public void refreshList(long accountId){
+    @Override
+	public void refresh(long accountId){
 		mAccountID = accountId;
-		refreshList();
+		refresh();
 	}
 
     /**
      * Reload the list of transactions and recompute account balances
      */
-	public void refreshList(){
+    @Override
+	public void refresh(){
 		getLoaderManager().restartLoader(0, null, this);
 
         mSumTextView = (TextView) getView().findViewById(R.id.transactions_sum);
@@ -225,7 +228,7 @@ public class TransactionsListFragment extends SherlockListFragment implements
 	public void onResume() {
 		super.onResume();
 		((TransactionsActivity)getSherlockActivity()).updateNavigationSelection();		
-		refreshList(((TransactionsActivity)getActivity()).getCurrentAccountID());
+		refresh(((TransactionsActivity) getActivity()).getCurrentAccountID());
 	}
 	
 	@Override

@@ -47,7 +47,7 @@ public class TransactionsDeleteConfirmationDialog extends SherlockDialogFragment
                             	adapter.deleteRecord(rowId);
                             }
                             if (getTargetFragment() instanceof AccountsListFragment){                            	
-                            	((AccountsListFragment)getTargetFragment()).refreshList();
+                            	((AccountsListFragment)getTargetFragment()).refresh();
                             }
                             WidgetConfigurationActivity.updateAllWidgets(getActivity());
                         }

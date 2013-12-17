@@ -26,7 +26,6 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
-import com.actionbarsherlock.widget.SearchView;
 import com.jayway.android.robotium.solo.Solo;
 import org.gnucash.android.R;
 import org.gnucash.android.data.Account;
@@ -162,7 +161,7 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
 		Fragment fragment = getActivity()
 				.getSupportFragmentManager()
 				.findFragmentByTag(AccountsActivity.FRAGMENT_ACCOUNTS_LIST);
-		((AccountsListFragment) fragment).refreshList();
+		((AccountsListFragment) fragment).refresh();
 		
 		mSolo.waitForText(DUMMY_ACCOUNT_NAME);
 		
@@ -215,7 +214,7 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
                 .findFragmentByTag(AccountsActivity.FRAGMENT_ACCOUNTS_LIST);
         assertNotNull(fragment);
 
-        ((AccountsListFragment) fragment).refreshList();
+        ((AccountsListFragment) fragment).refresh();
 
         mSolo.clickLongOnText(accountNameToDelete);
 
@@ -253,7 +252,7 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
 		Fragment fragment = getActivity()
 				.getSupportFragmentManager()
 				.findFragmentByTag(AccountsActivity.FRAGMENT_ACCOUNTS_LIST);
-		((AccountsListFragment) fragment).refreshList();
+		((AccountsListFragment) fragment).refresh();
 		
 		mSolo.waitForText(DUMMY_ACCOUNT_NAME);
 		mSolo.clickOnText(DUMMY_ACCOUNT_NAME);
@@ -330,6 +329,6 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
         Fragment fragment = getActivity()
                 .getSupportFragmentManager()
                 .findFragmentByTag(AccountsActivity.FRAGMENT_ACCOUNTS_LIST);
-        ((AccountsListFragment)fragment).refreshList();
+        ((AccountsListFragment)fragment).refresh();
     }
 }

@@ -27,7 +27,10 @@ import org.gnucash.android.db.DatabaseAdapter;
 import org.gnucash.android.db.DatabaseHelper;
 
 /**
- * @author Ngewi
+ * Cursor adapter which looks up the fully qualified account name and returns that instead of just the simple name.
+ * <p>The fully qualified account name includes the parent hierarchy</p>
+ *
+ * @author Ngewi Fet <ngewif@gmail.com>
  */
 public class QualifiedAccountNameCursorAdapter extends SimpleCursorAdapter {
     private AccountsDbAdapter mAccountDbAdapter;
