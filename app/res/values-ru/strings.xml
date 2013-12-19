@@ -50,7 +50,7 @@
     <string name="title_selected">%1$d выбрано</string>
     <string name="label_transactions_total">Общая сумма:</string>
     <string name="label_export_destination">Экспортировать в</string>
-    <string name="title_export_dialog">Export Transactions</string>
+    <string name="title_export_dialog">Экспорт проводок</string>
     <string name="option_export_all_transactions">Экспортировать все</string>
     <string name="hint_export_choice">Экспортировать все проводки, а не только новые.</string>
     <string name="error_exporting">Ошибка при экспорте OFX</string>    
@@ -331,17 +331,17 @@
     <string name="summary_delete_all_transactions">Все проводки во всех счетах будут удалены!</string>
     <string name="title_delete_all_transactions">Удалить все проводки</string>
     <string name="toast_all_transactions_deleted">Все проводки удалены!</string>
-    <string name="title_progress_importing_accounts">Importing accounts</string>
-    <string name="toast_tap_again_to_confirm_delete">Tap again to confirm. ALL entries will be deleted!!</string>
-    <string name="section_header_transactions">Transactions</string>
-    <string name="section_header_accounts">Sub-Accounts</string>
-    <string name="menu_search_accounts">Search</string>
-    <string name="title_default_export_format">Default Export Format</string>
-    <string name="summary_default_export_format">File format to use by default when exporting transactions</string>
-    <string name="menu_export_transactions">Export transactions...</string>
+    <string name="title_progress_importing_accounts">Импортируются счета</string>
+    <string name="toast_tap_again_to_confirm_delete">Нажмите езё раз для подтверждения. ВСЕ записи будут удалены!</string>
+    <string name="section_header_transactions">Проводки</string>
+    <string name="section_header_accounts">Дочерние счета</string>
+    <string name="menu_search_accounts">Поиск</string>
+    <string name="title_default_export_format">Формат экспорта по умолчанию</string>
+    <string name="summary_default_export_format">Формат файла, используемый по умолчанию при экспорте</string>
+    <string name="menu_export_transactions">Экспортировать проводки...</string>
     <!-- This should be the same name used by GnuCash desktop for imbalance accounts -->
-    <string name="imbalance_account_name">Imbalance</string>
-    <string name="title_progress_exporting_transactions">Exporting transactions</string>
+    <string name="imbalance_account_name">Дисбаланс</string>
+    <string name="title_progress_exporting_transactions">Проводки экспортируются</string>
     <plurals name="label_sub_accounts">
         <item quantity="one">%d дочерний счёт</item>
         <item quantity="other">%d шт. дочерних счетов</item>
@@ -353,7 +353,7 @@
         <item>АКТИВ</item>
         <item>ПАССИВ</item>
         <item>ДОХОДЫ</item>
-        <item>ТРАТЫ</item>
+        <item>РАСХОДЫ</item>
         <item>PAYABLE</item>
         <item>RECEIVABLE</item>
         <item>EQUITY</item>

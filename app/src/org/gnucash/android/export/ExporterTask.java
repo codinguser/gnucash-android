@@ -125,7 +125,6 @@ public class ExporterTask extends AsyncTask<ExportParams, Void, Boolean> {
      */
     @Override
     protected void onPostExecute(Boolean exportResult) {
-        mProgressDialog.dismiss();
 
         if (!exportResult){
             Toast.makeText(mContext,
@@ -175,6 +174,8 @@ public class ExporterTask extends AsyncTask<ExportParams, Void, Boolean> {
 
             alertFragment.show(fragmentManager, "transactions_delete_confirmation_dialog");
         }
+
+        mProgressDialog.dismiss();
 
     }
 
