@@ -241,7 +241,7 @@ public class TransactionsListFragment extends SherlockListFragment implements
 	public void onListItemClick(ListView l, View v, int position, long id) {
 		super.onListItemClick(l, v, position, id);
 		if (mInEditMode){
-			CheckBox checkbox = (CheckBox) v.findViewById(R.id.checkbox);
+			CheckBox checkbox = (CheckBox) v.findViewById(R.id.checkbox_parent_account);
 			checkbox.setChecked(!checkbox.isChecked());
 			return;
 		}
@@ -379,7 +379,7 @@ public class TransactionsListFragment extends SherlockListFragment implements
 		public View getView(int position, View convertView, ViewGroup parent) {
 			final View view = super.getView(position, convertView, parent);
 			final int itemPosition = position;
-			CheckBox checkbox = (CheckBox) view.findViewById(R.id.checkbox);
+			CheckBox checkbox = (CheckBox) view.findViewById(R.id.checkbox_parent_account);
             final TextView secondaryText = (TextView) view.findViewById(R.id.secondary_text);
 
             checkbox.setOnCheckedChangeListener(new OnCheckedChangeListener() {

@@ -351,26 +351,6 @@ public class NewTransactionFragment extends SherlockFragment implements
     }
 
     /**
-     * Initializes the recurrence spinner to the appropriate value from the transaction.
-     * This is only used when the transaction is a recurrence transaction
-     */
-    private void setSelectedRecurrenceOption() {
-        //init recurrence options
-        final long recurrencePeriod = mTransaction.getRecurrencePeriod();
-        if (recurrencePeriod > 0){
-            String[] recurrenceOptions = getResources().getStringArray(R.array.recurrence_options);
-
-            int selectionIndex = 0;
-            for (String recurrenceOption : recurrenceOptions) {
-                if (recurrencePeriod == Long.parseLong(recurrenceOption))
-                    break;
-                selectionIndex++;
-            }
-            mRecurringTransactionSpinner.setSelection(selectionIndex);
-        }
-    }
-
-    /**
 	 * Initialize views with default data for new transactions
 	 */
 	private void initalizeViews() {
@@ -399,7 +379,34 @@ public class NewTransactionFragment extends SherlockFragment implements
 		}
 		Currency accountCurrency = Currency.getInstance(code);
 		mCurrencyTextView.setText(accountCurrency.getSymbol(Locale.getDefault()));
+
+        if (mUseDoubleEntry){
+            long defaultTransferAccountID = mAccountsDbAdapter.getDefaultTransferAccountID(accountId);
+            if (defaultTransferAccountID > 0){
+                setSelectedTransferAccount(defaultTransferAccountID);
+            }
+        }
 	}
+
+    /**
+     * Initializes the recurrence spinner to the appropriate value from the transaction.
+     * This is only used when the transaction is a recurrence transaction
+     */
+    private void setSelectedRecurrenceOption() {
+        //init recurrence options
+        final long recurrencePeriod = mTransaction.getRecurrencePeriod();
+        if (recurrencePeriod > 0){
+            String[] recurrenceOptions = getResources().getStringArray(R.array.recurrence_options);
+
+            int selectionIndex = 0;
+            for (String recurrenceOption : recurrenceOptions) {
+                if (recurrencePeriod == Long.parseLong(recurrenceOption))
+                    break;
+                selectionIndex++;
+            }
+            mRecurringTransactionSpinner.setSelection(selectionIndex);
+        }
+    }
 
     /**
      * Updates the list of possible transfer accounts.

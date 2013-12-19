@@ -74,7 +74,8 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 		contentValues.put(DatabaseHelper.KEY_UID, account.getUID());
 		contentValues.put(DatabaseHelper.KEY_CURRENCY_CODE, account.getCurrency().getCurrencyCode());
 		contentValues.put(DatabaseHelper.KEY_PARENT_ACCOUNT_UID, account.getParentUID());
-		contentValues.put(DatabaseHelper.KEY_PLACEHOLDER, account.isPlaceholderAccount() ? 1 : 0);
+        contentValues.put(DatabaseHelper.KEY_DEFAULT_TRANSFER_ACCOUNT_UID, account.getDefaultTransferAccountUID());
+        contentValues.put(DatabaseHelper.KEY_PLACEHOLDER, account.isPlaceholderAccount() ? 1 : 0);
 
 		long rowId = -1;
 		if ((rowId = getAccountID(account.getUID())) > 0){
@@ -180,6 +181,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 		account.setCurrency(Currency.getInstance(c.getString(DatabaseAdapter.COLUMN_CURRENCY_CODE)));
 		account.setTransactions(mTransactionsAdapter.getAllTransactionsForAccount(uid));
         account.setPlaceHolderFlag(c.getInt(DatabaseAdapter.COLUMN_PLACEHOLDER) == 1);
+        account.setDefaultTransferAccountUID(c.getString(DatabaseAdapter.COLUMN_DEFAULT_TRANSFER_ACCOUNT_UID));
 		return account;
 	}
 		
@@ -584,6 +586,30 @@ public class AccountsDbAdapter extends DatabaseAdapter {
         cursor.close();
 
         return accountName;
+    }
+
+    /**
+     * Returns the default transfer account record ID for the account with UID <code>accountUID</code>
+     * @param accountID Database ID of the account record
+     * @return Record ID of default transfer account
+     */
+    public long getDefaultTransferAccountID(long accountID){
+        Cursor cursor = mDb.query(DatabaseHelper.ACCOUNTS_TABLE_NAME,
+                new String[]{DatabaseHelper.KEY_ROW_ID, DatabaseHelper.KEY_DEFAULT_TRANSFER_ACCOUNT_UID},
+                DatabaseHelper.KEY_ROW_ID + " = " + accountID,
+                null, null, null, null);
+
+        if (cursor == null || cursor.getCount() < 1){
+            return 0;
+        } else {
+            cursor.moveToFirst();
+        }
+
+        String defaultTransferAccountUID = cursor.getString(
+                cursor.getColumnIndexOrThrow(DatabaseHelper.KEY_DEFAULT_TRANSFER_ACCOUNT_UID));
+        cursor.close();
+
+        return getAccountID(defaultTransferAccountUID);
     }
 
     /**

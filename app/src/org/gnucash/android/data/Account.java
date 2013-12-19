@@ -50,7 +50,7 @@ public class Account {
 	 */
 	public static final String MIME_TYPE = "vnd.android.cursor.item/vnd.org.gnucash.android.account";
 
-	/**
+    /**
 	 * The type of account
 	 * This are the different types specified by the OFX format and 
 	 * they are currently not used except for exporting
@@ -114,6 +114,12 @@ public class Account {
 	 * Account UID of the parent account. Can be null
 	 */
 	private String mParentAccountUID;
+
+    /**
+     * Save UID of a default account for transfers.
+     * All transactions in this account will by default be transfers to the other account
+     */
+    private String mDefaultTransferAccountUID;
 
     /**
      * Flag for placeholder accounts.
@@ -362,7 +368,24 @@ public class Account {
         mPlaceholderAccount = isPlaceholder;
     }
 
-	/**
+    /**
+     * Return the unique ID of accounts to which to default transfer transactions to
+     * @return Unique ID string of default transfer account
+     */
+    public String getDefaultTransferAccountUID() {
+        return mDefaultTransferAccountUID;
+    }
+
+    /**
+     * Set the unique ID of account which is the default transfer target
+     * @param defaultTransferAccountUID Unique ID string of default transfer account
+     */
+    public void setDefaultTransferAccountUID(String defaultTransferAccountUID) {
+        this.mDefaultTransferAccountUID = defaultTransferAccountUID;
+    }
+
+
+    /**
 	 * Maps the <code>accountType</code> to the corresponding account type.
 	 * <code>accountType</code> have corresponding values to GnuCash desktop
 	 * @param accountType {@link AccountType} of an account

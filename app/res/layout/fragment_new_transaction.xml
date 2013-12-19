@@ -30,7 +30,7 @@
 	        android:layout_width="match_parent"
 	        android:layout_height="wrap_content"
 	        android:hint="@string/label_transaction_name"
-	        android:layout_marginBottom="@dimen/dialog_padding"
+	        android:layout_marginBottom="@dimen/form_row_bottom_margin"
 	        android:inputType="textCapSentences"
             android:imeOptions="actionNext"
             android:nextFocusDown="@+id/input_transaction_amount"

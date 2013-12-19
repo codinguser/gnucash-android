@@ -107,7 +107,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	 * Account which the origin account this transaction in double entry mode
 	 */
 	public static final String KEY_DOUBLE_ENTRY_ACCOUNT_UID 	= "double_account_uid";
-	
+
+    /**
+     * Each account has a default target for transfers when in double entry mode unless otherwise specified.
+     * This key holds the UID of the default transfer account for double entries.
+     */
+    public static final String KEY_DEFAULT_TRANSFER_ACCOUNT_UID = "default_transfer_account_uid";
+
 	/**
 	 * Transaction description database column
 	 */
@@ -151,6 +157,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			+ KEY_CURRENCY_CODE + " varchar(255) not null, "
 			+ KEY_PARENT_ACCOUNT_UID + " varchar(255), "
             + KEY_PLACEHOLDER + " tinyint default 0, "
+            + KEY_DEFAULT_TRANSFER_ACCOUNT_UID + " varchar(255), "
 			+ "UNIQUE (" + KEY_UID + ")"	
 			+ ");";
 	
@@ -197,7 +204,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		if (oldVersion < newVersion){
 			//introducing double entry accounting
 			Log.i(TAG, "Upgrading database to version " + newVersion);
-			if (oldVersion == 1 && newVersion == 2){		
+			if (oldVersion == 1 && newVersion >= 2){
 				Log.i(TAG, "Adding column for splitting transactions");
 				String addColumnSql = "ALTER TABLE " + TRANSACTIONS_TABLE_NAME + 
 									" ADD COLUMN " + KEY_DOUBLE_ENTRY_ACCOUNT_UID + " varchar(255)";
@@ -216,25 +223,37 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 ContentValues cv = new ContentValues();
                 cv.put(KEY_TYPE, AccountType.CASH.toString());
                 db.update(ACCOUNTS_TABLE_NAME, cv, null, null);
+
+                oldVersion = 2;
             }
 			
 
-            if (oldVersion == 2 && newVersion == 3){
+            if (oldVersion == 2 && newVersion >= 3){
                 Log.i(TAG, "Adding flag for placeholder accounts");
                 String addPlaceHolderAccountFlagSql = "ALTER TABLE " + ACCOUNTS_TABLE_NAME +
                         " ADD COLUMN " + KEY_PLACEHOLDER + " tinyint default 0";
 
                 db.execSQL(addPlaceHolderAccountFlagSql);
+                oldVersion = 3;
             }
 
-            if (oldVersion == 3 && newVersion == 4){
+            if (oldVersion == 3 && newVersion >= 4){
                 Log.i(TAG, "Updating database to version 4");
                 String addRecurrencePeriod = "ALTER TABLE " + TRANSACTIONS_TABLE_NAME +
                         " ADD COLUMN " + KEY_RECURRENCE_PERIOD + " integer default 0";
+
+                String addDefaultTransferAccount = "ALTER TABLE " + ACCOUNTS_TABLE_NAME
+                        + " ADD COLUMN " + KEY_DEFAULT_TRANSFER_ACCOUNT_UID + " varchar(255)";
+
                 db.execSQL(addRecurrencePeriod);
+                db.execSQL(addDefaultTransferAccount);
+
+                oldVersion = 4;
             }
-		} else {
-			Log.i(TAG, "Cannot downgrade database.");
 		}
+
+        if (oldVersion != newVersion) {
+            Log.i(TAG, "Upgrade for the database failed. The Database is currently at version " + oldVersion);
+        }
 	}
 }

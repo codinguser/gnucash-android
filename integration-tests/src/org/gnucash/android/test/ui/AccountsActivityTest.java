@@ -130,7 +130,7 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
 		mSolo.waitForText(getActivity().getString(R.string.title_add_account));
 
         //there already exists one eligible parent account in the system
-        assertThat(getActivity().findViewById(R.id.checkbox)).isVisible();
+        assertThat(getActivity().findViewById(R.id.checkbox_parent_account)).isVisible();
 
         EditText inputAccountName = (EditText) getActivity().findViewById(R.id.edit_text_account_name);
         String NEW_ACCOUNT_NAME = "A New Account";
