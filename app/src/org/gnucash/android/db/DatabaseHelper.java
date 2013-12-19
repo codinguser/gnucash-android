@@ -114,6 +114,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      */
     public static final String KEY_DEFAULT_TRANSFER_ACCOUNT_UID = "default_transfer_account_uid";
 
+    /**
+     * Color code for the account
+     */
+    public static final String KEY_COLOR_CODE = "color_code";
+
 	/**
 	 * Transaction description database column
 	 */
@@ -158,6 +163,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			+ KEY_PARENT_ACCOUNT_UID + " varchar(255), "
             + KEY_PLACEHOLDER + " tinyint default 0, "
             + KEY_DEFAULT_TRANSFER_ACCOUNT_UID + " varchar(255), "
+            + KEY_COLOR_CODE + " varchar(255), "
 			+ "UNIQUE (" + KEY_UID + ")"	
 			+ ");";
 	
@@ -245,8 +251,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 String addDefaultTransferAccount = "ALTER TABLE " + ACCOUNTS_TABLE_NAME
                         + " ADD COLUMN " + KEY_DEFAULT_TRANSFER_ACCOUNT_UID + " varchar(255)";
 
+                String addAccountColor = " ALTER TABLE " + ACCOUNTS_TABLE_NAME
+                        + " ADD COLUMN " + KEY_COLOR_CODE + " varchar(255)";
+
                 db.execSQL(addRecurrencePeriod);
                 db.execSQL(addDefaultTransferAccount);
+                db.execSQL(addAccountColor);
 
                 oldVersion = 4;
             }

@@ -26,4 +26,5 @@
     <dimen name="widget_margin">8dp</dimen>
     <dimen name="section_header_height">20dp</dimen>
     <dimen name="form_row_bottom_margin">10dp</dimen>
+    <dimen name="strip_width">5dp</dimen>
 </resources>

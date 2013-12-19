@@ -69,6 +69,10 @@ public class GnucashAccountXmlHandler extends DefaultHandler {
      */
     private static final String PLACEHOLDER_KEY = "placeholder";
 
+    /**
+     * Value of color slots in GnuCash account structure file
+     */
+    private static final String COLOR_KEY = "color";
 
     AccountsDbAdapter mDatabaseAdapter;
 
@@ -82,8 +86,9 @@ public class GnucashAccountXmlHandler extends DefaultHandler {
      */
     Account mAccount;
 
-    boolean mInPlaceHolderSlot = false;
-    boolean mISO4217Currency = false;
+    boolean mInColorSlot        = false;
+    boolean mInPlaceHolderSlot  = false;
+    boolean mISO4217Currency    = false;
 
     public GnucashAccountXmlHandler(Context context) {
         mDatabaseAdapter = new AccountsDbAdapter(context);
@@ -144,6 +149,9 @@ public class GnucashAccountXmlHandler extends DefaultHandler {
             if (characterString.equals(PLACEHOLDER_KEY)){
                 mInPlaceHolderSlot = true;
             }
+            if (characterString.equals(COLOR_KEY)){
+                mInColorSlot = true;
+            }
         }
 
         if (qualifiedName.equalsIgnoreCase(TAG_SLOT_VALUE)){
@@ -153,6 +161,13 @@ public class GnucashAccountXmlHandler extends DefaultHandler {
                     mAccount.setPlaceHolderFlag(true);
                 };
                 mInPlaceHolderSlot = false;
+            }
+
+            if (mInColorSlot){
+                Log.d(LOG_TAG, "Setting account color");
+                String color = "#" + characterString.trim().replaceAll(".(.)?", "$1").replace("null", "");
+                mAccount.setColorCode(color);
+                mInColorSlot = false;
             }
         }
         //reset the accumulated characters

@@ -76,6 +76,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 		contentValues.put(DatabaseHelper.KEY_PARENT_ACCOUNT_UID, account.getParentUID());
         contentValues.put(DatabaseHelper.KEY_DEFAULT_TRANSFER_ACCOUNT_UID, account.getDefaultTransferAccountUID());
         contentValues.put(DatabaseHelper.KEY_PLACEHOLDER, account.isPlaceholderAccount() ? 1 : 0);
+        contentValues.put(DatabaseHelper.KEY_COLOR_CODE, account.getColorCode());
 
 		long rowId = -1;
 		if ((rowId = getAccountID(account.getUID())) > 0){
@@ -182,6 +183,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 		account.setTransactions(mTransactionsAdapter.getAllTransactionsForAccount(uid));
         account.setPlaceHolderFlag(c.getInt(DatabaseAdapter.COLUMN_PLACEHOLDER) == 1);
         account.setDefaultTransferAccountUID(c.getString(DatabaseAdapter.COLUMN_DEFAULT_TRANSFER_ACCOUNT_UID));
+        account.setColorCode(c.getString(DatabaseAdapter.COLUMN_COLOR_CODE));
 		return account;
 	}
 		
@@ -269,7 +271,25 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 		}
 		return uid;
 	}
-	
+
+    /**
+     * Returns the color code for the account in format #rrggbb
+     * @param accountId Database row ID of the account
+     * @return String color code of account or null if none
+     */
+    public String getAccountColorCode(long accountId){
+        String colorCode = null;
+        Cursor c = mDb.query(DatabaseHelper.ACCOUNTS_TABLE_NAME,
+                new String[]{DatabaseHelper.KEY_ROW_ID, DatabaseHelper.KEY_COLOR_CODE},
+                DatabaseHelper.KEY_ROW_ID + "=" + accountId,
+                null, null, null, null);
+        if (c != null && c.moveToFirst()){
+            colorCode = c.getString(c.getColumnIndexOrThrow(DatabaseHelper.KEY_COLOR_CODE));
+            c.close();
+        }
+        return colorCode;
+    }
+
 	/**
 	 * Returns the {@link AccountType} of the account with unique ID <code>uid</code>
 	 * @param uid Unique ID of the account

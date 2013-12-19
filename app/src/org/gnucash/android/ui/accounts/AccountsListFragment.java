@@ -24,6 +24,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.graphics.Rect;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -673,8 +674,14 @@ public class AccountsListFragment extends SherlockListFragment implements
                     .findViewById(R.id.transactions_summary);
             new AccountBalanceTask(accountBalanceTextView, getActivity()).execute(accountId);
 
-            boolean isPlaceholderAccount = mAccountsDbAdapter.isPlaceholderAccount(accountId);
+            View colorStripView = v.findViewById(R.id.account_color_strip);
+            String accountColor = cursor.getString(DatabaseAdapter.COLUMN_COLOR_CODE);
+            if (accountColor != null){
+                int color = Color.parseColor(accountColor);
+                colorStripView.setBackgroundColor(color);
+            }
 
+            boolean isPlaceholderAccount = mAccountsDbAdapter.isPlaceholderAccount(accountId);
             ImageButton newTransactionButton = (ImageButton) v.findViewById(R.id.btn_new_transaction);
             if (isPlaceholderAccount){
                 newTransactionButton.setVisibility(View.GONE);

@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
 
-import android.content.Context;
+import android.graphics.Color;
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.export.ofx.OfxExporter;
@@ -126,6 +126,11 @@ public class Account {
      * These accounts cannot have transactions
      */
     private boolean mPlaceholderAccount;
+
+    /**
+     * Account color field in hex format #rrggbb
+     */
+    private String mColorCode;
 
 	/**
 	 * An extra key for passing the currency code (according ISO 4217) in an intent
@@ -311,13 +316,35 @@ public class Account {
 	public Money getBalance(){
 		//TODO: Consider double entry transactions
 		Money balance = new Money(new BigDecimal(0), this.mCurrency);
-		for (Transaction transx : mTransactionsList) {
-			balance = balance.add(transx.getAmount());		
+		for (Transaction transaction : mTransactionsList) {
+			balance = balance.add(transaction.getAmount());
 		}
 		return balance;
 	}
-	
-	/**
+
+    /**
+     * Returns the color code of the account in the format #rrggbb
+     * @return Color code of the account
+     */
+    public String getColorCode() {
+        return mColorCode;
+    }
+
+    /**
+     * Sets the color code of the account.
+     * @param colorCode Color code to be set in the format #rrggbb
+     * @throws java.lang.IllegalArgumentException if the color code is not properly formatted
+     */
+    public void setColorCode(String colorCode) {
+        //TODO: Proper regex validation
+        if (!colorCode.startsWith("#") || colorCode.length() < 4 || colorCode.length() > 9){
+            throw new IllegalArgumentException("Invalid color code for account");
+        }
+        this.mColorCode = colorCode;
+    }
+
+
+    /**
 	 * @return the mCurrency
 	 */
 	public Currency getCurrency() {

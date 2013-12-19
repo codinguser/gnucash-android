@@ -19,6 +19,7 @@ package org.gnucash.android.ui.transactions;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.*;
 import android.support.v4.view.PagerAdapter;
@@ -122,6 +123,12 @@ public class TransactionsActivity extends SherlockFragmentActivity implements
      * Spinner adapter for the action bar navigation list of accounts
      */
     private SpinnerAdapter mSpinnerAdapter;
+
+    /**
+     * This is the last known color for the title indicator.
+     * This is used to remember the color of the top level account if the child account doesn't have one.
+     */
+    private static int sLastTitleColor = R.color.title_green;
 
     private TextView mSectionHeaderTransactions;
     private TitlePageIndicator mTitlePageIndicator;
@@ -261,6 +268,7 @@ public class TransactionsActivity extends SherlockFragmentActivity implements
     @Override
     public void refresh(){
         refresh(mAccountId);
+        setTitleIndicatorColor();
     }
 
 	@Override
@@ -276,7 +284,10 @@ public class TransactionsActivity extends SherlockFragmentActivity implements
 		mAccountId = getIntent().getLongExtra(
                 TransactionsListFragment.SELECTED_ACCOUNT_ID, -1);
 
+        mAccountsDbAdapter = new AccountsDbAdapter(this);
 		setupActionBarNavigation();
+
+        setTitleIndicatorColor();
 
 		if (getIntent().getAction().equals(Intent.ACTION_INSERT_OR_EDIT)) {
             mPager.setVisibility(View.GONE);
@@ -297,7 +308,7 @@ public class TransactionsActivity extends SherlockFragmentActivity implements
 		mActivityRunning = true;
 	}
 
-    /**
+   /**
      * Loads the fragment for creating/editing transactions and initializes it to be displayed
      */
     private void initializeCreateOrEditTransaction() {
@@ -315,11 +326,24 @@ public class TransactionsActivity extends SherlockFragmentActivity implements
     }
 
     /**
+     * Sets the color for the ViewPager title indicator to match the account color
+     */
+    private void setTitleIndicatorColor() {
+        String colorCode = mAccountsDbAdapter.getAccountColorCode(mAccountId);
+        if (colorCode != null){
+            sLastTitleColor = Color.parseColor(colorCode);
+        }
+
+        mTitlePageIndicator.setSelectedColor(sLastTitleColor);
+        mTitlePageIndicator.setTextColor(sLastTitleColor);
+        mTitlePageIndicator.setFooterColor(sLastTitleColor);
+    }
+
+    /**
 	 * Set up action bar navigation list and listener callbacks
 	 */
 	private void setupActionBarNavigation() {
 		// set up spinner adapter for navigation list
-		mAccountsDbAdapter = new AccountsDbAdapter(this);
 		Cursor accountsCursor = mAccountsDbAdapter.fetchAllRecords();
 		mSpinnerAdapter = new QualifiedAccountNameCursorAdapter(getSupportActionBar().getThemedContext(),
                 R.layout.sherlock_spinner_item, accountsCursor);

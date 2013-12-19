@@ -337,24 +337,30 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
 					switch (index) {
 					case 0:
 						account.setAccountType(AccountType.EXPENSE);
+                        account.setColorCode(getString(R.color.account_red));
 						break;
 						
 					case 1:
 						account.setAccountType(AccountType.INCOME);
+                        account.setColorCode(getString(R.color.account_green));
 						break;
 						
 					case 2:
 						account.setAccountType(AccountType.ASSET);
+                        account.setColorCode(getString(R.color.account_gold));
 						break;
 					case 3:
 						account.setAccountType(AccountType.EQUITY);
+                        account.setColorCode(getString(R.color.account_blue));
 						break;
 					case 4:
 						account.setAccountType(AccountType.LIABILITY);
+                        account.setColorCode(getString(R.color.account_purple));
 						break;
 						
 					default:
 						account.setAccountType(AccountType.CASH);
+                        account.setColorCode(getString(R.color.account_green));
 						break;
 					}
 					dbAdapter.addAccount(account);
