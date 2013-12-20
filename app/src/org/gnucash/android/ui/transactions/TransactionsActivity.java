@@ -128,7 +128,7 @@ public class TransactionsActivity extends SherlockFragmentActivity implements
      * This is the last known color for the title indicator.
      * This is used to remember the color of the top level account if the child account doesn't have one.
      */
-    private static int sLastTitleColor = R.color.title_green;
+    private static int sLastTitleColor;
 
     private TextView mSectionHeaderTransactions;
     private TitlePageIndicator mTitlePageIndicator;
@@ -158,8 +158,9 @@ public class TransactionsActivity extends SherlockFragmentActivity implements
 	};
 
 
-
-
+    /**
+     * Adapter for managing the sub-account and transaction fragment pages in the accounts view
+     */
     private class AccountViewPagerAdapter extends FragmentStatePagerAdapter {
 
         public AccountViewPagerAdapter(FragmentManager fm){
@@ -285,9 +286,8 @@ public class TransactionsActivity extends SherlockFragmentActivity implements
                 TransactionsListFragment.SELECTED_ACCOUNT_ID, -1);
 
         mAccountsDbAdapter = new AccountsDbAdapter(this);
-		setupActionBarNavigation();
 
-        setTitleIndicatorColor();
+        setupActionBarNavigation();
 
 		if (getIntent().getAction().equals(Intent.ACTION_INSERT_OR_EDIT)) {
             mPager.setVisibility(View.GONE);
@@ -308,7 +308,7 @@ public class TransactionsActivity extends SherlockFragmentActivity implements
 		mActivityRunning = true;
 	}
 
-   /**
+    /**
      * Loads the fragment for creating/editing transactions and initializes it to be displayed
      */
     private void initializeCreateOrEditTransaction() {
@@ -322,14 +322,32 @@ public class TransactionsActivity extends SherlockFragmentActivity implements
             mSectionHeaderTransactions.setText(R.string.title_add_transaction);
             args.putLong(TransactionsListFragment.SELECTED_ACCOUNT_ID, mAccountId);
         }
+        mSectionHeaderTransactions.setBackgroundColor(sLastTitleColor);
         showTransactionFormFragment(args);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        setTitleIndicatorColor();
     }
 
     /**
      * Sets the color for the ViewPager title indicator to match the account color
      */
     private void setTitleIndicatorColor() {
+        //Basically, if we are in a top level account, use the default title color.
+        //but propagate a parent account's title color to children who don't have own color
+        String parentAccountUID = mAccountsDbAdapter.getParentAccountUID(mAccountId);
         String colorCode = mAccountsDbAdapter.getAccountColorCode(mAccountId);
+        if (parentAccountUID == null
+                || parentAccountUID.equals(mAccountsDbAdapter.getGnuCashRootAccountUID())) {
+            sLastTitleColor = getResources().getColor(R.color.title_green);
+        } else {
+            String parentColor = mAccountsDbAdapter.getAccountColorCode(mAccountsDbAdapter.getAccountID(parentAccountUID));
+            sLastTitleColor = parentColor != null ? Color.parseColor(parentColor) : sLastTitleColor;
+        }
+
         if (colorCode != null){
             sLastTitleColor = Color.parseColor(colorCode);
         }
@@ -337,6 +355,7 @@ public class TransactionsActivity extends SherlockFragmentActivity implements
         mTitlePageIndicator.setSelectedColor(sLastTitleColor);
         mTitlePageIndicator.setTextColor(sLastTitleColor);
         mTitlePageIndicator.setFooterColor(sLastTitleColor);
+        mSectionHeaderTransactions.setBackgroundColor(sLastTitleColor);
     }
 
     /**

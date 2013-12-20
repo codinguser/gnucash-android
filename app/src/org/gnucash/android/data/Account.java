@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012 Ngewi Fet <ngewif@gmail.com>
+ * Copyright (c) 2012 - 2014 Ngewi Fet <ngewif@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import java.util.Currency;
 import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
+import java.util.regex.Pattern;
 
 import android.graphics.Color;
 import org.gnucash.android.app.GnuCashApplication;
@@ -326,20 +327,36 @@ public class Account {
      * Returns the color code of the account in the format #rrggbb
      * @return Color code of the account
      */
-    public String getColorCode() {
+    public String getColorHexCode() {
         return mColorCode;
     }
 
     /**
      * Sets the color code of the account.
-     * @param colorCode Color code to be set in the format #rrggbb
+     * @param colorCode Color code to be set in the format #rrggbb or #rgb
      * @throws java.lang.IllegalArgumentException if the color code is not properly formatted
      */
     public void setColorCode(String colorCode) {
-        //TODO: Proper regex validation
-        if (!colorCode.startsWith("#") || colorCode.length() < 4 || colorCode.length() > 9){
-            throw new IllegalArgumentException("Invalid color code for account");
-        }
+        if (colorCode == null)
+            return;
+
+        //TODO: Allow use of #aarrggbb format as well
+
+        /*
+            ^             anchor for start of string
+            #             the literal #
+            (             start of group
+            ?:            indicate a non-capturing group that doesn't generate backreferences
+            [0-9a-fA-F]   hexadecimal digit
+            {3}           three times
+            )             end of group
+            {1,2}         repeat either once or twice
+            $             anchor for end of string
+         */
+        String colorHexRegex = "^#(?:[0-9a-fA-F]{3}){1,2}$";
+        if (!Pattern.matches(colorHexRegex, colorCode))
+            throw new IllegalArgumentException("Invalid color hex code");
+
         this.mColorCode = colorCode;
     }
 

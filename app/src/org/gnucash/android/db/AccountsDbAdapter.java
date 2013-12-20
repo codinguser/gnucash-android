@@ -76,7 +76,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 		contentValues.put(DatabaseHelper.KEY_PARENT_ACCOUNT_UID, account.getParentUID());
         contentValues.put(DatabaseHelper.KEY_DEFAULT_TRANSFER_ACCOUNT_UID, account.getDefaultTransferAccountUID());
         contentValues.put(DatabaseHelper.KEY_PLACEHOLDER, account.isPlaceholderAccount() ? 1 : 0);
-        contentValues.put(DatabaseHelper.KEY_COLOR_CODE, account.getColorCode());
+        contentValues.put(DatabaseHelper.KEY_COLOR_CODE, account.getColorHexCode());
 
 		long rowId = -1;
 		if ((rowId = getAccountID(account.getUID())) > 0){
@@ -226,8 +226,19 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 			cursor.close();
 		}
 		return result;
-	}	
-	
+	}
+
+    /**
+     * Returns the  unique ID of the parent account of the account with database ID <code>id</code>
+     * If the account has no parent, null is returned.
+     * @param id DB record ID of account . Should not be null
+     * @return DB record UID of the parent account, null if the account has no parent
+     * @see #getParentAccountUID(String)
+     */
+    public String getParentAccountUID(long id){
+        return getParentAccountUID(getAccountUID(id));
+    }
+
 	/**
 	 * Retrieves an account object from a database with database ID <code>rowId</code>
 	 * @param rowId Identifier of the account record to be retrieved

@@ -23,12 +23,19 @@ import java.util.List;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
+import android.content.res.TypedArray;
+import android.graphics.Color;
 import android.preference.PreferenceManager;
+import android.support.v4.app.FragmentManager;
 import org.gnucash.android.R;
 import org.gnucash.android.data.Account;
 import org.gnucash.android.data.Money;
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.DatabaseHelper;
+import org.gnucash.android.ui.colorpicker.ColorPickerDialog;
+import org.gnucash.android.ui.colorpicker.ColorPickerSwatch;
+import org.gnucash.android.ui.colorpicker.ColorSquare;
 import org.gnucash.android.ui.transactions.TransactionsListFragment;
 
 import android.content.Context;
@@ -59,7 +66,12 @@ import org.gnucash.android.util.QualifiedAccountNameCursorAdapter;
  */
 public class AddAccountFragment extends SherlockFragment {
 
-	/**
+    /**
+     * Tag for the color picker dialog fragment
+     */
+    public static final String COLOR_PICKER_DIALOG_TAG = "color_picker_dialog";
+
+    /**
 	 * EditText for the name of the account to be created/edited
 	 */
 	private EditText mNameEditText;
@@ -149,6 +161,23 @@ public class AddAccountFragment extends SherlockFragment {
      */
     private boolean mUseDoubleEntry;
 
+    /**
+     * Default to transparent
+     */
+    private String mSelectedColor = null;
+
+    /**
+     * Trigger for color picker dialog
+     */
+    private ColorSquare mColorSquare;
+
+    private ColorPickerSwatch.OnColorSelectedListener mColorSelectedListener = new ColorPickerSwatch.OnColorSelectedListener() {
+        @Override
+        public void onColorSelected(int color) {
+            mColorSquare.setBackgroundColor(color);
+            mSelectedColor = String.format("#%06X", (0xFFFFFF & color));
+        }
+    };
 
     /**
 	 * Default constructor
@@ -219,6 +248,14 @@ public class AddAccountFragment extends SherlockFragment {
             }
         });
 
+        mColorSquare = (ColorSquare) view.findViewById(R.id.input_color_picker);
+        mColorSquare.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showColorPickerDialog();
+            }
+        });
+
 		return view;
 	}
 	
@@ -278,10 +315,9 @@ public class AddAccountFragment extends SherlockFragment {
         }
 
         mPlaceholderCheckBox.setChecked(account.isPlaceholderAccount());
+        initializeColorSquarePreview(account.getColorHexCode());
 
-        String[] accountTypeEntries = getResources().getStringArray(R.array.account_type_entries);
-        int accountTypeIndex = Arrays.asList(accountTypeEntries).indexOf(account.getAccountType().name());
-        mAccountTypeSpinner.setSelection(accountTypeIndex);
+        setAccountTypeSelection(account.getAccountType());
     }
 
     /**
@@ -289,9 +325,41 @@ public class AddAccountFragment extends SherlockFragment {
      */
     private void initializeViews(){
         setSelectedCurrency(Money.DEFAULT_CURRENCY_CODE);
-
+        mColorSquare.setBackgroundColor(Color.LTGRAY);
         long parentAccountId = getArguments().getLong(AccountsListFragment.ARG_PARENT_ACCOUNT_ID);
         setParentAccountSelection(parentAccountId);
+
+        /* This snippet causes the child account to default to same color as parent. Not sure if we want that
+
+        if (parentAccountId > 0) {
+            //child accounts by default have same type as the parent
+            setAccountTypeSelection(mAccountsDbAdapter.getAccountType(parentAccountId));
+            String colorHex = mAccountsDbAdapter.getAccountColorCode(parentAccountId);
+            initializeColorSquarePreview(colorHex);
+            mSelectedColor = colorHex;
+        }
+        */
+    }
+
+    /**
+     * Initializes the preview of the color picker (color square) to the specified color
+     * @param colorHex Color of the format #rgb or #rrggbb
+     */
+    private void initializeColorSquarePreview(String colorHex){
+        if (colorHex != null)
+            mColorSquare.setBackgroundColor(Color.parseColor(colorHex));
+        else
+            mColorSquare.setBackgroundColor(Color.LTGRAY);
+    }
+
+    /**
+     * Selects the corresponding account type in the spinner
+     * @param accountType AccountType to be set
+     */
+    private void setAccountTypeSelection(Account.AccountType accountType){
+        String[] accountTypeEntries = getResources().getStringArray(R.array.account_type_entries);
+        int accountTypeIndex = Arrays.asList(accountTypeEntries).indexOf(accountType.name());
+        mAccountTypeSpinner.setSelection(accountTypeIndex);
     }
 
     /**
@@ -354,7 +422,43 @@ public class AddAccountFragment extends SherlockFragment {
         }
     }
 
-	@Override
+    /**
+     * Returns an array of colors used for accounts.
+     * The array returned has the actual color values and not the resource ID.
+     * @return Integer array of colors used for accounts
+     */
+    private int[] getAccountColorOptions(){
+        Resources res = getResources();
+        TypedArray colorTypedArray = res.obtainTypedArray(R.array.account_colors);
+        int[] colorOptions = new int[colorTypedArray.length()];
+        for (int i = 0; i < colorTypedArray.length(); i++) {
+             int color = colorTypedArray.getColor(i, R.color.title_green);
+             colorOptions[i] = color;
+        }
+        return colorOptions;
+    }
+    /**
+     * Shows the color picker dialog
+     */
+    private void showColorPickerDialog(){
+        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+        int currentColor = Color.LTGRAY;
+        if (mAccount != null){
+            String accountColor = mAccount.getColorHexCode();
+            if (accountColor != null){
+                currentColor = Color.parseColor(accountColor);
+            }
+        }
+
+        ColorPickerDialog colorPickerDialogFragment = ColorPickerDialog.newInstance(
+                R.string.color_picker_default_title,
+                getAccountColorOptions(),
+                currentColor, 4, 12);
+        colorPickerDialogFragment.setOnColorSelectedListener(mColorSelectedListener);
+        colorPickerDialogFragment.show(fragmentManager, COLOR_PICKER_DIALOG_TAG);
+    }
+
+    @Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {		
 		super.onCreateOptionsMenu(menu, inflater);
 		inflater.inflate(R.menu.default_save_actions, menu);
@@ -486,6 +590,7 @@ public class AddAccountFragment extends SherlockFragment {
         mAccount.setAccountType(Account.AccountType.valueOf(accountTypeEntries[selectedAccountType]));
 
         mAccount.setPlaceHolderFlag(mPlaceholderCheckBox.isChecked());
+        mAccount.setColorCode(mSelectedColor);
 
 		if (mParentCheckBox.isChecked()){
 			long id = mParentAccountSpinner.getSelectedItemId();

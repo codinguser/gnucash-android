@@ -182,7 +182,9 @@ public class NewTransactionFragment extends SherlockFragment implements
      */
     Account.AccountType mAccountType;
 
-
+    /**
+     * Spinner for marking the transaction as a recurring transaction
+     */
     Spinner mRecurringTransactionSpinner;
 
 	/**
@@ -193,14 +195,14 @@ public class NewTransactionFragment extends SherlockFragment implements
 			Bundle savedInstanceState) {
 		View v = inflater.inflate(R.layout.fragment_new_transaction, container, false);
 		
-		mNameEditText = (AutoCompleteTextView) v.findViewById(R.id.input_transaction_name);
-		mDescriptionEditText = (EditText) v.findViewById(R.id.input_description);
-		mDateTextView = (TextView) v.findViewById(R.id.input_date);
-		mTimeTextView = (TextView) v.findViewById(R.id.input_time);
-		mAmountEditText = (EditText) v.findViewById(R.id.input_transaction_amount);		
-		mCurrencyTextView = (TextView) v.findViewById(R.id.currency_symbol);
-		mTransactionTypeButton = (ToggleButton) v.findViewById(R.id.input_transaction_type);
-		mDoubleAccountSpinner = (Spinner) v.findViewById(R.id.input_double_entry_accounts_spinner);
+		mNameEditText           = (AutoCompleteTextView) v.findViewById(R.id.input_transaction_name);
+		mDescriptionEditText    = (EditText) v.findViewById(R.id.input_description);
+		mDateTextView           = (TextView) v.findViewById(R.id.input_date);
+		mTimeTextView           = (TextView) v.findViewById(R.id.input_time);
+		mAmountEditText         = (EditText) v.findViewById(R.id.input_transaction_amount);
+		mCurrencyTextView       = (TextView) v.findViewById(R.id.currency_symbol);
+		mTransactionTypeButton  = (ToggleButton) v.findViewById(R.id.input_transaction_type);
+		mDoubleAccountSpinner   = (Spinner) v.findViewById(R.id.input_double_entry_accounts_spinner);
 
         mRecurringTransactionSpinner = (Spinner) v.findViewById(R.id.input_recurring_transaction_spinner);
 		return v;

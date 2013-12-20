@@ -347,6 +347,7 @@
     <string name="toast_recurring_transaction_deleted">Successfully deleted recurring transaction</string>
     <string name="label_placeholder_account">Placeholder account</string>
     <string name="label_default_transfer_account">Default Transfer Account</string>
+    <string name="label_account_color_and_type">Account Color &amp; Type</string>
     <plurals name="label_sub_accounts">
         <item quantity="one">%d дочерний счёт</item>
         <item quantity="other">%d шт. дочерних счетов</item>
@@ -370,4 +371,6 @@
         <item>QIF</item>
         <item>OFX</item>
     </string-array>
+    <!-- Default title for color picker dialog [CHAR LIMIT=30] -->
+    <string name="color_picker_default_title">Select a Color</string>
 </resources>

@@ -51,16 +51,32 @@
                  android:layout_marginBottom="@dimen/form_row_bottom_margin" />
 
         <TextView
-                android:text="@string/label_account_type"
+                android:text="@string/label_account_color_and_type"
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
                 android:layout_marginBottom="-8dp"
                 style="@style/TextAppearance.EditTransaction_LabelSmall" />
 
-        <Spinner android:id="@+id/input_account_type_spinner"
-                 android:layout_width="match_parent"
-                 android:layout_height="wrap_content"
-                 android:layout_marginBottom="@dimen/form_row_bottom_margin" />
+        <LinearLayout android:id="@+id/layout_color_type"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/form_row_bottom_margin">
+
+            <org.gnucash.android.ui.colorpicker.ColorSquare
+                    android:id="@+id/input_color_picker"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_gravity="center_vertical"
+                    style="?android:attr/quickContactBadgeStyleSmallWindowMedium"/>
+
+            <Spinner android:id="@+id/input_account_type_spinner"
+                     android:layout_width="wrap_content"
+                     android:layout_height="wrap_content"
+                     android:layout_weight="1"
+                     android:layout_marginLeft="@dimen/dialog_padding"
+                     android:layout_marginBottom="@dimen/form_row_bottom_margin" />
+        </LinearLayout>
 
         <CheckBox android:id="@+id/checkbox_placeholder_account"
                   android:layout_width="match_parent"
