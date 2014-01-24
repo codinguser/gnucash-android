@@ -70,7 +70,6 @@ public class QifHelper {
      * @return Imbalance account name
      */
     public static String getImbalanceAccountName(Currency currency){
-        //TODO: localize this in the future
         return GnuCashApplication.getAppContext().getString(R.string.imbalance_account_name) + "-" + currency.getCurrencyCode();
     }
 }

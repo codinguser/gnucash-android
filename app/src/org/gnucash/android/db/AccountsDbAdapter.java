@@ -98,6 +98,21 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 		return rowId;
 	}
 
+    /**
+     * This feature goes through all the rows in the accounts and changes value for <code>columnKey</code> to <code>newValue</code><br/>
+     * The <code>newValue</code> parameter is taken as string since SQLite typically stores everything as text.
+     * <p><b>This method affects all rows, exercise caution when using it</b></p>
+     * @param columnKey Column name to be changed
+     * @param newValue New value to be assigned to the columnKey
+     * @return Number of records affected
+     */
+    public int updateAccounts(String columnKey, String newValue){
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(columnKey, newValue);
+
+        return mDb.update(DatabaseHelper.ACCOUNTS_TABLE_NAME, contentValues, null, null);
+    }
+
 	/**
 	 * Deletes an account with database id <code>rowId</code>
 	 * All the transactions in the account will also be deleted
@@ -143,14 +158,14 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 	 * Deletes an account while preserving the linked transactions
 	 * Reassigns all transactions belonging to the account with id <code>rowId</code> to 
 	 * the account with id <code>accountReassignId</code> before deleting the account.
-	 * @param rowIdToDelete
-	 * @param accountReassignId
+	 * @param accountId Database record ID of the account to be deleted
+	 * @param accountReassignId Record ID of the account to which to reassign the transactions from the previous
 	 * @return <code>true</code> if deletion was successful, <code>false</code> otherwise.
 	 */
-	public boolean transactionPreservingDelete(long rowIdToDelete, long accountReassignId){
+	public boolean transactionPreservingDelete(long accountId, long accountReassignId){
 		Cursor transactionsCursor = mDb.query(DatabaseHelper.TRANSACTIONS_TABLE_NAME, 
 				new String[]{DatabaseHelper.KEY_ACCOUNT_UID}, 
-				DatabaseHelper.KEY_ACCOUNT_UID + " = " + rowIdToDelete, 
+				DatabaseHelper.KEY_ACCOUNT_UID + " = " + accountId,
 				null, null, null, null);
 		if (transactionsCursor != null && transactionsCursor.getCount() > 0){
 			Log.d(TAG, "Found transactions. Migrating to new account");
@@ -158,13 +173,32 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 			contentValues.put(DatabaseHelper.KEY_ACCOUNT_UID, accountReassignId);
 			mDb.update(DatabaseHelper.TRANSACTIONS_TABLE_NAME, 
 					contentValues, 
-					DatabaseHelper.KEY_ACCOUNT_UID + "=" + rowIdToDelete, 
+					DatabaseHelper.KEY_ACCOUNT_UID + "=" + accountId,
 					null);
 			transactionsCursor.close();
 		}
-		return destructiveDeleteAccount(rowIdToDelete);
+		return destructiveDeleteAccount(accountId);
 	}
-	
+
+    /**
+     * Deletes an account and all its sub-accounts and transactions with it
+     * @param accountId Database record ID of account
+     * @return <code>true</code> if the account and subaccounts were all successfully deleted, <code>false</code> if
+     * even one was not deleted
+     */
+    public boolean recursiveDestructiveDelete(long accountId){
+        Log.d(TAG, "Delete account with rowId with its transactions and sub-accounts: " + accountId);
+        boolean result = true;
+
+        List<Long> subAccountIds = getSubAccountIds(accountId);
+        for (long subAccountId : subAccountIds) {
+            result |= recursiveDestructiveDelete(subAccountId);
+        }
+        result |= destructiveDeleteAccount(accountId);
+
+        return result;
+    }
+
 	/**
 	 * Builds an account instance with the provided cursor.
 	 * The cursor should already be pointing to the account record in the database
@@ -433,7 +467,9 @@ public class AccountsDbAdapter extends DatabaseAdapter {
      * @return Account Balance of an account including sub-accounts
      */
     public Money getAccountBalance(long accountId){
-        Money balance = Money.createInstance(getCurrencyCode(accountId));
+        String currencyCode = getCurrencyCode(accountId);
+        currencyCode = currencyCode == null ? Money.DEFAULT_CURRENCY_CODE : currencyCode;
+        Money balance = Money.createInstance(currencyCode);
 
         List<Long> subAccounts = getSubAccountIds(accountId);
         for (long id : subAccounts){
@@ -529,7 +565,10 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 
         String queryCount = "SELECT COUNT(*) FROM " + DatabaseHelper.ACCOUNTS_TABLE_NAME + " WHERE "
                 + DatabaseHelper.KEY_PARENT_ACCOUNT_UID + " = ?";
-        Cursor cursor = mDb.rawQuery(queryCount, new String[]{getAccountUID(accountId)});
+        String accountUID = getAccountUID(accountId);
+        if (accountUID == null) //if the account UID is null, then the accountId param was invalid. Just return
+            return 0;
+        Cursor cursor = mDb.rawQuery(queryCount, new String[]{accountUID});
         cursor.moveToFirst();
         int count = cursor.getInt(0);
         cursor.close();
@@ -677,6 +716,9 @@ public class AccountsDbAdapter extends DatabaseAdapter {
      * @return <code>true</code> if the account is a placeholder account, <code>false</code> otherwise
      */
     public boolean isPlaceholderAccount(String accountUID){
+        if (accountUID == null)
+            return false;
+
         Cursor cursor = mDb.query(DatabaseHelper.ACCOUNTS_TABLE_NAME,
                 new String[]{DatabaseHelper.KEY_ROW_ID, DatabaseHelper.KEY_PLACEHOLDER},
                 DatabaseHelper.KEY_UID + " = ?",

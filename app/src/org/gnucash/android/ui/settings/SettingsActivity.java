@@ -36,10 +36,12 @@ import com.actionbarsherlock.view.MenuItem;
 import org.gnucash.android.R;
 import org.gnucash.android.data.Money;
 import org.gnucash.android.db.AccountsDbAdapter;
+import org.gnucash.android.db.DatabaseHelper;
 import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.ui.accounts.AccountsActivity;
 import org.gnucash.android.ui.accounts.AccountsListFragment;
 
+import java.util.Currency;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -221,7 +223,7 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
 
     public void importAccounts() {
         Intent pickIntent = new Intent(Intent.ACTION_GET_CONTENT);
-        pickIntent.setType("application/octet-stream");
+        pickIntent.setType("application/*");
         Intent chooser = Intent.createChooser(pickIntent, "Select GnuCash account file");
 
         startActivityForResult(chooser, AccountsListFragment.REQUEST_PICK_ACCOUNTS_FILE);

@@ -286,26 +286,28 @@ public class AccountsListFragment extends SherlockListFragment implements
      */
     public void tryDeleteAccount(long rowId) {
         Account acc = mAccountsDbAdapter.getAccount(rowId);
-        if (acc.getTransactionCount() > 0) {
+        if (acc.getTransactionCount() > 0 || mAccountsDbAdapter.getSubAccountCount(rowId) > 0) {
             showConfirmationDialog(rowId);
         } else {
-            deleteAccount(rowId);
+            deleteAccount(rowId, false);
         }
     }
 
     /**
-     * Deletes an account and show a {@link Toast} notification on success
-     *
+     * Deletes an account and show a {@link Toast} notification on success.
+     * When an account is deleted, all it's child accounts will be reassigned as children to its parent account
      * @param rowId Record ID of the account to be deleted
      */
-    protected void deleteAccount(long rowId) {
+    protected void deleteAccount(long rowId, boolean deleteSubAccounts) {
         String accountUID = mAccountsDbAdapter.getAccountUID(rowId);
-        boolean deleted = mAccountsDbAdapter.destructiveDeleteAccount(rowId);
+        String parentUID    = mAccountsDbAdapter.getParentAccountUID(rowId);
+        boolean deleted     = deleteSubAccounts ?
+                mAccountsDbAdapter.recursiveDestructiveDelete(rowId)
+                : mAccountsDbAdapter.destructiveDeleteAccount(rowId);
         if (deleted) {
-            mAccountsDbAdapter.reassignParent(accountUID, null);
+            mAccountsDbAdapter.reassignParent(accountUID, parentUID);
             Toast.makeText(getActivity(), R.string.toast_account_deleted, Toast.LENGTH_SHORT).show();
             WidgetConfigurationActivity.updateAllWidgets(getActivity().getApplicationContext());
-            getLoaderManager().destroyLoader(0);
         }
         refresh();
     }
@@ -548,10 +550,12 @@ public class AccountsListFragment extends SherlockListFragment implements
         public Dialog onCreateDialog(Bundle savedInstanceState) {
             int title = getArguments().getInt("title");
             final long rowId = getArguments().getLong(TransactionsListFragment.SELECTED_ACCOUNT_ID);
-
-            return new AlertDialog.Builder(getActivity())
+            LayoutInflater layoutInflater = getSherlockActivity().getLayoutInflater();
+            final View dialogLayout = layoutInflater.inflate(R.layout.dialog_account_delete, (ViewGroup) getView());
+            AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity())
                     .setIcon(android.R.drawable.ic_delete)
                     .setTitle(title).setMessage(R.string.delete_account_confirmation_message)
+                    .setView(dialogLayout)
                     .setPositiveButton(R.string.alert_dialog_ok_delete,
                             new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int whichButton) {
@@ -561,21 +565,25 @@ public class AccountsListFragment extends SherlockListFragment implements
                                         accountsDbAdapter.deleteAllRecords();
                                         accountsDbAdapter.close();
                                         Toast.makeText(context, R.string.toast_all_accounts_deleted, Toast.LENGTH_SHORT).show();
-                                    } else
-                                        ((AccountsListFragment) getTargetFragment()).deleteAccount(rowId);
+                                    } else {
+                                        CheckBox deleteSubAccountsCheckBox = (CheckBox) dialogLayout
+                                                .findViewById(R.id.checkbox_delete_sub_accounts);
+                                        ((AccountsListFragment) getTargetFragment()).deleteAccount(rowId, deleteSubAccountsCheckBox.isChecked());
+                                    }
                                 }
-                            }
-                    )
+                            })
                     .setNegativeButton(R.string.alert_dialog_cancel,
                             new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int whichButton) {
                                     dismiss();
                                 }
                             }
-                    )
-                    .create();
+
+                    );
+            return dialogBuilder.create();
         }
-    }
+
+        }
 
     /**
      * Extends {@link DatabaseCursorLoader} for loading of {@link Account} from the
@@ -679,6 +687,8 @@ public class AccountsListFragment extends SherlockListFragment implements
             if (accountColor != null){
                 int color = Color.parseColor(accountColor);
                 colorStripView.setBackgroundColor(color);
+            } else {
+                colorStripView.setBackgroundColor(Color.TRANSPARENT);
             }
 
             boolean isPlaceholderAccount = mAccountsDbAdapter.isPlaceholderAccount(accountId);
