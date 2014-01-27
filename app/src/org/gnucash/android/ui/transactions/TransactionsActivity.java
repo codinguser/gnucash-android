@@ -21,11 +21,15 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.v4.app.*;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.ResourceCursorAdapter;
 import android.util.Log;
+import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
@@ -34,21 +38,20 @@ import android.widget.TextView;
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.ActionBar.OnNavigationListener;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
+import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.viewpagerindicator.TitlePageIndicator;
 import org.gnucash.android.R;
 import org.gnucash.android.data.Account;
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.DatabaseAdapter;
+import org.gnucash.android.db.DatabaseHelper;
 import org.gnucash.android.ui.Refreshable;
 import org.gnucash.android.ui.accounts.AccountsActivity;
 import org.gnucash.android.ui.accounts.AccountsListFragment;
 import org.gnucash.android.util.OnAccountClickedListener;
 import org.gnucash.android.util.OnTransactionClickedListener;
 import org.gnucash.android.util.QualifiedAccountNameCursorAdapter;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Activity for displaying, creating and editing transactions
@@ -90,15 +93,9 @@ public class TransactionsActivity extends SherlockFragmentActivity implements
     private static final int DEFAULT_NUM_PAGES = 2;
 
     /**
-     * Pager widget for swiping horizontally between views
+     * Menu item for marking an account as a favorite
      */
-    private ViewPager mPager;
-
-    /**
-     * Provides the pages to the view pager widget
-     */
-    private PagerAdapter mPagerAdapter;
-
+    MenuItem mFavoriteAccountMenu;
 
     /**
 	 * Database ID of {@link Account} whose transactions are displayed 
@@ -120,11 +117,6 @@ public class TransactionsActivity extends SherlockFragmentActivity implements
     private AccountsDbAdapter mAccountsDbAdapter;
 
     /**
-     * Spinner adapter for the action bar navigation list of accounts
-     */
-    private SpinnerAdapter mSpinnerAdapter;
-
-    /**
      * This is the last known color for the title indicator.
      * This is used to remember the color of the top level account if the child account doesn't have one.
      */
@@ -133,7 +125,7 @@ public class TransactionsActivity extends SherlockFragmentActivity implements
     private TextView mSectionHeaderTransactions;
     private TitlePageIndicator mTitlePageIndicator;
 
-    private Map<Integer, Refreshable> mFragmentPageReferenceMap = new HashMap();
+    private SparseArray<Refreshable> mFragmentPageReferenceMap = new SparseArray<Refreshable>();
 
 	private OnNavigationListener mTransactionListNavigationListener = new OnNavigationListener() {
 
@@ -260,8 +252,8 @@ public class TransactionsActivity extends SherlockFragmentActivity implements
      */
     @Override
     public void refresh(long accountId) {
-        for (Refreshable refreshableFragment : mFragmentPageReferenceMap.values()) {
-            refreshableFragment.refresh(accountId);
+        for (int i = 0; i < mFragmentPageReferenceMap.size(); i++) {
+            mFragmentPageReferenceMap.valueAt(i).refresh(accountId);
         }
         mTitlePageIndicator.notifyDataSetChanged();
     }
@@ -277,7 +269,7 @@ public class TransactionsActivity extends SherlockFragmentActivity implements
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_transactions);
 
-        mPager = (ViewPager) findViewById(R.id.pager);
+        ViewPager pager = (ViewPager) findViewById(R.id.pager);
         mTitlePageIndicator = (TitlePageIndicator) findViewById(R.id.titles);
         mSectionHeaderTransactions = (TextView) findViewById(R.id.section_header_transactions);
 
@@ -290,18 +282,18 @@ public class TransactionsActivity extends SherlockFragmentActivity implements
         setupActionBarNavigation();
 
 		if (getIntent().getAction().equals(Intent.ACTION_INSERT_OR_EDIT)) {
-            mPager.setVisibility(View.GONE);
+            pager.setVisibility(View.GONE);
             mTitlePageIndicator.setVisibility(View.GONE);
 
             initializeCreateOrEditTransaction();
         } else {	//load the transactions list
             mSectionHeaderTransactions.setVisibility(View.GONE);
 
-            mPagerAdapter = new AccountViewPagerAdapter(getSupportFragmentManager());
-            mPager.setAdapter(mPagerAdapter);
-            mTitlePageIndicator.setViewPager(mPager);
+            PagerAdapter pagerAdapter = new AccountViewPagerAdapter(getSupportFragmentManager());
+            pager.setAdapter(pagerAdapter);
+            mTitlePageIndicator.setViewPager(pager);
 
-            mPager.setCurrentItem(INDEX_TRANSACTIONS_FRAGMENT);
+            pager.setCurrentItem(INDEX_TRANSACTIONS_FRAGMENT);
 		}
 
 		// done creating, activity now running
@@ -364,7 +356,8 @@ public class TransactionsActivity extends SherlockFragmentActivity implements
 	private void setupActionBarNavigation() {
 		// set up spinner adapter for navigation list
 		Cursor accountsCursor = mAccountsDbAdapter.fetchAllRecords();
-		mSpinnerAdapter = new QualifiedAccountNameCursorAdapter(getSupportActionBar().getThemedContext(),
+
+        SpinnerAdapter mSpinnerAdapter = new QualifiedAccountNameCursorAdapter(getSupportActionBar().getThemedContext(),
                 R.layout.sherlock_spinner_item, accountsCursor);
 		((ResourceCursorAdapter) mSpinnerAdapter)
 				.setDropDownViewResource(R.layout.sherlock_spinner_dropdown_item);
@@ -397,6 +390,24 @@ public class TransactionsActivity extends SherlockFragmentActivity implements
 	}
 
     @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        mFavoriteAccountMenu = menu.findItem(R.id.menu_favorite_account);
+        MenuItem favoriteAccountMenuItem = menu.findItem(R.id.menu_favorite_account);
+
+        if (favoriteAccountMenuItem == null) //when the activity is used to edit a transaction
+            return super.onPrepareOptionsMenu(menu);
+
+        AccountsDbAdapter accountsDbAdapter = new AccountsDbAdapter(this);
+        boolean isFavoriteAccount = accountsDbAdapter.isFavoriteAccount(mAccountId);
+        accountsDbAdapter.close();
+
+        int favoriteIcon = isFavoriteAccount ? android.R.drawable.btn_star_big_on : android.R.drawable.btn_star_big_off;
+        favoriteAccountMenuItem.setIcon(favoriteIcon);
+        return super.onPrepareOptionsMenu(menu);
+
+    }
+
+    @Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case android.R.id.home:
@@ -410,6 +421,15 @@ public class TransactionsActivity extends SherlockFragmentActivity implements
 	        	finish();
 	        }
 	        return true;
+
+            case R.id.menu_favorite_account:
+                AccountsDbAdapter accountsDbAdapter = new AccountsDbAdapter(this);
+                boolean isFavorite = accountsDbAdapter.isFavoriteAccount(mAccountId);
+                //toggle favorite preference
+                accountsDbAdapter.updateAccount(mAccountId, DatabaseHelper.KEY_FAVORITE, isFavorite ? "0" : "1");
+                accountsDbAdapter.close();
+                supportInvalidateOptionsMenu();
+                return true;
 
             case R.id.menu_edit_account:
                 Intent editAccountIntent = new Intent(this, AccountsActivity.class);

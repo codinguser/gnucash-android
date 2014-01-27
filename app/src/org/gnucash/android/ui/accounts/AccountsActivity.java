@@ -31,28 +31,33 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.util.Log;
+import android.util.SparseArray;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Toast;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
+import com.viewpagerindicator.TitlePageIndicator;
 import org.gnucash.android.R;
 import org.gnucash.android.data.Account;
 import org.gnucash.android.data.Account.AccountType;
 import org.gnucash.android.data.Money;
 import org.gnucash.android.db.AccountsDbAdapter;
+import org.gnucash.android.ui.Refreshable;
 import org.gnucash.android.ui.transactions.RecurringTransactionsListFragment;
 import org.gnucash.android.ui.transactions.TransactionsActivity;
 import org.gnucash.android.ui.transactions.TransactionsListFragment;
 import org.gnucash.android.util.GnucashAccountXmlHandler;
 import org.gnucash.android.util.OnAccountClickedListener;
 
-import java.util.ArrayList;
-import java.util.Currency;
-import java.util.Locale;
+import java.util.*;
 
 /**
  * Manages actions related to accounts, displaying, exporting and creating new accounts
@@ -80,9 +85,39 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
 	/**
 	 * Logging tag
 	 */
-	protected static final String TAG = "AccountsActivity";	
-	
-	/**
+	protected static final String TAG = "AccountsActivity";
+
+    /**
+     * Intent action for viewing recurring transactions
+     */
+    public static final String ACTION_VIEW_RECURRING = "org.gnucash.android.action.VEIW_RECURRING";
+
+    /**
+     * Number of pages to show
+     */
+    private static final int DEFAULT_NUM_PAGES = 3;
+
+    /**
+     * Index for the recent accounts tab
+     */
+    public static final int INDEX_RECENT_ACCOUNTS_FRAGMENT = 0;
+
+    /**
+     * Index of the top level (all) accounts tab
+     */
+    public static final int INDEX_TOP_LEVEL_ACCOUNTS_FRAGMENT = 1;
+
+    /**
+     * Index of the favorite accounts tab
+     */
+    public static final int INDEX_FAVORITE_ACCOUNTS_FRAGMENT = 2;
+
+    /**
+     * Map containing fragments for the different tabs
+     */
+    private SparseArray<Refreshable> mFragmentPageReferenceMap = new SparseArray<Refreshable>();
+
+    /**
 	 * Stores the indices of accounts which have been selected by the user for creation from the dialog.
 	 * The account names are stored as string resources and the selected indices are then used to choose which accounts to create
 	 * The dialog for creating default accounts is only shown when the app is started for the first time.
@@ -93,38 +128,84 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
 	 * Dialog which is shown to the user on first start prompting the user to create some accounts
 	 */
 	private AlertDialog mDefaultAccountsDialog;
-	
+
+
+    /**
+     * Adapter for managing the sub-account and transaction fragment pages in the accounts view
+     */
+    private class AccountViewPagerAdapter extends FragmentStatePagerAdapter {
+
+        public AccountViewPagerAdapter(FragmentManager fm){
+            super(fm);
+        }
+
+        @Override
+        public Fragment getItem(int i) {
+            AccountsListFragment currentFragment;
+            switch (i){
+                case INDEX_RECENT_ACCOUNTS_FRAGMENT:
+                    currentFragment = AccountsListFragment.newInstance(AccountsListFragment.DisplayMode.RECENT);
+                    break;
+
+                case INDEX_FAVORITE_ACCOUNTS_FRAGMENT:
+                    currentFragment = AccountsListFragment.newInstance(AccountsListFragment.DisplayMode.FAVORITES);
+                    break;
+
+                case INDEX_TOP_LEVEL_ACCOUNTS_FRAGMENT:
+                default:
+                    currentFragment = AccountsListFragment.newInstance(AccountsListFragment.DisplayMode.TOP_LEVEL);
+                    break;
+            }
+
+            mFragmentPageReferenceMap.put(i, currentFragment);
+            return currentFragment;
+        }
+
+        @Override
+        public void destroyItem(ViewGroup container, int position, Object object) {
+            super.destroyItem(container, position, object);
+            mFragmentPageReferenceMap.remove(position);
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            switch (position){
+                case INDEX_RECENT_ACCOUNTS_FRAGMENT:
+                    return getString(R.string.title_recent_accounts);
+
+                case INDEX_FAVORITE_ACCOUNTS_FRAGMENT:
+                    return getString(R.string.title_favorite_accounts);
+
+                case INDEX_TOP_LEVEL_ACCOUNTS_FRAGMENT:
+                default:
+                    return getString(R.string.title_all_accounts);
+            }
+        }
+
+        @Override
+        public int getCount() {
+            return DEFAULT_NUM_PAGES;
+        }
+    }
+
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_accounts);
 
-		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-		Locale locale = Locale.getDefault();
-		//sometimes the locale en_UK is returned which causes a crash with Currency
-		if (locale.getCountry().equals("UK")) {
-		    locale = new Locale(locale.getLanguage(), "GB");
-		}
-		String currencyCode = null;
-		try { //there are some strange locales out there
-			currencyCode = prefs.getString(getString(R.string.key_default_currency), 
-					Currency.getInstance(locale).getCurrencyCode());
-		} catch (Exception e) {
-			Log.e(TAG, e.getMessage());
-			currencyCode = "USD"; //just use USD and let the user choose
-		}
-					
-		Money.DEFAULT_CURRENCY_CODE = currencyCode;		
-		
-		boolean firstRun = prefs.getBoolean(getString(R.string.key_first_run), true);
-		if (firstRun){
-			createDefaultAccounts();
-		}
+        init();
+
+        ViewPager pager = (ViewPager) findViewById(R.id.pager);
+        TitlePageIndicator titlePageIndicator = (TitlePageIndicator) findViewById(R.id.titles);
 
         final Intent intent = getIntent();
         String action = intent.getAction();
         if (action != null && action.equals(Intent.ACTION_INSERT_OR_EDIT)) {
             //enter account creation/edit mode if that was specified
+            pager.setVisibility(View.GONE);
+            titlePageIndicator.setVisibility(View.GONE);
+
             long accountId = intent.getLongExtra(TransactionsListFragment.SELECTED_ACCOUNT_ID, 0L);
             if (accountId > 0)
                 showEditAccountFragment(accountId);
@@ -132,30 +213,52 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
                 long parentAccountId = intent.getLongExtra(AccountsListFragment.ARG_PARENT_ACCOUNT_ID, 0L);
                 showAddAccountFragment(parentAccountId);
             }
+        } else if (action != null && action.equals(ACTION_VIEW_RECURRING)) {
+            pager.setVisibility(View.GONE);
+            titlePageIndicator.setVisibility(View.GONE);
+            showRecurringTransactionsFragment();
         } else {
             //show the simple accounts list
-
-            FragmentManager fragmentManager = getSupportFragmentManager();
-            AccountsListFragment accountsListFragment = (AccountsListFragment) fragmentManager
-                    .findFragmentByTag(FRAGMENT_ACCOUNTS_LIST);
-
-            if (accountsListFragment == null) {
-                FragmentTransaction fragmentTransaction = fragmentManager
-                        .beginTransaction();
-                fragmentTransaction.add(R.id.fragment_container,
-                        new AccountsListFragment(), FRAGMENT_ACCOUNTS_LIST);
-
-                fragmentTransaction.commit();
-            } else
-                accountsListFragment.refresh();
+            PagerAdapter mPagerAdapter = new AccountViewPagerAdapter(getSupportFragmentManager());
+            pager.setAdapter(mPagerAdapter);
+            titlePageIndicator.setViewPager(pager);
+            pager.setCurrentItem(INDEX_TOP_LEVEL_ACCOUNTS_FRAGMENT);
         }
 
-        if (hasNewFeatures()){
-			showWhatsNewDialog();
-		}
 	}
 
-	/**
+    /**
+     * Loads default setting for currency and performs app first-run initialization
+     */
+    private void init() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        Locale locale = Locale.getDefault();
+        //sometimes the locale en_UK is returned which causes a crash with Currency
+        if (locale.getCountry().equals("UK")) {
+            locale = new Locale(locale.getLanguage(), "GB");
+        }
+        String currencyCode = null;
+        try { //there are some strange locales out there
+            currencyCode = prefs.getString(getString(R.string.key_default_currency),
+                    Currency.getInstance(locale).getCurrencyCode());
+        } catch (Exception e) {
+            Log.e(TAG, e.getMessage());
+            currencyCode = "USD"; //just use USD and let the user choose
+        }
+
+        Money.DEFAULT_CURRENCY_CODE = currencyCode;
+
+        if (hasNewFeatures()){
+            showWhatsNewDialog();
+        }
+
+        boolean firstRun = prefs.getBoolean(getString(R.string.key_first_run), true);
+        if (firstRun){
+            createDefaultAccounts();
+        }
+    }
+
+    /**
 	 * Checks if the minor version has been increased and displays the What's New dialog box.
 	 * This is the minor version as per semantic versioning.
 	 * @return <code>true</code> if the minor version has been increased, <code>false</code> otherwise.
@@ -225,12 +328,24 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
 	        return true;
 
             case R.id.menu_recurring_transactions:
-                showRecurringTransactionsFragment();
+                Intent intent = new Intent(this, AccountsActivity.class);
+                intent.setAction(ACTION_VIEW_RECURRING);
+                startActivity(intent);
                 return true;
 		default:
 			return false;
 		}
 	}
+
+    /**
+     * Creates an intent which can be used start activity for creating new account
+     * @return Intent which can be used to start activity for creating new account
+     */
+    private Intent createNewAccountIntent(){
+        Intent addAccountIntent = new Intent(this, AccountsActivity.class);
+        addAccountIntent.setAction(Intent.ACTION_INSERT_OR_EDIT);
+        return addAccountIntent;
+    }
 
     /**
      * Shows form fragment for creating a new account
@@ -255,7 +370,6 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
         fragmentTransaction.replace(R.id.fragment_container,
                 recurringTransactionsFragment, "fragment_recurring_transactions");
 
-        fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
     }
     /**
@@ -293,12 +407,7 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
 	 * @param v View which triggered this callback
 	 */
 	public void onNewAccountClick(View v) {
-		AccountsListFragment accountFragment = (AccountsListFragment) getSupportFragmentManager()
-				.findFragmentByTag(FRAGMENT_ACCOUNTS_LIST);
-		if (accountFragment != null)
-			accountFragment.showAddAccountFragment(0);
-        else
-            showAddAccountFragment(0);
+        startActivity(createNewAccountIntent());
 	}
 
 	/**

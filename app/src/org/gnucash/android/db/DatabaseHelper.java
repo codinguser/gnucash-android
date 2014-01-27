@@ -46,7 +46,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	 * Database version.
 	 * With any change to the database schema, this number must increase
 	 */
-	private static final int DATABASE_VERSION = 4;
+	private static final int DATABASE_VERSION = 5;
 	
 	/**
 	 * Name of accounts table
@@ -146,6 +146,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      */
     public static final String KEY_RECURRENCE_PERIOD = "recurrence_period";
 
+    /**
+     * Marks an account as a favourite account
+     */
+    public static final String KEY_FAVORITE = "favorite";
+
 	/**********************************************************************************************************
 	//if you modify the order of the columns (i.e. the way they are created), 
 	//make sure to modify the indices in DatabaseAdapter
@@ -161,9 +166,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			+ KEY_TYPE 	+ " varchar(255) not null, "			
 			+ KEY_CURRENCY_CODE + " varchar(255) not null, "
 			+ KEY_PARENT_ACCOUNT_UID + " varchar(255), "
-            + KEY_PLACEHOLDER + " tinyint default 0, "
+            + KEY_PLACEHOLDER   + " tinyint default 0, "
             + KEY_DEFAULT_TRANSFER_ACCOUNT_UID + " varchar(255), "
-            + KEY_COLOR_CODE + " varchar(255), "
+            + KEY_COLOR_CODE    + " varchar(255), "
+            + KEY_FAVORITE 		+ " tinyint default 0, "
 			+ "UNIQUE (" + KEY_UID + ")"	
 			+ ");";
 	
@@ -259,6 +265,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 db.execSQL(addAccountColor);
 
                 oldVersion = 4;
+            }
+
+            if (oldVersion == 4 && newVersion >= 5){
+                Log.i(TAG, "Upgrading database to version 5");
+                String addAccountFavorite = " ALTER TABLE " + ACCOUNTS_TABLE_NAME
+                        + " ADD COLUMN " + KEY_FAVORITE + " tinyint default 0";
+                db.execSQL(addAccountFavorite);
+
+                oldVersion = 5;
             }
 		}
 

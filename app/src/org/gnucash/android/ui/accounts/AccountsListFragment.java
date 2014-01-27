@@ -37,10 +37,7 @@ import android.support.v4.content.Loader;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.TouchDelegate;
-import android.view.View;
-import android.view.ViewGroup;
+import android.view.*;
 import android.widget.*;
 import android.widget.AdapterView.OnItemLongClickListener;
 import com.actionbarsherlock.app.ActionBar;
@@ -51,6 +48,7 @@ import com.actionbarsherlock.view.ActionMode.Callback;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
+import com.viewpagerindicator.TitlePageIndicator;
 import org.gnucash.android.R;
 import org.gnucash.android.data.Account;
 import org.gnucash.android.data.Money;
@@ -76,17 +74,41 @@ public class AccountsListFragment extends SherlockListFragment implements
         com.actionbarsherlock.widget.SearchView.OnQueryTextListener,
         com.actionbarsherlock.widget.SearchView.OnCloseListener {
 
+    /**
+     * Describes the kinds of accounts that should be loaded in the accounts list.
+     * This enhances reuse of the accounts list fragment
+     */
+    public enum DisplayMode {
+        TOP_LEVEL, RECENT, FAVORITES
+    }
+
+    /**
+     * Field indicating which kind of accounts to load.
+     * Default value is {@link DisplayMode#TOP_LEVEL}
+     */
+    private DisplayMode mDisplayMode = DisplayMode.TOP_LEVEL;
+
+    /**
+     * Request code for GnuCash account structure file to import
+     */
     public static final int REQUEST_PICK_ACCOUNTS_FILE = 0x1;
+
+    /**
+     * Request code for opening the account to edit
+     */
+    private static final int REQUEST_EDIT_ACCOUNT = 0x10;
+
     /**
      * Key for passing argument for the parent account ID.
      * When this argument is set, only sub-accounts of the account will be loaded.
      */
     public static final String ARG_PARENT_ACCOUNT_ID = "parent_account_id";
+
     /**
      * Logging tag
      */
     protected static final String TAG = "AccountsListFragment";
-    private static final int REQUEST_EDIT_ACCOUNT = 0x10;
+
 
     /**
      * {@link ListAdapter} for the accounts which will be bound to the list
@@ -177,6 +199,12 @@ public class AccountsListFragment extends SherlockListFragment implements
             finishEditMode();
         }
     };
+
+    public static AccountsListFragment newInstance(DisplayMode displayMode){
+        AccountsListFragment fragment = new AccountsListFragment();
+        fragment.mDisplayMode = displayMode;
+        return fragment;
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -360,14 +388,10 @@ public class AccountsListFragment extends SherlockListFragment implements
         switch (item.getItemId()) {
 
             case R.id.menu_add_account:
-                if (mParentAccountId > 0){
-                    Intent addAccountIntent = new Intent(getActivity(), AccountsActivity.class);
-                    addAccountIntent.setAction(Intent.ACTION_INSERT_OR_EDIT);
-                    addAccountIntent.putExtra(AccountsListFragment.ARG_PARENT_ACCOUNT_ID, mParentAccountId);
-                    startActivityForResult(addAccountIntent, REQUEST_EDIT_ACCOUNT);
-                } else {
-                    showAddAccountFragment(mParentAccountId);
-                }
+                Intent addAccountIntent = new Intent(getActivity(), AccountsActivity.class);
+                addAccountIntent.setAction(Intent.ACTION_INSERT_OR_EDIT);
+                addAccountIntent.putExtra(AccountsListFragment.ARG_PARENT_ACCOUNT_ID, mParentAccountId);
+                startActivityForResult(addAccountIntent, REQUEST_EDIT_ACCOUNT);
                 return true;
 
             case R.id.menu_export:
@@ -482,7 +506,7 @@ public class AccountsListFragment extends SherlockListFragment implements
         if (mCurrentFilter != null){
             return new AccountsCursorLoader(getActivity(), mCurrentFilter);
         } else {
-            return new AccountsCursorLoader(this.getActivity(), accountId);
+            return new AccountsCursorLoader(this.getActivity(), accountId, mDisplayMode);
         }
     }
 
@@ -596,6 +620,7 @@ public class AccountsListFragment extends SherlockListFragment implements
     private static final class AccountsCursorLoader extends DatabaseCursorLoader {
         private long mParentAccountId = -1;
         private String mFilter;
+        private DisplayMode mDisplayMode = DisplayMode.TOP_LEVEL;
 
         /**
          * Initializes the loader to load accounts from the database.
@@ -604,9 +629,10 @@ public class AccountsListFragment extends SherlockListFragment implements
          * @param context Application context
          * @param parentAccountId Record ID of the parent account
          */
-        public AccountsCursorLoader(Context context, long parentAccountId) {
+        public AccountsCursorLoader(Context context, long parentAccountId, DisplayMode displayMode) {
             super(context);
             mParentAccountId = parentAccountId;
+            this.mDisplayMode = displayMode;
         }
 
         /**
@@ -632,8 +658,21 @@ public class AccountsListFragment extends SherlockListFragment implements
             } else {
                 if (mParentAccountId > 0)
                     cursor = ((AccountsDbAdapter) mDatabaseAdapter).fetchSubAccounts(mParentAccountId);
-                else
-                    cursor = ((AccountsDbAdapter) mDatabaseAdapter).fetchTopLevelAccounts();
+                else {
+                    switch (this.mDisplayMode){
+                        case RECENT:
+                            cursor = ((AccountsDbAdapter) mDatabaseAdapter).fetchRecentAccounts(10);
+                            break;
+                        case FAVORITES:
+                            cursor = ((AccountsDbAdapter) mDatabaseAdapter).fetchFavoriteAccounts();
+                            break;
+                        case TOP_LEVEL:
+                        default:
+                            cursor = ((AccountsDbAdapter) mDatabaseAdapter).fetchTopLevelAccounts();
+                            break;
+                    }
+                }
+
             }
 
             if (cursor != null)

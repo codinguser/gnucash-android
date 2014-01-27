@@ -133,6 +133,11 @@ public class Account {
      */
     private String mColorCode;
 
+    /**
+     * Flag which marks this account as a favorite account
+     */
+    private boolean mIsFavorite;
+
 	/**
 	 * An extra key for passing the currency code (according ISO 4217) in an intent
 	 */
@@ -360,6 +365,21 @@ public class Account {
         this.mColorCode = colorCode;
     }
 
+    /**
+     * Tests if this account is a favorite account or not
+     * @return <code>true</code> if account is flagged as favorite, <code>false</code> otherwise
+     */
+    public boolean isFavorite() {
+        return mIsFavorite;
+    }
+
+    /**
+     * Toggles the favorite flag on this account on or off
+     * @param isFavorite <code>true</code> if account should be flagged as favorite, <code>false</code> otherwise
+     */
+    public void setFavorite(boolean isFavorite) {
+        this.mIsFavorite = isFavorite;
+    }
 
     /**
 	 * @return the mCurrency

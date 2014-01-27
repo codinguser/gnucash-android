@@ -340,7 +340,7 @@
     <string name="menu_search_accounts">Search</string>
     <string name="title_default_export_format">Default Export Format</string>
     <string name="summary_default_export_format">File format to use by default when exporting transactions</string>
-    <string name="menu_export_transactions">Export transactions...</string>
+    <string name="menu_export_transactions">Export transactions…</string>
     <string name="label_recurring_transaction">Recurrence</string>
     <!-- This should be the same name used by GnuCash desktop for imbalance accounts -->
     <string name="imbalance_account_name">Imbalance</string>
@@ -376,4 +376,7 @@
     <!-- Default title for color picker dialog [CHAR LIMIT=30] -->
     <string name="color_picker_default_title">Select a Color</string>
     <string name="label_delete_sub_accounts">Delete sub-accounts</string>
+    <string name="title_recent_accounts">Recent</string>
+    <string name="title_favorite_accounts">Favorites</string>
+    <string name="title_all_accounts">All</string>
 </resources>

@@ -77,7 +77,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
         contentValues.put(DatabaseHelper.KEY_DEFAULT_TRANSFER_ACCOUNT_UID, account.getDefaultTransferAccountUID());
         contentValues.put(DatabaseHelper.KEY_PLACEHOLDER, account.isPlaceholderAccount() ? 1 : 0);
         contentValues.put(DatabaseHelper.KEY_COLOR_CODE, account.getColorHexCode());
-
+        contentValues.put(DatabaseHelper.KEY_FAVORITE, account.isFavorite() ? 1 : 0);
 		long rowId = -1;
 		if ((rowId = getAccountID(account.getUID())) > 0){
 			//if account already exists, then just update
@@ -102,15 +102,30 @@ public class AccountsDbAdapter extends DatabaseAdapter {
      * This feature goes through all the rows in the accounts and changes value for <code>columnKey</code> to <code>newValue</code><br/>
      * The <code>newValue</code> parameter is taken as string since SQLite typically stores everything as text.
      * <p><b>This method affects all rows, exercise caution when using it</b></p>
-     * @param columnKey Column name to be changed
+     * @param columnKey Name of column to be updated
      * @param newValue New value to be assigned to the columnKey
      * @return Number of records affected
      */
-    public int updateAccounts(String columnKey, String newValue){
+    public int updateAllAccounts(String columnKey, String newValue){
         ContentValues contentValues = new ContentValues();
         contentValues.put(columnKey, newValue);
 
         return mDb.update(DatabaseHelper.ACCOUNTS_TABLE_NAME, contentValues, null, null);
+    }
+
+    /**
+     * Updates a specific entry of an account
+     * @param accountId Database record ID of the account to be updated
+     * @param columnKey Name of column to be updated
+     * @param newValue  New value to be assigned to the columnKey
+     * @return Number of records affected
+     */
+    public int updateAccount(long accountId, String columnKey, String newValue){
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(columnKey, newValue);
+
+        return mDb.update(DatabaseHelper.ACCOUNTS_TABLE_NAME, contentValues,
+                DatabaseHelper.KEY_ROW_ID + "=" + accountId, null);
     }
 
 	/**
@@ -201,7 +216,10 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 
 	/**
 	 * Builds an account instance with the provided cursor.
-	 * The cursor should already be pointing to the account record in the database
+	 * <p>The method will not move the cursor position, so the cursor should already be pointing
+     * to the account record in the database<br/>
+     * <b>Note</b> that this method expects the cursor to contain all columns from the database table</p>
+     *
 	 * @param c Cursor pointing to account record in database
 	 * @return {@link Account} object constructed from database record
 	 */
@@ -218,6 +236,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
         account.setPlaceHolderFlag(c.getInt(DatabaseAdapter.COLUMN_PLACEHOLDER) == 1);
         account.setDefaultTransferAccountUID(c.getString(DatabaseAdapter.COLUMN_DEFAULT_TRANSFER_ACCOUNT_UID));
         account.setColorCode(c.getString(DatabaseAdapter.COLUMN_COLOR_CODE));
+        account.setFavorite(c.getInt(DatabaseAdapter.COLUMN_FAVORITE) == 1);
 		return account;
 	}
 		
@@ -511,6 +530,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
      * @return {@link Cursor} to the sub accounts data set
      */
     public Cursor fetchSubAccounts(long accountId){
+        Log.v(TAG, "Fetching sub accounts for account id " + accountId);
         return mDb.query(DatabaseHelper.ACCOUNTS_TABLE_NAME,
                 null,
                 DatabaseHelper.KEY_PARENT_ACCOUNT_UID + " = ?",
@@ -533,6 +553,43 @@ public class AccountsDbAdapter extends DatabaseAdapter {
         condition.append(" AND ");
         condition.append(DatabaseHelper.KEY_TYPE + " != " + "'" + AccountType.ROOT.name() + "'");
         return fetchAccounts(condition.toString());
+    }
+
+    /**
+     * Returns a cursor to accounts which have recently had transactions added to them
+     * @return Cursor to recently used accounts
+     */
+    public Cursor fetchRecentAccounts(int numberOfRecents){
+        Cursor recentTxCursor = mDb.query(true, DatabaseHelper.TRANSACTIONS_TABLE_NAME,
+                new String[]{DatabaseHelper.KEY_ACCOUNT_UID},
+                null, null, null, null, DatabaseHelper.KEY_TIMESTAMP, Integer.toString(numberOfRecents));
+        StringBuilder recentAccountUIDs = new StringBuilder("(");
+        while (recentTxCursor.moveToNext()){
+            String uid = recentTxCursor.getString(recentTxCursor.getColumnIndexOrThrow(DatabaseHelper.KEY_ACCOUNT_UID));
+            recentAccountUIDs.append("'" + uid + "'");
+            if (!recentTxCursor.isLast())
+                recentAccountUIDs.append(",");
+        }
+        recentAccountUIDs.append(")");
+        recentTxCursor.close();
+
+        return mDb.query(DatabaseHelper.ACCOUNTS_TABLE_NAME,
+                null, DatabaseHelper.KEY_UID + " IN " + recentAccountUIDs.toString(),
+                null, null, null, DatabaseHelper.KEY_NAME + " ASC");
+
+    }
+
+    /**
+     * Fetches favorite accounts from the database
+     * @return Cursor holding set of favorite accounts
+     */
+    public Cursor fetchFavoriteAccounts(){
+        Log.v(TAG, "Fetching favorite accounts from db");
+        String condition = DatabaseHelper.KEY_FAVORITE + " = 1";
+        Cursor cursor = mDb.query(DatabaseHelper.ACCOUNTS_TABLE_NAME,
+                null, condition, null, null, null,
+                DatabaseHelper.KEY_NAME + " ASC");
+        return cursor;
     }
 
     /**
@@ -740,6 +797,26 @@ public class AccountsDbAdapter extends DatabaseAdapter {
      */
     public boolean isPlaceholderAccount(long accountId){
         return isPlaceholderAccount(getAccountUID(accountId));
+    }
+
+    /**
+     * Returns true if the account is a favorite account, false otherwise
+     * @param accountId Record ID of the account
+     * @return <code>true</code> if the account is a favorite account, <code>false</code> otherwise
+     */
+    public boolean isFavoriteAccount(long accountId){
+        Cursor cursor = mDb.query(DatabaseHelper.ACCOUNTS_TABLE_NAME,
+                new String[]{DatabaseHelper.KEY_ROW_ID, DatabaseHelper.KEY_FAVORITE},
+                DatabaseHelper.KEY_ROW_ID + " = " + accountId, null,
+                null, null, null);
+
+        if (cursor == null || !cursor.moveToFirst()){
+            return false;
+        }
+        boolean isFavorite = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.KEY_FAVORITE)) == 1;
+        cursor.close();
+
+        return isFavorite;
     }
 
 	/**

@@ -15,6 +15,10 @@
  limitations under the License.
 -->
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
+    <item android:id="@+id/menu_favorite_account"
+          android:icon="@android:drawable/btn_star_big_off"
+          android:showAsAction="always" />
+
     <item android:id="@+id/menu_add_account"
           android:icon="@drawable/content_new_holo_dark"
           android:title="@string/title_add_account"

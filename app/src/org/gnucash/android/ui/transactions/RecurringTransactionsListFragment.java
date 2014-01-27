@@ -411,7 +411,7 @@ public class RecurringTransactionsListFragment extends SherlockListFragment impl
             TextView dateHeader = (TextView) view.findViewById(R.id.date_section_header);
 
             if (hasSectionHeader){
-                dateHeader.setText(getString(R.string.label_account) + ": " + accountsDbAdapter.getAccountName(currentAccountUid));
+                dateHeader.setText(accountsDbAdapter.getFullyQualifiedAccountName(currentAccountUid));
                 dateHeader.setVisibility(View.VISIBLE);
             } else {
                 dateHeader.setVisibility(View.GONE);

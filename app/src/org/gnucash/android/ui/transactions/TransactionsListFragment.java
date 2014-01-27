@@ -47,11 +47,9 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import org.gnucash.android.R;
+import org.gnucash.android.data.Account;
 import org.gnucash.android.data.Money;
-import org.gnucash.android.db.DatabaseAdapter;
-import org.gnucash.android.db.DatabaseCursorLoader;
-import org.gnucash.android.db.DatabaseHelper;
-import org.gnucash.android.db.TransactionsDbAdapter;
+import org.gnucash.android.db.*;
 import org.gnucash.android.ui.Refreshable;
 import org.gnucash.android.ui.accounts.AccountsListFragment;
 import org.gnucash.android.ui.widget.WidgetConfigurationActivity;
@@ -252,17 +250,17 @@ public class TransactionsListFragment extends SherlockListFragment implements
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {		
 		inflater.inflate(R.menu.transactions_list_actions, menu);	
 	}
-	
+
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
-		case R.id.menu_add_transaction:
-			mTransactionEditListener.createNewTransaction(mAccountID);
-			return true;
+            case R.id.menu_add_transaction:
+                mTransactionEditListener.createNewTransaction(mAccountID);
+                return true;
 
-		default:
-			return false;
-		}
+            default:
+                return false;
+        }
 	}
 	
 	@Override

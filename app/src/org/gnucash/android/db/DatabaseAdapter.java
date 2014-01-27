@@ -57,7 +57,8 @@ public abstract class DatabaseAdapter {
     public static final int COLUMN_PLACEHOLDER          = 6;
     public static final int COLUMN_DEFAULT_TRANSFER_ACCOUNT_UID = 7;
     public static final int COLUMN_COLOR_CODE           = 8;
-	
+	public static final int COLUMN_FAVORITE             = 9;
+
 	/**
 	 * {@link DatabaseHelper} for creating and opening the database
 	 */

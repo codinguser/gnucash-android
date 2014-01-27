@@ -611,4 +611,7 @@
     <string name="color_swatch_description_selected">Color <xliff:g id="color_index" example="14">%1$d</xliff:g> selected</string>
     <string name="label_account_color_and_type">Account Color &amp; Type</string>
     <string name="label_delete_sub_accounts">Delete sub-accounts</string>
+    <string name="title_recent_accounts">Recent</string>
+    <string name="title_favorite_accounts">Favorites</string>
+    <string name="title_all_accounts">All</string>
 </resources>
