@@ -23,4 +23,12 @@
         android:title="@string/header_transaction_settings" />
     <header android:fragment="org.gnucash.android.ui.settings.AboutPreferenceFragment"
         android:title="@string/header_about_gnucash" />
+    <header android:title="Rate in Play Store">
+        <intent android:action="android.intent.action.VIEW"
+                android:data="market://details?id=org.gnucash.android" />
+    </header>
+    <header android:title="Send feedback">
+        <intent android:action="android.intent.action.VIEW"
+                android:data="mailto:gnucash.org@gmail.com?subject=GnuCash Android Feedback" />
+    </header>
 </preference-headers>

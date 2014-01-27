@@ -75,7 +75,23 @@
 		        android:textColor="@color/debit_red"
 		        android:checked="true" />
 		</LinearLayout>
-		
+        <LinearLayout
+                android:id="@+id/layout_double_entry"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                style="@style/FormRow" >
+
+            <TextView
+                    android:text="@string/label_double_entry_account"
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:layout_marginBottom="-8dip"
+                    style="@style/TextAppearance.EditTransaction_LabelSmall" />
+            <Spinner
+                    android:id="@+id/input_double_entry_accounts_spinner"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"  />
+        </LinearLayout>
 	    <LinearLayout android:layout_width="match_parent"
 	        android:layout_height="wrap_content"
 	        style="@style/FormRow" >
@@ -132,23 +148,6 @@
 			        android:gravity="top"
 			        />
 	   </LinearLayout>
-		<LinearLayout 
-			android:id="@+id/layout_double_entry"
-		    android:layout_width="match_parent"
-	        android:layout_height="wrap_content"
-            style="@style/FormRow" >
-	        
-			<TextView
-			    android:text="@string/label_double_entry_account"
-			    android:layout_height="wrap_content"
-			    android:layout_width="wrap_content"
-			    android:layout_marginBottom="-8dip"
-			    style="@style/TextAppearance.EditTransaction_LabelSmall" />
-		    <Spinner
-		        android:id="@+id/input_double_entry_accounts_spinner"        
-		        android:layout_width="match_parent"
-		        android:layout_height="wrap_content"  />
-	    </LinearLayout>
 
         <LinearLayout
                 android:layout_height="wrap_content"

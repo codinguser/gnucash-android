@@ -25,6 +25,7 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.content.res.Resources;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -57,6 +58,8 @@ import org.gnucash.android.ui.transactions.TransactionsListFragment;
 import org.gnucash.android.util.GnucashAccountXmlHandler;
 import org.gnucash.android.util.OnAccountClickedListener;
 
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.*;
 
 /**
@@ -249,7 +252,7 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
         Money.DEFAULT_CURRENCY_CODE = currencyCode;
 
         if (hasNewFeatures()){
-            showWhatsNewDialog();
+            showWhatsNewDialog(this);
         }
 
         boolean firstRun = prefs.getBoolean(getString(R.string.key_first_run), true);
@@ -288,17 +291,18 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
 	/**
 	 * Show dialog with new features for this version
 	 */
-	private void showWhatsNewDialog(){
-        StringBuilder releaseTitle = new StringBuilder(getResources().getString(R.string.title_whats_new));
+	public static void showWhatsNewDialog(Context context){
+        Resources resources = context.getResources();
+        StringBuilder releaseTitle = new StringBuilder(resources.getString(R.string.title_whats_new));
         PackageInfo packageInfo = null;
         try {
-            packageInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+            packageInfo = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
         } catch (NameNotFoundException e) {
             e.printStackTrace();
         }
         releaseTitle.append(" - v").append(packageInfo.versionName);
 
-        new AlertDialog.Builder(this)
+        new AlertDialog.Builder(context)
 		.setTitle(releaseTitle.toString())
 		.setMessage(R.string.whats_new)
 		.setPositiveButton(R.string.label_dismiss, new DialogInterface.OnClickListener() {
@@ -531,7 +535,12 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
 
         switch (requestCode){
             case AccountsListFragment.REQUEST_PICK_ACCOUNTS_FILE:
-                new AccountImporterTask(this).execute(data.getData());
+                try {
+                    InputStream accountInputStream = getContentResolver().openInputStream(data.getData());
+                    new AccountImporterTask(this).execute(accountInputStream);
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
                 break;
         }
     }
@@ -570,7 +579,7 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
      * Imports a GnuCash (desktop) account file and displays a progress dialog.
      * The AccountsActivity is opened when importing is done.
      */
-    public static class AccountImporterTask extends AsyncTask<Uri, Void, Boolean>{
+    public static class AccountImporterTask extends AsyncTask<InputStream, Void, Boolean>{
         private final Context context;
         private ProgressDialog progressDialog;
 
@@ -589,9 +598,9 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
         }
 
         @Override
-        protected Boolean doInBackground(Uri... uris) {
+        protected Boolean doInBackground(InputStream... inputStreams) {
             try {
-                GnucashAccountXmlHandler.parse(context, context.getContentResolver().openInputStream(uris[0]));
+                GnucashAccountXmlHandler.parse(context, inputStreams[0]);
             } catch (Exception exception){
                 exception.printStackTrace();
                 return false;

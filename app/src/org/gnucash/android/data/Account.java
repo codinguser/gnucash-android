@@ -16,21 +16,16 @@
 
 package org.gnucash.android.data;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Currency;
-import java.util.List;
-import java.util.Locale;
-import java.util.UUID;
-import java.util.regex.Pattern;
-
-import android.graphics.Color;
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.export.ofx.OfxExporter;
 import org.gnucash.android.export.qif.QifHelper;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+
+import java.math.BigDecimal;
+import java.util.*;
+import java.util.regex.Pattern;
 
 /**
  * An account represents a transaction account in with {@link Transaction}s may be recorded
@@ -50,6 +45,24 @@ public class Account {
 	 * This is used when sending intents from third-party applications
 	 */
 	public static final String MIME_TYPE = "vnd.android.cursor.item/vnd.org.gnucash.android.account";
+
+    /*
+        ^             anchor for start of string
+        #             the literal #
+        (             start of group
+        ?:            indicate a non-capturing group that doesn't generate backreferences
+        [0-9a-fA-F]   hexadecimal digit
+        {3}           three times
+        )             end of group
+        {1,2}         repeat either once or twice
+        $             anchor for end of string
+     */
+    /**
+     * Regular expression for validating color code strings.
+     * Accepts #rgb and #rrggbb
+     */
+    //TODO: Allow use of #aarrggbb format as well
+    public static final String COLOR_HEX_REGEX = "^#(?:[0-9a-fA-F]{3}){1,2}$";
 
     /**
 	 * The type of account
@@ -345,21 +358,7 @@ public class Account {
         if (colorCode == null)
             return;
 
-        //TODO: Allow use of #aarrggbb format as well
-
-        /*
-            ^             anchor for start of string
-            #             the literal #
-            (             start of group
-            ?:            indicate a non-capturing group that doesn't generate backreferences
-            [0-9a-fA-F]   hexadecimal digit
-            {3}           three times
-            )             end of group
-            {1,2}         repeat either once or twice
-            $             anchor for end of string
-         */
-        String colorHexRegex = "^#(?:[0-9a-fA-F]{3}){1,2}$";
-        if (!Pattern.matches(colorHexRegex, colorCode))
+        if (!Pattern.matches(COLOR_HEX_REGEX, colorCode))
             throw new IllegalArgumentException("Invalid color hex code");
 
         this.mColorCode = colorCode;

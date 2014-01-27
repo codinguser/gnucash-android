@@ -27,8 +27,6 @@ import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.PreferenceManager;
 import android.util.Log;
-import android.view.View;
-import android.widget.AdapterView;
 import android.widget.Toast;
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockPreferenceActivity;
@@ -36,12 +34,12 @@ import com.actionbarsherlock.view.MenuItem;
 import org.gnucash.android.R;
 import org.gnucash.android.data.Money;
 import org.gnucash.android.db.AccountsDbAdapter;
-import org.gnucash.android.db.DatabaseHelper;
 import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.ui.accounts.AccountsActivity;
 import org.gnucash.android.ui.accounts.AccountsListFragment;
 
-import java.util.Currency;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -119,6 +117,12 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
 
             pref = findPreference(getString(R.string.key_delete_all_accounts));
             pref.setOnPreferenceClickListener(this);
+
+            pref = findPreference(getString(R.string.key_build_version));
+            pref.setOnPreferenceClickListener(this);
+
+            pref = findPreference(getString(R.string.key_create_default_accounts));
+            pref.setOnPreferenceClickListener(this);
 		}
 	}
 
@@ -176,6 +180,11 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
             return true;
         }
 
+        if (key.equals(getString(R.string.key_build_version))){
+            AccountsActivity.showWhatsNewDialog(this);
+            return true;
+        }
+
         //since we cannot get a support FragmentManager in the SettingsActivity pre H0NEYCOMB,
         //we will just use 2 taps within 2 seconds as confirmation
         if (key.equals(getString(R.string.key_delete_all_accounts))){
@@ -190,6 +199,7 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
             }
             Timer timer = new Timer();
             timer.schedule(new ResetCounter(), DOUBLE_TAP_DELAY);
+            return true;
         }
 
         if (key.equals(getString(R.string.key_delete_all_transactions))){
@@ -204,6 +214,7 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
             }
             Timer timer = new Timer();
             timer.schedule(new ResetCounter(), DOUBLE_TAP_DELAY);
+            return true;
         }
 
         return false;
@@ -219,8 +230,11 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
             mDeleteAccountsClickCount = 0;
             mDeleteTransactionsClickCount = 0;
         }
-    };
+    }
 
+    /**
+     * Starts a request to pick a file to import into GnuCash
+     */
     public void importAccounts() {
         Intent pickIntent = new Intent(Intent.ACTION_GET_CONTENT);
         pickIntent.setType("application/*");
@@ -238,7 +252,14 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
 
         switch (requestCode){
             case AccountsListFragment.REQUEST_PICK_ACCOUNTS_FILE:
-                new AccountsActivity.AccountImporterTask(this).execute(data.getData());
+                try {
+                    InputStream accountInputStream = getContentResolver().openInputStream(data.getData());
+                    new AccountsActivity.AccountImporterTask(this).execute(accountInputStream);
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                    Toast.makeText(this, R.string.toast_error_importing_accounts, Toast.LENGTH_SHORT).show();
+                }
+
                 break;
         }
     }

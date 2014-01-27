@@ -32,6 +32,7 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import java.io.*;
 import java.util.Currency;
+import java.util.regex.Pattern;
 
 /**
  * Handler for parsing the GnuCash accounts structure file.
@@ -127,7 +128,6 @@ public class GnucashAccountXmlHandler extends DefaultHandler {
 
         if (qualifiedName.equalsIgnoreCase(TAG_CURRENCY)){
             if (mAccount != null){
-                Log.i(LOG_TAG, mAccount.getName() + " account has no currency!");
                 String currencyCode = mISO4217Currency ? characterString : NO_CURRENCY_CODE;
                 mAccount.setCurrency(Currency.getInstance(currencyCode));
             }
@@ -164,9 +164,19 @@ public class GnucashAccountXmlHandler extends DefaultHandler {
             }
 
             if (mInColorSlot){
-                Log.d(LOG_TAG, "Setting account color");
-                String color = "#" + characterString.trim().replaceAll(".(.)?", "$1").replace("null", "");
-                mAccount.setColorCode(color);
+                String color = characterString.trim();
+                //Gnucash exports the account color in format #rrrgggbbb, but we need only #rrggbb.
+                //so we trim the last digit in each block, doesn't affect the color much
+                if (!Pattern.matches(Account.COLOR_HEX_REGEX, color))
+                    color = "#" + color.replaceAll(".(.)?", "$1").replace("null", "");
+                try {
+                    mAccount.setColorCode(color);
+                } catch (IllegalArgumentException ex){
+                    //sometimes the color entry in the account file is "Not set" instead of just blank. So catch!
+                    Log.i(LOG_TAG, "Invalid color code '" + color + "' for account " + mAccount.getName());
+                    ex.printStackTrace();
+                }
+
                 mInColorSlot = false;
             }
         }

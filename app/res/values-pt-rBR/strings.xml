@@ -379,4 +379,6 @@
     <string name="title_recent_accounts">Recent</string>
     <string name="title_favorite_accounts">Favorites</string>
     <string name="title_all_accounts">All</string>
+    <string name="summary_create_default_accounts">Creates default GnuCash account structure. All current accounts (and transactions) will be deleted!</string>
+    <string name="title_create_default_accounts">Create default accounts</string>
 </resources>

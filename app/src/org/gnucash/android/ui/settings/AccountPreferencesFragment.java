@@ -16,6 +16,8 @@
 
 package org.gnucash.android.ui.settings;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.Preference;
@@ -25,6 +27,9 @@ import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockPreferenceActivity;
 import org.gnucash.android.R;
 import org.gnucash.android.data.Money;
+import org.gnucash.android.ui.accounts.AccountsActivity;
+
+import java.io.InputStream;
 
 /**
  * Account settings fragment inside the Settings activity
@@ -60,6 +65,35 @@ public class AccountPreferencesFragment extends PreferenceFragment {
             @Override
             public boolean onPreferenceClick(Preference preference) {
                 deleteAllAccounts();
+                return true;
+            }
+        });
+
+        preference = findPreference(getString(R.string.key_create_default_accounts));
+        preference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                new AlertDialog.Builder(getActivity())
+                        .setTitle("Confirm")
+                        .setMessage("The new accounts will be created in addition to the existing account structure. " +
+                                "Any accounts with the same ID, they will simple be updated." +
+                                "If you wish to replace any currently existing accounts, delete them first before continuing this action!")
+                        .setPositiveButton("Create Accounts", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                InputStream accountFileInputStream = getResources().openRawResource(R.raw.default_accounts);
+                                new AccountsActivity.AccountImporterTask(getActivity()).execute(accountFileInputStream);
+                            }
+                        })
+                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                dialogInterface.dismiss();
+                            }
+                        })
+                        .create()
+                        .show();
+
                 return true;
             }
         });
