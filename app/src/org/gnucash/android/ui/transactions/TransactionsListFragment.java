@@ -47,9 +47,11 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import org.gnucash.android.R;
-import org.gnucash.android.data.Account;
 import org.gnucash.android.data.Money;
-import org.gnucash.android.db.*;
+import org.gnucash.android.db.DatabaseAdapter;
+import org.gnucash.android.db.DatabaseCursorLoader;
+import org.gnucash.android.db.DatabaseHelper;
+import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.ui.Refreshable;
 import org.gnucash.android.ui.accounts.AccountsListFragment;
 import org.gnucash.android.ui.widget.WidgetConfigurationActivity;
@@ -412,14 +414,16 @@ public class TransactionsListFragment extends SherlockListFragment implements
             parentView.post(new Runnable() {
                 @Override
                 public void run() {
-                    float extraPadding = getResources().getDimension(R.dimen.edge_padding);
-                    final android.graphics.Rect hitRect = new Rect();
-                    checkBoxView.getHitRect(hitRect);
-                    hitRect.right   += extraPadding;
-                    hitRect.bottom  += 3*extraPadding;
-                    hitRect.top     -= extraPadding;
-                    hitRect.left    -= 2*extraPadding;
-                    parentView.setTouchDelegate(new TouchDelegate(hitRect, checkBoxView));
+                    if (isAdded()){ //may be run when fragment has been unbound from activity
+                        float extraPadding = getResources().getDimension(R.dimen.edge_padding);
+                        final android.graphics.Rect hitRect = new Rect();
+                        checkBoxView.getHitRect(hitRect);
+                        hitRect.right   += extraPadding;
+                        hitRect.bottom  += 3*extraPadding;
+                        hitRect.top     -= extraPadding;
+                        hitRect.left    -= 2*extraPadding;
+                        parentView.setTouchDelegate(new TouchDelegate(hitRect, checkBoxView));
+                    }
                 }
             });
 
@@ -433,12 +437,20 @@ public class TransactionsListFragment extends SherlockListFragment implements
 			Money amount = new Money(
 					cursor.getString(DatabaseAdapter.COLUMN_AMOUNT), 
 					mTransactionsDbAdapter.getCurrencyCode(mAccountID));
-			
+
+            //FIXME: Take normal account balances into consideration for double entries
+//            String mainAccountUID = cursor.getString(DatabaseAdapter.COLUMN_ACCOUNT_UID);
+//            Account.AccountType mainAccountType = mTransactionsDbAdapter.getAccountType(mainAccountUID);
+
 			//negate any transactions if this account is the origin in double entry
-			String doubleEntryAccountUID = cursor.getString(DatabaseAdapter.COLUMN_DOUBLE_ENTRY_ACCOUNT_UID);
-			if (doubleEntryAccountUID != null 
-					&& mTransactionsDbAdapter.isSameAccount(mAccountID, doubleEntryAccountUID)){
-				amount = amount.negate();				
+			String transferAccountUID = cursor.getString(DatabaseAdapter.COLUMN_DOUBLE_ENTRY_ACCOUNT_UID);
+
+			if (transferAccountUID != null
+					&& mTransactionsDbAdapter.isSameAccount(mAccountID, transferAccountUID)){
+//                Account.AccountType transferAccountType = mTransactionsDbAdapter.getAccountType(transferAccountUID);
+//
+//                if (mainAccountType.getNormalBalanceType() == transferAccountType.getNormalBalanceType())
+                amount = amount.negate();
 			}
 				
 			TextView tramount = (TextView) view.findViewById(R.id.transaction_amount);
@@ -457,34 +469,51 @@ public class TransactionsListFragment extends SherlockListFragment implements
 				trNote.setVisibility(View.VISIBLE);
 				trNote.setText(description);
 			}
-			
-			long transactionTime = cursor.getLong(DatabaseAdapter.COLUMN_TIMESTAMP);
-			int position = cursor.getPosition();
-						
-			boolean hasSectionHeader;
-			if (position == 0){
-				hasSectionHeader = true;
-			} else {
-				cursor.moveToPosition(position - 1);
-				long previousTimestamp = cursor.getLong(DatabaseAdapter.COLUMN_TIMESTAMP);
-				cursor.moveToPosition(position);				
-				//has header if two consecutive transactions were not on same day
-				hasSectionHeader = !isSameDay(previousTimestamp, transactionTime);
-			}
-			
-			TextView dateHeader = (TextView) view.findViewById(R.id.date_section_header);
-			
-			if (hasSectionHeader){
-				java.text.DateFormat format = DateFormat.getLongDateFormat(getActivity());
-				String dateString = format.format(new Date(transactionTime));
-				dateHeader.setText(dateString);
-				dateHeader.setVisibility(View.VISIBLE);
-			} else {
-				dateHeader.setVisibility(View.GONE);
-			}
+
+            setSectionHeaderVisibility(view, cursor);
 		}
-		
-		private boolean isSameDay(long timeMillis1, long timeMillis2){
+
+        /**
+         * Toggles the visibilty of the section header based on whether the previous transaction and current were
+         * booked on the same day or not. Transactions a generally grouped by day
+         * @param view Parent view within which to find the section header
+         * @param cursor Cursor containing transaction data set
+         * @see #isSameDay(long, long)
+         */
+        private void setSectionHeaderVisibility(View view, Cursor cursor) {
+            long transactionTime = cursor.getLong(DatabaseAdapter.COLUMN_TIMESTAMP);
+            int position = cursor.getPosition();
+
+            boolean hasSectionHeader;
+            if (position == 0){
+                hasSectionHeader = true;
+            } else {
+                cursor.moveToPosition(position - 1);
+                long previousTimestamp = cursor.getLong(DatabaseAdapter.COLUMN_TIMESTAMP);
+                cursor.moveToPosition(position);
+                //has header if two consecutive transactions were not on same day
+                hasSectionHeader = !isSameDay(previousTimestamp, transactionTime);
+            }
+
+            TextView dateHeader = (TextView) view.findViewById(R.id.date_section_header);
+
+            if (hasSectionHeader){
+                java.text.DateFormat format = DateFormat.getLongDateFormat(getActivity());
+                String dateString = format.format(new Date(transactionTime));
+                dateHeader.setText(dateString);
+                dateHeader.setVisibility(View.VISIBLE);
+            } else {
+                dateHeader.setVisibility(View.GONE);
+            }
+        }
+
+        /**
+         * Checks if two timestamps have the same calendar day
+         * @param timeMillis1 Timestamp in milliseconds
+         * @param timeMillis2 Timestamp in milliseconds
+         * @return <code>true</code> if both timestamps are on same day, <code>false</code> otherwise
+         */
+        private boolean isSameDay(long timeMillis1, long timeMillis2){
 			Date date1 = new Date(timeMillis1);
 			Date date2 = new Date(timeMillis2);
 			

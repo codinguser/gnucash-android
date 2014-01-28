@@ -255,20 +255,17 @@ public class NewTransactionFragment extends SherlockFragment implements
 
     /**
      * Toggles the state transaction type button in response to the type of account.
+     * This just changes what label is shown to the user, but basically the button in checked state still
+     * represents a negative amount, and unchecked is positive. The CREDIT/DEBIT label depends on the account.
      * Different types of accounts handle CREDITS/DEBITS differently
      */
     private void toggleTransactionTypeState() {
-        switch (mAccountType) {
-            case ASSET:
-            case EXPENSE:
-                mTransactionTypeButton.setTextOff(getString(R.string.label_debit));
-                mTransactionTypeButton.setTextOn(getString(R.string.label_credit));
-                break;
-
-            default:
-                mTransactionTypeButton.setTextOff(getString(R.string.label_credit));
-                mTransactionTypeButton.setTextOn(getString(R.string.label_debit));
-                break;
+        if (mAccountType.hasDebitNormalBalance()){
+            mTransactionTypeButton.setTextOff(getString(R.string.label_debit));
+            mTransactionTypeButton.setTextOn(getString(R.string.label_credit));
+        } else {
+            mTransactionTypeButton.setTextOff(getString(R.string.label_credit));
+            mTransactionTypeButton.setTextOn(getString(R.string.label_debit));
         }
         mTransactionTypeButton.invalidate();
     }
@@ -321,7 +318,17 @@ public class NewTransactionFragment extends SherlockFragment implements
 	 */
 	private void initializeViewsWithTransaction(){
 		mNameEditText.setText(mTransaction.getName());
-		mTransactionTypeButton.setChecked(mTransaction.getTransactionType() == TransactionType.DEBIT);
+
+        //FIXME: Better handle the different kinds of accounts and how transfers between the different types affect balance
+        //checking the type button means the amount will be shown as negative (in red) to user
+//        if (mAccountType.hasDebitNormalBalance()){
+//            mTransactionTypeButton.setChecked();
+//            mTransactionTypeButton.setChecked(mTransaction.getTransactionType() == TransactionType.CREDIT);
+//        }
+//        else {
+//            mTransactionTypeButton.setChecked(mTransaction.getTransactionType() == TransactionType.DEBIT);
+//        }
+        mTransactionTypeButton.setChecked(mTransaction.getTransactionType() == TransactionType.DEBIT);
 		if (!mAmountManuallyEdited){
             //when autocompleting, only change the amount if the user has not manually changed it already
             mAmountEditText.setText(mTransaction.getAmount().toPlainString());
@@ -363,12 +370,12 @@ public class NewTransactionFragment extends SherlockFragment implements
 
 		String typePref = PreferenceManager.getDefaultSharedPreferences(getActivity()).getString(getString(R.string.key_default_transaction_type), "DEBIT");
 		if (typePref.equals("CREDIT")){
-            if (mAccountType == Account.AccountType.ASSET || mAccountType == Account.AccountType.EXPENSE)
+            if (mAccountType.hasDebitNormalBalance())
                 mTransactionTypeButton.setChecked(false);
             else
                 mTransactionTypeButton.setChecked(true);
-		} else {
-            if (mAccountType == Account.AccountType.ASSET || mAccountType == Account.AccountType.EXPENSE)
+		} else { //DEBIT
+            if (mAccountType.hasDebitNormalBalance())
                 mTransactionTypeButton.setChecked(true);
             else
                 mTransactionTypeButton.setChecked(false);
@@ -541,7 +548,7 @@ public class NewTransactionFragment extends SherlockFragment implements
         toggleTransactionTypeState();
 
         //if the new account has a different credit/debit philosophy as the previous one, then toggle the button
-        if (mAccountType.hasInvertedCredit() != previousAccountType.hasInvertedCredit()){
+        if (mAccountType.hasDebitNormalBalance() != previousAccountType.hasDebitNormalBalance()){
             mTransactionTypeButton.toggle();
         }
 
@@ -568,7 +575,7 @@ public class NewTransactionFragment extends SherlockFragment implements
 		Currency currency = Currency.getInstance(mTransactionsDbAdapter.getCurrencyCode(accountID));
 		Money amount 	= new Money(amountBigd, currency);
 		TransactionType type;
-        if (mAccountType.hasInvertedCredit()){
+        if (mAccountType.hasDebitNormalBalance()){
             type = amount.isNegative() ? TransactionType.CREDIT : TransactionType.DEBIT;
         } else
             type = amount.isNegative() ? TransactionType.DEBIT : TransactionType.CREDIT;

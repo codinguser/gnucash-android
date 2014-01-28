@@ -23,6 +23,7 @@ import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
+import android.view.ContextThemeWrapper;
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockPreferenceActivity;
 import org.gnucash.android.R;
@@ -74,18 +75,17 @@ public class AccountPreferencesFragment extends PreferenceFragment {
             @Override
             public boolean onPreferenceClick(Preference preference) {
                 new AlertDialog.Builder(getActivity())
-                        .setTitle("Confirm")
-                        .setMessage("The new accounts will be created in addition to the existing account structure. " +
-                                "Any accounts with the same ID, they will simple be updated." +
-                                "If you wish to replace any currently existing accounts, delete them first before continuing this action!")
-                        .setPositiveButton("Create Accounts", new DialogInterface.OnClickListener() {
+                        .setTitle(R.string.title_create_default_accounts)
+                        .setMessage(R.string.message_create_default_accounts_confirmation)
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .setPositiveButton(R.string.btn_create_accounts, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 InputStream accountFileInputStream = getResources().openRawResource(R.raw.default_accounts);
                                 new AccountsActivity.AccountImporterTask(getActivity()).execute(accountFileInputStream);
                             }
                         })
-                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        .setNegativeButton(R.string.btn_cancel, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 dialogInterface.dismiss();

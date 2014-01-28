@@ -360,16 +360,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 	 * @return {@link AccountType} of the account
 	 */
 	public AccountType getAccountType(String uid){
-		String type = null;
-		Cursor c = mDb.query(DatabaseHelper.ACCOUNTS_TABLE_NAME, 
-				new String[]{DatabaseHelper.KEY_TYPE}, 
-				DatabaseHelper.KEY_UID + "='" + uid + "'", 
-				null, null, null, null);
-		if (c != null && c.moveToFirst()){
-			type = c.getString(0); //0 because we requested only the type column
-			c.close();
-		}
-		return AccountType.valueOf(type);
+        return mTransactionsAdapter.getAccountType(uid);
 	}
 
     /**
@@ -562,7 +553,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
     public Cursor fetchRecentAccounts(int numberOfRecents){
         Cursor recentTxCursor = mDb.query(true, DatabaseHelper.TRANSACTIONS_TABLE_NAME,
                 new String[]{DatabaseHelper.KEY_ACCOUNT_UID},
-                null, null, null, null, DatabaseHelper.KEY_TIMESTAMP, Integer.toString(numberOfRecents));
+                null, null, null, null, DatabaseHelper.KEY_TIMESTAMP + " DESC", Integer.toString(numberOfRecents));
         StringBuilder recentAccountUIDs = new StringBuilder("(");
         while (recentTxCursor.moveToNext()){
             String uid = recentTxCursor.getString(recentTxCursor.getColumnIndexOrThrow(DatabaseHelper.KEY_ACCOUNT_UID));
@@ -698,6 +689,9 @@ public class AccountsDbAdapter extends DatabaseAdapter {
      * @see #getFullyQualifiedAccountName(String)
      */
     public String getAccountName(String accountUID){
+        if (accountUID == null)
+            return null;
+
         Cursor cursor = mDb.query(DatabaseHelper.ACCOUNTS_TABLE_NAME,
                 new String[]{DatabaseHelper.KEY_ROW_ID, DatabaseHelper.KEY_NAME},
                 DatabaseHelper.KEY_UID + " = ?",

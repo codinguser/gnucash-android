@@ -120,7 +120,7 @@ public class TransactionsActivity extends SherlockFragmentActivity implements
      * This is the last known color for the title indicator.
      * This is used to remember the color of the top level account if the child account doesn't have one.
      */
-    private static int sLastTitleColor;
+    public static int sLastTitleColor = -1;
 
     private TextView mSectionHeaderTransactions;
     private TitlePageIndicator mTitlePageIndicator;
@@ -273,6 +273,8 @@ public class TransactionsActivity extends SherlockFragmentActivity implements
         mTitlePageIndicator = (TitlePageIndicator) findViewById(R.id.titles);
         mSectionHeaderTransactions = (TextView) findViewById(R.id.section_header_transactions);
 
+        if (sLastTitleColor == -1) //if this is first launch of app. Previous launches would have set the color already
+            sLastTitleColor = getResources().getColor(R.color.title_green);
 
 		mAccountId = getIntent().getLongExtra(
                 TransactionsListFragment.SELECTED_ACCOUNT_ID, -1);
@@ -330,16 +332,7 @@ public class TransactionsActivity extends SherlockFragmentActivity implements
     private void setTitleIndicatorColor() {
         //Basically, if we are in a top level account, use the default title color.
         //but propagate a parent account's title color to children who don't have own color
-        String parentAccountUID = mAccountsDbAdapter.getParentAccountUID(mAccountId);
         String colorCode = mAccountsDbAdapter.getAccountColorCode(mAccountId);
-        if (parentAccountUID == null
-                || parentAccountUID.equals(mAccountsDbAdapter.getGnuCashRootAccountUID())) {
-            sLastTitleColor = getResources().getColor(R.color.title_green);
-        } else {
-            String parentColor = mAccountsDbAdapter.getAccountColorCode(mAccountsDbAdapter.getAccountID(parentAccountUID));
-            sLastTitleColor = parentColor != null ? Color.parseColor(parentColor) : sLastTitleColor;
-        }
-
         if (colorCode != null){
             sLastTitleColor = Color.parseColor(colorCode);
         }

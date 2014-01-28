@@ -20,6 +20,7 @@ import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.export.ofx.OfxExporter;
 import org.gnucash.android.export.qif.QifHelper;
+import org.gnucash.android.data.Transaction.TransactionType;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -70,34 +71,43 @@ public class Account {
 	 * they are currently not used except for exporting
 	 */
 	public enum AccountType {
-        CASH, BANK, CREDIT, ASSET(true), LIABILITY, INCOME, EXPENSE(true),
-        PAYABLE, RECEIVABLE, EQUITY, CURRENCY, STOCK, MUTUAL, ROOT;
+        CASH(TransactionType.DEBIT), BANK, CREDIT, ASSET(TransactionType.DEBIT), LIABILITY, INCOME,
+        EXPENSE(TransactionType.DEBIT), PAYABLE, RECEIVABLE, EQUITY, CURRENCY, STOCK, MUTUAL, ROOT;
 
         /**
-         * Indicates that this type of account has an inverted state for credits and debits.
-         * Credits decrease the account balance, while debits increase it.
+         * Indicates that this type of normal balance the account type has
+         * <p>To increase the value of an account with normal balance of credit, one would credit the account.
+         * To increase the value of an account with normal balance of debit, one would likewise debit the account.</p>
          */
-        private boolean mInvertedCredit = false;
+        private TransactionType mNormalBalance = TransactionType.CREDIT;
 
-        private AccountType(boolean invertedCredit){
-            mInvertedCredit = invertedCredit;
+        private AccountType(TransactionType normalBalance){
+            this.mNormalBalance = normalBalance;
         }
 
         private AccountType() {
             //nothing to see here, move along
         }
 
-        public boolean hasInvertedCredit(){
-            return mInvertedCredit;
+        public boolean hasDebitNormalBalance(){
+            return mNormalBalance == TransactionType.DEBIT;
         }
-    };
+
+        /**
+         * Returns the type of normal balance this account possesses
+         * @return TransactionType balance of the account type
+         */
+        public TransactionType getNormalBalanceType(){
+            return mNormalBalance;
+        }
+    }
 
     /**
      * Accounts types which are used by the OFX standard
      */
-	public enum OfxAccountType {CHECKING, SAVINGS, MONEYMRKT, CREDITLINE };
-		
-	/**
+	public enum OfxAccountType {CHECKING, SAVINGS, MONEYMRKT, CREDITLINE }
+
+    /**
 	 * Unique Identifier of the account
 	 * It is generated when the account is created and can be set a posteriori as well
 	 */

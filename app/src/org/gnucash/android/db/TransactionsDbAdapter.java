@@ -16,21 +16,19 @@
 
 package org.gnucash.android.db;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Currency;
-import java.util.List;
-
-import com.sun.swing.internal.plaf.metal.resources.metal_pt_BR;
-import org.gnucash.android.data.Account;
-import org.gnucash.android.data.Money;
-import org.gnucash.android.data.Transaction;
-
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteStatement;
 import android.util.Log;
+import org.gnucash.android.data.Account;
+import org.gnucash.android.data.Money;
+import org.gnucash.android.data.Transaction;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Currency;
+import java.util.List;
 
 /**
  * Manages persistence of {@link Transaction}s in the database
@@ -108,11 +106,11 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 	 * @return {@link Transaction} object corresponding to database record
 	 */
 	public Transaction getTransaction(long rowId){
-		Transaction transaction = null;
 		if (rowId <= 0)
-			return transaction;
+			return null;
 		
 		Log.v(TAG, "Fetching transaction with id " + rowId);
+        Transaction transaction = null;
 		Cursor c =	fetchRecord(DatabaseHelper.TRANSACTIONS_TABLE_NAME, rowId);
 		if (c != null && c.moveToFirst()){
 			transaction = buildTransactionInstance(c);			
@@ -214,7 +212,8 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 		transaction.setExported(c.getInt(DatabaseAdapter.COLUMN_EXPORTED) == 1);
 		transaction.setDoubleEntryAccountUID(doubleAccountUID);
         transaction.setRecurrencePeriod(recurrencePeriod);
-		
+		transaction.setTransactionType(Transaction.TransactionType.valueOf(c.getString(DatabaseAdapter.COLUMN_TYPE)));
+
 		return transaction;
 	}
 
@@ -325,8 +324,7 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 	public long getAllTransactionsCount(){
 		String sql = "SELECT COUNT(*) FROM " + DatabaseHelper.TRANSACTIONS_TABLE_NAME;		
 		SQLiteStatement statement = mDb.compileStatement(sql);
-	    long count = statement.simpleQueryForLong();
-	    return count;
+        return statement.simpleQueryForLong();
 	}
 	
 	/**
@@ -336,6 +334,7 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 	 * @return Sum of transactions belonging to the account
 	 */
 	public Money getTransactionsSum(long accountId){
+        //FIXME: Properly compute the balance while considering normal account balance
         String accountUID = getAccountUID(accountId);
 
         String querySum = "SELECT TOTAL(" + DatabaseHelper.KEY_AMOUNT
@@ -365,8 +364,7 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 
         BigDecimal sumDecimal = new BigDecimal(sum);
         Currency currency = Currency.getInstance(getCurrencyCode(accountUID));
-        Money transactionSum = new Money(sumDecimal, currency);
-        return transactionSum;
+        return new Money(sumDecimal, currency);
 	}
 	
 	/**
@@ -378,7 +376,25 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 	public boolean isSameAccount(long rowId, String accountUID){
 		return getAccountID(accountUID) == rowId;
 	}
-		
+
+    /**
+     * Returns the {@link Account.AccountType} of the account with unique ID <code>uid</code>
+     * @param accountUID Unique ID of the account
+     * @return {@link Account.AccountType} of the account
+     */
+    public Account.AccountType getAccountType(String accountUID){
+        String type = null;
+        Cursor c = mDb.query(DatabaseHelper.ACCOUNTS_TABLE_NAME,
+                new String[]{DatabaseHelper.KEY_TYPE},
+                DatabaseHelper.KEY_UID + "='" + accountUID + "'",
+                null, null, null, null);
+        if (c != null && c.moveToFirst()){
+            type = c.getString(c.getColumnIndexOrThrow(DatabaseHelper.KEY_TYPE));
+            c.close();
+        }
+        return Account.AccountType.valueOf(type);
+    }
+
 	/**
 	 * Marks an account record as exported
 	 * @param accountUID Unique ID of the record to be marked as exported

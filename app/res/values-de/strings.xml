@@ -316,42 +316,40 @@
     </string>
 	<string name="label_dismiss">Schließen</string>
     <string name="toast_transanction_amount_required">Geben Sie einen Betrag ein um die Buchung speichern zu können</string>
-    <string name="menu_import_accounts">Import GnuCash Accounts</string>
-    <string name="btn_import_accounts">Import Accounts</string>
-    <string name="toast_error_importing_accounts">An error occurred while importing the GnuCash accounts</string>
-    <string name="toast_success_importing_accounts">GnuCash Accounts successfully imported</string>
+    <string name="menu_import_accounts">GnuCash Konten importieren</string>
+    <string name="btn_import_accounts">Konten importieren</string>
+    <string name="toast_error_importing_accounts">Beim importieren von den GnuCash Konten ist einen Fehler aufgetreten!</string>
+    <string name="toast_success_importing_accounts">GnuCash Konten wurden erfolgreich importiert</string>
     <string name="summary_import_accounts">Import account structure exported from GnuCash desktop</string>
-    <string name="title_import_accounts">Import GnuCash accounts</string>
-    <string name="summary_delete_all_accounts">Delete all accounts in the database. All transactions will be deleted as
-        well.
+    <string name="title_import_accounts">GnuCash Konten importieren</string>
+    <string name="summary_delete_all_accounts">Alle Konten löschen. Alle Buchungen werden ebenfalls gelöscht!</string>
+    <string name="title_delete_all_accounts">Alle Konten löschen</string>
+    <string name="header_account_settings">Konten</string>
+    <string name="toast_all_accounts_deleted">Alle Konten wurden erfolgreich gelöscht</string>
+    <string name="confirm_delete_all_accounts">Wollen Sie wirklich ALLE Konten und Buchungen löschen?
+        \n\nDiese Operation kann nicht rückgängig gemacht werden!
     </string>
-    <string name="title_delete_all_accounts">Delete all accounts</string>
-    <string name="header_account_settings">Accounts</string>
-    <string name="toast_all_accounts_deleted">All accounts have been successfully deleted</string>
-    <string name="confirm_delete_all_accounts">Are you sure you want to delete all accounts and transactions? \nThis
-        operation cannot be undone!
-    </string>
-    <string name="label_account_type">Account Type</string>
-    <string name="summary_delete_all_transactions">All transactions in all accounts will be deleted!</string>
-    <string name="title_delete_all_transactions">Delete all transactions</string>
-    <string name="toast_all_transactions_deleted">All transactions successfully deleted!</string>
+    <string name="label_account_type">Kontoart</string>
+    <string name="summary_delete_all_transactions">Alle Buchungen in alle Konten werden gelöscht</string>
+    <string name="title_delete_all_transactions">Alle Buchungen löschen</string>
+    <string name="toast_all_transactions_deleted">Alle Buchungen wurden erfolgreich gelöscht</string>
     <string name="title_progress_importing_accounts">Importing accounts</string>
     <string name="toast_tap_again_to_confirm_delete">Tap again to confirm. ALL entries will be deleted!!</string>
-    <string name="section_header_transactions">Transactions</string>
-    <string name="section_header_subaccounts">Sub-Accounts</string>
-    <string name="menu_search_accounts">Search</string>
-    <string name="title_default_export_format">Default Export Format</string>
+    <string name="section_header_transactions">Buchungen</string>
+    <string name="section_header_subaccounts">Unterkonten</string>
+    <string name="menu_search_accounts">Suchen</string>
+    <string name="title_default_export_format">Standard Export Format</string>
     <string name="summary_default_export_format">File format to use by default when exporting transactions</string>
-    <string name="menu_export_transactions">Export transactions…</string>
+    <string name="menu_export_transactions">Buchungen exportieren…</string>
     <string name="label_recurring_transaction">Recurrence</string>
     <!-- This should be the same name used by GnuCash desktop for imbalance accounts -->
     <string name="imbalance_account_name">Ausgleichskonto</string>
-    <string name="title_progress_exporting_transactions">Exporting transactions</string>
-    <string name="label_no_recurring_transactions">No recurring transactions to display.</string>
-    <string name="toast_recurring_transaction_deleted">Successfully deleted recurring transaction</string>
-    <string name="label_placeholder_account">Placeholder account</string>
-    <string name="label_default_transfer_account">Default Transfer Account</string>
-    <string name="label_account_color_and_type">Account Color &amp; Type</string>
+    <string name="title_progress_exporting_transactions">Die Buchungen werden exportiert</string>
+    <string name="label_no_recurring_transactions">Keine wiederkehrende Buchungen vorhanden</string>
+    <string name="toast_recurring_transaction_deleted">Die wiederkehrende Buchung wurde erfolgreich gelöscht</string>
+    <string name="label_placeholder_account">Platzhalter Konto</string>
+    <string name="label_default_transfer_account">Standard Überweisungskonto</string>
+    <string name="label_account_color_and_type">Kontofarbe &amp; -art</string>
     <plurals name="label_sub_accounts">
         <item quantity="one">%d Unterkonto</item>
         <item quantity="other">%d Unterkonten</item>
@@ -376,11 +374,15 @@
         <item>OFX</item>
     </string-array>
     <!-- Default title for color picker dialog [CHAR LIMIT=30] -->
-    <string name="color_picker_default_title">Select a Color</string>
-    <string name="label_delete_sub_accounts">Delete sub-accounts</string>
-    <string name="title_recent_accounts">Recent</string>
-    <string name="title_favorite_accounts">Favorites</string>
-    <string name="title_all_accounts">All</string>
-    <string name="summary_create_default_accounts">Creates default GnuCash account structure. All current accounts (and transactions) will be deleted!</string>
-    <string name="title_create_default_accounts">Create default accounts</string>
+    <string name="color_picker_default_title">Farbe auswählen</string>
+    <string name="label_delete_sub_accounts">Unterkonten löschen</string>
+    <string name="title_recent_accounts">Kürzlich</string>
+    <string name="title_favorite_accounts">Favoriten</string>
+    <string name="title_all_accounts">Alle</string>
+    <string name="summary_create_default_accounts">Erstellt die häufig verwendete standard GnuCash Konten</string>
+    <string name="title_create_default_accounts">Standard Konten erstellen</string>
+    <string name="message_create_default_accounts_confirmation">New accounts will be created in addition to the existing
+        account structure.\n\nIf you wish to replace currently existing accounts, delete them first before proceeding!
+    </string>
+    <string name="menu_item_recurring_transactions">Wiederkehrende Buchungen</string>
 </resources>

@@ -523,7 +523,7 @@
     <string name="title_delete_all_accounts">Delete all accounts</string>
     <string name="header_account_settings">Accounts</string>
     <string name="toast_all_accounts_deleted">All accounts have been successfully deleted</string>
-    <string name="confirm_delete_all_accounts">Are you sure you want to delete all accounts and transactions? \nThis
+    <string name="confirm_delete_all_accounts">Are you sure you want to delete all accounts and transactions? \n\nThis
         operation cannot be undone!
     </string>
     <string name="label_account_type">Account Type</string>
@@ -539,7 +539,7 @@
     <string name="title_default_export_format">Default Export Format</string>
     <string name="key_default_export_format">default_export_format</string>
     <string name="summary_default_export_format">File format to use by default when exporting transactions</string>
-    <string name="menu_export_transactions">Export transactions...</string>
+    <string name="menu_export_transactions">Export transactions…</string>
     <string name="label_recurring_transaction">Recurrence</string>
     <!-- This should be the same name used by GnuCash desktop for imbalance accounts -->
     <string name="imbalance_account_name">Imbalance</string>
@@ -615,6 +615,10 @@
     <string name="title_favorite_accounts">Favorites</string>
     <string name="title_all_accounts">All</string>
     <string name="key_create_default_accounts">create_default_accounts</string>
-    <string name="summary_create_default_accounts">Creates default GnuCash account structure. All current accounts (and transactions) will be deleted!</string>
+    <string name="summary_create_default_accounts">Creates default GnuCash commonly-used account structure</string>
     <string name="title_create_default_accounts">Create default accounts</string>
+    <string name="message_create_default_accounts_confirmation">New accounts will be created in addition to the existing
+        account structure.\n\nIf you wish to replace currently existing accounts, delete them first before proceeding!
+    </string>
+    <string name="menu_item_recurring_transactions">Recurring Transactions</string>
 </resources>

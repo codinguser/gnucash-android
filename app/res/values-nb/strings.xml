@@ -382,6 +382,10 @@ format og importeres i regnskapsprogrammet GnuCash for PC.</string>
     <string name="title_recent_accounts">Recent</string>
     <string name="title_favorite_accounts">Favorites</string>
     <string name="title_all_accounts">All</string>
-    <string name="summary_create_default_accounts">Creates default GnuCash account structure. All current accounts (and transactions) will be deleted!</string>
+    <string name="summary_create_default_accounts">Creates default GnuCash commonly-used account structure</string>
     <string name="title_create_default_accounts">Create default accounts</string>
+    <string name="message_create_default_accounts_confirmation">New accounts will be created in addition to the existing
+        account structure.\n\nIf you wish to replace currently existing accounts, delete them first before proceeding!
+    </string>
+    <string name="menu_item_recurring_transactions">Recurring Transactions</string>
 </resources>

@@ -37,7 +37,10 @@ import android.support.v4.content.Loader;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.*;
+import android.view.LayoutInflater;
+import android.view.TouchDelegate;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.*;
 import android.widget.AdapterView.OnItemLongClickListener;
 import com.actionbarsherlock.app.ActionBar;
@@ -48,7 +51,6 @@ import com.actionbarsherlock.view.ActionMode.Callback;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
-import com.viewpagerindicator.TitlePageIndicator;
 import org.gnucash.android.R;
 import org.gnucash.android.data.Account;
 import org.gnucash.android.data.Money;
@@ -772,14 +774,16 @@ public class AccountsListFragment extends SherlockListFragment implements
             parentView.post(new Runnable() {
                 @Override
                 public void run() {
-                    final android.graphics.Rect hitRect = new Rect();
-                    float extraPadding = getResources().getDimension(R.dimen.edge_padding);
-                    addTransactionButton.getHitRect(hitRect);
-                    hitRect.right   += extraPadding;
-                    hitRect.bottom  += extraPadding;
-                    hitRect.top     -= extraPadding;
-                    hitRect.left    -= extraPadding;
-                    parentView.setTouchDelegate(new TouchDelegate(hitRect, addTransactionButton));
+                    if (isAdded()){ //may be run when fragment has been unbound from activity
+                        final android.graphics.Rect hitRect = new Rect();
+                        float extraPadding = getResources().getDimension(R.dimen.edge_padding);
+                        addTransactionButton.getHitRect(hitRect);
+                        hitRect.right   += extraPadding;
+                        hitRect.bottom  += extraPadding;
+                        hitRect.top     -= extraPadding;
+                        hitRect.left    -= extraPadding;
+                        parentView.setTouchDelegate(new TouchDelegate(hitRect, addTransactionButton));
+                    }
                 }
             });
 

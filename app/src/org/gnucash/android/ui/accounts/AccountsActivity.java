@@ -261,6 +261,12 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
         }
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        TransactionsActivity.sLastTitleColor = -1;
+    }
+
     /**
 	 * Checks if the minor version has been increased and displays the What's New dialog box.
 	 * This is the minor version as per semantic versioning.
