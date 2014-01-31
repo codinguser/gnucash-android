@@ -1,0 +1,803 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<gnc-v2
+     xmlns:gnc="http://www.gnucash.org/XML/gnc"
+     xmlns:act="http://www.gnucash.org/XML/act"
+     xmlns:book="http://www.gnucash.org/XML/book"
+     xmlns:cd="http://www.gnucash.org/XML/cd"
+     xmlns:cmdty="http://www.gnucash.org/XML/cmdty"
+     xmlns:price="http://www.gnucash.org/XML/price"
+     xmlns:slot="http://www.gnucash.org/XML/slot"
+     xmlns:split="http://www.gnucash.org/XML/split"
+     xmlns:sx="http://www.gnucash.org/XML/sx"
+     xmlns:trn="http://www.gnucash.org/XML/trn"
+     xmlns:ts="http://www.gnucash.org/XML/ts"
+     xmlns:fs="http://www.gnucash.org/XML/fs"
+     xmlns:bgt="http://www.gnucash.org/XML/bgt"
+     xmlns:recurrence="http://www.gnucash.org/XML/recurrence"
+     xmlns:lot="http://www.gnucash.org/XML/lot"
+     xmlns:addr="http://www.gnucash.org/XML/addr"
+     xmlns:owner="http://www.gnucash.org/XML/owner"
+     xmlns:billterm="http://www.gnucash.org/XML/billterm"
+     xmlns:bt-days="http://www.gnucash.org/XML/bt-days"
+     xmlns:bt-prox="http://www.gnucash.org/XML/bt-prox"
+     xmlns:cust="http://www.gnucash.org/XML/cust"
+     xmlns:employee="http://www.gnucash.org/XML/employee"
+     xmlns:entry="http://www.gnucash.org/XML/entry"
+     xmlns:invoice="http://www.gnucash.org/XML/invoice"
+     xmlns:job="http://www.gnucash.org/XML/job"
+     xmlns:order="http://www.gnucash.org/XML/order"
+     xmlns:taxtable="http://www.gnucash.org/XML/taxtable"
+     xmlns:tte="http://www.gnucash.org/XML/tte"
+     xmlns:vendor="http://www.gnucash.org/XML/vendor">
+<gnc:count-data cd:type="commodity">1</gnc:count-data>
+<gnc:count-data cd:type="account">56</gnc:count-data>
+<gnc:commodity version="2.0.0">
+  <cmdty:space>ISO4217</cmdty:space>
+  <cmdty:id>CAD</cmdty:id>
+  <cmdty:get_quotes/>
+  <cmdty:quote_source>currency</cmdty:quote_source>
+  <cmdty:quote_tz/>
+</gnc:commodity>
+<gnc:commodity version="2.0.0">
+  <cmdty:space>template</cmdty:space>
+  <cmdty:id>template</cmdty:id>
+  <cmdty:name>template</cmdty:name>
+  <cmdty:xcode>template</cmdty:xcode>
+  <cmdty:fraction>1</cmdty:fraction>
+</gnc:commodity>
+<gnc:account version="2.0.0">
+  <act:name>Root Account</act:name>
+  <act:id type="guid">3cd35f28160a1e49a1428440b954b514</act:id>
+  <act:type>ROOT</act:type>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Actif</act:name>
+  <act:id type="guid">ba0312af9692206f228fb50d26a1f569</act:id>
+  <act:type>ASSET</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>CAD</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>Actif</act:description>
+  <act:slots>
+    <slot>
+      <slot:key>placeholder</slot:key>
+      <slot:value type="string">true</slot:value>
+    </slot>
+    <slot>
+      <slot:key>color</slot:key>
+      <slot:value type="string">#1469EB</slot:value>
+    </slot>
+  </act:slots>
+  <act:parent type="guid">3cd35f28160a1e49a1428440b954b514</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Liquidités</act:name>
+  <act:id type="guid">f9356ba3cf686b03dd5122c1ed528547</act:id>
+  <act:type>ASSET</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>CAD</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>Liquidités ou actifs liquides</act:description>
+  <act:slots>
+    <slot>
+      <slot:key>placeholder</slot:key>
+      <slot:value type="string">true</slot:value>
+    </slot>
+  </act:slots>
+  <act:parent type="guid">ba0312af9692206f228fb50d26a1f569</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Chèques</act:name>
+  <act:id type="guid">1e30b3e7099875668af8275481fa128a</act:id>
+  <act:type>BANK</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>CAD</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>Compte chèques</act:description>
+  <act:parent type="guid">f9356ba3cf686b03dd5122c1ed528547</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Épargne</act:name>
+  <act:id type="guid">4b8a90b22c55f0f2e6442960a908ec73</act:id>
+  <act:type>BANK</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>CAD</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>Compte d'épargne</act:description>
+  <act:parent type="guid">f9356ba3cf686b03dd5122c1ed528547</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Encaisse</act:name>
+  <act:id type="guid">77dc0564f7b7617f9c399622aae7a426</act:id>
+  <act:type>CASH</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>CAD</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>Encaisse en poche</act:description>
+  <act:parent type="guid">f9356ba3cf686b03dd5122c1ed528547</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Passif</act:name>
+  <act:id type="guid">fa8a09d104ba9124ad120e47f33ce72c</act:id>
+  <act:type>LIABILITY</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>CAD</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>Passif</act:description>
+  <act:slots>
+    <slot>
+      <slot:key>placeholder</slot:key>
+      <slot:value type="string">true</slot:value>
+    </slot>
+    <slot>
+      <slot:key>color</slot:key>
+      <slot:value type="string">#B304AD</slot:value>
+    </slot>
+  </act:slots>
+  <act:parent type="guid">3cd35f28160a1e49a1428440b954b514</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Carte de crédit</act:name>
+  <act:id type="guid">0ede01db069d8194411e0b765687379c</act:id>
+  <act:type>LIABILITY</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>CAD</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>Carte de crédit</act:description>
+  <act:parent type="guid">fa8a09d104ba9124ad120e47f33ce72c</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Marge de crédit</act:name>
+  <act:id type="guid">562369725328f3c58a23007e1be6c10b</act:id>
+  <act:type>LIABILITY</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>CAD</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>Marge de crédit personnelle</act:description>
+  <act:parent type="guid">fa8a09d104ba9124ad120e47f33ce72c</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Revenus</act:name>
+  <act:id type="guid">b8504f7775ba37870fab9b378fe5254d</act:id>
+  <act:type>INCOME</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>CAD</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>Revenus</act:description>
+  <act:slots>
+    <slot>
+      <slot:key>placeholder</slot:key>
+      <slot:value type="string">true</slot:value>
+    </slot>
+    <slot>
+      <slot:key>color</slot:key>
+      <slot:value type="string">#319D67</slot:value>
+    </slot>
+  </act:slots>
+  <act:parent type="guid">3cd35f28160a1e49a1428440b954b514</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Cadeaux reçus</act:name>
+  <act:id type="guid">c5d8c31c09865099a72fd1ca4ff3d843</act:id>
+  <act:type>INCOME</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>CAD</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>Cadeaux reçus</act:description>
+  <act:parent type="guid">b8504f7775ba37870fab9b378fe5254d</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Intérêts</act:name>
+  <act:id type="guid">34f4e37955c3d28cd804dee23f9a4ce7</act:id>
+  <act:type>INCOME</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>CAD</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>Revenus d'intérets</act:description>
+  <act:slots>
+    <slot>
+      <slot:key>placeholder</slot:key>
+      <slot:value type="string">true</slot:value>
+    </slot>
+  </act:slots>
+  <act:parent type="guid">b8504f7775ba37870fab9b378fe5254d</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Chèques</act:name>
+  <act:id type="guid">bce091000ceb30237487377060a2c1d1</act:id>
+  <act:type>INCOME</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>CAD</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>Intérêts sur compte chèques</act:description>
+  <act:parent type="guid">34f4e37955c3d28cd804dee23f9a4ce7</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Épargne</act:name>
+  <act:id type="guid">29b6c885cf4e82e4699002761663e5c1</act:id>
+  <act:type>INCOME</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>CAD</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>Intérêts sur compte épargne</act:description>
+  <act:parent type="guid">34f4e37955c3d28cd804dee23f9a4ce7</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Autres</act:name>
+  <act:id type="guid">7a3fcb292e868f8680d94a344178b6b5</act:id>
+  <act:type>INCOME</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>CAD</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>Revenus autres</act:description>
+  <act:parent type="guid">b8504f7775ba37870fab9b378fe5254d</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Dépenses</act:name>
+  <act:id type="guid">4423ba7953102c0c51510d3bd930499a</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>CAD</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>Dépenses</act:description>
+  <act:slots>
+    <slot>
+      <slot:key>placeholder</slot:key>
+      <slot:value type="string">true</slot:value>
+    </slot>
+    <slot>
+      <slot:key>color</slot:key>
+      <slot:value type="string">#D13E29</slot:value>
+    </slot>
+  </act:slots>
+  <act:parent type="guid">3cd35f28160a1e49a1428440b954b514</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Ajustements</act:name>
+  <act:id type="guid">ad909711473603103e16e92184db7ea3</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>CAD</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>Ajustement/redressement du solde</act:description>
+  <act:parent type="guid">4423ba7953102c0c51510d3bd930499a</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Frais bancaires</act:name>
+  <act:id type="guid">04b4ac57c714082e4e14be915ab7d78b</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>CAD</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>Frais bancaires</act:description>
+  <act:parent type="guid">4423ba7953102c0c51510d3bd930499a</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Livres</act:name>
+  <act:id type="guid">9b422ef76f5f83eb234c248ef437f7d1</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>CAD</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>Livres</act:description>
+  <act:parent type="guid">4423ba7953102c0c51510d3bd930499a</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Dons</act:name>
+  <act:id type="guid">60b8355a29500f484e023e01f315e4bc</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>CAD</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>Dons de bienfaisance</act:description>
+  <act:parent type="guid">4423ba7953102c0c51510d3bd930499a</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Vêtements</act:name>
+  <act:id type="guid">2d0317874a2f71a52a694cebe8dd29b8</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>CAD</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>Vêtements</act:description>
+  <act:parent type="guid">4423ba7953102c0c51510d3bd930499a</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Informatique</act:name>
+  <act:id type="guid">6f23c14f7cfc745fdae69eb471fe5904</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>CAD</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>Frais d'informatique</act:description>
+  <act:parent type="guid">4423ba7953102c0c51510d3bd930499a</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Restaurant</act:name>
+  <act:id type="guid">1786e45a548698ad97a316010931a096</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>CAD</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>Repas pris au restaurant </act:description>
+  <act:parent type="guid">4423ba7953102c0c51510d3bd930499a</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Formation</act:name>
+  <act:id type="guid">43f0e9955eeba58363095c680063e3b1</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>CAD</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>Formation</act:description>
+  <act:parent type="guid">4423ba7953102c0c51510d3bd930499a</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Divertissements</act:name>
+  <act:id type="guid">54edcb11a0bc4ad24b240f1ba48ffc97</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>CAD</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>Divertissements</act:description>
+  <act:slots>
+    <slot>
+      <slot:key>placeholder</slot:key>
+      <slot:value type="string">true</slot:value>
+    </slot>
+  </act:slots>
+  <act:parent type="guid">4423ba7953102c0c51510d3bd930499a</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Musique/Films</act:name>
+  <act:id type="guid">3f9a2248699cd44c51cb07c9530a5c6f</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>CAD</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>Musique/Films</act:description>
+  <act:parent type="guid">54edcb11a0bc4ad24b240f1ba48ffc97</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Loisirs</act:name>
+  <act:id type="guid">91f39afdf0345a5abb9193da0f895703</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>CAD</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>Loisirs</act:description>
+  <act:parent type="guid">54edcb11a0bc4ad24b240f1ba48ffc97</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Voyages</act:name>
+  <act:id type="guid">4a79935607dc547658bf0c0d5f795ba2</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>CAD</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>Voyages</act:description>
+  <act:parent type="guid">54edcb11a0bc4ad24b240f1ba48ffc97</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Passe-temps</act:name>
+  <act:id type="guid">c1b73b873ae329d26d5893cad0e62b2f</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>CAD</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>Passe-temps</act:description>
+  <act:parent type="guid">54edcb11a0bc4ad24b240f1ba48ffc97</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Cadeaux</act:name>
+  <act:id type="guid">001ab8bcaa4583e37896c0d3825025df</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>CAD</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>Cadeaux à des tiers</act:description>
+  <act:parent type="guid">4423ba7953102c0c51510d3bd930499a</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Alimentation</act:name>
+  <act:id type="guid">3f00976c2e067ada65e9e0d288e4104a</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>CAD</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>Alimentation</act:description>
+  <act:parent type="guid">4423ba7953102c0c51510d3bd930499a</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Assurances</act:name>
+  <act:id type="guid">d6074acd842cb47f5f3413c954bc9041</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>CAD</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>Assurances</act:description>
+  <act:slots>
+    <slot>
+      <slot:key>placeholder</slot:key>
+      <slot:value type="string">true</slot:value>
+    </slot>
+  </act:slots>
+  <act:parent type="guid">4423ba7953102c0c51510d3bd930499a</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Santé</act:name>
+  <act:id type="guid">59bae86f81b647fc97ac63607b6dd8e0</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>CAD</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>Assurance santé</act:description>
+  <act:parent type="guid">d6074acd842cb47f5f3413c954bc9041</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Vie</act:name>
+  <act:id type="guid">8c3646eed6f34b59d4f242c3a6ff1ef2</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>CAD</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>Assurance vie</act:description>
+  <act:parent type="guid">d6074acd842cb47f5f3413c954bc9041</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Buanderie</act:name>
+  <act:id type="guid">57721242669da03b54f8b210c4a3550b</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>CAD</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>Buanderie</act:description>
+  <act:parent type="guid">4423ba7953102c0c51510d3bd930499a</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Frais médicaux</act:name>
+  <act:id type="guid">84844755a33f03d9963f9602bb54fba1</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>CAD</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>Frais médicaux</act:description>
+  <act:parent type="guid">4423ba7953102c0c51510d3bd930499a</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Divers</act:name>
+  <act:id type="guid">40c1235c11201a2ee6d92b4b56c298f6</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>CAD</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>Frais divers</act:description>
+  <act:parent type="guid">4423ba7953102c0c51510d3bd930499a</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Transports publics</act:name>
+  <act:id type="guid">b18073ae6f4ff5924edbac184836839a</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>CAD</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>Transports publics</act:description>
+  <act:parent type="guid">4423ba7953102c0c51510d3bd930499a</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Abonnements</act:name>
+  <act:id type="guid">b1c1f6057247db320289562c3bc34e0a</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>CAD</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>Abonnements</act:description>
+  <act:parent type="guid">4423ba7953102c0c51510d3bd930499a</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Fournitures</act:name>
+  <act:id type="guid">18064a4f7add1f4dda49c7cb5a63a629</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>CAD</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>Fournitures et produits ménagers</act:description>
+  <act:parent type="guid">4423ba7953102c0c51510d3bd930499a</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Services</act:name>
+  <act:id type="guid">4a0e8b8416ceccc1b8d1211336192442</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>CAD</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>Services publics</act:description>
+  <act:slots>
+    <slot>
+      <slot:key>placeholder</slot:key>
+      <slot:value type="string">true</slot:value>
+    </slot>
+  </act:slots>
+  <act:parent type="guid">4423ba7953102c0c51510d3bd930499a</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Électricité</act:name>
+  <act:id type="guid">0336416706cbe8d37efd9b2149ed9a6e</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>CAD</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>Électricité</act:description>
+  <act:parent type="guid">4a0e8b8416ceccc1b8d1211336192442</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Ordures</act:name>
+  <act:id type="guid">496be0da569481c99b3eb5c6823ebfa2</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>CAD</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>Collecte d'ordures</act:description>
+  <act:parent type="guid">4a0e8b8416ceccc1b8d1211336192442</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Gaz</act:name>
+  <act:id type="guid">7e43157db05539d49aa6ebbc9f8c4afb</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>CAD</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>Gaz/Mazout</act:description>
+  <act:parent type="guid">4a0e8b8416ceccc1b8d1211336192442</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Eau</act:name>
+  <act:id type="guid">7a216b1d9753f4dfe98e29b06aea168a</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>CAD</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>Eau</act:description>
+  <act:parent type="guid">4a0e8b8416ceccc1b8d1211336192442</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Câble</act:name>
+  <act:id type="guid">35c3b06201fdbe420b2b10f2be5675de</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>CAD</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>Câble</act:description>
+  <act:parent type="guid">4a0e8b8416ceccc1b8d1211336192442</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Internet</act:name>
+  <act:id type="guid">967f6d93138f60d1a1ee49cd87629850</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>CAD</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>Fournisseur d'accès Internet</act:description>
+  <act:parent type="guid">4a0e8b8416ceccc1b8d1211336192442</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Téléphone</act:name>
+  <act:id type="guid">42778c6609c1b783aacdd85bb6fa3c3a</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>CAD</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>Téléphone</act:description>
+  <act:parent type="guid">4a0e8b8416ceccc1b8d1211336192442</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Cellulaire</act:name>
+  <act:id type="guid">c1775b724645c55f5bc7ffd53e9ff03a</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>CAD</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>Téléphone cellulaire</act:description>
+  <act:parent type="guid">4a0e8b8416ceccc1b8d1211336192442</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Cotisations</act:name>
+  <act:id type="guid">cc0adb3521225e2c72ccb654c8861a2c</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>CAD</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>Cotisations professionnelles et syndicales</act:description>
+  <act:parent type="guid">4423ba7953102c0c51510d3bd930499a</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Intérêts</act:name>
+  <act:id type="guid">21a46c26af01e5c0d12e807fb9594297</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>CAD</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>Dépense d'intérêts</act:description>
+  <act:slots>
+    <slot>
+      <slot:key>placeholder</slot:key>
+      <slot:value type="string">true</slot:value>
+    </slot>
+  </act:slots>
+  <act:parent type="guid">4423ba7953102c0c51510d3bd930499a</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Carte de crédit</act:name>
+  <act:id type="guid">b195e2505d6b1011a250d171cea850c1</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>CAD</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>Intérêts sur carte de crédit</act:description>
+  <act:parent type="guid">21a46c26af01e5c0d12e807fb9594297</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Marge de crédit</act:name>
+  <act:id type="guid">330b461099246dae998ad5575d883353</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>CAD</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>Intérêts sur marge de crédit personnelle</act:description>
+  <act:parent type="guid">21a46c26af01e5c0d12e807fb9594297</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Garderie</act:name>
+  <act:id type="guid">786fdb1b3c83310d37cd33d918e0f658</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>CAD</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>Garderie</act:description>
+  <act:parent type="guid">4423ba7953102c0c51510d3bd930499a</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Capitaux propres</act:name>
+  <act:id type="guid">4e9ef4d8df45bd0ed652556266d64ed2</act:id>
+  <act:type>EQUITY</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>CAD</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>Capitaux propres</act:description>
+  <act:slots>
+    <slot>
+      <slot:key>placeholder</slot:key>
+      <slot:value type="string">true</slot:value>
+    </slot>
+    <slot>
+      <slot:key>color</slot:key>
+      <slot:value type="string">#EE8600</slot:value>
+    </slot>
+  </act:slots>
+  <act:parent type="guid">3cd35f28160a1e49a1428440b954b514</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Ouverture</act:name>
+  <act:id type="guid">6833194578672a1e620c749616ace232</act:id>
+  <act:type>EQUITY</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>CAD</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>Soldes d'ouverture des nouveaux comptes</act:description>
+  <act:parent type="guid">4e9ef4d8df45bd0ed652556266d64ed2</act:parent>
+</gnc:account>
+</gnc-v2>
+
+<!-- Local variables: -->
+<!-- mode: xml        -->
+<!-- End:             -->
