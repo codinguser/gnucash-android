@@ -23,7 +23,6 @@ import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
-import android.view.ContextThemeWrapper;
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockPreferenceActivity;
 import org.gnucash.android.R;
@@ -76,7 +75,7 @@ public class AccountPreferencesFragment extends PreferenceFragment {
             public boolean onPreferenceClick(Preference preference) {
                 new AlertDialog.Builder(getActivity())
                         .setTitle(R.string.title_create_default_accounts)
-                        .setMessage(R.string.message_create_default_accounts_confirmation)
+                        .setMessage(R.string.message_confirm_create_default_accounts_setting)
                         .setIcon(android.R.drawable.ic_dialog_alert)
                         .setPositiveButton(R.string.btn_create_accounts, new DialogInterface.OnClickListener() {
                             @Override

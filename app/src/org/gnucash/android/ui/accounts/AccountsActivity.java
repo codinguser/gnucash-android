@@ -26,7 +26,6 @@ import android.content.SharedPreferences.Editor;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Resources;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -47,10 +46,7 @@ import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import com.viewpagerindicator.TitlePageIndicator;
 import org.gnucash.android.R;
-import org.gnucash.android.data.Account;
-import org.gnucash.android.data.Account.AccountType;
 import org.gnucash.android.data.Money;
-import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.ui.Refreshable;
 import org.gnucash.android.ui.transactions.RecurringTransactionsListFragment;
 import org.gnucash.android.ui.transactions.TransactionsActivity;
@@ -60,7 +56,8 @@ import org.gnucash.android.util.OnAccountClickedListener;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
-import java.util.*;
+import java.util.Currency;
+import java.util.Locale;
 
 /**
  * Manages actions related to accounts, displaying, exporting and creating new accounts
@@ -74,8 +71,8 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
 	 * Tag used for identifying the account list fragment when it is added to this activity
 	 */
 	public static final String FRAGMENT_ACCOUNTS_LIST 	= "accounts_list";
-		
-	/**
+
+    /**
 	 * Tag used for identifying the account export fragment
 	 */
 	protected static final String FRAGMENT_EXPORT_OFX  = "export_ofx";
@@ -120,12 +117,6 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
      */
     private SparseArray<Refreshable> mFragmentPageReferenceMap = new SparseArray<Refreshable>();
 
-    /**
-	 * Stores the indices of accounts which have been selected by the user for creation from the dialog.
-	 * The account names are stored as string resources and the selected indices are then used to choose which accounts to create
-	 * The dialog for creating default accounts is only shown when the app is started for the first time.
-	 */
-	private ArrayList<Integer> mSelectedDefaultAccounts = new ArrayList<Integer>();
 	
 	/**
 	 * Dialog which is shown to the user on first start prompting the user to create some accounts
@@ -240,7 +231,7 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
         if (locale.getCountry().equals("UK")) {
             locale = new Locale(locale.getLanguage(), "GB");
         }
-        String currencyCode = null;
+        String currencyCode;
         try { //there are some strange locales out there
             currencyCode = prefs.getString(getString(R.string.key_default_currency),
                     Currency.getInstance(locale).getCurrencyCode());
@@ -300,13 +291,13 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
 	public static void showWhatsNewDialog(Context context){
         Resources resources = context.getResources();
         StringBuilder releaseTitle = new StringBuilder(resources.getString(R.string.title_whats_new));
-        PackageInfo packageInfo = null;
+        PackageInfo packageInfo;
         try {
             packageInfo = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
+            releaseTitle.append(" - v").append(packageInfo.versionName);
         } catch (NameNotFoundException e) {
             e.printStackTrace();
         }
-        releaseTitle.append(" - v").append(packageInfo.versionName);
 
         new AlertDialog.Builder(context)
 		.setTitle(releaseTitle.toString())
@@ -421,80 +412,20 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
 	}
 
 	/**
-	 * Creates the default accounts which have the selected by the user.
-	 * The indices of the default accounts is stored in {@link #mSelectedDefaultAccounts}
+	 * Shows the user dialog to create default account structure or import existing account structure
 	 */
 	private void createDefaultAccounts(){
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		boolean[] checkedDefaults = new boolean[]{true, true, false, false, false};
-		//add the checked defaults, the rest will be added by user action
-		mSelectedDefaultAccounts.add(0);
-		mSelectedDefaultAccounts.add(1);
-		builder.setTitle(R.string.title_default_accounts);		
-		builder.setMultiChoiceItems(R.array.default_accounts, checkedDefaults, new DialogInterface.OnMultiChoiceClickListener() {
-			
-			@Override
-			public void onClick(DialogInterface dialog, int which, boolean isChecked) {
-				if (isChecked){
-					mSelectedDefaultAccounts.add(which);
-				} else {
-					mSelectedDefaultAccounts.remove(Integer.valueOf(which));
-				}
-			}
-		});
+		builder.setTitle(R.string.title_default_accounts);
+        builder.setMessage(R.string.message_confirm_create_default_accounts_first_run);
+
 		builder.setPositiveButton(R.string.btn_create_accounts, new DialogInterface.OnClickListener() {
 			
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
-				AccountsDbAdapter dbAdapter = new AccountsDbAdapter(getApplicationContext());
-				String[] defaultAccounts = getResources().getStringArray(R.array.default_accounts);
-				for (int index : mSelectedDefaultAccounts) {
-					String name = defaultAccounts[index];
-					Account account = new Account(name);
-					
-					//these indices are bound to the order in which the accounts occur in strings.xml
-					switch (index) {
-					case 0:
-						account.setAccountType(AccountType.EXPENSE);
-                        account.setColorCode(getString(R.color.account_red));
-						break;
-						
-					case 1:
-						account.setAccountType(AccountType.INCOME);
-                        account.setColorCode(getString(R.color.account_green));
-						break;
-						
-					case 2:
-						account.setAccountType(AccountType.ASSET);
-                        account.setColorCode(getString(R.color.account_gold));
-						break;
-					case 3:
-						account.setAccountType(AccountType.EQUITY);
-                        account.setColorCode(getString(R.color.account_blue));
-						break;
-					case 4:
-						account.setAccountType(AccountType.LIABILITY);
-                        account.setColorCode(getString(R.color.account_purple));
-						break;
-						
-					default:
-						account.setAccountType(AccountType.CASH);
-                        account.setColorCode(getString(R.color.account_green));
-						break;
-					}
-					dbAdapter.addAccount(account);
-				}
-				
-				dbAdapter.close();
-				removeFirstRunFlag();
-				Fragment fragment = getSupportFragmentManager().findFragmentByTag(FRAGMENT_ACCOUNTS_LIST);
-				if (fragment != null){
-					try{
-						((AccountsListFragment) fragment).refresh();
-					} catch (ClassCastException e) {
-						Log.e(TAG, e.getMessage());
-					}
-				}
+                InputStream accountFileInputStream = getResources().openRawResource(R.raw.default_accounts);
+                new AccountsActivity.AccountImporterTask(AccountsActivity.this).execute(accountFileInputStream);
+                removeFirstRunFlag();
 			}
 		});
 		
