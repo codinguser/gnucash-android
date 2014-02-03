@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
- Copyright (c) 2012 Ngewi Fet <ngewif@gmail.com>
- Copyright (c) 2012 Nicolas Barranger <wicowyn@gmail.com>
+ Copyright (c) 2012 - 2014 Ngewi Fet <ngewif@gmail.com>
+ Copyright (c) 2012 - 2014 Nicolas Barranger <wicowyn@gmail.com>
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -307,12 +307,14 @@
 	<string name="summary_xml_ofx_header">Activez cette option lors d\'un export vers une application tierce autre que GnuCash pour PC</string>
 	<string name="title_whats_new">Quoi de nouveau</string>
 	<string name="whats_new">
-        - Import de l\'organisation des comptes GnuCash pour PC\n
-        - Affichage imbriqu&#233; de la hi&#233;rarchie de compte\n
-        - Options permettant d\'effacer tous les comptes/transactions\n
-        - Le support des types de comptes\n
-        - La solde du compte prend maintenant les sous-comptes en consid&#233;ration\n
-        - Nombreuses corrections de bugs\n
+        - Mark favorite accounts and quickly access them\n
+        - Display different tabs for recent, favorite and all accounts\n
+        - Add, view and delete recurring transactions (daily, weekly, monthly)\n
+        - Mark accounts as placeholder accounts (cannot contain transactions)\n
+        - Set a default transfer account for each account\n
+        - Color code accounts and themed account views\n
+        - Create default GnuCash account structure from within app\n
+        - Numerous bug fixes and improvements\n
 	</string>
 	<string name="label_dismiss">Passer</string>
     <string name="toast_transanction_amount_required">Entrez un montant pour sauvgarder la transaction</string>

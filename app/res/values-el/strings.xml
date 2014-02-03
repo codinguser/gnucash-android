@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
- Copyright (c) 2012 Ngewi Fet <ngewif@gmail.com>
- Copyright (c) 2012 Menelaos Maglis <mmaglis@metacom.gr> 
+ Copyright (c) 2012 - 2014 Ngewi Fet <ngewif@gmail.com>
+ Copyright (c) 2012 - 2014 Menelaos Maglis <mmaglis@metacom.gr>
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -314,12 +314,14 @@
 	<string name="summary_xml_ofx_header">Ενεργοποίηση αυτής της επιλογής για εξαγωγή σε εφαρμογές τρίτων, εκτός του GnuCash για επιτραπέζιο υπολογιστή.</string>
 	<string name="title_whats_new">Τι νέο υπάρχει</string>
 	<string name="whats_new">
-        - Import GnuCash desktop account structure\n
-        - Nested display of account hierarchy\n
-        - Options for deleting all accounts/transactions\n
-        - Preliminary support for account types\n
-        - Account balance now takes sub-accounts into consideration\n
-        - Numerous bug fixes\n
+        - Mark favorite accounts and quickly access them\n
+        - Display different tabs for recent, favorite and all accounts\n
+        - Add, view and delete recurring transactions (daily, weekly, monthly)\n
+        - Mark accounts as placeholder accounts (cannot contain transactions)\n
+        - Set a default transfer account for each account\n
+        - Color code accounts and themed account views\n
+        - Create default GnuCash account structure from within app\n
+        - Numerous bug fixes and improvements\n
 	</string>
 	<string name="label_dismiss">Απόρριψη</string>
     <string name="toast_transanction_amount_required">Εισαγωγή ποσού για

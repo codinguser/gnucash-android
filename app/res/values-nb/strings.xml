@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
- Copyright (c) 2012 Ngewi Fet <ngewif@gmail.com>
- Copyright (c) 2012 Kjell Thomas Pedersen <kjelltp@gmail.com>
- Copyright (c) 2012 Sigurd Gartmann <sigurdga-github@sigurdga.no>
+ Copyright (c) 2012 - 2014 Ngewi Fet <ngewif@gmail.com>
+ Copyright (c) 2012 - 2014 Kjell Thomas Pedersen <kjelltp@gmail.com>
+ Copyright (c) 2012 - 2014 Sigurd Gartmann <sigurdga-github@sigurdga.no>
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -310,12 +310,14 @@ format og importeres i regnskapsprogrammet GnuCash for PC.</string>
 	<string name="summary_xml_ofx_header">Velg denne hvis du skal eksportere til annen programvare enn GnuCash for PC.</string>
 	<string name="title_whats_new">Hva er nytt</string>
 	<string name="whats_new">
-        - Importering av GnuCash (PC) konto struktur\n
-        - Nestet visning av konto hierarki\n
-        - Valg for sletting av alle transaksjoner/kontoer\n
-        - Foreløpig støtte for kontotyper\n
-        - Konto balanse inkluderer nå underkontoer\n
-        - Mange feilrettinger\n
+        - Mark favorite accounts and quickly access them\n
+        - Display different tabs for recent, favorite and all accounts\n
+        - Add, view and delete recurring transactions (daily, weekly, monthly)\n
+        - Mark accounts as placeholder accounts (cannot contain transactions)\n
+        - Set a default transfer account for each account\n
+        - Color code accounts and themed account views\n
+        - Create default GnuCash account structure from within app\n
+        - Numerous bug fixes and improvements\n
 	</string>
 	<string name="label_dismiss">Ferdig</string>
     <string name="toast_transanction_amount_required">Oppgi et beløp for å lagre transaksjonen</string>

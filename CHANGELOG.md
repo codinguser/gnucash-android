@@ -1,5 +1,24 @@
 Change Log
 ===============================================================================
+Version 1.3.0 *(2014-02-07)*
+----------------------------
+* Fixed: Some file managers do not display all files available for import
+* Fixed: Crash when deleting account from accounts list
+* Fixed: CASH accounts should have normal DEBIT balance
+* Fixed: Crash when quickly opening and navigating from transactions list
+* Feature: Mark favorite accounts and quickly access them
+* Feature: Display different tabs for recent, favorite and all accounts
+* Feature: Add, view and delete recurring transactions (daily, weekly, monthly)
+* Feature: Mark accounts as placeholder accounts (cannot contain transactions)
+* Feature: Set a default transfer account for each account
+* Feature: Color code accounts & themed account views
+* Feature: Create default GnuCash account structure from within app
+* Improved: Enabled one-button click for rating app and sending feedback
+* Improved: Clicking on version information now shows changelog
+* Improved: Delete account and all its sub-accounts
+* Improved: Sub-accounts default to same account type as parent account
+* Improved: Use tab views for sub-accounts and transactions inside accounts
+
 Version 1.2.7 *(2013-12-18)*
 ----------------------------
 * Fixed: Export format always defaults to QIF, ignoring user preference

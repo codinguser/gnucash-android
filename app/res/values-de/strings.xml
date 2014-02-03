@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
- Copyright (c) 2012 Ngewi Fet <ngewif@gmail.com>
- Copyright (c) 2012 Christian Stimming <christian@stimming.de>
+ Copyright (c) 2012 - 2014 Ngewi Fet <ngewif@gmail.com>
+ Copyright (c) 2012 - 2014 Christian Stimming <christian@stimming.de>
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -307,12 +307,14 @@
 	<string name="summary_xml_ofx_header">Dieses Option aktivieren wenn Sie die OFX Dateien für ein anderes Programm als GnuCash auf dem Desktop exportieren</string>
 	<string name="title_whats_new">Neuigkeiten in dieser Version</string>
 	<string name="whats_new">
-        - Import GnuCash desktop account structure\n
-        - Nested display of account hierarchy\n
-        - Options for deleting all accounts/transactions\n
-        - Preliminary support for account types\n
-        - Account balance now takes sub-accounts into consideration\n
-        - Numerous bug fixes\n
+        - Mark favorite accounts and quickly access them\n
+        - Display different tabs for recent, favorite and all accounts\n
+        - Add, view and delete recurring transactions (daily, weekly, monthly)\n
+        - Mark accounts as placeholder accounts (cannot contain transactions)\n
+        - Set a default transfer account for each account\n
+        - Color code accounts and themed account views\n
+        - Create default GnuCash account structure from within app\n
+        - Numerous bug fixes and improvements\n
     </string>
 	<string name="label_dismiss">Schließen</string>
     <string name="toast_transanction_amount_required">Geben Sie einen Betrag ein um die Buchung speichern zu können</string>

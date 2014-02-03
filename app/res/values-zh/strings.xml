@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
 <!--
- Copyright (c) 2012 Ngewi Fet <ngewif@gmail.com>
+ Copyright (c) 2012 - 2014 Ngewi Fet <ngewif@gmail.com>
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -305,12 +305,14 @@
     <string name="summary_xml_ofx_header">当导出数据到GnuCash桌面版以外的程序时需要开启这个选项。</string>
     <string name="title_whats_new">新功能</string>
     <string name="whats_new">
-        - 导入GnuCash桌面版的资料\n
-        - 嵌套科目的显示\n
-        - 增加删除所有资料的选项\n
-        - 初步支持帐户类型\n
-        - 科目余额计算现在考虑了子帐户的情形\n
-        - 修改了好多BUG\n
+        - Mark favorite accounts and quickly access them\n
+        - Display different tabs for recent, favorite and all accounts\n
+        - Add, view and delete recurring transactions (daily, weekly, monthly)\n
+        - Mark accounts as placeholder accounts (cannot contain transactions)\n
+        - Set a default transfer account for each account\n
+        - Color code accounts and themed account views\n
+        - Create default GnuCash account structure from within app\n
+        - Numerous bug fixes and improvements\n
 	</string>
     <string name="label_dismiss">知道了</string>
     <string name="toast_transanction_amount_required">输入金额才能保存交易</string>

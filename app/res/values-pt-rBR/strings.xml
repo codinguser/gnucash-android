@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
- Copyright (c) 2012 Ngewi Fet <ngewif@gmail.com>
- Copyright (c) 2012 Pedro Abel <pedroabel@gmail.com>
+ Copyright (c) 2012 - 2014 Ngewi Fet <ngewif@gmail.com>
+ Copyright (c) 2012 - 2014 Pedro Abel <pedroabel@gmail.com>
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -306,12 +306,14 @@
 	  <string name="summary_xml_ofx_header">Habilitar essa opção quando estiver exportando para um software terceiro, diferente do GnuCash para desktop</string>
 	  <string name="title_whats_new">O que há de novo</string>
 	  <string name="whats_new">
-          - Importação da estrutura de contas do GnuCash para desktop\n
-          - Apresentação de contas alinhadas hierarquicamente\n
-          - Opções para deletar todas as contas/transações\n
-          - Suporte preliminar para tipos de contas\n
-          - Saldos das sub-contas agora são considerados ao apresentar o saldo da conta principal\n
-          - Diversas correções de bugs\n
+          - Mark favorite accounts and quickly access them\n
+          - Display different tabs for recent, favorite and all accounts\n
+          - Add, view and delete recurring transactions (daily, weekly, monthly)\n
+          - Mark accounts as placeholder accounts (cannot contain transactions)\n
+          - Set a default transfer account for each account\n
+          - Color code accounts and themed account views\n
+          - Create default GnuCash account structure from within app\n
+          - Numerous bug fixes and improvements\n
 	  </string>
 	  <string name="label_dismiss">Descartar</string>
     <string name="toast_transanction_amount_required">Adicione um valor para salvar a transação</string>

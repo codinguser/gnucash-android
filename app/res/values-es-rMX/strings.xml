@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
- Copyright (c) 2012 Ngewi Fet <ngewif@gmail.com>
- Copyright (c) 2012 Israel Buitron <israel.buitron@gmail.com>
+ Copyright (c) 2012 - 2014 Ngewi Fet <ngewif@gmail.com>
+ Copyright (c) 2012 - 2014 Israel Buitron <israel.buitron@gmail.com>
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -307,12 +307,14 @@
 	<string name="summary_xml_ofx_header">Active esta opci&#243;n para exportar a otras aplicaciones distintas a GnuCash para escritorio</string>
 	<string name="title_whats_new">&#191;Qu&#233; hay nuevo?</string>
 	<string name="whats_new">
-        - Importaci&#243;n de estructura de cuentas de GnuCash para escritorio\n
-        - Visualizaci\'on de cuentas jer&#225;rquicas\n
-        - Opciones para eliminaci&#243;n de todas las cuentas/transacciones\n
-        - Soporte preeliminar para tipos de cuentas\n
-        - Saldo de cuenta considera saldos de subcuentas\n
-        - Varios errores solucionados\n
+        - Mark favorite accounts and quickly access them\n
+        - Display different tabs for recent, favorite and all accounts\n
+        - Add, view and delete recurring transactions (daily, weekly, monthly)\n
+        - Mark accounts as placeholder accounts (cannot contain transactions)\n
+        - Set a default transfer account for each account\n
+        - Color code accounts and themed account views\n
+        - Create default GnuCash account structure from within app\n
+        - Numerous bug fixes and improvements\n
 	</string>
 	<string name="label_dismiss">Cerrar</string>
     <string name="toast_transanction_amount_required">Ingrese el saldo para guardar la transacci&#243;n</string>
