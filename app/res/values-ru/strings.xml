@@ -319,8 +319,8 @@
     <string name="menu_import_accounts">Импортировать счета из GnuCash</string>
     <string name="btn_import_accounts">Импортировать счета</string>
     <string name="toast_error_importing_accounts">Произошла ошибка при импорте счетов из GnuCash</string>
-    <string name="toast_success_importing_accounts">Счета из GnuCash успено импортированы</string>
-    <string name="summary_import_accounts">Испорт структуры счетов из GnuCash для ПК</string>
+    <string name="toast_success_importing_accounts">Счета из GnuCash успешно импортированы</string>
+    <string name="summary_import_accounts">Импорт структуры счетов из GnuCash для ПК</string>
     <string name="title_import_accounts">Импортировать счета из GnuCash</string>
     <string name="summary_delete_all_accounts">Удалить все счета из базы. Все проводки тоже удалятся.</string>
     <string name="title_delete_all_accounts">Удалить все счета</string>
@@ -332,7 +332,7 @@
     <string name="title_delete_all_transactions">Удалить все проводки</string>
     <string name="toast_all_transactions_deleted">Все проводки удалены!</string>
     <string name="title_progress_importing_accounts">Импортируются счета</string>
-    <string name="toast_tap_again_to_confirm_delete">Нажмите езё раз для подтверждения. ВСЕ записи будут удалены!</string>
+    <string name="toast_tap_again_to_confirm_delete">Нажмите ещё раз для подтверждения. ВСЕ записи будут удалены!</string>
     <string name="section_header_transactions">Проводки</string>
     <string name="section_header_accounts">Дочерние счета</string>
     <string name="menu_search_accounts">Поиск</string>
