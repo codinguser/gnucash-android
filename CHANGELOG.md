@@ -1,6 +1,6 @@
 Change Log
 ===============================================================================
-Version 1.3.0 *(2014-02-07)*
+Version 1.3.0 *(2014-02-10)*
 ----------------------------
 * Fixed: Some file managers do not display all files available for import
 * Fixed: Crash when deleting account from accounts list

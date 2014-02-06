@@ -400,10 +400,6 @@ public class AccountsListFragment extends SherlockListFragment implements
                 showExportDialog();
                 return true;
 
-            case R.id.menu_settings:
-                startActivity(new Intent(getActivity(), SettingsActivity.class));
-                return true;
-
             default:
                 return false;
         }

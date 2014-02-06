@@ -57,7 +57,7 @@ public class RecurringTransactionsListFragment extends SherlockListFragment impl
     /**
      * Logging tag
      */
-    protected static final String TAG = "TransactionsListFragment";
+    protected static final String TAG = "RecurringTransactionsFragment";
 
     private TransactionsDbAdapter mTransactionsDbAdapter;
     private SimpleCursorAdapter mCursorAdapter;
@@ -112,7 +112,7 @@ public class RecurringTransactionsListFragment extends SherlockListFragment impl
                         alarmManager.cancel(recurringPendingIntent);
                         if (mTransactionsDbAdapter.deleteRecord(id)){
                             Toast.makeText(getActivity(), R.string.toast_recurring_transaction_deleted, Toast.LENGTH_SHORT).show();
-                        };
+                        }
                     }
                     refreshList();
                     mode.finish();
@@ -148,10 +148,11 @@ public class RecurringTransactionsListFragment extends SherlockListFragment impl
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        ActionBar aBar = getSherlockActivity().getSupportActionBar();
-        aBar.setDisplayShowTitleEnabled(true);
-        aBar.setDisplayHomeAsUpEnabled(true);
-        aBar.setTitle("Recurring Transactions");
+        ActionBar actionBar = getSherlockActivity().getSupportActionBar();
+        actionBar.setDisplayShowTitleEnabled(true);
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setHomeButtonEnabled(true);
+        actionBar.setTitle("Recurring Transactions");
 
         setHasOptionsMenu(true);
         getListView().setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
@@ -209,7 +210,18 @@ public class RecurringTransactionsListFragment extends SherlockListFragment impl
 //        inflater.inflate(R.menu.transactions_list_actions, menu);
         //remove menu items from the AccountsActivity
         menu.removeItem(R.id.menu_search);
-        menu.removeItem(R.id.menu_settings);
+//        menu.removeItem(R.id.menu_settings);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case android.R.id.home:
+                getActivity().finish();
+                return true;
+            default:
+                return false;
+        }
     }
 
     @Override
@@ -284,10 +296,9 @@ public class RecurringTransactionsListFragment extends SherlockListFragment impl
      */
     private void stopActionMode(){
         int checkedCount = getListView().getCheckedItemIds().length;
-        if (checkedCount > 0 || mActionMode == null)
-            return;
-        else
+        if (checkedCount <= 0 && mActionMode != null) {
             mActionMode.finish();
+        }
     }
 
 

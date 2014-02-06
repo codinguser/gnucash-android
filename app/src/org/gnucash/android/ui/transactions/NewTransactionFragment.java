@@ -319,16 +319,11 @@ public class NewTransactionFragment extends SherlockFragment implements
 	private void initializeViewsWithTransaction(){
 		mNameEditText.setText(mTransaction.getName());
 
-        //FIXME: Better handle the different kinds of accounts and how transfers between the different types affect balance
+        //FIXME: You need to revisit me when splits are introduced
         //checking the type button means the amount will be shown as negative (in red) to user
-//        if (mAccountType.hasDebitNormalBalance()){
-//            mTransactionTypeButton.setChecked();
-//            mTransactionTypeButton.setChecked(mTransaction.getTransactionType() == TransactionType.CREDIT);
-//        }
-//        else {
-//            mTransactionTypeButton.setChecked(mTransaction.getTransactionType() == TransactionType.DEBIT);
-//        }
-        mTransactionTypeButton.setChecked(mTransaction.getTransactionType() == TransactionType.DEBIT);
+
+        mTransactionTypeButton.setChecked(mTransaction.getAmount().isNegative());
+
 		if (!mAmountManuallyEdited){
             //when autocompleting, only change the amount if the user has not manually changed it already
             mAmountEditText.setText(mTransaction.getAmount().toPlainString());

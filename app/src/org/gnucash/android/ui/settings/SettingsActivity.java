@@ -121,8 +121,10 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
             pref = findPreference(getString(R.string.key_build_version));
             pref.setOnPreferenceClickListener(this);
 
-            pref = findPreference(getString(R.string.key_create_default_accounts));
-            pref.setOnPreferenceClickListener(this);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB){
+                pref = findPreference(getString(R.string.key_create_default_accounts));
+                pref.setOnPreferenceClickListener(this);
+            }
 		}
 	}
 

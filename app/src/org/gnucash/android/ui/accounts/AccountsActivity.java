@@ -48,6 +48,7 @@ import com.viewpagerindicator.TitlePageIndicator;
 import org.gnucash.android.R;
 import org.gnucash.android.data.Money;
 import org.gnucash.android.ui.Refreshable;
+import org.gnucash.android.ui.settings.SettingsActivity;
 import org.gnucash.android.ui.transactions.RecurringTransactionsListFragment;
 import org.gnucash.android.ui.transactions.TransactionsActivity;
 import org.gnucash.android.ui.transactions.TransactionsListFragment;
@@ -242,14 +243,15 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
 
         Money.DEFAULT_CURRENCY_CODE = currencyCode;
 
-        if (hasNewFeatures()){
-            showWhatsNewDialog(this);
-        }
-
         boolean firstRun = prefs.getBoolean(getString(R.string.key_first_run), true);
         if (firstRun){
             createDefaultAccounts();
         }
+
+        if (hasNewFeatures()){
+            showWhatsNewDialog(this);
+        }
+
     }
 
     @Override
@@ -321,18 +323,16 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
-		case android.R.id.home:
-	        FragmentManager fm = getSupportFragmentManager();
-	        if (fm.getBackStackEntryCount() > 0) {
-	            fm.popBackStack();
-	        }
-	        return true;
-
             case R.id.menu_recurring_transactions:
                 Intent intent = new Intent(this, AccountsActivity.class);
                 intent.setAction(ACTION_VIEW_RECURRING);
                 startActivity(intent);
                 return true;
+
+            case R.id.menu_settings:
+                startActivity(new Intent(this, SettingsActivity.class));
+                return true;
+
 		default:
 			return false;
 		}
