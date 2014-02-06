@@ -307,14 +307,14 @@
 	<string name="summary_xml_ofx_header">Active esta opci&#243;n para exportar a otras aplicaciones distintas a GnuCash para escritorio</string>
 	<string name="title_whats_new">Novedades</string>
 	<string name="whats_new">
-        - Mark favorite accounts and quickly access them\n
-        - Display different tabs for recent, favorite and all accounts\n
-        - Add, view and delete recurring transactions (daily, weekly, monthly)\n
-        - Mark accounts as placeholder accounts (cannot contain transactions)\n
-        - Set a default transfer account for each account\n
-        - Color code accounts and themed account views\n
-        - Create default GnuCash account structure from within app\n
-        - Numerous bug fixes and improvements\n
+        - Marcar cuentas como favoritas para un acceso r&#225;pido\n
+        - Mostrar pesta&#241;as para recientes, favoritos y todas las cuentas\n
+        - A&#241;dir, ver y borrar transacciones recurrentes (diarias, semanales, mensuales)\n
+        - Marcar cuentas como cuentas de referencia (no puede contener transacciones)\n
+        - Definir una cuenta de transferencia por defecto para cada cuenta\n
+        - Escoger un color para cada cuenta y temas para las vistas de cuentas\n
+        - Crear una estructura de cuentas Gnucash por defecto desde la aplicaci&#243;\n
+        - Numerosos arreglos y mejoras\n
 	</string>
 	<string name="label_dismiss">Cerrar</string>
     <string name="toast_transanction_amount_required">Introduzca un importe para guardar la transacci&#243;n</string>
@@ -335,23 +335,23 @@
     <string name="summary_delete_all_transactions">Todas las transaccipnes en todas las cuentas ser&#225;n borradas</string>
     <string name="title_delete_all_transactions">Borrar todas las transacciones</string>
     <string name="toast_all_transactions_deleted">Todas las transacciones han sido borradas con &#233;xito</string>
-    <string name="title_progress_importing_accounts">Importing accounts</string>
-    <string name="toast_tap_again_to_confirm_delete">Tap again to confirm. ALL entries will be deleted!!</string>
-    <string name="section_header_transactions">Transactions</string>
-    <string name="section_header_subaccounts">Sub-Accounts</string>
-    <string name="menu_search_accounts">Search</string>
-    <string name="title_default_export_format">Default Export Format</string>
-    <string name="summary_default_export_format">File format to use by default when exporting transactions</string>
-    <string name="menu_export_transactions">Export transactions…</string>
-    <string name="label_recurring_transaction">Recurrence</string>
+    <string name="title_progress_importing_accounts">Importando cuentas</string>
+    <string name="toast_tap_again_to_confirm_delete">Toque otra vez para confirmar. ¡Todas las entradas serán borradas!</string>
+    <string name="section_header_transactions">Transacciones</string>
+    <string name="section_header_subaccounts">Sub-Cuentas</string>
+    <string name="menu_search_accounts">Buscar</string>
+    <string name="title_default_export_format">Formato de exportaci&#243;n por defecto</string>
+    <string name="summary_default_export_format">Formato de archivo para usar por defecto al exportar transacciones</string>
+    <string name="menu_export_transactions">Exportar transacciones…</string>
+    <string name="label_recurring_transaction">Recurrencia</string>
     <!-- This should be the same name used by GnuCash desktop for imbalance accounts -->
-    <string name="imbalance_account_name">Imbalance</string>
-    <string name="title_progress_exporting_transactions">Exporting transactions</string>
-    <string name="label_no_recurring_transactions">No recurring transactions to display.</string>
-    <string name="toast_recurring_transaction_deleted">Successfully deleted recurring transaction</string>
-    <string name="label_placeholder_account">Placeholder account</string>
-    <string name="label_default_transfer_account">Default Transfer Account</string>
-    <string name="label_account_color_and_type">Account Color &amp; Type</string>
+    <string name="imbalance_account_name">Descuadre</string>
+    <string name="title_progress_exporting_transactions">Exportando transacciones</string>
+    <string name="label_no_recurring_transactions">No hay transacciones recurrentes que mostrar.</string>
+    <string name="toast_recurring_transaction_deleted">Transaci&#243;n recurrente borrada con &#233;xito</string>
+    <string name="label_placeholder_account">Cuenta de referencia</string>
+    <string name="label_default_transfer_account">Cuenta de transferencia por defecto</string>
+    <string name="label_account_color_and_type">Color y tipo de cuenta</string>
     <plurals name="label_sub_accounts">
         <item quantity="one">%d sub-cuenta</item>
         <item quantity="other">%d sub-cuentas</item>
@@ -376,19 +376,16 @@
         <item>OFX</item>
     </string-array>
     <!-- Default title for color picker dialog [CHAR LIMIT=30] -->
-    <string name="color_picker_default_title">Select a Color</string>
-    <string name="label_delete_sub_accounts">Delete sub-accounts</string>
-    <string name="title_recent_accounts">Recent</string>
-    <string name="title_favorite_accounts">Favorites</string>
-    <string name="title_all_accounts">All</string>
-    <string name="summary_create_default_accounts">Creates default GnuCash commonly-used account structure</string>
-    <string name="title_create_default_accounts">Create default accounts</string>
-    <string name="message_confirm_create_default_accounts_setting">New accounts will be created in addition to the existing
-        account structure.\n\nIf you wish to replace currently existing accounts, delete them first before proceeding!
+    <string name="color_picker_default_title">Seleccionar un color</string>
+    <string name="label_delete_sub_accounts">Borrar sub-cuentas</string>
+    <string name="title_recent_accounts">Reciente</string>
+    <string name="title_favorite_accounts">Favoritos</string>
+    <string name="title_all_accounts">Todas</string>
+    <string name="summary_create_default_accounts">Crea una estructura por defecto de cuentas GnuCash com&#250;nmente usadas</string>
+    <string name="title_create_default_accounts">Crear cuentas por defecto</string>
+    <string name="message_confirm_create_default_accounts_setting">Se crear&#225;n nuevas cuentas por defecto adem&#225;s de la estructura ya existente.\n\nSi desea reemplazar las cuentas ya existentes b&#243;rrelas primero antes de seguir.
     </string>
-    <string name="menu_item_recurring_transactions">Recurring Transactions</string>
-    <string name="message_confirm_create_default_accounts_first_run">Welcome to GnuCash Android! \nYou can either create
-        a hierarchy of commonly-used accounts, or import your own GnuCash account structure. \n\nBoth options are also
-        available in app Settings so you can decide later.
+    <string name="menu_item_recurring_transactions">Transacciones Recurrentes</string>
+    <string name="message_confirm_create_default_accounts_first_run">Bienvenido a GnuCash Android! \nPuede crear una jerarqu&#237;a de cuentas com&#250;nmente usadas o importar su propia estructura de cuentas GnuCash. \n\nAmbas opciones est&#225;n disponibles en las opciones de la aplicaci&#243; por si quiere decidirlo m&#225;s tarde.
     </string>
 </resources>
