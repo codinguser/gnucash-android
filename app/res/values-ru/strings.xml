@@ -307,14 +307,14 @@
 	<string name="summary_xml_ofx_header">Включите эту опцию, если экспортируете в программы отличные от GnuCash для ПК</string>
 	<string name="title_whats_new">Новости</string>
 	<string name="whats_new">
-        - Mark favorite accounts and quickly access them\n
-        - Display different tabs for recent, favorite and all accounts\n
-        - Add, view and delete recurring transactions (daily, weekly, monthly)\n
-        - Mark accounts as placeholder accounts (cannot contain transactions)\n
-        - Set a default transfer account for each account\n
-        - Color code accounts and themed account views\n
-        - Create default GnuCash account structure from within app\n
-        - Numerous bug fixes and improvements\n
+        - Отметка избранных счетов для быстрого доступа\n
+        - Отдельные табы для последних открывавшихся, избранных и списка всех счетов\n
+        - Добавление, просмотр и удаление запланированных проводок (ежедневные, еженедельные, ежемесячные)\n
+        - Поддержка виртуальных счетов (содержит только дочерние счета, без проводок)\n
+        - Установка трансфертного счёта по умолчанию для каждого счёта\n
+        - Раскраска счетов и темы для списка счетов\n
+        - Создание структуры счетов из приложения\n
+        - Много улучшений и исправлений\n
 	</string>
 	<string name="label_dismiss">Отказаться</string>
     <string name="toast_transanction_amount_required">Введите сумму, чтобы сохранить проводку</string>
@@ -341,15 +341,15 @@
     <string name="title_default_export_format">Формат экспорта по умолчанию</string>
     <string name="summary_default_export_format">Формат файла, используемый по умолчанию при экспорте</string>
     <string name="menu_export_transactions">Экспортировать проводки…</string>
-    <string name="label_recurring_transaction">Recurrence</string>
+    <string name="label_recurring_transaction">Запланированная проводка</string>
     <!-- This should be the same name used by GnuCash desktop for imbalance accounts -->
     <string name="imbalance_account_name">Дисбаланс</string>
     <string name="title_progress_exporting_transactions">Проводки экспортируются</string>
-    <string name="label_no_recurring_transactions">No recurring transactions to display.</string>
-    <string name="toast_recurring_transaction_deleted">Successfully deleted recurring transaction</string>
-    <string name="label_placeholder_account">Placeholder account</string>
-    <string name="label_default_transfer_account">Default Transfer Account</string>
-    <string name="label_account_color_and_type">Account Color &amp; Type</string>
+    <string name="label_no_recurring_transactions">Нет запланированных проводок.</string>
+    <string name="toast_recurring_transaction_deleted">Запланированная проводка успешно удалена</string>
+    <string name="label_placeholder_account">Виртуальный счёт</string>
+    <string name="label_default_transfer_account">Трансфертный счёт по умолчанию</string>
+    <string name="label_account_color_and_type">Цвет &amp; Тип счёта</string>
     <plurals name="label_sub_accounts">
         <item quantity="one">%d дочерний счёт</item>
         <item quantity="other">%d шт. дочерних счетов</item>
@@ -362,31 +362,34 @@
         <item>ПАССИВ</item>
         <item>ДОХОДЫ</item>
         <item>РАСХОДЫ</item>
-        <item>PAYABLE</item>
-        <item>RECEIVABLE</item>
-        <item>EQUITY</item>
-        <item>CURRENCY</item>
-        <item>STOCK</item>
-        <item>MUTUAL FUND</item>
+        <item>А/ОПЛАЧИВАЕМО</item>
+        <item>А/ПОЛУЧАЕМО</item>
+        <item>ЦЕННЫЕ БУМАГИ</item>
+        <item>СОБСТВЕННЫЕ СРЕДСТВА</item>
+        <item>ТОРГОВЛЯ</item>
+        <item>ВЗАИМНЫЙ ФОНД</item>
     </string-array>
     <string-array name="export_formats">
         <item>QIF</item>
         <item>OFX</item>
     </string-array>
     <!-- Default title for color picker dialog [CHAR LIMIT=30] -->
-    <string name="color_picker_default_title">Select a Color</string>
-    <string name="label_delete_sub_accounts">Delete sub-accounts</string>
-    <string name="title_recent_accounts">Recent</string>
-    <string name="title_favorite_accounts">Favorites</string>
-    <string name="title_all_accounts">All</string>
-    <string name="summary_create_default_accounts">Creates default GnuCash commonly-used account structure</string>
-    <string name="title_create_default_accounts">Create default accounts</string>
-    <string name="message_confirm_create_default_accounts_setting">New accounts will be created in addition to the existing
-        account structure.\n\nIf you wish to replace currently existing accounts, delete them first before proceeding!
+    <string name="color_picker_default_title">Выберите цвет</string>
+    <string name="label_delete_sub_accounts">Удалить дочерние счета</string>
+    <string name="title_recent_accounts">Последние</string>
+    <string name="title_favorite_accounts">Избранные</string>
+    <string name="title_all_accounts">Все</string>
+    <string name="summary_create_default_accounts">Создание структуры счетов GnuCash по умолчанию</string>
+    <string name="title_create_default_accounts">Создание счетов по умолчанию</string>
+    <string name="message_confirm_create_default_accounts_setting">Новые счета
+        будут созданы в дополнение к имеющейся структуре счетов.\n\nЕсли вы
+        хотите заменить текущие счета, сперва их удалите!
     </string>
-    <string name="menu_item_recurring_transactions">Recurring Transactions</string>
-    <string name="message_confirm_create_default_accounts_first_run">Welcome to GnuCash Android! \nYou can either create
-        a hierarchy of commonly-used accounts, or import your own GnuCash account structure. \n\nBoth options are also
-        available in app Settings so you can decide later.
+    <string name="menu_item_recurring_transactions">Запланированные проводки</string>
+    <string name="message_confirm_create_default_accounts_first_run">Добро
+        пожаловать в GnuCash для Android!\nВы можете как создать структуру
+        часто используемых счетов, так и импортировать её из GnuCash.\n\nОбе
+        возможности будут доступны из настроек приложения, если вы захотите
+        сделать это позже.
     </string>
 </resources>
