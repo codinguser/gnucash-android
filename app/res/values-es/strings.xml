@@ -386,6 +386,6 @@
     <string name="message_confirm_create_default_accounts_setting">Se crear&#225;n nuevas cuentas por defecto adem&#225;s de la estructura ya existente.\n\nSi desea reemplazar las cuentas ya existentes b&#243;rrelas primero antes de seguir.
     </string>
     <string name="menu_item_recurring_transactions">Transacciones Recurrentes</string>
-    <string name="message_confirm_create_default_accounts_first_run">Bienvenido a GnuCash Android! \nPuede crear una jerarqu&#237;a de cuentas com&#250;nmente usadas o importar su propia estructura de cuentas GnuCash. \n\nAmbas opciones est&#225;n disponibles en las opciones de la aplicaci&#243; por si quiere decidirlo m&#225;s tarde.
+    <string name="message_confirm_create_default_accounts_first_run">&#161;Bienvenido a GnuCash Android! \nPuede crear una jerarqu&#237;a de cuentas com&#250;nmente usadas o importar su propia estructura de cuentas GnuCash. \n\nAmbas opciones est&#225;n disponibles en las opciones de la aplicaci&#243; por si quiere decidirlo m&#225;s tarde.
     </string>
 </resources>
