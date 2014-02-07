@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012 Ngewi Fet <ngewif@gmail.com>
+ * Copyright (c) 2012 - 2014 Ngewi Fet <ngewif@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,20 +16,19 @@
 
 package org.gnucash.android.db;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Currency;
-import java.util.List;
-
-import org.gnucash.android.data.Account;
-import org.gnucash.android.data.Money;
-import org.gnucash.android.data.Transaction;
-
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteStatement;
 import android.util.Log;
+import org.gnucash.android.data.Account;
+import org.gnucash.android.data.Money;
+import org.gnucash.android.data.Transaction;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Currency;
+import java.util.List;
 
 /**
  * Manages persistence of {@link Transaction}s in the database
@@ -66,7 +65,8 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 		contentValues.put(DatabaseHelper.KEY_DESCRIPTION, transaction.getDescription());
 		contentValues.put(DatabaseHelper.KEY_EXPORTED, transaction.isExported() ? 1 : 0);
 		contentValues.put(DatabaseHelper.KEY_DOUBLE_ENTRY_ACCOUNT_UID, transaction.getDoubleEntryAccountUID());
-		
+		contentValues.put(DatabaseHelper.KEY_RECURRENCE_PERIOD, transaction.getRecurrencePeriod());
+
 		long rowId = -1;
 		if ((rowId = fetchTransactionWithUID(transaction.getUID())) > 0){
 			//if transaction already exists, then just update
@@ -106,11 +106,11 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 	 * @return {@link Transaction} object corresponding to database record
 	 */
 	public Transaction getTransaction(long rowId){
-		Transaction transaction = null;
 		if (rowId <= 0)
-			return transaction;
+			return null;
 		
 		Log.v(TAG, "Fetching transaction with id " + rowId);
+        Transaction transaction = null;
 		Cursor c =	fetchRecord(DatabaseHelper.TRANSACTIONS_TABLE_NAME, rowId);
 		if (c != null && c.moveToFirst()){
 			transaction = buildTransactionInstance(c);			
@@ -127,15 +127,33 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 	 * @return Cursor holding set of transactions for particular account
 	 */
 	public Cursor fetchAllTransactionsForAccount(String accountUID){
+        //fetch transactions from this account except recurring transactions. Those have their own view
 		Cursor cursor = mDb.query(DatabaseHelper.TRANSACTIONS_TABLE_NAME, 
 				null, 
-				"(" + DatabaseHelper.KEY_ACCOUNT_UID + " = '" + accountUID + "') "
-				+ "OR (" + DatabaseHelper.KEY_DOUBLE_ENTRY_ACCOUNT_UID + " = '" + accountUID + "' )", 
+				"((" + DatabaseHelper.KEY_ACCOUNT_UID + " = '" + accountUID + "') "
+				+ "OR (" + DatabaseHelper.KEY_DOUBLE_ENTRY_ACCOUNT_UID + " = '" + accountUID + "' ))"
+                + " AND " + DatabaseHelper.KEY_RECURRENCE_PERIOD + " = 0",
 				null, null, null, DatabaseHelper.KEY_TIMESTAMP + " DESC");
-		
+
 		return cursor;
 	}
-	
+
+    /**
+     * Fetches all recurring transactions from the database.
+     * <p>These transactions are not considered "normal" transactions, but only serve to note recurring transactions.
+     * They are not considered when computing account balances</p>
+     * @return Cursor holding set of all recurring transactions
+     */
+    public Cursor fetchAllRecurringTransactions(){
+        Cursor cursor = mDb.query(DatabaseHelper.TRANSACTIONS_TABLE_NAME,
+                null,
+                DatabaseHelper.KEY_RECURRENCE_PERIOD + "!= 0",
+                null, null, null,
+                DatabaseHelper.KEY_ACCOUNT_UID + " ASC, " + DatabaseHelper.KEY_RECURRENCE_PERIOD + " ASC");
+//                DatabaseHelper.KEY_RECURRENCE_PERIOD + " ASC, " + DatabaseHelper.KEY_TIMESTAMP + " DESC");
+        return cursor;
+    }
+
 	/**
 	 * Returns a cursor to a set of all transactions for the account with ID <code>accountID</code>
 	 * or for which this account is the origin account in a double entry
@@ -184,6 +202,7 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 		String amount = c.getString(DatabaseAdapter.COLUMN_AMOUNT);
 		Money moneyAmount = new Money(new BigDecimal(amount), currency);
 		String name   = c.getString(DatabaseAdapter.COLUMN_NAME);
+        long recurrencePeriod = c.getLong(DatabaseAdapter.COLUMN_RECURRENCE_PERIOD);
 		
 		Transaction transaction = new Transaction(moneyAmount, name);
 		transaction.setUID(c.getString(DatabaseAdapter.COLUMN_UID));
@@ -192,7 +211,9 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 		transaction.setDescription(c.getString(DatabaseAdapter.COLUMN_DESCRIPTION));
 		transaction.setExported(c.getInt(DatabaseAdapter.COLUMN_EXPORTED) == 1);
 		transaction.setDoubleEntryAccountUID(doubleAccountUID);
-		
+        transaction.setRecurrencePeriod(recurrencePeriod);
+		transaction.setTransactionType(Transaction.TransactionType.valueOf(c.getString(DatabaseAdapter.COLUMN_TYPE)));
+
 		return transaction;
 	}
 
@@ -303,61 +324,47 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 	public long getAllTransactionsCount(){
 		String sql = "SELECT COUNT(*) FROM " + DatabaseHelper.TRANSACTIONS_TABLE_NAME;		
 		SQLiteStatement statement = mDb.compileStatement(sql);
-	    long count = statement.simpleQueryForLong();
-	    return count;
+        return statement.simpleQueryForLong();
 	}
 	
 	/**
 	 * Returns the sum of transactions belonging to the account with id <code>accountId</code>
      * Double entry accounting is taken into account and the balance reflects the transfer transactions.
-     * This means if the accounts are properly balanced, this method should return 0
 	 * @param accountId Record ID of the account
 	 * @return Sum of transactions belonging to the account
 	 */
 	public Money getTransactionsSum(long accountId){
-		Cursor c = fetchAllTransactionsForAccount(accountId);
+        //FIXME: Properly compute the balance while considering normal account balance
+        String accountUID = getAccountUID(accountId);
 
-		//transactions will have the currency of the account
-		String currencyCode = getCurrencyCode(accountId);
+        String querySum = "SELECT TOTAL(" + DatabaseHelper.KEY_AMOUNT
+                + ") FROM " + DatabaseHelper.TRANSACTIONS_TABLE_NAME
+                + " WHERE " + DatabaseHelper.KEY_ACCOUNT_UID + " = ? AND "
+                + DatabaseHelper.KEY_RECURRENCE_PERIOD + "=0";
 
-        Money amountSum = new Money("0", currencyCode);
+        Cursor sumCursor = mDb.rawQuery(querySum, new String[]{accountUID});
+        double sum = 0d;
 
-		if (c == null || c.getCount() <= 0)
-			return amountSum;
+        if (sumCursor != null && sumCursor.moveToFirst()){
+            sum += sumCursor.getFloat(0);
+            sumCursor.close();
+        }
 
-		while(c.moveToNext()){
-			Money money = new Money(c.getString(DatabaseAdapter.COLUMN_AMOUNT), currencyCode);
-			String doubleEntryAccountUID = c.getString(DatabaseAdapter.COLUMN_DOUBLE_ENTRY_ACCOUNT_UID);
-			if (doubleEntryAccountUID != null && doubleEntryAccountUID.equals(getAccountUID(accountId))){
-				amountSum = amountSum.add(money.negate());
-			} else {
-				amountSum = amountSum.add(money);
-			}
-		}
-		c.close();
-		
-		return amountSum;
-	}
-	
-	/**
-	 * Returns the balance of all accounts with each transaction counted only once
-	 * This does not take into account the currencies and double entry 
-	 * transactions are not considered as well.
-	 * @return Balance of all accounts in the database
-	 * @see AccountsDbAdapter#getDoubleEntryAccountsBalance()
-	 */
-	public Money getAllTransactionsSum(){
-        //TODO: Take double entry into account
-		String query = "SELECT TOTAL(" + DatabaseHelper.KEY_AMOUNT
-                + ") FROM " + DatabaseHelper.TRANSACTIONS_TABLE_NAME;
-		Cursor c = mDb.rawQuery(query, null); 
-//				new String[]{DatabaseHelper.KEY_AMOUNT, DatabaseHelper.TRANSACTIONS_TABLE_NAME});
-		double result = 0;
-		if (c != null && c.moveToFirst()){
-			result = c.getDouble(0);	
-		}
-		c.close();
-		return new Money(new BigDecimal(result));	
+        querySum = "SELECT TOTAL(" + DatabaseHelper.KEY_AMOUNT
+                + ") FROM " + DatabaseHelper.TRANSACTIONS_TABLE_NAME
+                + " WHERE " + DatabaseHelper.KEY_DOUBLE_ENTRY_ACCOUNT_UID + " = ? AND "
+                + DatabaseHelper.KEY_RECURRENCE_PERIOD + "=0";
+
+        sumCursor = mDb.rawQuery(querySum, new String[]{accountUID});
+
+        if (sumCursor != null && sumCursor.moveToFirst()){
+            sum -= sumCursor.getFloat(0);
+            sumCursor.close();
+        }
+
+        BigDecimal sumDecimal = new BigDecimal(sum);
+        Currency currency = Currency.getInstance(getCurrencyCode(accountUID));
+        return new Money(sumDecimal, currency);
 	}
 	
 	/**
@@ -369,7 +376,25 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 	public boolean isSameAccount(long rowId, String accountUID){
 		return getAccountID(accountUID) == rowId;
 	}
-		
+
+    /**
+     * Returns the {@link Account.AccountType} of the account with unique ID <code>uid</code>
+     * @param accountUID Unique ID of the account
+     * @return {@link Account.AccountType} of the account
+     */
+    public Account.AccountType getAccountType(String accountUID){
+        String type = null;
+        Cursor c = mDb.query(DatabaseHelper.ACCOUNTS_TABLE_NAME,
+                new String[]{DatabaseHelper.KEY_TYPE},
+                DatabaseHelper.KEY_UID + "='" + accountUID + "'",
+                null, null, null, null);
+        if (c != null && c.moveToFirst()){
+            type = c.getString(c.getColumnIndexOrThrow(DatabaseHelper.KEY_TYPE));
+            c.close();
+        }
+        return Account.AccountType.valueOf(type);
+    }
+
 	/**
 	 * Marks an account record as exported
 	 * @param accountUID Unique ID of the record to be marked as exported
@@ -423,6 +448,25 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 		return uid;
 	}
 
+    /**
+     * Returns Unique Identifier of account to which <code>transaction</code> belongs
+     * @param transactionID Record ID of the transaction
+     * @return Unique Identifier string of account to which transaction belongs
+     */
+    public String getAccountUidFromTransaction(long transactionID){
+        Cursor c = mDb.query(DatabaseHelper.TRANSACTIONS_TABLE_NAME,
+                new String[]{DatabaseHelper.KEY_ACCOUNT_UID},
+                DatabaseHelper.KEY_ROW_ID + "=" + transactionID,
+                null, null, null, null);
+        String accountUID = null;
+        if (c != null && c.moveToFirst()){
+            accountUID = c.getString(0);
+            c.close();
+        }
+
+        return accountUID;
+    }
+
 	/**
 	 * Returns the database row Id of the account with unique Identifier <code>accountUID</code>
 	 * @param accountUID Unique identifier of the account
@@ -441,6 +485,24 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 		return id;
 	}
 
+    /**
+     * Returns the database record ID for the specified transaction UID
+     * @param transactionUID Unique idendtifier of the transaction
+     * @return Database record ID for the transaction
+     */
+    public long getID(String transactionUID){
+        long id = -1;
+        Cursor c = mDb.query(DatabaseHelper.TRANSACTIONS_TABLE_NAME,
+                new String[]{DatabaseHelper.KEY_ROW_ID},
+                DatabaseHelper.KEY_UID + "='" + transactionUID + "'",
+                null, null, null, null);
+        if (c != null && c.moveToFirst()){
+            id = c.getLong(0);
+            c.close();
+        }
+        return id;
+    }
+
     @Override
     public Cursor fetchAllRecords() {
         return fetchAllRecords(DatabaseHelper.TRANSACTIONS_TABLE_NAME);
@@ -451,4 +513,22 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
         return fetchRecord(DatabaseHelper.TRANSACTIONS_TABLE_NAME, rowId);
     }
 
+    /**
+     * Returns a cursor to transactions whose name (UI: description) start with the <code>prefix</code>
+     * <p>This method is used for autocomplete suggestions when creating new transactions</p>
+     * @param prefix Starting characters of the transaction name
+     * @return Cursor to the data set containing all matching transactions
+     */
+    public Cursor fetchTransactionsStartingWith(String prefix){
+        StringBuffer stringBuffer = new StringBuffer(DatabaseHelper.KEY_NAME)
+                .append(" LIKE '").append(prefix).append("%'");
+        String selection = stringBuffer.toString();
+
+        Cursor c = mDb.query(DatabaseHelper.TRANSACTIONS_TABLE_NAME,
+                new String[]{DatabaseHelper.KEY_ROW_ID, DatabaseHelper.KEY_NAME},
+                selection,
+                null, null, null,
+                DatabaseHelper.KEY_NAME);
+        return c;
+    }
 }

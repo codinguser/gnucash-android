@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012 Ngewi Fet <ngewif@gmail.com>
+ * Copyright (c) 2012 - 2014 Ngewi Fet <ngewif@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,8 @@ import java.util.UUID;
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.data.Account.OfxAccountType;
 import org.gnucash.android.db.AccountsDbAdapter;
-import org.gnucash.android.util.OfxFormatter;
+import org.gnucash.android.export.ofx.OfxExporter;
+import org.gnucash.android.export.qif.QifHelper;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -38,7 +39,8 @@ import android.content.Intent;
  * @author Ngewi Fet <ngewif@gmail.com>
  */
 public class Transaction {
-	/**
+
+    /**
 	 * Type of transaction, a credit or a debit
 	 */
 	public enum TransactionType {DEBIT, CREDIT};
@@ -63,7 +65,13 @@ public class Transaction {
 	 * Key for identifying the amount of the transaction through an Intent
 	 */
 	public static final String EXTRA_AMOUNT 		= "org.gnucash.android.extra.amount";
-	
+
+    /**
+     * Extra key for the transaction type.
+     * This value should typically be set by calling {@link Transaction.TransactionType#name()}
+     */
+    public static final String EXTRA_TRANSACTION_TYPE = "org.gnucash.android.extra.transaction_type";
+
 	/**
 	 * {@link Money} value of this transaction
 	 */
@@ -112,7 +120,14 @@ public class Transaction {
 	 * @see TransactionType
 	 */
 	private TransactionType mType = TransactionType.DEBIT;
-	
+
+    /**
+     * Recurrence period of this transaction.
+     * <p>If this value is set then it means this transaction is a template which will be used to
+     * create a transaction every turn of the recurrence period</p>
+     */
+    private long mRecurrencePeriod = 0;
+
 	/**
 	 * Overloaded constructor. Creates a new transaction instance with the 
 	 * provided data and initializes the rest to default values. 
@@ -150,7 +165,25 @@ public class Transaction {
 		this.mType = type;
 		this.mName = name;
 	}
-	
+
+    /**
+     * Copy constructor.
+     * Creates a new transaction object which is a clone of the parameter.
+     * <p><b>Note:</b> The unique ID of the transaction is not cloned, but a new one is generated.</p>
+     * @param transaction Transaction to be cloned
+     */
+    public Transaction(Transaction transaction){
+        initDefaults();
+        setName(transaction.getName());
+        setDescription(transaction.getDescription());
+        setAmount(transaction.getAmount());
+        setTransactionType(transaction.getTransactionType());
+        setAccountUID(transaction.getAccountUID());
+        setDoubleEntryAccountUID(transaction.getDoubleEntryAccountUID());
+        setExported(transaction.isExported());
+        setTime(transaction.getTimeMillis());
+    }
+
 	/**
 	 * Initializes the different fields to their default values.
 	 */
@@ -167,8 +200,7 @@ public class Transaction {
 	 * @param amount Amount of the transaction
 	 */
 	public void setAmount(Money amount) {
-		this.mAmount = amount;
-		mType = amount.isNegative() ? TransactionType.DEBIT : TransactionType.CREDIT; 
+		this.mAmount = new Money(amount);
 	}
 
 	/**
@@ -305,6 +337,12 @@ public class Transaction {
 		this.mTransactionUID = transactionUID;
 	}
 
+    /**
+     * Resets the UID of this transaction to a newly generated one
+     */
+    public void resetUID(){
+        this.mTransactionUID = UUID.randomUUID().toString();
+    }
 	/**
 	 * Returns unique ID string for transaction
 	 * @return String with Unique ID of transaction
@@ -315,7 +353,7 @@ public class Transaction {
 
 	/**
 	 * Returns the Unique Identifier of account with which this transaction is double entered
-	 * @return Unique Identifier of account with which this transaction is double entered
+	 * @return Unique ID of transfer account or <code>null</code> if it is not a double transaction
 	 */
 	public String getDoubleEntryAccountUID() {
 		return mDoubleEntryAccountUID;
@@ -361,8 +399,24 @@ public class Transaction {
 	public void setAccountUID(String accountUID) {
 		this.mAccountUID = accountUID;
 	}
-	
-	/**
+
+    /**
+     * Returns the recurrence period for this transaction
+     * @return Recurrence period for this transaction in milliseconds
+     */
+    public long getRecurrencePeriod() {
+        return mRecurrencePeriod;
+    }
+
+    /**
+     * Sets the recurrence period for this transaction
+     * @param recurrenceId Recurrence period in milliseconds
+     */
+    public void setRecurrencePeriod(long recurrenceId) {
+        this.mRecurrencePeriod = recurrenceId;
+    }
+
+    /**
 	 * Converts transaction to XML DOM corresponding to OFX Statement transaction and 
 	 * returns the element node for the transaction.
 	 * The Unique ID of the account is needed in order to properly export double entry transactions
@@ -377,12 +431,12 @@ public class Transaction {
 		transactionNode.appendChild(type);
 
 		Element datePosted = doc.createElement("DTPOSTED");
-		datePosted.appendChild(doc.createTextNode(OfxFormatter.getOfxFormattedTime(mTimestamp)));
+		datePosted.appendChild(doc.createTextNode(OfxExporter.getOfxFormattedTime(mTimestamp)));
 		transactionNode.appendChild(datePosted);
 		
 		Element dateUser = doc.createElement("DTUSER");
 		dateUser.appendChild(doc.createTextNode(
-				OfxFormatter.getOfxFormattedTime(mTimestamp)));
+				OfxExporter.getOfxFormattedTime(mTimestamp)));
 		transactionNode.appendChild(dateUser);
 		
 		Element amount = doc.createElement("TRNAMT");
@@ -405,7 +459,7 @@ public class Transaction {
 		
 		if (mDoubleEntryAccountUID != null && mDoubleEntryAccountUID.length() > 0){
 			Element bankId = doc.createElement("BANKID");
-			bankId.appendChild(doc.createTextNode(OfxFormatter.APP_ID));
+			bankId.appendChild(doc.createTextNode(OfxExporter.APP_ID));
 			
 			//select the proper account as the double account
 			String doubleAccountUID = mDoubleEntryAccountUID.equals(accountUID) ? mAccountUID : mDoubleEntryAccountUID;
@@ -429,5 +483,54 @@ public class Transaction {
 		
 		return transactionNode;
 	}
+
+    /**
+     * Builds a QIF entry representing this transaction
+     * @return String QIF representation of this transaction
+     */
+    public String toQIF(){
+        final String newLine = "\n";
+
+        AccountsDbAdapter accountsDbAdapter = new AccountsDbAdapter(GnuCashApplication.getAppContext());
+
+        //all transactions are double transactions
+        String splitAccountFullName = QifHelper.getImbalanceAccountName(mAmount.getCurrency());
+        if (mDoubleEntryAccountUID != null && mDoubleEntryAccountUID.length() > 0){
+            splitAccountFullName = accountsDbAdapter.getFullyQualifiedAccountName(mDoubleEntryAccountUID);
+        }
+
+        StringBuffer transactionQifBuffer = new StringBuffer();
+        transactionQifBuffer.append(QifHelper.DATE_PREFIX).append(QifHelper.formatDate(mTimestamp)).append(newLine);
+        transactionQifBuffer.append(QifHelper.MEMO_PREFIX).append(mName).append(newLine);
+
+        transactionQifBuffer.append(QifHelper.SPLIT_CATEGORY_PREFIX).append(splitAccountFullName).append(newLine);
+        if (mDescription != null && mDescription.length() > 0){
+            transactionQifBuffer.append(QifHelper.SPLIT_MEMO_PREFIX).append(mDescription).append(newLine);
+        }
+        transactionQifBuffer.append(QifHelper.SPLIT_AMOUNT_PREFIX).append(mAmount.asString()).append(newLine);
+        transactionQifBuffer.append(QifHelper.ENTRY_TERMINATOR).append(newLine);
+
+        accountsDbAdapter.close();
+        return transactionQifBuffer.toString();
+    }
+
+    /**
+     * Creates an Intent with arguments from the <code>transaction</code>.
+     * This intent can be broadcast to create a new transaction
+     * @param transaction Transaction used to create intent
+     * @return
+     */
+    public static Intent createIntent(Transaction transaction){
+        Intent intent = new Intent(Intent.ACTION_INSERT);
+        intent.setType(Transaction.MIME_TYPE);
+        intent.putExtra(Intent.EXTRA_TITLE, transaction.getName());
+        intent.putExtra(Intent.EXTRA_TEXT, transaction.getDescription());
+        intent.putExtra(EXTRA_AMOUNT, transaction.getAmount().asBigDecimal());
+        intent.putExtra(EXTRA_ACCOUNT_UID, transaction.getAccountUID());
+        intent.putExtra(EXTRA_DOUBLE_ACCOUNT_UID, transaction.getDoubleEntryAccountUID());
+        intent.putExtra(Account.EXTRA_CURRENCY_CODE, transaction.getAmount().getCurrency().getCurrencyCode());
+        intent.putExtra(EXTRA_TRANSACTION_TYPE, transaction.getTransactionType().name());
+        return intent;
+    }
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012 Ngewi Fet <ngewif@gmail.com>
+ * Copyright (c) 2012 - 2014 Ngewi Fet <ngewif@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package org.gnucash.android.ui.transactions;
 import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
@@ -29,7 +30,9 @@ import android.support.v4.content.Loader;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.text.format.DateFormat;
 import android.util.Log;
+import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
+import android.view.TouchDelegate;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
@@ -49,13 +52,13 @@ import org.gnucash.android.db.DatabaseAdapter;
 import org.gnucash.android.db.DatabaseCursorLoader;
 import org.gnucash.android.db.DatabaseHelper;
 import org.gnucash.android.db.TransactionsDbAdapter;
+import org.gnucash.android.ui.Refreshable;
 import org.gnucash.android.ui.accounts.AccountsListFragment;
 import org.gnucash.android.ui.widget.WidgetConfigurationActivity;
 import org.gnucash.android.util.OnTransactionClickedListener;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Locale;
 
 /**
@@ -63,8 +66,8 @@ import java.util.Locale;
  * @author Ngewi Fet <ngewif@gmail.com>
  *
  */
-public class TransactionsListFragment extends SherlockListFragment implements 
-	LoaderCallbacks<Cursor> {
+public class TransactionsListFragment extends SherlockListFragment implements
+        Refreshable, LoaderCallbacks<Cursor> {
 
 	/**
 	 * Logging tag
@@ -97,11 +100,6 @@ public class TransactionsListFragment extends SherlockListFragment implements
 	private ActionMode mActionMode = null;
 	private boolean mInEditMode = false;
 	private long mAccountID;
-	
-	/**
-	 * Selected (checked) transactions in the list when entering ActionMode
-	 */
-	private HashMap<Integer, Long> mSelectedIds = new HashMap<Integer, Long>();
 
 	/**
 	 * Callback listener for editing transactions
@@ -141,10 +139,10 @@ public class TransactionsListFragment extends SherlockListFragment implements
 				return true;
 
 			case R.id.context_menu_delete:
-				for (long id : mSelectedIds.values()) {
+				for (long id : getListView().getCheckedItemIds()) {
 					mTransactionsDbAdapter.deleteRecord(id);
 				}				
-				refreshList();
+				refresh();
 				mode.finish();
 				WidgetConfigurationActivity.updateAllWidgets(getActivity());
 				return true;
@@ -181,21 +179,7 @@ public class TransactionsListFragment extends SherlockListFragment implements
 			Bundle savedInstanceState) {
 		return inflater.inflate(R.layout.fragment_transactions_list, container, false);		
 	}
-		
-	@Override
-	public void onSaveInstanceState(Bundle outState) {
-		super.onSaveInstanceState(outState);
-		
-		int[] selectedPositions = new int[mSelectedIds.size()];
-		int i = 0;
-		for (Integer id : mSelectedIds.keySet()) {
-			if (id == null)
-				continue;
-			selectedPositions[i++] = id;			
-		}
-		outState.putIntArray(SAVED_SELECTED_ITEMS, selectedPositions);
-	}
-	
+
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {		
 		super.onActivityCreated(savedInstanceState);
@@ -204,15 +188,25 @@ public class TransactionsListFragment extends SherlockListFragment implements
 		aBar.setDisplayShowTitleEnabled(false);
 		aBar.setDisplayHomeAsUpEnabled(true);
 
+        getListView().setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
 		setHasOptionsMenu(true);		
 	}
-	
-	public void refreshList(long accountId){
+
+    /**
+     * Refresh the list with transactions from account with ID <code>accountId</code>
+     * @param accountId Database ID of account to load transactions from
+     */
+    @Override
+	public void refresh(long accountId){
 		mAccountID = accountId;
-		refreshList();
+		refresh();
 	}
-	
-	public void refreshList(){
+
+    /**
+     * Reload the list of transactions and recompute account balances
+     */
+    @Override
+	public void refresh(){
 		getLoaderManager().restartLoader(0, null, this);
 
         mSumTextView = (TextView) getView().findViewById(R.id.transactions_sum);
@@ -234,7 +228,7 @@ public class TransactionsListFragment extends SherlockListFragment implements
 	public void onResume() {
 		super.onResume();
 		((TransactionsActivity)getSherlockActivity()).updateNavigationSelection();		
-		refreshList(((TransactionsActivity)getActivity()).getCurrentAccountID());
+		refresh(((TransactionsActivity) getActivity()).getCurrentAccountID());
 	}
 	
 	@Override
@@ -247,7 +241,7 @@ public class TransactionsListFragment extends SherlockListFragment implements
 	public void onListItemClick(ListView l, View v, int position, long id) {
 		super.onListItemClick(l, v, position, id);
 		if (mInEditMode){
-			CheckBox checkbox = (CheckBox) v.findViewById(R.id.checkbox);
+			CheckBox checkbox = (CheckBox) v.findViewById(R.id.checkbox_parent_account);
 			checkbox.setChecked(!checkbox.isChecked());
 			return;
 		}
@@ -258,17 +252,17 @@ public class TransactionsListFragment extends SherlockListFragment implements
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {		
 		inflater.inflate(R.menu.transactions_list_actions, menu);	
 	}
-	
+
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
-		case R.id.menu_add_transaction:
-			mTransactionEditListener.createNewTransaction(mAccountID);
-			return true;
+            case R.id.menu_add_transaction:
+                mTransactionEditListener.createNewTransaction(mAccountID);
+                return true;
 
-		default:
-			return false;
-		}
+            default:
+                return false;
+        }
 	}
 	
 	@Override
@@ -296,9 +290,8 @@ public class TransactionsListFragment extends SherlockListFragment implements
 	 */
 	public void finishEditMode(){
 		mInEditMode = false;
-		deselectAllItems();
+		uncheckAllItems();
 		mActionMode = null;
-		mSelectedIds.clear();
 	}
 	
 	/**
@@ -306,57 +299,24 @@ public class TransactionsListFragment extends SherlockListFragment implements
 	 * It sets the number highlighted items
 	 */
 	public void setActionModeTitle(){
-		int count = mSelectedIds.size();
+		int count = getListView().getCheckedItemIds().length; //mSelectedIds.size();
 		if (count > 0){			
 			mActionMode.setTitle(getResources().getString(R.string.title_selected, count));
 		}
 	}
 	
 	/**
-	 * Selects a transaction in the list of transaction
-	 * @param position Position of the item which was selected
+	 * Unchecks all the checked items in the list
 	 */
-	private void selectItem(int position){		
-		ListView lv = getListView();	
-		lv.setItemChecked(position, true);		
-		View v = lv.getChildAt(position -  lv.getFirstVisiblePosition());
+	private void uncheckAllItems() {
+        SparseBooleanArray checkedPositions = getListView().getCheckedItemPositions();
+        ListView listView = getListView();
+        for (int i = 0; i < checkedPositions.size(); i++) {
+            int position = checkedPositions.keyAt(i);
+            listView.setItemChecked(position, false);
+        }
+	}
 
-		v.setSelected(true);
-        v.setBackgroundColor(getResources().getColor(R.color.abs__holo_blue_light));
-        long id = lv.getItemIdAtPosition(position);
-        mSelectedIds.put(position, id);
-	}
-	
-	/**
-	 * Deselects all selected items
-	 */
-	private void deselectAllItems() {
-		Integer[] selectedItemPositions = new Integer[mSelectedIds.size()];
-		mSelectedIds.keySet().toArray(selectedItemPositions);
-		for (int position : selectedItemPositions) {
-			deselectItem(position);
-		}
-	}
-	
-	/**
-	 * Deselects an item at <code>position</code>
-	 * @param position
-	 */
-	private void deselectItem(int position){
-		if (position >= 0){
-			ListView listView = getListView();
-			listView.setItemChecked(position, false);
-			View v = getListView().getChildAt(position - listView.getFirstVisiblePosition());
-			if (v == null){
-				//if we just deleted a row, then the previous position is invalid
-				return;
-			}
-			v.setBackgroundColor(getResources().getColor(android.R.color.transparent));
-			((CheckBox) v.findViewById(R.id.checkbox)).setChecked(false);
-			v.setSelected(false);
-			mSelectedIds.remove(position);
-		}
-	}
 	
 	/**
 	 * Starts action mode and activates the Context ActionBar (CAB)
@@ -372,10 +332,12 @@ public class TransactionsListFragment extends SherlockListFragment implements
 	}
 	
 	/**
-	 * Stops action mode and deselects all selected transactions
+	 * Stops action mode and deselects all selected transactions.
+     * This method only has effect if the number of checked items is greater than 0 and {@link #mActionMode} is not null
 	 */
 	private void stopActionMode(){
-		if (mSelectedIds.size() > 0)
+        int checkedCount = getListView().getCheckedItemIds().length;
+		if (checkedCount > 0 || mActionMode == null)
 			return;
 		else
 			mActionMode.finish();
@@ -397,12 +359,7 @@ public class TransactionsListFragment extends SherlockListFragment implements
 	    DialogFragment bulkMoveFragment = new BulkMoveDialogFragment();
 	    Bundle args = new Bundle();
 	    args.putLong(ORIGIN_ACCOUNT_ID, mAccountID);
-	    long[] selectedIds = new long[mSelectedIds.size()]; 
-	    int i = 0;
-	    for (long l : mSelectedIds.values()) {
-			selectedIds[i++] = l;			
-		}
-	    args.putLongArray(SELECTED_TRANSACTION_IDS, selectedIds);
+	    args.putLongArray(SELECTED_TRANSACTION_IDS, getListView().getCheckedItemIds());
 	    bulkMoveFragment.setArguments(args);
 	    bulkMoveFragment.show(ft, "bulk_move_dialog");
 	}	
@@ -420,26 +377,57 @@ public class TransactionsListFragment extends SherlockListFragment implements
 		
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
-			View view = super.getView(position, convertView, parent);
+			final View view = super.getView(position, convertView, parent);
 			final int itemPosition = position;
-			CheckBox checkbox = (CheckBox) view.findViewById(R.id.checkbox);			
-			checkbox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+			CheckBox checkbox = (CheckBox) view.findViewById(R.id.checkbox_parent_account);
+            final TextView secondaryText = (TextView) view.findViewById(R.id.secondary_text);
+
+            checkbox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 				
 				@Override
 				public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-					startActionMode();
-					getListView().setItemChecked(itemPosition, isChecked);
-					if (isChecked){
-						selectItem(itemPosition);						
-					} else {
-						deselectItem(itemPosition);
-						stopActionMode();
-					}
-					setActionModeTitle();
+                    getListView().setItemChecked(itemPosition, isChecked);
+                    if (isChecked) {
+                        startActionMode();
+                    } else {
+                        stopActionMode();
+                    }
+                    setActionModeTitle();
 				}
 			});
-			
-			return view;
+
+
+            ListView listView = (ListView) parent;
+            if (mInEditMode && listView.isItemChecked(position)){
+                view.setBackgroundColor(getResources().getColor(R.color.abs__holo_blue_light));
+                secondaryText.setTextColor(getResources().getColor(android.R.color.white));
+            } else {
+                view.setBackgroundColor(getResources().getColor(android.R.color.transparent));
+                secondaryText.setTextColor(getResources().getColor(android.R.color.secondary_text_light_nodisable));
+                checkbox.setChecked(false);
+            }
+
+            //increase the touch target area for the add new transaction button
+
+            final View checkBoxView = checkbox;
+            final View parentView = view;
+            parentView.post(new Runnable() {
+                @Override
+                public void run() {
+                    if (isAdded()){ //may be run when fragment has been unbound from activity
+                        float extraPadding = getResources().getDimension(R.dimen.edge_padding);
+                        final android.graphics.Rect hitRect = new Rect();
+                        checkBoxView.getHitRect(hitRect);
+                        hitRect.right   += extraPadding;
+                        hitRect.bottom  += 3*extraPadding;
+                        hitRect.top     -= extraPadding;
+                        hitRect.left    -= 2*extraPadding;
+                        parentView.setTouchDelegate(new TouchDelegate(hitRect, checkBoxView));
+                    }
+                }
+            });
+
+            return view;
 		}
 		
 		@Override
@@ -449,12 +437,20 @@ public class TransactionsListFragment extends SherlockListFragment implements
 			Money amount = new Money(
 					cursor.getString(DatabaseAdapter.COLUMN_AMOUNT), 
 					mTransactionsDbAdapter.getCurrencyCode(mAccountID));
-			
+
+            //FIXME: Take normal account balances into consideration for double entries
+//            String mainAccountUID = cursor.getString(DatabaseAdapter.COLUMN_ACCOUNT_UID);
+//            Account.AccountType mainAccountType = mTransactionsDbAdapter.getAccountType(mainAccountUID);
+
 			//negate any transactions if this account is the origin in double entry
-			String doubleEntryAccountUID = cursor.getString(DatabaseAdapter.COLUMN_DOUBLE_ENTRY_ACCOUNT_UID);
-			if (doubleEntryAccountUID != null 
-					&& mTransactionsDbAdapter.isSameAccount(mAccountID, doubleEntryAccountUID)){
-				amount = amount.negate();				
+			String transferAccountUID = cursor.getString(DatabaseAdapter.COLUMN_DOUBLE_ENTRY_ACCOUNT_UID);
+
+			if (transferAccountUID != null
+					&& mTransactionsDbAdapter.isSameAccount(mAccountID, transferAccountUID)){
+//                Account.AccountType transferAccountType = mTransactionsDbAdapter.getAccountType(transferAccountUID);
+//
+//                if (mainAccountType.getNormalBalanceType() == transferAccountType.getNormalBalanceType())
+                amount = amount.negate();
 			}
 				
 			TextView tramount = (TextView) view.findViewById(R.id.transaction_amount);
@@ -473,34 +469,51 @@ public class TransactionsListFragment extends SherlockListFragment implements
 				trNote.setVisibility(View.VISIBLE);
 				trNote.setText(description);
 			}
-			
-			long transactionTime = cursor.getLong(DatabaseAdapter.COLUMN_TIMESTAMP);
-			int position = cursor.getPosition();
-						
-			boolean hasSectionHeader;
-			if (position == 0){
-				hasSectionHeader = true;
-			} else {
-				cursor.moveToPosition(position - 1);
-				long previousTimestamp = cursor.getLong(DatabaseAdapter.COLUMN_TIMESTAMP);
-				cursor.moveToPosition(position);				
-				//has header if two consecutive transactions were not on same day
-				hasSectionHeader = !isSameDay(previousTimestamp, transactionTime);
-			}
-			
-			TextView dateHeader = (TextView) view.findViewById(R.id.date_section_header);
-			
-			if (hasSectionHeader){
-				java.text.DateFormat format = DateFormat.getLongDateFormat(getActivity());
-				String dateString = format.format(new Date(transactionTime));
-				dateHeader.setText(dateString);
-				dateHeader.setVisibility(View.VISIBLE);
-			} else {
-				dateHeader.setVisibility(View.GONE);
-			}
+
+            setSectionHeaderVisibility(view, cursor);
 		}
-		
-		private boolean isSameDay(long timeMillis1, long timeMillis2){
+
+        /**
+         * Toggles the visibilty of the section header based on whether the previous transaction and current were
+         * booked on the same day or not. Transactions a generally grouped by day
+         * @param view Parent view within which to find the section header
+         * @param cursor Cursor containing transaction data set
+         * @see #isSameDay(long, long)
+         */
+        private void setSectionHeaderVisibility(View view, Cursor cursor) {
+            long transactionTime = cursor.getLong(DatabaseAdapter.COLUMN_TIMESTAMP);
+            int position = cursor.getPosition();
+
+            boolean hasSectionHeader;
+            if (position == 0){
+                hasSectionHeader = true;
+            } else {
+                cursor.moveToPosition(position - 1);
+                long previousTimestamp = cursor.getLong(DatabaseAdapter.COLUMN_TIMESTAMP);
+                cursor.moveToPosition(position);
+                //has header if two consecutive transactions were not on same day
+                hasSectionHeader = !isSameDay(previousTimestamp, transactionTime);
+            }
+
+            TextView dateHeader = (TextView) view.findViewById(R.id.date_section_header);
+
+            if (hasSectionHeader){
+                java.text.DateFormat format = DateFormat.getLongDateFormat(getActivity());
+                String dateString = format.format(new Date(transactionTime));
+                dateHeader.setText(dateString);
+                dateHeader.setVisibility(View.VISIBLE);
+            } else {
+                dateHeader.setVisibility(View.GONE);
+            }
+        }
+
+        /**
+         * Checks if two timestamps have the same calendar day
+         * @param timeMillis1 Timestamp in milliseconds
+         * @param timeMillis2 Timestamp in milliseconds
+         * @return <code>true</code> if both timestamps are on same day, <code>false</code> otherwise
+         */
+        private boolean isSameDay(long timeMillis1, long timeMillis2){
 			Date date1 = new Date(timeMillis1);
 			Date date2 = new Date(timeMillis2);
 			
@@ -530,6 +543,5 @@ public class TransactionsListFragment extends SherlockListFragment implements
 			return c;
 		}		
 	}
-
 
 }

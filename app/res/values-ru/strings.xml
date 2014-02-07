@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
- Copyright (c) 2012-13 Ngewi Fet <ngewif@gmail.com>
- Copyright (c) 2012-13 Alexander Galanin <al@galanin.nnov.ru>
+ Copyright (c) 2012-14 Ngewi Fet <ngewif@gmail.com>
+ Copyright (c) 2012-14 Alexander Galanin <al@galanin.nnov.ru>
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -21,7 +21,6 @@
     <string name="title_add_account">Создать счёт</string>
     <string name="title_edit_account">Редактировать счёт</string>
     <string name="info_details">Информация</string>
-    <string name="title_settings">Настройки</string>
     <string name="menu_export_ofx">Экспортировать OFX</string>
     <string name="description_add_transaction_icon">Добавить к счёту новую проводку</string>
     <string name="label_no_accounts">Нет счетов</string>
@@ -51,7 +50,7 @@
     <string name="title_selected">%1$d выбрано</string>
     <string name="label_transactions_total">Общая сумма:</string>
     <string name="label_export_destination">Экспортировать в</string>
-    <string name="title_export_dialog">Экспорт OFX</string>
+    <string name="title_export_dialog">Экспорт проводок</string>
     <string name="option_export_all_transactions">Экспортировать все</string>
     <string name="hint_export_choice">Экспортировать все проводки, а не только новые.</string>
     <string name="error_exporting">Ошибка при экспорте OFX</string>    
@@ -308,13 +307,14 @@
 	<string name="summary_xml_ofx_header">Включите эту опцию, если экспортируете в программы отличные от GnuCash для ПК</string>
 	<string name="title_whats_new">Новости</string>
 	<string name="whats_new">
-	    <b>Версия 1.2.0 - 20.06.2013</b>\n\n
-        - Импорт структуры счетов из GnuCash для ПК\n
-        - Вложенные счета\n
-        - Возможность удалить все счета/проводки\n
-        - Начальная поддержка различных типов счетов\n
-        - Баланс счёта теперь учитывает дочерние счета\n
-        - Многочисленные исправления ошибок\n
+        - Отметка избранных счетов для быстрого доступа\n
+        - Отдельные табы для последних открывавшихся, избранных и списка всех счетов\n
+        - Добавление, просмотр и удаление запланированных проводок (ежедневные, еженедельные, ежемесячные)\n
+        - Поддержка виртуальных счетов (содержит только дочерние счета, без проводок)\n
+        - Установка трансфертного счёта по умолчанию для каждого счёта\n
+        - Раскраска счетов и темы для списка счетов\n
+        - Создание структуры счетов из приложения\n
+        - Много улучшений и исправлений\n
 	</string>
 	<string name="label_dismiss">Отказаться</string>
     <string name="toast_transanction_amount_required">Введите сумму, чтобы сохранить проводку</string>
@@ -333,8 +333,23 @@
     <string name="summary_delete_all_transactions">Все проводки во всех счетах будут удалены!</string>
     <string name="title_delete_all_transactions">Удалить все проводки</string>
     <string name="toast_all_transactions_deleted">Все проводки удалены!</string>
-    <string name="title_progress_importing_accounts">Importing accounts</string>
-    <string name="toast_tap_again_to_confirm_delete">Tap again to confirm. ALL entries will be deleted!!</string>
+    <string name="title_progress_importing_accounts">Импортируются счета</string>
+    <string name="toast_tap_again_to_confirm_delete">Нажмите езё раз для подтверждения. ВСЕ записи будут удалены!</string>
+    <string name="section_header_transactions">Проводки</string>
+    <string name="section_header_accounts">Дочерние счета</string>
+    <string name="menu_search_accounts">Поиск</string>
+    <string name="title_default_export_format">Формат экспорта по умолчанию</string>
+    <string name="summary_default_export_format">Формат файла, используемый по умолчанию при экспорте</string>
+    <string name="menu_export_transactions">Экспортировать проводки…</string>
+    <string name="label_recurring_transaction">Запланированная проводка</string>
+    <!-- This should be the same name used by GnuCash desktop for imbalance accounts -->
+    <string name="imbalance_account_name">Дисбаланс</string>
+    <string name="title_progress_exporting_transactions">Проводки экспортируются</string>
+    <string name="label_no_recurring_transactions">Нет запланированных проводок.</string>
+    <string name="toast_recurring_transaction_deleted">Запланированная проводка успешно удалена</string>
+    <string name="label_placeholder_account">Виртуальный счёт</string>
+    <string name="label_default_transfer_account">Трансфертный счёт по умолчанию</string>
+    <string name="label_account_color_and_type">Цвет &amp; Тип счёта</string>
     <plurals name="label_sub_accounts">
         <item quantity="one">%d дочерний счёт</item>
         <item quantity="other">%d шт. дочерних счетов</item>
@@ -346,12 +361,35 @@
         <item>АКТИВ</item>
         <item>ПАССИВ</item>
         <item>ДОХОДЫ</item>
-        <item>ТРАТЫ</item>
-        <item>PAYABLE</item>
-        <item>RECEIVABLE</item>
-        <item>EQUITY</item>
-        <item>CURRENCY</item>
-        <item>STOCK</item>
-        <item>MUTUAL FUND</item>
+        <item>РАСХОДЫ</item>
+        <item>А/ОПЛАЧИВАЕМО</item>
+        <item>А/ПОЛУЧАЕМО</item>
+        <item>ЦЕННЫЕ БУМАГИ</item>
+        <item>СОБСТВЕННЫЕ СРЕДСТВА</item>
+        <item>ТОРГОВЛЯ</item>
+        <item>ВЗАИМНЫЙ ФОНД</item>
     </string-array>
+    <string-array name="export_formats">
+        <item>QIF</item>
+        <item>OFX</item>
+    </string-array>
+    <!-- Default title for color picker dialog [CHAR LIMIT=30] -->
+    <string name="color_picker_default_title">Выберите цвет</string>
+    <string name="label_delete_sub_accounts">Удалить дочерние счета</string>
+    <string name="title_recent_accounts">Последние</string>
+    <string name="title_favorite_accounts">Избранные</string>
+    <string name="title_all_accounts">Все</string>
+    <string name="summary_create_default_accounts">Создание структуры счетов GnuCash по умолчанию</string>
+    <string name="title_create_default_accounts">Создание счетов по умолчанию</string>
+    <string name="message_confirm_create_default_accounts_setting">Новые счета
+        будут созданы в дополнение к имеющейся структуре счетов.\n\nЕсли вы
+        хотите заменить текущие счета, сперва их удалите!
+    </string>
+    <string name="menu_item_recurring_transactions">Запланированные проводки</string>
+    <string name="message_confirm_create_default_accounts_first_run">Добро
+        пожаловать в GnuCash для Android!\nВы можете как создать структуру
+        часто используемых счетов, так и импортировать её из GnuCash.\n\nОбе
+        возможности будут доступны из настроек приложения, если вы захотите
+        сделать это позже.
+    </string>
 </resources>

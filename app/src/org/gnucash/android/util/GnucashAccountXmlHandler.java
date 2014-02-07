@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013 Ngewi Fet <ngewif@gmail.com>
+ * Copyright (c) 2013 - 2014 Ngewi Fet <ngewif@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package org.gnucash.android.util;
 
 import android.content.Context;
+import android.util.Log;
 import android.widget.Toast;
 import org.gnucash.android.R;
 import org.gnucash.android.data.Account;
@@ -27,11 +28,11 @@ import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import java.io.*;
 import java.util.Currency;
+import java.util.regex.Pattern;
 
 /**
  * Handler for parsing the GnuCash accounts structure file.
@@ -44,20 +45,51 @@ public class GnucashAccountXmlHandler extends DefaultHandler {
     /*
      * GnuCash account XML file qualified tag names. Used for matching tags
      */
-    public static final String TAG_NAME         = "act:name";
-    public static final String TAG_UID          = "act:id";
-    public static final String TAG_TYPE         = "act:type";
-    public static final String TAG_CURRENCY     = "cmdty:id";
-    public static final String TAG_PARENT_UID   = "act:parent";
-    public static final String TAG_ACCOUNT      = "gnc:account";
+    public static final String TAG_NAME             = "act:name";
+    public static final String TAG_UID              = "act:id";
+    public static final String TAG_TYPE             = "act:type";
+    public static final String TAG_CURRENCY         = "cmdty:id";
+    public static final String TAG_COMMODITY_SPACE  = "cmdty:space";
+    public static final String TAG_PARENT_UID       = "act:parent";
+    public static final String TAG_ACCOUNT          = "gnc:account";
+    public static final String TAG_SLOT_KEY         = "slot:key";
+    public static final String TAG_SLOT_VALUE       = "slot:value";
 
-    private static final String ERROR_TAG   = "GnuCashAccountImporter";
+    /**
+     * ISO 4217 currency code for "No Currency"
+     */
+    private static final String NO_CURRENCY_CODE    = "XXX";
+
+    /**
+     * Tag for logging
+     */
+    private static final String LOG_TAG = "GnuCashAccountImporter";
+
+    /**
+     * Value for placeholder slots in GnuCash account structure file
+     */
+    private static final String PLACEHOLDER_KEY = "placeholder";
+
+    /**
+     * Value of color slots in GnuCash account structure file
+     */
+    private static final String COLOR_KEY = "color";
 
     AccountsDbAdapter mDatabaseAdapter;
+
+    /**
+     * StringBuilder for accumulating characters between XML tags
+     */
     StringBuilder mContent;
+
+    /**
+     * Reference to account which is built when each account tag is parsed in the XML file
+     */
     Account mAccount;
 
-    boolean mISO4217Currency = false;
+    boolean mInColorSlot        = false;
+    boolean mInPlaceHolderSlot  = false;
+    boolean mISO4217Currency    = false;
 
     public GnucashAccountXmlHandler(Context context) {
         mDatabaseAdapter = new AccountsDbAdapter(context);
@@ -88,30 +120,66 @@ public class GnucashAccountXmlHandler extends DefaultHandler {
             mAccount.setAccountType(Account.AccountType.valueOf(characterString));
         }
 
+        if (qualifiedName.equalsIgnoreCase(TAG_COMMODITY_SPACE)){
+            if (characterString.equalsIgnoreCase("ISO4217")){
+                mISO4217Currency = true;
+            }
+        }
+
         if (qualifiedName.equalsIgnoreCase(TAG_CURRENCY)){
-            if (mAccount != null)
-                mAccount.setCurrency(Currency.getInstance(characterString));
+            if (mAccount != null){
+                String currencyCode = mISO4217Currency ? characterString : NO_CURRENCY_CODE;
+                mAccount.setCurrency(Currency.getInstance(currencyCode));
+            }
         }
 
         if (qualifiedName.equalsIgnoreCase(TAG_PARENT_UID)){
             mAccount.setParentUID(characterString);
         }
 
-        if (qualifiedName.equalsIgnoreCase("cmdty:space")){
-            if (characterString.equalsIgnoreCase("ISO4217")){
-                mISO4217Currency = true;
-            }
-        }
-
         if (qualifiedName.equalsIgnoreCase(TAG_ACCOUNT)){
-            //we only save accounts with ISO 4217 currencies. Ignore all else
-            if (mISO4217Currency)
-                mDatabaseAdapter.addAccount(mAccount);
+            Log.d(LOG_TAG, "Saving account...");
+            mDatabaseAdapter.addAccount(mAccount);
 
-            //reset for next account
+            //reset ISO 4217 flag for next account
             mISO4217Currency = false;
         }
 
+        if (qualifiedName.equalsIgnoreCase(TAG_SLOT_KEY)){
+            if (characterString.equals(PLACEHOLDER_KEY)){
+                mInPlaceHolderSlot = true;
+            }
+            if (characterString.equals(COLOR_KEY)){
+                mInColorSlot = true;
+            }
+        }
+
+        if (qualifiedName.equalsIgnoreCase(TAG_SLOT_VALUE)){
+            if (mInPlaceHolderSlot){
+                if (characterString.equals("true")){
+                    Log.d(LOG_TAG, "Setting account placeholder flag");
+                    mAccount.setPlaceHolderFlag(true);
+                };
+                mInPlaceHolderSlot = false;
+            }
+
+            if (mInColorSlot){
+                String color = characterString.trim();
+                //Gnucash exports the account color in format #rrrgggbbb, but we need only #rrggbb.
+                //so we trim the last digit in each block, doesn't affect the color much
+                if (!Pattern.matches(Account.COLOR_HEX_REGEX, color))
+                    color = "#" + color.replaceAll(".(.)?", "$1").replace("null", "");
+                try {
+                    mAccount.setColorCode(color);
+                } catch (IllegalArgumentException ex){
+                    //sometimes the color entry in the account file is "Not set" instead of just blank. So catch!
+                    Log.i(LOG_TAG, "Invalid color code '" + color + "' for account " + mAccount.getName());
+                    ex.printStackTrace();
+                }
+
+                mInColorSlot = false;
+            }
+        }
         //reset the accumulated characters
         mContent.setLength(0);
     }

@@ -17,7 +17,12 @@
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
     <PreferenceCategory android:title="@string/title_export_preference_category">
-        <EditTextPreference android:title="@string/title_default_export_email" 
+        <ListPreference android:title="@string/title_default_export_format"
+                        android:entryValues="@array/key_export_format_values"
+                        android:entries="@array/export_formats"
+                        android:key="@string/key_default_export_format"
+                        android:summary="@string/summary_default_export_format"/>
+        <EditTextPreference android:title="@string/title_default_export_email"
             android:key="@string/key_default_export_email" 
             android:summary="@string/summary_default_export_email"
             android:inputType="textEmailAddress"/>

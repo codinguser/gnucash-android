@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012 Ngewi Fet <ngewif@gmail.com>
+ * Copyright (c) 2012 - 2014 Ngewi Fet <ngewif@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,16 +16,17 @@
 
 package org.gnucash.android.data;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Currency;
-import java.util.List;
-import java.util.Locale;
-import java.util.UUID;
-
-import org.gnucash.android.util.OfxFormatter;
+import org.gnucash.android.app.GnuCashApplication;
+import org.gnucash.android.db.AccountsDbAdapter;
+import org.gnucash.android.export.ofx.OfxExporter;
+import org.gnucash.android.export.qif.QifHelper;
+import org.gnucash.android.data.Transaction.TransactionType;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+
+import java.math.BigDecimal;
+import java.util.*;
+import java.util.regex.Pattern;
 
 /**
  * An account represents a transaction account in with {@link Transaction}s may be recorded
@@ -45,21 +46,68 @@ public class Account {
 	 * This is used when sending intents from third-party applications
 	 */
 	public static final String MIME_TYPE = "vnd.android.cursor.item/vnd.org.gnucash.android.account";
-	
-	/**
+
+    /*
+        ^             anchor for start of string
+        #             the literal #
+        (             start of group
+        ?:            indicate a non-capturing group that doesn't generate backreferences
+        [0-9a-fA-F]   hexadecimal digit
+        {3}           three times
+        )             end of group
+        {1,2}         repeat either once or twice
+        $             anchor for end of string
+     */
+    /**
+     * Regular expression for validating color code strings.
+     * Accepts #rgb and #rrggbb
+     */
+    //TODO: Allow use of #aarrggbb format as well
+    public static final String COLOR_HEX_REGEX = "^#(?:[0-9a-fA-F]{3}){1,2}$";
+
+    /**
 	 * The type of account
 	 * This are the different types specified by the OFX format and 
 	 * they are currently not used except for exporting
 	 */
-	public enum AccountType {CASH, BANK, CREDIT, ASSET, LIABILITY, INCOME, EXPENSE,
-							PAYABLE, RECEIVABLE, EQUITY, CURRENCY, STOCK, MUTUAL, ROOT};
+	public enum AccountType {
+        CASH(TransactionType.DEBIT), BANK, CREDIT, ASSET(TransactionType.DEBIT), LIABILITY, INCOME,
+        EXPENSE(TransactionType.DEBIT), PAYABLE, RECEIVABLE, EQUITY, CURRENCY, STOCK, MUTUAL, ROOT;
+
+        /**
+         * Indicates that this type of normal balance the account type has
+         * <p>To increase the value of an account with normal balance of credit, one would credit the account.
+         * To increase the value of an account with normal balance of debit, one would likewise debit the account.</p>
+         */
+        private TransactionType mNormalBalance = TransactionType.CREDIT;
+
+        private AccountType(TransactionType normalBalance){
+            this.mNormalBalance = normalBalance;
+        }
+
+        private AccountType() {
+            //nothing to see here, move along
+        }
+
+        public boolean hasDebitNormalBalance(){
+            return mNormalBalance == TransactionType.DEBIT;
+        }
+
+        /**
+         * Returns the type of normal balance this account possesses
+         * @return TransactionType balance of the account type
+         */
+        public TransactionType getNormalBalanceType(){
+            return mNormalBalance;
+        }
+    }
 
     /**
      * Accounts types which are used by the OFX standard
      */
-	public enum OfxAccountType {CHECKING, SAVINGS, MONEYMRKT, CREDITLINE };
-		
-	/**
+	public enum OfxAccountType {CHECKING, SAVINGS, MONEYMRKT, CREDITLINE }
+
+    /**
 	 * Unique Identifier of the account
 	 * It is generated when the account is created and can be set a posteriori as well
 	 */
@@ -90,6 +138,28 @@ public class Account {
 	 * Account UID of the parent account. Can be null
 	 */
 	private String mParentAccountUID;
+
+    /**
+     * Save UID of a default account for transfers.
+     * All transactions in this account will by default be transfers to the other account
+     */
+    private String mDefaultTransferAccountUID;
+
+    /**
+     * Flag for placeholder accounts.
+     * These accounts cannot have transactions
+     */
+    private boolean mPlaceholderAccount;
+
+    /**
+     * Account color field in hex format #rrggbb
+     */
+    private String mColorCode;
+
+    /**
+     * Flag which marks this account as a favorite account
+     */
+    private boolean mIsFavorite;
 
 	/**
 	 * An extra key for passing the currency code (according ISO 4217) in an intent
@@ -275,13 +345,52 @@ public class Account {
 	public Money getBalance(){
 		//TODO: Consider double entry transactions
 		Money balance = new Money(new BigDecimal(0), this.mCurrency);
-		for (Transaction transx : mTransactionsList) {
-			balance = balance.add(transx.getAmount());		
+		for (Transaction transaction : mTransactionsList) {
+			balance = balance.add(transaction.getAmount());
 		}
 		return balance;
 	}
-	
-	/**
+
+    /**
+     * Returns the color code of the account in the format #rrggbb
+     * @return Color code of the account
+     */
+    public String getColorHexCode() {
+        return mColorCode;
+    }
+
+    /**
+     * Sets the color code of the account.
+     * @param colorCode Color code to be set in the format #rrggbb or #rgb
+     * @throws java.lang.IllegalArgumentException if the color code is not properly formatted
+     */
+    public void setColorCode(String colorCode) {
+        if (colorCode == null)
+            return;
+
+        if (!Pattern.matches(COLOR_HEX_REGEX, colorCode))
+            throw new IllegalArgumentException("Invalid color hex code");
+
+        this.mColorCode = colorCode;
+    }
+
+    /**
+     * Tests if this account is a favorite account or not
+     * @return <code>true</code> if account is flagged as favorite, <code>false</code> otherwise
+     */
+    public boolean isFavorite() {
+        return mIsFavorite;
+    }
+
+    /**
+     * Toggles the favorite flag on this account on or off
+     * @param isFavorite <code>true</code> if account should be flagged as favorite, <code>false</code> otherwise
+     */
+    public void setFavorite(boolean isFavorite) {
+        this.mIsFavorite = isFavorite;
+    }
+
+    /**
 	 * @return the mCurrency
 	 */
 	public Currency getCurrency() {
@@ -315,7 +424,41 @@ public class Account {
 		
 	}
 
-	/**
+    /**
+     * Returns <code>true</code> if this account is a placeholder account, <code>false</code> otherwise.
+     * @return <code>true</code> if this account is a placeholder account, <code>false</code> otherwise
+     */
+    public boolean isPlaceholderAccount(){
+        return mPlaceholderAccount;
+    }
+
+    /**
+     * Sets the placeholder flag for this account.
+     * Placeholder accounts cannot have transactions
+     * @param isPlaceholder Boolean flag indicating if the account is a placeholder account or not
+     */
+    public void setPlaceHolderFlag(boolean isPlaceholder){
+        mPlaceholderAccount = isPlaceholder;
+    }
+
+    /**
+     * Return the unique ID of accounts to which to default transfer transactions to
+     * @return Unique ID string of default transfer account
+     */
+    public String getDefaultTransferAccountUID() {
+        return mDefaultTransferAccountUID;
+    }
+
+    /**
+     * Set the unique ID of account which is the default transfer target
+     * @param defaultTransferAccountUID Unique ID string of default transfer account
+     */
+    public void setDefaultTransferAccountUID(String defaultTransferAccountUID) {
+        this.mDefaultTransferAccountUID = defaultTransferAccountUID;
+    }
+
+
+    /**
 	 * Maps the <code>accountType</code> to the corresponding account type.
 	 * <code>accountType</code> have corresponding values to GnuCash desktop
 	 * @param accountType {@link AccountType} of an account
@@ -356,14 +499,14 @@ public class Account {
 	 * @param doc XML DOM document for the OFX data
 	 * @param parent Parent node to which to add this account's transactions in XML
 	 */
-	public void toOfx(Document doc, Element parent, boolean allTransactions){
+	public void toOfx(Document doc, Element parent, boolean exportAllTransactions){
 		Element currency = doc.createElement("CURDEF");
 		currency.appendChild(doc.createTextNode(mCurrency.getCurrencyCode()));						
 		
 		//================= BEGIN BANK ACCOUNT INFO (BANKACCTFROM) =================================
 		
 		Element bankId = doc.createElement("BANKID");
-		bankId.appendChild(doc.createTextNode(OfxFormatter.APP_ID));
+		bankId.appendChild(doc.createTextNode(OfxExporter.APP_ID));
 		
 		Element acctId = doc.createElement("ACCTID");
 		acctId.appendChild(doc.createTextNode(mUID));
@@ -382,7 +525,7 @@ public class Account {
 		
 		//================= BEGIN ACCOUNT BALANCE INFO =================================
 		String balance = getBalance().toPlainString();
-		String formattedCurrentTimeString = OfxFormatter.getFormattedCurrentTime();
+		String formattedCurrentTimeString = OfxExporter.getFormattedCurrentTime();
 		
 		Element balanceAmount = doc.createElement("BALAMT");
 		balanceAmount.appendChild(doc.createTextNode(balance));			
@@ -413,7 +556,7 @@ public class Account {
 		bankTransactionsList.appendChild(dtend);
 		
 		for (Transaction transaction : mTransactionsList) {
-			if (!allTransactions && transaction.isExported())
+			if (!exportAllTransactions && transaction.isExported())
 				continue;
 			
 			bankTransactionsList.appendChild(transaction.toOfx(doc, mUID));
@@ -430,4 +573,37 @@ public class Account {
 				
 	}
 
+    /**
+     * Exports the account info and transactions in the QIF format
+     * @param exportAllTransactions Flag to determine whether to export all transactions, or only new transactions since last export
+     * @return QIF representation of the account information
+     */
+    public String toQIF(boolean exportAllTransactions) {
+        StringBuffer accountQifBuffer = new StringBuffer();
+        final String newLine = "\n";
+
+        AccountsDbAdapter accountsDbAdapter = new AccountsDbAdapter(GnuCashApplication.getAppContext());
+        String fullyQualifiedAccountName = accountsDbAdapter.getFullyQualifiedAccountName(mUID);
+        accountsDbAdapter.close();
+
+        accountQifBuffer.append(QifHelper.ACCOUNT_HEADER).append(newLine);
+        accountQifBuffer.append(QifHelper.ACCOUNT_NAME_PREFIX).append(fullyQualifiedAccountName).append(newLine);
+        accountQifBuffer.append(QifHelper.ENTRY_TERMINATOR).append(newLine);
+
+        String header = QifHelper.getQifHeader(mAccountType);
+        accountQifBuffer.append(header + newLine);
+
+        for (Transaction transaction : mTransactionsList) {
+            //ignore those which are loaded as double transactions.
+            // They will be handled as splits
+            if (!transaction.getAccountUID().equals(mUID))
+                continue;
+
+            if (!exportAllTransactions && transaction.isExported())
+                continue;
+
+            accountQifBuffer.append(transaction.toQIF() + newLine);
+        }
+        return accountQifBuffer.toString();
+    }
 }

@@ -1,0 +1,872 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+ Copyright (c) 2014 Ngewi Fet <ngewif@gmail.com>
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+<gnc-v2
+     xmlns:gnc="http://www.gnucash.org/XML/gnc"
+     xmlns:act="http://www.gnucash.org/XML/act"
+     xmlns:book="http://www.gnucash.org/XML/book"
+     xmlns:cd="http://www.gnucash.org/XML/cd"
+     xmlns:cmdty="http://www.gnucash.org/XML/cmdty"
+     xmlns:price="http://www.gnucash.org/XML/price"
+     xmlns:slot="http://www.gnucash.org/XML/slot"
+     xmlns:split="http://www.gnucash.org/XML/split"
+     xmlns:sx="http://www.gnucash.org/XML/sx"
+     xmlns:trn="http://www.gnucash.org/XML/trn"
+     xmlns:ts="http://www.gnucash.org/XML/ts"
+     xmlns:fs="http://www.gnucash.org/XML/fs"
+     xmlns:bgt="http://www.gnucash.org/XML/bgt"
+     xmlns:recurrence="http://www.gnucash.org/XML/recurrence"
+     xmlns:lot="http://www.gnucash.org/XML/lot"
+     xmlns:addr="http://www.gnucash.org/XML/addr"
+     xmlns:owner="http://www.gnucash.org/XML/owner"
+     xmlns:billterm="http://www.gnucash.org/XML/billterm"
+     xmlns:bt-days="http://www.gnucash.org/XML/bt-days"
+     xmlns:bt-prox="http://www.gnucash.org/XML/bt-prox"
+     xmlns:cust="http://www.gnucash.org/XML/cust"
+     xmlns:employee="http://www.gnucash.org/XML/employee"
+     xmlns:entry="http://www.gnucash.org/XML/entry"
+     xmlns:invoice="http://www.gnucash.org/XML/invoice"
+     xmlns:job="http://www.gnucash.org/XML/job"
+     xmlns:order="http://www.gnucash.org/XML/order"
+     xmlns:taxtable="http://www.gnucash.org/XML/taxtable"
+     xmlns:tte="http://www.gnucash.org/XML/tte"
+     xmlns:vendor="http://www.gnucash.org/XML/vendor">
+<gnc:count-data cd:type="commodity">1</gnc:count-data>
+<gnc:count-data cd:type="account">63</gnc:count-data>
+<gnc:commodity version="2.0.0">
+  <cmdty:space>ISO4217</cmdty:space>
+  <cmdty:id>RUB</cmdty:id>
+  <cmdty:get_quotes/>
+  <cmdty:quote_source>currency</cmdty:quote_source>
+  <cmdty:quote_tz/>
+</gnc:commodity>
+<gnc:commodity version="2.0.0">
+  <cmdty:space>template</cmdty:space>
+  <cmdty:id>template</cmdty:id>
+  <cmdty:name>template</cmdty:name>
+  <cmdty:xcode>template</cmdty:xcode>
+  <cmdty:fraction>1</cmdty:fraction>
+</gnc:commodity>
+<gnc:account version="2.0.0">
+  <act:name>Root Account</act:name>
+  <act:id type="guid">95130ae4c49276a751adbb535e596958</act:id>
+  <act:type>ROOT</act:type>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Активы</act:name>
+  <act:id type="guid">9771250b33c1d2bc4ef9b3c9a8417d67</act:id>
+  <act:type>ASSET</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>RUB</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>Активы</act:description>
+  <act:slots>
+    <slot>
+      <slot:key>placeholder</slot:key>
+      <slot:value type="string">true</slot:value>
+    </slot>
+    <slot>
+      <slot:key>color</slot:key>
+      <slot:value type="string">#1469EB</slot:value>
+    </slot>
+  </act:slots>
+  <act:parent type="guid">95130ae4c49276a751adbb535e596958</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Текущие активы</act:name>
+  <act:id type="guid">e265527fa15504ea5439b596ab5c85ff</act:id>
+  <act:type>ASSET</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>RUB</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>Текущие активы</act:description>
+  <act:slots>
+    <slot>
+      <slot:key>placeholder</slot:key>
+      <slot:value type="string">true</slot:value>
+    </slot>
+  </act:slots>
+  <act:parent type="guid">9771250b33c1d2bc4ef9b3c9a8417d67</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Чековый счет</act:name>
+  <act:id type="guid">18194eedc13803909a9906df62f0a609</act:id>
+  <act:type>BANK</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>RUB</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>Чековый счет</act:description>
+  <act:parent type="guid">e265527fa15504ea5439b596ab5c85ff</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Депозитный счет</act:name>
+  <act:id type="guid">cdbbf4e1dad136d2db97cecbaa155c60</act:id>
+  <act:type>BANK</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>RUB</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>Депозитный счет</act:description>
+  <act:parent type="guid">e265527fa15504ea5439b596ab5c85ff</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Наличные</act:name>
+  <act:id type="guid">e55bfb7a0b4cab9e00eb0d3f8f8905fe</act:id>
+  <act:type>CASH</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>RUB</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>Наличные</act:description>
+  <act:parent type="guid">e265527fa15504ea5439b596ab5c85ff</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Долги</act:name>
+  <act:id type="guid">cecbee342b45a9dfa25eaff757b794ac</act:id>
+  <act:type>LIABILITY</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>RUB</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>Долги</act:description>
+  <act:slots>
+    <slot>
+      <slot:key>placeholder</slot:key>
+      <slot:value type="string">true</slot:value>
+    </slot>
+    <slot>
+      <slot:key>color</slot:key>
+      <slot:value type="string">#B304AD</slot:value>
+    </slot>
+  </act:slots>
+  <act:parent type="guid">95130ae4c49276a751adbb535e596958</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Кредитная карта</act:name>
+  <act:id type="guid">10223989ddcabf496a16f5b4c390b4e1</act:id>
+  <act:type>CREDIT</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>RUB</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>Кредитная карта</act:description>
+  <act:parent type="guid">cecbee342b45a9dfa25eaff757b794ac</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Доходы</act:name>
+  <act:id type="guid">4db88e3e0189a26169a0e2646f69666e</act:id>
+  <act:type>INCOME</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>RUB</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>Доходы</act:description>
+  <act:slots>
+    <slot>
+      <slot:key>placeholder</slot:key>
+      <slot:value type="string">true</slot:value>
+    </slot>
+    <slot>
+      <slot:key>color</slot:key>
+      <slot:value type="string">#319D67</slot:value>
+    </slot>
+  </act:slots>
+  <act:parent type="guid">95130ae4c49276a751adbb535e596958</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Премия</act:name>
+  <act:id type="guid">0cc48bcc349ec1a8263dd37a64f2d8b3</act:id>
+  <act:type>INCOME</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>RUB</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>Премия</act:description>
+  <act:parent type="guid">4db88e3e0189a26169a0e2646f69666e</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Полученные подарки</act:name>
+  <act:id type="guid">9e48b0147e7656e0d6a26dd95151c40f</act:id>
+  <act:type>INCOME</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>RUB</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>Полученные подарки</act:description>
+  <act:parent type="guid">4db88e3e0189a26169a0e2646f69666e</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Процентный доход</act:name>
+  <act:id type="guid">9d8744b2767c59308ac19f44b5a2720a</act:id>
+  <act:type>INCOME</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>RUB</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>Процентный доход</act:description>
+  <act:parent type="guid">4db88e3e0189a26169a0e2646f69666e</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Чековые проценты</act:name>
+  <act:id type="guid">27c1298091642fca26bcd867323eb1e7</act:id>
+  <act:type>INCOME</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>RUB</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>Чековые проценты</act:description>
+  <act:parent type="guid">9d8744b2767c59308ac19f44b5a2720a</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Другие процентные доходы</act:name>
+  <act:id type="guid">18c760f38712481f2d6e1f915918c1b4</act:id>
+  <act:type>INCOME</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>RUB</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>Другие доходы с процентов</act:description>
+  <act:parent type="guid">9d8744b2767c59308ac19f44b5a2720a</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Депозитные проценты</act:name>
+  <act:id type="guid">76896c551424f5cd1893fe0d04d04b1c</act:id>
+  <act:type>INCOME</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>RUB</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>Депозитные проценты</act:description>
+  <act:parent type="guid">9d8744b2767c59308ac19f44b5a2720a</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Другие доходы</act:name>
+  <act:id type="guid">ff59b009dd32c02fe9549157af2a84d0</act:id>
+  <act:type>INCOME</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>RUB</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>Другие доходы</act:description>
+  <act:parent type="guid">4db88e3e0189a26169a0e2646f69666e</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Заработная плата</act:name>
+  <act:id type="guid">2367e3fe45d187019de81d7b187ee81f</act:id>
+  <act:type>INCOME</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>RUB</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>Заработная плата</act:description>
+  <act:parent type="guid">4db88e3e0189a26169a0e2646f69666e</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Расходы</act:name>
+  <act:id type="guid">5dc1e4b935b2be5dc27cf0ec5ca19386</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>RUB</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>Расходы</act:description>
+  <act:slots>
+    <slot>
+      <slot:key>placeholder</slot:key>
+      <slot:value type="string">true</slot:value>
+    </slot>
+    <slot>
+      <slot:key>color</slot:key>
+      <slot:value type="string">#D13E29</slot:value>
+    </slot>
+  </act:slots>
+  <act:parent type="guid">95130ae4c49276a751adbb535e596958</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Корректировка</act:name>
+  <act:id type="guid">79feef516658e483d61fe06f3500e805</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>RUB</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>Корректировка</act:description>
+  <act:parent type="guid">5dc1e4b935b2be5dc27cf0ec5ca19386</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Автомобиль</act:name>
+  <act:id type="guid">6ad70cdcd9d19d5166724ab56c9137eb</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>RUB</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>Расходы на автомобиль</act:description>
+  <act:parent type="guid">5dc1e4b935b2be5dc27cf0ec5ca19386</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Сборы</act:name>
+  <act:id type="guid">8ebc18d0e9b3c3d5c5f9f0a90bdcc541</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>RUB</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>Сборы</act:description>
+  <act:parent type="guid">6ad70cdcd9d19d5166724ab56c9137eb</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Топливо</act:name>
+  <act:id type="guid">2b531e75a208e36763dbccda662c9d25</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>RUB</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>Топливо</act:description>
+  <act:parent type="guid">6ad70cdcd9d19d5166724ab56c9137eb</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Парковка</act:name>
+  <act:id type="guid">ec951f93c7589b1837cd20649a80ad27</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>RUB</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>Парковка</act:description>
+  <act:parent type="guid">6ad70cdcd9d19d5166724ab56c9137eb</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Ремонт и обслуживание</act:name>
+  <act:id type="guid">f669c6c59bcbb902054349785acbd510</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>RUB</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>Ремонт и обслуживание</act:description>
+  <act:parent type="guid">6ad70cdcd9d19d5166724ab56c9137eb</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Банковское обслуживание</act:name>
+  <act:id type="guid">98d583e8c5b5f89f52dd76028511952f</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>RUB</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>Банковское обслуживание</act:description>
+  <act:parent type="guid">5dc1e4b935b2be5dc27cf0ec5ca19386</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Книги</act:name>
+  <act:id type="guid">c3ff638ff19f2def45bf8d0f17f6e118</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>RUB</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>Книги</act:description>
+  <act:parent type="guid">5dc1e4b935b2be5dc27cf0ec5ca19386</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Кабельное телевидение</act:name>
+  <act:id type="guid">86b294b4c118eb605be1bbd566b2f705</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>RUB</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>Кабельное телевидение</act:description>
+  <act:parent type="guid">5dc1e4b935b2be5dc27cf0ec5ca19386</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Благотворительность</act:name>
+  <act:id type="guid">2aa636bcefc450d5906e0fd924e6da82</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>RUB</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>Благотворительность</act:description>
+  <act:parent type="guid">5dc1e4b935b2be5dc27cf0ec5ca19386</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Одежда</act:name>
+  <act:id type="guid">211f84da1b9ef9911eb7446b62284e3a</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>RUB</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>Одежда</act:description>
+  <act:parent type="guid">5dc1e4b935b2be5dc27cf0ec5ca19386</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Компьютер</act:name>
+  <act:id type="guid">acd47986b3453c1b969b3ca50787d993</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>RUB</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>Компьютер</act:description>
+  <act:parent type="guid">5dc1e4b935b2be5dc27cf0ec5ca19386</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Обеды</act:name>
+  <act:id type="guid">d6875b9743cf687fde46241412448a73</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>RUB</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>Обеды</act:description>
+  <act:parent type="guid">5dc1e4b935b2be5dc27cf0ec5ca19386</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Учёба</act:name>
+  <act:id type="guid">29e6abeaa686f8ecb6d848e472e98d8f</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>RUB</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>Учёба</act:description>
+  <act:parent type="guid">5dc1e4b935b2be5dc27cf0ec5ca19386</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Развлечения</act:name>
+  <act:id type="guid">fdb4f85650c5ffb44a100e5b27201c8c</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>RUB</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>Развлечения</act:description>
+  <act:parent type="guid">5dc1e4b935b2be5dc27cf0ec5ca19386</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Музыка и кино</act:name>
+  <act:id type="guid">90ab0ba048f336999096475c35b9c827</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>RUB</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>Музыка и кино</act:description>
+  <act:parent type="guid">fdb4f85650c5ffb44a100e5b27201c8c</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Отдых</act:name>
+  <act:id type="guid">cf6924c1e7b24ceb9de0330827d5c2e7</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>RUB</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>Отдых</act:description>
+  <act:parent type="guid">fdb4f85650c5ffb44a100e5b27201c8c</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Путешествия</act:name>
+  <act:id type="guid">15f995e72c57c506334b3c3f9ee2d4bf</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>RUB</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>Путешествия</act:description>
+  <act:parent type="guid">fdb4f85650c5ffb44a100e5b27201c8c</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Подарки</act:name>
+  <act:id type="guid">da57838f8102a222114ef35dd3fe0ea7</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>RUB</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>Подарки</act:description>
+  <act:parent type="guid">5dc1e4b935b2be5dc27cf0ec5ca19386</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Хозтовары</act:name>
+  <act:id type="guid">97ebeec0def12319c8f5f363b5ef7be6</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>RUB</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>Хозтовары</act:description>
+  <act:parent type="guid">5dc1e4b935b2be5dc27cf0ec5ca19386</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Хобби</act:name>
+  <act:id type="guid">172590e22f38b03ced8fc0a1c5092947</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>RUB</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>Хобби</act:description>
+  <act:parent type="guid">5dc1e4b935b2be5dc27cf0ec5ca19386</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Страхование</act:name>
+  <act:id type="guid">593c069dc6837aaa5b98304d84e118f0</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>RUB</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>Страхование</act:description>
+  <act:parent type="guid">5dc1e4b935b2be5dc27cf0ec5ca19386</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Автостраховка</act:name>
+  <act:id type="guid">2e209fa0e9c30b7413305e4f019c9622</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>RUB</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>Автостраховка</act:description>
+  <act:parent type="guid">593c069dc6837aaa5b98304d84e118f0</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Медстраховка</act:name>
+  <act:id type="guid">1d236f02771b97e541fab5771ac1fcfc</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>RUB</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>Медстраховка</act:description>
+  <act:parent type="guid">593c069dc6837aaa5b98304d84e118f0</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Страхование жизни</act:name>
+  <act:id type="guid">1ef1146fe13295da087a67c441963a31</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>RUB</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>Страхование жизни</act:description>
+  <act:parent type="guid">593c069dc6837aaa5b98304d84e118f0</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Химчистка/прачечная</act:name>
+  <act:id type="guid">c27fa32b4477e8cc34a3ab85f1c9da28</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>RUB</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>Химчистка/прачечная</act:description>
+  <act:parent type="guid">5dc1e4b935b2be5dc27cf0ec5ca19386</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Медицинские расходы</act:name>
+  <act:id type="guid">b429db66a50e6726f89ffa9d879f3ca3</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>RUB</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>Медицинские расходы</act:description>
+  <act:parent type="guid">5dc1e4b935b2be5dc27cf0ec5ca19386</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Разное</act:name>
+  <act:id type="guid">e97700bfe8bb429904744c81f2278e88</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>RUB</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>Разное</act:description>
+  <act:parent type="guid">5dc1e4b935b2be5dc27cf0ec5ca19386</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Интернет услуги</act:name>
+  <act:id type="guid">16ea2c70343facb8443e1c1c4bf8ee7d</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>RUB</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>Интернет услуги</act:description>
+  <act:parent type="guid">5dc1e4b935b2be5dc27cf0ec5ca19386</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Телефон</act:name>
+  <act:id type="guid">c376a652e4359fd498c1f1937bacfff3</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>RUB</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>Телефон</act:description>
+  <act:parent type="guid">5dc1e4b935b2be5dc27cf0ec5ca19386</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Общественный транспорт</act:name>
+  <act:id type="guid">241aa8ad55420286eda902826cc15256</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>RUB</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>Общественный транспорт</act:description>
+  <act:parent type="guid">5dc1e4b935b2be5dc27cf0ec5ca19386</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Подписки</act:name>
+  <act:id type="guid">7dbb90f608edacbc2b26af82daaef77d</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>RUB</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>Подписки</act:description>
+  <act:parent type="guid">5dc1e4b935b2be5dc27cf0ec5ca19386</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Питание</act:name>
+  <act:id type="guid">9075621040257db772ab18790dbeaa55</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>RUB</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>Питание</act:description>
+  <act:parent type="guid">5dc1e4b935b2be5dc27cf0ec5ca19386</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Налоги</act:name>
+  <act:id type="guid">4fd8821e2cd6356cc1f28b49d30e849b</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>RUB</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>Налоги</act:description>
+  <act:parent type="guid">5dc1e4b935b2be5dc27cf0ec5ca19386</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Федеральные</act:name>
+  <act:id type="guid">7401fecef3fb3212470788fa5a4ebe55</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>RUB</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>Федеральные</act:description>
+  <act:parent type="guid">4fd8821e2cd6356cc1f28b49d30e849b</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Другие налоги</act:name>
+  <act:id type="guid">7ff01d3e4e74863f294a9e0037d1fb33</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>RUB</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>Другие налоги</act:description>
+  <act:parent type="guid">4fd8821e2cd6356cc1f28b49d30e849b</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Общественная безопасность</act:name>
+  <act:id type="guid">885358ab1eed962c21e2ad287bf72132</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>RUB</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>Общественная безопасность</act:description>
+  <act:parent type="guid">4fd8821e2cd6356cc1f28b49d30e849b</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Региональные</act:name>
+  <act:id type="guid">a3a8bb37289ba0a9797e54c3f66c1ca1</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>RUB</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>Региональные</act:description>
+  <act:parent type="guid">4fd8821e2cd6356cc1f28b49d30e849b</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Коммунальные услуги</act:name>
+  <act:id type="guid">7fca75ae83b6794752286b2f0160e84a</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>RUB</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>Коммунальные услуги</act:description>
+  <act:parent type="guid">5dc1e4b935b2be5dc27cf0ec5ca19386</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Электричество</act:name>
+  <act:id type="guid">440b94330312524214ee67ef9bcae504</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>RUB</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>Электричество</act:description>
+  <act:parent type="guid">7fca75ae83b6794752286b2f0160e84a</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Вывоз мусора</act:name>
+  <act:id type="guid">6774eb2faabc64883b7dd16bea21c8f8</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>RUB</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>Вывоз мусора</act:description>
+  <act:parent type="guid">7fca75ae83b6794752286b2f0160e84a</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Газ</act:name>
+  <act:id type="guid">8b4765c68d97d5209c2c6c7f211ec948</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>RUB</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>Газ</act:description>
+  <act:parent type="guid">7fca75ae83b6794752286b2f0160e84a</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Вода</act:name>
+  <act:id type="guid">2ae2963b304d8eb7aeba3b1ee02fcc2f</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>RUB</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>Вода</act:description>
+  <act:parent type="guid">7fca75ae83b6794752286b2f0160e84a</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Собственные средства</act:name>
+  <act:id type="guid">1da1a7dc9dd3a94723e08b9ec2f6a43d</act:id>
+  <act:type>EQUITY</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>RUB</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>Собственные средства</act:description>
+  <act:slots>
+    <slot>
+      <slot:key>placeholder</slot:key>
+      <slot:value type="string">true</slot:value>
+    </slot>
+    <slot>
+      <slot:key>color</slot:key>
+      <slot:value type="string">#EE8600</slot:value>
+    </slot>
+  </act:slots>
+  <act:parent type="guid">95130ae4c49276a751adbb535e596958</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>Начальное сальдо</act:name>
+  <act:id type="guid">015d745c513531b7ab7e2f71cf52d4d7</act:id>
+  <act:type>EQUITY</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>RUB</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>Остаток средств на начало периода</act:description>
+  <act:parent type="guid">1da1a7dc9dd3a94723e08b9ec2f6a43d</act:parent>
+</gnc:account>
+</gnc-v2>
+
+<!-- Local variables: -->
+<!-- mode: xml        -->
+<!-- End:             -->

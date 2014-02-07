@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.widget.Toast;
 import org.gnucash.android.R;
 import org.gnucash.android.db.TransactionsDbAdapter;
+import org.gnucash.android.ui.widget.WidgetConfigurationActivity;
 
 /**
  * Copyright (c) 2013 - gnucash-android
@@ -36,7 +37,7 @@ public class DeleteAllTransacationsConfirmationDialog extends DialogFragment {
                                 transactionsDbAdapter.deleteAllRecords();
                                 transactionsDbAdapter.close();
                                 Toast.makeText(context, R.string.toast_all_transactions_deleted, Toast.LENGTH_SHORT).show();
-
+                                WidgetConfigurationActivity.updateAllWidgets(getActivity());
                             }
                         }
                 )

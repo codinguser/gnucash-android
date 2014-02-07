@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
- Copyright (c) 2012 Ngewi Fet <ngewif@gmail.com>
- Copyright (c) 2012 Kjell Thomas Pedersen <kjelltp@gmail.com>
- Copyright (c) 2012 Sigurd Gartmann <sigurdga-github@sigurdga.no>
+ Copyright (c) 2012 - 2014 Ngewi Fet <ngewif@gmail.com>
+ Copyright (c) 2012 - 2014 Kjell Thomas Pedersen <kjelltp@gmail.com>
+ Copyright (c) 2012 - 2014 Sigurd Gartmann <sigurdga-github@sigurdga.no>
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -22,7 +22,6 @@
     <string name="title_add_account">Opprett konto</string>
     <string name="title_edit_account">Rediger konto</string>
     <string name="info_details">Informasjon</string>
-    <string name="title_settings">Innstillinger</string>
     <string name="menu_export_ofx">Eksport OFX</string>
     <string name="description_add_transaction_icon">Legg til ny kontotransaksjon</string>
     <string name="label_no_accounts">Ingen kontoer å vise</string>
@@ -52,7 +51,7 @@
     <string name="title_selected">%1$d valgt</string>
     <string name="label_transactions_total">Totalt beløp:</string>
     <string name="label_export_destination">Eksportmottaker</string>
-    <string name="title_export_dialog">Eksporter OFX</string>
+    <string name="title_export_dialog">Export Transactions</string>
     <string name="option_export_all_transactions">Eksporter alle transaksjoner</string>
     <string name="hint_export_choice">Vanligvis vil kun nye transaksjoner bli eksportert.  Merk dette valget for å eksportere alle transaksjonene</string>
     <string name="error_exporting">Feil ved eksportering av OFX-data</string>    
@@ -311,13 +310,14 @@ format og importeres i regnskapsprogrammet GnuCash for PC.</string>
 	<string name="summary_xml_ofx_header">Velg denne hvis du skal eksportere til annen programvare enn GnuCash for PC.</string>
 	<string name="title_whats_new">Hva er nytt</string>
 	<string name="whats_new">
-	    <b>Versjon 1.2.0 - 20.06.2013</b>\n\n
-        - Importering av GnuCash (PC) konto struktur\n
-        - Nestet visning av konto hierarki\n
-        - Valg for sletting av alle transaksjoner/kontoer\n
-        - Foreløpig støtte for kontotyper\n
-        - Konto balanse inkluderer nå underkontoer\n
-        - Mange feilrettinger\n
+        - Mark favorite accounts and quickly access them\n
+        - Display different tabs for recent, favorite and all accounts\n
+        - Add, view and delete recurring transactions (daily, weekly, monthly)\n
+        - Mark accounts as placeholder accounts (cannot contain transactions)\n
+        - Set a default transfer account for each account\n
+        - Color code accounts and themed account views\n
+        - Create default GnuCash account structure from within app\n
+        - Numerous bug fixes and improvements\n
 	</string>
 	<string name="label_dismiss">Ferdig</string>
     <string name="toast_transanction_amount_required">Oppgi et beløp for å lagre transaksjonen</string>
@@ -340,6 +340,21 @@ format og importeres i regnskapsprogrammet GnuCash for PC.</string>
     <string name="toast_all_transactions_deleted">Alle transaksjoner slettet!</string>
     <string name="title_progress_importing_accounts">Importing accounts</string>
     <string name="toast_tap_again_to_confirm_delete">Tap again to confirm. ALL entries will be deleted!!</string>
+    <string name="section_header_transactions">Transactions</string>
+    <string name="section_header_subaccounts">Sub-Accounts</string>
+    <string name="menu_search_accounts">Search</string>
+    <string name="title_default_export_format">Default Export Format</string>
+    <string name="summary_default_export_format">File format to use by default when exporting transactions</string>
+    <string name="menu_export_transactions">Export transactions…</string>
+    <string name="label_recurring_transaction">Recurrence</string>
+    <!-- This should be the same name used by GnuCash desktop for imbalance accounts -->
+    <string name="imbalance_account_name">Imbalance</string>
+    <string name="title_progress_exporting_transactions">Exporting transactions</string>
+    <string name="label_no_recurring_transactions">No recurring transactions to display.</string>
+    <string name="toast_recurring_transaction_deleted">Successfully deleted recurring transaction</string>
+    <string name="label_placeholder_account">Placeholder account</string>
+    <string name="label_default_transfer_account">Default Transfer Account</string>
+    <string name="label_account_color_and_type">Account Color &amp; Type</string>
     <plurals name="label_sub_accounts">
         <item quantity="one">%d under-konto</item>
         <item quantity="other">%d under-kontoer</item>
@@ -359,4 +374,24 @@ format og importeres i regnskapsprogrammet GnuCash for PC.</string>
         <item>AKSJE</item>
         <item>AKSJEFOND</item>
     </string-array>
+    <string-array name="export_formats">
+        <item>QIF</item>
+        <item>OFX</item>
+    </string-array>
+    <!-- Default title for color picker dialog [CHAR LIMIT=30] -->
+    <string name="color_picker_default_title">Select a Color</string>
+    <string name="label_delete_sub_accounts">Delete sub-accounts</string>
+    <string name="title_recent_accounts">Recent</string>
+    <string name="title_favorite_accounts">Favorites</string>
+    <string name="title_all_accounts">All</string>
+    <string name="summary_create_default_accounts">Creates default GnuCash commonly-used account structure</string>
+    <string name="title_create_default_accounts">Create default accounts</string>
+    <string name="message_confirm_create_default_accounts_setting">New accounts will be created in addition to the existing
+        account structure.\n\nIf you wish to replace currently existing accounts, delete them first before proceeding!
+    </string>
+    <string name="menu_item_recurring_transactions">Recurring Transactions</string>
+    <string name="message_confirm_create_default_accounts_first_run">Welcome to GnuCash Android! \nYou can either create
+        a hierarchy of commonly-used accounts, or import your own GnuCash account structure. \n\nBoth options are also
+        available in app Settings so you can decide later.
+    </string>
 </resources>

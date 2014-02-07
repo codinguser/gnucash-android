@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
- Copyright (c) 2012 Ngewi Fet <ngewif@gmail.com>
- Copyright (c) 2012 Menelaos Maglis <mmaglis@metacom.gr> 
+ Copyright (c) 2012 - 2014 Ngewi Fet <ngewif@gmail.com>
+ Copyright (c) 2012 - 2014 Menelaos Maglis <mmaglis@metacom.gr>
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -21,7 +21,6 @@
     <string name="title_add_account">Δημιουργία Λογαριασμού</string>
     <string name="title_edit_account">Επεξεργασία Λογαριασμού</string>
     <string name="info_details">Πληροφορίες</string>
-    <string name="title_settings">Ρυθμίσεις</string>
     <string name="menu_export_ofx">Εξαγωγή OFX</string>
     <string name="description_add_transaction_icon">Προσθήκη μιας νέας συναλλαγής σε ένα λογαριασμό</string>
     <string name="label_no_accounts">Δεν υπάρχουν λογαριασμοί για εμφάνιση</string>
@@ -51,7 +50,7 @@
     <string name="title_selected">%1$d επιλέχθηκε</string>
     <string name="label_transactions_total">Συνολικό άρθροισμα:</string>
     <string name="label_export_destination">Προορισμός Εξαγωγής</string>
-    <string name="title_export_dialog">Εξαγωγή OFX</string>
+    <string name="title_export_dialog">Export transactions</string>
     <string name="option_export_all_transactions">Εξαγωγή όλων των συναλλαγών</string>
     <string name="hint_export_choice">Προεπιλεγμένα, μόνο οι νέες συναλλαγές από τη τελευταία εξαγωγή θα εξαχθούν. Ενεργοποίησε αυτή την επιλογή για την εξαγωγή όλων των συναλλαγών</string>
     <string name="error_exporting">Σφάλμα εξαγωγής δεδομένων OFX</string>    
@@ -315,13 +314,14 @@
 	<string name="summary_xml_ofx_header">Ενεργοποίηση αυτής της επιλογής για εξαγωγή σε εφαρμογές τρίτων, εκτός του GnuCash για επιτραπέζιο υπολογιστή.</string>
 	<string name="title_whats_new">Τι νέο υπάρχει</string>
 	<string name="whats_new">
-        <b>Έκδοση 1.2.0 - 20.06.2013</b>\n\n
-        - Import GnuCash desktop account structure\n
-        - Nested display of account hierarchy\n
-        - Options for deleting all accounts/transactions\n
-        - Preliminary support for account types\n
-        - Account balance now takes sub-accounts into consideration\n
-        - Numerous bug fixes\n
+        - Mark favorite accounts and quickly access them\n
+        - Display different tabs for recent, favorite and all accounts\n
+        - Add, view and delete recurring transactions (daily, weekly, monthly)\n
+        - Mark accounts as placeholder accounts (cannot contain transactions)\n
+        - Set a default transfer account for each account\n
+        - Color code accounts and themed account views\n
+        - Create default GnuCash account structure from within app\n
+        - Numerous bug fixes and improvements\n
 	</string>
 	<string name="label_dismiss">Απόρριψη</string>
     <string name="toast_transanction_amount_required">Εισαγωγή ποσού για
@@ -353,6 +353,21 @@
 	με επιτυχία!</string>
     <string name="title_progress_importing_accounts">Importing accounts</string>
     <string name="toast_tap_again_to_confirm_delete">Tap again to confirm. ALL entries will be deleted!!</string>
+    <string name="section_header_transactions">Transactions</string>
+    <string name="section_header_subaccounts">Sub-Accounts</string>
+    <string name="menu_search_accounts">Search</string>
+    <string name="title_default_export_format">Default Export Format</string>
+    <string name="summary_default_export_format">File format to use by default when exporting transactions</string>
+    <string name="menu_export_transactions">Export transactions…</string>
+    <string name="label_recurring_transaction">Recurrence</string>
+    <!-- This should be the same name used by GnuCash desktop for imbalance accounts -->
+    <string name="imbalance_account_name">Imbalance</string>
+    <string name="title_progress_exporting_transactions">Exporting transactions</string>
+    <string name="label_no_recurring_transactions">No recurring transactions to display.</string>
+    <string name="toast_recurring_transaction_deleted">Successfully deleted recurring transaction</string>
+    <string name="label_placeholder_account">Placeholder account</string>
+    <string name="label_default_transfer_account">Default Transfer Account</string>
+    <string name="label_account_color_and_type">Account Color &amp; Type</string>
     <plurals name="label_sub_accounts">
         <item quantity="one">%d υπο-λογαριασμός</item>
         <item quantity="other">%d υπο-λογαριασμοί</item>
@@ -372,4 +387,24 @@
         <item>ΜΕΤΟΧΗ</item>
         <item>ΑΜΟΙΒΑΙΟ ΚΕΦΑΛΑΙΟ</item>
     </string-array>
+    <string-array name="export_formats">
+        <item>QIF</item>
+        <item>OFX</item>
+    </string-array>
+    <!-- Default title for color picker dialog [CHAR LIMIT=30] -->
+    <string name="color_picker_default_title">Select a Color</string>
+    <string name="label_delete_sub_accounts">Delete sub-accounts</string>
+    <string name="title_recent_accounts">Recent</string>
+    <string name="title_favorite_accounts">Favorites</string>
+    <string name="title_all_accounts">All</string>
+    <string name="summary_create_default_accounts">Creates default GnuCash commonly-used account structure</string>
+    <string name="title_create_default_accounts">Create default accounts</string>
+    <string name="message_confirm_create_default_accounts_setting">New accounts will be created in addition to the existing
+        account structure.\n\nIf you wish to replace currently existing accounts, delete them first before proceeding!
+    </string>
+    <string name="menu_item_recurring_transactions">Recurring Transactions</string>
+    <string name="message_confirm_create_default_accounts_first_run">Welcome to GnuCash Android! \nYou can either create
+        a hierarchy of commonly-used accounts, or import your own GnuCash account structure. \n\nBoth options are also
+        available in app Settings so you can decide later.
+    </string>
 </resources>

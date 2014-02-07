@@ -38,8 +38,38 @@
 	        style="@style/ListItem"
 	        android:layout_marginLeft="@dimen/dialog_padding"
 	        android:layout_marginRight="@dimen/dialog_padding"
-	        android:layout_marginBottom="20dp" />
-	       
+	        android:layout_marginBottom="@dimen/dialog_padding" />
+
+        <TextView
+                android:id="@+id/label_export_format"
+                android:text="Export Format"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:layout_marginBottom="-8dip"
+                android:layout_marginLeft="@dimen/dialog_padding"
+                style="@style/TextAppearance.EditTransaction_LabelSmall" />
+
+        <RadioGroup xmlns:android="http://schemas.android.com/apk/res/android"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/dialog_padding"
+                    android:layout_marginRight="@dimen/dialog_padding"
+                    android:layout_marginBottom="@dimen/dialog_padding"
+                    android:orientation="horizontal">
+
+            <RadioButton android:id="@+id/radio_qif_format"
+                         android:layout_width="wrap_content"
+                         android:layout_height="wrap_content"
+                         android:layout_marginRight="20dp"
+                         android:checked="true"
+                         android:text="QIF" />
+
+            <RadioButton android:id="@+id/radio_ofx_format"
+                         android:layout_width="wrap_content"
+                         android:layout_height="wrap_content"
+                         android:text="OFX"/>
+        </RadioGroup>
+
 	    <CheckBox android:id="@+id/checkbox_export_all"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
@@ -57,8 +87,8 @@
 	        android:layout_marginTop="@dimen/dialog_padding"
 	        android:layout_marginLeft="@dimen/dialog_padding"
 	        android:textAppearance="?android:attr/textAppearanceMedium"
-	        android:text="@string/option_delete_after_export"        
-	        />    
+	        android:text="@string/option_delete_after_export"
+	        />
 	        
 	    <TextView android:layout_marginLeft="@dimen/dialog_padding"
 	        android:text="@string/hint_delete_after_export"

@@ -26,6 +26,7 @@ import android.preference.PreferenceManager;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockPreferenceActivity;
+import org.gnucash.android.ui.accounts.AccountsActivity;
 
 
 /**
@@ -53,5 +54,12 @@ public class AboutPreferenceFragment extends PreferenceFragment{
 		String versionName = manager.getString(getString(R.string.key_build_version), "");
 		Preference pref = findPreference(getString(R.string.key_build_version));
 		pref.setSummary(versionName);
+        pref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                AccountsActivity.showWhatsNewDialog(getActivity());
+                return true;
+            }
+        });
 	}
 }

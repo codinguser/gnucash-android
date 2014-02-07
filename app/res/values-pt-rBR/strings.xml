@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
- Copyright (c) 2012 Ngewi Fet <ngewif@gmail.com>
- Copyright (c) 2012 Pedro Abel <pedroabel@gmail.com>
+ Copyright (c) 2012 - 2014 Ngewi Fet <ngewif@gmail.com>
+ Copyright (c) 2012 - 2014 Pedro Abel <pedroabel@gmail.com>
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@
 	  <string name="title_add_account">Criar Conta</string>
 	  <string name="title_edit_account">Editar Conta</string>
 	  <string name="info_details">Info</string>
-	  <string name="title_settings">Configurações</string>
 	  <string name="menu_export_ofx">Exportar OFX</string>
 	  <string name="description_add_transaction_icon">Adicionar nova transação para uma conta</string>
 	  <string name="label_no_accounts">Sem contas para apresentar</string>
@@ -50,7 +49,7 @@
 	  <string name="title_selected">%1$d selecionado</string>
 	  <string name="label_transactions_total">Total:</string>
 	  <string name="label_export_destination">Exportar para:</string>
-	  <string name="title_export_dialog">Exportar OFX</string>
+	  <string name="title_export_dialog">Export Transactions</string>
 	  <string name="option_export_all_transactions">Exportar todas as transações</string>
 	  <string name="hint_export_choice">Por padrão, só serão exportadas as transações criadas após o último procedimento de exportar. Selecionar essa opção para exportar todas as transações.</string>
 	  <string name="error_exporting">Erro ao exportar os dados OFX</string>
@@ -307,13 +306,14 @@
 	  <string name="summary_xml_ofx_header">Habilitar essa opção quando estiver exportando para um software terceiro, diferente do GnuCash para desktop</string>
 	  <string name="title_whats_new">O que há de novo</string>
 	  <string name="whats_new">
-	    <b>Version 1.2.0 - 20.06.2013</b>\n\n
-          - Importação da estrutura de contas do GnuCash para desktop\n
-          - Apresentação de contas alinhadas hierarquicamente\n
-          - Opções para deletar todas as contas/transações\n
-          - Suporte preliminar para tipos de contas\n
-          - Saldos das sub-contas agora são considerados ao apresentar o saldo da conta principal\n
-          - Diversas correções de bugs\n
+          - Mark favorite accounts and quickly access them\n
+          - Display different tabs for recent, favorite and all accounts\n
+          - Add, view and delete recurring transactions (daily, weekly, monthly)\n
+          - Mark accounts as placeholder accounts (cannot contain transactions)\n
+          - Set a default transfer account for each account\n
+          - Color code accounts and themed account views\n
+          - Create default GnuCash account structure from within app\n
+          - Numerous bug fixes and improvements\n
 	  </string>
 	  <string name="label_dismiss">Descartar</string>
     <string name="toast_transanction_amount_required">Adicione um valor para salvar a transação</string>
@@ -337,6 +337,21 @@
     <string name="toast_all_transactions_deleted">Todas as transações foram deletadas com sucesso!</string>
     <string name="title_progress_importing_accounts">Importando contas</string>
     <string name="toast_tap_again_to_confirm_delete">Toque novamente para confirmar. TODAS as entradas serão deletadas!!!</string>
+    <string name="section_header_transactions">Transactions</string>
+    <string name="section_header_subaccounts">Sub-Accounts</string>
+    <string name="menu_search_accounts">Search</string>
+    <string name="title_default_export_format">Default Export Format</string>
+    <string name="summary_default_export_format">File format to use by default when exporting transactions</string>
+    <string name="menu_export_transactions">Export transactions…</string>
+    <string name="label_recurring_transaction">Recurrence</string>
+    <!-- This should be the same name used by GnuCash desktop for imbalance accounts -->
+    <string name="imbalance_account_name">Imbalance</string>
+    <string name="title_progress_exporting_transactions">Exporting transactions</string>
+    <string name="label_no_recurring_transactions">No recurring transactions to display.</string>
+    <string name="toast_recurring_transaction_deleted">Successfully deleted recurring transaction</string>
+    <string name="label_placeholder_account">Placeholder account</string>
+    <string name="label_default_transfer_account">Default Transfer Account</string>
+    <string name="label_account_color_and_type">Account Color &amp; Type</string>
     <plurals name="label_sub_accounts">
         <item quantity="one">%d sub-contas</item>
         <item quantity="other">%d sub-contas</item>
@@ -356,4 +371,24 @@
         <item>AÇÕES</item>
         <item>FUNDO MÚTUO</item>
     </string-array>
+    <string-array name="export_formats">
+        <item>QIF</item>
+        <item>OFX</item>
+    </string-array>
+    <!-- Default title for color picker dialog [CHAR LIMIT=30] -->
+    <string name="color_picker_default_title">Select a Color</string>
+    <string name="label_delete_sub_accounts">Delete sub-accounts</string>
+    <string name="title_recent_accounts">Recent</string>
+    <string name="title_favorite_accounts">Favorites</string>
+    <string name="title_all_accounts">All</string>
+    <string name="summary_create_default_accounts">Creates default GnuCash commonly-used account structure</string>
+    <string name="title_create_default_accounts">Create default accounts</string>
+    <string name="message_confirm_create_default_accounts_setting">New accounts will be created in addition to the existing
+        account structure.\n\nIf you wish to replace currently existing accounts, delete them first before proceeding!
+    </string>
+    <string name="menu_item_recurring_transactions">Recurring Transactions</string>
+    <string name="message_confirm_create_default_accounts_first_run">Welcome to GnuCash Android! \nYou can either create
+        a hierarchy of commonly-used accounts, or import your own GnuCash account structure. \n\nBoth options are also
+        available in app Settings so you can decide later.
+    </string>
 </resources>

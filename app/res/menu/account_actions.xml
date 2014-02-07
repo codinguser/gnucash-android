@@ -20,10 +20,17 @@
           android:icon="@drawable/content_new_holo_dark"
           android:title="@string/title_add_account"
           android:showAsAction="always"/>
-    
-        <item android:id="@+id/menu_export"
+
+    <item android:id="@+id/menu_recurring_transactions"
+          android:title="@string/menu_item_recurring_transactions"
+          android:showAsAction="never|withText"
+          android:orderInCategory="4" />
+
+    <item android:id="@+id/menu_export"
           android:icon="@drawable/content_import_export_holo_light"
-          android:title="@string/menu_export_ofx"
+          android:title="@string/menu_export_transactions"
           android:showAsAction="never"
-          android:orderInCategory="3"/>
+          android:orderInCategory="5"/>
+
+
 </menu>

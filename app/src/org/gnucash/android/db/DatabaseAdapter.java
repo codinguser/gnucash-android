@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012 Ngewi Fet <ngewif@gmail.com>
+ * Copyright (c) 2012 - 2014 Ngewi Fet <ngewif@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,18 +42,23 @@ public abstract class DatabaseAdapter {
 	public static final int COLUMN_NAME 	= 2;
 	public static final int COLUMN_TYPE 	= 3;
 	
-	//columns specific to transactions
+	//columns indices specific to transactions
 	public static final int COLUMN_AMOUNT 		= 4;
 	public static final int COLUMN_DESCRIPTION 	= 5;
 	public static final int COLUMN_TIMESTAMP 	= 6;
 	public static final int COLUMN_ACCOUNT_UID 	= 7;
 	public static final int COLUMN_EXPORTED 	= 8;
 	public static final int COLUMN_DOUBLE_ENTRY_ACCOUNT_UID = 9;
+    public static final int COLUMN_RECURRENCE_PERIOD = 10;
 	
-	//columns specific to accounts
-	public static final int COLUMN_CURRENCY_CODE = 4;
-	public static final int COLUMN_PARENT_ACCOUNT_UID = 5;
-	
+	//columns indices specific to accounts
+	public static final int COLUMN_CURRENCY_CODE        = 4;
+	public static final int COLUMN_PARENT_ACCOUNT_UID   = 5;
+    public static final int COLUMN_PLACEHOLDER          = 6;
+    public static final int COLUMN_DEFAULT_TRANSFER_ACCOUNT_UID = 7;
+    public static final int COLUMN_COLOR_CODE           = 8;
+	public static final int COLUMN_FAVORITE             = 9;
+
 	/**
 	 * {@link DatabaseHelper} for creating and opening the database
 	 */

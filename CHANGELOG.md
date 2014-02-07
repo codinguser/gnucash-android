@@ -1,5 +1,60 @@
 Change Log
 ===============================================================================
+Version 1.3.0 *(2014-02-10)*
+----------------------------
+* Fixed: Some file managers do not display all files available for import
+* Fixed: Crash when deleting account from accounts list
+* Fixed: CASH accounts should have normal DEBIT balance
+* Fixed: Crash when quickly opening and navigating from transactions list
+* Feature: Mark favorite accounts and quickly access them
+* Feature: Display different tabs for recent, favorite and all accounts
+* Feature: Add, view and delete recurring transactions (daily, weekly, monthly)
+* Feature: Mark accounts as placeholder accounts (cannot contain transactions)
+* Feature: Set a default transfer account for each account
+* Feature: Color code accounts & themed account views
+* Feature: Create default GnuCash account structure from within app
+* Improved: Enabled one-button click for rating app and sending feedback
+* Improved: Clicking on version information now shows changelog
+* Improved: Delete account and all its sub-accounts
+* Improved: Sub-accounts default to same account type as parent account
+* Improved: Use tab views for sub-accounts and transactions inside accounts
+
+Version 1.2.7 *(2013-12-18)*
+----------------------------
+* Fixed: Export format always defaults to QIF, ignoring user preference
+* Improved: Better responsiveness of add transaction and add account buttons
+* Improved: Russian translation
+
+Version 1.2.6 *(2013-12-06)*
+----------------------------
+* Feature: Support for QIF export format
+* Improved: CREDIT/DEBIT meaning now matches GnuCash desktop. Effect on account balance depends on type of account
+
+Version 1.2.5 *(2013-09-17)*
+----------------------------
+* Feature: Search accounts by name
+* Fixed: crash when deleting accounts
+* Fixed: auto-completing transaction names does not copy the time or export flag
+* Fixed: random crash when opening app (or loading accounts)
+
+Version 1.2.4 *(2013-09-05)*
+----------------------------
+* Added support for detecting placeholder accounts during import
+* Use full qualified account names in account selection spinners
+* Loads complete transaction as a template when the autocomplete suggestion is selected
+* Fixed: selecting items from lists caused multiple to be selected in the wrong positions
+* Fixed: widgets not updated when all accounts or all transactions are deleted
+* Other minor bug fixes.
+
+Version 1.2.3 *(2013-08-28)*
+----------------------------
+* Fixed: crashes when editing/creating transactions
+* Feature: Added Chinese language translation
+* Feature: Autocomplete transaction descriptions
+* Improved reliability of importing stock accounts
+* Improved speed of loading account balance
+* Improved increased touch target area of "new transaction" button in accounts list view
+
 Version 1.2.2 *(2013-06-23)*
 ----------------------------
 * Fixed: bug with importing accounts

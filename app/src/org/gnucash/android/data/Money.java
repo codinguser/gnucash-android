@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012 Ngewi Fet <ngewif@gmail.com>
+ * Copyright (c) 2012 - 2014 Ngewi Fet <ngewif@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -85,7 +85,7 @@ public final class Money implements Comparable<Money>{
      * A zero instance with the currency of the default locale.
      * This can be used anywhere where a starting amount is required without having to create a new object
      */
-    public static final Money sDefaultZero = Money.createInstance(Currency.getInstance(Locale.getDefault()).getCurrencyCode());
+    private static final Money sDefaultZero = Money.createInstance(Currency.getInstance(Locale.getDefault()).getCurrencyCode());
 
     /**
      * Returns a Money instance initialized to the local currency and value 0
@@ -157,6 +157,16 @@ public final class Money implements Comparable<Money>{
 		init();
 		setAmount(amount);
 	}
+
+    /**
+     * Copy constructor.
+     * Creates a new Money object which is a clone of <code>money</code>
+     * @param money Money instance to be cloned
+     */
+    public Money(Money money){
+        setAmount(money.asBigDecimal());
+        setCurrency(money.getCurrency());
+    }
 
     /**
      * Creates a new Money instance with 0 amount and the <code>currencyCode</code>

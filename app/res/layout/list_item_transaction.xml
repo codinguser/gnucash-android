@@ -15,7 +15,7 @@
  limitations under the License.
 -->
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<org.gnucash.android.util.CheckableLinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
               android:orientation="vertical">
@@ -37,7 +37,7 @@
             android:orientation="horizontal">
 
         <CheckBox
-                android:id="@+id/checkbox"
+                android:id="@+id/checkbox_parent_account"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:focusable="false"
@@ -63,4 +63,4 @@
                 android:layout_marginRight="12dp"
                 style="@style/ListItemText"/>
     </LinearLayout>
-</LinearLayout>
+</org.gnucash.android.util.CheckableLinearLayout>

@@ -17,8 +17,8 @@
 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="org.gnucash.android"
-    android:versionCode="10"
-    android:versionName="1.2.2" >
+    android:versionCode="24"
+    android:versionName="1.3.0.beta2" >
 
     <uses-sdk android:minSdkVersion="8" android:targetSdkVersion="15"/>
     
@@ -55,13 +55,13 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.settings.SettingsActivity"></activity>
+        <activity android:name=".ui.settings.SettingsActivity"/>
         <activity android:name=".ui.transactions.TransactionsActivity" 
             android:configChanges="orientation|screenSize">
         </activity>
         <activity android:name=".ui.widget.WidgetConfigurationActivity"
             android:label="@string/label_widget_configuration"
-            android:theme="@style/Theme.Sherlock.Light.Dialog"
+            android:theme="@style/Dialog.WidgetConfiguration"
             android:excludeFromRecents="true">
 		    <intent-filter>
 		        <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE"/>

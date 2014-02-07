@@ -16,6 +16,8 @@
 
 package org.gnucash.android.ui.settings;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.Preference;
@@ -25,6 +27,9 @@ import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockPreferenceActivity;
 import org.gnucash.android.R;
 import org.gnucash.android.data.Money;
+import org.gnucash.android.ui.accounts.AccountsActivity;
+
+import java.io.InputStream;
 
 /**
  * Account settings fragment inside the Settings activity
@@ -60,6 +65,34 @@ public class AccountPreferencesFragment extends PreferenceFragment {
             @Override
             public boolean onPreferenceClick(Preference preference) {
                 deleteAllAccounts();
+                return true;
+            }
+        });
+
+        preference = findPreference(getString(R.string.key_create_default_accounts));
+        preference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                new AlertDialog.Builder(getActivity())
+                        .setTitle(R.string.title_create_default_accounts)
+                        .setMessage(R.string.message_confirm_create_default_accounts_setting)
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .setPositiveButton(R.string.btn_create_accounts, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                InputStream accountFileInputStream = getResources().openRawResource(R.raw.default_accounts);
+                                new AccountsActivity.AccountImporterTask(getActivity()).execute(accountFileInputStream);
+                            }
+                        })
+                        .setNegativeButton(R.string.btn_cancel, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                dialogInterface.dismiss();
+                            }
+                        })
+                        .create()
+                        .show();
+
                 return true;
             }
         });

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="account_colors">
+        <item>#0B57A4</item> <!-- aqua -->
+        <item>#2A82D7</item> <!-- blue -->
+        <item>#3714A4</item> <!-- blue violet -->
+        <item>#964B00</item> <!-- brown -->
+        <item>#A50516</item> <!-- crimson -->
+        <item>#FB3C8F</item> <!-- deep pink -->
+        <item>#1B4F15</item> <!-- forest green -->
+        <item>#A51497</item> <!-- fuchsia -->
+        <item>#686868</item> <!-- gray -->
+        <item>#3AA03A</item> <!-- green -->
+        <item>#FF0080</item> <!-- hot pink -->
+        <item>#8BBDEB</item> <!-- light blue -->
+        <item>#FC6A6C</item> <!-- light red -->
+        <item>#FC1CAD</item> <!-- magenta -->
+        <item>#7F2B14</item> <!-- maroon -->
+        <item>#000066</item> <!-- midnight blue -->
+        <item>#2B4726</item> <!-- olive -->
+        <item>#FD7222</item> <!-- orange -->
+        <item>#FC331C</item> <!-- orange red -->
+        <item>#FC5AB8</item> <!-- pink -->
+        <item>#AF31F2</item> <!-- purple -->
+        <item>#FC0D1B</item> <!-- red -->
+        <item>#D7462C</item> <!-- red orange -->
+        <item>#F69E94</item> <!-- salmon -->
+        <item>#2B8A6D</item> <!-- teal -->
+        <item>#6B28CE</item> <!-- violet -->
+        <item>#6041FA</item> <!-- violet blue -->
+        <item>#FEC42E</item> <!-- yellow orange -->
+    </array>
+</resources>

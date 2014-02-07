@@ -16,10 +16,16 @@
 -->
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
-    
+
+    <item android:id="@+id/menu_search"
+          android:title="@string/menu_search_accounts"
+          android:icon="@drawable/abs__ic_search"
+          android:showAsAction="collapseActionView|ifRoom"
+          android:actionViewClass="com.actionbarsherlock.widget.SearchView" />
+
     <item android:id="@+id/menu_settings"
           android:icon="@drawable/action_settings"
           android:title="@string/title_settings"
           android:showAsAction="never"
-          android:orderInCategory="4"/>
+          android:orderInCategory="10"/>
 </menu>

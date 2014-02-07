@@ -18,7 +18,6 @@ package org.gnucash.android.ui.transactions;
 
 import org.gnucash.android.R;
 import org.gnucash.android.db.AccountsDbAdapter;
-import org.gnucash.android.db.DatabaseHelper;
 import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.ui.widget.WidgetConfigurationActivity;
 
@@ -34,6 +33,7 @@ import android.view.WindowManager.LayoutParams;
 import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.Toast;
+import org.gnucash.android.util.QualifiedAccountNameCursorAdapter;
 
 /**
  * Dialog fragment for moving transactions from one account to another
@@ -102,15 +102,9 @@ public class BulkMoveDialogFragment extends DialogFragment {
 		
 		mAccountsDbAdapter = new AccountsDbAdapter(getActivity());
 		Cursor cursor = mAccountsDbAdapter.fetchAllRecords();
-		
-		String[] from = new String[] {DatabaseHelper.KEY_NAME};
-		int[] to = new int[] {android.R.id.text1};
-		SimpleCursorAdapter mCursorAdapter = new SimpleCursorAdapter(getActivity(), 
-				android.R.layout.simple_spinner_item, 
-				cursor,
-				from,
-				to, 
-				0);
+
+		SimpleCursorAdapter mCursorAdapter = new QualifiedAccountNameCursorAdapter(getActivity(),
+                android.R.layout.simple_spinner_item, cursor);
 		mCursorAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		mDestinationAccountSpinner.setAdapter(mCursorAdapter);
 		setListeners();
@@ -153,7 +147,7 @@ public class BulkMoveDialogFragment extends DialogFragment {
 						.findFragmentByTag(TransactionsActivity.FRAGMENT_TRANSACTIONS_LIST);
 					
 				WidgetConfigurationActivity.updateAllWidgets(getActivity());
-				((TransactionsListFragment)f).refreshList();
+				((TransactionsListFragment)f).refresh();
 				dismiss();
 			}			
 		});
@@ -162,6 +156,5 @@ public class BulkMoveDialogFragment extends DialogFragment {
 	@Override
 	public void onDestroyView() {
 		super.onDestroyView();
-		mAccountsDbAdapter.close();
 	}
 }
