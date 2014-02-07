@@ -21,7 +21,6 @@
     <string name="title_add_account">Создать счёт</string>
     <string name="title_edit_account">Редактировать счёт</string>
     <string name="info_details">Информация</string>
-    <string name="title_settings">Настройки</string>
     <string name="menu_export_ofx">Экспортировать OFX</string>
     <string name="description_add_transaction_icon">Добавить к счёту новую проводку</string>
     <string name="label_no_accounts">Нет счетов</string>
@@ -51,7 +50,7 @@
     <string name="title_selected">%1$d выбрано</string>
     <string name="label_transactions_total">Общая сумма:</string>
     <string name="label_export_destination">Экспортировать в</string>
-    <string name="title_export_dialog">Экспорт OFX</string>
+    <string name="title_export_dialog">Экспорт проводок</string>
     <string name="option_export_all_transactions">Экспортировать все</string>
     <string name="hint_export_choice">Экспортировать все проводки, а не только новые.</string>
     <string name="error_exporting">Ошибка при экспорте OFX</string>    
@@ -308,7 +307,6 @@
 	<string name="summary_xml_ofx_header">Включите эту опцию, если экспортируете в программы отличные от GnuCash для ПК</string>
 	<string name="title_whats_new">Новости</string>
 	<string name="whats_new">
-	    <b>Версия 1.2.0 - 20.06.2013</b>\n\n
         - Импорт структуры счетов из GnuCash для ПК\n
         - Вложенные счета\n
         - Возможность удалить все счета/проводки\n
@@ -333,8 +331,17 @@
     <string name="summary_delete_all_transactions">Все проводки во всех счетах будут удалены!</string>
     <string name="title_delete_all_transactions">Удалить все проводки</string>
     <string name="toast_all_transactions_deleted">Все проводки удалены!</string>
-    <string name="title_progress_importing_accounts">Importing accounts</string>
-    <string name="toast_tap_again_to_confirm_delete">Tap again to confirm. ALL entries will be deleted!!</string>
+    <string name="title_progress_importing_accounts">Импортируются счета</string>
+    <string name="toast_tap_again_to_confirm_delete">Нажмите езё раз для подтверждения. ВСЕ записи будут удалены!</string>
+    <string name="section_header_transactions">Проводки</string>
+    <string name="section_header_accounts">Дочерние счета</string>
+    <string name="menu_search_accounts">Поиск</string>
+    <string name="title_default_export_format">Формат экспорта по умолчанию</string>
+    <string name="summary_default_export_format">Формат файла, используемый по умолчанию при экспорте</string>
+    <string name="menu_export_transactions">Экспортировать проводки...</string>
+    <!-- This should be the same name used by GnuCash desktop for imbalance accounts -->
+    <string name="imbalance_account_name">Дисбаланс</string>
+    <string name="title_progress_exporting_transactions">Проводки экспортируются</string>
     <plurals name="label_sub_accounts">
         <item quantity="one">%d дочерний счёт</item>
         <item quantity="other">%d шт. дочерних счетов</item>
@@ -346,12 +353,16 @@
         <item>АКТИВ</item>
         <item>ПАССИВ</item>
         <item>ДОХОДЫ</item>
-        <item>ТРАТЫ</item>
+        <item>РАСХОДЫ</item>
         <item>PAYABLE</item>
         <item>RECEIVABLE</item>
         <item>EQUITY</item>
         <item>CURRENCY</item>
         <item>STOCK</item>
         <item>MUTUAL FUND</item>
+    </string-array>
+    <string-array name="export_formats">
+        <item>QIF</item>
+        <item>OFX</item>
     </string-array>
 </resources>

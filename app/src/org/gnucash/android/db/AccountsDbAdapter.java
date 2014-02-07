@@ -35,6 +35,10 @@ import android.util.Log;
  *
  */
 public class AccountsDbAdapter extends DatabaseAdapter {
+    /**
+     * Separator used for account name hierarchies between parent and child accounts
+     */
+    public static final String ACCOUNT_NAME_SEPARATOR = ":";
 
 	/**
 	 * Transactions database adapter for manipulating transactions associated with accounts
@@ -70,7 +74,8 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 		contentValues.put(DatabaseHelper.KEY_UID, account.getUID());
 		contentValues.put(DatabaseHelper.KEY_CURRENCY_CODE, account.getCurrency().getCurrencyCode());
 		contentValues.put(DatabaseHelper.KEY_PARENT_ACCOUNT_UID, account.getParentUID());
-		
+		contentValues.put(DatabaseHelper.KEY_PLACEHOLDER, account.isPlaceholderAccount() ? 1 : 0);
+
 		long rowId = -1;
 		if ((rowId = getAccountID(account.getUID())) > 0){
 			//if account already exists, then just update
@@ -174,6 +179,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 		//else the transactions end up with a different currency from the account
 		account.setCurrency(Currency.getInstance(c.getString(DatabaseAdapter.COLUMN_CURRENCY_CODE)));
 		account.setTransactions(mTransactionsAdapter.getAllTransactionsForAccount(uid));
+        account.setPlaceHolderFlag(c.getInt(DatabaseAdapter.COLUMN_PLACEHOLDER) == 1);
 		return account;
 	}
 		
@@ -199,17 +205,19 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 	/**
 	 * Returns the  unique ID of the parent account of the account with unique ID <code>uid</code>
 	 * If the account has no parent, null is returned
-	 * @param uid Unique Identifier of account whose parent is to be returned
+	 * @param uid Unique Identifier of account whose parent is to be returned. Should not be null
 	 * @return DB record UID of the parent account, null if the account has no parent
 	 */
 	public String getParentAccountUID(String uid){
 		Cursor cursor = mDb.query(DatabaseHelper.ACCOUNTS_TABLE_NAME, 
 				new String[] {DatabaseHelper.KEY_ROW_ID, DatabaseHelper.KEY_PARENT_ACCOUNT_UID}, 
-				DatabaseHelper.KEY_UID + " = '" + uid + "'", null, null, null, null);
+				DatabaseHelper.KEY_UID + " = ?",
+                new String[]{uid},
+                null, null, null, null);
 		String result = null;
 		if (cursor != null && cursor.moveToFirst()){
 			Log.d(TAG, "Account already exists. Returning existing id");
-			result = cursor.getString(0); //0 because only one row was requested
+			result = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.KEY_PARENT_ACCOUNT_UID));
 
 			cursor.close();
 		}
@@ -254,7 +262,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 				DatabaseHelper.KEY_ROW_ID + "=" + id, 
 				null, null, null, null);
 		if (c != null && c.moveToFirst()){
-			uid = c.getString(1);
+			uid = c.getString(c.getColumnIndexOrThrow(DatabaseHelper.KEY_UID));
 			c.close();
 		}
 		return uid;
@@ -277,8 +285,17 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 		}
 		return AccountType.valueOf(type);
 	}
-	
-	/**
+
+    /**
+     * Overloaded method. Resolves the account unique ID from the row ID and makes a call to {@link #getAccountType(String)}
+     * @param accountId Database row ID of the account
+     * @return {@link AccountType} of the account
+     */
+    public AccountType getAccountType(long accountId){
+        return getAccountType(getAccountUID(accountId));
+    }
+
+    /**
 	 * Returns the name of the account with id <code>accountID</code>
 	 * @param accountID Database ID of the account record
 	 * @return Name of the account 
@@ -316,6 +333,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 	 * @return List of {@link Account}s with unexported transactions
 	 */
 	public List<Account> getExportableAccounts(){
+        //TODO: Optimize to use SQL DISTINCT and load only necessary accounts from db
 		List<Account> accountsList = getAllAccounts();
 		Iterator<Account> it = accountsList.iterator();
 		
@@ -329,15 +347,19 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 	}
 	
 	/**
-	 * Returns a cursor to all account records in the database
+	 * Returns a cursor to all account records in the database.
+     * GnuCash ROOT accounts are ignored
 	 * @return {@link Cursor} to all account records
 	 */
     @Override
 	public Cursor fetchAllRecords(){
 		Log.v(TAG, "Fetching all accounts from db");
-        String selection =  DatabaseHelper.KEY_TYPE + " != " + "'ROOT'";
+        String selection =  DatabaseHelper.KEY_TYPE + " != ?" ;
 		Cursor cursor = mDb.query(DatabaseHelper.ACCOUNTS_TABLE_NAME,
-                null, selection, null, null, null,
+                null,
+                selection,
+                new String[]{AccountType.ROOT.name()},
+                null, null,
                 DatabaseHelper.KEY_NAME + " ASC");
 		return cursor;
 	}
@@ -373,31 +395,21 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 		return cursor;
 	}
 	
-	/**
-	 * Returns the balance of all accounts with each transaction counted only once
-	 * This does not take into account the currencies and double entry 
-	 * transactions are not considered as well.
-	 * @return Balance of all accounts in the database
-	 * @see AccountsDbAdapter#getDoubleEntryAccountsBalance()
-	 */
-	public Money getAllAccountsBalance(){
-		return mTransactionsAdapter.getAllTransactionsSum();
-	}
-
     /**
      * Returns the balance of an account while taking sub-accounts into consideration
      * @return Account Balance of an account including sub-accounts
      */
     public Money getAccountBalance(long accountId){
-        List<Long> subAccounts = getSubAccountIds(accountId);
         Money balance = Money.createInstance(getCurrencyCode(accountId));
+
+        List<Long> subAccounts = getSubAccountIds(accountId);
         for (long id : subAccounts){
             //recurse because arbitrary nesting depth is allowed
             Money subBalance = getAccountBalance(id);
             if (subBalance.getCurrency().equals(balance.getCurrency())){
                 //only add the balances if they are of the same currency
                 //ignore sub accounts of different currency just like GnuCash desktop does
-                balance = balance.add(getAccountBalance(id));
+                balance = balance.add(subBalance);
             }
         }
         return balance.add(mTransactionsAdapter.getTransactionsSum(accountId));
@@ -416,7 +428,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 
         if (cursor != null){
             while (cursor.moveToNext()){
-                subAccounts.add(cursor.getLong(0));
+                subAccounts.add(cursor.getLong(DatabaseAdapter.COLUMN_ROW_ID));
             }
             cursor.close();
         }
@@ -434,7 +446,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
                 null,
                 DatabaseHelper.KEY_PARENT_ACCOUNT_UID + " = ?",
                 new String[]{getAccountUID(accountId)},
-                null, null, null);
+                null, null, DatabaseHelper.KEY_NAME + " ASC");
     }
 
     /**
@@ -442,6 +454,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
      * @return Cursor to the top level accounts
      */
     public Cursor fetchTopLevelAccounts(){
+        //condition which selects accounts with no parent, whose UID is not ROOT and whose name is not ROOT
         StringBuilder condition = new StringBuilder("(");
         condition.append(DatabaseHelper.KEY_PARENT_ACCOUNT_UID + " IS NULL");
         condition.append(" OR ");
@@ -548,7 +561,88 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 	public String getCurrencyCode(String accountUID){
 		return getCurrencyCode(getAccountID(accountUID));
 	}
-	
+
+    /**
+     * Returns the simple name of the account with unique ID <code>accountUID</code>.
+     * @param accountUID Unique identifier of the account
+     * @return Name of the account as String
+     * @see #getFullyQualifiedAccountName(String)
+     */
+    public String getAccountName(String accountUID){
+        Cursor cursor = mDb.query(DatabaseHelper.ACCOUNTS_TABLE_NAME,
+                new String[]{DatabaseHelper.KEY_ROW_ID, DatabaseHelper.KEY_NAME},
+                DatabaseHelper.KEY_UID + " = ?",
+                new String[]{accountUID}, null, null, null);
+
+        if (cursor == null || cursor.getCount() < 1){
+            return null;
+        } else {  //account UIDs should be unique
+            cursor.moveToFirst();
+        }
+
+        String accountName = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.KEY_NAME));
+        cursor.close();
+
+        return accountName;
+    }
+
+    /**
+     * Returns the full account name including the account hierarchy (parent accounts)
+     * @param accountUID Unique ID of account
+     * @return Fully qualified (with parent hierarchy) account name
+     */
+    public String getFullyQualifiedAccountName(String accountUID){
+        String accountName = getAccountName(accountUID);
+        String parentAccountUID = getParentAccountUID(accountUID);
+
+        if (parentAccountUID == null || parentAccountUID.equalsIgnoreCase(getGnuCashRootAccountUID())){
+            return accountName;
+        }
+
+        String parentAccountName = getFullyQualifiedAccountName(parentAccountUID);
+
+        return parentAccountName + ACCOUNT_NAME_SEPARATOR + accountName;
+    }
+
+    /**
+     * Overloaded convenience method.
+     * Simply resolves the account UID and calls {@link #getFullyQualifiedAccountName(String)}
+     * @param accountId Database record ID of account
+     * @return Fully qualified (with parent hierarchy) account name
+     */
+    public String getFullyQualifiedAccountName(long accountId){
+        return getFullyQualifiedAccountName(getAccountUID(accountId));
+    }
+
+    /**
+     * Returns <code>true</code> if the account with unique ID <code>accountUID</code> is a placeholder account.
+     * @param accountUID Unique identifier of the account
+     * @return <code>true</code> if the account is a placeholder account, <code>false</code> otherwise
+     */
+    public boolean isPlaceholderAccount(String accountUID){
+        Cursor cursor = mDb.query(DatabaseHelper.ACCOUNTS_TABLE_NAME,
+                new String[]{DatabaseHelper.KEY_ROW_ID, DatabaseHelper.KEY_PLACEHOLDER},
+                DatabaseHelper.KEY_UID + " = ?",
+                new String[]{accountUID}, null, null, null);
+
+        if (cursor == null || !cursor.moveToFirst()){
+            return false;
+        }
+        boolean isPlaceholder = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.KEY_PLACEHOLDER)) == 1;
+        cursor.close();
+
+        return isPlaceholder;
+    }
+
+    /**
+     * Convenience method, resolves the account unique ID and calls {@link #isPlaceholderAccount(String)}
+     * @param accountId Database row ID of the account
+     * @return <code>true</code> if the account is a placeholder account, <code>false</code> otherwise
+     */
+    public boolean isPlaceholderAccount(long accountId){
+        return isPlaceholderAccount(getAccountUID(accountId));
+    }
+
 	/**
 	 * Deletes all accounts and their transactions from the database
 	 */

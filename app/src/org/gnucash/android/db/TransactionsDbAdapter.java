@@ -310,54 +310,39 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 	/**
 	 * Returns the sum of transactions belonging to the account with id <code>accountId</code>
      * Double entry accounting is taken into account and the balance reflects the transfer transactions.
-     * This means if the accounts are properly balanced, this method should return 0
 	 * @param accountId Record ID of the account
 	 * @return Sum of transactions belonging to the account
 	 */
 	public Money getTransactionsSum(long accountId){
-		Cursor c = fetchAllTransactionsForAccount(accountId);
+        String accountUID = getAccountUID(accountId);
 
-		//transactions will have the currency of the account
-		String currencyCode = getCurrencyCode(accountId);
+        String querySum = "SELECT TOTAL(" + DatabaseHelper.KEY_AMOUNT
+                + ") FROM " + DatabaseHelper.TRANSACTIONS_TABLE_NAME
+                + " WHERE " + DatabaseHelper.KEY_ACCOUNT_UID + " = ?";
 
-        Money amountSum = new Money("0", currencyCode);
+        Cursor sumCursor = mDb.rawQuery(querySum, new String[]{accountUID});
+        double sum = 0d;
 
-		if (c == null || c.getCount() <= 0)
-			return amountSum;
+        if (sumCursor != null && sumCursor.moveToFirst()){
+            sum += sumCursor.getFloat(0);
+            sumCursor.close();
+        }
 
-		while(c.moveToNext()){
-			Money money = new Money(c.getString(DatabaseAdapter.COLUMN_AMOUNT), currencyCode);
-			String doubleEntryAccountUID = c.getString(DatabaseAdapter.COLUMN_DOUBLE_ENTRY_ACCOUNT_UID);
-			if (doubleEntryAccountUID != null && doubleEntryAccountUID.equals(getAccountUID(accountId))){
-				amountSum = amountSum.add(money.negate());
-			} else {
-				amountSum = amountSum.add(money);
-			}
-		}
-		c.close();
-		
-		return amountSum;
-	}
-	
-	/**
-	 * Returns the balance of all accounts with each transaction counted only once
-	 * This does not take into account the currencies and double entry 
-	 * transactions are not considered as well.
-	 * @return Balance of all accounts in the database
-	 * @see AccountsDbAdapter#getDoubleEntryAccountsBalance()
-	 */
-	public Money getAllTransactionsSum(){
-        //TODO: Take double entry into account
-		String query = "SELECT TOTAL(" + DatabaseHelper.KEY_AMOUNT
-                + ") FROM " + DatabaseHelper.TRANSACTIONS_TABLE_NAME;
-		Cursor c = mDb.rawQuery(query, null); 
-//				new String[]{DatabaseHelper.KEY_AMOUNT, DatabaseHelper.TRANSACTIONS_TABLE_NAME});
-		double result = 0;
-		if (c != null && c.moveToFirst()){
-			result = c.getDouble(0);	
-		}
-		c.close();
-		return new Money(new BigDecimal(result));	
+        querySum = "SELECT TOTAL(" + DatabaseHelper.KEY_AMOUNT
+                + ") FROM " + DatabaseHelper.TRANSACTIONS_TABLE_NAME
+                + " WHERE " + DatabaseHelper.KEY_DOUBLE_ENTRY_ACCOUNT_UID + " = ?";
+
+        sumCursor = mDb.rawQuery(querySum, new String[]{accountUID});
+
+        if (sumCursor != null && sumCursor.moveToFirst()){
+            sum -= sumCursor.getFloat(0);
+            sumCursor.close();
+        }
+
+        BigDecimal sumDecimal = new BigDecimal(sum);
+        Currency currency = Currency.getInstance(getCurrencyCode(accountUID));
+        Money transactionSum = new Money(sumDecimal, currency);
+        return transactionSum;
 	}
 	
 	/**
@@ -451,4 +436,22 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
         return fetchRecord(DatabaseHelper.TRANSACTIONS_TABLE_NAME, rowId);
     }
 
+    /**
+     * Returns a cursor to transactions whose name (UI: description) start with the <code>prefix</code>
+     * <p>This method is used for autocomplete suggestions when creating new transactions</p>
+     * @param prefix Starting characters of the transaction name
+     * @return Cursor to the data set containing all matching transactions
+     */
+    public Cursor fetchTransactionsStartingWith(String prefix){
+        StringBuffer stringBuffer = new StringBuffer(DatabaseHelper.KEY_NAME)
+                .append(" LIKE '").append(prefix).append("%'");
+        String selection = stringBuffer.toString();
+
+        Cursor c = mDb.query(DatabaseHelper.TRANSACTIONS_TABLE_NAME,
+                new String[]{DatabaseHelper.KEY_ROW_ID, DatabaseHelper.KEY_NAME},
+                selection,
+                null, null, null,
+                DatabaseHelper.KEY_NAME);
+        return c;
+    }
 }

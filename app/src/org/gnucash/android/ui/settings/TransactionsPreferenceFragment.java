@@ -16,19 +16,15 @@
 
 package org.gnucash.android.ui.settings;
 
-import com.actionbarsherlock.app.SherlockFragmentActivity;
-import org.gnucash.android.R;
-
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
-
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockPreferenceActivity;
-import org.gnucash.android.ui.transactions.TransactionsDeleteConfirmationDialog;
+import org.gnucash.android.R;
 
 /**
  * Fragment for displaying transaction preferences

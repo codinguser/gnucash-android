@@ -16,18 +16,6 @@
 
 package org.gnucash.android.ui.transactions;
 
-import android.support.v4.app.Fragment;
-import android.widget.TextView;
-import org.gnucash.android.R;
-import org.gnucash.android.data.Account;
-import org.gnucash.android.db.AccountsDbAdapter;
-import org.gnucash.android.db.DatabaseAdapter;
-import org.gnucash.android.db.DatabaseHelper;
-import org.gnucash.android.ui.accounts.AccountsActivity;
-import org.gnucash.android.ui.accounts.AccountsListFragment;
-import org.gnucash.android.util.OnAccountClickedListener;
-import org.gnucash.android.util.OnTransactionClickedListener;
-
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -40,11 +28,21 @@ import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.SpinnerAdapter;
-
+import android.widget.TextView;
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.ActionBar.OnNavigationListener;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.MenuItem;
+import org.gnucash.android.R;
+import org.gnucash.android.data.Account;
+import org.gnucash.android.db.AccountsDbAdapter;
+import org.gnucash.android.db.DatabaseAdapter;
+import org.gnucash.android.db.DatabaseHelper;
+import org.gnucash.android.ui.accounts.AccountsActivity;
+import org.gnucash.android.ui.accounts.AccountsListFragment;
+import org.gnucash.android.util.OnAccountClickedListener;
+import org.gnucash.android.util.OnTransactionClickedListener;
+import org.gnucash.android.util.QualifiedAccountNameCursorAdapter;
 
 /**
  * Activity for displaying, creating and editing transactions
@@ -84,9 +82,20 @@ public class TransactionsActivity extends SherlockFragmentActivity implements
 	 */
 	private boolean mActivityRunning = false;
 
+    /**
+     * Account database adapter for manipulating the accounts list in navigation
+     */
+    private AccountsDbAdapter mAccountsDbAdapter;
+
+    /**
+     * Spinner adapter for the action bar navigation list of accounts
+     */
+    private SpinnerAdapter mSpinnerAdapter;
+
     TextView mSectionHeaderSubAccounts;
     TextView mSectionHeaderTransactions;
     View mSubAccountsContainer;
+    View mTransactionsContainer;
 
 	private OnNavigationListener mTransactionListNavigationListener = new OnNavigationListener() {
 
@@ -112,6 +121,9 @@ public class TransactionsActivity extends SherlockFragmentActivity implements
 		  }
 	};
 
+    /**
+     * Refreshes the fragments currently in the transactions activity
+     */
     private void refresh() {
         FragmentManager fragmentManager = getSupportFragmentManager();
         TransactionsListFragment transactionsListFragment = (TransactionsListFragment) fragmentManager
@@ -134,10 +146,6 @@ public class TransactionsActivity extends SherlockFragmentActivity implements
             fragmentTransaction.commit();
         }
     }
-
-    private AccountsDbAdapter mAccountsDbAdapter;
-
-	private SpinnerAdapter mSpinnerAdapter;
 				
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -147,6 +155,7 @@ public class TransactionsActivity extends SherlockFragmentActivity implements
         mSectionHeaderSubAccounts = (TextView) findViewById(R.id.section_header_sub_accounts);
         mSectionHeaderTransactions = (TextView) findViewById(R.id.section_header_transactions);
         mSubAccountsContainer = findViewById(R.id.sub_accounts_container);
+        mTransactionsContainer = findViewById(R.id.transactions_container);
 
 		final Intent intent = getIntent();
 		mAccountId = intent.getLongExtra(
@@ -161,6 +170,7 @@ public class TransactionsActivity extends SherlockFragmentActivity implements
             if (transactionId > 0) {
                 mSectionHeaderTransactions.setText(R.string.title_edit_transaction);
                 args.putLong(NewTransactionFragment.SELECTED_TRANSACTION_ID, transactionId);
+                args.putLong(TransactionsListFragment.SELECTED_ACCOUNT_ID, mAccountId);
             } else {
                 mSectionHeaderTransactions.setText(R.string.title_add_transaction);
                 args.putLong(TransactionsListFragment.SELECTED_ACCOUNT_ID, mAccountId);
@@ -181,13 +191,10 @@ public class TransactionsActivity extends SherlockFragmentActivity implements
 		// set up spinner adapter for navigation list
 		mAccountsDbAdapter = new AccountsDbAdapter(this);
 		Cursor accountsCursor = mAccountsDbAdapter.fetchAllRecords();
-		mSpinnerAdapter = new SimpleCursorAdapter(getSupportActionBar()
-				.getThemedContext(), R.layout.sherlock_spinner_item,
-				accountsCursor, new String[] { DatabaseHelper.KEY_NAME },
-				new int[] { android.R.id.text1 }, 0);
+		mSpinnerAdapter = new QualifiedAccountNameCursorAdapter(getSupportActionBar().getThemedContext(),
+                R.layout.sherlock_spinner_item, accountsCursor);
 		((ResourceCursorAdapter) mSpinnerAdapter)
 				.setDropDownViewResource(R.layout.sherlock_spinner_dropdown_item);
-
 		ActionBar actionBar = getSupportActionBar();
 		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
 		actionBar.setListNavigationCallbacks(mSpinnerAdapter,
@@ -205,16 +212,16 @@ public class TransactionsActivity extends SherlockFragmentActivity implements
 		// set the selected item in the spinner
 		int i = 0;
 		Cursor accountsCursor = mAccountsDbAdapter.fetchAllRecords();
-		accountsCursor.moveToFirst();
-		do {
-			long id = accountsCursor.getLong(DatabaseAdapter.COLUMN_ROW_ID);			
-			if (mAccountId == id) {
-				getSupportActionBar().setSelectedNavigationItem(i);
-				break;
-			}
-			++i;
-		} while (accountsCursor.moveToNext());
-
+//		boolean cursorMoved = accountsCursor.moveToFirst();
+        while (accountsCursor.moveToNext()) {
+            long id = accountsCursor.getLong(DatabaseAdapter.COLUMN_ROW_ID);
+            if (mAccountId == id) {
+                getSupportActionBar().setSelectedNavigationItem(i);
+                break;
+            }
+            ++i;
+        }
+        accountsCursor.close();
 	}
 
     /**
@@ -307,7 +314,9 @@ public class TransactionsActivity extends SherlockFragmentActivity implements
                 .beginTransaction();
 
         int subAccountCount = mAccountsDbAdapter.getSubAccountCount(mAccountId);
-        if (subAccountCount > 0){
+        boolean isPlaceholderAccount = mAccountsDbAdapter.isPlaceholderAccount(mAccountId);
+
+        if (subAccountCount > 0 || isPlaceholderAccount){
             mSubAccountsContainer.setVisibility(View.VISIBLE);
             mSectionHeaderSubAccounts.setVisibility(View.VISIBLE);
             String subAccountSectionText = getResources().getQuantityString(R.plurals.label_sub_accounts, subAccountCount, subAccountCount);
@@ -319,16 +328,21 @@ public class TransactionsActivity extends SherlockFragmentActivity implements
             fragmentTransaction.replace(R.id.sub_accounts_container, subAccountsListFragment, AccountsActivity.FRAGMENT_ACCOUNTS_LIST);
         }
 
-        TransactionsListFragment transactionsListFragment = new TransactionsListFragment();
-        Bundle args = new Bundle();
-        args.putLong(TransactionsListFragment.SELECTED_ACCOUNT_ID,
-                mAccountId);
-        transactionsListFragment.setArguments(args);
-        Log.i(TAG, "Opening transactions for account id " +  mAccountId);
+        //only load transactions if it is not a placeholder account
+        if (!isPlaceholderAccount){
+            TransactionsListFragment transactionsListFragment = new TransactionsListFragment();
+            Bundle args = new Bundle();
+            args.putLong(TransactionsListFragment.SELECTED_ACCOUNT_ID,
+                    mAccountId);
+            transactionsListFragment.setArguments(args);
+            Log.i(TAG, "Opening transactions for account id " +  mAccountId);
 
-        fragmentTransaction.replace(R.id.transactions_container,
-                transactionsListFragment, FRAGMENT_TRANSACTIONS_LIST);
-
+            fragmentTransaction.replace(R.id.transactions_container,
+                    transactionsListFragment, FRAGMENT_TRANSACTIONS_LIST);
+        } else {
+            mSectionHeaderTransactions.setVisibility(View.GONE);
+            mTransactionsContainer.setVisibility(View.GONE);
+        }
         fragmentTransaction.commit();
 	}
 	

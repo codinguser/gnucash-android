@@ -22,10 +22,12 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.UUID;
 
+import android.content.Context;
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.data.Account.OfxAccountType;
 import org.gnucash.android.db.AccountsDbAdapter;
-import org.gnucash.android.util.OfxFormatter;
+import org.gnucash.android.export.ofx.OfxExporter;
+import org.gnucash.android.export.qif.QifHelper;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -315,7 +317,7 @@ public class Transaction {
 
 	/**
 	 * Returns the Unique Identifier of account with which this transaction is double entered
-	 * @return Unique Identifier of account with which this transaction is double entered
+	 * @return Unique ID of transfer account or <code>null</code> if it is not a double transaction
 	 */
 	public String getDoubleEntryAccountUID() {
 		return mDoubleEntryAccountUID;
@@ -377,12 +379,12 @@ public class Transaction {
 		transactionNode.appendChild(type);
 
 		Element datePosted = doc.createElement("DTPOSTED");
-		datePosted.appendChild(doc.createTextNode(OfxFormatter.getOfxFormattedTime(mTimestamp)));
+		datePosted.appendChild(doc.createTextNode(OfxExporter.getOfxFormattedTime(mTimestamp)));
 		transactionNode.appendChild(datePosted);
 		
 		Element dateUser = doc.createElement("DTUSER");
 		dateUser.appendChild(doc.createTextNode(
-				OfxFormatter.getOfxFormattedTime(mTimestamp)));
+				OfxExporter.getOfxFormattedTime(mTimestamp)));
 		transactionNode.appendChild(dateUser);
 		
 		Element amount = doc.createElement("TRNAMT");
@@ -405,7 +407,7 @@ public class Transaction {
 		
 		if (mDoubleEntryAccountUID != null && mDoubleEntryAccountUID.length() > 0){
 			Element bankId = doc.createElement("BANKID");
-			bankId.appendChild(doc.createTextNode(OfxFormatter.APP_ID));
+			bankId.appendChild(doc.createTextNode(OfxExporter.APP_ID));
 			
 			//select the proper account as the double account
 			String doubleAccountUID = mDoubleEntryAccountUID.equals(accountUID) ? mAccountUID : mDoubleEntryAccountUID;
@@ -430,4 +432,33 @@ public class Transaction {
 		return transactionNode;
 	}
 
+    /**
+     * Builds a QIF entry representing this transaction
+     * @return String QIF representation of this transaction
+     */
+    public String toQIF(){
+        final String newLine = "\n";
+
+        AccountsDbAdapter accountsDbAdapter = new AccountsDbAdapter(GnuCashApplication.getAppContext());
+
+        //all transactions are double transactions
+        String splitAccountFullName = QifHelper.getImbalanceAccountName(mAmount.getCurrency());
+        if (mDoubleEntryAccountUID != null && mDoubleEntryAccountUID.length() > 0){
+            splitAccountFullName = accountsDbAdapter.getFullyQualifiedAccountName(mDoubleEntryAccountUID);
+        }
+
+        StringBuffer transactionQifBuffer = new StringBuffer();
+        transactionQifBuffer.append(QifHelper.DATE_PREFIX).append(QifHelper.formatDate(mTimestamp)).append(newLine);
+        transactionQifBuffer.append(QifHelper.MEMO_PREFIX).append(mName).append(newLine);
+
+        transactionQifBuffer.append(QifHelper.SPLIT_CATEGORY_PREFIX).append(splitAccountFullName).append(newLine);
+        if (mDescription != null && mDescription.length() > 0){
+            transactionQifBuffer.append(QifHelper.SPLIT_MEMO_PREFIX).append(mDescription).append(newLine);
+        }
+        transactionQifBuffer.append(QifHelper.SPLIT_AMOUNT_PREFIX).append(mAmount.asString()).append(newLine);
+        transactionQifBuffer.append(QifHelper.ENTRY_TERMINATOR).append(newLine);
+
+        accountsDbAdapter.close();
+        return transactionQifBuffer.toString();
+    }
 }

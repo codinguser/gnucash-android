@@ -61,8 +61,22 @@ public class GeneralPreferenceFragment extends PreferenceFragment implements OnP
 			pref.setSummary(defaultEmail);			
 		}
 		pref.setOnPreferenceChangeListener(this);
+
+        String keyDefaultExportFormat = getString(R.string.key_default_export_format);
+        pref = findPreference(keyDefaultExportFormat);
+        String defaultExportFormat = manager.getString(keyDefaultExportFormat, null);
+        if (defaultExportFormat != null && !defaultExportFormat.trim().isEmpty()){
+            pref.setSummary(defaultExportFormat);
+        }
+        pref.setOnPreferenceChangeListener(this);
 	}
 
+    /**
+     * Listens for changes to the preference and sets the preference summary to the new value
+     * @param preference Preference which has been changed
+     * @param newValue New value for the changed preference
+     * @return <code>true</code> if handled, <code>false</code> otherwise
+     */
 	@Override
 	public boolean onPreferenceChange(Preference preference, Object newValue) {
 		preference.setSummary(newValue.toString());
@@ -76,6 +90,13 @@ public class GeneralPreferenceFragment extends PreferenceFragment implements OnP
 				preference.setSummary(R.string.summary_default_export_email);
 			}					
 		}
+
+        if (preference.getKey().equals(getString(R.string.key_default_export_format))){
+            String exportFormat = newValue.toString();
+            if (exportFormat == null || exportFormat.trim().isEmpty()){
+                preference.setSummary(R.string.summary_default_export_format);
+            }
+        }
 		return true;
 	}
 

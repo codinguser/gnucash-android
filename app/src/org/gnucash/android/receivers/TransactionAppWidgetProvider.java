@@ -53,8 +53,14 @@ public class TransactionAppWidgetProvider extends AppWidgetProvider {
             WidgetConfigurationActivity.updateWidget(context, appWidgetId, accountId);            
         }
 	}
-	
-	@Override
+
+    @Override
+    public void onEnabled(Context context) {
+        super.onEnabled(context);
+        WidgetConfigurationActivity.updateAllWidgets(context);
+    }
+
+    @Override
 	public void onDeleted(Context context, int[] appWidgetIds) {
 		super.onDeleted(context, appWidgetIds);		
 		Editor editor = PreferenceManager.getDefaultSharedPreferences(context).edit();

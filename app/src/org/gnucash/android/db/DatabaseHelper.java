@@ -46,7 +46,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	 * Database version.
 	 * With any change to the database schema, this number must increase
 	 */
-	private static final int DATABASE_VERSION = 2;
+	private static final int DATABASE_VERSION = 3;
 	
 	/**
 	 * Name of accounts table
@@ -123,7 +123,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	 * Flag for exported transactions in the database
 	 */
 	public static final String KEY_EXPORTED		= "is_exported";
-	
+
+    public static final String KEY_PLACEHOLDER  = "is_placeholder";
+
 	/**********************************************************************************************************
 	//if you modify the order of the columns (i.e. the way they are created), 
 	//make sure to modify the indices in DatabaseAdapter
@@ -139,6 +141,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			+ KEY_TYPE 	+ " varchar(255) not null, "			
 			+ KEY_CURRENCY_CODE + " varchar(255) not null, "
 			+ KEY_PARENT_ACCOUNT_UID + " varchar(255), "
+            + KEY_PLACEHOLDER + " tinyint default 0, "
 			+ "UNIQUE (" + KEY_UID + ")"	
 			+ ");";
 	
@@ -204,7 +207,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			ContentValues cv = new ContentValues();
 			cv.put(KEY_TYPE, AccountType.CASH.toString());
 			db.update(ACCOUNTS_TABLE_NAME, cv, null, null);
-				
+
+            if (oldVersion == 2 && newVersion == 3){
+                Log.i(TAG, "Adding flag for placeholder accounts");
+                String addPlaceHolderAccountFlagSql = "ALTER TABLE " + ACCOUNTS_TABLE_NAME +
+                        " ADD COLUMN " + KEY_PLACEHOLDER + " tinyint default 0";
+
+                db.execSQL(addPlaceHolderAccountFlagSql);
+            }
 		} else {
 			Log.i(TAG, "Cannot downgrade database.");
 		}

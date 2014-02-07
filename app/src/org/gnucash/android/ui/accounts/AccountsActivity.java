@@ -49,8 +49,6 @@ import org.gnucash.android.ui.transactions.TransactionsListFragment;
 import org.gnucash.android.util.GnucashAccountXmlHandler;
 import org.gnucash.android.util.OnAccountClickedListener;
 
-import java.io.FileNotFoundException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Currency;
 import java.util.Locale;
@@ -187,8 +185,17 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
 	 * Show dialog with new features for this version
 	 */
 	private void showWhatsNewDialog(){
-		new AlertDialog.Builder(this)
-		.setTitle(R.string.title_whats_new)
+        StringBuilder releaseTitle = new StringBuilder(getResources().getString(R.string.title_whats_new));
+        PackageInfo packageInfo = null;
+        try {
+            packageInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+        } catch (NameNotFoundException e) {
+            e.printStackTrace();
+        }
+        releaseTitle.append(" - v").append(packageInfo.versionName);
+
+        new AlertDialog.Builder(this)
+		.setTitle(releaseTitle.toString())
 		.setMessage(R.string.whats_new)
 		.setPositiveButton(R.string.label_dismiss, new DialogInterface.OnClickListener() {
 			

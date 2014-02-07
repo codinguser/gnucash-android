@@ -11,6 +11,7 @@ public class AccountTest extends TestCase {
 	}
 
 	public void testUIDContainsName(){
+        //TODO: modify this test when migrating to GnuCash file exports
 		Account account = new Account("dummy");
 		assertTrue(account.getUID().contains("dummy"));
 				
@@ -18,7 +19,7 @@ public class AccountTest extends TestCase {
 		String uid = another.getUID();
 		
 		//only first ten characters are used in uid
-		assertTrue(uid.contains("tele-pathy"));
+		assertTrue(uid.contains("telepathy"));
 		
 		//no spaces allowed
 		assertFalse(uid.contains(" "));

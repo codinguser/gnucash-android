@@ -42,7 +42,7 @@ public abstract class DatabaseAdapter {
 	public static final int COLUMN_NAME 	= 2;
 	public static final int COLUMN_TYPE 	= 3;
 	
-	//columns specific to transactions
+	//columns indices specific to transactions
 	public static final int COLUMN_AMOUNT 		= 4;
 	public static final int COLUMN_DESCRIPTION 	= 5;
 	public static final int COLUMN_TIMESTAMP 	= 6;
@@ -50,9 +50,10 @@ public abstract class DatabaseAdapter {
 	public static final int COLUMN_EXPORTED 	= 8;
 	public static final int COLUMN_DOUBLE_ENTRY_ACCOUNT_UID = 9;
 	
-	//columns specific to accounts
-	public static final int COLUMN_CURRENCY_CODE = 4;
-	public static final int COLUMN_PARENT_ACCOUNT_UID = 5;
+	//columns indices specific to accounts
+	public static final int COLUMN_CURRENCY_CODE        = 4;
+	public static final int COLUMN_PARENT_ACCOUNT_UID   = 5;
+    public static final int COLUMN_PLACEHOLDER          = 6;
 	
 	/**
 	 * {@link DatabaseHelper} for creating and opening the database

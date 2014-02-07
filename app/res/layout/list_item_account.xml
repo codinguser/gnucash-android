@@ -15,7 +15,7 @@
  limitations under the License.
 -->
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<org.gnucash.android.util.CheckableLinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:layout_width="match_parent"
               android:layout_height="?android:attr/listPreferredItemHeight"
               android:gravity="center_vertical"
@@ -23,7 +23,6 @@
               android:paddingRight="@dimen/edge_padding"
               android:orientation="horizontal"
               style="@style/ListItem">
-
     <include
             layout="@layout/list_item_2_lines"
             android:layout_height="wrap_content"
@@ -48,13 +47,15 @@
             android:layout_marginRight="10dp"
             />
 
-    <ImageView
+    <ImageButton
             android:id="@+id/btn_new_transaction"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/content_new_holo_light"
+            android:layout_height="match_parent"
+            android:src="@drawable/content_new_holo_light"
+            style="@style/ImageButton.Transparent"
             android:padding="2dp"
             android:clickable="true"
+            android:focusable="false"
             android:contentDescription="@string/description_add_transaction_icon"/>
 
-</LinearLayout>
+</org.gnucash.android.util.CheckableLinearLayout>

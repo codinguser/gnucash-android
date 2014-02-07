@@ -20,7 +20,6 @@
     <string name="title_add_account">Create Account</string>
     <string name="title_edit_account">Edit Account</string>
     <string name="info_details">Info</string>
-    <string name="title_settings">Settings</string>
     <string name="menu_export_ofx">Export OFX</string>
     <string name="description_add_transaction_icon">Add a new transaction to an account</string>
     <string name="label_no_accounts">No accounts to display</string>
@@ -50,7 +49,7 @@
     <string name="title_selected">%1$d selected</string>
     <string name="label_transactions_total">Total sum:</string>
     <string name="label_export_destination">Export Destination</string>
-    <string name="title_export_dialog">Export OFX</string>
+    <string name="title_export_dialog">Export Transactions</string>
     <string name="option_export_all_transactions">Export all transactions</string>
     <string name="hint_export_choice">By default, only new transactions since last export will be exported. Check this option to export all transactions</string>
     <string name="error_exporting">Error exporting OFX data</string>    
@@ -501,13 +500,12 @@
 	<string name="key_previous_minor_version">previous_minor_version</string>
 	<string name="title_whats_new">What\'s New</string>
 	<string name="whats_new">
-	    <b>Version 1.2.0 - 20.06.2013</b>\n\n
         - Import GnuCash desktop account structure\n
         - Nested display of account hierarchy\n
         - Options for deleting all accounts/transactions\n
         - Preliminary support for account types\n
         - Account balance now takes sub-accounts into consideration\n
-        - Numerous bug fixes\n	        
+        - Numerous bug fixes\n
 	</string>
 	<string name="label_dismiss">Dismiss</string>
     <string name="toast_transanction_amount_required">Enter an amount to save the transaction</string>
@@ -535,6 +533,16 @@
     <string name="toast_all_transactions_deleted">All transactions successfully deleted!</string>
     <string name="title_progress_importing_accounts">Importing accounts</string>
     <string name="toast_tap_again_to_confirm_delete">Tap again to confirm. ALL entries will be deleted!!</string>
+    <string name="section_header_transactions">Transactions</string>
+    <string name="section_header_accounts">Sub-Accounts</string>
+    <string name="menu_search_accounts">Search</string>
+    <string name="title_default_export_format">Default Export Format</string>
+    <string name="key_default_export_format">default_export_format</string>
+    <string name="summary_default_export_format">File format to use by default when exporting transactions</string>
+    <string name="menu_export_transactions">Export transactions...</string>
+    <!-- This should be the same name used by GnuCash desktop for imbalance accounts -->
+    <string name="imbalance_account_name">Imbalance</string>
+    <string name="title_progress_exporting_transactions">Exporting transactions</string>
     <plurals name="label_sub_accounts">
         <item quantity="one">%d sub-account</item>
         <item quantity="other">%d sub-accounts</item>
@@ -568,5 +576,13 @@
         <item>CURRENCY</item>
         <item>STOCK</item>
         <item>MUTUAL</item>
+    </string-array>
+    <string-array name="key_export_format_values">
+        <item>QIF</item>
+        <item>OFX</item>
+    </string-array>
+    <string-array name="export_formats">
+        <item>QIF</item>
+        <item>OFX</item>
     </string-array>
 </resources>
