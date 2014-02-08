@@ -49,7 +49,7 @@
     <string name="title_selected">%1$d 已删除</string>
     <string name="label_transactions_total">合计：</string>
     <string name="label_export_destination">导出到</string>
-    <string name="title_export_dialog">Export Transactions</string>
+    <string name="title_export_dialog">导出交易资料</string>
     <string name="option_export_all_transactions">导出所有交易</string>
     <string name="hint_export_choice">默认情况下，自上次导出后新增的交易才会被导出。选择此项后所有的交易都会被导出。</string>
     <string name="error_exporting">导出OFX发生错误</string>
@@ -265,10 +265,10 @@
         <item>所有者权益</item>
         <item>负债</item>
     </string-array>
-    <string name="error_no_accounts">GnuCash文件里没有科目信息.\n使用小部件前需要添加科目</string>
+    <string name="error_no_accounts">GnuCash里还没有科目信息。\n使用小部件前需要添加科目</string>
     <string name="title_build_version">版本号</string>
-    <string name="title_license">许可</string>
-    <string name="summary_licence_details">Apache License v2.0。点击查看明细</string>
+    <string name="title_license">授权许可</string>
+    <string name="summary_licence_details">Apache License v2.0，点击查看明细（将打开网页）。</string>
     <string name="title_general_prefs">常规</string>
     <string name="label_widget_configuration">选择科目</string>
     <string name="toast_no_transactions_to_export">没有需要导出的交易</string>
@@ -276,7 +276,7 @@
     <string name="summary_about_gnucash">Gnucash for android是一个移动版的财务管理软件。提供灵活的跟踪开支的功能，可以导出OFX格式（开放金融交易格式）数据，并导入到桌面版的 GnuCash中。</string>
     <string name="title_about">关于</string>
     <string name="toast_error_exporting">无法写OFX文件:\n</string>
-    <string name="toast_ofx_exported_to">OFX文件保存在了:\n</string>
+    <string name="toast_ofx_exported_to">OFX文件保存到：\n</string>
     <string name="title_export_email">GnuCash OFX 导出</string>
     <string name="description_export_email">GnuCash OFX Export from </string>
     <string name="header_transaction_settings">交易</string>
@@ -306,14 +306,14 @@
     <string name="summary_xml_ofx_header">当导出数据到GnuCash桌面版以外的程序时需要开启这个选项。</string>
     <string name="title_whats_new">新功能</string>
     <string name="whats_new">
-        - Mark favorite accounts and quickly access them\n
-        - Display different tabs for recent, favorite and all accounts\n
-        - Add, view and delete recurring transactions (daily, weekly, monthly)\n
-        - Mark accounts as placeholder accounts (cannot contain transactions)\n
-        - Set a default transfer account for each account\n
-        - Color code accounts and themed account views\n
-        - Create default GnuCash account structure from within app\n
-        - Numerous bug fixes and improvements\n
+        - 给科目加星标！\n
+        - 使用标签访问科目\n
+        - 计划的交易（日、月、年）\n
+        - 科目占位符\n
+        - 设置默认的转账科目\n
+        - 科目的颜色\n
+        - 内置了常见科目结构\n
+        - 修复一些小错误\n
 	</string>
     <string name="label_dismiss">知道了</string>
     <string name="toast_transanction_amount_required">输入金额才能保存交易</string>
@@ -336,21 +336,21 @@
     <string name="toast_all_transactions_deleted">所有交易都已删除</string>
     <string name="title_progress_importing_accounts">导入科目</string>
     <string name="toast_tap_again_to_confirm_delete">点击再次确认，所有条目都将删除。</string>
-    <string name="section_header_transactions">Transactions</string>
-    <string name="section_header_subaccounts">Sub-Accounts</string>
-    <string name="menu_search_accounts">Search</string>
-    <string name="title_default_export_format">Default Export Format</string>
-    <string name="summary_default_export_format">File format to use by default when exporting transactions</string>
-    <string name="menu_export_transactions">Export transactions…</string>
-    <string name="label_recurring_transaction">Recurrence</string>
+    <string name="section_header_transactions">交易</string>
+    <string name="section_header_subaccounts">子科目</string>
+    <string name="menu_search_accounts">搜索</string>
+    <string name="title_default_export_format">默认的导出格式</string>
+    <string name="summary_default_export_format">导出交易信息时使用的文件格式。</string>
+    <string name="menu_export_transactions">导出交易…</string>
+    <string name="label_recurring_transaction">重复</string>
     <!-- This should be the same name used by GnuCash desktop for imbalance accounts -->
-    <string name="imbalance_account_name">Imbalance</string>
-    <string name="title_progress_exporting_transactions">Exporting transactions</string>
-    <string name="label_no_recurring_transactions">No recurring transactions to display.</string>
-    <string name="toast_recurring_transaction_deleted">Successfully deleted recurring transaction</string>
-    <string name="label_placeholder_account">Placeholder account</string>
-    <string name="label_default_transfer_account">Default Transfer Account</string>
-    <string name="label_account_color_and_type">Account Color &amp; Type</string>
+    <string name="imbalance_account_name">不平衡的</string>
+    <string name="title_progress_exporting_transactions">正在导出交易信息</string>
+    <string name="label_no_recurring_transactions">没有要显示的计划交易</string>
+    <string name="toast_recurring_transaction_deleted">计划交易已删除</string>
+    <string name="label_placeholder_account">占位符</string>
+    <string name="label_default_transfer_account">默认的转账帐户</string>
+    <string name="label_account_color_and_type">科目颜色和类型</string>
     <plurals name="label_sub_accounts">
         <item quantity="one">%d 子科目</item>
         <item quantity="other">%d 子科目</item>
@@ -375,19 +375,16 @@
         <item>OFX</item>
     </string-array>
     <!-- Default title for color picker dialog [CHAR LIMIT=30] -->
-    <string name="color_picker_default_title">Select a Color</string>
-    <string name="label_delete_sub_accounts">Delete sub-accounts</string>
-    <string name="title_recent_accounts">Recent</string>
-    <string name="title_favorite_accounts">Favorites</string>
-    <string name="title_all_accounts">All</string>
-    <string name="summary_create_default_accounts">Creates default GnuCash commonly-used account structure</string>
-    <string name="title_create_default_accounts">Create default accounts</string>
-    <string name="message_confirm_create_default_accounts_setting">New accounts will be created in addition to the existing
-        account structure.\n\nIf you wish to replace currently existing accounts, delete them first before proceeding!
+    <string name="color_picker_default_title">选择一种颜色</string>
+    <string name="label_delete_sub_accounts">删除子科目</string>
+    <string name="title_recent_accounts">最近的</string>
+    <string name="title_favorite_accounts">已加星标</string>
+    <string name="title_all_accounts">所有</string>
+    <string name="summary_create_default_accounts">创建通用的科目结构</string>
+    <string name="title_create_default_accounts">创建默认科目</string>
+    <string name="message_confirm_create_default_accounts_setting">准备创建新的科目结构，这不会覆盖现有的科目，如果你想创建全新的科目结构请先删除旧的科目。
     </string>
-    <string name="menu_item_recurring_transactions">Recurring Transactions</string>
-    <string name="message_confirm_create_default_accounts_first_run">Welcome to GnuCash Android! \nYou can either create
-        a hierarchy of commonly-used accounts, or import your own GnuCash account structure. \n\nBoth options are also
-        available in app Settings so you can decide later.
+    <string name="menu_item_recurring_transactions">计划的交易</string>
+    <string name="message_confirm_create_default_accounts_first_run">欢迎使用GnuCash Android！ \n你可以选择：1）创建常用的科目结构，2）导入自定义的科目结构。\或者稍后再决定，两种选择也能在设置中找到。
     </string>
 </resources>
