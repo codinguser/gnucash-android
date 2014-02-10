@@ -392,4 +392,10 @@
         возможности будут доступны из настроек приложения, если вы захотите
         сделать это позже.
     </string>
+    <string-array name="recurrence_period_strings">
+        <item>никто</item>
+        <item>ЕЖЕДНЕВНО</item>
+        <item>ЕЖЕНЕДЕЛЬНЫЙ</item>
+        <item>ЕЖЕМЕСЯЧНО</item>
+    </string-array>
 </resources>

@@ -388,4 +388,10 @@
     <string name="message_confirm_create_default_accounts_first_run">Bienvenue à GnuCash Android!\n Vous pouvez soit créer
 		une hiérarchie de comptes couramment utilisés, importer votre propre structure de compte GnuCash.\n\n Les deux options sont également
 		disponible dans les paramètres d\'applications de sorte que vous puissiez décider plus tard.</string>
+    <string-array name="recurrence_period_strings">
+        <item>AUCUN</item>
+        <item>QUOTIDIEN</item>
+        <item>SEMAINE</item>
+        <item>MENSUEL</item>
+    </string-array>
 </resources>

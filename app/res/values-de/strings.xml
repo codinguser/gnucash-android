@@ -335,7 +335,7 @@
     <string name="summary_delete_all_transactions">Alle Buchungen in alle Konten werden gelöscht</string>
     <string name="title_delete_all_transactions">Alle Buchungen löschen</string>
     <string name="toast_all_transactions_deleted">Alle Buchungen wurden erfolgreich gelöscht</string>
-    <string name="title_progress_importing_accounts">Importing accounts</string>
+    <string name="title_progress_importing_accounts">Konten werden importiert</string>
     <string name="toast_tap_again_to_confirm_delete">Tap again to confirm. ALL entries will be deleted!!</string>
     <string name="section_header_transactions">Buchungen</string>
     <string name="section_header_subaccounts">Unterkonten</string>
@@ -343,7 +343,7 @@
     <string name="title_default_export_format">Standard Export Format</string>
     <string name="summary_default_export_format">File format to use by default when exporting transactions</string>
     <string name="menu_export_transactions">Buchungen exportieren…</string>
-    <string name="label_recurring_transaction">Recurrence</string>
+    <string name="label_recurring_transaction">Wiederkehr</string>
     <!-- This should be the same name used by GnuCash desktop for imbalance accounts -->
     <string name="imbalance_account_name">Ausgleichskonto</string>
     <string name="title_progress_exporting_transactions">Die Buchungen werden exportiert</string>
@@ -391,4 +391,10 @@
         a hierarchy of commonly-used accounts, or import your own GnuCash account structure. \n\nBoth options are also
         available in app Settings so you can decide later.
     </string>
+    <string-array name="recurrence_values">
+        <item>KEINE</item>
+        <item>TÄGLICH</item>
+        <item>WÖCHENTLICH</item>
+        <item>MONATLICH</item>
+    </string-array>
 </resources>

@@ -228,7 +228,7 @@ public class NewTransactionFragment extends SherlockFragment implements
 		updateTransferAccountsList();
 
         ArrayAdapter<CharSequence> recurrenceAdapter = ArrayAdapter.createFromResource(getActivity(),
-                R.array.recurrence_entries, android.R.layout.simple_spinner_item);
+                R.array.recurrence_period_strings, android.R.layout.simple_spinner_item);
         recurrenceAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mRecurringTransactionSpinner.setAdapter(recurrenceAdapter);
 
@@ -400,7 +400,7 @@ public class NewTransactionFragment extends SherlockFragment implements
         //init recurrence options
         final long recurrencePeriod = mTransaction.getRecurrencePeriod();
         if (recurrencePeriod > 0){
-            String[] recurrenceOptions = getResources().getStringArray(R.array.recurrence_options);
+            String[] recurrenceOptions = getResources().getStringArray(R.array.recurrence_period_millis);
 
             int selectionIndex = 0;
             for (String recurrenceOption : recurrenceOptions) {
@@ -605,7 +605,7 @@ public class NewTransactionFragment extends SherlockFragment implements
         //set up recurring transaction if requested
         int recurrenceIndex = mRecurringTransactionSpinner.getSelectedItemPosition();
         if (recurrenceIndex != 0) {
-            String[] recurrenceOptions = getResources().getStringArray(R.array.recurrence_options);
+            String[] recurrenceOptions = getResources().getStringArray(R.array.recurrence_period_millis);
             long recurrencePeriodMillis = Long.parseLong(recurrenceOptions[recurrenceIndex]);
             long firstRunMillis = System.currentTimeMillis() + recurrencePeriodMillis;
 

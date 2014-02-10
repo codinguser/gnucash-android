@@ -370,8 +370,8 @@ public class RecurringTransactionsListFragment extends SherlockListFragment impl
          * @return String formatted representation of recurrence period
          */
         public String getRecurrenceAsString(long periodMillis){
-            String[] recurrencePeriods = getResources().getStringArray(R.array.recurrence_options);
-            String[] recurrenceStrings = getResources().getStringArray(R.array.recurrence_entries);
+            String[] recurrencePeriods = getResources().getStringArray(R.array.recurrence_period_millis);
+            String[] recurrenceStrings = getResources().getStringArray(R.array.recurrence_period_strings);
 
             int index = 0;
             for (String recurrencePeriod : recurrencePeriods) {

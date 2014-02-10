@@ -310,14 +310,14 @@ format og importeres i regnskapsprogrammet GnuCash for PC.</string>
 	<string name="summary_xml_ofx_header">Velg denne hvis du skal eksportere til annen programvare enn GnuCash for PC.</string>
 	<string name="title_whats_new">Hva er nytt</string>
 	<string name="whats_new">
-        - Mark favorite accounts and quickly access them\n
-        - Display different tabs for recent, favorite and all accounts\n
-        - Add, view and delete recurring transactions (daily, weekly, monthly)\n
-        - Mark accounts as placeholder accounts (cannot contain transactions)\n
-        - Set a default transfer account for each account\n
-        - Color code accounts and themed account views\n
-        - Create default GnuCash account structure from within app\n
-        - Numerous bug fixes and improvements\n
+        - Markere favoritter for rask tilgang\n
+        - Vis forskjellige fliker for nylige, favoritter og alle kontoer\n
+        - Legg til, vis og slett gjentakende transaksjoner (daglig, uke, måned)\n
+        - Marker kontoer som plassholder (kan ikke inneholde transaksjoner)\n
+        - Sette standard overføringskonto per konto\n
+        - Fargekoding av kontoer og temaer i konto visning\n
+        - Opprette standard GnuCash kontostruktur i appen\n
+        - Mange feilrettinger og forbedringer\n
 	</string>
 	<string name="label_dismiss">Ferdig</string>
     <string name="toast_transanction_amount_required">Oppgi et beløp for å lagre transaksjonen</string>
@@ -338,23 +338,23 @@ format og importeres i regnskapsprogrammet GnuCash for PC.</string>
     <string name="summary_delete_all_transactions">Alle transaksjoner i alle kontoer vil bli slettet!</string>
     <string name="title_delete_all_transactions">Slette alle transaksjoner</string>
     <string name="toast_all_transactions_deleted">Alle transaksjoner slettet!</string>
-    <string name="title_progress_importing_accounts">Importing accounts</string>
-    <string name="toast_tap_again_to_confirm_delete">Tap again to confirm. ALL entries will be deleted!!</string>
-    <string name="section_header_transactions">Transactions</string>
-    <string name="section_header_subaccounts">Sub-Accounts</string>
-    <string name="menu_search_accounts">Search</string>
-    <string name="title_default_export_format">Default Export Format</string>
-    <string name="summary_default_export_format">File format to use by default when exporting transactions</string>
+    <string name="title_progress_importing_accounts">Importerer kontoer</string>
+    <string name="toast_tap_again_to_confirm_delete">Trykk igjen for å bekrefte. ALLE oppføringer vil bli slettet!!</string>
+    <string name="section_header_transactions">Transaksjoner</string>
+    <string name="section_header_subaccounts">Underkontoer</string>
+    <string name="menu_search_accounts">Søk</string>
+    <string name="title_default_export_format">Standard Eksport Format</string>
+    <string name="summary_default_export_format">Standard filformat ved eksportering av transaksjoner</string>
     <string name="menu_export_transactions">Export transactions…</string>
     <string name="label_recurring_transaction">Recurrence</string>
     <!-- This should be the same name used by GnuCash desktop for imbalance accounts -->
-    <string name="imbalance_account_name">Imbalance</string>
-    <string name="title_progress_exporting_transactions">Exporting transactions</string>
-    <string name="label_no_recurring_transactions">No recurring transactions to display.</string>
-    <string name="toast_recurring_transaction_deleted">Successfully deleted recurring transaction</string>
-    <string name="label_placeholder_account">Placeholder account</string>
-    <string name="label_default_transfer_account">Default Transfer Account</string>
-    <string name="label_account_color_and_type">Account Color &amp; Type</string>
+    <string name="imbalance_account_name">Ubalanse</string>
+    <string name="title_progress_exporting_transactions">Eksporter transaksjoner</string>
+    <string name="label_no_recurring_transactions">Ingen gjentakende transaksjoner å vise.</string>
+    <string name="toast_recurring_transaction_deleted">Slettet alle gjentakende transaksjoner</string>
+    <string name="label_placeholder_account">Plassholder konto</string>
+    <string name="label_default_transfer_account">Standard overføringskonto</string>
+    <string name="label_account_color_and_type">Konto Farge &amp; Type</string>
     <plurals name="label_sub_accounts">
         <item quantity="one">%d under-konto</item>
         <item quantity="other">%d under-kontoer</item>
@@ -379,19 +379,22 @@ format og importeres i regnskapsprogrammet GnuCash for PC.</string>
         <item>OFX</item>
     </string-array>
     <!-- Default title for color picker dialog [CHAR LIMIT=30] -->
-    <string name="color_picker_default_title">Select a Color</string>
-    <string name="label_delete_sub_accounts">Delete sub-accounts</string>
-    <string name="title_recent_accounts">Recent</string>
-    <string name="title_favorite_accounts">Favorites</string>
-    <string name="title_all_accounts">All</string>
-    <string name="summary_create_default_accounts">Creates default GnuCash commonly-used account structure</string>
-    <string name="title_create_default_accounts">Create default accounts</string>
-    <string name="message_confirm_create_default_accounts_setting">New accounts will be created in addition to the existing
-        account structure.\n\nIf you wish to replace currently existing accounts, delete them first before proceeding!
+    <string name="color_picker_default_title">Velg en farge</string>
+    <string name="label_delete_sub_accounts">Slett underkontoer</string>
+    <string name="title_recent_accounts">Nylige</string>
+    <string name="title_favorite_accounts">Favoritter</string>
+    <string name="title_all_accounts">Alle</string>
+    <string name="summary_create_default_accounts">Oppretter standard GnuCash kontostruktur</string>
+    <string name="title_create_default_accounts">Opprette standard kontoer</string>
+    <string name="message_confirm_create_default_accounts_setting">Nye kontoer vil bli opprettet i tillegg til eksisterende kontostruktur.\n\nHvis du vil erstatte de, slett de før du forsetter!
     </string>
-    <string name="menu_item_recurring_transactions">Recurring Transactions</string>
-    <string name="message_confirm_create_default_accounts_first_run">Welcome to GnuCash Android! \nYou can either create
-        a hierarchy of commonly-used accounts, or import your own GnuCash account structure. \n\nBoth options are also
-        available in app Settings so you can decide later.
+    <string name="menu_item_recurring_transactions">Gjentakende transaksjoner</string>
+    <string name="message_confirm_create_default_accounts_first_run">Velkommen til GnuCash Android! \nDu kan enten opprette et hieraki av de mest brukte kontoene, eller importere din egen GnuCash kontostruktur. \n\nBegge valgene er også tilgjengelige under Instillinger, så du kan velge senere.
     </string>
+    <string-array name="recurrence_period_strings">
+        <item>NONE</item>
+        <item>DAGLIG</item>
+        <item>UKENTLIG</item>
+        <item>MÅNEDLIG</item>
+    </string-array>
 </resources>

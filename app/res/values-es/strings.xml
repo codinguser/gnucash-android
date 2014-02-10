@@ -388,4 +388,10 @@
     <string name="menu_item_recurring_transactions">Transacciones Recurrentes</string>
     <string name="message_confirm_create_default_accounts_first_run">&#161;Bienvenido a GnuCash Android! \nPuede crear una jerarqu&#237;a de cuentas com&#250;nmente usadas o importar su propia estructura de cuentas GnuCash. \n\nAmbas opciones est&#225;n disponibles en las opciones de la aplicaci&#243; por si quiere decidirlo m&#225;s tarde.
     </string>
+    <string-array name="recurrence_period_strings">
+        <item>NINGUNO</item>
+        <item>DIARIO</item>
+        <item>SEMANAL</item>
+        <item>MENSUAL</item>
+    </string-array>
 </resources>

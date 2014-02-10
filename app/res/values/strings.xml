@@ -593,13 +593,13 @@
         <item>QIF</item>
         <item>OFX</item>
     </string-array>
-    <string-array name="recurrence_entries">
+    <string-array name="recurrence_period_strings">
         <item>NONE</item>
         <item>DAILY</item>
         <item>WEEKLY</item>
         <item>MONTHLY</item>
     </string-array>
-    <string-array name="recurrence_options">
+    <string-array name="recurrence_period_millis">
         <item>0</item>
         <item>86400000</item>
         <item>604800000</item>
