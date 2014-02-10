@@ -17,8 +17,8 @@
 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="org.gnucash.android"
-    android:versionCode="22"
-    android:versionName="1.2.7" >
+    android:versionCode="25"
+    android:versionName="1.3.0" >
 
     <uses-sdk android:minSdkVersion="8" android:targetSdkVersion="15"/>
     
@@ -55,7 +55,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.settings.SettingsActivity"></activity>
+        <activity android:name=".ui.settings.SettingsActivity"/>
         <activity android:name=".ui.transactions.TransactionsActivity" 
             android:configChanges="orientation|screenSize">
         </activity>

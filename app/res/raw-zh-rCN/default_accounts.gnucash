@@ -1,0 +1,884 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+ Copyright (c) 2014 Ngewi Fet <ngewif@gmail.com>
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+<gnc-v2
+     xmlns:gnc="http://www.gnucash.org/XML/gnc"
+     xmlns:act="http://www.gnucash.org/XML/act"
+     xmlns:book="http://www.gnucash.org/XML/book"
+     xmlns:cd="http://www.gnucash.org/XML/cd"
+     xmlns:cmdty="http://www.gnucash.org/XML/cmdty"
+     xmlns:price="http://www.gnucash.org/XML/price"
+     xmlns:slot="http://www.gnucash.org/XML/slot"
+     xmlns:split="http://www.gnucash.org/XML/split"
+     xmlns:sx="http://www.gnucash.org/XML/sx"
+     xmlns:trn="http://www.gnucash.org/XML/trn"
+     xmlns:ts="http://www.gnucash.org/XML/ts"
+     xmlns:fs="http://www.gnucash.org/XML/fs"
+     xmlns:bgt="http://www.gnucash.org/XML/bgt"
+     xmlns:recurrence="http://www.gnucash.org/XML/recurrence"
+     xmlns:lot="http://www.gnucash.org/XML/lot"
+     xmlns:addr="http://www.gnucash.org/XML/addr"
+     xmlns:owner="http://www.gnucash.org/XML/owner"
+     xmlns:billterm="http://www.gnucash.org/XML/billterm"
+     xmlns:bt-days="http://www.gnucash.org/XML/bt-days"
+     xmlns:bt-prox="http://www.gnucash.org/XML/bt-prox"
+     xmlns:cust="http://www.gnucash.org/XML/cust"
+     xmlns:employee="http://www.gnucash.org/XML/employee"
+     xmlns:entry="http://www.gnucash.org/XML/entry"
+     xmlns:invoice="http://www.gnucash.org/XML/invoice"
+     xmlns:job="http://www.gnucash.org/XML/job"
+     xmlns:order="http://www.gnucash.org/XML/order"
+     xmlns:taxtable="http://www.gnucash.org/XML/taxtable"
+     xmlns:tte="http://www.gnucash.org/XML/tte"
+     xmlns:vendor="http://www.gnucash.org/XML/vendor">
+<gnc:count-data cd:type="commodity">1</gnc:count-data>
+<gnc:count-data cd:type="account">64</gnc:count-data>
+<gnc:commodity version="2.0.0">
+  <cmdty:space>ISO4217</cmdty:space>
+  <cmdty:id>CNY</cmdty:id>
+  <cmdty:get_quotes/>
+  <cmdty:quote_source>currency</cmdty:quote_source>
+  <cmdty:quote_tz/>
+</gnc:commodity>
+<gnc:commodity version="2.0.0">
+  <cmdty:space>template</cmdty:space>
+  <cmdty:id>template</cmdty:id>
+  <cmdty:name>template</cmdty:name>
+  <cmdty:xcode>template</cmdty:xcode>
+  <cmdty:fraction>1</cmdty:fraction>
+</gnc:commodity>
+<gnc:account version="2.0.0">
+  <act:name>Root Account</act:name>
+  <act:id type="guid">dfa64483c9ab2f017a4e9d4dae2f29e7</act:id>
+  <act:type>ROOT</act:type>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>资产</act:name>
+  <act:id type="guid">be88c71a4d74256c871326403d0b1d11</act:id>
+  <act:type>ASSET</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>CNY</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>资产</act:description>
+  <act:slots>
+    <slot>
+      <slot:key>placeholder</slot:key>
+      <slot:value type="string">true</slot:value>
+    </slot>
+    <slot>
+      <slot:key>color</slot:key>
+      <slot:value type="string">#1469EB</slot:value>
+    </slot>
+  </act:slots>
+  <act:parent type="guid">dfa64483c9ab2f017a4e9d4dae2f29e7</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>流动资产</act:name>
+  <act:id type="guid">e9b22f5db03bbebb4b06fd5c8ba145f6</act:id>
+  <act:type>ASSET</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>CNY</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>流动资产</act:description>
+  <act:slots>
+    <slot>
+      <slot:key>placeholder</slot:key>
+      <slot:value type="string">true</slot:value>
+    </slot>
+  </act:slots>
+  <act:parent type="guid">be88c71a4d74256c871326403d0b1d11</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>活期存款</act:name>
+  <act:id type="guid">d12e7a9a69180f84872d5de6afcdbad9</act:id>
+  <act:type>BANK</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>CNY</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>活期存款</act:description>
+  <act:parent type="guid">e9b22f5db03bbebb4b06fd5c8ba145f6</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>储蓄存款</act:name>
+  <act:id type="guid">394942be59634793d49399b86c9171eb</act:id>
+  <act:type>BANK</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>CNY</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>储蓄存款</act:description>
+  <act:parent type="guid">e9b22f5db03bbebb4b06fd5c8ba145f6</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>现金</act:name>
+  <act:id type="guid">4def05ba8a2c070f5403449b5ae51cb6</act:id>
+  <act:type>CASH</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>CNY</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>钱包里的现金</act:description>
+  <act:parent type="guid">e9b22f5db03bbebb4b06fd5c8ba145f6</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>负债</act:name>
+  <act:id type="guid">c9d210efd927002e983a9e6c42386465</act:id>
+  <act:type>LIABILITY</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>CNY</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>负债</act:description>
+  <act:slots>
+    <slot>
+      <slot:key>placeholder</slot:key>
+      <slot:value type="string">true</slot:value>
+    </slot>
+    <slot>
+      <slot:key>color</slot:key>
+      <slot:value type="string">#B304AD</slot:value>
+    </slot>
+  </act:slots>
+  <act:parent type="guid">dfa64483c9ab2f017a4e9d4dae2f29e7</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>信用卡</act:name>
+  <act:id type="guid">6b3b289583c5d9e2ff4b03fc7e2fef48</act:id>
+  <act:type>CREDIT</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>CNY</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>信用卡</act:description>
+  <act:parent type="guid">c9d210efd927002e983a9e6c42386465</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>收入</act:name>
+  <act:id type="guid">b8f9649f4c6c6beeb1904420cb602e10</act:id>
+  <act:type>INCOME</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>CNY</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>收入</act:description>
+  <act:slots>
+    <slot>
+      <slot:key>placeholder</slot:key>
+      <slot:value type="string">true</slot:value>
+    </slot>
+    <slot>
+      <slot:key>color</slot:key>
+      <slot:value type="string">#319D67</slot:value>
+    </slot>
+  </act:slots>
+  <act:parent type="guid">dfa64483c9ab2f017a4e9d4dae2f29e7</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>奖金</act:name>
+  <act:id type="guid">9f9cf4ddf6611379e785d0e352ba4868</act:id>
+  <act:type>INCOME</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>CNY</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>奖金</act:description>
+  <act:parent type="guid">b8f9649f4c6c6beeb1904420cb602e10</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>收到的礼物</act:name>
+  <act:id type="guid">98988bf0de639be281eb6693d0354207</act:id>
+  <act:type>INCOME</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>CNY</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>收到的礼物</act:description>
+  <act:parent type="guid">b8f9649f4c6c6beeb1904420cb602e10</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>利息收入</act:name>
+  <act:id type="guid">45a03b281251bc5b2a8539e84003e365</act:id>
+  <act:type>INCOME</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>CNY</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>利息收入</act:description>
+  <act:parent type="guid">b8f9649f4c6c6beeb1904420cb602e10</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>活期利息</act:name>
+  <act:id type="guid">473c77f6e68f9ee0111acebb40690bbb</act:id>
+  <act:type>INCOME</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>CNY</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>活期利息</act:description>
+  <act:parent type="guid">45a03b281251bc5b2a8539e84003e365</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>其他利息</act:name>
+  <act:id type="guid">c9b12d93b3e6f2cef246eb94a6bf55e9</act:id>
+  <act:type>INCOME</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>CNY</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>其他利息</act:description>
+  <act:parent type="guid">45a03b281251bc5b2a8539e84003e365</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>储蓄存款利息收入</act:name>
+  <act:id type="guid">9a6ba5dccc3af657608dd989a90b2627</act:id>
+  <act:type>INCOME</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>CNY</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>储蓄存款利息收入</act:description>
+  <act:parent type="guid">45a03b281251bc5b2a8539e84003e365</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>其他收入</act:name>
+  <act:id type="guid">ed5ee4ba3ae8b45f2b2c677c58c3d21c</act:id>
+  <act:type>INCOME</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>CNY</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>其他收入</act:description>
+  <act:parent type="guid">b8f9649f4c6c6beeb1904420cb602e10</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>薪金</act:name>
+  <act:id type="guid">628865ca95265bbcda3707115178cf0e</act:id>
+  <act:type>INCOME</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>CNY</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>薪金</act:description>
+  <act:parent type="guid">b8f9649f4c6c6beeb1904420cb602e10</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>支出</act:name>
+  <act:id type="guid">3f3ebd3d9c6441f8d9a0e88ef2bc9d80</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>CNY</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>支出</act:description>
+  <act:slots>
+    <slot>
+      <slot:key>placeholder</slot:key>
+      <slot:value type="string">true</slot:value>
+    </slot>
+    <slot>
+      <slot:key>color</slot:key>
+      <slot:value type="string">#D13E29</slot:value>
+    </slot>
+  </act:slots>
+  <act:parent type="guid">dfa64483c9ab2f017a4e9d4dae2f29e7</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>调整</act:name>
+  <act:id type="guid">e49a81b98502a44d2782f5d13af42ced</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>CNY</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>调整</act:description>
+  <act:parent type="guid">3f3ebd3d9c6441f8d9a0e88ef2bc9d80</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>汽车</act:name>
+  <act:id type="guid">33b62f14889cae00d71f408e547b5570</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>CNY</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>汽车</act:description>
+  <act:parent type="guid">3f3ebd3d9c6441f8d9a0e88ef2bc9d80</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>收费</act:name>
+  <act:id type="guid">6dd09e81a86ebaaabe87b1e60877838d</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>CNY</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>收费</act:description>
+  <act:parent type="guid">33b62f14889cae00d71f408e547b5570</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>燃气</act:name>
+  <act:id type="guid">1f2650006be222f81092b45425878910</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>CNY</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>燃气</act:description>
+  <act:parent type="guid">33b62f14889cae00d71f408e547b5570</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>停车</act:name>
+  <act:id type="guid">1319e49fe5597ab4bedb60265576e7f7</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>CNY</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>停车</act:description>
+  <act:parent type="guid">33b62f14889cae00d71f408e547b5570</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>维修和保养</act:name>
+  <act:id type="guid">359a6ef5ef98507eea89c2add8407223</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>CNY</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>维修和保养</act:description>
+  <act:parent type="guid">33b62f14889cae00d71f408e547b5570</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>银行服务收费</act:name>
+  <act:id type="guid">ef7cba7e068a70a16e527e6d0a6b85ea</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>CNY</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>银行服务收费</act:description>
+  <act:parent type="guid">3f3ebd3d9c6441f8d9a0e88ef2bc9d80</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>书籍</act:name>
+  <act:id type="guid">c6af9c5a11254a0356dfb5c135184edb</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>CNY</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>书籍</act:description>
+  <act:parent type="guid">3f3ebd3d9c6441f8d9a0e88ef2bc9d80</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>电报</act:name>
+  <act:id type="guid">44703e987a1b4141d90b463b473c8a2c</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>CNY</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>电报</act:description>
+  <act:parent type="guid">3f3ebd3d9c6441f8d9a0e88ef2bc9d80</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>慈善</act:name>
+  <act:id type="guid">6c62cbc8b335414b087241f20c53dd0a</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>CNY</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>慈善</act:description>
+  <act:parent type="guid">3f3ebd3d9c6441f8d9a0e88ef2bc9d80</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>衣服</act:name>
+  <act:id type="guid">cbec566ecce449bef971a0e39964518c</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>CNY</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>衣服</act:description>
+  <act:parent type="guid">3f3ebd3d9c6441f8d9a0e88ef2bc9d80</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>电脑</act:name>
+  <act:id type="guid">0d15d79073f36e5909e666993cfb5594</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>CNY</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>电脑</act:description>
+  <act:parent type="guid">3f3ebd3d9c6441f8d9a0e88ef2bc9d80</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>用餐</act:name>
+  <act:id type="guid">f5a80cf4cee013ee7707acfd450eea59</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>CNY</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>用餐</act:description>
+  <act:parent type="guid">3f3ebd3d9c6441f8d9a0e88ef2bc9d80</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>教育</act:name>
+  <act:id type="guid">11473257d888cf4e137a45558d63be41</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>CNY</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>教育</act:description>
+  <act:parent type="guid">3f3ebd3d9c6441f8d9a0e88ef2bc9d80</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>娱乐</act:name>
+  <act:id type="guid">d290f7baf07c87079234c45cd374b246</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>CNY</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>娱乐</act:description>
+  <act:parent type="guid">3f3ebd3d9c6441f8d9a0e88ef2bc9d80</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>音乐/电影</act:name>
+  <act:id type="guid">486f1b494b3af87651d94af37bc6fb6d</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>CNY</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>音乐/电影</act:description>
+  <act:parent type="guid">d290f7baf07c87079234c45cd374b246</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>娱乐</act:name>
+  <act:id type="guid">4259f8b2021de5dc10927a9ae8b6cadd</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>CNY</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>娱乐</act:description>
+  <act:parent type="guid">d290f7baf07c87079234c45cd374b246</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>旅行</act:name>
+  <act:id type="guid">2eac80f8228e4a339dd817faa4bd9c2b</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>CNY</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>旅行</act:description>
+  <act:parent type="guid">d290f7baf07c87079234c45cd374b246</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>礼品</act:name>
+  <act:id type="guid">dd5323f7618d51edeb1035b7e35485ee</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>CNY</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>礼品</act:description>
+  <act:parent type="guid">3f3ebd3d9c6441f8d9a0e88ef2bc9d80</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>食品杂货</act:name>
+  <act:id type="guid">3e5851ba65953c7e8ef2155e64f3f48c</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>CNY</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>食品杂货</act:description>
+  <act:parent type="guid">3f3ebd3d9c6441f8d9a0e88ef2bc9d80</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>爱好</act:name>
+  <act:id type="guid">346cf1cc33ee050fe4a9557a7603f0ab</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>CNY</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>爱好</act:description>
+  <act:parent type="guid">3f3ebd3d9c6441f8d9a0e88ef2bc9d80</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>保险</act:name>
+  <act:id type="guid">b141702c4f0996b82d0058d20c040717</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>CNY</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>保险</act:description>
+  <act:parent type="guid">3f3ebd3d9c6441f8d9a0e88ef2bc9d80</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>汽车保险</act:name>
+  <act:id type="guid">722fdc4be1515f2841cb32100992631a</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>CNY</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>汽车保险</act:description>
+  <act:parent type="guid">b141702c4f0996b82d0058d20c040717</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>健康保险</act:name>
+  <act:id type="guid">51488692648f933f542298ddf26861ad</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>CNY</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>健康保险</act:description>
+  <act:parent type="guid">b141702c4f0996b82d0058d20c040717</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>人寿保险</act:name>
+  <act:id type="guid">3615f3c8833da387dfc9dae88a447b94</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>CNY</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>人寿保险</act:description>
+  <act:parent type="guid">b141702c4f0996b82d0058d20c040717</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>洗衣/干洗</act:name>
+  <act:id type="guid">f83782eb8df279feeed5cc2895559bce</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>CNY</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>洗衣/干洗</act:description>
+  <act:parent type="guid">3f3ebd3d9c6441f8d9a0e88ef2bc9d80</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>医疗费用</act:name>
+  <act:id type="guid">ddbcbabb316f1e9deccccfbe1db07fed</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>CNY</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>医疗费用</act:description>
+  <act:parent type="guid">3f3ebd3d9c6441f8d9a0e88ef2bc9d80</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>杂项</act:name>
+  <act:id type="guid">738cfe8afaee004fd7088d861b6278ca</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>CNY</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>杂项</act:description>
+  <act:parent type="guid">3f3ebd3d9c6441f8d9a0e88ef2bc9d80</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>在线服务</act:name>
+  <act:id type="guid">7f787f9c16d1651c53360877a13d14fb</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>CNY</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>在线服务</act:description>
+  <act:parent type="guid">3f3ebd3d9c6441f8d9a0e88ef2bc9d80</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>电话</act:name>
+  <act:id type="guid">63417642c957b67128c9f305baf06e43</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>CNY</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>电话</act:description>
+  <act:parent type="guid">3f3ebd3d9c6441f8d9a0e88ef2bc9d80</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>公共交通</act:name>
+  <act:id type="guid">48cefe5661a5bb859253939ee49029c8</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>CNY</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>公共交通</act:description>
+  <act:parent type="guid">3f3ebd3d9c6441f8d9a0e88ef2bc9d80</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>订阅费</act:name>
+  <act:id type="guid">76acc705f602e7bd97d266543fb03b50</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>CNY</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>订阅费</act:description>
+  <act:parent type="guid">3f3ebd3d9c6441f8d9a0e88ef2bc9d80</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>物资</act:name>
+  <act:id type="guid">85597923f1d0111d77225c9986494c6f</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>CNY</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>物资</act:description>
+  <act:parent type="guid">3f3ebd3d9c6441f8d9a0e88ef2bc9d80</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>税费</act:name>
+  <act:id type="guid">3b35b432b39450f98de5f02ecad3a7b4</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>CNY</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>税费</act:description>
+  <act:parent type="guid">3f3ebd3d9c6441f8d9a0e88ef2bc9d80</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>国家</act:name>
+  <act:id type="guid">058fcf2914602ce3d5236f1e6524379b</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>CNY</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>国家</act:description>
+  <act:parent type="guid">3b35b432b39450f98de5f02ecad3a7b4</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>医疗保险</act:name>
+  <act:id type="guid">8699f26b4de9ab87dfaa94825c0a3060</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>CNY</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>医疗保险</act:description>
+  <act:parent type="guid">3b35b432b39450f98de5f02ecad3a7b4</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>其它税</act:name>
+  <act:id type="guid">3088e7d5bab1b8e7927fd60223d08749</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>CNY</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>其它税</act:description>
+  <act:parent type="guid">3b35b432b39450f98de5f02ecad3a7b4</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>社会保险</act:name>
+  <act:id type="guid">47282d883d68301265d6dee6a691db70</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>CNY</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>社会保险</act:description>
+  <act:parent type="guid">3b35b432b39450f98de5f02ecad3a7b4</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>省</act:name>
+  <act:id type="guid">aea38d0b387b896054c45d3d3c311486</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>CNY</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>省、直辖市、特别行政区、州、郡等</act:description>
+  <act:parent type="guid">3b35b432b39450f98de5f02ecad3a7b4</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>水电费</act:name>
+  <act:id type="guid">c869c31b1d6d483fee000825a8e5e915</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>CNY</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>水电费</act:description>
+  <act:parent type="guid">3f3ebd3d9c6441f8d9a0e88ef2bc9d80</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>电</act:name>
+  <act:id type="guid">cebca0dcf2973c480ee7d37b6b9c7462</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>CNY</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>电</act:description>
+  <act:parent type="guid">c869c31b1d6d483fee000825a8e5e915</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>垃圾收集</act:name>
+  <act:id type="guid">bcd29018444b8f2089e2457fb1507eae</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>CNY</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>垃圾收集</act:description>
+  <act:parent type="guid">c869c31b1d6d483fee000825a8e5e915</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>燃气</act:name>
+  <act:id type="guid">1ed337e755da7cc77a37e59b89cc9a9f</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>CNY</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>燃气</act:description>
+  <act:parent type="guid">c869c31b1d6d483fee000825a8e5e915</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>水</act:name>
+  <act:id type="guid">e45d8666aa35453d6a30000390e07f9a</act:id>
+  <act:type>EXPENSE</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>CNY</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>水</act:description>
+  <act:parent type="guid">c869c31b1d6d483fee000825a8e5e915</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>所有者权益</act:name>
+  <act:id type="guid">03c81fe2f5877e219b37f20ece87f793</act:id>
+  <act:type>EQUITY</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>CNY</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>所有者权益</act:description>
+  <act:slots>
+    <slot>
+      <slot:key>placeholder</slot:key>
+      <slot:value type="string">true</slot:value>
+    </slot>
+    <slot>
+      <slot:key>color</slot:key>
+      <slot:value type="string">#EE8600</slot:value>
+    </slot>
+  </act:slots>
+  <act:parent type="guid">dfa64483c9ab2f017a4e9d4dae2f29e7</act:parent>
+</gnc:account>
+<gnc:account version="2.0.0">
+  <act:name>期初余额</act:name>
+  <act:id type="guid">e3bebd5f4b817924c5f0822f28bf88a3</act:id>
+  <act:type>EQUITY</act:type>
+  <act:commodity>
+    <cmdty:space>ISO4217</cmdty:space>
+    <cmdty:id>CNY</cmdty:id>
+  </act:commodity>
+  <act:commodity-scu>100</act:commodity-scu>
+  <act:description>期初余额</act:description>
+  <act:parent type="guid">03c81fe2f5877e219b37f20ece87f793</act:parent>
+</gnc:account>
+</gnc-v2>
+
+<!-- Local variables: -->
+<!-- mode: xml        -->
+<!-- End:             -->

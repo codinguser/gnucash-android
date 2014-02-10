@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013 Ngewi Fet <ngewif@gmail.com>
+ * Copyright (c) 2013 - 2014 Ngewi Fet <ngewif@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,10 @@ import org.gnucash.android.db.DatabaseAdapter;
 import org.gnucash.android.db.DatabaseHelper;
 
 /**
- * @author Ngewi
+ * Cursor adapter which looks up the fully qualified account name and returns that instead of just the simple name.
+ * <p>The fully qualified account name includes the parent hierarchy</p>
+ *
+ * @author Ngewi Fet <ngewif@gmail.com>
  */
 public class QualifiedAccountNameCursorAdapter extends SimpleCursorAdapter {
     private AccountsDbAdapter mAccountDbAdapter;

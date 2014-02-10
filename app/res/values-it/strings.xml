@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
- Copyright (c) 2012 Ngewi Fet <ngewif@gmail.com>
- Copyright (c) 2012 Cristian Marchi <cri.penta@gmail.com>
+ Copyright (c) 2012 - 2014 Ngewi Fet <ngewif@gmail.com>
+ Copyright (c) 2012 - 2014 Cristian Marchi <cri.penta@gmail.com>
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -50,7 +50,7 @@
     <string name="title_selected">%1$d selezionate</string>
     <string name="label_transactions_total">Somma totale:</string>
     <string name="label_export_destination">Destinazione di esportazione</string>
-    <string name="title_export_dialog">Export Transactions</string>
+    <string name="title_export_dialog">Esporta transazioni</string>
     <string name="option_export_all_transactions">Esporta tutte le transazioni</string>
     <string name="hint_export_choice">Di default, verranno esportate solo le transazioni dall\'ultima esportazione. Selezionare questa opzione per esportare tutte le transazioni</string>
     <string name="error_exporting">Errore nell\'esportazione dei dati OFX</string>    
@@ -73,10 +73,10 @@
     <string name="title_choose_currency">Selezione della valuta predefinita</string>
     <string name="title_default_currency">Valuta predefinita</string>
     <string name="summary_default_currency">Valuta predefinita da assegnare ai nuovi conti</string>
-    <string name="label_permission_record_transactions">Abilita la registrazione delle transazioni in Gnucash per Android</string>
-    <string name="label_permission_create_accounts">Abilita la creazione dei conti in Gnucash per Android</string>
-    <string name="label_permission_group">I propri dati di Gnucash</string>
-    <string name="description_permission_group">Legge e modifica i dati di Gnucash</string>
+    <string name="label_permission_record_transactions">Abilita la registrazione delle transazioni in GnuCash per Android</string>
+    <string name="label_permission_create_accounts">Abilita la creazione dei conti in GnuCash per Android</string>
+    <string name="label_permission_group">I propri dati di GnuCash</string>
+    <string name="description_permission_group">Legge e modifica i dati di GnuCash</string>
     <string name="label_permission_record_transaction">registra transazione</string>
     <string name="label_permission_create_account">crea conti</string>
     <string name="label_display_account">Visualizza conto</string>
@@ -273,7 +273,7 @@
 	<string name="title_general_prefs">Generale</string>
 	<string name="label_widget_configuration">Seleziona conto</string>
 	<string name="toast_no_transactions_to_export">Non sono disponibili transazioni da esportare</string>
-	<string name="title_about_gnucash">Informazioni su GnuCcash</string>
+	<string name="title_about_gnucash">Informazioni su GnuCash</string>
 	<string name="summary_about_gnucash">GnuCashMobile &#232; un\'applicazione Android per tenere traccia delle proprie spese.\nPermette di registrare le proprie uscite al volo, di esportarle in formato OFX (Open Financial eXchange) e di importarle nella versione desktop di GnuCash.</string>
 	<string name="title_about">Informazioni</string>
 	<string name="toast_error_exporting">Impossibile scrivere il file OFX in:\n</string>
@@ -307,12 +307,14 @@
 	<string name="summary_xml_ofx_header">Abilitare questa opzione quando si esporta verso un\'applicazione diversa da GnuCash versione desktop</string>
 	<string name="title_whats_new">Novità</string>
 	<string name="whats_new">
-        - Importazione struttura dei conti da GnuCash desktop\n
-        - Visualizzazione ad albero della struttura dei conti\n
-        - Opzione per eliminare tutti i conti e le transazioni\n
-        - Supporto preliminare per i tipi di conti\n
-        - Il saldo del conto considera ora anche i sotto-conti\n
-        - Molte correzioni di bug\n
+        - Possibilità di marcare i conti come preferiti per acecdervi più velocemente\n
+        - Visualizzazione di diverse schede per i conti recenti, favoriti e per tutti i conti\n
+        - Aggiunta, visualizzazione ed eliminazione delle transazioni pianificate (quotidiane, settimanali, mensili)\n
+        - Possibilità di identificare i conti come segnalibro (non possono contenere transazioni)\n
+        - Possibilità di impostare un conto di trasferimento predefinito per ogni conto\n
+        - Introdotti i colori per i conti e le viste a tema\n
+        - Introdotta la possibilità di creare una struttura dei conti all\'interno dell\'app\n
+        - Sono state introdotte varie migliorie e molti problemi sono stati corretti\n
 	</string>
 	<string name="label_dismiss">Chiudi</string>
     <string name="toast_transanction_amount_required">Inserire un importo per salvare la transazione</string>
@@ -334,17 +336,23 @@
     <string name="summary_delete_all_transactions">Verranno eliminate tutte le transazioni in tutti i conti</string>
     <string name="title_delete_all_transactions">Elimina tutte le transazioni</string>
     <string name="toast_all_transactions_deleted">Tutte le transazioni sono state eliminate!</string>
-    <string name="title_progress_importing_accounts">Importing accounts</string>
-    <string name="toast_tap_again_to_confirm_delete">Tap again to confirm. ALL entries will be deleted!!</string>
-    <string name="section_header_transactions">Transactions</string>
-    <string name="section_header_accounts">Sub-Accounts</string>
-    <string name="menu_search_accounts">Search</string>
-    <string name="title_default_export_format">Default Export Format</string>
-    <string name="summary_default_export_format">File format to use by default when exporting transactions</string>
-    <string name="menu_export_transactions">Export transactions...</string>
+    <string name="title_progress_importing_accounts">Importazione dei conti</string>
+    <string name="toast_tap_again_to_confirm_delete">Premere di nuovo per confermare. Tutti gli elementi verranno rimossi!!</string>
+    <string name="section_header_transactions">Transazioni</string>
+    <string name="section_header_subaccounts">Sotto-conti</string>
+    <string name="menu_search_accounts">Cerca</string>
+    <string name="title_default_export_format">Formato predefinito di esportazione</string>
+    <string name="summary_default_export_format">Formato di file predefinito da utilizzare per l\'esportazione delle transazioni</string>
+    <string name="menu_export_transactions">Esporta transazioni…</string>
+    <string name="label_recurring_transaction">Ricorrenza</string>
     <!-- This should be the same name used by GnuCash desktop for imbalance accounts -->
-    <string name="imbalance_account_name">Imbalance</string>
-    <string name="title_progress_exporting_transactions">Exporting transactions</string>
+    <string name="imbalance_account_name">Sbilancio</string>
+    <string name="title_progress_exporting_transactions">Esportazione transazioni</string>
+    <string name="label_no_recurring_transactions">Nessuna transazione pianificata da visualizzare.</string>
+    <string name="toast_recurring_transaction_deleted">Transazione pianificata eliminata</string>
+    <string name="label_placeholder_account">Conto segnalibro</string>
+    <string name="label_default_transfer_account">DConto predefinito di trasferimento</string>
+    <string name="label_account_color_and_type">Tipo e colore del conto</string>
     <plurals name="label_sub_accounts">
         <item quantity="one">%d sotto-conto</item>
         <item quantity="other">%d sotto-conti</item>
@@ -367,5 +375,27 @@
     <string-array name="export_formats">
         <item>QIF</item>
         <item>OFX</item>
+    </string-array>
+    <!-- Default title for color picker dialog [CHAR LIMIT=30] -->
+    <string name="color_picker_default_title">Selezione del colore</string>
+    <string name="label_delete_sub_accounts">Elimina i sottoconti</string>
+    <string name="title_recent_accounts">Recenti</string>
+    <string name="title_favorite_accounts">Favoriti</string>
+    <string name="title_all_accounts">Tutti</string>
+    <string name="summary_create_default_accounts">Crea la struttura predefinita dei conti comuni di GnuCash</string>
+    <string name="title_create_default_accounts">Crea conti predefiniti</string>
+    <string name="message_confirm_create_default_accounts_setting">I nuovi conti saranno aggiunti alla struttura esistente.\n\n
+        Per sostituire i conti esistenti, occorre eliminarli prima di proseguire!
+    </string>
+    <string name="menu_item_recurring_transactions">Transazioni pianificate</string>
+    <string name="message_confirm_create_default_accounts_first_run">Benvenuti in GnuCash per Android! \nÈ possibile
+        creare una struttura dei conti più comunemente utilizzati o importare la propria struttura da GnuCash. \n\nEntrambe le
+        Opzioni sono disponibili nelle impostazioni dell\'applicazione ed è quindi possibile decidere in seguito.
+    </string>
+    <string-array name="recurrence_period_strings">
+        <item>NESSUNA</item>
+        <item>QUOTIDIANO</item>
+        <item>SETTIMANALE</item>
+        <item>MENSILE</item>
     </string-array>
 </resources>

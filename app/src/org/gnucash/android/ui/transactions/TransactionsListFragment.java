@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012 Ngewi Fet <ngewif@gmail.com>
+ * Copyright (c) 2012 - 2014 Ngewi Fet <ngewif@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,6 +52,7 @@ import org.gnucash.android.db.DatabaseAdapter;
 import org.gnucash.android.db.DatabaseCursorLoader;
 import org.gnucash.android.db.DatabaseHelper;
 import org.gnucash.android.db.TransactionsDbAdapter;
+import org.gnucash.android.ui.Refreshable;
 import org.gnucash.android.ui.accounts.AccountsListFragment;
 import org.gnucash.android.ui.widget.WidgetConfigurationActivity;
 import org.gnucash.android.util.OnTransactionClickedListener;
@@ -65,8 +66,8 @@ import java.util.Locale;
  * @author Ngewi Fet <ngewif@gmail.com>
  *
  */
-public class TransactionsListFragment extends SherlockListFragment implements 
-	LoaderCallbacks<Cursor> {
+public class TransactionsListFragment extends SherlockListFragment implements
+        Refreshable, LoaderCallbacks<Cursor> {
 
 	/**
 	 * Logging tag
@@ -141,7 +142,7 @@ public class TransactionsListFragment extends SherlockListFragment implements
 				for (long id : getListView().getCheckedItemIds()) {
 					mTransactionsDbAdapter.deleteRecord(id);
 				}				
-				refreshList();
+				refresh();
 				mode.finish();
 				WidgetConfigurationActivity.updateAllWidgets(getActivity());
 				return true;
@@ -195,15 +196,17 @@ public class TransactionsListFragment extends SherlockListFragment implements
      * Refresh the list with transactions from account with ID <code>accountId</code>
      * @param accountId Database ID of account to load transactions from
      */
-	public void refreshList(long accountId){
+    @Override
+	public void refresh(long accountId){
 		mAccountID = accountId;
-		refreshList();
+		refresh();
 	}
 
     /**
      * Reload the list of transactions and recompute account balances
      */
-	public void refreshList(){
+    @Override
+	public void refresh(){
 		getLoaderManager().restartLoader(0, null, this);
 
         mSumTextView = (TextView) getView().findViewById(R.id.transactions_sum);
@@ -225,7 +228,7 @@ public class TransactionsListFragment extends SherlockListFragment implements
 	public void onResume() {
 		super.onResume();
 		((TransactionsActivity)getSherlockActivity()).updateNavigationSelection();		
-		refreshList(((TransactionsActivity)getActivity()).getCurrentAccountID());
+		refresh(((TransactionsActivity) getActivity()).getCurrentAccountID());
 	}
 	
 	@Override
@@ -238,7 +241,7 @@ public class TransactionsListFragment extends SherlockListFragment implements
 	public void onListItemClick(ListView l, View v, int position, long id) {
 		super.onListItemClick(l, v, position, id);
 		if (mInEditMode){
-			CheckBox checkbox = (CheckBox) v.findViewById(R.id.checkbox);
+			CheckBox checkbox = (CheckBox) v.findViewById(R.id.checkbox_parent_account);
 			checkbox.setChecked(!checkbox.isChecked());
 			return;
 		}
@@ -249,17 +252,17 @@ public class TransactionsListFragment extends SherlockListFragment implements
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {		
 		inflater.inflate(R.menu.transactions_list_actions, menu);	
 	}
-	
+
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
-		case R.id.menu_add_transaction:
-			mTransactionEditListener.createNewTransaction(mAccountID);
-			return true;
+            case R.id.menu_add_transaction:
+                mTransactionEditListener.createNewTransaction(mAccountID);
+                return true;
 
-		default:
-			return false;
-		}
+            default:
+                return false;
+        }
 	}
 	
 	@Override
@@ -376,7 +379,7 @@ public class TransactionsListFragment extends SherlockListFragment implements
 		public View getView(int position, View convertView, ViewGroup parent) {
 			final View view = super.getView(position, convertView, parent);
 			final int itemPosition = position;
-			CheckBox checkbox = (CheckBox) view.findViewById(R.id.checkbox);
+			CheckBox checkbox = (CheckBox) view.findViewById(R.id.checkbox_parent_account);
             final TextView secondaryText = (TextView) view.findViewById(R.id.secondary_text);
 
             checkbox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
@@ -411,14 +414,16 @@ public class TransactionsListFragment extends SherlockListFragment implements
             parentView.post(new Runnable() {
                 @Override
                 public void run() {
-                    float extraPadding = getResources().getDimension(R.dimen.edge_padding);
-                    final android.graphics.Rect hitRect = new Rect();
-                    checkBoxView.getHitRect(hitRect);
-                    hitRect.right   += extraPadding;
-                    hitRect.bottom  += 3*extraPadding;
-                    hitRect.top     -= extraPadding;
-                    hitRect.left    -= 2*extraPadding;
-                    parentView.setTouchDelegate(new TouchDelegate(hitRect, checkBoxView));
+                    if (isAdded()){ //may be run when fragment has been unbound from activity
+                        float extraPadding = getResources().getDimension(R.dimen.edge_padding);
+                        final android.graphics.Rect hitRect = new Rect();
+                        checkBoxView.getHitRect(hitRect);
+                        hitRect.right   += extraPadding;
+                        hitRect.bottom  += 3*extraPadding;
+                        hitRect.top     -= extraPadding;
+                        hitRect.left    -= 2*extraPadding;
+                        parentView.setTouchDelegate(new TouchDelegate(hitRect, checkBoxView));
+                    }
                 }
             });
 
@@ -432,12 +437,20 @@ public class TransactionsListFragment extends SherlockListFragment implements
 			Money amount = new Money(
 					cursor.getString(DatabaseAdapter.COLUMN_AMOUNT), 
 					mTransactionsDbAdapter.getCurrencyCode(mAccountID));
-			
+
+            //FIXME: Take normal account balances into consideration for double entries
+//            String mainAccountUID = cursor.getString(DatabaseAdapter.COLUMN_ACCOUNT_UID);
+//            Account.AccountType mainAccountType = mTransactionsDbAdapter.getAccountType(mainAccountUID);
+
 			//negate any transactions if this account is the origin in double entry
-			String doubleEntryAccountUID = cursor.getString(DatabaseAdapter.COLUMN_DOUBLE_ENTRY_ACCOUNT_UID);
-			if (doubleEntryAccountUID != null 
-					&& mTransactionsDbAdapter.isSameAccount(mAccountID, doubleEntryAccountUID)){
-				amount = amount.negate();				
+			String transferAccountUID = cursor.getString(DatabaseAdapter.COLUMN_DOUBLE_ENTRY_ACCOUNT_UID);
+
+			if (transferAccountUID != null
+					&& mTransactionsDbAdapter.isSameAccount(mAccountID, transferAccountUID)){
+//                Account.AccountType transferAccountType = mTransactionsDbAdapter.getAccountType(transferAccountUID);
+//
+//                if (mainAccountType.getNormalBalanceType() == transferAccountType.getNormalBalanceType())
+                amount = amount.negate();
 			}
 				
 			TextView tramount = (TextView) view.findViewById(R.id.transaction_amount);
@@ -456,34 +469,51 @@ public class TransactionsListFragment extends SherlockListFragment implements
 				trNote.setVisibility(View.VISIBLE);
 				trNote.setText(description);
 			}
-			
-			long transactionTime = cursor.getLong(DatabaseAdapter.COLUMN_TIMESTAMP);
-			int position = cursor.getPosition();
-						
-			boolean hasSectionHeader;
-			if (position == 0){
-				hasSectionHeader = true;
-			} else {
-				cursor.moveToPosition(position - 1);
-				long previousTimestamp = cursor.getLong(DatabaseAdapter.COLUMN_TIMESTAMP);
-				cursor.moveToPosition(position);				
-				//has header if two consecutive transactions were not on same day
-				hasSectionHeader = !isSameDay(previousTimestamp, transactionTime);
-			}
-			
-			TextView dateHeader = (TextView) view.findViewById(R.id.date_section_header);
-			
-			if (hasSectionHeader){
-				java.text.DateFormat format = DateFormat.getLongDateFormat(getActivity());
-				String dateString = format.format(new Date(transactionTime));
-				dateHeader.setText(dateString);
-				dateHeader.setVisibility(View.VISIBLE);
-			} else {
-				dateHeader.setVisibility(View.GONE);
-			}
+
+            setSectionHeaderVisibility(view, cursor);
 		}
-		
-		private boolean isSameDay(long timeMillis1, long timeMillis2){
+
+        /**
+         * Toggles the visibilty of the section header based on whether the previous transaction and current were
+         * booked on the same day or not. Transactions a generally grouped by day
+         * @param view Parent view within which to find the section header
+         * @param cursor Cursor containing transaction data set
+         * @see #isSameDay(long, long)
+         */
+        private void setSectionHeaderVisibility(View view, Cursor cursor) {
+            long transactionTime = cursor.getLong(DatabaseAdapter.COLUMN_TIMESTAMP);
+            int position = cursor.getPosition();
+
+            boolean hasSectionHeader;
+            if (position == 0){
+                hasSectionHeader = true;
+            } else {
+                cursor.moveToPosition(position - 1);
+                long previousTimestamp = cursor.getLong(DatabaseAdapter.COLUMN_TIMESTAMP);
+                cursor.moveToPosition(position);
+                //has header if two consecutive transactions were not on same day
+                hasSectionHeader = !isSameDay(previousTimestamp, transactionTime);
+            }
+
+            TextView dateHeader = (TextView) view.findViewById(R.id.date_section_header);
+
+            if (hasSectionHeader){
+                java.text.DateFormat format = DateFormat.getLongDateFormat(getActivity());
+                String dateString = format.format(new Date(transactionTime));
+                dateHeader.setText(dateString);
+                dateHeader.setVisibility(View.VISIBLE);
+            } else {
+                dateHeader.setVisibility(View.GONE);
+            }
+        }
+
+        /**
+         * Checks if two timestamps have the same calendar day
+         * @param timeMillis1 Timestamp in milliseconds
+         * @param timeMillis2 Timestamp in milliseconds
+         * @return <code>true</code> if both timestamps are on same day, <code>false</code> otherwise
+         */
+        private boolean isSameDay(long timeMillis1, long timeMillis2){
 			Date date1 = new Date(timeMillis1);
 			Date date2 = new Date(timeMillis2);
 			

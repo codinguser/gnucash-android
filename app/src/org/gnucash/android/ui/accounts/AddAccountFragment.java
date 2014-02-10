@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012 Ngewi Fet <ngewif@gmail.com>
+ * Copyright (c) 2012 - 2014 Ngewi Fet <ngewif@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,11 +22,20 @@ import java.util.List;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.res.Resources;
+import android.content.res.TypedArray;
+import android.graphics.Color;
+import android.preference.PreferenceManager;
+import android.support.v4.app.FragmentManager;
 import org.gnucash.android.R;
 import org.gnucash.android.data.Account;
 import org.gnucash.android.data.Money;
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.DatabaseHelper;
+import org.gnucash.android.ui.colorpicker.ColorPickerDialog;
+import org.gnucash.android.ui.colorpicker.ColorPickerSwatch;
+import org.gnucash.android.ui.colorpicker.ColorSquare;
 import org.gnucash.android.ui.transactions.TransactionsListFragment;
 
 import android.content.Context;
@@ -57,7 +66,12 @@ import org.gnucash.android.util.QualifiedAccountNameCursorAdapter;
  */
 public class AddAccountFragment extends SherlockFragment {
 
-	/**
+    /**
+     * Tag for the color picker dialog fragment
+     */
+    public static final String COLOR_PICKER_DIALOG_TAG = "color_picker_dialog";
+
+    /**
 	 * EditText for the name of the account to be created/edited
 	 */
 	private EditText mNameEditText;
@@ -89,17 +103,83 @@ public class AddAccountFragment extends SherlockFragment {
 	 */
 	private Account mAccount = null;
 
-	private Cursor mCursor;
-	
-	private SimpleCursorAdapter mCursorAdapter;
-	
+    /**
+     * Cursor which will hold set of eligible parent accounts
+     */
+	private Cursor mParentAccountCursor;
+
+    /**
+     * SimpleCursorAdapter for the parent account spinner
+     * @see QualifiedAccountNameCursorAdapter
+     */
+	private SimpleCursorAdapter mParentAccountCursorAdapter;
+
+    /**
+     * Spinner for parent account list
+     */
 	private Spinner mParentAccountSpinner;
 
+    /**
+     * Checkbox which activates the parent account spinner when selected
+     * Leaving this unchecked means it is a top-level root account
+     */
 	private CheckBox mParentCheckBox;
 
+    /**
+     * Spinner for the account type
+     * @see org.gnucash.android.data.Account.AccountType
+     */
     private Spinner mAccountTypeSpinner;
 
-	/**
+    /**
+     * Checkbox for activating the default transfer account spinner
+     */
+    private CheckBox mDefaultTransferAccountCheckBox;
+
+    /**
+     * Spinner for selecting the default transfer account
+     */
+    private Spinner mDefaulTransferAccountSpinner;
+
+    /**
+     * Cursor holding data set of eligible transfer accounts
+     */
+    private Cursor mDefaultTransferAccountCursor;
+
+    /**
+     * Checkbox indicating if account is a placeholder account
+     */
+    private CheckBox mPlaceholderCheckBox;
+
+    /**
+     * Cursor adapter which binds to the spinner for default transfer account
+     */
+    private SimpleCursorAdapter mDefaultTransferAccountCursorAdapter;
+
+    /**
+     * Flag indicating if double entry transactions are enabled
+     */
+    private boolean mUseDoubleEntry;
+
+    /**
+     * Default to transparent
+     */
+    private String mSelectedColor = null;
+
+    /**
+     * Trigger for color picker dialog
+     */
+    private ColorSquare mColorSquare;
+
+    private ColorPickerSwatch.OnColorSelectedListener mColorSelectedListener = new ColorPickerSwatch.OnColorSelectedListener() {
+        @Override
+        public void onColorSelected(int color) {
+            mColorSquare.setBackgroundColor(color);
+            mSelectedColor = String.format("#%06X", (0xFFFFFF & color));
+        }
+    };
+
+    /**
 	 * Default constructor
 	 * Required, else the app crashes on screen rotation
 	 */
@@ -125,6 +205,9 @@ public class AddAccountFragment extends SherlockFragment {
         if (mAccountsDbAdapter == null){
             mAccountsDbAdapter = new AccountsDbAdapter(getSherlockActivity());
         }
+
+        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        mUseDoubleEntry = sharedPrefs.getBoolean(getString(R.string.key_use_double_entry), false);
 	}
 	
 	/**
@@ -140,11 +223,12 @@ public class AddAccountFragment extends SherlockFragment {
 		mNameEditText.requestFocus();
 
         mAccountTypeSpinner = (Spinner) view.findViewById(R.id.input_account_type_spinner);
+        mPlaceholderCheckBox = (CheckBox) view.findViewById(R.id.checkbox_placeholder_account);
 
 		mParentAccountSpinner = (Spinner) view.findViewById(R.id.input_parent_account);
 		mParentAccountSpinner.setEnabled(false);
 		
-		mParentCheckBox = (CheckBox) view.findViewById(R.id.checkbox);
+		mParentCheckBox = (CheckBox) view.findViewById(R.id.checkbox_parent_account);
 		mParentCheckBox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 			
 			@Override
@@ -152,6 +236,25 @@ public class AddAccountFragment extends SherlockFragment {
 				mParentAccountSpinner.setEnabled(isChecked);
 			}
 		});
+
+        mDefaulTransferAccountSpinner = (Spinner) view.findViewById(R.id.input_default_transfer_account);
+        mDefaulTransferAccountSpinner.setEnabled(false);
+
+        mDefaultTransferAccountCheckBox = (CheckBox) view.findViewById(R.id.checkbox_default_transfer_account);
+        mDefaultTransferAccountCheckBox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                mDefaulTransferAccountSpinner.setEnabled(isChecked);
+            }
+        });
+
+        mColorSquare = (ColorSquare) view.findViewById(R.id.input_color_picker);
+        mColorSquare.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showColorPickerDialog();
+            }
+        });
 
 		return view;
 	}
@@ -180,6 +283,8 @@ public class AddAccountFragment extends SherlockFragment {
         //need to load the cursor adapters for the spinners before initializing the views
         loadParentAccountList();
         loadAccountTypesList();
+        loadDefaultTransferAccoutList();
+        setDefaultTransferAccountInputsVisible(mUseDoubleEntry);
 
         if (mAccount != null){
             initializeViewsWithAccount(mAccount);
@@ -204,9 +309,15 @@ public class AddAccountFragment extends SherlockFragment {
         long parentAccountId = mAccountsDbAdapter.getAccountID(account.getParentUID());
         setParentAccountSelection(parentAccountId);
 
-        String[] accountTypeEntries = getResources().getStringArray(R.array.account_type_entries);
-        int accountTypeIndex = Arrays.asList(accountTypeEntries).indexOf(account.getAccountType().name());
-        mAccountTypeSpinner.setSelection(accountTypeIndex);
+        if (mUseDoubleEntry) {
+            long doubleDefaultAccountId = mAccountsDbAdapter.getAccountID(account.getDefaultTransferAccountUID());
+            setDefaultTransferAccountSelection(doubleDefaultAccountId);
+        }
+
+        mPlaceholderCheckBox.setChecked(account.isPlaceholderAccount());
+        initializeColorSquarePreview(account.getColorHexCode());
+
+        setAccountTypeSelection(account.getAccountType());
     }
 
     /**
@@ -214,10 +325,52 @@ public class AddAccountFragment extends SherlockFragment {
      */
     private void initializeViews(){
         setSelectedCurrency(Money.DEFAULT_CURRENCY_CODE);
-
+        mColorSquare.setBackgroundColor(Color.LTGRAY);
         long parentAccountId = getArguments().getLong(AccountsListFragment.ARG_PARENT_ACCOUNT_ID);
         setParentAccountSelection(parentAccountId);
 
+        /* This snippet causes the child account to default to same color as parent. Not sure if we want that
+
+        if (parentAccountId > 0) {
+            //child accounts by default have same type as the parent
+            setAccountTypeSelection(mAccountsDbAdapter.getAccountType(parentAccountId));
+            String colorHex = mAccountsDbAdapter.getAccountColorCode(parentAccountId);
+            initializeColorSquarePreview(colorHex);
+            mSelectedColor = colorHex;
+        }
+        */
+    }
+
+    /**
+     * Initializes the preview of the color picker (color square) to the specified color
+     * @param colorHex Color of the format #rgb or #rrggbb
+     */
+    private void initializeColorSquarePreview(String colorHex){
+        if (colorHex != null)
+            mColorSquare.setBackgroundColor(Color.parseColor(colorHex));
+        else
+            mColorSquare.setBackgroundColor(Color.LTGRAY);
+    }
+
+    /**
+     * Selects the corresponding account type in the spinner
+     * @param accountType AccountType to be set
+     */
+    private void setAccountTypeSelection(Account.AccountType accountType){
+        String[] accountTypeEntries = getResources().getStringArray(R.array.account_type_entries);
+        int accountTypeIndex = Arrays.asList(accountTypeEntries).indexOf(accountType.name());
+        mAccountTypeSpinner.setSelection(accountTypeIndex);
+    }
+
+    /**
+     * Toggles the visibility of the default transfer account input fields.
+     * This field is irrelevant for users who do not use double accounting
+     */
+    private void setDefaultTransferAccountInputsVisible(boolean visible) {
+        final int visibility = visible ? View.VISIBLE : View.GONE;
+        final View view = getView();
+        view.findViewById(R.id.layout_default_transfer_account).setVisibility(visibility);
+        view.findViewById(R.id.label_default_transfer_account).setVisibility(visibility);
     }
 
     /**
@@ -242,15 +395,70 @@ public class AddAccountFragment extends SherlockFragment {
         } else
             return;
 
-        for (int pos = 0; pos < mCursorAdapter.getCount(); pos++) {
-            if (mCursorAdapter.getItemId(pos) == parentAccountId){
+        for (int pos = 0; pos < mParentAccountCursorAdapter.getCount(); pos++) {
+            if (mParentAccountCursorAdapter.getItemId(pos) == parentAccountId){
                 mParentAccountSpinner.setSelection(pos);
                 break;
             }
         }
     }
 
-	@Override
+    /**
+     * Selects the account with ID <code>parentAccountId</code> in the default transfer account spinner
+     * @param defaultTransferAccountId Record ID of parent account to be selected
+     */
+    private void setDefaultTransferAccountSelection(long defaultTransferAccountId){
+        if (defaultTransferAccountId > 0){
+            mDefaultTransferAccountCheckBox.setChecked(true);
+            mDefaulTransferAccountSpinner.setEnabled(true);
+        } else
+            return;
+
+        for (int pos = 0; pos < mDefaultTransferAccountCursorAdapter.getCount(); pos++) {
+            if (mDefaultTransferAccountCursorAdapter.getItemId(pos) == defaultTransferAccountId){
+                mDefaulTransferAccountSpinner.setSelection(pos);
+                break;
+            }
+        }
+    }
+
+    /**
+     * Returns an array of colors used for accounts.
+     * The array returned has the actual color values and not the resource ID.
+     * @return Integer array of colors used for accounts
+     */
+    private int[] getAccountColorOptions(){
+        Resources res = getResources();
+        TypedArray colorTypedArray = res.obtainTypedArray(R.array.account_colors);
+        int[] colorOptions = new int[colorTypedArray.length()];
+        for (int i = 0; i < colorTypedArray.length(); i++) {
+             int color = colorTypedArray.getColor(i, R.color.title_green);
+             colorOptions[i] = color;
+        }
+        return colorOptions;
+    }
+    /**
+     * Shows the color picker dialog
+     */
+    private void showColorPickerDialog(){
+        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+        int currentColor = Color.LTGRAY;
+        if (mAccount != null){
+            String accountColor = mAccount.getColorHexCode();
+            if (accountColor != null){
+                currentColor = Color.parseColor(accountColor);
+            }
+        }
+
+        ColorPickerDialog colorPickerDialogFragment = ColorPickerDialog.newInstance(
+                R.string.color_picker_default_title,
+                getAccountColorOptions(),
+                currentColor, 4, 12);
+        colorPickerDialogFragment.setOnColorSelectedListener(mColorSelectedListener);
+        colorPickerDialogFragment.show(fragmentManager, COLOR_PICKER_DIALOG_TAG);
+    }
+
+    @Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {		
 		super.onCreateOptionsMenu(menu, inflater);
 		inflater.inflate(R.menu.default_save_actions, menu);
@@ -272,6 +480,26 @@ public class AddAccountFragment extends SherlockFragment {
 	}
 
     /**
+     * Initializes the default transfer account spinner with eligible accounts
+     */
+    private void loadDefaultTransferAccoutList(){
+        String condition = DatabaseHelper.KEY_ROW_ID + " != " + mSelectedAccountId
+                + " AND " + DatabaseHelper.KEY_PLACEHOLDER + "=0"
+                + " AND " + DatabaseHelper.KEY_UID + " != '" + mAccountsDbAdapter.getGnuCashRootAccountUID() + "'";
+        mDefaultTransferAccountCursor = mAccountsDbAdapter.fetchAccounts(condition);
+
+        if (mDefaultTransferAccountCursor == null || mDefaulTransferAccountSpinner.getCount() <= 0){
+            setDefaultTransferAccountInputsVisible(false);
+        }
+
+        mDefaultTransferAccountCursorAdapter = new QualifiedAccountNameCursorAdapter(getActivity(),
+                android.R.layout.simple_spinner_item,
+                mDefaultTransferAccountCursor);
+        mParentAccountCursorAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        mDefaulTransferAccountSpinner.setAdapter(mParentAccountCursorAdapter);
+    }
+
+    /**
      * Loads the list of possible accounts which can be set as a parent account and initializes the spinner
      */
 	private void loadParentAccountList(){
@@ -284,19 +512,19 @@ public class AddAccountFragment extends SherlockFragment {
             //TODO: Limit all descendants of the account to eliminate the possibility of cyclic hierarchy
         }
 
-		mCursor = mAccountsDbAdapter.fetchAccounts(condition);
-		if (mCursor == null || mCursor.getCount() <= 0){
+		mParentAccountCursor = mAccountsDbAdapter.fetchAccounts(condition);
+		if (mParentAccountCursor == null || mParentAccountCursor.getCount() <= 0){
             final View view = getView();
             view.findViewById(R.id.layout_parent_account).setVisibility(View.GONE);
             view.findViewById(R.id.label_parent_account).setVisibility(View.GONE);
         }
 
-		mCursorAdapter = new QualifiedAccountNameCursorAdapter(
+		mParentAccountCursorAdapter = new QualifiedAccountNameCursorAdapter(
 				getActivity(), 
-				android.R.layout.simple_spinner_item, 
-				mCursor);
-		mCursorAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);		
-		mParentAccountSpinner.setAdapter(mCursorAdapter);
+				android.R.layout.simple_spinner_item,
+                mParentAccountCursor);
+		mParentAccountCursorAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		mParentAccountSpinner.setAdapter(mParentAccountCursorAdapter);
 	}
 
     /**
@@ -333,8 +561,8 @@ public class AddAccountFragment extends SherlockFragment {
 	@Override
 	public void onDestroy() {
 		super.onDestroyView();
-		if (mCursor != null)
-			mCursor.close();
+		if (mParentAccountCursor != null)
+			mParentAccountCursor.close();
 		//do not close the database adapter. We got it from the activity, 
 		//the activity will take care of it.
 	}
@@ -361,12 +589,24 @@ public class AddAccountFragment extends SherlockFragment {
         String[] accountTypeEntries = getResources().getStringArray(R.array.account_type_entries);
         mAccount.setAccountType(Account.AccountType.valueOf(accountTypeEntries[selectedAccountType]));
 
+        mAccount.setPlaceHolderFlag(mPlaceholderCheckBox.isChecked());
+        mAccount.setColorCode(mSelectedColor);
+
 		if (mParentCheckBox.isChecked()){
 			long id = mParentAccountSpinner.getSelectedItemId();
 			mAccount.setParentUID(mAccountsDbAdapter.getAccountUID(id));
 		} else {
+            //need to do this explicitly in case user removes parent account
 			mAccount.setParentUID(null);
 		}
+
+        if (mDefaultTransferAccountCheckBox.isChecked()){
+            long id = mDefaulTransferAccountSpinner.getSelectedItemId();
+            mAccount.setDefaultTransferAccountUID(mAccountsDbAdapter.getAccountUID(id));
+        } else {
+            //explicitly set in case of removal of default account
+            mAccount.setDefaultTransferAccountUID(null);
+        }
 		
 		if (mAccountsDbAdapter == null)
 			mAccountsDbAdapter = new AccountsDbAdapter(getActivity());

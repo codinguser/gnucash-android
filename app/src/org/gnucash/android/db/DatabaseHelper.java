@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012 Ngewi Fet <ngewif@gmail.com>
+ * Copyright (c) 2012 - 2014 Ngewi Fet <ngewif@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,7 +46,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	 * Database version.
 	 * With any change to the database schema, this number must increase
 	 */
-	private static final int DATABASE_VERSION = 3;
+	private static final int DATABASE_VERSION = 5;
 	
 	/**
 	 * Name of accounts table
@@ -107,7 +107,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	 * Account which the origin account this transaction in double entry mode
 	 */
 	public static final String KEY_DOUBLE_ENTRY_ACCOUNT_UID 	= "double_account_uid";
-	
+
+    /**
+     * Each account has a default target for transfers when in double entry mode unless otherwise specified.
+     * This key holds the UID of the default transfer account for double entries.
+     */
+    public static final String KEY_DEFAULT_TRANSFER_ACCOUNT_UID = "default_transfer_account_uid";
+
+    /**
+     * Color code for the account
+     */
+    public static final String KEY_COLOR_CODE = "color_code";
+
 	/**
 	 * Transaction description database column
 	 */
@@ -124,7 +135,21 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	 */
 	public static final String KEY_EXPORTED		= "is_exported";
 
+    /**
+     * Flag for placeholder accounts.
+     * Placeholder accounts cannot directly contain transactions
+     */
     public static final String KEY_PLACEHOLDER  = "is_placeholder";
+
+    /**
+     * This is a key to identify a transaction as part of a recurring transaction series.
+     */
+    public static final String KEY_RECURRENCE_PERIOD = "recurrence_period";
+
+    /**
+     * Marks an account as a favourite account
+     */
+    public static final String KEY_FAVORITE = "favorite";
 
 	/**********************************************************************************************************
 	//if you modify the order of the columns (i.e. the way they are created), 
@@ -141,7 +166,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			+ KEY_TYPE 	+ " varchar(255) not null, "			
 			+ KEY_CURRENCY_CODE + " varchar(255) not null, "
 			+ KEY_PARENT_ACCOUNT_UID + " varchar(255), "
-            + KEY_PLACEHOLDER + " tinyint default 0, "
+            + KEY_PLACEHOLDER   + " tinyint default 0, "
+            + KEY_DEFAULT_TRANSFER_ACCOUNT_UID + " varchar(255), "
+            + KEY_COLOR_CODE    + " varchar(255), "
+            + KEY_FAVORITE 		+ " tinyint default 0, "
 			+ "UNIQUE (" + KEY_UID + ")"	
 			+ ");";
 	
@@ -159,6 +187,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			+ KEY_ACCOUNT_UID 	+ " varchar(255) not null, "			
 			+ KEY_EXPORTED 		+ " tinyint default 0, "
 			+ KEY_DOUBLE_ENTRY_ACCOUNT_UID 	+ " varchar(255), "
+            + KEY_RECURRENCE_PERIOD         + " integer default 0, "
 			+ "FOREIGN KEY (" 	+ KEY_ACCOUNT_UID + ") REFERENCES " + ACCOUNTS_TABLE_NAME + " (" + KEY_UID + "), "
 			+ "FOREIGN KEY (" 	+ KEY_DOUBLE_ENTRY_ACCOUNT_UID + ") REFERENCES " + ACCOUNTS_TABLE_NAME + " (" + KEY_UID + "), "
 			+ "UNIQUE (" 		+ KEY_UID + ") " 
@@ -187,7 +216,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		if (oldVersion < newVersion){
 			//introducing double entry accounting
 			Log.i(TAG, "Upgrading database to version " + newVersion);
-			if (oldVersion == 1 && newVersion == 2){		
+			if (oldVersion == 1 && newVersion >= 2){
 				Log.i(TAG, "Adding column for splitting transactions");
 				String addColumnSql = "ALTER TABLE " + TRANSACTIONS_TABLE_NAME + 
 									" ADD COLUMN " + KEY_DOUBLE_ENTRY_ACCOUNT_UID + " varchar(255)";
@@ -199,25 +228,57 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	
 				db.execSQL(addColumnSql);
 				db.execSQL(addParentAccountSql);
-			}
-			
-			//update account types to GnuCash account types
-			//since all were previously CHECKING, now all will be CASH
-			Log.i(TAG, "Converting account types to GnuCash compatible types");
-			ContentValues cv = new ContentValues();
-			cv.put(KEY_TYPE, AccountType.CASH.toString());
-			db.update(ACCOUNTS_TABLE_NAME, cv, null, null);
 
-            if (oldVersion == 2 && newVersion == 3){
+                //update account types to GnuCash account types
+                //since all were previously CHECKING, now all will be CASH
+                Log.i(TAG, "Converting account types to GnuCash compatible types");
+                ContentValues cv = new ContentValues();
+                cv.put(KEY_TYPE, AccountType.CASH.toString());
+                db.update(ACCOUNTS_TABLE_NAME, cv, null, null);
+
+                oldVersion = 2;
+            }
+			
+
+            if (oldVersion == 2 && newVersion >= 3){
                 Log.i(TAG, "Adding flag for placeholder accounts");
                 String addPlaceHolderAccountFlagSql = "ALTER TABLE " + ACCOUNTS_TABLE_NAME +
                         " ADD COLUMN " + KEY_PLACEHOLDER + " tinyint default 0";
 
                 db.execSQL(addPlaceHolderAccountFlagSql);
+                oldVersion = 3;
             }
-		} else {
-			Log.i(TAG, "Cannot downgrade database.");
-		}
-	}
 
+            if (oldVersion == 3 && newVersion >= 4){
+                Log.i(TAG, "Updating database to version 4");
+                String addRecurrencePeriod = "ALTER TABLE " + TRANSACTIONS_TABLE_NAME +
+                        " ADD COLUMN " + KEY_RECURRENCE_PERIOD + " integer default 0";
+
+                String addDefaultTransferAccount = "ALTER TABLE " + ACCOUNTS_TABLE_NAME
+                        + " ADD COLUMN " + KEY_DEFAULT_TRANSFER_ACCOUNT_UID + " varchar(255)";
+
+                String addAccountColor = " ALTER TABLE " + ACCOUNTS_TABLE_NAME
+                        + " ADD COLUMN " + KEY_COLOR_CODE + " varchar(255)";
+
+                db.execSQL(addRecurrencePeriod);
+                db.execSQL(addDefaultTransferAccount);
+                db.execSQL(addAccountColor);
+
+                oldVersion = 4;
+            }
+
+            if (oldVersion == 4 && newVersion >= 5){
+                Log.i(TAG, "Upgrading database to version 5");
+                String addAccountFavorite = " ALTER TABLE " + ACCOUNTS_TABLE_NAME
+                        + " ADD COLUMN " + KEY_FAVORITE + " tinyint default 0";
+                db.execSQL(addAccountFavorite);
+
+                oldVersion = 5;
+            }
+		}
+
+        if (oldVersion != newVersion) {
+            Log.i(TAG, "Upgrade for the database failed. The Database is currently at version " + oldVersion);
+        }
+	}
 }

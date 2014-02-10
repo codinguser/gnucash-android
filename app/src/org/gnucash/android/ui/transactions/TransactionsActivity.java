@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012 Ngewi Fet <ngewif@gmail.com>
+ * Copyright (c) 2012 - 2014 Ngewi Fet <ngewif@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,25 +19,34 @@ package org.gnucash.android.ui.transactions;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.support.v4.widget.ResourceCursorAdapter;
-import android.support.v4.widget.SimpleCursorAdapter;
 import android.util.Log;
+import android.util.SparseArray;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.ActionBar.OnNavigationListener;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
+import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
+import com.viewpagerindicator.TitlePageIndicator;
 import org.gnucash.android.R;
 import org.gnucash.android.data.Account;
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.DatabaseAdapter;
 import org.gnucash.android.db.DatabaseHelper;
+import org.gnucash.android.ui.Refreshable;
 import org.gnucash.android.ui.accounts.AccountsActivity;
 import org.gnucash.android.ui.accounts.AccountsListFragment;
 import org.gnucash.android.util.OnAccountClickedListener;
@@ -49,7 +58,7 @@ import org.gnucash.android.util.QualifiedAccountNameCursorAdapter;
  * @author Ngewi Fet <ngewif@gmail.com>
  */
 public class TransactionsActivity extends SherlockFragmentActivity implements
-        OnAccountClickedListener, OnTransactionClickedListener{
+        Refreshable, OnAccountClickedListener, OnTransactionClickedListener{
 
 	/**
 	 * Logging tag
@@ -67,6 +76,26 @@ public class TransactionsActivity extends SherlockFragmentActivity implements
 	 */
 	public static final String FRAGMENT_NEW_TRANSACTION 	= "new_transaction";
     private static final int REQUEST_EDIT_ACCOUNT           = 0x21;
+
+    /**
+     * ViewPager index for sub-accounts fragment
+     */
+    private static final int INDEX_SUB_ACCOUNTS_FRAGMENT     = 0;
+
+    /**
+     * ViewPager index for transactions fragment
+     */
+    private static final int INDEX_TRANSACTIONS_FRAGMENT     = 1;
+
+    /**
+     * Number of pages to show
+     */
+    private static final int DEFAULT_NUM_PAGES = 2;
+
+    /**
+     * Menu item for marking an account as a favorite
+     */
+    MenuItem mFavoriteAccountMenu;
 
     /**
 	 * Database ID of {@link Account} whose transactions are displayed 
@@ -88,21 +117,21 @@ public class TransactionsActivity extends SherlockFragmentActivity implements
     private AccountsDbAdapter mAccountsDbAdapter;
 
     /**
-     * Spinner adapter for the action bar navigation list of accounts
+     * This is the last known color for the title indicator.
+     * This is used to remember the color of the top level account if the child account doesn't have one.
      */
-    private SpinnerAdapter mSpinnerAdapter;
+    public static int sLastTitleColor = -1;
 
-    TextView mSectionHeaderSubAccounts;
-    TextView mSectionHeaderTransactions;
-    View mSubAccountsContainer;
-    View mTransactionsContainer;
+    private TextView mSectionHeaderTransactions;
+    private TitlePageIndicator mTitlePageIndicator;
+
+    private SparseArray<Refreshable> mFragmentPageReferenceMap = new SparseArray<Refreshable>();
 
 	private OnNavigationListener mTransactionListNavigationListener = new OnNavigationListener() {
 
 		  @Override
 		  public boolean onNavigationItemSelected(int position, long itemId) {
 			mAccountId = itemId;
-            updateSubAccountsView();
 
             FragmentManager fragmentManager = getSupportFragmentManager();
 
@@ -116,68 +145,157 @@ public class TransactionsActivity extends SherlockFragmentActivity implements
 		    }
 
             refresh();
-
             return true;
 		  }
 	};
 
+
     /**
-     * Refreshes the fragments currently in the transactions activity
+     * Adapter for managing the sub-account and transaction fragment pages in the accounts view
      */
-    private void refresh() {
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        TransactionsListFragment transactionsListFragment = (TransactionsListFragment) fragmentManager
-                .findFragmentByTag(FRAGMENT_TRANSACTIONS_LIST);
-        if (transactionsListFragment != null) {
-            transactionsListFragment.refreshList(mAccountId);
+    private class AccountViewPagerAdapter extends FragmentStatePagerAdapter {
+
+        public AccountViewPagerAdapter(FragmentManager fm){
+            super(fm);
         }
 
-        AccountsListFragment subAccountsListFragment = (AccountsListFragment) fragmentManager
-                .findFragmentByTag(AccountsActivity.FRAGMENT_ACCOUNTS_LIST);
-        if (subAccountsListFragment != null) {
-            subAccountsListFragment.refreshList(mAccountId);
-        } else {
-            subAccountsListFragment = new AccountsListFragment();
+        @Override
+        public Fragment getItem(int i) {
+            if (isPlaceHolderAccount()){
+                Fragment transactionsListFragment = prepareSubAccountsListFragment();
+                mFragmentPageReferenceMap.put(i, (Refreshable) transactionsListFragment);
+                return transactionsListFragment;
+            }
+
+            Fragment currentFragment;
+            switch (i){
+                case INDEX_SUB_ACCOUNTS_FRAGMENT:
+                    currentFragment = prepareSubAccountsListFragment();
+                    break;
+
+                case INDEX_TRANSACTIONS_FRAGMENT:
+                default:
+                    currentFragment = prepareTransactionsListFragment();
+                    break;
+            }
+
+            mFragmentPageReferenceMap.put(i, (Refreshable)currentFragment);
+            return currentFragment;
+        }
+
+        @Override
+        public void destroyItem(ViewGroup container, int position, Object object) {
+            super.destroyItem(container, position, object);
+            mFragmentPageReferenceMap.remove(position);
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            if (isPlaceHolderAccount())
+                return getString(R.string.section_header_subaccounts);
+
+            switch (position){
+                case INDEX_SUB_ACCOUNTS_FRAGMENT:
+                    return getString(R.string.section_header_subaccounts);
+
+                case INDEX_TRANSACTIONS_FRAGMENT:
+                default:
+                    return getString(R.string.section_header_transactions);
+            }
+        }
+
+        @Override
+        public int getCount() {
+            if (isPlaceHolderAccount())
+                return 1;
+            else
+                return DEFAULT_NUM_PAGES;
+        }
+
+        /**
+         * Creates and initializes the fragment for displaying sub-account list
+         * @return {@link AccountsListFragment} initialized with the sub-accounts
+         */
+        private AccountsListFragment prepareSubAccountsListFragment(){
+            AccountsListFragment subAccountsListFragment = new AccountsListFragment();
             Bundle args = new Bundle();
             args.putLong(AccountsListFragment.ARG_PARENT_ACCOUNT_ID, mAccountId);
             subAccountsListFragment.setArguments(args);
-            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            fragmentTransaction.replace(R.id.sub_accounts_container, subAccountsListFragment, AccountsActivity.FRAGMENT_ACCOUNTS_LIST);
-            fragmentTransaction.commit();
+            return subAccountsListFragment;
+        }
+
+        /**
+         * Creates and initializes fragment for displaying transactions
+         * @return {@link TransactionsListFragment} initialized with the current account transactions
+         */
+        private TransactionsListFragment prepareTransactionsListFragment(){
+            TransactionsListFragment transactionsListFragment = new TransactionsListFragment();
+            Bundle args = new Bundle();
+            args.putLong(TransactionsListFragment.SELECTED_ACCOUNT_ID,
+                    mAccountId);
+            transactionsListFragment.setArguments(args);
+            Log.i(TAG, "Opening transactions for account id " +  mAccountId);
+            return transactionsListFragment;
         }
     }
-				
+
+    /**
+     * Returns <code>true</code> is the current account is a placeholder account, <code>false</code> otherwise.
+     * @return <code>true</code> is the current account is a placeholder account, <code>false</code> otherwise.
+     */
+    private boolean isPlaceHolderAccount(){
+        return mAccountsDbAdapter.isPlaceholderAccount(mAccountId);
+    }
+
+    /**
+     * Refreshes the fragments currently in the transactions activity
+     */
+    @Override
+    public void refresh(long accountId) {
+        for (int i = 0; i < mFragmentPageReferenceMap.size(); i++) {
+            mFragmentPageReferenceMap.valueAt(i).refresh(accountId);
+        }
+        mTitlePageIndicator.notifyDataSetChanged();
+    }
+
+    @Override
+    public void refresh(){
+        refresh(mAccountId);
+        setTitleIndicatorColor();
+    }
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_transactions);
 
-        mSectionHeaderSubAccounts = (TextView) findViewById(R.id.section_header_sub_accounts);
+        ViewPager pager = (ViewPager) findViewById(R.id.pager);
+        mTitlePageIndicator = (TitlePageIndicator) findViewById(R.id.titles);
         mSectionHeaderTransactions = (TextView) findViewById(R.id.section_header_transactions);
-        mSubAccountsContainer = findViewById(R.id.sub_accounts_container);
-        mTransactionsContainer = findViewById(R.id.transactions_container);
 
-		final Intent intent = getIntent();
-		mAccountId = intent.getLongExtra(
-				TransactionsListFragment.SELECTED_ACCOUNT_ID, -1);
+        if (sLastTitleColor == -1) //if this is first launch of app. Previous launches would have set the color already
+            sLastTitleColor = getResources().getColor(R.color.title_green);
 
-		setupActionBarNavigation();
-		
-		if (intent.getAction().equals(Intent.ACTION_INSERT_OR_EDIT)) {
-			long transactionId = intent.getLongExtra(
-					NewTransactionFragment.SELECTED_TRANSACTION_ID, -1);
-            Bundle args = new Bundle();
-            if (transactionId > 0) {
-                mSectionHeaderTransactions.setText(R.string.title_edit_transaction);
-                args.putLong(NewTransactionFragment.SELECTED_TRANSACTION_ID, transactionId);
-                args.putLong(TransactionsListFragment.SELECTED_ACCOUNT_ID, mAccountId);
-            } else {
-                mSectionHeaderTransactions.setText(R.string.title_add_transaction);
-                args.putLong(TransactionsListFragment.SELECTED_ACCOUNT_ID, mAccountId);
-            }
-            showTransactionFormFragment(args);
+		mAccountId = getIntent().getLongExtra(
+                TransactionsListFragment.SELECTED_ACCOUNT_ID, -1);
+
+        mAccountsDbAdapter = new AccountsDbAdapter(this);
+
+        setupActionBarNavigation();
+
+		if (getIntent().getAction().equals(Intent.ACTION_INSERT_OR_EDIT)) {
+            pager.setVisibility(View.GONE);
+            mTitlePageIndicator.setVisibility(View.GONE);
+
+            initializeCreateOrEditTransaction();
         } else {	//load the transactions list
-            showTransactionsList();
+            mSectionHeaderTransactions.setVisibility(View.GONE);
+
+            PagerAdapter pagerAdapter = new AccountViewPagerAdapter(getSupportFragmentManager());
+            pager.setAdapter(pagerAdapter);
+            mTitlePageIndicator.setViewPager(pager);
+
+            pager.setCurrentItem(INDEX_TRANSACTIONS_FRAGMENT);
 		}
 
 		// done creating, activity now running
@@ -185,13 +303,54 @@ public class TransactionsActivity extends SherlockFragmentActivity implements
 	}
 
     /**
+     * Loads the fragment for creating/editing transactions and initializes it to be displayed
+     */
+    private void initializeCreateOrEditTransaction() {
+        long transactionId = getIntent().getLongExtra(NewTransactionFragment.SELECTED_TRANSACTION_ID, -1);
+        Bundle args = new Bundle();
+        if (transactionId > 0) {
+            mSectionHeaderTransactions.setText(R.string.title_edit_transaction);
+            args.putLong(NewTransactionFragment.SELECTED_TRANSACTION_ID, transactionId);
+            args.putLong(TransactionsListFragment.SELECTED_ACCOUNT_ID, mAccountId);
+        } else {
+            mSectionHeaderTransactions.setText(R.string.title_add_transaction);
+            args.putLong(TransactionsListFragment.SELECTED_ACCOUNT_ID, mAccountId);
+        }
+        mSectionHeaderTransactions.setBackgroundColor(sLastTitleColor);
+        showTransactionFormFragment(args);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        setTitleIndicatorColor();
+    }
+
+    /**
+     * Sets the color for the ViewPager title indicator to match the account color
+     */
+    private void setTitleIndicatorColor() {
+        //Basically, if we are in a top level account, use the default title color.
+        //but propagate a parent account's title color to children who don't have own color
+        String colorCode = mAccountsDbAdapter.getAccountColorCode(mAccountId);
+        if (colorCode != null){
+            sLastTitleColor = Color.parseColor(colorCode);
+        }
+
+        mTitlePageIndicator.setSelectedColor(sLastTitleColor);
+        mTitlePageIndicator.setTextColor(sLastTitleColor);
+        mTitlePageIndicator.setFooterColor(sLastTitleColor);
+        mSectionHeaderTransactions.setBackgroundColor(sLastTitleColor);
+    }
+
+    /**
 	 * Set up action bar navigation list and listener callbacks
 	 */
 	private void setupActionBarNavigation() {
 		// set up spinner adapter for navigation list
-		mAccountsDbAdapter = new AccountsDbAdapter(this);
 		Cursor accountsCursor = mAccountsDbAdapter.fetchAllRecords();
-		mSpinnerAdapter = new QualifiedAccountNameCursorAdapter(getSupportActionBar().getThemedContext(),
+
+        SpinnerAdapter mSpinnerAdapter = new QualifiedAccountNameCursorAdapter(getSupportActionBar().getThemedContext(),
                 R.layout.sherlock_spinner_item, accountsCursor);
 		((ResourceCursorAdapter) mSpinnerAdapter)
 				.setDropDownViewResource(R.layout.sherlock_spinner_dropdown_item);
@@ -212,7 +371,6 @@ public class TransactionsActivity extends SherlockFragmentActivity implements
 		// set the selected item in the spinner
 		int i = 0;
 		Cursor accountsCursor = mAccountsDbAdapter.fetchAllRecords();
-//		boolean cursorMoved = accountsCursor.moveToFirst();
         while (accountsCursor.moveToNext()) {
             long id = accountsCursor.getLong(DatabaseAdapter.COLUMN_ROW_ID);
             if (mAccountId == id) {
@@ -224,25 +382,22 @@ public class TransactionsActivity extends SherlockFragmentActivity implements
         accountsCursor.close();
 	}
 
-    /**
-     * Toggles visibility of the sub-accounts fragment depending on if there are sub-accounts to display or not.
-     */
-    public void updateSubAccountsView() {
-        final String action = getIntent().getAction();
-        if (action != null && action.equals(Intent.ACTION_INSERT_OR_EDIT))
-            return;
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        mFavoriteAccountMenu = menu.findItem(R.id.menu_favorite_account);
+        MenuItem favoriteAccountMenuItem = menu.findItem(R.id.menu_favorite_account);
 
-        int subAccountCount = mAccountsDbAdapter.getSubAccountCount(mAccountId);
-        if (subAccountCount > 0) {
-            mSubAccountsContainer.setVisibility(View.VISIBLE);
-            mSectionHeaderSubAccounts.setVisibility(View.VISIBLE);
-            String subAccountSectionText = getResources().getQuantityString(
-                    R.plurals.label_sub_accounts, subAccountCount, subAccountCount);
-            mSectionHeaderSubAccounts.setText(subAccountSectionText);
-        } else {
-            mSectionHeaderSubAccounts.setVisibility(View.GONE);
-            mSubAccountsContainer.setVisibility(View.GONE);
-        }
+        if (favoriteAccountMenuItem == null) //when the activity is used to edit a transaction
+            return super.onPrepareOptionsMenu(menu);
+
+        AccountsDbAdapter accountsDbAdapter = new AccountsDbAdapter(this);
+        boolean isFavoriteAccount = accountsDbAdapter.isFavoriteAccount(mAccountId);
+        accountsDbAdapter.close();
+
+        int favoriteIcon = isFavoriteAccount ? android.R.drawable.btn_star_big_on : android.R.drawable.btn_star_big_off;
+        favoriteAccountMenuItem.setIcon(favoriteIcon);
+        return super.onPrepareOptionsMenu(menu);
+
     }
 
     @Override
@@ -259,6 +414,15 @@ public class TransactionsActivity extends SherlockFragmentActivity implements
 	        	finish();
 	        }
 	        return true;
+
+            case R.id.menu_favorite_account:
+                AccountsDbAdapter accountsDbAdapter = new AccountsDbAdapter(this);
+                boolean isFavorite = accountsDbAdapter.isFavoriteAccount(mAccountId);
+                //toggle favorite preference
+                accountsDbAdapter.updateAccount(mAccountId, DatabaseHelper.KEY_FAVORITE, isFavorite ? "0" : "1");
+                accountsDbAdapter.close();
+                supportInvalidateOptionsMenu();
+                return true;
 
             case R.id.menu_edit_account:
                 Intent editAccountIntent = new Intent(this, AccountsActivity.class);
@@ -303,49 +467,19 @@ public class TransactionsActivity extends SherlockFragmentActivity implements
 	public void onNewTransactionClick(View v){
 		createNewTransaction(mAccountId);
 	}
-	
-	/**
-	 * Show list of transactions. Loads {@link TransactionsListFragment} 
-	 */
-	protected void showTransactionsList(){
-        FragmentManager fragmentManager = getSupportFragmentManager();
 
-        FragmentTransaction fragmentTransaction = fragmentManager
-                .beginTransaction();
 
-        int subAccountCount = mAccountsDbAdapter.getSubAccountCount(mAccountId);
-        boolean isPlaceholderAccount = mAccountsDbAdapter.isPlaceholderAccount(mAccountId);
+    /**
+     * Opens a dialog fragment to create a new account which is a sub account of the current account
+     * @param v View which triggered this callback
+     */
+    public void onNewAccountClick(View v) {
+        Intent addAccountIntent = new Intent(this, AccountsActivity.class);
+        addAccountIntent.setAction(Intent.ACTION_INSERT_OR_EDIT);
+        addAccountIntent.putExtra(AccountsListFragment.ARG_PARENT_ACCOUNT_ID, mAccountId);
+        startActivityForResult(addAccountIntent, REQUEST_EDIT_ACCOUNT);
+    }
 
-        if (subAccountCount > 0 || isPlaceholderAccount){
-            mSubAccountsContainer.setVisibility(View.VISIBLE);
-            mSectionHeaderSubAccounts.setVisibility(View.VISIBLE);
-            String subAccountSectionText = getResources().getQuantityString(R.plurals.label_sub_accounts, subAccountCount, subAccountCount);
-            mSectionHeaderSubAccounts.setText(subAccountSectionText);
-            AccountsListFragment subAccountsListFragment = new AccountsListFragment();
-            Bundle args = new Bundle();
-            args.putLong(AccountsListFragment.ARG_PARENT_ACCOUNT_ID, mAccountId);
-            subAccountsListFragment.setArguments(args);
-            fragmentTransaction.replace(R.id.sub_accounts_container, subAccountsListFragment, AccountsActivity.FRAGMENT_ACCOUNTS_LIST);
-        }
-
-        //only load transactions if it is not a placeholder account
-        if (!isPlaceholderAccount){
-            TransactionsListFragment transactionsListFragment = new TransactionsListFragment();
-            Bundle args = new Bundle();
-            args.putLong(TransactionsListFragment.SELECTED_ACCOUNT_ID,
-                    mAccountId);
-            transactionsListFragment.setArguments(args);
-            Log.i(TAG, "Opening transactions for account id " +  mAccountId);
-
-            fragmentTransaction.replace(R.id.transactions_container,
-                    transactionsListFragment, FRAGMENT_TRANSACTIONS_LIST);
-        } else {
-            mSectionHeaderTransactions.setVisibility(View.GONE);
-            mTransactionsContainer.setVisibility(View.GONE);
-        }
-        fragmentTransaction.commit();
-	}
-	
 	/**
 	 * Loads the transaction insert/edit fragment and passes the arguments
 	 * @param args Bundle arguments to be passed to the fragment

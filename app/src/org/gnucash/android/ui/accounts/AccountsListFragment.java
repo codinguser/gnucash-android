@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012 Ngewi Fet <ngewif@gmail.com>
+ * Copyright (c) 2012 - 2014 Ngewi Fet <ngewif@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.graphics.Rect;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -55,6 +56,7 @@ import org.gnucash.android.data.Account;
 import org.gnucash.android.data.Money;
 import org.gnucash.android.db.*;
 import org.gnucash.android.export.ExportDialogFragment;
+import org.gnucash.android.ui.Refreshable;
 import org.gnucash.android.ui.settings.SettingsActivity;
 import org.gnucash.android.ui.transactions.TransactionsActivity;
 import org.gnucash.android.ui.transactions.TransactionsListFragment;
@@ -69,21 +71,46 @@ import java.lang.ref.WeakReference;
  * @author Ngewi Fet <ngewif@gmail.com>
  */
 public class AccountsListFragment extends SherlockListFragment implements
+        Refreshable,
         LoaderCallbacks<Cursor>, OnItemLongClickListener,
         com.actionbarsherlock.widget.SearchView.OnQueryTextListener,
         com.actionbarsherlock.widget.SearchView.OnCloseListener {
 
+    /**
+     * Describes the kinds of accounts that should be loaded in the accounts list.
+     * This enhances reuse of the accounts list fragment
+     */
+    public enum DisplayMode {
+        TOP_LEVEL, RECENT, FAVORITES
+    }
+
+    /**
+     * Field indicating which kind of accounts to load.
+     * Default value is {@link DisplayMode#TOP_LEVEL}
+     */
+    private DisplayMode mDisplayMode = DisplayMode.TOP_LEVEL;
+
+    /**
+     * Request code for GnuCash account structure file to import
+     */
     public static final int REQUEST_PICK_ACCOUNTS_FILE = 0x1;
+
+    /**
+     * Request code for opening the account to edit
+     */
+    private static final int REQUEST_EDIT_ACCOUNT = 0x10;
+
     /**
      * Key for passing argument for the parent account ID.
      * When this argument is set, only sub-accounts of the account will be loaded.
      */
     public static final String ARG_PARENT_ACCOUNT_ID = "parent_account_id";
+
     /**
      * Logging tag
      */
     protected static final String TAG = "AccountsListFragment";
-    private static final int REQUEST_EDIT_ACCOUNT = 0x10;
+
 
     /**
      * {@link ListAdapter} for the accounts which will be bound to the list
@@ -119,7 +146,6 @@ public class AccountsListFragment extends SherlockListFragment implements
     /**
      * Database record ID of the account whose children will be loaded by the list fragment.
      * If no parent account is specified, then all top-level accounts are loaded.
-     * <p>This value is set in {@link #inSubAcccount()}, so always call that method first before using this value</p>
      */
     private long mParentAccountId = -1;
 
@@ -176,6 +202,12 @@ public class AccountsListFragment extends SherlockListFragment implements
         }
     };
 
+    public static AccountsListFragment newInstance(DisplayMode displayMode){
+        AccountsListFragment fragment = new AccountsListFragment();
+        fragment.mDisplayMode = displayMode;
+        return fragment;
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -216,8 +248,7 @@ public class AccountsListFragment extends SherlockListFragment implements
             actionbar.setDisplayHomeAsUpEnabled(false);
         }
 
-        if (!inSubAcccount())
-            setHasOptionsMenu(true);
+        setHasOptionsMenu(true);
 
         ListView lv = getListView();
         lv.setOnItemLongClickListener(this);
@@ -228,7 +259,7 @@ public class AccountsListFragment extends SherlockListFragment implements
     @Override
     public void onResume() {
         super.onResume();
-        refreshList();
+        refresh();
     }
 
     @Override
@@ -273,15 +304,7 @@ public class AccountsListFragment extends SherlockListFragment implements
         if (resultCode == Activity.RESULT_CANCELED)
             return;
 
-        refreshList();
-    }
-
-    /**
-     * Returns true if this fragment is currently rendering sub-accounts. false otherwise.
-     * @return true if this fragment is currently rendering sub-accounts. false otherwise
-     */
-    public boolean inSubAcccount(){
-        return mParentAccountId > 0;
+        refresh();
     }
 
     /**
@@ -293,28 +316,30 @@ public class AccountsListFragment extends SherlockListFragment implements
      */
     public void tryDeleteAccount(long rowId) {
         Account acc = mAccountsDbAdapter.getAccount(rowId);
-        if (acc.getTransactionCount() > 0) {
+        if (acc.getTransactionCount() > 0 || mAccountsDbAdapter.getSubAccountCount(rowId) > 0) {
             showConfirmationDialog(rowId);
         } else {
-            deleteAccount(rowId);
+            deleteAccount(rowId, false);
         }
     }
 
     /**
-     * Deletes an account and show a {@link Toast} notification on success
-     *
+     * Deletes an account and show a {@link Toast} notification on success.
+     * When an account is deleted, all it's child accounts will be reassigned as children to its parent account
      * @param rowId Record ID of the account to be deleted
      */
-    protected void deleteAccount(long rowId) {
+    protected void deleteAccount(long rowId, boolean deleteSubAccounts) {
         String accountUID = mAccountsDbAdapter.getAccountUID(rowId);
-        boolean deleted = mAccountsDbAdapter.destructiveDeleteAccount(rowId);
+        String parentUID    = mAccountsDbAdapter.getParentAccountUID(rowId);
+        boolean deleted     = deleteSubAccounts ?
+                mAccountsDbAdapter.recursiveDestructiveDelete(rowId)
+                : mAccountsDbAdapter.destructiveDeleteAccount(rowId);
         if (deleted) {
-            mAccountsDbAdapter.reassignParent(accountUID, null);
+            mAccountsDbAdapter.reassignParent(accountUID, parentUID);
             Toast.makeText(getActivity(), R.string.toast_account_deleted, Toast.LENGTH_SHORT).show();
             WidgetConfigurationActivity.updateAllWidgets(getActivity().getApplicationContext());
-            getLoaderManager().destroyLoader(0);
         }
-        refreshList();
+        refresh();
     }
 
     /**
@@ -341,20 +366,23 @@ public class AccountsListFragment extends SherlockListFragment implements
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.account_actions, menu);
+        if (mParentAccountId > 0)
+            inflater.inflate(R.menu.sub_account_actions, menu);
+        else {
+            inflater.inflate(R.menu.account_actions, menu);
+            // Associate searchable configuration with the SearchView
+            SearchManager searchManager =
+                    (SearchManager) getActivity().getSystemService(Context.SEARCH_SERVICE);
+            mSearchView =
+                    (com.actionbarsherlock.widget.SearchView) menu.findItem(R.id.menu_search).getActionView();
+            if (mSearchView == null)
+                return;
 
-        // Associate searchable configuration with the SearchView
-        SearchManager searchManager =
-                (SearchManager) getActivity().getSystemService(Context.SEARCH_SERVICE);
-        mSearchView =
-                (com.actionbarsherlock.widget.SearchView) menu.findItem(R.id.menu_search).getActionView();
-        if (mSearchView == null)
-            return;
-
-        mSearchView.setSearchableInfo(
-                searchManager.getSearchableInfo(getActivity().getComponentName()));
-        mSearchView.setOnQueryTextListener(this);
-        mSearchView.setOnCloseListener(this);
+            mSearchView.setSearchableInfo(
+                    searchManager.getSearchableInfo(getActivity().getComponentName()));
+            mSearchView.setOnQueryTextListener(this);
+            mSearchView.setOnCloseListener(this);
+        }
     }
 
     @Override
@@ -362,15 +390,14 @@ public class AccountsListFragment extends SherlockListFragment implements
         switch (item.getItemId()) {
 
             case R.id.menu_add_account:
-                showAddAccountFragment(0);
+                Intent addAccountIntent = new Intent(getActivity(), AccountsActivity.class);
+                addAccountIntent.setAction(Intent.ACTION_INSERT_OR_EDIT);
+                addAccountIntent.putExtra(AccountsListFragment.ARG_PARENT_ACCOUNT_ID, mParentAccountId);
+                startActivityForResult(addAccountIntent, REQUEST_EDIT_ACCOUNT);
                 return true;
 
             case R.id.menu_export:
                 showExportDialog();
-                return true;
-
-            case R.id.menu_settings:
-                startActivity(new Intent(getActivity(), SettingsActivity.class));
                 return true;
 
             default:
@@ -378,21 +405,20 @@ public class AccountsListFragment extends SherlockListFragment implements
         }
     }
 
-    public void refreshList(long parentAccountId) {
+    @Override
+    public void refresh(long parentAccountId) {
         getArguments().putLong(ARG_PARENT_ACCOUNT_ID, parentAccountId);
-        refreshList();
+        refresh();
     }
 
     /**
      * Refreshes the list by restarting the {@link DatabaseCursorLoader} associated
      * with the ListView
      */
-    public void refreshList() {
+    @Override
+    public void refresh() {
         getLoaderManager().restartLoader(0, null, this);
 
-        if (getActivity() instanceof TransactionsActivity){
-            ((TransactionsActivity)getActivity()).updateSubAccountsView();
-        }
 /*
         //TODO: Figure out a way to display account balances per currency
 		boolean doubleEntryActive = PreferenceManager.getDefaultSharedPreferences(getActivity())
@@ -478,7 +504,7 @@ public class AccountsListFragment extends SherlockListFragment implements
         if (mCurrentFilter != null){
             return new AccountsCursorLoader(getActivity(), mCurrentFilter);
         } else {
-            return new AccountsCursorLoader(this.getActivity(), accountId);
+            return new AccountsCursorLoader(this.getActivity(), accountId, mDisplayMode);
         }
     }
 
@@ -546,10 +572,12 @@ public class AccountsListFragment extends SherlockListFragment implements
         public Dialog onCreateDialog(Bundle savedInstanceState) {
             int title = getArguments().getInt("title");
             final long rowId = getArguments().getLong(TransactionsListFragment.SELECTED_ACCOUNT_ID);
-
-            return new AlertDialog.Builder(getActivity())
+            LayoutInflater layoutInflater = getSherlockActivity().getLayoutInflater();
+            final View dialogLayout = layoutInflater.inflate(R.layout.dialog_account_delete, (ViewGroup) getView());
+            AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity())
                     .setIcon(android.R.drawable.ic_delete)
                     .setTitle(title).setMessage(R.string.delete_account_confirmation_message)
+                    .setView(dialogLayout)
                     .setPositiveButton(R.string.alert_dialog_ok_delete,
                             new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int whichButton) {
@@ -559,21 +587,25 @@ public class AccountsListFragment extends SherlockListFragment implements
                                         accountsDbAdapter.deleteAllRecords();
                                         accountsDbAdapter.close();
                                         Toast.makeText(context, R.string.toast_all_accounts_deleted, Toast.LENGTH_SHORT).show();
-                                    } else
-                                        ((AccountsListFragment) getTargetFragment()).deleteAccount(rowId);
+                                    } else {
+                                        CheckBox deleteSubAccountsCheckBox = (CheckBox) dialogLayout
+                                                .findViewById(R.id.checkbox_delete_sub_accounts);
+                                        ((AccountsListFragment) getTargetFragment()).deleteAccount(rowId, deleteSubAccountsCheckBox.isChecked());
+                                    }
                                 }
-                            }
-                    )
+                            })
                     .setNegativeButton(R.string.alert_dialog_cancel,
                             new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int whichButton) {
                                     dismiss();
                                 }
                             }
-                    )
-                    .create();
+
+                    );
+            return dialogBuilder.create();
         }
-    }
+
+        }
 
     /**
      * Extends {@link DatabaseCursorLoader} for loading of {@link Account} from the
@@ -586,6 +618,7 @@ public class AccountsListFragment extends SherlockListFragment implements
     private static final class AccountsCursorLoader extends DatabaseCursorLoader {
         private long mParentAccountId = -1;
         private String mFilter;
+        private DisplayMode mDisplayMode = DisplayMode.TOP_LEVEL;
 
         /**
          * Initializes the loader to load accounts from the database.
@@ -594,9 +627,10 @@ public class AccountsListFragment extends SherlockListFragment implements
          * @param context Application context
          * @param parentAccountId Record ID of the parent account
          */
-        public AccountsCursorLoader(Context context, long parentAccountId) {
+        public AccountsCursorLoader(Context context, long parentAccountId, DisplayMode displayMode) {
             super(context);
             mParentAccountId = parentAccountId;
+            this.mDisplayMode = displayMode;
         }
 
         /**
@@ -622,8 +656,21 @@ public class AccountsListFragment extends SherlockListFragment implements
             } else {
                 if (mParentAccountId > 0)
                     cursor = ((AccountsDbAdapter) mDatabaseAdapter).fetchSubAccounts(mParentAccountId);
-                else
-                    cursor = ((AccountsDbAdapter) mDatabaseAdapter).fetchTopLevelAccounts();
+                else {
+                    switch (this.mDisplayMode){
+                        case RECENT:
+                            cursor = ((AccountsDbAdapter) mDatabaseAdapter).fetchRecentAccounts(10);
+                            break;
+                        case FAVORITES:
+                            cursor = ((AccountsDbAdapter) mDatabaseAdapter).fetchFavoriteAccounts();
+                            break;
+                        case TOP_LEVEL:
+                        default:
+                            cursor = ((AccountsDbAdapter) mDatabaseAdapter).fetchTopLevelAccounts();
+                            break;
+                    }
+                }
+
             }
 
             if (cursor != null)
@@ -672,8 +719,16 @@ public class AccountsListFragment extends SherlockListFragment implements
                     .findViewById(R.id.transactions_summary);
             new AccountBalanceTask(accountBalanceTextView, getActivity()).execute(accountId);
 
-            boolean isPlaceholderAccount = mAccountsDbAdapter.isPlaceholderAccount(accountId);
+            View colorStripView = v.findViewById(R.id.account_color_strip);
+            String accountColor = cursor.getString(DatabaseAdapter.COLUMN_COLOR_CODE);
+            if (accountColor != null){
+                int color = Color.parseColor(accountColor);
+                colorStripView.setBackgroundColor(color);
+            } else {
+                colorStripView.setBackgroundColor(Color.TRANSPARENT);
+            }
 
+            boolean isPlaceholderAccount = mAccountsDbAdapter.isPlaceholderAccount(accountId);
             ImageButton newTransactionButton = (ImageButton) v.findViewById(R.id.btn_new_transaction);
             if (isPlaceholderAccount){
                 newTransactionButton.setVisibility(View.GONE);
@@ -715,14 +770,16 @@ public class AccountsListFragment extends SherlockListFragment implements
             parentView.post(new Runnable() {
                 @Override
                 public void run() {
-                    final android.graphics.Rect hitRect = new Rect();
-                    float extraPadding = getResources().getDimension(R.dimen.edge_padding);
-                    addTransactionButton.getHitRect(hitRect);
-                    hitRect.right   += extraPadding;
-                    hitRect.bottom  += extraPadding;
-                    hitRect.top     -= extraPadding;
-                    hitRect.left    -= extraPadding;
-                    parentView.setTouchDelegate(new TouchDelegate(hitRect, addTransactionButton));
+                    if (isAdded()){ //may be run when fragment has been unbound from activity
+                        final android.graphics.Rect hitRect = new Rect();
+                        float extraPadding = getResources().getDimension(R.dimen.edge_padding);
+                        addTransactionButton.getHitRect(hitRect);
+                        hitRect.right   += extraPadding;
+                        hitRect.bottom  += extraPadding;
+                        hitRect.top     -= extraPadding;
+                        hitRect.left    -= extraPadding;
+                        parentView.setTouchDelegate(new TouchDelegate(hitRect, addTransactionButton));
+                    }
                 }
             });
 

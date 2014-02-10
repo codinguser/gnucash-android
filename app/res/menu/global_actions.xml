@@ -27,5 +27,5 @@
           android:icon="@drawable/action_settings"
           android:title="@string/title_settings"
           android:showAsAction="never"
-          android:orderInCategory="4"/>
+          android:orderInCategory="10"/>
 </menu>

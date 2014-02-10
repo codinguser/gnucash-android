@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
 <!--
- Copyright (c) 2012 Ngewi Fet <ngewif@gmail.com>
+ Copyright (c) 2012 - 2014 Ngewi Fet <ngewif@gmail.com>
+ Copyright (c) 2013 - 2014 Lei Xiao Bao <lxbzmy@gmail.com>
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -48,7 +49,7 @@
     <string name="title_selected">%1$d 已删除</string>
     <string name="label_transactions_total">合计：</string>
     <string name="label_export_destination">导出到</string>
-    <string name="title_export_dialog">Export Transactions</string>
+    <string name="title_export_dialog">导出交易资料</string>
     <string name="option_export_all_transactions">导出所有交易</string>
     <string name="hint_export_choice">默认情况下，自上次导出后新增的交易才会被导出。选择此项后所有的交易都会被导出。</string>
     <string name="error_exporting">导出OFX发生错误</string>
@@ -257,183 +258,6 @@
         <item>津巴布韦元</item>
         <item>Zloty</item>
     </string-array>
-    <string-array name="currency_codes">
-        <item>AFN</item>
-        <item>DZD</item>
-        <item>ARS</item>
-        <item>AMD</item>
-        <item>AWG</item>
-        <item>AUD</item>
-        <item>AZN</item>
-        <item>BSD</item>
-        <item>BHD</item>
-        <item>THB</item>
-        <item>PAB</item>
-        <item>BBD</item>
-        <item>BYR</item>
-        <item>BZD</item>
-        <item>BMD</item>
-        <item>VEF</item>
-        <item>BOB</item>
-        <item>BRL</item>
-        <item>BND</item>
-        <item>BGN</item>
-        <item>BIF</item>
-        <item>CAD</item>
-        <item>CVE</item>
-        <item>KYD</item>
-        <item>XOF</item>
-        <item>XAF</item>
-        <item>XPF</item>
-        <item>CLP</item>
-        <item>XTS</item>
-        <item>COP</item>
-        <item>KMF</item>
-        <item>CDF</item>
-        <item>BAM</item>
-        <item>NIO</item>
-        <item>CRC</item>
-        <item>HRK</item>
-        <item>CUP</item>
-        <item>CZK</item>
-        <item>GMD</item>
-        <item>DKK</item>
-        <item>MKD</item>
-        <item>DJF</item>
-        <item>STD</item>
-        <item>DOP</item>
-        <item>VND</item>
-        <item>XCD</item>
-        <item>EGP</item>
-        <item>SVC</item>
-        <item>ETB</item>
-        <item>EUR</item>
-        <item>FKP</item>
-        <item>FJD</item>
-        <item>HUF</item>
-        <item>GHS</item>
-        <item>GIP</item>
-        <item>XAU</item>
-        <item>HTG</item>
-        <item>PYG</item>
-        <item>GNF</item>
-        <item>GYD</item>
-        <item>HKD</item>
-        <item>UAH</item>
-        <item>ISK</item>
-        <item>INR</item>
-        <item>IRR</item>
-        <item>IQD</item>
-        <item>JMD</item>
-        <item>JOD</item>
-        <item>KES</item>
-        <item>PGK</item>
-        <item>LAK</item>
-        <item>KWD</item>
-        <item>MWK</item>
-        <item>AOA</item>
-        <item>MMK</item>
-        <item>GEL</item>
-        <item>LVL</item>
-        <item>LBP</item>
-        <item>ALL</item>
-        <item>HNL</item>
-        <item>SLL</item>
-        <item>LRD</item>
-        <item>LYD</item>
-        <item>SZL</item>
-        <item>LTL</item>
-        <item>LSL</item>
-        <item>MGA</item>
-        <item>MYR</item>
-        <item>MUR</item>
-        <item>MXN</item>
-        <item>MXV</item>
-        <item>MDL</item>
-        <item>MAD</item>
-        <item>MZN</item>
-        <item>BOV</item>
-        <item>NGN</item>
-        <item>ERN</item>
-        <item>NAD</item>
-        <item>NPR</item>
-        <item>ANG</item>
-        <item>ILS</item>
-        <item>RON</item>
-        <item>TWD</item>
-        <item>NZD</item>
-        <item>BTN</item>
-        <item>KPW</item>
-        <item>NOK</item>
-        <item>PEN</item>
-        <item>MRO</item>
-        <item>TOP</item>
-        <item>PKR</item>
-        <item>XPD</item>
-        <item>MOP</item>
-        <item>CUC</item>
-        <item>UYU</item>
-        <item>PHP</item>
-        <item>XPT</item>
-        <item>GBP</item>
-        <item>BWP</item>
-        <item>QAR</item>
-        <item>GTQ</item>
-        <item>ZAR</item>
-        <item>OMR</item>
-        <item>KHR</item>
-        <item>MVR</item>
-        <item>IDR</item>
-        <item>RUB</item>
-        <item>RWF</item>
-        <item>SHP</item>
-        <item>SAR</item>
-        <item>XDR</item>
-        <item>RSD</item>
-        <item>SCR</item>
-        <item>XAG</item>
-        <item>SGD</item>
-        <item>SBD</item>
-        <item>KGS</item>
-        <item>SOS</item>
-        <item>TJS</item>
-        <item>SSP</item>
-        <item>LKR</item>
-        <item>XSU</item>
-        <item>SDG</item>
-        <item>SRD</item>
-        <item>SEK</item>
-        <item>CHF</item>
-        <item>SYP</item>
-        <item>BDT</item>
-        <item>WST</item>
-        <item>TZS</item>
-        <item>KZT</item>
-        <item>XXX</item>
-        <item>TTD</item>
-        <item>MNT</item>
-        <item>TND</item>
-        <item>TRY</item>
-        <item>TMT</item>
-        <item>AED</item>
-        <item>UGX</item>
-        <item>XFU</item>
-        <item>COU</item>
-        <item>CLF</item>
-        <item>UYI</item>
-        <item>USD</item>
-        <item>UZS</item>
-        <item>VUV</item>
-        <item>CHE</item>
-        <item>CHW</item>
-        <item>KRW</item>
-        <item>YER</item>
-        <item>JPY</item>
-        <item>CNY</item>
-        <item>ZMK</item>
-        <item>ZWL</item>
-        <item>PLN</item>
-    </string-array>
     <string-array name="default_accounts">
         <item>支出</item>
         <item>收入</item>
@@ -441,10 +265,10 @@
         <item>所有者权益</item>
         <item>负债</item>
     </string-array>
-    <string name="error_no_accounts">GnuCash文件里没有科目信息.\n使用小部件前需要添加科目</string>
+    <string name="error_no_accounts">GnuCash里还没有科目信息。\n使用小部件前需要添加科目</string>
     <string name="title_build_version">版本号</string>
-    <string name="title_license">许可</string>
-    <string name="summary_licence_details">Apache License v2.0。点击查看明细</string>
+    <string name="title_license">授权许可</string>
+    <string name="summary_licence_details">Apache License v2.0，点击查看明细（将打开网页）。</string>
     <string name="title_general_prefs">常规</string>
     <string name="label_widget_configuration">选择科目</string>
     <string name="toast_no_transactions_to_export">没有需要导出的交易</string>
@@ -452,7 +276,7 @@
     <string name="summary_about_gnucash">Gnucash for android是一个移动版的财务管理软件。提供灵活的跟踪开支的功能，可以导出OFX格式（开放金融交易格式）数据，并导入到桌面版的 GnuCash中。</string>
     <string name="title_about">关于</string>
     <string name="toast_error_exporting">无法写OFX文件:\n</string>
-    <string name="toast_ofx_exported_to">OFX文件保存在了:\n</string>
+    <string name="toast_ofx_exported_to">OFX文件保存到：\n</string>
     <string name="title_export_email">GnuCash OFX 导出</string>
     <string name="description_export_email">GnuCash OFX Export from </string>
     <string name="header_transaction_settings">交易</string>
@@ -482,12 +306,14 @@
     <string name="summary_xml_ofx_header">当导出数据到GnuCash桌面版以外的程序时需要开启这个选项。</string>
     <string name="title_whats_new">新功能</string>
     <string name="whats_new">
-        - 导入GnuCash桌面版的资料\n
-        - 嵌套科目的显示\n
-        - 增加删除所有资料的选项\n
-        - 初步支持帐户类型\n
-        - 科目余额计算现在考虑了子帐户的情形\n
-        - 修改了好多BUG\n
+        - 给科目加星标！\n
+        - 使用标签访问科目\n
+        - 计划的交易（日、月、年）\n
+        - 科目占位符\n
+        - 设置默认的转账科目\n
+        - 科目的颜色\n
+        - 内置了常见科目结构\n
+        - 修复一些小错误\n
 	</string>
     <string name="label_dismiss">知道了</string>
     <string name="toast_transanction_amount_required">输入金额才能保存交易</string>
@@ -510,15 +336,21 @@
     <string name="toast_all_transactions_deleted">所有交易都已删除</string>
     <string name="title_progress_importing_accounts">导入科目</string>
     <string name="toast_tap_again_to_confirm_delete">点击再次确认，所有条目都将删除。</string>
-    <string name="section_header_transactions">Transactions</string>
-    <string name="section_header_accounts">Sub-Accounts</string>
-    <string name="menu_search_accounts">Search</string>
-    <string name="title_default_export_format">Default Export Format</string>
-    <string name="summary_default_export_format">File format to use by default when exporting transactions</string>
-    <string name="menu_export_transactions">Export transactions...</string>
+    <string name="section_header_transactions">交易</string>
+    <string name="section_header_subaccounts">子科目</string>
+    <string name="menu_search_accounts">搜索</string>
+    <string name="title_default_export_format">默认的导出格式</string>
+    <string name="summary_default_export_format">导出交易信息时使用的文件格式。</string>
+    <string name="menu_export_transactions">导出交易…</string>
+    <string name="label_recurring_transaction">重复</string>
     <!-- This should be the same name used by GnuCash desktop for imbalance accounts -->
-    <string name="imbalance_account_name">Imbalance</string>
-    <string name="title_progress_exporting_transactions">Exporting transactions</string>
+    <string name="imbalance_account_name">不平衡的</string>
+    <string name="title_progress_exporting_transactions">正在导出交易信息</string>
+    <string name="label_no_recurring_transactions">没有要显示的计划交易</string>
+    <string name="toast_recurring_transaction_deleted">计划交易已删除</string>
+    <string name="label_placeholder_account">占位符</string>
+    <string name="label_default_transfer_account">默认的转账帐户</string>
+    <string name="label_account_color_and_type">科目颜色和类型</string>
     <plurals name="label_sub_accounts">
         <item quantity="one">%d 子科目</item>
         <item quantity="other">%d 子科目</item>
@@ -541,5 +373,24 @@
     <string-array name="export_formats">
         <item>QIF</item>
         <item>OFX</item>
+    </string-array>
+    <!-- Default title for color picker dialog [CHAR LIMIT=30] -->
+    <string name="color_picker_default_title">选择一种颜色</string>
+    <string name="label_delete_sub_accounts">删除子科目</string>
+    <string name="title_recent_accounts">最近的</string>
+    <string name="title_favorite_accounts">已加星标</string>
+    <string name="title_all_accounts">所有</string>
+    <string name="summary_create_default_accounts">创建通用的科目结构</string>
+    <string name="title_create_default_accounts">创建默认科目</string>
+    <string name="message_confirm_create_default_accounts_setting">准备创建新的科目结构，这不会覆盖现有的科目，如果你想创建全新的科目结构请先删除旧的科目。
+    </string>
+    <string name="menu_item_recurring_transactions">计划的交易</string>
+    <string name="message_confirm_create_default_accounts_first_run">欢迎使用GnuCash Android！ \n你可以选择：1）创建常用的科目结构，2）导入自定义的科目结构。\或者稍后再决定，两种选择也能在设置中找到。
+    </string>
+    <string-array name="recurrence_period_strings">
+        <item>毫无</item>
+        <item>每日</item>
+        <item>每周</item>
+        <item>每月</item>
     </string-array>
 </resources>

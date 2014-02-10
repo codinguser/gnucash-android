@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013 Ngewi Fet <ngewif@gmail.com>
+ * Copyright (c) 2013 - 2014 Ngewi Fet <ngewif@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,6 +32,7 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import java.io.*;
 import java.util.Currency;
+import java.util.regex.Pattern;
 
 /**
  * Handler for parsing the GnuCash accounts structure file.
@@ -69,6 +70,10 @@ public class GnucashAccountXmlHandler extends DefaultHandler {
      */
     private static final String PLACEHOLDER_KEY = "placeholder";
 
+    /**
+     * Value of color slots in GnuCash account structure file
+     */
+    private static final String COLOR_KEY = "color";
 
     AccountsDbAdapter mDatabaseAdapter;
 
@@ -82,8 +87,9 @@ public class GnucashAccountXmlHandler extends DefaultHandler {
      */
     Account mAccount;
 
-    boolean mInPlaceHolderSlot = false;
-    boolean mISO4217Currency = false;
+    boolean mInColorSlot        = false;
+    boolean mInPlaceHolderSlot  = false;
+    boolean mISO4217Currency    = false;
 
     public GnucashAccountXmlHandler(Context context) {
         mDatabaseAdapter = new AccountsDbAdapter(context);
@@ -132,7 +138,7 @@ public class GnucashAccountXmlHandler extends DefaultHandler {
         }
 
         if (qualifiedName.equalsIgnoreCase(TAG_ACCOUNT)){
-            Log.i(LOG_TAG, "Saving account...");
+            Log.d(LOG_TAG, "Saving account...");
             mDatabaseAdapter.addAccount(mAccount);
 
             //reset ISO 4217 flag for next account
@@ -143,14 +149,35 @@ public class GnucashAccountXmlHandler extends DefaultHandler {
             if (characterString.equals(PLACEHOLDER_KEY)){
                 mInPlaceHolderSlot = true;
             }
+            if (characterString.equals(COLOR_KEY)){
+                mInColorSlot = true;
+            }
         }
 
         if (qualifiedName.equalsIgnoreCase(TAG_SLOT_VALUE)){
             if (mInPlaceHolderSlot){
                 if (characterString.equals("true")){
+                    Log.d(LOG_TAG, "Setting account placeholder flag");
                     mAccount.setPlaceHolderFlag(true);
                 };
                 mInPlaceHolderSlot = false;
+            }
+
+            if (mInColorSlot){
+                String color = characterString.trim();
+                //Gnucash exports the account color in format #rrrgggbbb, but we need only #rrggbb.
+                //so we trim the last digit in each block, doesn't affect the color much
+                if (!Pattern.matches(Account.COLOR_HEX_REGEX, color))
+                    color = "#" + color.replaceAll(".(.)?", "$1").replace("null", "");
+                try {
+                    mAccount.setColorCode(color);
+                } catch (IllegalArgumentException ex){
+                    //sometimes the color entry in the account file is "Not set" instead of just blank. So catch!
+                    Log.i(LOG_TAG, "Invalid color code '" + color + "' for account " + mAccount.getName());
+                    ex.printStackTrace();
+                }
+
+                mInColorSlot = false;
             }
         }
         //reset the accumulated characters

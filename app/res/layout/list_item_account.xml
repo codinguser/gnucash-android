@@ -23,6 +23,10 @@
               android:paddingRight="@dimen/edge_padding"
               android:orientation="horizontal"
               style="@style/ListItem">
+
+    <View   android:id="@+id/account_color_strip"
+            android:layout_width="@dimen/strip_width"
+            android:layout_height="match_parent" />
     <include
             layout="@layout/list_item_2_lines"
             android:layout_height="wrap_content"

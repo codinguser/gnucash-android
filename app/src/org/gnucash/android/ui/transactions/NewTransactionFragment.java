@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012 Ngewi Fet <ngewif@gmail.com>
+ * Copyright (c) 2012 - 2014 Ngewi Fet <ngewif@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,8 @@ import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.*;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.widget.*;
 import org.gnucash.android.R;
 import org.gnucash.android.data.Account;
@@ -180,6 +182,11 @@ public class NewTransactionFragment extends SherlockFragment implements
      */
     Account.AccountType mAccountType;
 
+    /**
+     * Spinner for marking the transaction as a recurring transaction
+     */
+    Spinner mRecurringTransactionSpinner;
+
 	/**
 	 * Create the view and retrieve references to the UI elements
 	 */
@@ -188,15 +195,16 @@ public class NewTransactionFragment extends SherlockFragment implements
 			Bundle savedInstanceState) {
 		View v = inflater.inflate(R.layout.fragment_new_transaction, container, false);
 		
-		mNameEditText = (AutoCompleteTextView) v.findViewById(R.id.input_transaction_name);
-		mDescriptionEditText = (EditText) v.findViewById(R.id.input_description);
-		mDateTextView = (TextView) v.findViewById(R.id.input_date);
-		mTimeTextView = (TextView) v.findViewById(R.id.input_time);
-		mAmountEditText = (EditText) v.findViewById(R.id.input_transaction_amount);		
-		mCurrencyTextView = (TextView) v.findViewById(R.id.currency_symbol);
-		mTransactionTypeButton = (ToggleButton) v.findViewById(R.id.input_transaction_type);
-		mDoubleAccountSpinner = (Spinner) v.findViewById(R.id.input_double_entry_accounts_spinner);
-		
+		mNameEditText           = (AutoCompleteTextView) v.findViewById(R.id.input_transaction_name);
+		mDescriptionEditText    = (EditText) v.findViewById(R.id.input_description);
+		mDateTextView           = (TextView) v.findViewById(R.id.input_date);
+		mTimeTextView           = (TextView) v.findViewById(R.id.input_time);
+		mAmountEditText         = (EditText) v.findViewById(R.id.input_transaction_amount);
+		mCurrencyTextView       = (TextView) v.findViewById(R.id.currency_symbol);
+		mTransactionTypeButton  = (ToggleButton) v.findViewById(R.id.input_transaction_type);
+		mDoubleAccountSpinner   = (Spinner) v.findViewById(R.id.input_double_entry_accounts_spinner);
+
+        mRecurringTransactionSpinner = (Spinner) v.findViewById(R.id.input_recurring_transaction_spinner);
 		return v;
 	}
 	
@@ -214,11 +222,16 @@ public class NewTransactionFragment extends SherlockFragment implements
 		if (!mUseDoubleEntry){
 			getView().findViewById(R.id.layout_double_entry).setVisibility(View.GONE);
 		}
-		
+
 		//updateTransferAccountsList must only be called after creating mAccountsDbAdapter
 		mAccountsDbAdapter = new AccountsDbAdapter(getActivity());
 		updateTransferAccountsList();
-		
+
+        ArrayAdapter<CharSequence> recurrenceAdapter = ArrayAdapter.createFromResource(getActivity(),
+                R.array.recurrence_period_strings, android.R.layout.simple_spinner_item);
+        recurrenceAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        mRecurringTransactionSpinner.setAdapter(recurrenceAdapter);
+
         long transactionId = getArguments().getLong(SELECTED_TRANSACTION_ID);
 		mTransactionsDbAdapter = new TransactionsDbAdapter(getActivity());
 		mTransaction = mTransactionsDbAdapter.getTransaction(transactionId);
@@ -240,18 +253,19 @@ public class NewTransactionFragment extends SherlockFragment implements
         initTransactionNameAutocomplete();
 	}
 
+    /**
+     * Toggles the state transaction type button in response to the type of account.
+     * This just changes what label is shown to the user, but basically the button in checked state still
+     * represents a negative amount, and unchecked is positive. The CREDIT/DEBIT label depends on the account.
+     * Different types of accounts handle CREDITS/DEBITS differently
+     */
     private void toggleTransactionTypeState() {
-        switch (mAccountType) {
-            case ASSET:
-            case EXPENSE:
-                mTransactionTypeButton.setTextOff(getString(R.string.label_debit));
-                mTransactionTypeButton.setTextOn(getString(R.string.label_credit));
-                break;
-
-            default:
-                mTransactionTypeButton.setTextOff(getString(R.string.label_credit));
-                mTransactionTypeButton.setTextOn(getString(R.string.label_debit));
-                break;
+        if (mAccountType.hasDebitNormalBalance()){
+            mTransactionTypeButton.setTextOff(getString(R.string.label_debit));
+            mTransactionTypeButton.setTextOn(getString(R.string.label_credit));
+        } else {
+            mTransactionTypeButton.setTextOff(getString(R.string.label_credit));
+            mTransactionTypeButton.setTextOn(getString(R.string.label_debit));
         }
         mTransactionTypeButton.invalidate();
     }
@@ -304,7 +318,12 @@ public class NewTransactionFragment extends SherlockFragment implements
 	 */
 	private void initializeViewsWithTransaction(){
 		mNameEditText.setText(mTransaction.getName());
-		mTransactionTypeButton.setChecked(mTransaction.getTransactionType() == TransactionType.DEBIT);
+
+        //FIXME: You need to revisit me when splits are introduced
+        //checking the type button means the amount will be shown as negative (in red) to user
+
+        mTransactionTypeButton.setChecked(mTransaction.getAmount().isNegative());
+
 		if (!mAmountManuallyEdited){
             //when autocompleting, only change the amount if the user has not manually changed it already
             mAmountEditText.setText(mTransaction.getAmount().toPlainString());
@@ -331,9 +350,11 @@ public class NewTransactionFragment extends SherlockFragment implements
 		String code = mTransactionsDbAdapter.getCurrencyCode(accountId);
 		Currency accountCurrency = Currency.getInstance(code);
 		mCurrencyTextView.setText(accountCurrency.getSymbol());
-	}
-	
-	/**
+
+        setSelectedRecurrenceOption();
+    }
+
+    /**
 	 * Initialize views with default data for new transactions
 	 */
 	private void initalizeViews() {
@@ -344,12 +365,12 @@ public class NewTransactionFragment extends SherlockFragment implements
 
 		String typePref = PreferenceManager.getDefaultSharedPreferences(getActivity()).getString(getString(R.string.key_default_transaction_type), "DEBIT");
 		if (typePref.equals("CREDIT")){
-            if (mAccountType == Account.AccountType.ASSET || mAccountType == Account.AccountType.EXPENSE)
+            if (mAccountType.hasDebitNormalBalance())
                 mTransactionTypeButton.setChecked(false);
             else
                 mTransactionTypeButton.setChecked(true);
-		} else {
-            if (mAccountType == Account.AccountType.ASSET || mAccountType == Account.AccountType.EXPENSE)
+		} else { //DEBIT
+            if (mAccountType.hasDebitNormalBalance())
                 mTransactionTypeButton.setChecked(true);
             else
                 mTransactionTypeButton.setChecked(false);
@@ -362,7 +383,34 @@ public class NewTransactionFragment extends SherlockFragment implements
 		}
 		Currency accountCurrency = Currency.getInstance(code);
 		mCurrencyTextView.setText(accountCurrency.getSymbol(Locale.getDefault()));
+
+        if (mUseDoubleEntry){
+            long defaultTransferAccountID = mAccountsDbAdapter.getDefaultTransferAccountID(accountId);
+            if (defaultTransferAccountID > 0){
+                setSelectedTransferAccount(defaultTransferAccountID);
+            }
+        }
 	}
+
+    /**
+     * Initializes the recurrence spinner to the appropriate value from the transaction.
+     * This is only used when the transaction is a recurrence transaction
+     */
+    private void setSelectedRecurrenceOption() {
+        //init recurrence options
+        final long recurrencePeriod = mTransaction.getRecurrencePeriod();
+        if (recurrencePeriod > 0){
+            String[] recurrenceOptions = getResources().getStringArray(R.array.recurrence_period_millis);
+
+            int selectionIndex = 0;
+            for (String recurrenceOption : recurrenceOptions) {
+                if (recurrencePeriod == Long.parseLong(recurrenceOption))
+                    break;
+                selectionIndex++;
+            }
+            mRecurringTransactionSpinner.setSelection(selectionIndex);
+        }
+    }
 
     /**
      * Updates the list of possible transfer accounts.
@@ -495,7 +543,7 @@ public class NewTransactionFragment extends SherlockFragment implements
         toggleTransactionTypeState();
 
         //if the new account has a different credit/debit philosophy as the previous one, then toggle the button
-        if (mAccountType.hasInvertedCredit() != previousAccountType.hasInvertedCredit()){
+        if (mAccountType.hasDebitNormalBalance() != previousAccountType.hasDebitNormalBalance()){
             mTransactionTypeButton.toggle();
         }
 
@@ -522,7 +570,7 @@ public class NewTransactionFragment extends SherlockFragment implements
 		Currency currency = Currency.getInstance(mTransactionsDbAdapter.getCurrencyCode(accountID));
 		Money amount 	= new Money(amountBigd, currency);
 		TransactionType type;
-        if (mAccountType.hasInvertedCredit()){
+        if (mAccountType.hasDebitNormalBalance()){
             type = amount.isNegative() ? TransactionType.CREDIT : TransactionType.DEBIT;
         } else
             type = amount.isNegative() ? TransactionType.DEBIT : TransactionType.CREDIT;
@@ -551,10 +599,27 @@ public class NewTransactionFragment extends SherlockFragment implements
 				mTransaction.setDoubleEntryAccountUID(mTransactionsDbAdapter.getAccountUID(doubleAccountId));
 			}
 		}
-		
-		
-		mTransactionsDbAdapter.addTransaction(mTransaction);
-		
+        //save the normal transaction first
+        mTransactionsDbAdapter.addTransaction(mTransaction);
+
+        //set up recurring transaction if requested
+        int recurrenceIndex = mRecurringTransactionSpinner.getSelectedItemPosition();
+        if (recurrenceIndex != 0) {
+            String[] recurrenceOptions = getResources().getStringArray(R.array.recurrence_period_millis);
+            long recurrencePeriodMillis = Long.parseLong(recurrenceOptions[recurrenceIndex]);
+            long firstRunMillis = System.currentTimeMillis() + recurrencePeriodMillis;
+
+            Transaction recurringTransaction = new Transaction(mTransaction);
+            recurringTransaction.setRecurrencePeriod(recurrencePeriodMillis);
+            long recurringTransactionId = mTransactionsDbAdapter.addTransaction(recurringTransaction);
+
+            PendingIntent recurringPendingIntent = PendingIntent.getBroadcast(getActivity().getApplicationContext(),
+                    (int)recurringTransactionId, Transaction.createIntent(mTransaction), PendingIntent.FLAG_UPDATE_CURRENT);
+            AlarmManager alarmManager = (AlarmManager) getActivity().getSystemService(Context.ALARM_SERVICE);
+            alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, firstRunMillis,
+                    recurrencePeriodMillis, recurringPendingIntent);
+        }
+
 		//update widgets, if any
 		WidgetConfigurationActivity.updateAllWidgets(getActivity().getApplicationContext());
 		

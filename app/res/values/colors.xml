@@ -19,4 +19,10 @@
     <color name="credit_green">#4cc552</color>
     <color name="light_gray">#FFAAAAAA</color>
     <color name="abs__holo_blue_light">#ff33b5e5</color>
+    <color name="title_green">#319D67</color>
+    <color name="account_green">#319D67</color>
+    <color name="account_red">#D13E29</color>
+    <color name="account_gold">#EE8600</color>
+    <color name="account_blue">#1469EB</color>
+    <color name="account_purple">#B304AD</color>
 </resources>
