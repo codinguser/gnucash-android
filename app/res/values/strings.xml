@@ -622,9 +622,10 @@
     <string name="message_confirm_create_default_accounts_setting">New accounts will be created in addition to the existing
         account structure.\n\nIf you wish to replace currently existing accounts, delete them first before proceeding!
     </string>
-    <string name="menu_item_recurring_transactions">Recurring Transactions</string>
+    <string name="menu_item_scheduled_transactions">Scheduled Transactions</string>
     <string name="message_confirm_create_default_accounts_first_run">Welcome to GnuCash Android! \nYou can either create
         a hierarchy of commonly-used accounts, or import your own GnuCash account structure. \n\nBoth options are also
         available in app Settings so you can decide later.
     </string>
+    <string name="title_scheduled_transactions">Scheduled Transactions</string>
 </resources>

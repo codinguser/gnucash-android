@@ -22,12 +22,13 @@
           android:showAsAction="always"/>
 
     <item android:id="@+id/menu_recurring_transactions"
-          android:title="@string/menu_item_recurring_transactions"
+          android:title="@string/menu_item_scheduled_transactions"
+          android:icon="@drawable/content_event_holo_dark"
           android:showAsAction="never|withText"
           android:orderInCategory="4" />
 
     <item android:id="@+id/menu_export"
-          android:icon="@drawable/content_import_export_holo_light"
+          android:icon="@drawable/content_import_export_holo_dark"
           android:title="@string/menu_export_transactions"
           android:showAsAction="never"
           android:orderInCategory="5"/>

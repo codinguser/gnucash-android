@@ -385,7 +385,6 @@
         будут созданы в дополнение к имеющейся структуре счетов.\n\nЕсли вы
         хотите заменить текущие счета, сперва их удалите!
     </string>
-    <string name="menu_item_recurring_transactions">Запланированные проводки</string>
     <string name="message_confirm_create_default_accounts_first_run">Добро
         пожаловать в GnuCash для Android!\nВы можете как создать структуру
         часто используемых счетов, так и импортировать её из GnuCash.\n\nОбе
@@ -398,4 +397,6 @@
         <item>ЕЖЕНЕДЕЛЬНЫЙ</item>
         <item>ЕЖЕМЕСЯЧНО</item>
     </string-array>
+    <string name="menu_item_scheduled_transactions">Scheduled Transactions</string>
+    <string name="title_scheduled_transactions">Scheduled Transactions</string>
 </resources>

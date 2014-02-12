@@ -49,7 +49,7 @@ import org.gnucash.android.R;
 import org.gnucash.android.data.Money;
 import org.gnucash.android.ui.Refreshable;
 import org.gnucash.android.ui.settings.SettingsActivity;
-import org.gnucash.android.ui.transactions.RecurringTransactionsListFragment;
+import org.gnucash.android.ui.transactions.ScheduledTransactionsListFragment;
 import org.gnucash.android.ui.transactions.TransactionsActivity;
 import org.gnucash.android.ui.transactions.TransactionsListFragment;
 import org.gnucash.android.util.GnucashAccountXmlHandler;
@@ -366,7 +366,7 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
         FragmentTransaction fragmentTransaction = fragmentManager
                 .beginTransaction();
 
-        RecurringTransactionsListFragment recurringTransactionsFragment = new RecurringTransactionsListFragment();
+        ScheduledTransactionsListFragment recurringTransactionsFragment = new ScheduledTransactionsListFragment();
 
         fragmentTransaction.replace(R.id.fragment_container,
                 recurringTransactionsFragment, "fragment_recurring_transactions");

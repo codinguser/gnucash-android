@@ -387,7 +387,6 @@
     <string name="message_confirm_create_default_accounts_setting">I nuovi conti saranno aggiunti alla struttura esistente.\n\n
         Per sostituire i conti esistenti, occorre eliminarli prima di proseguire!
     </string>
-    <string name="menu_item_recurring_transactions">Transazioni pianificate</string>
     <string name="message_confirm_create_default_accounts_first_run">Benvenuti in GnuCash per Android! \nÈ possibile
         creare una struttura dei conti più comunemente utilizzati o importare la propria struttura da GnuCash. \n\nEntrambe le
         Opzioni sono disponibili nelle impostazioni dell\'applicazione ed è quindi possibile decidere in seguito.
@@ -398,4 +397,6 @@
         <item>SETTIMANALE</item>
         <item>MENSILE</item>
     </string-array>
+    <string name="menu_item_scheduled_transactions">Scheduled Transactions</string>
+    <string name="title_scheduled_transactions">Scheduled Transactions</string>
 </resources>

@@ -51,7 +51,7 @@ import java.util.Locale;
  * Fragment which displays the recurring transactions in the system.
  * @author Ngewi Fet <ngewif@gmail.com>
  */
-public class RecurringTransactionsListFragment extends SherlockListFragment implements
+public class ScheduledTransactionsListFragment extends SherlockListFragment implements
         LoaderManager.LoaderCallbacks<Cursor> {
 
     /**
@@ -152,7 +152,7 @@ public class RecurringTransactionsListFragment extends SherlockListFragment impl
         actionBar.setDisplayShowTitleEnabled(true);
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setHomeButtonEnabled(true);
-        actionBar.setTitle("Recurring Transactions");
+        actionBar.setTitle(R.string.title_scheduled_transactions);
 
         setHasOptionsMenu(true);
         getListView().setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
