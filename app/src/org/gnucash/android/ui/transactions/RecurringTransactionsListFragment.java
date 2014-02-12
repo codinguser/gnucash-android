@@ -152,7 +152,7 @@ public class RecurringTransactionsListFragment extends SherlockListFragment impl
         actionBar.setDisplayShowTitleEnabled(true);
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setHomeButtonEnabled(true);
-        actionBar.setTitle("Recurring Transactions");
+        actionBar.setTitle(R.string.title_recurring_transactions);
 
         setHasOptionsMenu(true);
         getListView().setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);

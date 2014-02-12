@@ -314,7 +314,7 @@
         - 科目的颜色\n
         - 内置了常见科目结构\n
         - 修复一些小错误\n
-	</string>
+  </string>
     <string name="label_dismiss">知道了</string>
     <string name="toast_transanction_amount_required">输入金额才能保存交易</string>
     <string name="menu_import_accounts">导入GnuCash科目</string>
@@ -388,9 +388,10 @@
     <string name="message_confirm_create_default_accounts_first_run">欢迎使用GnuCash Android！ \n你可以选择：1）创建常用的科目结构，2）导入自定义的科目结构。\或者稍后再决定，两种选择也能在设置中找到。
     </string>
     <string-array name="recurrence_period_strings">
-        <item>毫无</item>
-        <item>每日</item>
+        <item>无</item>
+        <item>每天</item>
         <item>每周</item>
         <item>每月</item>
     </string-array>
+    <string name="title_recurring_transactions">计划的交易</string>
 </resources>
