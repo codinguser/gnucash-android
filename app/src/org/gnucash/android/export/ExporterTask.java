@@ -29,9 +29,10 @@ import android.util.Log;
 import android.widget.Toast;
 import org.gnucash.android.R;
 import org.gnucash.android.export.ofx.OfxExporter;
+import org.gnucash.android.export.ofx.OfxHelper;
 import org.gnucash.android.export.qif.QifExporter;
-import org.gnucash.android.ui.accounts.AccountsActivity;
-import org.gnucash.android.ui.transactions.TransactionsDeleteConfirmationDialog;
+import org.gnucash.android.ui.account.AccountsActivity;
+import org.gnucash.android.ui.transaction.dialog.TransactionsDeleteConfirmationDialogFragment;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -168,8 +169,8 @@ public class ExporterTask extends AsyncTask<ExportParams, Void, Boolean> {
             android.support.v4.app.FragmentManager fragmentManager = ((FragmentActivity)mContext).getSupportFragmentManager();
             Fragment currentFragment = fragmentManager
                     .findFragmentByTag(AccountsActivity.FRAGMENT_ACCOUNTS_LIST);
-            TransactionsDeleteConfirmationDialog alertFragment =
-                    TransactionsDeleteConfirmationDialog.newInstance(R.string.title_confirm_delete, 0);
+            TransactionsDeleteConfirmationDialogFragment alertFragment =
+                    TransactionsDeleteConfirmationDialogFragment.newInstance(R.string.title_confirm_delete, 0);
             alertFragment.setTargetFragment(currentFragment, 0);
 
             alertFragment.show(fragmentManager, "transactions_delete_confirmation_dialog");
@@ -195,7 +196,7 @@ public class ExporterTask extends AsyncTask<ExportParams, Void, Boolean> {
         Document document = docBuilder.newDocument();
         Element root = document.createElement("OFX");
 
-        ProcessingInstruction pi = document.createProcessingInstruction("OFX", OfxExporter.OFX_HEADER);
+        ProcessingInstruction pi = document.createProcessingInstruction("OFX", OfxHelper.OFX_HEADER);
         document.appendChild(pi);
         document.appendChild(root);
 
@@ -239,7 +240,7 @@ public class ExporterTask extends AsyncTask<ExportParams, Void, Boolean> {
             StringWriter stringWriter = new StringWriter();
             write(ofxNode, stringWriter, true);
 
-            StringBuffer stringBuffer = new StringBuffer(OfxExporter.OFX_SGML_HEADER);
+            StringBuffer stringBuffer = new StringBuffer(OfxHelper.OFX_SGML_HEADER);
             stringBuffer.append('\n');
             writer.write(stringBuffer.toString() + stringWriter.toString());
         }

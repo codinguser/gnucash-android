@@ -16,7 +16,7 @@
 
 package org.gnucash.android.db;
 
-import org.gnucash.android.data.Account.AccountType;
+import org.gnucash.android.model.Account.AccountType;
 
 import android.content.ContentValues;
 import android.content.Context;

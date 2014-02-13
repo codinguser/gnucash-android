@@ -22,7 +22,7 @@
           android:showAsAction="always"/>
 
     <item android:id="@+id/menu_recurring_transactions"
-          android:title="@string/menu_item_scheduled_transactions"
+          android:title="@string/menu_scheduled_transactions"
           android:icon="@drawable/content_event_holo_dark"
           android:showAsAction="never|withText"
           android:orderInCategory="4" />

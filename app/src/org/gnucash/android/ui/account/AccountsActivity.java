@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.gnucash.android.ui.accounts;
+package org.gnucash.android.ui.account;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -46,14 +46,14 @@ import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import com.viewpagerindicator.TitlePageIndicator;
 import org.gnucash.android.R;
-import org.gnucash.android.data.Money;
-import org.gnucash.android.ui.Refreshable;
+import org.gnucash.android.model.Money;
+import org.gnucash.android.ui.util.Refreshable;
+import org.gnucash.android.ui.UxArgument;
 import org.gnucash.android.ui.settings.SettingsActivity;
-import org.gnucash.android.ui.transactions.ScheduledTransactionsListFragment;
-import org.gnucash.android.ui.transactions.TransactionsActivity;
-import org.gnucash.android.ui.transactions.TransactionsListFragment;
+import org.gnucash.android.ui.transaction.ScheduledTransactionsListFragment;
+import org.gnucash.android.ui.transaction.TransactionsActivity;
 import org.gnucash.android.util.GnucashAccountXmlHandler;
-import org.gnucash.android.util.OnAccountClickedListener;
+import org.gnucash.android.ui.util.OnAccountClickedListener;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
@@ -71,7 +71,17 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
 	/**
 	 * Tag used for identifying the account list fragment when it is added to this activity
 	 */
-	public static final String FRAGMENT_ACCOUNTS_LIST 	= "accounts_list";
+	public static final String FRAGMENT_ACCOUNTS_LIST 	= "accounts_list_fragment";
+
+    /**
+     * Request code for GnuCash account structure file to import
+     */
+    public static final int REQUEST_PICK_ACCOUNTS_FILE = 0x1;
+
+    /**
+     * Request code for opening the account to edit
+     */
+    public static final int REQUEST_EDIT_ACCOUNT = 0x10;
 
     /**
 	 * Tag used for identifying the account export fragment
@@ -86,7 +96,7 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
 	/**
 	 * Logging tag
 	 */
-	protected static final String TAG = "AccountsActivity";
+	protected static final String LOG_TAG = "AccountsActivity";
 
     /**
      * Intent action for viewing recurring transactions
@@ -201,11 +211,11 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
             pager.setVisibility(View.GONE);
             titlePageIndicator.setVisibility(View.GONE);
 
-            long accountId = intent.getLongExtra(TransactionsListFragment.SELECTED_ACCOUNT_ID, 0L);
+            long accountId = intent.getLongExtra(UxArgument.SELECTED_ACCOUNT_ID, 0L);
             if (accountId > 0)
                 showEditAccountFragment(accountId);
             else {
-                long parentAccountId = intent.getLongExtra(AccountsListFragment.ARG_PARENT_ACCOUNT_ID, 0L);
+                long parentAccountId = intent.getLongExtra(UxArgument.PARENT_ACCOUNT_ID, 0L);
                 showAddAccountFragment(parentAccountId);
             }
         } else if (action != null && action.equals(ACTION_VIEW_RECURRING)) {
@@ -237,7 +247,7 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
             currencyCode = prefs.getString(getString(R.string.key_default_currency),
                     Currency.getInstance(locale).getCurrencyCode());
         } catch (Exception e) {
-            Log.e(TAG, e.getMessage());
+            Log.e(LOG_TAG, e.getMessage());
             currencyCode = "USD"; //just use USD and let the user choose
         }
 
@@ -354,7 +364,7 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
      */
     private void showAddAccountFragment(long parentAccountId){
         Bundle args = new Bundle();
-        args.putLong(AccountsListFragment.ARG_PARENT_ACCOUNT_ID, parentAccountId);
+        args.putLong(UxArgument.PARENT_ACCOUNT_ID, parentAccountId);
         showAccountFormFragment(args);
     }
 
@@ -379,7 +389,7 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
      */
     private void showEditAccountFragment(long accountId) {
         Bundle args = new Bundle();
-        args.putLong(TransactionsListFragment.SELECTED_ACCOUNT_ID, accountId);
+        args.putLong(UxArgument.SELECTED_ACCOUNT_ID, accountId);
         showAccountFormFragment(args);
     }
 
@@ -393,11 +403,11 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
         FragmentTransaction fragmentTransaction = fragmentManager
                 .beginTransaction();
 
-        AddAccountFragment newAccountFragment = AddAccountFragment.newInstance(null);
-        newAccountFragment.setArguments(args);
+        AccountFormFragment accountFormFragment = AccountFormFragment.newInstance(null);
+        accountFormFragment.setArguments(args);
 
         fragmentTransaction.replace(R.id.fragment_container,
-                newAccountFragment, AccountsActivity.FRAGMENT_NEW_ACCOUNT);
+                accountFormFragment, AccountsActivity.FRAGMENT_NEW_ACCOUNT);
 
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
@@ -417,7 +427,7 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
 	private void createDefaultAccounts(){
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		builder.setTitle(R.string.title_default_accounts);
-        builder.setMessage(R.string.message_confirm_create_default_accounts_first_run);
+        builder.setMessage(R.string.msg_confirm_create_default_accounts_first_run);
 
 		builder.setPositiveButton(R.string.btn_create_accounts, new DialogInterface.OnClickListener() {
 			
@@ -459,7 +469,7 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
         pickIntent.setType("application/octet-stream");
         Intent chooser = Intent.createChooser(pickIntent, "Select GnuCash account file");
 
-        startActivityForResult(chooser, AccountsListFragment.REQUEST_PICK_ACCOUNTS_FILE);
+        startActivityForResult(chooser, REQUEST_PICK_ACCOUNTS_FILE);
 
     }
 
@@ -471,7 +481,7 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
         }
 
         switch (requestCode){
-            case AccountsListFragment.REQUEST_PICK_ACCOUNTS_FILE:
+            case REQUEST_PICK_ACCOUNTS_FILE:
                 try {
                     InputStream accountInputStream = getContentResolver().openInputStream(data.getData());
                     new AccountImporterTask(this).execute(accountInputStream);
@@ -497,7 +507,7 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
 	public void accountSelected(long accountRowId) {
 		Intent intent = new Intent(this, TransactionsActivity.class);
 		intent.setAction(Intent.ACTION_VIEW);
-		intent.putExtra(TransactionsListFragment.SELECTED_ACCOUNT_ID, accountRowId);
+		intent.putExtra(UxArgument.SELECTED_ACCOUNT_ID, accountRowId);
 
 		startActivity(intent);
 	}

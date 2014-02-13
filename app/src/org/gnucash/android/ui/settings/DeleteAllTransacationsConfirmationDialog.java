@@ -28,7 +28,7 @@ public class DeleteAllTransacationsConfirmationDialog extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         return new AlertDialog.Builder(getActivity())
                 .setIcon(android.R.drawable.ic_delete)
-                .setTitle(R.string.title_confirm_delete).setMessage(R.string.delete_all_transactions_confirmation_message)
+                .setTitle(R.string.title_confirm_delete).setMessage(R.string.msg_delete_all_transactions_confirmation)
                 .setPositiveButton(R.string.alert_dialog_ok_delete,
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int whichButton) {

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.gnucash.android.ui.transactions;
+package org.gnucash.android.ui.transaction;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -28,15 +28,16 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.widget.*;
 import org.gnucash.android.R;
-import org.gnucash.android.data.Account;
-import org.gnucash.android.data.Money;
-import org.gnucash.android.data.Transaction;
-import org.gnucash.android.data.Transaction.TransactionType;
+import org.gnucash.android.model.Account;
+import org.gnucash.android.model.Money;
+import org.gnucash.android.model.Transaction;
+import org.gnucash.android.model.Transaction.TransactionType;
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.DatabaseHelper;
 import org.gnucash.android.db.TransactionsDbAdapter;
-import org.gnucash.android.ui.DatePickerDialogFragment;
-import org.gnucash.android.ui.TimePickerDialogFragment;
+import org.gnucash.android.ui.transaction.dialog.DatePickerDialogFragment;
+import org.gnucash.android.ui.transaction.dialog.TimePickerDialogFragment;
+import org.gnucash.android.ui.UxArgument;
 import org.gnucash.android.ui.widget.WidgetConfigurationActivity;
 
 import android.app.DatePickerDialog;
@@ -71,7 +72,7 @@ import org.gnucash.android.util.QualifiedAccountNameCursorAdapter;
  * Fragment for creating or editing transactions
  * @author Ngewi Fet <ngewif@gmail.com>
  */
-public class NewTransactionFragment extends SherlockFragment implements 
+public class TransactionFormFragment extends SherlockFragment implements
 	OnDateSetListener, OnTimeSetListener {
 	
 	/**
@@ -98,14 +99,8 @@ public class NewTransactionFragment extends SherlockFragment implements
 	 * Transaction to be created/updated
 	 */
 	private Transaction mTransaction;
-	
-	/**
-	 * Arguments key for database ID of transaction. 
-	 * Is used to pass a transaction ID into a bundle or intent
-	 */
-	public static final String SELECTED_TRANSACTION_ID = "selected_transaction_id";
-	
-	/**
+
+    /**
 	 * Formats a {@link Date} object into a date string of the format dd MMM yyyy e.g. 18 July 2012
 	 */
 	public final static DateFormat DATE_FORMATTER = DateFormat.getDateInstance();
@@ -232,11 +227,11 @@ public class NewTransactionFragment extends SherlockFragment implements
         recurrenceAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mRecurringTransactionSpinner.setAdapter(recurrenceAdapter);
 
-        long transactionId = getArguments().getLong(SELECTED_TRANSACTION_ID);
+        long transactionId = getArguments().getLong(UxArgument.SELECTED_TRANSACTION_ID);
 		mTransactionsDbAdapter = new TransactionsDbAdapter(getActivity());
 		mTransaction = mTransactionsDbAdapter.getTransaction(transactionId);
 
-        final long accountId = getArguments().getLong(TransactionsListFragment.SELECTED_ACCOUNT_ID);
+        final long accountId = getArguments().getLong(UxArgument.SELECTED_ACCOUNT_ID);
         mAccountType = mAccountsDbAdapter.getAccountType(accountId);
         toggleTransactionTypeState();
 
@@ -376,7 +371,7 @@ public class NewTransactionFragment extends SherlockFragment implements
                 mTransactionTypeButton.setChecked(false);
         }
 				
-		final long accountId = getArguments().getLong(TransactionsListFragment.SELECTED_ACCOUNT_ID);
+		final long accountId = getArguments().getLong(UxArgument.SELECTED_ACCOUNT_ID);
 		String code = Money.DEFAULT_CURRENCY_CODE;
 		if (accountId != 0){
 			code = mTransactionsDbAdapter.getCurrencyCode(accountId);
@@ -476,7 +471,7 @@ public class NewTransactionFragment extends SherlockFragment implements
 				} catch (ParseException e) {
 					Log.e(getTag(), "Error converting input time to Date object");
 				}
-				DialogFragment newFragment = new DatePickerDialogFragment(NewTransactionFragment.this, dateMillis);
+				DialogFragment newFragment = new DatePickerDialogFragment(TransactionFormFragment.this, dateMillis);
 				newFragment.show(ft, "date_dialog");
 			}
 		});
@@ -493,7 +488,7 @@ public class NewTransactionFragment extends SherlockFragment implements
                 } catch (ParseException e) {
                     Log.e(getTag(), "Error converting input time to Date object");
                 }
-                DialogFragment fragment = new TimePickerDialogFragment(NewTransactionFragment.this, timeMillis);
+                DialogFragment fragment = new TimePickerDialogFragment(TransactionFormFragment.this, timeMillis);
                 fragment.show(ft, "time_dialog");
             }
         });

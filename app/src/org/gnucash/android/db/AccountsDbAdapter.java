@@ -18,10 +18,10 @@ package org.gnucash.android.db;
 
 import java.util.*;
 
-import org.gnucash.android.data.Account;
-import org.gnucash.android.data.Money;
-import org.gnucash.android.data.Account.AccountType;
-import org.gnucash.android.data.Transaction;
+import org.gnucash.android.model.Account;
+import org.gnucash.android.model.Money;
+import org.gnucash.android.model.Account.AccountType;
+import org.gnucash.android.model.Transaction;
 
 import android.content.ContentValues;
 import android.content.Context;

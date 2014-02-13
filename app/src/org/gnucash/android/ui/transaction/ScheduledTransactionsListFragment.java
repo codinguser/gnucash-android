@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.gnucash.android.ui.transactions;
+package org.gnucash.android.ui.transaction;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
@@ -40,9 +40,10 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import org.gnucash.android.R;
-import org.gnucash.android.data.Money;
-import org.gnucash.android.data.Transaction;
+import org.gnucash.android.model.Money;
+import org.gnucash.android.model.Transaction;
 import org.gnucash.android.db.*;
+import org.gnucash.android.ui.UxArgument;
 import org.gnucash.android.ui.widget.WidgetConfigurationActivity;
 
 import java.util.Locale;
@@ -200,8 +201,8 @@ public class ScheduledTransactionsListFragment extends SherlockListFragment impl
     public void openTransactionForEdit(long accountId, long transactionId){
         Intent createTransactionIntent = new Intent(getActivity(), TransactionsActivity.class);
         createTransactionIntent.setAction(Intent.ACTION_INSERT_OR_EDIT);
-        createTransactionIntent.putExtra(TransactionsListFragment.SELECTED_ACCOUNT_ID, accountId);
-        createTransactionIntent.putExtra(NewTransactionFragment.SELECTED_TRANSACTION_ID, transactionId);
+        createTransactionIntent.putExtra(UxArgument.SELECTED_ACCOUNT_ID, accountId);
+        createTransactionIntent.putExtra(UxArgument.SELECTED_TRANSACTION_ID, transactionId);
         startActivity(createTransactionIntent);
     }
 

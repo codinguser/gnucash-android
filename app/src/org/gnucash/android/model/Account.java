@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package org.gnucash.android.data;
+package org.gnucash.android.model;
 
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.AccountsDbAdapter;
-import org.gnucash.android.export.ofx.OfxExporter;
+import org.gnucash.android.export.ofx.OfxHelper;
 import org.gnucash.android.export.qif.QifHelper;
-import org.gnucash.android.data.Transaction.TransactionType;
+import org.gnucash.android.model.Transaction.TransactionType;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -500,22 +500,22 @@ public class Account {
 	 * @param parent Parent node to which to add this account's transactions in XML
 	 */
 	public void toOfx(Document doc, Element parent, boolean exportAllTransactions){
-		Element currency = doc.createElement("CURDEF");
+		Element currency = doc.createElement(OfxHelper.TAG_CURRENCY_DEF);
 		currency.appendChild(doc.createTextNode(mCurrency.getCurrencyCode()));						
 		
 		//================= BEGIN BANK ACCOUNT INFO (BANKACCTFROM) =================================
 		
-		Element bankId = doc.createElement("BANKID");
-		bankId.appendChild(doc.createTextNode(OfxExporter.APP_ID));
+		Element bankId = doc.createElement(OfxHelper.TAG_BANK_ID);
+		bankId.appendChild(doc.createTextNode(OfxHelper.APP_ID));
 		
-		Element acctId = doc.createElement("ACCTID");
+		Element acctId = doc.createElement(OfxHelper.TAG_ACCOUNT_ID);
 		acctId.appendChild(doc.createTextNode(mUID));
 		
-		Element accttype = doc.createElement("ACCTTYPE");
+		Element accttype = doc.createElement(OfxHelper.TAG_ACCOUNT_TYPE);
 		String ofxAccountType = convertToOfxAccountType(mAccountType).toString();
 		accttype.appendChild(doc.createTextNode(ofxAccountType));
 		
-		Element bankFrom = doc.createElement("BANKACCTFROM");
+		Element bankFrom = doc.createElement(OfxHelper.TAG_BANK_ACCOUNT_FROM);
 		bankFrom.appendChild(bankId);
 		bankFrom.appendChild(acctId);
 		bankFrom.appendChild(accttype);
@@ -525,14 +525,14 @@ public class Account {
 		
 		//================= BEGIN ACCOUNT BALANCE INFO =================================
 		String balance = getBalance().toPlainString();
-		String formattedCurrentTimeString = OfxExporter.getFormattedCurrentTime();
+		String formattedCurrentTimeString = OfxHelper.getFormattedCurrentTime();
 		
-		Element balanceAmount = doc.createElement("BALAMT");
+		Element balanceAmount = doc.createElement(OfxHelper.TAG_BALANCE_AMOUNT);
 		balanceAmount.appendChild(doc.createTextNode(balance));			
-		Element dtasof = doc.createElement("DTASOF");
+		Element dtasof = doc.createElement(OfxHelper.TAG_DATE_AS_OF);
 		dtasof.appendChild(doc.createTextNode(formattedCurrentTimeString));
 		
-		Element ledgerBalance = doc.createElement("LEDGERBAL");
+		Element ledgerBalance = doc.createElement(OfxHelper.TAG_LEDGER_BALANCE);
 		ledgerBalance.appendChild(balanceAmount);
 		ledgerBalance.appendChild(dtasof);
 		
@@ -541,17 +541,17 @@ public class Account {
 		
 		//================= BEGIN TIME PERIOD INFO =================================
 		
-		Element dtstart = doc.createElement("DTSTART");			
+		Element dtstart = doc.createElement(OfxHelper.TAG_DATE_START);
 		dtstart.appendChild(doc.createTextNode(formattedCurrentTimeString));
 		
-		Element dtend = doc.createElement("DTEND");
+		Element dtend = doc.createElement(OfxHelper.TAG_DATE_END);
 		dtend.appendChild(doc.createTextNode(formattedCurrentTimeString));
 		
 		//================= END TIME PERIOD INFO =================================
 		
 		
 		//================= BEGIN TRANSACTIONS LIST =================================
-		Element bankTransactionsList = doc.createElement("BANKTRANLIST");
+		Element bankTransactionsList = doc.createElement(OfxHelper.TAG_BANK_TRANSACTION_LIST);
 		bankTransactionsList.appendChild(dtstart);
 		bankTransactionsList.appendChild(dtend);
 		
@@ -563,7 +563,7 @@ public class Account {
 		}		
 		//================= END TRANSACTIONS LIST =================================
 					
-		Element statementTransactions = doc.createElement("STMTRS");
+		Element statementTransactions = doc.createElement(OfxHelper.TAG_STATEMENT_TRANSACTIONS);
 		statementTransactions.appendChild(currency);
 		statementTransactions.appendChild(bankFrom);
 		statementTransactions.appendChild(bankTransactionsList);

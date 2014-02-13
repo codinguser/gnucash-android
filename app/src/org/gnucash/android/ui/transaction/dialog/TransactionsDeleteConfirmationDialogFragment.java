@@ -13,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.gnucash.android.ui.transactions;
+package org.gnucash.android.ui.transaction.dialog;
 
 import org.gnucash.android.R;
 import org.gnucash.android.db.TransactionsDbAdapter;
-import org.gnucash.android.ui.accounts.AccountsListFragment;
+import org.gnucash.android.ui.UxArgument;
+import org.gnucash.android.ui.account.AccountsListFragment;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -33,13 +34,13 @@ import org.gnucash.android.ui.widget.WidgetConfigurationActivity;
  * @author Ngewi Fet <ngewif@gmail.com>
  *
  */
-public class TransactionsDeleteConfirmationDialog extends SherlockDialogFragment {
+public class TransactionsDeleteConfirmationDialogFragment extends SherlockDialogFragment {
 
-    public static TransactionsDeleteConfirmationDialog newInstance(int title, long id) {
-        TransactionsDeleteConfirmationDialog frag = new TransactionsDeleteConfirmationDialog();
+    public static TransactionsDeleteConfirmationDialogFragment newInstance(int title, long id) {
+        TransactionsDeleteConfirmationDialogFragment frag = new TransactionsDeleteConfirmationDialogFragment();
         Bundle args = new Bundle();
         args.putInt("title", title);
-        args.putLong(TransactionsListFragment.SELECTED_TRANSACTION_IDS, id);
+        args.putLong(UxArgument.SELECTED_TRANSACTION_IDS, id);
         frag.setArguments(args);
         return frag;
     }
@@ -47,8 +48,8 @@ public class TransactionsDeleteConfirmationDialog extends SherlockDialogFragment
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         int title = getArguments().getInt("title");
-        final long rowId = getArguments().getLong(TransactionsListFragment.SELECTED_TRANSACTION_IDS);
-        int message = rowId == 0 ? R.string.delete_all_transactions_confirmation_message : R.string.delete_transaction_confirmation_message;
+        final long rowId = getArguments().getLong(UxArgument.SELECTED_TRANSACTION_IDS);
+        int message = rowId == 0 ? R.string.msg_delete_all_transactions_confirmation : R.string.msg_delete_transaction_confirmation;
         return new AlertDialog.Builder(getActivity())
                 .setIcon(android.R.drawable.ic_delete)
                 .setTitle(title).setMessage(message)

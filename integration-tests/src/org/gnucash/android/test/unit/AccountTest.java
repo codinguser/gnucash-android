@@ -1,6 +1,6 @@
 package org.gnucash.android.test.unit;
 
-import org.gnucash.android.data.Account;
+import org.gnucash.android.model.Account;
 
 import junit.framework.TestCase;
 

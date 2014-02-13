@@ -289,8 +289,8 @@
         <item>CREDIT</item>
         <item>DEBIT</item>
     </string-array>
-    <string name="delete_all_transactions_confirmation_message">Etes vous s&#251;re de vouloir supprimer TOUTES les transactions?</string>
-    <string name="delete_transaction_confirmation_message">Etes vous s&#251;re de vouloir supprimer cette transaction?</string>
+    <string name="msg_delete_all_transactions_confirmation">Etes vous s&#251;re de vouloir supprimer TOUTES les transactions?</string>
+    <string name="msg_delete_transaction_confirmation">Etes vous s&#251;re de vouloir supprimer cette transaction?</string>
     <string name="title_export_preference_category">Export</string>
     <string name="title_export_all_transactions">Exporter toutes les transactions</string>
     <string name="title_always_delete_exported_transactions">Supprimer les transactions export&#233;es</string>
@@ -381,10 +381,10 @@
     <string name="title_all_accounts">Tous</string>
     <string name="summary_create_default_accounts">Crée une structure de compte GnuCash par défaut couramment utilisé</string>
     <string name="title_create_default_accounts">Crée comptes par défaut</string>
-    <string name="message_confirm_create_default_accounts_setting">Les nouveaux comptes seront créés en plus de l\'existante
+    <string name="msg_confirm_create_default_accounts_setting">Les nouveaux comptes seront créés en plus de l\'existante
 		structure de compte.\n\n Si vous souhaitez remplacer des comptes existants, supprimez-les d\'abord avant de commencer!
     </string>
-    <string name="message_confirm_create_default_accounts_first_run">Bienvenue à GnuCash Android!\n Vous pouvez soit créer
+    <string name="msg_confirm_create_default_accounts_first_run">Bienvenue à GnuCash Android!\n Vous pouvez soit créer
 		une hiérarchie de comptes couramment utilisés, importer votre propre structure de compte GnuCash.\n\n Les deux options sont également
 		disponible dans les paramètres d\'applications de sorte que vous puissiez décider plus tard.</string>
     <string-array name="recurrence_period_strings">
@@ -393,6 +393,6 @@
         <item>SEMAINE</item>
         <item>MENSUEL</item>
     </string-array>
-    <string name="menu_item_scheduled_transactions">Scheduled Transactions</string>
+    <string name="menu_scheduled_transactions">Scheduled Transactions</string>
     <string name="title_scheduled_transactions">Scheduled Transactions</string>
 </resources>

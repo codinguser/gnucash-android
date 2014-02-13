@@ -292,8 +292,8 @@ format og importeres i regnskapsprogrammet GnuCash for PC.</string>
 		<item>KREDIT</item>
 		<item>DEBET</item>
 	</string-array>
-	<string name="delete_all_transactions_confirmation_message">Er du sikker at du vil slette ALLE transaksjonene?</string>
-	<string name="delete_transaction_confirmation_message">Er du sikker at du vil slette denne transaksjonen?</string>
+	<string name="msg_delete_all_transactions_confirmation">Er du sikker at du vil slette ALLE transaksjonene?</string>
+	<string name="msg_delete_transaction_confirmation">Er du sikker at du vil slette denne transaksjonen?</string>
 	<string name="title_export_preference_category">Eksport</string>
 	<string name="title_export_all_transactions">Eksportere alle transaksjoner</string>
 	<string name="title_always_delete_exported_transactions">Slette eksporterte transaksjoner</string>
@@ -386,9 +386,9 @@ format og importeres i regnskapsprogrammet GnuCash for PC.</string>
     <string name="title_all_accounts">Alle</string>
     <string name="summary_create_default_accounts">Oppretter standard GnuCash kontostruktur</string>
     <string name="title_create_default_accounts">Opprette standard kontoer</string>
-    <string name="message_confirm_create_default_accounts_setting">Nye kontoer vil bli opprettet i tillegg til eksisterende kontostruktur.\n\nHvis du vil erstatte de, slett de før du forsetter!
+    <string name="msg_confirm_create_default_accounts_setting">Nye kontoer vil bli opprettet i tillegg til eksisterende kontostruktur.\n\nHvis du vil erstatte de, slett de før du forsetter!
     </string>
-    <string name="message_confirm_create_default_accounts_first_run">Velkommen til GnuCash Android! \nDu kan enten opprette et hieraki av de mest brukte kontoene, eller importere din egen GnuCash kontostruktur. \n\nBegge valgene er også tilgjengelige under Instillinger, så du kan velge senere.
+    <string name="msg_confirm_create_default_accounts_first_run">Velkommen til GnuCash Android! \nDu kan enten opprette et hieraki av de mest brukte kontoene, eller importere din egen GnuCash kontostruktur. \n\nBegge valgene er også tilgjengelige under Instillinger, så du kan velge senere.
     </string>
     <string-array name="recurrence_period_strings">
         <item>NONE</item>
@@ -396,6 +396,6 @@ format og importeres i regnskapsprogrammet GnuCash for PC.</string>
         <item>UKENTLIG</item>
         <item>MÅNEDLIG</item>
     </string-array>
-    <string name="menu_item_scheduled_transactions">Scheduled Transactions</string>
+    <string name="menu_scheduled_transactions">Scheduled Transactions</string>
     <string name="title_scheduled_transactions">Scheduled Transactions</string>
 </resources>

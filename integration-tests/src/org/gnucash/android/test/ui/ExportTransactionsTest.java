@@ -19,17 +19,16 @@ package org.gnucash.android.test.ui;
 import java.io.File;
 
 import org.gnucash.android.R;
-import org.gnucash.android.data.Account;
-import org.gnucash.android.data.Transaction;
+import org.gnucash.android.model.Account;
+import org.gnucash.android.model.Transaction;
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.export.ExportFormat;
-import org.gnucash.android.ui.accounts.AccountsActivity;
+import org.gnucash.android.ui.account.AccountsActivity;
 import org.gnucash.android.export.ExportDialogFragment;
 
 import android.os.Environment;
 import android.test.ActivityInstrumentationTestCase2;
-import android.widget.Button;
 import android.widget.Spinner;
 
 import com.jayway.android.robotium.solo.Solo;

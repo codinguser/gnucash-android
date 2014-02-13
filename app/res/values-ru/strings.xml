@@ -289,8 +289,8 @@
 	    <item>КРЕДИТ</item>
 	    <item>ДЕБЕТ</item>
 	</string-array>
-	<string name="delete_all_transactions_confirmation_message">Вы действительно хотите удалить ВСЕ проводки?</string>
-	<string name="delete_transaction_confirmation_message">Вы действительно хотите удалить эту проводку?</string>
+	<string name="msg_delete_all_transactions_confirmation">Вы действительно хотите удалить ВСЕ проводки?</string>
+	<string name="msg_delete_transaction_confirmation">Вы действительно хотите удалить эту проводку?</string>
 	<string name="title_export_preference_category">Экспорт</string>
 	<string name="title_export_all_transactions">Экспорт всех проводок</string>
 	<string name="title_always_delete_exported_transactions">Всегда удалять экспортированное</string>
@@ -381,11 +381,11 @@
     <string name="title_all_accounts">Все</string>
     <string name="summary_create_default_accounts">Создание структуры счетов GnuCash по умолчанию</string>
     <string name="title_create_default_accounts">Создание счетов по умолчанию</string>
-    <string name="message_confirm_create_default_accounts_setting">Новые счета
+    <string name="msg_confirm_create_default_accounts_setting">Новые счета
         будут созданы в дополнение к имеющейся структуре счетов.\n\nЕсли вы
         хотите заменить текущие счета, сперва их удалите!
     </string>
-    <string name="message_confirm_create_default_accounts_first_run">Добро
+    <string name="msg_confirm_create_default_accounts_first_run">Добро
         пожаловать в GnuCash для Android!\nВы можете как создать структуру
         часто используемых счетов, так и импортировать её из GnuCash.\n\nОбе
         возможности будут доступны из настроек приложения, если вы захотите
@@ -397,6 +397,6 @@
         <item>ЕЖЕНЕДЕЛЬНЫЙ</item>
         <item>ЕЖЕМЕСЯЧНО</item>
     </string-array>
-    <string name="menu_item_scheduled_transactions">Scheduled Transactions</string>
+    <string name="menu_scheduled_transactions">Scheduled Transactions</string>
     <string name="title_scheduled_transactions">Scheduled Transactions</string>
 </resources>
