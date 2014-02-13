@@ -348,9 +348,10 @@ public class TransactionsActivity extends SherlockFragmentActivity implements
 	 */
 	private void setupActionBarNavigation() {
 		// set up spinner adapter for navigation list
-		Cursor accountsCursor = mAccountsDbAdapter.fetchAllRecords();
+		Cursor accountsCursor = mAccountsDbAdapter.fetchAllRecordsOrderedByFullName();
 
-        SpinnerAdapter mSpinnerAdapter = new QualifiedAccountNameCursorAdapter(getSupportActionBar().getThemedContext(),
+        SpinnerAdapter mSpinnerAdapter = new QualifiedAccountNameCursorAdapter(
+                getSupportActionBar().getThemedContext(),
                 R.layout.sherlock_spinner_item, accountsCursor);
 		((ResourceCursorAdapter) mSpinnerAdapter)
 				.setDropDownViewResource(R.layout.sherlock_spinner_dropdown_item);
@@ -370,7 +371,7 @@ public class TransactionsActivity extends SherlockFragmentActivity implements
 	public void updateNavigationSelection() {
 		// set the selected item in the spinner
 		int i = 0;
-		Cursor accountsCursor = mAccountsDbAdapter.fetchAllRecords();
+		Cursor accountsCursor = mAccountsDbAdapter.fetchAllRecordsOrderedByFullName();
         while (accountsCursor.moveToNext()) {
             long id = accountsCursor.getLong(DatabaseAdapter.COLUMN_ROW_ID);
             if (mAccountId == id) {

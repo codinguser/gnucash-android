@@ -54,8 +54,7 @@ import org.gnucash.android.util.QualifiedAccountNameCursorAdapter;
  */
 public class WidgetConfigurationActivity extends Activity {
 	private AccountsDbAdapter mAccountsDbAdapter;
-	private SimpleCursorAdapter mCursorAdapter;
-	private int mAppWidgetId;
+    private int mAppWidgetId;
 	
 	private Spinner mAccountsSpinner;
 	private Button mOkButton;
@@ -72,18 +71,18 @@ public class WidgetConfigurationActivity extends Activity {
 		mCancelButton 	= (Button) findViewById(R.id.btn_cancel);
 
 		mAccountsDbAdapter = new AccountsDbAdapter(this);
-		Cursor cursor = mAccountsDbAdapter.fetchAllRecords();
+		Cursor cursor = mAccountsDbAdapter.fetchAllRecordsOrderedByFullName();
 		
 		if (cursor.getCount() <= 0){
 			Toast.makeText(this, R.string.error_no_accounts, Toast.LENGTH_LONG).show();
 			finish();
 		}
-			
-		mCursorAdapter = new QualifiedAccountNameCursorAdapter(this,
-				android.R.layout.simple_spinner_item, 
-				cursor);
-		mCursorAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-		mAccountsSpinner.setAdapter(mCursorAdapter);
+
+        SimpleCursorAdapter cursorAdapter = new QualifiedAccountNameCursorAdapter(this,
+                android.R.layout.simple_spinner_item,
+                cursor);
+		cursorAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		mAccountsSpinner.setAdapter(cursorAdapter);
 		
 		bindListeners();
 	}

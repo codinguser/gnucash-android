@@ -142,11 +142,6 @@ public class AccountFormFragment extends SherlockFragment {
     private Spinner mDefaulTransferAccountSpinner;
 
     /**
-     * Cursor holding data set of eligible transfer accounts
-     */
-    private Cursor mDefaultTransferAccountCursor;
-
-    /**
      * Checkbox indicating if account is a placeholder account
      */
     private CheckBox mPlaceholderCheckBox;
@@ -486,15 +481,18 @@ public class AccountFormFragment extends SherlockFragment {
         String condition = DatabaseHelper.KEY_ROW_ID + " != " + mSelectedAccountId
                 + " AND " + DatabaseHelper.KEY_PLACEHOLDER + "=0"
                 + " AND " + DatabaseHelper.KEY_UID + " != '" + mAccountsDbAdapter.getGnuCashRootAccountUID() + "'";
-        mDefaultTransferAccountCursor = mAccountsDbAdapter.fetchAccounts(condition);
+        /*
+      Cursor holding data set of eligible transfer accounts
+     */
+        Cursor defaultTransferAccountCursor = mAccountsDbAdapter.fetchAccountsOrderedByFullName(condition);
 
-        if (mDefaultTransferAccountCursor == null || mDefaulTransferAccountSpinner.getCount() <= 0){
+        if (defaultTransferAccountCursor == null || mDefaulTransferAccountSpinner.getCount() <= 0){
             setDefaultTransferAccountInputsVisible(false);
         }
 
         mDefaultTransferAccountCursorAdapter = new QualifiedAccountNameCursorAdapter(getActivity(),
                 android.R.layout.simple_spinner_item,
-                mDefaultTransferAccountCursor);
+                defaultTransferAccountCursor);
         mParentAccountCursorAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mDefaulTransferAccountSpinner.setAdapter(mParentAccountCursorAdapter);
     }
@@ -512,7 +510,7 @@ public class AccountFormFragment extends SherlockFragment {
             //TODO: Limit all descendants of the account to eliminate the possibility of cyclic hierarchy
         }
 
-		mParentAccountCursor = mAccountsDbAdapter.fetchAccounts(condition);
+		mParentAccountCursor = mAccountsDbAdapter.fetchAccountsOrderedByFullName(condition);
 		if (mParentAccountCursor == null || mParentAccountCursor.getCount() <= 0){
             final View view = getView();
             view.findViewById(R.id.layout_parent_account).setVisibility(View.GONE);

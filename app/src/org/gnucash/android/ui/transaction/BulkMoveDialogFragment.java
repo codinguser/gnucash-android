@@ -102,7 +102,7 @@ public class BulkMoveDialogFragment extends DialogFragment {
 		getDialog().setTitle(title);
 		
 		mAccountsDbAdapter = new AccountsDbAdapter(getActivity());
-		Cursor cursor = mAccountsDbAdapter.fetchAllRecords();
+		Cursor cursor = mAccountsDbAdapter.fetchAllRecordsOrderedByFullName();
 
 		SimpleCursorAdapter mCursorAdapter = new QualifiedAccountNameCursorAdapter(getActivity(),
                 android.R.layout.simple_spinner_item, cursor);

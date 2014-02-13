@@ -420,7 +420,7 @@ public class TransactionFormFragment extends SherlockFragment implements
                             + "' AND " + DatabaseHelper.KEY_PLACEHOLDER + " = 0"
                             + ")";
 
-		mCursor = mAccountsDbAdapter.fetchAccounts(conditions);
+		mCursor = mAccountsDbAdapter.fetchAccountsOrderedByFullName(conditions);
 
         mCursorAdapter = new QualifiedAccountNameCursorAdapter(getActivity(),
                 android.R.layout.simple_spinner_item, mCursor);

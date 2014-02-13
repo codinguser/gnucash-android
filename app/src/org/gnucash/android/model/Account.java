@@ -117,7 +117,13 @@ public class Account {
 	 * Name of this account
 	 */
 	private String mName;
-	
+
+    /**
+     * Fully qualified name of this account including the parent hierarchy.
+     * On instantiation of an account, the full name is set to the name by default
+     */
+    private String mFullName;
+
 	/**
 	 * Currency used by transactions in this account
 	 */
@@ -179,8 +185,9 @@ public class Account {
 	 */
 	public Account(String name) {
 		setName(name);
-		this.mUID = generateUID();
-		this.mCurrency = Currency.getInstance(Money.DEFAULT_CURRENCY_CODE);
+        this.mFullName  = mName;
+		this.mUID       = generateUID();
+		this.mCurrency  = Currency.getInstance(Money.DEFAULT_CURRENCY_CODE);
 	}
 	
 	/**
@@ -190,8 +197,9 @@ public class Account {
 	 */
 	public Account(String name, Currency currency){
 		setName(name);
-		this.mUID = generateUID();
-		this.mCurrency = currency;
+        this.mFullName  = mName;
+		this.mUID       = generateUID();
+		this.mCurrency  = currency;
 	}
 
 	/**
@@ -209,8 +217,25 @@ public class Account {
 	public String getName() {
 		return mName;
 	}
-	
-	/**
+
+    /**
+     * Returns the full name of this account.
+     * The full name is the full account hierarchy name
+     * @return Fully qualified name of the account
+     */
+    public String getFullName() {
+        return mFullName;
+    }
+
+    /**
+     * Sets the fully qualified name of the account
+     * @param fullName Fully qualified account name
+     */
+    public void setFullName(String fullName) {
+        this.mFullName = fullName;
+    }
+
+    /**
 	 * Generates a unique ID for the account based on the name and a random string. 
 	 * This represents the ACCTID in the exported OFX and should have a maximum of 22 alphanumeric characters
 	 * @return Generated Unique ID string
