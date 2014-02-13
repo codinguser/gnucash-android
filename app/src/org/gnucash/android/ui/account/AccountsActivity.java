@@ -58,7 +58,9 @@ import org.gnucash.android.ui.util.OnAccountClickedListener;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.Currency;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * Manages actions related to accounts, displaying, exporting and creating new accounts
@@ -124,11 +126,20 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
     public static final int INDEX_FAVORITE_ACCOUNTS_FRAGMENT = 2;
 
     /**
+     * Used to save the index of the last open tab and restore the pager to that index
+     */
+    public static final String LAST_OPEN_TAB_INDEX = "last_open_tab";
+
+    /**
      * Map containing fragments for the different tabs
      */
-    private SparseArray<Refreshable> mFragmentPageReferenceMap = new SparseArray<Refreshable>();
+    private Map<Integer,Refreshable> mFragmentPageReferenceMap = new HashMap<Integer, Refreshable>();
 
-	
+    /**
+     * ViewPager which manages the different tabs
+     */
+    private ViewPager mPager;
+
 	/**
 	 * Dialog which is shown to the user on first start prompting the user to create some accounts
 	 */
@@ -201,14 +212,14 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
 
         init();
 
-        ViewPager pager = (ViewPager) findViewById(R.id.pager);
+        mPager = (ViewPager) findViewById(R.id.pager);
         TitlePageIndicator titlePageIndicator = (TitlePageIndicator) findViewById(R.id.titles);
 
         final Intent intent = getIntent();
         String action = intent.getAction();
         if (action != null && action.equals(Intent.ACTION_INSERT_OR_EDIT)) {
             //enter account creation/edit mode if that was specified
-            pager.setVisibility(View.GONE);
+            mPager.setVisibility(View.GONE);
             titlePageIndicator.setVisibility(View.GONE);
 
             long accountId = intent.getLongExtra(UxArgument.SELECTED_ACCOUNT_ID, 0L);
@@ -219,15 +230,15 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
                 showAddAccountFragment(parentAccountId);
             }
         } else if (action != null && action.equals(ACTION_VIEW_RECURRING)) {
-            pager.setVisibility(View.GONE);
+            mPager.setVisibility(View.GONE);
             titlePageIndicator.setVisibility(View.GONE);
             showRecurringTransactionsFragment();
         } else {
             //show the simple accounts list
             PagerAdapter mPagerAdapter = new AccountViewPagerAdapter(getSupportFragmentManager());
-            pager.setAdapter(mPagerAdapter);
-            titlePageIndicator.setViewPager(pager);
-            pager.setCurrentItem(INDEX_TOP_LEVEL_ACCOUNTS_FRAGMENT);
+            mPager.setAdapter(mPagerAdapter);
+            titlePageIndicator.setViewPager(mPager);
+            mPager.setCurrentItem(INDEX_TOP_LEVEL_ACCOUNTS_FRAGMENT);
         }
 
 	}
@@ -268,6 +279,16 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
     protected void onResume() {
         super.onResume();
         TransactionsActivity.sLastTitleColor = -1;
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        int lastTabIndex = preferences.getInt(LAST_OPEN_TAB_INDEX, INDEX_TOP_LEVEL_ACCOUNTS_FRAGMENT);
+        mPager.setCurrentItem(lastTabIndex);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onPause();
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        preferences.edit().putInt(LAST_OPEN_TAB_INDEX, mPager.getCurrentItem()).commit();
     }
 
     /**
@@ -276,25 +297,19 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
 	 * @return <code>true</code> if the minor version has been increased, <code>false</code> otherwise.
 	 */
 	private boolean hasNewFeatures(){
-		try {
-			PackageInfo packageInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
-			String versionName = packageInfo.versionName;			
-			int end = versionName.indexOf('.');
-			int currentMinor = Integer.parseInt(versionName.substring(0, end));
-			
-			SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-			int previousMinor = prefs.getInt(getString(R.string.key_previous_minor_version), 0);
-			if (currentMinor > previousMinor){
-				Editor editor = prefs.edit();
-				editor.putInt(getString(R.string.key_previous_minor_version), currentMinor);
-				editor.commit();
-				return true;
-			}
-		} catch (NameNotFoundException e) {
-			//do not show anything in that case
-			e.printStackTrace();			
-		}		
-		return false;
+        String versionName = getResources().getString(R.string.app_version_name);
+        int end = versionName.indexOf('.');
+        int currentMinor = Integer.parseInt(versionName.substring(0, end));
+
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        int previousMinor = prefs.getInt(getString(R.string.key_previous_minor_version), 0);
+        if (currentMinor > previousMinor){
+            Editor editor = prefs.edit();
+            editor.putInt(getString(R.string.key_previous_minor_version), currentMinor);
+            editor.commit();
+            return true;
+        }
+        return false;
 	}
 	
 	/**
@@ -409,7 +424,6 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
         fragmentTransaction.replace(R.id.fragment_container,
                 accountFormFragment, AccountsActivity.FRAGMENT_NEW_ACCOUNT);
 
-        fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
     }
 

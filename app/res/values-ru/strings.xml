@@ -336,7 +336,7 @@
     <string name="title_progress_importing_accounts">Импортируются счета</string>
     <string name="toast_tap_again_to_confirm_delete">Нажмите ещё раз для подтверждения. ВСЕ записи будут удалены!</string>
     <string name="section_header_transactions">Проводки</string>
-    <string name="section_header_accounts">Дочерние счета</string>
+    <string name="section_header_subaccounts">Дочерние счета</string>
     <string name="menu_search_accounts">Поиск</string>
     <string name="title_default_export_format">Формат экспорта по умолчанию</string>
     <string name="summary_default_export_format">Формат файла, используемый по умолчанию при экспорте</string>

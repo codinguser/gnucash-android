@@ -71,8 +71,9 @@ public class Account {
 	 * they are currently not used except for exporting
 	 */
 	public enum AccountType {
-        CASH(TransactionType.DEBIT), BANK, CREDIT, ASSET(TransactionType.DEBIT), LIABILITY, INCOME,
-        EXPENSE(TransactionType.DEBIT), PAYABLE, RECEIVABLE, EQUITY, CURRENCY, STOCK, MUTUAL, ROOT;
+        CASH(TransactionType.DEBIT), BANK(TransactionType.DEBIT), CREDIT, ASSET(TransactionType.DEBIT), LIABILITY,
+        INCOME, EXPENSE(TransactionType.DEBIT), PAYABLE, RECEIVABLE(TransactionType.DEBIT), EQUITY, CURRENCY,
+        STOCK(TransactionType.DEBIT), MUTUAL(TransactionType.DEBIT), ROOT;
 
         /**
          * Indicates that this type of normal balance the account type has

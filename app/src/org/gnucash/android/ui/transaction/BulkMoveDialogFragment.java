@@ -18,8 +18,10 @@ package org.gnucash.android.ui.transaction;
 
 import org.gnucash.android.R;
 import org.gnucash.android.db.AccountsDbAdapter;
+import org.gnucash.android.db.DatabaseHelper;
 import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.ui.UxArgument;
+import org.gnucash.android.ui.util.Refreshable;
 import org.gnucash.android.ui.widget.WidgetConfigurationActivity;
 
 import android.database.Cursor;
@@ -102,7 +104,12 @@ public class BulkMoveDialogFragment extends DialogFragment {
 		getDialog().setTitle(title);
 		
 		mAccountsDbAdapter = new AccountsDbAdapter(getActivity());
-		Cursor cursor = mAccountsDbAdapter.fetchAllRecordsOrderedByFullName();
+        String conditions = "(" + DatabaseHelper.KEY_ROW_ID + " != " + mOriginAccountId + " AND "
+                + DatabaseHelper.KEY_CURRENCY_CODE + " = '" + mAccountsDbAdapter.getCurrencyCode(mOriginAccountId)
+                + "' AND " + DatabaseHelper.KEY_UID + " != '" + mAccountsDbAdapter.getGnuCashRootAccountUID()
+                + "' AND " + DatabaseHelper.KEY_PLACEHOLDER + " = 0"
+                + ")";
+		Cursor cursor = mAccountsDbAdapter.fetchAccountsOrderedByFullName(conditions);
 
 		SimpleCursorAdapter mCursorAdapter = new QualifiedAccountNameCursorAdapter(getActivity(),
                 android.R.layout.simple_spinner_item, cursor);
@@ -142,13 +149,9 @@ public class BulkMoveDialogFragment extends DialogFragment {
 					trxnAdapter.moveTranscation(trxnId, dstAccountId);
 				}
 				trxnAdapter.close();
-				
-				Fragment f = getActivity()
-						.getSupportFragmentManager()
-						.findFragmentByTag(TransactionsActivity.FRAGMENT_TRANSACTIONS_LIST);
-					
+
 				WidgetConfigurationActivity.updateAllWidgets(getActivity());
-				((TransactionsListFragment)f).refresh();
+				((Refreshable)getTargetFragment()).refresh();
 				dismiss();
 			}			
 		});

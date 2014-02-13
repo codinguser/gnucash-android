@@ -351,14 +351,16 @@ public class ScheduledTransactionsListFragment extends SherlockListFragment impl
             parentView.post(new Runnable() {
                 @Override
                 public void run() {
-                    float extraPadding = getResources().getDimension(R.dimen.edge_padding);
-                    final android.graphics.Rect hitRect = new Rect();
-                    checkBoxView.getHitRect(hitRect);
-                    hitRect.right   += extraPadding;
-                    hitRect.bottom  += 3*extraPadding;
-                    hitRect.top     -= extraPadding;
-                    hitRect.left    -= 2*extraPadding;
-                    parentView.setTouchDelegate(new TouchDelegate(hitRect, checkBoxView));
+                    if (isAdded()){ //may be run when fragment has been unbound from activity
+                        float extraPadding = getResources().getDimension(R.dimen.edge_padding);
+                        final android.graphics.Rect hitRect = new Rect();
+                        checkBoxView.getHitRect(hitRect);
+                        hitRect.right   += extraPadding;
+                        hitRect.bottom  += 3*extraPadding;
+                        hitRect.top     -= extraPadding;
+                        hitRect.left    -= 2*extraPadding;
+                        parentView.setTouchDelegate(new TouchDelegate(hitRect, checkBoxView));
+                    }
                 }
             });
 

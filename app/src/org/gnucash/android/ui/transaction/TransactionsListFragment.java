@@ -341,6 +341,7 @@ public class TransactionsListFragment extends SherlockListFragment implements
 	    args.putLong(UxArgument.ORIGIN_ACCOUNT_ID, mAccountID);
 	    args.putLongArray(UxArgument.SELECTED_TRANSACTION_IDS, getListView().getCheckedItemIds());
 	    bulkMoveFragment.setArguments(args);
+        bulkMoveFragment.setTargetFragment(this, 0);
 	    bulkMoveFragment.show(ft, "bulk_move_dialog");
 	}	
 	
