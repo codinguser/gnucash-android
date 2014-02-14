@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.gnucash.android.ui.transactions;
+package org.gnucash.android.ui.transaction;
 
 import android.content.Context;
 import android.content.Intent;
@@ -42,15 +42,16 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.viewpagerindicator.TitlePageIndicator;
 import org.gnucash.android.R;
-import org.gnucash.android.data.Account;
+import org.gnucash.android.model.Account;
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.DatabaseAdapter;
 import org.gnucash.android.db.DatabaseHelper;
-import org.gnucash.android.ui.Refreshable;
-import org.gnucash.android.ui.accounts.AccountsActivity;
-import org.gnucash.android.ui.accounts.AccountsListFragment;
-import org.gnucash.android.util.OnAccountClickedListener;
-import org.gnucash.android.util.OnTransactionClickedListener;
+import org.gnucash.android.ui.util.Refreshable;
+import org.gnucash.android.ui.UxArgument;
+import org.gnucash.android.ui.account.AccountsActivity;
+import org.gnucash.android.ui.account.AccountsListFragment;
+import org.gnucash.android.ui.util.OnAccountClickedListener;
+import org.gnucash.android.ui.util.OnTransactionClickedListener;
 import org.gnucash.android.util.QualifiedAccountNameCursorAdapter;
 
 /**
@@ -72,10 +73,9 @@ public class TransactionsActivity extends SherlockFragmentActivity implements
 	public static final String FRAGMENT_TRANSACTIONS_LIST 	= "transactions_list";
 	
 	/**
-	 * Tag for {@link NewTransactionFragment}
+	 * Tag for {@link TransactionFormFragment}
 	 */
 	public static final String FRAGMENT_NEW_TRANSACTION 	= "new_transaction";
-    private static final int REQUEST_EDIT_ACCOUNT           = 0x21;
 
     /**
      * ViewPager index for sub-accounts fragment
@@ -136,7 +136,7 @@ public class TransactionsActivity extends SherlockFragmentActivity implements
             FragmentManager fragmentManager = getSupportFragmentManager();
 
 		    //inform new accounts fragment that account was changed
-		    NewTransactionFragment newTransactionsFragment = (NewTransactionFragment) fragmentManager
+		    TransactionFormFragment newTransactionsFragment = (TransactionFormFragment) fragmentManager
 					.findFragmentByTag(FRAGMENT_NEW_TRANSACTION);
 		    if (newTransactionsFragment != null){
 		    	newTransactionsFragment.onAccountChanged(itemId);
@@ -219,7 +219,7 @@ public class TransactionsActivity extends SherlockFragmentActivity implements
         private AccountsListFragment prepareSubAccountsListFragment(){
             AccountsListFragment subAccountsListFragment = new AccountsListFragment();
             Bundle args = new Bundle();
-            args.putLong(AccountsListFragment.ARG_PARENT_ACCOUNT_ID, mAccountId);
+            args.putLong(UxArgument.PARENT_ACCOUNT_ID, mAccountId);
             subAccountsListFragment.setArguments(args);
             return subAccountsListFragment;
         }
@@ -231,7 +231,7 @@ public class TransactionsActivity extends SherlockFragmentActivity implements
         private TransactionsListFragment prepareTransactionsListFragment(){
             TransactionsListFragment transactionsListFragment = new TransactionsListFragment();
             Bundle args = new Bundle();
-            args.putLong(TransactionsListFragment.SELECTED_ACCOUNT_ID,
+            args.putLong(UxArgument.SELECTED_ACCOUNT_ID,
                     mAccountId);
             transactionsListFragment.setArguments(args);
             Log.i(TAG, "Opening transactions for account id " +  mAccountId);
@@ -277,7 +277,7 @@ public class TransactionsActivity extends SherlockFragmentActivity implements
             sLastTitleColor = getResources().getColor(R.color.title_green);
 
 		mAccountId = getIntent().getLongExtra(
-                TransactionsListFragment.SELECTED_ACCOUNT_ID, -1);
+                UxArgument.SELECTED_ACCOUNT_ID, -1);
 
         mAccountsDbAdapter = new AccountsDbAdapter(this);
 
@@ -306,15 +306,15 @@ public class TransactionsActivity extends SherlockFragmentActivity implements
      * Loads the fragment for creating/editing transactions and initializes it to be displayed
      */
     private void initializeCreateOrEditTransaction() {
-        long transactionId = getIntent().getLongExtra(NewTransactionFragment.SELECTED_TRANSACTION_ID, -1);
+        long transactionId = getIntent().getLongExtra(UxArgument.SELECTED_TRANSACTION_ID, -1);
         Bundle args = new Bundle();
         if (transactionId > 0) {
             mSectionHeaderTransactions.setText(R.string.title_edit_transaction);
-            args.putLong(NewTransactionFragment.SELECTED_TRANSACTION_ID, transactionId);
-            args.putLong(TransactionsListFragment.SELECTED_ACCOUNT_ID, mAccountId);
+            args.putLong(UxArgument.SELECTED_TRANSACTION_ID, transactionId);
+            args.putLong(UxArgument.SELECTED_ACCOUNT_ID, mAccountId);
         } else {
             mSectionHeaderTransactions.setText(R.string.title_add_transaction);
-            args.putLong(TransactionsListFragment.SELECTED_ACCOUNT_ID, mAccountId);
+            args.putLong(UxArgument.SELECTED_ACCOUNT_ID, mAccountId);
         }
         mSectionHeaderTransactions.setBackgroundColor(sLastTitleColor);
         showTransactionFormFragment(args);
@@ -348,9 +348,10 @@ public class TransactionsActivity extends SherlockFragmentActivity implements
 	 */
 	private void setupActionBarNavigation() {
 		// set up spinner adapter for navigation list
-		Cursor accountsCursor = mAccountsDbAdapter.fetchAllRecords();
+		Cursor accountsCursor = mAccountsDbAdapter.fetchAllRecordsOrderedByFullName();
 
-        SpinnerAdapter mSpinnerAdapter = new QualifiedAccountNameCursorAdapter(getSupportActionBar().getThemedContext(),
+        SpinnerAdapter mSpinnerAdapter = new QualifiedAccountNameCursorAdapter(
+                getSupportActionBar().getThemedContext(),
                 R.layout.sherlock_spinner_item, accountsCursor);
 		((ResourceCursorAdapter) mSpinnerAdapter)
 				.setDropDownViewResource(R.layout.sherlock_spinner_dropdown_item);
@@ -370,7 +371,7 @@ public class TransactionsActivity extends SherlockFragmentActivity implements
 	public void updateNavigationSelection() {
 		// set the selected item in the spinner
 		int i = 0;
-		Cursor accountsCursor = mAccountsDbAdapter.fetchAllRecords();
+		Cursor accountsCursor = mAccountsDbAdapter.fetchAllRecordsOrderedByFullName();
         while (accountsCursor.moveToNext()) {
             long id = accountsCursor.getLong(DatabaseAdapter.COLUMN_ROW_ID);
             if (mAccountId == id) {
@@ -427,8 +428,8 @@ public class TransactionsActivity extends SherlockFragmentActivity implements
             case R.id.menu_edit_account:
                 Intent editAccountIntent = new Intent(this, AccountsActivity.class);
                 editAccountIntent.setAction(Intent.ACTION_INSERT_OR_EDIT);
-                editAccountIntent.putExtra(TransactionsListFragment.SELECTED_ACCOUNT_ID, mAccountId);
-                startActivityForResult(editAccountIntent, REQUEST_EDIT_ACCOUNT);
+                editAccountIntent.putExtra(UxArgument.SELECTED_ACCOUNT_ID, mAccountId);
+                startActivityForResult(editAccountIntent, AccountsActivity.REQUEST_EDIT_ACCOUNT);
                 return true;
 
         default:
@@ -476,8 +477,8 @@ public class TransactionsActivity extends SherlockFragmentActivity implements
     public void onNewAccountClick(View v) {
         Intent addAccountIntent = new Intent(this, AccountsActivity.class);
         addAccountIntent.setAction(Intent.ACTION_INSERT_OR_EDIT);
-        addAccountIntent.putExtra(AccountsListFragment.ARG_PARENT_ACCOUNT_ID, mAccountId);
-        startActivityForResult(addAccountIntent, REQUEST_EDIT_ACCOUNT);
+        addAccountIntent.putExtra(UxArgument.PARENT_ACCOUNT_ID, mAccountId);
+        startActivityForResult(addAccountIntent, AccountsActivity.REQUEST_EDIT_ACCOUNT);
     }
 
 	/**
@@ -489,11 +490,11 @@ public class TransactionsActivity extends SherlockFragmentActivity implements
 		FragmentTransaction fragmentTransaction = fragmentManager
 				.beginTransaction();
 				
-		NewTransactionFragment newTransactionFragment = new NewTransactionFragment();	
-		newTransactionFragment.setArguments(args);
+		TransactionFormFragment transactionFormFragment = new TransactionFormFragment();
+		transactionFormFragment.setArguments(args);
 
 		fragmentTransaction.add(R.id.fragment_container,
-				newTransactionFragment, TransactionsActivity.FRAGMENT_NEW_TRANSACTION);
+                transactionFormFragment, TransactionsActivity.FRAGMENT_NEW_TRANSACTION);
 		
 		if (mActivityRunning)
 			fragmentTransaction.addToBackStack(null);
@@ -504,7 +505,7 @@ public class TransactionsActivity extends SherlockFragmentActivity implements
 	public void createNewTransaction(long accountRowId) {
         Intent createTransactionIntent = new Intent(this.getApplicationContext(), TransactionsActivity.class);
         createTransactionIntent.setAction(Intent.ACTION_INSERT_OR_EDIT);
-        createTransactionIntent.putExtra(TransactionsListFragment.SELECTED_ACCOUNT_ID, accountRowId);
+        createTransactionIntent.putExtra(UxArgument.SELECTED_ACCOUNT_ID, accountRowId);
         startActivity(createTransactionIntent);
 	}
 
@@ -512,8 +513,8 @@ public class TransactionsActivity extends SherlockFragmentActivity implements
 	public void editTransaction(long transactionId){
         Intent createTransactionIntent = new Intent(this.getApplicationContext(), TransactionsActivity.class);
         createTransactionIntent.setAction(Intent.ACTION_INSERT_OR_EDIT);
-        createTransactionIntent.putExtra(TransactionsListFragment.SELECTED_ACCOUNT_ID, mAccountId);
-        createTransactionIntent.putExtra(NewTransactionFragment.SELECTED_TRANSACTION_ID, transactionId);
+        createTransactionIntent.putExtra(UxArgument.SELECTED_ACCOUNT_ID, mAccountId);
+        createTransactionIntent.putExtra(UxArgument.SELECTED_TRANSACTION_ID, transactionId);
         startActivity(createTransactionIntent);
 	}
 
@@ -521,7 +522,7 @@ public class TransactionsActivity extends SherlockFragmentActivity implements
     public void accountSelected(long accountRowId) {
         Intent restartIntent = new Intent(this.getApplicationContext(), TransactionsActivity.class);
         restartIntent.setAction(Intent.ACTION_VIEW);
-        restartIntent.putExtra(TransactionsListFragment.SELECTED_ACCOUNT_ID, accountRowId);
+        restartIntent.putExtra(UxArgument.SELECTED_ACCOUNT_ID, accountRowId);
         startActivity(restartIntent);
     }
 }

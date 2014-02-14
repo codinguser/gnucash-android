@@ -289,8 +289,8 @@
 	 	<item>CREDITO</item>
 	 	<item>DEBITO</item>
 	</string-array>
-	<string name="delete_all_transactions_confirmation_message">Eliminare TUTTE le transazioni?</string>
-	<string name="delete_transaction_confirmation_message">Eliminare davvero questa transazione?</string>
+	<string name="msg_delete_all_transactions_confirmation">Eliminare TUTTE le transazioni?</string>
+	<string name="msg_delete_transaction_confirmation">Eliminare davvero questa transazione?</string>
 	<string name="title_export_preference_category">Esporta</string>
 	<string name="title_export_all_transactions">Esporta tutte le transazioni</string>
 	<string name="title_always_delete_exported_transactions">Elimina le transazioni esportate</string>
@@ -384,11 +384,10 @@
     <string name="title_all_accounts">Tutti</string>
     <string name="summary_create_default_accounts">Crea la struttura predefinita dei conti comuni di GnuCash</string>
     <string name="title_create_default_accounts">Crea conti predefiniti</string>
-    <string name="message_confirm_create_default_accounts_setting">I nuovi conti saranno aggiunti alla struttura esistente.\n\n
+    <string name="msg_confirm_create_default_accounts_setting">I nuovi conti saranno aggiunti alla struttura esistente.\n\n
         Per sostituire i conti esistenti, occorre eliminarli prima di proseguire!
     </string>
-    <string name="menu_item_recurring_transactions">Transazioni pianificate</string>
-    <string name="message_confirm_create_default_accounts_first_run">Benvenuti in GnuCash per Android! \nÈ possibile
+    <string name="msg_confirm_create_default_accounts_first_run">Benvenuti in GnuCash per Android! \nÈ possibile
         creare una struttura dei conti più comunemente utilizzati o importare la propria struttura da GnuCash. \n\nEntrambe le
         Opzioni sono disponibili nelle impostazioni dell\'applicazione ed è quindi possibile decidere in seguito.
     </string>
@@ -398,4 +397,6 @@
         <item>SETTIMANALE</item>
         <item>MENSILE</item>
     </string-array>
+    <string name="menu_scheduled_transactions">Scheduled Transactions</string>
+    <string name="title_scheduled_transactions">Scheduled Transactions</string>
 </resources>

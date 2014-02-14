@@ -20,7 +20,7 @@ import android.content.Context;
 import android.util.Log;
 import android.widget.Toast;
 import org.gnucash.android.R;
-import org.gnucash.android.data.Account;
+import org.gnucash.android.model.Account;
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;

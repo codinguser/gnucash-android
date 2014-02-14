@@ -288,8 +288,8 @@
         <item>贷方</item>
         <item>借方</item>
     </string-array>
-    <string name="delete_all_transactions_confirmation_message">确定删除所有交易？</string>
-    <string name="delete_transaction_confirmation_message">确定删除此项交易？</string>
+    <string name="msg_delete_all_transactions_confirmation">确定删除所有交易？</string>
+    <string name="msg_delete_transaction_confirmation">确定删除此项交易？</string>
     <string name="title_export_preference_category">导出设置</string>
     <string name="title_export_all_transactions">导出所有交易</string>
     <string name="title_always_delete_exported_transactions">删除已导出的交易</string>
@@ -382,15 +382,16 @@
     <string name="title_all_accounts">所有</string>
     <string name="summary_create_default_accounts">创建通用的科目结构</string>
     <string name="title_create_default_accounts">创建默认科目</string>
-    <string name="message_confirm_create_default_accounts_setting">准备创建新的科目结构，这不会覆盖现有的科目，如果你想创建全新的科目结构请先删除旧的科目。
+    <string name="msg_confirm_create_default_accounts_setting">准备创建新的科目结构，这不会覆盖现有的科目，如果你想创建全新的科目结构请先删除旧的科目。
     </string>
-    <string name="menu_item_recurring_transactions">计划的交易</string>
-    <string name="message_confirm_create_default_accounts_first_run">欢迎使用GnuCash Android！ \n你可以选择：1）创建常用的科目结构，2）导入自定义的科目结构。\或者稍后再决定，两种选择也能在设置中找到。
+    <string name="menu_scheduled_transactions">计划的交易</string>
+    <string name="msg_confirm_create_default_accounts_first_run">欢迎使用GnuCash Android！ \n你可以选择：1）创建常用的科目结构，2）导入自定义的科目结构。\或者稍后再决定，两种选择也能在设置中找到。
     </string>
     <string-array name="recurrence_period_strings">
-        <item>毫无</item>
-        <item>每日</item>
+        <item>无</item>
+        <item>每天</item>
         <item>每周</item>
         <item>每月</item>
     </string-array>
+    <string name="title_scheduled_transactions">计划的交易</string>
 </resources>

@@ -29,14 +29,14 @@ import android.widget.TextView;
 import android.widget.ToggleButton;
 import com.jayway.android.robotium.solo.Solo;
 import org.gnucash.android.R;
-import org.gnucash.android.data.Account;
-import org.gnucash.android.data.Money;
-import org.gnucash.android.data.Transaction;
+import org.gnucash.android.model.Account;
+import org.gnucash.android.model.Money;
+import org.gnucash.android.model.Transaction;
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.TransactionsDbAdapter;
-import org.gnucash.android.ui.transactions.NewTransactionFragment;
-import org.gnucash.android.ui.transactions.TransactionsActivity;
-import org.gnucash.android.ui.transactions.TransactionsListFragment;
+import org.gnucash.android.ui.UxArgument;
+import org.gnucash.android.ui.transaction.TransactionFormFragment;
+import org.gnucash.android.ui.transaction.TransactionsActivity;
 
 import java.text.NumberFormat;
 import java.text.ParseException;
@@ -81,7 +81,7 @@ public class TransactionsActivityTest extends
         assertTrue(id > 0);
 
         Intent intent = new Intent(Intent.ACTION_VIEW);
-        intent.putExtra(TransactionsListFragment.SELECTED_ACCOUNT_ID, id);
+        intent.putExtra(UxArgument.SELECTED_ACCOUNT_ID, id);
         setActivityIntent(intent);
 
         mSolo = new Solo(getInstrumentation(), getActivity());
@@ -112,12 +112,12 @@ public class TransactionsActivityTest extends
 	}
 	
 	private void validateNewTransactionFields(){
-		String expectedValue = NewTransactionFragment.DATE_FORMATTER.format(new Date(mTransactionTimeMillis));
+		String expectedValue = TransactionFormFragment.DATE_FORMATTER.format(new Date(mTransactionTimeMillis));
 		TextView dateView = (TextView) mSolo.getView(R.id.input_date);
 		String actualValue = dateView.getText().toString();
 		assertEquals(expectedValue, actualValue);
 		
-		expectedValue = NewTransactionFragment.TIME_FORMATTER.format(new Date(mTransactionTimeMillis));
+		expectedValue = TransactionFormFragment.TIME_FORMATTER.format(new Date(mTransactionTimeMillis));
 		TextView timeView = (TextView) mSolo.getView(R.id.input_time);
 		actualValue = timeView.getText().toString();
 		assertEquals(expectedValue, actualValue);
@@ -164,12 +164,12 @@ public class TransactionsActivityTest extends
 		String description = mSolo.getEditText(2).getText().toString();
 		assertEquals(transaction.getDescription(), description);
 		
-		String expectedValue = NewTransactionFragment.DATE_FORMATTER.format(transaction.getTimeMillis());
+		String expectedValue = TransactionFormFragment.DATE_FORMATTER.format(transaction.getTimeMillis());
 		TextView dateView = (TextView) mSolo.getView(R.id.input_date);
 		String actualValue = dateView.getText().toString(); //mSolo.getText(6).getText().toString();
 		assertEquals(expectedValue, actualValue);
 		
-		expectedValue = NewTransactionFragment.TIME_FORMATTER.format(transaction.getTimeMillis());
+		expectedValue = TransactionFormFragment.TIME_FORMATTER.format(transaction.getTimeMillis());
 		TextView timeView = (TextView) mSolo.getView(R.id.input_time);
 		actualValue = timeView.getText().toString();// mSolo.getText(7).getText().toString();
 		assertEquals(expectedValue, actualValue);
@@ -313,10 +313,10 @@ public class TransactionsActivityTest extends
 			assertEquals(trx.getAccountUID(), DUMMY_ACCOUNT_UID);
 			Date expectedDate = new Date(mTransactionTimeMillis);
 			Date trxDate = new Date(trx.getTimeMillis());
-			assertEquals(NewTransactionFragment.DATE_FORMATTER.format(expectedDate), 
-					NewTransactionFragment.DATE_FORMATTER.format(trxDate));
-			assertEquals(NewTransactionFragment.TIME_FORMATTER.format(expectedDate), 
-					NewTransactionFragment.TIME_FORMATTER.format(trxDate));
+			assertEquals(TransactionFormFragment.DATE_FORMATTER.format(expectedDate),
+					TransactionFormFragment.DATE_FORMATTER.format(trxDate));
+			assertEquals(TransactionFormFragment.TIME_FORMATTER.format(expectedDate),
+					TransactionFormFragment.TIME_FORMATTER.format(trxDate));
 			
 			//FIXME: for some reason, the expected time is higher (in the future) than the actual time
 			//this should not be the case since the transaction was created with the expected time

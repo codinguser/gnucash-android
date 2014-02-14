@@ -288,8 +288,8 @@
 		<item>CREDIT</item>
 		<item>DEBIT</item>
 	</string-array>
-	<string name="delete_all_transactions_confirmation_message">Are you sure you want to delete ALL transactions?</string>
-	<string name="delete_transaction_confirmation_message">Are you sure you want to delete this transaction?</string>
+	<string name="msg_delete_all_transactions_confirmation">Are you sure you want to delete ALL transactions?</string>
+	<string name="msg_delete_transaction_confirmation">Are you sure you want to delete this transaction?</string>
 	<string name="title_export_preference_category">Export</string>
 	<string name="title_export_all_transactions">Export all transactions</string>
 	<string name="title_always_delete_exported_transactions">Delete exported transactions</string>
@@ -382,11 +382,11 @@
     <string name="title_all_accounts">All</string>
     <string name="summary_create_default_accounts">Creates default GnuCash commonly-used account structure</string>
     <string name="title_create_default_accounts">Create default accounts</string>
-    <string name="message_confirm_create_default_accounts_setting">New accounts will be created in addition to the existing
+    <string name="msg_confirm_create_default_accounts_setting">New accounts will be created in addition to the existing
         account structure.\n\nIf you wish to replace currently existing accounts, delete them first before proceeding!
     </string>
-    <string name="menu_item_recurring_transactions">Recurring Transactions</string>
-    <string name="message_confirm_create_default_accounts_first_run">Welcome to GnuCash Android! \nYou can either create
+    <string name="menu_scheduled_transactions">Scheduled Transactions</string>
+    <string name="msg_confirm_create_default_accounts_first_run">Welcome to GnuCash Android! \nYou can either create
         a hierarchy of commonly-used accounts, or import your own GnuCash account structure. \n\nBoth options are also
         available in app Settings so you can decide later.
     </string>
@@ -396,4 +396,5 @@
         <item>WEEKLY</item>
         <item>MONTHLY</item>
     </string-array>
+    <string name="title_scheduled_transactions">Scheduled Transactions</string>
 </resources>

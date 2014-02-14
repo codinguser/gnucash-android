@@ -2,8 +2,8 @@ package org.gnucash.android.test.db;
 
 import java.util.List;
 
-import org.gnucash.android.data.Account;
-import org.gnucash.android.data.Transaction;
+import org.gnucash.android.model.Account;
+import org.gnucash.android.model.Transaction;
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.TransactionsDbAdapter;
 

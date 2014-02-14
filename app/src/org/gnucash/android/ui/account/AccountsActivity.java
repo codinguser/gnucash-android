@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.gnucash.android.ui.accounts;
+package org.gnucash.android.ui.account;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -46,19 +46,21 @@ import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import com.viewpagerindicator.TitlePageIndicator;
 import org.gnucash.android.R;
-import org.gnucash.android.data.Money;
-import org.gnucash.android.ui.Refreshable;
+import org.gnucash.android.model.Money;
+import org.gnucash.android.ui.util.Refreshable;
+import org.gnucash.android.ui.UxArgument;
 import org.gnucash.android.ui.settings.SettingsActivity;
-import org.gnucash.android.ui.transactions.RecurringTransactionsListFragment;
-import org.gnucash.android.ui.transactions.TransactionsActivity;
-import org.gnucash.android.ui.transactions.TransactionsListFragment;
+import org.gnucash.android.ui.transaction.ScheduledTransactionsListFragment;
+import org.gnucash.android.ui.transaction.TransactionsActivity;
 import org.gnucash.android.util.GnucashAccountXmlHandler;
-import org.gnucash.android.util.OnAccountClickedListener;
+import org.gnucash.android.ui.util.OnAccountClickedListener;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.Currency;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * Manages actions related to accounts, displaying, exporting and creating new accounts
@@ -71,7 +73,17 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
 	/**
 	 * Tag used for identifying the account list fragment when it is added to this activity
 	 */
-	public static final String FRAGMENT_ACCOUNTS_LIST 	= "accounts_list";
+	public static final String FRAGMENT_ACCOUNTS_LIST 	= "accounts_list_fragment";
+
+    /**
+     * Request code for GnuCash account structure file to import
+     */
+    public static final int REQUEST_PICK_ACCOUNTS_FILE = 0x1;
+
+    /**
+     * Request code for opening the account to edit
+     */
+    public static final int REQUEST_EDIT_ACCOUNT = 0x10;
 
     /**
 	 * Tag used for identifying the account export fragment
@@ -86,7 +98,7 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
 	/**
 	 * Logging tag
 	 */
-	protected static final String TAG = "AccountsActivity";
+	protected static final String LOG_TAG = "AccountsActivity";
 
     /**
      * Intent action for viewing recurring transactions
@@ -114,11 +126,20 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
     public static final int INDEX_FAVORITE_ACCOUNTS_FRAGMENT = 2;
 
     /**
+     * Used to save the index of the last open tab and restore the pager to that index
+     */
+    public static final String LAST_OPEN_TAB_INDEX = "last_open_tab";
+
+    /**
      * Map containing fragments for the different tabs
      */
-    private SparseArray<Refreshable> mFragmentPageReferenceMap = new SparseArray<Refreshable>();
+    private Map<Integer,Refreshable> mFragmentPageReferenceMap = new HashMap<Integer, Refreshable>();
 
-	
+    /**
+     * ViewPager which manages the different tabs
+     */
+    private ViewPager mPager;
+
 	/**
 	 * Dialog which is shown to the user on first start prompting the user to create some accounts
 	 */
@@ -191,33 +212,33 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
 
         init();
 
-        ViewPager pager = (ViewPager) findViewById(R.id.pager);
+        mPager = (ViewPager) findViewById(R.id.pager);
         TitlePageIndicator titlePageIndicator = (TitlePageIndicator) findViewById(R.id.titles);
 
         final Intent intent = getIntent();
         String action = intent.getAction();
         if (action != null && action.equals(Intent.ACTION_INSERT_OR_EDIT)) {
             //enter account creation/edit mode if that was specified
-            pager.setVisibility(View.GONE);
+            mPager.setVisibility(View.GONE);
             titlePageIndicator.setVisibility(View.GONE);
 
-            long accountId = intent.getLongExtra(TransactionsListFragment.SELECTED_ACCOUNT_ID, 0L);
+            long accountId = intent.getLongExtra(UxArgument.SELECTED_ACCOUNT_ID, 0L);
             if (accountId > 0)
                 showEditAccountFragment(accountId);
             else {
-                long parentAccountId = intent.getLongExtra(AccountsListFragment.ARG_PARENT_ACCOUNT_ID, 0L);
+                long parentAccountId = intent.getLongExtra(UxArgument.PARENT_ACCOUNT_ID, 0L);
                 showAddAccountFragment(parentAccountId);
             }
         } else if (action != null && action.equals(ACTION_VIEW_RECURRING)) {
-            pager.setVisibility(View.GONE);
+            mPager.setVisibility(View.GONE);
             titlePageIndicator.setVisibility(View.GONE);
             showRecurringTransactionsFragment();
         } else {
             //show the simple accounts list
             PagerAdapter mPagerAdapter = new AccountViewPagerAdapter(getSupportFragmentManager());
-            pager.setAdapter(mPagerAdapter);
-            titlePageIndicator.setViewPager(pager);
-            pager.setCurrentItem(INDEX_TOP_LEVEL_ACCOUNTS_FRAGMENT);
+            mPager.setAdapter(mPagerAdapter);
+            titlePageIndicator.setViewPager(mPager);
+            mPager.setCurrentItem(INDEX_TOP_LEVEL_ACCOUNTS_FRAGMENT);
         }
 
 	}
@@ -237,7 +258,7 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
             currencyCode = prefs.getString(getString(R.string.key_default_currency),
                     Currency.getInstance(locale).getCurrencyCode());
         } catch (Exception e) {
-            Log.e(TAG, e.getMessage());
+            Log.e(LOG_TAG, e.getMessage());
             currencyCode = "USD"; //just use USD and let the user choose
         }
 
@@ -258,6 +279,16 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
     protected void onResume() {
         super.onResume();
         TransactionsActivity.sLastTitleColor = -1;
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        int lastTabIndex = preferences.getInt(LAST_OPEN_TAB_INDEX, INDEX_TOP_LEVEL_ACCOUNTS_FRAGMENT);
+        mPager.setCurrentItem(lastTabIndex);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onPause();
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        preferences.edit().putInt(LAST_OPEN_TAB_INDEX, mPager.getCurrentItem()).commit();
     }
 
     /**
@@ -266,25 +297,19 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
 	 * @return <code>true</code> if the minor version has been increased, <code>false</code> otherwise.
 	 */
 	private boolean hasNewFeatures(){
-		try {
-			PackageInfo packageInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
-			String versionName = packageInfo.versionName;			
-			int end = versionName.indexOf('.');
-			int currentMinor = Integer.parseInt(versionName.substring(0, end));
-			
-			SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-			int previousMinor = prefs.getInt(getString(R.string.key_previous_minor_version), 0);
-			if (currentMinor > previousMinor){
-				Editor editor = prefs.edit();
-				editor.putInt(getString(R.string.key_previous_minor_version), currentMinor);
-				editor.commit();
-				return true;
-			}
-		} catch (NameNotFoundException e) {
-			//do not show anything in that case
-			e.printStackTrace();			
-		}		
-		return false;
+        String versionName = getResources().getString(R.string.app_version_name);
+        int end = versionName.indexOf('.');
+        int currentMinor = Integer.parseInt(versionName.substring(0, end));
+
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        int previousMinor = prefs.getInt(getString(R.string.key_previous_minor_version), 0);
+        if (currentMinor > previousMinor){
+            Editor editor = prefs.edit();
+            editor.putInt(getString(R.string.key_previous_minor_version), currentMinor);
+            editor.commit();
+            return true;
+        }
+        return false;
 	}
 	
 	/**
@@ -354,7 +379,7 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
      */
     private void showAddAccountFragment(long parentAccountId){
         Bundle args = new Bundle();
-        args.putLong(AccountsListFragment.ARG_PARENT_ACCOUNT_ID, parentAccountId);
+        args.putLong(UxArgument.PARENT_ACCOUNT_ID, parentAccountId);
         showAccountFormFragment(args);
     }
 
@@ -366,7 +391,7 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
         FragmentTransaction fragmentTransaction = fragmentManager
                 .beginTransaction();
 
-        RecurringTransactionsListFragment recurringTransactionsFragment = new RecurringTransactionsListFragment();
+        ScheduledTransactionsListFragment recurringTransactionsFragment = new ScheduledTransactionsListFragment();
 
         fragmentTransaction.replace(R.id.fragment_container,
                 recurringTransactionsFragment, "fragment_recurring_transactions");
@@ -379,7 +404,7 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
      */
     private void showEditAccountFragment(long accountId) {
         Bundle args = new Bundle();
-        args.putLong(TransactionsListFragment.SELECTED_ACCOUNT_ID, accountId);
+        args.putLong(UxArgument.SELECTED_ACCOUNT_ID, accountId);
         showAccountFormFragment(args);
     }
 
@@ -393,13 +418,12 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
         FragmentTransaction fragmentTransaction = fragmentManager
                 .beginTransaction();
 
-        AddAccountFragment newAccountFragment = AddAccountFragment.newInstance(null);
-        newAccountFragment.setArguments(args);
+        AccountFormFragment accountFormFragment = AccountFormFragment.newInstance(null);
+        accountFormFragment.setArguments(args);
 
         fragmentTransaction.replace(R.id.fragment_container,
-                newAccountFragment, AccountsActivity.FRAGMENT_NEW_ACCOUNT);
+                accountFormFragment, AccountsActivity.FRAGMENT_NEW_ACCOUNT);
 
-        fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
     }
 
@@ -417,7 +441,7 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
 	private void createDefaultAccounts(){
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		builder.setTitle(R.string.title_default_accounts);
-        builder.setMessage(R.string.message_confirm_create_default_accounts_first_run);
+        builder.setMessage(R.string.msg_confirm_create_default_accounts_first_run);
 
 		builder.setPositiveButton(R.string.btn_create_accounts, new DialogInterface.OnClickListener() {
 			
@@ -459,7 +483,7 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
         pickIntent.setType("application/octet-stream");
         Intent chooser = Intent.createChooser(pickIntent, "Select GnuCash account file");
 
-        startActivityForResult(chooser, AccountsListFragment.REQUEST_PICK_ACCOUNTS_FILE);
+        startActivityForResult(chooser, REQUEST_PICK_ACCOUNTS_FILE);
 
     }
 
@@ -471,7 +495,7 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
         }
 
         switch (requestCode){
-            case AccountsListFragment.REQUEST_PICK_ACCOUNTS_FILE:
+            case REQUEST_PICK_ACCOUNTS_FILE:
                 try {
                     InputStream accountInputStream = getContentResolver().openInputStream(data.getData());
                     new AccountImporterTask(this).execute(accountInputStream);
@@ -497,7 +521,7 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
 	public void accountSelected(long accountRowId) {
 		Intent intent = new Intent(this, TransactionsActivity.class);
 		intent.setAction(Intent.ACTION_VIEW);
-		intent.putExtra(TransactionsListFragment.SELECTED_ACCOUNT_ID, accountRowId);
+		intent.putExtra(UxArgument.SELECTED_ACCOUNT_ID, accountRowId);
 
 		startActivity(intent);
 	}

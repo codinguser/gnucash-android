@@ -18,7 +18,7 @@ package org.gnucash.android.export.qif;
 
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
-import org.gnucash.android.data.Account;
+import org.gnucash.android.model.Account;
 
 import java.text.SimpleDateFormat;
 import java.util.Currency;

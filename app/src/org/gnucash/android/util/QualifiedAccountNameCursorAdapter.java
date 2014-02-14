@@ -33,20 +33,17 @@ import org.gnucash.android.db.DatabaseHelper;
  * @author Ngewi Fet <ngewif@gmail.com>
  */
 public class QualifiedAccountNameCursorAdapter extends SimpleCursorAdapter {
-    private AccountsDbAdapter mAccountDbAdapter;
 
     public QualifiedAccountNameCursorAdapter(Context context, int layout, Cursor c) {
         super(context, layout, c,
-                new String[] {DatabaseHelper.KEY_NAME},
+                new String[] {DatabaseHelper.KEY_FULL_NAME},
                 new int[] {android.R.id.text1}, 0);
-        mAccountDbAdapter = new AccountsDbAdapter(context);
     }
 
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
         super.bindView(view, context, cursor);
         TextView textView = (TextView) view.findViewById(android.R.id.text1);
-        textView.setText(mAccountDbAdapter.getFullyQualifiedAccountName(cursor.getLong(DatabaseAdapter.COLUMN_ROW_ID)));
         textView.setEllipsize(TextUtils.TruncateAt.MIDDLE);
     }
 }

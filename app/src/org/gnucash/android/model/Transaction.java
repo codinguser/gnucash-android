@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.gnucash.android.data;
+package org.gnucash.android.model;
 
 import java.math.BigDecimal;
 import java.util.Currency;
@@ -23,9 +23,9 @@ import java.util.Locale;
 import java.util.UUID;
 
 import org.gnucash.android.app.GnuCashApplication;
-import org.gnucash.android.data.Account.OfxAccountType;
+import org.gnucash.android.model.Account.OfxAccountType;
 import org.gnucash.android.db.AccountsDbAdapter;
-import org.gnucash.android.export.ofx.OfxExporter;
+import org.gnucash.android.export.ofx.OfxHelper;
 import org.gnucash.android.export.qif.QifHelper;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -425,55 +425,55 @@ public class Transaction {
 	 * @return Element in DOM corresponding to transaction
 	 */
 	public Element toOfx(Document doc, String accountUID){		
-		Element transactionNode = doc.createElement("STMTTRN");
-		Element type = doc.createElement("TRNTYPE");
+		Element transactionNode = doc.createElement(OfxHelper.TAG_STATEMENT_TRANSACTION);
+		Element type = doc.createElement(OfxHelper.TAG_TRANSACTION_TYPE);
 		type.appendChild(doc.createTextNode(mType.toString()));
 		transactionNode.appendChild(type);
 
-		Element datePosted = doc.createElement("DTPOSTED");
-		datePosted.appendChild(doc.createTextNode(OfxExporter.getOfxFormattedTime(mTimestamp)));
+		Element datePosted = doc.createElement(OfxHelper.TAG_DATE_POSTED);
+		datePosted.appendChild(doc.createTextNode(OfxHelper.getOfxFormattedTime(mTimestamp)));
 		transactionNode.appendChild(datePosted);
 		
-		Element dateUser = doc.createElement("DTUSER");
+		Element dateUser = doc.createElement(OfxHelper.TAG_DATE_USER);
 		dateUser.appendChild(doc.createTextNode(
-				OfxExporter.getOfxFormattedTime(mTimestamp)));
+				OfxHelper.getOfxFormattedTime(mTimestamp)));
 		transactionNode.appendChild(dateUser);
 		
-		Element amount = doc.createElement("TRNAMT");
+		Element amount = doc.createElement(OfxHelper.TAG_TRANSACTION_AMOUNT);
 		amount.appendChild(doc.createTextNode(mAmount.toPlainString()));
 		transactionNode.appendChild(amount);
 		
-		Element transID = doc.createElement("FITID");
+		Element transID = doc.createElement(OfxHelper.TAG_TRANSACTION_FITID);
 		transID.appendChild(doc.createTextNode(mTransactionUID));
 		transactionNode.appendChild(transID);
 		
-		Element name = doc.createElement("NAME");
+		Element name = doc.createElement(OfxHelper.TAG_NAME);
 		name.appendChild(doc.createTextNode(mName));
 		transactionNode.appendChild(name);
 		
 		if (mDescription != null && mDescription.length() > 0){
-			Element memo = doc.createElement("MEMO");
+			Element memo = doc.createElement(OfxHelper.TAG_MEMO);
 			memo.appendChild(doc.createTextNode(mDescription));
 			transactionNode.appendChild(memo);
 		}
 		
 		if (mDoubleEntryAccountUID != null && mDoubleEntryAccountUID.length() > 0){
-			Element bankId = doc.createElement("BANKID");
-			bankId.appendChild(doc.createTextNode(OfxExporter.APP_ID));
+			Element bankId = doc.createElement(OfxHelper.TAG_BANK_ID);
+			bankId.appendChild(doc.createTextNode(OfxHelper.APP_ID));
 			
 			//select the proper account as the double account
 			String doubleAccountUID = mDoubleEntryAccountUID.equals(accountUID) ? mAccountUID : mDoubleEntryAccountUID;
 			
-			Element acctId = doc.createElement("ACCTID");
+			Element acctId = doc.createElement(OfxHelper.TAG_ACCOUNT_ID);
 			acctId.appendChild(doc.createTextNode(doubleAccountUID));
 			
-			Element accttype = doc.createElement("ACCTTYPE");			
+			Element accttype = doc.createElement(OfxHelper.TAG_ACCOUNT_TYPE);
 			AccountsDbAdapter acctDbAdapter = new AccountsDbAdapter(GnuCashApplication.getAppContext());
 			OfxAccountType ofxAccountType = Account.convertToOfxAccountType(acctDbAdapter.getAccountType(doubleAccountUID));
 			accttype.appendChild(doc.createTextNode(ofxAccountType.toString()));
 			acctDbAdapter.close();
 			
-			Element bankAccountTo = doc.createElement("BANKACCTTO");
+			Element bankAccountTo = doc.createElement(OfxHelper.TAG_BANK_ACCOUNT_TO);
 			bankAccountTo.appendChild(bankId);
 			bankAccountTo.appendChild(acctId);
 			bankAccountTo.appendChild(accttype);
@@ -499,7 +499,7 @@ public class Transaction {
             splitAccountFullName = accountsDbAdapter.getFullyQualifiedAccountName(mDoubleEntryAccountUID);
         }
 
-        StringBuffer transactionQifBuffer = new StringBuffer();
+        StringBuilder transactionQifBuffer = new StringBuilder();
         transactionQifBuffer.append(QifHelper.DATE_PREFIX).append(QifHelper.formatDate(mTimestamp)).append(newLine);
         transactionQifBuffer.append(QifHelper.MEMO_PREFIX).append(mName).append(newLine);
 
@@ -518,7 +518,7 @@ public class Transaction {
      * Creates an Intent with arguments from the <code>transaction</code>.
      * This intent can be broadcast to create a new transaction
      * @param transaction Transaction used to create intent
-     * @return
+     * @return Intent with transaction details as extras
      */
     public static Intent createIntent(Transaction transaction){
         Intent intent = new Intent(Intent.ACTION_INSERT);

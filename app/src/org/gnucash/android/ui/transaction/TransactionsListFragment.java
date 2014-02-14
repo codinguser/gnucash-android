@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.gnucash.android.ui.transactions;
+package org.gnucash.android.ui.transaction;
 
 import android.app.Activity;
 import android.content.Context;
@@ -47,15 +47,16 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import org.gnucash.android.R;
-import org.gnucash.android.data.Money;
+import org.gnucash.android.model.Money;
 import org.gnucash.android.db.DatabaseAdapter;
 import org.gnucash.android.db.DatabaseCursorLoader;
 import org.gnucash.android.db.DatabaseHelper;
 import org.gnucash.android.db.TransactionsDbAdapter;
-import org.gnucash.android.ui.Refreshable;
-import org.gnucash.android.ui.accounts.AccountsListFragment;
+import org.gnucash.android.ui.util.Refreshable;
+import org.gnucash.android.ui.UxArgument;
+import org.gnucash.android.ui.account.AccountsListFragment;
 import org.gnucash.android.ui.widget.WidgetConfigurationActivity;
-import org.gnucash.android.util.OnTransactionClickedListener;
+import org.gnucash.android.ui.util.OnTransactionClickedListener;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -72,30 +73,9 @@ public class TransactionsListFragment extends SherlockListFragment implements
 	/**
 	 * Logging tag
 	 */
-	protected static final String TAG = "TransactionsListFragment";
+	protected static final String LOG_TAG = "TransactionsListFragment";
 
-	/**
-	 * Key for passing list of selected items as an argument in a bundle or intent
-	 */
-	private static final String SAVED_SELECTED_ITEMS 	= "selected_items";	
-	
-	/**
-	 * Key for passing the selected account ID as an argument in a bundle or intent
-	 * This is the account whose transactions are to be displayed
-	 */
-	public static final String SELECTED_ACCOUNT_ID 		= "selected_account_id";
-	
-	/**
-	 * Key for passing list of IDs selected transactions as an argument in a bundle or intent
-	 */
-	public static final String SELECTED_TRANSACTION_IDS = "selected_transactions";
-
-	/**
-	 * Key for the origin account as argument when moving accounts
-	 */
-	public static final String ORIGIN_ACCOUNT_ID = "origin_acccount_id";
-	
-	private TransactionsDbAdapter mTransactionsDbAdapter;
+    private TransactionsDbAdapter mTransactionsDbAdapter;
 	private SimpleCursorAdapter mCursorAdapter;
 	private ActionMode mActionMode = null;
 	private boolean mInEditMode = false;
@@ -163,7 +143,7 @@ public class TransactionsListFragment extends SherlockListFragment implements
 		super.onCreate(savedInstanceState);
 		setHasOptionsMenu(true);
 		Bundle args = getArguments();
-		mAccountID = args.getLong(SELECTED_ACCOUNT_ID);	
+		mAccountID = args.getLong(UxArgument.SELECTED_ACCOUNT_ID);
 
 		mTransactionsDbAdapter = new TransactionsDbAdapter(getActivity());
 		mCursorAdapter = new TransactionsCursorAdapter(
@@ -267,20 +247,20 @@ public class TransactionsListFragment extends SherlockListFragment implements
 	
 	@Override
 	public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
-		Log.d(TAG, "Creating transactions loader");
+		Log.d(LOG_TAG, "Creating transactions loader");
 		return new TransactionsCursorLoader(getActivity(), mAccountID);
 	}
 
 	@Override
 	public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-		Log.d(TAG, "Transactions loader finished. Swapping in cursor");
+		Log.d(LOG_TAG, "Transactions loader finished. Swapping in cursor");
 		mCursorAdapter.swapCursor(cursor);
 		mCursorAdapter.notifyDataSetChanged();		
 	}
 
 	@Override
 	public void onLoaderReset(Loader<Cursor> loader) {
-		Log.d(TAG, "Resetting transactions loader");
+		Log.d(LOG_TAG, "Resetting transactions loader");
 		mCursorAdapter.swapCursor(null);		
 	}
 
@@ -358,9 +338,10 @@ public class TransactionsListFragment extends SherlockListFragment implements
 	    // Create and show the dialog.
 	    DialogFragment bulkMoveFragment = new BulkMoveDialogFragment();
 	    Bundle args = new Bundle();
-	    args.putLong(ORIGIN_ACCOUNT_ID, mAccountID);
-	    args.putLongArray(SELECTED_TRANSACTION_IDS, getListView().getCheckedItemIds());
+	    args.putLong(UxArgument.ORIGIN_ACCOUNT_ID, mAccountID);
+	    args.putLongArray(UxArgument.SELECTED_TRANSACTION_IDS, getListView().getCheckedItemIds());
 	    bulkMoveFragment.setArguments(args);
+        bulkMoveFragment.setTargetFragment(this, 0);
 	    bulkMoveFragment.show(ft, "bulk_move_dialog");
 	}	
 	

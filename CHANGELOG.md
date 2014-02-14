@@ -1,5 +1,17 @@
 Change Log
 ===============================================================================
+Version 1.3.1 *(2014-02-14)*
+----------------------------
+* Fixed: Crash when bulk moving transactions
+* Fixed: Missing string for internationalization in ru_RU locale
+* Fixed: Random crashes when opening ScheduledTransactions list
+* Fixed: Blank screen after closing AccountFormFragment
+* Fixed: Correct normal balance of the different types of ASSET accounts
+* Fixed: Limit the target accounts for bulk transfers to same currency and non-placeholder accounts
+* Improved: Remember last opened tab in accounts list
+* Improved: Added version information for feedback email
+* Improved: Lists of accounts are now sorted by the fully qualified account name
+
 Version 1.3.0 *(2014-02-10)*
 ----------------------------
 * Fixed: Some file managers do not display all files available for import

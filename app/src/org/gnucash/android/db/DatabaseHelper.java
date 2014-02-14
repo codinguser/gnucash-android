@@ -16,13 +16,13 @@
 
 package org.gnucash.android.db;
 
-import org.gnucash.android.data.Account.AccountType;
-
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
+import org.gnucash.android.model.Account.AccountType;
 
 /**
  * Helper class for managing the SQLite database.
@@ -46,7 +46,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	 * Database version.
 	 * With any change to the database schema, this number must increase
 	 */
-	private static final int DATABASE_VERSION = 5;
+	private static final int DATABASE_VERSION = 6;
 	
 	/**
 	 * Name of accounts table
@@ -70,7 +70,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	 * Currently used by all tables
 	 */
 	public static final String KEY_NAME 	= "name";
-	
+
+    /**
+     * Key for fully qualified name of the account column
+     * This name includes the parent hierarchy
+     */
+    public static final String KEY_FULL_NAME = "full_name";
+
 	/**
 	 * Unique Identifier.
 	 */
@@ -170,6 +176,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + KEY_DEFAULT_TRANSFER_ACCOUNT_UID + " varchar(255), "
             + KEY_COLOR_CODE    + " varchar(255), "
             + KEY_FAVORITE 		+ " tinyint default 0, "
+            + KEY_FULL_NAME 	+ " varchar(255), "
 			+ "UNIQUE (" + KEY_UID + ")"	
 			+ ");";
 	
@@ -275,10 +282,109 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
                 oldVersion = 5;
             }
+
+            if (oldVersion == 5 && newVersion >= 6){
+                Log.i(TAG, "Upgrading database to version 6");
+                String addFullAccountNameQuery = " ALTER TABLE " + ACCOUNTS_TABLE_NAME
+                        + " ADD COLUMN " + KEY_FULL_NAME + " varchar(255) ";
+                db.execSQL(addFullAccountNameQuery);
+
+                //update all existing accounts with their fully qualified name
+                Cursor cursor = db.query(DatabaseHelper.ACCOUNTS_TABLE_NAME,
+                        new String[]{KEY_ROW_ID, KEY_UID},
+                        null, null, null, null, null);
+                while(cursor != null && cursor.moveToNext()){
+                    String uid = cursor.getString(cursor.getColumnIndexOrThrow(KEY_UID));
+                    String fullName = getFullyQualifiedAccountName(db, uid);
+
+                    if (fullName == null)
+                        continue;
+
+                    ContentValues contentValues = new ContentValues();
+                    contentValues.put(KEY_FULL_NAME, fullName);
+
+                    long id = cursor.getLong(cursor.getColumnIndexOrThrow(KEY_ROW_ID));
+                    db.update(ACCOUNTS_TABLE_NAME, contentValues, KEY_ROW_ID + " = " + id, null);
+                }
+
+                if (cursor != null) {
+                    cursor.close();
+                }
+
+                oldVersion = 6;
+            }
 		}
 
         if (oldVersion != newVersion) {
-            Log.i(TAG, "Upgrade for the database failed. The Database is currently at version " + oldVersion);
+            Log.w(TAG, "Upgrade for the database failed. The Database is currently at version " + oldVersion);
         }
 	}
+
+    /**
+     * Performs same functtion as {@link org.gnucash.android.db.AccountsDbAdapter#getFullyQualifiedAccountName(String)}
+     * <p>This method is only necessary because we cannot open the database again (by instantiating {@link AccountsDbAdapter}
+     * while it is locked for upgrades. So we reimplement the method here.</p>
+     * @param db SQLite database
+     * @param accountUID Unique ID of account whose fully qualified name is to be determined
+     * @return Fully qualified (colon-sepaated) account name
+     * @see org.gnucash.android.db.AccountsDbAdapter#getFullyQualifiedAccountName(String)
+     */
+    private String getFullyQualifiedAccountName(SQLiteDatabase db, String accountUID){
+        //get the parent account UID of the account
+        Cursor cursor = db.query(DatabaseHelper.ACCOUNTS_TABLE_NAME,
+                new String[] {DatabaseHelper.KEY_ROW_ID, DatabaseHelper.KEY_PARENT_ACCOUNT_UID},
+                DatabaseHelper.KEY_UID + " = ?",
+                new String[]{accountUID},
+                null, null, null, null);
+
+        String parentAccountUID = null;
+        if (cursor != null && cursor.moveToFirst()){
+            parentAccountUID = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.KEY_PARENT_ACCOUNT_UID));
+            cursor.close();
+        }
+
+        //get the name of the account
+        cursor = db.query(DatabaseHelper.ACCOUNTS_TABLE_NAME,
+                new String[]{DatabaseHelper.KEY_ROW_ID, DatabaseHelper.KEY_NAME},
+                DatabaseHelper.KEY_UID + " = '" + accountUID + "'",
+                null, null, null, null);
+
+        String accountName = null;
+        if (cursor != null && cursor.moveToFirst()){
+            accountName = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.KEY_NAME));
+            cursor.close();
+        }
+
+        String gnucashRootAccountUID = getGnuCashRootAccountUID(db);
+        if (parentAccountUID == null || accountName == null
+            || parentAccountUID.equalsIgnoreCase(gnucashRootAccountUID)){
+            return accountName;
+        }
+
+        String parentAccountName = getFullyQualifiedAccountName(db, parentAccountUID);
+
+        return parentAccountName + AccountsDbAdapter.ACCOUNT_NAME_SEPARATOR + accountName;
+    }
+
+    /**
+     * Returns the GnuCash ROOT account UID.
+     * <p>In GnuCash desktop account structure, there is a root account (which is not visible in the UI) from which
+     * other top level accounts derive. GnuCash Android does not have this ROOT account by default unless the account
+     * structure was imported from GnuCash for desktop. Hence this method also returns <code>null</code> as an
+     * acceptable result.</p>
+     * <p><b>Note:</b> NULL is an acceptable response, be sure to check for it</p>
+     * @return Unique ID of the GnuCash root account.
+     */
+    private String getGnuCashRootAccountUID(SQLiteDatabase db){
+        String condition = DatabaseHelper.KEY_TYPE + "= '" + AccountType.ROOT.name() + "'";
+        Cursor cursor =  db.query(DatabaseHelper.ACCOUNTS_TABLE_NAME,
+                null, condition, null, null, null,
+                DatabaseHelper.KEY_NAME + " ASC");
+        String rootUID = null;
+        if (cursor != null && cursor.moveToFirst()){
+            rootUID = cursor.getString(DatabaseAdapter.COLUMN_UID);
+            cursor.close();
+        }
+        return rootUID;
+    }
 }

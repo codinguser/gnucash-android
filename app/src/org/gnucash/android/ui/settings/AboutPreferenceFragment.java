@@ -26,7 +26,7 @@ import android.preference.PreferenceManager;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockPreferenceActivity;
-import org.gnucash.android.ui.accounts.AccountsActivity;
+import org.gnucash.android.ui.account.AccountsActivity;
 
 
 /**

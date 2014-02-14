@@ -16,15 +16,10 @@
 
 package org.gnucash.android.export.ofx;
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
-import java.util.TimeZone;
 
-import org.gnucash.android.data.Account;
-import org.gnucash.android.data.Transaction;
+import org.gnucash.android.model.Account;
+import org.gnucash.android.model.Transaction;
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.TransactionsDbAdapter;
 import org.w3c.dom.Document;
@@ -38,23 +33,7 @@ import android.content.Context;
  */
 public class OfxExporter {
 
-	/**
-	 * A date formatter used when creating file names for the exported data
-	 */
-	public final static SimpleDateFormat OFX_DATE_FORMATTER = new SimpleDateFormat("yyyyMMddHHmmss", Locale.US);
-	
-	/**
-	 * ID which will be used as the bank ID for OFX from this app
-	 */
-	public static String APP_ID = "org.gnucash.android";
-	
-	/**
-	 * The Transaction ID is usually the client ID sent in a request.
-	 * Since the data exported is not as a result of a request, we use 0
-	 */
-	public static final String UNSOLICITED_TRANSACTION_ID = "0";
-	
-	/**
+    /**
 	 * List of accounts in the expense report
 	 */
 	private List<Account> mAccountsList;
@@ -70,17 +49,7 @@ public class OfxExporter {
 	 */
 	private Context mContext;
 
-	/**
-	 * Header for OFX documents
-	 */
-	public static final String OFX_HEADER = "OFXHEADER=\"200\" VERSION=\"211\" SECURITY=\"NONE\" OLDFILEUID=\"NONE\" NEWFILEUID=\"NONE\"";
-	
-	/**
-	 * SGML header for OFX. Used for compatibility with desktop GnuCash
-	 */
-	public static final String OFX_SGML_HEADER = "ENCODING:UTF-8\nOFXHEADER:100\nDATA:OFXSGML\nVERSION:211\nSECURITY:NONE\nCHARSET:UTF-8\nCOMPRESSION:NONE\nOLDFILEUID:NONE\nNEWFILEUID:NONE";
-	
-	/**
+    /**
 	 * Builds an XML representation of the {@link Account}s and {@link Transaction}s in the database 
 	 * @param context Application context
 	 * @param exportAll Whether all transactions should be exported or only new ones since last export
@@ -91,45 +60,21 @@ public class OfxExporter {
 		mExportAll = exportAll;
 		mContext = context;
 	}
-	
-	/**
-	 * Returns the current time formatted using the pattern in {@link #OFX_DATE_FORMATTER}
-	 * @return Current time as a formatted string
-	 * @see #getOfxFormattedTime(long)
-	 */
-	public static String getFormattedCurrentTime(){
-		return getOfxFormattedTime(System.currentTimeMillis());
-	}
-	
-	/**
-	 * Returns a formatted string representation of time in <code>milliseconds</code>
-	 * @param milliseconds Long value representing the time to be formatted
-	 * @return Formatted string representation of time in <code>milliseconds</code>
-	 */
-	public static String getOfxFormattedTime(long milliseconds){
-		Date date = new Date(milliseconds);
-		String dateString = OFX_DATE_FORMATTER.format(date);
-		TimeZone tz = Calendar.getInstance().getTimeZone();
-		int offset = tz.getRawOffset();
-		int hours   = (int) (( offset / (1000*60*60)) % 24);
-		String sign = offset > 0 ?  "+" : "";
-		return dateString + "[" + sign + hours + ":" + tz.getDisplayName(false, TimeZone.SHORT, Locale.getDefault()) + "]";
-	}
-	
-	/**
+
+    /**
 	 * Converts all expenses into OFX XML format and adds them to the XML document
 	 * @param doc DOM document of the OFX expenses.
 	 * @param parent Parent node for all expenses in report
 	 */
 	public void toOfx(Document doc, Element parent){
-		Element transactionUid = doc.createElement("TRNUID");		
+		Element transactionUid = doc.createElement(OfxHelper.TAG_TRANSACTION_UID);
 		//unsolicited because the data exported is not as a result of a request
-		transactionUid.appendChild(doc.createTextNode(UNSOLICITED_TRANSACTION_ID));
+		transactionUid.appendChild(doc.createTextNode(OfxHelper.UNSOLICITED_TRANSACTION_ID));
 
-		Element statementTransactionResponse = doc.createElement("STMTTRNRS");
+		Element statementTransactionResponse = doc.createElement(OfxHelper.TAG_STATEMENT_TRANSACTION_RESPONSE);
 		statementTransactionResponse.appendChild(transactionUid);
 		
-		Element bankmsgs = doc.createElement("BANKMSGSRSV1");
+		Element bankmsgs = doc.createElement(OfxHelper.TAG_BANK_MESSAGES_V1);
 		bankmsgs.appendChild(statementTransactionResponse);
 		
 		parent.appendChild(bankmsgs);		

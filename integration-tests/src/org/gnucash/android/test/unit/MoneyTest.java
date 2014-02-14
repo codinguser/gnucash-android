@@ -22,7 +22,7 @@ import java.util.Locale;
 
 import junit.framework.TestCase;
 
-import org.gnucash.android.data.Money;
+import org.gnucash.android.model.Money;
 
 public class MoneyTest extends TestCase {
 

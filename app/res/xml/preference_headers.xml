@@ -29,6 +29,9 @@
     </header>
     <header android:title="Send feedback">
         <intent android:action="android.intent.action.VIEW"
-                android:data="mailto:gnucash.org@gmail.com?subject=GnuCash Android Feedback" />
+                android:data="mailto:gnucash.org@gmail.com" >
+            <extra android:name="android.intent.extra.SUBJECT" android:value="GnuCash Android Feedback" />
+            <extra android:name="android.intent.extra.TEXT" android:value="@string/app_version_name" />
+        </intent>
     </header>
 </preference-headers>
