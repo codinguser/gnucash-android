@@ -18,10 +18,10 @@ package org.gnucash.android.db;
 
 import java.util.*;
 
-import org.gnucash.android.data.Account;
-import org.gnucash.android.data.Money;
-import org.gnucash.android.data.Account.AccountType;
-import org.gnucash.android.data.Transaction;
+import org.gnucash.android.model.Account;
+import org.gnucash.android.model.Money;
+import org.gnucash.android.model.Account.AccountType;
+import org.gnucash.android.model.Transaction;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -69,21 +69,26 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 	 */
 	public long addAccount(Account account){
 		ContentValues contentValues = new ContentValues();
-		contentValues.put(DatabaseHelper.KEY_NAME, account.getName());
-		contentValues.put(DatabaseHelper.KEY_TYPE, account.getAccountType().name());
-		contentValues.put(DatabaseHelper.KEY_UID, account.getUID());
+		contentValues.put(DatabaseHelper.KEY_NAME,          account.getName());
+		contentValues.put(DatabaseHelper.KEY_TYPE,          account.getAccountType().name());
+		contentValues.put(DatabaseHelper.KEY_UID,           account.getUID());
 		contentValues.put(DatabaseHelper.KEY_CURRENCY_CODE, account.getCurrency().getCurrencyCode());
-		contentValues.put(DatabaseHelper.KEY_PARENT_ACCOUNT_UID, account.getParentUID());
-        contentValues.put(DatabaseHelper.KEY_DEFAULT_TRANSFER_ACCOUNT_UID, account.getDefaultTransferAccountUID());
-        contentValues.put(DatabaseHelper.KEY_PLACEHOLDER, account.isPlaceholderAccount() ? 1 : 0);
-        contentValues.put(DatabaseHelper.KEY_COLOR_CODE, account.getColorHexCode());
-        contentValues.put(DatabaseHelper.KEY_FAVORITE, account.isFavorite() ? 1 : 0);
+        contentValues.put(DatabaseHelper.KEY_PLACEHOLDER,   account.isPlaceholderAccount() ? 1 : 0);
+        contentValues.put(DatabaseHelper.KEY_COLOR_CODE,    account.getColorHexCode());
+        contentValues.put(DatabaseHelper.KEY_FAVORITE,      account.isFavorite() ? 1 : 0);
+        contentValues.put(DatabaseHelper.KEY_FULL_NAME,     account.getFullName());
+        contentValues.put(DatabaseHelper.KEY_PARENT_ACCOUNT_UID,            account.getParentUID());
+        contentValues.put(DatabaseHelper.KEY_DEFAULT_TRANSFER_ACCOUNT_UID,  account.getDefaultTransferAccountUID());
+
 		long rowId = -1;
 		if ((rowId = getAccountID(account.getUID())) > 0){
 			//if account already exists, then just update
 			Log.d(TAG, "Updating existing account");
-			mDb.update(DatabaseHelper.ACCOUNTS_TABLE_NAME, contentValues, 
-					DatabaseHelper.KEY_ROW_ID + " = " + rowId, null);
+			int rowsAffected = mDb.update(DatabaseHelper.ACCOUNTS_TABLE_NAME, contentValues,
+                    DatabaseHelper.KEY_ROW_ID + " = " + rowId, null);
+            if (rowsAffected == 1){
+                updateAccount(rowId, DatabaseHelper.KEY_FULL_NAME, getFullyQualifiedAccountName(rowId));
+            }
 		} else {
 			Log.d(TAG, "Adding new account to db");
 			rowId = mDb.insert(DatabaseHelper.ACCOUNTS_TABLE_NAME, null, contentValues);
@@ -91,6 +96,8 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 		
 		//now add transactions if there are any
 		if (rowId > 0){
+            //update the fully qualified account name
+            updateAccount(rowId, DatabaseHelper.KEY_FULL_NAME, getFullyQualifiedAccountName(rowId));
 			for (Transaction t : account.getTransactions()) {
 				mTransactionsAdapter.addTransaction(t);
 			}
@@ -237,6 +244,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
         account.setDefaultTransferAccountUID(c.getString(DatabaseAdapter.COLUMN_DEFAULT_TRANSFER_ACCOUNT_UID));
         account.setColorCode(c.getString(DatabaseAdapter.COLUMN_COLOR_CODE));
         account.setFavorite(c.getInt(DatabaseAdapter.COLUMN_FAVORITE) == 1);
+        account.setFullName(c.getString(DatabaseAdapter.COLUMN_FULL_NAME));
 		return account;
 	}
 		
@@ -441,6 +449,21 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 		return cursor;
 	}
 
+    /**
+     * Returns a cursor to all account records in the database ordered by full name.
+     * GnuCash ROOT accounts are ignored
+     * @return {@link Cursor} to all account records
+     */
+    public Cursor fetchAllRecordsOrderedByFullName(){
+        Log.v(TAG, "Fetching all accounts from db");
+        String selection =  DatabaseHelper.KEY_TYPE + " != ?" ;
+        return mDb.query(DatabaseHelper.ACCOUNTS_TABLE_NAME,
+                null,
+                selection,
+                new String[]{AccountType.ROOT.name()},
+                null, null,
+                DatabaseHelper.KEY_FULL_NAME + " ASC");
+    }
 
     @Override
     public Cursor fetchRecord(long rowId) {
@@ -471,7 +494,19 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 				DatabaseHelper.KEY_NAME + " ASC");
 		return cursor;
 	}
-	
+
+    /**
+     * Returns a Cursor set of accounts which fulfill <code>condition</code>
+     * <p>This method returns the accounts list sorted by the full account name</p>
+     * @param condition SQL WHERE statement without the 'WHERE' itself
+     * @return Cursor set of accounts which fulfill <code>condition</code>
+     */
+    public Cursor fetchAccountsOrderedByFullName(String condition){
+        Log.v(TAG, "Fetching all accounts from db where " + condition);
+        return mDb.query(DatabaseHelper.ACCOUNTS_TABLE_NAME,
+                null, condition, null, null, null,
+                DatabaseHelper.KEY_FULL_NAME + " ASC");
+    }
     /**
      * Returns the balance of an account while taking sub-accounts into consideration
      * @return Account Balance of an account including sub-accounts

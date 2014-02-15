@@ -289,8 +289,8 @@
 		<item>CREDIT</item>
 		<item>DEBIT</item>
 	</string-array>
-	<string name="delete_all_transactions_confirmation_message">Weet u zeker dat u alle transacties wil verwijderen?</string>
-	<string name="delete_transaction_confirmation_message">Weet u zeker dat u deze transactie wil verwijderen?</string>
+	<string name="msg_delete_all_transactions_confirmation">Weet u zeker dat u alle transacties wil verwijderen?</string>
+	<string name="msg_delete_transaction_confirmation">Weet u zeker dat u deze transactie wil verwijderen?</string>
 	<string name="title_export_preference_category">Exporteer</string>
 	<string name="title_export_all_transactions">Exporteer alle transacties</string>
 	<string name="title_always_delete_exported_transactions">Verwijder geëxporteerde transacties</string>
@@ -385,11 +385,10 @@
     <string name="title_all_accounts">All</string>
     <string name="summary_create_default_accounts">Creates default GnuCash commonly-used account structure</string>
     <string name="title_create_default_accounts">Create default accounts</string>
-    <string name="message_confirm_create_default_accounts_setting">New accounts will be created in addition to the existing
+    <string name="msg_confirm_create_default_accounts_setting">New accounts will be created in addition to the existing
         account structure.\n\nIf you wish to replace currently existing accounts, delete them first before proceeding!
     </string>
-    <string name="menu_item_recurring_transactions">Recurring Transactions</string>
-    <string name="message_confirm_create_default_accounts_first_run">Welcome to GnuCash Android! \nYou can either create
+    <string name="msg_confirm_create_default_accounts_first_run">Welcome to GnuCash Android! \nYou can either create
         a hierarchy of commonly-used accounts, or import your own GnuCash account structure. \n\nBoth options are also
         available in app Settings so you can decide later.
     </string>
@@ -399,4 +398,6 @@
         <item>WEKELIJKSE</item>
         <item>MAANDELIJKS</item>
     </string-array>
+    <string name="menu_scheduled_transactions">Scheduled Transactions</string>
+    <string name="title_scheduled_transactions">Scheduled Transactions</string>
 </resources>

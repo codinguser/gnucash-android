@@ -19,14 +19,13 @@ package org.gnucash.android.ui.widget;
 import java.util.Locale;
 
 import org.gnucash.android.R;
-import org.gnucash.android.data.Account;
-import org.gnucash.android.data.Money;
+import org.gnucash.android.model.Account;
+import org.gnucash.android.model.Money;
 import org.gnucash.android.db.AccountsDbAdapter;
-import org.gnucash.android.db.DatabaseHelper;
 import org.gnucash.android.receivers.TransactionAppWidgetProvider;
-import org.gnucash.android.ui.accounts.AccountsActivity;
-import org.gnucash.android.ui.transactions.TransactionsActivity;
-import org.gnucash.android.ui.transactions.TransactionsListFragment;
+import org.gnucash.android.ui.UxArgument;
+import org.gnucash.android.ui.account.AccountsActivity;
+import org.gnucash.android.ui.transaction.TransactionsActivity;
 
 import android.app.Activity;
 import android.app.PendingIntent;
@@ -55,8 +54,7 @@ import org.gnucash.android.util.QualifiedAccountNameCursorAdapter;
  */
 public class WidgetConfigurationActivity extends Activity {
 	private AccountsDbAdapter mAccountsDbAdapter;
-	private SimpleCursorAdapter mCursorAdapter;
-	private int mAppWidgetId;
+    private int mAppWidgetId;
 	
 	private Spinner mAccountsSpinner;
 	private Button mOkButton;
@@ -73,18 +71,18 @@ public class WidgetConfigurationActivity extends Activity {
 		mCancelButton 	= (Button) findViewById(R.id.btn_cancel);
 
 		mAccountsDbAdapter = new AccountsDbAdapter(this);
-		Cursor cursor = mAccountsDbAdapter.fetchAllRecords();
+		Cursor cursor = mAccountsDbAdapter.fetchAllRecordsOrderedByFullName();
 		
 		if (cursor.getCount() <= 0){
 			Toast.makeText(this, R.string.error_no_accounts, Toast.LENGTH_LONG).show();
 			finish();
 		}
-			
-		mCursorAdapter = new QualifiedAccountNameCursorAdapter(this,
-				android.R.layout.simple_spinner_item, 
-				cursor);
-		mCursorAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-		mAccountsSpinner.setAdapter(mCursorAdapter);
+
+        SimpleCursorAdapter cursorAdapter = new QualifiedAccountNameCursorAdapter(this,
+                android.R.layout.simple_spinner_item,
+                cursor);
+		cursorAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		mAccountsSpinner.setAdapter(cursorAdapter);
 		
 		bindListeners();
 	}
@@ -119,7 +117,7 @@ public class WidgetConfigurationActivity extends Activity {
 				long accountId = mAccountsSpinner.getSelectedItemId();
 				SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(WidgetConfigurationActivity.this);
 				Editor editor = prefs.edit();
-				editor.putLong(TransactionsListFragment.SELECTED_ACCOUNT_ID + mAppWidgetId, accountId);					
+				editor.putLong(UxArgument.SELECTED_ACCOUNT_ID + mAppWidgetId, accountId);
 				editor.commit();	
 				
 				updateWidget(WidgetConfigurationActivity.this, mAppWidgetId, accountId);
@@ -169,7 +167,7 @@ public class WidgetConfigurationActivity extends Activity {
 			views.setOnClickPendingIntent(R.id.btn_new_transaction, pendingIntent);
 			appWidgetManager.updateAppWidget(appWidgetId, views);
 			Editor editor = PreferenceManager.getDefaultSharedPreferences(context).edit();
-			editor.remove(TransactionsListFragment.SELECTED_ACCOUNT_ID + appWidgetId);
+			editor.remove(UxArgument.SELECTED_ACCOUNT_ID + appWidgetId);
 			editor.commit();
 			return;
 		}
@@ -189,7 +187,7 @@ public class WidgetConfigurationActivity extends Activity {
 		Intent accountViewIntent = new Intent(context, TransactionsActivity.class);
 		accountViewIntent.setAction(Intent.ACTION_VIEW);
 		accountViewIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
-		accountViewIntent.putExtra(TransactionsListFragment.SELECTED_ACCOUNT_ID, accountId);
+		accountViewIntent.putExtra(UxArgument.SELECTED_ACCOUNT_ID, accountId);
 		PendingIntent accountPendingIntent = PendingIntent
 				.getActivity(context, appWidgetId, accountViewIntent, 0);
 		views.setOnClickPendingIntent(R.id.widget_layout, accountPendingIntent);
@@ -197,7 +195,7 @@ public class WidgetConfigurationActivity extends Activity {
 		Intent newTransactionIntent = new Intent(context, TransactionsActivity.class);
 		newTransactionIntent.setAction(Intent.ACTION_INSERT_OR_EDIT);
 		newTransactionIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
-		newTransactionIntent.putExtra(TransactionsListFragment.SELECTED_ACCOUNT_ID, accountId);		
+		newTransactionIntent.putExtra(UxArgument.SELECTED_ACCOUNT_ID, accountId);
 		PendingIntent pendingIntent = PendingIntent
 				.getActivity(context, appWidgetId, newTransactionIntent, 0);	            
 		views.setOnClickPendingIntent(R.id.btn_new_transaction, pendingIntent);
@@ -218,7 +216,7 @@ public class WidgetConfigurationActivity extends Activity {
         SharedPreferences defaultSharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
 		for (int widgetId : appWidgetIds) {
 			long accountId = defaultSharedPrefs
-            		.getLong(TransactionsListFragment.SELECTED_ACCOUNT_ID + widgetId, -1);
+            		.getLong(UxArgument.SELECTED_ACCOUNT_ID + widgetId, -1);
             
 			if (accountId <= 0)
 				continue;

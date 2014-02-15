@@ -15,7 +15,7 @@
  */
 package org.gnucash.android.receivers;
 
-import org.gnucash.android.ui.transactions.TransactionsListFragment;
+import org.gnucash.android.ui.UxArgument;
 import org.gnucash.android.ui.widget.WidgetConfigurationActivity;
 
 import android.appwidget.AppWidgetManager;
@@ -45,7 +45,7 @@ public class TransactionAppWidgetProvider extends AppWidgetProvider {
             
             long accountId = PreferenceManager
             		.getDefaultSharedPreferences(context)
-            		.getLong(TransactionsListFragment.SELECTED_ACCOUNT_ID + appWidgetId, -1);
+            		.getLong(UxArgument.SELECTED_ACCOUNT_ID + appWidgetId, -1);
             
             if (accountId <= 0)
             	return;
@@ -66,7 +66,7 @@ public class TransactionAppWidgetProvider extends AppWidgetProvider {
 		Editor editor = PreferenceManager.getDefaultSharedPreferences(context).edit();
 		
 		for (int appWidgetId : appWidgetIds) {
-			editor.remove(TransactionsListFragment.SELECTED_ACCOUNT_ID + appWidgetId);			
+			editor.remove(UxArgument.SELECTED_ACCOUNT_ID + appWidgetId);
 		}
 		editor.commit();		
 	}

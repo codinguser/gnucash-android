@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.gnucash.android.ui;
+package org.gnucash.android.ui.transaction.dialog;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;

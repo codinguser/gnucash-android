@@ -16,7 +16,7 @@
 package org.gnucash.android.export.qif;
 
 import android.content.Context;
-import org.gnucash.android.data.Account;
+import org.gnucash.android.model.Account;
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.TransactionsDbAdapter;
 

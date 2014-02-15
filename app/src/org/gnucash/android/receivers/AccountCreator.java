@@ -18,7 +18,7 @@ package org.gnucash.android.receivers;
 
 import java.util.Currency;
 
-import org.gnucash.android.data.Account;
+import org.gnucash.android.model.Account;
 import org.gnucash.android.db.AccountsDbAdapter;
 
 import android.content.BroadcastReceiver;

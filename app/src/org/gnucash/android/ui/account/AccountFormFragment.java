@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.gnucash.android.ui.accounts;
+package org.gnucash.android.ui.account;
 
 import java.util.Arrays;
 import java.util.Currency;
@@ -29,14 +29,14 @@ import android.graphics.Color;
 import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentManager;
 import org.gnucash.android.R;
-import org.gnucash.android.data.Account;
-import org.gnucash.android.data.Money;
+import org.gnucash.android.model.Account;
+import org.gnucash.android.model.Money;
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.DatabaseHelper;
+import org.gnucash.android.ui.UxArgument;
 import org.gnucash.android.ui.colorpicker.ColorPickerDialog;
 import org.gnucash.android.ui.colorpicker.ColorPickerSwatch;
 import org.gnucash.android.ui.colorpicker.ColorSquare;
-import org.gnucash.android.ui.transactions.TransactionsListFragment;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -64,7 +64,7 @@ import org.gnucash.android.util.QualifiedAccountNameCursorAdapter;
  * Fragment used for creating and editing accounts
  * @author Ngewi Fet <ngewif@gmail.com>
  */
-public class AddAccountFragment extends SherlockFragment {
+public class AccountFormFragment extends SherlockFragment {
 
     /**
      * Tag for the color picker dialog fragment
@@ -127,7 +127,7 @@ public class AddAccountFragment extends SherlockFragment {
 
     /**
      * Spinner for the account type
-     * @see org.gnucash.android.data.Account.AccountType
+     * @see org.gnucash.android.model.Account.AccountType
      */
     private Spinner mAccountTypeSpinner;
 
@@ -140,11 +140,6 @@ public class AddAccountFragment extends SherlockFragment {
      * Spinner for selecting the default transfer account
      */
     private Spinner mDefaulTransferAccountSpinner;
-
-    /**
-     * Cursor holding data set of eligible transfer accounts
-     */
-    private Cursor mDefaultTransferAccountCursor;
 
     /**
      * Checkbox indicating if account is a placeholder account
@@ -183,7 +178,7 @@ public class AddAccountFragment extends SherlockFragment {
 	 * Default constructor
 	 * Required, else the app crashes on screen rotation
 	 */
-	public AddAccountFragment() {
+	public AccountFormFragment() {
 		//nothing to see here, move along
 	}
 	
@@ -192,8 +187,8 @@ public class AddAccountFragment extends SherlockFragment {
 	 * @param dbAdapter {@link AccountsDbAdapter} for saving the account
 	 * @return New instance of the dialog fragment
 	 */
-	static public AddAccountFragment newInstance(AccountsDbAdapter dbAdapter){
-		AddAccountFragment f = new AddAccountFragment();
+	static public AccountFormFragment newInstance(AccountsDbAdapter dbAdapter){
+		AccountFormFragment f = new AccountFormFragment();
 		f.mAccountsDbAdapter = dbAdapter;
 		return f;
 	}
@@ -274,7 +269,7 @@ public class AddAccountFragment extends SherlockFragment {
 		currencyArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		mCurrencySpinner.setAdapter(currencyArrayAdapter);
 
-        mSelectedAccountId = getArguments().getLong(TransactionsListFragment.SELECTED_ACCOUNT_ID);
+        mSelectedAccountId = getArguments().getLong(UxArgument.SELECTED_ACCOUNT_ID);
         if (mSelectedAccountId > 0) {
             mAccount = mAccountsDbAdapter.getAccount(mSelectedAccountId);
             getSherlockActivity().getSupportActionBar().setTitle(R.string.title_edit_account);
@@ -326,7 +321,7 @@ public class AddAccountFragment extends SherlockFragment {
     private void initializeViews(){
         setSelectedCurrency(Money.DEFAULT_CURRENCY_CODE);
         mColorSquare.setBackgroundColor(Color.LTGRAY);
-        long parentAccountId = getArguments().getLong(AccountsListFragment.ARG_PARENT_ACCOUNT_ID);
+        long parentAccountId = getArguments().getLong(UxArgument.PARENT_ACCOUNT_ID);
         setParentAccountSelection(parentAccountId);
 
         /* This snippet causes the child account to default to same color as parent. Not sure if we want that
@@ -486,15 +481,18 @@ public class AddAccountFragment extends SherlockFragment {
         String condition = DatabaseHelper.KEY_ROW_ID + " != " + mSelectedAccountId
                 + " AND " + DatabaseHelper.KEY_PLACEHOLDER + "=0"
                 + " AND " + DatabaseHelper.KEY_UID + " != '" + mAccountsDbAdapter.getGnuCashRootAccountUID() + "'";
-        mDefaultTransferAccountCursor = mAccountsDbAdapter.fetchAccounts(condition);
+        /*
+      Cursor holding data set of eligible transfer accounts
+     */
+        Cursor defaultTransferAccountCursor = mAccountsDbAdapter.fetchAccountsOrderedByFullName(condition);
 
-        if (mDefaultTransferAccountCursor == null || mDefaulTransferAccountSpinner.getCount() <= 0){
+        if (defaultTransferAccountCursor == null || mDefaulTransferAccountSpinner.getCount() <= 0){
             setDefaultTransferAccountInputsVisible(false);
         }
 
         mDefaultTransferAccountCursorAdapter = new QualifiedAccountNameCursorAdapter(getActivity(),
                 android.R.layout.simple_spinner_item,
-                mDefaultTransferAccountCursor);
+                defaultTransferAccountCursor);
         mParentAccountCursorAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mDefaulTransferAccountSpinner.setAdapter(mParentAccountCursorAdapter);
     }
@@ -512,7 +510,7 @@ public class AddAccountFragment extends SherlockFragment {
             //TODO: Limit all descendants of the account to eliminate the possibility of cyclic hierarchy
         }
 
-		mParentAccountCursor = mAccountsDbAdapter.fetchAccounts(condition);
+		mParentAccountCursor = mAccountsDbAdapter.fetchAccountsOrderedByFullName(condition);
 		if (mParentAccountCursor == null || mParentAccountCursor.getCount() <= 0){
             final View view = getView();
             view.findViewById(R.id.layout_parent_account).setVisibility(View.GONE);

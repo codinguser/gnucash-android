@@ -17,7 +17,7 @@
 package org.gnucash.android.ui.settings;
 
 import org.gnucash.android.R;
-import org.gnucash.android.data.Money;
+import org.gnucash.android.model.Money;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;

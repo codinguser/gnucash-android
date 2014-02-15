@@ -289,8 +289,8 @@
 		<item>Haben</item>
 		<item>Soll</item>
 	</string-array>
-	<string name="delete_all_transactions_confirmation_message">Wollen Sie wirklich ALLE Buchungen l&#246;schen?</string>
-	<string name="delete_transaction_confirmation_message">Wollen Sie wirklich diese Buchung l&#246;schen?</string>	
+	<string name="msg_delete_all_transactions_confirmation">Wollen Sie wirklich ALLE Buchungen l&#246;schen?</string>
+	<string name="msg_delete_transaction_confirmation">Wollen Sie wirklich diese Buchung l&#246;schen?</string>
 	<string name="title_export_preference_category">Exportieren</string>
 	<string name="title_export_all_transactions">Alle Buchungen exportieren</string>
 	<string name="title_always_delete_exported_transactions">Alle exportierten Buchungen l&#246;schen</string>
@@ -383,11 +383,11 @@
     <string name="title_all_accounts">Alle</string>
     <string name="summary_create_default_accounts">Erstellt die häufig verwendete standard GnuCash Konten</string>
     <string name="title_create_default_accounts">Standard Konten erstellen</string>
-    <string name="message_confirm_create_default_accounts_setting">New accounts will be created in addition to the existing
+    <string name="msg_confirm_create_default_accounts_setting">New accounts will be created in addition to the existing
         account structure.\n\nIf you wish to replace currently existing accounts, delete them first before proceeding!
     </string>
-    <string name="menu_item_recurring_transactions">Wiederkehrende Buchungen</string>
-    <string name="message_confirm_create_default_accounts_first_run">Welcome to GnuCash Android! \nYou can either create
+    <string name="menu_scheduled_transactions">Eingeplante Buchungen</string>
+    <string name="msg_confirm_create_default_accounts_first_run">Welcome to GnuCash Android! \nYou can either create
         a hierarchy of commonly-used accounts, or import your own GnuCash account structure. \n\nBoth options are also
         available in app Settings so you can decide later.
     </string>
@@ -397,4 +397,5 @@
         <item>WÖCHENTLICH</item>
         <item>MONATLICH</item>
     </string-array>
+    <string name="title_scheduled_transactions">Eingeplante Buchungen</string>
 </resources>

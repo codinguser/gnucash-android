@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.gnucash.android.data;
+package org.gnucash.android.model;
 
 import java.math.BigDecimal;
 import java.math.MathContext;

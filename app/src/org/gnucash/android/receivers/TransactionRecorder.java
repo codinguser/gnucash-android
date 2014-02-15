@@ -19,12 +19,10 @@ package org.gnucash.android.receivers;
 import java.math.BigDecimal;
 import java.util.Currency;
 
-import org.gnucash.android.data.Account;
-import org.gnucash.android.data.Money;
-import org.gnucash.android.data.Transaction;
+import org.gnucash.android.model.Account;
+import org.gnucash.android.model.Money;
+import org.gnucash.android.model.Transaction;
 import org.gnucash.android.db.TransactionsDbAdapter;
-import org.gnucash.android.export.ofx.OfxExporter;
-import org.gnucash.android.export.qif.QifExporter;
 import org.gnucash.android.export.qif.QifHelper;
 import org.gnucash.android.ui.widget.WidgetConfigurationActivity;
 

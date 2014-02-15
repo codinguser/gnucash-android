@@ -32,11 +32,10 @@ import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockPreferenceActivity;
 import com.actionbarsherlock.view.MenuItem;
 import org.gnucash.android.R;
-import org.gnucash.android.data.Money;
+import org.gnucash.android.model.Money;
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.TransactionsDbAdapter;
-import org.gnucash.android.ui.accounts.AccountsActivity;
-import org.gnucash.android.ui.accounts.AccountsListFragment;
+import org.gnucash.android.ui.account.AccountsActivity;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
@@ -51,7 +50,12 @@ import java.util.TimerTask;
  */
 public class SettingsActivity extends SherlockPreferenceActivity implements OnPreferenceChangeListener, Preference.OnPreferenceClickListener{
 
+    /**
+     * Allowed delay between two consecutive taps of a setting for it to be considered a double tap
+     * Used on Android v2.3.3 or lower devices where dialogs cannot be instantiated easily in settings
+     */
     public static final int DOUBLE_TAP_DELAY = 2000;
+
     /**
      * Counts the number of times the preference for deleting all accounts has been clicked.
      * It is reset every time the SettingsActivity is resumed.
@@ -242,7 +246,7 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
         pickIntent.setType("application/*");
         Intent chooser = Intent.createChooser(pickIntent, "Select GnuCash account file");
 
-        startActivityForResult(chooser, AccountsListFragment.REQUEST_PICK_ACCOUNTS_FILE);
+        startActivityForResult(chooser, AccountsActivity.REQUEST_PICK_ACCOUNTS_FILE);
 
     }
 
@@ -253,7 +257,7 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
         }
 
         switch (requestCode){
-            case AccountsListFragment.REQUEST_PICK_ACCOUNTS_FILE:
+            case AccountsActivity.REQUEST_PICK_ACCOUNTS_FILE:
                 try {
                     InputStream accountInputStream = getContentResolver().openInputStream(data.getData());
                     new AccountsActivity.AccountImporterTask(this).execute(accountInputStream);

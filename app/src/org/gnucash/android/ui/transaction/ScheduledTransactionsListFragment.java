@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.gnucash.android.ui.transactions;
+package org.gnucash.android.ui.transaction;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
@@ -40,9 +40,10 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import org.gnucash.android.R;
-import org.gnucash.android.data.Money;
-import org.gnucash.android.data.Transaction;
+import org.gnucash.android.model.Money;
+import org.gnucash.android.model.Transaction;
 import org.gnucash.android.db.*;
+import org.gnucash.android.ui.UxArgument;
 import org.gnucash.android.ui.widget.WidgetConfigurationActivity;
 
 import java.util.Locale;
@@ -51,7 +52,7 @@ import java.util.Locale;
  * Fragment which displays the recurring transactions in the system.
  * @author Ngewi Fet <ngewif@gmail.com>
  */
-public class RecurringTransactionsListFragment extends SherlockListFragment implements
+public class ScheduledTransactionsListFragment extends SherlockListFragment implements
         LoaderManager.LoaderCallbacks<Cursor> {
 
     /**
@@ -152,7 +153,7 @@ public class RecurringTransactionsListFragment extends SherlockListFragment impl
         actionBar.setDisplayShowTitleEnabled(true);
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setHomeButtonEnabled(true);
-        actionBar.setTitle(R.string.title_recurring_transactions);
+        actionBar.setTitle(R.string.title_scheduled_transactions);
 
         setHasOptionsMenu(true);
         getListView().setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
@@ -200,8 +201,8 @@ public class RecurringTransactionsListFragment extends SherlockListFragment impl
     public void openTransactionForEdit(long accountId, long transactionId){
         Intent createTransactionIntent = new Intent(getActivity(), TransactionsActivity.class);
         createTransactionIntent.setAction(Intent.ACTION_INSERT_OR_EDIT);
-        createTransactionIntent.putExtra(TransactionsListFragment.SELECTED_ACCOUNT_ID, accountId);
-        createTransactionIntent.putExtra(NewTransactionFragment.SELECTED_TRANSACTION_ID, transactionId);
+        createTransactionIntent.putExtra(UxArgument.SELECTED_ACCOUNT_ID, accountId);
+        createTransactionIntent.putExtra(UxArgument.SELECTED_TRANSACTION_ID, transactionId);
         startActivity(createTransactionIntent);
     }
 
@@ -350,14 +351,16 @@ public class RecurringTransactionsListFragment extends SherlockListFragment impl
             parentView.post(new Runnable() {
                 @Override
                 public void run() {
-                    float extraPadding = getResources().getDimension(R.dimen.edge_padding);
-                    final android.graphics.Rect hitRect = new Rect();
-                    checkBoxView.getHitRect(hitRect);
-                    hitRect.right   += extraPadding;
-                    hitRect.bottom  += 3*extraPadding;
-                    hitRect.top     -= extraPadding;
-                    hitRect.left    -= 2*extraPadding;
-                    parentView.setTouchDelegate(new TouchDelegate(hitRect, checkBoxView));
+                    if (isAdded()){ //may be run when fragment has been unbound from activity
+                        float extraPadding = getResources().getDimension(R.dimen.edge_padding);
+                        final android.graphics.Rect hitRect = new Rect();
+                        checkBoxView.getHitRect(hitRect);
+                        hitRect.right   += extraPadding;
+                        hitRect.bottom  += 3*extraPadding;
+                        hitRect.top     -= extraPadding;
+                        hitRect.left    -= 2*extraPadding;
+                        parentView.setTouchDelegate(new TouchDelegate(hitRect, checkBoxView));
+                    }
                 }
             });
 

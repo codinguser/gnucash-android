@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.gnucash.android.ui.accounts;
+package org.gnucash.android.ui.account;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -52,16 +52,15 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import org.gnucash.android.R;
-import org.gnucash.android.data.Account;
-import org.gnucash.android.data.Money;
+import org.gnucash.android.model.Account;
+import org.gnucash.android.model.Money;
 import org.gnucash.android.db.*;
 import org.gnucash.android.export.ExportDialogFragment;
-import org.gnucash.android.ui.Refreshable;
-import org.gnucash.android.ui.settings.SettingsActivity;
-import org.gnucash.android.ui.transactions.TransactionsActivity;
-import org.gnucash.android.ui.transactions.TransactionsListFragment;
+import org.gnucash.android.ui.util.Refreshable;
+import org.gnucash.android.ui.UxArgument;
+import org.gnucash.android.ui.transaction.TransactionsActivity;
 import org.gnucash.android.ui.widget.WidgetConfigurationActivity;
-import org.gnucash.android.util.OnAccountClickedListener;
+import org.gnucash.android.ui.util.OnAccountClickedListener;
 
 import java.lang.ref.WeakReference;
 
@@ -89,22 +88,6 @@ public class AccountsListFragment extends SherlockListFragment implements
      * Default value is {@link DisplayMode#TOP_LEVEL}
      */
     private DisplayMode mDisplayMode = DisplayMode.TOP_LEVEL;
-
-    /**
-     * Request code for GnuCash account structure file to import
-     */
-    public static final int REQUEST_PICK_ACCOUNTS_FILE = 0x1;
-
-    /**
-     * Request code for opening the account to edit
-     */
-    private static final int REQUEST_EDIT_ACCOUNT = 0x10;
-
-    /**
-     * Key for passing argument for the parent account ID.
-     * When this argument is set, only sub-accounts of the account will be loaded.
-     */
-    public static final String ARG_PARENT_ACCOUNT_ID = "parent_account_id";
 
     /**
      * Logging tag
@@ -224,7 +207,7 @@ public class AccountsListFragment extends SherlockListFragment implements
 
         Bundle args = getArguments();
         if (args != null)
-            mParentAccountId = args.getLong(ARG_PARENT_ACCOUNT_ID);
+            mParentAccountId = args.getLong(UxArgument.PARENT_ACCOUNT_ID);
 
         mAccountsDbAdapter = new AccountsDbAdapter(getActivity());
         mAccountsCursorAdapter = new AccountsCursorAdapter(
@@ -392,8 +375,8 @@ public class AccountsListFragment extends SherlockListFragment implements
             case R.id.menu_add_account:
                 Intent addAccountIntent = new Intent(getActivity(), AccountsActivity.class);
                 addAccountIntent.setAction(Intent.ACTION_INSERT_OR_EDIT);
-                addAccountIntent.putExtra(AccountsListFragment.ARG_PARENT_ACCOUNT_ID, mParentAccountId);
-                startActivityForResult(addAccountIntent, REQUEST_EDIT_ACCOUNT);
+                addAccountIntent.putExtra(UxArgument.PARENT_ACCOUNT_ID, mParentAccountId);
+                startActivityForResult(addAccountIntent, AccountsActivity.REQUEST_EDIT_ACCOUNT);
                 return true;
 
             case R.id.menu_export:
@@ -407,7 +390,7 @@ public class AccountsListFragment extends SherlockListFragment implements
 
     @Override
     public void refresh(long parentAccountId) {
-        getArguments().putLong(ARG_PARENT_ACCOUNT_ID, parentAccountId);
+        getArguments().putLong(UxArgument.PARENT_ACCOUNT_ID, parentAccountId);
         refresh();
     }
 
@@ -455,12 +438,12 @@ public class AccountsListFragment extends SherlockListFragment implements
                 .beginTransaction();
 
         Bundle args = new Bundle();
-        args.putLong(TransactionsListFragment.SELECTED_ACCOUNT_ID, accountId);
-        AddAccountFragment newAccountFragment = AddAccountFragment.newInstance(mAccountsDbAdapter);
-        newAccountFragment.setArguments(args);
+        args.putLong(UxArgument.SELECTED_ACCOUNT_ID, accountId);
+        AccountFormFragment accountFormFragment = AccountFormFragment.newInstance(mAccountsDbAdapter);
+        accountFormFragment.setArguments(args);
 
         fragmentTransaction.replace(R.id.fragment_container,
-                newAccountFragment, AccountsActivity.FRAGMENT_NEW_ACCOUNT);
+                accountFormFragment, AccountsActivity.FRAGMENT_NEW_ACCOUNT);
 
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
@@ -474,8 +457,8 @@ public class AccountsListFragment extends SherlockListFragment implements
     public void openCreateOrEditActivity(long accountId){
         Intent editAccountIntent = new Intent(AccountsListFragment.this.getActivity(), AccountsActivity.class);
         editAccountIntent.setAction(Intent.ACTION_INSERT_OR_EDIT);
-        editAccountIntent.putExtra(TransactionsListFragment.SELECTED_ACCOUNT_ID, accountId);
-        startActivityForResult(editAccountIntent, REQUEST_EDIT_ACCOUNT);
+        editAccountIntent.putExtra(UxArgument.SELECTED_ACCOUNT_ID, accountId);
+        startActivityForResult(editAccountIntent, AccountsActivity.REQUEST_EDIT_ACCOUNT);
     }
 
     /**
@@ -499,7 +482,7 @@ public class AccountsListFragment extends SherlockListFragment implements
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         Log.d(TAG, "Creating the accounts loader");
         Bundle fragmentArguments = getArguments();
-        long accountId = fragmentArguments == null ? -1 : fragmentArguments.getLong(ARG_PARENT_ACCOUNT_ID);
+        long accountId = fragmentArguments == null ? -1 : fragmentArguments.getLong(UxArgument.PARENT_ACCOUNT_ID);
 
         if (mCurrentFilter != null){
             return new AccountsCursorLoader(getActivity(), mCurrentFilter);
@@ -563,7 +546,7 @@ public class AccountsListFragment extends SherlockListFragment implements
             DeleteConfirmationDialogFragment frag = new DeleteConfirmationDialogFragment();
             Bundle args = new Bundle();
             args.putInt("title", title);
-            args.putLong(TransactionsListFragment.SELECTED_ACCOUNT_ID, id);
+            args.putLong(UxArgument.SELECTED_ACCOUNT_ID, id);
             frag.setArguments(args);
             return frag;
         }
@@ -571,7 +554,7 @@ public class AccountsListFragment extends SherlockListFragment implements
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
             int title = getArguments().getInt("title");
-            final long rowId = getArguments().getLong(TransactionsListFragment.SELECTED_ACCOUNT_ID);
+            final long rowId = getArguments().getLong(UxArgument.SELECTED_ACCOUNT_ID);
             LayoutInflater layoutInflater = getSherlockActivity().getLayoutInflater();
             final View dialogLayout = layoutInflater.inflate(R.layout.dialog_account_delete, (ViewGroup) getView());
             AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity())
@@ -740,7 +723,7 @@ public class AccountsListFragment extends SherlockListFragment implements
                     public void onClick(View v) {
                         Intent intent = new Intent(getActivity(), TransactionsActivity.class);
                         intent.setAction(Intent.ACTION_INSERT_OR_EDIT);
-                        intent.putExtra(TransactionsListFragment.SELECTED_ACCOUNT_ID, accountId);
+                        intent.putExtra(UxArgument.SELECTED_ACCOUNT_ID, accountId);
                         getActivity().startActivity(intent);
                     }
                 });

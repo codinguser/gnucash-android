@@ -21,9 +21,9 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteStatement;
 import android.util.Log;
-import org.gnucash.android.data.Account;
-import org.gnucash.android.data.Money;
-import org.gnucash.android.data.Transaction;
+import org.gnucash.android.model.Account;
+import org.gnucash.android.model.Money;
+import org.gnucash.android.model.Transaction;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
