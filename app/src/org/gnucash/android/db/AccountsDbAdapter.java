@@ -526,7 +526,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
                 balance = balance.add(subBalance);
             }
         }
-        return balance.add(mTransactionsAdapter.getTransactionsSum(accountId));
+        return balance.add(getAccount(accountId).getBalance());
     }
 
     /**
