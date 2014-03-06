@@ -41,7 +41,7 @@ import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import org.gnucash.android.R;
 import org.gnucash.android.model.Money;
-import org.gnucash.android.model.Transaction;
+import org.gnucash.android.model.OriginalTransaction;
 import org.gnucash.android.db.*;
 import org.gnucash.android.ui.UxArgument;
 import org.gnucash.android.ui.widget.WidgetConfigurationActivity;
@@ -107,7 +107,7 @@ public class ScheduledTransactionsListFragment extends SherlockListFragment impl
                         Log.i(TAG, "Cancelling recurring transaction(s)");
 
                         PendingIntent recurringPendingIntent = PendingIntent.getBroadcast(getActivity().getApplicationContext(),
-                                (int)id, Transaction.createIntent(mTransactionsDbAdapter.getTransaction(id)), PendingIntent.FLAG_UPDATE_CURRENT);
+                                (int)id, OriginalTransaction.createIntent(mTransactionsDbAdapter.getTransaction(id)), PendingIntent.FLAG_UPDATE_CURRENT);
                         recurringPendingIntent.cancel();
                         AlarmManager alarmManager = (AlarmManager) getActivity().getSystemService(Context.ALARM_SERVICE);
                         alarmManager.cancel(recurringPendingIntent);

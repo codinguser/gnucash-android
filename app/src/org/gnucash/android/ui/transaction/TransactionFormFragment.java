@@ -30,8 +30,9 @@ import android.widget.*;
 import org.gnucash.android.R;
 import org.gnucash.android.model.Account;
 import org.gnucash.android.model.Money;
+import org.gnucash.android.model.OriginalTransaction;
 import org.gnucash.android.model.Transaction;
-import org.gnucash.android.model.Transaction.TransactionType;
+import org.gnucash.android.model.TransactionType;
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.DatabaseHelper;
 import org.gnucash.android.db.TransactionsDbAdapter;
@@ -574,7 +575,7 @@ public class TransactionFormFragment extends SherlockFragment implements
 			mTransaction.setName(name);
 			mTransaction.setTransactionType(type);
 		} else {
-			mTransaction = new Transaction(amount, name, type);
+			mTransaction = new OriginalTransaction(amount, name, type);
 		}
 		
 		mTransaction.setAccountUID(mTransactionsDbAdapter.getAccountUID(accountID));
@@ -604,12 +605,12 @@ public class TransactionFormFragment extends SherlockFragment implements
             long recurrencePeriodMillis = Long.parseLong(recurrenceOptions[recurrenceIndex]);
             long firstRunMillis = System.currentTimeMillis() + recurrencePeriodMillis;
 
-            Transaction recurringTransaction = new Transaction(mTransaction);
+            Transaction recurringTransaction = new OriginalTransaction(mTransaction);
             recurringTransaction.setRecurrencePeriod(recurrencePeriodMillis);
             long recurringTransactionId = mTransactionsDbAdapter.addTransaction(recurringTransaction);
 
             PendingIntent recurringPendingIntent = PendingIntent.getBroadcast(getActivity().getApplicationContext(),
-                    (int)recurringTransactionId, Transaction.createIntent(mTransaction), PendingIntent.FLAG_UPDATE_CURRENT);
+                    (int)recurringTransactionId, OriginalTransaction.createIntent(mTransaction), PendingIntent.FLAG_UPDATE_CURRENT);
             AlarmManager alarmManager = (AlarmManager) getActivity().getSystemService(Context.ALARM_SERVICE);
             alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, firstRunMillis,
                     recurrencePeriodMillis, recurringPendingIntent);

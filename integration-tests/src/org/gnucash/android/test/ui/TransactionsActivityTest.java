@@ -31,6 +31,7 @@ import com.jayway.android.robotium.solo.Solo;
 import org.gnucash.android.R;
 import org.gnucash.android.model.Account;
 import org.gnucash.android.model.Money;
+import org.gnucash.android.model.OriginalTransaction;
 import org.gnucash.android.model.Transaction;
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.TransactionsDbAdapter;
@@ -67,7 +68,7 @@ public class TransactionsActivityTest extends
         Account account = new Account(DUMMY_ACCOUNT_NAME);
         account.setUID(DUMMY_ACCOUNT_UID);
         account.setCurrency(Currency.getInstance(Locale.getDefault()));
-        mTransaction = new Transaction(TRANSACTION_AMOUNT, TRANSACTION_NAME);
+        mTransaction = new OriginalTransaction(TRANSACTION_AMOUNT, TRANSACTION_NAME);
         mTransaction.setAccountUID(DUMMY_ACCOUNT_UID);
         mTransaction.setDescription("What up?");
         mTransaction.setTime(mTransactionTimeMillis);

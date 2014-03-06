@@ -30,6 +30,7 @@ import com.jayway.android.robotium.solo.Solo;
 import org.gnucash.android.R;
 import org.gnucash.android.model.Account;
 import org.gnucash.android.model.Money;
+import org.gnucash.android.model.OriginalTransaction;
 import org.gnucash.android.model.Transaction;
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.TransactionsDbAdapter;
@@ -203,7 +204,7 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
         Account acc = new Account(accountNameToDelete);
         acc.setUID(accountUidToDelete);
 
-        Transaction transaction = new Transaction("5.99", "hats");
+        Transaction transaction = new OriginalTransaction("5.99", "hats");
         transaction.setAccountUID(accountUidToDelete);
         acc.addTransaction(transaction);
         AccountsDbAdapter accDbAdapter = new AccountsDbAdapter(getActivity());
@@ -243,7 +244,7 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
         //first create a couple of transations
         TransactionsDbAdapter transactionsDbAdapter = new TransactionsDbAdapter(getActivity());
         for (int i = 0; i < TRANSACTION_COUNT; i++) {
-            Transaction transaction = new Transaction(Money.getZeroInstance(), "Transaxion " + i);
+            Transaction transaction = new OriginalTransaction(Money.getZeroInstance(), "Transaxion " + i);
             transaction.setAccountUID(DUMMY_ACCOUNT_UID);
             transactionsDbAdapter.addTransaction(transaction);
         }
