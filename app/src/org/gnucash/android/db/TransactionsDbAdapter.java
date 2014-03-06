@@ -21,7 +21,11 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteStatement;
 import android.util.Log;
-import org.gnucash.android.model.*;
+import org.gnucash.android.model.Transaction;
+import org.gnucash.android.model.TransactionType;
+import org.gnucash.android.model.OriginalTransaction;
+import org.gnucash.android.model.Money;
+import org.gnucash.android.model.Account;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -161,7 +165,7 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 	public Cursor fetchAllTransactionsForAccount(long accountID){
 		return fetchAllTransactionsForAccount(getAccountUID(accountID));	
 	}
-	
+
 	/**
 	 * Returns list of all transactions for account with UID <code>accountUID</code>
 	 * @param accountUID UID of account whose transactions are to be retrieved
@@ -188,7 +192,7 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 		c.close();
 		return transactionsList;
 	}
-	
+
 	/**
 	 * Builds a transaction instance with the provided cursor.
 	 * The cursor should already be pointing to the transaction record in the database
