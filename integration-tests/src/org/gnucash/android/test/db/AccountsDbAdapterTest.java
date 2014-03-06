@@ -4,6 +4,7 @@ import java.util.Currency;
 import java.util.List;
 
 import org.gnucash.android.model.Account;
+import org.gnucash.android.model.OriginalTransaction;
 import org.gnucash.android.model.Transaction;
 import org.gnucash.android.db.AccountsDbAdapter;
 
@@ -21,13 +22,13 @@ public class AccountsDbAdapterTest extends AndroidTestCase {
 		mAdapter = new AccountsDbAdapter(getContext());
 		mAdapter.deleteAllRecords();
 		Account first = new Account(ALPHA_ACCOUNT_NAME);
-		Transaction t1 = new Transaction("2.99", "T800");
+		Transaction t1 = new OriginalTransaction("2.99", "T800");
 		t1.setAccountUID(first.getUID());
-		Transaction t2 = new Transaction("4.99", "T1000");
+		Transaction t2 = new OriginalTransaction("4.99", "T1000");
 		t2.setAccountUID(first.getUID());
 		
 		Account second = new Account(BRAVO_ACCOUNT_NAME);
-		Transaction t = new Transaction("9.99", "buyout");
+		Transaction t = new OriginalTransaction("9.99", "buyout");
 		t.setAccountUID(second.getUID());
 		
 		mAdapter.addAccount(second);
@@ -45,8 +46,8 @@ public class AccountsDbAdapterTest extends AndroidTestCase {
 	public void testTransactionsHaveSameCurrencyAsAccount(){
 		Account acc1 = new Account("Japanese", Currency.getInstance("JPY"));
 		acc1.setUID("simile");
-		Transaction trx = new Transaction("2.50", "Underground");
-		Transaction term = new Transaction("3.49", "Tube");
+		Transaction trx = new OriginalTransaction("2.50", "Underground");
+		Transaction term = new OriginalTransaction("3.49", "Tube");
 		acc1.addTransaction(trx);
 		acc1.addTransaction(term);
 		

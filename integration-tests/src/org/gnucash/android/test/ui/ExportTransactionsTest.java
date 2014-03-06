@@ -20,6 +20,7 @@ import java.io.File;
 
 import org.gnucash.android.R;
 import org.gnucash.android.model.Account;
+import org.gnucash.android.model.OriginalTransaction;
 import org.gnucash.android.model.Transaction;
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.TransactionsDbAdapter;
@@ -48,7 +49,7 @@ public class ExportTransactionsTest extends
 		mSolo = new Solo(getInstrumentation(), getActivity());	
 		
 		Account account = new Account("Exportable");		
-		Transaction transaction = new Transaction("9.99", "Pizza");		
+		Transaction transaction = new OriginalTransaction("9.99", "Pizza");
 		transaction.setDescription("What up?");
 		transaction.setTime(System.currentTimeMillis());
 		

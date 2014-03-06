@@ -21,9 +21,11 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteStatement;
 import android.util.Log;
-import org.gnucash.android.model.Account;
-import org.gnucash.android.model.Money;
 import org.gnucash.android.model.Transaction;
+import org.gnucash.android.model.TransactionType;
+import org.gnucash.android.model.OriginalTransaction;
+import org.gnucash.android.model.Money;
+import org.gnucash.android.model.Account;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -163,7 +165,7 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 	public Cursor fetchAllTransactionsForAccount(long accountID){
 		return fetchAllTransactionsForAccount(getAccountUID(accountID));	
 	}
-	
+
 	/**
 	 * Returns list of all transactions for account with UID <code>accountUID</code>
 	 * @param accountUID UID of account whose transactions are to be retrieved
@@ -172,15 +174,17 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 	public List<Transaction> getAllTransactionsForAccount(String accountUID){
 		Cursor c = fetchAllTransactionsForAccount(accountUID);
 		ArrayList<Transaction> transactionsList = new ArrayList<Transaction>();
-		
+
 		if (c == null || (c.getCount() <= 0))
 			return transactionsList;
-		
+
 		while (c.moveToNext()) {
 			Transaction transaction = buildTransactionInstance(c);
 			String doubleEntryAccountUID = transaction.getDoubleEntryAccountUID();
 			//negate double entry transactions for the transfer account
 			if (doubleEntryAccountUID != null && doubleEntryAccountUID.equals(accountUID)){
+				// TODO: instead of negating here, let's use a DoubleTransaction instead of an OriginalTransaction
+				// transaction = new DoubleTransaction(transaction, doubleAccount);
 				transaction.setAmount(transaction.getAmount().negate());
 			}
 			transactionsList.add(transaction);
@@ -188,7 +192,7 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 		c.close();
 		return transactionsList;
 	}
-	
+
 	/**
 	 * Builds a transaction instance with the provided cursor.
 	 * The cursor should already be pointing to the transaction record in the database
@@ -204,7 +208,7 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 		String name   = c.getString(DatabaseAdapter.COLUMN_NAME);
         long recurrencePeriod = c.getLong(DatabaseAdapter.COLUMN_RECURRENCE_PERIOD);
 		
-		Transaction transaction = new Transaction(moneyAmount, name);
+		Transaction transaction = new OriginalTransaction(moneyAmount, name);
 		transaction.setUID(c.getString(DatabaseAdapter.COLUMN_UID));
 		transaction.setAccountUID(accountUID);
 		transaction.setTime(c.getLong(DatabaseAdapter.COLUMN_TIMESTAMP));
@@ -212,7 +216,7 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 		transaction.setExported(c.getInt(DatabaseAdapter.COLUMN_EXPORTED) == 1);
 		transaction.setDoubleEntryAccountUID(doubleAccountUID);
         transaction.setRecurrencePeriod(recurrencePeriod);
-		transaction.setTransactionType(Transaction.TransactionType.valueOf(c.getString(DatabaseAdapter.COLUMN_TYPE)));
+		transaction.setTransactionType(TransactionType.valueOf(c.getString(DatabaseAdapter.COLUMN_TYPE)));
 
 		return transaction;
 	}

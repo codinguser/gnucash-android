@@ -20,7 +20,6 @@ import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.export.ofx.OfxHelper;
 import org.gnucash.android.export.qif.QifHelper;
-import org.gnucash.android.model.Transaction.TransactionType;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
