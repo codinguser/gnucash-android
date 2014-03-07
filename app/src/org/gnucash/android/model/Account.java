@@ -369,10 +369,23 @@ public class Account {
 	 * @return {@link Money} aggregate amount of all transactions in account.
 	 */
 	public Money getBalance(){
-		//TODO: Consider double entry transactions
 		Money balance = new Money(new BigDecimal(0), this.mCurrency);
 		for (Transaction transaction : mTransactionsList) {
-			balance = balance.add(transaction.getAmount());
+			boolean isDebitAccount = getAccountType().hasDebitNormalBalance();
+			boolean isDebitTransaction = transaction.getType() == TransactionType.DEBIT;
+			if (isDebitAccount) {
+				if (isDebitTransaction) {
+					balance = balance.add(transaction.getAmount());
+				} else {
+					balance = balance.subtract(transaction.getAmount());
+				}
+			} else {
+				if (isDebitTransaction) {
+					balance = balance.subtract(transaction.getAmount());
+				} else {
+					balance = balance.add(transaction.getAmount());
+				}
+			}
 		}
 		return balance;
 	}

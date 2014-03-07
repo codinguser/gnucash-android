@@ -24,6 +24,7 @@ import android.util.Log;
 import org.gnucash.android.model.Account;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.model.Transaction;
+import org.gnucash.android.model.Transaction.TransactionType;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -179,9 +180,13 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 		while (c.moveToNext()) {
 			Transaction transaction = buildTransactionInstance(c);
 			String doubleEntryAccountUID = transaction.getDoubleEntryAccountUID();
-			//negate double entry transactions for the transfer account
+			// Negate double entry transactions for the transfer account
 			if (doubleEntryAccountUID != null && doubleEntryAccountUID.equals(accountUID)){
-				transaction.setAmount(transaction.getAmount().negate());
+				if (transaction.getType() == TransactionType.DEBIT) {
+					transaction.setType(TransactionType.CREDIT);
+				} else {
+					transaction.setType(TransactionType.DEBIT);
+				}
 			}
 			transactionsList.add(transaction);
 		}

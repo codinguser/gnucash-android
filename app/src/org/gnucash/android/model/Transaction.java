@@ -366,7 +366,22 @@ public class Transaction {
 	public void setDoubleEntryAccountUID(String doubleEntryAccountUID) {
 		this.mDoubleEntryAccountUID = doubleEntryAccountUID;
 	}
-	
+
+	/**
+	 * Returns type of this transaction
+	 * @return Type of this transaction
+	 */
+	public TransactionType getType() {
+		return mType;
+	}
+
+	/**
+	 * Sets the type of this transaction
+	 * @param Type of this transaction
+	 */
+	public void setType(TransactionType type) {
+		mType = type;
+	}
 
 	/**
 	 * Returns UID of account to which this transaction belongs
