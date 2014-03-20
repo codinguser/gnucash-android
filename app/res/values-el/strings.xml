@@ -405,7 +405,7 @@
     <string name="menu_scheduled_transactions">Προγραμματισμένες Κινήσεις</string>
     <string name="msg_confirm_create_default_accounts_first_run">GnuCash Android. Καλώς ήρθατε! \nΜπορείτε είτε να δημιουργήσετε
         μια ιεραρχία συνηθισμένων λογαριασμών, ή να εισάγετε τη δική σας δομή λογαριασμών GnuCash. \n\nΚαι οι δύο επιλογές είναι επίσης
-        διαθέσιμες στις Επιλογές της εφαρμογής γι' αυτό μπορείτε να αποφασίσετε αργότερα.
+        διαθέσιμες στις Επιλογές της εφαρμογής γι\' αυτό μπορείτε να αποφασίσετε αργότερα.
     </string>
     <string-array name="recurrence_period_strings">
         <item>ΚΑΜΙΑ</item>

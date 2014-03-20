@@ -51,7 +51,7 @@ public class Account {
         ^             anchor for start of string
         #             the literal #
         (             start of group
-        ?:            indicate a non-capturing group that doesn't generate backreferences
+        ?:            indicate a non-capturing group that doesn't generate back-references
         [0-9a-fA-F]   hexadecimal digit
         {3}           three times
         )             end of group
@@ -357,7 +357,7 @@ public class Account {
 	 */
 	public boolean hasUnexportedTransactions(){
 		for (Transaction transaction : mTransactionsList) {
-			if (transaction.isExported() == false)
+			if (!transaction.isExported())
 				return true;			
 		}
 		return false;

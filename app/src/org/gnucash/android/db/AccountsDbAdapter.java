@@ -22,6 +22,7 @@ import org.gnucash.android.model.Account;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.model.Account.AccountType;
 import org.gnucash.android.model.Transaction;
+import org.gnucash.android.model.Transaction.TransactionType;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -84,11 +85,8 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 		if ((rowId = getAccountID(account.getUID())) > 0){
 			//if account already exists, then just update
 			Log.d(TAG, "Updating existing account");
-			int rowsAffected = mDb.update(DatabaseHelper.ACCOUNTS_TABLE_NAME, contentValues,
+			mDb.update(DatabaseHelper.ACCOUNTS_TABLE_NAME, contentValues,
                     DatabaseHelper.KEY_ROW_ID + " = " + rowId, null);
-            if (rowsAffected == 1){
-                updateAccount(rowId, DatabaseHelper.KEY_FULL_NAME, getFullyQualifiedAccountName(rowId));
-            }
 		} else {
 			Log.d(TAG, "Adding new account to db");
 			rowId = mDb.insert(DatabaseHelper.ACCOUNTS_TABLE_NAME, null, contentValues);
@@ -99,7 +97,20 @@ public class AccountsDbAdapter extends DatabaseAdapter {
             //update the fully qualified account name
             updateAccount(rowId, DatabaseHelper.KEY_FULL_NAME, getFullyQualifiedAccountName(rowId));
 			for (Transaction t : account.getTransactions()) {
-				mTransactionsAdapter.addTransaction(t);
+                //FIXME: This is a hack until actual splits are implemented
+                if (t.getDoubleEntryAccountUID().equals(account.getUID())){
+                    Transaction trx = new Transaction(t,false);
+//                    trx.setAmount(trx.getAmount().negate());
+                    if (trx.getType() == TransactionType.DEBIT) {
+                        trx.setType(TransactionType.CREDIT);
+                    } else {
+                        trx.setType(TransactionType.DEBIT);
+                    }
+
+                    mTransactionsAdapter.addTransaction(trx);
+                }
+                else
+				    mTransactionsAdapter.addTransaction(t);
 			}
 		}
 		return rowId;
@@ -147,7 +158,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 		//first remove all transactions for the account
 		Cursor c = mTransactionsAdapter.fetchAllTransactionsForAccount(rowId);
 		if (c == null)
-			return result; 
+			return false;
 		
 		while (c.moveToNext()){
 			long id = c.getLong(DatabaseAdapter.COLUMN_ROW_ID);
@@ -210,7 +221,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
      */
     public boolean recursiveDestructiveDelete(long accountId){
         Log.d(TAG, "Delete account with rowId with its transactions and sub-accounts: " + accountId);
-        boolean result = true;
+        boolean result = false;
 
         List<Long> subAccountIds = getSubAccountIds(accountId);
         for (long subAccountId : subAccountIds) {
@@ -425,7 +436,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 		while (it.hasNext()){
 			Account account = it.next();
 			
-			if (account.hasUnexportedTransactions() == false)
+			if (!account.hasUnexportedTransactions())
 				it.remove();
 		}
 		return accountsList;
@@ -440,13 +451,12 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 	public Cursor fetchAllRecords(){
 		Log.v(TAG, "Fetching all accounts from db");
         String selection =  DatabaseHelper.KEY_TYPE + " != ?" ;
-		Cursor cursor = mDb.query(DatabaseHelper.ACCOUNTS_TABLE_NAME,
+        return mDb.query(DatabaseHelper.ACCOUNTS_TABLE_NAME,
                 null,
                 selection,
                 new String[]{AccountType.ROOT.name()},
                 null, null,
                 DatabaseHelper.KEY_NAME + " ASC");
-		return cursor;
 	}
 
     /**
@@ -489,10 +499,9 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 	 */
 	public Cursor fetchAccounts(String condition){
 		Log.v(TAG, "Fetching all accounts from db where " + condition);
-		Cursor cursor = mDb.query(DatabaseHelper.ACCOUNTS_TABLE_NAME, 
-				null, condition, null, null, null, 
-				DatabaseHelper.KEY_NAME + " ASC");
-		return cursor;
+        return mDb.query(DatabaseHelper.ACCOUNTS_TABLE_NAME,
+                null, condition, null, null, null,
+                DatabaseHelper.KEY_NAME + " ASC");
 	}
 
     /**
@@ -612,10 +621,9 @@ public class AccountsDbAdapter extends DatabaseAdapter {
     public Cursor fetchFavoriteAccounts(){
         Log.v(TAG, "Fetching favorite accounts from db");
         String condition = DatabaseHelper.KEY_FAVORITE + " = 1";
-        Cursor cursor = mDb.query(DatabaseHelper.ACCOUNTS_TABLE_NAME,
+        return mDb.query(DatabaseHelper.ACCOUNTS_TABLE_NAME,
                 null, condition, null, null, null,
                 DatabaseHelper.KEY_NAME + " ASC");
-        return cursor;
     }
 
     /**

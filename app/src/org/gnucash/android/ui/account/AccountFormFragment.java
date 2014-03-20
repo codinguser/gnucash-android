@@ -16,49 +16,43 @@
 
 package org.gnucash.android.ui.account;
 
-import java.util.Arrays;
-import java.util.Currency;
-import java.util.List;
-
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
+import android.database.Cursor;
 import android.graphics.Color;
+import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentManager;
-import org.gnucash.android.R;
-import org.gnucash.android.model.Account;
-import org.gnucash.android.model.Money;
-import org.gnucash.android.db.AccountsDbAdapter;
-import org.gnucash.android.db.DatabaseHelper;
-import org.gnucash.android.ui.UxArgument;
-import org.gnucash.android.ui.colorpicker.ColorPickerDialog;
-import org.gnucash.android.ui.colorpicker.ColorPickerSwatch;
-import org.gnucash.android.ui.colorpicker.ColorSquare;
-
-import android.content.Context;
-import android.database.Cursor;
-import android.os.Bundle;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.ArrayAdapter;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
+import android.widget.*;
 import android.widget.CompoundButton.OnCheckedChangeListener;
-import android.widget.EditText;
-import android.widget.Spinner;
-import android.widget.Toast;
-
 import com.actionbarsherlock.app.SherlockFragment;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
+import org.gnucash.android.R;
+import org.gnucash.android.db.AccountsDbAdapter;
+import org.gnucash.android.db.DatabaseHelper;
+import org.gnucash.android.model.Account;
+import org.gnucash.android.model.Money;
+import org.gnucash.android.ui.UxArgument;
+import org.gnucash.android.ui.colorpicker.ColorPickerDialog;
+import org.gnucash.android.ui.colorpicker.ColorPickerSwatch;
+import org.gnucash.android.ui.colorpicker.ColorSquare;
 import org.gnucash.android.util.QualifiedAccountNameCursorAdapter;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Currency;
+import java.util.List;
 
 /**
  * Fragment used for creating and editing accounts
@@ -97,7 +91,14 @@ public class AccountFormFragment extends SherlockFragment {
 	 * This is used if we are editing an account instead of creating one
 	 */
 	private long mSelectedAccountId = 0;
-	
+
+    /**
+     * Database ID of the parent account
+     * This value is set to the parent account of the transaction being edited or
+     * the account in which a new sub-account is being created
+     */
+    private long mParentAccountId = -1;
+
 	/**
 	 * Reference to account object which will be created at end of dialog
 	 */
@@ -202,7 +203,7 @@ public class AccountFormFragment extends SherlockFragment {
         }
 
         SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        mUseDoubleEntry = sharedPrefs.getBoolean(getString(R.string.key_use_double_entry), false);
+        mUseDoubleEntry = sharedPrefs.getBoolean(getString(R.string.key_use_double_entry), true);
 	}
 	
 	/**
@@ -218,6 +219,19 @@ public class AccountFormFragment extends SherlockFragment {
 		mNameEditText.requestFocus();
 
         mAccountTypeSpinner = (Spinner) view.findViewById(R.id.input_account_type_spinner);
+        mAccountTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+                loadParentAccountList(getSelectedAccountType());
+                setParentAccountSelection(mParentAccountId);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+                //nothing to see here, move along
+            }
+        });
+
         mPlaceholderCheckBox = (CheckBox) view.findViewById(R.id.checkbox_placeholder_account);
 
 		mParentAccountSpinner = (Spinner) view.findViewById(R.id.input_parent_account);
@@ -276,9 +290,8 @@ public class AccountFormFragment extends SherlockFragment {
         }
 
         //need to load the cursor adapters for the spinners before initializing the views
-        loadParentAccountList();
         loadAccountTypesList();
-        loadDefaultTransferAccoutList();
+        loadDefaultTransferAccountList();
         setDefaultTransferAccountInputsVisible(mUseDoubleEntry);
 
         if (mAccount != null){
@@ -286,6 +299,8 @@ public class AccountFormFragment extends SherlockFragment {
         } else {
             initializeViews();
         }
+
+
 	}
 
     /**
@@ -297,12 +312,14 @@ public class AccountFormFragment extends SherlockFragment {
         if (account == null)
             throw new IllegalArgumentException("Account cannot be null");
 
+        loadParentAccountList(account.getAccountType());
+        mParentAccountId = mAccountsDbAdapter.getAccountID(account.getParentUID());
+        setParentAccountSelection(mParentAccountId);
+
         String currencyCode = account.getCurrency().getCurrencyCode();
         setSelectedCurrency(currencyCode);
 
         mNameEditText.setText(account.getName());
-        long parentAccountId = mAccountsDbAdapter.getAccountID(account.getParentUID());
-        setParentAccountSelection(parentAccountId);
 
         if (mUseDoubleEntry) {
             long doubleDefaultAccountId = mAccountsDbAdapter.getAccountID(account.getDefaultTransferAccountUID());
@@ -321,19 +338,23 @@ public class AccountFormFragment extends SherlockFragment {
     private void initializeViews(){
         setSelectedCurrency(Money.DEFAULT_CURRENCY_CODE);
         mColorSquare.setBackgroundColor(Color.LTGRAY);
-        long parentAccountId = getArguments().getLong(UxArgument.PARENT_ACCOUNT_ID);
-        setParentAccountSelection(parentAccountId);
+        mParentAccountId = getArguments().getLong(UxArgument.PARENT_ACCOUNT_ID);
 
-        /* This snippet causes the child account to default to same color as parent. Not sure if we want that
 
-        if (parentAccountId > 0) {
-            //child accounts by default have same type as the parent
-            setAccountTypeSelection(mAccountsDbAdapter.getAccountType(parentAccountId));
-            String colorHex = mAccountsDbAdapter.getAccountColorCode(parentAccountId);
-            initializeColorSquarePreview(colorHex);
-            mSelectedColor = colorHex;
+        if (mParentAccountId > 0) {
+            Account.AccountType parentAccountType = mAccountsDbAdapter.getAccountType(mParentAccountId);
+            setAccountTypeSelection(parentAccountType);
+            loadParentAccountList(parentAccountType);
+            setParentAccountSelection(mParentAccountId);
+//            String colorHex = mAccountsDbAdapter.getAccountColorCode(parentAccountId);
+//            initializeColorSquarePreview(colorHex);
+//            mSelectedColor = colorHex;
         }
-        */
+
+        //this must be called after changing account type
+        //because changing account type reloads list of eligible parent accounts
+
+
     }
 
     /**
@@ -392,7 +413,14 @@ public class AccountFormFragment extends SherlockFragment {
 
         for (int pos = 0; pos < mParentAccountCursorAdapter.getCount(); pos++) {
             if (mParentAccountCursorAdapter.getItemId(pos) == parentAccountId){
-                mParentAccountSpinner.setSelection(pos);
+                final int position = pos;
+                mParentAccountSpinner.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        mParentAccountSpinner.setSelection(position);
+                    }
+                }, 100);
+//                mParentAccountSpinner.setSelection(pos, true);
                 break;
             }
         }
@@ -477,7 +505,7 @@ public class AccountFormFragment extends SherlockFragment {
     /**
      * Initializes the default transfer account spinner with eligible accounts
      */
-    private void loadDefaultTransferAccoutList(){
+    private void loadDefaultTransferAccountList(){
         String condition = DatabaseHelper.KEY_ROW_ID + " != " + mSelectedAccountId
                 + " AND " + DatabaseHelper.KEY_PLACEHOLDER + "=0"
                 + " AND " + DatabaseHelper.KEY_UID + " != '" + mAccountsDbAdapter.getGnuCashRootAccountUID() + "'";
@@ -493,22 +521,31 @@ public class AccountFormFragment extends SherlockFragment {
         mDefaultTransferAccountCursorAdapter = new QualifiedAccountNameCursorAdapter(getActivity(),
                 android.R.layout.simple_spinner_item,
                 defaultTransferAccountCursor);
-        mParentAccountCursorAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        mDefaulTransferAccountSpinner.setAdapter(mParentAccountCursorAdapter);
+        mDefaultTransferAccountCursorAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        mDefaulTransferAccountSpinner.setAdapter(mDefaultTransferAccountCursorAdapter);
     }
 
     /**
-     * Loads the list of possible accounts which can be set as a parent account and initializes the spinner
+     * Loads the list of possible accounts which can be set as a parent account and initializes the spinner.
+     * The allowed parent accounts depends on the account type
+     * @param accountType AccountType of account whose allowed parent list is to be loaded
      */
-	private void loadParentAccountList(){
-        String condition = null;
+	private void loadParentAccountList(Account.AccountType accountType){
+        String condition = DatabaseHelper.KEY_TYPE + " IN ("
+                + getAllowedParentAccountTypes(accountType) + ") ";
+
         if (mAccount != null){  //if editing an account
             // limit cyclic account hierarchies. Still technically possible since we don't forbid descendant accounts
-            condition = "(" + DatabaseHelper.KEY_PARENT_ACCOUNT_UID + " IS NULL "
+            condition += " AND (" + DatabaseHelper.KEY_PARENT_ACCOUNT_UID + " IS NULL "
                     + " OR " + DatabaseHelper.KEY_PARENT_ACCOUNT_UID + " != '" + mAccount.getUID() + "')"
-                    + " AND " + DatabaseHelper.KEY_ROW_ID + "!=" + mSelectedAccountId;
+                    + " AND " + DatabaseHelper.KEY_ROW_ID + " != " + mSelectedAccountId;
+
             //TODO: Limit all descendants of the account to eliminate the possibility of cyclic hierarchy
         }
+
+        //if we are reloading the list, close the previous cursor first
+        if (mParentAccountCursor != null)
+            mParentAccountCursor.close();
 
 		mParentAccountCursor = mAccountsDbAdapter.fetchAccountsOrderedByFullName(condition);
 		if (mParentAccountCursor == null || mParentAccountCursor.getCount() <= 0){
@@ -525,6 +562,68 @@ public class AccountFormFragment extends SherlockFragment {
 		mParentAccountSpinner.setAdapter(mParentAccountCursorAdapter);
 	}
 
+    /**
+     * Returns a comma separated list of account types which can be parent accounts for the specified <code>type</code>.
+     * The strings in the list are the {@link org.gnucash.android.model.Account.AccountType#name()}s of the different types.
+     * @param type {@link org.gnucash.android.model.Account.AccountType}
+     * @return String comma separated list of account types
+     */
+    private String getAllowedParentAccountTypes(Account.AccountType type){
+
+        switch (type){
+            case EQUITY:
+                return "'" + Account.AccountType.EQUITY.name() + "'";
+
+            case INCOME:
+            case EXPENSE:
+                return "'" + Account.AccountType.EXPENSE + "', '" + Account.AccountType.INCOME + "', '"
+                        + Account.AccountType.ROOT + "'";
+
+            case CASH:
+            case BANK:
+            case CREDIT:
+            case ASSET:
+            case LIABILITY:
+            case PAYABLE:
+            case RECEIVABLE:
+            case CURRENCY:
+            case STOCK:
+            case MUTUAL: {
+                List<String> accountTypeStrings = getAccountTypeStringList();
+
+                accountTypeStrings.remove(Account.AccountType.EQUITY.name());
+                accountTypeStrings.remove(Account.AccountType.EXPENSE.name());
+                accountTypeStrings.remove(Account.AccountType.INCOME.name());
+
+                String result = "";
+                for (String accountTypeString : accountTypeStrings) {
+                    result += "'" + accountTypeString + "',";
+                }
+
+                //remove the last comma
+                return result.substring(0, result.length() - 1);
+
+            }
+
+            case ROOT:
+            default:
+                return Arrays.toString(Account.AccountType.values()).replaceAll("\\[|]", "");
+        }
+    }
+
+    /**
+     * Returns a list of all the available {@link org.gnucash.android.model.Account.AccountType}s as strings
+     * @return String list of all account types
+     */
+    private List<String> getAccountTypeStringList(){
+        String[] accountTypes = Arrays.toString(Account.AccountType.values()).replaceAll("\\[|]", "").split(",");
+        List<String> accountTypesList = new ArrayList<String>();
+        for (String accountType : accountTypes) {
+            accountTypesList.add(accountType.trim());
+        }
+
+        return accountTypesList;
+    }
     /**
      * Loads the list of account types into the account type selector spinner
      */
@@ -583,9 +682,8 @@ public class AccountFormFragment extends SherlockFragment {
 				.getSelectedItemPosition());
 		mAccount.setCurrency(Currency.getInstance(curCode));
 
-        int selectedAccountType = mAccountTypeSpinner.getSelectedItemPosition();
-        String[] accountTypeEntries = getResources().getStringArray(R.array.account_type_entries);
-        mAccount.setAccountType(Account.AccountType.valueOf(accountTypeEntries[selectedAccountType]));
+        Account.AccountType selectedAccountType = getSelectedAccountType();
+        mAccount.setAccountType(selectedAccountType);
 
         mAccount.setPlaceHolderFlag(mPlaceholderCheckBox.isChecked());
         mAccount.setColorCode(mSelectedColor);
@@ -612,8 +710,18 @@ public class AccountFormFragment extends SherlockFragment {
 
 		finishFragment();
 	}
-	
-	/**
+
+    /**
+     * Returns the currently selected account type in the spinner
+     * @return {@link org.gnucash.android.model.Account.AccountType} currently selected
+     */
+    private Account.AccountType getSelectedAccountType() {
+        int selectedAccountTypeIndex = mAccountTypeSpinner.getSelectedItemPosition();
+        String[] accountTypeEntries = getResources().getStringArray(R.array.account_type_entries);
+        return Account.AccountType.valueOf(accountTypeEntries[selectedAccountTypeIndex]);
+    }
+
+    /**
 	 * Retrieves the name of the account which has been entered in the EditText
 	 * @return
 	 */
