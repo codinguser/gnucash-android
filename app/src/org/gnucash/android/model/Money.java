@@ -57,12 +57,6 @@ public final class Money implements Comparable<Money>{
 	private static final RoundingMode DEFAULT_ROUNDING_MODE = RoundingMode.HALF_EVEN;
 	
 	/**
-	 * Number of decimal places to limit the fractions to when performing operations
-	 * Defaults to 2 decimal places
-	 */
-	private static final int DEFAULT_DECIMAL_PLACES = 2;
-	
-	/**
 	 * Rounding mode to be applied when performing operations
 	 * Defaults to {@link #DEFAULT_ROUNDING_MODE}
 	 */
@@ -70,9 +64,9 @@ public final class Money implements Comparable<Money>{
 	
 	/**
 	 * Number of decimal places to limit fractions to in arithmetic operations
-	 * Defaults to {@link #DEFAULT_DECIMAL_PLACES}
+	 * Defaults to 2 decimal places
 	 */
-	protected int DECIMAL_PLACES = DEFAULT_DECIMAL_PLACES;
+	protected int DECIMAL_PLACES = 2;
 
 	/**
 	 * Default currency code (according ISO 4217) 
@@ -109,8 +103,9 @@ public final class Money implements Comparable<Money>{
 	 * @param currency {@link Currency} associated with the <code>amount</code>
 	 */
 	public Money(BigDecimal amount, Currency currency){		
-		this.mAmount = amount;
 		this.mCurrency = currency;
+		DECIMAL_PLACES = currency.getDefaultFractionDigits();
+		this.mAmount = amount;
 	}
 	
 	/**
@@ -120,8 +115,8 @@ public final class Money implements Comparable<Money>{
 	 * @param currencyCode Currency code as specified by ISO 4217
 	 */
 	public Money(String amount, String currencyCode){
-		setAmount(amount);
 		setCurrency(Currency.getInstance(currencyCode));
+		setAmount(amount);
 	}
 	
 	/**
@@ -132,10 +127,9 @@ public final class Money implements Comparable<Money>{
 	 * @param context {@link MathContext} specifying rounding mode during operations
 	 */
 	public Money(BigDecimal amount, Currency currency, MathContext context){
-		setAmount(amount);
 		setCurrency(currency);
 		ROUNDING_MODE = context.getRoundingMode();
-		DECIMAL_PLACES = context.getPrecision();
+		setAmount(amount);
 	}
 	
 	/**
@@ -164,8 +158,8 @@ public final class Money implements Comparable<Money>{
      * @param money Money instance to be cloned
      */
     public Money(Money money){
-        setAmount(money.asBigDecimal());
         setCurrency(money.getCurrency());
+        setAmount(money.asBigDecimal());
     }
 
     /**
@@ -179,11 +173,12 @@ public final class Money implements Comparable<Money>{
 
 	/**
 	 * Initializes the amount and currency to their default values
-	 * @see {@link Money#DEFAULT_CURRENCY_CODE}, {@link #DEFAULT_ROUNDING_MODE}, {@link #DEFAULT_DECIMAL_PLACES}
+	 * @see {@link Money#DEFAULT_CURRENCY_CODE}, {@link #DEFAULT_ROUNDING_MODE}
 	 */
 	private void init(){
 		mCurrency = Currency.getInstance(Money.DEFAULT_CURRENCY_CODE);
-		mAmount = new BigDecimal(0).setScale(DEFAULT_DECIMAL_PLACES, DEFAULT_ROUNDING_MODE);
+		DECIMAL_PLACES = mCurrency.getDefaultFractionDigits();
+		mAmount = new BigDecimal(0).setScale(DECIMAL_PLACES, DEFAULT_ROUNDING_MODE);
 	}
 
 	/**
@@ -214,6 +209,7 @@ public final class Money implements Comparable<Money>{
 	private void setCurrency(Currency currency) {
 		//TODO: Consider doing a conversion of the value as well in the future
 		this.mCurrency = currency;
+		DECIMAL_PLACES = currency.getDefaultFractionDigits();
 	}
 
 	/**

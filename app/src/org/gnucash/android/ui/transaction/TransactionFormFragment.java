@@ -176,6 +176,11 @@ public class TransactionFormFragment extends SherlockFragment implements
      * Used for determining the accounting rules for credits and debits
      */
     Account.AccountType mAccountType;
+	
+	/**
+	 * The fraction digits of the currency.
+	 */
+	private int mFractionDigits;
 
     /**
      * Spinner for marking the transaction as a recurring transaction
@@ -239,10 +244,10 @@ public class TransactionFormFragment extends SherlockFragment implements
 		if (mTransaction == null)
 			initalizeViews();
 		else {
+			initializeViewsWithTransaction();
 			if (mUseDoubleEntry && isInDoubleAccount()){
 				mTransaction.setAmount(mTransaction.getAmount().negate());
 			}
-			initializeViewsWithTransaction();
 		}
 
         initTransactionNameAutocomplete();
@@ -319,10 +324,6 @@ public class TransactionFormFragment extends SherlockFragment implements
 
         mTransactionTypeButton.setChecked(mTransaction.getAmount().isNegative());
 
-		if (!mAmountManuallyEdited){
-            //when autocompleting, only change the amount if the user has not manually changed it already
-            mAmountEditText.setText(mTransaction.getAmount().toPlainString());
-        }
 		mCurrencyTextView.setText(mTransaction.getAmount().getCurrency().getSymbol(Locale.getDefault()));
 		mDescriptionEditText.setText(mTransaction.getDescription());
 		mDateTextView.setText(DATE_FORMATTER.format(mTransaction.getTimeMillis()));
@@ -345,6 +346,11 @@ public class TransactionFormFragment extends SherlockFragment implements
 		String code = mTransactionsDbAdapter.getCurrencyCode(accountId);
 		Currency accountCurrency = Currency.getInstance(code);
 		mCurrencyTextView.setText(accountCurrency.getSymbol());
+		mFractionDigits = accountCurrency.getDefaultFractionDigits();
+		if (!mAmountManuallyEdited){
+            //when autocompleting, only change the amount if the user has not manually changed it already
+            mAmountEditText.setText(mTransaction.getAmount().toPlainString());
+        }
 
         setSelectedRecurrenceOption();
     }
@@ -378,7 +384,8 @@ public class TransactionFormFragment extends SherlockFragment implements
 		}
 		Currency accountCurrency = Currency.getInstance(code);
 		mCurrencyTextView.setText(accountCurrency.getSymbol(Locale.getDefault()));
-
+		mFractionDigits = accountCurrency.getDefaultFractionDigits();
+		
         if (mUseDoubleEntry){
             long defaultTransferAccountID = mAccountsDbAdapter.getDefaultTransferAccountID(accountId);
             if (defaultTransferAccountID > 0){
@@ -532,6 +539,7 @@ public class TransactionFormFragment extends SherlockFragment implements
 		String currencyCode = accountsDbAdapter.getCurrencyCode(newAccountId);
 		Currency currency = Currency.getInstance(currencyCode);
 		mCurrencyTextView.setText(currency.getSymbol(Locale.getDefault()));
+		mFractionDigits = currency.getDefaultFractionDigits();
 
         Account.AccountType previousAccountType = mAccountType;
         mAccountType = accountsDbAdapter.getAccountType(newAccountId);
@@ -715,10 +723,25 @@ public class TransactionFormFragment extends SherlockFragment implements
 	 */
 	public BigDecimal parseInputToDecimal(String amountString){
 		String clean = stripCurrencyFormatting(amountString);
-		//all amounts are input to 2 decimal places, so after removing decimal separator, divide by 100
-		BigDecimal amount = new BigDecimal(clean).setScale(2,
-				RoundingMode.HALF_EVEN).divide(new BigDecimal(100), 2,
+		// Change empty to zero.
+		if (clean == "") {
+			clean = "0";
+		}
+		BigDecimal amount = null;
+		if (mFractionDigits != 0) {
+			int divisor = 1;
+			for(int i = 0; i < mFractionDigits; i++) {
+				divisor *= 10;
+			}
+			// all amounts with default fraction digits of current currency,
+			// so after removing decimal separator, divide by 10 to the fraction digits power. 
+			amount = new BigDecimal(clean).setScale(mFractionDigits,
+					RoundingMode.HALF_EVEN).divide(new BigDecimal(divisor), mFractionDigits,
 				RoundingMode.HALF_EVEN);
+		} else {
+			amount = new BigDecimal(clean).setScale(mFractionDigits,
+					RoundingMode.HALF_EVEN);
+		}
 		if (mTransactionTypeButton.isChecked() && amount.doubleValue() > 0)
 			amount = amount.negate();
 		return amount;
@@ -726,10 +749,10 @@ public class TransactionFormFragment extends SherlockFragment implements
 
 
 	/**
-	 * Captures input string in the amount input field and parses it into a formatted amount
+	 * Captures input string in the amount input field and parses it into a formatted amount.
 	 * The amount input field allows numbers to be input sequentially and they are parsed
-	 * into a string with 2 decimal places. This means inputting 245 will result in the amount
-	 * of 2.45
+	 * into a string with fraction digits places. This means inputting 245 will result in the
+	 * amount of 2.45 in the USD Currency.
 	 * @author Ngewi Fet <ngewif@gmail.com>
 	 */
 	private class AmountInputFormatter implements TextWatcher {
@@ -742,8 +765,8 @@ public class TransactionFormFragment extends SherlockFragment implements
 			
 			BigDecimal amount = parseInputToDecimal(s.toString());
 			DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance(Locale.getDefault());
-			formatter.setMinimumFractionDigits(2);
-			formatter.setMaximumFractionDigits(2);
+			formatter.setMinimumFractionDigits(mFractionDigits);
+			formatter.setMaximumFractionDigits(mFractionDigits);
 			current = formatter.format(amount.doubleValue());
 			
 			mAmountEditText.removeTextChangedListener(this);
