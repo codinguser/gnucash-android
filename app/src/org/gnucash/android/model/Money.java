@@ -57,6 +57,13 @@ public final class Money implements Comparable<Money>{
 	private static final RoundingMode DEFAULT_ROUNDING_MODE = RoundingMode.HALF_EVEN;
 	
 	/**
+	 * Number of decimal places to limit the fractions to when performing operations
+	 * Defaults to 2 decimal places
+	 */
+	private static final int DEFAULT_DECIMAL_PLACES = 2;
+
+	/**
+
 	 * Rounding mode to be applied when performing operations
 	 * Defaults to {@link #DEFAULT_ROUNDING_MODE}
 	 */
@@ -64,9 +71,9 @@ public final class Money implements Comparable<Money>{
 	
 	/**
 	 * Number of decimal places to limit fractions to in arithmetic operations
-	 * Defaults to 2 decimal places
+	 * Defaults to {@link #DEFAULT_DECIMAL_PLACES}
 	 */
-	protected int DECIMAL_PLACES = 2;
+	protected int DECIMAL_PLACES = DEFAULT_DECIMAL_PLACES;
 
 	/**
 	 * Default currency code (according ISO 4217) 
@@ -173,12 +180,11 @@ public final class Money implements Comparable<Money>{
 
 	/**
 	 * Initializes the amount and currency to their default values
-	 * @see {@link Money#DEFAULT_CURRENCY_CODE}, {@link #DEFAULT_ROUNDING_MODE}
+	 * @see {@link Money#DEFAULT_CURRENCY_CODE}, {@link #DEFAULT_ROUNDING_MODE}, {@link #DEFAULT_DECIMAL_PLACES}
 	 */
 	private void init(){
 		mCurrency = Currency.getInstance(Money.DEFAULT_CURRENCY_CODE);
-		DECIMAL_PLACES = mCurrency.getDefaultFractionDigits();
-		mAmount = new BigDecimal(0).setScale(DECIMAL_PLACES, DEFAULT_ROUNDING_MODE);
+		mAmount = new BigDecimal(0).setScale(DEFAULT_DECIMAL_PLACES, DEFAULT_ROUNDING_MODE);
 	}
 
 	/**
