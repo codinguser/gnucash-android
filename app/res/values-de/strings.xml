@@ -68,14 +68,14 @@
     <string name="title_share_ofx_with">OFX-Datei senden mit…</string>
     <string name="toast_incompatible_currency">Buchungen k&#246;nnten nicht verschoben werden.\Die W&#228;hrung des Zielkontos ist inkompatibel</string>
     <string name="header_general_settings">Allgemein</string>
-    <string name="header_about_gnucash">&#220;ber Gnucash</string>
+    <string name="header_about_gnucash">&#220;ber GnuCash</string>
     <string name="title_choose_currency">Standardw&#228;hrung ausw&#228;hlen</string>
     <string name="title_default_currency">Standardw&#228;hrung</string>
-    <string name="summary_default_currency">Standardw&#228;hrung f&#252;r neuen Konten</string>
-    <string name="label_permission_record_transactions">Erm&#246;glicht das Speichern von Buchungen in Gnucash</string>
-    <string name="label_permission_create_accounts">Erm&#246;glicht das Erstellen von Konten in Gnucash</string>
-    <string name="label_permission_group">Ihre Gnucash-Daten</string>
-    <string name="description_permission_group">Lesen und Bearbeiten von Gnucash-Daten</string>
+    <string name="summary_default_currency">Standardw&#228;hrung f&#252;r neue Konten</string>
+    <string name="label_permission_record_transactions">Erm&#246;glicht das Speichern von Buchungen in GnuCash</string>
+    <string name="label_permission_create_accounts">Erm&#246;glicht das Erstellen von Konten in GnuCash</string>
+    <string name="label_permission_group">Ihre GnuCash-Daten</string>
+    <string name="description_permission_group">Lesen und Bearbeiten von GnuCash-Daten</string>
     <string name="label_permission_record_transaction">Buchungen speichern</string>
     <string name="label_permission_create_account">Konten erstellen</string>
     <string name="label_display_account">Konto anzeigen</string>
@@ -265,21 +265,21 @@
 	    <item>KapitalKonto</item>
 	    <item>Passiva</item>
 	</string-array>
-	<string name="error_no_accounts">Keine Konten vorhanden.\nSie m&#252;ssen einen Konto erstellen um Widgets zu anzuf&#252;gen</string>
+	<string name="error_no_accounts">Keine Konten vorhanden.\nSie m&#252;ssen ein Konto erstellen um Widgets anf&#252;gen zu k&#246;nnen.</string>
 	<string name="title_build_version">Version</string>
 	<string name="title_license">Lizenz</string>
 	<string name="summary_licence_details">Apache License v2.0. Klicken f&#252;r Details</string>
 	<string name="title_general_prefs">Allgemein</string>
 	<string name="label_widget_configuration">Konto ausw&#228;hlen</string>
 	<string name="toast_no_transactions_to_export">Keine Buchungen zum Exportieren</string>
-	<string name="title_about_gnucash">&#220;ber Gnucash</string>
-	<string name="summary_about_gnucash">GnucashMobile ist eine mobile Datenaufzeichungs-App f&#252;r Android. \nEs erm&#246;glicht die schnelle und flexible Registrierung von Zahlungsvorg&#228;ngen unterwegs, die dann als Datei im OFX-Format exportiert und von der GnuCash-Anwendung an einem Desktop-PC importiert werden k&#246;nnen.</string>
+	<string name="title_about_gnucash">&#220;ber GnuCash</string>
+	<string name="summary_about_gnucash">GnuCashMobile ist eine mobile Datenaufzeichungs-App f&#252;r Android. \nEs erm&#246;glicht die schnelle und flexible Registrierung von Zahlungsvorg&#228;ngen unterwegs, die dann als Datei im OFX-Format exportiert und von der GnuCash-Anwendung an einem Desktop-PC importiert werden k&#246;nnen.</string>
 	<string name="title_about">&#220;ber</string>
 	<string name="ofx_file_exported_to">OFX-Datei exportiert nach:</string>
 	<string name="toast_error_exporting_ofx">Fehler beim Exportieren der OFX-Datei:\n</string>
 	<string name="toast_ofx_exported_to">OFX-Datei erfolgreich exportiert nach:\n</string>
-	<string name="title_export_email">Gnucash exportierte OFX-Datei</string>
-	<string name="description_export_email">Gnucash-Konten-Export von </string>
+	<string name="title_export_email">GnuCash exportierte OFX-Datei</string>
+	<string name="description_export_email">GnuCash-Konten-Export von </string>
 	<string name="header_transaction_settings">Buchungen</string>
 	<string name="title_transaction_preferences">Einstellungen Buchungen</string>
 	<string name="title_account_preferences">Einstellungen Konten</string>
@@ -294,7 +294,7 @@
 	<string name="title_export_preference_category">Exportieren</string>
 	<string name="title_export_all_transactions">Alle Buchungen exportieren</string>
 	<string name="title_always_delete_exported_transactions">Alle exportierten Buchungen l&#246;schen</string>
-	<string name="title_default_export_email">Standard Export E-mail</string>
+	<string name="title_default_export_email">Standard Export E-Mail</string>
 	<string name="summary_default_export_email">Die Standard-E-Mail, an die exportierte OFX Dateien geschickt werden. Sie können diese immer noch beim Exportieren ändern.</string>
 	<string name="label_double_entry_account">Überweisungskonto</string>
 	<string name="summary_use_double_entry">Alle Buchungen stellen eine Überweisung von einem Konto zu einem anderen dar</string>
@@ -386,7 +386,7 @@
     <string name="msg_confirm_create_default_accounts_setting">Neue Konten werden zusätzlich zur existierenden Kontenstruktur erstellt.\n\nWenn Sie die derzeitig existierenden Konten ersetzen wollen, löschen Sie diese bitte, bevor Sie fortfahren!
     </string>
     <string name="menu_scheduled_transactions">Eingeplante Buchungen</string>
-    <string name="msg_confirm_create_default_accounts_first_run">Willkommen bei GnuCash Android!\nSie können entweder eine Hierarchie der für gewöhnlich verwendeten Konten erstellen oder Ihre eigene GnuCash-Kontenstruktur importieren\n\nBeide Optionen sind auch in den Einstellungen verfügbar, sodass Sie dies später entscheiden können.
+    <string name="msg_confirm_create_default_accounts_first_run">Willkommen bei GnuCash Android!\nSie können entweder eine Hierarchie der für gewöhnlich verwendeten Konten erstellen oder Ihre eigene GnuCash-Kontenstruktur importieren.\n\nBeide Optionen sind auch in den Einstellungen verfügbar, sodass Sie dies später entscheiden können.
     </string>
     <string-array name="recurrence_values">
         <item>KEINE</item>
