@@ -285,7 +285,6 @@
 	<string name="toast_ofx_exported_to">Αρχείο OFX εξήχθη σε:\n</string>
 	<string name="title_export_email">Εξαγωγή GnuCash OFX</string>
 	<string name="description_export_email">Εξαγωγή GnuCash OFX προς </string>
-	<string name="header_transaction_settings">Συναλλαγές</string>
 	<string name="header_transaction_settings">Κινήσεις</string>
 	<string name="title_transaction_preferences">Προτιμήσεις Κινήσεων</string>
 	<string name="title_account_preferences">Προτιμήσεις Λογαριασμών</string>
