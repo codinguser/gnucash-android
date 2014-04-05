@@ -526,7 +526,7 @@
     <string name="title_delete_all_accounts">Delete all accounts</string>
     <string name="header_account_settings">Accounts</string>
     <string name="toast_all_accounts_deleted">All accounts have been successfully deleted</string>
-    <string name="confirm_delete_all_accounts">Are you sure you want to delete all accounts and transactions? \n\nThis
+    <string name="confirm_delete_all_accounts">Are you sure you want to delete all accounts and transactions?\n\nThis
         operation cannot be undone!
     </string>
     <string name="label_account_type">Account Type</string>
