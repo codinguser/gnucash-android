@@ -18,13 +18,13 @@
 
 <resources>
     <string name="app_name">GnuCash</string>
-    <string name="title_add_account">Nieuw dagboek</string>
-    <string name="title_edit_account">Dagboek bewerken</string>
+    <string name="title_add_account">Nieuw rekening</string>
+    <string name="title_edit_account">Rekening bewerken</string>
     <string name="info_details">Info</string>
     <string name="menu_export_ofx">OFX exporteren</string>
-    <string name="description_add_transaction_icon">Nieuwe transactie in een dagboek</string>
-    <string name="label_no_accounts">Geen dagboeken beschikbaar</string>
-    <string name="label_account_name">Dagboeknaam</string>
+    <string name="description_add_transaction_icon">Nieuwe transactie in een rekening</string>
+    <string name="label_no_accounts">Geen rekeningen beschikbaar</string>
+    <string name="label_account_name">Rekeningnaam</string>
     <string name="btn_cancel">Annuleren</string>
     <string name="btn_save">Bewaren</string>
     <string name="label_no_transactions_to_display">Geen transacties beschikbaar</string>
@@ -33,17 +33,17 @@
     <string name="title_add_transaction">Nieuwe transactie</string>
     <string name="label_no_transactions">Geen transacties beschikbaar</string>
     <string name="label_timeanddate">Datum &amp; Tijd</string>
-    <string name="label_account">Dagboek</string>
+    <string name="label_account">Rekening</string>
     <string name="label_debit">Debet</string>
     <string name="label_credit">Credit</string>
-    <string name="title_accounts">Dagboeken</string>
+    <string name="title_accounts">Rekeningen</string>
     <string name="title_transactions">Transacties</string>
     <string name="menu_delete">Verwijderen</string>
     <string name="alert_dialog_ok_delete">Verwijderen</string>
     <string name="alert_dialog_cancel">Annuleren</string>
-    <string name="toast_account_deleted">Het dagboek werd verwijderd</string>
+    <string name="toast_account_deleted">De rekening werd verwijderd</string>
     <string name="title_confirm_delete">Verwijderen bevestigen</string>
-    <string name="delete_account_confirmation_message">Alle transacties in dit dagboek zullen ook verwijderd worden</string>
+    <string name="delete_account_confirmation_message">Alle transacties in deze rekening zullen ook verwijderd worden</string>
     <string name="title_edit_transaction">Transactie bewerken</string>
     <string name="label_transaction_description">Opmerking</string>
     <string name="menu_move">Verplaatsen</string>
@@ -64,24 +64,24 @@
     </string-array>
     <string name="btn_move">Verplaatsen</string>
     <string name="title_move_transactions">%1$d transactie(s) verplaatsen</string>
-    <string name="label_move_destination">Bestemmingsdagboek</string>
+    <string name="label_move_destination">Bestemmingsrekening</string>
     <string name="permission_access_sdcard">SD kaart benaderen</string>
     <string name="title_share_ofx_with">OFX data verzenden via&#8230;</string>
-    <string name="toast_incompatible_currency">Transacties kunnen niet verplaatst worden.\nHet munteenheid van het dagboeken is niet compatibel</string>
+    <string name="toast_incompatible_currency">Transacties kunnen niet verplaatst worden.\nDe munteenheden van de rekeningen zijn niet compatibel</string>
     <string name="header_general_settings">Algemeen</string>
     <string name="header_about_gnucash">Over</string>
     <string name="title_choose_currency">Standaard munteenheid kiezen</string>
     <string name="title_default_currency">Standaard munteenheid</string>
-    <string name="summary_default_currency">Standaard munteenheid voor nieuwe dagboeken</string>
+    <string name="summary_default_currency">Standaard munteenheid voor nieuwe rekeningen</string>
     <string name="label_permission_record_transactions">Staat het bewaren van transacties in GnuCash for Android toe</string>
-    <string name="label_permission_create_accounts">Staat het aanmaken van dagboeken in GnuCash for Android toe</string>
+    <string name="label_permission_create_accounts">Staat het aanmaken van rekeningen in GnuCash for Android toe</string>
     <string name="label_permission_group">Uw GnuCash data</string>
     <string name="description_permission_group">GnuCash data lezen en bewerken</string>
     <string name="label_permission_record_transaction">Transacties bewaren</string>
-    <string name="label_permission_create_account">Dagboeken aanmaken</string>
-    <string name="label_display_account">Dagboek tonen</string>
-    <string name="btn_create_accounts">Dagboeken aanmaken</string>
-    <string name="title_default_accounts">Aan te maken dagboeken selecteren</string>
+    <string name="label_permission_create_account">Rekeningen aanmaken</string>
+    <string name="label_display_account">Rekening tonen</string>
+    <string name="btn_create_accounts">Rekeningen aanmaken</string>
+    <string name="title_default_accounts">Aan te maken rekeningen selecteren</string>
     <string-array name="currency_names">
         <item>Afghani</item>
 		<item>Algerian Dinar</item>
@@ -266,7 +266,7 @@
 	    <item>Eigen Vermogen</item>
 	    <item>Passiva</item>
 	</string-array>
-	<string name="error_no_accounts">Geen dagboeken beschikbaar.\nU moet een dagboek aanmaken alvorens een widget toe te voegen</string>
+	<string name="error_no_accounts">Geen rekeningen beschikbaar.\nU moet een rekening aanmaken alvorens een widget toe te voegen</string>
 	<string name="title_build_version">Versie</string>
 	<string name="title_license">License</string>
 	<string name="summary_licence_details">Apache License v2.0. Klik voor details</string>
@@ -276,7 +276,7 @@
 	<string name="title_about_gnucash">Over GnuCash</string>
 	<string name="summary_about_gnucash">GnucashMobile is een mobiele uitgavebeheerstoepassing voor Android.\nHet laat onderweg een snelle en flexibele registratie van uitgaven toe, die als OFX gegevens ge&#235;xporteerd kunnen worden om in de GnuCash-toepassing op een desktop-computer te importeren.</string>
 	<string name="title_about">Over</string>
-	<string name="toast_error_exporting">Fout bij het schrijven van de OFX data naar bestand :\n</string>
+	<string name="toast_error_exporting">Fout bij het schrijven van de OFX data naar bestand:\n</string>
 	<string name="toast_ofx_exported_to">OFX data ge&#235;exporteerd naar:\n</string>
 	<string name="title_export_email">GnuCash OFX export</string>
 	<string name="description_export_email">GnuCash OFX Export van </string>
@@ -284,10 +284,10 @@
 	<string name="title_transaction_preferences">Transactie voorkeuren</string>
 	<string name="title_account_preferences">Account voorkeuren</string>
 	<string name="title_default_transaction_type">Standaard Transactietype</string>
-	<string name="summary_default_transaction_type">Het standaard transactietype, CREDIT or DEBIT</string>
+	<string name="summary_default_transaction_type">Het standaard transactietype, CREDIT or DEBET</string>
 	<string-array name="transaction_types">
 		<item>CREDIT</item>
-		<item>DEBIT</item>
+		<item>DEBET</item>
 	</string-array>
 	<string name="msg_delete_all_transactions_confirmation">Weet u zeker dat u alle transacties wil verwijderen?</string>
 	<string name="msg_delete_transaction_confirmation">Weet u zeker dat u deze transactie wil verwijderen?</string>
@@ -298,12 +298,12 @@
 	<string name="summary_default_export_email">Het standaard emailaddress om geëxporteerde data heen te sturen. U kan dit emailadres nog wijzigen als u exporteerd.</string>	
 	<string name="label_double_entry_account">Draag Account over</string>
 	<string name="summary_use_double_entry">Alle transacties zullen worden overgedragen van het ene account naar de andere</string>
-	<string name="title_use_double_entry">Schake Double Entry in</string>
+	<string name="title_use_double_entry">Schakel dubbel boekhouden in</string>
 	<string name="account_balance">Saldo</string>
 	<string name="toast_no_account_name_entered">Vul een accountnaam in</string>
 	<string name="label_account_currency">Munteenheid</string>
-	<string name="label_parent_account">Parent account</string>
-	<string name="title_xml_ofx_header">Gebruik XML OFX header</string>
+	<string name="label_parent_account">Hoofdrekening</string>
+	<string name="title_xml_ofx_header">Gebruik XML OFX hoofding</string>
 	<string name="summary_xml_ofx_header">Schakel deze optie in als u naar een applicatie anders dan GnuCash wil exporteren</string>
 	<string name="title_whats_new">Nieuw sinds de vorige versie</string>
 	<string name="whats_new">
@@ -318,45 +318,45 @@
 	</string>
 	<string name="label_dismiss">Wijs af</string>
     <string name="toast_transanction_amount_required">Vul een bedrag in om de transactie op te slaan.</string>
-    <string name="menu_import_accounts">Import GnuCash Accounts</string>
-    <string name="btn_import_accounts">Import Accounts</string>
-    <string name="toast_error_importing_accounts">An error occurred while importing the GnuCash accounts</string>
-    <string name="toast_success_importing_accounts">GnuCash accounts successfully imported</string>
-    <string name="summary_import_accounts">Import account structure exported from GnuCash desktop</string>
-    <string name="title_import_accounts">Import GnuCash accounts</string>
-    <string name="summary_delete_all_accounts">Delete all accounts in the database. All transactions will be deleted as
-        well.
+    <string name="menu_import_accounts">GnuCash rekeningen importeren</string>
+    <string name="btn_import_accounts">Rekeningen importeren</string>
+    <string name="toast_error_importing_accounts">Fout bij het importeren van de GnuCash rekeningen</string>
+    <string name="toast_success_importing_accounts">GnuCash rekeningen met succes geïmporteerd</string>
+    <string name="summary_import_accounts">Rekeningstructuur uit desktop-GnuCash importeren</string>
+    <string name="title_import_accounts">GnuCash rekeningen importeren</string>
+    <string name="summary_delete_all_accounts">Alle rekeningen uit de database verwijderen. Alle transacties zullen ook
+        verwijderd worden.
     </string>
-    <string name="title_delete_all_accounts">Delete all accounts</string>
-    <string name="header_account_settings">Accounts</string>
-    <string name="toast_all_accounts_deleted">All accounts have been successfully deleted</string>
-    <string name="confirm_delete_all_accounts">Are you sure you want to delete all accounts and transactions? \nThis
-        operation cannot be undone!
+    <string name="title_delete_all_accounts">Alle rekeningen verwijderen</string>
+    <string name="header_account_settings">Rekeningen</string>
+    <string name="toast_all_accounts_deleted">Alle rekeningen werden met succes verwijderd</string>
+    <string name="confirm_delete_all_accounts">Weet je zeker dat je alle rekeningen en transacties wil verwijderen? \nDeze
+        verrichting kan niet ongedaan gemaakt worden!
     </string>
-    <string name="label_account_type">Account Type</string>
-    <string name="summary_delete_all_transactions">All transactions in all accounts will be deleted!</string>
-    <string name="title_delete_all_transactions">Delete all transactions</string>
-    <string name="toast_all_transactions_deleted">All transactions successfully deleted!</string>
-    <string name="title_progress_importing_accounts">Importing accounts</string>
-    <string name="toast_tap_again_to_confirm_delete">Tap again to confirm. ALL entries will be deleted!!</string>
-    <string name="section_header_transactions">Transactions</string>
-    <string name="section_header_subaccounts">Sub-Accounts</string>
-    <string name="menu_search_accounts">Search</string>
-    <string name="title_default_export_format">Default Export Format</string>
-    <string name="summary_default_export_format">File format to use by default when exporting transactions</string>
-    <string name="menu_export_transactions">Export transactions…</string>
-    <string name="label_recurring_transaction">Recurrence</string>
+    <string name="label_account_type">Rekening Type</string>
+    <string name="summary_delete_all_transactions">Alle transacties in alle rekeningen zullen verwijderd worden!</string>
+    <string name="title_delete_all_transactions">Alle transacties verwijderen</string>
+    <string name="toast_all_transactions_deleted">Alle transacties werden met succes verwijderd!</string>
+    <string name="title_progress_importing_accounts">Rekeningen importeren</string>
+    <string name="toast_tap_again_to_confirm_delete">Tap opnieuw op te bevestigen. ALLE regels zullen verwijderd worden!!</string>
+    <string name="section_header_transactions">Transacties</string>
+    <string name="section_header_subaccounts">Subrekeningen</string>
+    <string name="menu_search_accounts">Zoeken</string>
+    <string name="title_default_export_format">Standaard Export Formaat</string>
+    <string name="summary_default_export_format">Bestandsformaat om standaard te gebruiken bij het experteren van transacties</string>
+    <string name="menu_export_transactions">Transacties exporteren…</string>
+    <string name="label_recurring_transaction">Herhaling</string>
     <!-- This should be the same name used by GnuCash desktop for imbalance accounts -->
     <string name="imbalance_account_name">Imbalance</string>
-    <string name="title_progress_exporting_transactions">Exporting transactions</string>
-    <string name="label_no_recurring_transactions">No recurring transactions to display.</string>
-    <string name="toast_recurring_transaction_deleted">Successfully deleted recurring transaction</string>
-    <string name="label_placeholder_account">Placeholder account</string>
-    <string name="label_default_transfer_account">Default Transfer Account</string>
-    <string name="label_account_color_and_type">Account Color &amp; Type</string>
+    <string name="title_progress_exporting_transactions">Transactions exporteren</string>
+    <string name="label_no_recurring_transactions">Geen repetitieve transacties gevonden.</string>
+    <string name="toast_recurring_transaction_deleted">Repetitieve transactie met succes verwijderd</string>
+    <string name="label_placeholder_account">Aggregatie rekening</string>
+    <string name="label_default_transfer_account">Standard tegenrekening</string>
+    <string name="label_account_color_and_type">Rekening kleur &amp; type</string>
     <plurals name="label_sub_accounts">
-        <item quantity="one">%d sub-account</item>
-        <item quantity="other">%d sub-accounts</item>
+        <item quantity="one">%d subrekening</item>
+        <item quantity="other">%d subrekeningen</item>
     </plurals>
     <string-array name="account_type_entry_values">
         <item>CASH</item>
@@ -378,19 +378,19 @@
         <item>OFX</item>
     </string-array>
     <!-- Default title for color picker dialog [CHAR LIMIT=30] -->
-    <string name="color_picker_default_title">Select a Color</string>
-    <string name="label_delete_sub_accounts">Delete sub-accounts</string>
+    <string name="color_picker_default_title">Kies een kleur</string>
+    <string name="label_delete_sub_accounts">Subrekeningen verwijderen</string>
     <string name="title_recent_accounts">Recent</string>
-    <string name="title_favorite_accounts">Favorites</string>
-    <string name="title_all_accounts">All</string>
-    <string name="summary_create_default_accounts">Creates default GnuCash commonly-used account structure</string>
-    <string name="title_create_default_accounts">Create default accounts</string>
-    <string name="msg_confirm_create_default_accounts_setting">New accounts will be created in addition to the existing
-        account structure.\n\nIf you wish to replace currently existing accounts, delete them first before proceeding!
+    <string name="title_favorite_accounts">Favorieten</string>
+    <string name="title_all_accounts">Alle</string>
+    <string name="summary_create_default_accounts">Creëert standaard GnuCash veelgebruikte rekeningstructuur</string>
+    <string name="title_create_default_accounts">Standaard rekeningen creëren</string>
+    <string name="msg_confirm_create_default_accounts_setting">Nieuwe rekeningen zullen toegevoegd worden aan de bestaande
+        rekeningstructuur.\n\nAls je de bestaande rekeningen wil vervangen, verwijder ze dan eerst voor verder te gaan!
     </string>
-    <string name="msg_confirm_create_default_accounts_first_run">Welcome to GnuCash Android! \nYou can either create
-        a hierarchy of commonly-used accounts, or import your own GnuCash account structure. \n\nBoth options are also
-        available in app Settings so you can decide later.
+    <string name="msg_confirm_create_default_accounts_first_run">Welkom in GnuCash Android! \nJe kan een nieuwe structuur van
+        veel gebruikte rekeningen creëren, of je eigen GnuCash rekeningstructuur importeren. \n\nBeide opties zijn ook
+        beschikbaar in app Instellingen zodat je later kan beslissen.
     </string>
     <string-array name="recurrence_period_strings">
         <item>GEEN</item>
@@ -398,6 +398,6 @@
         <item>WEKELIJKSE</item>
         <item>MAANDELIJKS</item>
     </string-array>
-    <string name="menu_scheduled_transactions">Scheduled Transactions</string>
-    <string name="title_scheduled_transactions">Scheduled Transactions</string>
+    <string name="menu_scheduled_transactions">Vaste journaalposten</string>
+    <string name="title_scheduled_transactions">Vaste journaalposten</string>
 </resources>

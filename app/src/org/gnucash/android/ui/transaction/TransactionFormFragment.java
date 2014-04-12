@@ -213,7 +213,7 @@ public class TransactionFormFragment extends SherlockFragment implements
 		actionBar.setDisplayShowTitleEnabled(false);
 
 		SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
-		mUseDoubleEntry = sharedPrefs.getBoolean(getString(R.string.key_use_double_entry), false);
+		mUseDoubleEntry = sharedPrefs.getBoolean(getString(R.string.key_use_double_entry), true);
 		if (!mUseDoubleEntry){
 			getView().findViewById(R.id.layout_double_entry).setVisibility(View.GONE);
 		}
@@ -604,7 +604,7 @@ public class TransactionFormFragment extends SherlockFragment implements
             long recurrencePeriodMillis = Long.parseLong(recurrenceOptions[recurrenceIndex]);
             long firstRunMillis = System.currentTimeMillis() + recurrencePeriodMillis;
 
-            Transaction recurringTransaction = new Transaction(mTransaction);
+            Transaction recurringTransaction = new Transaction(mTransaction, true);
             recurringTransaction.setRecurrencePeriod(recurrencePeriodMillis);
             long recurringTransactionId = mTransactionsDbAdapter.addTransaction(recurringTransaction);
 

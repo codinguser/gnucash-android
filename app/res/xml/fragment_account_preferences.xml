@@ -7,7 +7,8 @@
                     android:dialogTitle="@string/title_choose_currency"
                     android:title="@string/title_default_currency"
                     android:entries="@array/currency_names"
-                    android:entryValues="@array/currency_codes"/>
+                    android:entryValues="@array/currency_codes"
+                    android:defaultValue="USD"/>
     <Preference android:key="@string/key_import_accounts"
                 android:summary="@string/summary_import_accounts"
                 android:title="@string/title_import_accounts" />

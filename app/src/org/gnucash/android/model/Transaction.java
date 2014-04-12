@@ -169,10 +169,12 @@ public class Transaction {
     /**
      * Copy constructor.
      * Creates a new transaction object which is a clone of the parameter.
-     * <p><b>Note:</b> The unique ID of the transaction is not cloned, but a new one is generated.</p>
+     * <p><b>Note:</b> The unique ID of the transaction is not cloned if the parameter <code>generateNewUID</code>,
+     * is set to false. Otherwise, a new one is generated.</p>
      * @param transaction Transaction to be cloned
+     * @param generateNewUID Flag to determine if new UID should be assigned or not
      */
-    public Transaction(Transaction transaction){
+    public Transaction(Transaction transaction, boolean generateNewUID){
         initDefaults();
         setName(transaction.getName());
         setDescription(transaction.getDescription());
@@ -182,6 +184,9 @@ public class Transaction {
         setDoubleEntryAccountUID(transaction.getDoubleEntryAccountUID());
         setExported(transaction.isExported());
         setTime(transaction.getTimeMillis());
+        if (!generateNewUID){
+            setUID(transaction.getUID());
+        }
     }
 
 	/**
@@ -366,7 +371,22 @@ public class Transaction {
 	public void setDoubleEntryAccountUID(String doubleEntryAccountUID) {
 		this.mDoubleEntryAccountUID = doubleEntryAccountUID;
 	}
-	
+
+	/**
+	 * Returns type of this transaction
+	 * @return Type of this transaction
+	 */
+	public TransactionType getType() {
+		return mType;
+	}
+
+	/**
+	 * Sets the type of this transaction
+	 * @param Type of this transaction
+	 */
+	public void setType(TransactionType type) {
+		mType = type;
+	}
 
 	/**
 	 * Returns UID of account to which this transaction belongs

@@ -633,9 +633,8 @@ public class AccountsListFragment extends SherlockListFragment implements
             Cursor cursor;
 
             if (mFilter != null){
-                StringBuffer queryBuffer = new StringBuffer(DatabaseHelper.KEY_NAME)
-                        .append(" LIKE '%").append(mFilter).append("%'");
-                cursor = ((AccountsDbAdapter)mDatabaseAdapter).fetchAccounts(queryBuffer.toString());
+                cursor = ((AccountsDbAdapter)mDatabaseAdapter)
+                        .fetchAccounts(DatabaseHelper.KEY_NAME + " LIKE '%" + mFilter + "%'");
             } else {
                 if (mParentAccountId > 0)
                     cursor = ((AccountsDbAdapter) mDatabaseAdapter).fetchSubAccounts(mParentAccountId);

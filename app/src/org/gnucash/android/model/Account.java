@@ -51,7 +51,7 @@ public class Account {
         ^             anchor for start of string
         #             the literal #
         (             start of group
-        ?:            indicate a non-capturing group that doesn't generate backreferences
+        ?:            indicate a non-capturing group that doesn't generate back-references
         [0-9a-fA-F]   hexadecimal digit
         {3}           three times
         )             end of group
@@ -357,7 +357,7 @@ public class Account {
 	 */
 	public boolean hasUnexportedTransactions(){
 		for (Transaction transaction : mTransactionsList) {
-			if (transaction.isExported() == false)
+			if (!transaction.isExported())
 				return true;			
 		}
 		return false;
@@ -369,10 +369,23 @@ public class Account {
 	 * @return {@link Money} aggregate amount of all transactions in account.
 	 */
 	public Money getBalance(){
-		//TODO: Consider double entry transactions
 		Money balance = new Money(new BigDecimal(0), this.mCurrency);
 		for (Transaction transaction : mTransactionsList) {
-			balance = balance.add(transaction.getAmount());
+			boolean isDebitAccount = getAccountType().hasDebitNormalBalance();
+			boolean isDebitTransaction = transaction.getType() == TransactionType.DEBIT;
+			if (isDebitAccount) {
+				if (isDebitTransaction) {
+					balance = balance.add(transaction.getAmount());
+				} else {
+					balance = balance.subtract(transaction.getAmount());
+				}
+			} else {
+				if (isDebitTransaction) {
+					balance = balance.subtract(transaction.getAmount());
+				} else {
+					balance = balance.add(transaction.getAmount());
+				}
+			}
 		}
 		return balance;
 	}
