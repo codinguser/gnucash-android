@@ -14,10 +14,10 @@ There are different ways to get the GnuCash app for Android; through the app sto
 ### App Store
 
 <a href="https://play.google.com/store/apps/details?id=org.gnucash.android">
-  <img alt="Android app on Google Play" src="http://developer.android.com/images/brand/en_generic_rgb_wo_60.png" />
+  <img alt="Android app on Google Play" src="http://developer.android.com/images/brand/en_generic_rgb_wo_60.png" height="60" />
 </a>
 <a href="https://f-droid.org/repository/browse/?fdid=org.gnucash.android">
-  <img alt="Android app on Google Play" src="https://upload.wikimedia.org/wikipedia/commons/b/b7/F-Droid_Logo_2.svg" />
+  <img alt="Android app on Google Play" src="https://upload.wikimedia.org/wikipedia/commons/b/b7/F-Droid_Logo_2.svg" height="60" />
 </a>
 
 ## Building
