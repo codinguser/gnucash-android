@@ -8,15 +8,17 @@ The application supports Android 2.2 Froyo (API level 8) and above.
 
 # Installation
 
-There are different ways to get the Gnucash app for Android; through the app store, or building it yourself.
+There are different ways to get the GnuCash app for Android; through the app store, or building it yourself.
 
 
 ### App Store
 
-<a href="http://play.google.com/store/apps/details?id=org.gnucash.android">
-  <img alt="Android app on Google Play" src="http://developer.android.com/images/brand/en_generic_rgb_wo_60.png" />
+<a href="https://play.google.com/store/apps/details?id=org.gnucash.android">
+  <img alt="Android app on Google Play" src="http://developer.android.com/images/brand/en_generic_rgb_wo_60.png" height="60" />
 </a>
-
+<a href="https://f-droid.org/repository/browse/?fdid=org.gnucash.android">
+  <img alt="Android app on Google Play" src="https://upload.wikimedia.org/wikipedia/commons/b/b7/F-Droid_Logo_2.svg" height="60" />
+</a>
 
 ## Building
 
@@ -41,8 +43,8 @@ signed with a different key.  Manually uninstall GnuCash from your device and
 you will then be able to install your own built version.
 
 
-#Licence
-Gnucash for Android is free software; you can redistribute it and/or 
+# Licence
+GnuCash for Android is free software; you can redistribute it and/or 
 modify it under the terms of the Apache license, version 2.0.
 You may obtain a copy of the License at
 
