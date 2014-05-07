@@ -699,10 +699,12 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 				new String[]{DatabaseHelper.KEY_ROW_ID, DatabaseHelper.KEY_UID}, 
 				DatabaseHelper.KEY_UID + "='" + accountUID + "'", 
 				null, null, null, null);
-		if (c != null && c.moveToFirst()){
-			id = c.getLong(DatabaseAdapter.COLUMN_ROW_ID);
-			c.close();
-		}
+		if (c != null) {
+            if (c.moveToFirst()) {
+                id = c.getLong(DatabaseAdapter.COLUMN_ROW_ID);
+            }
+            c.close();
+        }
 		return id;
 	}
 	
@@ -740,7 +742,10 @@ public class AccountsDbAdapter extends DatabaseAdapter {
                 DatabaseHelper.KEY_UID + " = ?",
                 new String[]{accountUID}, null, null, null);
 
-        if (cursor == null || cursor.getCount() < 1){
+        if (cursor == null) {
+            return null;
+        } else if ( cursor.getCount() < 1) {
+            cursor.close();
             return null;
         } else {  //account UIDs should be unique
             cursor.moveToFirst();
@@ -763,7 +768,10 @@ public class AccountsDbAdapter extends DatabaseAdapter {
                 DatabaseHelper.KEY_ROW_ID + " = " + accountID,
                 null, null, null, null);
 
-        if (cursor == null || cursor.getCount() < 1){
+        if (cursor == null) {
+            return 0;
+        } else if (cursor.getCount() < 1) {
+            cursor.close();
             return 0;
         } else {
             cursor.moveToFirst();
@@ -818,7 +826,10 @@ public class AccountsDbAdapter extends DatabaseAdapter {
                 DatabaseHelper.KEY_UID + " = ?",
                 new String[]{accountUID}, null, null, null);
 
-        if (cursor == null || !cursor.moveToFirst()){
+        if (cursor == null)
+            return false;
+        if (!cursor.moveToFirst()) {
+            cursor.close();
             return false;
         }
         boolean isPlaceholder = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.KEY_PLACEHOLDER)) == 1;
@@ -847,7 +858,10 @@ public class AccountsDbAdapter extends DatabaseAdapter {
                 DatabaseHelper.KEY_ROW_ID + " = " + accountId, null,
                 null, null, null);
 
-        if (cursor == null || !cursor.moveToFirst()){
+        if (cursor == null)
+            return false;
+        if (!cursor.moveToFirst()){
+            cursor.close();
             return false;
         }
         boolean isFavorite = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.KEY_FAVORITE)) == 1;
