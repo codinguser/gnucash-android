@@ -269,12 +269,13 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 				new String[] {DatabaseHelper.KEY_ROW_ID, DatabaseHelper.KEY_UID}, 
 				DatabaseHelper.KEY_UID + " = '" + uid + "'", null, null, null, null);
 		long result = -1;
-		if (cursor != null && cursor.moveToFirst()){
-			Log.v(TAG, "Returning account id");
-			result = cursor.getLong(DatabaseAdapter.COLUMN_ROW_ID);
-
-			cursor.close();
-		}
+		if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                Log.v(TAG, "Returning account id");
+                result = cursor.getLong(DatabaseAdapter.COLUMN_ROW_ID);
+            }
+            cursor.close();
+        }
 		return result;
 	}
 	
@@ -291,12 +292,13 @@ public class AccountsDbAdapter extends DatabaseAdapter {
                 new String[]{uid},
                 null, null, null, null);
 		String result = null;
-		if (cursor != null && cursor.moveToFirst()){
-			Log.d(TAG, "Account already exists. Returning existing id");
-			result = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.KEY_PARENT_ACCOUNT_UID));
-
-			cursor.close();
-		}
+		if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                Log.d(TAG, "Account already exists. Returning existing id");
+                result = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.KEY_PARENT_ACCOUNT_UID));
+            }
+            cursor.close();
+        }
 		return result;
 	}
 
@@ -320,10 +322,12 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 		Account account = null;
 		Log.v(TAG, "Fetching account with id " + rowId);
 		Cursor c =	fetchRecord(DatabaseHelper.ACCOUNTS_TABLE_NAME, rowId);
-		if (c != null && c.moveToFirst()){
-			account = buildAccountInstance(c);	
-			c.close();
-		}
+		if (c != null) {
+            if (c.moveToFirst()) {
+                account = buildAccountInstance(c);
+            }
+            c.close();
+        }
 		return account;
 	}
 		
@@ -348,10 +352,12 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 				new String[]{DatabaseHelper.KEY_ROW_ID, DatabaseHelper.KEY_UID}, 
 				DatabaseHelper.KEY_ROW_ID + "=" + id, 
 				null, null, null, null);
-		if (c != null && c.moveToFirst()){
-			uid = c.getString(c.getColumnIndexOrThrow(DatabaseHelper.KEY_UID));
-			c.close();
-		}
+		if (c != null) {
+            if (c.moveToFirst()) {
+                uid = c.getString(c.getColumnIndexOrThrow(DatabaseHelper.KEY_UID));
+            }
+            c.close();
+        }
 		return uid;
 	}
 
@@ -366,8 +372,10 @@ public class AccountsDbAdapter extends DatabaseAdapter {
                 new String[]{DatabaseHelper.KEY_ROW_ID, DatabaseHelper.KEY_COLOR_CODE},
                 DatabaseHelper.KEY_ROW_ID + "=" + accountId,
                 null, null, null, null);
-        if (c != null && c.moveToFirst()){
-            colorCode = c.getString(c.getColumnIndexOrThrow(DatabaseHelper.KEY_COLOR_CODE));
+        if (c != null) {
+            if (c.moveToFirst()) {
+                colorCode = c.getString(c.getColumnIndexOrThrow(DatabaseHelper.KEY_COLOR_CODE));
+            }
             c.close();
         }
         return colorCode;
@@ -399,10 +407,12 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 	public String getName(long accountID) {
 		String name = null;
 		Cursor c = fetchRecord(DatabaseHelper.ACCOUNTS_TABLE_NAME, accountID);
-		if (c != null && c.moveToFirst()){
-			name = c.getString(DatabaseAdapter.COLUMN_NAME);
-			c.close();
-		}
+		if (c != null) {
+            if (c.moveToFirst()) {
+                name = c.getString(DatabaseAdapter.COLUMN_NAME);
+            }
+            c.close();
+        }
 		return name;
 	}
 	
@@ -699,10 +709,12 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 				new String[]{DatabaseHelper.KEY_ROW_ID, DatabaseHelper.KEY_UID}, 
 				DatabaseHelper.KEY_UID + "='" + accountUID + "'", 
 				null, null, null, null);
-		if (c != null && c.moveToFirst()){
-			id = c.getLong(DatabaseAdapter.COLUMN_ROW_ID);
-			c.close();
-		}
+		if (c != null) {
+            if (c.moveToFirst()) {
+                id = c.getLong(DatabaseAdapter.COLUMN_ROW_ID);
+            }
+            c.close();
+        }
 		return id;
 	}
 	
@@ -740,7 +752,10 @@ public class AccountsDbAdapter extends DatabaseAdapter {
                 DatabaseHelper.KEY_UID + " = ?",
                 new String[]{accountUID}, null, null, null);
 
-        if (cursor == null || cursor.getCount() < 1){
+        if (cursor == null) {
+            return null;
+        } else if ( cursor.getCount() < 1) {
+            cursor.close();
             return null;
         } else {  //account UIDs should be unique
             cursor.moveToFirst();
@@ -763,7 +778,10 @@ public class AccountsDbAdapter extends DatabaseAdapter {
                 DatabaseHelper.KEY_ROW_ID + " = " + accountID,
                 null, null, null, null);
 
-        if (cursor == null || cursor.getCount() < 1){
+        if (cursor == null) {
+            return 0;
+        } else if (cursor.getCount() < 1) {
+            cursor.close();
             return 0;
         } else {
             cursor.moveToFirst();
@@ -818,7 +836,10 @@ public class AccountsDbAdapter extends DatabaseAdapter {
                 DatabaseHelper.KEY_UID + " = ?",
                 new String[]{accountUID}, null, null, null);
 
-        if (cursor == null || !cursor.moveToFirst()){
+        if (cursor == null)
+            return false;
+        if (!cursor.moveToFirst()) {
+            cursor.close();
             return false;
         }
         boolean isPlaceholder = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.KEY_PLACEHOLDER)) == 1;
@@ -847,7 +868,10 @@ public class AccountsDbAdapter extends DatabaseAdapter {
                 DatabaseHelper.KEY_ROW_ID + " = " + accountId, null,
                 null, null, null);
 
-        if (cursor == null || !cursor.moveToFirst()){
+        if (cursor == null)
+            return false;
+        if (!cursor.moveToFirst()){
+            cursor.close();
             return false;
         }
         boolean isFavorite = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.KEY_FAVORITE)) == 1;

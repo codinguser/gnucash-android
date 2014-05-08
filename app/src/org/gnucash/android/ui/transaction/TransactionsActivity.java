@@ -117,6 +117,11 @@ public class TransactionsActivity extends SherlockFragmentActivity implements
     private AccountsDbAdapter mAccountsDbAdapter;
 
     /**
+     * Hold the accounts cursor that will be used in the Navigation
+     */
+    private Cursor mAccountsCursor = null;
+
+    /**
      * This is the last known color for the title indicator.
      * This is used to remember the color of the top level account if the child account doesn't have one.
      */
@@ -348,11 +353,14 @@ public class TransactionsActivity extends SherlockFragmentActivity implements
 	 */
 	private void setupActionBarNavigation() {
 		// set up spinner adapter for navigation list
-		Cursor accountsCursor = mAccountsDbAdapter.fetchAllRecordsOrderedByFullName();
+        if (mAccountsCursor != null) {
+            mAccountsCursor.close();
+        }
+		mAccountsCursor = mAccountsDbAdapter.fetchAllRecordsOrderedByFullName();
 
         SpinnerAdapter mSpinnerAdapter = new QualifiedAccountNameCursorAdapter(
                 getSupportActionBar().getThemedContext(),
-                R.layout.sherlock_spinner_item, accountsCursor);
+                R.layout.sherlock_spinner_item, mAccountsCursor);
 		((ResourceCursorAdapter) mSpinnerAdapter)
 				.setDropDownViewResource(R.layout.sherlock_spinner_dropdown_item);
 		ActionBar actionBar = getSupportActionBar();
@@ -360,7 +368,7 @@ public class TransactionsActivity extends SherlockFragmentActivity implements
 		actionBar.setListNavigationCallbacks(mSpinnerAdapter,
 				mTransactionListNavigationListener);
         actionBar.setDisplayHomeAsUpEnabled(true);
-		
+
 		updateNavigationSelection();
 	}
 	
@@ -449,6 +457,7 @@ public class TransactionsActivity extends SherlockFragmentActivity implements
     @Override
 	protected void onDestroy() {
 		super.onDestroy();
+        mAccountsCursor.close();
 		mAccountsDbAdapter.close();
 	}
 	
