@@ -169,6 +169,7 @@ public class ExporterTask extends AsyncTask<ExportParams, Void, Boolean> {
             android.support.v4.app.FragmentManager fragmentManager = ((FragmentActivity)mContext).getSupportFragmentManager();
             Fragment currentFragment = fragmentManager
                     .findFragmentByTag(AccountsActivity.FRAGMENT_ACCOUNTS_LIST);
+
             TransactionsDeleteConfirmationDialogFragment alertFragment =
                     TransactionsDeleteConfirmationDialogFragment.newInstance(R.string.title_confirm_delete, 0);
             alertFragment.setTargetFragment(currentFragment, 0);
@@ -218,6 +219,7 @@ public class ExporterTask extends AsyncTask<ExportParams, Void, Boolean> {
         writer.write(qif);
 
         writer.flush();
+        writer.close();
     }
 
     /**

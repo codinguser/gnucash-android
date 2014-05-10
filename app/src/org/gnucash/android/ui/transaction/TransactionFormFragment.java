@@ -420,6 +420,9 @@ public class TransactionFormFragment extends SherlockFragment implements
                             + "' AND " + DatabaseHelper.KEY_PLACEHOLDER + " = 0"
                             + ")";
 
+        if (mCursor != null) {
+            mCursor.close();
+        }
 		mCursor = mAccountsDbAdapter.fetchAccountsOrderedByFullName(conditions);
 
         mCursorAdapter = new QualifiedAccountNameCursorAdapter(getActivity(),
@@ -543,6 +546,8 @@ public class TransactionFormFragment extends SherlockFragment implements
         }
 
 		updateTransferAccountsList();
+
+        accountsDbAdapter.close();
 	}
 	
 	/**

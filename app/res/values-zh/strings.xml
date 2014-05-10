@@ -46,7 +46,7 @@
     <string name="title_edit_transaction">修改交易</string>
     <string name="label_transaction_description">备注</string>
     <string name="menu_move">移动</string>
-    <string name="title_selected">%1$d 已删除</string>
+    <string name="title_selected">%1$d 已选中</string>
     <string name="label_transactions_total">合计：</string>
     <string name="label_export_destination">导出到</string>
     <string name="title_export_dialog">导出交易资料</string>
@@ -352,7 +352,6 @@
     <string name="label_default_transfer_account">默认的转账帐户</string>
     <string name="label_account_color_and_type">科目颜色和类型</string>
     <plurals name="label_sub_accounts">
-        <item quantity="one">%d 子科目</item>
         <item quantity="other">%d 子科目</item>
     </plurals>
     <string-array name="account_type_entry_values">

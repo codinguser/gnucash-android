@@ -80,6 +80,12 @@ public class AccountFormFragment extends SherlockFragment {
 	 * Accounts database adapter
 	 */
 	private AccountsDbAdapter mAccountsDbAdapter;
+
+    /**
+     * Whether the AccountsDbAdapter is created inside this class.
+     * If so, it should be also closed by this class
+     */
+    private boolean mReleaseDbAdapter = false;
 	
 	/**
 	 * List of all currency codes (ISO 4217) supported by the app
@@ -191,6 +197,7 @@ public class AccountFormFragment extends SherlockFragment {
 	static public AccountFormFragment newInstance(AccountsDbAdapter dbAdapter){
 		AccountFormFragment f = new AccountFormFragment();
 		f.mAccountsDbAdapter = dbAdapter;
+        f.mReleaseDbAdapter = false;
 		return f;
 	}
 	
@@ -199,6 +206,7 @@ public class AccountFormFragment extends SherlockFragment {
 		super.onCreate(savedInstanceState);
 		setHasOptionsMenu(true);
         if (mAccountsDbAdapter == null){
+            mReleaseDbAdapter = true;
             mAccountsDbAdapter = new AccountsDbAdapter(getSherlockActivity());
         }
 
@@ -660,8 +668,11 @@ public class AccountFormFragment extends SherlockFragment {
 		super.onDestroyView();
 		if (mParentAccountCursor != null)
 			mParentAccountCursor.close();
-		//do not close the database adapter. We got it from the activity, 
-		//the activity will take care of it.
+        // The mAccountsDbAdapter should only be closed when it is not passed in
+        // by other Activities.
+		if (mReleaseDbAdapter == true && mAccountsDbAdapter != null) {
+            mAccountsDbAdapter.close();
+        }
 	}
 	
 	private void saveAccount() {
