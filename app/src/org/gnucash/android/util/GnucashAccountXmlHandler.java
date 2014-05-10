@@ -202,7 +202,7 @@ public class GnucashAccountXmlHandler extends DefaultHandler {
             GnucashAccountXmlHandler handler = new GnucashAccountXmlHandler(context);
             xr.setContentHandler(handler);
             xr.parse(new InputSource(bos));
-
+            handler.mDatabaseAdapter.close();
         } catch (Exception e) {
             e.printStackTrace();
             Toast.makeText(context, R.string.toast_error_importing_accounts, Toast.LENGTH_LONG).show();

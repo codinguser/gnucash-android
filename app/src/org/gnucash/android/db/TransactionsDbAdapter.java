@@ -92,12 +92,13 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 				DatabaseHelper.KEY_UID + " = '" + uid + "'", 
 				null, null, null, null);
 		long result = -1;
-		if (cursor != null && cursor.moveToFirst()){
-			Log.d(TAG, "Transaction already exists. Returning existing id");
-			result = cursor.getLong(0); //0 because only one row was requested
-
-			cursor.close();
-		}
+		if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                Log.d(TAG, "Transaction already exists. Returning existing id");
+                result = cursor.getLong(0); //0 because only one row was requested
+            }
+            cursor.close();
+        }
 		return result;
 	}
 
@@ -113,10 +114,12 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 		Log.v(TAG, "Fetching transaction with id " + rowId);
         Transaction transaction = null;
 		Cursor c =	fetchRecord(DatabaseHelper.TRANSACTIONS_TABLE_NAME, rowId);
-		if (c != null && c.moveToFirst()){
-			transaction = buildTransactionInstance(c);			
-			c.close();
-		}
+		if (c != null) {
+            if (c.moveToFirst()) {
+                transaction = buildTransactionInstance(c);
+            }
+            c.close();
+        }
 		return transaction;
 	}
 	
@@ -173,9 +176,12 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 	public List<Transaction> getAllTransactionsForAccount(String accountUID){
 		Cursor c = fetchAllTransactionsForAccount(accountUID);
 		ArrayList<Transaction> transactionsList = new ArrayList<Transaction>();
-		
-		if (c == null || (c.getCount() <= 0))
+		if (c == null)
 			return transactionsList;
+        if (c.getCount() <= 0) {
+            c.close();
+            return transactionsList;
+        }
 		
 		while (c.moveToNext()) {
 			Transaction transaction = buildTransactionInstance(c);
@@ -235,8 +241,12 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 				DatabaseHelper.KEY_UID + "= '" + accountUID + "'", 
 				null, null, null, null);
 		
-		if (cursor == null || cursor.getCount() <= 0)
+		if (cursor == null)
 			return null;
+        if (cursor.getCount() <= 0) {
+            cursor.close();
+            return null;
+        }
 					
 		cursor.moveToFirst();
 		String currencyCode = cursor.getString(0);
@@ -338,7 +348,7 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 	 * @param accountId Record ID of the account
 	 * @return Sum of transactions belonging to the account
 	 */
-	public Money getTransactionsSum(long accountId){
+	public Money getTransactionsSum(long accountId) {
         //FIXME: Properly compute the balance while considering normal account balance
         String accountUID = getAccountUID(accountId);
 
@@ -350,8 +360,10 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
         Cursor sumCursor = mDb.rawQuery(querySum, new String[]{accountUID});
         double sum = 0d;
 
-        if (sumCursor != null && sumCursor.moveToFirst()){
-            sum += sumCursor.getFloat(0);
+        if (sumCursor != null) {
+            if (sumCursor.moveToFirst()) {
+                sum += sumCursor.getFloat(0);
+            }
             sumCursor.close();
         }
 
@@ -362,8 +374,10 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 
         sumCursor = mDb.rawQuery(querySum, new String[]{accountUID});
 
-        if (sumCursor != null && sumCursor.moveToFirst()){
-            sum -= sumCursor.getFloat(0);
+        if (sumCursor != null) {
+            if (sumCursor.moveToFirst()) {
+                sum -= sumCursor.getFloat(0);
+            }
             sumCursor.close();
         }
 
@@ -393,8 +407,10 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
                 new String[]{DatabaseHelper.KEY_TYPE},
                 DatabaseHelper.KEY_UID + "='" + accountUID + "'",
                 null, null, null, null);
-        if (c != null && c.moveToFirst()){
-            type = c.getString(c.getColumnIndexOrThrow(DatabaseHelper.KEY_TYPE));
+        if (c != null) {
+            if (c.moveToFirst()) {
+                type = c.getString(c.getColumnIndexOrThrow(DatabaseHelper.KEY_TYPE));
+            }
             c.close();
         }
         return Account.AccountType.valueOf(type);
@@ -432,6 +448,7 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 		while (c.moveToNext()){
 			transactionsList.add(buildTransactionInstance(c));
 		}
+        c.close();
 		return transactionsList;
 	}
 
@@ -446,10 +463,12 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 				new String[]{DatabaseHelper.KEY_UID}, 
 				DatabaseHelper.KEY_ROW_ID + "=" + accountRowID, 
 				null, null, null, null);
-		if (c != null && c.moveToFirst()){
-			uid = c.getString(0);
-			c.close();
-		}
+		if (c != null) {
+            if (c.moveToFirst()) {
+                uid = c.getString(0);
+            }
+            c.close();
+        }
 		return uid;
 	}
 
@@ -464,11 +483,12 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
                 DatabaseHelper.KEY_ROW_ID + "=" + transactionID,
                 null, null, null, null);
         String accountUID = null;
-        if (c != null && c.moveToFirst()){
-            accountUID = c.getString(0);
+        if (c != null) {
+            if (c.moveToFirst()) {
+                accountUID = c.getString(0);
+            }
             c.close();
         }
-
         return accountUID;
     }
 
@@ -483,10 +503,12 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 				new String[]{DatabaseHelper.KEY_ROW_ID}, 
 				DatabaseHelper.KEY_UID + "='" + accountUID + "'", 
 				null, null, null, null);
-		if (c != null && c.moveToFirst()){
-			id = c.getLong(0);
-			c.close();
-		}
+		if (c != null) {
+            if (c.moveToFirst()) {
+                id = c.getLong(0);
+            }
+            c.close();
+        }
 		return id;
 	}
 
@@ -501,8 +523,10 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
                 new String[]{DatabaseHelper.KEY_ROW_ID},
                 DatabaseHelper.KEY_UID + "='" + transactionUID + "'",
                 null, null, null, null);
-        if (c != null && c.moveToFirst()){
-            id = c.getLong(0);
+        if (c != null) {
+            if (c.moveToFirst()) {
+                id = c.getLong(0);
+            }
             c.close();
         }
         return id;
