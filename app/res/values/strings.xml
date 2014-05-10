@@ -66,7 +66,6 @@
     <string name="title_move_transactions">Move %1$d transaction(s)</string>
     <string name="label_move_destination">Destination Account</string>
     <string name="permission_access_sdcard">Access SD Card</string>
-    <string name="title_share_ofx_with">Share OFX export with&#8230;</string>
     <string name="key_default_currency">default_currency</string>
     <string name="toast_incompatible_currency">Cannot move transactions.\nThe destination account uses a different currency from origin account</string>
     <string name="header_general_settings">General</string>
@@ -629,4 +628,5 @@
         available in app Settings so you can decide later.
     </string>
     <string name="title_scheduled_transactions">Scheduled Transactions</string>
+    <string name="title_select_export_destination">Select destination for export</string>
 </resources>

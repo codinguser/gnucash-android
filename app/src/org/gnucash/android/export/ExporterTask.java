@@ -268,7 +268,8 @@ public class ExporterTask extends AsyncTask<ExportParams, Void, Boolean> {
 
         shareIntent.putExtra(Intent.EXTRA_TEXT, mContext.getString(R.string.description_export_email)
                 + " " + formatter.format(new Date(System.currentTimeMillis())));
-        mContext.startActivity(Intent.createChooser(shareIntent, mContext.getString(R.string.title_share_ofx_with)));
+
+        mContext.startActivity(Intent.createChooser(shareIntent, mContext.getString(R.string.title_select_export_destination)));
     }
 
     /**
