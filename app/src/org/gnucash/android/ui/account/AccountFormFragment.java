@@ -673,6 +673,9 @@ public class AccountFormFragment extends SherlockFragment {
 		if (mReleaseDbAdapter == true && mAccountsDbAdapter != null) {
             mAccountsDbAdapter.close();
         }
+        if (mDefaultTransferAccountCursorAdapter != null) {
+            mDefaultTransferAccountCursorAdapter.getCursor().close();
+        }
 	}
 	
 	private void saveAccount() {

@@ -205,6 +205,11 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
         }
     }
 
+    public AccountsListFragment getCurrentAccountListFragment(){
+        int index = mPager.getCurrentItem();
+        return (AccountsListFragment)(mFragmentPageReferenceMap.get(index));
+    }
+
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
