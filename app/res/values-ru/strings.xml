@@ -66,7 +66,6 @@
     <string name="title_move_transactions">Перенести %1$d проводк(у,и,ок)</string>
     <string name="label_move_destination">Счёт-получатель</string>
     <string name="permission_access_sdcard">Доступ к карте памяти</string>
-    <string name="title_share_ofx_with">Отправить OFX&#8230;</string>
     <string name="toast_incompatible_currency">Невозможно перенести проводки.\nСчёт-получатель использует другую валюту.</string>
     <string name="header_general_settings">Общие</string>
     <string name="header_about_gnucash">О программе</string>
@@ -399,4 +398,5 @@
     </string-array>
     <string name="menu_scheduled_transactions">Scheduled Transactions</string>
     <string name="title_scheduled_transactions">Scheduled Transactions</string>
+    <string name="title_select_export_destination">Select destination for export</string>
 </resources>

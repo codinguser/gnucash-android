@@ -65,7 +65,6 @@
     <string name="title_move_transactions">移动 %1$d 交易</string>
     <string name="label_move_destination">目的科目</string>
     <string name="permission_access_sdcard">访问 SD Card</string>
-    <string name="title_share_ofx_with">发送OFX到</string>
     <string name="toast_incompatible_currency">不能移动交易。\n两个科目的货币设置不一样。</string>
     <string name="header_general_settings">常规</string>
     <string name="header_about_gnucash">关于</string>
@@ -393,4 +392,5 @@
         <item>每月</item>
     </string-array>
     <string name="title_scheduled_transactions">计划的交易</string>
+    <string name="title_select_export_destination">Select destination for export</string>
 </resources>

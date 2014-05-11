@@ -66,7 +66,6 @@
     <string name="title_move_transactions">D&#233;placer %1$d transaction(s)</string>
     <string name="label_move_destination">Compte de destination</string>
     <string name="permission_access_sdcard">Acc&#233;s carte SD</string>
-    <string name="title_share_ofx_with">Partager l\'export en OFX avec…</string>
     <string name="toast_incompatible_currency">Impossible de d&#233;placer les transactions.\nLe compte de destination utilise une monnaie diff&#233;rente du compte d\'origine</string>
     <string name="header_general_settings">G&#233;n&#233;ral</string>
     <string name="header_about_gnucash">À propos</string>
@@ -395,4 +394,5 @@
     </string-array>
     <string name="menu_scheduled_transactions">Transactions planifiées</string>
     <string name="title_scheduled_transactions">Transactions planifiées</string>
+    <string name="title_select_export_destination">Select destination for export</string>
 </resources>

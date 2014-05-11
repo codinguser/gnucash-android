@@ -66,7 +66,6 @@
     <string name="title_move_transactions">Μετακίνησε %1$d συναλλαγή(ες)</string>
     <string name="label_move_destination">Λογιαριασμός Προορισμού</string>
     <string name="permission_access_sdcard">Πρόσβαση κάρτας SD</string>
-    <string name="title_share_ofx_with">Μοίρασμα εξαγωγής OFX με&#8230;</string>
     <string name="toast_incompatible_currency">Αδυναμία μετακίνησης	συναλλαγών.\nΟ λογαριασμός προορισμού χρησιμοποιεί διαφορετικό νόμισμα από το λογαριασμό προέλευσης</string>
     <string name="header_general_settings">Γενικές</string>
     <string name="header_about_gnucash">Πληροφορίες</string>
@@ -413,4 +412,5 @@
         <item>ΜΗΝΙΑΙΑ</item>
     </string-array>
     <string name="title_scheduled_transactions">Προγραμματισμένες Κινήσεις</string>
+    <string name="title_select_export_destination">Select destination for export</string>
 </resources>

@@ -67,7 +67,6 @@
     <string name="title_move_transactions">Flytt %1$d transaksjoner</string>
     <string name="label_move_destination">Til konto</string>
     <string name="permission_access_sdcard">Aksesser minnekort</string>
-    <string name="title_share_ofx_with">Del OFX-eksport med&#8230;</string>
     <string name="toast_incompatible_currency">Kan ikke flytte transaksjonen(e).\nMottakerkonto har en annen valuta</string>
     <string name="header_general_settings">Generelt</string>
     <string name="header_about_gnucash">Om</string>
@@ -398,4 +397,5 @@ format og importeres i regnskapsprogrammet GnuCash for PC.</string>
     </string-array>
     <string name="menu_scheduled_transactions">Scheduled Transactions</string>
     <string name="title_scheduled_transactions">Scheduled Transactions</string>
+    <string name="title_select_export_destination">Select destination for export</string>
 </resources>

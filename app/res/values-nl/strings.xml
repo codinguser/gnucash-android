@@ -66,7 +66,6 @@
     <string name="title_move_transactions">%1$d transactie(s) verplaatsen</string>
     <string name="label_move_destination">Bestemmingsrekening</string>
     <string name="permission_access_sdcard">SD kaart benaderen</string>
-    <string name="title_share_ofx_with">OFX data verzenden via&#8230;</string>
     <string name="toast_incompatible_currency">Transacties kunnen niet verplaatst worden.\nDe munteenheden van de rekeningen zijn niet compatibel</string>
     <string name="header_general_settings">Algemeen</string>
     <string name="header_about_gnucash">Over</string>
@@ -400,4 +399,5 @@
     </string-array>
     <string name="menu_scheduled_transactions">Vaste journaalposten</string>
     <string name="title_scheduled_transactions">Vaste journaalposten</string>
+    <string name="title_select_export_destination">Select destination for export</string>
 </resources>
