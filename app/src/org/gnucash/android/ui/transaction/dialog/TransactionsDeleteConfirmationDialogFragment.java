@@ -62,6 +62,7 @@ public class TransactionsDeleteConfirmationDialogFragment extends SherlockDialog
                             } else {
                             	adapter.deleteRecord(rowId);
                             }
+                            adapter.close();
                             if (getTargetFragment() instanceof AccountsListFragment){                            	
                             	((AccountsListFragment)getTargetFragment()).refresh();
                             }

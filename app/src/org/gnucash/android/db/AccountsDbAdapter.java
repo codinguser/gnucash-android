@@ -165,6 +165,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 			result &= mTransactionsAdapter.deleteRecord(id);
 		}
 		result &= deleteRecord(DatabaseHelper.ACCOUNTS_TABLE_NAME, rowId);
+        c.close();
 		return result;
 	}
 
