@@ -1,6 +1,6 @@
 Change Log
 ===============================================================================
-Version 1.3.2 *(2014-05-15)*
+Version 1.3.2 *(2014-05-23)*
 ----------------------------
 * Fixed: Editing account modifies the transaction type of transfer transactions
 * Fixed: Bug causing double entry transactions not to be considered equal
