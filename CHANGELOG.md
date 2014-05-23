@@ -1,5 +1,16 @@
 Change Log
 ===============================================================================
+Version 1.3.2 *(2014-05-23)*
+----------------------------
+* Fixed: Editing account modifies the transaction type of transfer transactions
+* Fixed: Bug causing double entry transactions not to be considered equal
+* Fixed: Computation of account balance did not properly consider double entries
+* Improved: Double-entry accounting is now activated by default
+* Improved: Reliability of account structure import
+* Improved: Restricted parent/child account hierarchies relationships to those defined by GnuCash accounting
+* Improved: Dutch translation
+* Improved: German translation
+
 Version 1.3.1 *(2014-02-14)*
 ----------------------------
 * Fixed: Crash when bulk moving transactions

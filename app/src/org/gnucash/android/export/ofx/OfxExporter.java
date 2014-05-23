@@ -59,6 +59,7 @@ public class OfxExporter {
 		mAccountsList = exportAll ? dbAdapter.getAllAccounts() : dbAdapter.getExportableAccounts();
 		mExportAll = exportAll;
 		mContext = context;
+        dbAdapter.close();
 	}
 
     /**

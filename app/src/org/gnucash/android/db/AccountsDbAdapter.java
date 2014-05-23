@@ -22,6 +22,7 @@ import org.gnucash.android.model.Account;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.model.Account.AccountType;
 import org.gnucash.android.model.Transaction;
+import org.gnucash.android.model.Transaction.TransactionType;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -84,11 +85,8 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 		if ((rowId = getAccountID(account.getUID())) > 0){
 			//if account already exists, then just update
 			Log.d(TAG, "Updating existing account");
-			int rowsAffected = mDb.update(DatabaseHelper.ACCOUNTS_TABLE_NAME, contentValues,
+			mDb.update(DatabaseHelper.ACCOUNTS_TABLE_NAME, contentValues,
                     DatabaseHelper.KEY_ROW_ID + " = " + rowId, null);
-            if (rowsAffected == 1){
-                updateAccount(rowId, DatabaseHelper.KEY_FULL_NAME, getFullyQualifiedAccountName(rowId));
-            }
 		} else {
 			Log.d(TAG, "Adding new account to db");
 			rowId = mDb.insert(DatabaseHelper.ACCOUNTS_TABLE_NAME, null, contentValues);
@@ -99,7 +97,20 @@ public class AccountsDbAdapter extends DatabaseAdapter {
             //update the fully qualified account name
             updateAccount(rowId, DatabaseHelper.KEY_FULL_NAME, getFullyQualifiedAccountName(rowId));
 			for (Transaction t : account.getTransactions()) {
-				mTransactionsAdapter.addTransaction(t);
+                //FIXME: This is a hack until actual splits are implemented
+                if (t.getDoubleEntryAccountUID().equals(account.getUID())){
+                    Transaction trx = new Transaction(t,false);
+//                    trx.setAmount(trx.getAmount().negate());
+                    if (trx.getType() == TransactionType.DEBIT) {
+                        trx.setType(TransactionType.CREDIT);
+                    } else {
+                        trx.setType(TransactionType.DEBIT);
+                    }
+
+                    mTransactionsAdapter.addTransaction(trx);
+                }
+                else
+				    mTransactionsAdapter.addTransaction(t);
 			}
 		}
 		return rowId;
@@ -147,13 +158,14 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 		//first remove all transactions for the account
 		Cursor c = mTransactionsAdapter.fetchAllTransactionsForAccount(rowId);
 		if (c == null)
-			return result; 
+			return false;
 		
 		while (c.moveToNext()){
 			long id = c.getLong(DatabaseAdapter.COLUMN_ROW_ID);
 			result &= mTransactionsAdapter.deleteRecord(id);
 		}
 		result &= deleteRecord(DatabaseHelper.ACCOUNTS_TABLE_NAME, rowId);
+        c.close();
 		return result;
 	}
 
@@ -210,7 +222,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
      */
     public boolean recursiveDestructiveDelete(long accountId){
         Log.d(TAG, "Delete account with rowId with its transactions and sub-accounts: " + accountId);
-        boolean result = true;
+        boolean result = false;
 
         List<Long> subAccountIds = getSubAccountIds(accountId);
         for (long subAccountId : subAccountIds) {
@@ -258,12 +270,13 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 				new String[] {DatabaseHelper.KEY_ROW_ID, DatabaseHelper.KEY_UID}, 
 				DatabaseHelper.KEY_UID + " = '" + uid + "'", null, null, null, null);
 		long result = -1;
-		if (cursor != null && cursor.moveToFirst()){
-			Log.v(TAG, "Returning account id");
-			result = cursor.getLong(DatabaseAdapter.COLUMN_ROW_ID);
-
-			cursor.close();
-		}
+		if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                Log.v(TAG, "Returning account id");
+                result = cursor.getLong(DatabaseAdapter.COLUMN_ROW_ID);
+            }
+            cursor.close();
+        }
 		return result;
 	}
 	
@@ -280,12 +293,13 @@ public class AccountsDbAdapter extends DatabaseAdapter {
                 new String[]{uid},
                 null, null, null, null);
 		String result = null;
-		if (cursor != null && cursor.moveToFirst()){
-			Log.d(TAG, "Account already exists. Returning existing id");
-			result = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.KEY_PARENT_ACCOUNT_UID));
-
-			cursor.close();
-		}
+		if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                Log.d(TAG, "Account already exists. Returning existing id");
+                result = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.KEY_PARENT_ACCOUNT_UID));
+            }
+            cursor.close();
+        }
 		return result;
 	}
 
@@ -309,10 +323,12 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 		Account account = null;
 		Log.v(TAG, "Fetching account with id " + rowId);
 		Cursor c =	fetchRecord(DatabaseHelper.ACCOUNTS_TABLE_NAME, rowId);
-		if (c != null && c.moveToFirst()){
-			account = buildAccountInstance(c);	
-			c.close();
-		}
+		if (c != null) {
+            if (c.moveToFirst()) {
+                account = buildAccountInstance(c);
+            }
+            c.close();
+        }
 		return account;
 	}
 		
@@ -337,10 +353,12 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 				new String[]{DatabaseHelper.KEY_ROW_ID, DatabaseHelper.KEY_UID}, 
 				DatabaseHelper.KEY_ROW_ID + "=" + id, 
 				null, null, null, null);
-		if (c != null && c.moveToFirst()){
-			uid = c.getString(c.getColumnIndexOrThrow(DatabaseHelper.KEY_UID));
-			c.close();
-		}
+		if (c != null) {
+            if (c.moveToFirst()) {
+                uid = c.getString(c.getColumnIndexOrThrow(DatabaseHelper.KEY_UID));
+            }
+            c.close();
+        }
 		return uid;
 	}
 
@@ -355,8 +373,10 @@ public class AccountsDbAdapter extends DatabaseAdapter {
                 new String[]{DatabaseHelper.KEY_ROW_ID, DatabaseHelper.KEY_COLOR_CODE},
                 DatabaseHelper.KEY_ROW_ID + "=" + accountId,
                 null, null, null, null);
-        if (c != null && c.moveToFirst()){
-            colorCode = c.getString(c.getColumnIndexOrThrow(DatabaseHelper.KEY_COLOR_CODE));
+        if (c != null) {
+            if (c.moveToFirst()) {
+                colorCode = c.getString(c.getColumnIndexOrThrow(DatabaseHelper.KEY_COLOR_CODE));
+            }
             c.close();
         }
         return colorCode;
@@ -388,10 +408,12 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 	public String getName(long accountID) {
 		String name = null;
 		Cursor c = fetchRecord(DatabaseHelper.ACCOUNTS_TABLE_NAME, accountID);
-		if (c != null && c.moveToFirst()){
-			name = c.getString(DatabaseAdapter.COLUMN_NAME);
-			c.close();
-		}
+		if (c != null) {
+            if (c.moveToFirst()) {
+                name = c.getString(DatabaseAdapter.COLUMN_NAME);
+            }
+            c.close();
+        }
 		return name;
 	}
 	
@@ -425,7 +447,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 		while (it.hasNext()){
 			Account account = it.next();
 			
-			if (account.hasUnexportedTransactions() == false)
+			if (!account.hasUnexportedTransactions())
 				it.remove();
 		}
 		return accountsList;
@@ -440,13 +462,12 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 	public Cursor fetchAllRecords(){
 		Log.v(TAG, "Fetching all accounts from db");
         String selection =  DatabaseHelper.KEY_TYPE + " != ?" ;
-		Cursor cursor = mDb.query(DatabaseHelper.ACCOUNTS_TABLE_NAME,
+        return mDb.query(DatabaseHelper.ACCOUNTS_TABLE_NAME,
                 null,
                 selection,
                 new String[]{AccountType.ROOT.name()},
                 null, null,
                 DatabaseHelper.KEY_NAME + " ASC");
-		return cursor;
 	}
 
     /**
@@ -489,10 +510,9 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 	 */
 	public Cursor fetchAccounts(String condition){
 		Log.v(TAG, "Fetching all accounts from db where " + condition);
-		Cursor cursor = mDb.query(DatabaseHelper.ACCOUNTS_TABLE_NAME, 
-				null, condition, null, null, null, 
-				DatabaseHelper.KEY_NAME + " ASC");
-		return cursor;
+        return mDb.query(DatabaseHelper.ACCOUNTS_TABLE_NAME,
+                null, condition, null, null, null,
+                DatabaseHelper.KEY_NAME + " ASC");
 	}
 
     /**
@@ -526,7 +546,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
                 balance = balance.add(subBalance);
             }
         }
-        return balance.add(mTransactionsAdapter.getTransactionsSum(accountId));
+        return balance.add(getAccount(accountId).getBalance());
     }
 
     /**
@@ -612,10 +632,9 @@ public class AccountsDbAdapter extends DatabaseAdapter {
     public Cursor fetchFavoriteAccounts(){
         Log.v(TAG, "Fetching favorite accounts from db");
         String condition = DatabaseHelper.KEY_FAVORITE + " = 1";
-        Cursor cursor = mDb.query(DatabaseHelper.ACCOUNTS_TABLE_NAME,
+        return mDb.query(DatabaseHelper.ACCOUNTS_TABLE_NAME,
                 null, condition, null, null, null,
                 DatabaseHelper.KEY_NAME + " ASC");
-        return cursor;
     }
 
     /**
@@ -691,10 +710,12 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 				new String[]{DatabaseHelper.KEY_ROW_ID, DatabaseHelper.KEY_UID}, 
 				DatabaseHelper.KEY_UID + "='" + accountUID + "'", 
 				null, null, null, null);
-		if (c != null && c.moveToFirst()){
-			id = c.getLong(DatabaseAdapter.COLUMN_ROW_ID);
-			c.close();
-		}
+		if (c != null) {
+            if (c.moveToFirst()) {
+                id = c.getLong(DatabaseAdapter.COLUMN_ROW_ID);
+            }
+            c.close();
+        }
 		return id;
 	}
 	
@@ -732,7 +753,10 @@ public class AccountsDbAdapter extends DatabaseAdapter {
                 DatabaseHelper.KEY_UID + " = ?",
                 new String[]{accountUID}, null, null, null);
 
-        if (cursor == null || cursor.getCount() < 1){
+        if (cursor == null) {
+            return null;
+        } else if ( cursor.getCount() < 1) {
+            cursor.close();
             return null;
         } else {  //account UIDs should be unique
             cursor.moveToFirst();
@@ -755,7 +779,10 @@ public class AccountsDbAdapter extends DatabaseAdapter {
                 DatabaseHelper.KEY_ROW_ID + " = " + accountID,
                 null, null, null, null);
 
-        if (cursor == null || cursor.getCount() < 1){
+        if (cursor == null) {
+            return 0;
+        } else if (cursor.getCount() < 1) {
+            cursor.close();
             return 0;
         } else {
             cursor.moveToFirst();
@@ -810,7 +837,10 @@ public class AccountsDbAdapter extends DatabaseAdapter {
                 DatabaseHelper.KEY_UID + " = ?",
                 new String[]{accountUID}, null, null, null);
 
-        if (cursor == null || !cursor.moveToFirst()){
+        if (cursor == null)
+            return false;
+        if (!cursor.moveToFirst()) {
+            cursor.close();
             return false;
         }
         boolean isPlaceholder = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.KEY_PLACEHOLDER)) == 1;
@@ -839,7 +869,10 @@ public class AccountsDbAdapter extends DatabaseAdapter {
                 DatabaseHelper.KEY_ROW_ID + " = " + accountId, null,
                 null, null, null);
 
-        if (cursor == null || !cursor.moveToFirst()){
+        if (cursor == null)
+            return false;
+        if (!cursor.moveToFirst()){
+            cursor.close();
             return false;
         }
         boolean isFavorite = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.KEY_FAVORITE)) == 1;

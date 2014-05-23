@@ -37,6 +37,7 @@ import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.util.SparseArray;
+import android.util.SparseIntArray;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
@@ -133,7 +134,7 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
     /**
      * Map containing fragments for the different tabs
      */
-    private Map<Integer,Refreshable> mFragmentPageReferenceMap = new HashMap<Integer, Refreshable>();
+    private SparseArray<Refreshable> mFragmentPageReferenceMap = new SparseArray<Refreshable>();
 
     /**
      * ViewPager which manages the different tabs
@@ -204,6 +205,11 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
         }
     }
 
+    public AccountsListFragment getCurrentAccountListFragment(){
+        int index = mPager.getCurrentItem();
+        return (AccountsListFragment)(mFragmentPageReferenceMap.get(index));
+    }
+
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -238,7 +244,10 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
             PagerAdapter mPagerAdapter = new AccountViewPagerAdapter(getSupportFragmentManager());
             mPager.setAdapter(mPagerAdapter);
             titlePageIndicator.setViewPager(mPager);
-            mPager.setCurrentItem(INDEX_TOP_LEVEL_ACCOUNTS_FRAGMENT);
+
+            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+            int lastTabIndex = preferences.getInt(LAST_OPEN_TAB_INDEX, INDEX_TOP_LEVEL_ACCOUNTS_FRAGMENT);
+            mPager.setCurrentItem(lastTabIndex);
         }
 
 	}
@@ -247,19 +256,22 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
      * Loads default setting for currency and performs app first-run initialization
      */
     private void init() {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        PreferenceManager.setDefaultValues(this, R.xml.fragment_transaction_preferences, false);
+
         Locale locale = Locale.getDefault();
         //sometimes the locale en_UK is returned which causes a crash with Currency
         if (locale.getCountry().equals("UK")) {
             locale = new Locale(locale.getLanguage(), "GB");
         }
+
         String currencyCode;
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         try { //there are some strange locales out there
             currencyCode = prefs.getString(getString(R.string.key_default_currency),
                     Currency.getInstance(locale).getCurrencyCode());
         } catch (Exception e) {
             Log.e(LOG_TAG, e.getMessage());
-            currencyCode = "USD"; //just use USD and let the user choose
+            currencyCode = "USD";
         }
 
         Money.DEFAULT_CURRENCY_CODE = currencyCode;
@@ -275,18 +287,15 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
 
     }
 
-    @Override
+     @Override
     protected void onResume() {
         super.onResume();
         TransactionsActivity.sLastTitleColor = -1;
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-        int lastTabIndex = preferences.getInt(LAST_OPEN_TAB_INDEX, INDEX_TOP_LEVEL_ACCOUNTS_FRAGMENT);
-        mPager.setCurrentItem(lastTabIndex);
     }
 
     @Override
-    protected void onStop() {
-        super.onPause();
+    protected void onDestroy() {
+        super.onDestroy();
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         preferences.edit().putInt(LAST_OPEN_TAB_INDEX, mPager.getCurrentItem()).commit();
     }
@@ -471,7 +480,7 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
         });
 
 		mDefaultAccountsDialog = builder.create();
-		mDefaultAccountsDialog.show();		
+		mDefaultAccountsDialog.show();
 	}
 
     /**

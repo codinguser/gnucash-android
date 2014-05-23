@@ -19,23 +19,23 @@
 <resources>
     <string name="app_name">GnuCash</string>
     <string name="title_add_account">Cr&#233;er un compte</string>
-    <string name="title_edit_account">Editer le compte</string>
+    <string name="title_edit_account">Éditer le compte</string>
     <string name="info_details">Informations</string>
     <string name="menu_export_ofx">Exporter en OFX</string>
     <string name="description_add_transaction_icon">Ajoute une nouvelle transaction &#224; un compte</string>
-    <string name="label_no_accounts">Aucun comptes &#224; afficher</string>
+    <string name="label_no_accounts">Aucun compte &#224; afficher</string>
     <string name="label_account_name">Nom de compte</string>
     <string name="btn_cancel">Annuler</string>
-    <string name="btn_save">Sauvgarder</string>
-    <string name="label_no_transactions_to_display">Aucune transactions &#224; afficher</string>
+    <string name="btn_save">Sauvegarder</string>
+    <string name="label_no_transactions_to_display">Aucune transaction &#224; afficher</string>
     <string name="label_transaction_name">Description</string>
     <string name="label_transaction_amount">Montant</string>
     <string name="title_add_transaction">Nouvelle transaction</string>
     <string name="label_no_transactions">Aucune transaction &#224; afficher</string>
     <string name="label_timeanddate">DATE &amp; HEURE</string>
     <string name="label_account">Compte</string>
-    <string name="label_debit">DEBIT</string>
-    <string name="label_credit">CREDIT</string>
+    <string name="label_debit">DÉBIT</string>
+    <string name="label_credit">CRÉDIT</string>
     <string name="title_accounts">Comptes</string>
     <string name="title_transactions">Transactions</string>
     <string name="menu_delete">SUPPRIMER</string>
@@ -44,13 +44,13 @@
     <string name="toast_account_deleted">Compte supprim&#233;</string>
     <string name="title_confirm_delete">Confirmer la suppression</string>
     <string name="delete_account_confirmation_message">Toutes les transactions dans ce compte seront aussi supprimées</string>
-    <string name="title_edit_transaction">Editer la transaction</string>
+    <string name="title_edit_transaction">Éditer la transaction</string>
     <string name="label_transaction_description">Note</string>
-    <string name="menu_move">DEPLACER</string>
+    <string name="menu_move">DÉPLACER</string>
     <string name="title_selected">%1$d s&#233;lectionné(s)</string>
-    <string name="label_transactions_total">Total:</string>
+    <string name="label_transactions_total">Total :</string>
     <string name="label_export_destination">Destination d\'export</string>
-    <string name="title_export_dialog">Exporter les Transactions</string>
+    <string name="title_export_dialog">Exporter les transactions</string>
     <string name="option_export_all_transactions">Exporter toutes les transactions</string>
     <string name="hint_export_choice">Par d&#233;faut, seul les nouvelles transactions depuis le dernier export seront exportées. Cochez cette option pour exporter toutes les transactions</string>
     <string name="error_exporting">Erreur lors de l\'export des donn&#233;es en OFX</string>
@@ -66,15 +66,14 @@
     <string name="title_move_transactions">D&#233;placer %1$d transaction(s)</string>
     <string name="label_move_destination">Compte de destination</string>
     <string name="permission_access_sdcard">Acc&#233;s carte SD</string>
-    <string name="title_share_ofx_with">Partager l\'export en OFX avec…</string>
-    <string name="toast_incompatible_currency">Impposible de d&#233;placer les transactions.\nLe compte de destination utilise une monnaie diff&#233;rente du compte d\'origine</string>
+    <string name="toast_incompatible_currency">Impossible de d&#233;placer les transactions.\nLe compte de destination utilise une monnaie diff&#233;rente du compte d\'origine</string>
     <string name="header_general_settings">G&#233;n&#233;ral</string>
-    <string name="header_about_gnucash">A propos</string>
+    <string name="header_about_gnucash">À propos</string>
     <string name="title_choose_currency">Choisisez une monnaie par d&#233;faut</string>
     <string name="title_default_currency">Monnaie par d&#233;faut</string>
     <string name="summary_default_currency">Monnaie par d&#233;faut &#224; assignée aux nouveau comptes</string>
-    <string name="label_permission_record_transactions">Permettre l\'enregistrement des transactions dans Gnucash pour Android</string>
-    <string name="label_permission_create_accounts">Permettre la cr&#233;ation de comptes dans Gnucash pour Android</string>
+    <string name="label_permission_record_transactions">Permettre l\'enregistrement des transactions dans GnuCash pour Android</string>
+    <string name="label_permission_create_accounts">Permettre la cr&#233;ation de comptes dans GnuCash pour Android</string>
     <string name="label_permission_group">Vos donn&#233;es GnuCash</string>
     <string name="description_permission_group">Lire et modifier les donn&#233;es GnuCash</string>
     <string name="label_permission_record_transaction">enregistrer les transactions</string>
@@ -266,31 +265,31 @@
         <item>Capitaux propres</item>
         <item>Charges</item>
     </string-array>
-    <string name="error_no_accounts">Aucun compte &#233;xistant dans Gnucash.\nCr&#233;ez un compte avant d\'ajouter un widget</string>
+    <string name="error_no_accounts">Aucun compte &#233;xistant dans GnuCash.\nCr&#233;ez un compte avant d\'ajouter un widget</string>
     <string name="title_build_version">Version logiciel</string>
     <string name="title_license">Licence</string>
-    <string name="summary_licence_details">Apache License v2.0. Clickez pour plus de d&#233;tails</string>
+    <string name="summary_licence_details">Apache License v2.0. Cliquez pour plus de d&#233;tails</string>
     <string name="title_general_prefs">G&#233;n&#233;ral</string>
     <string name="label_widget_configuration">S&#233;lectionner un compte</string>
-    <string name="toast_no_transactions_to_export">Il n\'existe pas de transactions disponible pour l\'exportation</string>
-    <string name="title_about_gnucash">A propos de Gnucash</string>
-    <string name="summary_about_gnucash">GnucashMobile est une application mobile de suivis de finance pour Android.\nElle permet un suivi simple des d&#233;penses qui peut &#234;tre export&#233; vers le format Open Financial eXchange (OFX) et import&#233; dans Gnucash pour PC.</string>
+    <string name="toast_no_transactions_to_export">Il n\'existe pas de transaction disponible pour l\'exportation</string>
+    <string name="title_about_gnucash">À propos de GnuCash</string>
+    <string name="summary_about_gnucash">GnucashMobile est une application mobile de suivis de finance pour Android.\nElle permet un suivi simple des d&#233;penses qui peut &#234;tre export&#233; vers le format Open Financial eXchange (OFX) et import&#233; dans GnuCash pour PC.</string>
     <string name="title_about">A propos</string>
-    <string name="toast_error_exporting">Impossible d\'&#233;crire un fichier OFX en:\n</string>
-    <string name="toast_ofx_exported_to">Fichier OFX export&#233; en:\n</string>
-    <string name="title_export_email">Gnucash OFX export</string>
-    <string name="description_export_email">Gnucash OFX Export de </string>
+    <string name="toast_error_exporting">Impossible d\'&#233;crire un fichier OFX en :\n</string>
+    <string name="toast_ofx_exported_to">Fichier OFX export&#233; en :\n</string>
+    <string name="title_export_email">GnuCash OFX export</string>
+    <string name="description_export_email">GnuCash OFX export de </string>
     <string name="header_transaction_settings">Transactions</string>
     <string name="title_transaction_preferences">Pr&#233;f&#233;rences des transactions</string>
     <string name="title_account_preferences">Pr&#233;f&#233;rences du compte</string>
     <string name="title_default_transaction_type">Type de transaction par d&#233;faut</string>
-    <string name="summary_default_transaction_type">Le type de transaction &#224; utiliser par d&#233;faut, CREDIT ou DEBIT</string>
+    <string name="summary_default_transaction_type">Le type de transaction &#224; utiliser par d&#233;faut, CRÉDIT ou DÉBIT</string>
     <string-array name="transaction_types">
-        <item>CREDIT</item>
-        <item>DEBIT</item>
+        <item>CRÉDIT</item>
+        <item>DÉBIT</item>
     </string-array>
-    <string name="msg_delete_all_transactions_confirmation">Etes vous s&#251;re de vouloir supprimer TOUTES les transactions?</string>
-    <string name="msg_delete_transaction_confirmation">Etes vous s&#251;re de vouloir supprimer cette transaction?</string>
+    <string name="msg_delete_all_transactions_confirmation">Êtes vous s&#251;re de vouloir supprimer TOUTES les transactions ?</string>
+    <string name="msg_delete_transaction_confirmation">Êtes vous s&#251;re de vouloir supprimer cette transaction ?</string>
     <string name="title_export_preference_category">Export</string>
     <string name="title_export_all_transactions">Exporter toutes les transactions</string>
     <string name="title_always_delete_exported_transactions">Supprimer les transactions export&#233;es</string>
@@ -317,7 +316,7 @@
         - Nombreuses corrections de bogues et améliorations\n
 	</string>
     <string name="label_dismiss">Passer</string>
-    <string name="toast_transanction_amount_required">Entrez un montant pour sauvgarder la transaction</string>
+    <string name="toast_transanction_amount_required">Entrez un montant pour sauvegarder la transaction</string>
     <string name="menu_import_accounts">Importer des comptes GnuCash</string>
     <string name="btn_import_accounts">Import de comptes</string>
     <string name="toast_error_importing_accounts">Une &#233;rreur s\'est produite pendant l\'import de vos comptes GnuCash</string>
@@ -328,19 +327,19 @@
     <string name="title_delete_all_accounts">Supprimer tous les comptes</string>
     <string name="header_account_settings">Comptes</string>
     <string name="toast_all_accounts_deleted">Tous les comptes ont &#233;t&#233; supprim&#233;s avec succ&#232;s</string>
-    <string name="confirm_delete_all_accounts">Etes-vous s&#251;r de vouloir supprimer tous les comptes et toutes les transactions?\n Cette op&#233;ration est d&#233;finitive!</string>
+    <string name="confirm_delete_all_accounts">Êtes-vous s&#251;r de vouloir supprimer tous les comptes et toutes les transactions?\nCette op&#233;ration est d&#233;finitive !</string>
     <string name="label_account_type">Type de compte</string>
-    <string name="summary_delete_all_transactions">Toutes les transactions sur tous les comptes seront supprim&#233;es!</string>
+    <string name="summary_delete_all_transactions">Toutes les transactions sur tous les comptes seront supprim&#233;es !</string>
     <string name="title_delete_all_transactions">Supprimer toutes les transactions</string>
-    <string name="toast_all_transactions_deleted">Toutes les transactions ont &#233;t&#233; supprim&#233;es avec succ&#232;s!</string>
+    <string name="toast_all_transactions_deleted">Toutes les transactions ont &#233;t&#233; supprim&#233;es avec succ&#232;s !</string>
     <string name="title_progress_importing_accounts">Importation de comptes</string>
-    <string name="toast_tap_again_to_confirm_delete">Taper de nouveau pour confirmer. TOUTES les entrées seront supprimées!!</string>
+    <string name="toast_tap_again_to_confirm_delete">Taper de nouveau pour confirmer. TOUTES les entrées seront supprimées !</string>
     <string name="section_header_transactions">Transactions</string>
-    <string name="section_header_subaccounts">Sous-Comptes</string>
+    <string name="section_header_subaccounts">Sous-comptes</string>
     <string name="menu_search_accounts">Rechercher</string>
     <string name="title_default_export_format">Format d\'export par défaut</string>
     <string name="summary_default_export_format">Format de fichier à utiliser par défaut pour l\'export des transactions</string>
-    <string name="menu_export_transactions">Export transactions…</string>
+    <string name="menu_export_transactions">Exporter les transactions…</string>
     <string name="label_recurring_transaction">Récurrence</string>
     <!-- This should be the same name used by GnuCash desktop for imbalance accounts -->
     <string name="imbalance_account_name">Déséquilibre</string>
@@ -382,17 +381,18 @@
     <string name="summary_create_default_accounts">Crée une structure de compte GnuCash par défaut couramment utilisé</string>
     <string name="title_create_default_accounts">Crée comptes par défaut</string>
     <string name="msg_confirm_create_default_accounts_setting">Les nouveaux comptes seront créés en plus de l\'existante
-		structure de compte.\n\n Si vous souhaitez remplacer des comptes existants, supprimez-les d\'abord avant de commencer!
+		structure de compte.\n\n Si vous souhaitez remplacer des comptes existants, supprimez-les d\'abord avant de commencer !
     </string>
-    <string name="msg_confirm_create_default_accounts_first_run">Bienvenue à GnuCash Android!\n Vous pouvez soit créer
-		une hiérarchie de comptes couramment utilisés, importer votre propre structure de compte GnuCash.\n\n Les deux options sont également
-		disponible dans les paramètres d\'applications de sorte que vous puissiez décider plus tard.</string>
+    <string name="msg_confirm_create_default_accounts_first_run">Bienvenue sur GnuCash Android!\nVous pouvez soit créer
+		une hiérarchie de comptes couramment utilisés, importer votre propre structure de compte GnuCash.\n\nLes deux options sont également
+		disponibles dans les paramètres de l\'application de sorte que vous puissiez décider plus tard.</string>
     <string-array name="recurrence_period_strings">
         <item>AUCUN</item>
         <item>QUOTIDIEN</item>
         <item>SEMAINE</item>
         <item>MENSUEL</item>
     </string-array>
-    <string name="menu_scheduled_transactions">Scheduled Transactions</string>
-    <string name="title_scheduled_transactions">Scheduled Transactions</string>
+    <string name="menu_scheduled_transactions">Transactions planifiées</string>
+    <string name="title_scheduled_transactions">Transactions planifiées</string>
+    <string name="title_select_export_destination">Select destination for export</string>
 </resources>

@@ -46,7 +46,7 @@
     <string name="title_edit_transaction">修改交易</string>
     <string name="label_transaction_description">备注</string>
     <string name="menu_move">移动</string>
-    <string name="title_selected">%1$d 已删除</string>
+    <string name="title_selected">%1$d 已选中</string>
     <string name="label_transactions_total">合计：</string>
     <string name="label_export_destination">导出到</string>
     <string name="title_export_dialog">导出交易资料</string>
@@ -65,7 +65,6 @@
     <string name="title_move_transactions">移动 %1$d 交易</string>
     <string name="label_move_destination">目的科目</string>
     <string name="permission_access_sdcard">访问 SD Card</string>
-    <string name="title_share_ofx_with">发送OFX到</string>
     <string name="toast_incompatible_currency">不能移动交易。\n两个科目的货币设置不一样。</string>
     <string name="header_general_settings">常规</string>
     <string name="header_about_gnucash">关于</string>
@@ -352,7 +351,6 @@
     <string name="label_default_transfer_account">默认的转账帐户</string>
     <string name="label_account_color_and_type">科目颜色和类型</string>
     <plurals name="label_sub_accounts">
-        <item quantity="one">%d 子科目</item>
         <item quantity="other">%d 子科目</item>
     </plurals>
     <string-array name="account_type_entry_values">
@@ -394,4 +392,5 @@
         <item>每月</item>
     </string-array>
     <string name="title_scheduled_transactions">计划的交易</string>
+    <string name="title_select_export_destination">Select destination for export</string>
 </resources>

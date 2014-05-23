@@ -49,12 +49,12 @@
     <string name="title_selected">%1$d ausgew&#228;hlt</string>
     <string name="label_transactions_total">Summe:</string>
     <string name="label_export_destination">Exportziel</string>
-    <string name="title_export_dialog">Buchungen Exportieren</string>
+    <string name="title_export_dialog">Buchungen exportieren</string>
     <string name="option_export_all_transactions">Alle Buchungen exportieren</string>
     <string name="hint_export_choice">Auswählen, um alle Buchungen zu exportieren. Andernfalls werden nur die neuen Buchungen seit letztem Export exportiert.</string>
     <string name="error_exporting">Fehler beim Exportieren der OFX-Datei</string>    
     <string name="btn_export">Export</string>
-    <string name="option_delete_after_export">L&#246;schen nach dem exportieren</string>
+    <string name="option_delete_after_export">L&#246;schen nach dem Exportieren</string>
     <string name="hint_delete_after_export">Alle exportierten Buchungen werden nach dem Export gelöscht.</string>
     <string name="title_settings">Einstellungen</string>
     <string-array name="export_destinations">
@@ -65,20 +65,19 @@
     <string name="title_move_transactions">%1$d Buchung(en) verschieben</string>
     <string name="label_move_destination">Zielkonto</string>
     <string name="permission_access_sdcard">Zugriff auf SD-Kartenspeicher</string>
-    <string name="title_share_ofx_with">OFX-Datei senden mit…</string>
     <string name="toast_incompatible_currency">Buchungen k&#246;nnten nicht verschoben werden.\Die W&#228;hrung des Zielkontos ist inkompatibel</string>
     <string name="header_general_settings">Allgemein</string>
-    <string name="header_about_gnucash">&#220;ber Gnucash</string>
-    <string name="title_choose_currency">Standard W&#228;hrung ausw&#228;hlen</string>
-    <string name="title_default_currency">Standard W&#228;hrung</string>
-    <string name="summary_default_currency">Standard W&#228;hrung f&#252;r neuen Konten</string>
-    <string name="label_permission_record_transactions">Erm&#246;glicht das Speichern von Buchungen in Gnucash</string>
-    <string name="label_permission_create_accounts">Erm&#246;glicht das Erstellen von Konten in Gnucash</string>
-    <string name="label_permission_group">Ihre Gnucash Daten</string>
-    <string name="description_permission_group">Lesen und Bearbeiten von Gnucash Daten</string>
+    <string name="header_about_gnucash">&#220;ber GnuCash</string>
+    <string name="title_choose_currency">Standardw&#228;hrung ausw&#228;hlen</string>
+    <string name="title_default_currency">Standardw&#228;hrung</string>
+    <string name="summary_default_currency">Standardw&#228;hrung f&#252;r neue Konten</string>
+    <string name="label_permission_record_transactions">Erm&#246;glicht das Speichern von Buchungen in GnuCash</string>
+    <string name="label_permission_create_accounts">Erm&#246;glicht das Erstellen von Konten in GnuCash</string>
+    <string name="label_permission_group">Ihre GnuCash-Daten</string>
+    <string name="description_permission_group">Lesen und Bearbeiten von GnuCash-Daten</string>
     <string name="label_permission_record_transaction">Buchungen speichern</string>
     <string name="label_permission_create_account">Konten erstellen</string>
-    <string name="label_display_account">Konto Anzeigen</string>
+    <string name="label_display_account">Konto anzeigen</string>
     <string name="btn_create_accounts">Konten erstellen</string>
     <string name="title_default_accounts">Zu erstellende Konten ausw&#228;hlen</string>
     <string-array name="currency_names">
@@ -265,21 +264,21 @@
 	    <item>KapitalKonto</item>
 	    <item>Passiva</item>
 	</string-array>
-	<string name="error_no_accounts">Keine Konten vorhanden.\nSie m&#252;ssen einen Konto erstellen um Widgets zu anzuf&#252;gen</string>
+	<string name="error_no_accounts">Keine Konten vorhanden.\nSie m&#252;ssen ein Konto erstellen um Widgets anf&#252;gen zu k&#246;nnen.</string>
 	<string name="title_build_version">Version</string>
 	<string name="title_license">Lizenz</string>
 	<string name="summary_licence_details">Apache License v2.0. Klicken f&#252;r Details</string>
 	<string name="title_general_prefs">Allgemein</string>
 	<string name="label_widget_configuration">Konto ausw&#228;hlen</string>
-	<string name="toast_no_transactions_to_export">Keine Buchungen zum exportieren</string>
-	<string name="title_about_gnucash">&#220;ber Gnucash</string>
-	<string name="summary_about_gnucash">GnucashMobile ist eine mobile Datenaufzeichungs-App f&#252;r Android. \nEs erm&#246;glicht die schnelle und flexible Registrierung von Zahlungsvorg&#228;ngen unterwegs, die dann als Datei im OFX-Format exportiert und von der GnuCash-Anwendung an einem Desktop-PC importiert werden k&#246;nnen.</string>
+	<string name="toast_no_transactions_to_export">Keine Buchungen zum Exportieren</string>
+	<string name="title_about_gnucash">&#220;ber GnuCash</string>
+	<string name="summary_about_gnucash">GnuCashMobile ist eine mobile Datenaufzeichungs-App f&#252;r Android. \nEs erm&#246;glicht die schnelle und flexible Registrierung von Zahlungsvorg&#228;ngen unterwegs, die dann als Datei im OFX-Format exportiert und von der GnuCash-Anwendung an einem Desktop-PC importiert werden k&#246;nnen.</string>
 	<string name="title_about">&#220;ber</string>
 	<string name="ofx_file_exported_to">OFX-Datei exportiert nach:</string>
 	<string name="toast_error_exporting_ofx">Fehler beim Exportieren der OFX-Datei:\n</string>
 	<string name="toast_ofx_exported_to">OFX-Datei erfolgreich exportiert nach:\n</string>
-	<string name="title_export_email">Gnucash exportierte OFX-Datei</string>
-	<string name="description_export_email">Gnucash accounts export from </string>
+	<string name="title_export_email">GnuCash exportierte OFX-Datei</string>
+	<string name="description_export_email">GnuCash-Konten-Export von </string>
 	<string name="header_transaction_settings">Buchungen</string>
 	<string name="title_transaction_preferences">Einstellungen Buchungen</string>
 	<string name="title_account_preferences">Einstellungen Konten</string>
@@ -294,17 +293,17 @@
 	<string name="title_export_preference_category">Exportieren</string>
 	<string name="title_export_all_transactions">Alle Buchungen exportieren</string>
 	<string name="title_always_delete_exported_transactions">Alle exportierten Buchungen l&#246;schen</string>
-	<string name="title_default_export_email">Standard Export E-mail</string>
-	<string name="summary_default_export_email">Die Standard Email an die exportierte OFX Dateien geschickt werden. Sie können diese immer noch beim exportieren ändern</string>
+	<string name="title_default_export_email">Standard Export E-Mail</string>
+	<string name="summary_default_export_email">Die Standard-E-Mail, an die exportierte OFX Dateien geschickt werden. Sie können diese immer noch beim Exportieren ändern.</string>
 	<string name="label_double_entry_account">Überweisungskonto</string>
 	<string name="summary_use_double_entry">Alle Buchungen stellen eine Überweisung von einem Konto zu einem anderen dar</string>
 	<string name="title_use_double_entry">Doppelte Buchführung aktivieren</string>
 	<string name="account_balance">Kontostand</string>
-	<string name="toast_no_account_name_entered">Geben Sie einen Kontonamen ein um das Konto zu erstellen</string>
+	<string name="toast_no_account_name_entered">Geben Sie einen Kontonamen ein, um das Konto zu erstellen</string>
 	<string name="label_account_currency">Währung</string>
 	<string name="label_parent_account">Hauptkonto</string>
-	<string name="title_xml_ofx_header">XML OFX header verwenden</string>
-	<string name="summary_xml_ofx_header">Dieses Option aktivieren wenn Sie die OFX Dateien für ein anderes Programm als GnuCash auf dem Desktop exportieren</string>
+	<string name="title_xml_ofx_header">XML-OFX-Header verwenden</string>
+	<string name="summary_xml_ofx_header">Diese Option aktivieren, wenn Sie die OFX-Dateien für ein anderes Programm als GnuCash auf dem Desktop exportieren</string>
 	<string name="title_whats_new">Neuigkeiten in dieser Version</string>
 	<string name="whats_new">
         - Mark favorite accounts and quickly access them\n
@@ -317,13 +316,13 @@
         - Numerous bug fixes and improvements\n
     </string>
 	<string name="label_dismiss">Schließen</string>
-    <string name="toast_transanction_amount_required">Geben Sie einen Betrag ein um die Buchung speichern zu können</string>
-    <string name="menu_import_accounts">GnuCash Konten importieren</string>
+    <string name="toast_transanction_amount_required">Geben Sie einen Betrag ein, um die Buchung speichern zu können</string>
+    <string name="menu_import_accounts">GnuCash-Konten importieren</string>
     <string name="btn_import_accounts">Konten importieren</string>
-    <string name="toast_error_importing_accounts">Beim importieren von den GnuCash Konten ist einen Fehler aufgetreten!</string>
-    <string name="toast_success_importing_accounts">GnuCash Konten wurden erfolgreich importiert</string>
-    <string name="summary_import_accounts">Import account structure exported from GnuCash desktop</string>
-    <string name="title_import_accounts">GnuCash Konten importieren</string>
+    <string name="toast_error_importing_accounts">Beim Importieren der GnuCash-Konten ist ein Fehler aufgetreten!</string>
+    <string name="toast_success_importing_accounts">GnuCash-Konten wurden erfolgreich importiert</string>
+    <string name="summary_import_accounts">Importiere Kontenstruktur, welche von der Desktop-Version von GnuCash exportiert wurde</string>
+    <string name="title_import_accounts">GnuCash-Konten importieren</string>
     <string name="summary_delete_all_accounts">Alle Konten löschen. Alle Buchungen werden ebenfalls gelöscht!</string>
     <string name="title_delete_all_accounts">Alle Konten löschen</string>
     <string name="header_account_settings">Konten</string>
@@ -332,16 +331,16 @@
         \n\nDiese Operation kann nicht rückgängig gemacht werden!
     </string>
     <string name="label_account_type">Kontoart</string>
-    <string name="summary_delete_all_transactions">Alle Buchungen in alle Konten werden gelöscht</string>
+    <string name="summary_delete_all_transactions">Alle Buchungen in allen Konten werden gelöscht</string>
     <string name="title_delete_all_transactions">Alle Buchungen löschen</string>
     <string name="toast_all_transactions_deleted">Alle Buchungen wurden erfolgreich gelöscht</string>
     <string name="title_progress_importing_accounts">Konten werden importiert</string>
-    <string name="toast_tap_again_to_confirm_delete">Tap again to confirm. ALL entries will be deleted!!</string>
+    <string name="toast_tap_again_to_confirm_delete">Erneut Tippen zum Bestätigen. ALLE Einträge werden gelöscht!</string>
     <string name="section_header_transactions">Buchungen</string>
     <string name="section_header_subaccounts">Unterkonten</string>
     <string name="menu_search_accounts">Suchen</string>
-    <string name="title_default_export_format">Standard Export Format</string>
-    <string name="summary_default_export_format">File format to use by default when exporting transactions</string>
+    <string name="title_default_export_format">Standard-Export-Format</string>
+    <string name="summary_default_export_format">Dateiformat, welches standardmäßig verwendet wird, wenn Buchungen exportiert werden</string>
     <string name="menu_export_transactions">Buchungen exportieren…</string>
     <string name="label_recurring_transaction">Wiederkehr</string>
     <!-- This should be the same name used by GnuCash desktop for imbalance accounts -->
@@ -357,19 +356,19 @@
         <item quantity="other">%d Unterkonten</item>
     </plurals>
     <string-array name="account_type_entry_values">
-        <item>CASH</item>
+        <item>BARGELD</item>
         <item>BANK</item>
-        <item>CREDIT CARD</item>
-        <item>ASSET</item>
-        <item>LIABILITY</item>
-        <item>INCOME</item>
-        <item>EXPENSE</item>
+        <item>KREDITKARTE</item>
+        <item>AKTIVA</item>
+        <item>PASSIVA</item>
+        <item>EINKOMMEN</item>
+        <item>AUFWENDUNGEN</item>
         <item>PAYABLE</item>
-        <item>RECEIVABLE</item>
-        <item>EQUITY</item>
-        <item>CURRENCY</item>
-        <item>STOCK</item>
-        <item>MUTUAL FUND</item>
+        <item>FORDERUNGEN</item>
+        <item>EIGENKAPITAL</item>
+        <item>WÄHRUNG</item>
+        <item>AKTIENKONTO</item>
+        <item>INVESTMENTFONDS</item>
     </string-array>
     <string-array name="export_formats">
         <item>QIF</item>
@@ -381,15 +380,12 @@
     <string name="title_recent_accounts">Kürzlich</string>
     <string name="title_favorite_accounts">Favoriten</string>
     <string name="title_all_accounts">Alle</string>
-    <string name="summary_create_default_accounts">Erstellt die häufig verwendete standard GnuCash Konten</string>
-    <string name="title_create_default_accounts">Standard Konten erstellen</string>
-    <string name="msg_confirm_create_default_accounts_setting">New accounts will be created in addition to the existing
-        account structure.\n\nIf you wish to replace currently existing accounts, delete them first before proceeding!
+    <string name="summary_create_default_accounts">Erstellt die häufig verwendeten Standard-GnuCash-Konten</string>
+    <string name="title_create_default_accounts">Standard-Konten erstellen</string>
+    <string name="msg_confirm_create_default_accounts_setting">Neue Konten werden zusätzlich zur existierenden Kontenstruktur erstellt.\n\nWenn Sie die derzeitig existierenden Konten ersetzen wollen, löschen Sie diese bitte, bevor Sie fortfahren!
     </string>
     <string name="menu_scheduled_transactions">Eingeplante Buchungen</string>
-    <string name="msg_confirm_create_default_accounts_first_run">Welcome to GnuCash Android! \nYou can either create
-        a hierarchy of commonly-used accounts, or import your own GnuCash account structure. \n\nBoth options are also
-        available in app Settings so you can decide later.
+    <string name="msg_confirm_create_default_accounts_first_run">Willkommen bei GnuCash Android!\nSie können entweder eine Hierarchie der für gewöhnlich verwendeten Konten erstellen oder Ihre eigene GnuCash-Kontenstruktur importieren.\n\nBeide Optionen sind auch in den Einstellungen verfügbar, sodass Sie dies später entscheiden können.
     </string>
     <string-array name="recurrence_values">
         <item>KEINE</item>
@@ -398,4 +394,5 @@
         <item>MONATLICH</item>
     </string-array>
     <string name="title_scheduled_transactions">Eingeplante Buchungen</string>
+    <string name="title_select_export_destination">Select destination for export</string>
 </resources>

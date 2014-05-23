@@ -167,8 +167,8 @@ public class ExporterTask extends AsyncTask<ExportParams, Void, Boolean> {
 
         if (mExportParams.shouldDeleteTransactionsAfterExport()){
             android.support.v4.app.FragmentManager fragmentManager = ((FragmentActivity)mContext).getSupportFragmentManager();
-            Fragment currentFragment = fragmentManager
-                    .findFragmentByTag(AccountsActivity.FRAGMENT_ACCOUNTS_LIST);
+            Fragment currentFragment = ((AccountsActivity)mContext).getCurrentAccountListFragment();
+
             TransactionsDeleteConfirmationDialogFragment alertFragment =
                     TransactionsDeleteConfirmationDialogFragment.newInstance(R.string.title_confirm_delete, 0);
             alertFragment.setTargetFragment(currentFragment, 0);
@@ -218,6 +218,7 @@ public class ExporterTask extends AsyncTask<ExportParams, Void, Boolean> {
         writer.write(qif);
 
         writer.flush();
+        writer.close();
     }
 
     /**
@@ -268,7 +269,8 @@ public class ExporterTask extends AsyncTask<ExportParams, Void, Boolean> {
 
         shareIntent.putExtra(Intent.EXTRA_TEXT, mContext.getString(R.string.description_export_email)
                 + " " + formatter.format(new Date(System.currentTimeMillis())));
-        mContext.startActivity(Intent.createChooser(shareIntent, mContext.getString(R.string.title_share_ofx_with)));
+
+        mContext.startActivity(Intent.createChooser(shareIntent, mContext.getString(R.string.title_select_export_destination)));
     }
 
     /**

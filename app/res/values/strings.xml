@@ -17,7 +17,7 @@
 
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="app_name">GnuCash</string>
-    <string name="app_version_name">1.3.1</string>
+    <string name="app_version_name">1.3.2</string>
     <string name="title_add_account">Create Account</string>
     <string name="title_edit_account">Edit Account</string>
     <string name="info_details">Info</string>
@@ -66,7 +66,6 @@
     <string name="title_move_transactions">Move %1$d transaction(s)</string>
     <string name="label_move_destination">Destination Account</string>
     <string name="permission_access_sdcard">Access SD Card</string>
-    <string name="title_share_ofx_with">Share OFX export with&#8230;</string>
     <string name="key_default_currency">default_currency</string>
     <string name="toast_incompatible_currency">Cannot move transactions.\nThe destination account uses a different currency from origin account</string>
     <string name="header_general_settings">General</string>
@@ -526,7 +525,7 @@
     <string name="title_delete_all_accounts">Delete all accounts</string>
     <string name="header_account_settings">Accounts</string>
     <string name="toast_all_accounts_deleted">All accounts have been successfully deleted</string>
-    <string name="confirm_delete_all_accounts">Are you sure you want to delete all accounts and transactions? \n\nThis
+    <string name="confirm_delete_all_accounts">Are you sure you want to delete all accounts and transactions?\n\nThis
         operation cannot be undone!
     </string>
     <string name="label_account_type">Account Type</string>
@@ -629,4 +628,5 @@
         available in app Settings so you can decide later.
     </string>
     <string name="title_scheduled_transactions">Scheduled Transactions</string>
+    <string name="title_select_export_destination">Select destination for export</string>
 </resources>
