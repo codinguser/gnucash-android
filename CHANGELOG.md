@@ -1,5 +1,8 @@
 Change Log
 ===============================================================================
+Version 1.3.3 *(2014-05-26)*
+* Reversed changes in the computation of balances, back to pre-v1.3.2 mode (will be re-instated in the future)
+
 Version 1.3.2 *(2014-05-23)*
 ----------------------------
 * Fixed: Editing account modifies the transaction type of transfer transactions

@@ -371,21 +371,30 @@ public class Account {
 	public Money getBalance(){
 		Money balance = new Money(new BigDecimal(0), this.mCurrency);
 		for (Transaction transaction : mTransactionsList) {
-			boolean isDebitAccount = getAccountType().hasDebitNormalBalance();
-			boolean isDebitTransaction = transaction.getType() == TransactionType.DEBIT;
-			if (isDebitAccount) {
-				if (isDebitTransaction) {
-					balance = balance.add(transaction.getAmount());
-				} else {
-					balance = balance.subtract(transaction.getAmount());
-				}
-			} else {
-				if (isDebitTransaction) {
-					balance = balance.subtract(transaction.getAmount());
-				} else {
-					balance = balance.add(transaction.getAmount());
-				}
-			}
+            balance = balance.add(transaction.getAmount());
+
+/*
+            //TODO: Re-enable proper computation of balance for double-entries in the future
+            if (GnuCashApplication.isDoubleEntryEnabled(false)) {
+                boolean isDebitAccount = getAccountType().hasDebitNormalBalance();
+                boolean isDebitTransaction = transaction.getType() == TransactionType.DEBIT;
+                if (isDebitAccount) {
+                    if (isDebitTransaction) {
+                        balance = balance.add(transaction.getAmount());
+                    } else {
+                        balance = balance.subtract(transaction.getAmount());
+                    }
+                } else {
+                    if (isDebitTransaction) {
+                        balance = balance.subtract(transaction.getAmount());
+                    } else {
+                        balance = balance.add(transaction.getAmount());
+                    }
+                }
+            } else { //not using double entry
+                balance = balance.add(transaction.getAmount());
+            }
+*/
 		}
 		return balance;
 	}

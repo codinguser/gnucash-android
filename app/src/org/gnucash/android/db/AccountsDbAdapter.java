@@ -546,7 +546,13 @@ public class AccountsDbAdapter extends DatabaseAdapter {
                 balance = balance.add(subBalance);
             }
         }
-        return balance.add(getAccount(accountId).getBalance());
+
+        return balance.add(mTransactionsAdapter.getTransactionsSum(accountId));
+
+//      properly compute the account balance taking double entry into account
+//      TODO: re-enable this when splits are added
+//        return balance.add(getAccount(accountId).getBalance());
+
     }
 
     /**
