@@ -17,6 +17,9 @@ package org.gnucash.android.app;
 
 import android.app.Application;
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
+import org.gnucash.android.R;
 
 /**
  * An {@link Application} subclass for retrieving static context
@@ -38,5 +41,16 @@ public class GnuCashApplication extends Application{
      */
     public static Context getAppContext() {
         return GnuCashApplication.context;
+    }
+
+    /**
+     * Returns <code>true</code> if double entry is enabled in the app settings, <code>false</code> otherwise.
+     * If the value is not set, the default value can be specified in the parameters.
+     * @param defaultValue Default value to return if double entry is not explicitly set
+     * @return <code>true</code> if double entry is enabled, <code>false</code> otherwise
+     */
+    public static boolean isDoubleEntryEnabled(boolean defaultValue){
+        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
+        return sharedPrefs.getBoolean(context.getString(R.string.key_use_double_entry), defaultValue);
     }
 }

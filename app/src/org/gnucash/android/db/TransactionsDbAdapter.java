@@ -21,6 +21,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteStatement;
 import android.util.Log;
+import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.model.Account;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.model.Transaction;
@@ -186,14 +187,25 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 		while (c.moveToNext()) {
 			Transaction transaction = buildTransactionInstance(c);
 			String doubleEntryAccountUID = transaction.getDoubleEntryAccountUID();
-			// Negate double entry transactions for the transfer account
+
+            //one transaction in this case represents both sides of the split
 			if (doubleEntryAccountUID != null && doubleEntryAccountUID.equals(accountUID)){
-				if (transaction.getType() == TransactionType.DEBIT) {
-					transaction.setType(TransactionType.CREDIT);
-				} else {
-					transaction.setType(TransactionType.DEBIT);
-				}
+                transaction.setAmount(transaction.getAmount().negate());
+/*
+//use this to properly compute the account balance
+				if (GnuCashApplication.isDoubleEntryEnabled(false)) {
+                    if (transaction.getType() == TransactionType.DEBIT) {
+                        transaction.setType(TransactionType.CREDIT);
+                    } else {
+                        transaction.setType(TransactionType.DEBIT);
+                    }
+                } else {
+                    // Negate double entry transactions for the transfer account
+                    transaction.setAmount(transaction.getAmount().negate());
+                }
+*/
 			}
+
 			transactionsList.add(transaction);
 		}
 		c.close();

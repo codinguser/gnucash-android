@@ -279,6 +279,8 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
         boolean firstRun = prefs.getBoolean(getString(R.string.key_first_run), true);
         if (firstRun){
             createDefaultAccounts();
+            //default to using double entry and save the preference explicitly
+            prefs.edit().putBoolean(getString(R.string.key_use_double_entry), true).commit();
         }
 
         if (hasNewFeatures()){
