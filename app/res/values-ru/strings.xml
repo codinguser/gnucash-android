@@ -27,7 +27,6 @@
     <string name="label_account_name">Имя счёта</string>
     <string name="btn_cancel">Отмена</string>
     <string name="btn_save">Сохранить</string>
-    <string name="label_no_transactions_to_display">Нет проводок</string>
     <string name="label_transaction_name">Описание</string>
     <string name="label_transaction_amount">Сумма</string>
     <string name="title_add_transaction">Новая проводка</string>
@@ -53,7 +52,7 @@
     <string name="title_export_dialog">Экспорт проводок</string>
     <string name="option_export_all_transactions">Экспортировать все</string>
     <string name="hint_export_choice">Экспортировать все проводки, а не только новые.</string>
-    <string name="error_exporting">Ошибка при экспорте OFX</string>    
+    <string name="toast_export_error">Ошибка при экспорте OFX</string>
     <string name="btn_export">Экспорт</string>
     <string name="option_delete_after_export">Удалить после экспорта</string>
     <string name="hint_delete_after_export">Все экспортированные проводки будут удалены по завершении.</string>
@@ -399,4 +398,21 @@
     <string name="menu_scheduled_transactions">Scheduled Transactions</string>
     <string name="title_scheduled_transactions">Scheduled Transactions</string>
     <string name="title_select_export_destination">Select destination for export</string>
+    <string name="hint_split_memo">Memo</string>
+    <string name="label_spend">Spend</string>
+    <string name="label_receive">Receive</string>
+    <string name="label_withdrawal">Withdrawal</string>
+    <string name="label_deposit">Deposit</string>
+    <string name="label_payment">Payment</string>
+    <string name="label_charge">Charge</string>
+    <string name="label_decrease">Decrease</string>
+    <string name="label_increase">Increase</string>
+    <string name="label_income">Income</string>
+    <string name="label_rebate">Rebate</string>
+    <string name="label_expense">Expense</string>
+    <string name="label_bill">Bill</string>
+    <string name="label_invoice">Invoice</string>
+    <string name="label_buy">Buy</string>
+    <string name="label_sell">Sell</string>
+    <string name="label_repeats">Repeats</string>
 </resources>

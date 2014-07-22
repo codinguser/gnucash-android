@@ -20,11 +20,10 @@ import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.export.ofx.OfxHelper;
 import org.gnucash.android.export.qif.QifHelper;
-import org.gnucash.android.model.Transaction.TransactionType;
+import org.gnucash.android.export.xml.GncXmlHelper;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import java.math.BigDecimal;
 import java.util.*;
 import java.util.regex.Pattern;
 
@@ -64,44 +63,6 @@ public class Account {
      */
     //TODO: Allow use of #aarrggbb format as well
     public static final String COLOR_HEX_REGEX = "^#(?:[0-9a-fA-F]{3}){1,2}$";
-
-    /**
-	 * The type of account
-	 * This are the different types specified by the OFX format and 
-	 * they are currently not used except for exporting
-	 */
-	public enum AccountType {
-        CASH(TransactionType.DEBIT), BANK(TransactionType.DEBIT), CREDIT, ASSET(TransactionType.DEBIT), LIABILITY,
-        INCOME, EXPENSE(TransactionType.DEBIT), PAYABLE, RECEIVABLE(TransactionType.DEBIT), EQUITY, CURRENCY,
-        STOCK(TransactionType.DEBIT), MUTUAL(TransactionType.DEBIT), ROOT;
-
-        /**
-         * Indicates that this type of normal balance the account type has
-         * <p>To increase the value of an account with normal balance of credit, one would credit the account.
-         * To increase the value of an account with normal balance of debit, one would likewise debit the account.</p>
-         */
-        private TransactionType mNormalBalance = TransactionType.CREDIT;
-
-        private AccountType(TransactionType normalBalance){
-            this.mNormalBalance = normalBalance;
-        }
-
-        private AccountType() {
-            //nothing to see here, move along
-        }
-
-        public boolean hasDebitNormalBalance(){
-            return mNormalBalance == TransactionType.DEBIT;
-        }
-
-        /**
-         * Returns the type of normal balance this account possesses
-         * @return TransactionType balance of the account type
-         */
-        public TransactionType getNormalBalanceType(){
-            return mNormalBalance;
-        }
-    }
 
     /**
      * Accounts types which are used by the OFX standard
@@ -156,7 +117,7 @@ public class Account {
      * Flag for placeholder accounts.
      * These accounts cannot have transactions
      */
-    private boolean mPlaceholderAccount;
+    private boolean mIsPlaceholderAccount;
 
     /**
      * Account color field in hex format #rrggbb
@@ -292,21 +253,10 @@ public class Account {
 
 	/**
 	 * Adds a transaction to this account
-	 * <p>The currency of the transaction will be set to the currency of the account
-	 * if they are not the same. The currency value conversion is performed, just 
-	 * a different currency is assigned to the same value amount in the transaction.</p>
-	 * <p>
-	 * If the transaction has no account Unique ID, it will be set to the UID of this account.
-	 * Some transactions already have the account UID and double account UID set. In that case,
-	 * nothing is changed
-	 * </p>
 	 * @param transaction {@link Transaction} to be added to the account
 	 */
 	public void addTransaction(Transaction transaction){
-		//some double transactions may already an account UID. Set only for those with null
-		if (transaction.getAccountUID() == null)
-			transaction.setAccountUID(getUID());
-		transaction.setCurrency(mCurrency);
+		transaction.setCurrencyCode(mCurrency.getCurrencyCode());
 		mTransactionsList.add(transaction);
 	}
 	
@@ -318,11 +268,6 @@ public class Account {
 	 * @param transactionsList List of {@link Transaction}s to be set.
 	 */
 	public void setTransactions(List<Transaction> transactionsList){
-		for (Transaction transaction : transactionsList) {
-			if (transaction.getAccountUID() == null)
-				transaction.setAccountUID(getUID());
-			transaction.setCurrency(mCurrency);
-		}
 		this.mTransactionsList = transactionsList;
 	}
 		
@@ -369,32 +314,9 @@ public class Account {
 	 * @return {@link Money} aggregate amount of all transactions in account.
 	 */
 	public Money getBalance(){
-		Money balance = new Money(new BigDecimal(0), this.mCurrency);
-		for (Transaction transaction : mTransactionsList) {
-            balance = balance.add(transaction.getAmount());
-
-/*
-            //TODO: Re-enable proper computation of balance for double-entries in the future
-            if (GnuCashApplication.isDoubleEntryEnabled(false)) {
-                boolean isDebitAccount = getAccountType().hasDebitNormalBalance();
-                boolean isDebitTransaction = transaction.getType() == TransactionType.DEBIT;
-                if (isDebitAccount) {
-                    if (isDebitTransaction) {
-                        balance = balance.add(transaction.getAmount());
-                    } else {
-                        balance = balance.subtract(transaction.getAmount());
-                    }
-                } else {
-                    if (isDebitTransaction) {
-                        balance = balance.subtract(transaction.getAmount());
-                    } else {
-                        balance = balance.add(transaction.getAmount());
-                    }
-                }
-            } else { //not using double entry
-                balance = balance.add(transaction.getAmount());
-            }
-*/
+		Money balance = Money.createZeroInstance(mCurrency.getCurrencyCode());
+        for (Transaction transaction : mTransactionsList) {
+            balance.add(transaction.getBalance(mUID));
 		}
 		return balance;
 	}
@@ -477,7 +399,7 @@ public class Account {
      * @return <code>true</code> if this account is a placeholder account, <code>false</code> otherwise
      */
     public boolean isPlaceholderAccount(){
-        return mPlaceholderAccount;
+        return mIsPlaceholderAccount;
     }
 
     /**
@@ -486,7 +408,7 @@ public class Account {
      * @param isPlaceholder Boolean flag indicating if the account is a placeholder account or not
      */
     public void setPlaceHolderFlag(boolean isPlaceholder){
-        mPlaceholderAccount = isPlaceholder;
+        mIsPlaceholderAccount = isPlaceholder;
     }
 
     /**
@@ -606,8 +528,7 @@ public class Account {
 		for (Transaction transaction : mTransactionsList) {
 			if (!exportAllTransactions && transaction.isExported())
 				continue;
-			
-			bankTransactionsList.appendChild(transaction.toOfx(doc, mUID));
+            bankTransactionsList.appendChild(transaction.toOFX(doc, mUID));
 		}		
 		//================= END TRANSACTIONS LIST =================================
 					
@@ -624,34 +545,116 @@ public class Account {
     /**
      * Exports the account info and transactions in the QIF format
      * @param exportAllTransactions Flag to determine whether to export all transactions, or only new transactions since last export
+     * @param exportedTransactionUIDs List of unique IDs of transactions which have already been exported (in the current session). Used to avoid duplicating splits
      * @return QIF representation of the account information
      */
-    public String toQIF(boolean exportAllTransactions) {
-        StringBuffer accountQifBuffer = new StringBuffer();
+    public String toQIF(boolean exportAllTransactions, List<String> exportedTransactionUIDs) {
+        StringBuilder accountQIFBuilder = new StringBuilder();
         final String newLine = "\n";
 
         AccountsDbAdapter accountsDbAdapter = new AccountsDbAdapter(GnuCashApplication.getAppContext());
         String fullyQualifiedAccountName = accountsDbAdapter.getFullyQualifiedAccountName(mUID);
         accountsDbAdapter.close();
 
-        accountQifBuffer.append(QifHelper.ACCOUNT_HEADER).append(newLine);
-        accountQifBuffer.append(QifHelper.ACCOUNT_NAME_PREFIX).append(fullyQualifiedAccountName).append(newLine);
-        accountQifBuffer.append(QifHelper.ENTRY_TERMINATOR).append(newLine);
+        accountQIFBuilder.append(QifHelper.ACCOUNT_HEADER).append(newLine);
+        accountQIFBuilder.append(QifHelper.ACCOUNT_NAME_PREFIX).append(fullyQualifiedAccountName).append(newLine);
+        accountQIFBuilder.append(QifHelper.ENTRY_TERMINATOR).append(newLine);
 
         String header = QifHelper.getQifHeader(mAccountType);
-        accountQifBuffer.append(header + newLine);
+        accountQIFBuilder.append(header + newLine);
 
         for (Transaction transaction : mTransactionsList) {
-            //ignore those which are loaded as double transactions.
-            // They will be handled as splits
-            if (!transaction.getAccountUID().equals(mUID))
-                continue;
-
             if (!exportAllTransactions && transaction.isExported())
                 continue;
+            if (exportedTransactionUIDs.contains(transaction.getUID()))
+                continue;
 
-            accountQifBuffer.append(transaction.toQIF() + newLine);
+            accountQIFBuilder.append(transaction.toQIF(mUID) + newLine);
+            exportedTransactionUIDs.add(transaction.getUID());
         }
-        return accountQifBuffer.toString();
+        return accountQIFBuilder.toString();
     }
+
+    /**
+     * Helper method for creating slot key-value pairs in the account XML structure.
+     * <p>This method is for use with slots whose values are strings</p>
+     * @param doc {@link org.w3c.dom.Document} for creating nodes
+     * @param key Slot key as string
+     * @param value Slot value as String
+     * @return Element node containing the key-value pair
+     */
+    private Element createSlot(Document doc, String key, String value){
+        Element slotNode  = doc.createElement(GncXmlHelper.TAG_SLOT);
+        Element slotKeyNode = doc.createElement(GncXmlHelper.TAG_SLOT_KEY);
+        slotKeyNode.appendChild(doc.createTextNode(key));
+        Element slotValueNode = doc.createElement(GncXmlHelper.TAG_SLOT_VALUE);
+        slotValueNode.setAttribute("type", "string");
+        slotValueNode.appendChild(doc.createTextNode(value));
+        slotNode.appendChild(slotKeyNode);
+        slotNode.appendChild(slotValueNode);
+
+        return slotNode;
+    }
+
+    /**
+     * Method which generates the GnuCash XML DOM for this account
+     * @param doc {@link org.w3c.dom.Document} for creating nodes
+     * @param rootNode {@link org.w3c.dom.Element} node to which to attach the XML
+     */
+    public void toGncXml(Document doc, Element rootNode) {
+        Element nameNode = doc.createElement(GncXmlHelper.TAG_NAME);
+        nameNode.appendChild(doc.createTextNode(mName));
+
+        Element idNode = doc.createElement(GncXmlHelper.TAG_ACCT_ID);
+        idNode.setAttribute("type", "guid");
+        idNode.appendChild(doc.createTextNode(mUID));
+
+        Element typeNode = doc.createElement(GncXmlHelper.TAG_TYPE);
+        typeNode.appendChild(doc.createTextNode(mAccountType.name()));
+
+        Element commodityNode = doc.createElement(GncXmlHelper.TAG_COMMODITY);
+        Element cmdtySpacenode = doc.createElement(GncXmlHelper.TAG_COMMODITY_SPACE);
+        cmdtySpacenode.appendChild(doc.createTextNode("ISO4217"));
+        commodityNode.appendChild(cmdtySpacenode);
+        Element cmdtyIdNode = doc.createElement(GncXmlHelper.TAG_COMMODITY_ID);
+        cmdtyIdNode.appendChild(doc.createTextNode(mCurrency.getCurrencyCode()));
+        commodityNode.appendChild(cmdtyIdNode);
+
+        Element commodityScuNode = doc.createElement(GncXmlHelper.TAG_COMMODITY_SCU);
+        int fractionDigits = mCurrency.getDefaultFractionDigits();
+        commodityScuNode.appendChild(doc.createTextNode(Integer.toString((int) Math.pow(10, fractionDigits))));
+
+        Element descriptionNode = doc.createElement(GncXmlHelper.TAG_ACCT_DESCRIPTION);
+        descriptionNode.appendChild(doc.createTextNode(mName));
+
+        Element acctSlotsNode = doc.createElement(GncXmlHelper.TAG_ACT_SLOTS);
+        acctSlotsNode.appendChild(createSlot(doc, "placeholder", Boolean.toString(mIsPlaceholderAccount)));
+
+        if (mColorCode != null && mColorCode.trim().length() > 0){
+            acctSlotsNode.appendChild(createSlot(doc, "color", mColorCode));
+        }
+
+        acctSlotsNode.appendChild(createSlot(doc, "favorite", Boolean.toString(mIsFavorite)));
+
+        Element accountNode = doc.createElement(GncXmlHelper.TAG_ACCOUNT);
+        accountNode.setAttribute("version", GncXmlHelper.BOOK_VERSION);
+        accountNode.appendChild(nameNode);
+        accountNode.appendChild(idNode);
+        accountNode.appendChild(typeNode);
+        accountNode.appendChild(commodityNode);
+        accountNode.appendChild(commodityScuNode);
+        accountNode.appendChild(descriptionNode);
+        accountNode.appendChild(acctSlotsNode);
+
+
+        if (mParentAccountUID != null && mParentAccountUID.trim().length() > 0){
+            Element parentAccountNode = doc.createElement(GncXmlHelper.TAG_PARENT_UID);
+            parentAccountNode.setAttribute("type", "guid");
+            parentAccountNode.appendChild(doc.createTextNode(mParentAccountUID));
+            accountNode.appendChild(parentAccountNode);
+        }
+
+        rootNode.appendChild(accountNode);
+    }
+
 }

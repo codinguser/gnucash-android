@@ -46,8 +46,6 @@ import org.gnucash.android.db.*;
 import org.gnucash.android.ui.UxArgument;
 import org.gnucash.android.ui.widget.WidgetConfigurationActivity;
 
-import java.util.Locale;
-
 /**
  * Fragment which displays the recurring transactions in the system.
  * @author Ngewi Fet <ngewif@gmail.com>
@@ -133,9 +131,9 @@ public class ScheduledTransactionsListFragment extends SherlockListFragment impl
         mTransactionsDbAdapter = new TransactionsDbAdapter(getActivity());
         mCursorAdapter = new TransactionsCursorAdapter(
                 getActivity().getApplicationContext(),
-                R.layout.list_item_transaction, null,
-                new String[] {DatabaseHelper.KEY_NAME, DatabaseHelper.KEY_AMOUNT},
-                new int[] {R.id.primary_text, R.id.transaction_amount});
+                R.layout.list_item_scheduled_trxn, null,
+                new String[] {DatabaseSchema.TransactionEntry.COLUMN_NAME},
+                new int[] {R.id.primary_text});
         setListAdapter(mCursorAdapter);
     }
 
@@ -186,8 +184,7 @@ public class ScheduledTransactionsListFragment extends SherlockListFragment impl
             checkbox.setChecked(!checkbox.isChecked());
             return;
         }
-        //else
-        String accountUID = mTransactionsDbAdapter.getAccountUidFromTransaction(id);
+        String accountUID = mTransactionsDbAdapter.getTransaction(id).getSplits().get(0).getAccountUID();
         long accountID = mTransactionsDbAdapter.getAccountID(accountUID);
 
         openTransactionForEdit(accountID, id);
@@ -390,48 +387,15 @@ public class ScheduledTransactionsListFragment extends SherlockListFragment impl
         @Override
         public void bindView(View view, Context context, Cursor cursor) {
             super.bindView(view, context, cursor);
-            AccountsDbAdapter accountsDbAdapter = new AccountsDbAdapter(getActivity());
-            long accountID = accountsDbAdapter.getAccountID(cursor.getString(DatabaseAdapter.COLUMN_ACCOUNT_UID));
 
-            Money amount = new Money(
-                    cursor.getString(DatabaseAdapter.COLUMN_AMOUNT),
-                    mTransactionsDbAdapter.getCurrencyCode(accountID));
-
-            TextView tramount = (TextView) view.findViewById(R.id.transaction_amount);
-            tramount.setText(amount.formattedString(Locale.getDefault()));
-
-            if (amount.isNegative())
-                tramount.setTextColor(getResources().getColor(R.color.debit_red));
-            else
-                tramount.setTextColor(getResources().getColor(R.color.credit_green));
+            Transaction transaction = mTransactionsDbAdapter.buildTransactionInstance(cursor);
+            TextView amountTextView = (TextView) view.findViewById(R.id.transaction_amount);
+            amountTextView.setText(transaction.getSplits().size() + " splits");
 
             TextView trNote = (TextView) view.findViewById(R.id.secondary_text);
-            trNote.setText("Repeats  " + getRecurrenceAsString(cursor.getLong(DatabaseAdapter.COLUMN_RECURRENCE_PERIOD))) ;
+            trNote.setText(context.getString(R.string.label_repeats) + " " +
+                    getRecurrenceAsString(cursor.getLong(cursor.getColumnIndexOrThrow(DatabaseSchema.TransactionEntry.COLUMN_RECURRENCE_PERIOD)))) ;
 
-            String currentAccountUid = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.KEY_ACCOUNT_UID));
-            int position = cursor.getPosition();
-            boolean hasSectionHeader;
-
-            if (position == 0){
-                hasSectionHeader = true;
-            } else {
-                cursor.moveToPosition(position - 1);
-                String previousAccountUid = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.KEY_ACCOUNT_UID));
-                cursor.moveToPosition(position);
-
-                hasSectionHeader = !previousAccountUid.equals(currentAccountUid);
-            }
-
-            TextView dateHeader = (TextView) view.findViewById(R.id.date_section_header);
-
-            if (hasSectionHeader){
-                dateHeader.setText(accountsDbAdapter.getFullyQualifiedAccountName(currentAccountUid));
-                dateHeader.setVisibility(View.VISIBLE);
-            } else {
-                dateHeader.setVisibility(View.GONE);
-            }
-
-            accountsDbAdapter.close();
         }
 
     }

@@ -47,20 +47,17 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import org.gnucash.android.R;
+import org.gnucash.android.db.*;
 import org.gnucash.android.model.Money;
-import org.gnucash.android.db.DatabaseAdapter;
-import org.gnucash.android.db.DatabaseCursorLoader;
-import org.gnucash.android.db.DatabaseHelper;
-import org.gnucash.android.db.TransactionsDbAdapter;
+import org.gnucash.android.ui.transaction.dialog.BulkMoveDialogFragment;
+import org.gnucash.android.ui.util.AccountBalanceTask;
 import org.gnucash.android.ui.util.Refreshable;
 import org.gnucash.android.ui.UxArgument;
-import org.gnucash.android.ui.account.AccountsListFragment;
 import org.gnucash.android.ui.widget.WidgetConfigurationActivity;
 import org.gnucash.android.ui.util.OnTransactionClickedListener;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Locale;
 
 /**
  * List Fragment for displaying list of transactions for an account
@@ -119,9 +116,11 @@ public class TransactionsListFragment extends SherlockListFragment implements
 				return true;
 
 			case R.id.context_menu_delete:
+                SplitsDbAdapter splitsDbAdapter = new SplitsDbAdapter(getActivity());
 				for (long id : getListView().getCheckedItemIds()) {
-					mTransactionsDbAdapter.deleteRecord(id);
-				}				
+                    splitsDbAdapter.deleteSplitsForTransactionAndAccount(id, mAccountID);
+				}
+                splitsDbAdapter.close();
 				refresh();
 				mode.finish();
 				WidgetConfigurationActivity.updateAllWidgets(getActivity());
@@ -149,8 +148,8 @@ public class TransactionsListFragment extends SherlockListFragment implements
 		mCursorAdapter = new TransactionsCursorAdapter(
 				getActivity().getApplicationContext(), 
 				R.layout.list_item_transaction, null, 
-				new String[] {DatabaseHelper.KEY_NAME, DatabaseHelper.KEY_AMOUNT}, 
-				new int[] {R.id.primary_text, R.id.transaction_amount});
+				new String[] {DatabaseSchema.TransactionEntry.COLUMN_NAME},
+				new int[] {R.id.primary_text});
 		setListAdapter(mCursorAdapter);
 	}
 	
@@ -190,7 +189,7 @@ public class TransactionsListFragment extends SherlockListFragment implements
 		getLoaderManager().restartLoader(0, null, this);
 
         mSumTextView = (TextView) getView().findViewById(R.id.transactions_sum);
-        new AccountsListFragment.AccountBalanceTask(mSumTextView, getActivity()).execute(mAccountID);
+        new AccountBalanceTask(mSumTextView, getActivity()).execute(mAccountID);
 
 	}
 			
@@ -413,37 +412,15 @@ public class TransactionsListFragment extends SherlockListFragment implements
 		
 		@Override
 		public void bindView(View view, Context context, Cursor cursor) {
-			super.bindView(view, context, cursor);			
-			
-			Money amount = new Money(
-					cursor.getString(DatabaseAdapter.COLUMN_AMOUNT), 
-					mTransactionsDbAdapter.getCurrencyCode(mAccountID));
+			super.bindView(view, context, cursor);
 
-            //FIXME: Take normal account balances into consideration for double entries
-//            String mainAccountUID = cursor.getString(DatabaseAdapter.COLUMN_ACCOUNT_UID);
-//            Account.AccountType mainAccountType = mTransactionsDbAdapter.getAccountType(mainAccountUID);
+            long transactionId = cursor.getLong(cursor.getColumnIndexOrThrow(DatabaseSchema.TransactionEntry._ID));
+			Money amount = mTransactionsDbAdapter.getBalance(transactionId, mAccountID);
+			TextView amountTextView = (TextView) view.findViewById(R.id.transaction_amount);
+            TransactionsActivity.displayBalance(amountTextView, amount);
 
-			//negate any transactions if this account is the origin in double entry
-			String transferAccountUID = cursor.getString(DatabaseAdapter.COLUMN_DOUBLE_ENTRY_ACCOUNT_UID);
-
-			if (transferAccountUID != null
-					&& mTransactionsDbAdapter.isSameAccount(mAccountID, transferAccountUID)){
-//                Account.AccountType transferAccountType = mTransactionsDbAdapter.getAccountType(transferAccountUID);
-//
-//                if (mainAccountType.getNormalBalanceType() == transferAccountType.getNormalBalanceType())
-                amount = amount.negate();
-			}
-				
-			TextView tramount = (TextView) view.findViewById(R.id.transaction_amount);
-			tramount.setText(amount.formattedString(Locale.getDefault()));
-						
-			if (amount.isNegative())
-				tramount.setTextColor(getResources().getColor(R.color.debit_red));
-			else
-				tramount.setTextColor(getResources().getColor(R.color.credit_green));
-			
 			TextView trNote = (TextView) view.findViewById(R.id.secondary_text);
-			String description = cursor.getString(DatabaseAdapter.COLUMN_DESCRIPTION);
+			String description = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.TransactionEntry.COLUMN_DESCRIPTION));
 			if (description == null || description.length() == 0)
 				trNote.setVisibility(View.GONE);
 			else {
@@ -462,7 +439,7 @@ public class TransactionsListFragment extends SherlockListFragment implements
          * @see #isSameDay(long, long)
          */
         private void setSectionHeaderVisibility(View view, Cursor cursor) {
-            long transactionTime = cursor.getLong(DatabaseAdapter.COLUMN_TIMESTAMP);
+            long transactionTime = cursor.getLong(cursor.getColumnIndexOrThrow(DatabaseSchema.TransactionEntry.COLUMN_TIMESTAMP));
             int position = cursor.getPosition();
 
             boolean hasSectionHeader;
@@ -470,7 +447,7 @@ public class TransactionsListFragment extends SherlockListFragment implements
                 hasSectionHeader = true;
             } else {
                 cursor.moveToPosition(position - 1);
-                long previousTimestamp = cursor.getLong(DatabaseAdapter.COLUMN_TIMESTAMP);
+                long previousTimestamp = cursor.getLong(cursor.getColumnIndexOrThrow(DatabaseSchema.TransactionEntry.COLUMN_TIMESTAMP));
                 cursor.moveToPosition(position);
                 //has header if two consecutive transactions were not on same day
                 hasSectionHeader = !isSameDay(previousTimestamp, transactionTime);

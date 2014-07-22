@@ -25,6 +25,7 @@ import android.widget.TextView;
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.DatabaseAdapter;
 import org.gnucash.android.db.DatabaseHelper;
+import org.gnucash.android.db.DatabaseSchema;
 
 /**
  * Cursor adapter which looks up the fully qualified account name and returns that instead of just the simple name.
@@ -36,7 +37,7 @@ public class QualifiedAccountNameCursorAdapter extends SimpleCursorAdapter {
 
     public QualifiedAccountNameCursorAdapter(Context context, int layout, Cursor c) {
         super(context, layout, c,
-                new String[] {DatabaseHelper.KEY_FULL_NAME},
+                new String[] {DatabaseSchema.AccountEntry.COLUMN_FULL_NAME},
                 new int[] {android.R.id.text1}, 0);
     }
 

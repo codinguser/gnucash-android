@@ -203,8 +203,7 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
         Account acc = new Account(accountNameToDelete);
         acc.setUID(accountUidToDelete);
 
-        Transaction transaction = new Transaction("5.99", "hats");
-        transaction.setAccountUID(accountUidToDelete);
+        Transaction transaction = new Transaction("hats");
         acc.addTransaction(transaction);
         AccountsDbAdapter accDbAdapter = new AccountsDbAdapter(getActivity());
         accDbAdapter.addAccount(acc);
@@ -243,8 +242,7 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
         //first create a couple of transations
         TransactionsDbAdapter transactionsDbAdapter = new TransactionsDbAdapter(getActivity());
         for (int i = 0; i < TRANSACTION_COUNT; i++) {
-            Transaction transaction = new Transaction(Money.getZeroInstance(), "Transaxion " + i);
-            transaction.setAccountUID(DUMMY_ACCOUNT_UID);
+            Transaction transaction = new Transaction("Transaxion " + i);
             transactionsDbAdapter.addTransaction(transaction);
         }
         transactionsDbAdapter.close();

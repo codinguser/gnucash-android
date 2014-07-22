@@ -18,7 +18,7 @@ package org.gnucash.android.export.qif;
 
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
-import org.gnucash.android.model.Account;
+import org.gnucash.android.model.AccountType;
 
 import java.text.SimpleDateFormat;
 import java.util.Currency;
@@ -63,7 +63,7 @@ public class QifHelper {
      * @param accountType AccountType of account
      * @return QIF header for the transactions
      */
-    public static String getQifHeader(Account.AccountType accountType){
+    public static String getQifHeader(AccountType accountType){
         switch (accountType) {
             case CASH:
                 return "!Type:Cash";
@@ -80,12 +80,4 @@ public class QifHelper {
         }
     }
 
-    /**
-     * Returns the imbalance account where to store transactions which are not double entry
-     * @param currency Currency of the transaction
-     * @return Imbalance account name
-     */
-    public static String getImbalanceAccountName(Currency currency){
-        return GnuCashApplication.getAppContext().getString(R.string.imbalance_account_name) + "-" + currency.getCurrencyCode();
-    }
 }

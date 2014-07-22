@@ -32,6 +32,7 @@ import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockPreferenceActivity;
 import com.actionbarsherlock.view.MenuItem;
 import org.gnucash.android.R;
+import org.gnucash.android.importer.GncXmlImportTask;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.TransactionsDbAdapter;
@@ -260,7 +261,7 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
             case AccountsActivity.REQUEST_PICK_ACCOUNTS_FILE:
                 try {
                     InputStream accountInputStream = getContentResolver().openInputStream(data.getData());
-                    new AccountsActivity.AccountImporterTask(this).execute(accountInputStream);
+                    new GncXmlImportTask(this).execute(accountInputStream);
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
                     Toast.makeText(this, R.string.toast_error_importing_accounts, Toast.LENGTH_SHORT).show();

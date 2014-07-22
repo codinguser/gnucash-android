@@ -17,7 +17,7 @@
 
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="app_name">GnuCash</string>
-    <string name="app_version_name">1.3.3</string>
+    <string name="app_version_name">1.4.0-beta1</string>
     <string name="title_add_account">Create Account</string>
     <string name="title_edit_account">Edit Account</string>
     <string name="info_details">Info</string>
@@ -27,7 +27,6 @@
     <string name="label_account_name">Account name</string>
     <string name="btn_cancel">Cancel</string>
     <string name="btn_save">Save</string>
-    <string name="label_no_transactions_to_display">No transactions to display</string>
     <string name="label_transaction_name">Description</string>
     <string name="label_transaction_amount">Amount</string>
     <string name="title_add_transaction">New transaction</string>
@@ -53,7 +52,7 @@
     <string name="title_export_dialog">Export Transactions</string>
     <string name="option_export_all_transactions">Export all transactions</string>
     <string name="hint_export_choice">By default, only new transactions since last export will be exported. Check this option to export all transactions</string>
-    <string name="error_exporting">Error exporting OFX data</string>    
+    <string name="toast_export_error">Error exporting data</string>
     <string name="btn_export">Export</string>
     <string name="option_delete_after_export">Delete after export</string>
     <string name="hint_delete_after_export">All exported transactions will be deleted when exporting is completed</string>
@@ -629,4 +628,21 @@
     </string>
     <string name="title_scheduled_transactions">Scheduled Transactions</string>
     <string name="title_select_export_destination">Select destination for export</string>
+    <string name="hint_split_memo">Memo</string>
+    <string name="label_spend">Spend</string>
+    <string name="label_receive">Receive</string>
+    <string name="label_withdrawal">Withdrawal</string>
+    <string name="label_deposit">Deposit</string>
+    <string name="label_payment">Payment</string>
+    <string name="label_charge">Charge</string>
+    <string name="label_decrease">Decrease</string>
+    <string name="label_increase">Increase</string>
+    <string name="label_income">Income</string>
+    <string name="label_rebate">Rebate</string>
+    <string name="label_expense">Expense</string>
+    <string name="label_bill">Bill</string>
+    <string name="label_invoice">Invoice</string>
+    <string name="label_buy">Buy</string>
+    <string name="label_sell">Sell</string>
+    <string name="label_repeats">Repeats</string>
 </resources>

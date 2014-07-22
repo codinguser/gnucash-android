@@ -29,21 +29,11 @@ import android.util.Log;
 import android.widget.Toast;
 import org.gnucash.android.R;
 import org.gnucash.android.export.ofx.OfxExporter;
-import org.gnucash.android.export.ofx.OfxHelper;
 import org.gnucash.android.export.qif.QifExporter;
+import org.gnucash.android.export.xml.GncXmlExporter;
 import org.gnucash.android.ui.account.AccountsActivity;
 import org.gnucash.android.ui.transaction.dialog.TransactionsDeleteConfirmationDialogFragment;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.ProcessingInstruction;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.*;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 import java.io.*;
 import java.nio.channels.FileChannel;
 import java.text.SimpleDateFormat;
@@ -61,6 +51,8 @@ public class ExporterTask extends AsyncTask<ExportParams, Void, Boolean> {
     private final Context mContext;
 
     private ProgressDialog mProgressDialog;
+
+    private Exporter mExporter;
 
     /**
      * Log tag
@@ -94,30 +86,32 @@ public class ExporterTask extends AsyncTask<ExportParams, Void, Boolean> {
     @Override
     protected Boolean doInBackground(ExportParams... params) {
         mExportParams = params[0];
-        boolean exportAllTransactions = mExportParams.shouldExportAllTransactions();
-        try {
+
             switch (mExportParams.getExportFormat()) {
-                case QIF: {
-                    QifExporter qifExporter = new QifExporter(mContext, exportAllTransactions);
-                    String qif = qifExporter.generateQIF();
+                case QIF:
+                    mExporter = new QifExporter(mExportParams);
+                    break;
 
-                    writeQifExternalStorage(qif);
-                }
-                return true;
+                case OFX:
+                    mExporter = new OfxExporter(mExportParams);
+                    break;
 
-                case OFX: {
-                    Document document = exportOfx(exportAllTransactions);
-                    writeOfxToExternalStorage(document);
-                }
-                return true;
+                case GNC_XML:
+                    mExporter = new GncXmlExporter(mExportParams);
+                    break;
             }
+
+        try {
+            writeOutput(mExporter.generateExport());
         } catch (Exception e) {
             e.printStackTrace();
             Log.e(TAG, e.getMessage());
-            Toast.makeText(mContext, R.string.error_exporting,
+            //TODO: Internationalize (and correct ofx specific) error message
+            Toast.makeText(mContext, R.string.toast_export_error,
                     Toast.LENGTH_LONG).show();
-        };
-        return false;
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -126,7 +120,7 @@ public class ExporterTask extends AsyncTask<ExportParams, Void, Boolean> {
      */
     @Override
     protected void onPostExecute(Boolean exportResult) {
-
+        //TODO: Internationalize error strings
         if (!exportResult){
             Toast.makeText(mContext,
                     mContext.getString(R.string.toast_error_exporting),
@@ -143,7 +137,7 @@ public class ExporterTask extends AsyncTask<ExportParams, Void, Boolean> {
                 File src = new File(mExportParams.getTargetFilepath());
                 new File(Environment.getExternalStorageDirectory() + "/gnucash/").mkdirs();
                 File dst = new File(Environment.getExternalStorageDirectory()
-                        + "/gnucash/" + ExportDialogFragment.buildExportFilename(mExportParams.getExportFormat()));
+                        + "/gnucash/" + Exporter.buildExportFilename(mExportParams.getExportFormat()));
 
                 try {
                     copyFile(src, dst);
@@ -180,71 +174,16 @@ public class ExporterTask extends AsyncTask<ExportParams, Void, Boolean> {
 
     }
 
-
     /**
-     * Exports transactions in the database to the OFX format.
-     * The accounts are written to a DOM document and returned
-     * @param exportAll Flag to export all transactions or only the new ones since last export
-     * @return DOM {@link Document} containing the OFX file information
-     * @throws javax.xml.parsers.ParserConfigurationException
+     * Writes out the String containing the exported data to disk
+     * @param exportOutput String containing exported data
+     * @throws IOException if the write fails
      */
-    protected Document exportOfx(boolean exportAll) throws ParserConfigurationException {
-        DocumentBuilderFactory docFactory = DocumentBuilderFactory
-                .newInstance();
-        DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
-
-        Document document = docBuilder.newDocument();
-        Element root = document.createElement("OFX");
-
-        ProcessingInstruction pi = document.createProcessingInstruction("OFX", OfxHelper.OFX_HEADER);
-        document.appendChild(pi);
-        document.appendChild(root);
-
-        OfxExporter exporter = new OfxExporter(mContext, exportAll);
-        exporter.toOfx(document, root);
-
-        return document;
-    }
-
-    /**
-     * Writes out the String containing the exported transaction in QIF format to disk
-     * @param qif String containing exported transactions
-     * @throws IOException
-     */
-    private void writeQifExternalStorage(String qif) throws IOException {
+    private void writeOutput(String exportOutput) throws IOException {
         File file = new File(mExportParams.getTargetFilepath());
 
         BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), "UTF-8"));
-        writer.write(qif);
-
-        writer.flush();
-        writer.close();
-    }
-
-    /**
-     * Writes the OFX document <code>doc</code> to external storage
-     * @param doc Document containing OFX file data
-     * @throws IOException if file could not be saved
-     */
-    private void writeOfxToExternalStorage(Document doc) throws IOException{
-        File file = new File(mExportParams.getTargetFilepath());
-
-        BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), "UTF-8"));
-        boolean useXmlHeader = PreferenceManager.getDefaultSharedPreferences(mContext)
-                .getBoolean(mContext.getString(R.string.key_xml_ofx_header), false);
-
-        //if we want SGML OFX headers, write first to string and then prepend header
-        if (useXmlHeader){
-            write(doc, writer, false);
-        } else {
-            Node ofxNode = doc.getElementsByTagName("OFX").item(0);
-            StringWriter stringWriter = new StringWriter();
-            write(ofxNode, stringWriter, true);
-
-            StringBuffer stringBuffer = new StringBuffer(OfxHelper.OFX_SGML_HEADER);
-            stringBuffer.append('\n');
-            writer.write(stringBuffer.toString() + stringWriter.toString());
-        }
+        writer.write(exportOutput);
 
         writer.flush();
         writer.close();
@@ -297,31 +236,4 @@ public class ExporterTask extends AsyncTask<ExportParams, Void, Boolean> {
         }
     }
 
-    /**
-     * Writes out the document held in <code>node</code> to <code>outputWriter</code>
-     * @param node {@link Node} containing the OFX document structure. Usually the parent node
-     * @param outputWriter {@link Writer} to use in writing the file to stream
-     * @param omitXmlDeclaration Flag which causes the XML declaration to be omitted
-     */
-    public void write(Node node, Writer outputWriter, boolean omitXmlDeclaration){
-        try {
-            TransformerFactory transformerFactory = TransformerFactory
-                    .newInstance();
-            Transformer transformer = transformerFactory.newTransformer();
-            DOMSource source = new DOMSource(node);
-            StreamResult result = new StreamResult(outputWriter);
-
-            transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
-            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-            if (omitXmlDeclaration) {
-                transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
-            }
-
-            transformer.transform(source, result);
-        } catch (TransformerConfigurationException txconfigException) {
-            txconfigException.printStackTrace();
-        } catch (TransformerException tfException) {
-            tfException.printStackTrace();
-        }
-    }
 }
