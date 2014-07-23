@@ -1,6 +1,29 @@
 Change Log
 ===============================================================================
+Version 1.4.0 *(2014-08-04)*
+----------------------------
+Since transactions are at the core of this app, this release touches almost all subsystems and is therefore huge.
+Transactions are now composed of multiple splits, which belong to different accounts and are no longer bound to accounts,
+nor is the money amount bound to the transaction itself.
+Splits store the amounts as absolute values and then separately the kind - CREDIT/DEBIT - of the split.
+
+* Feature: Introduces multiple splits per transaction
+* Feature: Introduced a new Split editor for the creation and editing of splits
+* Feature: Use account specific labels for CREDIT/DEBIT instead of just generic "debit" and "credit"
+* Feature: Import GnuCash XML files - accounts and transactions only (experimental)
+* Feature: Back up transactions in an XML format (similar to GnuCash XML) called .gnca (Gnucash Android)
+* Improved: Updated processes for moving, creating, exporting, deleting transactions to work with splits
+* Improved: Updated computation of account and transaction balances to be in line with accounting principles
+* Improved: Updated color (red/green) display to match movement in the account, and not a representation of the side of the split
+* Improved: Introduced new format for sending Transactions through Intents (while maintaining backwards compatibility)
+* Improved: Extensive code refactoring for
+    - Better modularity of transaction exports (and ease introduction of new formats),
+    - Cleaner database schema and reduction of overlap and redundancies
+    - Easier database migrations during future update (with reduced risk of data loss)
+
+
 Version 1.3.3 *(2014-05-26)*
+----------------------------
 * Reversed changes in the computation of balances, back to pre-v1.3.2 mode (will be re-instated in the future)
 
 Version 1.3.2 *(2014-05-23)*
