@@ -65,8 +65,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + AccountEntry.COLUMN_COLOR_CODE        + " varchar(255), "
             + AccountEntry.COLUMN_FAVORITE 		    + " tinyint default 0, "
             + AccountEntry.COLUMN_FULL_NAME 	    + " varchar(255), "
-            + AccountEntry.COLUMN_PLACEHOLDER            + " tinyint default 0, "
-            + AccountEntry.COLUMN_PARENT_ACCOUNT_UID     + " varchar(255), "
+            + AccountEntry.COLUMN_PLACEHOLDER           + " tinyint default 0, "
+            + AccountEntry.COLUMN_PARENT_ACCOUNT_UID    + " varchar(255), "
             + AccountEntry.COLUMN_DEFAULT_TRANSFER_ACCOUNT_UID   + " varchar(255), "
             + "UNIQUE (" + AccountEntry.COLUMN_UID       + ")"
 			+ ");";

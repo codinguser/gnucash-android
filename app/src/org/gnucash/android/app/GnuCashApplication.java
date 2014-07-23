@@ -53,4 +53,15 @@ public class GnuCashApplication extends Application{
         SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
         return sharedPrefs.getBoolean(context.getString(R.string.key_use_double_entry), defaultValue);
     }
+
+    /**
+     * Returns <code>true</code> if setting is enabled to save opening balances after deleting transactions,
+     * <code>false</code> otherwise.
+     * @param defaultValue Default value to return if double entry is not explicitly set
+     * @return <code>true</code> if opening balances should be saved, <code>false</code> otherwise
+     */
+    public static boolean shouldSaveOpeningBalances(boolean defaultValue){
+        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
+        return sharedPrefs.getBoolean(context.getString(R.string.key_save_opening_balances), defaultValue);
+    }
 }

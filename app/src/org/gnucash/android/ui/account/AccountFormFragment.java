@@ -40,7 +40,6 @@ import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import org.gnucash.android.R;
 import org.gnucash.android.db.AccountsDbAdapter;
-import org.gnucash.android.db.DatabaseHelper;
 import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.model.Account;
 import org.gnucash.android.model.AccountType;
@@ -246,7 +245,7 @@ public class AccountFormFragment extends SherlockFragment {
 
 		mParentAccountSpinner = (Spinner) view.findViewById(R.id.input_parent_account);
 		mParentAccountSpinner.setEnabled(false);
-		
+
 		mParentCheckBox = (CheckBox) view.findViewById(R.id.checkbox_parent_account);
 		mParentCheckBox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 			
@@ -679,7 +678,10 @@ public class AccountFormFragment extends SherlockFragment {
             mDefaultTransferAccountCursorAdapter.getCursor().close();
         }
 	}
-	
+
+    /**
+     * Reads the fields from the account form and saves as a new account
+     */
 	private void saveAccount() {
 		if (mAccount == null){
 			String name = getEnteredName();

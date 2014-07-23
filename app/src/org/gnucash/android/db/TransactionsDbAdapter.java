@@ -228,6 +228,23 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
         return transactions;
     }
 
+    /**
+     * Return number of transactions in the database which are non recurring
+     * @return Number of transactions
+     */
+    public int getTotalTransactionsCount(){
+        String queryCount = "SELECT COUNT(*) FROM " + TransactionEntry.TABLE_NAME +
+                " WHERE " + TransactionEntry.COLUMN_RECURRENCE_PERIOD + " =0";
+        Cursor cursor = mDb.rawQuery(queryCount, null);
+        int count = 0;
+        if (cursor != null){
+            cursor.moveToFirst();
+            count = cursor.getInt(0);
+            cursor.close();
+        }
+        return count;
+    }
+
 	/**
 	 * Builds a transaction instance with the provided cursor.
 	 * The cursor should already be pointing to the transaction record in the database

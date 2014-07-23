@@ -153,25 +153,6 @@ public class MigrationHelper {
     }
 
     /**
-     * Returns the list of currencies in the database
-     * @return List of currencies in the database
-     */
-    static List<Currency> getCurrencies(SQLiteDatabase db){
-
-        Cursor cursor = db.query(true, AccountEntry.TABLE_NAME, new String[]{AccountEntry.COLUMN_CURRENCY},
-                null, null, null, null, null, null);
-        List<Currency> currencyList = new ArrayList<Currency>();
-        if (cursor != null){
-            while (cursor.moveToNext()){
-                String currencyCode = cursor.getString(cursor.getColumnIndexOrThrow(AccountEntry.COLUMN_CURRENCY));
-                currencyList.add(Currency.getInstance(currencyCode));
-            }
-            cursor.close();
-        }
-        return currencyList;
-    }
-
-    /**
      * Imports GnuCash XML into the database from file
      * @param filepath Path to GnuCash XML file
      */
@@ -183,18 +164,6 @@ public class MigrationHelper {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
             throw new RuntimeException(e);
-        }
-
-        //update the fully qualified names because
-        //during import, an account may be imported before its parent which will make the full name null:<name>
-        AccountsDbAdapter accountsDbAdapter = new AccountsDbAdapter(db);
-        Cursor cursor = accountsDbAdapter.fetchAllRecords();
-        if (cursor != null){
-            while (cursor.moveToNext()){
-                long id = cursor.getLong(cursor.getColumnIndexOrThrow(AccountEntry._ID));
-                accountsDbAdapter.updateAccount(id, AccountEntry.COLUMN_FULL_NAME,
-                        accountsDbAdapter.getFullyQualifiedAccountName(id));
-            }
         }
     }
 }

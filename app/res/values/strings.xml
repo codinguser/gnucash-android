@@ -646,4 +646,10 @@
     <string name="label_repeats">Repeats</string>
     <string name="key_restore_backup">restore_backup</string>
     <string name="toast_no_recent_backup">No recent backup found</string>
+    <string name="account_name_opening_balances">Opening Balances</string>
+    <string name="account_name_equity">Equity</string>
+    <string name="key_save_opening_balances">save_opening_balances</string>
+    <string name="summary_save_opening_balances">Enable to save the current account balance (before deleting transactions) as new opening balance after deleting transactions
+    </string>
+    <string name="title_save_opening_balances">Save account opening balances</string>
 </resources>

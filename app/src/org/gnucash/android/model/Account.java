@@ -307,7 +307,7 @@ public class Account {
 		}
 		return false;
 	}
-	
+
 	/**
 	 * Returns the aggregate of all transactions in this account.
 	 * It takes into account debit and credit amounts, it does not however consider sub-accounts

@@ -32,15 +32,18 @@ import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockPreferenceActivity;
 import com.actionbarsherlock.view.MenuItem;
 import org.gnucash.android.R;
+import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.export.Exporter;
 import org.gnucash.android.export.xml.GncXmlExporter;
 import org.gnucash.android.importer.GncXmlImportTask;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.TransactionsDbAdapter;
+import org.gnucash.android.model.Transaction;
 import org.gnucash.android.ui.account.AccountsActivity;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -219,8 +222,21 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
                 Toast.makeText(this, R.string.toast_tap_again_to_confirm_delete, Toast.LENGTH_SHORT).show();
             } else {
                 GncXmlExporter.createBackup(); //create backup before deleting everything
+                List<Transaction> openingBalances = new ArrayList<Transaction>();
+                boolean preserveOpeningBalances = GnuCashApplication.shouldSaveOpeningBalances(false);
+                if (preserveOpeningBalances) {
+                    AccountsDbAdapter accountsDbAdapter = new AccountsDbAdapter(this);
+                    openingBalances = accountsDbAdapter.getAllOpeningBalanceTransactions();
+                    accountsDbAdapter.close();
+                }
                 TransactionsDbAdapter transactionsDbAdapter = new TransactionsDbAdapter(this);
                 transactionsDbAdapter.deleteAllRecords();
+
+                if (preserveOpeningBalances) {
+                    for (Transaction openingBalance : openingBalances) {
+                        transactionsDbAdapter.addTransaction(openingBalance);
+                    }
+                }
                 transactionsDbAdapter.close();
                 Toast.makeText(this, R.string.toast_all_transactions_deleted, Toast.LENGTH_LONG).show();
             }

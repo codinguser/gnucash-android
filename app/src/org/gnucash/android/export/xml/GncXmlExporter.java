@@ -16,8 +16,10 @@
 
 package org.gnucash.android.export.xml;
 
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
+import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.export.ExportFormat;
 import org.gnucash.android.export.ExportParams;
@@ -68,6 +70,10 @@ public class GncXmlExporter extends Exporter{
         mTransactionsDbAdapter = new TransactionsDbAdapter(db);
     }
 
+    /**
+     * Generate GnuCash XML
+     * @throws ParserConfigurationException if there was an error when generating the XML
+     */
     private void generateGncXml() throws ParserConfigurationException {
         DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
 //        docFactory.setNamespaceAware(true);
@@ -105,30 +111,48 @@ public class GncXmlExporter extends Exporter{
 
         Element cmdtyCountData = mDocument.createElement(GncXmlHelper.TAG_COUNT_DATA);
         cmdtyCountData.setAttribute("cd:type", "commodity");
-        cmdtyCountData.appendChild(mDocument.createTextNode("1")); //TODO: put actual number of currencies
+        cmdtyCountData.appendChild(mDocument.createTextNode(String.valueOf(mAccountsDbAdapter.getCurrencies().size())));
         bookNode.appendChild(cmdtyCountData);
-
-        List<Account> accountList = mAccountsDbAdapter.getSimpleAccountList();
 
         Element accountCountNode = mDocument.createElement(GncXmlHelper.TAG_COUNT_DATA);
         accountCountNode.setAttribute("cd:type", "account");
-        accountCountNode.appendChild(mDocument.createTextNode(String.valueOf(accountList.size())));
+        int accountCount = mAccountsDbAdapter.getTotalAccountCount();
+        accountCountNode.appendChild(mDocument.createTextNode(String.valueOf(accountCount)));
         bookNode.appendChild(accountCountNode);
-
-        List<Transaction> transactionsList = mTransactionsDbAdapter.getAllTransactions();
 
         Element transactionCountNode = mDocument.createElement(GncXmlHelper.TAG_COUNT_DATA);
         transactionCountNode.setAttribute("cd:type", "transaction");
-        transactionCountNode.appendChild(mDocument.createTextNode(String.valueOf(transactionsList.size())));
+        int transactionCount = mTransactionsDbAdapter.getTotalTransactionsCount();
+        transactionCountNode.appendChild(mDocument.createTextNode(String.valueOf(transactionCount)));
         bookNode.appendChild(transactionCountNode);
 
-        for (Account account : accountList) {
-            account.toGncXml(mDocument, bookNode);
+        String rootAccountUID = mAccountsDbAdapter.getGnuCashRootAccountUID();
+        Account rootAccount = mAccountsDbAdapter.getAccount(rootAccountUID);
+        if (rootAccount != null){
+            rootAccount.toGncXml(mDocument, bookNode);
+        }
+        Cursor accountsCursor = mAccountsDbAdapter.fetchAllRecordsOrderedByFullName();
+
+        //create accounts hierarchically by ordering by full name
+        if (accountsCursor != null){
+            while (accountsCursor.moveToNext()){
+                long id = accountsCursor.getLong(accountsCursor.getColumnIndexOrThrow(DatabaseSchema.AccountEntry._ID));
+                Account account = mAccountsDbAdapter.getAccount(id);
+                account.toGncXml(mDocument, bookNode);
+            }
+            accountsCursor.close();
         }
 
-        for (Transaction transaction : transactionsList) {
-            transaction.toGncXml(mDocument, bookNode);
+        //more memory efficient approach than loading all transactions into memory first
+        Cursor transactionsCursor = mTransactionsDbAdapter.fetchAllRecords();
+        if (transactionsCursor != null){
+            while (transactionsCursor.moveToNext()){
+                Transaction transaction = mTransactionsDbAdapter.buildTransactionInstance(transactionsCursor);
+                transaction.toGncXml(mDocument, bookNode);
+            }
+            transactionsCursor.close();
         }
+
         mDocument.appendChild(rootElement);
         mAccountsDbAdapter.close();
         mTransactionsDbAdapter.close();

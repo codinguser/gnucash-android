@@ -411,4 +411,9 @@
     <string name="label_account_balance">Balance:</string>
     <string name="label_repeats">Repeats</string>
     <string name="toast_no_recent_backup">No recent backup found</string>
+    <string name="account_name_opening_balances">Soldes initiaux</string>
+    <string name="account_name_equity">Capitaux propres</string>
+    <string name="summary_save_opening_balances">Enable to save the current account balance (before deleting transactions) as new opening balance after deleting transactions
+    </string>
+    <string name="title_save_opening_balances">Save account opening balances</string>
 </resources>

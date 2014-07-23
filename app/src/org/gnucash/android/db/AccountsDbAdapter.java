@@ -24,11 +24,9 @@ import android.database.sqlite.SQLiteQueryBuilder;
 import android.util.Log;
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
-import org.gnucash.android.model.Account;
-import org.gnucash.android.model.AccountType;
-import org.gnucash.android.model.Money;
-import org.gnucash.android.model.Transaction;
+import org.gnucash.android.model.*;
 
+import java.math.BigDecimal;
 import java.util.*;
 
 import static org.gnucash.android.db.DatabaseSchema.*;
@@ -77,6 +75,36 @@ public class AccountsDbAdapter extends DatabaseAdapter {
         return GnuCashApplication.getAppContext().getString(R.string.imbalance_account_name) + "-" + currency.getCurrencyCode();
     }
 
+    /**
+     * Get the name of the default account for opening balances for the current locale.
+     * For the English locale, it will be "Equity:Opening Balances"
+     * @return Fully qualified account name of the opening balances account
+     */
+    public static String getOpeningBalanceAccountFullName(){
+        Context context = GnuCashApplication.getAppContext();
+        return context.getString(R.string.account_name_equity)
+                + ACCOUNT_NAME_SEPARATOR
+                + context.getString(R.string.account_name_opening_balances);
+    }
+
+    /**
+     * Returns the list of currencies in the database
+     * @return List of currencies in the database
+     */
+    public List<Currency> getCurrencies(){
+        Cursor cursor = mDb.query(true, AccountEntry.TABLE_NAME, new String[]{AccountEntry.COLUMN_CURRENCY},
+                null, null, null, null, null, null);
+        List<Currency> currencyList = new ArrayList<Currency>();
+        if (cursor != null){
+            while (cursor.moveToNext()){
+                String currencyCode = cursor.getString(cursor.getColumnIndexOrThrow(AccountEntry.COLUMN_CURRENCY));
+                currencyList.add(Currency.getInstance(currencyCode));
+            }
+            cursor.close();
+        }
+        return currencyList;
+    }
+
     @Override
 	public void close() {
 		super.close();
@@ -100,10 +128,10 @@ public class AccountsDbAdapter extends DatabaseAdapter {
         contentValues.put(AccountEntry.COLUMN_COLOR_CODE,   account.getColorHexCode());
         contentValues.put(AccountEntry.COLUMN_FAVORITE,     account.isFavorite() ? 1 : 0);
         contentValues.put(AccountEntry.COLUMN_FULL_NAME,    account.getFullName());
-        contentValues.put(AccountEntry.COLUMN_PARENT_ACCOUNT_UID,            account.getParentUID());
-        contentValues.put(AccountEntry.COLUMN_DEFAULT_TRANSFER_ACCOUNT_UID,  account.getDefaultTransferAccountUID());
+        contentValues.put(AccountEntry.COLUMN_PARENT_ACCOUNT_UID,           account.getParentUID());
+        contentValues.put(AccountEntry.COLUMN_DEFAULT_TRANSFER_ACCOUNT_UID, account.getDefaultTransferAccountUID());
 
-		long rowId = -1;
+        long rowId = -1;
 		if ((rowId = getAccountID(account.getUID())) > 0){
 			//if account already exists, then just update
 			Log.d(TAG, "Updating existing account");
@@ -279,7 +307,8 @@ public class AccountsDbAdapter extends DatabaseAdapter {
         account.setUID(uid);
         account.setParentUID(c.getString(c.getColumnIndexOrThrow(AccountEntry.COLUMN_PARENT_ACCOUNT_UID)));
         account.setAccountType(AccountType.valueOf(c.getString(c.getColumnIndexOrThrow(AccountEntry.COLUMN_TYPE))));
-        account.setCurrency(Currency.getInstance(c.getString(c.getColumnIndexOrThrow(AccountEntry.COLUMN_CURRENCY))));
+        Currency currency = Currency.getInstance(c.getString(c.getColumnIndexOrThrow(AccountEntry.COLUMN_CURRENCY)));
+        account.setCurrency(currency);
         account.setPlaceHolderFlag(c.getInt(c.getColumnIndexOrThrow(AccountEntry.COLUMN_PLACEHOLDER)) == 1);
         account.setDefaultTransferAccountUID(c.getString(c.getColumnIndexOrThrow(AccountEntry.COLUMN_DEFAULT_TRANSFER_ACCOUNT_UID)));
         account.setColorCode(c.getString(c.getColumnIndexOrThrow(AccountEntry.COLUMN_COLOR_CODE)));
@@ -459,17 +488,75 @@ public class AccountsDbAdapter extends DatabaseAdapter {
      */
     public String getOrCreateImbalanceAccountUID(Currency currency){
         String imbalanceAccountName = getImbalanceAccountName(currency);
-        Cursor c = mDb.query(AccountEntry.TABLE_NAME, new String[]{AccountEntry.COLUMN_UID},
-                AccountEntry.COLUMN_NAME + "= ?", new String[]{imbalanceAccountName},
-                null, null, null, "1");
-        String uid;
-        if (c != null && c.moveToNext()) {
-            uid = c.getString(c.getColumnIndexOrThrow(AccountEntry.COLUMN_UID));
-        } else {
+        String uid = findAccountUidByFullName(imbalanceAccountName);
+        if (uid == null){
             Account account = new Account(imbalanceAccountName, currency);
             account.setAccountType(AccountType.BANK);
             addAccount(account);
             uid = account.getUID();
+        }
+        return uid;
+    }
+
+    /**
+     * Creates the account with the specified name and returns its unique identifier.
+     * <p>If a full hierarchical account name is provided, then the whole hierarchy is created and the
+     * unique ID of the last account (at bottom) of the hierarchy is returned</p>
+     * @param fullName Fully qualified name of the account
+     * @param accountType Type to assign to all accounts created
+     * @return String unique ID of the account at bottom of hierarchy
+     */
+    public String createAccountHierarchy(String fullName, AccountType accountType){
+        if (fullName == null)
+            throw new IllegalArgumentException("The account name cannot be null");
+
+        String[] tokens = fullName.split(ACCOUNT_NAME_SEPARATOR);
+        String uid = null;
+        String parentName = "";
+        for (String token : tokens) {
+            parentName += token;
+            String parentUID = findAccountUidByFullName(parentName);
+            parentName += ACCOUNT_NAME_SEPARATOR;
+            if (parentUID != null){ //the parent account exists, don't recreate
+                uid = parentUID;
+                continue;
+            }
+            Account account = new Account(token);
+            account.setAccountType(accountType);
+            account.setParentUID(uid); //set its parent
+            uid = account.getUID();
+        }
+        return uid;
+    }
+
+    /**
+     * Returns the unique ID of the opening balance account or creates one if necessary
+     * @return String unique ID of the opening balance account
+     */
+    public String getOrCreateOpeningBalanceAccountUID(){
+        String openingBalanceAccountName = getOpeningBalanceAccountFullName();
+        String uid = findAccountUidByFullName(openingBalanceAccountName);
+        if (uid == null){
+            uid = createAccountHierarchy(openingBalanceAccountName, AccountType.EQUITY);
+        }
+        return uid;
+    }
+
+    /**
+     * Finds an account unique ID by its full name
+     * @param fullName Fully qualified name of the account
+     * @return String unique ID of the account
+     */
+    public String findAccountUidByFullName(String fullName){
+        Cursor c = mDb.query(AccountEntry.TABLE_NAME, new String[]{AccountEntry.COLUMN_UID},
+                AccountEntry.COLUMN_FULL_NAME + "= ?", new String[]{fullName},
+                null, null, null, "1");
+        String uid = null;
+        if (c != null) {
+            if (c.moveToNext()) {
+                uid = c.getString(c.getColumnIndexOrThrow(AccountEntry.COLUMN_UID));
+            }
+            c.close();
         }
         return uid;
     }
@@ -717,6 +804,22 @@ public class AccountsDbAdapter extends DatabaseAdapter {
         return count;
     }
 
+    /**
+     * Returns the number of accounts in the database
+     * @return Number of accounts in the database
+     */
+    public int getTotalAccountCount(){
+        String queryCount = "SELECT COUNT(*) FROM " + AccountEntry.TABLE_NAME;
+        Cursor cursor = mDb.rawQuery(queryCount, null);
+        int count = 0;
+        if (cursor != null){
+            cursor.moveToFirst();
+            count = cursor.getInt(0);
+            cursor.close();
+        }
+        return count;
+    }
+
 	/**
 	 * Return the record ID for the account with UID <code>accountUID</code>
 	 * @param accountUID String Unique ID of the account
@@ -884,6 +987,38 @@ public class AccountsDbAdapter extends DatabaseAdapter {
             cursor.close();
         }
         return isFavorite;
+    }
+
+    /**
+     * Updates all opening balances to the current account balances
+     */
+    public List<Transaction> getAllOpeningBalanceTransactions(){
+        Cursor cursor = fetchAccounts(null);
+        List<Transaction> openingTransactions = new ArrayList<Transaction>();
+        if (cursor != null){
+            SplitsDbAdapter splitsDbAdapter = new SplitsDbAdapter(mDb);
+            while(cursor.moveToNext()){
+                long id = cursor.getLong(cursor.getColumnIndexOrThrow(AccountEntry._ID));
+                String accountUID = getAccountUID(id);
+                String currencyCode = getCurrencyCode(id);
+                Money balance = splitsDbAdapter.computeSplitBalance(accountUID);
+                if (balance.asBigDecimal().compareTo(new BigDecimal(0)) == 0)
+                    continue;
+
+                Transaction transaction = new Transaction(mContext.getString(R.string.account_name_opening_balances));
+                transaction.setDescription(getName(id));
+                transaction.setCurrencyCode(currencyCode);
+                TransactionType transactionType = Transaction.getTypeForBalance(getAccountType(accountUID),
+                        balance.isNegative());
+                Split split = new Split(balance.absolute(), accountUID);
+                split.setType(transactionType);
+                transaction.addSplit(split);
+                transaction.addSplit(split.createPair(getOrCreateOpeningBalanceAccountUID()));
+                openingTransactions.add(transaction);
+            }
+            cursor.close();
+        }
+        return openingTransactions;
     }
 
 	/**
