@@ -21,7 +21,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Environment;
+import android.os.Build;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -75,6 +75,10 @@ public class ExporterTask extends AsyncTask<ExportParams, Void, Boolean> {
         mProgressDialog.setTitle(R.string.title_progress_exporting_transactions);
         mProgressDialog.setIndeterminate(true);
         mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.HONEYCOMB){
+            mProgressDialog.setProgressNumberFormat(null);
+            mProgressDialog.setProgressPercentFormat(null);
+        }
         mProgressDialog.show();
     }
 
@@ -120,7 +124,7 @@ public class ExporterTask extends AsyncTask<ExportParams, Void, Boolean> {
      */
     @Override
     protected void onPostExecute(Boolean exportResult) {
-        //TODO: Internationalize error strings
+        //TODO: generalize format error strings
         if (!exportResult){
             Toast.makeText(mContext,
                     mContext.getString(R.string.toast_error_exporting),
@@ -135,9 +139,7 @@ public class ExporterTask extends AsyncTask<ExportParams, Void, Boolean> {
 
             case SD_CARD:
                 File src = new File(mExportParams.getTargetFilepath());
-                new File(Environment.getExternalStorageDirectory() + "/gnucash/").mkdirs();
-                File dst = new File(Environment.getExternalStorageDirectory()
-                        + "/gnucash/" + Exporter.buildExportFilename(mExportParams.getExportFormat()));
+                File dst = Exporter.createExportFile(mExportParams.getExportFormat());
 
                 try {
                     copyFile(src, dst);

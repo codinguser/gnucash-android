@@ -31,6 +31,9 @@ import org.gnucash.android.importer.GncXmlImportTask;
 import org.gnucash.android.model.AccountType;
 
 import java.io.*;
+import java.util.ArrayList;
+import java.util.Currency;
+import java.util.List;
 
 import static org.gnucash.android.db.DatabaseSchema.AccountEntry;
 
@@ -147,6 +150,25 @@ public class MigrationHelper {
         }
 
         return exportParams.getTargetFilepath();
+    }
+
+    /**
+     * Returns the list of currencies in the database
+     * @return List of currencies in the database
+     */
+    static List<Currency> getCurrencies(SQLiteDatabase db){
+
+        Cursor cursor = db.query(true, AccountEntry.TABLE_NAME, new String[]{AccountEntry.COLUMN_CURRENCY},
+                null, null, null, null, null, null);
+        List<Currency> currencyList = new ArrayList<Currency>();
+        if (cursor != null){
+            while (cursor.moveToNext()){
+                String currencyCode = cursor.getString(cursor.getColumnIndexOrThrow(AccountEntry.COLUMN_CURRENCY));
+                currencyList.add(Currency.getInstance(currencyCode));
+            }
+            cursor.close();
+        }
+        return currencyList;
     }
 
     /**

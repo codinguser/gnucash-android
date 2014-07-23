@@ -30,7 +30,7 @@
 			android:gravity="left|center_vertical"
 			android:layout_weight="1"
 			android:layout_marginLeft="@dimen/edge_padding"
-			android:text="@string/label_transactions_total" 			
+			android:text="@string/label_account_balance"
 			style="@style/ListItemText" />
 		
 		<TextView android:id="@+id/transactions_sum"

@@ -17,6 +17,7 @@
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.widget.Toast;
 import org.gnucash.android.R;
 import org.gnucash.android.ui.account.AccountsActivity;
@@ -42,6 +43,10 @@ public class GncXmlImportTask extends AsyncTask<InputStream, Void, Boolean> {
         progressDialog.setTitle(R.string.title_progress_importing_accounts);
         progressDialog.setIndeterminate(true);
         progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.HONEYCOMB){
+            progressDialog.setProgressNumberFormat(null);
+            progressDialog.setProgressPercentFormat(null);
+        }
         progressDialog.show();
     }
 

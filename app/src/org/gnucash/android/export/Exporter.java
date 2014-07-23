@@ -18,9 +18,12 @@ package org.gnucash.android.export;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.Environment;
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.AccountsDbAdapter;
 
+import java.io.File;
+import java.io.FileFilter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -31,6 +34,19 @@ import java.util.Locale;
  * @author Ngewi Fet <ngewif@gmail.com>
  */
 public abstract class Exporter {
+    /**
+     * Folder where exports like QIF and OFX will be saved for access by external programs
+     */
+    public static final String EXPORT_FOLDER_PATH = Environment.getExternalStorageDirectory() + "/gnucash/";
+
+    /**
+     * Folder where GNC_XML backups will be saved
+     */
+    public static final String BACKUP_FOLDER_PATH = EXPORT_FOLDER_PATH + "backup/";
+
+    /**
+     * Export options
+     */
     protected ExportParams mParameters;
 
     /**
@@ -67,6 +83,53 @@ public abstract class Exporter {
                 new Date(System.currentTimeMillis()))
                 + "_gnucash_export" + format.getExtension();
         return filename;
+    }
+
+    /**
+     * Builds a file (creating folders where necessary) for saving the exported data
+     * @param format Export format which determines the file extension
+     * @return File for export
+     * @see #EXPORT_FOLDER_PATH
+     */
+    public static File createExportFile(ExportFormat format){
+        new File(EXPORT_FOLDER_PATH).mkdirs();
+        return new File(EXPORT_FOLDER_PATH + buildExportFilename(format));
+    }
+
+    /**
+     * Builds a file for backups of the database (in GNC_XML) format
+     * @return File for saving backups
+     * @see #BACKUP_FOLDER_PATH
+     */
+    public static File createBackupFile(){
+        new File(BACKUP_FOLDER_PATH).mkdirs();
+        return new File(BACKUP_FOLDER_PATH + buildExportFilename(ExportFormat.GNC_XML));
+    }
+
+    /**
+     * Returns the most recent backup file from the backup folder
+     * @return Last modified file from backup folder
+     * @see #BACKUP_FOLDER_PATH
+     */
+    public static File getMostRecentBackupFile(){
+        File backupFolder = new File(BACKUP_FOLDER_PATH);
+        if (!backupFolder.exists())
+            return null;
+
+        File[] files = backupFolder.listFiles(new FileFilter() {
+            public boolean accept(File file) {
+                return file.isFile();
+            }
+        });
+        long lastMod = Long.MIN_VALUE;
+        File backupFile = null;
+        for (File file : files) {
+            if (file.lastModified() > lastMod) {
+                backupFile = file;
+                lastMod = file.lastModified();
+            }
+        }
+        return backupFile;
     }
 
     /**

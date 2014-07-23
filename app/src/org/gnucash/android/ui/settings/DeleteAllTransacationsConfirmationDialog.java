@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.widget.Toast;
 import org.gnucash.android.R;
 import org.gnucash.android.db.TransactionsDbAdapter;
+import org.gnucash.android.export.xml.GncXmlExporter;
 import org.gnucash.android.ui.widget.WidgetConfigurationActivity;
 
 /**
@@ -32,6 +33,7 @@ public class DeleteAllTransacationsConfirmationDialog extends DialogFragment {
                 .setPositiveButton(R.string.alert_dialog_ok_delete,
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int whichButton) {
+                                GncXmlExporter.createBackup();
                                 Context context = getDialog().getContext();
                                 TransactionsDbAdapter transactionsDbAdapter = new TransactionsDbAdapter(context);
                                 transactionsDbAdapter.deleteAllRecords();

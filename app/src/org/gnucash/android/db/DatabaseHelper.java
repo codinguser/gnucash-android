@@ -25,6 +25,10 @@ import android.util.Log;
 import org.gnucash.android.export.ExportFormat;
 import org.gnucash.android.model.AccountType;
 
+import java.util.Currency;
+import java.util.List;
+import java.util.Locale;
+
 import static org.gnucash.android.db.DatabaseSchema.*;
 
 /**
@@ -214,9 +218,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             }
 
             if (oldVersion == 6 && newVersion >= DatabaseSchema.SPLITS_DB_VERSION){
-                //TODO: add account description and starting balance
-
                 Log.i(LOG_TAG, "Upgrading database to version 7");
+
+                //for users who do not have double-entry activated, we create imbalance accounts for their splits
+                //TODO: Enable when we can hide imbalance accounts from user
+//                List<Currency> currencies = MigrationHelper.getCurrencies(db);
+//                AccountsDbAdapter accountsDbAdapter = new AccountsDbAdapter(db);
+//                for (Currency currency : currencies) {
+//                    accountsDbAdapter.getOrCreateImbalanceAccountUID(currency);
+//                }
 
                 String filepath = MigrationHelper.exportDatabase(db, ExportFormat.GNC_XML);
 

@@ -17,6 +17,7 @@ package org.gnucash.android.ui.transaction.dialog;
 
 import org.gnucash.android.R;
 import org.gnucash.android.db.TransactionsDbAdapter;
+import org.gnucash.android.export.xml.GncXmlExporter;
 import org.gnucash.android.ui.UxArgument;
 import org.gnucash.android.ui.account.AccountsListFragment;
 
@@ -58,6 +59,7 @@ public class TransactionsDeleteConfirmationDialogFragment extends SherlockDialog
                         public void onClick(DialogInterface dialog, int whichButton) {
                         	TransactionsDbAdapter adapter = new TransactionsDbAdapter(getSherlockActivity());                            
                             if (rowId == 0){
+                                GncXmlExporter.createBackup(); //create backup before deleting everything
 	                        	adapter.deleteAllRecords();
                             } else {
                             	adapter.deleteRecord(rowId);

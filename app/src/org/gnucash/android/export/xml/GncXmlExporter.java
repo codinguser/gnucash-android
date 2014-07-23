@@ -17,8 +17,9 @@
 package org.gnucash.android.export.xml;
 
 import android.database.sqlite.SQLiteDatabase;
-import org.gnucash.android.db.AccountsDbAdapter;
+import android.util.Log;
 import org.gnucash.android.db.TransactionsDbAdapter;
+import org.gnucash.android.export.ExportFormat;
 import org.gnucash.android.export.ExportParams;
 import org.gnucash.android.export.Exporter;
 import org.gnucash.android.model.Account;
@@ -29,9 +30,14 @@ import org.w3c.dom.Element;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.*;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.StringWriter;
 import java.util.List;
 import java.util.UUID;
@@ -149,5 +155,22 @@ public class GncXmlExporter extends Exporter{
             throw new ExporterException(mParameters, e);
         }
         return stringWriter.toString();
+    }
+
+    /**
+     * Creates a backup of current database contents to the default backup location
+     */
+    public static void createBackup(){
+        ExportParams params = new ExportParams(ExportFormat.GNC_XML);
+        try {
+            FileWriter fileWriter = new FileWriter(Exporter.createBackupFile());
+            BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+            bufferedWriter.write(new GncXmlExporter(params).generateExport());
+            bufferedWriter.flush();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            Log.e("GncXmlExporter", "Error creating backup", e);
+        }
     }
 }

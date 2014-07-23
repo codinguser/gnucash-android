@@ -29,6 +29,7 @@ import org.gnucash.android.model.*;
 import static org.gnucash.android.db.DatabaseSchema.*;
 
 import java.util.ArrayList;
+import java.util.Currency;
 import java.util.List;
 
 /**
@@ -246,7 +247,6 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 
         if (mDb.getVersion() < SPLITS_DB_VERSION){ //legacy, will be used once, when migrating the database
             String accountUID = c.getString(c.getColumnIndexOrThrow(SplitEntry.COLUMN_ACCOUNT_UID));
-            String transferAccountUID = c.getString(c.getColumnIndexOrThrow(DatabaseHelper.KEY_DOUBLE_ENTRY_ACCOUNT_UID));
             String amountString = c.getString(c.getColumnIndexOrThrow(SplitEntry.COLUMN_AMOUNT));
             String currencyCode = getCurrencyCode(accountUID);
             Money amount = new Money(amountString, currencyCode);
@@ -255,7 +255,16 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
             TransactionType type = Transaction.getTypeForBalance(getAccountType(accountUID), amount.isNegative());
             split.setType(type);
             transaction.addSplit(split);
-            transaction.addSplit(split.createPair(transferAccountUID));
+
+            String transferAccountUID = c.getString(c.getColumnIndexOrThrow(DatabaseHelper.KEY_DOUBLE_ENTRY_ACCOUNT_UID));
+            //TODO: Enable this when we can successfully hide imbalance accounts from the user
+//            if (transferAccountUID == null) {
+//                AccountsDbAdapter accountsDbAdapter = new AccountsDbAdapter(mDb);
+//                transferAccountUID = accountsDbAdapter.getOrCreateImbalanceAccountUID(Currency.getInstance(currencyCode));
+//                accountsDbAdapter.close();
+//            }
+            if (transferAccountUID != null)
+                transaction.addSplit(split.createPair(transferAccountUID));
         } else {
             transaction.setCurrencyCode(c.getString(c.getColumnIndexOrThrow(TransactionEntry.COLUMN_CURRENCY)));
             long transactionID = c.getLong(c.getColumnIndexOrThrow(TransactionEntry._ID));
