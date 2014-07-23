@@ -27,6 +27,7 @@ import android.app.PendingIntent;
 import android.support.v4.app.FragmentManager;
 import android.widget.*;
 import org.gnucash.android.R;
+import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.*;
 import org.gnucash.android.model.*;
 import org.gnucash.android.ui.transaction.dialog.DatePickerDialogFragment;
@@ -292,10 +293,11 @@ public class TransactionFormFragment extends SherlockFragment implements
         mNameEditText.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-                mTransaction = mTransactionsDbAdapter.getTransaction(id);
-                mTransaction.setUID(UUID.randomUUID().toString());
-                mTransaction.setExported(false);
-                mTransaction.setTime(System.currentTimeMillis());
+                mTransaction = new Transaction(mTransactionsDbAdapter.getTransaction(id), true);
+                if (!GnuCashApplication.isDoubleEntryEnabled(true)){ //if no double entry, use only splits for this acct
+                    List<Split> accountSplits = mTransaction.getSplits(mAccountsDbAdapter.getAccountUID(mAccountId));
+                    mTransaction.setSplits(accountSplits);
+                }
                 initializeViewsWithTransaction();
                 setAmountEditViewVisible(View.GONE);
             }

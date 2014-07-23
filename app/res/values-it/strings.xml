@@ -305,14 +305,13 @@
 	<string name="summary_xml_ofx_header">Abilitare questa opzione quando si esporta verso un\'applicazione diversa da GnuCash versione desktop</string>
 	<string name="title_whats_new">Novità</string>
 	<string name="whats_new">
-        - Possibilità di marcare i conti come preferiti per acecdervi più velocemente\n
-        - Visualizzazione di diverse schede per i conti recenti, favoriti e per tutti i conti\n
-        - Aggiunta, visualizzazione ed eliminazione delle transazioni pianificate (quotidiane, settimanali, mensili)\n
-        - Possibilità di identificare i conti come segnalibro (non possono contenere transazioni)\n
-        - Possibilità di impostare un conto di trasferimento predefinito per ogni conto\n
-        - Introdotti i colori per i conti e le viste a tema\n
-        - Introdotta la possibilità di creare una struttura dei conti all\'interno dell\'app\n
-        - Sono state introdotte varie migliorie e molti problemi sono stati corretti\n
+        - Create multiple splits per transaction\n
+        - Account balances now follow GnuCash Desktop accounting principles\n
+        - Use account-specific labels for CREDIT/DEBITs (accounting terminology)\n
+        - Automated backup of database before deletion operations\n
+        - Restore most recent backup of database (in Settings -> General)\n
+        - Read transactions from GnuCash XML files (limited support)\n
+        - Multiple bug fixes and improvements\n
 	</string>
 	<string name="label_dismiss">Chiudi</string>
     <string name="toast_transanction_amount_required">Inserire un importo per salvare la transazione</string>
@@ -415,4 +414,5 @@
     <string name="label_buy">Buy</string>
     <string name="label_sell">Sell</string>
     <string name="label_repeats">Repeats</string>
+    <string name="toast_no_recent_backup">No recent backup found</string>
 </resources>

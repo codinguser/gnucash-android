@@ -258,9 +258,15 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
 
     public void importMostRecentBackup(){
         Log.i("Settings", "Importing GnuCash XML");
+        File backupFile = Exporter.getMostRecentBackupFile();
+
+        if (backupFile == null){
+            Toast.makeText(this, R.string.toast_no_recent_backup, Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         try {
-            FileInputStream inputStream = new FileInputStream(Exporter.getMostRecentBackupFile());
+            FileInputStream inputStream = new FileInputStream(backupFile);
             new GncXmlImportTask(this).execute(inputStream);
         } catch (FileNotFoundException e) {
             e.printStackTrace();

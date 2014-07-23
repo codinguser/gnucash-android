@@ -304,14 +304,13 @@
     <string name="summary_xml_ofx_header">Activez cette option lors d\'un export vers une application tierce autre que GnuCash pour PC</string>
     <string name="title_whats_new">Nouveautées</string>
 	<string name="whats_new">
-        - Marquer vos comptes et accédez-y facilement\n
-        - Affichage en onglets pour les comptes récents, favoris et tous\n
-        - Ajouter, afficher et supprimer des opérations récurrentes (quotidien, hebdomadaire, mensuel)\n
-        - Marque les comptes comme espace réservé (ne peut pas contenir de transactions)\n
-        - Définir un compte de transfert par défaut pour chaque compte\n
-        - Code couleur pour comptes et utilisation de thèmes\n
-        - Création d\'une structure de compte GnuCash par défaut à partir de l\'application\n
-        - Nombreuses corrections de bogues et améliorations\n
+        - Create multiple splits per transaction\n
+        - Account balances now follow GnuCash Desktop accounting principles\n
+        - Use account-specific labels for CREDIT/DEBITs (accounting terminology)\n
+        - Automated backup of database before deletion operations\n
+        - Restore most recent backup of database (in Settings -> General)\n
+        - Read transactions from GnuCash XML files (limited support)\n
+        - Multiple bug fixes and improvements\n
 	</string>
     <string name="label_dismiss">Passer</string>
     <string name="toast_transanction_amount_required">Entrez un montant pour sauvegarder la transaction</string>
@@ -411,4 +410,5 @@
     <string name="label_sell">Sell</string>
     <string name="label_account_balance">Balance:</string>
     <string name="label_repeats">Repeats</string>
+    <string name="toast_no_recent_backup">No recent backup found</string>
 </resources>

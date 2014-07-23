@@ -307,14 +307,13 @@ format og importeres i regnskapsprogrammet GnuCash for PC.</string>
 	<string name="summary_xml_ofx_header">Velg denne hvis du skal eksportere til annen programvare enn GnuCash for PC.</string>
 	<string name="title_whats_new">Hva er nytt</string>
 	<string name="whats_new">
-        - Markere favoritter for rask tilgang\n
-        - Vis forskjellige fliker for nylige, favoritter og alle kontoer\n
-        - Legg til, vis og slett gjentakende transaksjoner (daglig, uke, måned)\n
-        - Marker kontoer som plassholder (kan ikke inneholde transaksjoner)\n
-        - Sette standard overføringskonto per konto\n
-        - Fargekoding av kontoer og temaer i konto visning\n
-        - Opprette standard GnuCash kontostruktur i appen\n
-        - Mange feilrettinger og forbedringer\n
+        - Create multiple splits per transaction\n
+        - Account balances now follow GnuCash Desktop accounting principles\n
+        - Use account-specific labels for CREDIT/DEBITs (accounting terminology)\n
+        - Automated backup of database before deletion operations\n
+        - Restore most recent backup of database (in Settings -> General)\n
+        - Read transactions from GnuCash XML files (limited support)\n
+        - Multiple bug fixes and improvements\n
 	</string>
 	<string name="label_dismiss">Ferdig</string>
     <string name="toast_transanction_amount_required">Oppgi et beløp for å lagre transaksjonen</string>
@@ -414,4 +413,5 @@ format og importeres i regnskapsprogrammet GnuCash for PC.</string>
     <string name="label_sell">Sell</string>
     <string name="label_repeats">Repeats</string>
     <string name="label_account_balance">Balance:</string>
+    <string name="toast_no_recent_backup">No recent backup found</string>
 </resources>

@@ -23,11 +23,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 import org.gnucash.android.export.ExportFormat;
+import org.gnucash.android.model.Account;
 import org.gnucash.android.model.AccountType;
-
-import java.util.Currency;
-import java.util.List;
-import java.util.Locale;
 
 import static org.gnucash.android.db.DatabaseSchema.*;
 
@@ -253,6 +250,19 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(ACCOUNTS_TABLE_CREATE);
         db.execSQL(TRANSACTIONS_TABLE_CREATE);
         db.execSQL(SPLITS_TABLE_CREATE);
+
+        String createAccountUidIndex = "CREATE UNIQUE INDEX '" + AccountEntry.INDEX_UID + "' ON "
+                + AccountEntry.TABLE_NAME + "(" + AccountEntry.COLUMN_UID + ")";
+
+        String createTransactionUidIndex = "CREATE UNIQUE INDEX '"+ TransactionEntry.INDEX_UID +"' ON "
+                + TransactionEntry.TABLE_NAME + "(" + TransactionEntry.COLUMN_UID + ")";
+
+        String createSplitUidIndex = "CREATE UNIQUE INDEX '" + SplitEntry.INDEX_UID +"' ON "
+                + SplitEntry.TABLE_NAME + "(" + SplitEntry.COLUMN_UID + ")";
+
+        db.execSQL(createAccountUidIndex);
+        db.execSQL(createTransactionUidIndex);
+        db.execSQL(createSplitUidIndex);
     }
 
     /**

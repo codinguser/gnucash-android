@@ -144,7 +144,6 @@ public class Transaction {
         for (Split split : transaction.mSplitList) {
             addSplit(new Split(split, true));
         }
-        setExported(transaction.isExported());
         setTime(transaction.getTimeMillis());
         if (!generateNewUID){
             setUID(transaction.getUID());

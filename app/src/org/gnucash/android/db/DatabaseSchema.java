@@ -35,7 +35,6 @@ public class DatabaseSchema {
      */
     public static final int SPLITS_DB_VERSION = 7;
 
-
     //no instances are to be instantiated
     private DatabaseSchema(){}
 
@@ -60,6 +59,7 @@ public class DatabaseSchema {
         public static final String COLUMN_TYPE                  = "type";
         public static final String COLUMN_DEFAULT_TRANSFER_ACCOUNT_UID = "default_transfer_account_uid";
 
+        public static final String INDEX_UID                    = "account_uid_index";
     }
 
     /**
@@ -75,6 +75,8 @@ public class DatabaseSchema {
         public static final String COLUMN_TIMESTAMP             = "timestamp";
         public static final String COLUMN_EXPORTED              = "is_exported";
         public static final String COLUMN_RECURRENCE_PERIOD     = "recurrence_period";
+
+        public static final String INDEX_UID                    = "transaction_uid_index";
     }
 
     /**
@@ -89,5 +91,7 @@ public class DatabaseSchema {
         public static final String COLUMN_MEMO                  = "memo";
         public static final String COLUMN_ACCOUNT_UID           = "account_uid";
         public static final String COLUMN_TRANSACTION_UID       = "transaction_uid";
+
+        public static final String INDEX_UID                    = "split_uid_index";
     }
 }

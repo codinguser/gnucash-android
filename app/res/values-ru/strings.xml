@@ -304,14 +304,13 @@
 	<string name="summary_xml_ofx_header">Включите эту опцию, если экспортируете в программы отличные от GnuCash для ПК</string>
 	<string name="title_whats_new">Новости</string>
 	<string name="whats_new">
-        - Отметка избранных счетов для быстрого доступа\n
-        - Отдельные табы для последних открывавшихся, избранных и списка всех счетов\n
-        - Добавление, просмотр и удаление запланированных проводок (ежедневные, еженедельные, ежемесячные)\n
-        - Поддержка виртуальных счетов (содержит только дочерние счета, без проводок)\n
-        - Установка трансфертного счёта по умолчанию для каждого счёта\n
-        - Раскраска счетов и темы для списка счетов\n
-        - Создание структуры счетов из приложения\n
-        - Много улучшений и исправлений\n
+        - Create multiple splits per transaction\n
+        - Account balances now follow GnuCash Desktop accounting principles\n
+        - Use account-specific labels for CREDIT/DEBITs (accounting terminology)\n
+        - Automated backup of database before deletion operations\n
+        - Restore most recent backup of database (in Settings -> General)\n
+        - Read transactions from GnuCash XML files (limited support)\n
+        - Multiple bug fixes and improvements\n
 	</string>
 	<string name="label_dismiss">Отказаться</string>
     <string name="toast_transanction_amount_required">Введите сумму, чтобы сохранить проводку</string>
@@ -415,4 +414,5 @@
     <string name="label_sell">Sell</string>
     <string name="label_repeats">Repeats</string>
     <string name="label_account_balance">Balance:</string>
+    <string name="toast_no_recent_backup">No recent backup found</string>
 </resources>

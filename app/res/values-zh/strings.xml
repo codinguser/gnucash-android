@@ -303,14 +303,13 @@
     <string name="summary_xml_ofx_header">当导出数据到GnuCash桌面版以外的程序时需要开启这个选项。</string>
     <string name="title_whats_new">新功能</string>
     <string name="whats_new">
-        - 给科目加星标！\n
-        - 使用标签访问科目\n
-        - 计划的交易（日、月、年）\n
-        - 科目占位符\n
-        - 设置默认的转账科目\n
-        - 科目的颜色\n
-        - 内置了常见科目结构\n
-        - 修复一些小错误\n
+        - Create multiple splits per transaction\n
+        - Account balances now follow GnuCash Desktop accounting principles\n
+        - Use account-specific labels for CREDIT/DEBITs (accounting terminology)\n
+        - Automated backup of database before deletion operations\n
+        - Restore most recent backup of database (in Settings -> General)\n
+        - Read transactions from GnuCash XML files (limited support)\n
+        - Multiple bug fixes and improvements\n
 	</string>
     <string name="label_dismiss">知道了</string>
     <string name="toast_transanction_amount_required">输入金额才能保存交易</string>
@@ -409,4 +408,5 @@
     <string name="label_sell">Sell</string>
     <string name="label_repeats">Repeats</string>
     <string name="label_account_balance">Balance:</string>
+    <string name="toast_no_recent_backup">No recent backup found</string>
 </resources>
