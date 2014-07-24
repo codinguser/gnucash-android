@@ -21,7 +21,7 @@
     <string name="title_add_account">Crear cuenta</string>
     <string name="title_edit_account">Editar cuenta</string>
     <string name="info_details">Detalles</string>
-    <string name="menu_export_ofx">Exportar a OFX</string>
+    <string name="menu_export">Exportar a OFX</string>
     <string name="description_add_transaction_icon">Agregar transacci&#243;n a una cuenta</string>
     <string name="label_no_accounts">No hay cuentas</string>
     <string name="label_account_name">Nombre de la cuenta</string>
@@ -51,7 +51,7 @@
     <string name="title_export_dialog">Export Transactions</string>
     <string name="option_export_all_transactions">Exportar todas las transacciones</string>
     <string name="hint_export_choice">Por omisi&#243;n, s&#243;lo las trasacciones nuevas ser&#225;n exportadas. Selecione esta opci&#243;n para exportar todas las transacciones</string>
-    <string name="toast_export_error">Error al exportar los datos OFX</string>
+    <string name="toast_export_error">Error al exportar los datos %1$s</string>
     <string name="btn_export">Exportar</string>
     <string name="option_delete_after_export">Borrar despu&#233;s de exportar</string>
     <string name="hint_delete_after_export">Todas las transacciones ser&#225;n borradas despu&#233;s de ser exportadas completamente</string>
@@ -116,7 +116,8 @@
 		<item>C&#243;rdoba Nicarag&#252;ense</item>
 		<item>Col&#243;n Costarricense</item>
 		<item>Kuna Croata</item>
-		<item>Peso Cubano</item>
+        <item>Peso convertible</item>
+        <item>Peso Cubano</item>
 		<item>Corona Checa</item>
 		<item>Dalasi</item>
 		<item>Corona Danesa</item>
@@ -193,8 +194,6 @@
 		<item>Rupia pakistan&#237;</item>
 		<item>Palladium</item>
 		<item>Pataca</item>
-		<item>Peso convertible</item>
-		<item>Peso uruguayo</item>
 		<item>Peso filipino</item>
 		<item>Platino</item>
 		<item>Libra esterlina</item>
@@ -243,7 +242,8 @@
 		<item>Unidad de Valor Real</item>
 		<item>Unidades de fomento</item>
 		<item>Peso uruguayo en Unidades Indexadas (URUIURUI)</item>
-		<item>D&#243;lar Estadounidense</item>
+        <item>Peso uruguayo</item>
+        <item>D&#243;lar Estadounidense</item>
 		<item>Som uzbeko</item>
 		<item>Vatu</item>
 		<item>Euro WIR</item>
@@ -273,10 +273,9 @@
 	<string name="title_about_gnucash">Acerca de Gnucash</string>
 	<string name="summary_about_gnucash">GnucashMobile es una aplicaci&#243;n de registro de finanzas para Android\nEsta permite un registro flexible de los gastos realizados, los cuales pueden ser exportados a formato Open Financial eXchange (OFX) e importados a Gnucash desde una computadora de escritorio.</string>
 	<string name="title_about">Acerca de</string>
-	<string name="toast_error_exporting">No se pudo escribir el archivo OFX en:\n</string>
-	<string name="toast_ofx_exported_to">Archivo OFX exportado a:\n</string>
-	<string name="title_export_email">Exportaci&#243;n OFX de Gnucash</string>
-	<string name="description_export_email">Exportaci&#243;n OFX de Gnucash </string>
+	<string name="toast_format_exported_to">Archivo %1$s exportado a:\n</string>
+	<string name="title_export_email">Exportaci&#243;n %1$s de Gnucash Android</string>
+	<string name="description_export_email">Exportaci&#243;n de Gnucash Android </string>
 	<string name="header_transaction_settings">Transacciones</string>
 	<string name="title_transaction_preferences">Opciones de transacci&#243;n</string>
 	<string name="title_account_preferences">Opciones de cuenta</string>
@@ -305,11 +304,12 @@
 	<string name="title_whats_new">&#191;Qu&#233; hay nuevo?</string>
 	<string name="whats_new">
         - Create multiple splits per transaction\n
-        - Account balances now follow GnuCash Desktop accounting principles\n
-        - Use account-specific labels for CREDIT/DEBITs (accounting terminology)\n
+        - Fixed computation of account balances for different account types\n
+        - Use account-specific labels for CREDIT/DEBITs\n
         - Automated backup of database before deletion operations\n
         - Restore most recent backup of database (in Settings -> General)\n
         - Read transactions from GnuCash XML files (limited support)\n
+        - Option to save opening balances before deleting transactions\n
         - Multiple bug fixes and improvements\n
 	</string>
 	<string name="label_dismiss">Cerrar</string>

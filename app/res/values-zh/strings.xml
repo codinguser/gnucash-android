@@ -20,7 +20,7 @@
     <string name="title_add_account">创建科目</string>
     <string name="title_edit_account">修改科目</string>
     <string name="info_details">信息</string>
-    <string name="menu_export_ofx">导出OFX</string>
+    <string name="menu_export">导出OFX</string>
     <string name="description_add_transaction_icon">为科目增加交易</string>
     <string name="label_no_accounts">没有要显示的科目</string>
     <string name="label_account_name">科目名称</string>
@@ -50,7 +50,7 @@
     <string name="title_export_dialog">导出交易资料</string>
     <string name="option_export_all_transactions">导出所有交易</string>
     <string name="hint_export_choice">默认情况下，自上次导出后新增的交易才会被导出。选择此项后所有的交易都会被导出。</string>
-    <string name="toast_export_error">导出OFX发生错误</string>
+    <string name="toast_export_error">导出%1$s发生错误</string>
     <string name="btn_export">导出</string>
     <string name="option_delete_after_export">导出后删除交易</string>
     <string name="hint_delete_after_export">导出完成后现存所有交易都会被删除</string>
@@ -115,6 +115,7 @@
         <item>科多巴</item>
         <item>哥斯达黎加科朗</item>
         <item>克罗地亚库纳</item>
+        <item>Cuban Convertible Peso</item>
         <item>古巴比索</item>
         <item>捷克克朗</item>
         <item>达拉斯</item>
@@ -192,8 +193,6 @@
         <item>巴基斯坦卢比</item>
         <item>Palladium</item>
         <item>Pataca</item>
-        <item>Peso Convertible</item>
-        <item>Peso Uruguayo</item>
         <item>Philippine Peso</item>
         <item>Platinum</item>
         <item>Pound Sterling</item>
@@ -242,6 +241,7 @@
         <item>Unidad de Valor Real</item>
         <item>Unidades de fomento</item>
         <item>Uruguay Peso en Unidades Indexadas (URUIURUI)</item>
+        <item>Uruguayan Peso</item>
         <item>美元</item>
         <item>Uzbekistan Sum</item>
         <item>Vatu</item>
@@ -272,10 +272,9 @@
     <string name="title_about_gnucash">关于GnuCash</string>
     <string name="summary_about_gnucash">Gnucash for android是一个移动版的财务管理软件。提供灵活的跟踪开支的功能，可以导出OFX格式（开放金融交易格式）数据，并导入到桌面版的 GnuCash中。</string>
     <string name="title_about">关于</string>
-    <string name="toast_error_exporting">无法写OFX文件:\n</string>
-    <string name="toast_ofx_exported_to">OFX文件保存到：\n</string>
-    <string name="title_export_email">GnuCash OFX 导出</string>
-    <string name="description_export_email">GnuCash OFX Export from </string>
+    <string name="toast_format_exported_to">%1$s文件保存到：\n</string>
+    <string name="title_export_email">GnuCash Android %1$s 导出</string>
+    <string name="description_export_email">GnuCash Android Export from </string>
     <string name="header_transaction_settings">交易</string>
     <string name="title_transaction_preferences">交易设置</string>
     <string name="title_account_preferences">科目设置</string>
@@ -304,11 +303,12 @@
     <string name="title_whats_new">新功能</string>
     <string name="whats_new">
         - Create multiple splits per transaction\n
-        - Account balances now follow GnuCash Desktop accounting principles\n
-        - Use account-specific labels for CREDIT/DEBITs (accounting terminology)\n
+        - Fixed computation of account balances for different account types\n
+        - Use account-specific labels for CREDIT/DEBITs\n
         - Automated backup of database before deletion operations\n
         - Restore most recent backup of database (in Settings -> General)\n
         - Read transactions from GnuCash XML files (limited support)\n
+        - Option to save opening balances before deleting transactions\n
         - Multiple bug fixes and improvements\n
 	</string>
     <string name="label_dismiss">知道了</string>

@@ -52,8 +52,6 @@ public class ExporterTask extends AsyncTask<ExportParams, Void, Boolean> {
 
     private ProgressDialog mProgressDialog;
 
-    private Exporter mExporter;
-
     /**
      * Log tag
      */
@@ -91,7 +89,8 @@ public class ExporterTask extends AsyncTask<ExportParams, Void, Boolean> {
     protected Boolean doInBackground(ExportParams... params) {
         mExportParams = params[0];
 
-            switch (mExportParams.getExportFormat()) {
+        Exporter mExporter;
+        switch (mExportParams.getExportFormat()) {
                 case QIF:
                     mExporter = new QifExporter(mExportParams);
                     break;
@@ -101,6 +100,7 @@ public class ExporterTask extends AsyncTask<ExportParams, Void, Boolean> {
                     break;
 
                 case GNC_XML:
+                default:
                     mExporter = new GncXmlExporter(mExportParams);
                     break;
             }
@@ -110,7 +110,6 @@ public class ExporterTask extends AsyncTask<ExportParams, Void, Boolean> {
         } catch (Exception e) {
             e.printStackTrace();
             Log.e(TAG, e.getMessage());
-            //TODO: Internationalize (and correct ofx specific) error message
             Toast.makeText(mContext, R.string.toast_export_error,
                     Toast.LENGTH_LONG).show();
             return false;
@@ -124,10 +123,9 @@ public class ExporterTask extends AsyncTask<ExportParams, Void, Boolean> {
      */
     @Override
     protected void onPostExecute(Boolean exportResult) {
-        //TODO: generalize format error strings
         if (!exportResult){
             Toast.makeText(mContext,
-                    mContext.getString(R.string.toast_error_exporting),
+                    mContext.getString(R.string.toast_export_error, mExportParams.getExportFormat().name()),
                     Toast.LENGTH_LONG).show();
             return;
         }
@@ -145,7 +143,8 @@ public class ExporterTask extends AsyncTask<ExportParams, Void, Boolean> {
                     copyFile(src, dst);
                 } catch (IOException e) {
                     Toast.makeText(mContext,
-                            mContext.getString(R.string.toast_error_exporting_ofx) + dst.getAbsolutePath(),
+                            mContext.getString(R.string.toast_export_error, mExportParams.getExportFormat().name())
+                                    + dst.getAbsolutePath(),
                             Toast.LENGTH_LONG).show();
                     Log.e(TAG, e.getMessage());
                     break;
@@ -153,7 +152,8 @@ public class ExporterTask extends AsyncTask<ExportParams, Void, Boolean> {
 
                 //file already exists, just let the user know
                 Toast.makeText(mContext,
-                        mContext.getString(R.string.toast_ofx_exported_to) + dst.getAbsolutePath(),
+                        mContext.getString(R.string.toast_format_exported_to, mExportParams.getExportFormat().name())
+                                + dst.getAbsolutePath(),
                         Toast.LENGTH_LONG).show();
                 break;
 
@@ -202,7 +202,8 @@ public class ExporterTask extends AsyncTask<ExportParams, Void, Boolean> {
         Intent shareIntent = new Intent(Intent.ACTION_SEND);
         shareIntent.setType("application/xml");
         shareIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse("file://" + path));
-        shareIntent.putExtra(Intent.EXTRA_SUBJECT, mContext.getString(R.string.title_export_email));
+        shareIntent.putExtra(Intent.EXTRA_SUBJECT, mContext.getString(R.string.title_export_email,
+                mExportParams.getExportFormat().name()));
         if (defaultEmail != null && defaultEmail.trim().length() > 0){
             shareIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{defaultEmail});
         }

@@ -21,7 +21,7 @@
     <string name="title_add_account">Nieuw rekening</string>
     <string name="title_edit_account">Rekening bewerken</string>
     <string name="info_details">Info</string>
-    <string name="menu_export_ofx">OFX exporteren</string>
+    <string name="menu_export">OFX exporteren</string>
     <string name="description_add_transaction_icon">Nieuwe transactie in een rekening</string>
     <string name="label_no_accounts">Geen rekeningen beschikbaar</string>
     <string name="label_account_name">Rekeningnaam</string>
@@ -51,7 +51,7 @@
     <string name="title_export_dialog">OFX Exporteren</string>
     <string name="option_export_all_transactions">All transacties exporteren</string>
     <string name="hint_export_choice">Aanvinken om alle transacties te exporteren. Anders worden enkel de nieuwe transacties sinds de laatste export ge&#235;xporteerd.</string>
-    <string name="toast_export_error">Fout tijdens het exporteren van de OFX data</string>
+    <string name="toast_export_error">Fout tijdens het exporteren van de %1$s data</string>
     <string name="btn_export">Exporteer</string>
     <string name="option_delete_after_export">Verwijderen na exporteren</string>
     <string name="hint_delete_after_export">Alle ge&#235;xporteerde transacties zullen verwijderd worden na de export</string>
@@ -116,7 +116,8 @@
 		<item>Cordoba Oro</item>
 		<item>Costa Rican Colon</item>
 		<item>Croatian Kuna</item>
-		<item>Cuban Peso</item>
+        <item>Cuban Convertible Peso</item>
+        <item>Cuban Peso</item>
 		<item>Czech Koruna</item>
 		<item>Dalasi</item>
 		<item>Danish Krone</item>
@@ -193,8 +194,6 @@
 		<item>Pakistan Rupee</item>
 		<item>Palladium</item>
 		<item>Pataca</item>
-		<item>Peso Convertible</item>
-		<item>Peso Uruguayo</item>
 		<item>Philippine Peso</item>
 		<item>Platinum</item>
 		<item>Pound Sterling</item>
@@ -243,7 +242,8 @@
 		<item>Unidad de Valor Real</item>
 		<item>Unidades de fomento</item>
 		<item>Uruguay Peso en Unidades Indexadas (URUIURUI)</item>
-		<item>US Dollar</item>
+        <item>Uruguayan Peso</item>
+        <item>US Dollar</item>
 		<item>Uzbekistan Sum</item>
 		<item>Vatu</item>
 		<item>WIR Euro</item>
@@ -273,10 +273,9 @@
 	<string name="title_about_gnucash">Over GnuCash</string>
 	<string name="summary_about_gnucash">GnucashMobile is een mobiele uitgavebeheerstoepassing voor Android.\nHet laat onderweg een snelle en flexibele registratie van uitgaven toe, die als OFX gegevens ge&#235;xporteerd kunnen worden om in de GnuCash-toepassing op een desktop-computer te importeren.</string>
 	<string name="title_about">Over</string>
-	<string name="toast_error_exporting">Fout bij het schrijven van de OFX data naar bestand:\n</string>
-	<string name="toast_ofx_exported_to">OFX data ge&#235;exporteerd naar:\n</string>
-	<string name="title_export_email">GnuCash OFX export</string>
-	<string name="description_export_email">GnuCash OFX Export van </string>
+	<string name="toast_format_exported_to">%1$s data ge&#235;exporteerd naar:\n</string>
+	<string name="title_export_email">GnuCash Android %1$s export</string>
+	<string name="description_export_email">GnuCash Android Export van </string>
 	<string name="header_transaction_settings">Transacties</string>
 	<string name="title_transaction_preferences">Transactie voorkeuren</string>
 	<string name="title_account_preferences">Account voorkeuren</string>
@@ -305,11 +304,12 @@
 	<string name="title_whats_new">Nieuw sinds de vorige versie</string>
 	<string name="whats_new">
         - Create multiple splits per transaction\n
-        - Account balances now follow GnuCash Desktop accounting principles\n
-        - Use account-specific labels for CREDIT/DEBITs (accounting terminology)\n
+        - Fixed computation of account balances for different account types\n
+        - Use account-specific labels for CREDIT/DEBITs\n
         - Automated backup of database before deletion operations\n
         - Restore most recent backup of database (in Settings -> General)\n
         - Read transactions from GnuCash XML files (limited support)\n
+        - Option to save opening balances before deleting transactions\n
         - Multiple bug fixes and improvements\n
 	</string>
 	<string name="label_dismiss">Wijs af</string>

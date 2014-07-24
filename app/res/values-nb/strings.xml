@@ -22,7 +22,7 @@
     <string name="title_add_account">Opprett konto</string>
     <string name="title_edit_account">Rediger konto</string>
     <string name="info_details">Informasjon</string>
-    <string name="menu_export_ofx">Eksport OFX</string>
+    <string name="menu_export">Eksport OFX</string>
     <string name="description_add_transaction_icon">Legg til ny kontotransaksjon</string>
     <string name="label_no_accounts">Ingen kontoer å vise</string>
     <string name="label_account_name">Kontonavn</string>
@@ -52,7 +52,7 @@
     <string name="title_export_dialog">Export Transactions</string>
     <string name="option_export_all_transactions">Eksporter alle transaksjoner</string>
     <string name="hint_export_choice">Vanligvis vil kun nye transaksjoner bli eksportert.  Merk dette valget for å eksportere alle transaksjonene</string>
-    <string name="toast_export_error">Feil ved eksportering av OFX-data</string>
+    <string name="toast_export_error">Feil ved eksportering av %1$s-data</string>
     <string name="btn_export">Eksporter</string>
     <string name="option_delete_after_export">Slett etter eksportering</string>
     <string name="hint_delete_after_export">Alle eksporterte transaksjoner vil bli slettet etter eksportering</string>
@@ -117,7 +117,8 @@
 		<item>Cordoba Oro</item>
 		<item>Costa Rican Colon</item>
 		<item>Croatian Kuna</item>
-		<item>Cuban Peso</item>
+        <item>Cuban Convertible Peso</item>
+        <item>Cuban Peso</item>
 		<item>Czech Koruna</item>
 		<item>Dalasi</item>
 		<item>Danske kroner</item>
@@ -194,8 +195,6 @@
 		<item>Pakistan Rupee</item>
 		<item>Palladium</item>
 		<item>Pataca</item>
-		<item>Peso Convertible</item>
-		<item>Peso Uruguayo</item>
 		<item>Philippine Peso</item>
 		<item>Platinum</item>
 		<item>Engelske pund</item>
@@ -244,7 +243,8 @@
 		<item>Unidad de Valor Real</item>
 		<item>Unidades de fomento</item>
 		<item>Uruguay Peso en Unidades Indexadas (URUIURUI)</item>
-		<item>Amerikanske dollar</item>
+        <item>Uruguayan Peso</item>
+        <item>Amerikanske dollar</item>
 		<item>Uzbekistan Sum</item>
 		<item>Vatu</item>
 		<item>WIR Euro</item>
@@ -276,10 +276,9 @@
 muligheten til å raskt og fleksibelt logge transaksjoner som kan eksporteres til OFX (Open Financial eXchange)-
 format og importeres i regnskapsprogrammet GnuCash for PC.</string> 
 	<string name="title_about">Om</string>
-	<string name="toast_error_exporting">Kunne ikke lagre OFX-fil til :\n</string>
-	<string name="toast_ofx_exported_to">OFX-fil eksportert til:\n</string>
-	<string name="title_export_email">Gnucash OFX-eksportering</string>
-	<string name="description_export_email">Gnucash OFX-eksportering til </string>
+	<string name="toast_format_exported_to">%1$s-fil eksportert til:\n</string>
+	<string name="title_export_email">Gnucash Android %1$s-eksportering</string>
+	<string name="description_export_email">Gnucash Android-eksportering til </string>
 	<string name="header_transaction_settings">Transaksjoner</string>
 	<string name="title_transaction_preferences">Transaksjonsinnstillinger</string>
 	<string name="title_account_preferences">Kontoinnstillinger</string>
@@ -308,11 +307,12 @@ format og importeres i regnskapsprogrammet GnuCash for PC.</string>
 	<string name="title_whats_new">Hva er nytt</string>
 	<string name="whats_new">
         - Create multiple splits per transaction\n
-        - Account balances now follow GnuCash Desktop accounting principles\n
-        - Use account-specific labels for CREDIT/DEBITs (accounting terminology)\n
+        - Fixed computation of account balances for different account types\n
+        - Use account-specific labels for CREDIT/DEBITs\n
         - Automated backup of database before deletion operations\n
         - Restore most recent backup of database (in Settings -> General)\n
         - Read transactions from GnuCash XML files (limited support)\n
+        - Option to save opening balances before deleting transactions\n
         - Multiple bug fixes and improvements\n
 	</string>
 	<string name="label_dismiss">Ferdig</string>

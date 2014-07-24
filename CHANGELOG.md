@@ -12,6 +12,7 @@ Splits store the amounts as absolute values and then separately the kind - CREDI
 * Feature: Use account specific labels for CREDIT/DEBIT instead of just generic "debit" and "credit"
 * Feature: Import GnuCash XML files - accounts and transactions only (experimental)
 * Feature: Back up transactions in an XML format (similar to GnuCash XML) called .gnca (Gnucash Android)
+* Feature: Option for saving opening balances before deleting transactions
 * Improved: Updated processes for moving, creating, exporting, deleting transactions to work with splits
 * Improved: Updated computation of account and transaction balances to be in line with accounting principles
 * Improved: Updated color (red/green) display to match movement in the account, and not a representation of the side of the split

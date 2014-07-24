@@ -21,7 +21,7 @@
     <string name="title_add_account">Δημιουργία Λογαριασμού</string>
     <string name="title_edit_account">Επεξεργασία Λογαριασμού</string>
     <string name="info_details">Πληροφορίες</string>
-    <string name="menu_export_ofx">Εξαγωγή OFX</string>
+    <string name="menu_export">Εξαγωγή OFX</string>
     <string name="description_add_transaction_icon">Προσθήκη μιας νέας συναλλαγής σε ένα λογαριασμό</string>
     <string name="label_no_accounts">Δεν υπάρχουν λογαριασμοί για εμφάνιση</string>
     <string name="label_account_name">Όνομα λογαριασμού</string>
@@ -51,7 +51,7 @@
     <string name="title_export_dialog">Export transactions</string>
     <string name="option_export_all_transactions">Εξαγωγή όλων των συναλλαγών</string>
     <string name="hint_export_choice">Προεπιλεγμένα, μόνο οι νέες συναλλαγές από τη τελευταία εξαγωγή θα εξαχθούν. Ενεργοποίησε αυτή την επιλογή για την εξαγωγή όλων των συναλλαγών</string>
-    <string name="toast_export_error">Σφάλμα εξαγωγής δεδομένων OFX</string>
+    <string name="toast_export_error">Σφάλμα εξαγωγής δεδομένων %1$s</string>
     <string name="btn_export">Εξαγωγή</string>
     <string name="option_delete_after_export">Διαγραφή μετά την εξαγωγή</string>
     <string name="hint_delete_after_export">Όλες οι συναλλαγές που εξάγονται, θα διαγραφούν με την ολοκλήρωση της εξαγωγής</string>
@@ -116,7 +116,8 @@
 		<item>Cordoba Oro</item>
 		<item>Costa Rican Colon</item>
 		<item>Croatian Kuna</item>
-		<item>Cuban Peso</item>
+        <item>Cuban Convertible Peso</item>
+        <item>Cuban Peso</item>
 		<item>Czech Koruna</item>
 		<item>Dalasi</item>
 		<item>Danish Krone</item>
@@ -193,8 +194,6 @@
 		<item>Pakistan Rupee</item>
 		<item>Palladium</item>
 		<item>Pataca</item>
-		<item>Peso Convertible</item>
-		<item>Peso Uruguayo</item>
 		<item>Philippine Peso</item>
 		<item>Platinum</item>
 		<item>Pound Sterling</item>
@@ -243,7 +242,8 @@
 		<item>Unidad de Valor Real</item>
 		<item>Unidades de fomento</item>
 		<item>Uruguay Peso en Unidades Indexadas (URUIURUI)</item>
-		<item>US Dolar</item>
+        <item>Uruguayan Peso</item>
+        <item>US Dolar</item>
 		<item>Uzbekistan Sum</item>
 		<item>Vatu</item>
 		<item>WIR Euro</item>
@@ -278,10 +278,9 @@
 	eXchange (OFX) και να εισαχθούν στην εφαρμογή GnuCash για τον
 	υπολογιστή.</string>
 	<string name="title_about">Πληροφορίες</string>
-	<string name="toast_error_exporting">Αδυναμία εγγραφής αρχείου OFX σε :\n</string>
-	<string name="toast_ofx_exported_to">Αρχείο OFX εξήχθη σε:\n</string>
-	<string name="title_export_email">Εξαγωγή GnuCash OFX</string>
-	<string name="description_export_email">Εξαγωγή GnuCash OFX προς </string>
+	<string name="toast_format_exported_to">Αρχείο %1$s εξήχθη σε:\n</string>
+	<string name="title_export_email">Εξαγωγή GnuCash Android %1$s</string>
+	<string name="description_export_email">Εξαγωγή GnuCash Android προς </string>
 	<string name="header_transaction_settings">Κινήσεις</string>
 	<string name="title_transaction_preferences">Προτιμήσεις Κινήσεων</string>
 	<string name="title_account_preferences">Προτιμήσεις Λογαριασμών</string>
@@ -311,11 +310,12 @@
 	<string name="title_whats_new">Τι νέο υπάρχει</string>
 	<string name="whats_new">
         - Create multiple splits per transaction\n
-        - Account balances now follow GnuCash Desktop accounting principles\n
-        - Use account-specific labels for CREDIT/DEBITs (accounting terminology)\n
+        - Fixed computation of account balances for different account types\n
+        - Use account-specific labels for CREDIT/DEBITs\n
         - Automated backup of database before deletion operations\n
         - Restore most recent backup of database (in Settings -> General)\n
         - Read transactions from GnuCash XML files (limited support)\n
+        - Option to save opening balances before deleting transactions\n
         - Multiple bug fixes and improvements\n
 	</string>
 	<string name="label_dismiss">Απόρριψη</string>

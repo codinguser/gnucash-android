@@ -20,7 +20,7 @@
     <string name="title_add_account">Neues Konto</string>
     <string name="title_edit_account">Konto bearbeiten</string>
     <string name="info_details">Info</string>
-    <string name="menu_export_ofx">OFX-Datei exportieren</string>
+    <string name="menu_export">OFX-Datei exportieren</string>
     <string name="description_add_transaction_icon">Neue Buchung in ein Konto</string>
     <string name="label_no_accounts">Keine Konten vorhanden</string>
     <string name="label_account_name">Kontoname</string>
@@ -50,7 +50,7 @@
     <string name="title_export_dialog">Buchungen exportieren</string>
     <string name="option_export_all_transactions">Alle Buchungen exportieren</string>
     <string name="hint_export_choice">Auswählen, um alle Buchungen zu exportieren. Andernfalls werden nur die neuen Buchungen seit letztem Export exportiert.</string>
-    <string name="toast_export_error">Fehler beim Exportieren der OFX-Datei</string>
+    <string name="toast_export_error">Fehler beim Exportieren der %1$s-Datei</string>
     <string name="btn_export">Export</string>
     <string name="option_delete_after_export">L&#246;schen nach dem Exportieren</string>
     <string name="hint_delete_after_export">Alle exportierten Buchungen werden nach dem Export gelöscht.</string>
@@ -115,7 +115,8 @@
 		<item>Cordoba Oro</item>
 		<item>Costa Rican Colon</item>
 		<item>Croatian Kuna</item>
-		<item>Cuban Peso</item>
+        <item>Cuban Convertible Peso</item>
+        <item>Cuban Peso</item>
 		<item>Czech Koruna</item>
 		<item>Dalasi</item>
 		<item>Danish Krone</item>
@@ -192,8 +193,6 @@
 		<item>Pakistan Rupee</item>
 		<item>Palladium</item>
 		<item>Pataca</item>
-		<item>Peso Convertible</item>
-		<item>Peso Uruguayo</item>
 		<item>Philippine Peso</item>
 		<item>Platinum</item>
 		<item>Pound Sterling</item>
@@ -242,7 +241,8 @@
 		<item>Unidad de Valor Real</item>
 		<item>Unidades de fomento</item>
 		<item>Uruguay Peso en Unidades Indexadas (URUIURUI)</item>
-		<item>US Dollar</item>
+        <item>Uruguayan Peso</item>
+        <item>US Dollar</item>
 		<item>Uzbekistan Sum</item>
 		<item>Vatu</item>
 		<item>WIR Euro</item>
@@ -273,10 +273,9 @@
 	<string name="summary_about_gnucash">GnuCashMobile ist eine mobile Datenaufzeichungs-App f&#252;r Android. \nEs erm&#246;glicht die schnelle und flexible Registrierung von Zahlungsvorg&#228;ngen unterwegs, die dann als Datei im OFX-Format exportiert und von der GnuCash-Anwendung an einem Desktop-PC importiert werden k&#246;nnen.</string>
 	<string name="title_about">&#220;ber</string>
 	<string name="ofx_file_exported_to">OFX-Datei exportiert nach:</string>
-	<string name="toast_error_exporting_ofx">Fehler beim Exportieren der OFX-Datei:\n</string>
-	<string name="toast_ofx_exported_to">OFX-Datei erfolgreich exportiert nach:\n</string>
-	<string name="title_export_email">GnuCash exportierte OFX-Datei</string>
-	<string name="description_export_email">GnuCash-Konten-Export von </string>
+	<string name="toast_format_exported_to">%1$s-Datei erfolgreich exportiert nach:\n</string>
+	<string name="title_export_email">GnuCash Android exportierte %1$s-Datei</string>
+	<string name="description_export_email">GnuCash-Android-Konten-Export von </string>
 	<string name="header_transaction_settings">Buchungen</string>
 	<string name="title_transaction_preferences">Einstellungen Buchungen</string>
 	<string name="title_account_preferences">Einstellungen Konten</string>
@@ -305,11 +304,12 @@
 	<string name="title_whats_new">Neuigkeiten in dieser Version</string>
 	<string name="whats_new">
         - Create multiple splits per transaction\n
-        - Account balances now follow GnuCash Desktop accounting principles\n
-        - Use account-specific labels for CREDIT/DEBITs (accounting terminology)\n
+        - Fixed computation of account balances for different account types\n
+        - Use account-specific labels for CREDIT/DEBITs\n
         - Automated backup of database before deletion operations\n
         - Restore most recent backup of database (in Settings -> General)\n
         - Read transactions from GnuCash XML files (limited support)\n
+        - Option to save opening balances before deleting transactions\n
         - Multiple bug fixes and improvements\n
     </string>
 	<string name="label_dismiss">Schließen</string>
@@ -392,7 +392,6 @@
     </string-array>
     <string name="title_scheduled_transactions">Eingeplante Buchungen</string>
     <string name="title_select_export_destination">Select destination for export</string>
-    <string name="toast_error_exporting">Could not write OFX file to :\n</string>
     <string name="hint_split_memo">Memo</string>
     <string name="label_spend">Spend</string>
     <string name="label_receive">Receive</string>
@@ -413,7 +412,7 @@
     <string name="label_account_balance">Balance:</string>
     <string name="toast_no_recent_backup">No recent backup found</string>
     <string name="account_name_opening_balances">Anfangsbestand</string>
-    <string name="account_name_equity"></string> <!-- This is no error, the default German locale has no parent Equity account -->
+    <string name="account_name_equity"> </string> <!-- This is no error, the default German locale has no parent Equity account -->
     <string name="summary_save_opening_balances">Enable to save the current account balance (before deleting transactions) as new opening balance after deleting transactions
     </string>
     <string name="title_save_opening_balances">Save account opening balances</string>

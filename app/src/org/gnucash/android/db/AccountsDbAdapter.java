@@ -67,51 +67,6 @@ public class AccountsDbAdapter extends DatabaseAdapter {
     }
 
     /**
-     * Returns the imbalance account where to store transactions which are not double entry
-     * @param currency Currency of the transaction
-     * @return Imbalance account name
-     */
-    public static String getImbalanceAccountName(Currency currency){
-        return GnuCashApplication.getAppContext().getString(R.string.imbalance_account_name) + "-" + currency.getCurrencyCode();
-    }
-
-    /**
-     * Get the name of the default account for opening balances for the current locale.
-     * For the English locale, it will be "Equity:Opening Balances"
-     * @return Fully qualified account name of the opening balances account
-     */
-    public static String getOpeningBalanceAccountFullName(){
-        Context context = GnuCashApplication.getAppContext();
-        return context.getString(R.string.account_name_equity)
-                + ACCOUNT_NAME_SEPARATOR
-                + context.getString(R.string.account_name_opening_balances);
-    }
-
-    /**
-     * Returns the list of currencies in the database
-     * @return List of currencies in the database
-     */
-    public List<Currency> getCurrencies(){
-        Cursor cursor = mDb.query(true, AccountEntry.TABLE_NAME, new String[]{AccountEntry.COLUMN_CURRENCY},
-                null, null, null, null, null, null);
-        List<Currency> currencyList = new ArrayList<Currency>();
-        if (cursor != null){
-            while (cursor.moveToNext()){
-                String currencyCode = cursor.getString(cursor.getColumnIndexOrThrow(AccountEntry.COLUMN_CURRENCY));
-                currencyList.add(Currency.getInstance(currencyCode));
-            }
-            cursor.close();
-        }
-        return currencyList;
-    }
-
-    @Override
-	public void close() {
-		super.close();
-		mTransactionsAdapter.close();
-	}
-
-    /**
 	 * Adds an account to the database. 
 	 * If an account already exists in the database with the same unique ID, 
 	 * then just update that account. 
@@ -510,7 +465,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
         if (fullName == null)
             throw new IllegalArgumentException("The account name cannot be null");
 
-        String[] tokens = fullName.split(ACCOUNT_NAME_SEPARATOR);
+        String[] tokens = fullName.trim().split(ACCOUNT_NAME_SEPARATOR);
         String uid = null;
         String parentName = "";
         for (String token : tokens) {
@@ -1021,7 +976,57 @@ public class AccountsDbAdapter extends DatabaseAdapter {
         return openingTransactions;
     }
 
-	/**
+
+    /**
+     * Returns the imbalance account where to store transactions which are not double entry
+     * @param currency Currency of the transaction
+     * @return Imbalance account name
+     */
+    public static String getImbalanceAccountName(Currency currency){
+        return GnuCashApplication.getAppContext().getString(R.string.imbalance_account_name) + "-" + currency.getCurrencyCode();
+    }
+
+    /**
+     * Get the name of the default account for opening balances for the current locale.
+     * For the English locale, it will be "Equity:Opening Balances"
+     * @return Fully qualified account name of the opening balances account
+     */
+    public static String getOpeningBalanceAccountFullName(){
+        Context context = GnuCashApplication.getAppContext();
+        String parentEquity = context.getString(R.string.account_name_equity).trim();
+        //German locale has no parent Equity account
+        if (parentEquity.length() > 0) {
+            return parentEquity + ACCOUNT_NAME_SEPARATOR
+                    + context.getString(R.string.account_name_opening_balances);
+        } else
+            return context.getString(R.string.account_name_opening_balances);
+    }
+
+    /**
+     * Returns the list of currencies in the database
+     * @return List of currencies in the database
+     */
+    public List<Currency> getCurrencies(){
+        Cursor cursor = mDb.query(true, AccountEntry.TABLE_NAME, new String[]{AccountEntry.COLUMN_CURRENCY},
+                null, null, null, null, null, null);
+        List<Currency> currencyList = new ArrayList<Currency>();
+        if (cursor != null){
+            while (cursor.moveToNext()){
+                String currencyCode = cursor.getString(cursor.getColumnIndexOrThrow(AccountEntry.COLUMN_CURRENCY));
+                currencyList.add(Currency.getInstance(currencyCode));
+            }
+            cursor.close();
+        }
+        return currencyList;
+    }
+
+    @Override
+    public void close() {
+        super.close();
+        mTransactionsAdapter.close();
+    }
+
+    /**
 	 * Deletes all accounts and their transactions (and their splits) from the database.
      * Basically empties all 3 tables, so use with care ;)
 	 */

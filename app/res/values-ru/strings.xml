@@ -21,7 +21,7 @@
     <string name="title_add_account">Создать счёт</string>
     <string name="title_edit_account">Редактировать счёт</string>
     <string name="info_details">Информация</string>
-    <string name="menu_export_ofx">Экспортировать OFX</string>
+    <string name="menu_export">Экспортировать OFX</string>
     <string name="description_add_transaction_icon">Добавить к счёту новую проводку</string>
     <string name="label_no_accounts">Нет счетов</string>
     <string name="label_account_name">Имя счёта</string>
@@ -51,7 +51,7 @@
     <string name="title_export_dialog">Экспорт проводок</string>
     <string name="option_export_all_transactions">Экспортировать все</string>
     <string name="hint_export_choice">Экспортировать все проводки, а не только новые.</string>
-    <string name="toast_export_error">Ошибка при экспорте OFX</string>
+    <string name="toast_export_error">Ошибка при экспорте %1$s</string>
     <string name="btn_export">Экспорт</string>
     <string name="option_delete_after_export">Удалить после экспорта</string>
     <string name="hint_delete_after_export">Все экспортированные проводки будут удалены по завершении.</string>
@@ -116,7 +116,8 @@
 		<item>Cordoba Oro</item>
 		<item>Costa Rican Colon</item>
 		<item>Croatian Kuna</item>
-		<item>Cuban Peso</item>
+        <item>Cuban Convertible Peso</item>
+        <item>Cuban Peso</item>
 		<item>Czech Koruna</item>
 		<item>Dalasi</item>
 		<item>Danish Krone</item>
@@ -193,8 +194,6 @@
 		<item>Pakistan Rupee</item>
 		<item>Palladium</item>
 		<item>Pataca</item>
-		<item>Peso Convertible</item>
-		<item>Peso Uruguayo</item>
 		<item>Philippine Peso</item>
 		<item>Platinum</item>
 		<item>Pound Sterling</item>
@@ -243,7 +242,8 @@
 		<item>Unidad de Valor Real</item>
 		<item>Unidades de fomento</item>
 		<item>Uruguay Peso en Unidades Indexadas (URUIURUI)</item>
-		<item>US Dollar</item>
+        <item>Uruguayan Peso</item>
+        <item>US Dollar</item>
 		<item>Uzbekistan Sum</item>
 		<item>Vatu</item>
 		<item>WIR Euro</item>
@@ -273,10 +273,9 @@
 	<string name="title_about_gnucash">О Gnucash</string>
         <string name="summary_about_gnucash">Gnucash - программа учёта финансов для Android.\nОна позволяет легко отслеживать расходы и передавать информацию в Gnucash для рабочей станции посредством файлов формата OFX (Open Financial eXchange).</string>
 	<string name="title_about">О программе</string>
-	<string name="toast_error_exporting">Не могу записать файл OFX в :\n</string>
-	<string name="toast_ofx_exported_to">Файл OFX экспортирован в:\n</string>
-	<string name="title_export_email">Экспорт OFX-файла из Gnucash</string>
-	<string name="description_export_email">OFX-файл, экспортированный из Gnucash </string>
+	<string name="toast_format_exported_to">Файл %1$s экспортирован в:\n</string>
+	<string name="title_export_email">Экспорт %1$s-файла из Gnucash Android</string>
+	<string name="description_export_email">GnuCash Android export from </string>
 	<string name="header_transaction_settings">Проводки</string>
 	<string name="title_transaction_preferences">Свойства проводки</string>
 	<string name="title_account_preferences">Свойства счёта</string>
@@ -305,11 +304,12 @@
 	<string name="title_whats_new">Новости</string>
 	<string name="whats_new">
         - Create multiple splits per transaction\n
-        - Account balances now follow GnuCash Desktop accounting principles\n
-        - Use account-specific labels for CREDIT/DEBITs (accounting terminology)\n
+        - Fixed computation of account balances for different account types\n
+        - Use account-specific labels for CREDIT/DEBITs\n
         - Automated backup of database before deletion operations\n
         - Restore most recent backup of database (in Settings -> General)\n
         - Read transactions from GnuCash XML files (limited support)\n
+        - Option to save opening balances before deleting transactions\n
         - Multiple bug fixes and improvements\n
 	</string>
 	<string name="label_dismiss">Отказаться</string>
