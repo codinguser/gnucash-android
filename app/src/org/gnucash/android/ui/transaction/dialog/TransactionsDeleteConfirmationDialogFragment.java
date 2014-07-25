@@ -16,7 +16,11 @@
 package org.gnucash.android.ui.transaction.dialog;
 
 import org.gnucash.android.R;
+import org.gnucash.android.app.GnuCashApplication;
+import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.TransactionsDbAdapter;
+import org.gnucash.android.export.xml.GncXmlExporter;
+import org.gnucash.android.model.Transaction;
 import org.gnucash.android.ui.UxArgument;
 import org.gnucash.android.ui.account.AccountsListFragment;
 
@@ -27,6 +31,9 @@ import android.os.Bundle;
 
 import com.actionbarsherlock.app.SherlockDialogFragment;
 import org.gnucash.android.ui.widget.WidgetConfigurationActivity;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Displays a delete confirmation dialog for transactions
@@ -54,27 +61,43 @@ public class TransactionsDeleteConfirmationDialogFragment extends SherlockDialog
                 .setIcon(android.R.drawable.ic_delete)
                 .setTitle(title).setMessage(message)
                 .setPositiveButton(R.string.alert_dialog_ok_delete,
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int whichButton) {
-                        	TransactionsDbAdapter adapter = new TransactionsDbAdapter(getSherlockActivity());                            
-                            if (rowId == 0){
-	                        	adapter.deleteAllRecords();
-                            } else {
-                            	adapter.deleteRecord(rowId);
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int whichButton) {
+                                TransactionsDbAdapter transactionsDbAdapter = new TransactionsDbAdapter(getSherlockActivity());
+                                if (rowId == 0) {
+                                    GncXmlExporter.createBackup(); //create backup before deleting everything
+                                    List<Transaction> openingBalances = new ArrayList<Transaction>();
+                                    boolean preserveOpeningBalances = GnuCashApplication.shouldSaveOpeningBalances(false);
+                                    if (preserveOpeningBalances) {
+                                        AccountsDbAdapter accountsDbAdapter = new AccountsDbAdapter(getActivity());
+                                        openingBalances = accountsDbAdapter.getAllOpeningBalanceTransactions();
+                                        accountsDbAdapter.close();
+                                    }
+
+                                    transactionsDbAdapter.deleteAllRecords();
+
+                                    if (preserveOpeningBalances) {
+                                        for (Transaction openingBalance : openingBalances) {
+                                            transactionsDbAdapter.addTransaction(openingBalance);
+                                        }
+                                    }
+                                } else {
+                                    transactionsDbAdapter.deleteRecord(rowId);
+                                }
+                                transactionsDbAdapter.close();
+                                if (getTargetFragment() instanceof AccountsListFragment) {
+                                    ((AccountsListFragment) getTargetFragment()).refresh();
+                                }
+                                WidgetConfigurationActivity.updateAllWidgets(getActivity());
                             }
-                            if (getTargetFragment() instanceof AccountsListFragment){                            	
-                            	((AccountsListFragment)getTargetFragment()).refresh();
-                            }
-                            WidgetConfigurationActivity.updateAllWidgets(getActivity());
                         }
-                    }
                 )
                 .setNegativeButton(R.string.alert_dialog_cancel,
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int whichButton) {
-                        	dismiss();
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int whichButton) {
+                                dismiss();
+                            }
                         }
-                    }
                 )
                 .create();
     }

@@ -42,10 +42,13 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.viewpagerindicator.TitlePageIndicator;
 import org.gnucash.android.R;
+import org.gnucash.android.app.GnuCashApplication;
+import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.model.Account;
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.DatabaseAdapter;
 import org.gnucash.android.db.DatabaseHelper;
+import org.gnucash.android.model.Money;
 import org.gnucash.android.ui.util.Refreshable;
 import org.gnucash.android.ui.UxArgument;
 import org.gnucash.android.ui.account.AccountsActivity;
@@ -115,6 +118,11 @@ public class TransactionsActivity extends SherlockFragmentActivity implements
      * Account database adapter for manipulating the accounts list in navigation
      */
     private AccountsDbAdapter mAccountsDbAdapter;
+
+    /**
+     * Hold the accounts cursor that will be used in the Navigation
+     */
+    private Cursor mAccountsCursor = null;
 
     /**
      * This is the last known color for the title indicator.
@@ -348,11 +356,14 @@ public class TransactionsActivity extends SherlockFragmentActivity implements
 	 */
 	private void setupActionBarNavigation() {
 		// set up spinner adapter for navigation list
-		Cursor accountsCursor = mAccountsDbAdapter.fetchAllRecordsOrderedByFullName();
+        if (mAccountsCursor != null) {
+            mAccountsCursor.close();
+        }
+		mAccountsCursor = mAccountsDbAdapter.fetchAllRecordsOrderedByFullName();
 
         SpinnerAdapter mSpinnerAdapter = new QualifiedAccountNameCursorAdapter(
                 getSupportActionBar().getThemedContext(),
-                R.layout.sherlock_spinner_item, accountsCursor);
+                R.layout.sherlock_spinner_item, mAccountsCursor);
 		((ResourceCursorAdapter) mSpinnerAdapter)
 				.setDropDownViewResource(R.layout.sherlock_spinner_dropdown_item);
 		ActionBar actionBar = getSupportActionBar();
@@ -360,7 +371,7 @@ public class TransactionsActivity extends SherlockFragmentActivity implements
 		actionBar.setListNavigationCallbacks(mSpinnerAdapter,
 				mTransactionListNavigationListener);
         actionBar.setDisplayHomeAsUpEnabled(true);
-		
+
 		updateNavigationSelection();
 	}
 	
@@ -373,7 +384,7 @@ public class TransactionsActivity extends SherlockFragmentActivity implements
 		int i = 0;
 		Cursor accountsCursor = mAccountsDbAdapter.fetchAllRecordsOrderedByFullName();
         while (accountsCursor.moveToNext()) {
-            long id = accountsCursor.getLong(DatabaseAdapter.COLUMN_ROW_ID);
+            long id = accountsCursor.getLong(accountsCursor.getColumnIndexOrThrow(DatabaseSchema.AccountEntry._ID));
             if (mAccountId == id) {
                 getSupportActionBar().setSelectedNavigationItem(i);
                 break;
@@ -420,7 +431,7 @@ public class TransactionsActivity extends SherlockFragmentActivity implements
                 AccountsDbAdapter accountsDbAdapter = new AccountsDbAdapter(this);
                 boolean isFavorite = accountsDbAdapter.isFavoriteAccount(mAccountId);
                 //toggle favorite preference
-                accountsDbAdapter.updateAccount(mAccountId, DatabaseHelper.KEY_FAVORITE, isFavorite ? "0" : "1");
+                accountsDbAdapter.updateAccount(mAccountId, DatabaseSchema.AccountEntry.COLUMN_FAVORITE, isFavorite ? "0" : "1");
                 accountsDbAdapter.close();
                 supportInvalidateOptionsMenu();
                 return true;
@@ -449,6 +460,7 @@ public class TransactionsActivity extends SherlockFragmentActivity implements
     @Override
 	protected void onDestroy() {
 		super.onDestroy();
+        mAccountsCursor.close();
 		mAccountsDbAdapter.close();
 	}
 	
@@ -500,7 +512,21 @@ public class TransactionsActivity extends SherlockFragmentActivity implements
 			fragmentTransaction.addToBackStack(null);
 		fragmentTransaction.commit();
 	}
-	
+
+    /**
+     * Display the balance of a transaction in a text view and format the text color to match the sign of the amount
+     * @param balanceTextView {@link android.widget.TextView} where balance is to be displayed
+     * @param balance {@link org.gnucash.android.model.Money} balance to display
+     */
+    public static void displayBalance(TextView balanceTextView, Money balance){
+        balanceTextView.setText(balance.formattedString());
+        Context context = GnuCashApplication.getAppContext();
+        int fontColor = balance.isNegative() ?
+                context.getResources().getColor(R.color.debit_red) :
+                context.getResources().getColor(R.color.credit_green);
+        balanceTextView.setTextColor(fontColor);
+    }
+
 	@Override
 	public void createNewTransaction(long accountRowId) {
         Intent createTransactionIntent = new Intent(this.getApplicationContext(), TransactionsActivity.class);

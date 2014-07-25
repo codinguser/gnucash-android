@@ -48,6 +48,11 @@ public final class UxArgument {
      */
     public static final String PARENT_ACCOUNT_ID        = "parent_account_id";
 
+    /**
+     * Amount passed as a string
+     */
+    public static final String AMOUNT_STRING = "starting_amount";
+
     //prevent initialization of instances of this class
     private UxArgument(){
         //prevent even the native class from calling the ctor

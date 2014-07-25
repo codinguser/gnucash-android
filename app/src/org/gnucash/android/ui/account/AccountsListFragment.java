@@ -26,7 +26,6 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.Rect;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
@@ -53,16 +52,14 @@ import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import org.gnucash.android.R;
 import org.gnucash.android.model.Account;
-import org.gnucash.android.model.Money;
 import org.gnucash.android.db.*;
 import org.gnucash.android.export.ExportDialogFragment;
+import org.gnucash.android.ui.util.AccountBalanceTask;
 import org.gnucash.android.ui.util.Refreshable;
 import org.gnucash.android.ui.UxArgument;
 import org.gnucash.android.ui.transaction.TransactionsActivity;
 import org.gnucash.android.ui.widget.WidgetConfigurationActivity;
 import org.gnucash.android.ui.util.OnAccountClickedListener;
-
-import java.lang.ref.WeakReference;
 
 /**
  * Fragment for displaying the list of accounts in the database
@@ -213,7 +210,7 @@ public class AccountsListFragment extends SherlockListFragment implements
         mAccountsCursorAdapter = new AccountsCursorAdapter(
                 getActivity().getApplicationContext(),
                 R.layout.list_item_account, null,
-                new String[]{DatabaseHelper.KEY_NAME},
+                new String[]{DatabaseSchema.AccountEntry.COLUMN_NAME},
                 new int[]{R.id.primary_text});
 
         setListAdapter(mAccountsCursorAdapter);
@@ -633,9 +630,8 @@ public class AccountsListFragment extends SherlockListFragment implements
             Cursor cursor;
 
             if (mFilter != null){
-                StringBuffer queryBuffer = new StringBuffer(DatabaseHelper.KEY_NAME)
-                        .append(" LIKE '%").append(mFilter).append("%'");
-                cursor = ((AccountsDbAdapter)mDatabaseAdapter).fetchAccounts(queryBuffer.toString());
+                cursor = ((AccountsDbAdapter)mDatabaseAdapter)
+                        .fetchAccounts(DatabaseSchema.AccountEntry.COLUMN_NAME + " LIKE '%" + mFilter + "%'");
             } else {
                 if (mParentAccountId > 0)
                     cursor = ((AccountsDbAdapter) mDatabaseAdapter).fetchSubAccounts(mParentAccountId);
@@ -686,7 +682,7 @@ public class AccountsListFragment extends SherlockListFragment implements
             // perform the default binding
             super.bindView(v, context, cursor);
 
-            final long accountId = cursor.getLong(DatabaseAdapter.COLUMN_ROW_ID);
+            final long accountId = cursor.getLong(cursor.getColumnIndexOrThrow(DatabaseSchema.AccountEntry._ID));
 
             TextView subAccountTextView = (TextView) v.findViewById(R.id.secondary_text);
             int subAccountCount = mAccountsDbAdapter.getSubAccountCount(accountId);
@@ -703,7 +699,7 @@ public class AccountsListFragment extends SherlockListFragment implements
             new AccountBalanceTask(accountBalanceTextView, getActivity()).execute(accountId);
 
             View colorStripView = v.findViewById(R.id.account_color_strip);
-            String accountColor = cursor.getString(DatabaseAdapter.COLUMN_COLOR_CODE);
+            String accountColor = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.AccountEntry.COLUMN_COLOR_CODE));
             if (accountColor != null){
                 int color = Color.parseColor(accountColor);
                 colorStripView.setBackgroundColor(color);
@@ -767,55 +763,6 @@ public class AccountsListFragment extends SherlockListFragment implements
             });
 
             return convertView;
-        }
-    }
-
-    /**
-     * An asynchronous task for computing the account balance of an account.
-     * This is done asynchronously because in cases of deeply nested accounts,
-     * it can take some time and would block the UI thread otherwise.
-     */
-    public static class AccountBalanceTask extends AsyncTask<Long, Void, Money> {
-        private final WeakReference<TextView> accountBalanceTextViewReference;
-        private final AccountsDbAdapter accountsDbAdapter;
-
-        public AccountBalanceTask(TextView balanceTextView, Context context){
-            accountBalanceTextViewReference = new WeakReference<TextView>(balanceTextView);
-            accountsDbAdapter = new AccountsDbAdapter(context);
-        }
-
-        @Override
-        protected Money doInBackground(Long... params) {
-            //if the view for which we are doing this job is dead, kill the job as well
-            if (accountBalanceTextViewReference == null || accountBalanceTextViewReference.get() == null){
-                cancel(true);
-                return Money.getZeroInstance();
-            }
-            Money balance = Money.getZeroInstance();
-
-            try {
-                balance = accountsDbAdapter.getAccountBalance(params[0]);
-            } catch (IllegalArgumentException ex){
-                //sometimes a load computation has been started and the data set changes.
-                //the account ID may no longer exist. So we catch that exception here and do nothing
-                Log.e(TAG, "Error computing account balance: " + ex);
-            }
-            return balance;
-        }
-
-        @Override
-        protected void onPostExecute(Money balance) {
-            if (accountBalanceTextViewReference != null && balance != null){
-                final Context context = accountsDbAdapter.getContext();
-                final TextView balanceTextView = accountBalanceTextViewReference.get();
-                if (balanceTextView != null){
-                    balanceTextView.setText(balance.formattedString());
-                    int fontColor = balance.isNegative() ? context.getResources().getColor(R.color.debit_red) :
-                            context.getResources().getColor(R.color.credit_green);
-                    balanceTextView.setTextColor(fontColor);
-                }
-            }
-            accountsDbAdapter.close();
         }
     }
 

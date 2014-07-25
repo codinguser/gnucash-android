@@ -25,6 +25,7 @@ import android.os.Bundle;
 import android.widget.Toast;
 import org.gnucash.android.R;
 import org.gnucash.android.db.AccountsDbAdapter;
+import org.gnucash.android.export.xml.GncXmlExporter;
 import org.gnucash.android.ui.widget.WidgetConfigurationActivity;
 
 /**
@@ -49,6 +50,7 @@ public class DeleteAllAccountsConfirmationDialog extends DialogFragment {
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int whichButton) {
                                 Context context = getDialog().getContext();
+                                GncXmlExporter.createBackup();
                                 AccountsDbAdapter accountsDbAdapter = new AccountsDbAdapter(context);
                                 accountsDbAdapter.deleteAllRecords();
                                 accountsDbAdapter.close();

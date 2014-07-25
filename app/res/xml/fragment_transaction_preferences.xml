@@ -23,7 +23,12 @@
                     android:summary="@string/summary_default_transaction_type"/>
     <CheckBoxPreference android:summary="@string/summary_use_double_entry"
                         android:key="@string/key_use_double_entry"
+                        android:defaultValue="true"
                         android:title="@string/title_use_double_entry"/>
+    <CheckBoxPreference android:summary="@string/summary_save_opening_balances"
+                        android:key="@string/key_save_opening_balances"
+                        android:defaultValue="false"
+                        android:title="@string/title_save_opening_balances" />
     <Preference android:key="@string/key_delete_all_transactions"
                 android:summary="@string/summary_delete_all_transactions"
                 android:title="@string/title_delete_all_transactions" />

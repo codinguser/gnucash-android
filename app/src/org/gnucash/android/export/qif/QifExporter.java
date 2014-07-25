@@ -15,46 +15,51 @@
  */
 package org.gnucash.android.export.qif;
 
-import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
+import org.gnucash.android.export.ExportParams;
+import org.gnucash.android.export.Exporter;
 import org.gnucash.android.model.Account;
-import org.gnucash.android.db.AccountsDbAdapter;
-import org.gnucash.android.db.TransactionsDbAdapter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * @author Ngewi
  */
-public class QifExporter {
-    boolean mExportAll;
-    Context mContext;
+public class QifExporter extends Exporter{
     private List<Account> mAccountsList;
 
-    public QifExporter(Context context, boolean exportAll){
-        AccountsDbAdapter accountsDbAdapter = new AccountsDbAdapter(context);
-        mAccountsList = exportAll ? accountsDbAdapter.getAllAccounts() : accountsDbAdapter.getExportableAccounts();
-        accountsDbAdapter.close();
-
-        this.mExportAll = exportAll;
-        this.mContext = context;
+    public QifExporter(ExportParams params){
+        super(params);
     }
 
-    public String generateQIF(){
+    public QifExporter(ExportParams params,  SQLiteDatabase db){
+        super(params, db);
+    }
+
+    private String generateQIF(){
         StringBuffer qifBuffer = new StringBuffer();
 
-        TransactionsDbAdapter transactionsDbAdapter = new TransactionsDbAdapter(mContext);
+        List<String> exportedTransactions = new ArrayList<String>();
         for (Account account : mAccountsList) {
             if (account.getTransactionCount() == 0)
                 continue;
 
-            qifBuffer.append(account.toQIF(mExportAll) + "\n");
+            qifBuffer.append(account.toQIF(mParameters.shouldExportAllTransactions(), exportedTransactions) + "\n");
 
             //mark as exported
-            transactionsDbAdapter.markAsExported(account.getUID());
+            mAccountsDbAdapter.markAsExported(account.getUID());
         }
-        transactionsDbAdapter.close();
+        mAccountsDbAdapter.close();
 
         return qifBuffer.toString();
     }
 
+    @Override
+    public String generateExport() throws ExporterException {
+        mAccountsList = mParameters.shouldExportAllTransactions() ?
+                mAccountsDbAdapter.getAllAccounts() : mAccountsDbAdapter.getExportableAccounts();
+
+        return generateQIF();
+    }
 }

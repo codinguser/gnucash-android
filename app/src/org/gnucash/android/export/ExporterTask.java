@@ -21,7 +21,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Environment;
+import android.os.Build;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -29,21 +29,11 @@ import android.util.Log;
 import android.widget.Toast;
 import org.gnucash.android.R;
 import org.gnucash.android.export.ofx.OfxExporter;
-import org.gnucash.android.export.ofx.OfxHelper;
 import org.gnucash.android.export.qif.QifExporter;
+import org.gnucash.android.export.xml.GncXmlExporter;
 import org.gnucash.android.ui.account.AccountsActivity;
 import org.gnucash.android.ui.transaction.dialog.TransactionsDeleteConfirmationDialogFragment;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.ProcessingInstruction;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.*;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 import java.io.*;
 import java.nio.channels.FileChannel;
 import java.text.SimpleDateFormat;
@@ -83,6 +73,10 @@ public class ExporterTask extends AsyncTask<ExportParams, Void, Boolean> {
         mProgressDialog.setTitle(R.string.title_progress_exporting_transactions);
         mProgressDialog.setIndeterminate(true);
         mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.HONEYCOMB){
+            mProgressDialog.setProgressNumberFormat(null);
+            mProgressDialog.setProgressPercentFormat(null);
+        }
         mProgressDialog.show();
     }
 
@@ -94,30 +88,33 @@ public class ExporterTask extends AsyncTask<ExportParams, Void, Boolean> {
     @Override
     protected Boolean doInBackground(ExportParams... params) {
         mExportParams = params[0];
-        boolean exportAllTransactions = mExportParams.shouldExportAllTransactions();
-        try {
-            switch (mExportParams.getExportFormat()) {
-                case QIF: {
-                    QifExporter qifExporter = new QifExporter(mContext, exportAllTransactions);
-                    String qif = qifExporter.generateQIF();
 
-                    writeQifExternalStorage(qif);
-                }
-                return true;
+        Exporter mExporter;
+        switch (mExportParams.getExportFormat()) {
+                case QIF:
+                    mExporter = new QifExporter(mExportParams);
+                    break;
 
-                case OFX: {
-                    Document document = exportOfx(exportAllTransactions);
-                    writeOfxToExternalStorage(document);
-                }
-                return true;
+                case OFX:
+                    mExporter = new OfxExporter(mExportParams);
+                    break;
+
+                case GNC_XML:
+                default:
+                    mExporter = new GncXmlExporter(mExportParams);
+                    break;
             }
+
+        try {
+            writeOutput(mExporter.generateExport());
         } catch (Exception e) {
             e.printStackTrace();
             Log.e(TAG, e.getMessage());
-            Toast.makeText(mContext, R.string.error_exporting,
+            Toast.makeText(mContext, R.string.toast_export_error,
                     Toast.LENGTH_LONG).show();
-        };
-        return false;
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -126,10 +123,9 @@ public class ExporterTask extends AsyncTask<ExportParams, Void, Boolean> {
      */
     @Override
     protected void onPostExecute(Boolean exportResult) {
-
         if (!exportResult){
             Toast.makeText(mContext,
-                    mContext.getString(R.string.toast_error_exporting),
+                    mContext.getString(R.string.toast_export_error, mExportParams.getExportFormat().name()),
                     Toast.LENGTH_LONG).show();
             return;
         }
@@ -141,15 +137,14 @@ public class ExporterTask extends AsyncTask<ExportParams, Void, Boolean> {
 
             case SD_CARD:
                 File src = new File(mExportParams.getTargetFilepath());
-                new File(Environment.getExternalStorageDirectory() + "/gnucash/").mkdirs();
-                File dst = new File(Environment.getExternalStorageDirectory()
-                        + "/gnucash/" + ExportDialogFragment.buildExportFilename(mExportParams.getExportFormat()));
+                File dst = Exporter.createExportFile(mExportParams.getExportFormat());
 
                 try {
                     copyFile(src, dst);
                 } catch (IOException e) {
                     Toast.makeText(mContext,
-                            mContext.getString(R.string.toast_error_exporting_ofx) + dst.getAbsolutePath(),
+                            mContext.getString(R.string.toast_export_error, mExportParams.getExportFormat().name())
+                                    + dst.getAbsolutePath(),
                             Toast.LENGTH_LONG).show();
                     Log.e(TAG, e.getMessage());
                     break;
@@ -157,7 +152,8 @@ public class ExporterTask extends AsyncTask<ExportParams, Void, Boolean> {
 
                 //file already exists, just let the user know
                 Toast.makeText(mContext,
-                        mContext.getString(R.string.toast_ofx_exported_to) + dst.getAbsolutePath(),
+                        mContext.getString(R.string.toast_format_exported_to, mExportParams.getExportFormat().name())
+                                + dst.getAbsolutePath(),
                         Toast.LENGTH_LONG).show();
                 break;
 
@@ -167,8 +163,8 @@ public class ExporterTask extends AsyncTask<ExportParams, Void, Boolean> {
 
         if (mExportParams.shouldDeleteTransactionsAfterExport()){
             android.support.v4.app.FragmentManager fragmentManager = ((FragmentActivity)mContext).getSupportFragmentManager();
-            Fragment currentFragment = fragmentManager
-                    .findFragmentByTag(AccountsActivity.FRAGMENT_ACCOUNTS_LIST);
+            Fragment currentFragment = ((AccountsActivity)mContext).getCurrentAccountListFragment();
+
             TransactionsDeleteConfirmationDialogFragment alertFragment =
                     TransactionsDeleteConfirmationDialogFragment.newInstance(R.string.title_confirm_delete, 0);
             alertFragment.setTargetFragment(currentFragment, 0);
@@ -180,70 +176,16 @@ public class ExporterTask extends AsyncTask<ExportParams, Void, Boolean> {
 
     }
 
-
     /**
-     * Exports transactions in the database to the OFX format.
-     * The accounts are written to a DOM document and returned
-     * @param exportAll Flag to export all transactions or only the new ones since last export
-     * @return DOM {@link Document} containing the OFX file information
-     * @throws javax.xml.parsers.ParserConfigurationException
+     * Writes out the String containing the exported data to disk
+     * @param exportOutput String containing exported data
+     * @throws IOException if the write fails
      */
-    protected Document exportOfx(boolean exportAll) throws ParserConfigurationException {
-        DocumentBuilderFactory docFactory = DocumentBuilderFactory
-                .newInstance();
-        DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
-
-        Document document = docBuilder.newDocument();
-        Element root = document.createElement("OFX");
-
-        ProcessingInstruction pi = document.createProcessingInstruction("OFX", OfxHelper.OFX_HEADER);
-        document.appendChild(pi);
-        document.appendChild(root);
-
-        OfxExporter exporter = new OfxExporter(mContext, exportAll);
-        exporter.toOfx(document, root);
-
-        return document;
-    }
-
-    /**
-     * Writes out the String containing the exported transaction in QIF format to disk
-     * @param qif String containing exported transactions
-     * @throws IOException
-     */
-    private void writeQifExternalStorage(String qif) throws IOException {
+    private void writeOutput(String exportOutput) throws IOException {
         File file = new File(mExportParams.getTargetFilepath());
 
         BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), "UTF-8"));
-        writer.write(qif);
-
-        writer.flush();
-    }
-
-    /**
-     * Writes the OFX document <code>doc</code> to external storage
-     * @param doc Document containing OFX file data
-     * @throws IOException if file could not be saved
-     */
-    private void writeOfxToExternalStorage(Document doc) throws IOException{
-        File file = new File(mExportParams.getTargetFilepath());
-
-        BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), "UTF-8"));
-        boolean useXmlHeader = PreferenceManager.getDefaultSharedPreferences(mContext)
-                .getBoolean(mContext.getString(R.string.key_xml_ofx_header), false);
-
-        //if we want SGML OFX headers, write first to string and then prepend header
-        if (useXmlHeader){
-            write(doc, writer, false);
-        } else {
-            Node ofxNode = doc.getElementsByTagName("OFX").item(0);
-            StringWriter stringWriter = new StringWriter();
-            write(ofxNode, stringWriter, true);
-
-            StringBuffer stringBuffer = new StringBuffer(OfxHelper.OFX_SGML_HEADER);
-            stringBuffer.append('\n');
-            writer.write(stringBuffer.toString() + stringWriter.toString());
-        }
+        writer.write(exportOutput);
 
         writer.flush();
         writer.close();
@@ -260,7 +202,8 @@ public class ExporterTask extends AsyncTask<ExportParams, Void, Boolean> {
         Intent shareIntent = new Intent(Intent.ACTION_SEND);
         shareIntent.setType("application/xml");
         shareIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse("file://" + path));
-        shareIntent.putExtra(Intent.EXTRA_SUBJECT, mContext.getString(R.string.title_export_email));
+        shareIntent.putExtra(Intent.EXTRA_SUBJECT, mContext.getString(R.string.title_export_email,
+                mExportParams.getExportFormat().name()));
         if (defaultEmail != null && defaultEmail.trim().length() > 0){
             shareIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{defaultEmail});
         }
@@ -268,7 +211,8 @@ public class ExporterTask extends AsyncTask<ExportParams, Void, Boolean> {
 
         shareIntent.putExtra(Intent.EXTRA_TEXT, mContext.getString(R.string.description_export_email)
                 + " " + formatter.format(new Date(System.currentTimeMillis())));
-        mContext.startActivity(Intent.createChooser(shareIntent, mContext.getString(R.string.title_share_ofx_with)));
+
+        mContext.startActivity(Intent.createChooser(shareIntent, mContext.getString(R.string.title_select_export_destination)));
     }
 
     /**
@@ -295,31 +239,4 @@ public class ExporterTask extends AsyncTask<ExportParams, Void, Boolean> {
         }
     }
 
-    /**
-     * Writes out the document held in <code>node</code> to <code>outputWriter</code>
-     * @param node {@link Node} containing the OFX document structure. Usually the parent node
-     * @param outputWriter {@link Writer} to use in writing the file to stream
-     * @param omitXmlDeclaration Flag which causes the XML declaration to be omitted
-     */
-    public void write(Node node, Writer outputWriter, boolean omitXmlDeclaration){
-        try {
-            TransformerFactory transformerFactory = TransformerFactory
-                    .newInstance();
-            Transformer transformer = transformerFactory.newTransformer();
-            DOMSource source = new DOMSource(node);
-            StreamResult result = new StreamResult(outputWriter);
-
-            transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
-            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-            if (omitXmlDeclaration) {
-                transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
-            }
-
-            transformer.transform(source, result);
-        } catch (TransformerConfigurationException txconfigException) {
-            txconfigException.printStackTrace();
-        } catch (TransformerException tfException) {
-            tfException.printStackTrace();
-        }
-    }
 }

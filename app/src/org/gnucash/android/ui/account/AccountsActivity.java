@@ -17,7 +17,6 @@
 package org.gnucash.android.ui.account;
 
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -26,7 +25,6 @@ import android.content.SharedPreferences.Editor;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Resources;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
@@ -39,28 +37,25 @@ import android.util.Log;
 import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import com.viewpagerindicator.TitlePageIndicator;
 import org.gnucash.android.R;
+import org.gnucash.android.importer.GncXmlImportTask;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.ui.util.Refreshable;
 import org.gnucash.android.ui.UxArgument;
 import org.gnucash.android.ui.settings.SettingsActivity;
 import org.gnucash.android.ui.transaction.ScheduledTransactionsListFragment;
 import org.gnucash.android.ui.transaction.TransactionsActivity;
-import org.gnucash.android.util.GnucashAccountXmlHandler;
 import org.gnucash.android.ui.util.OnAccountClickedListener;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.Currency;
-import java.util.HashMap;
 import java.util.Locale;
-import java.util.Map;
 
 /**
  * Manages actions related to accounts, displaying, exporting and creating new accounts
@@ -133,7 +128,7 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
     /**
      * Map containing fragments for the different tabs
      */
-    private Map<Integer,Refreshable> mFragmentPageReferenceMap = new HashMap<Integer, Refreshable>();
+    private SparseArray<Refreshable> mFragmentPageReferenceMap = new SparseArray<Refreshable>();
 
     /**
      * ViewPager which manages the different tabs
@@ -204,6 +199,11 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
         }
     }
 
+    public AccountsListFragment getCurrentAccountListFragment(){
+        int index = mPager.getCurrentItem();
+        return (AccountsListFragment)(mFragmentPageReferenceMap.get(index));
+    }
+
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -238,7 +238,10 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
             PagerAdapter mPagerAdapter = new AccountViewPagerAdapter(getSupportFragmentManager());
             mPager.setAdapter(mPagerAdapter);
             titlePageIndicator.setViewPager(mPager);
-            mPager.setCurrentItem(INDEX_TOP_LEVEL_ACCOUNTS_FRAGMENT);
+
+            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+            int lastTabIndex = preferences.getInt(LAST_OPEN_TAB_INDEX, INDEX_TOP_LEVEL_ACCOUNTS_FRAGMENT);
+            mPager.setCurrentItem(lastTabIndex);
         }
 
 	}
@@ -247,19 +250,22 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
      * Loads default setting for currency and performs app first-run initialization
      */
     private void init() {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        PreferenceManager.setDefaultValues(this, R.xml.fragment_transaction_preferences, false);
+
         Locale locale = Locale.getDefault();
         //sometimes the locale en_UK is returned which causes a crash with Currency
         if (locale.getCountry().equals("UK")) {
             locale = new Locale(locale.getLanguage(), "GB");
         }
+
         String currencyCode;
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         try { //there are some strange locales out there
             currencyCode = prefs.getString(getString(R.string.key_default_currency),
                     Currency.getInstance(locale).getCurrencyCode());
         } catch (Exception e) {
             Log.e(LOG_TAG, e.getMessage());
-            currencyCode = "USD"; //just use USD and let the user choose
+            currencyCode = "USD";
         }
 
         Money.DEFAULT_CURRENCY_CODE = currencyCode;
@@ -267,6 +273,8 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
         boolean firstRun = prefs.getBoolean(getString(R.string.key_first_run), true);
         if (firstRun){
             createDefaultAccounts();
+            //default to using double entry and save the preference explicitly
+            prefs.edit().putBoolean(getString(R.string.key_use_double_entry), true).commit();
         }
 
         if (hasNewFeatures()){
@@ -275,18 +283,15 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
 
     }
 
-    @Override
+     @Override
     protected void onResume() {
         super.onResume();
         TransactionsActivity.sLastTitleColor = -1;
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-        int lastTabIndex = preferences.getInt(LAST_OPEN_TAB_INDEX, INDEX_TOP_LEVEL_ACCOUNTS_FRAGMENT);
-        mPager.setCurrentItem(lastTabIndex);
     }
 
     @Override
-    protected void onStop() {
-        super.onPause();
+    protected void onDestroy() {
+        super.onDestroy();
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         preferences.edit().putInt(LAST_OPEN_TAB_INDEX, mPager.getCurrentItem()).commit();
     }
@@ -448,7 +453,7 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
                 InputStream accountFileInputStream = getResources().openRawResource(R.raw.default_accounts);
-                new AccountsActivity.AccountImporterTask(AccountsActivity.this).execute(accountFileInputStream);
+                new GncXmlImportTask(AccountsActivity.this).execute(accountFileInputStream);
                 removeFirstRunFlag();
 			}
 		});
@@ -471,7 +476,7 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
         });
 
 		mDefaultAccountsDialog = builder.create();
-		mDefaultAccountsDialog.show();		
+		mDefaultAccountsDialog.show();
 	}
 
     /**
@@ -498,7 +503,7 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
             case REQUEST_PICK_ACCOUNTS_FILE:
                 try {
                     InputStream accountInputStream = getContentResolver().openInputStream(data.getData());
-                    new AccountImporterTask(this).execute(accountInputStream);
+                    new GncXmlImportTask(this).execute(accountInputStream);
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
                 }
@@ -536,47 +541,4 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
 		editor.commit();
 	}
 
-    /**
-     * Imports a GnuCash (desktop) account file and displays a progress dialog.
-     * The AccountsActivity is opened when importing is done.
-     */
-    public static class AccountImporterTask extends AsyncTask<InputStream, Void, Boolean>{
-        private final Context context;
-        private ProgressDialog progressDialog;
-
-        public AccountImporterTask(Context context){
-            this.context = context;
-        }
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            progressDialog = new ProgressDialog(context);
-            progressDialog.setTitle(R.string.title_progress_importing_accounts);
-            progressDialog.setIndeterminate(true);
-            progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-            progressDialog.show();
-        }
-
-        @Override
-        protected Boolean doInBackground(InputStream... inputStreams) {
-            try {
-                GnucashAccountXmlHandler.parse(context, inputStreams[0]);
-            } catch (Exception exception){
-                exception.printStackTrace();
-                return false;
-            }
-            return true;
-        }
-
-        @Override
-        protected void onPostExecute(Boolean importSuccess) {
-            progressDialog.dismiss();
-
-            int message = importSuccess ? R.string.toast_success_importing_accounts : R.string.toast_error_importing_accounts;
-            Toast.makeText(context, message, Toast.LENGTH_LONG).show();
-
-            AccountsActivity.start(context);
-        }
-    }
 }

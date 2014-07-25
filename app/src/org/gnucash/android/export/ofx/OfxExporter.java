@@ -16,57 +16,63 @@
 
 package org.gnucash.android.export.ofx;
 
+import java.io.StringWriter;
+import java.io.Writer;
 import java.util.List;
 
+import android.database.sqlite.SQLiteDatabase;
+import android.preference.PreferenceManager;
+import org.gnucash.android.R;
+import org.gnucash.android.export.ExportParams;
+import org.gnucash.android.export.Exporter;
 import org.gnucash.android.model.Account;
 import org.gnucash.android.model.Transaction;
 import org.gnucash.android.db.AccountsDbAdapter;
-import org.gnucash.android.db.TransactionsDbAdapter;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.ProcessingInstruction;
 
-import android.content.Context;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.*;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
 /**
  * Exports the data in the database in OFX format
  * @author Ngewi Fet <ngewi.fet@gmail.com>
  */
-public class OfxExporter {
+public class OfxExporter extends Exporter{
 
     /**
 	 * List of accounts in the expense report
 	 */
 	private List<Account> mAccountsList;
-	
-	/**
-	 * Flag indicating whether to ignore the 'exported' on transactions
-	 * If set to true, then all transactions will be exported, regardless of whether they were exported previously
-	 */
-	private boolean mExportAll = false;
-	
-	/**
-	 * Reference to the application context
-	 */
-	private Context mContext;
 
     /**
-	 * Builds an XML representation of the {@link Account}s and {@link Transaction}s in the database 
-	 * @param context Application context
-	 * @param exportAll Whether all transactions should be exported or only new ones since last export
+	 * Builds an XML representation of the {@link Account}s and {@link Transaction}s in the database
 	 */
-	public OfxExporter(Context context, boolean exportAll) {
-		AccountsDbAdapter dbAdapter = new AccountsDbAdapter(context);
-		mAccountsList = exportAll ? dbAdapter.getAllAccounts() : dbAdapter.getExportableAccounts();
-		mExportAll = exportAll;
-		mContext = context;
+	public OfxExporter(ExportParams params) {
+        super(params);
 	}
+
+    /**
+     * Initializes the OFX exporter with a specific database to export from
+     * @param params Export parameters/options
+     * @param db SQLite database object (should be already open)
+     */
+    public OfxExporter(ExportParams params, SQLiteDatabase db){
+        super(params, db);
+    }
 
     /**
 	 * Converts all expenses into OFX XML format and adds them to the XML document
 	 * @param doc DOM document of the OFX expenses.
 	 * @param parent Parent node for all expenses in report
 	 */
-	public void toOfx(Document doc, Element parent){
+	private void generateOfx(Document doc, Element parent){
 		Element transactionUid = doc.createElement(OfxHelper.TAG_TRANSACTION_UID);
 		//unsolicited because the data exported is not as a result of a request
 		transactionUid.appendChild(doc.createTextNode(OfxHelper.UNSOLICITED_TRANSACTION_ID));
@@ -79,18 +85,90 @@ public class OfxExporter {
 		
 		parent.appendChild(bankmsgs);		
 		
-		TransactionsDbAdapter transactionsDbAdapter = new TransactionsDbAdapter(mContext);
+		AccountsDbAdapter accountsDbAdapter = new AccountsDbAdapter(mContext);
 		for (Account account : mAccountsList) {		
 			if (account.getTransactionCount() == 0)
 				continue; 
 			
 			//add account details (transactions) to the XML document			
-			account.toOfx(doc, statementTransactionResponse, mExportAll);
+			account.toOfx(doc, statementTransactionResponse, mParameters.shouldExportAllTransactions());
 			
 			//mark as exported
-			transactionsDbAdapter.markAsExported(account.getUID());
+			accountsDbAdapter.markAsExported(account.getUID());
 			
 		}
-		transactionsDbAdapter.close();
+		accountsDbAdapter.close();
 	}
+
+    @Override
+    public String generateExport() throws ExporterException {
+        mAccountsList = mParameters.shouldExportAllTransactions() ?
+                mAccountsDbAdapter.getAllAccounts() : mAccountsDbAdapter.getExportableAccounts();
+        mAccountsDbAdapter.close();
+
+        DocumentBuilderFactory docFactory = DocumentBuilderFactory
+                .newInstance();
+        DocumentBuilder docBuilder = null;
+        try {
+            docBuilder = docFactory.newDocumentBuilder();
+        } catch (ParserConfigurationException e) {
+            throw new ExporterException(mParameters, e);
+        }
+
+        Document document = docBuilder.newDocument();
+        Element root = document.createElement("OFX");
+
+        ProcessingInstruction pi = document.createProcessingInstruction("OFX", OfxHelper.OFX_HEADER);
+        document.appendChild(pi);
+        document.appendChild(root);
+
+        generateOfx(document, root);
+
+        boolean useXmlHeader = PreferenceManager.getDefaultSharedPreferences(mContext)
+                .getBoolean(mContext.getString(R.string.key_xml_ofx_header), false);
+
+        StringWriter stringWriter = new StringWriter();
+        //if we want SGML OFX headers, write first to string and then prepend header
+        if (useXmlHeader){
+            write(document, stringWriter, false);
+            return stringWriter.toString();
+        } else {
+            Node ofxNode = document.getElementsByTagName("OFX").item(0);
+
+            write(ofxNode, stringWriter, true);
+
+            StringBuffer stringBuffer = new StringBuffer(OfxHelper.OFX_SGML_HEADER);
+            stringBuffer.append('\n');
+            stringBuffer.append(stringWriter.toString());
+            return stringBuffer.toString();
+        }
+    }
+
+    /**
+     * Writes out the document held in <code>node</code> to <code>outputWriter</code>
+     * @param node {@link Node} containing the OFX document structure. Usually the parent node
+     * @param outputWriter {@link java.io.Writer} to use in writing the file to stream
+     * @param omitXmlDeclaration Flag which causes the XML declaration to be omitted
+     */
+    private void write(Node node, Writer outputWriter, boolean omitXmlDeclaration){
+        try {
+            TransformerFactory transformerFactory = TransformerFactory
+                    .newInstance();
+            Transformer transformer = transformerFactory.newTransformer();
+            DOMSource source = new DOMSource(node);
+            StreamResult result = new StreamResult(outputWriter);
+
+            transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
+            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+            if (omitXmlDeclaration) {
+                transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+            }
+
+            transformer.transform(source, result);
+        } catch (TransformerConfigurationException txconfigException) {
+            txconfigException.printStackTrace();
+        } catch (TransformerException tfException) {
+            tfException.printStackTrace();
+        }
+    }
 }

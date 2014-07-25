@@ -69,6 +69,9 @@ public class GeneralPreferenceFragment extends PreferenceFragment implements OnP
             pref.setSummary(defaultExportFormat);
         }
         pref.setOnPreferenceChangeListener(this);
+
+        pref = findPreference(getString(R.string.key_restore_backup));
+        pref.setOnPreferenceClickListener((SettingsActivity)getActivity());
 	}
 
     /**
