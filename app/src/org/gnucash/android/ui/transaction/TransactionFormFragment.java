@@ -22,8 +22,6 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.*;
 
-import android.app.AlarmManager;
-import android.app.PendingIntent;
 import android.support.v4.app.FragmentManager;
 import android.widget.*;
 import org.gnucash.android.R;
@@ -55,7 +53,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.CompoundButton.OnCheckedChangeListener;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockFragment;
@@ -365,11 +362,9 @@ public class TransactionFormFragment extends SherlockFragment implements
 		mTimeTextView.setText(TIME_FORMATTER.format(time));
 		mTime = mDate = Calendar.getInstance();
 
-		String typePref = PreferenceManager.getDefaultSharedPreferences(getActivity()).getString(getString(R.string.key_default_transaction_type), "DEBIT");
-		if (typePref.equals("CREDIT")){
-            mTransactionTypeButton.setChecked(false);
-        }
         mTransactionTypeButton.setAccountType(mAccountType);
+		String typePref = PreferenceManager.getDefaultSharedPreferences(getActivity()).getString(getString(R.string.key_default_transaction_type), "DEBIT");
+        mTransactionTypeButton.setChecked(TransactionType.valueOf(typePref));
 
 		final long accountId = getArguments().getLong(UxArgument.SELECTED_ACCOUNT_ID);
 		String code = Money.DEFAULT_CURRENCY_CODE;
@@ -464,7 +459,7 @@ public class TransactionFormFragment extends SherlockFragment implements
 	 * Sets click listeners for the dialog buttons
 	 */
 	private void setListeners() {
-        mAmountInputFormatter = new AmountInputFormatter(mAmountEditText, mTransactionTypeButton);
+        mAmountInputFormatter = new AmountInputFormatter(mAmountEditText);
         mAmountEditText.addTextChangedListener(mAmountInputFormatter);
 
         mOpenSplitsButton.setOnClickListener(new View.OnClickListener() {
@@ -474,7 +469,7 @@ public class TransactionFormFragment extends SherlockFragment implements
             }
         });
 
-		mTransactionTypeButton.setupCheckedListener(mAmountEditText, mCurrencyTextView);
+		mTransactionTypeButton.setAmountFormattingListener(mAmountEditText, mCurrencyTextView);
 
 		mDateTextView.setOnClickListener(new View.OnClickListener() {
 

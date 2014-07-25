@@ -18,7 +18,6 @@ package org.gnucash.android.ui.util;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.widget.EditText;
-import android.widget.ToggleButton;
 import org.gnucash.android.ui.transaction.TransactionFormFragment;
 
 import java.math.BigDecimal;
@@ -37,15 +36,13 @@ import java.util.Locale;
 public class AmountInputFormatter implements TextWatcher {
     private String current = "0";
     private EditText amountEditText;
-    private ToggleButton mTypeButton;
     /**
      * Flag to note if the user has manually edited the amount of the transaction
      */
     private boolean isModified = false;
 
-    public AmountInputFormatter(EditText amountInput, ToggleButton typeButton) {
+    public AmountInputFormatter(EditText amountInput) {
         this.amountEditText = amountInput;
-        this.mTypeButton = typeButton;
     }
 
     @Override
@@ -54,22 +51,12 @@ public class AmountInputFormatter implements TextWatcher {
             return;
 //make sure that the sign of the input is in line with the type button state
         BigDecimal amount = TransactionFormFragment.parseInputToDecimal(s.toString());
-        if (mTypeButton.isChecked()) {
-            if (amount.signum() > 0) {
-                amount = amount.negate();
-            }
-        } else { //if it is to increase account balance
-            if (amount.signum() <= 0) {
-//make the number positive
-                amount = amount.negate();
-            }
-        }
 
         DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance(Locale.getDefault());
-        formatter.setMinimumFractionDigits(2);
+        formatter.setMinimumFractionDigits(2);  //TODO: Use fraction of the currency in question
         formatter.setMaximumFractionDigits(2);
 
-        current = formatter.format(amount.doubleValue());
+        current = formatter.format(amount.doubleValue()); //TODO: Try with Bigdecimal string instead of double
         amountEditText.removeTextChangedListener(this);
         amountEditText.setText(current);
         amountEditText.setSelection(current.length());

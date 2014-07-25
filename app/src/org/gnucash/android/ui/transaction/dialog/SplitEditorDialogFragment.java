@@ -117,12 +117,7 @@ public class SplitEditorDialogFragment extends DialogFragment {
             final Currency currency = Currency.getInstance(mAccountsDbAdapter.getCurrencyCode(mAccountUID));
             Split split = new Split(new Money(mBaseAmount, currency), mAccountUID);
             AccountType accountType = mAccountsDbAdapter.getAccountType(mAccountUID);
-            TransactionType transactionType;
-            if (accountType.hasDebitNormalBalance()) {
-                transactionType = mBaseAmount.signum() < 0 ? TransactionType.CREDIT : TransactionType.DEBIT;
-            } else {
-                transactionType = mBaseAmount.signum() < 0 ? TransactionType.CREDIT : TransactionType.DEBIT;
-            }
+            TransactionType transactionType = Transaction.getTypeForBalance(accountType, mBaseAmount.signum() < 0);
             split.setType(transactionType);
             View view = addSplitView(split);
             view.findViewById(R.id.input_accounts_spinner).setEnabled(false);
@@ -186,8 +181,7 @@ public class SplitEditorDialogFragment extends DialogFragment {
         final TextView splitUidTextView         = (TextView)    splitView.findViewById(R.id.split_uid);
         final TransactionTypeToggleButton splitTypeButton = (TransactionTypeToggleButton) splitView.findViewById(R.id.btn_split_type);
 
-        splitAmountEditText.addTextChangedListener(new AmountInputFormatter(splitAmountEditText,splitTypeButton));
-        splitAmountEditText.addTextChangedListener(mBalanceUpdater);
+        splitAmountEditText.addTextChangedListener(new AmountInputFormatter(splitAmountEditText));
 
         removeSplitButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -199,17 +193,10 @@ public class SplitEditorDialogFragment extends DialogFragment {
             }
         });
 
-        accountsSpinner.setOnItemSelectedListener(new TypeButtonLabelUpdater(splitTypeButton));
         updateTransferAccountsList(accountsSpinner);
+        accountsSpinner.setOnItemSelectedListener(new TypeButtonLabelUpdater(splitTypeButton));
 
-        splitTypeButton.setupCheckedListener(splitAmountEditText, splitCurrencyTextView);
-        splitTypeButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                updateTotal();
-            }
-        });
-
+        splitTypeButton.setAmountFormattingListener(splitAmountEditText, splitCurrencyTextView);
         splitTypeButton.setChecked(mBaseAmount.signum() > 0);
         splitUidTextView.setText(UUID.randomUUID().toString());
 
@@ -217,10 +204,20 @@ public class SplitEditorDialogFragment extends DialogFragment {
             splitAmountEditText.setText(split.getAmount().toPlainString());
             splitMemoEditText.setText(split.getMemo());
             splitUidTextView.setText(split.getUID());
-
-            setSelectedTransferAccount(mAccountsDbAdapter.getAccountID(split.getAccountUID()), accountsSpinner);
-            splitTypeButton.setChecked(Transaction.shouldDecreaseBalance(splitTypeButton.getAccountType(), split.getType()));
+            String splitAccountUID = split.getAccountUID();
+            setSelectedTransferAccount(mAccountsDbAdapter.getAccountID(splitAccountUID), accountsSpinner);
+            splitTypeButton.setAccountType(mAccountsDbAdapter.getAccountType(splitAccountUID));
+            splitTypeButton.setChecked(split.getType());
         }
+
+        //put these balance update triggers last last so as to avoid computing while still loading
+        splitAmountEditText.addTextChangedListener(mBalanceUpdater);
+        splitTypeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                updateTotal();
+            }
+        });
     }
 
     /**
@@ -230,13 +227,7 @@ public class SplitEditorDialogFragment extends DialogFragment {
     private void setSelectedTransferAccount(long accountId, final Spinner accountsSpinner){
         for (int pos = 0; pos < mCursorAdapter.getCount(); pos++) {
             if (mCursorAdapter.getItemId(pos) == accountId){
-                final int position = pos;
-                accountsSpinner.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        accountsSpinner.setSelection(position);
-                    }
-                }, 100);
+                accountsSpinner.setSelection(pos);
                 break;
             }
         }
@@ -290,7 +281,7 @@ public class SplitEditorDialogFragment extends DialogFragment {
         List<Split> splitList = new ArrayList<Split>();
         for (View splitView : mSplitItemViewList) {
             EditText splitMemoEditText              = (EditText)    splitView.findViewById(R.id.input_split_memo);
-            EditText splitAmountEditText      = (EditText)    splitView.findViewById(R.id.input_split_amount);
+            EditText splitAmountEditText            = (EditText)    splitView.findViewById(R.id.input_split_amount);
             Spinner accountsSpinner                 = (Spinner)     splitView.findViewById(R.id.input_accounts_spinner);
             TextView splitUidTextView               = (TextView)    splitView.findViewById(R.id.split_uid);
             TransactionTypeToggleButton splitTypeButton = (TransactionTypeToggleButton) splitView.findViewById(R.id.btn_split_type);

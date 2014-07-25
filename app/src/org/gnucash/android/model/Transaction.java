@@ -428,8 +428,8 @@ public class Transaction {
     }
 
     /**
-     * Returns true if the amount represents a decrease for the account balance in accounty of type <code>accountType</code>, false otherwise
-     * @return true if the amount represents a decrease movement for the account balance, false otherwise
+     * Returns true if the transaction type represents a decrease for the account balance for the <code>accountType</code>, false otherwise
+     * @return true if the amount represents a decrease in the account balance, false otherwise
      * @see #getTypeForBalance(AccountType, boolean)
      */
     public static boolean shouldDecreaseBalance(AccountType accountType, TransactionType transactionType){

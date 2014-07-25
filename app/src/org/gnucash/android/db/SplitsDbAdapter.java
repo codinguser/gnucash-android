@@ -207,12 +207,12 @@ public class SplitsDbAdapter extends DatabaseAdapter {
     public List<Split> getSplitsForTransactionInAccount(String transactionUID, String accountUID){
         Cursor cursor = fetchSplitsForTransactionAndAccount(transactionUID, accountUID);
         List<Split> splitList = new ArrayList<Split>();
-        while (cursor != null && cursor.moveToNext()){
-            splitList.add(buildSplitInstance(cursor));
-        }
-        if (cursor != null)
+        if (cursor != null){
+            while (cursor.moveToNext()){
+                splitList.add(buildSplitInstance(cursor));
+            }
             cursor.close();
-
+        }
         return splitList;
     }
 
@@ -312,6 +312,9 @@ public class SplitsDbAdapter extends DatabaseAdapter {
      * @return Cursor to splits data set
      */
     public Cursor fetchSplitsForTransactionAndAccount(String transactionUID, String accountUID){
+        if (transactionUID == null || accountUID == null)
+            return null;
+
         Log.v(TAG, "Fetching all splits for transaction ID " + transactionUID
                 + "and account ID " + accountUID);
         return mDb.query(SplitEntry.TABLE_NAME,

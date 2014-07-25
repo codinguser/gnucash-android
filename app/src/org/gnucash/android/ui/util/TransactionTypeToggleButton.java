@@ -24,6 +24,7 @@ import android.widget.TextView;
 import android.widget.ToggleButton;
 import org.gnucash.android.R;
 import org.gnucash.android.model.AccountType;
+import org.gnucash.android.model.Transaction;
 import org.gnucash.android.model.TransactionType;
 import org.gnucash.android.ui.transaction.TransactionFormFragment;
 
@@ -105,8 +106,16 @@ public class TransactionTypeToggleButton extends ToggleButton {
      * @param amoutView Amount string {@link android.widget.EditText}
      * @param currencyTextView Currency symbol text view
      */
-    public void setupCheckedListener(EditText amoutView, TextView currencyTextView){
+    public void setAmountFormattingListener(EditText amoutView, TextView currencyTextView){
         setOnCheckedChangeListener(new OnTypeChangedListener(amoutView, currencyTextView));
+    }
+
+    /**
+     * Toggles the button checked based on the movement caused by the transaction type for the specified account
+     * @param transactionType {@link org.gnucash.android.model.TransactionType} of the split
+     */
+    public void setChecked(TransactionType transactionType){
+        setChecked(Transaction.shouldDecreaseBalance(mAccountType, transactionType));
     }
 
     /**
