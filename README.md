@@ -1,7 +1,7 @@
 # Introduction
 
 Gnucash Mobile for Android is companion application for desktop Gnucash designed for Android.
-It allows you to record transactions on-the-go and export them in the OFX format and later import the data into Gnucash for the desktop. You can create multiple accounts for transactions in Gnucash. Double-entry accounting is also supported. 
+It allows you to record transactions on-the-go and export them in the QIF or OFX format and later import the data into Gnucash for the desktop. You can create multiple accounts for transactions in Gnucash. Double-entry accounting is also supported.
 
 The application supports Android 2.2 Froyo (API level 8) and above. 
 
@@ -25,7 +25,7 @@ v3.0.3+ and the [Android SDK](http://developer.android.com/sdk/index.html)
 to be installed in your development environment. In addition you'll need to set
 the `ANDROID_HOME` environment variable to the location of your SDK:
 
-    export ANDROID_HOME=/home/roberto/tools/android-sdk
+    export ANDROID_HOME=/home/<user>/tools/android-sdk
 
 After satisfying those requirements, the build is pretty simple:
 
@@ -40,6 +40,19 @@ Android security as it it won't let you directly replace an app that's been
 signed with a different key.  Manually uninstall GnuCash from your device and
 you will then be able to install your own built version.
 
+## Contributing
+
+There are several ways you could contribute to the development.
+
+One way is providing translations for locales which are not yet available, or improving translations.
+See this [blog post](http://www.codinguser.com/2012/09/gnucash-for-android-beta-2-lost-in-translation/) for some guidelines.
+
+You could as well contribute code, fixing bugs, new features or automated tests.
+Take a look at the [bug tracker](https://github.com/codinguser/gnucash-android/issues?state=open)
+for ideas where to start.
+
+For development, it is recommended to use the IntelliJ IDEA 13+ IDE for development which is available as free
+community edition. Import the project into the IDE from an external (maven) model.The IDE will resolve dependencies automatically.
 
 #Licence
 Gnucash for Android is free software; you can redistribute it and/or 

@@ -63,7 +63,8 @@ public class GncXmlImportTask extends AsyncTask<InputStream, Void, Boolean> {
 
     @Override
     protected void onPostExecute(Boolean importSuccess) {
-        progressDialog.dismiss();
+        if (progressDialog != null && progressDialog.isShowing())
+            progressDialog.dismiss();
 
         int message = importSuccess ? R.string.toast_success_importing_accounts : R.string.toast_error_importing_accounts;
         Toast.makeText(context, message, Toast.LENGTH_LONG).show();

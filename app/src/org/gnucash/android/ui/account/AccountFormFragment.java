@@ -422,14 +422,7 @@ public class AccountFormFragment extends SherlockFragment {
 
         for (int pos = 0; pos < mParentAccountCursorAdapter.getCount(); pos++) {
             if (mParentAccountCursorAdapter.getItemId(pos) == parentAccountId){
-                final int position = pos;
-                mParentAccountSpinner.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        mParentAccountSpinner.setSelection(position);
-                    }
-                }, 100);
-//                mParentAccountSpinner.setSelection(pos, true);
+                mParentAccountSpinner.setSelection(pos, true);
                 break;
             }
         }

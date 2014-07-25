@@ -624,10 +624,14 @@ public class AccountsDbAdapter extends DatabaseAdapter {
      */
     public List<Long> getSubAccountIds(long accountId){
         List<Long> subAccounts = new ArrayList<Long>();
+        String accountUID = getAccountUID(accountId);
+        if (accountUID == null)
+            return subAccounts;
+
         Cursor cursor = mDb.query(AccountEntry.TABLE_NAME,
                 new String[]{AccountEntry._ID},
                 AccountEntry.COLUMN_PARENT_ACCOUNT_UID + " = ?",
-                new String[]{getAccountUID(accountId)},
+                new String[]{accountUID},
                 null, null, null);
 
         if (cursor != null){

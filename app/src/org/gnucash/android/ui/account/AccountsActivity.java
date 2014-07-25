@@ -43,6 +43,7 @@ import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import com.viewpagerindicator.TitlePageIndicator;
 import org.gnucash.android.R;
+import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.importer.GncXmlImportTask;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.ui.util.Refreshable;
@@ -252,24 +253,9 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
     private void init() {
         PreferenceManager.setDefaultValues(this, R.xml.fragment_transaction_preferences, false);
 
-        Locale locale = Locale.getDefault();
-        //sometimes the locale en_UK is returned which causes a crash with Currency
-        if (locale.getCountry().equals("UK")) {
-            locale = new Locale(locale.getLanguage(), "GB");
-        }
+        Money.DEFAULT_CURRENCY_CODE = GnuCashApplication.getDefaultCurrency();
 
-        String currencyCode;
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        try { //there are some strange locales out there
-            currencyCode = prefs.getString(getString(R.string.key_default_currency),
-                    Currency.getInstance(locale).getCurrencyCode());
-        } catch (Exception e) {
-            Log.e(LOG_TAG, e.getMessage());
-            currencyCode = "USD";
-        }
-
-        Money.DEFAULT_CURRENCY_CODE = currencyCode;
-
         boolean firstRun = prefs.getBoolean(getString(R.string.key_first_run), true);
         if (firstRun){
             createDefaultAccounts();

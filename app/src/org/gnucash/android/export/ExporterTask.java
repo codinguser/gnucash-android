@@ -172,7 +172,8 @@ public class ExporterTask extends AsyncTask<ExportParams, Void, Boolean> {
             alertFragment.show(fragmentManager, "transactions_delete_confirmation_dialog");
         }
 
-        mProgressDialog.dismiss();
+        if (mProgressDialog != null && mProgressDialog.isShowing())
+            mProgressDialog.dismiss();
 
     }
 
