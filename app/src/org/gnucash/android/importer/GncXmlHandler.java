@@ -32,6 +32,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import java.io.*;
@@ -98,6 +99,7 @@ public class GncXmlHandler extends DefaultHandler {
     boolean mInPlaceHolderSlot  = false;
     boolean mInFavoriteSlot     = false;
     boolean mISO4217Currency    = false;
+    boolean mIsDatePosted       = false;
 
     private Context mContext;
     private TransactionsDbAdapter mTransactionsDbAdapter;
@@ -133,6 +135,10 @@ public class GncXmlHandler extends DefaultHandler {
 
         if (qualifiedName.equalsIgnoreCase(GncXmlHelper.TAG_TRX_SPLIT)){
             mSplit = new Split(Money.getZeroInstance(),"");
+        }
+
+        if (qualifiedName.equalsIgnoreCase(GncXmlHelper.TAG_DATE_POSTED)){
+            mIsDatePosted = true;
         }
     }
 
@@ -210,7 +216,8 @@ public class GncXmlHandler extends DefaultHandler {
                 if (!Pattern.matches(Account.COLOR_HEX_REGEX, color))
                     color = "#" + color.replaceAll(".(.)?", "$1").replace("null", "");
                 try {
-                    mAccount.setColorCode(color);
+                    if (mAccount != null)
+                        mAccount.setColorCode(color);
                 } catch (IllegalArgumentException ex){
                     //sometimes the color entry in the account file is "Not set" instead of just blank. So catch!
                     Log.i(LOG_TAG, "Invalid color code '" + color + "' for account " + mAccount.getName());
@@ -238,7 +245,10 @@ public class GncXmlHandler extends DefaultHandler {
 
         if (qualifiedName.equalsIgnoreCase(GncXmlHelper.TAG_DATE)){
             try {
-                mTransaction.setTime(GncXmlHelper.parseDate(characterString));
+                if (mIsDatePosted && mTransaction != null) {
+                    mTransaction.setTime(GncXmlHelper.parseDate(characterString));
+                    mIsDatePosted = false;
+                }
             } catch (ParseException e) {
                 e.printStackTrace();
                 throw new SAXException("Unable to parse transaction time", e);
@@ -289,56 +299,11 @@ public class GncXmlHandler extends DefaultHandler {
         mContent.append(chars, start, length);
     }
 
-    /**
-     * Parses XML into an already open database.
-     * <p>This method is used mainly by the {@link org.gnucash.android.db.DatabaseHelper} for database migrations.<br>
-     *     You should probably use {@link #parse(android.content.Context, java.io.InputStream)} instead</p>
-     * @param db SQLite Database
-     * @param gncXmlInputStream Input stream of GnuCash XML
-     */
-    public static void parse(SQLiteDatabase db, InputStream gncXmlInputStream) {
-        try {
-            SAXParserFactory spf = SAXParserFactory.newInstance();
-            SAXParser sp = spf.newSAXParser();
-            XMLReader xr = sp.getXMLReader();
-
-            BufferedInputStream bos = new BufferedInputStream(gncXmlInputStream);
-
-            /** Create handler to handle XML Tags ( extends DefaultHandler ) */
-
-            GncXmlHandler handler = new GncXmlHandler(db);
-            xr.setContentHandler(handler);
-            xr.parse(new InputSource(bos));
-        } catch (Exception e) {
-            e.printStackTrace();
-            Toast.makeText(GnuCashApplication.getAppContext(),
-                    R.string.toast_error_importing_accounts, Toast.LENGTH_LONG).show();
-        }
+    @Override
+    public void endDocument() throws SAXException {
+        super.endDocument();
+        mAccountsDbAdapter.close();
+        mTransactionsDbAdapter.close();
     }
 
-    /**
-     * Parse GnuCash XML input and populates the database
-     * @param context Application context
-     * @param gncXmlInputStream InputStream source of the GnuCash XML file
-     */
-    public static void parse(Context context, InputStream gncXmlInputStream){
-        try {
-            SAXParserFactory spf = SAXParserFactory.newInstance();
-            SAXParser sp = spf.newSAXParser();
-            XMLReader xr = sp.getXMLReader();
-
-            BufferedInputStream bos = new BufferedInputStream(gncXmlInputStream);
-
-            /** Create handler to handle XML Tags ( extends DefaultHandler ) */
-
-            GncXmlHandler handler = new GncXmlHandler(context);
-            xr.setContentHandler(handler);
-            xr.parse(new InputSource(bos));
-            handler.mAccountsDbAdapter.close();
-            handler.mTransactionsDbAdapter.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-            Toast.makeText(context, R.string.toast_error_importing_accounts, Toast.LENGTH_LONG).show();
-        }
-    }
 }

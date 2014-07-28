@@ -151,21 +151,33 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 	 * i.e <code>accountUID</code> is double entry account UID
 	 * @param accountUID UID of the account whose transactions are to be retrieved
 	 * @return Cursor holding set of transactions for particular account
+     * @throws java.lang.IllegalArgumentException if the accountUID is null
 	 */
 	public Cursor fetchAllTransactionsForAccount(String accountUID){
-        SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
-        queryBuilder.setTables(TransactionEntry.TABLE_NAME
-                + " INNER JOIN " +  SplitEntry.TABLE_NAME + " ON "
-                + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_UID + " = "
-                + SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_TRANSACTION_UID);
-        queryBuilder.setDistinct(true);
-        String[] projectionIn = new String[]{TransactionEntry.TABLE_NAME + ".*"};
-        String selection = SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_ACCOUNT_UID + " = ?"
-                + " AND " + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_RECURRENCE_PERIOD + " = 0";
-        String[] selectionArgs = new String[]{accountUID};
-        String sortOrder = TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_TIMESTAMP + " DESC";
+        if (accountUID == null)
+            throw new IllegalArgumentException("Unique ID of the account cannot be null");
 
-        return queryBuilder.query(mDb, projectionIn, selection, selectionArgs, null, null, sortOrder);
+        if (mDb.getVersion() < DatabaseSchema.SPLITS_DB_VERSION){ //legacy from previous database format
+            return mDb.query(TransactionEntry.TABLE_NAME, null,
+                    "((" + SplitEntry.COLUMN_ACCOUNT_UID + " = '" + accountUID + "') "
+                            + "OR (" + DatabaseHelper.KEY_DOUBLE_ENTRY_ACCOUNT_UID + " = '" + accountUID + "' ))"
+                            + " AND " + TransactionEntry.COLUMN_RECURRENCE_PERIOD + " = 0",
+                    null, null, null, TransactionEntry.COLUMN_TIMESTAMP + " DESC");
+        } else {
+            SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
+            queryBuilder.setTables(TransactionEntry.TABLE_NAME
+                    + " INNER JOIN " + SplitEntry.TABLE_NAME + " ON "
+                    + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_UID + " = "
+                    + SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_TRANSACTION_UID);
+            queryBuilder.setDistinct(true);
+            String[] projectionIn = new String[]{TransactionEntry.TABLE_NAME + ".*"};
+            String selection = SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_ACCOUNT_UID + " = ?"
+                    + " AND " + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_RECURRENCE_PERIOD + " = 0";
+            String[] selectionArgs = new String[]{accountUID};
+            String sortOrder = TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_TIMESTAMP + " DESC";
+
+            return queryBuilder.query(mDb, projectionIn, selection, selectionArgs, null, null, sortOrder);
+        }
 	}
 
     /**

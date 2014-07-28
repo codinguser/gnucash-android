@@ -44,7 +44,7 @@ import java.util.Date;
  *
  * @author Ngewi Fet <ngewif@gmail.com>
  */
-public class ExporterTask extends AsyncTask<ExportParams, Void, Boolean> {
+public class ExporterAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
     /**
      * App context
      */
@@ -55,14 +55,14 @@ public class ExporterTask extends AsyncTask<ExportParams, Void, Boolean> {
     /**
      * Log tag
      */
-    public static final String TAG = "ExporterTask";
+    public static final String TAG = "ExporterAsyncTask";
 
     /**
      * Export parameters
      */
     private ExportParams mExportParams;
 
-    public ExporterTask(Context context){
+    public ExporterAsyncTask(Context context){
         this.mContext = context;
     }
 
@@ -111,7 +111,8 @@ public class ExporterTask extends AsyncTask<ExportParams, Void, Boolean> {
             e.printStackTrace();
             Log.e(TAG, e.getMessage());
             Toast.makeText(mContext, R.string.toast_export_error,
-                    Toast.LENGTH_LONG).show();
+                    Toast.LENGTH_SHORT).show();
+            Toast.makeText(mContext, e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
             return false;
         }
         return true;

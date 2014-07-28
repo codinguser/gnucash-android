@@ -26,7 +26,7 @@ import android.preference.PreferenceManager;
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockPreferenceActivity;
 import org.gnucash.android.R;
-import org.gnucash.android.importer.GncXmlImportTask;
+import org.gnucash.android.importer.ImportAsyncTask;
 import org.gnucash.android.model.Money;
 
 import java.io.InputStream;
@@ -81,7 +81,7 @@ public class AccountPreferencesFragment extends PreferenceFragment {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 InputStream accountFileInputStream = getResources().openRawResource(R.raw.default_accounts);
-                                new GncXmlImportTask(getActivity()).execute(accountFileInputStream);
+                                new ImportAsyncTask(getActivity()).execute(accountFileInputStream);
                             }
                         })
                         .setNegativeButton(R.string.btn_cancel, new DialogInterface.OnClickListener() {

@@ -18,6 +18,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.util.Log;
 import android.widget.Toast;
 import org.gnucash.android.R;
 import org.gnucash.android.ui.account.AccountsActivity;
@@ -28,11 +29,11 @@ import java.io.InputStream;
  * Imports a GnuCash (desktop) account file and displays a progress dialog.
  * The AccountsActivity is opened when importing is done.
  */
-public class GncXmlImportTask extends AsyncTask<InputStream, Void, Boolean> {
+public class ImportAsyncTask extends AsyncTask<InputStream, Void, Boolean> {
     private final Context context;
     private ProgressDialog progressDialog;
 
-    public GncXmlImportTask(Context context){
+    public ImportAsyncTask(Context context){
         this.context = context;
     }
 
@@ -53,9 +54,13 @@ public class GncXmlImportTask extends AsyncTask<InputStream, Void, Boolean> {
     @Override
     protected Boolean doInBackground(InputStream... inputStreams) {
         try {
-            GncXmlHandler.parse(context, inputStreams[0]);
+            GncXmlImporter.parse(context, inputStreams[0]);
         } catch (Exception exception){
             exception.printStackTrace();
+            Log.e(ImportAsyncTask.class.getName(), exception.getMessage());
+            Toast.makeText(context,
+                    context.getString(R.string.toast_error_importing_accounts) + "\n" + exception.getLocalizedMessage(),
+                    Toast.LENGTH_LONG).show();
             return false;
         }
         return true;
@@ -67,7 +72,7 @@ public class GncXmlImportTask extends AsyncTask<InputStream, Void, Boolean> {
             progressDialog.dismiss();
 
         int message = importSuccess ? R.string.toast_success_importing_accounts : R.string.toast_error_importing_accounts;
-        Toast.makeText(context, message, Toast.LENGTH_LONG).show();
+        Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
 
         AccountsActivity.start(context);
     }

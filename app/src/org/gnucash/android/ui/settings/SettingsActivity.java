@@ -35,7 +35,7 @@ import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.export.Exporter;
 import org.gnucash.android.export.xml.GncXmlExporter;
-import org.gnucash.android.importer.GncXmlImportTask;
+import org.gnucash.android.importer.ImportAsyncTask;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.TransactionsDbAdapter;
@@ -283,7 +283,7 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
 
         try {
             FileInputStream inputStream = new FileInputStream(backupFile);
-            new GncXmlImportTask(this).execute(inputStream);
+            new ImportAsyncTask(this).execute(inputStream);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
             throw new RuntimeException(e);
@@ -300,7 +300,7 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
             case AccountsActivity.REQUEST_PICK_ACCOUNTS_FILE:
                 try {
                     InputStream accountInputStream = getContentResolver().openInputStream(data.getData());
-                    new GncXmlImportTask(this).execute(accountInputStream);
+                    new ImportAsyncTask(this).execute(accountInputStream);
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
                     Toast.makeText(this, R.string.toast_error_importing_accounts, Toast.LENGTH_SHORT).show();

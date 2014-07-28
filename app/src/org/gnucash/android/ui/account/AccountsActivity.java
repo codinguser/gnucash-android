@@ -33,7 +33,6 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
 import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,7 +43,7 @@ import com.actionbarsherlock.view.MenuItem;
 import com.viewpagerindicator.TitlePageIndicator;
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
-import org.gnucash.android.importer.GncXmlImportTask;
+import org.gnucash.android.importer.ImportAsyncTask;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.ui.util.Refreshable;
 import org.gnucash.android.ui.UxArgument;
@@ -55,8 +54,6 @@ import org.gnucash.android.ui.util.OnAccountClickedListener;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
-import java.util.Currency;
-import java.util.Locale;
 
 /**
  * Manages actions related to accounts, displaying, exporting and creating new accounts
@@ -439,7 +436,7 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
                 InputStream accountFileInputStream = getResources().openRawResource(R.raw.default_accounts);
-                new GncXmlImportTask(AccountsActivity.this).execute(accountFileInputStream);
+                new ImportAsyncTask(AccountsActivity.this).execute(accountFileInputStream);
                 removeFirstRunFlag();
 			}
 		});
@@ -489,7 +486,7 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
             case REQUEST_PICK_ACCOUNTS_FILE:
                 try {
                     InputStream accountInputStream = getContentResolver().openInputStream(data.getData());
-                    new GncXmlImportTask(this).execute(accountInputStream);
+                    new ImportAsyncTask(this).execute(accountInputStream);
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
                 }

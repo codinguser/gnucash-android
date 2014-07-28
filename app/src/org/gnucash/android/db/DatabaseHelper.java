@@ -16,12 +16,14 @@
 
 package org.gnucash.android.db;
 
+import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
+import android.widget.Toast;
 import org.gnucash.android.export.ExportFormat;
 import org.gnucash.android.model.Account;
 import org.gnucash.android.model.AccountType;
@@ -103,11 +105,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + ");";
 
     /**
+     * Context passed in for database upgrade. Keep reference so as to be able to display UI dialogs
+     */
+    private Context mContext;
+
+    /**
 	 * Constructor
 	 * @param context Application context
 	 */
 	public DatabaseHelper(Context context){
 		super(context, DATABASE_NAME, null, DatabaseSchema.DATABASE_VERSION);
+        mContext = context;
 	}
 	
 	@Override
@@ -119,7 +127,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 		Log.i(LOG_TAG, "Upgrading database from version "
 				+ oldVersion + " to " + newVersion);
-		
+
+        ProgressDialog progressDialog = ProgressDialog.show(mContext, "Upgrading database", "Processing...", true);
+
 		if (oldVersion < newVersion){
 			//introducing double entry accounting
 			Log.i(LOG_TAG, "Upgrading database to version " + newVersion);
@@ -185,6 +195,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
             if (oldVersion == 5 && newVersion >= 6){
                 Log.i(LOG_TAG, "Upgrading database to version 6");
+                progressDialog.setMessage("Upgrading database to version 6");
+
                 String addFullAccountNameQuery = " ALTER TABLE " + AccountEntry.TABLE_NAME
                         + " ADD COLUMN " + AccountEntry.COLUMN_FULL_NAME + " varchar(255) ";
                 db.execSQL(addFullAccountNameQuery);
@@ -216,6 +228,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
             if (oldVersion == 6 && newVersion >= DatabaseSchema.SPLITS_DB_VERSION){
                 Log.i(LOG_TAG, "Upgrading database to version 7");
+                progressDialog.setMessage("Upgrading to version " + SPLITS_DB_VERSION);
 
                 //for users who do not have double-entry activated, we create imbalance accounts for their splits
                 //TODO: Enable when we can hide imbalance accounts from user
@@ -225,17 +238,27 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 //                    accountsDbAdapter.getOrCreateImbalanceAccountUID(currency);
 //                }
 
-                String filepath = MigrationHelper.exportDatabase(db, ExportFormat.GNC_XML);
+                progressDialog.setMessage("Backing up database");
+                try {
+                    String filepath = MigrationHelper.exportDatabase(db, ExportFormat.GNC_XML);
 
-                dropAllDatabaseTables(db);
-                createDatabaseTables(db);
+                    progressDialog.setMessage("Upgrading database schema");
 
-                MigrationHelper.importGnucashXML(db, filepath);
+                    dropAllDatabaseTables(db);
+                    createDatabaseTables(db);
 
+                    progressDialog.setMessage("Restoring database");
+
+                    MigrationHelper.importGnucashXML(db, filepath);
+                } catch (Exception e){
+                    Toast.makeText(mContext, "Error upgrading database.\n" + e.getMessage(), Toast.LENGTH_LONG).show();
+                    throw new RuntimeException(e);
+                }
                 oldVersion = DatabaseSchema.SPLITS_DB_VERSION;
             }
 		}
 
+        progressDialog.dismiss();
         if (oldVersion != newVersion) {
             Log.w(LOG_TAG, "Upgrade for the database failed. The Database is currently at version " + oldVersion);
         }
