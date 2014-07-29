@@ -40,7 +40,6 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import org.gnucash.android.R;
-import org.gnucash.android.model.Money;
 import org.gnucash.android.model.Transaction;
 import org.gnucash.android.db.*;
 import org.gnucash.android.ui.UxArgument;
@@ -132,7 +131,7 @@ public class ScheduledTransactionsListFragment extends SherlockListFragment impl
         mCursorAdapter = new TransactionsCursorAdapter(
                 getActivity().getApplicationContext(),
                 R.layout.list_item_scheduled_trxn, null,
-                new String[] {DatabaseSchema.TransactionEntry.COLUMN_NAME},
+                new String[] {DatabaseSchema.TransactionEntry.COLUMN_DESCRIPTION},
                 new int[] {R.id.primary_text});
         setListAdapter(mCursorAdapter);
     }

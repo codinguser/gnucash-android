@@ -96,32 +96,32 @@ public class GncXmlExporter extends Exporter{
         rootElement.setAttribute("xmlns:ts",     "http://www.gnucash.org/XML/ts");
 
         Element bookCountNode = mDocument.createElement(GncXmlHelper.TAG_COUNT_DATA);
-        bookCountNode.setAttribute("cd:type", "book");
+        bookCountNode.setAttribute(GncXmlHelper.ATTR_KEY_CD_TYPE, GncXmlHelper.ATTR_VALUE_BOOK);
         bookCountNode.appendChild(mDocument.createTextNode("1"));
         rootElement.appendChild(bookCountNode);
 
         Element bookNode = mDocument.createElement(GncXmlHelper.TAG_BOOK);
-        bookNode.setAttribute("version", GncXmlHelper.BOOK_VERSION);
+        bookNode.setAttribute(GncXmlHelper.ATTR_KEY_VERSION, GncXmlHelper.BOOK_VERSION);
         rootElement.appendChild(bookNode);
 
         Element bookIdNode = mDocument.createElement(GncXmlHelper.TAG_BOOK_ID);
-        bookIdNode.setAttribute("type", "guid");
+        bookIdNode.setAttribute(GncXmlHelper.ATTR_KEY_TYPE, GncXmlHelper.ATTR_VALUE_GUID);
         bookIdNode.appendChild(mDocument.createTextNode(UUID.randomUUID().toString().replaceAll("-", "")));
         bookNode.appendChild(bookIdNode);
 
         Element cmdtyCountData = mDocument.createElement(GncXmlHelper.TAG_COUNT_DATA);
-        cmdtyCountData.setAttribute("cd:type", "commodity");
+        cmdtyCountData.setAttribute(GncXmlHelper.ATTR_KEY_CD_TYPE, "commodity");
         cmdtyCountData.appendChild(mDocument.createTextNode(String.valueOf(mAccountsDbAdapter.getCurrencies().size())));
         bookNode.appendChild(cmdtyCountData);
 
         Element accountCountNode = mDocument.createElement(GncXmlHelper.TAG_COUNT_DATA);
-        accountCountNode.setAttribute("cd:type", "account");
+        accountCountNode.setAttribute(GncXmlHelper.ATTR_KEY_CD_TYPE, "account");
         int accountCount = mAccountsDbAdapter.getTotalAccountCount();
         accountCountNode.appendChild(mDocument.createTextNode(String.valueOf(accountCount)));
         bookNode.appendChild(accountCountNode);
 
         Element transactionCountNode = mDocument.createElement(GncXmlHelper.TAG_COUNT_DATA);
-        transactionCountNode.setAttribute("cd:type", "transaction");
+        transactionCountNode.setAttribute(GncXmlHelper.ATTR_KEY_CD_TYPE, "transaction");
         int transactionCount = mTransactionsDbAdapter.getTotalTransactionsCount();
         transactionCountNode.appendChild(mDocument.createTextNode(String.valueOf(transactionCount)));
         bookNode.appendChild(transactionCountNode);

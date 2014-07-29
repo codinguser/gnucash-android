@@ -25,7 +25,6 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 import android.widget.Toast;
 import org.gnucash.android.export.ExportFormat;
-import org.gnucash.android.model.Account;
 import org.gnucash.android.model.AccountType;
 
 import static org.gnucash.android.db.DatabaseSchema.*;
@@ -79,8 +78,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	private static final String TRANSACTIONS_TABLE_CREATE = "create table " + TransactionEntry.TABLE_NAME + " ("
 			+ TransactionEntry._ID 		            + " integer primary key autoincrement, "
 			+ TransactionEntry.COLUMN_UID 		    + " varchar(255) not null, "
-			+ TransactionEntry.COLUMN_NAME		    + " varchar(255), "
-			+ TransactionEntry.COLUMN_DESCRIPTION 	+ " text, "
+			+ TransactionEntry.COLUMN_DESCRIPTION   + " varchar(255), "
+			+ TransactionEntry.COLUMN_NOTES         + " text, "
 			+ TransactionEntry.COLUMN_TIMESTAMP     + " integer not null, "
 			+ TransactionEntry.COLUMN_EXPORTED      + " tinyint default 0, "
             + TransactionEntry.COLUMN_CURRENCY      + " varchar(255) not null, "

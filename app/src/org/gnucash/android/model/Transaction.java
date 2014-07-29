@@ -94,12 +94,12 @@ public class Transaction {
 	/**
 	 * Name describing the transaction
 	 */
-	private String mName;
+	private String mDescription;
 
 	/**
 	 * An extra note giving details about the transaction
 	 */
-	private String mDescription = "";
+	private String mNotes = "";
 
 	/**
 	 * Flag indicating if this transaction has been exported before or not
@@ -126,7 +126,7 @@ public class Transaction {
 	 */
 	public Transaction(String name) {
 		initDefaults();
-		setName(name);
+		setDescription(name);
 	}
 
     /**
@@ -139,8 +139,8 @@ public class Transaction {
      */
     public Transaction(Transaction transaction, boolean generateNewUID){
         initDefaults();
-        setName(transaction.getName());
         setDescription(transaction.getDescription());
+        setNote(transaction.getNote());
         for (Split split : transaction.mSplitList) {
             addSplit(new Split(split, true));
         }
@@ -164,22 +164,6 @@ public class Transaction {
      */
     public List<Split> getSplits(){
         return mSplitList;
-    }
-
-    /**
-     * Returns what kind of transaction this is for the specified account depending on the splits for that account.
-     * <br>This is mostly necessary for generating OFX files.
-     * @param accountUID Unique Identifier of the account
-     * @return TransactionType of this transaction
-     */
-    public TransactionType getTransactionTypeForAccount(String accountUID){
-        List<Split> splitList = getSplits(accountUID);
-        if (splitList.size() == 1)
-            return splitList.get(0).getType();
-
-        Money balance = getBalance(accountUID);
-
-        return balance.isNegative() ? TransactionType.DEBIT : TransactionType.CREDIT;
     }
 
     /**
@@ -314,51 +298,36 @@ public class Transaction {
         return Currency.getInstance(this.mCurrencyCode);
     }
 
-    /**
-	 * Returns the transaction amount for a specific account displayed by the account.
-     * <p>This is specific to accounts because the total balance of every transaction in double entry mode is zero.</p>
-	 * @return Properly formatted string amount for account
-	 */
-	public Money getFormattedAmount(String accountUID){
-        Money balance = Money.createZeroInstance(mCurrencyCode);
-        for (Split split : mSplitList) {
-            if (split.getAccountUID().equals(accountUID)){
-                balance = balance.add(split.getAmount());
-            }
-        }
-        return balance;
-	}
-
 	/**
 	 * Returns the name of the transaction
 	 * @return Name of the transaction
 	 */
-	public String getName() {
-		return mName;
+	public String getDescription() {
+		return mDescription;
 	}
 
 	/**
 	 * Sets the name of the transaction
 	 * @param name String containing name of transaction to set
 	 */
-	public void setName(String name) {
-		this.mName = name.trim();
+	public void setDescription(String name) {
+		this.mDescription = name.trim();
 	}
 
 	/**
 	 * Set short description of the transaction
 	 * @param description String containing description of transaction
 	 */
-	public void setDescription(String description) {
-		this.mDescription = description;
+	public void setNote(String description) {
+		this.mNotes = description;
 	}
 
 	/**
 	 * Returns the description of the transaction
 	 * @return String containing description of transaction
 	 */
-	public String getDescription() {
-		return mDescription;
+	public String getNote() {
+		return mNotes;
 	}
 
 	/**
@@ -505,12 +474,12 @@ public class Transaction {
         transactionNode.appendChild(transID);
 
         Element name = doc.createElement(OfxHelper.TAG_NAME);
-        name.appendChild(doc.createTextNode(mName));
+        name.appendChild(doc.createTextNode(mDescription));
         transactionNode.appendChild(name);
 
-        if (mDescription != null && mDescription.length() > 0){
+        if (mNotes != null && mNotes.length() > 0){
             Element memo = doc.createElement(OfxHelper.TAG_MEMO);
-            memo.appendChild(doc.createTextNode(mDescription));
+            memo.appendChild(doc.createTextNode(mNotes));
             transactionNode.appendChild(memo);
         }
 
@@ -558,7 +527,7 @@ public class Transaction {
         StringBuilder transactionQIFBuilder = new StringBuilder();
 
         transactionQIFBuilder.append(QifHelper.DATE_PREFIX).append(QifHelper.formatDate(mTimestamp)).append(newLine);
-        transactionQIFBuilder.append(QifHelper.MEMO_PREFIX).append(mName).append(newLine);
+        transactionQIFBuilder.append(QifHelper.MEMO_PREFIX).append(mDescription).append(newLine);
 
         List<String> processedSplitUIDs = new ArrayList<String>();
         final List<Split> splitList = getSplits();
@@ -625,8 +594,8 @@ public class Transaction {
     public static Intent createIntent(Transaction transaction){
         Intent intent = new Intent(Intent.ACTION_INSERT);
         intent.setType(Transaction.MIME_TYPE);
-        intent.putExtra(Intent.EXTRA_TITLE, transaction.getName());
-        intent.putExtra(Intent.EXTRA_TEXT, transaction.getDescription());
+        intent.putExtra(Intent.EXTRA_TITLE, transaction.getDescription());
+        intent.putExtra(Intent.EXTRA_TEXT, transaction.getNote());
         intent.putExtra(Account.EXTRA_CURRENCY_CODE, transaction.getCurrencyCode());
         StringBuilder stringBuilder = new StringBuilder();
         for (Split split : transaction.getSplits()) {
@@ -638,7 +607,7 @@ public class Transaction {
 
     public void toGncXml(Document doc, Element rootElement) {
         Element idNode = doc.createElement(GncXmlHelper.TAG_TRX_ID);
-        idNode.setAttribute("type", "guid");
+        idNode.setAttribute(GncXmlHelper.ATTR_KEY_TYPE, GncXmlHelper.ATTR_VALUE_GUID);
         idNode.appendChild(doc.createTextNode(mUID));
 
         Element currencyNode = doc.createElement(GncXmlHelper.TAG_TRX_CURRENCY);
@@ -659,26 +628,31 @@ public class Transaction {
         dateENode.appendChild(doc.createTextNode(GncXmlHelper.formatDate(mTimestamp)));
         dateEneteredNode.appendChild(dateENode);
 
-        Element descriptionNode = doc.createElement(GncXmlHelper.TAG_TRX_DESCRIPTION);
-        if (mName != null) {
-            descriptionNode.appendChild(doc.createTextNode(mName));
+        Element descriptionNode = doc.createElement(GncXmlHelper.TAG_TRN_DESCRIPTION);
+        if (mDescription != null) {
+            descriptionNode.appendChild(doc.createTextNode(mDescription));
         }
 
-        Element trnSplits = doc.createElement(GncXmlHelper.TAG_TRX_SPLITS);
+        Element trnSlotsNode = doc.createElement(GncXmlHelper.TAG_TRN_SLOTS);
+        if (mNotes != null && mNotes.length() > 0) {
+            trnSlotsNode.appendChild(GncXmlHelper.createSlot(doc, GncXmlHelper.KEY_NOTES, mNotes));
+            //TODO: Consider adding future transactions date as slot here too
+        }
+        Element trnSplits = doc.createElement(GncXmlHelper.TAG_TRN_SPLITS);
         for (Split split : mSplitList) {
-            if (split.getMemo() == null || split.getMemo().trim().length() == 0) {
-                split.setMemo(mDescription);
-            }
             split.toGncXml(doc, trnSplits);
         }
 
         Element transactionNode = doc.createElement(GncXmlHelper.TAG_TRANSACTION);
-        transactionNode.setAttribute("version", GncXmlHelper.BOOK_VERSION);
+        transactionNode.setAttribute(GncXmlHelper.ATTR_KEY_VERSION, GncXmlHelper.BOOK_VERSION);
         transactionNode.appendChild(idNode);
         transactionNode.appendChild(currencyNode);
         transactionNode.appendChild(datePostedNode);
         transactionNode.appendChild(dateEneteredNode);
         transactionNode.appendChild(descriptionNode);
+        if (mNotes != null && mNotes.length() > 0){
+            transactionNode.appendChild(trnSlotsNode);
+        }
         //TODO: Improve xml compatibilty with desktop for scheduled actions
         if (mRecurrencePeriod != 0) {
             Element recurrenceNode = doc.createElement(GncXmlHelper.TAG_RECURRENCE_PERIOD);

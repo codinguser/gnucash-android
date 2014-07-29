@@ -57,7 +57,7 @@ public class TransactionRecorder extends BroadcastReceiver {
 
         Transaction transaction = new Transaction(name);
         transaction.setTime(System.currentTimeMillis());
-        transaction.setDescription(note);
+        transaction.setNote(note);
         transaction.setCurrencyCode(currencyCode);
 
         //Parse deprecated args for compatibility. Transactions were bound to accounts, now only splits are

@@ -68,7 +68,7 @@ public class TransactionsActivityTest extends
         account.setUID(DUMMY_ACCOUNT_UID);
         account.setCurrency(Currency.getInstance(Locale.getDefault()));
         mTransaction = new Transaction(TRANSACTION_NAME);
-        mTransaction.setDescription("What up?");
+        mTransaction.setNote("What up?");
         mTransaction.setTime(mTransactionTimeMillis);
 
         account.addTransaction(mTransaction);
@@ -148,7 +148,7 @@ public class TransactionsActivityTest extends
 	private void validateEditTransactionFields(Transaction transaction){
 		
 		String name = mSolo.getEditText(0).getText().toString();
-		assertEquals(transaction.getName(), name);
+		assertEquals(transaction.getDescription(), name);
 		
 		String amountString = mSolo.getEditText(1).getText().toString();
 		NumberFormat formatter = NumberFormat.getInstance();
@@ -161,7 +161,7 @@ public class TransactionsActivityTest extends
 		assertEquals(transaction.getBalance(DUMMY_ACCOUNT_UID), amount);
 		
 		String description = mSolo.getEditText(2).getText().toString();
-		assertEquals(transaction.getDescription(), description);
+		assertEquals(transaction.getNote(), description);
 		
 		String expectedValue = TransactionFormFragment.DATE_FORMATTER.format(transaction.getTimeMillis());
 		TextView dateView = (TextView) mSolo.getView(R.id.input_date);
@@ -308,7 +308,7 @@ public class TransactionsActivityTest extends
 			
 			assertEquals(1, transactions.size());
 			Transaction trx = transactions.get(0);
-			assertEquals(TRANSACTION_NAME, trx.getName());
+			assertEquals(TRANSACTION_NAME, trx.getDescription());
 			Date expectedDate = new Date(mTransactionTimeMillis);
 			Date trxDate = new Date(trx.getTimeMillis());
 			assertEquals(TransactionFormFragment.DATE_FORMATTER.format(expectedDate),
@@ -399,8 +399,8 @@ public class TransactionsActivityTest extends
 		List<Transaction> transactions = trxnAdapter.getAllTransactionsForAccount(DUMMY_ACCOUNT_UID);
 		
 		for (Transaction transaction : transactions) {
-			if (transaction.getName().equals("Power intents")){
-				assertEquals("Intents for sale", transaction.getDescription());
+			if (transaction.getDescription().equals("Power intents")){
+				assertEquals("Intents for sale", transaction.getNote());
 				assertEquals(4.99, transaction.getBalance(DUMMY_ACCOUNT_UID).asDouble());
 			}
 		}

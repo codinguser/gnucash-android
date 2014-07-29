@@ -49,7 +49,7 @@ public class ExportTransactionsTest extends
 		
 		Account account = new Account("Exportable");		
 		Transaction transaction = new Transaction("Pizza");
-		transaction.setDescription("What up?");
+		transaction.setNote("What up?");
 		transaction.setTime(System.currentTimeMillis());
 		
 		account.addTransaction(transaction);

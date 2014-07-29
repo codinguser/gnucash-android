@@ -112,7 +112,7 @@ public class TransactionFormFragment extends SherlockFragment implements
 	/**
 	 * Input field for the transaction name (description)
 	 */
-	private AutoCompleteTextView mNameEditText;
+	private AutoCompleteTextView mDescriptionEditText;
 
 	/**
 	 * Input field for the transaction amount
@@ -128,7 +128,7 @@ public class TransactionFormFragment extends SherlockFragment implements
 	/**
 	 * Input field for the transaction description (note)
 	 */
-	private EditText mDescriptionEditText;
+	private EditText mNotesEditText;
 
 	/**
 	 * Input field for the transaction date
@@ -186,8 +186,8 @@ public class TransactionFormFragment extends SherlockFragment implements
 			Bundle savedInstanceState) {
 		View v = inflater.inflate(R.layout.fragment_new_transaction, container, false);
 
-		mNameEditText           = (AutoCompleteTextView) v.findViewById(R.id.input_transaction_name);
-		mDescriptionEditText    = (EditText) v.findViewById(R.id.input_description);
+		mDescriptionEditText = (AutoCompleteTextView) v.findViewById(R.id.input_transaction_name);
+		mNotesEditText = (EditText) v.findViewById(R.id.input_description);
 		mDateTextView           = (TextView) v.findViewById(R.id.input_date);
 		mTimeTextView           = (TextView) v.findViewById(R.id.input_time);
 		mAmountEditText         = (EditText) v.findViewById(R.id.input_transaction_amount);
@@ -266,7 +266,7 @@ public class TransactionFormFragment extends SherlockFragment implements
      */
     private void initTransactionNameAutocomplete() {
         final int[] to = new int[]{android.R.id.text1};
-        final String[] from = new String[]{DatabaseSchema.TransactionEntry.COLUMN_NAME};
+        final String[] from = new String[]{DatabaseSchema.TransactionEntry.COLUMN_DESCRIPTION};
 
         SimpleCursorAdapter adapter = new SimpleCursorAdapter(
                 getActivity(), android.R.layout.simple_dropdown_item_1line,
@@ -275,7 +275,7 @@ public class TransactionFormFragment extends SherlockFragment implements
         adapter.setCursorToStringConverter(new SimpleCursorAdapter.CursorToStringConverter() {
             @Override
             public CharSequence convertToString(Cursor cursor) {
-                final int colIndex = cursor.getColumnIndexOrThrow(DatabaseSchema.TransactionEntry.COLUMN_NAME);
+                final int colIndex = cursor.getColumnIndexOrThrow(DatabaseSchema.TransactionEntry.COLUMN_DESCRIPTION);
                 return cursor.getString(colIndex);
             }
         });
@@ -287,11 +287,11 @@ public class TransactionFormFragment extends SherlockFragment implements
             }
         });
 
-        mNameEditText.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        mDescriptionEditText.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
                 mTransaction = new Transaction(mTransactionsDbAdapter.getTransaction(id), true);
-                if (!GnuCashApplication.isDoubleEntryEnabled(true)){ //if no double entry, use only splits for this acct
+                if (!GnuCashApplication.isDoubleEntryEnabled(true)) { //if no double entry, use only splits for this acct
                     List<Split> accountSplits = mTransaction.getSplits(mAccountsDbAdapter.getAccountUID(mAccountId));
                     mTransaction.setSplits(accountSplits);
                 }
@@ -300,7 +300,7 @@ public class TransactionFormFragment extends SherlockFragment implements
             }
         });
 
-        mNameEditText.setAdapter(adapter);
+        mDescriptionEditText.setAdapter(adapter);
     }
 
     /**
@@ -308,7 +308,7 @@ public class TransactionFormFragment extends SherlockFragment implements
 	 * This method is called if the fragment is used for editing a transaction
 	 */
 	private void initializeViewsWithTransaction(){
-		mNameEditText.setText(mTransaction.getName());
+		mDescriptionEditText.setText(mTransaction.getDescription());
 
         String accountUID = mAccountsDbAdapter.getAccountUID(mAccountId);
         mTransactionTypeButton.setAccountType(mAccountType);
@@ -319,7 +319,7 @@ public class TransactionFormFragment extends SherlockFragment implements
             mAmountEditText.setText(mTransaction.getBalance(accountUID).toPlainString());
         }
 		mCurrencyTextView.setText(mTransaction.getCurrency().getSymbol(Locale.getDefault()));
-		mDescriptionEditText.setText(mTransaction.getDescription());
+		mNotesEditText.setText(mTransaction.getNote());
 		mDateTextView.setText(DATE_FORMATTER.format(mTransaction.getTimeMillis()));
 		mTimeTextView.setText(TIME_FORMATTER.format(mTransaction.getTimeMillis()));
 		Calendar cal = GregorianCalendar.getInstance();
@@ -556,8 +556,8 @@ public class TransactionFormFragment extends SherlockFragment implements
 				mTime.get(Calendar.HOUR_OF_DAY),
 				mTime.get(Calendar.MINUTE),
 				mTime.get(Calendar.SECOND));
-		String name = mNameEditText.getText().toString();
 		String description = mDescriptionEditText.getText().toString();
+		String notes = mNotesEditText.getText().toString();
 		BigDecimal amountBigd = parseInputToDecimal(mAmountEditText.getText().toString());
 
 		long accountID 	= ((TransactionsActivity) getSherlockActivity()).getCurrentAccountID();
@@ -578,9 +578,9 @@ public class TransactionFormFragment extends SherlockFragment implements
                 }
             }
             mTransaction.setSplits(mSplitsList);
-			mTransaction.setName(name);
+			mTransaction.setDescription(description);
 		} else {
-			mTransaction = new Transaction(name);
+			mTransaction = new Transaction(description);
             if (mSplitsList.isEmpty()) { //amount entered in the simple interface (not using splits Editor)
                 Split split = new Split(amount, accountUID);
                 split.setType(mTransactionTypeButton.getTransactionType());
@@ -601,7 +601,7 @@ public class TransactionFormFragment extends SherlockFragment implements
 		}
         mTransaction.setCurrencyCode(mAccountsDbAdapter.getCurrencyCode(accountID));
 		mTransaction.setTime(cal.getTimeInMillis());
-		mTransaction.setDescription(description);
+		mTransaction.setNote(notes);
 
         //save the normal transaction first
         mTransactionsDbAdapter.addTransaction(mTransaction);
@@ -654,7 +654,7 @@ public class TransactionFormFragment extends SherlockFragment implements
 	public boolean onOptionsItemSelected(MenuItem item) {
 		//hide the keyboard if it is visible
 		InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-		imm.hideSoftInputFromWindow(mNameEditText.getApplicationWindowToken(), 0);
+		imm.hideSoftInputFromWindow(mDescriptionEditText.getApplicationWindowToken(), 0);
 
 		switch (item.getItemId()) {
 		case R.id.menu_cancel:

@@ -216,7 +216,7 @@ public class Split {
         accountNode.setAttribute("type", "guid");
         accountNode.appendChild(doc.createTextNode(mAccountUID));
 
-        Element splitNode = doc.createElement(GncXmlHelper.TAG_TRX_SPLIT);
+        Element splitNode = doc.createElement(GncXmlHelper.TAG_TRN_SPLIT);
         splitNode.appendChild(idNode);
         splitNode.appendChild(memoNode);
         splitNode.appendChild(stateNode);

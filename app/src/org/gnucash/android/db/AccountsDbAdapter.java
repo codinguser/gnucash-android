@@ -965,7 +965,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
                     continue;
 
                 Transaction transaction = new Transaction(mContext.getString(R.string.account_name_opening_balances));
-                transaction.setDescription(getName(id));
+                transaction.setNote(getName(id));
                 transaction.setCurrencyCode(currencyCode);
                 TransactionType transactionType = Transaction.getTypeForBalance(getAccountType(accountUID),
                         balance.isNegative());

@@ -29,7 +29,6 @@ import org.gnucash.android.model.*;
 import static org.gnucash.android.db.DatabaseSchema.*;
 
 import java.util.ArrayList;
-import java.util.Currency;
 import java.util.List;
 
 /**
@@ -75,10 +74,10 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 	 */
 	public long addTransaction(Transaction transaction){
 		ContentValues contentValues = new ContentValues();
-		contentValues.put(TransactionEntry.COLUMN_NAME, transaction.getName());
+		contentValues.put(TransactionEntry.COLUMN_DESCRIPTION,  transaction.getDescription());
 		contentValues.put(TransactionEntry.COLUMN_UID,          transaction.getUID());
 		contentValues.put(TransactionEntry.COLUMN_TIMESTAMP,    transaction.getTimeMillis());
-		contentValues.put(TransactionEntry.COLUMN_DESCRIPTION,  transaction.getDescription());
+		contentValues.put(TransactionEntry.COLUMN_NOTES,        transaction.getNote());
 		contentValues.put(TransactionEntry.COLUMN_EXPORTED,     transaction.isExported() ? 1 : 0);
         contentValues.put(TransactionEntry.COLUMN_CURRENCY,     transaction.getCurrencyCode());
         contentValues.put(TransactionEntry.COLUMN_RECURRENCE_PERIOD, transaction.getRecurrencePeriod());
@@ -264,11 +263,11 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 	 * @return {@link Transaction} object constructed from database record
 	 */
 	public Transaction buildTransactionInstance(Cursor c){
-		String name   = c.getString(c.getColumnIndexOrThrow(TransactionEntry.COLUMN_NAME));
+		String name   = c.getString(c.getColumnIndexOrThrow(TransactionEntry.COLUMN_DESCRIPTION));
 		Transaction transaction = new Transaction(name);
 		transaction.setUID(c.getString(c.getColumnIndexOrThrow(TransactionEntry.COLUMN_UID)));
 		transaction.setTime(c.getLong(c.getColumnIndexOrThrow(TransactionEntry.COLUMN_TIMESTAMP)));
-		transaction.setDescription(c.getString(c.getColumnIndexOrThrow(TransactionEntry.COLUMN_DESCRIPTION)));
+		transaction.setNote(c.getString(c.getColumnIndexOrThrow(TransactionEntry.COLUMN_NOTES)));
 		transaction.setExported(c.getInt(c.getColumnIndexOrThrow(TransactionEntry.COLUMN_EXPORTED)) == 1);
 
         long recurrencePeriod = c.getLong(c.getColumnIndexOrThrow(TransactionEntry.COLUMN_RECURRENCE_PERIOD));
@@ -465,15 +464,15 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
      * @return Cursor to the data set containing all matching transactions
      */
     public Cursor fetchTransactionsStartingWith(String prefix){
-        StringBuffer stringBuffer = new StringBuffer(TransactionEntry.COLUMN_NAME)
+        StringBuffer stringBuffer = new StringBuffer(TransactionEntry.COLUMN_DESCRIPTION)
                 .append(" LIKE '").append(prefix).append("%'");
         String selection = stringBuffer.toString();
 
         Cursor c = mDb.query(TransactionEntry.TABLE_NAME,
-                new String[]{TransactionEntry._ID, TransactionEntry.COLUMN_NAME},
+                new String[]{TransactionEntry._ID, TransactionEntry.COLUMN_DESCRIPTION},
                 selection,
                 null, null, null,
-                TransactionEntry.COLUMN_NAME + " ASC");
+                TransactionEntry.COLUMN_DESCRIPTION + " ASC");
         return c;
     }
 

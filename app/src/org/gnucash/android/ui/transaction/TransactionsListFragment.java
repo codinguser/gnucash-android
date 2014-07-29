@@ -148,7 +148,7 @@ public class TransactionsListFragment extends SherlockListFragment implements
 		mCursorAdapter = new TransactionsCursorAdapter(
 				getActivity().getApplicationContext(), 
 				R.layout.list_item_transaction, null, 
-				new String[] {DatabaseSchema.TransactionEntry.COLUMN_NAME},
+				new String[] {DatabaseSchema.TransactionEntry.COLUMN_DESCRIPTION},
 				new int[] {R.id.primary_text});
 		setListAdapter(mCursorAdapter);
 	}
@@ -420,12 +420,12 @@ public class TransactionsListFragment extends SherlockListFragment implements
             TransactionsActivity.displayBalance(amountTextView, amount);
 
 			TextView trNote = (TextView) view.findViewById(R.id.secondary_text);
-			String description = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.TransactionEntry.COLUMN_DESCRIPTION));
-			if (description == null || description.length() == 0)
+			String notes = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.TransactionEntry.COLUMN_NOTES));
+			if (notes == null || notes.length() == 0)
 				trNote.setVisibility(View.GONE);
 			else {
 				trNote.setVisibility(View.VISIBLE);
-				trNote.setText(description);
+				trNote.setText(notes);
 			}
 
             setSectionHeaderVisibility(view, cursor);

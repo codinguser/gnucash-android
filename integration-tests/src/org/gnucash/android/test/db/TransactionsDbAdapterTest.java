@@ -40,8 +40,8 @@ public class TransactionsDbAdapterTest extends AndroidTestCase {
 	
 	public void testTransactionsAreTimeSorted(){
 		List<Transaction> transactionsList = mAdapter.getAllTransactionsForAccount(ALPHA_ACCOUNT_UID);
-		assertEquals("T1000", transactionsList.get(0).getName());
-		assertEquals("T800", transactionsList.get(1).getName());
+		assertEquals("T1000", transactionsList.get(0).getDescription());
+		assertEquals("T800", transactionsList.get(1).getDescription());
 	}
 	
 	@Override

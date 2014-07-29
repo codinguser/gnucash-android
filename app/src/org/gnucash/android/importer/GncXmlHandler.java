@@ -19,23 +19,15 @@ package org.gnucash.android.importer;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
-import android.widget.Toast;
-import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.export.xml.GncXmlHelper;
 import org.gnucash.android.model.*;
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.xml.sax.Attributes;
-import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
-import java.io.*;
 import java.text.ParseException;
 import java.util.Currency;
 import java.util.regex.Pattern;
@@ -59,20 +51,8 @@ public class GncXmlHandler extends DefaultHandler {
     private static final String LOG_TAG = "GnuCashAccountImporter";
 
     /**
-     * Value for placeholder slots in GnuCash account structure file
+     * Adapter for saving the imported accounts
      */
-    private static final String PLACEHOLDER_KEY = "placeholder";
-
-    /**
-     * Value of color slots in GnuCash account structure file
-     */
-    private static final String COLOR_KEY = "color";
-
-    /**
-     * Value of favorite slots in GnuCash account structure file
-     */
-    private static final String FAVORITE_KEY = "favorite";
-
     AccountsDbAdapter mAccountsDbAdapter;
 
     /**
@@ -100,6 +80,7 @@ public class GncXmlHandler extends DefaultHandler {
     boolean mInFavoriteSlot     = false;
     boolean mISO4217Currency    = false;
     boolean mIsDatePosted       = false;
+    boolean mIsNote = false;
 
     private Context mContext;
     private TransactionsDbAdapter mTransactionsDbAdapter;
@@ -133,7 +114,7 @@ public class GncXmlHandler extends DefaultHandler {
             mTransaction = new Transaction(""); //dummy name will be replaced
         }
 
-        if (qualifiedName.equalsIgnoreCase(GncXmlHelper.TAG_TRX_SPLIT)){
+        if (qualifiedName.equalsIgnoreCase(GncXmlHelper.TAG_TRN_SPLIT)){
             mSplit = new Split(Money.getZeroInstance(),"");
         }
 
@@ -190,15 +171,19 @@ public class GncXmlHandler extends DefaultHandler {
         }
 
         if (qualifiedName.equalsIgnoreCase(GncXmlHelper.TAG_SLOT_KEY)){
-            if (characterString.equals(PLACEHOLDER_KEY)){
+            if (characterString.equals(GncXmlHelper.KEY_PLACEHOLDER)){
                 mInPlaceHolderSlot = true;
             }
-            if (characterString.equals(COLOR_KEY)){
+            if (characterString.equals(GncXmlHelper.KEY_COLOR)){
                 mInColorSlot = true;
             }
 
-            if (characterString.equals(FAVORITE_KEY)){
+            if (characterString.equals(GncXmlHelper.KEY_FAVORITE)){
                 mInFavoriteSlot = true;
+            }
+
+            if (characterString.equals(GncXmlHelper.KEY_NOTES)){
+                mIsNote = true;
             }
         }
 
@@ -231,6 +216,13 @@ public class GncXmlHandler extends DefaultHandler {
                 mAccount.setFavorite(Boolean.parseBoolean(characterString));
                 mInFavoriteSlot = false;
             }
+
+            if (mIsNote){
+                if (mTransaction != null){
+                    mTransaction.setNote(characterString);
+                    mIsNote = false;
+                }
+            }
         }
 
 
@@ -239,8 +231,8 @@ public class GncXmlHandler extends DefaultHandler {
             mTransaction.setUID(characterString);
         }
 
-        if (qualifiedName.equalsIgnoreCase(GncXmlHelper.TAG_TRX_DESCRIPTION)){
-            mTransaction.setName(characterString);
+        if (qualifiedName.equalsIgnoreCase(GncXmlHelper.TAG_TRN_DESCRIPTION)){
+            mTransaction.setDescription(characterString);
         }
 
         if (qualifiedName.equalsIgnoreCase(GncXmlHelper.TAG_DATE)){
@@ -277,7 +269,7 @@ public class GncXmlHandler extends DefaultHandler {
             mSplit.setAccountUID(characterString);
         }
 
-        if (qualifiedName.equals(GncXmlHelper.TAG_TRX_SPLIT)){
+        if (qualifiedName.equals(GncXmlHelper.TAG_TRN_SPLIT)){
             mTransaction.addSplit(mSplit);
         }
 

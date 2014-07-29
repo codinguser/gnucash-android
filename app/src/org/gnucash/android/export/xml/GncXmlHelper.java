@@ -3,6 +3,8 @@ package org.gnucash.android.export.xml;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.model.Split;
 import org.gnucash.android.model.TransactionType;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 import java.math.BigDecimal;
 import java.text.ParseException;
@@ -16,6 +18,15 @@ import java.util.Date;
  */
 public abstract class GncXmlHelper {
     public static final String TAG_PREFIX           = "gnc:";
+
+    public static final String ATTR_KEY_CD_TYPE     = "cd:type";
+    public static final String ATTR_KEY_TYPE        = "type";
+    public static final String ATTR_KEY_VERSION     = "version";
+    public static final String ATTR_VALUE_STRING    = "string";
+    public static final String ATTR_VALUE_GUID      = "guid";
+    public static final String ATTR_VALUE_BOOK      = "book";
+    public static final String ATTR_VALUE_GDATE     = "gdate";
+
     /*
     Qualified GnuCash XML tag names
      */
@@ -23,7 +34,6 @@ public abstract class GncXmlHelper {
     public static final String TAG_BOOK             = "gnc:book";
     public static final String TAG_BOOK_ID          = "book:id";
     public static final String TAG_COUNT_DATA       = "gnc:count-data";
-    public static final String ATTRIBUTE_CD_TYPE    = "cd:type";
 
     public static final String TAG_COMMODITY        = "gnc:commodity";
     public static final String TAG_NAME             = "act:name";
@@ -46,9 +56,10 @@ public abstract class GncXmlHelper {
     public static final String TAG_DATE_POSTED      = "trn:date-posted";
     public static final String TAG_DATE             = "ts:date";
     public static final String TAG_DATE_ENTERED     = "trn:date-entered";
-    public static final String TAG_TRX_DESCRIPTION  = "trn:description";
-    public static final String TAG_TRX_SPLITS       = "trn:splits";
-    public static final String TAG_TRX_SPLIT        = "trn:split";
+    public static final String TAG_TRN_DESCRIPTION  = "trn:description";
+    public static final String TAG_TRN_SPLITS       = "trn:splits";
+    public static final String TAG_TRN_SPLIT        = "trn:split";
+    public static final String TAG_TRN_SLOTS        = "trn:slots";
 
     public static final String TAG_SPLIT_ID         = "split:id";
     public static final String TAG_SPLIT_MEMO       = "split:memo";
@@ -61,7 +72,13 @@ public abstract class GncXmlHelper {
     public static final String TAG_RECURRENCE_PERIOD = "trn:recurrence_period";
 
     public static final String BOOK_VERSION         = "2.0.0";
-    public static final SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z");
+    public static final SimpleDateFormat TIME_FORMATTER = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z");
+
+
+    public static final String KEY_PLACEHOLDER      = "placeholder";
+    public static final String KEY_COLOR            = "color";
+    public static final String KEY_FAVORITE         = "favorite";
+    public static final String KEY_NOTES            = "notes";
 
 
     /**
@@ -69,7 +86,7 @@ public abstract class GncXmlHelper {
      * @param milliseconds Milliseconds since epoch
      */
     public static String formatDate(long milliseconds){
-        return DATE_FORMATTER.format(new Date(milliseconds));
+        return TIME_FORMATTER.format(new Date(milliseconds));
     }
 
     /**
@@ -79,7 +96,7 @@ public abstract class GncXmlHelper {
      * @throws ParseException if the date string could not be parsed e.g. because of different format
      */
     public static long parseDate(String dateString) throws ParseException {
-        Date date = DATE_FORMATTER.parse(dateString);
+        Date date = TIME_FORMATTER.parse(dateString);
         return date.getTime();
     }
 
@@ -105,5 +122,26 @@ public abstract class GncXmlHelper {
         BigDecimal denominator = new BigDecimal(tokens[1]);
 
         return numerator.divide(denominator);
+    }
+
+    /**
+     * Helper method for creating slot key-value pairs in the GnuCash XML structure.
+     * <p>This method is only a helper for creating slots whose values are of string type</p>
+     * @param doc {@link org.w3c.dom.Document} for creating nodes
+     * @param key Slot key as string
+     * @param value Slot value as String
+     * @return Element node containing the key-value pair
+     */
+    public static Element createSlot(Document doc, String key, String value){
+        Element slotNode  = doc.createElement(TAG_SLOT);
+        Element slotKeyNode = doc.createElement(TAG_SLOT_KEY);
+        slotKeyNode.appendChild(doc.createTextNode(key));
+        Element slotValueNode = doc.createElement(TAG_SLOT_VALUE);
+        slotValueNode.setAttribute(ATTR_KEY_TYPE, ATTR_VALUE_STRING);
+        slotValueNode.appendChild(doc.createTextNode(value));
+        slotNode.appendChild(slotKeyNode);
+        slotNode.appendChild(slotValueNode);
+
+        return slotNode;
     }
 }

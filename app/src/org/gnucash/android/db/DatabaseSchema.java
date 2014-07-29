@@ -68,9 +68,10 @@ public class DatabaseSchema {
     public static abstract class TransactionEntry implements CommonColumns {
 
         public static final String TABLE_NAME                   = "transactions";
-
-        public static final String COLUMN_NAME                  = "name";
-        public static final String COLUMN_DESCRIPTION           = "description";
+        //The actual names of columns for description and notes are unlike the variable names because of legacy
+        //We will not change them now for backwards compatibility reasons. But the variable names make sense
+        public static final String COLUMN_DESCRIPTION           = "name";
+        public static final String COLUMN_NOTES                 = "description";
         public static final String COLUMN_CURRENCY              = "currency_code";
         public static final String COLUMN_TIMESTAMP             = "timestamp";
         public static final String COLUMN_EXPORTED              = "is_exported";
