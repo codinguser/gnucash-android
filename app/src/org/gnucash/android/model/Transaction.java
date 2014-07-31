@@ -299,32 +299,32 @@ public class Transaction {
     }
 
 	/**
-	 * Returns the name of the transaction
-	 * @return Name of the transaction
+	 * Returns the description of the transaction
+	 * @return Transaction description
 	 */
 	public String getDescription() {
 		return mDescription;
 	}
 
 	/**
-	 * Sets the name of the transaction
-	 * @param name String containing name of transaction to set
+	 * Sets the transaction description
+	 * @param description String description
 	 */
-	public void setDescription(String name) {
-		this.mDescription = name.trim();
+	public void setDescription(String description) {
+		this.mDescription = description.trim();
 	}
 
 	/**
-	 * Set short description of the transaction
-	 * @param description String containing description of transaction
+	 * Add notes to the transaction
+	 * @param notes String containing notes for the transaction
 	 */
-	public void setNote(String description) {
-		this.mNotes = description;
+	public void setNote(String notes) {
+		this.mNotes = notes;
 	}
 
 	/**
-	 * Returns the description of the transaction
-	 * @return String containing description of transaction
+	 * Returns the transaction notes
+	 * @return String notes of transaction
 	 */
 	public String getNote() {
 		return mNotes;

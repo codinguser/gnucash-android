@@ -435,7 +435,7 @@ public class TransactionFormFragment extends SherlockFragment implements
             return;
         }
         FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-        String baseAmountString = "0";
+        String baseAmountString;
         long transactionId = getArguments().getLong(UxArgument.SELECTED_TRANSACTION_ID);
 
         if (transactionId <= 0){
