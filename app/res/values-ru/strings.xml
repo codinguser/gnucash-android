@@ -303,14 +303,14 @@
 	<string name="summary_xml_ofx_header">Включите эту опцию, если экспортируете в программы отличные от GnuCash для ПК</string>
 	<string name="title_whats_new">Новости</string>
 	<string name="whats_new">
-        - Create multiple splits per transaction\n
-        - Fixed computation of account balances for different account types\n
-        - Use account-specific labels for CREDIT/DEBITs\n
-        - Automated backup of database before deletion operations\n
-        - Restore most recent backup of database (in Settings -> General)\n
-        - Read transactions from GnuCash XML files (limited support)\n
-        - Option to save opening balances before deleting transactions\n
-        - Multiple bug fixes and improvements\n
+        - Создание разделённых проводок\n
+        - Исправлено вычисление баланса счёта для счетов различных типов\n
+        - Подписи для дебетовых и кредитных проводок обозначаются согласно типу счёта\n
+        - Автоматическое резервное копирование базы перед операцией удаления\n
+        - Восстановление последней резервной копии базы (Настройки -&gt; Общие)\n
+        - Чтение транзакций из XML-файлов GnuCash (неполная функциональность)\n
+        - Возможность сохранять начальное сальдо при удалении транзакций\n
+        - Множественные исправления ошибок и улучшения\n
 	</string>
 	<string name="label_dismiss">Отказаться</string>
     <string name="toast_transanction_amount_required">Введите сумму, чтобы сохранить проводку</string>
@@ -393,31 +393,31 @@
         <item>ЕЖЕНЕДЕЛЬНЫЙ</item>
         <item>ЕЖЕМЕСЯЧНО</item>
     </string-array>
-    <string name="menu_scheduled_transactions">Scheduled Transactions</string>
-    <string name="title_scheduled_transactions">Scheduled Transactions</string>
-    <string name="title_select_export_destination">Select destination for export</string>
-    <string name="hint_split_memo">Memo</string>
-    <string name="label_spend">Spend</string>
-    <string name="label_receive">Receive</string>
-    <string name="label_withdrawal">Withdrawal</string>
-    <string name="label_deposit">Deposit</string>
-    <string name="label_payment">Payment</string>
-    <string name="label_charge">Charge</string>
-    <string name="label_decrease">Decrease</string>
-    <string name="label_increase">Increase</string>
-    <string name="label_income">Income</string>
-    <string name="label_rebate">Rebate</string>
-    <string name="label_expense">Expense</string>
-    <string name="label_bill">Bill</string>
-    <string name="label_invoice">Invoice</string>
-    <string name="label_buy">Buy</string>
-    <string name="label_sell">Sell</string>
-    <string name="label_repeats">Repeats</string>
-    <string name="label_account_balance">Balance:</string>
-    <string name="toast_no_recent_backup">No recent backup found</string>
+    <string name="menu_scheduled_transactions">Запланированные проводки</string>
+    <string name="title_scheduled_transactions">Запланированные проводки</string>
+    <string name="title_select_export_destination">Выберите получателя экспорта</string>
+    <string name="hint_split_memo">Памятка</string>
+    <string name="label_spend">Расход</string>
+    <string name="label_receive">Приход</string>
+    <string name="label_withdrawal">Возврат</string>
+    <string name="label_deposit">Депозит</string>
+    <string name="label_payment">Платёж</string>
+    <string name="label_charge">Долг</string>
+    <string name="label_decrease">Уменьшение</string>
+    <string name="label_increase">Увеличение</string>
+    <string name="label_income">Входящее</string>
+    <string name="label_rebate">Скидка</string>
+    <string name="label_expense">Трата</string>
+    <string name="label_bill">Счёт</string>
+    <string name="label_invoice">Чек</string>
+    <string name="label_buy">Покупка</string>
+    <string name="label_sell">Продажа</string>
+    <string name="label_repeats">Повторы</string>
+    <string name="label_account_balance">Баланс:</string>
+    <string name="toast_no_recent_backup">Нет резервной копии</string>
     <string name="account_name_opening_balances">Начальное сальдо</string>
     <string name="account_name_equity">Собственные средства</string>
-    <string name="summary_save_opening_balances">Enable to save the current account balance (before deleting transactions) as new opening balance after deleting transactions
+    <string name="summary_save_opening_balances">Включите чтобы сохранить текущий баланс (перед удалением проводок) как новое начальное сальдо после их удаления
     </string>
-    <string name="title_save_opening_balances">Save account opening balances</string>
+    <string name="title_save_opening_balances">Сохранять начальное сальдо счетов</string>
 </resources>
