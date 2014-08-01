@@ -167,6 +167,13 @@
                     android:layout_marginBottom="-8dip"
                     style="@style/TextAppearance.EditTransaction_LabelSmall" />
 
+            <TextView android:id="@+id/input_recurrence"
+                      android:layout_width="match_parent"
+                      android:layout_height="wrap_content"
+                      android:gravity="center"
+                      android:text="Not scheduled"
+                      style="@style/Dropdown.TextView" />
+
             <Spinner android:id="@+id/input_recurring_transaction_spinner"
                      android:layout_width="match_parent"
                      android:layout_height="wrap_content"

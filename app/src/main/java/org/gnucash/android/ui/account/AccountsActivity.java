@@ -216,8 +216,8 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_accounts);
+        setContentView(R.layout.activity_accounts);
+        super.onCreate(savedInstanceState);
 
         init();
 

@@ -390,6 +390,12 @@
         <item>WEEKLY</item>
         <item>MONTHLY</item>
     </string-array>
+    <string-array name="nav_drawer_entries">
+        <item>Accounts</item>
+        <item>Favorites</item>
+        <item>Export Transactions</item>
+        <item>Recurring Transactions</item>
+    </string-array>
     <!-- Default title for color picker dialog [CHAR LIMIT=30] -->
     <string name="color_picker_default_title">Select a Color</string>
     <!-- Content description for a color square. -->

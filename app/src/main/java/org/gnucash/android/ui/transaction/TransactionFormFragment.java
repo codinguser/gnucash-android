@@ -23,8 +23,12 @@ import java.text.ParseException;
 import java.util.*;
 
 import android.support.v4.app.FragmentManager;
+import android.text.format.Time;
 import android.text.Editable;
 import android.widget.*;
+import com.doomonafireball.betterpickers.recurrencepicker.EventRecurrence;
+import com.doomonafireball.betterpickers.recurrencepicker.EventRecurrenceFormatter;
+import com.doomonafireball.betterpickers.recurrencepicker.RecurrencePickerDialog;
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.*;
@@ -67,9 +71,11 @@ import org.gnucash.android.util.QualifiedAccountNameCursorAdapter;
  * @author Ngewi Fet <ngewif@gmail.com>
  */
 public class TransactionFormFragment extends SherlockFragment implements
-	OnDateSetListener, OnTimeSetListener {
+	OnDateSetListener, OnTimeSetListener, RecurrencePickerDialog.OnRecurrenceSetListener {
 
-    public static final String TAG_SPLITS_EDITOR_FRAGMENT = "splits_editor";
+    public static final String FRAGMENT_TAG_SPLITS_EDITOR       = "splits_editor";
+    private static final String FRAGMENT_TAG_RECURRENCE_PICKER  = "recurrence_picker";
+
     /**
 	 * Transactions database adapter
 	 */
@@ -177,6 +183,11 @@ public class TransactionFormFragment extends SherlockFragment implements
      */
     Spinner mRecurringTransactionSpinner;
 
+    TextView mRecurrenceTextView;
+
+    private String mRecurrenceRule;
+    private EventRecurrence mEventRecurrence = new EventRecurrence();
+
     private AmountInputFormatter mAmountInputFormatter;
 
     private Button mOpenSplitsButton;
@@ -201,7 +212,7 @@ public class TransactionFormFragment extends SherlockFragment implements
 		mTransactionTypeButton  = (TransactionTypeToggleButton) v.findViewById(R.id.input_transaction_type);
 		mDoubleAccountSpinner   = (Spinner) v.findViewById(R.id.input_double_entry_accounts_spinner);
         mOpenSplitsButton       = (Button) v.findViewById(R.id.btn_open_splits);
-
+        mRecurrenceTextView     = (TextView) v.findViewById(R.id.input_recurrence);
         mRecurringTransactionSpinner = (Spinner) v.findViewById(R.id.input_recurring_transaction_spinner);
 		return v;
 	}
@@ -499,7 +510,7 @@ public class TransactionFormFragment extends SherlockFragment implements
         SplitEditorDialogFragment splitEditorDialogFragment =
                 SplitEditorDialogFragment.newInstance(baseAmountString);
         splitEditorDialogFragment.setTargetFragment(TransactionFormFragment.this, 0);
-        splitEditorDialogFragment.show(fragmentManager, TAG_SPLITS_EDITOR_FRAGMENT);
+        splitEditorDialogFragment.show(fragmentManager, FRAGMENT_TAG_SPLITS_EDITOR);
     }
 	/**
 	 * Sets click listeners for the dialog buttons
@@ -549,6 +560,31 @@ public class TransactionFormFragment extends SherlockFragment implements
                 }
                 DialogFragment fragment = new TimePickerDialogFragment(TransactionFormFragment.this, timeMillis);
                 fragment.show(ft, "time_dialog");
+            }
+        });
+
+        mRecurrenceTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                FragmentManager fm = getSherlockActivity().getSupportFragmentManager();
+                Bundle b = new Bundle();
+                Time t = new Time();
+                t.setToNow();
+                b.putLong(RecurrencePickerDialog.BUNDLE_START_TIME_MILLIS, t.toMillis(false));
+                b.putString(RecurrencePickerDialog.BUNDLE_TIME_ZONE, t.timezone);
+
+                // may be more efficient to serialize and pass in EventRecurrence
+                b.putString(RecurrencePickerDialog.BUNDLE_RRULE, mRecurrenceRule);
+
+                RecurrencePickerDialog rpd = (RecurrencePickerDialog) fm.findFragmentByTag(
+                        FRAGMENT_TAG_RECURRENCE_PICKER);
+                if (rpd != null) {
+                    rpd.dismiss();
+                }
+                rpd = new RecurrencePickerDialog();
+                rpd.setArguments(b);
+                rpd.setOnRecurrenceSetListener(TransactionFormFragment.this);
+                rpd.show(fm, FRAGMENT_TAG_RECURRENCE_PICKER);
             }
         });
 	}
@@ -853,6 +889,19 @@ public class TransactionFormFragment extends SherlockFragment implements
 				RoundingMode.HALF_EVEN);
 	}
 
+
+    @Override
+    public void onRecurrenceSet(String rrule) {
+        mRecurrenceRule = rrule;
+        String repeatString = "Not scheduled";
+        if (mRecurrenceRule != null){
+            mEventRecurrence.parse(mRecurrenceRule);
+            repeatString = EventRecurrenceFormatter.getRepeatString(getActivity(), getResources(), mEventRecurrence, true);
+
+        }
+
+        mRecurrenceTextView.setText(repeatString);
+    }
     private class AmountTextWatcher extends AmountInputFormatter {
 
         public AmountTextWatcher(EditText amountInput) {

@@ -42,6 +42,8 @@
         android:name="org.gnucash.android.permission.CREATE_ACCOUNT" />
     <uses-permission android:label="@string/permission_access_sdcard"
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.VIBRATE"
+                     android:label="Allow device to vibrate with notifications" />
 	    
     <application android:name="org.gnucash.android.app.GnuCashApplication"
         android:icon="@drawable/ic_launcher"
