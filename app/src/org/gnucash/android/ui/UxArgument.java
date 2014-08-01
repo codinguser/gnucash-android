@@ -49,6 +49,16 @@ public final class UxArgument {
     public static final String PARENT_ACCOUNT_ID        = "parent_account_id";
 
     /**
+     * Key for checking whether the passcode is enabled or not.
+     */
+    public static final String ENABLED_PASSCODE         = "enabled_passcode";
+
+    /**
+     * Key for storing the passcode.
+     */
+    public static final String PASSCODE                 = "passcode";
+
+    /**
      * Amount passed as a string
      */
     public static final String AMOUNT_STRING = "starting_amount";
