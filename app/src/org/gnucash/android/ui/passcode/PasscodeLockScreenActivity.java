@@ -37,57 +37,32 @@ import org.gnucash.android.ui.account.AccountsActivity;
  * Activity for displaying and managing the passcode lock screen.
  * @author Oleksandr Tyshkovets <olexandr.tyshkovets@gmail.com>
  */
-public class PasscodeLockScreenActivity extends Activity {
+public class PasscodeLockScreenActivity extends Activity implements KeyboardFragment.OnPasscodeEnteredListener {
 
     private static final String TAG = "PasscodeLockScreenActivity";
+    private SharedPreferences sharedPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.passcode_lockscreen);
 
-        final SharedPreferences sharedPreferences = PreferenceManager
-                .getDefaultSharedPreferences(getApplicationContext());
-
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         if (!sharedPreferences.getBoolean(UxArgument.ENABLED_PASSCODE, false)) {
+            Log.i(TAG, "Passcode disabled");
             startActivity(new Intent(this, AccountsActivity.class));
         }
+    }
 
-        final EditText passcodeEditText = (EditText) findViewById(R.id.passcode);
-        passcodeEditText.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void afterTextChanged(Editable editable) {
-                String pass = editable.toString();
-                String passcode = sharedPreferences.getString(UxArgument.PASSCODE, "");
-                Log.d(TAG, passcode);
-                if (pass.length() == 4) {
-                    if (pass.equals(passcode)) {
-                        startActivity(new Intent(getApplicationContext(), AccountsActivity.class));
-                    } else {
-                        Toast.makeText(getApplicationContext(),
-                                R.string.toast_wrong_passcode, Toast.LENGTH_SHORT).show();
-                        passcodeEditText.getText().clear();
-                    }
-                }
-            }
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {}
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {}
-        });
-
-        passcodeEditText.setOnKeyListener(new View.OnKeyListener() {
-            @Override
-            public boolean onKey(View v, int keyCode, KeyEvent event) {
-                if ((event.getAction() == KeyEvent.ACTION_DOWN)
-                        && (keyCode == KeyEvent.KEYCODE_ENTER)) {
-                    Toast.makeText(getApplicationContext(),
-                            R.string.toast_enter_full_passcode, Toast.LENGTH_LONG).show();
-                }
-                return false;
-            }
-        });
-
+    @Override
+    public void onPasscodeEntered(String pass) {
+        String passcode = sharedPreferences.getString(UxArgument.PASSCODE, "");
+        Log.d(TAG, "Passcode: " + passcode);
+        if (passcode.equals(pass)) {
+            startActivity(new Intent(this, AccountsActivity.class));
+        } else {
+            Toast.makeText(this, R.string.toast_wrong_passcode, Toast.LENGTH_SHORT).show();
+        }
     }
 
 }

@@ -29,7 +29,6 @@
     <string name="btn_save">Save</string>
     <string name="label_passcode">Enter Passcode</string>
     <string name="toast_wrong_passcode">Wrong passcode, please try again</string>
-    <string name="toast_enter_full_passcode">You didn’t enter the full passcode</string>
     <string name="label_transaction_name">Description</string>
     <string name="label_transaction_amount">Amount</string>
     <string name="title_add_transaction">New transaction</string>

@@ -50,7 +50,7 @@
         <activity
             android:name=".ui.passcode.PasscodeLockScreenActivity"
             android:noHistory="true"
-            android:windowSoftInputMode="stateAlwaysVisible">
+            android:windowSoftInputMode="stateAlwaysHidden">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
