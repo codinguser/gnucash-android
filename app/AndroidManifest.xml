@@ -61,6 +61,7 @@
             android:label="@string/app_name">
         </activity>
         <activity android:name=".ui.settings.SettingsActivity"/>
+        <activity android:name=".ui.passcode.PasscodePreferenceActivity" />
         <activity android:name=".ui.transaction.TransactionsActivity"
             android:configChanges="orientation|screenSize">
         </activity>

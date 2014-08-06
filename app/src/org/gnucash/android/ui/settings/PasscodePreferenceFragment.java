@@ -16,24 +16,32 @@
 
 package org.gnucash.android.ui.settings;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
+import android.widget.Toast;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockPreferenceActivity;
 
 import org.gnucash.android.R;
 import org.gnucash.android.ui.UxArgument;
+import org.gnucash.android.ui.passcode.PasscodePreferenceActivity;
 
 /**
  * Fragment for configuring passcode to the application
  * @author Oleksandr Tyshkovets <olexandr.tyshkovets@gmail.com>
  */
 public class PasscodePreferenceFragment extends PreferenceFragment {
+
+    private static final int REQUEST_CODE = 1;
+
+    private SharedPreferences.Editor editor;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -50,11 +58,10 @@ public class PasscodePreferenceFragment extends PreferenceFragment {
     public void onResume() {
         super.onResume();
 
-        final SharedPreferences.Editor editor = PreferenceManager
-                .getDefaultSharedPreferences(getActivity().getApplicationContext()).edit();
+        editor = PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext()).edit();
 
-        final String keyEnablePasscode = getString(R.string.key_enable_passcode);
-        findPreference(keyEnablePasscode)
+
+        findPreference(getString(R.string.key_enable_passcode))
                 .setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
                     @Override
                     public boolean onPreferenceChange(Preference preference, Object newValue) {
@@ -64,15 +71,25 @@ public class PasscodePreferenceFragment extends PreferenceFragment {
                     }
                 });
         findPreference(getString(R.string.key_change_passcode))
-                .setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+                .setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                     @Override
-                    public boolean onPreferenceChange(Preference preference, Object newValue) {
-                        editor.putString(UxArgument.PASSCODE, newValue.toString());
-                        editor.commit();
+                    public boolean onPreferenceClick(Preference preference) {
+                        startActivityForResult(
+                                new Intent(getActivity(), PasscodePreferenceActivity.class), REQUEST_CODE);
                         return true;
                     }
                 });
+    }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (resultCode == Activity.RESULT_OK && requestCode == REQUEST_CODE && data!= null) {
+            editor.putString(UxArgument.PASSCODE, data.getStringExtra(UxArgument.PASSCODE));
+            editor.commit();
+            Toast.makeText(getActivity(), R.string.toast_passcode_set, Toast.LENGTH_SHORT).show();
+        }
     }
 
 }

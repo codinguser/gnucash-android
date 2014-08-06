@@ -19,11 +19,8 @@
     <PreferenceCategory android:title="@string/title_passcode_preferences"/>
     <CheckBoxPreference android:title="@string/title_enable_passcode"
                         android:key="@string/key_enable_passcode" />
-    <EditTextPreference android:title="@string/title_change_passcode"
-                        android:key="@string/key_change_passcode"
-                        android:dependency="@string/key_enable_passcode"
-                        android:inputType="number"
-                        android:password="true"
-                        android:maxLength="4" />
+    <Preference android:key="@string/key_change_passcode"
+                android:title="@string/title_change_passcode"
+                android:dependency="@string/key_enable_passcode" />
 
 </PreferenceScreen>
