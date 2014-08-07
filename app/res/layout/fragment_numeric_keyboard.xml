@@ -185,7 +185,8 @@
             android:cursorVisible="false"
             android:focusableInTouchMode="false"
             android:hint="*"
-            android:inputType="numberPassword"
+            android:inputType="textPassword|number"
+            android:password="true"
             android:maxLength="1"
             android:textSize="33sp" />
 
@@ -196,7 +197,8 @@
             android:cursorVisible="false"
             android:focusableInTouchMode="false"
             android:hint="*"
-            android:inputType="numberPassword"
+            android:inputType="textPassword|number"
+            android:password="true"
             android:maxLength="1"
             android:textSize="33sp" />
 
@@ -207,7 +209,8 @@
             android:cursorVisible="false"
             android:focusableInTouchMode="false"
             android:hint="*"
-            android:inputType="numberPassword"
+            android:inputType="textPassword|number"
+            android:password="true"
             android:maxLength="1"
             android:textSize="33sp" />
 
@@ -218,7 +221,8 @@
             android:cursorVisible="false"
             android:focusableInTouchMode="false"
             android:hint="*"
-            android:inputType="numberPassword"
+            android:inputType="textPassword|number"
+            android:password="true"
             android:maxLength="1"
             android:textSize="33sp" />
 

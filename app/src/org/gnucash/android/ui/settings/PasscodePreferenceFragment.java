@@ -39,7 +39,10 @@ import org.gnucash.android.ui.passcode.PasscodePreferenceActivity;
  */
 public class PasscodePreferenceFragment extends PreferenceFragment {
 
-    private static final int REQUEST_CODE = 1;
+    /**
+     * * Request code for retrieving passcode to store
+     */
+    public static final int PASSCODE_REQUEST_CODE = 2;
 
     private SharedPreferences.Editor editor;
 
@@ -75,7 +78,7 @@ public class PasscodePreferenceFragment extends PreferenceFragment {
                     @Override
                     public boolean onPreferenceClick(Preference preference) {
                         startActivityForResult(
-                                new Intent(getActivity(), PasscodePreferenceActivity.class), REQUEST_CODE);
+                                new Intent(getActivity(), PasscodePreferenceActivity.class), PASSCODE_REQUEST_CODE);
                         return true;
                     }
                 });
@@ -85,7 +88,7 @@ public class PasscodePreferenceFragment extends PreferenceFragment {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (resultCode == Activity.RESULT_OK && requestCode == REQUEST_CODE && data!= null) {
+        if (resultCode == Activity.RESULT_OK && requestCode == PASSCODE_REQUEST_CODE && data!= null) {
             editor.putString(UxArgument.PASSCODE, data.getStringExtra(UxArgument.PASSCODE));
             editor.commit();
             Toast.makeText(getActivity(), R.string.toast_passcode_set, Toast.LENGTH_SHORT).show();

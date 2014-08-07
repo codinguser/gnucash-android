@@ -16,18 +16,14 @@
 
 package org.gnucash.android.ui.passcode;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
-import android.view.KeyEvent;
-import android.view.View;
-import android.widget.EditText;
 import android.widget.Toast;
+
+import com.actionbarsherlock.app.SherlockFragmentActivity;
 
 import org.gnucash.android.R;
 import org.gnucash.android.ui.UxArgument;
@@ -37,7 +33,8 @@ import org.gnucash.android.ui.account.AccountsActivity;
  * Activity for displaying and managing the passcode lock screen.
  * @author Oleksandr Tyshkovets <olexandr.tyshkovets@gmail.com>
  */
-public class PasscodeLockScreenActivity extends Activity implements KeyboardFragment.OnPasscodeEnteredListener {
+public class PasscodeLockScreenActivity extends SherlockFragmentActivity
+        implements KeyboardFragment.OnPasscodeEnteredListener {
 
     private static final String TAG = "PasscodeLockScreenActivity";
     private SharedPreferences sharedPreferences;

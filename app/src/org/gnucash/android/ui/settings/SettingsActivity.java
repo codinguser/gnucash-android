@@ -40,7 +40,9 @@ import org.gnucash.android.model.Money;
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.model.Transaction;
+import org.gnucash.android.ui.UxArgument;
 import org.gnucash.android.ui.account.AccountsActivity;
+import org.gnucash.android.ui.passcode.PasscodePreferenceActivity;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -51,7 +53,7 @@ import java.util.TimerTask;
 /**
  * Activity for displaying settings and information about the application
  * @author Ngewi Fet <ngewif@gmail.com>
- *
+ * @author Oleksandr Tyshkovets <olexandr.tyshkovets@gmail.com>
  */
 public class SettingsActivity extends SherlockPreferenceActivity implements OnPreferenceChangeListener, Preference.OnPreferenceClickListener{
 
@@ -111,6 +113,7 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
 			addPreferencesFromResource(R.xml.fragment_general_preferences);
             addPreferencesFromResource(R.xml.fragment_account_preferences);
 			addPreferencesFromResource(R.xml.fragment_transaction_preferences);
+            addPreferencesFromResource(R.xml.fragment_passcode_preferences);
 			addPreferencesFromResource(R.xml.fragment_about_preferences);
 			setDefaultCurrencyListener();
 			SharedPreferences manager = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
@@ -132,6 +135,12 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
 
             pref = findPreference(getString(R.string.key_restore_backup));
             pref.setOnPreferenceClickListener(this);
+
+            pref = findPreference(getString(R.string.key_change_passcode));
+            pref.setOnPreferenceClickListener(this);
+
+            pref = findPreference(getString(R.string.key_enable_passcode));
+            pref.setOnPreferenceChangeListener(this);
 		}
 	}
 
@@ -168,7 +177,12 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
 		preference.setSummary(newValue.toString());
 		if (preference.getKey().equals(getString(R.string.key_default_currency))){
 			Money.DEFAULT_CURRENCY_CODE = newValue.toString();
-		}
+		} else if (preference.getKey().equals(getString(R.string.key_enable_passcode))) {
+            Editor editor = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit();
+            editor.putBoolean(UxArgument.ENABLED_PASSCODE, (Boolean) newValue);
+            editor.commit();
+        }
+
 		return true;
 	}
 	
@@ -245,6 +259,12 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
             return true;
         }
 
+        if (key.equals(getString(R.string.key_change_passcode))){
+            startActivityForResult(new Intent(this, PasscodePreferenceActivity.class),
+                    PasscodePreferenceFragment.PASSCODE_REQUEST_CODE);
+            return true;
+        }
+
         return false;
     }
 
@@ -306,6 +326,14 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
                     Toast.makeText(this, R.string.toast_error_importing_accounts, Toast.LENGTH_SHORT).show();
                 }
 
+                break;
+            case PasscodePreferenceFragment.PASSCODE_REQUEST_CODE:
+                if (data!= null) {
+                    Editor editor = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit();
+                    editor.putString(UxArgument.PASSCODE, data.getStringExtra(UxArgument.PASSCODE));
+                    editor.commit();
+                    Toast.makeText(getApplicationContext(), R.string.toast_passcode_set, Toast.LENGTH_SHORT).show();
+                }
                 break;
         }
     }

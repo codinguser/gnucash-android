@@ -17,7 +17,6 @@
 package org.gnucash.android.ui.passcode;
 
 import android.app.Activity;
-import android.app.Fragment;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.LayoutInflater;
@@ -25,13 +24,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.actionbarsherlock.app.SherlockFragment;
+
 import org.gnucash.android.R;
 
 /**
  * Soft numeric keyboard for lock screen and passcode preference.
  * @author Oleksandr Tyshkovets <olexandr.tyshkovets@gmail.com>
  */
-public class KeyboardFragment extends Fragment {
+public class KeyboardFragment extends SherlockFragment {
 
     private TextView pass1;
     private TextView pass2;
