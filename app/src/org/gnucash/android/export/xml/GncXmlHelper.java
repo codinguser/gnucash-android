@@ -79,7 +79,7 @@ public abstract class GncXmlHelper {
     public static final String KEY_COLOR            = "color";
     public static final String KEY_FAVORITE         = "favorite";
     public static final String KEY_NOTES            = "notes";
-
+    public static final String KEY_DEFAULT_TRANSFER_ACCOUNT = "default_transfer_account";
 
     /**
      * Formats dates for the GnuCash XML format
@@ -132,12 +132,12 @@ public abstract class GncXmlHelper {
      * @param value Slot value as String
      * @return Element node containing the key-value pair
      */
-    public static Element createSlot(Document doc, String key, String value){
+    public static Element createSlot(Document doc, String key, String value, String valueType){
         Element slotNode  = doc.createElement(TAG_SLOT);
         Element slotKeyNode = doc.createElement(TAG_SLOT_KEY);
         slotKeyNode.appendChild(doc.createTextNode(key));
         Element slotValueNode = doc.createElement(TAG_SLOT_VALUE);
-        slotValueNode.setAttribute(ATTR_KEY_TYPE, ATTR_VALUE_STRING);
+        slotValueNode.setAttribute(ATTR_KEY_TYPE, valueType);
         slotValueNode.appendChild(doc.createTextNode(value));
         slotNode.appendChild(slotKeyNode);
         slotNode.appendChild(slotValueNode);

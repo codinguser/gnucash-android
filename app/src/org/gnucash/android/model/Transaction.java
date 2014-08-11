@@ -635,7 +635,7 @@ public class Transaction {
 
         Element trnSlotsNode = doc.createElement(GncXmlHelper.TAG_TRN_SLOTS);
         if (mNotes != null && mNotes.length() > 0) {
-            trnSlotsNode.appendChild(GncXmlHelper.createSlot(doc, GncXmlHelper.KEY_NOTES, mNotes));
+            trnSlotsNode.appendChild(GncXmlHelper.createSlot(doc, GncXmlHelper.KEY_NOTES, mNotes, GncXmlHelper.ATTR_VALUE_STRING));
             //TODO: Consider adding future transactions date as slot here too
         }
         Element trnSplits = doc.createElement(GncXmlHelper.TAG_TRN_SPLITS);

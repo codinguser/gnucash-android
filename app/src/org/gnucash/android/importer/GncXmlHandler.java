@@ -80,7 +80,8 @@ public class GncXmlHandler extends DefaultHandler {
     boolean mInFavoriteSlot     = false;
     boolean mISO4217Currency    = false;
     boolean mIsDatePosted       = false;
-    boolean mIsNote = false;
+    boolean mIsNote             = false;
+    boolean mInDefaultTransferAccount = false;
 
     private Context mContext;
     private TransactionsDbAdapter mTransactionsDbAdapter;
@@ -185,6 +186,10 @@ public class GncXmlHandler extends DefaultHandler {
             if (characterString.equals(GncXmlHelper.KEY_NOTES)){
                 mIsNote = true;
             }
+
+            if (characterString.equals(GncXmlHelper.KEY_DEFAULT_TRANSFER_ACCOUNT)){
+                mInDefaultTransferAccount = true;
+            }
         }
 
         if (qualifiedName.equalsIgnoreCase(GncXmlHelper.TAG_SLOT_VALUE)){
@@ -222,6 +227,11 @@ public class GncXmlHandler extends DefaultHandler {
                     mTransaction.setNote(characterString);
                     mIsNote = false;
                 }
+            }
+
+            if (mInDefaultTransferAccount){
+                mAccount.setDefaultTransferAccountUID(characterString);
+                mInDefaultTransferAccount = false;
             }
         }
 

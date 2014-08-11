@@ -291,12 +291,17 @@ public class TransactionFormFragment extends SherlockFragment implements
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
                 mTransaction = new Transaction(mTransactionsDbAdapter.getTransaction(id), true);
-                if (!GnuCashApplication.isDoubleEntryEnabled(true)) { //if no double entry, use only splits for this acct
-                    List<Split> accountSplits = mTransaction.getSplits(mAccountsDbAdapter.getAccountUID(mAccountId));
-                    mTransaction.setSplits(accountSplits);
-                }
+                mTransaction.setTime(System.currentTimeMillis());
                 initializeViewsWithTransaction();
-                setAmountEditViewVisible(View.GONE);
+                List<Split> splitList = mTransaction.getSplits();
+                boolean isSplitPair = splitList.size() == 2 && splitList.get(0).isPairOf(splitList.get(1));
+                if (isSplitPair){
+                    mSplitsList.clear();
+                    mAmountEditText.setText(splitList.get(0).getAmount().toPlainString());
+                } else {
+                    setAmountEditViewVisible(View.GONE);
+                }
+                mTransaction = null; //we are creating a new transaction after all
             }
         });
 

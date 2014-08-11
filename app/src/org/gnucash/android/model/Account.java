@@ -608,14 +608,18 @@ public class Account {
 
         Element acctSlotsNode = doc.createElement(GncXmlHelper.TAG_ACT_SLOTS);
         acctSlotsNode.appendChild(GncXmlHelper.createSlot(doc, GncXmlHelper.KEY_PLACEHOLDER,
-                Boolean.toString(mIsPlaceholderAccount)));
+                Boolean.toString(mIsPlaceholderAccount), GncXmlHelper.ATTR_VALUE_STRING));
 
         if (mColorCode != null && mColorCode.trim().length() > 0){
-            acctSlotsNode.appendChild(GncXmlHelper.createSlot(doc, GncXmlHelper.KEY_COLOR, mColorCode));
+            acctSlotsNode.appendChild(GncXmlHelper.createSlot(doc, GncXmlHelper.KEY_COLOR, mColorCode, GncXmlHelper.ATTR_VALUE_STRING));
+        }
+
+        if (mDefaultTransferAccountUID != null && mDefaultTransferAccountUID.trim().length() > 0){
+            acctSlotsNode.appendChild(GncXmlHelper.createSlot(doc, GncXmlHelper.KEY_DEFAULT_TRANSFER_ACCOUNT, mDefaultTransferAccountUID, "guid"));
         }
 
         acctSlotsNode.appendChild(GncXmlHelper.createSlot(doc,
-                GncXmlHelper.KEY_FAVORITE, Boolean.toString(mIsFavorite)));
+                GncXmlHelper.KEY_FAVORITE, Boolean.toString(mIsFavorite), GncXmlHelper.ATTR_VALUE_STRING));
 
         Element accountNode = doc.createElement(GncXmlHelper.TAG_ACCOUNT);
         accountNode.setAttribute(GncXmlHelper.ATTR_KEY_VERSION, GncXmlHelper.BOOK_VERSION);

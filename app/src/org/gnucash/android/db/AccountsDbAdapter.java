@@ -973,6 +973,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
                 split.setType(transactionType);
                 transaction.addSplit(split);
                 transaction.addSplit(split.createPair(getOrCreateOpeningBalanceAccountUID()));
+                transaction.setExported(true);
                 openingTransactions.add(transaction);
             }
             cursor.close();
