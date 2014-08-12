@@ -20,6 +20,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.CheckBoxPreference;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.PreferenceFragment;
@@ -45,6 +46,7 @@ public class PasscodePreferenceFragment extends PreferenceFragment {
     public static final int PASSCODE_REQUEST_CODE = 2;
 
     private SharedPreferences.Editor editor;
+    private CheckBoxPreference checkBoxPreference;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -62,12 +64,15 @@ public class PasscodePreferenceFragment extends PreferenceFragment {
         super.onResume();
 
         editor = PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext()).edit();
+        final Intent intent = new Intent(getActivity(), PasscodePreferenceActivity.class);
 
-
-        findPreference(getString(R.string.key_enable_passcode))
-                .setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+        checkBoxPreference = (CheckBoxPreference) findPreference(getString(R.string.key_enable_passcode));
+        checkBoxPreference.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
                     @Override
                     public boolean onPreferenceChange(Preference preference, Object newValue) {
+                        if ((Boolean) newValue) {
+                            startActivityForResult(intent, PASSCODE_REQUEST_CODE);
+                        }
                         editor.putBoolean(UxArgument.ENABLED_PASSCODE, (Boolean) newValue);
                         editor.commit();
                         return true;
@@ -77,8 +82,7 @@ public class PasscodePreferenceFragment extends PreferenceFragment {
                 .setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                     @Override
                     public boolean onPreferenceClick(Preference preference) {
-                        startActivityForResult(
-                                new Intent(getActivity(), PasscodePreferenceActivity.class), PASSCODE_REQUEST_CODE);
+                        startActivityForResult(intent, PASSCODE_REQUEST_CODE);
                         return true;
                     }
                 });
@@ -92,7 +96,11 @@ public class PasscodePreferenceFragment extends PreferenceFragment {
             editor.putString(UxArgument.PASSCODE, data.getStringExtra(UxArgument.PASSCODE));
             editor.commit();
             Toast.makeText(getActivity(), R.string.toast_passcode_set, Toast.LENGTH_SHORT).show();
+        } else {
+            editor.putBoolean(UxArgument.ENABLED_PASSCODE, false);
+            checkBoxPreference.setChecked(false);
         }
+        editor.commit();
     }
 
 }
