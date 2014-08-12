@@ -196,6 +196,8 @@ public class SplitEditorDialogFragment extends DialogFragment {
         updateTransferAccountsList(accountsSpinner);
         accountsSpinner.setOnItemSelectedListener(new TypeButtonLabelUpdater(splitTypeButton));
 
+        Currency accountCurrency = Currency.getInstance(mAccountsDbAdapter.getCurrencyCode(mAccountId));
+        splitCurrencyTextView.setText(accountCurrency.getSymbol());
         splitTypeButton.setAmountFormattingListener(splitAmountEditText, splitCurrencyTextView);
         splitTypeButton.setChecked(mBaseAmount.signum() > 0);
         splitUidTextView.setText(UUID.randomUUID().toString());

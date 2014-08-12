@@ -292,14 +292,22 @@ public class TransactionFormFragment extends SherlockFragment implements
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
                 mTransaction = new Transaction(mTransactionsDbAdapter.getTransaction(id), true);
                 mTransaction.setTime(System.currentTimeMillis());
+                //we check here because next method will modify it and we want to catch user-modification
+                boolean amountEntered = mAmountInputFormatter.isInputModified();
                 initializeViewsWithTransaction();
                 List<Split> splitList = mTransaction.getSplits();
                 boolean isSplitPair = splitList.size() == 2 && splitList.get(0).isPairOf(splitList.get(1));
                 if (isSplitPair){
                     mSplitsList.clear();
-                    mAmountEditText.setText(splitList.get(0).getAmount().toPlainString());
+                    if (!amountEntered) //if user already entered an amount
+                        mAmountEditText.setText(splitList.get(0).getAmount().toPlainString());
                 } else {
-                    setAmountEditViewVisible(View.GONE);
+                    if (amountEntered){ //if user entered own amount, clear
+                        mSplitsList.clear();
+                        setAmountEditViewVisible(View.VISIBLE);
+                    } else {
+                        setAmountEditViewVisible(View.GONE);
+                    }
                 }
                 mTransaction = null; //we are creating a new transaction after all
             }
@@ -377,7 +385,7 @@ public class TransactionFormFragment extends SherlockFragment implements
 			code = mTransactionsDbAdapter.getCurrencyCode(accountId);
 		}
 		Currency accountCurrency = Currency.getInstance(code);
-		mCurrencyTextView.setText(accountCurrency.getSymbol(Locale.getDefault()));
+		mCurrencyTextView.setText(accountCurrency.getSymbol());
 
         if (mUseDoubleEntry){
             long defaultTransferAccountID = mAccountsDbAdapter.getDefaultTransferAccountID(accountId);
