@@ -63,6 +63,11 @@ public final class UxArgument {
      */
     public static final String AMOUNT_STRING = "starting_amount";
 
+    /**
+     * Class caller, which will be launched after the unlocking
+     */
+    public static final String PASSCODE_CLASS_CALLER = "passcode_class_caller";
+
     //prevent initialization of instances of this class
     private UxArgument(){
         //prevent even the native class from calling the ctor

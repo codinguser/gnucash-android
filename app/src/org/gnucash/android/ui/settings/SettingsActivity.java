@@ -158,6 +158,12 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
     }
 
     @Override
+    protected void onPause() {
+        super.onPause();
+        GnuCashApplication.PASSCODE_SESSION_INIT_TIME = System.currentTimeMillis();
+    }
+
+    @Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case android.R.id.home:		

@@ -48,17 +48,17 @@
         android:label="@string/app_name" 
         android:theme="@style/Theme.Sherlock.Light.DarkActionBar">
         <activity
-            android:name=".ui.passcode.PasscodeLockScreenActivity"
-            android:noHistory="true"
-            android:windowSoftInputMode="stateAlwaysHidden">
+            android:name=".ui.account.AccountsActivity"
+            android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.account.AccountsActivity"
-            android:label="@string/app_name">
+            android:name=".ui.passcode.PasscodeLockScreenActivity"
+            android:noHistory="true"
+            android:windowSoftInputMode="stateAlwaysHidden">
         </activity>
         <activity android:name=".ui.settings.SettingsActivity"/>
         <activity android:name=".ui.passcode.PasscodePreferenceActivity" />

@@ -94,7 +94,6 @@ public class PasscodePreferenceFragment extends PreferenceFragment {
 
         if (resultCode == Activity.RESULT_OK && requestCode == PASSCODE_REQUEST_CODE && data!= null) {
             editor.putString(UxArgument.PASSCODE, data.getStringExtra(UxArgument.PASSCODE));
-            editor.commit();
             Toast.makeText(getActivity(), R.string.toast_passcode_set, Toast.LENGTH_SHORT).show();
         } else {
             editor.putBoolean(UxArgument.ENABLED_PASSCODE, false);
