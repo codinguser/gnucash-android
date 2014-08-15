@@ -21,13 +21,12 @@
     <string name="title_add_account">Создать счёт</string>
     <string name="title_edit_account">Редактировать счёт</string>
     <string name="info_details">Информация</string>
-    <string name="menu_export_ofx">Экспортировать OFX</string>
+    <string name="menu_export">Экспортировать OFX</string>
     <string name="description_add_transaction_icon">Добавить к счёту новую проводку</string>
     <string name="label_no_accounts">Нет счетов</string>
     <string name="label_account_name">Имя счёта</string>
     <string name="btn_cancel">Отмена</string>
     <string name="btn_save">Сохранить</string>
-    <string name="label_no_transactions_to_display">Нет проводок</string>
     <string name="label_transaction_name">Описание</string>
     <string name="label_transaction_amount">Сумма</string>
     <string name="title_add_transaction">Новая проводка</string>
@@ -48,12 +47,11 @@
     <string name="label_transaction_description">Замечание</string>
     <string name="menu_move">ПЕРЕНЕСТИ</string>
     <string name="title_selected">%1$d выбрано</string>
-    <string name="label_transactions_total">Общая сумма:</string>
     <string name="label_export_destination">Экспортировать в</string>
     <string name="title_export_dialog">Экспорт проводок</string>
     <string name="option_export_all_transactions">Экспортировать все</string>
     <string name="hint_export_choice">Экспортировать все проводки, а не только новые.</string>
-    <string name="error_exporting">Ошибка при экспорте OFX</string>    
+    <string name="toast_export_error">Ошибка при экспорте %1$s</string>
     <string name="btn_export">Экспорт</string>
     <string name="option_delete_after_export">Удалить после экспорта</string>
     <string name="hint_delete_after_export">Все экспортированные проводки будут удалены по завершении.</string>
@@ -118,7 +116,8 @@
 		<item>Cordoba Oro</item>
 		<item>Costa Rican Colon</item>
 		<item>Croatian Kuna</item>
-		<item>Cuban Peso</item>
+        <item>Cuban Convertible Peso</item>
+        <item>Cuban Peso</item>
 		<item>Czech Koruna</item>
 		<item>Dalasi</item>
 		<item>Danish Krone</item>
@@ -195,8 +194,6 @@
 		<item>Pakistan Rupee</item>
 		<item>Palladium</item>
 		<item>Pataca</item>
-		<item>Peso Convertible</item>
-		<item>Peso Uruguayo</item>
 		<item>Philippine Peso</item>
 		<item>Platinum</item>
 		<item>Pound Sterling</item>
@@ -245,7 +242,8 @@
 		<item>Unidad de Valor Real</item>
 		<item>Unidades de fomento</item>
 		<item>Uruguay Peso en Unidades Indexadas (URUIURUI)</item>
-		<item>US Dollar</item>
+        <item>Uruguayan Peso</item>
+        <item>US Dollar</item>
 		<item>Uzbekistan Sum</item>
 		<item>Vatu</item>
 		<item>WIR Euro</item>
@@ -275,10 +273,9 @@
 	<string name="title_about_gnucash">О Gnucash</string>
         <string name="summary_about_gnucash">Gnucash - программа учёта финансов для Android.\nОна позволяет легко отслеживать расходы и передавать информацию в Gnucash для рабочей станции посредством файлов формата OFX (Open Financial eXchange).</string>
 	<string name="title_about">О программе</string>
-	<string name="toast_error_exporting">Не могу записать файл OFX в :\n</string>
-	<string name="toast_ofx_exported_to">Файл OFX экспортирован в:\n</string>
-	<string name="title_export_email">Экспорт OFX-файла из Gnucash</string>
-	<string name="description_export_email">OFX-файл, экспортированный из Gnucash </string>
+	<string name="toast_format_exported_to">Файл %1$s экспортирован в:\n</string>
+	<string name="title_export_email">Экспорт %1$s-файла из Gnucash Android</string>
+	<string name="description_export_email">GnuCash Android export from </string>
 	<string name="header_transaction_settings">Проводки</string>
 	<string name="title_transaction_preferences">Свойства проводки</string>
 	<string name="title_account_preferences">Свойства счёта</string>
@@ -306,14 +303,14 @@
 	<string name="summary_xml_ofx_header">Включите эту опцию, если экспортируете в программы отличные от GnuCash для ПК</string>
 	<string name="title_whats_new">Новости</string>
 	<string name="whats_new">
-        - Отметка избранных счетов для быстрого доступа\n
-        - Отдельные табы для последних открывавшихся, избранных и списка всех счетов\n
-        - Добавление, просмотр и удаление запланированных проводок (ежедневные, еженедельные, ежемесячные)\n
-        - Поддержка виртуальных счетов (содержит только дочерние счета, без проводок)\n
-        - Установка трансфертного счёта по умолчанию для каждого счёта\n
-        - Раскраска счетов и темы для списка счетов\n
-        - Создание структуры счетов из приложения\n
-        - Много улучшений и исправлений\n
+        - Создание разделённых проводок\n
+        - Исправлено вычисление баланса счёта для счетов различных типов\n
+        - Подписи для дебетовых и кредитных проводок обозначаются согласно типу счёта\n
+        - Автоматическое резервное копирование базы перед операцией удаления\n
+        - Восстановление последней резервной копии базы (Настройки -&gt; Общие)\n
+        - Чтение транзакций из XML-файлов GnuCash (неполная функциональность)\n
+        - Возможность сохранять начальное сальдо при удалении транзакций\n
+        - Множественные исправления ошибок и улучшения\n
 	</string>
 	<string name="label_dismiss">Отказаться</string>
     <string name="toast_transanction_amount_required">Введите сумму, чтобы сохранить проводку</string>
@@ -396,7 +393,31 @@
         <item>ЕЖЕНЕДЕЛЬНЫЙ</item>
         <item>ЕЖЕМЕСЯЧНО</item>
     </string-array>
-    <string name="menu_scheduled_transactions">Scheduled Transactions</string>
-    <string name="title_scheduled_transactions">Scheduled Transactions</string>
-    <string name="title_select_export_destination">Select destination for export</string>
+    <string name="menu_scheduled_transactions">Запланированные проводки</string>
+    <string name="title_scheduled_transactions">Запланированные проводки</string>
+    <string name="title_select_export_destination">Выберите получателя экспорта</string>
+    <string name="hint_split_memo">Памятка</string>
+    <string name="label_spend">Расход</string>
+    <string name="label_receive">Приход</string>
+    <string name="label_withdrawal">Возврат</string>
+    <string name="label_deposit">Депозит</string>
+    <string name="label_payment">Платёж</string>
+    <string name="label_charge">Долг</string>
+    <string name="label_decrease">Уменьшение</string>
+    <string name="label_increase">Увеличение</string>
+    <string name="label_income">Входящее</string>
+    <string name="label_rebate">Скидка</string>
+    <string name="label_expense">Трата</string>
+    <string name="label_bill">Счёт</string>
+    <string name="label_invoice">Чек</string>
+    <string name="label_buy">Покупка</string>
+    <string name="label_sell">Продажа</string>
+    <string name="label_repeats">Повторы</string>
+    <string name="label_account_balance">Баланс:</string>
+    <string name="toast_no_recent_backup">Нет резервной копии</string>
+    <string name="account_name_opening_balances">Начальное сальдо</string>
+    <string name="account_name_equity">Собственные средства</string>
+    <string name="summary_save_opening_balances">Включите чтобы сохранить текущий баланс (перед удалением проводок) как новое начальное сальдо после их удаления
+    </string>
+    <string name="title_save_opening_balances">Сохранять начальное сальдо счетов</string>
 </resources>

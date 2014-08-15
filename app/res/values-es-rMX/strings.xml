@@ -21,13 +21,12 @@
     <string name="title_add_account">Crear cuenta</string>
     <string name="title_edit_account">Editar cuenta</string>
     <string name="info_details">Detalles</string>
-    <string name="menu_export_ofx">Exportar a OFX</string>
+    <string name="menu_export">Exportar a OFX</string>
     <string name="description_add_transaction_icon">Agregar transacci&#243;n a una cuenta</string>
     <string name="label_no_accounts">No hay cuentas</string>
     <string name="label_account_name">Nombre de la cuenta</string>
     <string name="btn_cancel">Cancelar</string>
     <string name="btn_save">Guardar</string>
-    <string name="label_no_transactions_to_display">No hay cuentas</string>
     <string name="label_transaction_name">Descripci&#243;n</string>
     <string name="label_transaction_amount">Monto</string>
     <string name="title_add_transaction">Nueva transacci&#243;n</string>
@@ -48,12 +47,11 @@
     <string name="label_transaction_description">Descripci&#243;n</string>
     <string name="menu_move">Mover</string>
     <string name="title_selected">%1$d seleccionado</string>
-    <string name="label_transactions_total">Total:</string>
     <string name="label_export_destination">Exportar Destino</string>
     <string name="title_export_dialog">Export Transactions</string>
     <string name="option_export_all_transactions">Exportar todas las transacciones</string>
     <string name="hint_export_choice">Por omisi&#243;n, s&#243;lo las trasacciones nuevas ser&#225;n exportadas. Selecione esta opci&#243;n para exportar todas las transacciones</string>
-    <string name="error_exporting">Error al exportar los datos OFX</string>
+    <string name="toast_export_error">Error al exportar los datos %1$s</string>
     <string name="btn_export">Exportar</string>
     <string name="option_delete_after_export">Borrar despu&#233;s de exportar</string>
     <string name="hint_delete_after_export">Todas las transacciones ser&#225;n borradas despu&#233;s de ser exportadas completamente</string>
@@ -118,7 +116,8 @@
 		<item>C&#243;rdoba Nicarag&#252;ense</item>
 		<item>Col&#243;n Costarricense</item>
 		<item>Kuna Croata</item>
-		<item>Peso Cubano</item>
+        <item>Peso convertible</item>
+        <item>Peso Cubano</item>
 		<item>Corona Checa</item>
 		<item>Dalasi</item>
 		<item>Corona Danesa</item>
@@ -195,8 +194,6 @@
 		<item>Rupia pakistan&#237;</item>
 		<item>Palladium</item>
 		<item>Pataca</item>
-		<item>Peso convertible</item>
-		<item>Peso uruguayo</item>
 		<item>Peso filipino</item>
 		<item>Platino</item>
 		<item>Libra esterlina</item>
@@ -245,7 +242,8 @@
 		<item>Unidad de Valor Real</item>
 		<item>Unidades de fomento</item>
 		<item>Peso uruguayo en Unidades Indexadas (URUIURUI)</item>
-		<item>D&#243;lar Estadounidense</item>
+        <item>Peso uruguayo</item>
+        <item>D&#243;lar Estadounidense</item>
 		<item>Som uzbeko</item>
 		<item>Vatu</item>
 		<item>Euro WIR</item>
@@ -275,10 +273,9 @@
 	<string name="title_about_gnucash">Acerca de Gnucash</string>
 	<string name="summary_about_gnucash">GnucashMobile es una aplicaci&#243;n de registro de finanzas para Android\nEsta permite un registro flexible de los gastos realizados, los cuales pueden ser exportados a formato Open Financial eXchange (OFX) e importados a Gnucash desde una computadora de escritorio.</string>
 	<string name="title_about">Acerca de</string>
-	<string name="toast_error_exporting">No se pudo escribir el archivo OFX en:\n</string>
-	<string name="toast_ofx_exported_to">Archivo OFX exportado a:\n</string>
-	<string name="title_export_email">Exportaci&#243;n OFX de Gnucash</string>
-	<string name="description_export_email">Exportaci&#243;n OFX de Gnucash </string>
+	<string name="toast_format_exported_to">Archivo %1$s exportado a:\n</string>
+	<string name="title_export_email">Exportaci&#243;n %1$s de Gnucash Android</string>
+	<string name="description_export_email">Exportaci&#243;n de Gnucash Android </string>
 	<string name="header_transaction_settings">Transacciones</string>
 	<string name="title_transaction_preferences">Opciones de transacci&#243;n</string>
 	<string name="title_account_preferences">Opciones de cuenta</string>
@@ -306,14 +303,14 @@
 	<string name="summary_xml_ofx_header">Active esta opci&#243;n para exportar a otras aplicaciones distintas a GnuCash para escritorio</string>
 	<string name="title_whats_new">&#191;Qu&#233; hay nuevo?</string>
 	<string name="whats_new">
-        - Mark favorite accounts and quickly access them\n
-        - Display different tabs for recent, favorite and all accounts\n
-        - Add, view and delete recurring transactions (daily, weekly, monthly)\n
-        - Mark accounts as placeholder accounts (cannot contain transactions)\n
-        - Set a default transfer account for each account\n
-        - Color code accounts and themed account views\n
-        - Create default GnuCash account structure from within app\n
-        - Numerous bug fixes and improvements\n
+        - Create multiple splits per transaction\n
+        - Fixed computation of account balances for different account types\n
+        - Use account-specific labels for CREDIT/DEBITs\n
+        - Automated backup of database before deletion operations\n
+        - Restore most recent backup of database (in Settings -> General)\n
+        - Read transactions from GnuCash XML files (limited support)\n
+        - Option to save opening balances before deleting transactions\n
+        - Multiple bug fixes and improvements\n
 	</string>
 	<string name="label_dismiss">Cerrar</string>
     <string name="toast_transanction_amount_required">Ingrese el saldo para guardar la transacci&#243;n</string>
@@ -398,4 +395,28 @@
     <string name="menu_scheduled_transactions">Scheduled Transactions</string>
     <string name="title_scheduled_transactions">Scheduled Transactions</string>
     <string name="title_select_export_destination">Select destination for export</string>
+    <string name="hint_split_memo">Memo</string>
+    <string name="label_spend">Spend</string>
+    <string name="label_receive">Receive</string>
+    <string name="label_withdrawal">Withdrawal</string>
+    <string name="label_deposit">Deposit</string>
+    <string name="label_payment">Payment</string>
+    <string name="label_charge">Charge</string>
+    <string name="label_decrease">Decrease</string>
+    <string name="label_increase">Increase</string>
+    <string name="label_income">Income</string>
+    <string name="label_rebate">Rebate</string>
+    <string name="label_expense">Expense</string>
+    <string name="label_bill">Bill</string>
+    <string name="label_invoice">Invoice</string>
+    <string name="label_buy">Buy</string>
+    <string name="label_sell">Sell</string>
+    <string name="label_repeats">Repeats</string>
+    <string name="label_account_balance">Balance:</string>
+    <string name="toast_no_recent_backup">No recent backup found</string>
+    <string name="account_name_opening_balances">Balances de apertura</string>
+    <string name="account_name_equity">Capital</string>
+    <string name="summary_save_opening_balances">Enable to save the current account balance (before deleting transactions) as new opening balance after deleting transactions
+    </string>
+    <string name="title_save_opening_balances">Save account opening balances</string>
 </resources>

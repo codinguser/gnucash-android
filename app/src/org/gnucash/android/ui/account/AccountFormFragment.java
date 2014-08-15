@@ -40,8 +40,9 @@ import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import org.gnucash.android.R;
 import org.gnucash.android.db.AccountsDbAdapter;
-import org.gnucash.android.db.DatabaseHelper;
+import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.model.Account;
+import org.gnucash.android.model.AccountType;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.ui.UxArgument;
 import org.gnucash.android.ui.colorpicker.ColorPickerDialog;
@@ -134,7 +135,7 @@ public class AccountFormFragment extends SherlockFragment {
 
     /**
      * Spinner for the account type
-     * @see org.gnucash.android.model.Account.AccountType
+     * @see org.gnucash.android.model.AccountType
      */
     private Spinner mAccountTypeSpinner;
 
@@ -244,7 +245,7 @@ public class AccountFormFragment extends SherlockFragment {
 
 		mParentAccountSpinner = (Spinner) view.findViewById(R.id.input_parent_account);
 		mParentAccountSpinner.setEnabled(false);
-		
+
 		mParentCheckBox = (CheckBox) view.findViewById(R.id.checkbox_parent_account);
 		mParentCheckBox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 			
@@ -350,7 +351,7 @@ public class AccountFormFragment extends SherlockFragment {
 
 
         if (mParentAccountId > 0) {
-            Account.AccountType parentAccountType = mAccountsDbAdapter.getAccountType(mParentAccountId);
+            AccountType parentAccountType = mAccountsDbAdapter.getAccountType(mParentAccountId);
             setAccountTypeSelection(parentAccountType);
             loadParentAccountList(parentAccountType);
             setParentAccountSelection(mParentAccountId);
@@ -380,7 +381,7 @@ public class AccountFormFragment extends SherlockFragment {
      * Selects the corresponding account type in the spinner
      * @param accountType AccountType to be set
      */
-    private void setAccountTypeSelection(Account.AccountType accountType){
+    private void setAccountTypeSelection(AccountType accountType){
         String[] accountTypeEntries = getResources().getStringArray(R.array.account_type_entries);
         int accountTypeIndex = Arrays.asList(accountTypeEntries).indexOf(accountType.name());
         mAccountTypeSpinner.setSelection(accountTypeIndex);
@@ -421,14 +422,7 @@ public class AccountFormFragment extends SherlockFragment {
 
         for (int pos = 0; pos < mParentAccountCursorAdapter.getCount(); pos++) {
             if (mParentAccountCursorAdapter.getItemId(pos) == parentAccountId){
-                final int position = pos;
-                mParentAccountSpinner.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        mParentAccountSpinner.setSelection(position);
-                    }
-                }, 100);
-//                mParentAccountSpinner.setSelection(pos, true);
+                mParentAccountSpinner.setSelection(pos, true);
                 break;
             }
         }
@@ -514,9 +508,9 @@ public class AccountFormFragment extends SherlockFragment {
      * Initializes the default transfer account spinner with eligible accounts
      */
     private void loadDefaultTransferAccountList(){
-        String condition = DatabaseHelper.KEY_ROW_ID + " != " + mSelectedAccountId
-                + " AND " + DatabaseHelper.KEY_PLACEHOLDER + "=0"
-                + " AND " + DatabaseHelper.KEY_UID + " != '" + mAccountsDbAdapter.getGnuCashRootAccountUID() + "'";
+        String condition = DatabaseSchema.AccountEntry._ID + " != " + mSelectedAccountId
+                + " AND " + DatabaseSchema.AccountEntry.COLUMN_PLACEHOLDER + "=0"
+                + " AND " + DatabaseSchema.AccountEntry.COLUMN_UID + " != '" + mAccountsDbAdapter.getGnuCashRootAccountUID() + "'";
         /*
       Cursor holding data set of eligible transfer accounts
      */
@@ -538,15 +532,15 @@ public class AccountFormFragment extends SherlockFragment {
      * The allowed parent accounts depends on the account type
      * @param accountType AccountType of account whose allowed parent list is to be loaded
      */
-	private void loadParentAccountList(Account.AccountType accountType){
-        String condition = DatabaseHelper.KEY_TYPE + " IN ("
+	private void loadParentAccountList(AccountType accountType){
+        String condition = DatabaseSchema.SplitEntry.COLUMN_TYPE + " IN ("
                 + getAllowedParentAccountTypes(accountType) + ") ";
 
         if (mAccount != null){  //if editing an account
             // limit cyclic account hierarchies. Still technically possible since we don't forbid descendant accounts
-            condition += " AND (" + DatabaseHelper.KEY_PARENT_ACCOUNT_UID + " IS NULL "
-                    + " OR " + DatabaseHelper.KEY_PARENT_ACCOUNT_UID + " != '" + mAccount.getUID() + "')"
-                    + " AND " + DatabaseHelper.KEY_ROW_ID + " != " + mSelectedAccountId;
+            condition += " AND (" + DatabaseSchema.AccountEntry.COLUMN_PARENT_ACCOUNT_UID + " IS NULL "
+                    + " OR " + DatabaseSchema.AccountEntry.COLUMN_PARENT_ACCOUNT_UID + " != '" + mAccount.getUID() + "')"
+                    + " AND " + DatabaseSchema.AccountEntry._ID + " != " + mSelectedAccountId;
 
             //TODO: Limit all descendants of the account to eliminate the possibility of cyclic hierarchy
         }
@@ -572,20 +566,20 @@ public class AccountFormFragment extends SherlockFragment {
 
     /**
      * Returns a comma separated list of account types which can be parent accounts for the specified <code>type</code>.
-     * The strings in the list are the {@link org.gnucash.android.model.Account.AccountType#name()}s of the different types.
-     * @param type {@link org.gnucash.android.model.Account.AccountType}
+     * The strings in the list are the {@link org.gnucash.android.model.AccountType#name()}s of the different types.
+     * @param type {@link org.gnucash.android.model.AccountType}
      * @return String comma separated list of account types
      */
-    private String getAllowedParentAccountTypes(Account.AccountType type){
+    private String getAllowedParentAccountTypes(AccountType type){
 
         switch (type){
             case EQUITY:
-                return "'" + Account.AccountType.EQUITY.name() + "'";
+                return "'" + AccountType.EQUITY.name() + "'";
 
             case INCOME:
             case EXPENSE:
-                return "'" + Account.AccountType.EXPENSE + "', '" + Account.AccountType.INCOME + "', '"
-                        + Account.AccountType.ROOT + "'";
+                return "'" + AccountType.EXPENSE + "', '" + AccountType.INCOME + "', '"
+                        + AccountType.ROOT + "'";
 
             case CASH:
             case BANK:
@@ -599,9 +593,9 @@ public class AccountFormFragment extends SherlockFragment {
             case MUTUAL: {
                 List<String> accountTypeStrings = getAccountTypeStringList();
 
-                accountTypeStrings.remove(Account.AccountType.EQUITY.name());
-                accountTypeStrings.remove(Account.AccountType.EXPENSE.name());
-                accountTypeStrings.remove(Account.AccountType.INCOME.name());
+                accountTypeStrings.remove(AccountType.EQUITY.name());
+                accountTypeStrings.remove(AccountType.EXPENSE.name());
+                accountTypeStrings.remove(AccountType.INCOME.name());
 
                 String result = "";
                 for (String accountTypeString : accountTypeStrings) {
@@ -615,16 +609,16 @@ public class AccountFormFragment extends SherlockFragment {
 
             case ROOT:
             default:
-                return Arrays.toString(Account.AccountType.values()).replaceAll("\\[|]", "");
+                return Arrays.toString(AccountType.values()).replaceAll("\\[|]", "");
         }
     }
 
     /**
-     * Returns a list of all the available {@link org.gnucash.android.model.Account.AccountType}s as strings
+     * Returns a list of all the available {@link org.gnucash.android.model.AccountType}s as strings
      * @return String list of all account types
      */
     private List<String> getAccountTypeStringList(){
-        String[] accountTypes = Arrays.toString(Account.AccountType.values()).replaceAll("\\[|]", "").split(",");
+        String[] accountTypes = Arrays.toString(AccountType.values()).replaceAll("\\[|]", "").split(",");
         List<String> accountTypesList = new ArrayList<String>();
         for (String accountType : accountTypes) {
             accountTypesList.add(accountType.trim());
@@ -677,7 +671,10 @@ public class AccountFormFragment extends SherlockFragment {
             mDefaultTransferAccountCursorAdapter.getCursor().close();
         }
 	}
-	
+
+    /**
+     * Reads the fields from the account form and saves as a new account
+     */
 	private void saveAccount() {
 		if (mAccount == null){
 			String name = getEnteredName();
@@ -696,7 +693,7 @@ public class AccountFormFragment extends SherlockFragment {
 				.getSelectedItemPosition());
 		mAccount.setCurrency(Currency.getInstance(curCode));
 
-        Account.AccountType selectedAccountType = getSelectedAccountType();
+        AccountType selectedAccountType = getSelectedAccountType();
         mAccount.setAccountType(selectedAccountType);
 
         mAccount.setPlaceHolderFlag(mPlaceholderCheckBox.isChecked());
@@ -727,12 +724,12 @@ public class AccountFormFragment extends SherlockFragment {
 
     /**
      * Returns the currently selected account type in the spinner
-     * @return {@link org.gnucash.android.model.Account.AccountType} currently selected
+     * @return {@link org.gnucash.android.model.AccountType} currently selected
      */
-    private Account.AccountType getSelectedAccountType() {
+    private AccountType getSelectedAccountType() {
         int selectedAccountTypeIndex = mAccountTypeSpinner.getSelectedItemPosition();
         String[] accountTypeEntries = getResources().getStringArray(R.array.account_type_entries);
-        return Account.AccountType.valueOf(accountTypeEntries[selectedAccountTypeIndex]);
+        return AccountType.valueOf(accountTypeEntries[selectedAccountTypeIndex]);
     }
 
     /**

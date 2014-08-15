@@ -29,7 +29,7 @@
         <CheckBoxPreference android:summary="@string/hint_export_choice" android:key="@string/key_export_all_transactions" android:title="@string/title_export_all_transactions"/>
         <CheckBoxPreference android:summary="@string/hint_delete_after_export" android:key="@string/key_delete_transactions_after_export" android:title="@string/title_always_delete_exported_transactions"/>
         <CheckBoxPreference android:key="@string/key_xml_ofx_header" android:summary="@string/summary_xml_ofx_header" android:title="@string/title_xml_ofx_header"/>
-        
+        <Preference android:summary="Restore accounts and transactions from the last backup" android:key="@string/key_restore_backup" android:title="Restore last backup" />
     </PreferenceCategory>
     
     

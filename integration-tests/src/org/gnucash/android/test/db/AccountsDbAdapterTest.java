@@ -21,14 +21,11 @@ public class AccountsDbAdapterTest extends AndroidTestCase {
 		mAdapter = new AccountsDbAdapter(getContext());
 		mAdapter.deleteAllRecords();
 		Account first = new Account(ALPHA_ACCOUNT_NAME);
-		Transaction t1 = new Transaction("2.99", "T800");
-		t1.setAccountUID(first.getUID());
-		Transaction t2 = new Transaction("4.99", "T1000");
-		t2.setAccountUID(first.getUID());
+		Transaction t1 = new Transaction("T800");
+		Transaction t2 = new Transaction("T1000");
 		
 		Account second = new Account(BRAVO_ACCOUNT_NAME);
-		Transaction t = new Transaction("9.99", "buyout");
-		t.setAccountUID(second.getUID());
+		Transaction t = new Transaction("buyout");
 		
 		mAdapter.addAccount(second);
 		mAdapter.addAccount(first);
@@ -45,8 +42,8 @@ public class AccountsDbAdapterTest extends AndroidTestCase {
 	public void testTransactionsHaveSameCurrencyAsAccount(){
 		Account acc1 = new Account("Japanese", Currency.getInstance("JPY"));
 		acc1.setUID("simile");
-		Transaction trx = new Transaction("2.50", "Underground");
-		Transaction term = new Transaction("3.49", "Tube");
+		Transaction trx = new Transaction("Underground");
+		Transaction term = new Transaction( "Tube");
 		acc1.addTransaction(trx);
 		acc1.addTransaction(term);
 		
@@ -54,7 +51,7 @@ public class AccountsDbAdapterTest extends AndroidTestCase {
 		
 		Account account = mAdapter.getAccount("simile");
 		for (Transaction t : account.getTransactions()) {
-			assertEquals("JPY", t.getAmount().getCurrency().getCurrencyCode());
+			assertEquals("JPY", t.getBalance(acc1.getUID()).getCurrency().getCurrencyCode());
 		}
 	}
 	

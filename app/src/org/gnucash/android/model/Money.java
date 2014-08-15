@@ -85,7 +85,7 @@ public final class Money implements Comparable<Money>{
      * A zero instance with the currency of the default locale.
      * This can be used anywhere where a starting amount is required without having to create a new object
      */
-    private static final Money sDefaultZero = Money.createInstance(Currency.getInstance(Locale.getDefault()).getCurrencyCode());
+    private static final Money sDefaultZero = Money.createZeroInstance(Currency.getInstance(Locale.getDefault()).getCurrencyCode());
 
     /**
      * Returns a Money instance initialized to the local currency and value 0
@@ -173,7 +173,7 @@ public final class Money implements Comparable<Money>{
      * @param currencyCode Currency to use for this money instance
      * @return Money object with value 0 and currency <code>currencyCode</code>
      */
-    public static Money createInstance(String currencyCode){
+    public static Money createZeroInstance(String currencyCode){
         return new Money("0", currencyCode);
     }
 
@@ -465,4 +465,12 @@ public final class Money implements Comparable<Money>{
 		}
 		return result;		
 	}
+
+    /**
+     * Returns a new instance of {@link Money} object with the absolute value of the current object
+     * @return Money object with absolute value of this instance
+     */
+    public Money absolute() {
+        return new Money(mAmount.abs(), mCurrency);
+    }
 }

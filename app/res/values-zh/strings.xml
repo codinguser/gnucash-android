@@ -20,13 +20,12 @@
     <string name="title_add_account">创建科目</string>
     <string name="title_edit_account">修改科目</string>
     <string name="info_details">信息</string>
-    <string name="menu_export_ofx">导出OFX</string>
+    <string name="menu_export">导出OFX</string>
     <string name="description_add_transaction_icon">为科目增加交易</string>
     <string name="label_no_accounts">没有要显示的科目</string>
     <string name="label_account_name">科目名称</string>
     <string name="btn_cancel">取消</string>
     <string name="btn_save">保存</string>
-    <string name="label_no_transactions_to_display">没有要显示的交易</string>
     <string name="label_transaction_name">描述</string>
     <string name="label_transaction_amount">金额</string>
     <string name="title_add_transaction">新交易</string>
@@ -47,12 +46,11 @@
     <string name="label_transaction_description">备注</string>
     <string name="menu_move">移动</string>
     <string name="title_selected">%1$d 已选中</string>
-    <string name="label_transactions_total">合计：</string>
     <string name="label_export_destination">导出到</string>
     <string name="title_export_dialog">导出交易资料</string>
     <string name="option_export_all_transactions">导出所有交易</string>
     <string name="hint_export_choice">默认情况下，自上次导出后新增的交易才会被导出。选择此项后所有的交易都会被导出。</string>
-    <string name="error_exporting">导出OFX发生错误</string>
+    <string name="toast_export_error">导出%1$s发生错误</string>
     <string name="btn_export">导出</string>
     <string name="option_delete_after_export">导出后删除交易</string>
     <string name="hint_delete_after_export">导出完成后现存所有交易都会被删除</string>
@@ -117,6 +115,7 @@
         <item>科多巴</item>
         <item>哥斯达黎加科朗</item>
         <item>克罗地亚库纳</item>
+        <item>Cuban Convertible Peso</item>
         <item>古巴比索</item>
         <item>捷克克朗</item>
         <item>达拉斯</item>
@@ -194,8 +193,6 @@
         <item>巴基斯坦卢比</item>
         <item>Palladium</item>
         <item>Pataca</item>
-        <item>Peso Convertible</item>
-        <item>Peso Uruguayo</item>
         <item>Philippine Peso</item>
         <item>Platinum</item>
         <item>Pound Sterling</item>
@@ -244,6 +241,7 @@
         <item>Unidad de Valor Real</item>
         <item>Unidades de fomento</item>
         <item>Uruguay Peso en Unidades Indexadas (URUIURUI)</item>
+        <item>Uruguayan Peso</item>
         <item>美元</item>
         <item>Uzbekistan Sum</item>
         <item>Vatu</item>
@@ -274,10 +272,9 @@
     <string name="title_about_gnucash">关于GnuCash</string>
     <string name="summary_about_gnucash">Gnucash for android是一个移动版的财务管理软件。提供灵活的跟踪开支的功能，可以导出OFX格式（开放金融交易格式）数据，并导入到桌面版的 GnuCash中。</string>
     <string name="title_about">关于</string>
-    <string name="toast_error_exporting">无法写OFX文件:\n</string>
-    <string name="toast_ofx_exported_to">OFX文件保存到：\n</string>
-    <string name="title_export_email">GnuCash OFX 导出</string>
-    <string name="description_export_email">GnuCash OFX Export from </string>
+    <string name="toast_format_exported_to">%1$s文件保存到：\n</string>
+    <string name="title_export_email">GnuCash Android %1$s 导出</string>
+    <string name="description_export_email">GnuCash Android Export from </string>
     <string name="header_transaction_settings">交易</string>
     <string name="title_transaction_preferences">交易设置</string>
     <string name="title_account_preferences">科目设置</string>
@@ -305,14 +302,14 @@
     <string name="summary_xml_ofx_header">当导出数据到GnuCash桌面版以外的程序时需要开启这个选项。</string>
     <string name="title_whats_new">新功能</string>
     <string name="whats_new">
-        - 给科目加星标！\n
-        - 使用标签访问科目\n
-        - 计划的交易（日、月、年）\n
-        - 科目占位符\n
-        - 设置默认的转账科目\n
-        - 科目的颜色\n
-        - 内置了常见科目结构\n
-        - 修复一些小错误\n
+        - Create multiple splits per transaction\n
+        - Fixed computation of account balances for different account types\n
+        - Use account-specific labels for CREDIT/DEBITs\n
+        - Automated backup of database before deletion operations\n
+        - Restore most recent backup of database (in Settings -> General)\n
+        - Read transactions from GnuCash XML files (limited support)\n
+        - Option to save opening balances before deleting transactions\n
+        - Multiple bug fixes and improvements\n
 	</string>
     <string name="label_dismiss">知道了</string>
     <string name="toast_transanction_amount_required">输入金额才能保存交易</string>
@@ -393,4 +390,28 @@
     </string-array>
     <string name="title_scheduled_transactions">计划的交易</string>
     <string name="title_select_export_destination">Select destination for export</string>
+    <string name="hint_split_memo">Memo</string>
+    <string name="label_spend">Spend</string>
+    <string name="label_receive">Receive</string>
+    <string name="label_withdrawal">Withdrawal</string>
+    <string name="label_deposit">Deposit</string>
+    <string name="label_payment">Payment</string>
+    <string name="label_charge">Charge</string>
+    <string name="label_decrease">Decrease</string>
+    <string name="label_increase">Increase</string>
+    <string name="label_income">Income</string>
+    <string name="label_rebate">Rebate</string>
+    <string name="label_expense">Expense</string>
+    <string name="label_bill">Bill</string>
+    <string name="label_invoice">Invoice</string>
+    <string name="label_buy">Buy</string>
+    <string name="label_sell">Sell</string>
+    <string name="label_repeats">Repeats</string>
+    <string name="label_account_balance">Balance:</string>
+    <string name="toast_no_recent_backup">No recent backup found</string>
+    <string name="account_name_opening_balances">期初余额</string>
+    <string name="account_name_equity">所有者权益</string>
+    <string name="summary_save_opening_balances">Enable to save the current account balance (before deleting transactions) as new opening balance after deleting transactions
+    </string>
+    <string name="title_save_opening_balances">Save account opening balances</string>
 </resources>

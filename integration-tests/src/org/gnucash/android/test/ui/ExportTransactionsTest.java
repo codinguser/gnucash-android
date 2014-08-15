@@ -19,13 +19,13 @@ package org.gnucash.android.test.ui;
 import java.io.File;
 
 import org.gnucash.android.R;
+import org.gnucash.android.export.Exporter;
 import org.gnucash.android.model.Account;
 import org.gnucash.android.model.Transaction;
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.export.ExportFormat;
 import org.gnucash.android.ui.account.AccountsActivity;
-import org.gnucash.android.export.ExportDialogFragment;
 
 import android.os.Environment;
 import android.test.ActivityInstrumentationTestCase2;
@@ -48,8 +48,8 @@ public class ExportTransactionsTest extends
 		mSolo = new Solo(getInstrumentation(), getActivity());	
 		
 		Account account = new Account("Exportable");		
-		Transaction transaction = new Transaction("9.99", "Pizza");		
-		transaction.setDescription("What up?");
+		Transaction transaction = new Transaction("Pizza");
+		transaction.setNote("What up?");
 		transaction.setTime(System.currentTimeMillis());
 		
 		account.addTransaction(transaction);
@@ -80,7 +80,7 @@ public class ExportTransactionsTest extends
 		
 		//the file name is time-based (down to the minute), so we cache it here, 
 		//as close as possible to the export itself to minimize difference
-		String filename = ExportDialogFragment.buildExportFilename(ExportFormat.OFX);
+		String filename = Exporter.buildExportFilename(ExportFormat.OFX);
 		
 		mSolo.waitForDialogToClose(2000);
         mSolo.sleep(2000);
@@ -112,7 +112,7 @@ public class ExportTransactionsTest extends
 
         //the file name is time-based (down to the minute), so we cache it here,
         //as close as possible to the export itself to minimize difference
-        String filename = ExportDialogFragment.buildExportFilename(ExportFormat.QIF);
+        String filename = Exporter.buildExportFilename(ExportFormat.QIF);
 
         mSolo.waitForDialogToClose(10000);
 
@@ -174,7 +174,7 @@ public class ExportTransactionsTest extends
 		//the file name is time-based (down to the minute), so we cache it here, 
 		//as close as possible to the export itself to minimize chance of a different name 
 		//due to a different minute
-		String filename = ExportDialogFragment.buildExportFilename(ExportFormat.OFX);
+		String filename = Exporter.buildExportFilename(ExportFormat.OFX);
 		
 		mSolo.waitForDialogToClose(10000);
 				
@@ -207,7 +207,7 @@ public class ExportTransactionsTest extends
 		//the file name is time-based (down to the minute), so we cache it here, 
 		//as close as possible to the export itself to minimize chance of a different name 
 		//due to a different minute
-		String filename = ExportDialogFragment.buildExportFilename(ExportFormat.OFX);
+		String filename = Exporter.buildExportFilename(ExportFormat.OFX);
 		
 		mSolo.waitForDialogToClose(10000);		
 		

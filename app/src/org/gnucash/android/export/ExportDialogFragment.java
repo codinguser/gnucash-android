@@ -30,9 +30,6 @@ import android.widget.*;
 import org.gnucash.android.R;
 
 import java.io.File;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
 
 /**
  * Dialog fragment for exporting account information as OFX files.
@@ -78,8 +75,6 @@ public class ExportDialogFragment extends DialogFragment {
 	 */
 	private static final String TAG = "ExportDialogFragment";
 
-    ;
-
     private ExportFormat mExportFormat = ExportFormat.QIF;
 
 	/**
@@ -100,7 +95,7 @@ public class ExportDialogFragment extends DialogFragment {
             dismiss();
 
             Log.i(TAG, "Commencing async export of transactions");
-            new ExporterTask(getActivity()).execute(exportParameters);
+            new ExporterAsyncTask(getActivity()).execute(exportParameters);
 		}
 		
 	}
@@ -113,7 +108,7 @@ public class ExportDialogFragment extends DialogFragment {
             case R.id.radio_qif_format:
                 mExportFormat = ExportFormat.QIF;
         }
-        mFilePath = getActivity().getExternalFilesDir(null) + "/" + buildExportFilename(mExportFormat);
+        mFilePath = getActivity().getExternalFilesDir(null) + "/" + Exporter.buildExportFilename(mExportFormat);
         return;
     }
 
@@ -127,7 +122,7 @@ public class ExportDialogFragment extends DialogFragment {
 	public void onActivityCreated(Bundle savedInstanceState) {		
 		super.onActivityCreated(savedInstanceState);
         bindViews();
-		mFilePath = getActivity().getExternalFilesDir(null) + "/" + buildExportFilename(mExportFormat);
+		mFilePath = getActivity().getExternalFilesDir(null) + "/" + Exporter.buildExportFilename(mExportFormat);
 		getDialog().setTitle(R.string.title_export_dialog);
 	}
 
@@ -194,27 +189,6 @@ public class ExportDialogFragment extends DialogFragment {
 			file.delete();
 		}
 	}
-	
 
-
-	/**
-	 * Builds a file name based on the current time stamp for the exported file
-	 * @return String containing the file name
-	 */
-	public static String buildExportFilename(ExportFormat format){
-		SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US);
-		String filename = formatter.format(
-				new Date(System.currentTimeMillis())) 
-				+ "_gnucash_all";
-        switch (format) {
-            case QIF:
-                filename += ".qif";
-                break;
-            case OFX:
-                filename += ".ofx";
-                break;
-        }
-		return filename;
-	}
 }
 

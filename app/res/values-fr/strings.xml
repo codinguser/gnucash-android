@@ -21,13 +21,12 @@
     <string name="title_add_account">Cr&#233;er un compte</string>
     <string name="title_edit_account">Éditer le compte</string>
     <string name="info_details">Informations</string>
-    <string name="menu_export_ofx">Exporter en OFX</string>
+    <string name="menu_export">Exporter en OFX</string>
     <string name="description_add_transaction_icon">Ajoute une nouvelle transaction &#224; un compte</string>
     <string name="label_no_accounts">Aucun compte &#224; afficher</string>
     <string name="label_account_name">Nom de compte</string>
     <string name="btn_cancel">Annuler</string>
     <string name="btn_save">Sauvegarder</string>
-    <string name="label_no_transactions_to_display">Aucune transaction &#224; afficher</string>
     <string name="label_transaction_name">Description</string>
     <string name="label_transaction_amount">Montant</string>
     <string name="title_add_transaction">Nouvelle transaction</string>
@@ -48,12 +47,11 @@
     <string name="label_transaction_description">Note</string>
     <string name="menu_move">DÉPLACER</string>
     <string name="title_selected">%1$d s&#233;lectionné(s)</string>
-    <string name="label_transactions_total">Total :</string>
     <string name="label_export_destination">Destination d\'export</string>
     <string name="title_export_dialog">Exporter les transactions</string>
     <string name="option_export_all_transactions">Exporter toutes les transactions</string>
     <string name="hint_export_choice">Par d&#233;faut, seul les nouvelles transactions depuis le dernier export seront exportées. Cochez cette option pour exporter toutes les transactions</string>
-    <string name="error_exporting">Erreur lors de l\'export des donn&#233;es en OFX</string>
+    <string name="toast_export_error">Erreur lors de l\'export des donn&#233;es en %1$s</string>
     <string name="btn_export">Exporter</string>
     <string name="option_delete_after_export">Supprimer apr&#232;s export</string>
     <string name="hint_delete_after_export">Toutes les transactions export&#233;es seront supprimées apr&#233;s l\'export</string>
@@ -118,6 +116,7 @@
         <item>Cordoba Oro</item>
         <item>Costa Rican Colon</item>
         <item>Croatian Kuna</item>
+        <item>Cuban Convertible Peso</item>
         <item>Cuban Peso</item>
         <item>Czech Koruna</item>
         <item>Dalasi</item>
@@ -195,8 +194,6 @@
         <item>Pakistan Rupee</item>
         <item>Palladium</item>
         <item>Pataca</item>
-        <item>Peso Convertible</item>
-        <item>Peso Uruguayo</item>
         <item>Philippine Peso</item>
         <item>Platinum</item>
         <item>Pound Sterling</item>
@@ -245,6 +242,7 @@
         <item>Unidad de Valor Real</item>
         <item>Unidades de fomento</item>
         <item>Uruguay Peso en Unidades Indexadas (URUIURUI)</item>
+        <item>Uruguayan Peso</item>
         <item>US Dollar</item>
         <item>Uzbekistan Sum</item>
         <item>Vatu</item>
@@ -275,10 +273,9 @@
     <string name="title_about_gnucash">À propos de GnuCash</string>
     <string name="summary_about_gnucash">GnucashMobile est une application mobile de suivis de finance pour Android.\nElle permet un suivi simple des d&#233;penses qui peut &#234;tre export&#233; vers le format Open Financial eXchange (OFX) et import&#233; dans GnuCash pour PC.</string>
     <string name="title_about">A propos</string>
-    <string name="toast_error_exporting">Impossible d\'&#233;crire un fichier OFX en :\n</string>
-    <string name="toast_ofx_exported_to">Fichier OFX export&#233; en :\n</string>
-    <string name="title_export_email">GnuCash OFX export</string>
-    <string name="description_export_email">GnuCash OFX export de </string>
+    <string name="toast_format_exported_to">Fichier %1$s export&#233; en :\n</string>
+    <string name="title_export_email">GnuCash Android %1$s export</string>
+    <string name="description_export_email">GnuCash Android export de </string>
     <string name="header_transaction_settings">Transactions</string>
     <string name="title_transaction_preferences">Pr&#233;f&#233;rences des transactions</string>
     <string name="title_account_preferences">Pr&#233;f&#233;rences du compte</string>
@@ -306,14 +303,14 @@
     <string name="summary_xml_ofx_header">Activez cette option lors d\'un export vers une application tierce autre que GnuCash pour PC</string>
     <string name="title_whats_new">Nouveautées</string>
 	<string name="whats_new">
-        - Marquer vos comptes et accédez-y facilement\n
-        - Affichage en onglets pour les comptes récents, favoris et tous\n
-        - Ajouter, afficher et supprimer des opérations récurrentes (quotidien, hebdomadaire, mensuel)\n
-        - Marque les comptes comme espace réservé (ne peut pas contenir de transactions)\n
-        - Définir un compte de transfert par défaut pour chaque compte\n
-        - Code couleur pour comptes et utilisation de thèmes\n
-        - Création d\'une structure de compte GnuCash par défaut à partir de l\'application\n
-        - Nombreuses corrections de bogues et améliorations\n
+        - Création de multiples découpes par transactions\n
+        - Correction du calcul des soldes de comptes pour les comptes de différents types\n
+        - Utilisation de labels spécifiques pour les comptes CREDIT/DEBITs\n
+        - Sauvegarde automatique des données avant la suppression des opérations\n
+        - Restaurer la dernière sauvegarde des données (dans Paramètres -> Général)\n
+        - Lecture des transactions depuis les fichiers GnuCash XML (support limité)\n
+        - Options pour sauvegarder le solde des comptes avant la suppression des transactions\n
+        - Multiples améliorations et corrections de bugs\n
 	</string>
     <string name="label_dismiss">Passer</string>
     <string name="toast_transanction_amount_required">Entrez un montant pour sauvegarder la transaction</string>
@@ -374,7 +371,7 @@
     </string-array>
     <!-- Default title for color picker dialog [CHAR LIMIT=30] -->
     <string name="color_picker_default_title">Sélectionnez une couleur</string>
-    <string name="label_delete_sub_accounts">Supprimer sous-comptes</string>
+    <string name="label_delete_sub_accounts">Supprimer les sous-comptes</string>
     <string name="title_recent_accounts">Récent</string>
     <string name="title_favorite_accounts">Favoris</string>
     <string name="title_all_accounts">Tous</string>
@@ -394,5 +391,29 @@
     </string-array>
     <string name="menu_scheduled_transactions">Transactions planifiées</string>
     <string name="title_scheduled_transactions">Transactions planifiées</string>
-    <string name="title_select_export_destination">Select destination for export</string>
+    <string name="title_select_export_destination">Selectionnez une destination pour l\'export</string>
+    <string name="hint_split_memo">Memo</string>
+    <string name="label_spend">Dépense</string>
+    <string name="label_receive">Reçu</string>
+    <string name="label_withdrawal">Retrait</string>
+    <string name="label_deposit">Dépôt</string>
+    <string name="label_payment">Paiement</string>
+    <string name="label_charge">Charge</string>
+    <string name="label_decrease">Diminuer</string>
+    <string name="label_increase">Augmenter</string>
+    <string name="label_income">Revenu</string>
+    <string name="label_rebate">Remboursement</string>
+    <string name="label_expense">Frais</string>
+    <string name="label_bill">Note</string>
+    <string name="label_invoice">Facture</string>
+    <string name="label_buy">Achat</string>
+    <string name="label_sell">Vente</string>
+    <string name="label_account_balance">Solde:</string>
+    <string name="label_repeats">Répétitions</string>
+    <string name="toast_no_recent_backup">Aucune sauvegarde récente trouvée</string>
+    <string name="account_name_opening_balances">Soldes initiaux</string>
+    <string name="account_name_equity">Capitaux propres</string>
+    <string name="summary_save_opening_balances">Permet d\'enregistrer le solde du compte courant (avant la suppression des transactions) comme le nouveau solde d\'ouverture après la suppression des transactions
+    </string>
+    <string name="title_save_opening_balances">Enregistrer les soldes des comptes d\'ouverture</string>
 </resources>

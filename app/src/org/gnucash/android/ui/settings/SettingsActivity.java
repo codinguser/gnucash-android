@@ -32,13 +32,18 @@ import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockPreferenceActivity;
 import com.actionbarsherlock.view.MenuItem;
 import org.gnucash.android.R;
+import org.gnucash.android.app.GnuCashApplication;
+import org.gnucash.android.export.Exporter;
+import org.gnucash.android.export.xml.GncXmlExporter;
+import org.gnucash.android.importer.ImportAsyncTask;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.TransactionsDbAdapter;
+import org.gnucash.android.model.Transaction;
 import org.gnucash.android.ui.account.AccountsActivity;
 
-import java.io.FileNotFoundException;
-import java.io.InputStream;
+import java.io.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -125,10 +130,8 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
             pref = findPreference(getString(R.string.key_build_version));
             pref.setOnPreferenceClickListener(this);
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB){
-                pref = findPreference(getString(R.string.key_create_default_accounts));
-                pref.setOnPreferenceClickListener(this);
-            }
+            pref = findPreference(getString(R.string.key_restore_backup));
+            pref.setOnPreferenceClickListener(this);
 		}
 	}
 
@@ -191,6 +194,10 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
             return true;
         }
 
+        if (key.equals(getString(R.string.key_restore_backup))){
+            importMostRecentBackup();
+        }
+
         //since we cannot get a support FragmentManager in the SettingsActivity pre H0NEYCOMB,
         //we will just use 2 taps within 2 seconds as confirmation
         if (key.equals(getString(R.string.key_delete_all_accounts))){
@@ -198,6 +205,7 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
             if (mDeleteAccountsClickCount < 2){
                 Toast.makeText(this, R.string.toast_tap_again_to_confirm_delete, Toast.LENGTH_SHORT).show();
             } else {
+                GncXmlExporter.createBackup(); //create backup before deleting everything
                 AccountsDbAdapter accountsDbAdapter = new AccountsDbAdapter(this);
                 accountsDbAdapter.deleteAllRecords();
                 accountsDbAdapter.close();
@@ -213,8 +221,22 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
             if (mDeleteTransactionsClickCount < 2){
                 Toast.makeText(this, R.string.toast_tap_again_to_confirm_delete, Toast.LENGTH_SHORT).show();
             } else {
+                GncXmlExporter.createBackup(); //create backup before deleting everything
+                List<Transaction> openingBalances = new ArrayList<Transaction>();
+                boolean preserveOpeningBalances = GnuCashApplication.shouldSaveOpeningBalances(false);
+                if (preserveOpeningBalances) {
+                    AccountsDbAdapter accountsDbAdapter = new AccountsDbAdapter(this);
+                    openingBalances = accountsDbAdapter.getAllOpeningBalanceTransactions();
+                    accountsDbAdapter.close();
+                }
                 TransactionsDbAdapter transactionsDbAdapter = new TransactionsDbAdapter(this);
                 transactionsDbAdapter.deleteAllRecords();
+
+                if (preserveOpeningBalances) {
+                    for (Transaction openingBalance : openingBalances) {
+                        transactionsDbAdapter.addTransaction(openingBalance);
+                    }
+                }
                 transactionsDbAdapter.close();
                 Toast.makeText(this, R.string.toast_all_transactions_deleted, Toast.LENGTH_LONG).show();
             }
@@ -250,6 +272,24 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
 
     }
 
+    public void importMostRecentBackup(){
+        Log.i("Settings", "Importing GnuCash XML");
+        File backupFile = Exporter.getMostRecentBackupFile();
+
+        if (backupFile == null){
+            Toast.makeText(this, R.string.toast_no_recent_backup, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        try {
+            FileInputStream inputStream = new FileInputStream(backupFile);
+            new ImportAsyncTask(this).execute(inputStream);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == Activity.RESULT_CANCELED){
@@ -260,7 +300,7 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
             case AccountsActivity.REQUEST_PICK_ACCOUNTS_FILE:
                 try {
                     InputStream accountInputStream = getContentResolver().openInputStream(data.getData());
-                    new AccountsActivity.AccountImporterTask(this).execute(accountInputStream);
+                    new ImportAsyncTask(this).execute(accountInputStream);
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
                     Toast.makeText(this, R.string.toast_error_importing_accounts, Toast.LENGTH_SHORT).show();

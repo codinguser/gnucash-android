@@ -23,15 +23,15 @@ public class TransactionsDbAdapterTest extends AndroidTestCase {
 		AccountsDbAdapter accountsAdapter = new AccountsDbAdapter(mContext);
 		Account first = new Account(ALPHA_ACCOUNT_NAME);
 		first.setUID(ALPHA_ACCOUNT_UID);
-		Transaction t1 = new Transaction("2.99", "T800");
+		Transaction t1 = new Transaction("T800");
 		t1.setTime(System.currentTimeMillis() - 10000);
-		Transaction t2 = new Transaction("4.99", "T1000");
+		Transaction t2 = new Transaction( "T1000");
 		t2.setTime(System.currentTimeMillis());
 		first.addTransaction(t1);
 		first.addTransaction(t2);
 		
 		Account second = new Account(BRAVO_ACCOUNT_NAME);
-		Transaction t = new Transaction("9.99", "buyout");
+		Transaction t = new Transaction( "buyout");
 		second.addTransaction(t);
 		
 		accountsAdapter.addAccount(second);
@@ -40,8 +40,8 @@ public class TransactionsDbAdapterTest extends AndroidTestCase {
 	
 	public void testTransactionsAreTimeSorted(){
 		List<Transaction> transactionsList = mAdapter.getAllTransactionsForAccount(ALPHA_ACCOUNT_UID);
-		assertEquals("T1000", transactionsList.get(0).getName());
-		assertEquals("T800", transactionsList.get(1).getName());
+		assertEquals("T1000", transactionsList.get(0).getDescription());
+		assertEquals("T800", transactionsList.get(1).getDescription());
 	}
 	
 	@Override
