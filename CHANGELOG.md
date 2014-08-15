@@ -1,6 +1,6 @@
 Change Log
 ===============================================================================
-Version 1.4.0 *(2014-08-04)*
+Version 1.4.0 *(2014-08-15)*
 ----------------------------
 Since transactions are at the core of this app, this release touches almost all subsystems and is therefore huge.
 Transactions are now composed of multiple splits, which belong to different accounts and are no longer bound to accounts,
