@@ -391,29 +391,29 @@
         <item>MONATLICH</item>
     </string-array>
     <string name="title_scheduled_transactions">Eingeplante Buchungen</string>
-    <string name="title_select_export_destination">Select destination for export</string>
-    <string name="hint_split_memo">Memo</string>
-    <string name="label_spend">Spend</string>
-    <string name="label_receive">Receive</string>
-    <string name="label_withdrawal">Withdrawal</string>
-    <string name="label_deposit">Deposit</string>
-    <string name="label_payment">Payment</string>
-    <string name="label_charge">Charge</string>
-    <string name="label_decrease">Decrease</string>
-    <string name="label_increase">Increase</string>
-    <string name="label_income">Income</string>
-    <string name="label_rebate">Rebate</string>
-    <string name="label_expense">Expense</string>
-    <string name="label_bill">Bill</string>
-    <string name="label_invoice">Invoice</string>
-    <string name="label_buy">Buy</string>
-    <string name="label_sell">Sell</string>
-    <string name="label_repeats">Repeats</string>
-    <string name="label_account_balance">Balance:</string>
-    <string name="toast_no_recent_backup">No recent backup found</string>
+    <string name="title_select_export_destination">Exportziel auswählen</string>
+    <string name="hint_split_memo">Buchungstext</string>
+    <string name="label_spend">Ausgabe</string>
+    <string name="label_receive">Einnahme</string>
+    <string name="label_withdrawal">Abhebung</string>
+    <string name="label_deposit">Einzahlung</string>
+    <string name="label_payment">Zahlung</string>
+    <string name="label_charge">Gebühr</string>
+    <string name="label_decrease">Abnahme</string>
+    <string name="label_increase">Zunahme</string>
+    <string name="label_income">Ertrag</string>
+    <string name="label_rebate">Rabatt</string>
+    <string name="label_expense">Aufwand</string>
+    <string name="label_bill">Rechnung</string>
+    <string name="label_invoice">Rechnung</string>
+    <string name="label_buy">Kauf</string>
+    <string name="label_sell">Verkauf</string>
+    <string name="label_repeats">Wiederholungen</string>
+    <string name="label_account_balance">Saldo:</string>
+    <string name="toast_no_recent_backup">Keine Sicherheitskopie vorhanden</string>
     <string name="account_name_opening_balances">Anfangsbestand</string>
     <string name="account_name_equity"> </string> <!-- This is no error, the default German locale has no parent Equity account -->
-    <string name="summary_save_opening_balances">Enable to save the current account balance (before deleting transactions) as new opening balance after deleting transactions
+    <string name="summary_save_opening_balances">Möglichkeit aktivieren, den aktuellen Saldo als neuen Anfangsbestand nach dem Löschen der Buchungen zu übernehmen
     </string>
-    <string name="title_save_opening_balances">Save account opening balances</string>
+    <string name="title_save_opening_balances">Saldo als neuen Anfangsbestand übernehmen</string>
 </resources>
