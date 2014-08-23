@@ -128,7 +128,7 @@ public class TransactionsActivity extends SherlockFragmentActivity implements
      * This is the last known color for the title indicator.
      * This is used to remember the color of the top level account if the child account doesn't have one.
      */
-    public static int sLastTitleColor = -1;
+    //public static int sLastTitleColor = -1;
 
     private TextView mSectionHeaderTransactions;
     private TitlePageIndicator mTitlePageIndicator;
@@ -281,8 +281,8 @@ public class TransactionsActivity extends SherlockFragmentActivity implements
         mTitlePageIndicator = (TitlePageIndicator) findViewById(R.id.titles);
         mSectionHeaderTransactions = (TextView) findViewById(R.id.section_header_transactions);
 
-        if (sLastTitleColor == -1) //if this is first launch of app. Previous launches would have set the color already
-            sLastTitleColor = getResources().getColor(R.color.title_green);
+        //if (sLastTitleColor == -1) //if this is first launch of app. Previous launches would have set the color already
+        //    sLastTitleColor = getResources().getColor(R.color.title_green);
 
 		mAccountId = getIntent().getLongExtra(
                 UxArgument.SELECTED_ACCOUNT_ID, -1);
@@ -324,7 +324,7 @@ public class TransactionsActivity extends SherlockFragmentActivity implements
             mSectionHeaderTransactions.setText(R.string.title_add_transaction);
             args.putLong(UxArgument.SELECTED_ACCOUNT_ID, mAccountId);
         }
-        mSectionHeaderTransactions.setBackgroundColor(sLastTitleColor);
+        //mSectionHeaderTransactions.setBackgroundColor(sLastTitleColor);
         showTransactionFormFragment(args);
     }
 
@@ -341,14 +341,28 @@ public class TransactionsActivity extends SherlockFragmentActivity implements
         //Basically, if we are in a top level account, use the default title color.
         //but propagate a parent account's title color to children who don't have own color
         String colorCode = mAccountsDbAdapter.getAccountColorCode(mAccountId);
+        int iColor = -1;
         if (colorCode != null){
-            sLastTitleColor = Color.parseColor(colorCode);
+            iColor = Color.parseColor(colorCode);
+        } else {
+            String UIDParent = mAccountsDbAdapter.getAccountUID(mAccountId);
+            while ((UIDParent = mAccountsDbAdapter.getParentAccountUID(UIDParent)) != null) {
+                colorCode = mAccountsDbAdapter.getAccountColorCode(mAccountsDbAdapter.getAccountID(UIDParent));
+                if (colorCode != null) {
+                    iColor = Color.parseColor(colorCode);
+                    break;
+                }
+            }
+            if (colorCode == null)
+            {
+                iColor = getResources().getColor(R.color.title_green);
+            }
         }
 
-        mTitlePageIndicator.setSelectedColor(sLastTitleColor);
-        mTitlePageIndicator.setTextColor(sLastTitleColor);
-        mTitlePageIndicator.setFooterColor(sLastTitleColor);
-        mSectionHeaderTransactions.setBackgroundColor(sLastTitleColor);
+        mTitlePageIndicator.setSelectedColor(iColor);
+        mTitlePageIndicator.setTextColor(iColor);
+        mTitlePageIndicator.setFooterColor(iColor);
+        mSectionHeaderTransactions.setBackgroundColor(iColor);
     }
 
     /**
