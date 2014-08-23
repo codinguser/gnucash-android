@@ -201,6 +201,7 @@ public class WidgetConfigurationActivity extends Activity {
 		views.setOnClickPendingIntent(R.id.btn_new_transaction, pendingIntent);
 		
 		appWidgetManager.updateAppWidget(appWidgetId, views);
+        accountsDbAdapter.close();
 	}
 	
 	/**

@@ -127,8 +127,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		Log.i(LOG_TAG, "Upgrading database from version "
 				+ oldVersion + " to " + newVersion);
 
-        ProgressDialog progressDialog = ProgressDialog.show(mContext, "Upgrading database", "Processing...", true);
-
 		if (oldVersion < newVersion){
 			//introducing double entry accounting
 			Log.i(LOG_TAG, "Upgrading database to version " + newVersion);
@@ -194,7 +192,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
             if (oldVersion == 5 && newVersion >= 6){
                 Log.i(LOG_TAG, "Upgrading database to version 6");
-                progressDialog.setMessage("Upgrading database to version 6");
 
                 String addFullAccountNameQuery = " ALTER TABLE " + AccountEntry.TABLE_NAME
                         + " ADD COLUMN " + AccountEntry.COLUMN_FULL_NAME + " varchar(255) ";
@@ -227,7 +224,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
             if (oldVersion == 6 && newVersion >= DatabaseSchema.SPLITS_DB_VERSION){
                 Log.i(LOG_TAG, "Upgrading database to version 7");
-                progressDialog.setMessage("Upgrading to version " + SPLITS_DB_VERSION);
 
                 //for users who do not have double-entry activated, we create imbalance accounts for their splits
                 //TODO: Enable when we can hide imbalance accounts from user
@@ -237,16 +233,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 //                    accountsDbAdapter.getOrCreateImbalanceAccountUID(currency);
 //                }
 
-                progressDialog.setMessage("Backing up database");
                 try {
                     String filepath = MigrationHelper.exportDatabase(db, ExportFormat.GNC_XML);
 
-                    progressDialog.setMessage("Upgrading database schema");
-
                     dropAllDatabaseTables(db);
                     createDatabaseTables(db);
-
-                    progressDialog.setMessage("Restoring database");
 
                     MigrationHelper.importGnucashXML(db, filepath);
                 } catch (Exception e){
@@ -257,7 +248,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             }
 		}
 
-        progressDialog.dismiss();
         if (oldVersion != newVersion) {
             Log.w(LOG_TAG, "Upgrade for the database failed. The Database is currently at version " + oldVersion);
         }

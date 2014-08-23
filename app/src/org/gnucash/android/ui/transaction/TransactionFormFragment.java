@@ -25,7 +25,6 @@ import java.util.*;
 import android.support.v4.app.FragmentManager;
 import android.widget.*;
 import org.gnucash.android.R;
-import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.*;
 import org.gnucash.android.model.*;
 import org.gnucash.android.ui.transaction.dialog.DatePickerDialogFragment;
@@ -252,13 +251,14 @@ public class TransactionFormFragment extends SherlockFragment implements
         });
 
         setListeners();
-		if (mTransaction == null)
-			initalizeViews();
-		else {
+		if (mTransaction == null) {
+            initalizeViews();
+            initTransactionNameAutocomplete();
+        } else {
 			initializeViewsWithTransaction();
 		}
 
-        initTransactionNameAutocomplete();
+
 	}
 
     /**
@@ -302,7 +302,7 @@ public class TransactionFormFragment extends SherlockFragment implements
                     if (!amountEntered) //if user already entered an amount
                         mAmountEditText.setText(splitList.get(0).getAmount().toPlainString());
                 } else {
-                    if (amountEntered){ //if user entered own amount, clear
+                    if (amountEntered){ //if user entered own amount, clear loaded splits and use the user value
                         mSplitsList.clear();
                         setAmountEditViewVisible(View.VISIBLE);
                     } else {
@@ -449,9 +449,8 @@ public class TransactionFormFragment extends SherlockFragment implements
         }
         FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
         String baseAmountString;
-        long transactionId = getArguments().getLong(UxArgument.SELECTED_TRANSACTION_ID);
 
-        if (transactionId <= 0){
+        if (mTransaction == null){ //if we are creating a new transaction (not editing an existing one)
             BigDecimal enteredAmount = parseInputToDecimal(mAmountEditText.getText().toString());
             baseAmountString = enteredAmount.toPlainString();
         } else {
@@ -578,19 +577,28 @@ public class TransactionFormFragment extends SherlockFragment implements
 		Currency currency = Currency.getInstance(mTransactionsDbAdapter.getCurrencyCode(accountID));
 		Money amount 	= new Money(amountBigd, currency).absolute();
 
-		if (mTransaction != null){
-            if (mSplitsList.size() == 2) {
-                //if it is a simple transfer where the editor was not used, then respect the button
-                for (Split split : mSplitsList) {
-                    if (split.getAccountUID().equals(accountUID)){
-                        split.setType(mTransactionTypeButton.getTransactionType());
-                        split.setAmount(amount.absolute());
-                    } else {
-                        split.setType(mTransactionTypeButton.getTransactionType().invert());
-                    }
+        //capture any edits which were done directly (not using split editor)
+        if (mSplitsList.size() == 2 && mSplitsList.get(0).isPairOf(mSplitsList.get(1))) {
+            //if it is a simple transfer where the editor was not used, then respect the button
+            for (Split split : mSplitsList) {
+                if (split.getAccountUID().equals(accountUID)){
+                    split.setType(mTransactionTypeButton.getTransactionType());
+                    split.setAmount(amount);
+                } else {
+                    split.setType(mTransactionTypeButton.getTransactionType().invert());
+                    split.setAmount(amount);
                 }
             }
-            mTransaction.setSplits(mSplitsList);
+        }
+
+		if (mTransaction != null){
+            if (!mUseDoubleEntry){
+                Split split = new Split(amount, accountUID);
+                split.setType(mTransactionTypeButton.getTransactionType());
+                mTransaction.getSplits().clear();
+                mTransaction.addSplit(split);
+            } else
+                mTransaction.setSplits(mSplitsList);
 			mTransaction.setDescription(description);
 		} else {
 			mTransaction = new Transaction(description);
