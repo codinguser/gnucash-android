@@ -651,11 +651,11 @@ public class AccountsDbAdapter extends DatabaseAdapter {
      */
     public Cursor fetchSubAccounts(long accountId){
         Log.v(TAG, "Fetching sub accounts for account id " + accountId);
+        String accountUID = getAccountUID(accountId);
         return mDb.query(AccountEntry.TABLE_NAME,
                 null,
-                AccountEntry.COLUMN_PARENT_ACCOUNT_UID + " = ?",
-                new String[]{getAccountUID(accountId)},
-                null, null, AccountEntry.COLUMN_NAME + " ASC");
+                AccountEntry.COLUMN_PARENT_ACCOUNT_UID + " = '" + accountUID + "'",
+                null, null, null, AccountEntry.COLUMN_NAME + " ASC");
     }
 
     /**
@@ -736,8 +736,10 @@ public class AccountsDbAdapter extends DatabaseAdapter {
         String condition = AccountEntry.COLUMN_TYPE + "= '" + AccountType.ROOT.name() + "'";
         Cursor cursor =  fetchAccounts(condition);
         String rootUID = null;
-        if (cursor != null && cursor.moveToFirst()){
-            rootUID = cursor.getString(cursor.getColumnIndexOrThrow(AccountEntry.COLUMN_UID));
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                rootUID = cursor.getString(cursor.getColumnIndexOrThrow(AccountEntry.COLUMN_UID));
+            }
             cursor.close();
         }
         return rootUID;

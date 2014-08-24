@@ -1,5 +1,15 @@
 Change Log
 ===============================================================================
+Version 1.4.1 *(2014-08-25)*
+----------------------------
+* Fixed: Transaction edits not saved
+* Fixed: Crash during import due to template transactions
+* Fixed: Cursors potentially left unclosed
+* Fixed: Fatal crash when error occurs in importing/exporting transaction (instead of displaying error message)
+* Fixed: Editing a transfer transaction does not edit other side of the transaction
+* Removed progress dialog from database migration (seems to be cause of some crashes)
+* Updated German translation
+
 Version 1.4.0 *(2014-08-15)*
 ----------------------------
 Since transactions are at the core of this app, this release touches almost all subsystems and is therefore huge.

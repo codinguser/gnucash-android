@@ -14,6 +14,7 @@
  * limitations under the License.
  */package org.gnucash.android.importer;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
@@ -30,10 +31,10 @@ import java.io.InputStream;
  * The AccountsActivity is opened when importing is done.
  */
 public class ImportAsyncTask extends AsyncTask<InputStream, Void, Boolean> {
-    private final Context context;
+    private final Activity context;
     private ProgressDialog progressDialog;
 
-    public ImportAsyncTask(Context context){
+    public ImportAsyncTask(Activity context){
         this.context = context;
     }
 
@@ -57,10 +58,17 @@ public class ImportAsyncTask extends AsyncTask<InputStream, Void, Boolean> {
             GncXmlImporter.parse(context, inputStreams[0]);
         } catch (Exception exception){
             exception.printStackTrace();
+            final String err_msg = exception.getLocalizedMessage();
             Log.e(ImportAsyncTask.class.getName(), exception.getMessage());
-            Toast.makeText(context,
-                    context.getString(R.string.toast_error_importing_accounts) + "\n" + exception.getLocalizedMessage(),
-                    Toast.LENGTH_LONG).show();
+            context.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(context,
+                            context.getString(R.string.toast_error_importing_accounts) + "\n" + err_msg,
+                            Toast.LENGTH_LONG).show();
+                }
+            });
+
             return false;
         }
         return true;
