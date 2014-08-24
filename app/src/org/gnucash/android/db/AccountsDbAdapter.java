@@ -736,8 +736,10 @@ public class AccountsDbAdapter extends DatabaseAdapter {
         String condition = AccountEntry.COLUMN_TYPE + "= '" + AccountType.ROOT.name() + "'";
         Cursor cursor =  fetchAccounts(condition);
         String rootUID = null;
-        if (cursor != null && cursor.moveToFirst()){
-            rootUID = cursor.getString(cursor.getColumnIndexOrThrow(AccountEntry.COLUMN_UID));
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                rootUID = cursor.getString(cursor.getColumnIndexOrThrow(AccountEntry.COLUMN_UID));
+            }
             cursor.close();
         }
         return rootUID;
