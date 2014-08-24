@@ -75,6 +75,11 @@ public class GncXmlHandler extends DefaultHandler {
      */
     Split mSplit;
 
+    /**
+     * Ignore certain elements in GnuCash XML file, such as "<gnc:template-transactions>"
+     */
+    String mIgnoreElement = null;
+
     boolean mInColorSlot        = false;
     boolean mInPlaceHolderSlot  = false;
     boolean mInFavoriteSlot     = false;
@@ -122,11 +127,24 @@ public class GncXmlHandler extends DefaultHandler {
         if (qualifiedName.equalsIgnoreCase(GncXmlHelper.TAG_DATE_POSTED)){
             mIsDatePosted = true;
         }
+
+        if (qualifiedName.equalsIgnoreCase(GncXmlHelper.TAG_TEMPLATE_TRANSACTION)) {
+            mIgnoreElement = GncXmlHelper.TAG_TEMPLATE_TRANSACTION;
+        }
     }
 
     @Override
     public void endElement(String uri, String localName, String qualifiedName) throws SAXException {
         String characterString = mContent.toString().trim();
+
+        if (mIgnoreElement != null) {
+            // Ignore everything inside
+            if (qualifiedName.equalsIgnoreCase(mIgnoreElement)) {
+                mIgnoreElement = null;
+            }
+            mContent.setLength(0);
+            return;
+        }
 
         if (qualifiedName.equalsIgnoreCase(GncXmlHelper.TAG_NAME)) {
             mAccount.setName(characterString);
