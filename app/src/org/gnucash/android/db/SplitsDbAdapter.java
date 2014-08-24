@@ -118,8 +118,10 @@ public class SplitsDbAdapter extends DatabaseAdapter {
         Cursor cursor = fetchRecord(id);
 
         Split split = null;
-        if (cursor != null && cursor.moveToFirst()){
-            split = buildSplitInstance(cursor);
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                split = buildSplitInstance(cursor);
+            }
             cursor.close();
         }
         return split;
@@ -237,10 +239,11 @@ public class SplitsDbAdapter extends DatabaseAdapter {
                 new String[] {SplitEntry._ID},
                 SplitEntry.COLUMN_UID + " = ?", new String[]{uid}, null, null, null);
         long result = -1;
-        if (cursor != null && cursor.moveToFirst()){
-            Log.d(TAG, "Transaction already exists. Returning existing id");
-            result = cursor.getLong(cursor.getColumnIndexOrThrow(SplitEntry._ID));
-
+        if (cursor != null){
+            if (cursor.moveToFirst()) {
+                Log.d(TAG, "Transaction already exists. Returning existing id");
+                result = cursor.getLong(cursor.getColumnIndexOrThrow(SplitEntry._ID));
+            }
             cursor.close();
         }
         return result;
@@ -336,8 +339,11 @@ public class SplitsDbAdapter extends DatabaseAdapter {
                 null, null, null, null);
 
         String trxUID = null;
-        if (cursor != null && cursor.moveToFirst()){
-            trxUID = cursor.getString(cursor.getColumnIndexOrThrow(TransactionEntry.COLUMN_UID));
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                trxUID = cursor.getString(cursor.getColumnIndexOrThrow(TransactionEntry.COLUMN_UID));
+            }
+            cursor.close();
         }
 
         return trxUID;
