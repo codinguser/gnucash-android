@@ -60,6 +60,7 @@ public abstract class GncXmlHelper {
     public static final String TAG_TRN_SPLITS       = "trn:splits";
     public static final String TAG_TRN_SPLIT        = "trn:split";
     public static final String TAG_TRN_SLOTS        = "trn:slots";
+    public static final String TAG_TEMPLATE_TRANSACTION = "gnc:template-transactions";
 
     public static final String TAG_SPLIT_ID         = "split:id";
     public static final String TAG_SPLIT_MEMO       = "split:memo";
