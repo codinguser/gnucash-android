@@ -16,6 +16,7 @@
 
 package org.gnucash.android.export;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -48,7 +49,7 @@ public class ExporterAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
     /**
      * App context
      */
-    private final Context mContext;
+    private final Activity mContext;
 
     private ProgressDialog mProgressDialog;
 
@@ -62,7 +63,7 @@ public class ExporterAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
      */
     private ExportParams mExportParams;
 
-    public ExporterAsyncTask(Context context){
+    public ExporterAsyncTask(Activity context){
         this.mContext = context;
     }
 
@@ -110,9 +111,15 @@ public class ExporterAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
         } catch (Exception e) {
             e.printStackTrace();
             Log.e(TAG, e.getMessage());
-            Toast.makeText(mContext, R.string.toast_export_error,
-                    Toast.LENGTH_SHORT).show();
-            Toast.makeText(mContext, e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
+            final String err_msg = e.getLocalizedMessage();
+            mContext.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(mContext, R.string.toast_export_error,
+                            Toast.LENGTH_SHORT).show();
+                    Toast.makeText(mContext, err_msg, Toast.LENGTH_LONG).show();
+                }
+            });
             return false;
         }
         return true;

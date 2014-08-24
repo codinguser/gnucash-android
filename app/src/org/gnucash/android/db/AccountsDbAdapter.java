@@ -651,11 +651,11 @@ public class AccountsDbAdapter extends DatabaseAdapter {
      */
     public Cursor fetchSubAccounts(long accountId){
         Log.v(TAG, "Fetching sub accounts for account id " + accountId);
+        String accountUID = getAccountUID(accountId);
         return mDb.query(AccountEntry.TABLE_NAME,
                 null,
-                AccountEntry.COLUMN_PARENT_ACCOUNT_UID + " = ?",
-                new String[]{getAccountUID(accountId)},
-                null, null, AccountEntry.COLUMN_NAME + " ASC");
+                AccountEntry.COLUMN_PARENT_ACCOUNT_UID + " = '" + accountUID + "'",
+                null, null, null, AccountEntry.COLUMN_NAME + " ASC");
     }
 
     /**
