@@ -21,6 +21,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
+import android.database.sqlite.SQLiteStatement;
 import android.util.Log;
 import org.gnucash.android.model.AccountType;
 import org.gnucash.android.model.Money;
@@ -64,21 +65,59 @@ public class SplitsDbAdapter extends DatabaseAdapter {
         contentValues.put(SplitEntry.COLUMN_ACCOUNT_UID, split.getAccountUID());
         contentValues.put(SplitEntry.COLUMN_TRANSACTION_UID, split.getTransactionUID());
 
-        long rowId = -1;
-        if ((rowId = getID(split.getUID())) > 0){
-            //if split already exists, then just update
-            Log.d(TAG, "Updating existing transaction split");
-            mDb.update(SplitEntry.TABLE_NAME, contentValues,
-                    SplitEntry._ID + " = " + rowId, null);
-        } else {
-            Log.d(TAG, "Adding new transaction split to db");
-            rowId = mDb.insert(SplitEntry.TABLE_NAME, null, contentValues);
-        }
+        Log.d(TAG, "Replace transaction split in db");
+        long rowId = mDb.replace(SplitEntry.TABLE_NAME, null, contentValues);
 
         //when a split is updated, we want mark the transaction as not exported
         updateRecord(TransactionEntry.TABLE_NAME, getTransactionID(split.getTransactionUID()),
                 TransactionEntry.COLUMN_EXPORTED, String.valueOf(rowId > 0 ? 1 : 0));
         return rowId;
+    }
+
+    /**
+     * Adds some splits to the database.
+     * If the split already exists, then it is simply updated.
+     * This function will NOT update the exported status of corresponding transactions.
+     * All or none of the splits will be inserted/updated into the database.
+     * @param splitList {@link org.gnucash.android.model.Split} to be recorded in DB
+     * @return Number of records of the newly saved split
+     */
+    public long bulkAddSplits(List<Split> splitList){
+        long nRow = 0;
+        try {
+            mDb.beginTransaction();
+            SQLiteStatement replaceStatement = mDb.compileStatement("REPLACE INTO " + SplitEntry.TABLE_NAME + " ( "
+                    + SplitEntry.COLUMN_UID             + " , "
+                    + SplitEntry.COLUMN_MEMO 	        + " , "
+                    + SplitEntry.COLUMN_TYPE            + " , "
+                    + SplitEntry.COLUMN_AMOUNT          + " , "
+                    + SplitEntry.COLUMN_ACCOUNT_UID 	+ " , "
+                    + SplitEntry.COLUMN_TRANSACTION_UID + " ) VALUES ( ? , ? , ? , ? , ? , ? ) ");
+            for (Split split : splitList) {
+                replaceStatement.clearBindings();
+                replaceStatement.bindString(1, split.getUID());
+                if (split.getMemo() != null) {
+                    replaceStatement.bindString(2, split.getMemo());
+                }
+                replaceStatement.bindString(3, split.getType().name());
+                replaceStatement.bindString(4, split.getAmount().absolute().toPlainString());
+                replaceStatement.bindString(5, split.getAccountUID());
+                replaceStatement.bindString(6, split.getTransactionUID());
+
+                Log.d(TAG, "Replacing transaction split in db");
+                replaceStatement.execute();
+                nRow++;
+            }
+            mDb.setTransactionSuccessful();
+        }
+        catch(Exception e) {
+            nRow = 0;
+        }
+        finally {
+            mDb.endTransaction();
+        }
+
+        return nRow;
     }
 
     /**

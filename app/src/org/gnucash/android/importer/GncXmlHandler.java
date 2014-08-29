@@ -30,7 +30,11 @@ import org.xml.sax.helpers.DefaultHandler;
 
 import java.text.ParseException;
 import java.util.Currency;
+import java.util.HashMap;
+import java.util.Stack;
 import java.util.regex.Pattern;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
  * Handler for parsing the GnuCash XML file.
@@ -66,9 +70,19 @@ public class GncXmlHandler extends DefaultHandler {
     Account mAccount;
 
     /**
+     * All the accounts found in a file to be imported, used for bulk import mode
+     */
+    List<Account> mAccountList;
+
+    /**
      * Transaction instance which will be built for each transaction found
      */
     Transaction mTransaction;
+
+    /**
+     * All the transaction instances found in a file to be inserted, used in bulk mode
+     */
+    List<Transaction> mTransactionList;
 
     /**
      * Accumulate attributes of splits found in this object
@@ -79,6 +93,11 @@ public class GncXmlHandler extends DefaultHandler {
      * Ignore certain elements in GnuCash XML file, such as "<gnc:template-transactions>"
      */
     String mIgnoreElement = null;
+
+    /**
+     * Showing whether we are in bulk import mode
+     */
+    boolean mBulk = false;
 
     boolean mInColorSlot        = false;
     boolean mInPlaceHolderSlot  = false;
@@ -92,10 +111,23 @@ public class GncXmlHandler extends DefaultHandler {
     private TransactionsDbAdapter mTransactionsDbAdapter;
 
     public GncXmlHandler(Context context) {
+        init(context, false);
+    }
+
+    public GncXmlHandler(Context context, boolean bulk) {
+        init(context, bulk);
+    }
+
+    private void init(Context context, boolean bulk) {
         mContext = context;
         mAccountsDbAdapter = new AccountsDbAdapter(mContext);
         mTransactionsDbAdapter = new TransactionsDbAdapter(mContext);
         mContent = new StringBuilder();
+        mBulk = bulk;
+        if (bulk) {
+            mAccountList = new ArrayList<Account>();
+            mTransactionList = new ArrayList<Transaction>();
+        }
     }
 
     /**
@@ -181,9 +213,13 @@ public class GncXmlHandler extends DefaultHandler {
         }
 
         if (qualifiedName.equalsIgnoreCase(GncXmlHelper.TAG_ACCOUNT)){
-            Log.d(LOG_TAG, "Saving account...");
-            mAccountsDbAdapter.addAccount(mAccount);
-
+            if (mBulk) {
+                mAccountList.add(mAccount);
+            }
+            else {
+                Log.d(LOG_TAG, "Saving account...");
+                mAccountsDbAdapter.addAccount(mAccount);
+            }
             mAccount = null;
             //reset ISO 4217 flag for next account
             mISO4217Currency = false;
@@ -302,10 +338,15 @@ public class GncXmlHandler extends DefaultHandler {
         }
 
         if (qualifiedName.equalsIgnoreCase(GncXmlHelper.TAG_TRANSACTION)){
-            if (mTransaction.getRecurrencePeriod() > 0){ //TODO: Fix this when scheduled actions are expanded
-                mTransactionsDbAdapter.scheduleTransaction(mTransaction);
-            } else {
-                mTransactionsDbAdapter.addTransaction(mTransaction);
+            if (mBulk) {
+                mTransactionList.add(mTransaction);
+            }
+            else {
+                if (mTransaction.getRecurrencePeriod() > 0) { //TODO: Fix this when scheduled actions are expanded
+                    mTransactionsDbAdapter.scheduleTransaction(mTransaction);
+                } else {
+                    mTransactionsDbAdapter.addTransaction(mTransaction);
+                }
             }
             mTransaction = null;
         }
@@ -322,8 +363,53 @@ public class GncXmlHandler extends DefaultHandler {
     @Override
     public void endDocument() throws SAXException {
         super.endDocument();
+        if (mBulk) {
+            HashMap<String, Account> map = new HashMap<String, Account>(mAccountList.size());
+            HashMap<String, String> mapFullName = new HashMap<String, String>(mAccountList.size());
+            for(Account account:mAccountList) {
+                map.put(account.getUID(), account);
+                mapFullName.put(account.getUID(), null);
+            }
+            java.util.Stack<Account> stack = new Stack<Account>();
+            for (Account account:mAccountList){
+                if (mapFullName.get(account.getUID()) != null) {
+                    continue;
+                }
+                stack.push(account);
+                String parentAccountFullName = null;
+                while (!stack.isEmpty()) {
+                    Account acc = stack.peek();
+                    if (acc.getAccountType().name().equals("ROOT")) {
+                        mapFullName.put(acc.getUID(), "");
+                        stack.pop();
+                        parentAccountFullName = "";
+                        continue;
+                    }
+                    if (mapFullName.get(acc.getParentUID()) == null) {
+                        stack.push(map.get(acc.getParentUID()));
+                        continue;
+                    }
+                    else {
+                        parentAccountFullName = mapFullName.get(acc.getParentUID());
+                    }
+                    if (parentAccountFullName != null) {
+                        parentAccountFullName = parentAccountFullName.length() == 0 ? acc.getName() :
+                                (parentAccountFullName + AccountsDbAdapter.ACCOUNT_NAME_SEPARATOR + acc.getName());
+                        mapFullName.put(acc.getUID(), parentAccountFullName);
+                        stack.pop();
+                    }
+                }
+            }
+            for (Account account:mAccountList){
+                account.setFullName(mapFullName.get(account.getUID()));
+            }
+            long startTime = System.nanoTime();
+            mAccountsDbAdapter.bulkAddAccounts(mAccountList);
+            mTransactionsDbAdapter.bulkAddTransactions(mTransactionList);
+            long endTime = System.nanoTime();
+            Log.d("Handler:", String.format(" bulk insert time: %d", endTime - startTime));
+        }
         mAccountsDbAdapter.close();
         mTransactionsDbAdapter.close();
     }
-
 }

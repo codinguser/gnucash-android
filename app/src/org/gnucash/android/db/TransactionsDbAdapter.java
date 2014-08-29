@@ -82,15 +82,8 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
         contentValues.put(TransactionEntry.COLUMN_CURRENCY,     transaction.getCurrencyCode());
         contentValues.put(TransactionEntry.COLUMN_RECURRENCE_PERIOD, transaction.getRecurrencePeriod());
 
-		long rowId = -1;
-		if ((rowId = fetchTransactionWithUID(transaction.getUID())) > 0){
-			//if transaction already exists, then just update
-			Log.d(TAG, "Updating existing transaction");
-			mDb.update(TransactionEntry.TABLE_NAME, contentValues, TransactionEntry._ID + " = " + rowId, null);
-		} else {
-			Log.d(TAG, "Adding new transaction to db");
-			rowId = mDb.insert(TransactionEntry.TABLE_NAME, null, contentValues);
-		}	
+        Log.d(TAG, "Replacing transaction in db");
+        long rowId = mDb.replace(TransactionEntry.TABLE_NAME, null, contentValues);
 
         if (rowId > 0){
             Log.d(TAG, "Adding splits for transaction");
@@ -101,6 +94,59 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
         }
 		return rowId;
 	}
+
+    /**
+     * Adds an several transactions to the database.
+     * If a transaction already exists in the database with the same unique ID,
+     * then the record will just be updated instead. Recurrence Transactions will not
+     * be inserted, instead schedule Transaction would be called. If an exception
+     * occurs, no transaction would be inserted.
+     * @param transactionList {@link Transaction} transactions to be inserted to database
+     * @return Number of transactions inserted
+     */
+    public long bulkAddTransactions(List<Transaction> transactionList){
+        List<Split> splitList = new ArrayList<Split>(transactionList.size()*3);
+        long rowInserted = 0;
+        try {
+            mDb.beginTransaction();
+            SQLiteStatement replaceStatement = mDb.compileStatement("REPLACE INTO " + TransactionEntry.TABLE_NAME + " ( "
+                + TransactionEntry.COLUMN_UID 		    + " , "
+                + TransactionEntry.COLUMN_DESCRIPTION   + " , "
+                + TransactionEntry.COLUMN_NOTES         + " , "
+                + TransactionEntry.COLUMN_TIMESTAMP     + " , "
+                + TransactionEntry.COLUMN_EXPORTED      + " , "
+                + TransactionEntry.COLUMN_CURRENCY      + " ) VALUES ( ? , ? , ? , ? , ? , ?)");
+            for (Transaction transaction : transactionList) {
+                if (transaction.getRecurrencePeriod() > 0) {
+                    scheduleTransaction(transaction);
+                    continue;
+                }
+                Log.d(TAG, "Replacing transaction in db");
+                replaceStatement.clearBindings();
+                replaceStatement.bindString(1, transaction.getUID());
+                replaceStatement.bindString(2, transaction.getDescription());
+                replaceStatement.bindString(3, transaction.getNote());
+                replaceStatement.bindLong(4, transaction.getTimeMillis());
+                replaceStatement.bindLong(5, transaction.isExported() ? 1 : 0);
+                replaceStatement.bindString(6, transaction.getCurrencyCode());
+                //replaceStatement.bindLong(7, transaction.getRecurrencePeriod());
+                replaceStatement.execute();
+                rowInserted ++;
+                splitList.addAll(transaction.getSplits());
+            }
+            mDb.setTransactionSuccessful();
+        }
+        catch (Exception e) {
+            rowInserted = 0;
+        }
+        finally {
+            mDb.endTransaction();
+        }
+        if (rowInserted != 0 && !splitList.isEmpty()) { // TODO: clear empty transactions
+            mSplitsDbAdapter.bulkAddSplits(splitList);
+        }
+        return rowInserted;
+    }
 
     /**
 	 * Fetch a transaction from the database which has a unique ID <code>uid</code>

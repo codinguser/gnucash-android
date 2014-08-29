@@ -21,6 +21,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
+import android.database.sqlite.SQLiteStatement;
 import android.util.Log;
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
@@ -86,17 +87,9 @@ public class AccountsDbAdapter extends DatabaseAdapter {
         contentValues.put(AccountEntry.COLUMN_PARENT_ACCOUNT_UID,           account.getParentUID());
         contentValues.put(AccountEntry.COLUMN_DEFAULT_TRANSFER_ACCOUNT_UID, account.getDefaultTransferAccountUID());
 
-        long rowId = -1;
-		if ((rowId = getAccountID(account.getUID())) > 0){
-			//if account already exists, then just update
-			Log.d(TAG, "Updating existing account");
-			mDb.update(AccountEntry.TABLE_NAME, contentValues,
-                    AccountEntry._ID + " = " + rowId, null);
-		} else {
-			Log.d(TAG, "Adding new account to db");
-			rowId = mDb.insert(AccountEntry.TABLE_NAME, null, contentValues);
-		}
-		
+        Log.d(TAG, "Replace account to db");
+        long rowId =  mDb.replace(AccountEntry.TABLE_NAME, null, contentValues);
+
 		//now add transactions if there are any
 		if (rowId > 0){
             //update the fully qualified account name
@@ -108,6 +101,62 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 		return rowId;
 	}
 
+    /**
+     * Adds some accounts to the database.
+     * If an account already exists in the database with the same unique ID,
+     * then just update that account. This function will NOT try to determine the full name
+     * of the accounts inserted, full names should be generated prior to the insert.
+     * All or none of the accounts will be inserted;
+     * @param accountList {@link Account} to be inserted to database
+     * @return number of rows inserted
+     */
+    public long bulkAddAccounts(List<Account> accountList){
+        long nRow = 0;
+        try {
+            mDb.beginTransaction();
+            SQLiteStatement replaceStatement = mDb.compileStatement("REPLACE INTO " + AccountEntry.TABLE_NAME + " ( "
+                    + AccountEntry.COLUMN_UID 	            + " , "
+                    + AccountEntry.COLUMN_NAME 	            + " , "
+                    + AccountEntry.COLUMN_TYPE              + " , "
+                    + AccountEntry.COLUMN_CURRENCY          + " , "
+                    + AccountEntry.COLUMN_COLOR_CODE        + " , "
+                    + AccountEntry.COLUMN_FAVORITE 		    + " , "
+                    + AccountEntry.COLUMN_FULL_NAME 	    + " , "
+                    + AccountEntry.COLUMN_PLACEHOLDER           + " , "
+                    + AccountEntry.COLUMN_PARENT_ACCOUNT_UID    + " , "
+                    + AccountEntry.COLUMN_DEFAULT_TRANSFER_ACCOUNT_UID   + " ) VALUES ( ? , ? , ? , ? , ? , ? , ? , ? , ? , ? )");
+            for (Account account:accountList) {
+                replaceStatement.clearBindings();
+                replaceStatement.bindString(1, account.getUID());
+                replaceStatement.bindString(2, account.getName());
+                replaceStatement.bindString(3, account.getAccountType().name());
+                replaceStatement.bindString(4, account.getCurrency().getCurrencyCode());
+                if (account.getColorHexCode() != null) {
+                    replaceStatement.bindString(5, account.getColorHexCode());
+                }
+                replaceStatement.bindLong(6, account.isFavorite() ? 1 : 0);
+                replaceStatement.bindString(7, account.getFullName());
+                replaceStatement.bindLong(8, account.isPlaceholderAccount() ? 1 : 0);
+                if (account.getParentUID() != null) {
+                    replaceStatement.bindString(9, account.getParentUID());
+                }
+                if (account.getDefaultTransferAccountUID() != null) {
+                    replaceStatement.bindString(10, account.getDefaultTransferAccountUID());
+                }
+                Log.d(TAG, "Replacing account in db");
+                replaceStatement.execute();
+                nRow ++;
+            }
+            mDb.setTransactionSuccessful();
+        }
+        catch (Exception e){
+            nRow = 0;
+        }
+        finally {
+            mDb.endTransaction();
+        }
+        return nRow;
+    }
     /**
      * Marks all transactions for a given account as exported
      * @param accountUID Unique ID of the record to be marked as exported
