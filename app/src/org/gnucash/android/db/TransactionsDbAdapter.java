@@ -121,7 +121,7 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
                     scheduleTransaction(transaction);
                     continue;
                 }
-                Log.d(TAG, "Replacing transaction in db");
+                //Log.d(TAG, "Replacing transaction in db");
                 replaceStatement.clearBindings();
                 replaceStatement.bindString(1, transaction.getUID());
                 replaceStatement.bindString(2, transaction.getDescription());
@@ -136,14 +136,22 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
             }
             mDb.setTransactionSuccessful();
         }
-        catch (Exception e) {
-            rowInserted = 0;
-        }
         finally {
             mDb.endTransaction();
         }
-        if (rowInserted != 0 && !splitList.isEmpty()) { // TODO: clear empty transactions
-            mSplitsDbAdapter.bulkAddSplits(splitList);
+        if (rowInserted != 0 && !splitList.isEmpty()) {
+            try {
+                long nSplits = mSplitsDbAdapter.bulkAddSplits(splitList);
+                Log.d(TAG, String.format("%d splits inserted", nSplits));
+            }
+            finally {
+                SQLiteStatement deleteEmptyTransaction = mDb.compileStatement("DELETE FROM " +
+                        TransactionEntry.TABLE_NAME + " WHERE NOT EXISTS ( SELECT * FROM " +
+                        SplitEntry.TABLE_NAME +
+                        " WHERE " + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_UID +
+                        " = " + SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_TRANSACTION_UID + " ) ");
+                deleteEmptyTransaction.execute();
+            }
         }
         return rowInserted;
     }

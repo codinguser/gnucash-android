@@ -82,7 +82,7 @@ public class SplitsDbAdapter extends DatabaseAdapter {
      * @param splitList {@link org.gnucash.android.model.Split} to be recorded in DB
      * @return Number of records of the newly saved split
      */
-    public long bulkAddSplits(List<Split> splitList){
+    public long bulkAddSplits(List<Split> splitList) {
         long nRow = 0;
         try {
             mDb.beginTransaction();
@@ -104,14 +104,11 @@ public class SplitsDbAdapter extends DatabaseAdapter {
                 replaceStatement.bindString(5, split.getAccountUID());
                 replaceStatement.bindString(6, split.getTransactionUID());
 
-                Log.d(TAG, "Replacing transaction split in db");
+                //Log.d(TAG, "Replacing transaction split in db");
                 replaceStatement.execute();
                 nRow++;
             }
             mDb.setTransactionSuccessful();
-        }
-        catch(Exception e) {
-            nRow = 0;
         }
         finally {
             mDb.endTransaction();

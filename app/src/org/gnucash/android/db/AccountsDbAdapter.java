@@ -143,14 +143,11 @@ public class AccountsDbAdapter extends DatabaseAdapter {
                 if (account.getDefaultTransferAccountUID() != null) {
                     replaceStatement.bindString(10, account.getDefaultTransferAccountUID());
                 }
-                Log.d(TAG, "Replacing account in db");
+                //Log.d(TAG, "Replacing account in db");
                 replaceStatement.execute();
                 nRow ++;
             }
             mDb.setTransactionSuccessful();
-        }
-        catch (Exception e){
-            nRow = 0;
         }
         finally {
             mDb.endTransaction();
