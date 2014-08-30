@@ -182,37 +182,30 @@ public class GncXmlHandler extends DefaultHandler {
             mAccount.setName(characterString);
             mAccount.setFullName(characterString);
         }
-
-        if (qualifiedName.equalsIgnoreCase(GncXmlHelper.TAG_ACCT_ID)){
+        else if (qualifiedName.equalsIgnoreCase(GncXmlHelper.TAG_ACCT_ID)){
             mAccount.setUID(characterString);
         }
-
-        if (qualifiedName.equalsIgnoreCase(GncXmlHelper.TAG_TYPE)){
+        else if (qualifiedName.equalsIgnoreCase(GncXmlHelper.TAG_TYPE)){
             mAccount.setAccountType(AccountType.valueOf(characterString));
         }
-
-        if (qualifiedName.equalsIgnoreCase(GncXmlHelper.TAG_COMMODITY_SPACE)){
+        else if (qualifiedName.equalsIgnoreCase(GncXmlHelper.TAG_COMMODITY_SPACE)){
             if (characterString.equalsIgnoreCase("ISO4217")){
                 mISO4217Currency = true;
             }
         }
-
-        if (qualifiedName.equalsIgnoreCase(GncXmlHelper.TAG_COMMODITY_ID)){
+        else if (qualifiedName.equalsIgnoreCase(GncXmlHelper.TAG_COMMODITY_ID)){
             String currencyCode = mISO4217Currency ? characterString : NO_CURRENCY_CODE;
             if (mAccount != null){
                 mAccount.setCurrency(Currency.getInstance(currencyCode));
             }
-
             if (mTransaction != null){
                 mTransaction.setCurrencyCode(currencyCode);
             }
         }
-
-        if (qualifiedName.equalsIgnoreCase(GncXmlHelper.TAG_PARENT_UID)){
+        else if (qualifiedName.equalsIgnoreCase(GncXmlHelper.TAG_PARENT_UID)){
             mAccount.setParentUID(characterString);
         }
-
-        if (qualifiedName.equalsIgnoreCase(GncXmlHelper.TAG_ACCOUNT)){
+        else if (qualifiedName.equalsIgnoreCase(GncXmlHelper.TAG_ACCOUNT)){
             if (mBulk) {
                 mAccountList.add(mAccount);
             }
@@ -224,29 +217,24 @@ public class GncXmlHandler extends DefaultHandler {
             //reset ISO 4217 flag for next account
             mISO4217Currency = false;
         }
-
-        if (qualifiedName.equalsIgnoreCase(GncXmlHelper.TAG_SLOT_KEY)){
+        else if (qualifiedName.equalsIgnoreCase(GncXmlHelper.TAG_SLOT_KEY)){
             if (characterString.equals(GncXmlHelper.KEY_PLACEHOLDER)){
                 mInPlaceHolderSlot = true;
             }
-            if (characterString.equals(GncXmlHelper.KEY_COLOR)){
+            else if (characterString.equals(GncXmlHelper.KEY_COLOR)){
                 mInColorSlot = true;
             }
-
-            if (characterString.equals(GncXmlHelper.KEY_FAVORITE)){
+            else if (characterString.equals(GncXmlHelper.KEY_FAVORITE)){
                 mInFavoriteSlot = true;
             }
-
-            if (characterString.equals(GncXmlHelper.KEY_NOTES)){
+            else if (characterString.equals(GncXmlHelper.KEY_NOTES)){
                 mIsNote = true;
             }
-
-            if (characterString.equals(GncXmlHelper.KEY_DEFAULT_TRANSFER_ACCOUNT)){
+            else if (characterString.equals(GncXmlHelper.KEY_DEFAULT_TRANSFER_ACCOUNT)){
                 mInDefaultTransferAccount = true;
             }
         }
-
-        if (qualifiedName.equalsIgnoreCase(GncXmlHelper.TAG_SLOT_VALUE)){
+        else if (qualifiedName.equalsIgnoreCase(GncXmlHelper.TAG_SLOT_VALUE)){
             if (mInPlaceHolderSlot){
                 Log.v(LOG_TAG, "Setting account placeholder flag");
                 mAccount.setPlaceHolderFlag(Boolean.parseBoolean(characterString));
@@ -257,17 +245,19 @@ public class GncXmlHandler extends DefaultHandler {
                 String color = characterString.trim();
                 //Gnucash exports the account color in format #rrrgggbbb, but we need only #rrggbb.
                 //so we trim the last digit in each block, doesn't affect the color much
-                if (!Pattern.matches(Account.COLOR_HEX_REGEX, color))
-                    color = "#" + color.replaceAll(".(.)?", "$1").replace("null", "");
-                try {
-                    if (mAccount != null)
-                        mAccount.setColorCode(color);
-                } catch (IllegalArgumentException ex){
-                    //sometimes the color entry in the account file is "Not set" instead of just blank. So catch!
-                    Log.i(LOG_TAG, "Invalid color code '" + color + "' for account " + mAccount.getName());
-                    ex.printStackTrace();
+                if (!color.equals("Not Set")) {
+                    // avoid known exception, printStackTrace is very time consuming
+                    if (!Pattern.matches(Account.COLOR_HEX_REGEX, color))
+                        color = "#" + color.replaceAll(".(.)?", "$1").replace("null", "");
+                    try {
+                        if (mAccount != null)
+                            mAccount.setColorCode(color);
+                    } catch (IllegalArgumentException ex) {
+                        //sometimes the color entry in the account file is "Not set" instead of just blank. So catch!
+                        Log.i(LOG_TAG, "Invalid color code '" + color + "' for account " + mAccount.getName());
+                        ex.printStackTrace();
+                    }
                 }
-
                 mInColorSlot = false;
             }
 
@@ -291,15 +281,13 @@ public class GncXmlHandler extends DefaultHandler {
 
 
         //================  PROCESSING OF TRANSACTION TAGS =====================================
-        if (qualifiedName.equalsIgnoreCase(GncXmlHelper.TAG_TRX_ID)){
+        else if (qualifiedName.equalsIgnoreCase(GncXmlHelper.TAG_TRX_ID)){
             mTransaction.setUID(characterString);
         }
-
-        if (qualifiedName.equalsIgnoreCase(GncXmlHelper.TAG_TRN_DESCRIPTION)){
+        else if (qualifiedName.equalsIgnoreCase(GncXmlHelper.TAG_TRN_DESCRIPTION)){
             mTransaction.setDescription(characterString);
         }
-
-        if (qualifiedName.equalsIgnoreCase(GncXmlHelper.TAG_DATE)){
+        else if (qualifiedName.equalsIgnoreCase(GncXmlHelper.TAG_DATE)){
             try {
                 if (mIsDatePosted && mTransaction != null) {
                     mTransaction.setTime(GncXmlHelper.parseDate(characterString));
@@ -310,34 +298,27 @@ public class GncXmlHandler extends DefaultHandler {
                 throw new SAXException("Unable to parse transaction time", e);
             }
         }
-
-        if (qualifiedName.equalsIgnoreCase(GncXmlHelper.TAG_RECURRENCE_PERIOD)){
+        else if (qualifiedName.equalsIgnoreCase(GncXmlHelper.TAG_RECURRENCE_PERIOD)){
             mTransaction.setRecurrencePeriod(Long.parseLong(characterString));
         }
-
-        if (qualifiedName.equalsIgnoreCase(GncXmlHelper.TAG_SPLIT_ID)){
+        else if (qualifiedName.equalsIgnoreCase(GncXmlHelper.TAG_SPLIT_ID)){
             mSplit.setUID(characterString);
         }
-
-        if (qualifiedName.equalsIgnoreCase(GncXmlHelper.TAG_SPLIT_MEMO)){
+        else if (qualifiedName.equalsIgnoreCase(GncXmlHelper.TAG_SPLIT_MEMO)){
             mSplit.setMemo(characterString);
         }
-
-        if (qualifiedName.equalsIgnoreCase(GncXmlHelper.TAG_SPLIT_VALUE)){
+        else if (qualifiedName.equalsIgnoreCase(GncXmlHelper.TAG_SPLIT_VALUE)){
             Money amount = new Money(GncXmlHelper.parseMoney(characterString), mTransaction.getCurrency());
             mSplit.setType(amount.isNegative() ? TransactionType.CREDIT : TransactionType.DEBIT);
             mSplit.setAmount(amount.absolute());
         }
-
-        if (qualifiedName.equalsIgnoreCase(GncXmlHelper.TAG_SPLIT_ACCOUNT)){
+        else if (qualifiedName.equalsIgnoreCase(GncXmlHelper.TAG_SPLIT_ACCOUNT)){
             mSplit.setAccountUID(characterString);
         }
-
-        if (qualifiedName.equals(GncXmlHelper.TAG_TRN_SPLIT)){
+        else if (qualifiedName.equals(GncXmlHelper.TAG_TRN_SPLIT)){
             mTransaction.addSplit(mSplit);
         }
-
-        if (qualifiedName.equalsIgnoreCase(GncXmlHelper.TAG_TRANSACTION)){
+        else if (qualifiedName.equalsIgnoreCase(GncXmlHelper.TAG_TRANSACTION)){
             if (mBulk) {
                 mTransactionList.add(mTransaction);
             }
@@ -404,8 +385,10 @@ public class GncXmlHandler extends DefaultHandler {
                 account.setFullName(mapFullName.get(account.getUID()));
             }
             long startTime = System.nanoTime();
-            mAccountsDbAdapter.bulkAddAccounts(mAccountList);
-            mTransactionsDbAdapter.bulkAddTransactions(mTransactionList);
+            long nAccounts = mAccountsDbAdapter.bulkAddAccounts(mAccountList);
+            Log.d("Handler:", String.format("%d accounts inserted", nAccounts));
+            long nTransactions = mTransactionsDbAdapter.bulkAddTransactions(mTransactionList);
+            Log.d("Handler:", String.format("%d transactions inserted", nTransactions));
             long endTime = System.nanoTime();
             Log.d("Handler:", String.format(" bulk insert time: %d", endTime - startTime));
         }
