@@ -35,33 +35,33 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.SpinnerAdapter;
 import android.widget.TextView;
+
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.ActionBar.OnNavigationListener;
-import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.viewpagerindicator.TitlePageIndicator;
+
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
+import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.model.Account;
-import org.gnucash.android.db.AccountsDbAdapter;
-import org.gnucash.android.db.DatabaseAdapter;
-import org.gnucash.android.db.DatabaseHelper;
 import org.gnucash.android.model.Money;
-import org.gnucash.android.ui.util.Refreshable;
 import org.gnucash.android.ui.UxArgument;
 import org.gnucash.android.ui.account.AccountsActivity;
 import org.gnucash.android.ui.account.AccountsListFragment;
+import org.gnucash.android.ui.passcode.PassLockActivity;
 import org.gnucash.android.ui.util.OnAccountClickedListener;
 import org.gnucash.android.ui.util.OnTransactionClickedListener;
+import org.gnucash.android.ui.util.Refreshable;
 import org.gnucash.android.util.QualifiedAccountNameCursorAdapter;
 
 /**
  * Activity for displaying, creating and editing transactions
  * @author Ngewi Fet <ngewif@gmail.com>
  */
-public class TransactionsActivity extends SherlockFragmentActivity implements
+public class TransactionsActivity extends PassLockActivity implements
         Refreshable, OnAccountClickedListener, OnTransactionClickedListener{
 
 	/**

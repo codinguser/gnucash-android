@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+ Copyright (c) 2014 Oleksandr Tyshkovets <olexandr.tyshkovets@gmail.com>
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true">
+
+    <LinearLayout
+        android:id="@+id/zero"
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal"
+        android:weightSum="3" >
+
+        <Button
+            android:id="@+id/empty_btn"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text=""
+            android:textSize="25sp"
+            android:enabled="false" />
+
+        <Button
+            android:id="@+id/zero_btn"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="0"
+            android:textSize="25sp"/>
+
+        <ImageButton
+            android:id="@+id/delete_btn"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:src="@drawable/clear_btn" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/seven_to_nine"
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:layout_above="@+id/zero"
+        android:orientation="horizontal"
+        android:weightSum="3" >
+
+        <Button
+            android:id="@+id/seven_btn"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="7"
+            android:textSize="25sp" />
+
+        <Button
+            android:id="@+id/eight_btn"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="8"
+            android:textSize="25sp" />
+
+        <Button
+            android:id="@+id/nine_btn"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="9"
+            android:textSize="25sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/four_to_six"
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:layout_above="@+id/seven_to_nine"
+        android:orientation="horizontal"
+        android:weightSum="3" >
+
+        <Button
+            android:id="@+id/four_btn"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="4"
+            android:textSize="25sp" />
+
+        <Button
+            android:id="@+id/five_btn"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="5"
+            android:textSize="25sp" />
+
+        <Button
+            android:id="@+id/six_btn"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="6"
+            android:textSize="25sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/one_to_three"
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:layout_above="@+id/four_to_six"
+        android:orientation="horizontal"
+        android:weightSum="3" >
+
+        <Button
+            android:id="@+id/one_btn"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="1"
+            android:textSize="25sp" />
+
+        <Button
+            android:id="@+id/two_btn"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="2"
+            android:textSize="25sp" />
+
+        <Button
+            android:id="@+id/three_btn"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="3"
+            android:textSize="25sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/pass_label"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:id="@+id/passcode_label"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="Enter passcode"
+            android:textSize="25sp" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:layout_below="@+id/pass_label"
+        android:orientation="horizontal"
+        android:gravity="center" >
+
+        <EditText
+            android:id="@+id/passcode1"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:cursorVisible="false"
+            android:focusableInTouchMode="false"
+            android:hint="*"
+            android:inputType="textPassword|number"
+            android:password="true"
+            android:maxLength="1"
+            android:textSize="33sp" />
+
+        <EditText
+            android:id="@+id/passcode2"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:cursorVisible="false"
+            android:focusableInTouchMode="false"
+            android:hint="*"
+            android:inputType="textPassword|number"
+            android:password="true"
+            android:maxLength="1"
+            android:textSize="33sp" />
+
+        <EditText
+            android:id="@+id/passcode3"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:cursorVisible="false"
+            android:focusableInTouchMode="false"
+            android:hint="*"
+            android:inputType="textPassword|number"
+            android:password="true"
+            android:maxLength="1"
+            android:textSize="33sp" />
+
+        <EditText
+            android:id="@+id/passcode4"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:cursorVisible="false"
+            android:focusableInTouchMode="false"
+            android:hint="*"
+            android:inputType="textPassword|number"
+            android:password="true"
+            android:maxLength="1"
+            android:textSize="33sp" />
+
+    </LinearLayout>
+
+</RelativeLayout>

@@ -23,26 +23,34 @@ import android.content.SharedPreferences.Editor;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.CheckBoxPreference;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.Toast;
+
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockPreferenceActivity;
 import com.actionbarsherlock.view.MenuItem;
+
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
+import org.gnucash.android.db.AccountsDbAdapter;
+import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.export.Exporter;
 import org.gnucash.android.export.xml.GncXmlExporter;
 import org.gnucash.android.importer.ImportAsyncTask;
 import org.gnucash.android.model.Money;
-import org.gnucash.android.db.AccountsDbAdapter;
-import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.model.Transaction;
+import org.gnucash.android.ui.UxArgument;
 import org.gnucash.android.ui.account.AccountsActivity;
+import org.gnucash.android.ui.passcode.PasscodePreferenceActivity;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
@@ -51,7 +59,7 @@ import java.util.TimerTask;
 /**
  * Activity for displaying settings and information about the application
  * @author Ngewi Fet <ngewif@gmail.com>
- *
+ * @author Oleksandr Tyshkovets <olexandr.tyshkovets@gmail.com>
  */
 public class SettingsActivity extends SherlockPreferenceActivity implements OnPreferenceChangeListener, Preference.OnPreferenceClickListener{
 
@@ -111,6 +119,7 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
 			addPreferencesFromResource(R.xml.fragment_general_preferences);
             addPreferencesFromResource(R.xml.fragment_account_preferences);
 			addPreferencesFromResource(R.xml.fragment_transaction_preferences);
+            addPreferencesFromResource(R.xml.fragment_passcode_preferences);
 			addPreferencesFromResource(R.xml.fragment_about_preferences);
 			setDefaultCurrencyListener();
 			SharedPreferences manager = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
@@ -132,6 +141,12 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
 
             pref = findPreference(getString(R.string.key_restore_backup));
             pref.setOnPreferenceClickListener(this);
+
+            pref = findPreference(getString(R.string.key_change_passcode));
+            pref.setOnPreferenceClickListener(this);
+
+            pref = findPreference(getString(R.string.key_enable_passcode));
+            pref.setOnPreferenceChangeListener(this);
 		}
 	}
 
@@ -140,6 +155,12 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
         super.onResume();
         mDeleteAccountsClickCount = 0;
         mDeleteTransactionsClickCount = 0;
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        GnuCashApplication.PASSCODE_SESSION_INIT_TIME = System.currentTimeMillis();
     }
 
     @Override
@@ -165,10 +186,20 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
 	
 	@Override
  	public boolean onPreferenceChange(Preference preference, Object newValue) {
-		preference.setSummary(newValue.toString());
 		if (preference.getKey().equals(getString(R.string.key_default_currency))){
 			Money.DEFAULT_CURRENCY_CODE = newValue.toString();
-		}
+            preference.setSummary(newValue.toString());
+		} else if (preference.getKey().equals(getString(R.string.key_enable_passcode))) {
+            if ((Boolean) newValue) {
+                startActivityForResult(new Intent(this, PasscodePreferenceActivity.class),
+                        PasscodePreferenceFragment.PASSCODE_REQUEST_CODE);
+            }
+            PreferenceManager.getDefaultSharedPreferences(getApplicationContext())
+                    .edit()
+                    .putBoolean(UxArgument.ENABLED_PASSCODE, (Boolean) newValue)
+                    .commit();
+        }
+
 		return true;
 	}
 	
@@ -245,6 +276,12 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
             return true;
         }
 
+        if (key.equals(getString(R.string.key_change_passcode))){
+            startActivityForResult(new Intent(this, PasscodePreferenceActivity.class),
+                    PasscodePreferenceFragment.PASSCODE_REQUEST_CODE);
+            return true;
+        }
+
         return false;
     }
 
@@ -293,6 +330,13 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == Activity.RESULT_CANCELED){
+            if (requestCode == PasscodePreferenceFragment.PASSCODE_REQUEST_CODE) {
+                PreferenceManager.getDefaultSharedPreferences(getApplicationContext())
+                        .edit()
+                        .putBoolean(UxArgument.ENABLED_PASSCODE, false)
+                        .commit();
+                ((CheckBoxPreference) findPreference(getString(R.string.key_enable_passcode))).setChecked(false);
+            }
             return;
         }
 
@@ -305,7 +349,15 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
                     e.printStackTrace();
                     Toast.makeText(this, R.string.toast_error_importing_accounts, Toast.LENGTH_SHORT).show();
                 }
-
+                break;
+            case PasscodePreferenceFragment.PASSCODE_REQUEST_CODE:
+                if (data!= null) {
+                    PreferenceManager.getDefaultSharedPreferences(getApplicationContext())
+                            .edit()
+                            .putString(UxArgument.PASSCODE, data.getStringExtra(UxArgument.PASSCODE))
+                            .commit();
+                    Toast.makeText(getApplicationContext(), R.string.toast_passcode_set, Toast.LENGTH_SHORT).show();
+                }
                 break;
         }
     }

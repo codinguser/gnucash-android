@@ -55,7 +55,13 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".ui.passcode.PasscodeLockScreenActivity"
+            android:noHistory="true"
+            android:windowSoftInputMode="stateAlwaysHidden">
+        </activity>
         <activity android:name=".ui.settings.SettingsActivity"/>
+        <activity android:name=".ui.passcode.PasscodePreferenceActivity" />
         <activity android:name=".ui.transaction.TransactionsActivity"
             android:configChanges="orientation|screenSize">
         </activity>

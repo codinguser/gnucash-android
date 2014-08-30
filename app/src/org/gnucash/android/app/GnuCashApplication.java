@@ -32,6 +32,16 @@ import java.util.Locale;
  */
 public class GnuCashApplication extends Application{
 
+    /**
+     * Lifetime of passcode session
+     */
+    public static final long SESSION_TIMEOUT = 5 * 1000;
+
+    /**
+     * Init time of passcode session
+     */
+    public static long PASSCODE_SESSION_INIT_TIME = 0l;
+
     private static Context context;
 
     public void onCreate(){

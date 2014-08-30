@@ -27,6 +27,11 @@
     <string name="label_account_name">Account name</string>
     <string name="btn_cancel">Cancel</string>
     <string name="btn_save">Save</string>
+    <string name="label_passcode">Enter Passcode</string>
+    <string name="toast_wrong_passcode">Wrong passcode, please try again</string>
+    <string name="toast_passcode_set">Passcode set</string>
+    <string name="toast_confirm_passcode">Please confirm your passcode</string>
+    <string name="toast_invalid_passcode_confirmation">Invalid passcode confirmation. Please try again</string>
     <string name="label_transaction_name">Description</string>
     <string name="label_transaction_amount">Amount</string>
     <string name="title_add_transaction">New transaction</string>
@@ -453,6 +458,12 @@
 	<string name="key_license">app_license</string>
 	<string name="label_widget_configuration">Select Account</string>
 	<string name="toast_no_transactions_to_export">There are no transactions available to export</string>
+    <string name="header_passcode_settings">Passcode</string>
+    <string name="title_passcode_preferences">Passcode Preferences</string>
+    <string name="key_enable_passcode">enable_passcode</string>
+    <string name="title_enable_passcode">Turn On/Off Passcode</string>
+    <string name="title_change_passcode">Change Passcode</string>
+    <string name="key_change_passcode">change_passcode</string>
 	<string name="key_about">about_gnucash</string>
 	<string name="title_about_gnucash">About GnuCash</string>
 	<string name="summary_about_gnucash">Gnucash is a mobile finance expense tracker application for Android.\n

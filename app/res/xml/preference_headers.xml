@@ -21,6 +21,8 @@
             android:title="@string/header_account_settings" />
     <header android:fragment="org.gnucash.android.ui.settings.TransactionsPreferenceFragment" 
         android:title="@string/header_transaction_settings" />
+    <header android:fragment="org.gnucash.android.ui.settings.PasscodePreferenceFragment"
+        android:title="@string/header_passcode_settings" />
     <header android:fragment="org.gnucash.android.ui.settings.AboutPreferenceFragment"
         android:title="@string/header_about_gnucash" />
     <header android:title="Rate in Play Store">
