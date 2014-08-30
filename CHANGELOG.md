@@ -1,5 +1,9 @@
 Change Log
 ===============================================================================
+Version 1.4.2 *(2014-08-30)*
+----------------------------
+* Fixed: Newly added transactions cannot be exported
+
 Version 1.4.1 *(2014-08-25)*
 ----------------------------
 * Fixed: Transaction edits not saved
