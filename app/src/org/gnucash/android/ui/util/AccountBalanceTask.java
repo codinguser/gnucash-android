@@ -52,11 +52,14 @@ public class AccountBalanceTask extends AsyncTask<Long, Void, Money> {
 
         Money balance = Money.getZeroInstance();
         try {
-            balance = accountsDbAdapter.getAccountBalance(params[0]);
+            balance = accountsDbAdapter.getAccountBalance(accountsDbAdapter.getAccountUID(params[0]));
         } catch (IllegalArgumentException ex){
             //sometimes a load computation has been started and the data set changes.
             //the account ID may no longer exist. So we catch that exception here and do nothing
             Log.e(LOG_TAG, "Error computing account balance: " + ex);
+        } catch (Exception ex) {
+            Log.e(LOG_TAG, "Error computing account balance: " + ex);
+            ex.printStackTrace();
         }
         return balance;
     }
