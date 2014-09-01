@@ -286,6 +286,9 @@ public class SplitsDbAdapter extends DatabaseAdapter {
      * @return Cursor to splits
      */
     public Cursor fetchSplitsForTransaction(String transactionUID){
+        if (transactionUID == null)
+            throw new IllegalArgumentException("Transaction UID cannot be null");
+
         Log.v(TAG, "Fetching all splits for transaction UID " + transactionUID);
         return mDb.query(SplitEntry.TABLE_NAME,
                 null, SplitEntry.COLUMN_TRANSACTION_UID + " = ?",
@@ -388,6 +391,17 @@ public class SplitsDbAdapter extends DatabaseAdapter {
             cursor.close();
         }
         return result;
+    }
+
+    /**
+     * Deletes a split from the database.
+     * This is a convenience method which essentially calls {@link #deleteRecord(long)}
+     * @param uid String unique ID of split
+     * @return <code>true</code> if the split was deleted, <code>false</code> otherwise
+     */
+    public boolean deleteSplit(String uid){
+        long id = getID(uid);
+        return deleteRecord(id);
     }
 
     /**
