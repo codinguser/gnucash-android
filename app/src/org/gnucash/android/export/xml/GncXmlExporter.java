@@ -19,6 +19,8 @@ package org.gnucash.android.export.xml;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
+
+import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.export.ExportFormat;
@@ -28,6 +30,8 @@ import org.gnucash.android.model.Account;
 import org.gnucash.android.model.Transaction;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.xmlpull.v1.XmlPullParserFactory;
+import org.xmlpull.v1.XmlSerializer;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -41,6 +45,8 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.io.Writer;
+import java.util.Currency;
 import java.util.List;
 import java.util.UUID;
 
@@ -181,6 +187,61 @@ public class GncXmlExporter extends Exporter{
         return stringWriter.toString();
     }
 
+
+    public void generateExport(Writer writer) throws ExporterException{
+        try {
+            String[] namespaces = new String[] {"gnc", "act", "book", "cd", "cmdty", "price", "slot", "split", "trn", "ts"};
+            XmlSerializer xmlSerializer = XmlPullParserFactory.newInstance().newSerializer();
+            xmlSerializer.setOutput(writer);
+            xmlSerializer.startDocument("utf-8", true);
+            // root tag
+            xmlSerializer.startTag(null, GncXmlHelper.TAG_ROOT);
+            for(String ns : namespaces) {
+                xmlSerializer.attribute(null, "xmlns:" + ns, "http://www.gnucash.org/XML/" + ns);
+            }
+            // book count
+            xmlSerializer.startTag(null, GncXmlHelper.TAG_COUNT_DATA);
+            xmlSerializer.attribute(null, GncXmlHelper.ATTR_KEY_CD_TYPE, "book");
+            xmlSerializer.text("1");
+            xmlSerializer.endTag(null, GncXmlHelper.TAG_COUNT_DATA);
+            // book
+            xmlSerializer.startTag(null, GncXmlHelper.TAG_BOOK);
+            xmlSerializer.attribute(null, GncXmlHelper.ATTR_KEY_VERSION, GncXmlHelper.BOOK_VERSION);
+            // book_id
+            xmlSerializer.startTag(null, GncXmlHelper.TAG_BOOK_ID);
+            xmlSerializer.attribute(null, GncXmlHelper.ATTR_KEY_TYPE, GncXmlHelper.ATTR_VALUE_GUID);
+            xmlSerializer.text(UUID.randomUUID().toString().replaceAll("-", ""));
+            xmlSerializer.endTag(null, GncXmlHelper.TAG_BOOK_ID);
+            //commodity count
+            xmlSerializer.startTag(null, GncXmlHelper.TAG_COUNT_DATA);
+            xmlSerializer.attribute(null, GncXmlHelper.ATTR_KEY_CD_TYPE, "commodity");
+            xmlSerializer.text(mAccountsDbAdapter.getCurrencies().size() + "");
+            xmlSerializer.endTag(null, GncXmlHelper.TAG_COUNT_DATA);
+            //account count
+            xmlSerializer.startTag(null, GncXmlHelper.TAG_COUNT_DATA);
+            xmlSerializer.attribute(null, GncXmlHelper.ATTR_KEY_CD_TYPE, "account");
+            xmlSerializer.text(mAccountsDbAdapter.getTotalAccountCount() + "");
+            xmlSerializer.endTag(null, GncXmlHelper.TAG_COUNT_DATA);
+            //transaction count
+            xmlSerializer.startTag(null, GncXmlHelper.TAG_COUNT_DATA);
+            xmlSerializer.attribute(null, GncXmlHelper.ATTR_KEY_CD_TYPE, "transaction");
+            xmlSerializer.text(mTransactionsDbAdapter.getTotalTransactionsCount() + "");
+            xmlSerializer.endTag(null, GncXmlHelper.TAG_COUNT_DATA);
+            // accounts. bulk import does not rely on account order
+            // the cursor gather account in arbitrary order
+            mAccountsDbAdapter.exportAccountsToGncXML(xmlSerializer, null, null);
+
+            // transactions.
+            mTransactionsDbAdapter.exportTransactionsWithSplitsToGncXML(xmlSerializer, null);
+
+            xmlSerializer.endTag(null, GncXmlHelper.TAG_BOOK);
+            xmlSerializer.endTag(null, GncXmlHelper.TAG_ROOT);
+            xmlSerializer.endDocument();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new ExporterException(mParameters, e);
+        }
+    }
     /**
      * Creates a backup of current database contents to the default backup location
      */
@@ -188,9 +249,9 @@ public class GncXmlExporter extends Exporter{
         ExportParams params = new ExportParams(ExportFormat.GNC_XML);
         try {
             FileWriter fileWriter = new FileWriter(Exporter.createBackupFile());
-            BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
-            bufferedWriter.write(new GncXmlExporter(params).generateExport());
-            bufferedWriter.flush();
+            //BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+            new GncXmlExporter(params).generateExport(fileWriter);
+            //bufferedWriter.flush();
 
         } catch (IOException e) {
             e.printStackTrace();

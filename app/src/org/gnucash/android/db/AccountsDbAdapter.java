@@ -24,8 +24,11 @@ import android.database.sqlite.SQLiteQueryBuilder;
 import android.util.Log;
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
+import org.gnucash.android.export.xml.GncXmlHelper;
 import org.gnucash.android.model.*;
+import org.xmlpull.v1.XmlSerializer;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.*;
 
@@ -580,6 +583,20 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 
     /**
      * Returns a Cursor set of accounts which fulfill <code>condition</code>
+     * and ordered by <code>orderBy</code>
+     * @param condition SQL WHERE statement without the 'WHERE' itself
+     * @return Cursor set of accounts which fulfill <code>condition</code>
+     */
+    public Cursor fetchAccounts(String condition, String orderBy){
+        Log.v(TAG, "Fetching all accounts from db where " +
+                (condition == null ? "NONE" : condition) + " order by " +
+                (orderBy == null ? "NONE" : orderBy));
+        return mDb.query(AccountEntry.TABLE_NAME,
+                null, condition, null, null, null,
+                orderBy);
+    }
+    /**
+     * Returns a Cursor set of accounts which fulfill <code>condition</code>
      * <p>This method returns the accounts list sorted by the full account name</p>
      * @param condition SQL WHERE statement without the 'WHERE' itself
      * @return Cursor set of accounts which fulfill <code>condition</code>
@@ -1044,4 +1061,111 @@ public class AccountsDbAdapter extends DatabaseAdapter {
         return mDb.delete(AccountEntry.TABLE_NAME, null, null);
 	}
 
+    /**
+     * Export set of accounts in GncXML format
+     * @param condition condition to select accounts
+     * @param orderBy       how accounts are ordered
+     * @param xmlSerializer XmlSerializer object to write the XML output
+     * @return export successful
+     */
+    public void exportAccountsToGncXML(XmlSerializer xmlSerializer, String condition, String orderBy) throws IOException{
+        Cursor cursor = fetchAccounts(null, null);
+        while(cursor.moveToNext())
+        {
+            // write account
+            xmlSerializer.startTag(null, GncXmlHelper.TAG_ACCOUNT);
+            xmlSerializer.attribute(null, GncXmlHelper.ATTR_KEY_VERSION, GncXmlHelper.BOOK_VERSION);
+            // account name
+            xmlSerializer.startTag(null, GncXmlHelper.TAG_NAME);
+            xmlSerializer.text(cursor.getString(cursor.getColumnIndexOrThrow(AccountEntry.COLUMN_NAME)));
+            xmlSerializer.endTag(null,GncXmlHelper.TAG_NAME);
+            // account guid
+            xmlSerializer.startTag(null, GncXmlHelper.TAG_ACCT_ID);
+            xmlSerializer.attribute(null, GncXmlHelper.ATTR_KEY_TYPE, GncXmlHelper.ATTR_VALUE_GUID);
+            xmlSerializer.text(cursor.getString(cursor.getColumnIndexOrThrow(AccountEntry.COLUMN_UID)));
+            xmlSerializer.endTag(null, GncXmlHelper.TAG_ACCT_ID);
+            // account type
+            xmlSerializer.startTag(null, GncXmlHelper.TAG_TYPE);
+            String acct_type = cursor.getString(cursor.getColumnIndexOrThrow(AccountEntry.COLUMN_TYPE));
+            xmlSerializer.text(acct_type);
+            xmlSerializer.endTag(null, GncXmlHelper.TAG_TYPE);
+            // commodity
+            xmlSerializer.startTag(null, GncXmlHelper.TAG_COMMODITY);
+            xmlSerializer.startTag(null, GncXmlHelper.TAG_COMMODITY_SPACE);
+            xmlSerializer.text("ISO4217");
+            xmlSerializer.endTag(null, GncXmlHelper.TAG_COMMODITY_SPACE);
+            xmlSerializer.startTag(null, GncXmlHelper.TAG_COMMODITY_ID);
+            String acctCurrencyCode = cursor.getString(cursor.getColumnIndexOrThrow(AccountEntry.COLUMN_CURRENCY));
+            xmlSerializer.text(acctCurrencyCode);
+            xmlSerializer.endTag(null, GncXmlHelper.TAG_COMMODITY_ID);
+            xmlSerializer.endTag(null, GncXmlHelper.TAG_COMMODITY);
+            // commodity scu
+            xmlSerializer.startTag(null, GncXmlHelper.TAG_COMMODITY_SCU);
+            xmlSerializer.text(Integer.toString((int) Math.pow(10, Currency.getInstance(acctCurrencyCode).getDefaultFractionDigits())));
+            xmlSerializer.endTag(null, GncXmlHelper.TAG_COMMODITY_SCU);
+            // account description
+            // this is optional in Gnc XML, and currently not in the db, so description node
+            // is omitted
+            //
+            // account slots, color, placeholder, default transfer account, favorite
+            xmlSerializer.startTag(null, GncXmlHelper.TAG_ACT_SLOTS);
+            xmlSerializer.startTag(null, GncXmlHelper.TAG_SLOT);
+
+            xmlSerializer.startTag(null, GncXmlHelper.TAG_SLOT_KEY);
+            xmlSerializer.text(GncXmlHelper.KEY_PLACEHOLDER);
+            xmlSerializer.endTag(null, GncXmlHelper.TAG_SLOT_KEY);
+            xmlSerializer.startTag(null, GncXmlHelper.TAG_SLOT_VALUE);
+            xmlSerializer.attribute(null, GncXmlHelper.ATTR_KEY_TYPE, GncXmlHelper.ATTR_VALUE_STRING);
+            xmlSerializer.text(Boolean.toString(cursor.getInt(cursor.getColumnIndexOrThrow(AccountEntry.COLUMN_PLACEHOLDER)) != 0));
+            xmlSerializer.endTag(null, GncXmlHelper.TAG_SLOT_VALUE);
+
+            String color = cursor.getString(cursor.getColumnIndexOrThrow(AccountEntry.COLUMN_COLOR_CODE));
+            if (color != null && color.length() > 0) {
+                xmlSerializer.startTag(null, GncXmlHelper.TAG_SLOT_KEY);
+                xmlSerializer.text(GncXmlHelper.KEY_COLOR);
+                xmlSerializer.endTag(null, GncXmlHelper.TAG_SLOT_KEY);
+                xmlSerializer.startTag(null, GncXmlHelper.TAG_SLOT_VALUE);
+                xmlSerializer.attribute(null, GncXmlHelper.ATTR_KEY_TYPE, GncXmlHelper.ATTR_VALUE_STRING);
+                xmlSerializer.text(color);
+                xmlSerializer.endTag(null, GncXmlHelper.TAG_SLOT_VALUE);
+            }
+
+            String defaultTransferAcctUUID = cursor.getString(cursor.getColumnIndexOrThrow(AccountEntry.COLUMN_DEFAULT_TRANSFER_ACCOUNT_UID));
+            if (defaultTransferAcctUUID != null && defaultTransferAcctUUID.length() > 0) {
+                xmlSerializer.startTag(null, GncXmlHelper.TAG_SLOT_KEY);
+                xmlSerializer.text(GncXmlHelper.KEY_DEFAULT_TRANSFER_ACCOUNT);
+                xmlSerializer.endTag(null, GncXmlHelper.TAG_SLOT_KEY);
+                xmlSerializer.startTag(null, GncXmlHelper.TAG_SLOT_VALUE);
+                xmlSerializer.attribute(null, GncXmlHelper.ATTR_KEY_TYPE, GncXmlHelper.ATTR_VALUE_STRING);
+                xmlSerializer.text(defaultTransferAcctUUID);
+                xmlSerializer.endTag(null, GncXmlHelper.TAG_SLOT_VALUE);
+            }
+
+            xmlSerializer.startTag(null, GncXmlHelper.TAG_SLOT_KEY);
+            xmlSerializer.text(GncXmlHelper.KEY_FAVORITE);
+            xmlSerializer.endTag(null, GncXmlHelper.TAG_SLOT_KEY);
+            xmlSerializer.startTag(null, GncXmlHelper.TAG_SLOT_VALUE);
+            xmlSerializer.attribute(null, GncXmlHelper.ATTR_KEY_TYPE, GncXmlHelper.ATTR_VALUE_STRING);
+            xmlSerializer.text(Boolean.toString(cursor.getInt(cursor.getColumnIndexOrThrow(AccountEntry.COLUMN_FAVORITE)) != 0));
+            xmlSerializer.endTag(null, GncXmlHelper.TAG_SLOT_VALUE);
+
+            xmlSerializer.endTag(null, GncXmlHelper.TAG_SLOT);
+            xmlSerializer.endTag(null, GncXmlHelper.TAG_ACT_SLOTS);
+
+            // parent uid
+            String parentUID = cursor.getString(cursor.getColumnIndexOrThrow(AccountEntry.COLUMN_PARENT_ACCOUNT_UID));
+            if (acct_type != "ROOT" && parentUID != null && parentUID.length() > 0) {
+                xmlSerializer.startTag(null, GncXmlHelper.TAG_PARENT_UID);
+                xmlSerializer.attribute(null, GncXmlHelper.ATTR_KEY_TYPE, GncXmlHelper.ATTR_VALUE_STRING);
+                xmlSerializer.text(parentUID);
+                xmlSerializer.endTag(null, GncXmlHelper.TAG_PARENT_UID);
+            }
+            else
+            {
+                Log.d("export", "root account : " + cursor.getString(cursor.getColumnIndexOrThrow(AccountEntry.COLUMN_UID)));
+            }
+            xmlSerializer.endTag(null, GncXmlHelper.TAG_ACCOUNT);
+        }
+        cursor.close();
+    }
 }

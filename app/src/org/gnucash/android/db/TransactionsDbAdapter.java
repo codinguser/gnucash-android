@@ -25,10 +25,17 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.database.sqlite.SQLiteStatement;
 import android.util.Log;
+
+import org.gnucash.android.export.xml.GncXmlHelper;
 import org.gnucash.android.model.*;
+import org.xmlpull.v1.XmlSerializer;
+
 import static org.gnucash.android.db.DatabaseSchema.*;
 
+import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Currency;
 import java.util.List;
 
 /**
@@ -237,6 +244,159 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
             cursor.close();
         }
         return transactions;
+    }
+
+    public void exportTransactionsWithSplitsToGncXML(
+            XmlSerializer xmlSerializer,
+            String condition) throws IOException{
+        Cursor cursor = mDb.query(TransactionEntry.TABLE_NAME + " , " + SplitEntry.TABLE_NAME +
+                        " ON " + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_UID +
+                        " = " + SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_TRANSACTION_UID,
+                new String[]{
+                        TransactionEntry.TABLE_NAME+"."+TransactionEntry.COLUMN_UID + " AS trans_uid",
+                        TransactionEntry.TABLE_NAME+"."+TransactionEntry.COLUMN_DESCRIPTION + " AS trans_desc",
+                        TransactionEntry.TABLE_NAME+"."+TransactionEntry.COLUMN_NOTES + " AS trans_notes",
+                        TransactionEntry.TABLE_NAME+"."+TransactionEntry.COLUMN_TIMESTAMP + " AS trans_time",
+                        TransactionEntry.TABLE_NAME+"."+TransactionEntry.COLUMN_EXPORTED + " AS trans_exported",
+                        TransactionEntry.TABLE_NAME+"."+TransactionEntry.COLUMN_CURRENCY + " AS trans_currency",
+                        TransactionEntry.TABLE_NAME+"."+TransactionEntry.COLUMN_RECURRENCE_PERIOD + " AS trans_recur",
+                        SplitEntry.TABLE_NAME+"."+SplitEntry.COLUMN_UID + " AS split_uid",
+                        SplitEntry.TABLE_NAME+"."+SplitEntry.COLUMN_MEMO + " AS split_memo",
+                        SplitEntry.TABLE_NAME+"."+SplitEntry.COLUMN_TYPE + " AS split_type",
+                        SplitEntry.TABLE_NAME+"."+SplitEntry.COLUMN_AMOUNT + " AS split_amount",
+                        SplitEntry.TABLE_NAME+"."+SplitEntry.COLUMN_ACCOUNT_UID + " AS split_acct_uid"
+                }, condition, null, null, null,
+                TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_RECURRENCE_PERIOD + " ASC , " +
+                        TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_TIMESTAMP + " ASC , " +
+                        TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_UID + " ASC ");
+
+        String lastTrxUID = "";
+        Currency trxCurrency = null;
+        int fractionDigits = 2;
+        BigDecimal denom = new BigDecimal(100);
+        String denomString = "100";
+        int recur = 0;
+        while (cursor.moveToNext()){
+            String curTrxUID = cursor.getString(cursor.getColumnIndexOrThrow("trans_uid"));
+            if (!lastTrxUID.equals(curTrxUID)){ // new transaction starts
+                if (!lastTrxUID.equals("")){ // there's an old transaction, close it
+                    xmlSerializer.endTag(null, GncXmlHelper.TAG_TRN_SPLITS);
+                    if (recur > 0) {
+                        xmlSerializer.startTag(null, GncXmlHelper.TAG_RECURRENCE_PERIOD);
+                        xmlSerializer.text(Integer.toString(recur));
+                        xmlSerializer.endTag(null, GncXmlHelper.TAG_RECURRENCE_PERIOD);
+                    }
+                    xmlSerializer.endTag(null, GncXmlHelper.TAG_TRANSACTION);
+                }
+                // new transaction
+                xmlSerializer.startTag(null, GncXmlHelper.TAG_TRANSACTION);
+                xmlSerializer.attribute(null, GncXmlHelper.ATTR_KEY_VERSION, GncXmlHelper.BOOK_VERSION);
+                // transaction id
+                xmlSerializer.startTag(null, GncXmlHelper.TAG_TRX_ID);
+                xmlSerializer.attribute(null, GncXmlHelper.ATTR_KEY_TYPE, GncXmlHelper.ATTR_VALUE_GUID);
+                xmlSerializer.text(curTrxUID);
+                xmlSerializer.endTag(null, GncXmlHelper.TAG_TRX_ID);
+                // currency
+                String currency = cursor.getString(cursor.getColumnIndexOrThrow("trans_currency"));
+                trxCurrency = Currency.getInstance(currency);
+                fractionDigits = trxCurrency.getDefaultFractionDigits();
+                int denomInt = (int)Math.pow(10, fractionDigits);
+                denom = new BigDecimal(denomInt);
+                denomString = Integer.toString(denomInt);
+                xmlSerializer.startTag(null, GncXmlHelper.TAG_TRX_CURRENCY);
+                xmlSerializer.startTag(null, GncXmlHelper.TAG_COMMODITY_SPACE);
+                xmlSerializer.text("ISO4217");
+                xmlSerializer.endTag(null, GncXmlHelper.TAG_COMMODITY_SPACE);
+                xmlSerializer.startTag(null, GncXmlHelper.TAG_COMMODITY_ID);
+                xmlSerializer.text(currency);
+                xmlSerializer.endTag(null, GncXmlHelper.TAG_COMMODITY_ID);
+                xmlSerializer.endTag(null, GncXmlHelper.TAG_TRX_CURRENCY);
+                // date posted
+                String strDate = GncXmlHelper.formatDate(cursor.getLong(cursor.getColumnIndexOrThrow("trans_time")));
+                xmlSerializer.startTag(null, GncXmlHelper.TAG_DATE_POSTED);
+                xmlSerializer.startTag(null, GncXmlHelper.TAG_DATE);
+                xmlSerializer.text(strDate);
+                xmlSerializer.endTag(null, GncXmlHelper.TAG_DATE);
+                xmlSerializer.endTag(null, GncXmlHelper.TAG_DATE_POSTED);
+                // date entered
+                xmlSerializer.startTag(null, GncXmlHelper.TAG_DATE_ENTERED);
+                xmlSerializer.startTag(null, GncXmlHelper.TAG_DATE);
+                xmlSerializer.text(strDate);
+                xmlSerializer.endTag(null, GncXmlHelper.TAG_DATE);
+                xmlSerializer.endTag(null, GncXmlHelper.TAG_DATE_ENTERED);
+                // description
+                xmlSerializer.startTag(null, GncXmlHelper.TAG_TRN_DESCRIPTION);
+                xmlSerializer.text(cursor.getString(cursor.getColumnIndexOrThrow("trans_desc")));
+                xmlSerializer.endTag(null, GncXmlHelper.TAG_TRN_DESCRIPTION);
+                lastTrxUID = curTrxUID;
+                // notes
+                String notes = cursor.getString(cursor.getColumnIndexOrThrow("trans_notes"));
+                if (notes != null && notes.length() > 0) {
+                    xmlSerializer.startTag(null, GncXmlHelper.TAG_TRN_SLOTS);
+                    xmlSerializer.startTag(null, GncXmlHelper.TAG_SLOT);
+                    xmlSerializer.startTag(null, GncXmlHelper.TAG_SLOT_KEY);
+                    xmlSerializer.text(GncXmlHelper.KEY_NOTES);
+                    xmlSerializer.endTag(null, GncXmlHelper.TAG_SLOT_KEY);
+                    xmlSerializer.startTag(null, GncXmlHelper.TAG_SLOT_VALUE);
+                    xmlSerializer.attribute(null, GncXmlHelper.ATTR_KEY_TYPE, GncXmlHelper.ATTR_VALUE_STRING);
+                    xmlSerializer.text(notes);
+                    xmlSerializer.endTag(null, GncXmlHelper.TAG_SLOT_VALUE);
+                    xmlSerializer.endTag(null, GncXmlHelper.TAG_SLOT);
+                    xmlSerializer.endTag(null, GncXmlHelper.TAG_TRN_SLOTS);
+                }
+                // recurrence period
+                recur = cursor.getInt(cursor.getColumnIndexOrThrow("trans_recur"));
+                // splits start
+                xmlSerializer.startTag(null, GncXmlHelper.TAG_TRN_SPLITS);
+            }
+            xmlSerializer.startTag(null, GncXmlHelper.TAG_TRN_SPLIT);
+            // split id
+            xmlSerializer.startTag(null, GncXmlHelper.TAG_SPLIT_ID);
+            xmlSerializer.attribute(null, GncXmlHelper.ATTR_KEY_TYPE, GncXmlHelper.ATTR_VALUE_GUID);
+            xmlSerializer.text(cursor.getString(cursor.getColumnIndexOrThrow("split_uid")));
+            xmlSerializer.endTag(null, GncXmlHelper.TAG_SPLIT_ID);
+            // memo
+            String memo = cursor.getString(cursor.getColumnIndexOrThrow("split_memo"));
+            if (memo != null && memo.length() > 0){
+                xmlSerializer.startTag(null, GncXmlHelper.TAG_SPLIT_MEMO);
+                xmlSerializer.text(memo);
+                xmlSerializer.endTag(null, GncXmlHelper.TAG_SPLIT_MEMO);
+            }
+            // reconciled
+            xmlSerializer.startTag(null, GncXmlHelper.TAG_RECONCILED_STATE);
+            xmlSerializer.text("n");
+            xmlSerializer.endTag(null, GncXmlHelper.TAG_RECONCILED_STATE);
+            // value, in the transaction's currency
+            String trxType = cursor.getString(cursor.getColumnIndexOrThrow("split_type"));
+            BigDecimal value = new BigDecimal(cursor.getString(cursor.getColumnIndexOrThrow("split_amount")));
+            value = value.multiply(denom);
+            String strValue = (trxType.equals("CREDIT") ? "-" : "") + value.stripTrailingZeros().toPlainString() + "/" + denomString;
+            xmlSerializer.startTag(null, GncXmlHelper.TAG_SPLIT_VALUE);
+            xmlSerializer.text(strValue);
+            xmlSerializer.endTag(null, GncXmlHelper.TAG_SPLIT_VALUE);
+            // quantity, in the split account's currency
+            // TODO: multi currency support.
+            xmlSerializer.startTag(null, GncXmlHelper.TAG_SPLIT_QUANTITY);
+            xmlSerializer.text(strValue);
+            xmlSerializer.endTag(null, GncXmlHelper.TAG_SPLIT_QUANTITY);
+            // account guid
+            xmlSerializer.startTag(null, GncXmlHelper.TAG_SPLIT_ACCOUNT);
+            xmlSerializer.attribute(null, GncXmlHelper.ATTR_KEY_TYPE, GncXmlHelper.ATTR_VALUE_GUID);
+            xmlSerializer.text(cursor.getString(cursor.getColumnIndexOrThrow("split_acct_uid")));
+            xmlSerializer.endTag(null, GncXmlHelper.TAG_SPLIT_ACCOUNT);
+            xmlSerializer.endTag(null, GncXmlHelper.TAG_TRN_SPLIT);
+        }
+        if (!lastTrxUID.equals("")){ // there's an unfinished transaction, close it
+            xmlSerializer.endTag(null,GncXmlHelper.TAG_TRN_SPLITS);
+            if (recur > 0) {
+                xmlSerializer.startTag(null, GncXmlHelper.TAG_RECURRENCE_PERIOD);
+                xmlSerializer.text(Integer.toString(recur));
+                xmlSerializer.endTag(null, GncXmlHelper.TAG_RECURRENCE_PERIOD);
+            }
+            xmlSerializer.endTag(null, GncXmlHelper.TAG_TRANSACTION);
+        }
+
+        cursor.close();
     }
 
     /**
