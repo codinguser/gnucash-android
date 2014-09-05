@@ -41,14 +41,19 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+
+import java.io.BufferedOutputStream;
 import java.io.BufferedWriter;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.Currency;
 import java.util.List;
 import java.util.UUID;
+import java.util.zip.GZIPOutputStream;
 
 /**
  * Creates a GnuCash XML representation of the accounts and transactions
@@ -248,11 +253,12 @@ public class GncXmlExporter extends Exporter{
     public static void createBackup(){
         ExportParams params = new ExportParams(ExportFormat.GNC_XML);
         try {
-            FileWriter fileWriter = new FileWriter(Exporter.createBackupFile());
-            //BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
-            new GncXmlExporter(params).generateExport(fileWriter);
-            //bufferedWriter.flush();
-
+            FileOutputStream fileOutputStream = new FileOutputStream(Exporter.createBackupFile());
+            BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(fileOutputStream);
+            GZIPOutputStream gzipOutputStream = new GZIPOutputStream(bufferedOutputStream);
+            OutputStreamWriter outputStreamWriter = new OutputStreamWriter(gzipOutputStream);
+            new GncXmlExporter(params).generateExport(outputStreamWriter);
+            outputStreamWriter.close();
         } catch (IOException e) {
             e.printStackTrace();
             Log.e("GncXmlExporter", "Error creating backup", e);
