@@ -81,7 +81,7 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 	 */
 	public long addTransaction(Transaction transaction){
 		ContentValues contentValues = new ContentValues();
-		contentValues.put(TransactionEntry.COLUMN_DESCRIPTION,  transaction.getDescription());
+		contentValues.put(TransactionEntry.COLUMN_DESCRIPTION, transaction.getDescription());
 		contentValues.put(TransactionEntry.COLUMN_UID,          transaction.getUID());
 		contentValues.put(TransactionEntry.COLUMN_TIMESTAMP,    transaction.getTimeMillis());
 		contentValues.put(TransactionEntry.COLUMN_NOTES,        transaction.getNote());
@@ -329,19 +329,33 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
                 xmlSerializer.text(cursor.getString(cursor.getColumnIndexOrThrow("trans_desc")));
                 xmlSerializer.endTag(null, GncXmlHelper.TAG_TRN_DESCRIPTION);
                 lastTrxUID = curTrxUID;
-                // notes
+                // slots
                 String notes = cursor.getString(cursor.getColumnIndexOrThrow("trans_notes"));
-                if (notes != null && notes.length() > 0) {
+                boolean exported = cursor.getInt(cursor.getColumnIndexOrThrow("trans_exported")) == 1;
+                if ((notes != null && notes.length() > 0) || !exported) {
                     xmlSerializer.startTag(null, GncXmlHelper.TAG_TRN_SLOTS);
-                    xmlSerializer.startTag(null, GncXmlHelper.TAG_SLOT);
-                    xmlSerializer.startTag(null, GncXmlHelper.TAG_SLOT_KEY);
-                    xmlSerializer.text(GncXmlHelper.KEY_NOTES);
-                    xmlSerializer.endTag(null, GncXmlHelper.TAG_SLOT_KEY);
-                    xmlSerializer.startTag(null, GncXmlHelper.TAG_SLOT_VALUE);
-                    xmlSerializer.attribute(null, GncXmlHelper.ATTR_KEY_TYPE, GncXmlHelper.ATTR_VALUE_STRING);
-                    xmlSerializer.text(notes);
-                    xmlSerializer.endTag(null, GncXmlHelper.TAG_SLOT_VALUE);
-                    xmlSerializer.endTag(null, GncXmlHelper.TAG_SLOT);
+                    if (notes != null && notes.length() > 0) {
+                        xmlSerializer.startTag(null, GncXmlHelper.TAG_SLOT);
+                        xmlSerializer.startTag(null, GncXmlHelper.TAG_SLOT_KEY);
+                        xmlSerializer.text(GncXmlHelper.KEY_NOTES);
+                        xmlSerializer.endTag(null, GncXmlHelper.TAG_SLOT_KEY);
+                        xmlSerializer.startTag(null, GncXmlHelper.TAG_SLOT_VALUE);
+                        xmlSerializer.attribute(null, GncXmlHelper.ATTR_KEY_TYPE, GncXmlHelper.ATTR_VALUE_STRING);
+                        xmlSerializer.text(notes);
+                        xmlSerializer.endTag(null, GncXmlHelper.TAG_SLOT_VALUE);
+                        xmlSerializer.endTag(null, GncXmlHelper.TAG_SLOT);
+                    }
+                    if (!exported) {
+                        xmlSerializer.startTag(null, GncXmlHelper.TAG_SLOT);
+                        xmlSerializer.startTag(null, GncXmlHelper.TAG_SLOT_KEY);
+                        xmlSerializer.text(GncXmlHelper.KEY_EXPORTED);
+                        xmlSerializer.endTag(null, GncXmlHelper.TAG_SLOT_KEY);
+                        xmlSerializer.startTag(null, GncXmlHelper.TAG_SLOT_VALUE);
+                        xmlSerializer.attribute(null, GncXmlHelper.ATTR_KEY_TYPE, GncXmlHelper.ATTR_VALUE_STRING);
+                        xmlSerializer.text("false");
+                        xmlSerializer.endTag(null, GncXmlHelper.TAG_SLOT_VALUE);
+                        xmlSerializer.endTag(null, GncXmlHelper.TAG_SLOT);
+                    }
                     xmlSerializer.endTag(null, GncXmlHelper.TAG_TRN_SLOTS);
                 }
                 // recurrence period
