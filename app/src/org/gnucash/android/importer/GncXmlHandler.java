@@ -231,6 +231,9 @@ public class GncXmlHandler extends DefaultHandler {
             else if (characterString.equals(GncXmlHelper.KEY_DEFAULT_TRANSFER_ACCOUNT)){
                 mInDefaultTransferAccount = true;
             }
+            else if (characterString.equals(GncXmlHelper.KEY_EXPORTED)){
+                mInExported = true;
+            }
         }
         else if (qualifiedName.equalsIgnoreCase(GncXmlHelper.TAG_SLOT_VALUE)){
             if (mInPlaceHolderSlot){
