@@ -106,6 +106,7 @@ public class GncXmlHandler extends DefaultHandler {
     boolean mIsDatePosted       = false;
     boolean mIsNote             = false;
     boolean mInDefaultTransferAccount = false;
+    boolean mInExported         = false;
 
     private Context mContext;
     private TransactionsDbAdapter mTransactionsDbAdapter;
@@ -145,22 +146,19 @@ public class GncXmlHandler extends DefaultHandler {
     public void startElement(String uri, String localName,
                              String qualifiedName, Attributes attributes) throws SAXException {
         if (qualifiedName.equalsIgnoreCase(GncXmlHelper.TAG_ACCOUNT)) {
-            mAccount = new Account(""); //dummy name, will be replaced when we find name tag
+            mAccount = new Account(""); // dummy name, will be replaced when we find name tag
         }
-
-        if (qualifiedName.equalsIgnoreCase(GncXmlHelper.TAG_TRANSACTION)){
-            mTransaction = new Transaction(""); //dummy name will be replaced
+        else if (qualifiedName.equalsIgnoreCase(GncXmlHelper.TAG_TRANSACTION)){
+            mTransaction = new Transaction(""); // dummy name will be replaced
+            mTransaction.setExported(true);     // default to exported when import transactions
         }
-
-        if (qualifiedName.equalsIgnoreCase(GncXmlHelper.TAG_TRN_SPLIT)){
+        else if (qualifiedName.equalsIgnoreCase(GncXmlHelper.TAG_TRN_SPLIT)){
             mSplit = new Split(Money.getZeroInstance(),"");
         }
-
-        if (qualifiedName.equalsIgnoreCase(GncXmlHelper.TAG_DATE_POSTED)){
+        else if (qualifiedName.equalsIgnoreCase(GncXmlHelper.TAG_DATE_POSTED)){
             mIsDatePosted = true;
         }
-
-        if (qualifiedName.equalsIgnoreCase(GncXmlHelper.TAG_TEMPLATE_TRANSACTION)) {
+        else if (qualifiedName.equalsIgnoreCase(GncXmlHelper.TAG_TEMPLATE_TRANSACTION)) {
             mIgnoreElement = GncXmlHelper.TAG_TEMPLATE_TRANSACTION;
         }
     }
@@ -240,8 +238,7 @@ public class GncXmlHandler extends DefaultHandler {
                 mAccount.setPlaceHolderFlag(Boolean.parseBoolean(characterString));
                 mInPlaceHolderSlot = false;
             }
-
-            if (mInColorSlot){
+            else if (mInColorSlot){
                 String color = characterString.trim();
                 //Gnucash exports the account color in format #rrrgggbbb, but we need only #rrggbb.
                 //so we trim the last digit in each block, doesn't affect the color much
@@ -260,22 +257,25 @@ public class GncXmlHandler extends DefaultHandler {
                 }
                 mInColorSlot = false;
             }
-
-            if (mInFavoriteSlot){
+            else if (mInFavoriteSlot){
                 mAccount.setFavorite(Boolean.parseBoolean(characterString));
                 mInFavoriteSlot = false;
             }
-
-            if (mIsNote){
+            else if (mIsNote){
                 if (mTransaction != null){
                     mTransaction.setNote(characterString);
                     mIsNote = false;
                 }
             }
-
-            if (mInDefaultTransferAccount){
+            else if (mInDefaultTransferAccount){
                 mAccount.setDefaultTransferAccountUID(characterString);
                 mInDefaultTransferAccount = false;
+            }
+            else if (mInExported){
+                if (mTransaction != null) {
+                    mTransaction.setExported(Boolean.parseBoolean(characterString));
+                    mInExported = false;
+                }
             }
         }
 
