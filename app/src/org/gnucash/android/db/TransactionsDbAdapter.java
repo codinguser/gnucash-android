@@ -251,8 +251,9 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
     public Cursor fetchTransactionsWithSplitsWithTransactionAccount(String [] columns, String condition, String orderBy) {
         // table is :
         // transactions, splits ON transactions.uid = splits.transaction_uid ,
-        // ( SELECT transactions.uid AS trans_acct_t_uid , MAX ( splits.account_uid ) as trans_acct_a_uid FROM
-        //     transactions, splits ON transactions.uid = splits.transaction_uid GROUP BY transactions.uid ) AS trans_acct ON
+        // ( SELECT transactions.uid AS trans_acct_t_uid , MAX ( splits.account_uid ) as trans_acct_a_uid
+        //   TOTAL ( CASE WHEN splits.type = 'DEBIT' THEN splits.amount ELSE - splits.amount END ) AS trans_acct_balance
+        //   FROM transactions, splits ON transactions.uid = splits.transaction_uid GROUP BY transactions.uid ) AS trans_acct ON
         // trans_acct.trans_acct_t_uid = transactions.uid , accounts AS account1 ON account1.uid = trans_acct.trans_acct_a_uid ,
         // accounts AS account2 ON account2.uid = splits.split_account_uid
         //
@@ -274,7 +275,11 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
                 " = " + SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_TRANSACTION_UID +
                 " , ( SELECT " + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_UID +
                 " AS trans_acct_t_uid , MAX ( " + SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_ACCOUNT_UID +
-                " ) AS trans_acct_a_uid FROM " + TransactionEntry.TABLE_NAME + " , " + SplitEntry.TABLE_NAME +
+                " ) AS trans_acct_a_uid , TOTAL ( CASE WHEN " + SplitEntry.TABLE_NAME + "." +
+                SplitEntry.COLUMN_TYPE + " = 'DEBIT' THEN "+ SplitEntry.TABLE_NAME + "." +
+                SplitEntry.COLUMN_AMOUNT + " ELSE - " + SplitEntry.TABLE_NAME + "." +
+                SplitEntry.COLUMN_AMOUNT + " END ) AS trans_acct_balance FROM " +
+                TransactionEntry.TABLE_NAME + " , " + SplitEntry.TABLE_NAME +
                 " ON " + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_UID +
                 " = " + SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_TRANSACTION_UID +
                 " GROUP BY " + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_UID +

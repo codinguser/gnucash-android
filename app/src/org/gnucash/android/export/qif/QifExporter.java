@@ -29,6 +29,7 @@ import org.gnucash.android.model.Transaction;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -84,8 +85,10 @@ public class QifExporter extends Exporter{
                             SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_AMOUNT + " AS split_amount",
                             SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_TYPE + " AS split_type",
                             SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_MEMO + " AS split_memo",
+                            "trans_acct.trans_acct_balance AS trans_acct_balance",
                             "account1." + AccountEntry.COLUMN_UID + " AS acct1_uid",
                             "account1." + AccountEntry.COLUMN_FULL_NAME + " AS acct1_full_name",
+                            "account1." + AccountEntry.COLUMN_CURRENCY + " AS acct1_currency",
                             "account1." + AccountEntry.COLUMN_TYPE + " AS acct1_type",
                             "account2." + AccountEntry.COLUMN_FULL_NAME + " AS acct2_full_name"
                     },
@@ -133,6 +136,18 @@ public class QifExporter extends Exporter{
                         writer.append(QifHelper.MEMO_PREFIX)
                                 .append(cursor.getString(cursor.getColumnIndexOrThrow("trans_desc")))
                                 .append(newLine);
+                        // deal with imbalance first
+                        double imbalance = cursor.getDouble(cursor.getColumnIndexOrThrow("trans_acct_balance"));
+                        BigDecimal decimalImbalance = BigDecimal.valueOf(imbalance).setScale(2, BigDecimal.ROUND_HALF_UP);
+                        if (decimalImbalance.compareTo(BigDecimal.ZERO) != 0) {
+                            writer.append(QifHelper.SPLIT_CATEGORY_PREFIX)
+                                    .append("Imbalance-")
+                                    .append(cursor.getString(cursor.getColumnIndexOrThrow("acct1_currency")))
+                                    .append(newLine);
+                            writer.append(QifHelper.SPLIT_AMOUNT_PREFIX)
+                                    .append(decimalImbalance.toPlainString())
+                                    .append(newLine);
+                        }
                     }
                     // all splits
                     // amount associated with the header account will not be exported.
