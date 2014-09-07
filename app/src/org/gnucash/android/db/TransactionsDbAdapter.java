@@ -239,6 +239,53 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
         return transactions;
     }
 
+    public Cursor fetchTransactionsWithSplits(String [] columns, String condition, String orderBy) {
+        return mDb.query(TransactionEntry.TABLE_NAME + " , " + SplitEntry.TABLE_NAME +
+                        " ON " + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_UID +
+                        " = " + SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_TRANSACTION_UID,
+                columns, condition, null, null, null,
+                orderBy);
+
+    }
+
+    public Cursor fetchTransactionsWithSplitsWithTransactionAccount(String [] columns, String condition, String orderBy) {
+        // table is :
+        // transactions, splits ON transactions.uid = splits.transaction_uid ,
+        // ( SELECT transactions.uid AS trans_acct_t_uid , MAX ( splits.account_uid ) as trans_acct_a_uid FROM
+        //     transactions, splits ON transactions.uid = splits.transaction_uid GROUP BY transactions.uid ) AS trans_acct ON
+        // trans_acct.trans_acct_t_uid = transactions.uid , accounts AS account1 ON account1.uid = trans_acct.trans_acct_a_uid ,
+        // accounts AS account2 ON account2.uid = splits.split_account_uid
+        //
+        // This is multi table/sub-query join. The third select would pick one Account_UID for each
+        // Transaction, which can be used to order all transactions.
+        // This is used in QIF export, when all transactions are grouped by accounts.
+        // account1 provides information for the grouped account. Splits from the grouped account
+        // can be eliminated with a WHERE clause. Transactions in QIF can be auto balanced.
+        // account2 provides information for the account associated with the split.
+        //
+        // Account, transaction and split Information can be retrieve in a single query.
+        //
+        // Another approach is not to group transactions by account, be prefix each transaction with an account.
+        // It is easier and should also work, never tried though.
+        // By Yongxin Wang
+        return mDb.query(
+                TransactionEntry.TABLE_NAME + " , " + SplitEntry.TABLE_NAME +
+                " ON " + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_UID +
+                " = " + SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_TRANSACTION_UID +
+                " , ( SELECT " + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_UID +
+                " AS trans_acct_t_uid , MAX ( " + SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_ACCOUNT_UID +
+                " ) AS trans_acct_a_uid FROM " + TransactionEntry.TABLE_NAME + " , " + SplitEntry.TABLE_NAME +
+                " ON " + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_UID +
+                " = " + SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_TRANSACTION_UID +
+                " GROUP BY " + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_UID +
+                " )  AS trans_acct ON trans_acct.trans_acct_t_uid = " +
+                TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_UID + " , " +
+                AccountEntry.TABLE_NAME + " AS account1 ON account1." + AccountEntry.COLUMN_UID +
+                " = trans_acct.trans_acct_a_uid , " + AccountEntry.TABLE_NAME + " AS account2 ON account2." +
+                AccountEntry.COLUMN_UID + " = " + SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_ACCOUNT_UID,
+                columns, condition, null, null, null , orderBy);
+    }
+
     /**
      * Return number of transactions in the database which are non recurring
      * @return Number of transactions
@@ -485,6 +532,10 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
      */
     public int updateTransaction(String transactionUID, String columnKey, String newValue){
         return updateRecord(TransactionEntry.TABLE_NAME, getID(transactionUID), columnKey, newValue);
+    }
+
+    public int updateTransaction(ContentValues contentValues, String whereClause, String[] whereArgs){
+        return mDb.update(TransactionEntry.TABLE_NAME, contentValues, whereClause, whereArgs);
     }
 
     /**

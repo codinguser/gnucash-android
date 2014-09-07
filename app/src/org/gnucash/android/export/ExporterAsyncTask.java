@@ -107,7 +107,19 @@ public class ExporterAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
             }
 
         try {
-            writeOutput(mExporter.generateExport());
+            if (mExportParams.getExportFormat() == ExportFormat.QIF) {
+                File file = new File(mExportParams.getTargetFilepath());
+                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), "UTF-8"));
+                try {
+                    ((QifExporter)mExporter).generateExport(writer);
+                }
+                finally {
+                    writer.close();
+                }
+            }
+            else {
+                writeOutput(mExporter.generateExport());
+            }
         } catch (Exception e) {
             e.printStackTrace();
             Log.e(TAG, e.getMessage());
