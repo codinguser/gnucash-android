@@ -209,7 +209,7 @@ public class TransactionFormFragment extends SherlockFragment implements
 		actionBar.setDisplayShowTitleEnabled(false);
 
 		SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
-		mUseDoubleEntry = sharedPrefs.getBoolean(getString(R.string.key_use_double_entry), true);
+		mUseDoubleEntry = sharedPrefs.getBoolean(getString(R.string.key_use_double_entry), false);
 		if (!mUseDoubleEntry){
 			getView().findViewById(R.id.layout_double_entry).setVisibility(View.GONE);
             mOpenSplitsButton.setVisibility(View.GONE);
@@ -306,7 +306,9 @@ public class TransactionFormFragment extends SherlockFragment implements
                         mSplitsList.clear();
                         setAmountEditViewVisible(View.VISIBLE);
                     } else {
-                        setAmountEditViewVisible(View.GONE);
+                        if (mUseDoubleEntry) { //don't hide the view in single entry mode
+                            setAmountEditViewVisible(View.GONE);
+                        }
                     }
                 }
                 mTransaction = null; //we are creating a new transaction after all
@@ -346,7 +348,7 @@ public class TransactionFormFragment extends SherlockFragment implements
         } else {
             for (Split split : mTransaction.getSplits()) {
                 //two splits, one belongs to this account and the other to another account
-                if (!split.getAccountUID().equals(accountUID)) {
+                if (mUseDoubleEntry && !split.getAccountUID().equals(accountUID)) {
                     setSelectedTransferAccount(mAccountsDbAdapter.getAccountID(split.getAccountUID()));
                 }
             }
@@ -593,15 +595,30 @@ public class TransactionFormFragment extends SherlockFragment implements
 
 		if (mTransaction != null){
             if (!mUseDoubleEntry){
+                //first remove old splits for this transaction, since there is only one split
+                SplitsDbAdapter splitsDbAdapter = new SplitsDbAdapter(getActivity());
+                for (Split split : mTransaction.getSplits()) {
+                    splitsDbAdapter.deleteSplit(split.getUID());
+                }
+                splitsDbAdapter.close();
+
                 Split split = new Split(amount, accountUID);
                 split.setType(mTransactionTypeButton.getTransactionType());
                 mTransaction.getSplits().clear();
                 mTransaction.addSplit(split);
-            } else
+            } else {
                 mTransaction.setSplits(mSplitsList);
+            }
 			mTransaction.setDescription(description);
 		} else {
 			mTransaction = new Transaction(description);
+            if (!mUseDoubleEntry){
+                Split split = new Split(amount, accountUID);
+                split.setType(mTransactionTypeButton.getTransactionType());
+                mSplitsList.clear();
+                mSplitsList.add(split);
+            }
+
             if (mSplitsList.isEmpty()) { //amount entered in the simple interface (not using splits Editor)
                 Split split = new Split(amount, accountUID);
                 split.setType(mTransactionTypeButton.getTransactionType());
@@ -707,8 +724,7 @@ public class TransactionFormFragment extends SherlockFragment implements
         //once we set the split list, do not allow direct editing of the total
         if (mSplitsList.size() > 1){
             mAmountEditText.setEnabled(false);
-            mTransactionTypeButton.setVisibility(View.GONE);
-            getView().findViewById(R.id.layout_double_entry).setVisibility(View.GONE);
+            setAmountEditViewVisible(View.GONE);
         }
 
         SplitsDbAdapter splitsDbAdapter = new SplitsDbAdapter(getActivity());
