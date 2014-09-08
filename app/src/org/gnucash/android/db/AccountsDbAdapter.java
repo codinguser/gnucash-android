@@ -24,8 +24,11 @@ import android.database.sqlite.SQLiteQueryBuilder;
 import android.util.Log;
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
+import org.gnucash.android.export.xml.GncXmlHelper;
 import org.gnucash.android.model.*;
+import org.xmlpull.v1.XmlSerializer;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.*;
 
@@ -580,6 +583,20 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 
     /**
      * Returns a Cursor set of accounts which fulfill <code>condition</code>
+     * and ordered by <code>orderBy</code>
+     * @param condition SQL WHERE statement without the 'WHERE' itself
+     * @return Cursor set of accounts which fulfill <code>condition</code>
+     */
+    public Cursor fetchAccounts(String condition, String orderBy){
+        Log.v(TAG, "Fetching all accounts from db where " +
+                (condition == null ? "NONE" : condition) + " order by " +
+                (orderBy == null ? "NONE" : orderBy));
+        return mDb.query(AccountEntry.TABLE_NAME,
+                null, condition, null, null, null,
+                orderBy);
+    }
+    /**
+     * Returns a Cursor set of accounts which fulfill <code>condition</code>
      * <p>This method returns the accounts list sorted by the full account name</p>
      * @param condition SQL WHERE statement without the 'WHERE' itself
      * @return Cursor set of accounts which fulfill <code>condition</code>
@@ -1043,5 +1060,4 @@ public class AccountsDbAdapter extends DatabaseAdapter {
         mDb.delete(SplitEntry.TABLE_NAME, null, null);
         return mDb.delete(AccountEntry.TABLE_NAME, null, null);
 	}
-
 }
