@@ -32,6 +32,7 @@ import com.actionbarsherlock.app.SherlockPreferenceActivity;
 
 import org.gnucash.android.R;
 import org.gnucash.android.ui.UxArgument;
+import org.gnucash.android.ui.passcode.PasscodeLockScreenActivity;
 import org.gnucash.android.ui.passcode.PasscodePreferenceActivity;
 
 /**
@@ -41,9 +42,13 @@ import org.gnucash.android.ui.passcode.PasscodePreferenceActivity;
 public class PasscodePreferenceFragment extends PreferenceFragment {
 
     /**
-     * * Request code for retrieving passcode to store
+     * Request code for retrieving passcode to store
      */
     public static final int PASSCODE_REQUEST_CODE = 2;
+    /**
+     * Request code for disabling passcode
+     */
+    public static final int DISABLING_PASSCODE_REQUEST_CODE = 3;
 
     private SharedPreferences.Editor editor;
     private CheckBoxPreference checkBoxPreference;
@@ -72,6 +77,9 @@ public class PasscodePreferenceFragment extends PreferenceFragment {
                     public boolean onPreferenceChange(Preference preference, Object newValue) {
                         if ((Boolean) newValue) {
                             startActivityForResult(intent, PASSCODE_REQUEST_CODE);
+                        } else {
+                            startActivityForResult(new Intent(getActivity(), PasscodeLockScreenActivity.class),
+                                    DISABLING_PASSCODE_REQUEST_CODE);
                         }
                         editor.putBoolean(UxArgument.ENABLED_PASSCODE, (Boolean) newValue);
                         editor.commit();
@@ -92,12 +100,21 @@ public class PasscodePreferenceFragment extends PreferenceFragment {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (resultCode == Activity.RESULT_OK && requestCode == PASSCODE_REQUEST_CODE && data!= null) {
-            editor.putString(UxArgument.PASSCODE, data.getStringExtra(UxArgument.PASSCODE));
-            Toast.makeText(getActivity(), R.string.toast_passcode_set, Toast.LENGTH_SHORT).show();
-        } else {
-            editor.putBoolean(UxArgument.ENABLED_PASSCODE, false);
-            checkBoxPreference.setChecked(false);
+        switch (requestCode) {
+            case PASSCODE_REQUEST_CODE:
+                if (resultCode == Activity.RESULT_OK && data!= null) {
+                    editor.putString(UxArgument.PASSCODE, data.getStringExtra(UxArgument.PASSCODE));
+                    Toast.makeText(getActivity(), R.string.toast_passcode_set, Toast.LENGTH_SHORT).show();
+                } else {
+                    editor.putBoolean(UxArgument.ENABLED_PASSCODE, false);
+                    checkBoxPreference.setChecked(false);
+                }
+                break;
+            case DISABLING_PASSCODE_REQUEST_CODE:
+                boolean flag = (resultCode == Activity.RESULT_OK) ? false : true;
+                editor.putBoolean(UxArgument.ENABLED_PASSCODE, flag);
+                checkBoxPreference.setChecked(flag);
+                break;
         }
         editor.commit();
     }

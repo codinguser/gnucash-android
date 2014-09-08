@@ -36,11 +36,14 @@ public class PasscodeLockScreenActivity extends SherlockFragmentActivity
         implements KeyboardFragment.OnPasscodeEnteredListener {
 
     private static final String TAG = "PasscodeLockScreenActivity";
+    private String clazz;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.passcode_lockscreen);
+        clazz = getIntent().getStringExtra(UxArgument.PASSCODE_CLASS_CALLER);
+        Log.w(TAG, "Passcode Caller: " + clazz);
     }
 
     @Override
@@ -50,13 +53,18 @@ public class PasscodeLockScreenActivity extends SherlockFragmentActivity
         Log.d(TAG, "Passcode: " + passcode);
 
         if (passcode.equals(pass)) {
-            GnuCashApplication.PASSCODE_SESSION_INIT_TIME = System.currentTimeMillis();
-            startActivity(new Intent()
-                    .setClassName(this, getIntent().getStringExtra(UxArgument.PASSCODE_CLASS_CALLER))
-                    .setAction(getIntent().getAction())
-                    .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                    .putExtra(UxArgument.SELECTED_ACCOUNT_ID, getIntent().getLongExtra(UxArgument.SELECTED_ACCOUNT_ID, 0L))
-            );
+            if (clazz == null || clazz.isEmpty()) {
+                setResult(RESULT_OK);
+                finish();
+            } else {
+                GnuCashApplication.PASSCODE_SESSION_INIT_TIME = System.currentTimeMillis();
+                startActivity(new Intent()
+                        .setClassName(this, clazz)
+                        .setAction(getIntent().getAction())
+                        .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                        .putExtra(UxArgument.SELECTED_ACCOUNT_ID, getIntent().getLongExtra(UxArgument.SELECTED_ACCOUNT_ID, 0L))
+                );
+            }
         } else {
             Toast.makeText(this, R.string.toast_wrong_passcode, Toast.LENGTH_SHORT).show();
         }
@@ -64,10 +72,15 @@ public class PasscodeLockScreenActivity extends SherlockFragmentActivity
 
     @Override
     public void onBackPressed() {
-        GnuCashApplication.PASSCODE_SESSION_INIT_TIME = System.currentTimeMillis() - GnuCashApplication.SESSION_TIMEOUT;
-        startActivity(new Intent(Intent.ACTION_MAIN)
-                .addCategory(Intent.CATEGORY_HOME)
-                .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+        if (clazz == null) {
+            setResult(RESULT_CANCELED);
+            finish();
+        } else {
+            GnuCashApplication.PASSCODE_SESSION_INIT_TIME = System.currentTimeMillis() - GnuCashApplication.SESSION_TIMEOUT;
+            startActivity(new Intent(Intent.ACTION_MAIN)
+                    .addCategory(Intent.CATEGORY_HOME)
+                    .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+        }
     }
 
 }

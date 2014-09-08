@@ -16,7 +16,6 @@
 
 package org.gnucash.android.ui.settings;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -45,6 +44,7 @@ import org.gnucash.android.model.Money;
 import org.gnucash.android.model.Transaction;
 import org.gnucash.android.ui.UxArgument;
 import org.gnucash.android.ui.account.AccountsActivity;
+import org.gnucash.android.ui.passcode.PasscodeLockScreenActivity;
 import org.gnucash.android.ui.passcode.PasscodePreferenceActivity;
 
 import java.io.File;
@@ -193,6 +193,9 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
             if ((Boolean) newValue) {
                 startActivityForResult(new Intent(this, PasscodePreferenceActivity.class),
                         PasscodePreferenceFragment.PASSCODE_REQUEST_CODE);
+            } else {
+                startActivityForResult(new Intent(this, PasscodeLockScreenActivity.class),
+                        PasscodePreferenceFragment.DISABLING_PASSCODE_REQUEST_CODE);
             }
             PreferenceManager.getDefaultSharedPreferences(getApplicationContext())
                     .edit()
@@ -329,16 +332,7 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode == Activity.RESULT_CANCELED){
-            if (requestCode == PasscodePreferenceFragment.PASSCODE_REQUEST_CODE) {
-                PreferenceManager.getDefaultSharedPreferences(getApplicationContext())
-                        .edit()
-                        .putBoolean(UxArgument.ENABLED_PASSCODE, false)
-                        .commit();
-                ((CheckBoxPreference) findPreference(getString(R.string.key_enable_passcode))).setChecked(false);
-            }
-            return;
-        }
+        Editor editor = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit();
 
         switch (requestCode){
             case AccountsActivity.REQUEST_PICK_ACCOUNTS_FILE:
@@ -351,14 +345,21 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
                 }
                 break;
             case PasscodePreferenceFragment.PASSCODE_REQUEST_CODE:
-                if (data!= null) {
-                    PreferenceManager.getDefaultSharedPreferences(getApplicationContext())
-                            .edit()
-                            .putString(UxArgument.PASSCODE, data.getStringExtra(UxArgument.PASSCODE))
-                            .commit();
+                if (resultCode == RESULT_OK && data!= null) {
+                    editor.putString(UxArgument.PASSCODE, data.getStringExtra(UxArgument.PASSCODE));
                     Toast.makeText(getApplicationContext(), R.string.toast_passcode_set, Toast.LENGTH_SHORT).show();
+                } else {
+                    editor.putBoolean(UxArgument.ENABLED_PASSCODE, false);
+                    ((CheckBoxPreference) findPreference(getString(R.string.key_enable_passcode))).setChecked(false);
                 }
                 break;
+            case PasscodePreferenceFragment.DISABLING_PASSCODE_REQUEST_CODE:
+                boolean flag = (resultCode == RESULT_OK) ? false : true;
+                editor.putBoolean(UxArgument.ENABLED_PASSCODE, flag);
+                ((CheckBoxPreference) findPreference(getString(R.string.key_enable_passcode))).setChecked(flag);
+                break;
         }
+
+        editor.commit();
     }
 }
