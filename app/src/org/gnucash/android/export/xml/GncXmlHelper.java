@@ -81,6 +81,7 @@ public abstract class GncXmlHelper {
     public static final String KEY_FAVORITE         = "favorite";
     public static final String KEY_NOTES            = "notes";
     public static final String KEY_DEFAULT_TRANSFER_ACCOUNT = "default_transfer_account";
+    public static final String KEY_EXPORTED         = "exported";
 
     /**
      * Formats dates for the GnuCash XML format

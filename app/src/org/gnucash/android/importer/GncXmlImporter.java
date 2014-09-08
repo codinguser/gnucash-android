@@ -17,6 +17,7 @@ package org.gnucash.android.importer;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
@@ -80,8 +81,11 @@ public class GncXmlImporter {
 
         //TODO: Set an error handler which can log errors
 
-        GncXmlHandler handler = new GncXmlHandler(context);
+        GncXmlHandler handler = new GncXmlHandler(context, true);
         xr.setContentHandler(handler);
+        long startTime = System.nanoTime();
         xr.parse(new InputSource(bos));
+        long endTime = System.nanoTime();
+        Log.d("Import", String.format("%d ns spent on importing the file", endTime-startTime));
     }
 }
