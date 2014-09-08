@@ -25,7 +25,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.database.sqlite.SQLiteStatement;
 import android.util.Log;
+
 import org.gnucash.android.model.*;
+
 import static org.gnucash.android.db.DatabaseSchema.*;
 
 import java.util.ArrayList;
@@ -74,7 +76,7 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 	 */
 	public long addTransaction(Transaction transaction){
 		ContentValues contentValues = new ContentValues();
-		contentValues.put(TransactionEntry.COLUMN_DESCRIPTION,  transaction.getDescription());
+		contentValues.put(TransactionEntry.COLUMN_DESCRIPTION, transaction.getDescription());
 		contentValues.put(TransactionEntry.COLUMN_UID,          transaction.getUID());
 		contentValues.put(TransactionEntry.COLUMN_TIMESTAMP,    transaction.getTimeMillis());
 		contentValues.put(TransactionEntry.COLUMN_NOTES,        transaction.getNote());
@@ -291,6 +293,15 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
             cursor.close();
         }
         return transactions;
+    }
+
+    public Cursor fetchTransactionsWithSplits(String [] columns, String condition, String orderBy) {
+        return mDb.query(DatabaseSchema.TransactionEntry.TABLE_NAME + " , " + DatabaseSchema.SplitEntry.TABLE_NAME +
+                        " ON " + DatabaseSchema.TransactionEntry.TABLE_NAME + "." + DatabaseSchema.TransactionEntry.COLUMN_UID +
+                        " = " + DatabaseSchema.SplitEntry.TABLE_NAME + "." + DatabaseSchema.SplitEntry.COLUMN_TRANSACTION_UID,
+                columns, condition, null, null, null,
+                orderBy);
+
     }
 
     /**
