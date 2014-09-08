@@ -46,6 +46,7 @@
     <string name="label_transaction_description">备注</string>
     <string name="menu_move">移动</string>
     <string name="title_selected">%1$d 已选中</string>
+    <string name="label_account_balance">总计：</string>
     <string name="label_export_destination">导出到</string>
     <string name="title_export_dialog">导出交易资料</string>
     <string name="option_export_all_transactions">导出所有交易</string>
@@ -302,14 +303,14 @@
     <string name="summary_xml_ofx_header">当导出数据到GnuCash桌面版以外的程序时需要开启这个选项。</string>
     <string name="title_whats_new">新功能</string>
     <string name="whats_new">
-        - Create multiple splits per transaction\n
-        - Fixed computation of account balances for different account types\n
-        - Use account-specific labels for CREDIT/DEBITs\n
-        - Automated backup of database before deletion operations\n
-        - Restore most recent backup of database (in Settings -> General)\n
-        - Read transactions from GnuCash XML files (limited support)\n
-        - Option to save opening balances before deleting transactions\n
-        - Multiple bug fixes and improvements\n
+        - 对交易进行拆分；\n
+        - 改正计算合计的方法；\n
+        - 使用易懂的标记来替代（借/贷）；\n
+        - 做删除交易之前会自动备份；\n
+        - 恢复备份（设置——常规）；\n
+        - 从桌面版导入交易（有限的）；\n
+        - 删除交易后保持账户的余额\n
+        - 对以前问题的修复；\n
 	</string>
     <string name="label_dismiss">知道了</string>
     <string name="toast_transanction_amount_required">输入金额才能保存交易</string>
@@ -346,7 +347,6 @@
     <string name="toast_recurring_transaction_deleted">计划交易已删除</string>
     <string name="label_placeholder_account">占位符</string>
     <string name="label_default_transfer_account">默认的转账帐户</string>
-    <string name="label_account_color_and_type">科目颜色和类型</string>
     <plurals name="label_sub_accounts">
         <item quantity="other">%d 子科目</item>
     </plurals>
@@ -369,8 +369,15 @@
         <item>QIF</item>
         <item>OFX</item>
     </string-array>
+    <string-array name="recurrence_period_strings">
+        <item>无</item>
+        <item>每天</item>
+        <item>每周</item>
+        <item>每月</item>
+    </string-array>
     <!-- Default title for color picker dialog [CHAR LIMIT=30] -->
     <string name="color_picker_default_title">选择一种颜色</string>
+    <string name="label_account_color_and_type">科目颜色和类型</string>
     <string name="label_delete_sub_accounts">删除子科目</string>
     <string name="title_recent_accounts">最近的</string>
     <string name="title_favorite_accounts">已加星标</string>
@@ -382,36 +389,29 @@
     <string name="menu_scheduled_transactions">计划的交易</string>
     <string name="msg_confirm_create_default_accounts_first_run">欢迎使用GnuCash Android！ \n你可以选择：1）创建常用的科目结构，2）导入自定义的科目结构。\或者稍后再决定，两种选择也能在设置中找到。
     </string>
-    <string-array name="recurrence_period_strings">
-        <item>无</item>
-        <item>每天</item>
-        <item>每周</item>
-        <item>每月</item>
-    </string-array>
+    
     <string name="title_scheduled_transactions">计划的交易</string>
-    <string name="title_select_export_destination">Select destination for export</string>
-    <string name="hint_split_memo">Memo</string>
-    <string name="label_spend">Spend</string>
-    <string name="label_receive">Receive</string>
-    <string name="label_withdrawal">Withdrawal</string>
-    <string name="label_deposit">Deposit</string>
-    <string name="label_payment">Payment</string>
-    <string name="label_charge">Charge</string>
-    <string name="label_decrease">Decrease</string>
-    <string name="label_increase">Increase</string>
-    <string name="label_income">Income</string>
-    <string name="label_rebate">Rebate</string>
-    <string name="label_expense">Expense</string>
-    <string name="label_bill">Bill</string>
-    <string name="label_invoice">Invoice</string>
-    <string name="label_buy">Buy</string>
-    <string name="label_sell">Sell</string>
-    <string name="label_repeats">Repeats</string>
-    <string name="label_account_balance">Balance:</string>
-    <string name="toast_no_recent_backup">No recent backup found</string>
+    <string name="title_select_export_destination">选择存储的位置</string>
+    <string name="hint_split_memo">描述</string>
+    <string name="label_spend">花费</string>
+    <string name="label_receive">收到</string>
+    <string name="label_withdrawal">取款</string>
+    <string name="label_deposit">存款</string>
+    <string name="label_payment">支付</string>
+    <string name="label_charge">费用（charge）</string>
+    <string name="label_decrease">减少</string>
+    <string name="label_increase">增加</string>
+    <string name="label_income">收入</string>
+    <string name="label_rebate">回扣（Rebate）</string>
+    <string name="label_expense">费用（Expense）</string>
+    <string name="label_bill">支付</string>
+    <string name="label_invoice">发票</string>
+    <string name="label_buy">买入</string>
+    <string name="label_sell">卖出</string>
+    <string name="label_repeats">重复</string>
+    <string name="toast_no_recent_backup">还没有备份</string>
     <string name="account_name_opening_balances">期初余额</string>
     <string name="account_name_equity">所有者权益</string>
-    <string name="summary_save_opening_balances">Enable to save the current account balance (before deleting transactions) as new opening balance after deleting transactions
-    </string>
-    <string name="title_save_opening_balances">Save account opening balances</string>
+    <string name="summary_save_opening_balances">当删除所有交易后，还保持曾经的账户余额作为新的期初余额。</string>
+    <string name="title_save_opening_balances">保存账户的期初余额</string>
 </resources>
