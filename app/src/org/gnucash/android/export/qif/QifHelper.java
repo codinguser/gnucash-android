@@ -80,4 +80,7 @@ public class QifHelper {
         }
     }
 
+    public static String getQifHeader(String accountType) {
+        return getQifHeader(AccountType.valueOf(accountType));
+    }
 }
