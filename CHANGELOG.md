@@ -1,5 +1,11 @@
 Change Log
 ===============================================================================
+Version 1.4.3 *(2014-09-09)*
+----------------------------
+* Fixed: Cannot edit transactions when in single-entry mode
+* Fixed: Transaction type button sometimes hidden in single-entry mode
+* Fixed: Problems saving new transactions from templates
+
 Version 1.4.2 *(2014-08-30)*
 ----------------------------
 * Fixed: Newly added transactions cannot be exported
