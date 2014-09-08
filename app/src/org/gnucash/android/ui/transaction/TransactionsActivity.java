@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2012 - 2014 Ngewi Fet <ngewif@gmail.com>
+ * Copyright (c) 2014 Yongxin Wang <fefe.wyx@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -123,12 +124,6 @@ public class TransactionsActivity extends PassLockActivity implements
      * Hold the accounts cursor that will be used in the Navigation
      */
     private Cursor mAccountsCursor = null;
-
-    /**
-     * This is the last known color for the title indicator.
-     * This is used to remember the color of the top level account if the child account doesn't have one.
-     */
-    //public static int sLastTitleColor = -1;
 
     private TextView mSectionHeaderTransactions;
     private TitlePageIndicator mTitlePageIndicator;
@@ -281,9 +276,6 @@ public class TransactionsActivity extends PassLockActivity implements
         mTitlePageIndicator = (TitlePageIndicator) findViewById(R.id.titles);
         mSectionHeaderTransactions = (TextView) findViewById(R.id.section_header_transactions);
 
-        //if (sLastTitleColor == -1) //if this is first launch of app. Previous launches would have set the color already
-        //    sLastTitleColor = getResources().getColor(R.color.title_green);
-
 		mAccountId = getIntent().getLongExtra(
                 UxArgument.SELECTED_ACCOUNT_ID, -1);
 
@@ -324,7 +316,6 @@ public class TransactionsActivity extends PassLockActivity implements
             mSectionHeaderTransactions.setText(R.string.title_add_transaction);
             args.putLong(UxArgument.SELECTED_ACCOUNT_ID, mAccountId);
         }
-        //mSectionHeaderTransactions.setBackgroundColor(sLastTitleColor);
         showTransactionFormFragment(args);
     }
 
@@ -345,9 +336,9 @@ public class TransactionsActivity extends PassLockActivity implements
         if (colorCode != null){
             iColor = Color.parseColor(colorCode);
         } else {
-            String UIDParent = mAccountsDbAdapter.getAccountUID(mAccountId);
-            while ((UIDParent = mAccountsDbAdapter.getParentAccountUID(UIDParent)) != null) {
-                colorCode = mAccountsDbAdapter.getAccountColorCode(mAccountsDbAdapter.getAccountID(UIDParent));
+            String accountUID = mAccountsDbAdapter.getAccountUID(mAccountId);
+            while ((accountUID = mAccountsDbAdapter.getParentAccountUID(accountUID)) != null) {
+                colorCode = mAccountsDbAdapter.getAccountColorCode(mAccountsDbAdapter.getAccountID(accountUID));
                 if (colorCode != null) {
                     iColor = Color.parseColor(colorCode);
                     break;
