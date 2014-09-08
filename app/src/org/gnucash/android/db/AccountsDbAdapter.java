@@ -21,6 +21,9 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
+import android.database.sqlite.SQLiteStatement;
+import android.text.TextUtils;
+
 import android.util.Log;
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
@@ -613,6 +616,54 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 
         SplitsDbAdapter splitsDbAdapter = new SplitsDbAdapter(getContext());
         Money splitSum = splitsDbAdapter.computeSplitBalance(getAccountUID(accountId));
+        splitsDbAdapter.close();
+        return balance.add(splitSum);
+    }
+
+    /**
+     * Returns the balance of an account while taking sub-accounts into consideration
+     * @return Account Balance of an account including sub-accounts
+     */
+    public Money getAccountBalance(String accountUID){
+        Log.d(TAG, "Computing account balance for account ID " + accountUID);
+        String currencyCode = mTransactionsAdapter.getCurrencyCode(accountUID);
+        boolean hasDebitNormalBalance = getAccountType(accountUID).hasDebitNormalBalance();
+        currencyCode = currencyCode == null ? Money.DEFAULT_CURRENCY_CODE : currencyCode;
+        Money balance = Money.createZeroInstance(currencyCode);
+
+        // retrieve all descendant accounts of the accountUID
+        // accountsList will hold accountUID with all descendant accounts.
+        // accountsList level will hold descendant accounts of the same level
+        // only accounts have the same currency with accountUID will be retrieved
+        ArrayList<String> accountsList = new ArrayList<String>();
+        accountsList.add(accountUID);
+        ArrayList<String> accountsListLevel = new ArrayList<String>();
+        accountsListLevel.add(accountUID);
+        for (;;) {
+            Cursor cursor = mDb.query(AccountEntry.TABLE_NAME,
+                    new String[]{AccountEntry.COLUMN_UID},
+                    AccountEntry.COLUMN_PARENT_ACCOUNT_UID + " IN ( '" + TextUtils.join("' , '", accountsListLevel) + "' ) AND " +
+                            AccountEntry.COLUMN_CURRENCY + " = ? ",
+                    new String[]{currencyCode}, null, null, null);
+            accountsListLevel.clear();
+            if (cursor != null){
+                int columnIndex = cursor.getColumnIndexOrThrow(AccountEntry.COLUMN_UID);
+                while(cursor.moveToNext()){
+                    accountsListLevel.add(cursor.getString(columnIndex));
+                }
+                cursor.close();
+            }
+            if (accountsListLevel.size() > 0) {
+                accountsList.addAll(accountsListLevel);
+            }
+            else {
+                break;
+            }
+        }
+
+        SplitsDbAdapter splitsDbAdapter = new SplitsDbAdapter(getContext());
+        Log.d(TAG, "all account list : " + accountsList.size());
+        Money splitSum = splitsDbAdapter.computeSplitBalance(accountsList, currencyCode, hasDebitNormalBalance);
         splitsDbAdapter.close();
         return balance.add(splitSum);
     }
