@@ -16,6 +16,7 @@
 
 package org.gnucash.android.export.ofx;
 
+import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.List;
@@ -100,7 +101,6 @@ public class OfxExporter extends Exporter{
 		accountsDbAdapter.close();
 	}
 
-    @Override
     public String generateExport() throws ExporterException {
         mAccountsList = mParameters.shouldExportAllTransactions() ?
                 mAccountsDbAdapter.getAllAccounts() : mAccountsDbAdapter.getExportableAccounts();
@@ -108,7 +108,7 @@ public class OfxExporter extends Exporter{
 
         DocumentBuilderFactory docFactory = DocumentBuilderFactory
                 .newInstance();
-        DocumentBuilder docBuilder = null;
+        DocumentBuilder docBuilder;
         try {
             docBuilder = docFactory.newDocumentBuilder();
         } catch (ParserConfigurationException e) {
@@ -141,6 +141,16 @@ public class OfxExporter extends Exporter{
             stringBuffer.append('\n');
             stringBuffer.append(stringWriter.toString());
             return stringBuffer.toString();
+        }
+    }
+
+    @Override
+    public void generateExport(Writer writer) throws ExporterException {
+        try {
+            writer.write(generateExport());
+        }
+        catch (IOException e) {
+            throw new ExporterException(mParameters, e);
         }
     }
 

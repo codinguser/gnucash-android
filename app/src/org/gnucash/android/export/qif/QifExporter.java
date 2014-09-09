@@ -25,21 +25,15 @@ import static org.gnucash.android.db.DatabaseSchema.*;
 import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.export.ExportParams;
 import org.gnucash.android.export.Exporter;
-import org.gnucash.android.model.Account;
-import org.gnucash.android.model.Transaction;
 
 import java.io.IOException;
 import java.io.Writer;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @author Ngewi
  */
 public class QifExporter extends Exporter{
-    private List<Account> mAccountsList;
-
     public QifExporter(ExportParams params){
         super(params);
     }
@@ -48,33 +42,8 @@ public class QifExporter extends Exporter{
         super(params, db);
     }
 
-    private String generateQIF(){
-        StringBuffer qifBuffer = new StringBuffer();
-
-        List<String> exportedTransactions = new ArrayList<String>();
-        for (Account account : mAccountsList) {
-            if (account.getTransactionCount() == 0)
-                continue;
-
-            qifBuffer.append(account.toQIF(mParameters.shouldExportAllTransactions(), exportedTransactions) + "\n");
-
-            //mark as exported
-            mAccountsDbAdapter.markAsExported(account.getUID());
-        }
-        mAccountsDbAdapter.close();
-
-        return qifBuffer.toString();
-    }
-
     @Override
-    public String generateExport() throws ExporterException {
-        mAccountsList = mParameters.shouldExportAllTransactions() ?
-                mAccountsDbAdapter.getAllAccounts() : mAccountsDbAdapter.getExportableAccounts();
-
-        return generateQIF();
-    }
-
-    public void generateExport(Writer writer) throws ExporterException , IOException {
+    public void generateExport(Writer writer) throws ExporterException {
         final String newLine = "\n";
         TransactionsDbAdapter transactionsDbAdapter = new TransactionsDbAdapter(GnuCashApplication.getAppContext());
         try {
@@ -179,6 +148,10 @@ public class QifExporter extends Exporter{
             ContentValues contentValues = new ContentValues();
             contentValues.put(TransactionEntry.COLUMN_EXPORTED, 1);
             transactionsDbAdapter.updateTransaction(contentValues, null, null);
+        }
+        catch (IOException e)
+        {
+            throw new ExporterException(mParameters, e);
         }
         finally {
             transactionsDbAdapter.close();

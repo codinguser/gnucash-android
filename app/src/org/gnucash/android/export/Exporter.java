@@ -24,6 +24,7 @@ import org.gnucash.android.db.AccountsDbAdapter;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.io.Writer;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -134,10 +135,10 @@ public abstract class Exporter {
 
     /**
      * Generates the export output
-     * @return Export output as String
+     * @param writer A Writer to export result to
      * @throws ExporterException if an error occurs during export
      */
-    public abstract String generateExport() throws ExporterException;
+    public abstract void generateExport(Writer writer) throws ExporterException;
 
     public static class ExporterException extends RuntimeException{
 

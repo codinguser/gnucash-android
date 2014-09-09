@@ -136,7 +136,7 @@ public class MigrationHelper {
 
         BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(
                 new FileOutputStream(exportParams.getTargetFilepath()), "UTF-8"));
-        writer.write(exporter.generateExport());
+        exporter.generateExport(writer);
 
         writer.flush();
         writer.close();

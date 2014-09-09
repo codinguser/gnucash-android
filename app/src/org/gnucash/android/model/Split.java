@@ -188,42 +188,4 @@ public class Split {
         }
         return split;
     }
-
-    /**
-     * Creates a GnuCash XML representation of this split
-     * @param doc XML {@link org.w3c.dom.Document} for creating the nodes
-     * @param rootNode Parent node to append the split XML to
-     */
-    public void toGncXml(Document doc, Element rootNode) {
-        Element idNode = doc.createElement(GncXmlHelper.TAG_SPLIT_ID);
-        idNode.setAttribute("type", "guid");
-        idNode.appendChild(doc.createTextNode(mUID));
-
-        Element memoNode = doc.createElement(GncXmlHelper.TAG_SPLIT_MEMO);
-        if (mMemo != null)
-            memoNode.appendChild(doc.createTextNode(mMemo));
-
-        Element stateNode = doc.createElement(GncXmlHelper.TAG_RECONCILED_STATE);
-        stateNode.appendChild(doc.createTextNode("n"));
-
-        Element valueNode = doc.createElement(GncXmlHelper.TAG_SPLIT_VALUE);
-        valueNode.appendChild(doc.createTextNode(GncXmlHelper.formatMoney(this)));
-
-        Element quantityNode = doc.createElement(GncXmlHelper.TAG_SPLIT_QUANTITY);
-        quantityNode.appendChild(doc.createTextNode(GncXmlHelper.formatMoney(this)));
-
-        Element accountNode = doc.createElement(GncXmlHelper.TAG_SPLIT_ACCOUNT);
-        accountNode.setAttribute("type", "guid");
-        accountNode.appendChild(doc.createTextNode(mAccountUID));
-
-        Element splitNode = doc.createElement(GncXmlHelper.TAG_TRN_SPLIT);
-        splitNode.appendChild(idNode);
-        splitNode.appendChild(memoNode);
-        splitNode.appendChild(stateNode);
-        splitNode.appendChild(valueNode);
-        splitNode.appendChild(quantityNode);
-        splitNode.appendChild(accountNode);
-
-        rootNode.appendChild(splitNode);
-    }
 }
