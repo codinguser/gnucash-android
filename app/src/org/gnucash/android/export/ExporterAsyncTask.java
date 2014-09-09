@@ -108,18 +108,13 @@ public class ExporterAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
             }
 
         try {
-            if (mExportParams.getExportFormat() == ExportFormat.QIF) {
-                File file = new File(mExportParams.getTargetFilepath());
-                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), "UTF-8"));
-                try {
-                    ((QifExporter)mExporter).generateExport(writer);
-                }
-                finally {
-                    writer.close();
-                }
+            File file = new File(mExportParams.getTargetFilepath());
+            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), "UTF-8"));
+            try {
+                mExporter.generateExport(writer);
             }
-            else {
-                writeOutput(mExporter.generateExport());
+            finally {
+                writer.close();
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -196,21 +191,6 @@ public class ExporterAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
         if (mProgressDialog != null && mProgressDialog.isShowing())
             mProgressDialog.dismiss();
 
-    }
-
-    /**
-     * Writes out the String containing the exported data to disk
-     * @param exportOutput String containing exported data
-     * @throws IOException if the write fails
-     */
-    private void writeOutput(String exportOutput) throws IOException {
-        File file = new File(mExportParams.getTargetFilepath());
-
-        BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), "UTF-8"));
-        writer.write(exportOutput);
-
-        writer.flush();
-        writer.close();
     }
 
     /**
