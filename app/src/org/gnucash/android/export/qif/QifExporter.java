@@ -70,7 +70,9 @@ public class QifExporter extends Exporter{
                             mParameters.shouldExportAllTransactions() ?
                                     "" : " AND " + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_EXPORTED + "== 0"
                             ),
-                    "acct1_uid ASC, trans_uid ASC"
+                    // trans_time ASC : put transactions in time order
+                    // trans_uid ASC  : put splits from the same transaction together
+                   "trans_time ASC, trans_uid ASC"
                     );
             try {
                 String currentAccountUID = "";
