@@ -53,9 +53,7 @@ public class DeleteAllTransacationsConfirmationDialog extends DialogFragment {
                                 transactionsDbAdapter.deleteAllRecords();
 
                                 if (preserveOpeningBalances) {
-                                    for (Transaction openingBalance : openingBalances) {
-                                        transactionsDbAdapter.addTransaction(openingBalance);
-                                    }
+                                    transactionsDbAdapter.bulkAddTransactions(openingBalances);
                                 }
                                 transactionsDbAdapter.close();
                                 Toast.makeText(context, R.string.toast_all_transactions_deleted, Toast.LENGTH_SHORT).show();
