@@ -474,17 +474,30 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 	 * @return List of {@link Account}s with unexported transactions
 	 */
 	public List<Account> getExportableAccounts(){
-        //TODO: Optimize to use SQL DISTINCT and load only necessary accounts from db
-		List<Account> accountsList = getAllAccounts();
-		Iterator<Account> it = accountsList.iterator();
-		
-		while (it.hasNext()){
-			Account account = it.next();
-			
-			if (!account.hasUnexportedTransactions())
-				it.remove();
-		}
-		return accountsList;
+        LinkedList<Account> accountsList = new LinkedList<Account>();
+        Cursor cursor = mDb.query(
+                TransactionEntry.TABLE_NAME + " , " + SplitEntry.TABLE_NAME +
+                        " ON " + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_UID + " = " +
+                        SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_TRANSACTION_UID + " , " +
+                        AccountEntry.TABLE_NAME + " ON " + AccountEntry.TABLE_NAME + "." +
+                        AccountEntry.COLUMN_UID + " = " + SplitEntry.TABLE_NAME + "." +
+                        SplitEntry.COLUMN_ACCOUNT_UID,
+                new String[]{AccountEntry.TABLE_NAME + ".*"},
+                TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_EXPORTED + " == 0",
+                null,
+                AccountEntry.TABLE_NAME + "." + AccountEntry.COLUMN_UID,
+                null,
+                null
+        );
+        try {
+            while (cursor.moveToNext()) {
+                accountsList.add(buildAccountInstance(cursor));
+            }
+        }
+        finally {
+            cursor.close();
+        }
+        return accountsList;
 	}
 
     /**
