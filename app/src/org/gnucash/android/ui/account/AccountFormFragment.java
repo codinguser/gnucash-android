@@ -28,6 +28,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.SimpleCursorAdapter;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -115,6 +116,11 @@ public class AccountFormFragment extends SherlockFragment {
      * Cursor which will hold set of eligible parent accounts
      */
 	private Cursor mParentAccountCursor;
+
+    /**
+     * List of all descendant Account UIDs, if we are modifying an account
+     */
+    private List<String> mDescendantAccountUIDs;
 
     /**
      * SimpleCursorAdapter for the parent account spinner
@@ -537,12 +543,11 @@ public class AccountFormFragment extends SherlockFragment {
                 + getAllowedParentAccountTypes(accountType) + ") ";
 
         if (mAccount != null){  //if editing an account
-            // limit cyclic account hierarchies. Still technically possible since we don't forbid descendant accounts
+            mDescendantAccountUIDs = mAccountsDbAdapter.getDescendantAccountUIDs(mAccount.getUID(), null, null);
+            // limit cyclic account hierarchies.
             condition += " AND (" + DatabaseSchema.AccountEntry.COLUMN_PARENT_ACCOUNT_UID + " IS NULL "
-                    + " OR " + DatabaseSchema.AccountEntry.COLUMN_PARENT_ACCOUNT_UID + " != '" + mAccount.getUID() + "')"
+                    + " OR " + DatabaseSchema.AccountEntry.COLUMN_UID + " NOT IN ( '" + TextUtils.join("','", mDescendantAccountUIDs) + "' ) )"
                     + " AND " + DatabaseSchema.AccountEntry._ID + " != " + mSelectedAccountId;
-
-            //TODO: Limit all descendants of the account to eliminate the possibility of cyclic hierarchy
         }
 
         //if we are reloading the list, close the previous cursor first
@@ -574,7 +579,8 @@ public class AccountFormFragment extends SherlockFragment {
 
         switch (type){
             case EQUITY:
-                return "'" + AccountType.EQUITY.name() + "'";
+                return "'" + AccountType.EQUITY.name()+ "', '"
+                        + AccountType.ROOT + "'";
 
             case INCOME:
             case EXPENSE:
@@ -597,13 +603,7 @@ public class AccountFormFragment extends SherlockFragment {
                 accountTypeStrings.remove(AccountType.EXPENSE.name());
                 accountTypeStrings.remove(AccountType.INCOME.name());
 
-                String result = "";
-                for (String accountTypeString : accountTypeStrings) {
-                    result += "'" + accountTypeString + "',";
-                }
-
-                //remove the last comma
-                return result.substring(0, result.length() - 1);
+                return "'" + TextUtils.join("','", accountTypeStrings) + "'";
 
             }
 

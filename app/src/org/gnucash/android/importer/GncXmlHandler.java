@@ -361,13 +361,14 @@ public class GncXmlHandler extends DefaultHandler {
                     continue;
                 }
                 stack.push(account);
-                String parentAccountFullName = null;
+                String parentAccountFullName;
+                String rootAccountUID = null;
                 while (!stack.isEmpty()) {
                     Account acc = stack.peek();
-                    if (acc.getAccountType().name().equals("ROOT")) {
+                    if (acc.getAccountType() == AccountType.ROOT) {
                         mapFullName.put(acc.getUID(), "");
+                        rootAccountUID = acc.getUID();
                         stack.pop();
-                        parentAccountFullName = "";
                         continue;
                     }
                     if (mapFullName.get(acc.getParentUID()) == null) {
@@ -383,6 +384,10 @@ public class GncXmlHandler extends DefaultHandler {
                         mapFullName.put(acc.getUID(), parentAccountFullName);
                         stack.pop();
                     }
+                }
+                if (rootAccountUID != null)
+                {
+                    mapFullName.put(rootAccountUID, map.get(rootAccountUID).getName());
                 }
             }
             for (Account account:mAccountList){

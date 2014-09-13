@@ -694,27 +694,50 @@ public class AccountsDbAdapter extends DatabaseAdapter {
         currencyCode = currencyCode == null ? Money.DEFAULT_CURRENCY_CODE : currencyCode;
         Money balance = Money.createZeroInstance(currencyCode);
 
-        // retrieve all descendant accounts of the accountUID
+        List<String> accountsList = getDescendantAccountUIDs(accountUID,
+                AccountEntry.COLUMN_CURRENCY + " = ? ",
+                new String[]{currencyCode});
+
+        accountsList.add(0, accountUID);
+
+        SplitsDbAdapter splitsDbAdapter = new SplitsDbAdapter(getContext());
+        Log.d(TAG, "all account list : " + accountsList.size());
+        Money splitSum = splitsDbAdapter.computeSplitBalance(accountsList, currencyCode, hasDebitNormalBalance);
+        splitsDbAdapter.close();
+        return balance.add(splitSum);
+    }
+
+    /**
+     * Retrieve all descendant accounts of an account
+     * Note, in filtering, once an account is filtered out, all its descendants
+     * will also be filtered out, even they don't meet the filter condition
+     * @param accountUID The account to retrieve descendant accounts
+     * @param where      Condition to filter accounts
+     * @param whereArgs  Condition args to filter accounts
+     * @return The descendant accounts list.
+     */
+    public List<String> getDescendantAccountUIDs(String accountUID, String where, String[] whereArgs) {
         // accountsList will hold accountUID with all descendant accounts.
-        // accountsList level will hold descendant accounts of the same level
-        // only accounts have the same currency with accountUID will be retrieved
+        // accountsListLevel will hold descendant accounts of the same level
         ArrayList<String> accountsList = new ArrayList<String>();
-        accountsList.add(accountUID);
         ArrayList<String> accountsListLevel = new ArrayList<String>();
         accountsListLevel.add(accountUID);
         for (;;) {
             Cursor cursor = mDb.query(AccountEntry.TABLE_NAME,
                     new String[]{AccountEntry.COLUMN_UID},
-                    AccountEntry.COLUMN_PARENT_ACCOUNT_UID + " IN ( '" + TextUtils.join("' , '", accountsListLevel) + "' ) AND " +
-                            AccountEntry.COLUMN_CURRENCY + " = ? ",
-                    new String[]{currencyCode}, null, null, null);
+                    AccountEntry.COLUMN_PARENT_ACCOUNT_UID + " IN ( '" + TextUtils.join("' , '", accountsListLevel) + "' )" +
+                            (where == null ? "" : " AND " + where),
+                    whereArgs, null, null, null);
             accountsListLevel.clear();
-            if (cursor != null){
-                int columnIndex = cursor.getColumnIndexOrThrow(AccountEntry.COLUMN_UID);
-                while(cursor.moveToNext()){
-                    accountsListLevel.add(cursor.getString(columnIndex));
+            if (cursor != null) {
+                try {
+                    int columnIndex = cursor.getColumnIndexOrThrow(AccountEntry.COLUMN_UID);
+                    while (cursor.moveToNext()) {
+                        accountsListLevel.add(cursor.getString(columnIndex));
+                    }
+                } finally {
+                    cursor.close();
                 }
-                cursor.close();
             }
             if (accountsListLevel.size() > 0) {
                 accountsList.addAll(accountsListLevel);
@@ -723,12 +746,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
                 break;
             }
         }
-
-        SplitsDbAdapter splitsDbAdapter = new SplitsDbAdapter(getContext());
-        Log.d(TAG, "all account list : " + accountsList.size());
-        Money splitSum = splitsDbAdapter.computeSplitBalance(accountsList, currencyCode, hasDebitNormalBalance);
-        splitsDbAdapter.close();
-        return balance.add(splitSum);
+        return accountsList;
     }
 
     /**
