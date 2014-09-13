@@ -22,6 +22,8 @@ import android.database.sqlite.SQLiteDatabase;
 
 import org.gnucash.android.app.GnuCashApplication;
 import static org.gnucash.android.db.DatabaseSchema.*;
+
+import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.export.ExportParams;
 import org.gnucash.android.export.Exporter;
@@ -29,6 +31,7 @@ import org.gnucash.android.export.Exporter;
 import java.io.IOException;
 import java.io.Writer;
 import java.math.BigDecimal;
+import java.util.Currency;
 
 /**
  * @author Ngewi
@@ -113,8 +116,9 @@ public class QifExporter extends Exporter{
                         BigDecimal decimalImbalance = BigDecimal.valueOf(imbalance).setScale(2, BigDecimal.ROUND_HALF_UP);
                         if (decimalImbalance.compareTo(BigDecimal.ZERO) != 0) {
                             writer.append(QifHelper.SPLIT_CATEGORY_PREFIX)
-                                    .append("Imbalance-")
-                                    .append(cursor.getString(cursor.getColumnIndexOrThrow("acct1_currency")))
+                                    .append(AccountsDbAdapter.getImbalanceAccountName(
+                                            Currency.getInstance(cursor.getString(cursor.getColumnIndexOrThrow("acct1_currency")))
+                                    ))
                                     .append(newLine);
                             writer.append(QifHelper.SPLIT_AMOUNT_PREFIX)
                                     .append(decimalImbalance.toPlainString())
