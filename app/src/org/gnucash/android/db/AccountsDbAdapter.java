@@ -266,7 +266,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
                                 new String[]{acct.getUID()}
                         );
                     } else {
-                        // in direct descendant
+                        // indirect descendant
                         acct.setFullName(
                                 mapAccounts.get(acct.getParentUID()).getFullName() +
                                         ACCOUNT_NAME_SEPARATOR + acct.getName()
