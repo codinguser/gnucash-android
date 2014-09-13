@@ -168,22 +168,21 @@ public class AccountsDbAdapter extends DatabaseAdapter {
     public int markAsExported(String accountUID){
         ContentValues contentValues = new ContentValues();
         contentValues.put(TransactionEntry.COLUMN_EXPORTED, 1);
-        Cursor cursor = mTransactionsAdapter.fetchAllTransactionsForAccount(accountUID);
-        List<Long> transactionIdList = new ArrayList<Long>();
-        if (cursor != null){
-            while(cursor.moveToNext()){
-                long id = cursor.getLong(cursor.getColumnIndexOrThrow(TransactionEntry._ID));
-                transactionIdList.add(id);
-            }
-            cursor.close();
-        }
-        int recordsTouched = 0;
-        for (long id : transactionIdList) {
-            recordsTouched += mDb.update(TransactionEntry.TABLE_NAME,
-                    contentValues,
-                    TransactionEntry._ID + "=" + id, null);
-        }
-        return recordsTouched;
+        return mDb.update(
+                TransactionEntry.TABLE_NAME,
+                contentValues,
+                TransactionEntry.COLUMN_UID + " IN ( " +
+                        "SELECT DISTINCT " + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_UID +
+                        " FROM " + TransactionEntry.TABLE_NAME + " , " + SplitEntry.TABLE_NAME + " ON " +
+                        TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_UID + " = " +
+                        SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_TRANSACTION_UID + " , " +
+                        AccountEntry.TABLE_NAME + " ON " + SplitEntry.TABLE_NAME + "." +
+                        SplitEntry.COLUMN_ACCOUNT_UID + " = " + AccountEntry.TABLE_NAME + "." +
+                        AccountEntry.COLUMN_UID + " WHERE " + AccountEntry.TABLE_NAME + "." +
+                        AccountEntry.COLUMN_UID + " = ? "
+                        + " ) ",
+                new String[] {accountUID}
+        );
     }
 
     /**
