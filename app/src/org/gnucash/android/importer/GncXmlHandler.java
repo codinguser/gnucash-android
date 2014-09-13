@@ -329,6 +329,7 @@ public class GncXmlHandler extends DefaultHandler {
             else {
                 if (mTransaction.getRecurrencePeriod() > 0) { //TODO: Fix this when scheduled actions are expanded
                     mTransactionsDbAdapter.scheduleTransaction(mTransaction);
+                    mTransactionsDbAdapter.addTransaction(mTransaction);
                 } else {
                     mTransactionsDbAdapter.addTransaction(mTransaction);
                 }

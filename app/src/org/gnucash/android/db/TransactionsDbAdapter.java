@@ -118,11 +118,11 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
                 + TransactionEntry.COLUMN_NOTES         + " , "
                 + TransactionEntry.COLUMN_TIMESTAMP     + " , "
                 + TransactionEntry.COLUMN_EXPORTED      + " , "
-                + TransactionEntry.COLUMN_CURRENCY      + " ) VALUES ( ? , ? , ? , ? , ? , ?)");
+                + TransactionEntry.COLUMN_CURRENCY      + " , "
+                + TransactionEntry.COLUMN_RECURRENCE_PERIOD + " ) VALUES ( ? , ? , ? , ? , ? , ? , ?)");
             for (Transaction transaction : transactionList) {
                 if (transaction.getRecurrencePeriod() > 0) {
                     scheduleTransaction(transaction);
-                    continue;
                 }
                 //Log.d(TAG, "Replacing transaction in db");
                 replaceStatement.clearBindings();
@@ -132,7 +132,7 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
                 replaceStatement.bindLong(4, transaction.getTimeMillis());
                 replaceStatement.bindLong(5, transaction.isExported() ? 1 : 0);
                 replaceStatement.bindString(6, transaction.getCurrencyCode());
-                //replaceStatement.bindLong(7, transaction.getRecurrencePeriod());
+                replaceStatement.bindLong(7, transaction.getRecurrencePeriod());
                 replaceStatement.execute();
                 rowInserted ++;
                 splitList.addAll(transaction.getSplits());
