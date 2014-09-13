@@ -362,32 +362,31 @@ public class GncXmlHandler extends DefaultHandler {
                 }
                 stack.push(account);
                 String parentAccountFullName;
-                String rootAccountUID = null;
                 while (!stack.isEmpty()) {
                     Account acc = stack.peek();
                     if (acc.getAccountType() == AccountType.ROOT) {
-                        mapFullName.put(acc.getUID(), "");
-                        rootAccountUID = acc.getUID();
+                        // append blank to Root Account, ensure it always sorts first
+                        mapFullName.put(acc.getUID(), " " + acc.getName());
                         stack.pop();
                         continue;
                     }
-                    if (mapFullName.get(acc.getParentUID()) == null) {
-                        stack.push(map.get(acc.getParentUID()));
+                    String parentUID = acc.getParentUID();
+                    Account parentAccount = map.get(parentUID);
+                    if (parentAccount.getAccountType() == AccountType.ROOT) {
+                        // top level account, full name is the same as its name
+                        mapFullName.put(acc.getUID(), acc.getName());
+                        stack.pop();
                         continue;
                     }
-                    else {
-                        parentAccountFullName = mapFullName.get(acc.getParentUID());
+                    parentAccountFullName = mapFullName.get(parentUID);
+                    if (parentAccountFullName == null) {
+                        // non-top-level account, parent full name still unknown
+                        stack.push(parentAccount);
+                        continue;
                     }
-                    if (parentAccountFullName != null) {
-                        parentAccountFullName = parentAccountFullName.length() == 0 ? acc.getName() :
-                                (parentAccountFullName + AccountsDbAdapter.ACCOUNT_NAME_SEPARATOR + acc.getName());
-                        mapFullName.put(acc.getUID(), parentAccountFullName);
-                        stack.pop();
-                    }
-                }
-                if (rootAccountUID != null)
-                {
-                    mapFullName.put(rootAccountUID, map.get(rootAccountUID).getName());
+                    mapFullName.put(acc.getUID(), parentAccountFullName +
+                            AccountsDbAdapter.ACCOUNT_NAME_SEPARATOR + acc.getName());
+                    stack.pop();
                 }
             }
             for (Account account:mAccountList){
