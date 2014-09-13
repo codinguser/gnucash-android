@@ -1234,7 +1234,10 @@ public class AccountsDbAdapter extends DatabaseAdapter {
                 long id = cursor.getLong(cursor.getColumnIndexOrThrow(AccountEntry._ID));
                 String accountUID = getAccountUID(id);
                 String currencyCode = getCurrencyCode(id);
-                Money balance = splitsDbAdapter.computeSplitBalance(accountUID);
+                ArrayList<String> accountList = new ArrayList<String>();
+                accountList.add(accountUID);
+                Money balance = splitsDbAdapter.computeSplitBalance(accountList,
+                        currencyCode, getAccountType(accountUID).hasDebitNormalBalance());
                 if (balance.asBigDecimal().compareTo(new BigDecimal(0)) == 0)
                     continue;
 
