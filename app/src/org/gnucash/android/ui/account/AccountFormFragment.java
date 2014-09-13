@@ -29,6 +29,7 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -54,6 +55,7 @@ import org.gnucash.android.util.QualifiedAccountNameCursorAdapter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Currency;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -119,6 +121,7 @@ public class AccountFormFragment extends SherlockFragment {
 
     /**
      * List of all descendant Account UIDs, if we are modifying an account
+     * null if creating a new account
      */
     private List<String> mDescendantAccountUIDs;
 
@@ -664,7 +667,7 @@ public class AccountFormFragment extends SherlockFragment {
 			mParentAccountCursor.close();
         // The mAccountsDbAdapter should only be closed when it is not passed in
         // by other Activities.
-		if (mReleaseDbAdapter == true && mAccountsDbAdapter != null) {
+		if (mReleaseDbAdapter && mAccountsDbAdapter != null) {
             mAccountsDbAdapter.close();
         }
         if (mDefaultTransferAccountCursorAdapter != null) {
@@ -676,6 +679,8 @@ public class AccountFormFragment extends SherlockFragment {
      * Reads the fields from the account form and saves as a new account
      */
 	private void saveAccount() {
+        // accounts to update, in case we're updating full names of a sub account tree
+        ArrayList<Account> accountsToUpdate = new ArrayList<Account>();
 		if (mAccount == null){
 			String name = getEnteredName();
 			if (name == null || name.length() == 0){
@@ -699,12 +704,19 @@ public class AccountFormFragment extends SherlockFragment {
         mAccount.setPlaceHolderFlag(mPlaceholderCheckBox.isChecked());
         mAccount.setColorCode(mSelectedColor);
 
+        long newParentAccountID;
+        String newParentAccountGUID;
+        String rootAccountGUID = mAccountsDbAdapter.getGnuCashRootAccountUID();
+        long rootAccountID = mAccountsDbAdapter.getAccountID(rootAccountGUID);
 		if (mParentCheckBox.isChecked()){
-			long id = mParentAccountSpinner.getSelectedItemId();
-			mAccount.setParentUID(mAccountsDbAdapter.getAccountUID(id));
+            newParentAccountID = mParentAccountSpinner.getSelectedItemId();
+            newParentAccountGUID = mAccountsDbAdapter.getAccountUID(newParentAccountID);
+			mAccount.setParentUID(newParentAccountGUID);
 		} else {
             //need to do this explicitly in case user removes parent account
 			mAccount.setParentUID(null);
+            newParentAccountGUID = rootAccountGUID;
+            newParentAccountID = rootAccountID;
 		}
 
         if (mDefaultTransferAccountCheckBox.isChecked()){
@@ -714,10 +726,55 @@ public class AccountFormFragment extends SherlockFragment {
             //explicitly set in case of removal of default account
             mAccount.setDefaultTransferAccountUID(null);
         }
-		
+
+        // update full names
+        long oldParentAccountId = mParentAccountId == -1 ? rootAccountID : mParentAccountId;
+        if (mDescendantAccountUIDs == null || newParentAccountID != oldParentAccountId) {
+            // new Account or parent account changed
+            String newAccountFullName;
+            if (newParentAccountID == rootAccountID){
+                newAccountFullName = mAccount.getName();
+            }
+            else {
+                newAccountFullName = mAccountsDbAdapter.getAccountFullName(newParentAccountGUID) +
+                    AccountsDbAdapter.ACCOUNT_NAME_SEPARATOR + mAccount.getName();
+            }
+            mAccount.setFullName(newAccountFullName);
+            if (mDescendantAccountUIDs != null) {
+                // modifying existing account
+                if (oldParentAccountId != newParentAccountID && mDescendantAccountUIDs.size() > 0) {
+                    // parent change, update all full names of descent accounts
+                    accountsToUpdate.addAll(mAccountsDbAdapter.getSimpleAccountList(
+                            DatabaseSchema.AccountEntry.COLUMN_UID + " IN ('" +
+                                    TextUtils.join("','", mDescendantAccountUIDs) + "')",
+                            null,
+                            null
+                    ));
+                }
+                HashMap<String, Account> mapAccount = new HashMap<String, Account>();
+                for (Account acct : accountsToUpdate) mapAccount.put(acct.getUID(), acct);
+                for (String uid: mDescendantAccountUIDs) {
+                    // mAccountsDbAdapter.getDescendantAccountUIDs() will ensure a parent-child order
+                    Account acct = mapAccount.get(uid);
+                    // mAccount cannot be root, so acct here cannot be top level account.
+                    if (acct.getParentUID().equals(mAccount.getUID())) {
+                        acct.setFullName(mAccount.getFullName() + AccountsDbAdapter.ACCOUNT_NAME_SEPARATOR + acct.getName());
+                    }
+                    else {
+                        acct.setFullName(
+                                mapAccount.get(acct.getParentUID()).getFullName() +
+                                        AccountsDbAdapter.ACCOUNT_NAME_SEPARATOR +
+                                        acct.getName()
+                        );
+                    }
+                }
+            }
+        }
+        accountsToUpdate.add(mAccount);
 		if (mAccountsDbAdapter == null)
 			mAccountsDbAdapter = new AccountsDbAdapter(getActivity());
-		mAccountsDbAdapter.addAccount(mAccount);
+        // bulk update, will not update transactions
+		mAccountsDbAdapter.bulkAddAccounts(accountsToUpdate);
 
 		finishFragment();
 	}

@@ -91,7 +91,7 @@ public class GncXmlExporter extends Exporter{
     }
 
     private void exportAccounts(XmlSerializer xmlSerializer) throws IOException {
-        Cursor cursor = mAccountsDbAdapter.fetchAccounts(null, null);
+        Cursor cursor = mAccountsDbAdapter.fetchAccounts(null, null, null);
         while (cursor.moveToNext()) {
             // write account
             xmlSerializer.startTag(null, GncXmlHelper.TAG_ACCOUNT);

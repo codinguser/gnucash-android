@@ -458,17 +458,40 @@ public class AccountsDbAdapter extends DatabaseAdapter {
     public List<Account> getSimpleAccountList(){
         LinkedList<Account> accounts = new LinkedList<Account>();
         Cursor c = fetchAccounts(null);
-
         if (c == null)
             return accounts;
 
-        while(c.moveToNext()){
-            accounts.add(buildSimpleAccountInstance(c));
+        try {
+            while (c.moveToNext()) {
+                accounts.add(buildSimpleAccountInstance(c));
+            }
         }
-        c.close();
+        finally {
+            c.close();
+        }
         return accounts;
     }
 
+    /**
+     * Returns a list of all account entries in the system (includes root account)
+     * No transactions are loaded, just the accounts
+     * @return List of {@link Account}s in the database
+     */
+    public List<Account> getSimpleAccountList(String where, String[] whereArgs, String orderBy){
+        LinkedList<Account> accounts = new LinkedList<Account>();
+        Cursor c = fetchAccounts(where, whereArgs, orderBy);
+        if (c == null)
+            return accounts;
+        try {
+            while (c.moveToNext()) {
+                accounts.add(buildSimpleAccountInstance(c));
+            }
+        }
+        finally {
+            c.close();
+        }
+        return accounts;
+    }
 	/**
 	 * Returns a list of accounts which have transactions that have not been exported yet
 	 * @return List of {@link Account}s with unexported transactions
@@ -633,15 +656,17 @@ public class AccountsDbAdapter extends DatabaseAdapter {
     /**
      * Returns a Cursor set of accounts which fulfill <code>condition</code>
      * and ordered by <code>orderBy</code>
-     * @param condition SQL WHERE statement without the 'WHERE' itself
+     * @param where SQL WHERE statement without the 'WHERE' itself
+     * @param whereArgs args to where clause
+     * @param orderBy orderBy clause
      * @return Cursor set of accounts which fulfill <code>condition</code>
      */
-    public Cursor fetchAccounts(String condition, String orderBy){
+    public Cursor fetchAccounts(String where, String[] whereArgs, String orderBy){
         Log.v(TAG, "Fetching all accounts from db where " +
-                (condition == null ? "NONE" : condition) + " order by " +
+                (where == null ? "NONE" : where) + " order by " +
                 (orderBy == null ? "NONE" : orderBy));
         return mDb.query(AccountEntry.TABLE_NAME,
-                null, condition, null, null, null,
+                null, where, whereArgs, null, null,
                 orderBy);
     }
     /**
@@ -1015,6 +1040,26 @@ public class AccountsDbAdapter extends DatabaseAdapter {
         String parentAccountName = getFullyQualifiedAccountName(parentAccountUID);
 
         return parentAccountName + ACCOUNT_NAME_SEPARATOR + accountName;
+    }
+
+    /**
+     * get account's full name directly from DB
+     * @param accountUID the account to retrieve full name
+     * @return full name registered in DB
+     */
+    public String getAccountFullName(String accountUID) {
+        Cursor cursor = mDb.query(AccountEntry.TABLE_NAME, new String[]{AccountEntry.COLUMN_FULL_NAME},
+                AccountEntry.COLUMN_UID + " = ?", new String[]{accountUID},
+                null, null, null);
+        try {
+            if (cursor.moveToFirst()) {
+                return cursor.getString(cursor.getColumnIndexOrThrow(AccountEntry.COLUMN_FULL_NAME));
+            }
+        }
+        finally {
+            cursor.close();
+        }
+        return null;
     }
 
     /**
