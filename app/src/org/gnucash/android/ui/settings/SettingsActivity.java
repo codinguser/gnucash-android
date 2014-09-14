@@ -264,9 +264,7 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
                 transactionsDbAdapter.deleteAllRecords();
 
                 if (preserveOpeningBalances) {
-                    for (Transaction openingBalance : openingBalances) {
-                        transactionsDbAdapter.addTransaction(openingBalance);
-                    }
+                    transactionsDbAdapter.bulkAddTransactions(openingBalances);
                 }
                 transactionsDbAdapter.close();
                 Toast.makeText(this, R.string.toast_all_transactions_deleted, Toast.LENGTH_LONG).show();

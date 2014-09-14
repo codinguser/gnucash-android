@@ -518,20 +518,27 @@ public class AccountsDbAdapter extends DatabaseAdapter {
             throw new IllegalArgumentException("The account name cannot be null");
 
         String[] tokens = fullName.trim().split(ACCOUNT_NAME_SEPARATOR);
-        String uid = null;
+        String uid = getGnuCashRootAccountUID();
         String parentName = "";
+        ArrayList<Account> accountsList = new ArrayList<Account>();
         for (String token : tokens) {
             parentName += token;
             String parentUID = findAccountUidByFullName(parentName);
-            parentName += ACCOUNT_NAME_SEPARATOR;
             if (parentUID != null){ //the parent account exists, don't recreate
                 uid = parentUID;
-                continue;
             }
-            Account account = new Account(token);
-            account.setAccountType(accountType);
-            account.setParentUID(uid); //set its parent
-            uid = account.getUID();
+            else {
+                Account account = new Account(token);
+                account.setAccountType(accountType);
+                account.setParentUID(uid); //set its parent
+                account.setFullName(parentName);
+                accountsList.add(account);
+                uid = account.getUID();
+            }
+            parentName += ACCOUNT_NAME_SEPARATOR;
+        }
+        if (accountsList.size() > 0) {
+            bulkAddAccounts(accountsList);
         }
         return uid;
     }

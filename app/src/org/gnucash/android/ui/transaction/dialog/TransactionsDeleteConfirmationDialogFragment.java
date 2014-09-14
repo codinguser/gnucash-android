@@ -77,9 +77,7 @@ public class TransactionsDeleteConfirmationDialogFragment extends SherlockDialog
                                     transactionsDbAdapter.deleteAllRecords();
 
                                     if (preserveOpeningBalances) {
-                                        for (Transaction openingBalance : openingBalances) {
-                                            transactionsDbAdapter.addTransaction(openingBalance);
-                                        }
+                                        transactionsDbAdapter.bulkAddTransactions(openingBalances);
                                     }
                                 } else {
                                     transactionsDbAdapter.deleteRecord(rowId);
