@@ -794,35 +794,20 @@ public class AccountsDbAdapter extends DatabaseAdapter {
      * @return Cursor to recently used accounts
      */
     public Cursor fetchRecentAccounts(int numberOfRecents){
-        SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
-        queryBuilder.setTables(TransactionEntry.TABLE_NAME
+        return mDb.query(TransactionEntry.TABLE_NAME
                 + " LEFT OUTER JOIN " + SplitEntry.TABLE_NAME + " ON "
                 + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_UID + " = "
-                + SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_TRANSACTION_UID);
-        queryBuilder.setDistinct(true);
-        String sortOrder = TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_TIMESTAMP + " DESC";
-        Map<String, String> projectionMap = new HashMap<String, String>();
-        projectionMap.put(SplitEntry.COLUMN_ACCOUNT_UID, SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_ACCOUNT_UID);
-        queryBuilder.setProjectionMap(projectionMap);
-        Cursor recentTxCursor =  queryBuilder.query(mDb,
-                new String[]{SplitEntry.COLUMN_ACCOUNT_UID},
-                null, null, null, null, sortOrder, Integer.toString(numberOfRecents));
-
-
-        StringBuilder recentAccountUIDs = new StringBuilder("(");
-        while (recentTxCursor.moveToNext()){
-            String uid = recentTxCursor.getString(recentTxCursor.getColumnIndexOrThrow(SplitEntry.COLUMN_ACCOUNT_UID));
-            recentAccountUIDs.append("'" + uid + "'");
-            if (!recentTxCursor.isLast())
-                recentAccountUIDs.append(",");
-        }
-        recentAccountUIDs.append(")");
-        recentTxCursor.close();
-
-        return mDb.query(AccountEntry.TABLE_NAME,
-                null, AccountEntry.COLUMN_UID + " IN " + recentAccountUIDs.toString(),
-                null, null, null, AccountEntry.COLUMN_NAME + " ASC");
-
+                + SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_TRANSACTION_UID
+                + " , " + AccountEntry.TABLE_NAME + " ON " + SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_ACCOUNT_UID
+                + " = " + AccountEntry.TABLE_NAME + "." + AccountEntry.COLUMN_UID,
+                new String[]{AccountEntry.TABLE_NAME + ".*"},
+                null,
+                null,
+                SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_ACCOUNT_UID, //groupby
+                null, //haveing
+                "MAX ( " + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_TIMESTAMP + " ) DESC", // order
+                Integer.toString(numberOfRecents) // limit;
+        );
     }
 
     /**
