@@ -264,6 +264,7 @@ public class AccountFormFragment extends SherlockFragment {
 
 		mParentAccountSpinner = (Spinner) view.findViewById(R.id.input_parent_account);
 		mParentAccountSpinner.setEnabled(false);
+        mParentAccountSpinner.setVisibility(View.INVISIBLE);
 
 		mParentCheckBox = (CheckBox) view.findViewById(R.id.checkbox_parent_account);
 		mParentCheckBox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
@@ -271,17 +272,20 @@ public class AccountFormFragment extends SherlockFragment {
 			@Override
 			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 				mParentAccountSpinner.setEnabled(isChecked);
+                mParentAccountSpinner.setVisibility(isChecked?View.VISIBLE:View.INVISIBLE);
 			}
 		});
 
         mDefaulTransferAccountSpinner = (Spinner) view.findViewById(R.id.input_default_transfer_account);
         mDefaulTransferAccountSpinner.setEnabled(false);
+        mDefaulTransferAccountSpinner.setVisibility(View.INVISIBLE);
 
         mDefaultTransferAccountCheckBox = (CheckBox) view.findViewById(R.id.checkbox_default_transfer_account);
         mDefaultTransferAccountCheckBox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
                 mDefaulTransferAccountSpinner.setEnabled(isChecked);
+                mDefaulTransferAccountSpinner.setVisibility(isChecked?View.VISIBLE:View.INVISIBLE);
             }
         });
 
@@ -442,6 +446,7 @@ public class AccountFormFragment extends SherlockFragment {
         if (parentAccountId > 0 && parentAccountId != mRootAccountId){
             mParentCheckBox.setChecked(true);
             mParentAccountSpinner.setEnabled(true);
+            mParentAccountSpinner.setVisibility(View.VISIBLE);
         } else
             return;
 
@@ -461,6 +466,7 @@ public class AccountFormFragment extends SherlockFragment {
         if (defaultTransferAccountId > 0){
             mDefaultTransferAccountCheckBox.setChecked(true);
             mDefaulTransferAccountSpinner.setEnabled(true);
+            mDefaulTransferAccountSpinner.setVisibility(View.VISIBLE);
         } else
             return;
 
