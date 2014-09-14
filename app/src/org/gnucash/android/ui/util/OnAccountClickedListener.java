@@ -27,8 +27,8 @@ public interface OnAccountClickedListener {
 
 	/**
 	 * Callback when an account is selected (clicked) from in a list of accounts
-	 * @param accountRowId Database row ID of the selected account
+	 * @param accountUID GUID of the selected account
 	 */
-	public void accountSelected(long accountRowId);
+	public void accountSelected(String accountUID);
 	
 }

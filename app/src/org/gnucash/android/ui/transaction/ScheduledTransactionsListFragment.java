@@ -184,21 +184,19 @@ public class ScheduledTransactionsListFragment extends SherlockListFragment impl
             return;
         }
         String accountUID = mTransactionsDbAdapter.getTransaction(id).getSplits().get(0).getAccountUID();
-        long accountID = mTransactionsDbAdapter.getAccountID(accountUID);
-
-        openTransactionForEdit(accountID, id);
+        openTransactionForEdit(accountUID, mTransactionsDbAdapter.getUID(id));
     }
 
     /**
      * Opens the transaction editor to enable editing of the transaction
-     * @param accountId Account ID of the transaction
-     * @param transactionId Transaction to be edited
+     * @param accountUID GUID of account to which transaction belongs
+     * @param transactionUID GUID of transaction to be edited
      */
-    public void openTransactionForEdit(long accountId, long transactionId){
+    public void openTransactionForEdit(String accountUID, String transactionUID){
         Intent createTransactionIntent = new Intent(getActivity(), TransactionsActivity.class);
         createTransactionIntent.setAction(Intent.ACTION_INSERT_OR_EDIT);
-        createTransactionIntent.putExtra(UxArgument.SELECTED_ACCOUNT_ID, accountId);
-        createTransactionIntent.putExtra(UxArgument.SELECTED_TRANSACTION_ID, transactionId);
+        createTransactionIntent.putExtra(UxArgument.SELECTED_ACCOUNT_UID, accountUID);
+        createTransactionIntent.putExtra(UxArgument.SELECTED_TRANSACTION_UID, transactionUID);
         startActivity(createTransactionIntent);
     }
 

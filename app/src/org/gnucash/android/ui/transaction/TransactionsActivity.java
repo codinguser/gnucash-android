@@ -104,8 +104,13 @@ public class TransactionsActivity extends PassLockActivity implements
     /**
 	 * Database ID of {@link Account} whose transactions are displayed 
 	 */
-	private long mAccountId 	= 0;
-		
+//	private long mAccountId 	= 0;
+
+    /**
+     * GUID of {@link Account} whose transactions are displayed
+     */
+    private String mAccountUID = null;
+
 	/**
 	 * Flag which is used to determine if the activity is running or not. 
 	 * Basically if onCreate has already been called or not. It is used
@@ -134,8 +139,7 @@ public class TransactionsActivity extends PassLockActivity implements
 
 		  @Override
 		  public boolean onNavigationItemSelected(int position, long itemId) {
-			mAccountId = itemId;
-
+            mAccountUID = mAccountsDbAdapter.getAccountUID(itemId);
             FragmentManager fragmentManager = getSupportFragmentManager();
 
 		    //inform new accounts fragment that account was changed
@@ -222,7 +226,7 @@ public class TransactionsActivity extends PassLockActivity implements
         private AccountsListFragment prepareSubAccountsListFragment(){
             AccountsListFragment subAccountsListFragment = new AccountsListFragment();
             Bundle args = new Bundle();
-            args.putLong(UxArgument.PARENT_ACCOUNT_ID, mAccountId);
+            args.putString(UxArgument.PARENT_ACCOUNT_UID, mAccountUID);
             subAccountsListFragment.setArguments(args);
             return subAccountsListFragment;
         }
@@ -234,10 +238,9 @@ public class TransactionsActivity extends PassLockActivity implements
         private TransactionsListFragment prepareTransactionsListFragment(){
             TransactionsListFragment transactionsListFragment = new TransactionsListFragment();
             Bundle args = new Bundle();
-            args.putLong(UxArgument.SELECTED_ACCOUNT_ID,
-                    mAccountId);
+            args.putString(UxArgument.SELECTED_ACCOUNT_UID, mAccountUID);
             transactionsListFragment.setArguments(args);
-            Log.i(TAG, "Opening transactions for account id " +  mAccountId);
+            Log.i(TAG, "Opening transactions for account:  " +  mAccountUID);
             return transactionsListFragment;
         }
     }
@@ -247,23 +250,23 @@ public class TransactionsActivity extends PassLockActivity implements
      * @return <code>true</code> is the current account is a placeholder account, <code>false</code> otherwise.
      */
     private boolean isPlaceHolderAccount(){
-        return mAccountsDbAdapter.isPlaceholderAccount(mAccountId);
+        return mAccountsDbAdapter.isPlaceholderAccount(mAccountUID);
     }
 
     /**
      * Refreshes the fragments currently in the transactions activity
      */
     @Override
-    public void refresh(long accountId) {
+    public void refresh(String accountUID) {
         for (int i = 0; i < mFragmentPageReferenceMap.size(); i++) {
-            mFragmentPageReferenceMap.valueAt(i).refresh(accountId);
+            mFragmentPageReferenceMap.valueAt(i).refresh(accountUID);
         }
         mTitlePageIndicator.notifyDataSetChanged();
     }
 
     @Override
     public void refresh(){
-        refresh(mAccountId);
+        refresh(mAccountUID);
         setTitleIndicatorColor();
     }
 
@@ -276,8 +279,7 @@ public class TransactionsActivity extends PassLockActivity implements
         mTitlePageIndicator = (TitlePageIndicator) findViewById(R.id.titles);
         mSectionHeaderTransactions = (TextView) findViewById(R.id.section_header_transactions);
 
-		mAccountId = getIntent().getLongExtra(
-                UxArgument.SELECTED_ACCOUNT_ID, -1);
+		mAccountUID = getIntent().getStringExtra(UxArgument.SELECTED_ACCOUNT_UID);
 
         mAccountsDbAdapter = new AccountsDbAdapter(this);
 
@@ -306,15 +308,15 @@ public class TransactionsActivity extends PassLockActivity implements
      * Loads the fragment for creating/editing transactions and initializes it to be displayed
      */
     private void initializeCreateOrEditTransaction() {
-        long transactionId = getIntent().getLongExtra(UxArgument.SELECTED_TRANSACTION_ID, -1);
+        String transactionUID = getIntent().getStringExtra(UxArgument.SELECTED_TRANSACTION_UID);
         Bundle args = new Bundle();
-        if (transactionId > 0) {
+        if (transactionUID != null) {
             mSectionHeaderTransactions.setText(R.string.title_edit_transaction);
-            args.putLong(UxArgument.SELECTED_TRANSACTION_ID, transactionId);
-            args.putLong(UxArgument.SELECTED_ACCOUNT_ID, mAccountId);
+            args.putString(UxArgument.SELECTED_TRANSACTION_UID, transactionUID);
+            args.putString(UxArgument.SELECTED_ACCOUNT_UID, mAccountUID);
         } else {
             mSectionHeaderTransactions.setText(R.string.title_add_transaction);
-            args.putLong(UxArgument.SELECTED_ACCOUNT_ID, mAccountId);
+            args.putString(UxArgument.SELECTED_ACCOUNT_UID, mAccountUID);
         }
         showTransactionFormFragment(args);
     }
@@ -331,12 +333,12 @@ public class TransactionsActivity extends PassLockActivity implements
     private void setTitleIndicatorColor() {
         //Basically, if we are in a top level account, use the default title color.
         //but propagate a parent account's title color to children who don't have own color
-        String colorCode = mAccountsDbAdapter.getAccountColorCode(mAccountId);
+        String colorCode = mAccountsDbAdapter.getAccountColorCode(mAccountsDbAdapter.getAccountID(mAccountUID));
         int iColor = -1;
         if (colorCode != null){
             iColor = Color.parseColor(colorCode);
         } else {
-            String accountUID = mAccountsDbAdapter.getAccountUID(mAccountId);
+            String accountUID = mAccountUID;
             while ((accountUID = mAccountsDbAdapter.getParentAccountUID(accountUID)) != null) {
                 colorCode = mAccountsDbAdapter.getAccountColorCode(mAccountsDbAdapter.getAccountID(accountUID));
                 if (colorCode != null) {
@@ -389,8 +391,8 @@ public class TransactionsActivity extends PassLockActivity implements
 		int i = 0;
 		Cursor accountsCursor = mAccountsDbAdapter.fetchAllRecordsOrderedByFullName();
         while (accountsCursor.moveToNext()) {
-            long id = accountsCursor.getLong(accountsCursor.getColumnIndexOrThrow(DatabaseSchema.AccountEntry._ID));
-            if (mAccountId == id) {
+            String uid = accountsCursor.getString(accountsCursor.getColumnIndexOrThrow(DatabaseSchema.AccountEntry.COLUMN_UID));
+            if (mAccountUID.equals(uid)) {
                 getSupportActionBar().setSelectedNavigationItem(i);
                 break;
             }
@@ -408,7 +410,7 @@ public class TransactionsActivity extends PassLockActivity implements
             return super.onPrepareOptionsMenu(menu);
 
         AccountsDbAdapter accountsDbAdapter = new AccountsDbAdapter(this);
-        boolean isFavoriteAccount = accountsDbAdapter.isFavoriteAccount(mAccountId);
+        boolean isFavoriteAccount = accountsDbAdapter.isFavoriteAccount(mAccountsDbAdapter.getAccountID(mAccountUID));
         accountsDbAdapter.close();
 
         int favoriteIcon = isFavoriteAccount ? android.R.drawable.btn_star_big_on : android.R.drawable.btn_star_big_off;
@@ -434,9 +436,10 @@ public class TransactionsActivity extends PassLockActivity implements
 
             case R.id.menu_favorite_account:
                 AccountsDbAdapter accountsDbAdapter = new AccountsDbAdapter(this);
-                boolean isFavorite = accountsDbAdapter.isFavoriteAccount(mAccountId);
+                long accountId = accountsDbAdapter.getAccountID(mAccountUID);
+                boolean isFavorite = accountsDbAdapter.isFavoriteAccount(accountId);
                 //toggle favorite preference
-                accountsDbAdapter.updateAccount(mAccountId, DatabaseSchema.AccountEntry.COLUMN_FAVORITE, isFavorite ? "0" : "1");
+                accountsDbAdapter.updateAccount(accountId, DatabaseSchema.AccountEntry.COLUMN_FAVORITE, isFavorite ? "0" : "1");
                 accountsDbAdapter.close();
                 supportInvalidateOptionsMenu();
                 return true;
@@ -444,7 +447,7 @@ public class TransactionsActivity extends PassLockActivity implements
             case R.id.menu_edit_account:
                 Intent editAccountIntent = new Intent(this, AccountsActivity.class);
                 editAccountIntent.setAction(Intent.ACTION_INSERT_OR_EDIT);
-                editAccountIntent.putExtra(UxArgument.SELECTED_ACCOUNT_ID, mAccountId);
+                editAccountIntent.putExtra(UxArgument.SELECTED_ACCOUNT_UID, mAccountUID);
                 startActivityForResult(editAccountIntent, AccountsActivity.REQUEST_EDIT_ACCOUNT);
                 return true;
 
@@ -470,11 +473,11 @@ public class TransactionsActivity extends PassLockActivity implements
 	}
 	
 	/**
-	 * Returns the database row ID of the current account
-	 * @return Database row ID of the current account
+	 * Returns the global unique ID of the current account
+	 * @return GUID of the current account
 	 */
-	public long getCurrentAccountID(){
-		return mAccountId;
+	public String getCurrentAccountUID(){
+		return mAccountUID;
 	}
 	
 	/**
@@ -483,7 +486,7 @@ public class TransactionsActivity extends PassLockActivity implements
 	 * @param v View which triggered this method
 	 */
 	public void onNewTransactionClick(View v){
-		createNewTransaction(mAccountId);
+		createNewTransaction(mAccountUID);
 	}
 
 
@@ -494,7 +497,7 @@ public class TransactionsActivity extends PassLockActivity implements
     public void onNewAccountClick(View v) {
         Intent addAccountIntent = new Intent(this, AccountsActivity.class);
         addAccountIntent.setAction(Intent.ACTION_INSERT_OR_EDIT);
-        addAccountIntent.putExtra(UxArgument.PARENT_ACCOUNT_ID, mAccountId);
+        addAccountIntent.putExtra(UxArgument.PARENT_ACCOUNT_UID, mAccountUID);
         startActivityForResult(addAccountIntent, AccountsActivity.REQUEST_EDIT_ACCOUNT);
     }
 
@@ -533,27 +536,27 @@ public class TransactionsActivity extends PassLockActivity implements
     }
 
 	@Override
-	public void createNewTransaction(long accountRowId) {
+	public void createNewTransaction(String accountUID) {
         Intent createTransactionIntent = new Intent(this.getApplicationContext(), TransactionsActivity.class);
         createTransactionIntent.setAction(Intent.ACTION_INSERT_OR_EDIT);
-        createTransactionIntent.putExtra(UxArgument.SELECTED_ACCOUNT_ID, accountRowId);
+        createTransactionIntent.putExtra(UxArgument.SELECTED_ACCOUNT_UID, accountUID);
         startActivity(createTransactionIntent);
 	}
 
 	@Override
-	public void editTransaction(long transactionId){
+	public void editTransaction(String transactionUID){
         Intent createTransactionIntent = new Intent(this.getApplicationContext(), TransactionsActivity.class);
         createTransactionIntent.setAction(Intent.ACTION_INSERT_OR_EDIT);
-        createTransactionIntent.putExtra(UxArgument.SELECTED_ACCOUNT_ID, mAccountId);
-        createTransactionIntent.putExtra(UxArgument.SELECTED_TRANSACTION_ID, transactionId);
+        createTransactionIntent.putExtra(UxArgument.SELECTED_ACCOUNT_UID, mAccountUID);
+        createTransactionIntent.putExtra(UxArgument.SELECTED_TRANSACTION_UID, transactionUID);
         startActivity(createTransactionIntent);
 	}
 
     @Override
-    public void accountSelected(long accountRowId) {
+    public void accountSelected(String accountUID) {
         Intent restartIntent = new Intent(this.getApplicationContext(), TransactionsActivity.class);
         restartIntent.setAction(Intent.ACTION_VIEW);
-        restartIntent.putExtra(UxArgument.SELECTED_ACCOUNT_ID, accountRowId);
+        restartIntent.putExtra(UxArgument.SELECTED_ACCOUNT_UID, accountUID);
         startActivity(restartIntent);
     }
 }

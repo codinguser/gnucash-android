@@ -223,12 +223,12 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
             mPager.setVisibility(View.GONE);
             titlePageIndicator.setVisibility(View.GONE);
 
-            long accountId = intent.getLongExtra(UxArgument.SELECTED_ACCOUNT_ID, 0L);
-            if (accountId > 0)
-                showEditAccountFragment(accountId);
+            String accountUID = intent.getStringExtra(UxArgument.SELECTED_ACCOUNT_UID);
+            if (accountUID != null)
+                showEditAccountFragment(accountUID);
             else {
-                long parentAccountId = intent.getLongExtra(UxArgument.PARENT_ACCOUNT_ID, 0L);
-                showAddAccountFragment(parentAccountId);
+                String parentAccountUID = intent.getStringExtra(UxArgument.PARENT_ACCOUNT_UID);
+                showAddAccountFragment(parentAccountUID);
             }
         } else if (action != null && action.equals(ACTION_VIEW_RECURRING)) {
             mPager.setVisibility(View.GONE);
@@ -360,11 +360,11 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
 
     /**
      * Shows form fragment for creating a new account
-     * @param parentAccountId Record ID of the parent account present. Can be 0 for top-level account
+     * @param parentAccountUID GUID of the parent account present. Can be 0 for top-level account
      */
-    private void showAddAccountFragment(long parentAccountId){
+    private void showAddAccountFragment(String parentAccountUID){
         Bundle args = new Bundle();
-        args.putLong(UxArgument.PARENT_ACCOUNT_ID, parentAccountId);
+        args.putString(UxArgument.PARENT_ACCOUNT_UID, parentAccountUID);
         showAccountFormFragment(args);
     }
 
@@ -385,11 +385,11 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
     }
     /**
      * Shows the form fragment for editing the account with record ID <code>accountId</code>
-     * @param accountId Record ID of the account to be edited
+     * @param accountUID GUID of the account to be edited
      */
-    private void showEditAccountFragment(long accountId) {
+    private void showEditAccountFragment(String accountUID) {
         Bundle args = new Bundle();
-        args.putLong(UxArgument.SELECTED_ACCOUNT_ID, accountId);
+        args.putString(UxArgument.SELECTED_ACCOUNT_UID, accountUID);
         showAccountFormFragment(args);
     }
 
@@ -503,10 +503,10 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
     }
 
     @Override
-	public void accountSelected(long accountRowId) {
+	public void accountSelected(String accountUID) {
 		Intent intent = new Intent(this, TransactionsActivity.class);
 		intent.setAction(Intent.ACTION_VIEW);
-		intent.putExtra(UxArgument.SELECTED_ACCOUNT_ID, accountRowId);
+		intent.putExtra(UxArgument.SELECTED_ACCOUNT_UID, accountUID);
 
 		startActivity(intent);
 	}

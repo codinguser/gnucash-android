@@ -80,7 +80,7 @@ public class TransactionsActivityTest extends
         assertTrue(id > 0);
 
         Intent intent = new Intent(Intent.ACTION_VIEW);
-        intent.putExtra(UxArgument.SELECTED_ACCOUNT_ID, id);
+        intent.putExtra(UxArgument.SELECTED_ACCOUNT_UID, id);
         setActivityIntent(intent);
 
         mSolo = new Solo(getInstrumentation(), getActivity());
@@ -330,7 +330,7 @@ public class TransactionsActivityTest extends
 		clickSherlockActionBarItem(R.id.context_menu_delete);
 		
 		AccountsDbAdapter accountsDbAdapter = new AccountsDbAdapter(getActivity());
-		long id = accountsDbAdapter.getId(DUMMY_ACCOUNT_UID);
+		long id = accountsDbAdapter.getID(DUMMY_ACCOUNT_UID);
 		TransactionsDbAdapter adapter = new TransactionsDbAdapter(getActivity());
 		assertEquals(0, adapter.getTransactionsCount(id));
 		

@@ -18,7 +18,6 @@ package org.gnucash.android.ui.transaction.dialog;
 
 import org.gnucash.android.R;
 import org.gnucash.android.db.AccountsDbAdapter;
-import org.gnucash.android.db.DatabaseHelper;
 import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.ui.UxArgument;
@@ -29,7 +28,6 @@ import org.gnucash.android.ui.widget.WidgetConfigurationActivity;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
-import android.support.v4.app.Fragment;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -67,9 +65,9 @@ public class BulkMoveDialogFragment extends DialogFragment {
 	long[] mTransactionIds = null;
 	
 	/**
-	 * Account from which to move the transactions
+	 * GUID of account from which to move the transactions
 	 */
-	long mOriginAccountId = -1;
+	String mOriginAccountUID = null;
 	
 	/**
 	 * Accounts database adapter
@@ -99,15 +97,15 @@ public class BulkMoveDialogFragment extends DialogFragment {
 		
 		Bundle args = getArguments();
 		mTransactionIds = args.getLongArray(UxArgument.SELECTED_TRANSACTION_IDS);
-		mOriginAccountId = args.getLong(UxArgument.ORIGIN_ACCOUNT_ID);
+		mOriginAccountUID = args.getString(UxArgument.ORIGIN_ACCOUNT_UID);
 		
 		String title = getActivity().getString(R.string.title_move_transactions, 
 				mTransactionIds.length);
 		getDialog().setTitle(title);
 		
 		mAccountsDbAdapter = new AccountsDbAdapter(getActivity());
-        String conditions = "(" + DatabaseSchema.AccountEntry._ID           + " != " + mOriginAccountId + " AND "
-                + DatabaseSchema.AccountEntry.COLUMN_CURRENCY               + " = '" + mAccountsDbAdapter.getCurrencyCode(mOriginAccountId)
+        String conditions = "(" + DatabaseSchema.AccountEntry.COLUMN_UID    + " != '" + mOriginAccountUID + "' AND "
+                + DatabaseSchema.AccountEntry.COLUMN_CURRENCY               + " = '" + mAccountsDbAdapter.getCurrencyCode(mOriginAccountUID)
                 + "' AND " + DatabaseSchema.AccountEntry.COLUMN_UID         + " != '" + mAccountsDbAdapter.getGnuCashRootAccountUID()
                 + "' AND " + DatabaseSchema.AccountEntry.COLUMN_PLACEHOLDER + " = 0"
                 + ")";
@@ -142,13 +140,14 @@ public class BulkMoveDialogFragment extends DialogFragment {
 				
 				long dstAccountId = mDestinationAccountSpinner.getSelectedItemId();
 				TransactionsDbAdapter trxnAdapter = new TransactionsDbAdapter(getActivity());
-				if (!trxnAdapter.getCurrencyCode(dstAccountId).equals(trxnAdapter.getCurrencyCode(mOriginAccountId))){
+				if (!trxnAdapter.getCurrencyCode(dstAccountId).equals(trxnAdapter.getCurrencyCode(mOriginAccountUID))){
 					Toast.makeText(getActivity(), R.string.toast_incompatible_currency, Toast.LENGTH_LONG).show();
 					return;
 				}
-                long accountId      = ((TransactionsActivity)getActivity()).getCurrentAccountID();
+                String srcAccountUID    = ((TransactionsActivity)getActivity()).getCurrentAccountUID();
+                String dstAccountUID    = trxnAdapter.getAccountUID(dstAccountId);
 				for (long trxnId : mTransactionIds) {
-					trxnAdapter.moveTranscation(trxnId, accountId, dstAccountId);
+					trxnAdapter.moveTranscation(trxnAdapter.getUID(trxnId), srcAccountUID, dstAccountUID);
 				}
 				trxnAdapter.close();
 

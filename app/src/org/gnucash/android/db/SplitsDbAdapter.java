@@ -24,22 +24,19 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.database.sqlite.SQLiteStatement;
 import android.text.TextUtils;
-
 import android.util.Log;
 import org.gnucash.android.model.AccountType;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.model.Split;
-import org.gnucash.android.model.Transaction;
 import org.gnucash.android.model.TransactionType;
 
 import java.math.BigDecimal;
-import java.math.MathContext;
-import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Currency;
 import java.util.List;
 
-import static org.gnucash.android.db.DatabaseSchema.*;
+import static org.gnucash.android.db.DatabaseSchema.SplitEntry;
+import static org.gnucash.android.db.DatabaseSchema.TransactionEntry;
 
 /**
  * Database adapter for managing transaction splits in the database
@@ -325,6 +322,7 @@ public class SplitsDbAdapter extends DatabaseAdapter {
      * @param uid Unique Identifier String of the split transaction
      * @return Database record ID of split
      */
+    @Override
     public long getID(String uid){
         if (uid == null)
             return 0;
@@ -348,6 +346,7 @@ public class SplitsDbAdapter extends DatabaseAdapter {
      * @param id Database record ID of the split
      * @return String unique identifier of the split
      */
+    @Override
     public String getUID(long id){
         Cursor cursor = mDb.query(SplitEntry.TABLE_NAME,
                 new String[]{SplitEntry.COLUMN_UID},
@@ -526,17 +525,15 @@ public class SplitsDbAdapter extends DatabaseAdapter {
 
     /**
      * Deletes splits for a specific transaction and account and the transaction itself
-     * @param transactionId Database record ID of the transaction
-     * @param accountId Database ID of the account
+     * @param transactionUID String unique ID of transaction
+     * @param accountUID String unique ID of account
      * @return Number of records deleted
      */
-    public int deleteSplitsForTransactionAndAccount(long transactionId, long accountId){
-        String transactionUID  = getTransactionUID(transactionId);
-        String accountUID      = getAccountUID(accountId);
+    public int deleteSplitsForTransactionAndAccount(String transactionUID, String accountUID){
         int deletedCount = mDb.delete(SplitEntry.TABLE_NAME,
                 SplitEntry.COLUMN_TRANSACTION_UID + "= ? AND " + SplitEntry.COLUMN_ACCOUNT_UID + "= ?",
                 new String[]{transactionUID, accountUID});
-        deleteTransaction(transactionId);
+        deleteTransaction(getID(transactionUID));
         return deletedCount;
     }
 
@@ -552,4 +549,5 @@ public class SplitsDbAdapter extends DatabaseAdapter {
     public int deleteAllRecords() {
         return deleteAllRecords(SplitEntry.TABLE_NAME);
     }
+
 }

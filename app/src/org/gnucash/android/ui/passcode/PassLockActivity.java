@@ -29,7 +29,8 @@ public class PassLockActivity extends SherlockFragmentActivity {
             startActivity(new Intent(this, PasscodeLockScreenActivity.class)
                     .setAction(getIntent().getAction())
                     .putExtra(UxArgument.PASSCODE_CLASS_CALLER, this.getClass().getName())
-                    .putExtra(UxArgument.SELECTED_ACCOUNT_ID, getIntent().getLongExtra(UxArgument.SELECTED_ACCOUNT_ID, 0L))
+                    .putExtra(UxArgument.SELECTED_ACCOUNT_UID,
+                            getIntent().getLongExtra(UxArgument.SELECTED_ACCOUNT_UID, 0L))
             );
         }
     }
@@ -45,7 +46,7 @@ public class PassLockActivity extends SherlockFragmentActivity {
      */
     private boolean isSessionActive() {
         return System.currentTimeMillis() - GnuCashApplication.PASSCODE_SESSION_INIT_TIME
-                < GnuCashApplication.SESSION_TIMEOUT ? true : false;
+                < GnuCashApplication.SESSION_TIMEOUT;
     }
 
 }

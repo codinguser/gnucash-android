@@ -272,6 +272,20 @@ public abstract class DatabaseAdapter {
     }
 
     /**
+     * Returns the database record ID of the entry
+     * @param uid GUID of the record
+     * @return Long database identifier of the record
+     */
+    public abstract long getID(String uid);
+
+    /**
+     * Returns the global unique identifier of the record
+     * @param id Database record ID of the entry
+     * @return String GUID of the record
+     */
+    public abstract String getUID(long id);
+
+    /**
      * Updates a record in the table
      * @param recordId Database ID of the record to be updated
      * @param columnKey Name of column to be updated

@@ -155,8 +155,8 @@ public class SplitEditorDialogFragment extends DialogFragment {
         mAccountsDbAdapter = new AccountsDbAdapter(getActivity());
 
         Bundle args     = getArguments();
-        mAccountId      = ((TransactionsActivity)getActivity()).getCurrentAccountID();
-        mAccountUID     = mAccountsDbAdapter.getAccountUID(mAccountId);
+        mAccountUID      = ((TransactionsActivity)getActivity()).getCurrentAccountUID();
+        mAccountId     = mAccountsDbAdapter.getID(mAccountUID);
         mBaseAmount     = new BigDecimal(args.getString(UxArgument.AMOUNT_STRING));
 
         String conditions = "(" //+ AccountEntry._ID + " != " + mAccountId + " AND "

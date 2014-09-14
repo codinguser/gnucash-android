@@ -29,7 +29,6 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -52,11 +51,7 @@ import org.gnucash.android.ui.colorpicker.ColorPickerSwatch;
 import org.gnucash.android.ui.colorpicker.ColorSquare;
 import org.gnucash.android.util.QualifiedAccountNameCursorAdapter;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Currency;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 /**
  * Fragment used for creating and editing accounts
@@ -95,19 +90,13 @@ public class AccountFormFragment extends SherlockFragment {
 	 * List of all currency codes (ISO 4217) supported by the app
 	 */
 	private List<String> mCurrencyCodes;
-	
-	/**
-	 * Record ID of the account which was selected
-	 * This is used if we are editing an account instead of creating one
-	 */
-	private long mSelectedAccountId = 0;
 
     /**
-     * Database ID of the parent account
+     * GUID of the parent account
      * This value is set to the parent account of the transaction being edited or
      * the account in which a new sub-account is being created
      */
-    private long mParentAccountId = -1;
+    private String mParentAccountUID = null;
 
     /**
      * Account ID of the root account
@@ -123,6 +112,11 @@ public class AccountFormFragment extends SherlockFragment {
 	 * Reference to account object which will be created at end of dialog
 	 */
 	private Account mAccount = null;
+
+    /**
+     * Unique ID string of account being edited
+     */
+    private String mAccountUID = null;
 
     /**
      * Cursor which will hold set of eligible parent accounts
@@ -201,6 +195,7 @@ public class AccountFormFragment extends SherlockFragment {
         }
     };
 
+
     /**
 	 * Default constructor
 	 * Required, else the app crashes on screen rotation
@@ -251,7 +246,7 @@ public class AccountFormFragment extends SherlockFragment {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
                 loadParentAccountList(getSelectedAccountType());
-                setParentAccountSelection(mParentAccountId);
+                setParentAccountSelection(mAccountsDbAdapter.getID(mParentAccountUID));
             }
 
             @Override
@@ -311,9 +306,10 @@ public class AccountFormFragment extends SherlockFragment {
 		currencyArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		mCurrencySpinner.setAdapter(currencyArrayAdapter);
 
-        mSelectedAccountId = getArguments().getLong(UxArgument.SELECTED_ACCOUNT_ID);
-        if (mSelectedAccountId > 0) {
-            mAccount = mAccountsDbAdapter.getAccount(mSelectedAccountId);
+        mAccountUID = getArguments().getString(UxArgument.SELECTED_ACCOUNT_UID);
+
+        if (mAccountUID != null) {
+            mAccount = mAccountsDbAdapter.getAccount(mAccountUID);
             getSherlockActivity().getSupportActionBar().setTitle(R.string.title_edit_account);
         }
         mRootAccountUID = mAccountsDbAdapter.getGnuCashRootAccountUID();
@@ -343,12 +339,12 @@ public class AccountFormFragment extends SherlockFragment {
             throw new IllegalArgumentException("Account cannot be null");
 
         loadParentAccountList(account.getAccountType());
-        mParentAccountId = mAccountsDbAdapter.getAccountID(account.getParentUID());
-        if (mParentAccountId == -1) {
+        mParentAccountUID = account.getParentUID();
+        if (mParentAccountUID == null) {
             // null parent, set Parent as root
-            mParentAccountId = mRootAccountId;
+            mParentAccountUID = mRootAccountUID;
         }
-        setParentAccountSelection(mParentAccountId);
+        setParentAccountSelection(mAccountsDbAdapter.getID(mParentAccountUID));
 
         String currencyCode = account.getCurrency().getCurrencyCode();
         setSelectedCurrency(currencyCode);
@@ -372,22 +368,15 @@ public class AccountFormFragment extends SherlockFragment {
     private void initializeViews(){
         setSelectedCurrency(Money.DEFAULT_CURRENCY_CODE);
         mColorSquare.setBackgroundColor(Color.LTGRAY);
-        mParentAccountId = getArguments().getLong(UxArgument.PARENT_ACCOUNT_ID);
+        mParentAccountUID = getArguments().getString(UxArgument.PARENT_ACCOUNT_UID);
 
 
-        if (mParentAccountId > 0) {
-            AccountType parentAccountType = mAccountsDbAdapter.getAccountType(mParentAccountId);
+        if (mParentAccountUID != null) {
+            AccountType parentAccountType = mAccountsDbAdapter.getAccountType(mParentAccountUID);
             setAccountTypeSelection(parentAccountType);
             loadParentAccountList(parentAccountType);
-            setParentAccountSelection(mParentAccountId);
-//            String colorHex = mAccountsDbAdapter.getAccountColorCode(parentAccountId);
-//            initializeColorSquarePreview(colorHex);
-//            mSelectedColor = colorHex;
+            setParentAccountSelection(mAccountsDbAdapter.getID(mParentAccountUID));
         }
-
-        //this must be called after changing account type
-        //because changing account type reloads list of eligible parent accounts
-
 
     }
 
@@ -533,7 +522,7 @@ public class AccountFormFragment extends SherlockFragment {
      * Initializes the default transfer account spinner with eligible accounts
      */
     private void loadDefaultTransferAccountList(){
-        String condition = DatabaseSchema.AccountEntry._ID + " != " + mSelectedAccountId
+        String condition = DatabaseSchema.AccountEntry.COLUMN_UID + " != '" + mAccountUID + "' "
                 + " AND " + DatabaseSchema.AccountEntry.COLUMN_PLACEHOLDER + "=0"
                 + " AND " + DatabaseSchema.AccountEntry.COLUMN_UID + " != '" + mAccountsDbAdapter.getGnuCashRootAccountUID() + "'";
         /*
@@ -563,10 +552,10 @@ public class AccountFormFragment extends SherlockFragment {
 
         if (mAccount != null){  //if editing an account
             mDescendantAccountUIDs = mAccountsDbAdapter.getDescendantAccountUIDs(mAccount.getUID(), null, null);
+            mDescendantAccountUIDs.add(mAccountUID); //cannot set self as parent
             // limit cyclic account hierarchies.
             condition += " AND (" + DatabaseSchema.AccountEntry.COLUMN_PARENT_ACCOUNT_UID + " IS NULL "
-                    + " OR " + DatabaseSchema.AccountEntry.COLUMN_UID + " NOT IN ( '" + TextUtils.join("','", mDescendantAccountUIDs) + "' ) )"
-                    + " AND " + DatabaseSchema.AccountEntry._ID + " != " + mSelectedAccountId;
+                    + " OR " + DatabaseSchema.AccountEntry.COLUMN_UID + " NOT IN ( '" + TextUtils.join("','", mDescendantAccountUIDs) + "' ) )";
         }
 
         //if we are reloading the list, close the previous cursor first
@@ -737,8 +726,9 @@ public class AccountFormFragment extends SherlockFragment {
             mAccount.setDefaultTransferAccountUID(null);
         }
 
+        long parentAccountId = mAccountsDbAdapter.getID(mParentAccountUID);
         // update full names
-        if (mDescendantAccountUIDs == null || newParentAccountId != mParentAccountId) {
+        if (mDescendantAccountUIDs == null || newParentAccountId != parentAccountId) {
             // new Account or parent account changed
             String newAccountFullName;
             if (newParentAccountId == mRootAccountId){
@@ -751,7 +741,7 @@ public class AccountFormFragment extends SherlockFragment {
             mAccount.setFullName(newAccountFullName);
             if (mDescendantAccountUIDs != null) {
                 // modifying existing account
-                if (mParentAccountId != newParentAccountId && mDescendantAccountUIDs.size() > 0) {
+                if (parentAccountId != newParentAccountId && mDescendantAccountUIDs.size() > 0) {
                     // parent change, update all full names of descent accounts
                     accountsToUpdate.addAll(mAccountsDbAdapter.getSimpleAccountList(
                             DatabaseSchema.AccountEntry.COLUMN_UID + " IN ('" +
@@ -800,7 +790,7 @@ public class AccountFormFragment extends SherlockFragment {
 
     /**
 	 * Retrieves the name of the account which has been entered in the EditText
-	 * @return
+	 * @return Name of the account which has been entered in the EditText
 	 */
 	public String getEnteredName(){
 		return mNameEditText.getText().toString().trim();

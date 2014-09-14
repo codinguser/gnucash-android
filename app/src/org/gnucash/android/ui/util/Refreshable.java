@@ -28,7 +28,7 @@ public interface Refreshable {
 
     /**
      * Refresh the list with modified parameters
-     * @param id Record ID of relevant item to be refreshed
+     * @param uid GUID of relevant item to be refreshed
      */
-    public void refresh(long id);
+    public void refresh(String uid);
 }

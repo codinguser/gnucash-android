@@ -441,13 +441,11 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
     /**
      * Returns the transaction balance for the transaction for the specified account.
      * <p>We consider only those splits which belong to this account</p>
-     * @param transactionId Database record ID of the transaction
-     * @param accountId Database record id of the account
+     * @param transactionUID GUID of the transaction
+     * @param accountUID GUID of the account
      * @return {@link org.gnucash.android.model.Money} balance of the transaction for that account
      */
-    public Money getBalance(long transactionId, long accountId){
-        String accountUID = getAccountUID(accountId);
-        String transactionUID = getUID(transactionId);
+    public Money getBalance(String transactionUID, String accountUID){
         List<Split> splitList = mSplitsDbAdapter.getSplitsForTransactionInAccount(
                 transactionUID, accountUID);
 
@@ -459,6 +457,7 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
      * @param transactionId Database record ID of transaction
      * @return String unique identifier of the transaction
      */
+    @Override
     public String getUID(long transactionId){
         String uid = null;
         Cursor c = mDb.query(TransactionEntry.TABLE_NAME,
@@ -503,20 +502,19 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 	public int deleteAllRecords(){
 		return deleteAllRecords(TransactionEntry.TABLE_NAME);
 	}
-	
-	/**
+
+    /**
 	 * Assigns transaction with id <code>rowId</code> to account with id <code>accountId</code>
-	 * @param rowId Record ID of the transaction to be assigned
-     * @param srcAccountId Record Id of the account from which the transaction is to be moved
-	 * @param dstAccountId Record Id of the account to which the transaction will be assigned
+	 * @param transactionUID GUID of the transaction
+     * @param srcAccountUID GUID of the account from which the transaction is to be moved
+	 * @param dstAccountUID GUID of the account to which the transaction will be assigned
 	 * @return Number of transactions splits affected
 	 */
-	public int moveTranscation(long rowId, long srcAccountId, long dstAccountId){
-		Log.i(TAG, "Moving transaction ID " + rowId + " splits from " + srcAccountId + " to account " + dstAccountId);
-		String srcAccountUID = getAccountUID(srcAccountId);
-        String dstAccountUID = getAccountUID(dstAccountId);
+	public int moveTranscation(String transactionUID, String srcAccountUID, String dstAccountUID){
+		Log.i(TAG, "Moving transaction ID " + transactionUID
+                + " splits from " + srcAccountUID + " to account " + dstAccountUID);
 
-		List<Split> splits = mSplitsDbAdapter.getSplitsForTransactionInAccount(getUID(rowId), srcAccountUID);
+		List<Split> splits = mSplitsDbAdapter.getSplitsForTransactionInAccount(transactionUID, srcAccountUID);
         for (Split split : splits) {
             split.setAccountUID(dstAccountUID);
             mSplitsDbAdapter.addSplit(split);
@@ -557,6 +555,7 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
      * @param transactionUID Unique idendtifier of the transaction
      * @return Database record ID for the transaction
      */
+    @Override
     public long getID(String transactionUID){
         long id = -1;
         Cursor c = mDb.query(TransactionEntry.TABLE_NAME,
@@ -631,5 +630,14 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
         AlarmManager alarmManager = (AlarmManager) mContext.getSystemService(Context.ALARM_SERVICE);
         alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, firstRunMillis,
                 recurrencePeriodMillis, recurringPendingIntent);
+    }
+
+    /**
+     * Returns a transaction for the given transaction GUID
+     * @param transactionUID GUID of the transaction
+     * @return Retrieves a transaction from the database
+     */
+    public Transaction getTransaction(String transactionUID) {
+        return getTransaction(getID(transactionUID));
     }
 }

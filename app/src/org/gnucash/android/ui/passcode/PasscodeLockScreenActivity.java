@@ -55,7 +55,7 @@ public class PasscodeLockScreenActivity extends SherlockFragmentActivity
                     .setClassName(this, getIntent().getStringExtra(UxArgument.PASSCODE_CLASS_CALLER))
                     .setAction(getIntent().getAction())
                     .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                    .putExtra(UxArgument.SELECTED_ACCOUNT_ID, getIntent().getLongExtra(UxArgument.SELECTED_ACCOUNT_ID, 0L))
+                    .putExtra(UxArgument.SELECTED_ACCOUNT_UID, getIntent().getLongExtra(UxArgument.SELECTED_ACCOUNT_UID, 0L))
             );
         } else {
             Toast.makeText(this, R.string.toast_wrong_passcode, Toast.LENGTH_SHORT).show();
