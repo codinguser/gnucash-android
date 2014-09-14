@@ -76,8 +76,8 @@ public class GncXmlExporter extends Exporter{
             return;
         }
         xmlSerializer.startTag(null, GncXmlHelper.TAG_ACT_SLOTS);
-        xmlSerializer.startTag(null, GncXmlHelper.TAG_SLOT);
         for (int i = 0; i < slotKey.size(); i++) {
+            xmlSerializer.startTag(null, GncXmlHelper.TAG_SLOT);
             xmlSerializer.startTag(null, GncXmlHelper.TAG_SLOT_KEY);
             xmlSerializer.text(slotKey.get(i));
             xmlSerializer.endTag(null, GncXmlHelper.TAG_SLOT_KEY);
@@ -85,8 +85,8 @@ public class GncXmlExporter extends Exporter{
             xmlSerializer.attribute(null, GncXmlHelper.ATTR_KEY_TYPE, slotType.get(i));
             xmlSerializer.text(slotValue.get(i));
             xmlSerializer.endTag(null, GncXmlHelper.TAG_SLOT_VALUE);
+            xmlSerializer.endTag(null, GncXmlHelper.TAG_SLOT);
         }
-        xmlSerializer.endTag(null, GncXmlHelper.TAG_SLOT);
         xmlSerializer.endTag(null, GncXmlHelper.TAG_ACT_SLOTS);
     }
 
