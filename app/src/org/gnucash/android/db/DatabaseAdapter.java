@@ -197,14 +197,15 @@ public abstract class DatabaseAdapter {
 
         if (cursor == null)
             return null;
-        if (cursor.getCount() <= 0) {
-            cursor.close();
-            return null;
+        String currencyCode = null;
+        try {
+            if (cursor.moveToFirst()) {
+                currencyCode = cursor.getString(0);
+            }
         }
-
-        cursor.moveToFirst();
-        String currencyCode = cursor.getString(0);
-        cursor.close();
+        finally {
+            cursor.close();
+        }
         return currencyCode;
     }
 
