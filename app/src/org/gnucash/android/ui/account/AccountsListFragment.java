@@ -315,7 +315,6 @@ public class AccountsListFragment extends SherlockListFragment implements
                 mAccountsDbAdapter.recursiveDestructiveDelete(rowId)
                 : mAccountsDbAdapter.destructiveDeleteAccount(rowId);
         if (deleted) {
-            mAccountsDbAdapter.reassignParent(accountUID, parentUID);
             Toast.makeText(getActivity(), R.string.toast_account_deleted, Toast.LENGTH_SHORT).show();
             WidgetConfigurationActivity.updateAllWidgets(getActivity().getApplicationContext());
         }
