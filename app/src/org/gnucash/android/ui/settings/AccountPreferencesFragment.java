@@ -16,6 +16,7 @@
 
 package org.gnucash.android.ui.settings;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
@@ -23,20 +24,24 @@ import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
+
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockPreferenceActivity;
-import org.gnucash.android.R;
-import org.gnucash.android.importer.ImportAsyncTask;
-import org.gnucash.android.model.Money;
 
-import java.io.InputStream;
+import org.gnucash.android.R;
+import org.gnucash.android.model.Money;
+import org.gnucash.android.ui.account.AccountsActivity;
 
 /**
  * Account settings fragment inside the Settings activity
  *
  * @author Ngewi Fet <ngewi.fet@gmail.com>
+ * @author Oleksandr Tyshkovets <olexandr.tyshkovets@gmail.com>
  */
 public class AccountPreferencesFragment extends PreferenceFragment {
+
+    private Activity activity;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,13 +51,16 @@ public class AccountPreferencesFragment extends PreferenceFragment {
         actionBar.setHomeButtonEnabled(true);
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setTitle(R.string.title_account_preferences);
+
+        activity = getActivity();
     }
 
     @Override
     public void onResume() {
         super.onResume();
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        String defaultCurrency = sharedPreferences.getString(getString(R.string.key_default_currency), Money.DEFAULT_CURRENCY_CODE);
+        final String defaultCurrency = sharedPreferences.getString(getString(R.string.key_default_currency),
+                Money.DEFAULT_CURRENCY_CODE);
         Preference pref = findPreference(getString(R.string.key_default_currency));
         pref.setSummary(defaultCurrency);
         pref.setOnPreferenceChangeListener((SettingsActivity)getActivity());
@@ -80,8 +88,7 @@ public class AccountPreferencesFragment extends PreferenceFragment {
                         .setPositiveButton(R.string.btn_create_accounts, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-                                InputStream accountFileInputStream = getResources().openRawResource(R.raw.default_accounts);
-                                new ImportAsyncTask(getActivity()).execute(accountFileInputStream);
+                                new AccountsActivity().createDefaultAccounts(defaultCurrency, activity);
                             }
                         })
                         .setNegativeButton(R.string.btn_cancel, new DialogInterface.OnClickListener() {
