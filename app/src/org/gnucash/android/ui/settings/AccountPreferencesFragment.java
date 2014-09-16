@@ -59,8 +59,7 @@ public class AccountPreferencesFragment extends PreferenceFragment {
     public void onResume() {
         super.onResume();
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        final String defaultCurrency = sharedPreferences.getString(getString(R.string.key_default_currency),
-                Money.DEFAULT_CURRENCY_CODE);
+        String defaultCurrency = sharedPreferences.getString(getString(R.string.key_default_currency), Money.DEFAULT_CURRENCY_CODE);
         Preference pref = findPreference(getString(R.string.key_default_currency));
         pref.setSummary(defaultCurrency);
         pref.setOnPreferenceChangeListener((SettingsActivity)getActivity());
@@ -88,7 +87,7 @@ public class AccountPreferencesFragment extends PreferenceFragment {
                         .setPositiveButton(R.string.btn_create_accounts, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-                                new AccountsActivity().createDefaultAccounts(defaultCurrency, activity);
+                                AccountsActivity.createDefaultAccounts(Money.DEFAULT_CURRENCY_CODE, activity);
                             }
                         })
                         .setNegativeButton(R.string.btn_cancel, new DialogInterface.OnClickListener() {
