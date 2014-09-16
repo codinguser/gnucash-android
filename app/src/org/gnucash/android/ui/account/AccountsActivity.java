@@ -17,6 +17,7 @@
 
 package org.gnucash.android.ui.account;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -37,6 +38,7 @@ import android.support.v4.view.ViewPager;
 import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
@@ -55,14 +57,20 @@ import org.gnucash.android.ui.transaction.TransactionsActivity;
 import org.gnucash.android.ui.util.OnAccountClickedListener;
 import org.gnucash.android.ui.util.Refreshable;
 
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.Arrays;
 
 /**
  * Manages actions related to accounts, displaying, exporting and creating new accounts
  * The various actions are implemented as Fragments which are then added to this activity
+ *
  * @author Ngewi Fet <ngewif@gmail.com>
- * 
+ * @author Oleksandr Tyshkovets <olexandr.tyshkovets@gmail.com>
  */
 public class AccountsActivity extends PassLockActivity implements OnAccountClickedListener {
 
@@ -258,7 +266,7 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         boolean firstRun = prefs.getBoolean(getString(R.string.key_first_run), true);
         if (firstRun){
-            createDefaultAccounts();
+            showFirstRunDialog();
             //default to using double entry and save the preference explicitly
             prefs.edit().putBoolean(getString(R.string.key_use_double_entry), true).commit();
         }
@@ -423,7 +431,7 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
 	/**
 	 * Shows the user dialog to create default account structure or import existing account structure
 	 */
-	private void createDefaultAccounts(){
+	private void showFirstRunDialog() {
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		builder.setTitle(R.string.title_default_accounts);
         builder.setMessage(R.string.msg_confirm_create_default_accounts_first_run);
@@ -432,9 +440,27 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
 			
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
-                InputStream accountFileInputStream = getResources().openRawResource(R.raw.default_accounts);
-                new ImportAsyncTask(AccountsActivity.this).execute(accountFileInputStream);
-                removeFirstRunFlag();
+                AlertDialog.Builder adb = new AlertDialog.Builder(AccountsActivity.this);
+                adb.setTitle(R.string.title_choose_currency);
+                ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(
+                        AccountsActivity.this,
+                        android.R.layout.select_dialog_singlechoice,
+                        getResources().getStringArray(R.array.currency_names));
+                adb.setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
+
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        String currency = Arrays.asList(getResources().getStringArray(R.array.currency_codes)).get(which);
+                        PreferenceManager.getDefaultSharedPreferences(AccountsActivity.this)
+                                .edit()
+                                .putString(getString(R.string.key_default_currency), currency)
+                                .commit();
+
+                        createDefaultAccounts(currency, AccountsActivity.this);
+                        removeFirstRunFlag();
+                    }
+                });
+                adb.create().show();
 			}
 		});
 		
@@ -458,6 +484,30 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
 		mDefaultAccountsDialog = builder.create();
 		mDefaultAccountsDialog.show();
 	}
+
+    /**
+     * Creates default accounts with the specified currency
+     *
+     * @param currencyCode
+     * @param activity
+     */
+    public static void createDefaultAccounts(String currencyCode, Activity activity) {
+        InputStream accountFileInputStream = activity.getResources().openRawResource(R.raw.default_accounts);
+        BufferedReader reader = new BufferedReader(new InputStreamReader(accountFileInputStream));
+        StringBuilder sb = new StringBuilder();
+        String line = null;
+        try {
+            while ((line = reader.readLine()) != null) {
+                sb.append(line).append("\n");
+            }
+            reader.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        String accountFile = sb.toString().replaceAll("<cmdty:id>(.*?)</cmdty:id>", "<cmdty:id>" + currencyCode + "</cmdty:id>");
+        accountFileInputStream = new ByteArrayInputStream(accountFile.getBytes());
+        new ImportAsyncTask(activity).execute(accountFileInputStream);
+    }
 
     /**
      * Starts Intent chooser for selecting a GnuCash accounts file to import.
