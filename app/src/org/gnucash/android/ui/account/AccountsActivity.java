@@ -47,6 +47,8 @@ import com.viewpagerindicator.TitlePageIndicator;
 
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
+import org.gnucash.android.db.AccountsDbAdapter;
+import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.importer.ImportAsyncTask;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.ui.UxArgument;
@@ -56,6 +58,7 @@ import org.gnucash.android.ui.transaction.ScheduledTransactionsListFragment;
 import org.gnucash.android.ui.transaction.TransactionsActivity;
 import org.gnucash.android.ui.util.OnAccountClickedListener;
 import org.gnucash.android.ui.util.Refreshable;
+import org.gnucash.android.ui.util.TaskDelegate;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -486,27 +489,27 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
 	}
 
     /**
-     * Creates default accounts with the specified currency
+     * Creates default accounts with the specified currency code.
+     * If the currency parameter is null, then locale currency will be used if available
      *
-     * @param currencyCode
-     * @param activity
+     * @param currencyCode Currency code to assign to the imported accounts
+     * @param activity Activity for providing context and displaying dialogs
      */
-    public static void createDefaultAccounts(String currencyCode, Activity activity) {
-        InputStream accountFileInputStream = activity.getResources().openRawResource(R.raw.default_accounts);
-        BufferedReader reader = new BufferedReader(new InputStreamReader(accountFileInputStream));
-        StringBuilder sb = new StringBuilder();
-        String line = null;
-        try {
-            while ((line = reader.readLine()) != null) {
-                sb.append(line).append("\n");
-            }
-            reader.close();
-        } catch (IOException e) {
-            e.printStackTrace();
+    public static void createDefaultAccounts(final String currencyCode, final Activity activity) {
+        TaskDelegate delegate = null;
+        if (currencyCode != null) {
+            delegate = new TaskDelegate() {
+                @Override
+                public void onTaskComplete() {
+                    AccountsDbAdapter accountsDbAdapter = new AccountsDbAdapter(activity);
+                    accountsDbAdapter.updateAllAccounts(DatabaseSchema.AccountEntry.COLUMN_CURRENCY, currencyCode);
+                    accountsDbAdapter.close();
+                }
+            };
         }
-        String accountFile = sb.toString().replaceAll("<cmdty:id>(.*?)</cmdty:id>", "<cmdty:id>" + currencyCode + "</cmdty:id>");
-        accountFileInputStream = new ByteArrayInputStream(accountFile.getBytes());
-        new ImportAsyncTask(activity).execute(accountFileInputStream);
+
+        InputStream accountFileInputStream = activity.getResources().openRawResource(R.raw.default_accounts);
+        new ImportAsyncTask(activity, delegate).execute(accountFileInputStream);
     }
 
     /**
