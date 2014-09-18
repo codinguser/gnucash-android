@@ -100,7 +100,8 @@ public class QifExporter extends Exporter{
                             if (!currencyCode.equals(currentCurrencyCode)) {
                                 currentCurrencyCode = currencyCode;
                                 writer.append(QifHelper.INTERNAL_CURRENCY_PREFIX)
-                                        .append(currencyCode);
+                                        .append(currencyCode)
+                                        .append(newLine);
                             }
                             // start new account
                             currentAccountUID = accountUID;
