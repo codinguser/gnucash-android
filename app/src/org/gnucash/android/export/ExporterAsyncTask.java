@@ -32,6 +32,7 @@ import android.widget.Toast;
 import org.gnucash.android.R;
 import org.gnucash.android.export.ofx.OfxExporter;
 import org.gnucash.android.export.qif.QifExporter;
+import org.gnucash.android.export.qif.QifHelper;
 import org.gnucash.android.export.xml.GncXmlExporter;
 import org.gnucash.android.ui.account.AccountsActivity;
 import org.gnucash.android.ui.transaction.dialog.TransactionsDeleteConfirmationDialogFragment;
@@ -223,21 +224,50 @@ public class ExporterAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
      * @param dst Absolute path to the destination file
      * @throws IOException if the file could not be copied
      */
-    public static void copyFile(File src, File dst) throws IOException
+    public void copyFile(File src, File dst) throws IOException
     {
         //TODO: Make this asynchronous at some time, t in the future.
-        FileChannel inChannel = new FileInputStream(src).getChannel();
-        FileChannel outChannel = new FileOutputStream(dst).getChannel();
-        try
-        {
-            inChannel.transferTo(0, inChannel.size(), outChannel);
+        if (mExportParams.getExportFormat() == ExportFormat.QIF) {
+            // split only at the last dot
+            String[] pathParts = dst.getPath().split("(?=\\.[^\\.]+$)");
+            String line;
+            BufferedReader in = new BufferedReader(new FileReader(src));
+            BufferedWriter out = null;
+            try {
+                while ((line = in.readLine()) != null) {
+                    if (line.startsWith(QifHelper.INTERNAL_CURRENCY_PREFIX)) {
+                        String currencyCode = line.substring(1);
+                        if (out != null) {
+                            out.close();
+                        }
+                        out = new BufferedWriter(new FileWriter(pathParts[0] + "_" + currencyCode + pathParts[1]));
+                    }
+                    else {
+                        if (out == null) {
+                            out = new BufferedWriter(new FileWriter(pathParts[0] + pathParts[1]));
+                        }
+                        out.append(line).append('\n');
+                    }
+                }
+            }
+            finally {
+                in.close();
+                if (out != null) {
+                    out.close();
+                }
+            }
         }
-        finally
-        {
-            if (inChannel != null)
-                inChannel.close();
-            if (outChannel != null)
-                outChannel.close();
+        else {
+            FileChannel inChannel = new FileInputStream(src).getChannel();
+            FileChannel outChannel = new FileOutputStream(dst).getChannel();
+            try {
+                inChannel.transferTo(0, inChannel.size(), outChannel);
+            } finally {
+                if (inChannel != null)
+                    inChannel.close();
+                if (outChannel != null)
+                    outChannel.close();
+            }
         }
     }
 

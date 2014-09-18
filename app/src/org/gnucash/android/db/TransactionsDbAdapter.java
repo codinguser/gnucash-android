@@ -305,7 +305,7 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 
     }
 
-    public Cursor fetchTransactionsWithSplitsWithTransactionAccount(String [] columns, String condition, String orderBy) {
+    public Cursor fetchTransactionsWithSplitsWithTransactionAccount(String [] columns, String where, String[] whereArgs, String orderBy) {
         // table is :
         // transactions, splits ON transactions.uid = splits.transaction_uid ,
         // ( SELECT transactions.uid AS trans_acct_t_uid ,
@@ -361,7 +361,7 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
                 AccountEntry.TABLE_NAME + " AS account1 ON account1." + AccountEntry.COLUMN_UID +
                 " = trans_acct.trans_acct_a_uid , " + AccountEntry.TABLE_NAME + " AS account2 ON account2." +
                 AccountEntry.COLUMN_UID + " = " + SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_ACCOUNT_UID,
-                columns, condition, null, null, null , orderBy);
+                columns, where, whereArgs, null, null , orderBy);
     }
 
     /**
