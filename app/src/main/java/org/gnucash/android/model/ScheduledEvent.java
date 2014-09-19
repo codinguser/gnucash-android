@@ -15,17 +15,23 @@
  */
 package org.gnucash.android.model;
 
+import org.gnucash.android.ui.util.RecurrenceParser;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.UUID;
 
 /**
-* Represents a scheduled event which is stored in the database and run at regular period
+* Represents a scheduled event which is stored in the database and run at regular mPeriod
 *
 * @author Ngewi Fet <ngewif@gmail.com>
 */
 public class ScheduledEvent {
-    public long period;
-    public long startDate;
-    public long endDate;
+
+
+    private long mPeriod;
+    private long mStartDate;
+    private long mEndDate;
 
     /**
      * Types of events which can be scheduled
@@ -40,7 +46,7 @@ public class ScheduledEvent {
     /**
      * Next scheduled run of Event
      */
-    private long mNextRun;
+    private long mLastRun;
 
     /**
      * Unique ID of the template from which the recurring event will be executed.
@@ -82,11 +88,42 @@ public class ScheduledEvent {
         this.mEventUID = eventUID;
     }
 
-    public long getNextRun() {
-        return mNextRun;
+    public long getLastRun() {
+        return mLastRun;
     }
 
-    public void setNextRun(long nextRun) {
-        this.mNextRun = nextRun;
+    public void setLastRun(long nextRun) {
+        this.mLastRun = nextRun;
+    }
+
+    public long getPeriod() {
+        return mPeriod;
+    }
+
+    public void setPeriod(long period) {
+        this.mPeriod = period;
+    }
+
+    public long getStartTime() {
+        return mStartDate;
+    }
+
+    public void setStartTime(long startDate) {
+        this.mStartDate = startDate;
+    }
+
+    public long getEndTime() {
+        return mEndDate;
+    }
+
+    public void setEndTime(long endDate) {
+        this.mEndDate = endDate;
+    }
+
+    @Override
+    public String toString() {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
+        return mEventType.name() + " recurring every " + mPeriod/ RecurrenceParser.DAY_MILLIS + " days starting on "
+                + dateFormat.format(new Date(mStartDate));
     }
 }

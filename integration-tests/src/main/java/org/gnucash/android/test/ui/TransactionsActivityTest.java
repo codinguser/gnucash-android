@@ -167,7 +167,7 @@ public class TransactionsActivityTest extends
 		boolean toastFound = mSolo.waitForText(toastAmountRequired);
         assertTrue(toastFound);
 
-		int afterCount = mTransactionsDbAdapter.getTransactionsCount(mTransactionsDbAdapter.getAccountID(DUMMY_ACCOUNT_UID));
+		int afterCount = adapter.getTransactionsCount(adapter.getID(DUMMY_ACCOUNT_UID));
 		assertEquals(beforeCount, afterCount);
 
         mSolo.goBack();

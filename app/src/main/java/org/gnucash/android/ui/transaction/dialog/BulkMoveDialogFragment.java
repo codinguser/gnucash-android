@@ -143,12 +143,12 @@ public class BulkMoveDialogFragment extends DialogFragment {
 				
 				long dstAccountId = mDestinationAccountSpinner.getSelectedItemId();
 				TransactionsDbAdapter trxnAdapter = GnuCashApplication.getTransactionDbAdapter();
-				if (!trxnAdapter.getCurrencyCode(dstAccountId).equals(trxnAdapter.getCurrencyCode(mOriginAccountUID))){
+				if (!trxnAdapter.getAccountCurrencyCode(dstAccountId).equals(trxnAdapter.getAccountCurrencyCode(mOriginAccountUID))){
 					Toast.makeText(getActivity(), R.string.toast_incompatible_currency, Toast.LENGTH_LONG).show();
 					return;
 				}
                 String srcAccountUID    = ((TransactionsActivity)getActivity()).getCurrentAccountUID();
-                String dstAccountUID    = trxnAdapter.getAccountUID(dstAccountId);
+                String dstAccountUID    = mAccountsDbAdapter.getUID(dstAccountId);
 				for (long trxnId : mTransactionIds) {
 					trxnAdapter.moveTransaction(trxnAdapter.getUID(trxnId), srcAccountUID, dstAccountUID);
 				}

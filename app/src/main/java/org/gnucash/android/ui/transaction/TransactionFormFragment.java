@@ -38,6 +38,7 @@ import org.gnucash.android.ui.transaction.dialog.SplitEditorDialogFragment;
 import org.gnucash.android.ui.transaction.dialog.TimePickerDialogFragment;
 import org.gnucash.android.ui.UxArgument;
 import org.gnucash.android.ui.util.AmountInputFormatter;
+import org.gnucash.android.ui.util.RecurrenceParser;
 import org.gnucash.android.ui.util.TransactionTypeToggleButton;
 import org.gnucash.android.ui.widget.WidgetConfigurationActivity;
 
@@ -178,11 +179,6 @@ public class TransactionFormFragment extends SherlockFragment implements
      */
     AccountType mAccountType;
 
-    /**
-     * Spinner for marking the transaction as a recurring transaction
-     */
-    Spinner mRecurringTransactionSpinner;
-
     TextView mRecurrenceTextView;
 
     private String mRecurrenceRule;
@@ -213,7 +209,6 @@ public class TransactionFormFragment extends SherlockFragment implements
 		mDoubleAccountSpinner   = (Spinner) v.findViewById(R.id.input_double_entry_accounts_spinner);
         mOpenSplitsButton       = (Button) v.findViewById(R.id.btn_open_splits);
         mRecurrenceTextView     = (TextView) v.findViewById(R.id.input_recurrence);
-        mRecurringTransactionSpinner = (Spinner) v.findViewById(R.id.input_recurring_transaction_spinner);
 		return v;
 	}
 
@@ -237,11 +232,6 @@ public class TransactionFormFragment extends SherlockFragment implements
 		mAccountsDbAdapter = GnuCashApplication.getAccountsDbAdapter();
         mAccountType = mAccountsDbAdapter.getAccountType(mAccountUID);
 
-        ArrayAdapter<CharSequence> recurrenceAdapter = ArrayAdapter.createFromResource(getActivity(),
-                R.array.recurrence_period_strings, android.R.layout.simple_spinner_item);
-        recurrenceAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        mRecurringTransactionSpinner.setAdapter(recurrenceAdapter);
-
         String transactionUID = getArguments().getString(UxArgument.SELECTED_TRANSACTION_UID);
 		mTransactionsDbAdapter = GnuCashApplication.getTransactionDbAdapter();
 		if (transactionUID != null)
@@ -260,7 +250,7 @@ public class TransactionFormFragment extends SherlockFragment implements
                 if (mSplitsList.size() == 2){ //when handling simple transfer to one account
                     for (Split split : mSplitsList) {
                         if (!split.getAccountUID().equals(mAccountUID)){
-                            split.setAccountUID(mAccountsDbAdapter.getAccountUID(id));
+                            split.setAccountUID(mAccountsDbAdapter.getUID(id));
                         }
                         // else case is handled when saving the transactions
                     }
@@ -373,7 +363,7 @@ public class TransactionFormFragment extends SherlockFragment implements
             for (Split split : mTransaction.getSplits()) {
                 //two splits, one belongs to this account and the other to another account
                 if (mUseDoubleEntry && !split.getAccountUID().equals(mAccountUID)) {
-                    setSelectedTransferAccount(mAccountsDbAdapter.getAccountID(split.getAccountUID()));
+                    setSelectedTransferAccount(mAccountsDbAdapter.getID(split.getAccountUID()));
                 }
             }
         } else {
@@ -382,11 +372,9 @@ public class TransactionFormFragment extends SherlockFragment implements
             }
         }
 
-		String currencyCode = mTransactionsDbAdapter.getCurrencyCode(mAccountUID);
+		String currencyCode = mTransactionsDbAdapter.getAccountCurrencyCode(mAccountUID);
 		Currency accountCurrency = Currency.getInstance(currencyCode);
 		mCurrencyTextView.setText(accountCurrency.getSymbol());
-
-        setSelectedRecurrenceOption();
         if (mMultiCurrency) {
             enableControls(false);
         }
@@ -426,7 +414,7 @@ public class TransactionFormFragment extends SherlockFragment implements
 
 		String code = Money.DEFAULT_CURRENCY_CODE;
 		if (mAccountUID != null){
-			code = mTransactionsDbAdapter.getCurrencyCode(mAccountUID);
+			code = mTransactionsDbAdapter.getAccountCurrencyCode(mAccountUID);
 		}
 		Currency accountCurrency = Currency.getInstance(code);
 		mCurrencyTextView.setText(accountCurrency.getSymbol());
@@ -439,26 +427,6 @@ public class TransactionFormFragment extends SherlockFragment implements
             }
         }
 	}
-
-    /**
-     * Initializes the recurrence spinner to the appropriate value from the transaction.
-     * This is only used when the transaction is a recurrence transaction
-     */
-    private void setSelectedRecurrenceOption() {
-        //init recurrence options
-        final long recurrencePeriod = mTransaction.getRecurrencePeriod();
-        if (recurrencePeriod > 0){
-            String[] recurrenceOptions = getResources().getStringArray(R.array.key_recurrence_period_millis);
-
-            int selectionIndex = 0;
-            for (String recurrenceOption : recurrenceOptions) {
-                if (recurrencePeriod == Long.parseLong(recurrenceOption))
-                    break;
-                selectionIndex++;
-            }
-            mRecurringTransactionSpinner.setSelection(selectionIndex);
-        }
-    }
 
     /**
      * Updates the list of possible transfer accounts.
@@ -610,7 +578,7 @@ public class TransactionFormFragment extends SherlockFragment implements
 
     /**
      * Callback when the account in the navigation bar is changed by the user
-     * @param newAccountId Database record ID of the newly selected account
+     * @param newAccountUID GUID of the newly selected account
      */
     public void onAccountChanged(long newAccountId) {
         if (mMultiCurrency) {
@@ -622,7 +590,7 @@ public class TransactionFormFragment extends SherlockFragment implements
         Currency currency = Currency.getInstance(currencyCode);
         mCurrencyTextView.setText(currency.getSymbol(Locale.getDefault()));
 
-        mAccountType = accountsDbAdapter.getAccountType(newAccountId);
+        mAccountType = accountsDbAdapter.getAccountType(newAccountUID);
         mTransactionTypeButton.setAccountType(mAccountType);
 
         updateTransferAccountsList();
@@ -645,7 +613,7 @@ public class TransactionFormFragment extends SherlockFragment implements
 		BigDecimal amountBigd = parseInputToDecimal(mAmountEditText.getText().toString());
 
 		String accountUID 	= ((TransactionsActivity) getSherlockActivity()).getCurrentAccountUID();
-		Currency currency = Currency.getInstance(mTransactionsDbAdapter.getCurrencyCode(accountUID));
+		Currency currency = Currency.getInstance(mTransactionsDbAdapter.getAccountCurrencyCode(accountUID));
 		Money amount 	= new Money(amountBigd, currency).absolute();
 
         //capture any edits which were done directly (not using split editor)
@@ -695,7 +663,7 @@ public class TransactionFormFragment extends SherlockFragment implements
                 String transferAcctUID;
                 if (mUseDoubleEntry) {
                     long transferAcctId = mDoubleAccountSpinner.getSelectedItemId();
-                    transferAcctUID = mAccountsDbAdapter.getAccountUID(transferAcctId);
+                    transferAcctUID = mAccountsDbAdapter.getUID(transferAcctId);
                     mTransaction.addSplit(split.createPair(transferAcctUID));
                 } else {
                       //TODO: enable this when we can hide certain accounts from the user
@@ -705,7 +673,7 @@ public class TransactionFormFragment extends SherlockFragment implements
                 mTransaction.setSplits(mSplitsList);
             }
 		}
-        mTransaction.setCurrencyCode(mAccountsDbAdapter.getCurrencyCode(mAccountUID));
+        mTransaction.setCurrencyCode(mAccountsDbAdapter.getAccountCurrencyCode(mAccountUID));
 		mTransaction.setTime(cal.getTimeInMillis());
 		mTransaction.setNote(notes);
 
@@ -727,20 +695,28 @@ public class TransactionFormFragment extends SherlockFragment implements
      * @see #saveNewTransaction()
      */
     private void scheduleRecurringTransaction() {
-        //set up recurring transaction if requested
-        int recurrenceIndex = mRecurringTransactionSpinner.getSelectedItemPosition();
-        if (recurrenceIndex != 0) {
-            String[] recurrenceOptions = getResources().getStringArray(R.array.key_recurrence_period_millis);
-            long recurrencePeriodMillis = Long.parseLong(recurrenceOptions[recurrenceIndex]);
-            Transaction recurringTransaction;
-            if (mTransaction.getRecurrencePeriod() > 0) //if we are editing the recurring transaction itself...
-                recurringTransaction = mTransaction;
-            else
-                recurringTransaction = new Transaction(mTransaction, true);
-
-            recurringTransaction.setRecurrencePeriod(recurrencePeriodMillis);
-            mTransactionsDbAdapter.scheduleTransaction(recurringTransaction);
+        List<ScheduledEvent> events = RecurrenceParser.parse(mEventRecurrence, ScheduledEvent.EventType.TRANSACTION);
+        Transaction recurringTransaction;
+        if (mTransaction.getRecurrencePeriod() > 0) //if we are editing the recurring transaction itself...
+            recurringTransaction = mTransaction;
+        else {
+            recurringTransaction = new Transaction(mTransaction, true);
+            mTransactionsDbAdapter.addTransaction(recurringTransaction);
+            //value does not matter, just should be > 0 to mark as a recurring transaction
+            recurringTransaction.setRecurrencePeriod(RecurrenceParser.DAY_MILLIS);
         }
+        mTransactionsDbAdapter.addTransaction(recurringTransaction);
+
+        ScheduledEventDbAdapter scheduledEventDbAdapter = new ScheduledEventDbAdapter(getActivity());
+        Toast.makeText(getActivity(), "Found " + events.size() + " events", Toast.LENGTH_LONG).show();
+        for (ScheduledEvent event : events) {
+            scheduledEventDbAdapter.addScheduledEvent(event);
+            event.setEventUID(recurringTransaction.getUID());
+            scheduledEventDbAdapter.addScheduledEvent(event);
+
+            Log.d("TransactionFormFragment", event.toString());
+        }
+        scheduledEventDbAdapter.close();
     }
 
 

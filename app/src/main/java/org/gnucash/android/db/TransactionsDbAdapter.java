@@ -268,7 +268,7 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 	 * @return Cursor holding set of transactions for particular account
 	 */
 	public Cursor fetchAllTransactionsForAccount(long accountID){
-		return fetchAllTransactionsForAccount(getAccountUID(accountID));
+		return fetchAllTransactionsForAccount(getUID(AccountEntry.TABLE_NAME, accountID));
 	}
 	
 	/**
@@ -369,7 +369,7 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
         if (mDb.getVersion() < SPLITS_DB_VERSION){ //legacy, will be used once, when migrating the database
             String accountUID = c.getString(c.getColumnIndexOrThrow(SplitEntry.COLUMN_ACCOUNT_UID));
             String amountString = c.getString(c.getColumnIndexOrThrow(SplitEntry.COLUMN_AMOUNT));
-            String currencyCode = getCurrencyCode(accountUID);
+            String currencyCode = getAccountCurrencyCode(accountUID);
             Money amount = new Money(amountString, currencyCode);
 
             Split split = new Split(amount.absolute(), accountUID);
@@ -396,14 +396,14 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 
 	/**
 	 * Returns the currency code (ISO 4217) used by the account with id <code>accountId</code>
-	 * If you do not have the database record Id, you can call {@link #getAccountID(String)} instead.
+	 * If you do not have the database record Id, you can call {@link #getID(String, String)}  instead.
 	 * @param accountId Database record id of the account 
 	 * @return Currency code of the account with Id <code>accountId</code>
-	 * @see #getCurrencyCode(String)
+	 * @see #getAccountCurrencyCode(String)
 	 */
-    public String getCurrencyCode(long accountId){
-		String accountUID = getAccountUID(accountId);
-		return getCurrencyCode(accountUID);
+	public String getAccountCurrencyCode(long accountId){
+		String accountUID = getUID(AccountEntry.TABLE_NAME, accountId);
+		return getAccountCurrencyCode(accountUID);
 	}
 
     /**
@@ -426,20 +426,8 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
      * @return String unique identifier of the transaction
      */
     @Override
-    public String getUID(long transactionId) {
-        Cursor c = mDb.query(TransactionEntry.TABLE_NAME,
-                new String[]{TransactionEntry.COLUMN_UID},
-                TransactionEntry._ID + "=" + transactionId,
-                null, null, null, null);
-        try {
-            if (c.moveToFirst()) {
-                return c.getString(c.getColumnIndexOrThrow(TransactionEntry.COLUMN_UID));
-            } else {
-                throw new IllegalArgumentException("transacion " + transactionId + " does not exist");
-            }
-        } finally {
-            c.close();
-        }
+    public String getUID(long transactionId){
+        return getUID(TransactionEntry.TABLE_NAME, transactionId);
     }
 
 	/**
@@ -540,19 +528,7 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
      */
     @Override
     public long getID(String transactionUID){
-        Cursor c = mDb.query(TransactionEntry.TABLE_NAME,
-                new String[]{TransactionEntry._ID},
-                TransactionEntry.COLUMN_UID + "='" + transactionUID + "'",
-                null, null, null, null);
-        try {
-            if (c.moveToFirst()) {
-                return c.getLong(0);
-            } else {
-                throw new IllegalArgumentException("transaction " + transactionUID + " does not exist");
-            }
-        } finally {
-            c.close();
-        }
+        return getID(TransactionEntry.TABLE_NAME, transactionUID);
     }
 
     @Override

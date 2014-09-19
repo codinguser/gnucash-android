@@ -248,7 +248,7 @@ public class Transaction {
     public static Money computeBalance(String accountUID, List<Split> splitList) {
         AccountsDbAdapter accountsDbAdapter = GnuCashApplication.getAccountsDbAdapter();
         AccountType accountType = accountsDbAdapter.getAccountType(accountUID);
-        String currencyCode = accountsDbAdapter.getCurrencyCode(accountUID);
+        String currencyCode = accountsDbAdapter.getAccountCurrencyCode(accountUID);
 
         boolean isDebitAccount = accountType.hasDebitNormalBalance();
         Money balance = Money.createZeroInstance(currencyCode);

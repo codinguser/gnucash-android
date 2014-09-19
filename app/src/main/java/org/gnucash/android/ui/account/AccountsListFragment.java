@@ -267,7 +267,7 @@ public class AccountsListFragment extends SherlockListFragment implements
             listView.setItemChecked(position, true);
             return;
         }
-        mAccountSelectedListener.accountSelected(mAccountsDbAdapter.getAccountUID(id));
+        mAccountSelectedListener.accountSelected(mAccountsDbAdapter.getUID(id));
     }
 
     @Override
@@ -333,7 +333,7 @@ public class AccountsListFragment extends SherlockListFragment implements
      */
     public void showConfirmationDialog(long id) {
         DeleteConfirmationDialogFragment alertFragment =
-                DeleteConfirmationDialogFragment.newInstance(R.string.title_confirm_delete, mAccountsDbAdapter.getAccountUID(id));
+                DeleteConfirmationDialogFragment.newInstance(R.string.title_confirm_delete, mAccountsDbAdapter.getUID(id));
         alertFragment.setTargetFragment(this, 0);
         alertFragment.show(getSherlockActivity().getSupportFragmentManager(), "dialog");
     }
@@ -440,7 +440,7 @@ public class AccountsListFragment extends SherlockListFragment implements
     public void openCreateOrEditActivity(long accountId){
         Intent editAccountIntent = new Intent(AccountsListFragment.this.getActivity(), AccountsActivity.class);
         editAccountIntent.setAction(Intent.ACTION_INSERT_OR_EDIT);
-        editAccountIntent.putExtra(UxArgument.SELECTED_ACCOUNT_UID, mAccountsDbAdapter.getAccountUID(accountId));
+        editAccountIntent.putExtra(UxArgument.SELECTED_ACCOUNT_UID, mAccountsDbAdapter.getUID(accountId));
         startActivityForResult(editAccountIntent, AccountsActivity.REQUEST_EDIT_ACCOUNT);
     }
 

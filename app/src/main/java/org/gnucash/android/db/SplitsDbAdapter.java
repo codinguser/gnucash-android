@@ -132,7 +132,7 @@ public class SplitsDbAdapter extends DatabaseAdapter {
         String transxUID    = cursor.getString(cursor.getColumnIndexOrThrow(SplitEntry.COLUMN_TRANSACTION_UID));
         String memo         = cursor.getString(cursor.getColumnIndexOrThrow(SplitEntry.COLUMN_MEMO));
 
-        String currencyCode = getCurrencyCode(accountUID);
+        String currencyCode = getAccountCurrencyCode(accountUID);
         Money amount = new Money(amountString, currencyCode);
 
         Split split = new Split(amount, accountUID);
@@ -181,7 +181,7 @@ public class SplitsDbAdapter extends DatabaseAdapter {
      */
     public Money computeSplitBalance(String accountUID) {
         Cursor cursor = fetchSplitsForAccount(accountUID);
-        String currencyCode = getCurrencyCode(accountUID);
+        String currencyCode = getAccountCurrencyCode(accountUID);
         Money splitSum = new Money("0", currencyCode);
         AccountType accountType = getAccountType(accountUID);
 
@@ -325,19 +325,7 @@ public class SplitsDbAdapter extends DatabaseAdapter {
      */
     @Override
     public long getID(String uid){
-        Cursor cursor = mDb.query(SplitEntry.TABLE_NAME,
-                new String[] {SplitEntry._ID},
-                SplitEntry.COLUMN_UID + " = ?", new String[]{uid}, null, null, null);
-        try {
-            if (cursor.moveToFirst()) {
-                Log.d(TAG, "Transaction already exists. Returning existing id");
-                return cursor.getLong(cursor.getColumnIndexOrThrow(SplitEntry._ID));
-            } else {
-                throw new IllegalArgumentException("split " + uid + " does not exist");
-            }
-        } finally {
-            cursor.close();
-        }
+        return getID(SplitEntry.TABLE_NAME, uid);
     }
 
     /**
@@ -347,18 +335,7 @@ public class SplitsDbAdapter extends DatabaseAdapter {
      */
     @Override
     public String getUID(long id){
-        Cursor cursor = mDb.query(SplitEntry.TABLE_NAME,
-                new String[]{SplitEntry.COLUMN_UID},
-                SplitEntry._ID + " = " + id, null, null, null, null);
-        try {
-            if (cursor.moveToFirst()) {
-                return cursor.getString(cursor.getColumnIndexOrThrow(SplitEntry.COLUMN_UID));
-            } else {
-                throw new IllegalArgumentException("split " + id + " does not exist");
-            }
-        } finally {
-            cursor.close();
-        }
+        return getUID(SplitEntry.TABLE_NAME, id);
     }
 
     /**

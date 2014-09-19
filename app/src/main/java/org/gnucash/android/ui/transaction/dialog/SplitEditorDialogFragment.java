@@ -127,7 +127,7 @@ public class SplitEditorDialogFragment extends DialogFragment {
             //aha! there are some splits. Let's load those instead
             loadSplitViews(splitList);
         } else {
-            final Currency currency = Currency.getInstance(mAccountsDbAdapter.getCurrencyCode(mAccountUID));
+            final Currency currency = Currency.getInstance(mAccountsDbAdapter.getAccountCurrencyCode(mAccountUID));
             Split split = new Split(new Money(mBaseAmount, currency), mAccountUID);
             AccountType accountType = mAccountsDbAdapter.getAccountType(mAccountUID);
             TransactionType transactionType = Transaction.getTypeForBalance(accountType, mBaseAmount.signum() < 0);
@@ -245,7 +245,7 @@ public class SplitEditorDialogFragment extends DialogFragment {
             splitMemoEditText.setText(split.getMemo());
             splitUidTextView.setText(split.getUID());
             String splitAccountUID = split.getAccountUID();
-            setSelectedTransferAccount(mAccountsDbAdapter.getAccountID(splitAccountUID), accountsSpinner);
+            setSelectedTransferAccount(mAccountsDbAdapter.getID(splitAccountUID), accountsSpinner);
             splitTypeButton.setAccountType(mAccountsDbAdapter.getAccountType(splitAccountUID));
             splitTypeButton.setChecked(split.getType());
         }
@@ -336,8 +336,8 @@ public class SplitEditorDialogFragment extends DialogFragment {
             TransactionTypeToggleButton splitTypeButton = (TransactionTypeToggleButton) splitView.findViewById(R.id.btn_split_type);
 
             BigDecimal amountBigDecimal = TransactionFormFragment.parseInputToDecimal(splitAmountEditText.getText().toString());
-            String currencyCode = mAccountsDbAdapter.getCurrencyCode(accountsSpinner.getSelectedItemId());
-            String accountUID = mAccountsDbAdapter.getAccountUID(accountsSpinner.getSelectedItemId());
+            String accountUID = mAccountsDbAdapter.getUID(accountsSpinner.getSelectedItemId());
+            String currencyCode = mAccountsDbAdapter.getCurrencyCode(accountUID);
             Money amount = new Money(amountBigDecimal, Currency.getInstance(currencyCode));
             Split split = new Split(amount, accountUID);
             split.setMemo(splitMemoEditText.getText().toString());

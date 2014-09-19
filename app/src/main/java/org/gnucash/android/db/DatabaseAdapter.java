@@ -197,6 +197,54 @@ public abstract class DatabaseAdapter {
     }
 
     /**
+     * Returns the string unique ID (GUID) of a record in the database
+     * @param tableName Name of table where record is found
+     * @param uid GUID of the record
+     * @return Long record ID
+     */
+    protected long getID(String tableName, String uid){
+        if (uid == null)
+            return 0;
+
+        Cursor cursor = mDb.query(tableName,
+                new String[] {DatabaseSchema.CommonColumns._ID},
+                DatabaseSchema.CommonColumns.COLUMN_UID + " = ?",
+                new String[]{uid},
+                null, null, null);
+        long result = -1;
+        if (cursor != null){
+            if (cursor.moveToFirst()) {
+                Log.d(TAG, "Transaction already exists. Returning existing id");
+                result = cursor.getLong(cursor.getColumnIndexOrThrow(DatabaseSchema.CommonColumns._ID));
+            }
+            cursor.close();
+        }
+        return result;
+    }
+
+    /**
+     * Returns the string unique ID (GUID) of a record in the database
+     * @param tableName Name of table where record is found
+     * @param id long database record ID
+     * @return GUID of the record
+     */
+    protected String getUID(String tableName, long id){
+        Cursor cursor = mDb.query(tableName,
+                new String[]{DatabaseSchema.CommonColumns.COLUMN_UID},
+                DatabaseSchema.CommonColumns._ID + " = " + id,
+                null, null, null, null);
+
+        String uid = null;
+        if (cursor != null){
+            if (cursor.moveToFirst()) {
+                uid = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.CommonColumns.COLUMN_UID));
+            }
+            cursor.close();
+        }
+        return uid;
+    }
+
+    /**
      * Retrieves record with id <code>rowId</code> from table
      * @param rowId ID of record to be retrieved
      * @return {@link Cursor} to record retrieved
@@ -229,7 +277,7 @@ public abstract class DatabaseAdapter {
      * @return Currency code of the account. "" if accountUID
      *      does not exist in DB
      */
-    public String getCurrencyCode(String accountUID) {
+    public String getAccountCurrencyCode(String accountUID) {
         Cursor cursor = mDb.query(DatabaseSchema.AccountEntry.TABLE_NAME,
                 new String[] {DatabaseSchema.AccountEntry.COLUMN_CURRENCY},
                 DatabaseSchema.AccountEntry.COLUMN_UID + "= ?",
@@ -267,50 +315,6 @@ public abstract class DatabaseAdapter {
             c.close();
         }
         return AccountType.valueOf(type);
-    }
-
-    /**
-     * Returns an account UID of the account with record id <code>accountRowID</code>
-     * @param accountRowID Record ID of account as long parameter
-     * @return String containing UID of account
-     * @throws java.lang.IllegalArgumentException if accountRowID does not exist
-     */
-    public String getAccountUID(long accountRowID) {
-        Cursor c = mDb.query(DatabaseSchema.AccountEntry.TABLE_NAME,
-                new String[]{DatabaseSchema.AccountEntry.COLUMN_UID},
-                DatabaseSchema.CommonColumns._ID + "=" + accountRowID,
-                null, null, null, null);
-        try {
-            if (c.moveToFirst()) {
-                return c.getString(0);
-            } else {
-                throw new IllegalArgumentException(String.format("account %d does not exist", accountRowID));
-            }
-        } finally {
-            c.close();
-        }
-    }
-
-    /**
-     * Returns the database row Id of the account with unique Identifier <code>accountUID</code>
-     * @param accountUID Unique identifier of the account
-     * @return Database row ID of the account
-     * @throws java.lang.IllegalArgumentException if accountUID does not exist
-     */
-    public long getAccountID(String accountUID){
-        Cursor c = mDb.query(DatabaseSchema.AccountEntry.TABLE_NAME,
-                new String[]{DatabaseSchema.AccountEntry._ID},
-                DatabaseSchema.AccountEntry.COLUMN_UID + "= ?",
-                new String[]{accountUID}, null, null, null);
-        try {
-            if (c.moveToFirst()) {
-                return c.getLong(0);
-            } else {
-                throw new IllegalArgumentException("account " + accountUID + " does not exist");
-            }
-        } finally {
-            c.close();
-        }
     }
 
     /**

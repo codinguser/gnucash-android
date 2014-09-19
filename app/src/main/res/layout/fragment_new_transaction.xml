@@ -174,11 +174,6 @@
                       android:text="Not scheduled"
                       style="@style/Dropdown.TextView" />
 
-            <Spinner android:id="@+id/input_recurring_transaction_spinner"
-                     android:layout_width="match_parent"
-                     android:layout_height="wrap_content"
-                     android:layout_marginBottom="@dimen/dialog_padding"
-                    />
         </LinearLayout>
 	</LinearLayout>
 </ScrollView>

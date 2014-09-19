@@ -141,14 +141,14 @@ public class TransactionsActivity extends PassLockActivity implements
 
 		  @Override
 		  public boolean onNavigationItemSelected(int position, long itemId) {
-            mAccountUID = mAccountsDbAdapter.getAccountUID(itemId);
+            mAccountUID = mAccountsDbAdapter.getUID(itemId);
             FragmentManager fragmentManager = getSupportFragmentManager();
 
 		    //inform new accounts fragment that account was changed
 		    TransactionFormFragment newTransactionsFragment = (TransactionFormFragment) fragmentManager
 					.findFragmentByTag(FRAGMENT_NEW_TRANSACTION);
 		    if (newTransactionsFragment != null){
-		    	newTransactionsFragment.onAccountChanged(itemId);
+		    	newTransactionsFragment.onAccountChanged(mAccountUID);
 		    	//if we do not return, the transactions list fragment could also be found (although it's not visible)
 		    	return true;
 		    }
@@ -335,14 +335,14 @@ public class TransactionsActivity extends PassLockActivity implements
     private void setTitleIndicatorColor() {
         //Basically, if we are in a top level account, use the default title color.
         //but propagate a parent account's title color to children who don't have own color
-        String colorCode = mAccountsDbAdapter.getAccountColorCode(mAccountsDbAdapter.getAccountID(mAccountUID));
+        String colorCode = mAccountsDbAdapter.getAccountColorCode(mAccountsDbAdapter.getID(mAccountUID));
         int iColor = -1;
         if (colorCode != null){
             iColor = Color.parseColor(colorCode);
         } else {
             String accountUID = mAccountUID;
             while ((accountUID = mAccountsDbAdapter.getParentAccountUID(accountUID)) != null) {
-                colorCode = mAccountsDbAdapter.getAccountColorCode(mAccountsDbAdapter.getAccountID(accountUID));
+                colorCode = mAccountsDbAdapter.getAccountColorCode(mAccountsDbAdapter.getID(accountUID));
                 if (colorCode != null) {
                     iColor = Color.parseColor(colorCode);
                     break;
@@ -436,7 +436,7 @@ public class TransactionsActivity extends PassLockActivity implements
 
             case R.id.menu_favorite_account:
                 AccountsDbAdapter accountsDbAdapter = GnuCashApplication.getAccountsDbAdapter();
-                long accountId = accountsDbAdapter.getAccountID(mAccountUID);
+                long accountId = accountsDbAdapter.getID(mAccountUID);
                 boolean isFavorite = accountsDbAdapter.isFavoriteAccount(accountId);
                 //toggle favorite preference
                 accountsDbAdapter.updateAccount(accountId, DatabaseSchema.AccountEntry.COLUMN_FAVORITE, isFavorite ? "0" : "1");

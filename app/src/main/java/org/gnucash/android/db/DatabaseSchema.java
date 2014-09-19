@@ -95,4 +95,16 @@ public class DatabaseSchema {
 
         public static final String INDEX_UID                    = "split_uid_index";
     }
+
+    public static abstract class ScheduledEventEntry implements CommonColumns {
+        public static final String TABLE_NAME           = "scheduled_events";
+
+        public static final String COLUMN_TYPE          = "type";
+        public static final String COLUMN_EVENT_UID     = "event_uid";
+        public static final String COLUMN_START_TIME    = "start_time";
+        public static final String COLUMN_END_TIME      = "end_time";
+        public static final String COLUMN_LAST_RUN      = "last_run";
+        public static final String COLUMN_PERIOD        = "period";
+
+    }
 }

@@ -306,11 +306,8 @@ public class AccountFormFragment extends SherlockFragment {
             getSherlockActivity().getSupportActionBar().setTitle(R.string.title_edit_account);
         }
         mRootAccountUID = mAccountsDbAdapter.getGnuCashRootAccountUID();
-        if (mRootAccountUID == null) {
-            mRootAccountId = -1;
-        } else {
-            mRootAccountId = mAccountsDbAdapter.getAccountID(mRootAccountUID);
-        }
+        mRootAccountId = mAccountsDbAdapter.getID(mRootAccountUID);
+
         //need to load the cursor adapters for the spinners before initializing the views
         loadAccountTypesList();
         loadDefaultTransferAccountList();
@@ -353,8 +350,7 @@ public class AccountFormFragment extends SherlockFragment {
         mNameEditText.setText(account.getName());
 
         if (mUseDoubleEntry) {
-            String defaultTransferUID = account.getDefaultTransferAccountUID();
-            long doubleDefaultAccountId = (defaultTransferUID == null ? -1 : mAccountsDbAdapter.getAccountID(defaultTransferUID));
+            long doubleDefaultAccountId = mAccountsDbAdapter.getID(account.getDefaultTransferAccountUID());
             setDefaultTransferAccountSelection(doubleDefaultAccountId);
         }
 
@@ -716,7 +712,7 @@ public class AccountFormFragment extends SherlockFragment {
         String newParentAccountUID;
 		if (mParentCheckBox.isChecked()) {
             newParentAccountId = mParentAccountSpinner.getSelectedItemId();
-            newParentAccountUID = mAccountsDbAdapter.getAccountUID(newParentAccountId);
+            newParentAccountUID = mAccountsDbAdapter.getUID(newParentAccountId);
             mAccount.setParentUID(newParentAccountUID);
         } else {
             //need to do this explicitly in case user removes parent account
@@ -727,7 +723,7 @@ public class AccountFormFragment extends SherlockFragment {
 
         if (mDefaultTransferAccountCheckBox.isChecked()){
             long id = mDefaulTransferAccountSpinner.getSelectedItemId();
-            mAccount.setDefaultTransferAccountUID(mAccountsDbAdapter.getAccountUID(id));
+            mAccount.setDefaultTransferAccountUID(mAccountsDbAdapter.getUID(id));
         } else {
             //explicitly set in case of removal of default account
             mAccount.setDefaultTransferAccountUID(null);

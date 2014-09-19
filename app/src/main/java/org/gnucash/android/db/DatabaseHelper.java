@@ -103,6 +103,20 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + "UNIQUE (" 		+ SplitEntry.COLUMN_UID + ") "
             + ");";
 
+
+    public static final String SCHEDULED_EVENTS_TABLE_CREATE = "CREATE TABLE " + ScheduledEventEntry.TABLE_NAME + " ("
+            + ScheduledEventEntry._ID                   + " integer primary key autoincrement, "
+            + ScheduledEventEntry.COLUMN_UID            + " varchar(255) not null, "
+            + ScheduledEventEntry.COLUMN_EVENT_UID      + " varchar(255) not null, "
+            + ScheduledEventEntry.COLUMN_TYPE           + " varchar(255) not null, "
+            + ScheduledEventEntry.COLUMN_PERIOD         + " integer not null, "
+            + ScheduledEventEntry.COLUMN_LAST_RUN       + " integer default 0, "
+            + ScheduledEventEntry.COLUMN_START_TIME     + " integer not null, "
+            + ScheduledEventEntry.COLUMN_END_TIME       + " integer default 0, "
+            + "UNIQUE (" 		+ ScheduledEventEntry.COLUMN_UID + ") "
+            + ");";
+
+
     /**
      * Context passed in for database upgrade. Keep reference so as to be able to display UI dialogs
      */
@@ -314,6 +328,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     db.endTransaction();
                 }
             }
+
+            if (oldVersion == 7 && newVersion >= 8){
+                Log.i(LOG_TAG, "Upgrading database to version 8");
+                Log.i(LOG_TAG, "Creating scheduled events table");
+
+                db.execSQL(SCHEDULED_EVENTS_TABLE_CREATE);
+            }
 		}
 
         if (oldVersion != newVersion) {
@@ -330,6 +351,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(ACCOUNTS_TABLE_CREATE);
         db.execSQL(TRANSACTIONS_TABLE_CREATE);
         db.execSQL(SPLITS_TABLE_CREATE);
+        db.execSQL(SCHEDULED_EVENTS_TABLE_CREATE);
 
         String createAccountUidIndex = "CREATE UNIQUE INDEX '" + AccountEntry.INDEX_UID + "' ON "
                 + AccountEntry.TABLE_NAME + "(" + AccountEntry.COLUMN_UID + ")";
@@ -354,6 +376,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + AccountEntry.TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS " + TransactionEntry.TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS " + SplitEntry.TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS " + ScheduledEventEntry.TABLE_NAME);
     }
 
 

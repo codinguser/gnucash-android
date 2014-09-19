@@ -221,7 +221,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 	 * @return <code>true</code> if deletion was successful, <code>false</code> otherwise.
 	 */
 	public boolean destructiveDeleteAccount(long rowId){
-        String accountUID = getAccountUID(rowId);
+        String accountUID = getUID(rowId);
         if (getAccountType(accountUID) == AccountType.ROOT) {
             // refuse to delete ROOT
             return false;
@@ -294,7 +294,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
                     + " FROM trans_split_acct WHERE "
                     + AccountEntry.TABLE_NAME + "_" + AccountEntry.COLUMN_UID
                     + " = ? )",
-                    new String[]{getAccountUID(rowId)});
+                    new String[]{getUID(rowId)});
             // delete empty transactions
             // trans_split_acct is an inner joint, empty transactions will
             // not be selected in this view
@@ -346,7 +346,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
         mDb.update(SplitEntry.TABLE_NAME,
                 contentValues,
                 SplitEntry.COLUMN_ACCOUNT_UID + "=?",
-                new String[]{getAccountUID(accountId)});
+                new String[]{getUID(accountId)});
         return destructiveDeleteAccount(accountId);
     }
 
@@ -358,7 +358,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
      */
     public boolean recursiveDestructiveDelete(long accountId){
         Log.d(TAG, "Delete account with rowId with its transactions and sub-accounts: " + accountId);
-        String accountUID = getAccountUID(accountId);
+        String accountUID = getUID(accountId);
         List<String> descendantAccountUIDs = getDescendantAccountUIDs(accountUID, null, null);
         mDb.beginTransaction();
         try {
@@ -462,7 +462,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
      * @see #getParentAccountUID(String)
      */
     public String getParentAccountUID(long id){
-        return getParentAccountUID(getAccountUID(id));
+        return getParentAccountUID(getUID(id));
     }
 
 	/**
@@ -522,7 +522,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
      * @return {@link AccountType} of the account
      */
     public AccountType getAccountType(long accountId){
-        return getAccountType(getAccountUID(accountId));
+        return getAccountType(getUID(accountId));
     }
 
     /**
@@ -815,7 +815,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
      */
     public Money getAccountBalance(long accountId){
         Log.d(TAG, "Computing account balance for account ID " + accountId);
-        String currencyCode = getCurrencyCode(accountId);
+        String currencyCode = getCurrencyCode(getUID(accountId));
         Money balance = Money.createZeroInstance(currencyCode);
 
         List<Long> subAccounts = getSubAccountIds(accountId);
@@ -839,7 +839,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
      */
     public Money getAccountBalance(String accountUID){
         Log.d(TAG, "Computing account balance for account ID " + accountUID);
-        String currencyCode = mTransactionsAdapter.getCurrencyCode(accountUID);
+        String currencyCode = mTransactionsAdapter.getAccountCurrencyCode(accountUID);
         boolean hasDebitNormalBalance = getAccountType(accountUID).hasDebitNormalBalance();
         Money balance = Money.createZeroInstance(currencyCode);
 
@@ -1047,32 +1047,21 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 	 */
     @Override
 	public long getID(String accountUID){
-		long id = -1;
-		Cursor c = mDb.query(AccountEntry.TABLE_NAME,
-				new String[]{AccountEntry._ID},
-				AccountEntry.COLUMN_UID + "='" + accountUID + "'",
-				null, null, null, null);
-		if (c != null) {
-            if (c.moveToFirst()) {
-                id = c.getLong(c.getColumnIndexOrThrow(AccountEntry._ID));
-            }
-            c.close();
-        }
-		return id;
+		return getID(AccountEntry.TABLE_NAME, accountUID);
 	}
 
     @Override
     public String getUID(long id) {
-        return getAccountUID(id);
+        return getUID(AccountEntry.TABLE_NAME, id);
     }
 
     /**
 	 * Returns currency code of account with database ID <code>id</code>
-	 * @param id Record ID of the account to be removed
+	 * @param uid GUID of the account
 	 * @return Currency code of the account
 	 */
-	public String getCurrencyCode(long id){
-		return mTransactionsAdapter.getCurrencyCode(id);
+	public String getCurrencyCode(String uid){
+		return getAccountCurrencyCode(uid);
 	}
 
     /**
@@ -1169,7 +1158,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
      * @return Fully qualified (with parent hierarchy) account name
      */
     public String getFullyQualifiedAccountName(long accountId){
-        return getFullyQualifiedAccountName(getAccountUID(accountId));
+        return getFullyQualifiedAccountName(getUID(accountId));
     }
 
     /**
@@ -1196,7 +1185,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
      * @return <code>true</code> if the account is a placeholder account, <code>false</code> otherwise
      */
     public boolean isPlaceholderAccount(long accountId){
-        return isPlaceholderAccount(getAccountUID(accountId));
+        return isPlaceholderAccount(getUID(accountId));
     }
 
     /**
@@ -1230,8 +1219,8 @@ public class AccountsDbAdapter extends DatabaseAdapter {
             SplitsDbAdapter splitsDbAdapter = mTransactionsAdapter.getSplitDbAdapter();
             while (cursor.moveToNext()) {
                 long id = cursor.getLong(cursor.getColumnIndexOrThrow(AccountEntry._ID));
-                String accountUID = getAccountUID(id);
-                String currencyCode = getCurrencyCode(id);
+                String accountUID = getUID(id);
+                String currencyCode = getCurrencyCode(accountUID);
                 ArrayList<String> accountList = new ArrayList<String>();
                 accountList.add(accountUID);
                 Money balance = splitsDbAdapter.computeSplitBalance(accountList,
