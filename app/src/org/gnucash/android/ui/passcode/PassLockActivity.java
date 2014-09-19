@@ -30,7 +30,7 @@ public class PassLockActivity extends SherlockFragmentActivity {
                     .setAction(getIntent().getAction())
                     .putExtra(UxArgument.PASSCODE_CLASS_CALLER, this.getClass().getName())
                     .putExtra(UxArgument.SELECTED_ACCOUNT_UID,
-                            getIntent().getLongExtra(UxArgument.SELECTED_ACCOUNT_UID, 0L))
+                            getIntent().getStringExtra(UxArgument.SELECTED_ACCOUNT_UID))
             );
         }
     }
