@@ -48,7 +48,7 @@ import android.widget.Toast;
 import org.gnucash.android.util.QualifiedAccountNameCursorAdapter;
 
 /**
- * Activity for configuration which account to diplay on a widget. 
+ * Activity for configuration which account to display on a widget.
  * The activity is opened each time a widget is added to the homescreen
  * @author Ngewi Fet <ngewif@gmail.com>
  */

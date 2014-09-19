@@ -315,8 +315,6 @@ public class AccountsListFragment extends SherlockListFragment implements
      * @param rowId Record ID of the account to be deleted
      */
     protected void deleteAccount(long rowId, boolean deleteSubAccounts) {
-        String accountUID = mAccountsDbAdapter.getAccountUID(rowId);
-        String parentUID    = mAccountsDbAdapter.getParentAccountUID(rowId);
         boolean deleted     = deleteSubAccounts ?
                 mAccountsDbAdapter.recursiveDestructiveDelete(rowId)
                 : mAccountsDbAdapter.destructiveDeleteAccount(rowId);
@@ -433,23 +431,6 @@ public class AccountsListFragment extends SherlockListFragment implements
         super.onDestroy();
         mAccountsDbAdapter.close();
         mAccountsCursorAdapter.close();
-    }
-
-    public void showAddAccountFragment(String accountUID) {
-        FragmentManager fragmentManager = getSherlockActivity().getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager
-                .beginTransaction();
-
-        Bundle args = new Bundle();
-        args.putString(UxArgument.SELECTED_ACCOUNT_UID, accountUID);
-        AccountFormFragment accountFormFragment = AccountFormFragment.newInstance(mAccountsDbAdapter);
-        accountFormFragment.setArguments(args);
-
-        fragmentTransaction.replace(R.id.fragment_container,
-                accountFormFragment, AccountsActivity.FRAGMENT_NEW_ACCOUNT);
-
-        fragmentTransaction.addToBackStack(null);
-        fragmentTransaction.commit();
     }
 
     /**

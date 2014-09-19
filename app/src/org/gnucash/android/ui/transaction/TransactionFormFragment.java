@@ -405,7 +405,7 @@ public class TransactionFormFragment extends SherlockFragment implements
         //init recurrence options
         final long recurrencePeriod = mTransaction.getRecurrencePeriod();
         if (recurrencePeriod > 0){
-            String[] recurrenceOptions = getResources().getStringArray(R.array.recurrence_period_millis);
+            String[] recurrenceOptions = getResources().getStringArray(R.array.key_recurrence_period_millis);
 
             int selectionIndex = 0;
             for (String recurrenceOption : recurrenceOptions) {
@@ -659,7 +659,7 @@ public class TransactionFormFragment extends SherlockFragment implements
         //set up recurring transaction if requested
         int recurrenceIndex = mRecurringTransactionSpinner.getSelectedItemPosition();
         if (recurrenceIndex != 0) {
-            String[] recurrenceOptions = getResources().getStringArray(R.array.recurrence_period_millis);
+            String[] recurrenceOptions = getResources().getStringArray(R.array.key_recurrence_period_millis);
             long recurrencePeriodMillis = Long.parseLong(recurrenceOptions[recurrenceIndex]);
             Transaction recurringTransaction;
             if (mTransaction.getRecurrencePeriod() > 0) //if we are editing the recurring transaction itself...

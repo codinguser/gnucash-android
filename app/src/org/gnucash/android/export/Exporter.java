@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2014 Ngewi Fet <ngewif@gmail.com>
+ * Copyright (c) 2014 Yongxin Wang <fefe.wyx@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,6 +34,7 @@ import java.util.Locale;
  * Base class for the different exporters
  *
  * @author Ngewi Fet <ngewif@gmail.com>
+ * @author Yongxin Wang <fefe.wyx@gmail.com>
  */
 public abstract class Exporter {
     /**

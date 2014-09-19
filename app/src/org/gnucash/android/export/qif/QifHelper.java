@@ -17,16 +17,13 @@
 
 package org.gnucash.android.export.qif;
 
-import org.gnucash.android.R;
-import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.model.AccountType;
 
 import java.text.SimpleDateFormat;
-import java.util.Currency;
 import java.util.Date;
 
 /**
- * @author Ngewi
+ * @author Ngewi Fet <ngewif@gmail.com>
  */
 public class QifHelper {
     /*

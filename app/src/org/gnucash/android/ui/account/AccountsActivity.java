@@ -39,12 +39,10 @@ import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import com.viewpagerindicator.TitlePageIndicator;
-
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.AccountsDbAdapter;
@@ -60,12 +58,8 @@ import org.gnucash.android.ui.util.OnAccountClickedListener;
 import org.gnucash.android.ui.util.Refreshable;
 import org.gnucash.android.ui.util.TaskDelegate;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.Arrays;
 
 /**
@@ -453,7 +447,7 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
 
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        String currency = Arrays.asList(getResources().getStringArray(R.array.currency_codes)).get(which);
+                        String currency = Arrays.asList(getResources().getStringArray(R.array.key_currency_codes)).get(which);
                         PreferenceManager.getDefaultSharedPreferences(AccountsActivity.this)
                                 .edit()
                                 .putString(getString(R.string.key_default_currency), currency)

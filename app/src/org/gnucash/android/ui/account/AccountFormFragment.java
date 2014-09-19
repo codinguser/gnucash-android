@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2012 - 2014 Ngewi Fet <ngewif@gmail.com>
+ * Copyright (c) 2014 Yongxin Wang <fefe.wyx@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,6 +57,7 @@ import java.util.*;
 /**
  * Fragment used for creating and editing accounts
  * @author Ngewi Fet <ngewif@gmail.com>
+ * @author Yongxin Wang <fefe.wyx@gmail.com>
  */
 public class AccountFormFragment extends SherlockFragment {
 
@@ -396,7 +398,7 @@ public class AccountFormFragment extends SherlockFragment {
      * @param accountType AccountType to be set
      */
     private void setAccountTypeSelection(AccountType accountType){
-        String[] accountTypeEntries = getResources().getStringArray(R.array.account_type_entries);
+        String[] accountTypeEntries = getResources().getStringArray(R.array.key_account_type_entries);
         int accountTypeIndex = Arrays.asList(accountTypeEntries).indexOf(accountType.name());
         mAccountTypeSpinner.setSelection(accountTypeIndex);
     }
@@ -417,7 +419,7 @@ public class AccountFormFragment extends SherlockFragment {
      * @param currencyCode ISO 4217 currency code to be selected
      */
     private void setSelectedCurrency(String currencyCode){
-        mCurrencyCodes = Arrays.asList(getResources().getStringArray(R.array.currency_codes));
+        mCurrencyCodes = Arrays.asList(getResources().getStringArray(R.array.key_currency_codes));
         if (mCurrencyCodes.contains(currencyCode)){
             mCurrencySpinner.setSelection(mCurrencyCodes.indexOf(currencyCode));
         }
@@ -784,7 +786,7 @@ public class AccountFormFragment extends SherlockFragment {
      */
     private AccountType getSelectedAccountType() {
         int selectedAccountTypeIndex = mAccountTypeSpinner.getSelectedItemPosition();
-        String[] accountTypeEntries = getResources().getStringArray(R.array.account_type_entries);
+        String[] accountTypeEntries = getResources().getStringArray(R.array.key_account_type_entries);
         return AccountType.valueOf(accountTypeEntries[selectedAccountTypeIndex]);
     }
 

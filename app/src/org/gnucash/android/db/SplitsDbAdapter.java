@@ -42,6 +42,7 @@ import static org.gnucash.android.db.DatabaseSchema.TransactionEntry;
  * Database adapter for managing transaction splits in the database
  *
  * @author Ngewi Fet <ngewif@gmail.com>
+ * @author Yongxin Wang <fefe.wyx@gmail.com>
  */
 public class SplitsDbAdapter extends DatabaseAdapter {
 

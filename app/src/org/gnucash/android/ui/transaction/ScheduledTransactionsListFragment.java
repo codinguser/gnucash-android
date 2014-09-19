@@ -367,7 +367,7 @@ public class ScheduledTransactionsListFragment extends SherlockListFragment impl
          * @return String formatted representation of recurrence period
          */
         public String getRecurrenceAsString(long periodMillis){
-            String[] recurrencePeriods = getResources().getStringArray(R.array.recurrence_period_millis);
+            String[] recurrencePeriods = getResources().getStringArray(R.array.key_recurrence_period_millis);
             String[] recurrenceStrings = getResources().getStringArray(R.array.recurrence_period_strings);
 
             int index = 0;

@@ -42,6 +42,7 @@ import java.util.ArrayList;
  * The discovered accounts and transactions are automatically added to the database
  *
  * @author Ngewi Fet <ngewif@gmail.com>
+ * @author Yongxin Wang <fefe.wyx@gmail.com>
  */
 public class GncXmlHandler extends DefaultHandler {
 

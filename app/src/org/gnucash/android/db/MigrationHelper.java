@@ -33,20 +33,20 @@ import java.io.*;
 import static org.gnucash.android.db.DatabaseSchema.AccountEntry;
 
 /**
- * Date: 23.03.2014
+ * Collection of helper methods which are used during database migrations
  *
- * @author Ngewi
+ * @author Ngewi Fet <ngewif@gmail.com>
  */
 public class MigrationHelper {
     public static final String LOG_TAG = "MigrationHelper";
 
     /**
-     * Performs same functtion as {@link AccountsDbAdapter#getFullyQualifiedAccountName(String)}
+     * Performs same function as {@link AccountsDbAdapter#getFullyQualifiedAccountName(String)}
      * <p>This method is only necessary because we cannot open the database again (by instantiating {@link org.gnucash.android.db.AccountsDbAdapter}
-     * while it is locked for upgrades. So we reimplement the method here.</p>
+     * while it is locked for upgrades. So we re-implement the method here.</p>
      * @param db SQLite database
      * @param accountUID Unique ID of account whose fully qualified name is to be determined
-     * @return Fully qualified (colon-sepaated) account name
+     * @return Fully qualified (colon-separated) account name
      * @see AccountsDbAdapter#getFullyQualifiedAccountName(String)
      */
     static String getFullyQualifiedAccountName(SQLiteDatabase db, String accountUID){

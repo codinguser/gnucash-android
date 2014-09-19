@@ -133,12 +133,7 @@ public class TransactionsListFragment extends SherlockListFragment implements
 		}
 	};
 
-	/**
-	 * Text view displaying the sum of the accounts
-	 */
-	private TextView mSumTextView;
-	
-	@Override
+    @Override
  	public void onCreate(Bundle savedInstanceState) {		
 		super.onCreate(savedInstanceState);
 		setHasOptionsMenu(true);
@@ -189,7 +184,10 @@ public class TransactionsListFragment extends SherlockListFragment implements
 	public void refresh(){
 		getLoaderManager().restartLoader(0, null, this);
 
-        mSumTextView = (TextView) getView().findViewById(R.id.transactions_sum);
+        /*
+	  Text view displaying the sum of the accounts
+	 */
+        TextView mSumTextView = (TextView) getView().findViewById(R.id.transactions_sum);
         new AccountBalanceTask(mSumTextView, getActivity()).execute(mAccountUID);
 
 	}
@@ -317,11 +315,10 @@ public class TransactionsListFragment extends SherlockListFragment implements
 	 */
 	private void stopActionMode(){
         int checkedCount = getListView().getCheckedItemIds().length;
-		if (checkedCount > 0 || mActionMode == null)
-			return;
-		else
-			mActionMode.finish();
-	}
+        if (checkedCount <= 0 && mActionMode != null) {
+            mActionMode.finish();
+        }
+    }
 		
 	/**
 	 * Prepares and displays the dialog for bulk moving transactions to another account

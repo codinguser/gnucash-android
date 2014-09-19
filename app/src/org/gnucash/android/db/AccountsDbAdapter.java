@@ -38,7 +38,7 @@ import static org.gnucash.android.db.DatabaseSchema.*;
  * Manages persistence of {@link Account}s in the database
  * Handles adding, modifying and deleting of account records.
  * @author Ngewi Fet <ngewif@gmail.com>
- *
+ * @author Yongxin Wang <fefe.wyx@gmail.com>
  */
 public class AccountsDbAdapter extends DatabaseAdapter {
     /**

@@ -38,7 +38,7 @@ import java.util.List;
  * Manages persistence of {@link Transaction}s in the database
  * Handles adding, modifying and deleting of transaction records.
  * @author Ngewi Fet <ngewif@gmail.com> 
- * 
+ * @author Yongxin Wang <fefe.wyx@gmail.com>
  */
 public class TransactionsDbAdapter extends DatabaseAdapter {
 
@@ -243,13 +243,11 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
      * @return Cursor holding set of all recurring transactions
      */
     public Cursor fetchAllRecurringTransactions(){
-        Cursor cursor = mDb.query(TransactionEntry.TABLE_NAME,
+        return mDb.query(TransactionEntry.TABLE_NAME,
                 null,
                 TransactionEntry.COLUMN_RECURRENCE_PERIOD + "!= 0",
                 null, null, null,
                 AccountEntry.COLUMN_NAME + " ASC, " + TransactionEntry.COLUMN_RECURRENCE_PERIOD + " ASC");
-//                DatabaseHelper.COLUMN_RECURRENCE_PERIOD + " ASC, " + DatabaseHelper.COLUMN_TIMESTAMP + " DESC");
-        return cursor;
     }
 
 	/**
@@ -592,12 +590,11 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
                 .append(" LIKE '").append(prefix).append("%'");
         String selection = stringBuffer.toString();
 
-        Cursor c = mDb.query(TransactionEntry.TABLE_NAME,
+        return mDb.query(TransactionEntry.TABLE_NAME,
                 new String[]{TransactionEntry._ID, TransactionEntry.COLUMN_DESCRIPTION},
                 selection,
                 null, null, null,
                 TransactionEntry.COLUMN_DESCRIPTION + " ASC");
-        return c;
     }
 
     /**

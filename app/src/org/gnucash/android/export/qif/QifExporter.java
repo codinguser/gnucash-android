@@ -34,7 +34,10 @@ import java.math.BigDecimal;
 import java.util.Currency;
 
 /**
- * @author Ngewi
+ * Exports the accounts and transactions in the database to the QIF format
+ *
+ * @author Ngewi Fet <ngewif@gmail.com>
+ * @author Yongxin Wang <fefe.wyx@gmail.com>
  */
 public class QifExporter extends Exporter{
     public QifExporter(ExportParams params){

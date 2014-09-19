@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2012 - 2014 Ngewi Fet <ngewif@gmail.com>
+ * Copyright (c) 2014 Yongxin Wang <fefe.wyx@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,6 +45,7 @@ import javax.xml.transform.stream.StreamResult;
 /**
  * Exports the data in the database in OFX format
  * @author Ngewi Fet <ngewi.fet@gmail.com>
+ * @author Yongxin Wang <fefe.wyx@gmail.com>
  */
 public class OfxExporter extends Exporter{
 

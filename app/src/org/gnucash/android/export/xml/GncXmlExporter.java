@@ -54,6 +54,7 @@ import java.util.zip.GZIPOutputStream;
  * Creates a GnuCash XML representation of the accounts and transactions
  *
  * @author Ngewi Fet <ngewif@gmail.com>
+ * @author Yongxin Wang <fefe.wyx@gmail.com>
  */
 public class GncXmlExporter extends Exporter{
 

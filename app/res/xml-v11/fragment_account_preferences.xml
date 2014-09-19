@@ -6,7 +6,7 @@
                     android:dialogTitle="@string/title_choose_currency"
                     android:title="@string/title_default_currency"
                     android:entries="@array/currency_names"
-                    android:entryValues="@array/currency_codes"/>
+                    android:entryValues="@array/key_currency_codes"/>
     <Preference android:key="@string/key_create_default_accounts"
                 android:title="@string/title_create_default_accounts"
                 android:summary="@string/summary_create_default_accounts" />
