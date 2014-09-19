@@ -126,12 +126,11 @@ public class MigrationHelper {
         //we do not use the ExporterAsyncTask here because we want to use an already open db
         Exporter exporter = null;
         switch (format){
-            case QIF:
-                exporter = new QifExporter(exportParams, db);
-                break;
             case GNC_XML:
-            default:
                 exporter = new GncXmlExporter(exportParams, db);
+                break;
+            default:
+                throw new IllegalArgumentException("Only Gnc XML is supported in Migration");
         }
 
         BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(
