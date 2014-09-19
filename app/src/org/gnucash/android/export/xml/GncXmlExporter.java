@@ -27,14 +27,22 @@ import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.export.ExportFormat;
 import org.gnucash.android.export.ExportParams;
 import org.gnucash.android.export.Exporter;
+import org.gnucash.android.model.Account;
+import org.gnucash.android.model.Transaction;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.xmlpull.v1.XmlPullParserFactory;
 import org.xmlpull.v1.XmlSerializer;
 
-import java.io.BufferedOutputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import java.io.*;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Currency;
@@ -393,5 +401,115 @@ public class GncXmlExporter extends Exporter{
             e.printStackTrace();
             Log.e("GncXmlExporter", "Error creating backup", e);
         }
+    }
+
+    /**
+     * Generate GnuCash XML by loading the accounts and transactions from the database and exporting each one.
+     * This method consumes a lot of memory and is slow, but exists for database migrations for backwards compatibility.
+     * <p>The normal exporter interface should be used to generate GncXML files</p>
+     * @return String with the generated XML
+     * @throws ParserConfigurationException if there was an error when generating the XML
+     * @deprecated Use the {@link #generateExport(java.io.Writer)} to generate XML
+     */
+    public String generateXML() throws ParserConfigurationException {
+        DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder documentBuilder = docFactory.newDocumentBuilder();
+
+        Document document = documentBuilder.newDocument();
+        document.setXmlVersion("1.0");
+        document.setXmlStandalone(true);
+
+        Element rootElement = document.createElement(GncXmlHelper.TAG_ROOT);
+        rootElement.setAttribute("xmlns:gnc",    "http://www.gnucash.org/XML/gnc");
+        rootElement.setAttribute("xmlns:act",    "http://www.gnucash.org/XML/act");
+        rootElement.setAttribute("xmlns:book",   "http://www.gnucash.org/XML/book");
+        rootElement.setAttribute("xmlns:cd",     "http://www.gnucash.org/XML/cd");
+        rootElement.setAttribute("xmlns:cmdty",  "http://www.gnucash.org/XML/cmdty");
+        rootElement.setAttribute("xmlns:price",  "http://www.gnucash.org/XML/price");
+        rootElement.setAttribute("xmlns:slot",   "http://www.gnucash.org/XML/slot");
+        rootElement.setAttribute("xmlns:split",  "http://www.gnucash.org/XML/split");
+        rootElement.setAttribute("xmlns:trn",    "http://www.gnucash.org/XML/trn");
+        rootElement.setAttribute("xmlns:ts",     "http://www.gnucash.org/XML/ts");
+
+        Element bookCountNode = document.createElement(GncXmlHelper.TAG_COUNT_DATA);
+        bookCountNode.setAttribute(GncXmlHelper.ATTR_KEY_CD_TYPE, GncXmlHelper.ATTR_VALUE_BOOK);
+        bookCountNode.appendChild(document.createTextNode("1"));
+        rootElement.appendChild(bookCountNode);
+
+        Element bookNode = document.createElement(GncXmlHelper.TAG_BOOK);
+        bookNode.setAttribute(GncXmlHelper.ATTR_KEY_VERSION, GncXmlHelper.BOOK_VERSION);
+        rootElement.appendChild(bookNode);
+
+        Element bookIdNode = document.createElement(GncXmlHelper.TAG_BOOK_ID);
+        bookIdNode.setAttribute(GncXmlHelper.ATTR_KEY_TYPE, GncXmlHelper.ATTR_VALUE_GUID);
+        bookIdNode.appendChild(document.createTextNode(UUID.randomUUID().toString().replaceAll("-", "")));
+        bookNode.appendChild(bookIdNode);
+
+        Element cmdtyCountData = document.createElement(GncXmlHelper.TAG_COUNT_DATA);
+        cmdtyCountData.setAttribute(GncXmlHelper.ATTR_KEY_CD_TYPE, "commodity");
+        cmdtyCountData.appendChild(document.createTextNode(String.valueOf(mAccountsDbAdapter.getCurrencies().size())));
+        bookNode.appendChild(cmdtyCountData);
+
+        Element accountCountNode = document.createElement(GncXmlHelper.TAG_COUNT_DATA);
+        accountCountNode.setAttribute(GncXmlHelper.ATTR_KEY_CD_TYPE, "account");
+        int accountCount = mAccountsDbAdapter.getTotalAccountCount();
+        accountCountNode.appendChild(document.createTextNode(String.valueOf(accountCount)));
+        bookNode.appendChild(accountCountNode);
+
+        Element transactionCountNode = document.createElement(GncXmlHelper.TAG_COUNT_DATA);
+        transactionCountNode.setAttribute(GncXmlHelper.ATTR_KEY_CD_TYPE, "transaction");
+        int transactionCount = mTransactionsDbAdapter.getTotalTransactionsCount();
+        transactionCountNode.appendChild(document.createTextNode(String.valueOf(transactionCount)));
+        bookNode.appendChild(transactionCountNode);
+
+        String rootAccountUID = mAccountsDbAdapter.getGnuCashRootAccountUID();
+        Account rootAccount = mAccountsDbAdapter.getAccount(rootAccountUID);
+        if (rootAccount != null){
+            rootAccount.toGncXml(document, bookNode);
+        }
+        Cursor accountsCursor = mAccountsDbAdapter.fetchAllRecordsOrderedByFullName();
+
+        //create accounts hierarchically by ordering by full name
+        if (accountsCursor != null){
+            while (accountsCursor.moveToNext()){
+                long id = accountsCursor.getLong(accountsCursor.getColumnIndexOrThrow(DatabaseSchema.AccountEntry._ID));
+                Account account = mAccountsDbAdapter.getAccount(id);
+                account.toGncXml(document, bookNode);
+            }
+            accountsCursor.close();
+        }
+
+        //more memory efficient approach than loading all transactions into memory first
+        Cursor transactionsCursor = mTransactionsDbAdapter.fetchAllRecords();
+        if (transactionsCursor != null){
+            while (transactionsCursor.moveToNext()){
+                Transaction transaction = mTransactionsDbAdapter.buildTransactionInstance(transactionsCursor);
+                transaction.toGncXml(document, bookNode);
+            }
+            transactionsCursor.close();
+        }
+
+        document.appendChild(rootElement);
+        mAccountsDbAdapter.close();
+        mTransactionsDbAdapter.close();
+
+        StringWriter stringWriter = new StringWriter();
+        try {
+            TransformerFactory transformerFactory = TransformerFactory.newInstance();
+
+            Transformer transformer = transformerFactory.newTransformer();
+
+            transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
+            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+            DOMSource source = new DOMSource(document);
+            StreamResult result = new StreamResult(stringWriter);
+
+            transformer.transform(source, result);
+            stringWriter.flush();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new ExporterException(mParameters, e);
+        }
+        return stringWriter.toString();
     }
 }

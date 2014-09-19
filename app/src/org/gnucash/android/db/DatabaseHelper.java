@@ -16,7 +16,6 @@
 
 package org.gnucash.android.db;
 
-import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -24,7 +23,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 import android.widget.Toast;
-import org.gnucash.android.export.ExportFormat;
 import org.gnucash.android.model.AccountType;
 
 import static org.gnucash.android.db.DatabaseSchema.*;
@@ -234,7 +232,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 //                }
 
                 try {
-                    String filepath = MigrationHelper.exportDatabase(db, ExportFormat.GNC_XML);
+                    String filepath = MigrationHelper.exportGnucashXML(db);
 
                     dropAllDatabaseTables(db);
                     createDatabaseTables(db);

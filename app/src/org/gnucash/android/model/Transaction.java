@@ -20,13 +20,11 @@ import android.content.Intent;
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.export.ofx.OfxHelper;
-import org.gnucash.android.export.qif.QifHelper;
 import org.gnucash.android.export.xml.GncXmlHelper;
 import org.gnucash.android.model.Account.OfxAccountType;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import java.math.BigDecimal;
 import java.util.*;
 
 /**
@@ -513,6 +511,71 @@ public class Transaction {
 
         return transactionNode;
 	}
+
+    /**
+     * Generate the GncXML for the transaction and append to the DOM document
+     * @param doc XML document to which transaction should be added
+     * @param rootElement Parent node for the XML
+     * @deprecated Use the {@link org.gnucash.android.export.xml.GncXmlExporter} to generate XML
+     */
+    public void toGncXml(Document doc, Element rootElement) {
+        Element idNode = doc.createElement(GncXmlHelper.TAG_TRX_ID);
+        idNode.setAttribute(GncXmlHelper.ATTR_KEY_TYPE, GncXmlHelper.ATTR_VALUE_GUID);
+        idNode.appendChild(doc.createTextNode(mUID));
+
+        Element currencyNode = doc.createElement(GncXmlHelper.TAG_TRX_CURRENCY);
+        Element cmdtySpacenode = doc.createElement(GncXmlHelper.TAG_COMMODITY_SPACE);
+        cmdtySpacenode.appendChild(doc.createTextNode("ISO4217"));
+        currencyNode.appendChild(cmdtySpacenode);
+        Element cmdtyIdNode = doc.createElement(GncXmlHelper.TAG_COMMODITY_ID);
+        cmdtyIdNode.appendChild(doc.createTextNode(mCurrencyCode));
+        currencyNode.appendChild(cmdtyIdNode);
+
+        Element datePostedNode = doc.createElement(GncXmlHelper.TAG_DATE_POSTED);
+        Element datePNode = doc.createElement(GncXmlHelper.TAG_DATE);
+        datePNode.appendChild(doc.createTextNode(GncXmlHelper.formatDate(mTimestamp)));
+        datePostedNode.appendChild(datePNode);
+
+        Element dateEneteredNode = doc.createElement(GncXmlHelper.TAG_DATE_ENTERED);
+        Element dateENode = doc.createElement(GncXmlHelper.TAG_DATE);
+        dateENode.appendChild(doc.createTextNode(GncXmlHelper.formatDate(mTimestamp)));
+        dateEneteredNode.appendChild(dateENode);
+
+        Element descriptionNode = doc.createElement(GncXmlHelper.TAG_TRN_DESCRIPTION);
+        if (mDescription != null) {
+            descriptionNode.appendChild(doc.createTextNode(mDescription));
+        }
+
+        Element trnSlotsNode = doc.createElement(GncXmlHelper.TAG_TRN_SLOTS);
+        if (mNotes != null && mNotes.length() > 0) {
+            trnSlotsNode.appendChild(GncXmlHelper.createSlot(doc, GncXmlHelper.KEY_NOTES, mNotes, GncXmlHelper.ATTR_VALUE_STRING));
+            //TODO: Consider adding future transactions date as slot here too
+        }
+        Element trnSplits = doc.createElement(GncXmlHelper.TAG_TRN_SPLITS);
+        for (Split split : mSplitList) {
+            split.toGncXml(doc, trnSplits);
+        }
+
+        Element transactionNode = doc.createElement(GncXmlHelper.TAG_TRANSACTION);
+        transactionNode.setAttribute(GncXmlHelper.ATTR_KEY_VERSION, GncXmlHelper.BOOK_VERSION);
+        transactionNode.appendChild(idNode);
+        transactionNode.appendChild(currencyNode);
+        transactionNode.appendChild(datePostedNode);
+        transactionNode.appendChild(dateEneteredNode);
+        transactionNode.appendChild(descriptionNode);
+        if (mNotes != null && mNotes.length() > 0){
+            transactionNode.appendChild(trnSlotsNode);
+        }
+        //TODO: Improve xml compatibilty with desktop for scheduled actions
+        if (mRecurrencePeriod != 0) {
+            Element recurrenceNode = doc.createElement(GncXmlHelper.TAG_RECURRENCE_PERIOD);
+            recurrenceNode.appendChild(doc.createTextNode(String.valueOf(mRecurrencePeriod)));
+            transactionNode.appendChild(recurrenceNode);
+        }
+        transactionNode.appendChild(trnSplits);
+
+        rootElement.appendChild(transactionNode);
+    }
 
     /**
      * Creates an Intent with arguments from the <code>transaction</code>.
