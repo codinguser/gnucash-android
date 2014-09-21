@@ -162,7 +162,9 @@ public abstract class DatabaseAdapter {
                 " ) , 2 ) AS trans_acct_a_uid , TOTAL ( CASE WHEN " + SplitEntry.TABLE_NAME + "_" +
                 SplitEntry.COLUMN_TYPE + " = 'DEBIT' THEN "+ SplitEntry.TABLE_NAME + "_" +
                 SplitEntry.COLUMN_AMOUNT + " ELSE - " + SplitEntry.TABLE_NAME + "_" +
-                SplitEntry.COLUMN_AMOUNT + " END ) AS trans_acct_balance FROM trans_split_acct " +
+                SplitEntry.COLUMN_AMOUNT + " END ) AS trans_acct_balance , COUNT ( DISTINCT " +
+                AccountEntry.TABLE_NAME + "_" + AccountEntry.COLUMN_CURRENCY +
+                " ) AS trans_currency_count FROM trans_split_acct " +
                 " GROUP BY " + TransactionEntry.TABLE_NAME + "_" + TransactionEntry.COLUMN_UID
         );
     }

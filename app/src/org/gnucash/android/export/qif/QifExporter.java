@@ -71,6 +71,8 @@ public class QifExporter extends Exporter{
                     },
                     // no recurrence transactions
                     TransactionEntry.TABLE_NAME + "_" + TransactionEntry.COLUMN_RECURRENCE_PERIOD + " == 0 AND " +
+                            // exclude transactions involving multiple currencies
+                            "trans_extra_info.trans_currency_count = 1 AND " +
                             // in qif, split from the one account entry is not recorded (will be auto balanced)
                             AccountEntry.TABLE_NAME + "_" + AccountEntry.COLUMN_UID + " != account1." + AccountEntry.COLUMN_UID +
                             (
