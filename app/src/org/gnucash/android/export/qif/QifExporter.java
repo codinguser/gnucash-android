@@ -27,6 +27,7 @@ import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.export.ExportParams;
 import org.gnucash.android.export.Exporter;
+import org.gnucash.android.model.Account;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -55,27 +56,28 @@ public class QifExporter extends Exporter{
         try {
             Cursor cursor = transactionsDbAdapter.fetchTransactionsWithSplitsWithTransactionAccount(
                     new String[]{
-                            TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_UID + " AS trans_uid",
-                            TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_TIMESTAMP + " AS trans_time",
-                            TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_DESCRIPTION + " AS trans_desc",
-                            SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_AMOUNT + " AS split_amount",
-                            SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_TYPE + " AS split_type",
-                            SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_MEMO + " AS split_memo",
+                            TransactionEntry.TABLE_NAME + "_" + TransactionEntry.COLUMN_UID + " AS trans_uid",
+                            TransactionEntry.TABLE_NAME + "_" + TransactionEntry.COLUMN_TIMESTAMP + " AS trans_time",
+                            TransactionEntry.TABLE_NAME + "_" + TransactionEntry.COLUMN_DESCRIPTION + " AS trans_desc",
+                            SplitEntry.TABLE_NAME + "_" + SplitEntry.COLUMN_AMOUNT + " AS split_amount",
+                            SplitEntry.TABLE_NAME + "_" + SplitEntry.COLUMN_TYPE + " AS split_type",
+                            SplitEntry.TABLE_NAME + "_" + SplitEntry.COLUMN_MEMO + " AS split_memo",
                             "trans_acct.trans_acct_balance AS trans_acct_balance",
                             "account1." + AccountEntry.COLUMN_UID + " AS acct1_uid",
                             "account1." + AccountEntry.COLUMN_FULL_NAME + " AS acct1_full_name",
                             "account1." + AccountEntry.COLUMN_CURRENCY + " AS acct1_currency",
                             "account1." + AccountEntry.COLUMN_TYPE + " AS acct1_type",
-                            "account2." + AccountEntry.COLUMN_FULL_NAME + " AS acct2_full_name"
+                            AccountEntry.TABLE_NAME + "_" + AccountEntry.COLUMN_FULL_NAME + " AS acct2_full_name"
                     },
                     // no recurrence transactions
-                    TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_RECURRENCE_PERIOD + " == 0 AND " +
+                    TransactionEntry.TABLE_NAME + "_" + TransactionEntry.COLUMN_RECURRENCE_PERIOD + " == 0 AND " +
                             // in qif, split from the one account entry is not recorded (will be auto balanced)
-                            SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_ACCOUNT_UID + " != account1." + AccountEntry.COLUMN_UID +
+                            AccountEntry.TABLE_NAME + "_" + AccountEntry.COLUMN_UID + " != account1." + AccountEntry.COLUMN_UID +
                             (
                             mParameters.shouldExportAllTransactions() ?
-                                    "" : " AND " + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_EXPORTED + "== 0"
+                                    "" : " AND " + TransactionEntry.TABLE_NAME + "_" + TransactionEntry.COLUMN_EXPORTED + "== 0"
                             ),
+                    null,
                     // trans_time ASC : put transactions in time order
                     // trans_uid ASC  : put splits from the same transaction together
                    "trans_time ASC, trans_uid ASC"
