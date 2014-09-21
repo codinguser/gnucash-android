@@ -78,7 +78,13 @@ public abstract class DatabaseAdapter {
     }
 
     private void createTempView() {
-        // create a temporary view, combining accounts, transactions and splits
+        // Create some temporary views. Temporary views only exists in one DB session, and will not
+        // be saved in the DB
+        //
+        // TODO: Useful views should be add to the DB
+        //
+        // create a temporary view, combining accounts, transactions and splits, as this is often used
+        // in the queries
         mDb.execSQL("CREATE TEMP VIEW IF NOT EXISTS trans_split_acct AS SELECT "
                         + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_UID + " AS "
                         + TransactionEntry.TABLE_NAME + "_" + TransactionEntry.COLUMN_UID + " , "
@@ -126,6 +132,38 @@ public abstract class DatabaseAdapter {
                         + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_UID + "=" + SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_TRANSACTION_UID
                         + " , " + AccountEntry.TABLE_NAME + " ON "
                         + SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_ACCOUNT_UID + "=" + AccountEntry.TABLE_NAME + "." + AccountEntry.COLUMN_UID
+        );
+
+        // SELECT transactions_uid AS trans_acct_t_uid ,
+        //      SUBSTR (
+        //          MIN (
+        //              ( CASE WHEN IFNULL ( splits_memo , '' ) == '' THEN 'a' ELSE 'b' END ) || accounts_uid
+        //          ) ,
+        //          2
+        //      ) as trans_acct_a_uid ,
+        //   TOTAL ( CASE WHEN splits_type = 'DEBIT' THEN splits_amount ELSE - splits_amount END ) AS trans_acct_balance
+        //   FROM trans_split_acct GROUP BY transactions_uid
+        //
+        // This temporary view would pick one Account_UID for each
+        // Transaction, which can be used to order all transactions. If possible, account_uid of a split whose
+        // memo is null is select.
+        //
+        // Transaction balance is also picked out by this view
+        //
+        // a split without split memo is chosen if possible, in the following manner:
+        //   if the splits memo is null or empty string, attach an 'a' in front of the split account uid,
+        //   if not, attach a 'b' to the split account uid
+        //   pick the minimal value of the modified account uid (one of the ones begins with 'a', if exists)
+        //   use substr to get account uid
+        mDb.execSQL("CREATE TEMP VIEW IF NOT EXISTS trans_extra_info AS SELECT " + TransactionEntry.TABLE_NAME + "_" + TransactionEntry.COLUMN_UID +
+                " AS trans_acct_t_uid , SUBSTR ( MIN ( ( CASE WHEN IFNULL ( " + SplitEntry.TABLE_NAME + "_" +
+                SplitEntry.COLUMN_MEMO + " , '' ) == '' THEN 'a' ELSE 'b' END ) || " +
+                AccountEntry.TABLE_NAME + "_" + AccountEntry.COLUMN_UID +
+                " ) , 2 ) AS trans_acct_a_uid , TOTAL ( CASE WHEN " + SplitEntry.TABLE_NAME + "_" +
+                SplitEntry.COLUMN_TYPE + " = 'DEBIT' THEN "+ SplitEntry.TABLE_NAME + "_" +
+                SplitEntry.COLUMN_AMOUNT + " ELSE - " + SplitEntry.TABLE_NAME + "_" +
+                SplitEntry.COLUMN_AMOUNT + " END ) AS trans_acct_balance FROM trans_split_acct " +
+                " GROUP BY " + TransactionEntry.TABLE_NAME + "_" + TransactionEntry.COLUMN_UID
         );
     }
 

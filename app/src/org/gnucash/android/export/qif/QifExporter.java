@@ -62,7 +62,7 @@ public class QifExporter extends Exporter{
                             SplitEntry.TABLE_NAME + "_" + SplitEntry.COLUMN_AMOUNT + " AS split_amount",
                             SplitEntry.TABLE_NAME + "_" + SplitEntry.COLUMN_TYPE + " AS split_type",
                             SplitEntry.TABLE_NAME + "_" + SplitEntry.COLUMN_MEMO + " AS split_memo",
-                            "trans_acct.trans_acct_balance AS trans_acct_balance",
+                            "trans_extra_info.trans_acct_balance AS trans_acct_balance",
                             "account1." + AccountEntry.COLUMN_UID + " AS acct1_uid",
                             "account1." + AccountEntry.COLUMN_FULL_NAME + " AS acct1_full_name",
                             "account1." + AccountEntry.COLUMN_CURRENCY + " AS acct1_currency",
