@@ -160,6 +160,11 @@ public class TransactionFormFragment extends SherlockFragment implements
 	private boolean mUseDoubleEntry;
 
     /**
+     * Flag to not if the transaction involves multiple currency
+     */
+    private boolean mMultiCurrency;
+
+    /**
      * The AccountType of the account to which this transaction belongs.
      * Used for determining the accounting rules for credits and debits
      */
@@ -323,6 +328,7 @@ public class TransactionFormFragment extends SherlockFragment implements
 	 * This method is called if the fragment is used for editing a transaction
 	 */
 	private void initializeViewsWithTransaction(){
+        mMultiCurrency = mTransactionsDbAdapter.getNumCurrencies(mTransaction.getUID()) > 1;
 		mDescriptionEditText.setText(mTransaction.getDescription());
 
         mTransactionTypeButton.setAccountType(mAccountType);
@@ -360,6 +366,23 @@ public class TransactionFormFragment extends SherlockFragment implements
 		mCurrencyTextView.setText(accountCurrency.getSymbol());
 
         setSelectedRecurrenceOption();
+        if (mMultiCurrency) {
+            enableControls(false);
+        }
+    }
+
+    private void enableControls(boolean b) {
+        mDescriptionEditText.setEnabled(b);
+        mNotesEditText.setEnabled(b);
+        mDateTextView.setEnabled(b);
+        mTimeTextView.setEnabled(b);
+        mAmountEditText.setEnabled(b);
+        mCurrencyTextView.setEnabled(b);
+        mTransactionTypeButton.setEnabled(b);
+        mDoubleAccountSpinner.setEnabled(b);
+        // the next is always enabled, so the user can check the detailed info of splits
+        // mOpenSplitsButton;
+        mRecurringTransactionSpinner.setEnabled(b);
     }
 
     private void setAmountEditViewVisible(int visibility) {
