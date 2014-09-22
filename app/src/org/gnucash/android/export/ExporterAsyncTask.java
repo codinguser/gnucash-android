@@ -118,7 +118,7 @@ public class ExporterAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            Log.e(TAG, (e.getMessage() == null ? "" : e.getMessage()));
+            Log.e(TAG, "" + e.getMessage());
             final String err_msg = e.getLocalizedMessage();
             mContext.runOnUiThread(new Runnable() {
                 @Override

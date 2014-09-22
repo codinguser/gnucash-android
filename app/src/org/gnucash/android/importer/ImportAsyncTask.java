@@ -67,7 +67,7 @@ public class ImportAsyncTask extends AsyncTask<InputStream, Void, Boolean> {
         } catch (Exception exception){
             exception.printStackTrace();
             final String err_msg = exception.getLocalizedMessage();
-            Log.e(ImportAsyncTask.class.getName(), exception.getMessage());
+            Log.e(ImportAsyncTask.class.getName(), "" + exception.getMessage());
             context.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
