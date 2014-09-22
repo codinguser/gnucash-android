@@ -101,7 +101,7 @@ public class GnuCashApplication extends Application{
         try { //there are some strange locales out there
             currencyCode = Currency.getInstance(locale).getCurrencyCode();
         } catch (Throwable e) {
-            Log.e(context.getString(R.string.app_name), e.getMessage());
+            Log.e(context.getString(R.string.app_name), "" + e.getMessage());
         } finally {
             currencyCode = prefs.getString(context.getString(R.string.key_default_currency), currencyCode);
         }
