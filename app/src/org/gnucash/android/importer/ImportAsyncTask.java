@@ -53,11 +53,13 @@ public class ImportAsyncTask extends AsyncTask<InputStream, Void, Boolean> {
         progressDialog.setTitle(R.string.title_progress_importing_accounts);
         progressDialog.setIndeterminate(true);
         progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        progressDialog.show();
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.HONEYCOMB){
+            //these methods must be called after progressDialog.show()
             progressDialog.setProgressNumberFormat(null);
             progressDialog.setProgressPercentFormat(null);
         }
-        progressDialog.show();
+
     }
 
     @Override

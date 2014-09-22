@@ -23,6 +23,7 @@ import java.text.ParseException;
 import java.util.*;
 
 import android.support.v4.app.FragmentManager;
+import android.text.Editable;
 import android.widget.*;
 import org.gnucash.android.R;
 import org.gnucash.android.db.*;
@@ -473,7 +474,7 @@ public class TransactionFormFragment extends SherlockFragment implements
 	 * Sets click listeners for the dialog buttons
 	 */
 	private void setListeners() {
-        mAmountInputFormatter = new AmountInputFormatter(mAmountEditText);
+        mAmountInputFormatter = new AmountTextWatcher(mAmountEditText); //new AmountInputFormatter(mAmountEditText);
         mAmountEditText.addTextChangedListener(mAmountInputFormatter);
 
         mOpenSplitsButton.setOnClickListener(new View.OnClickListener() {
@@ -790,6 +791,8 @@ public class TransactionFormFragment extends SherlockFragment implements
 		//remove all currency formatting and anything else which is not a number
         String sign = s.trim().substring(0,1);
         String stripped = s.trim().replaceAll("\\D*", "");
+        if (stripped.length() == 0)
+            return "";
         if (sign.equals("+") || sign.equals("-")){
             stripped = sign + stripped;
         }
@@ -814,5 +817,21 @@ public class TransactionFormFragment extends SherlockFragment implements
 		return amount;
 	}
 
+    private class AmountTextWatcher extends AmountInputFormatter {
 
+        public AmountTextWatcher(EditText amountInput) {
+            super(amountInput);
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+            String value = s.toString();
+            if (mTransactionTypeButton.isChecked()){
+                if (s.charAt(0) != '-'){
+                    s = Editable.Factory.getInstance().newEditable("-" + value);
+                }
+            }
+            super.afterTextChanged(s);
+        }
+    }
 }
