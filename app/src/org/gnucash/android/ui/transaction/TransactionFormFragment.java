@@ -722,7 +722,11 @@ public class TransactionFormFragment extends SherlockFragment implements
 			return true;
 
 		case R.id.menu_save:
-            if (mAmountEditText.getText().length() == 0){
+            if (mMultiCurrency) {
+                Toast.makeText(getActivity(), "Multi-currency transactions cannot be modified", Toast.LENGTH_LONG).show();
+                finish();
+            }
+            else if (mAmountEditText.getText().length() == 0) {
                 Toast.makeText(getActivity(), R.string.toast_transanction_amount_required, Toast.LENGTH_SHORT).show();
             } else
 			    saveNewTransaction();
