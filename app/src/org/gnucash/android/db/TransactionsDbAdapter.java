@@ -303,63 +303,23 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 
     }
 
-    public Cursor fetchTransactionsWithSplitsWithTransactionAccount(String [] columns, String condition, String orderBy) {
+    public Cursor fetchTransactionsWithSplitsWithTransactionAccount(String [] columns, String where, String[] whereArgs, String orderBy) {
         // table is :
-        // transactions, splits ON transactions.uid = splits.transaction_uid ,
-        // ( SELECT transactions.uid AS trans_acct_t_uid ,
-        //      SUBSTR (
-        //          MIN (
-        //              ( CASE WHEN IFNULL ( splits.memo , '' ) == '' THEN 'a' ELSE 'b' END ) || splits.account_uid
-        //          ) ,
-        //          2
-        //      ) as trans_acct_a_uid ,
-        //   TOTAL ( CASE WHEN splits.type = 'DEBIT' THEN splits.amount ELSE - splits.amount END ) AS trans_acct_balance
-        //   FROM transactions, splits ON transactions.uid = splits.transaction_uid GROUP BY transactions.uid ) AS trans_acct ON
-        // trans_acct.trans_acct_t_uid = transactions.uid , accounts AS account1 ON account1.uid = trans_acct.trans_acct_a_uid ,
-        // accounts AS account2 ON account2.uid = splits.split_account_uid
+        // trans_split_acct , trans_extra_info ON trans_extra_info.trans_acct_t_uid = transactions_uid ,
+        // accounts AS account1 ON account1.uid = trans_extra_info.trans_acct_a_uid
         //
-        // This is multi table/sub-query join. The third select would pick one Account_UID for each
-        // Transaction, which can be used to order all transactions.
-        // This is used in QIF export, when all transactions are grouped by accounts.
-        //
-        // As the split memo for the account used for grouping is lost, a split without a split memo
-        // is chosen if possible, in the following manner:
-        //   if the splits memo is null or empty string, attach an 'a' in front of the split account uid,
-        //   if not, attach a 'b' to the split account uid
-        //   pick the minimal value of the modified account uid (one of the ones begins with 'a', if exists)
-        //   use substr to get account uid
+        // views effectively simplified this query
         //
         // account1 provides information for the grouped account. Splits from the grouped account
         // can be eliminated with a WHERE clause. Transactions in QIF can be auto balanced.
-        // account2 provides information for the account associated with the split.
         //
         // Account, transaction and split Information can be retrieve in a single query.
-        //
-        // Another approach is not to group transactions by account, be prefix each transaction with an account.
-        // It is easier and should also work, never tried though.
-        // By Yongxin Wang
         return mDb.query(
-                TransactionEntry.TABLE_NAME + " , " + SplitEntry.TABLE_NAME +
-                " ON " + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_UID +
-                " = " + SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_TRANSACTION_UID +
-                " , ( SELECT " + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_UID +
-                " AS trans_acct_t_uid , SUBSTR ( MIN ( ( CASE WHEN IFNULL ( " + SplitEntry.TABLE_NAME + "." +
-                SplitEntry.COLUMN_MEMO + " , '' ) == '' THEN 'a' ELSE 'b' END ) || " +
-                SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_ACCOUNT_UID +
-                " ) , 2 ) AS trans_acct_a_uid , TOTAL ( CASE WHEN " + SplitEntry.TABLE_NAME + "." +
-                SplitEntry.COLUMN_TYPE + " = 'DEBIT' THEN "+ SplitEntry.TABLE_NAME + "." +
-                SplitEntry.COLUMN_AMOUNT + " ELSE - " + SplitEntry.TABLE_NAME + "." +
-                SplitEntry.COLUMN_AMOUNT + " END ) AS trans_acct_balance FROM " +
-                TransactionEntry.TABLE_NAME + " , " + SplitEntry.TABLE_NAME +
-                " ON " + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_UID +
-                " = " + SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_TRANSACTION_UID +
-                " GROUP BY " + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_UID +
-                " )  AS trans_acct ON trans_acct.trans_acct_t_uid = " +
-                TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_UID + " , " +
+                "trans_split_acct , trans_extra_info ON trans_extra_info.trans_acct_t_uid = trans_split_acct." +
+                TransactionEntry.TABLE_NAME + "_" + TransactionEntry.COLUMN_UID + " , " +
                 AccountEntry.TABLE_NAME + " AS account1 ON account1." + AccountEntry.COLUMN_UID +
-                " = trans_acct.trans_acct_a_uid , " + AccountEntry.TABLE_NAME + " AS account2 ON account2." +
-                AccountEntry.COLUMN_UID + " = " + SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_ACCOUNT_UID,
-                columns, condition, null, null, null , orderBy);
+                " = trans_extra_info.trans_acct_a_uid",
+                columns, where, whereArgs, null, null , orderBy);
     }
 
     /**
