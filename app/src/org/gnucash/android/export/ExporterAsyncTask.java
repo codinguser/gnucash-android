@@ -118,14 +118,16 @@ public class ExporterAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            Log.e(TAG, e.getMessage());
+            Log.e(TAG, (e.getMessage() == null ? "" : e.getMessage()));
             final String err_msg = e.getLocalizedMessage();
             mContext.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     Toast.makeText(mContext, R.string.toast_export_error,
                             Toast.LENGTH_SHORT).show();
-                    Toast.makeText(mContext, err_msg, Toast.LENGTH_LONG).show();
+                    if (err_msg != null) {
+                        Toast.makeText(mContext, err_msg, Toast.LENGTH_LONG).show();
+                    }
                 }
             });
             return false;
