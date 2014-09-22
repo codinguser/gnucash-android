@@ -420,4 +420,6 @@
     <string name="summary_save_opening_balances">Enable to save the current account balance (before deleting transactions) as new opening balance after deleting transactions
     </string>
     <string name="title_save_opening_balances">Save account opening balances</string>
+    <string name="export_warning_ofx">OFX does not support double-entry transactions</string>
+    <string name="export_warning_qif">QIF does not support transactions with splits of different currencies</string>
 </resources>

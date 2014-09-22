@@ -416,4 +416,6 @@
     <string name="summary_save_opening_balances">Möglichkeit aktivieren, den aktuellen Saldo als neuen Anfangsbestand nach dem Löschen der Buchungen zu übernehmen
     </string>
     <string name="title_save_opening_balances">Saldo als neuen Anfangsbestand übernehmen</string>
+    <string name="export_warning_ofx">OFX does not support double-entry transactions</string>
+    <string name="export_warning_qif">QIF does not support transactions with splits of different currencies</string>
 </resources>

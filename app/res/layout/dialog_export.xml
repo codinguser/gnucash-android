@@ -69,6 +69,12 @@
                          android:layout_height="wrap_content"
                          android:text="OFX"/>
         </RadioGroup>
+        <TextView android:id="@+id/export_warning"
+                  android:layout_marginLeft="@dimen/dialog_padding"
+                  android:text="Some format-based export warning"
+                  android:textColor="@color/account_red"
+                  style="@style/TextAppearance.Hint"
+                  android:visibility="gone" />
 
 	    <CheckBox android:id="@+id/checkbox_export_all"
 	        android:layout_width="wrap_content"
