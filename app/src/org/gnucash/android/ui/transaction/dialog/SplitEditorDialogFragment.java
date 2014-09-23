@@ -69,6 +69,8 @@ public class SplitEditorDialogFragment extends DialogFragment {
     private BigDecimal mBaseAmount = BigDecimal.ZERO;
 
     private List<String> mRemovedSplitUIDs = new ArrayList<String>();
+
+    private boolean mMultiCurrency = false;
     /**
      * Create and return a new instance of the fragment with the appropriate paramenters
      * @param baseAmountString String with base amount which is being split
@@ -129,8 +131,37 @@ public class SplitEditorDialogFragment extends DialogFragment {
     }
 
     private void loadSplitViews(List<Split> splitList) {
+        Currency currency = null;
         for (Split split : splitList) {
             addSplitView(split);
+            if (currency == null) {
+                currency = split.getAmount().getCurrency();
+            }
+            else if (currency != split.getAmount().getCurrency()) {
+                mMultiCurrency = true;
+            }
+        }
+        if (mMultiCurrency) {
+            enableAllControls(false);
+        }
+    }
+
+    private void enableAllControls(boolean b) {
+        for (View splitView : mSplitItemViewList) {
+            EditText splitMemoEditText = (EditText) splitView.findViewById(R.id.input_split_memo);
+            final EditText splitAmountEditText = (EditText) splitView.findViewById(R.id.input_split_amount);
+            ImageButton removeSplitButton = (ImageButton) splitView.findViewById(R.id.btn_remove_split);
+            Spinner accountsSpinner = (Spinner) splitView.findViewById(R.id.input_accounts_spinner);
+            final TextView splitCurrencyTextView = (TextView) splitView.findViewById(R.id.split_currency_symbol);
+            final TextView splitUidTextView = (TextView) splitView.findViewById(R.id.split_uid);
+            final TransactionTypeToggleButton splitTypeButton = (TransactionTypeToggleButton) splitView.findViewById(R.id.btn_split_type);
+            splitMemoEditText.setEnabled(b);
+            splitAmountEditText.setEnabled(b);
+            removeSplitButton.setEnabled(b);
+            accountsSpinner.setEnabled(b);
+            splitCurrencyTextView.setEnabled(b);
+            splitUidTextView.setEnabled(b);
+            splitTypeButton.setEnabled(b);
         }
     }
 
@@ -260,9 +291,13 @@ public class SplitEditorDialogFragment extends DialogFragment {
         mSaveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                List<Split> splitList = extractSplitsFromView();
-                ((TransactionFormFragment) getTargetFragment()).setSplitList(splitList, mRemovedSplitUIDs);
-
+                if (mMultiCurrency) {
+                    Toast.makeText(getActivity(), R.string.toast_error_edit_multi_currency_transaction, Toast.LENGTH_LONG).show();
+                }
+                else {
+                    List<Split> splitList = extractSplitsFromView();
+                    ((TransactionFormFragment) getTargetFragment()).setSplitList(splitList, mRemovedSplitUIDs);
+                }
                 dismiss();
             }
         });
@@ -309,15 +344,15 @@ public class SplitEditorDialogFragment extends DialogFragment {
         List<Split> splitList   = extractSplitsFromView();
         String currencyCode     = mAccountsDbAdapter.getCurrencyCode(mAccountId);
         Money splitSum          = Money.createZeroInstance(currencyCode);
-
-        for (Split split : splitList) {
-            Money amount = split.getAmount().absolute();
-            if (split.getType() == TransactionType.DEBIT)
-                splitSum = splitSum.subtract(amount);
-            else
-                splitSum = splitSum.add(amount);
+        if (!mMultiCurrency) {
+            for (Split split : splitList) {
+                Money amount = split.getAmount().absolute();
+                if (split.getType() == TransactionType.DEBIT)
+                    splitSum = splitSum.subtract(amount);
+                else
+                    splitSum = splitSum.add(amount);
+            }
         }
-
         TransactionsActivity.displayBalance(mImbalanceTextView, splitSum);
     }
 
