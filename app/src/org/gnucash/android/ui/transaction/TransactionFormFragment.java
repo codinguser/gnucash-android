@@ -567,19 +567,23 @@ public class TransactionFormFragment extends SherlockFragment implements
      * Callback when the account in the navigation bar is changed by the user
      * @param newAccountId Database record ID of the newly selected account
      */
-	public void onAccountChanged(long newAccountId){
-		AccountsDbAdapter accountsDbAdapter = new AccountsDbAdapter(getActivity());
-		String currencyCode = accountsDbAdapter.getCurrencyCode(newAccountId);
-		Currency currency = Currency.getInstance(currencyCode);
-		mCurrencyTextView.setText(currency.getSymbol(Locale.getDefault()));
+    public void onAccountChanged(long newAccountId) {
+        if (mMultiCurrency) {
+            Toast.makeText(getActivity(), R.string.toast_error_edit_multi_currency_transaction, Toast.LENGTH_LONG).show();
+            return;
+        }
+        AccountsDbAdapter accountsDbAdapter = new AccountsDbAdapter(getActivity());
+        String currencyCode = accountsDbAdapter.getCurrencyCode(newAccountId);
+        Currency currency = Currency.getInstance(currencyCode);
+        mCurrencyTextView.setText(currency.getSymbol(Locale.getDefault()));
 
         mAccountType = accountsDbAdapter.getAccountType(newAccountId);
         mTransactionTypeButton.setAccountType(mAccountType);
 
-		updateTransferAccountsList();
+        updateTransferAccountsList();
 
         accountsDbAdapter.close();
-	}
+    }
 
 	/**
 	 * Collects information from the fragment views and uses it to create
