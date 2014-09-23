@@ -40,6 +40,7 @@ public class QifHelper {
     public static final String ACCOUNT_HEADER           = "!Account";
     public static final String ACCOUNT_NAME_PREFIX      = "N";
 
+    public static final String INTERNAL_CURRENCY_PREFIX = "*";
 
     public static final String ENTRY_TERMINATOR = "^";
     private static final SimpleDateFormat QIF_DATE_FORMATTER = new SimpleDateFormat("yyyy/M/d");

@@ -32,6 +32,7 @@ import android.widget.Toast;
 import org.gnucash.android.R;
 import org.gnucash.android.export.ofx.OfxExporter;
 import org.gnucash.android.export.qif.QifExporter;
+import org.gnucash.android.export.qif.QifHelper;
 import org.gnucash.android.export.xml.GncXmlExporter;
 import org.gnucash.android.ui.account.AccountsActivity;
 import org.gnucash.android.ui.transaction.dialog.TransactionsDeleteConfirmationDialogFragment;
@@ -39,7 +40,9 @@ import org.gnucash.android.ui.transaction.dialog.TransactionsDeleteConfirmationD
 import java.io.*;
 import java.nio.channels.FileChannel;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Asynchronous task for exporting transactions.
@@ -200,21 +203,38 @@ public class ExporterAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
      * the exported OFX file
      * @param path String path to the file on disk
      */
-    private void shareFile(String path){
+    private void shareFile(String path) {
         String defaultEmail = PreferenceManager.getDefaultSharedPreferences(mContext)
                 .getString(mContext.getString(R.string.key_default_export_email), null);
-        Intent shareIntent = new Intent(Intent.ACTION_SEND);
+        Intent shareIntent = new Intent(Intent.ACTION_SEND_MULTIPLE);
         shareIntent.setType("application/xml");
-        shareIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse("file://" + path));
+        ArrayList<Uri> exportFiles = new ArrayList<Uri>();
+        if (mExportParams.getExportFormat() == ExportFormat.QIF) {
+            try {
+                List<String> splitFiles = splitQIF(new File(path), new File(path));
+                for (String file : splitFiles) {
+                    exportFiles.add(Uri.parse("file://" + file));
+                }
+            } catch (IOException e) {
+                Log.e(TAG, "error split up files in shareFile");
+                e.printStackTrace();
+                return;
+            }
+        } else {
+            exportFiles.add(Uri.parse("file://" + path));
+        }
+        shareIntent.putExtra(Intent.EXTRA_STREAM, exportFiles);
         shareIntent.putExtra(Intent.EXTRA_SUBJECT, mContext.getString(R.string.title_export_email,
                 mExportParams.getExportFormat().name()));
-        if (defaultEmail != null && defaultEmail.trim().length() > 0){
+        if (defaultEmail != null && defaultEmail.trim().length() > 0) {
             shareIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{defaultEmail});
         }
         SimpleDateFormat formatter = (SimpleDateFormat) SimpleDateFormat.getDateTimeInstance();
 
-        shareIntent.putExtra(Intent.EXTRA_TEXT, mContext.getString(R.string.description_export_email)
+        ArrayList<CharSequence> extraText = new ArrayList<CharSequence>();
+        extraText.add(mContext.getString(R.string.description_export_email)
                 + " " + formatter.format(new Date(System.currentTimeMillis())));
+        shareIntent.putExtra(Intent.EXTRA_TEXT, extraText);
 
         mContext.startActivity(Intent.createChooser(shareIntent, mContext.getString(R.string.title_select_export_destination)));
     }
@@ -225,22 +245,60 @@ public class ExporterAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
      * @param dst Absolute path to the destination file
      * @throws IOException if the file could not be copied
      */
-    public static void copyFile(File src, File dst) throws IOException
-    {
+    public void copyFile(File src, File dst) throws IOException {
         //TODO: Make this asynchronous at some time, t in the future.
-        FileChannel inChannel = new FileInputStream(src).getChannel();
-        FileChannel outChannel = new FileOutputStream(dst).getChannel();
-        try
-        {
-            inChannel.transferTo(0, inChannel.size(), outChannel);
-        }
-        finally
-        {
-            if (inChannel != null)
-                inChannel.close();
-            if (outChannel != null)
-                outChannel.close();
+        if (mExportParams.getExportFormat() == ExportFormat.QIF) {
+            splitQIF(src, dst);
+        } else {
+            FileChannel inChannel = new FileInputStream(src).getChannel();
+            FileChannel outChannel = new FileOutputStream(dst).getChannel();
+            try {
+                inChannel.transferTo(0, inChannel.size(), outChannel);
+            } finally {
+                if (inChannel != null)
+                    inChannel.close();
+                if (outChannel != null)
+                    outChannel.close();
+            }
         }
     }
 
+    /**
+     * Copies a file from <code>src</code> to <code>dst</code>
+     * @param src Absolute path to the source file
+     * @param dst Absolute path to the destination file
+     * @throws IOException if the file could not be copied
+     */
+    private static List<String> splitQIF(File src, File dst) throws IOException {
+        // split only at the last dot
+        String[] pathParts = dst.getPath().split("(?=\\.[^\\.]+$)");
+        ArrayList<String> splitFiles = new ArrayList<String>();
+        String line;
+        BufferedReader in = new BufferedReader(new FileReader(src));
+        BufferedWriter out = null;
+        try {
+            while ((line = in.readLine()) != null) {
+                if (line.startsWith(QifHelper.INTERNAL_CURRENCY_PREFIX)) {
+                    String currencyCode = line.substring(1);
+                    if (out != null) {
+                        out.close();
+                    }
+                    String newFileName = pathParts[0] + "_" + currencyCode + pathParts[1];
+                    splitFiles.add(newFileName);
+                    out = new BufferedWriter(new FileWriter(newFileName));
+                } else {
+                    if (out == null) {
+                        throw new IllegalArgumentException(src.getPath() + " format is not correct");
+                    }
+                    out.append(line).append('\n');
+                }
+            }
+        } finally {
+            in.close();
+            if (out != null) {
+                out.close();
+            }
+        }
+        return splitFiles;
+    }
 }

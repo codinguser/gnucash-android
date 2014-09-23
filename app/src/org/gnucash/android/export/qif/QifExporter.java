@@ -82,12 +82,14 @@ public class QifExporter extends Exporter{
                     null,
                     // trans_time ASC : put transactions in time order
                     // trans_uid ASC  : put splits from the same transaction together
-                   "trans_time ASC, trans_uid ASC"
+                   "acct1_currency ASC, trans_time ASC, trans_uid ASC"
                     );
             try {
+                String currentCurrencyCode = "";
                 String currentAccountUID = "";
                 String currentTransactionUID = "";
                 while (cursor.moveToNext()) {
+                    String currencyCode = cursor.getString(cursor.getColumnIndexOrThrow("acct1_currency"));
                     String accountUID = cursor.getString(cursor.getColumnIndexOrThrow("acct1_uid"));
                     String transactionUID = cursor.getString(cursor.getColumnIndexOrThrow("trans_uid"));
                     if (!transactionUID.equals(currentTransactionUID)) {
@@ -100,6 +102,12 @@ public class QifExporter extends Exporter{
                             //if (!currentAccountUID.equals("")) {
                             //    // end last account
                             //}
+                            if (!currencyCode.equals(currentCurrencyCode)) {
+                                currentCurrencyCode = currencyCode;
+                                writer.append(QifHelper.INTERNAL_CURRENCY_PREFIX)
+                                        .append(currencyCode)
+                                        .append(newLine);
+                            }
                             // start new account
                             currentAccountUID = accountUID;
                             writer.append(QifHelper.ACCOUNT_HEADER).append(newLine);
