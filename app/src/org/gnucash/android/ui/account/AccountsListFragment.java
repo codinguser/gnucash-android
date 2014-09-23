@@ -673,7 +673,7 @@ public class AccountsListFragment extends SherlockListFragment implements
         }
 
         @Override
-        public void bindView(View v, Context context, final Cursor cursor) {
+        public void bindView(View v, Context context, Cursor cursor) {
             // perform the default binding
             super.bindView(v, context, cursor);
 
@@ -714,7 +714,6 @@ public class AccountsListFragment extends SherlockListFragment implements
                     public void onClick(View v) {
                         Intent intent = new Intent(getActivity(), TransactionsActivity.class);
                         intent.setAction(Intent.ACTION_INSERT_OR_EDIT);
-                        String accountUID = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.AccountEntry.COLUMN_UID));
                         intent.putExtra(UxArgument.SELECTED_ACCOUNT_UID, accountUID);
                         getActivity().startActivity(intent);
                     }
