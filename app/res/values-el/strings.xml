@@ -435,5 +435,5 @@
     </string>
     <string name="title_save_opening_balances">Save account opening balances</string>
     <string name="export_warning_ofx">OFX does not support double-entry transactions</string>
-    <string name="export_warning_qif">There will be one QIF file per currency in use</string>
+    <string name="export_warning_qif">A separate QIF file will be generated for each currency in use</string>
 </resources>
