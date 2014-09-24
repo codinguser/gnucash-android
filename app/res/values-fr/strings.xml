@@ -416,4 +416,7 @@
     <string name="summary_save_opening_balances">Permet d\'enregistrer le solde du compte courant (avant la suppression des transactions) comme le nouveau solde d\'ouverture après la suppression des transactions
     </string>
     <string name="title_save_opening_balances">Enregistrer les soldes des comptes d\'ouverture</string>
+    <string name="title_transaction_splits">Transaction splits</string>
+    <string name="label_imbalance">Imbalance:</string>
+    <string name="btn_add_split">Add split</string>
 </resources>

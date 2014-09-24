@@ -416,4 +416,7 @@
     <string name="summary_save_opening_balances">Möglichkeit aktivieren, den aktuellen Saldo als neuen Anfangsbestand nach dem Löschen der Buchungen zu übernehmen
     </string>
     <string name="title_save_opening_balances">Saldo als neuen Anfangsbestand übernehmen</string>
+    <string name="title_transaction_splits">Transaction splits</string>
+    <string name="label_imbalance">Imbalance:</string>
+    <string name="btn_add_split">Add split</string>
 </resources>

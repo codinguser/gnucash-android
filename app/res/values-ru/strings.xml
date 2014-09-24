@@ -420,4 +420,7 @@
     <string name="summary_save_opening_balances">Включите чтобы сохранить текущий баланс (перед удалением проводок) как новое начальное сальдо после их удаления
     </string>
     <string name="title_save_opening_balances">Сохранять начальное сальдо счетов</string>
+    <string name="title_transaction_splits">Transaction splits</string>
+    <string name="label_imbalance">Imbalance:</string>
+    <string name="btn_add_split">Add split</string>
 </resources>
