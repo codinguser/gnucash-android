@@ -183,7 +183,15 @@ public class ScheduledTransactionsListFragment extends SherlockListFragment impl
             checkbox.setChecked(!checkbox.isChecked());
             return;
         }
-        String accountUID = mTransactionsDbAdapter.getTransaction(id).getSplits().get(0).getAccountUID();
+        Transaction transaction = mTransactionsDbAdapter.getTransaction(id);
+
+        //this should actually never happen, but has happened once. So perform check for the future
+        if (transaction.getSplits().size() == 0){
+            Toast.makeText(getActivity(), "The selected transaction has no splits and cannot be opened", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String accountUID = transaction.getSplits().get(0).getAccountUID();
         openTransactionForEdit(accountUID, mTransactionsDbAdapter.getUID(id));
     }
 

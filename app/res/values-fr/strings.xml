@@ -416,4 +416,6 @@
     <string name="summary_save_opening_balances">Permet d\'enregistrer le solde du compte courant (avant la suppression des transactions) comme le nouveau solde d\'ouverture après la suppression des transactions
     </string>
     <string name="title_save_opening_balances">Enregistrer les soldes des comptes d\'ouverture</string>
+    <string name="export_warning_ofx">OFX does not support double-entry transactions</string>
+    <string name="export_warning_qif">A separate QIF file will be generated for each currency in use</string>
 </resources>
