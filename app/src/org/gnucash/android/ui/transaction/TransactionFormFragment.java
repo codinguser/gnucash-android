@@ -224,9 +224,6 @@ public class TransactionFormFragment extends SherlockFragment implements
 		mAccountsDbAdapter = new AccountsDbAdapter(getActivity());
         mAccountType = mAccountsDbAdapter.getAccountType(mAccountUID);
 
-        //updateTransferAccountsList must only be called after initializing mAccountsDbAdapter
-		updateTransferAccountsList();
-
         ArrayAdapter<CharSequence> recurrenceAdapter = ArrayAdapter.createFromResource(getActivity(),
                 R.array.recurrence_period_strings, android.R.layout.simple_spinner_item);
         recurrenceAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -235,6 +232,13 @@ public class TransactionFormFragment extends SherlockFragment implements
         String transactionUID = getArguments().getString(UxArgument.SELECTED_TRANSACTION_UID);
 		mTransactionsDbAdapter = new TransactionsDbAdapter(getActivity());
 		mTransaction = mTransactionsDbAdapter.getTransaction(transactionUID);
+        if (mTransaction != null) {
+            mMultiCurrency = mTransactionsDbAdapter.getNumCurrencies(mTransaction.getUID()) > 1;
+        }
+
+        //updateTransferAccountsList must only be called after initializing mAccountsDbAdapter
+        // it needs mMultiCurrency to be properly initialized
+        updateTransferAccountsList();
 
         mDoubleAccountSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -328,7 +332,6 @@ public class TransactionFormFragment extends SherlockFragment implements
 	 * This method is called if the fragment is used for editing a transaction
 	 */
 	private void initializeViewsWithTransaction(){
-        mMultiCurrency = mTransactionsDbAdapter.getNumCurrencies(mTransaction.getUID()) > 1;
 		mDescriptionEditText.setText(mTransaction.getDescription());
 
         mTransactionTypeButton.setAccountType(mAccountType);
@@ -448,8 +451,8 @@ public class TransactionFormFragment extends SherlockFragment implements
 		String accountUID = ((TransactionsActivity)getActivity()).getCurrentAccountUID();
 
 		String conditions = "(" + DatabaseSchema.AccountEntry.COLUMN_UID + " != '" + accountUID
-                            + "' AND " + DatabaseSchema.AccountEntry.COLUMN_CURRENCY + " = '" + mAccountsDbAdapter.getCurrencyCode(accountUID)
-                            + "' AND " + DatabaseSchema.AccountEntry.COLUMN_UID + " != '" + mAccountsDbAdapter.getGnuCashRootAccountUID()
+                            + "' AND " + (mMultiCurrency ? "" : (DatabaseSchema.AccountEntry.COLUMN_CURRENCY + " = '" + mAccountsDbAdapter.getCurrencyCode(accountUID)
+                            + "' AND ")) + DatabaseSchema.AccountEntry.COLUMN_UID + " != '" + mAccountsDbAdapter.getGnuCashRootAccountUID()
                             + "' AND " + DatabaseSchema.AccountEntry.COLUMN_PLACEHOLDER + " = 0"
                             + ")";
 
