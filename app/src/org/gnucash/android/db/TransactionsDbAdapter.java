@@ -597,4 +597,22 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
     public Transaction getTransaction(String transactionUID) {
         return getTransaction(getID(transactionUID));
     }
+
+    public int getNumCurrencies(String transactionUID) {
+        Cursor cursor = mDb.query("trans_extra_info",
+                new String[]{"trans_currency_count"},
+                "trans_acct_t_uid=?",
+                new String[]{transactionUID},
+                null, null, null);
+        int numCurrencies = 0;
+        try {
+            if (cursor.moveToFirst()) {
+                numCurrencies = cursor.getInt(0);
+            }
+        }
+        finally {
+            cursor.close();
+        }
+        return numCurrencies;
+    }
 }

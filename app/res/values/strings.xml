@@ -325,6 +325,7 @@
 	</string>
 	<string name="label_dismiss">Dismiss</string>
     <string name="toast_transanction_amount_required">Enter an amount to save the transaction</string>
+    <string name="toast_error_edit_multi_currency_transaction">Multi-currency transactions cannot be modified</string>
     <string name="menu_import_accounts">Import GnuCash Accounts</string>
     <string name="btn_import_accounts">Import Accounts</string>
     <string name="toast_error_importing_accounts">An error occurred while importing the GnuCash accounts</string>

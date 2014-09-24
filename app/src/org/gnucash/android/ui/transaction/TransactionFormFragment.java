@@ -161,6 +161,11 @@ public class TransactionFormFragment extends SherlockFragment implements
 	private boolean mUseDoubleEntry;
 
     /**
+     * Flag to not if the transaction involves multiple currency
+     */
+    private boolean mMultiCurrency;
+
+    /**
      * The AccountType of the account to which this transaction belongs.
      * Used for determining the accounting rules for credits and debits
      */
@@ -220,9 +225,6 @@ public class TransactionFormFragment extends SherlockFragment implements
 		mAccountsDbAdapter = new AccountsDbAdapter(getActivity());
         mAccountType = mAccountsDbAdapter.getAccountType(mAccountUID);
 
-        //updateTransferAccountsList must only be called after initializing mAccountsDbAdapter
-		updateTransferAccountsList();
-
         ArrayAdapter<CharSequence> recurrenceAdapter = ArrayAdapter.createFromResource(getActivity(),
                 R.array.recurrence_period_strings, android.R.layout.simple_spinner_item);
         recurrenceAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -231,6 +233,13 @@ public class TransactionFormFragment extends SherlockFragment implements
         String transactionUID = getArguments().getString(UxArgument.SELECTED_TRANSACTION_UID);
 		mTransactionsDbAdapter = new TransactionsDbAdapter(getActivity());
 		mTransaction = mTransactionsDbAdapter.getTransaction(transactionUID);
+        if (mTransaction != null) {
+            mMultiCurrency = mTransactionsDbAdapter.getNumCurrencies(mTransaction.getUID()) > 1;
+        }
+
+        //updateTransferAccountsList must only be called after initializing mAccountsDbAdapter
+        // it needs mMultiCurrency to be properly initialized
+        updateTransferAccountsList();
 
         mDoubleAccountSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -361,6 +370,23 @@ public class TransactionFormFragment extends SherlockFragment implements
 		mCurrencyTextView.setText(accountCurrency.getSymbol());
 
         setSelectedRecurrenceOption();
+        if (mMultiCurrency) {
+            enableControls(false);
+        }
+    }
+
+    private void enableControls(boolean b) {
+        mDescriptionEditText.setEnabled(b);
+        mNotesEditText.setEnabled(b);
+        mDateTextView.setEnabled(b);
+        mTimeTextView.setEnabled(b);
+        mAmountEditText.setEnabled(b);
+        mCurrencyTextView.setEnabled(b);
+        mTransactionTypeButton.setEnabled(b);
+        mDoubleAccountSpinner.setEnabled(b);
+        // the next is always enabled, so the user can check the detailed info of splits
+        // mOpenSplitsButton;
+        mRecurringTransactionSpinner.setEnabled(b);
     }
 
     private void setAmountEditViewVisible(int visibility) {
@@ -426,8 +452,8 @@ public class TransactionFormFragment extends SherlockFragment implements
 		String accountUID = ((TransactionsActivity)getActivity()).getCurrentAccountUID();
 
 		String conditions = "(" + DatabaseSchema.AccountEntry.COLUMN_UID + " != '" + accountUID
-                            + "' AND " + DatabaseSchema.AccountEntry.COLUMN_CURRENCY + " = '" + mAccountsDbAdapter.getCurrencyCode(accountUID)
-                            + "' AND " + DatabaseSchema.AccountEntry.COLUMN_UID + " != '" + mAccountsDbAdapter.getGnuCashRootAccountUID()
+                            + "' AND " + (mMultiCurrency ? "" : (DatabaseSchema.AccountEntry.COLUMN_CURRENCY + " = '" + mAccountsDbAdapter.getCurrencyCode(accountUID)
+                            + "' AND ")) + DatabaseSchema.AccountEntry.COLUMN_UID + " != '" + mAccountsDbAdapter.getGnuCashRootAccountUID()
                             + "' AND " + DatabaseSchema.AccountEntry.COLUMN_PLACEHOLDER + " = 0"
                             + ")";
 
@@ -459,7 +485,7 @@ public class TransactionFormFragment extends SherlockFragment implements
         } else {
             Money biggestAmount = Money.createZeroInstance(mTransaction.getCurrencyCode());
             for (Split split : mTransaction.getSplits()) {
-                if (split.getAmount().compareTo(biggestAmount) > 0)
+                if (split.getAmount().asBigDecimal().compareTo(biggestAmount.asBigDecimal()) > 0)
                     biggestAmount = split.getAmount();
             }
             baseAmountString = biggestAmount.toPlainString();
@@ -545,19 +571,23 @@ public class TransactionFormFragment extends SherlockFragment implements
      * Callback when the account in the navigation bar is changed by the user
      * @param newAccountId Database record ID of the newly selected account
      */
-	public void onAccountChanged(long newAccountId){
-		AccountsDbAdapter accountsDbAdapter = new AccountsDbAdapter(getActivity());
-		String currencyCode = accountsDbAdapter.getCurrencyCode(newAccountId);
-		Currency currency = Currency.getInstance(currencyCode);
-		mCurrencyTextView.setText(currency.getSymbol(Locale.getDefault()));
+    public void onAccountChanged(long newAccountId) {
+        if (mMultiCurrency) {
+            Toast.makeText(getActivity(), R.string.toast_error_edit_multi_currency_transaction, Toast.LENGTH_LONG).show();
+            return;
+        }
+        AccountsDbAdapter accountsDbAdapter = new AccountsDbAdapter(getActivity());
+        String currencyCode = accountsDbAdapter.getCurrencyCode(newAccountId);
+        Currency currency = Currency.getInstance(currencyCode);
+        mCurrencyTextView.setText(currency.getSymbol(Locale.getDefault()));
 
         mAccountType = accountsDbAdapter.getAccountType(newAccountId);
         mTransactionTypeButton.setAccountType(mAccountType);
 
-		updateTransferAccountsList();
+        updateTransferAccountsList();
 
         accountsDbAdapter.close();
-	}
+    }
 
 	/**
 	 * Collects information from the fragment views and uses it to create
@@ -700,7 +730,11 @@ public class TransactionFormFragment extends SherlockFragment implements
 			return true;
 
 		case R.id.menu_save:
-            if (mAmountEditText.getText().length() == 0){
+            if (mMultiCurrency) {
+                Toast.makeText(getActivity(), R.string.toast_error_edit_multi_currency_transaction, Toast.LENGTH_LONG).show();
+                finish();
+            }
+            else if (mAmountEditText.getText().length() == 0) {
                 Toast.makeText(getActivity(), R.string.toast_transanction_amount_required, Toast.LENGTH_SHORT).show();
             } else
 			    saveNewTransaction();
