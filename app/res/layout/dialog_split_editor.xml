@@ -55,7 +55,7 @@ limitations under the License.
                     android:layout_height="match_parent"
                     android:textAppearance="?android:attr/textAppearanceSmall"
                     android:gravity="center_vertical"
-                    android:text="Imbalance:"/>
+                    android:text="@string/label_imbalance"/>
 
             <TextView android:id="@+id/imbalance_textview"
                       android:layout_width="0dp"
@@ -69,7 +69,7 @@ limitations under the License.
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:drawableLeft="@drawable/content_new_holo_light"
-                android:text="Add split"/>
+                android:text="@string/btn_add_split"/>
 
     </TableLayout>
 </RelativeLayout>

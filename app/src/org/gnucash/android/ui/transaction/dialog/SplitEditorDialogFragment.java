@@ -102,7 +102,7 @@ public class SplitEditorDialogFragment extends DialogFragment {
         getDialog().getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
                 WindowManager.LayoutParams.MATCH_PARENT);
 
-        getDialog().setTitle("Transaction splits");
+        getDialog().setTitle(R.string.title_transaction_splits);
 
         mSplitItemViewList = new ArrayList<View>();
         mSplitsDbAdapter = new SplitsDbAdapter(getActivity());
