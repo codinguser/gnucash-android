@@ -227,7 +227,7 @@ public class SplitEditorDialogFragment extends DialogFragment {
         updateTransferAccountsList(accountsSpinner);
         accountsSpinner.setOnItemSelectedListener(new TypeButtonLabelUpdater(splitTypeButton));
 
-        Currency accountCurrency = Currency.getInstance(mAccountsDbAdapter.getCurrencyCode(mAccountId));
+        Currency accountCurrency = Currency.getInstance(mAccountsDbAdapter.getCurrencyCode(split.getAccountUID()));
         splitCurrencyTextView.setText(accountCurrency.getSymbol());
         splitTypeButton.setAmountFormattingListener(splitAmountEditText, splitCurrencyTextView);
         splitTypeButton.setChecked(mBaseAmount.signum() > 0);
@@ -305,7 +305,12 @@ public class SplitEditorDialogFragment extends DialogFragment {
         mAddSplit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                addSplitView(null);
+                if (mMultiCurrency) {
+                    Toast.makeText(getActivity(), R.string.toast_error_edit_multi_currency_transaction, Toast.LENGTH_LONG).show();
+                }
+                else {
+                    addSplitView(null);
+                }
             }
         });
     }
