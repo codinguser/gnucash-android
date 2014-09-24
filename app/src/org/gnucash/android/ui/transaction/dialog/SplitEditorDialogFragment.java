@@ -105,13 +105,24 @@ public class SplitEditorDialogFragment extends DialogFragment {
 
         getDialog().setTitle("Transaction splits");
 
-        initArgs();
         mSplitItemViewList = new ArrayList<View>();
         mSplitsDbAdapter = new SplitsDbAdapter(getActivity());
 
         //we are editing splits for a new transaction.
         // But the user may have already created some splits before. Let's check
         List<Split> splitList = ((TransactionFormFragment) getTargetFragment()).getSplitList();
+        {
+            Currency currency = null;
+            for (Split split : splitList) {
+                if (currency == null) {
+                    currency = split.getAmount().getCurrency();
+                } else if (currency != split.getAmount().getCurrency()) {
+                    mMultiCurrency = true;
+                }
+            }
+        }
+
+        initArgs();
         if (!splitList.isEmpty()) {
             //aha! there are some splits. Let's load those instead
             loadSplitViews(splitList);
@@ -131,15 +142,8 @@ public class SplitEditorDialogFragment extends DialogFragment {
     }
 
     private void loadSplitViews(List<Split> splitList) {
-        Currency currency = null;
         for (Split split : splitList) {
             addSplitView(split);
-            if (currency == null) {
-                currency = split.getAmount().getCurrency();
-            }
-            else if (currency != split.getAmount().getCurrency()) {
-                mMultiCurrency = true;
-            }
         }
         if (mMultiCurrency) {
             enableAllControls(false);
@@ -191,8 +195,8 @@ public class SplitEditorDialogFragment extends DialogFragment {
         mBaseAmount     = new BigDecimal(args.getString(UxArgument.AMOUNT_STRING));
 
         String conditions = "(" //+ AccountEntry._ID + " != " + mAccountId + " AND "
-                + DatabaseSchema.AccountEntry.COLUMN_CURRENCY + " = '" + mAccountsDbAdapter.getCurrencyCode(mAccountId)
-                + "' AND " + DatabaseSchema.AccountEntry.COLUMN_UID + " != '" + mAccountsDbAdapter.getGnuCashRootAccountUID()
+                + (mMultiCurrency ? "" : (DatabaseSchema.AccountEntry.COLUMN_CURRENCY + " = '" + mAccountsDbAdapter.getCurrencyCode(mAccountId)
+                + "' AND ")) + DatabaseSchema.AccountEntry.COLUMN_UID + " != '" + mAccountsDbAdapter.getGnuCashRootAccountUID()
                 + "' AND " + DatabaseSchema.AccountEntry.COLUMN_PLACEHOLDER + " = 0"
                 + ")";
         mCursor = mAccountsDbAdapter.fetchAccountsOrderedByFullName(conditions);
