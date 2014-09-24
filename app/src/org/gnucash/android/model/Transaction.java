@@ -185,10 +185,7 @@ public class Transaction {
      * @param splitList List of splits for this transaction
      */
     public void setSplits(List<Split> splitList){
-        mSplitList.clear();
-        for (Split split : splitList) {
-            addSplit(split);
-        }
+        mSplitList = splitList;
     }
 
     /**

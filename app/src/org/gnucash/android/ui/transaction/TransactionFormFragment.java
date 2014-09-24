@@ -484,7 +484,7 @@ public class TransactionFormFragment extends SherlockFragment implements
         } else {
             Money biggestAmount = Money.createZeroInstance(mTransaction.getCurrencyCode());
             for (Split split : mTransaction.getSplits()) {
-                if (split.getAmount().compareTo(biggestAmount) > 0)
+                if (split.getAmount().asBigDecimal().compareTo(biggestAmount.asBigDecimal()) > 0)
                     biggestAmount = split.getAmount();
             }
             baseAmountString = biggestAmount.toPlainString();
