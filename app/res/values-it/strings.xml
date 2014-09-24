@@ -423,4 +423,11 @@
     <string name="title_transaction_splits">Transaction splits</string>
     <string name="label_imbalance">Imbalance:</string>
     <string name="btn_add_split">Add split</string>
+    <string name="title_enable_crashlytics">Enable Crash Logging</string>
+    <string name="label_enable">Enable</string>
+    <string name="msg_enable_crashlytics">By enabling logging (recommended) you can help improve the quality of the
+        GnuCash Android application.
+        Errors in the application will be logged and sent to the developers for analysis.
+        No user-identifiable information will be collected as part of this process!
+    </string>
 </resources>

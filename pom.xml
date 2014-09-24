@@ -54,6 +54,20 @@
         </pluginManagement>
     </build>
 
+    <repositories>
+        <repository>
+            <id>crashlytics-repo</id>
+            <url>http://download.crashlytics.com/maven</url>
+        </repository>
+    </repositories>
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>crashlytics-plugin-repo</id>
+            <url>http://download.crashlytics.com/maven</url>
+        </pluginRepository>
+    </pluginRepositories>
+
     <issueManagement>
         <url>https://github.com/codinguser/gnucash-android/issues</url>
         <system>GitHub Issues</system>

@@ -31,7 +31,9 @@
         <CheckBoxPreference android:key="@string/key_xml_ofx_header" android:summary="@string/summary_xml_ofx_header" android:title="@string/title_xml_ofx_header"/>
         <Preference android:summary="Restore accounts and transactions from the last backup" android:key="@string/key_restore_backup" android:title="Restore last backup" />
     </PreferenceCategory>
-    
+    <CheckBoxPreference android:title="@string/title_enable_crashlytics"
+                        android:summary="@string/msg_enable_crashlytics"
+                        android:key="@string/key_enable_crashlytics" />
     
 
 </PreferenceScreen>

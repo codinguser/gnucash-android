@@ -22,6 +22,7 @@
     <string name="key_create_default_accounts">create_default_accounts</string>
     <string name="key_restore_backup">restore_backup</string>
     <string name="key_save_opening_balances">save_opening_balances</string>
+    <string name="key_enable_crashlytics">enable_crashlytics</string>
 
     <string-array name="key_transaction_type_values">
         <item>CREDIT</item>

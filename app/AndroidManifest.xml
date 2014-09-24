@@ -42,6 +42,8 @@
         android:name="org.gnucash.android.permission.CREATE_ACCOUNT" />
     <uses-permission android:label="@string/permission_access_sdcard"
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+
+    <uses-permission android:name="android.permission.INTERNET"/>
 	    
     <application android:name="org.gnucash.android.app.GnuCashApplication"
         android:icon="@drawable/ic_launcher"
@@ -99,6 +101,7 @@
 		    <meta-data android:name="android.appwidget.provider"
 		               android:resource="@xml/transaction_appwidget_info" />
 		</receiver>
+        <meta-data android:name="com.crashlytics.ApiKey" android:value="46fe045d00d4ad8a71014c53567be3368e10bd64"/>
         
     </application>
 

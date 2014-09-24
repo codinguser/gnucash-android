@@ -51,6 +51,11 @@
             <version>${viewpagerindicator.version}</version>
             <type>apklib</type>
         </dependency>
+        <dependency>
+            <groupId>com.crashlytics.android</groupId>
+            <artifactId>crashlytics</artifactId>
+            <version>[1.1.11,)</version>
+        </dependency>
     </dependencies>
     <build>
         <sourceDirectory>src</sourceDirectory>
@@ -58,6 +63,25 @@
             <plugin>
                 <groupId>com.jayway.maven.plugins.android.generation2</groupId>
                 <artifactId>android-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>com.crashlytics</groupId>
+                <artifactId>crashlytics-maven</artifactId>
+                <version>1.9.2</version>
+                <executions>
+                    <execution>
+                        <id>GenerateResources</id>
+                        <goals>
+                            <goal>GenerateResources</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>CleanupResources</id>
+                        <goals>
+                            <goal>CleanupResources</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

@@ -480,6 +480,29 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
 
 		mDefaultAccountsDialog = builder.create();
 		mDefaultAccountsDialog.show();
+
+        //show dialog to get user consent for logging
+        new AlertDialog.Builder(this)
+                .setTitle(getString(R.string.title_enable_crashlytics))
+                .setMessage(getString(R.string.msg_enable_crashlytics))
+                .setPositiveButton(R.string.label_enable, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(AccountsActivity.this);
+                        Editor editor = sharedPreferences.edit();
+                        editor.putBoolean(getString(R.string.key_enable_crashlytics), true);
+                        editor.commit();
+                    }
+                })
+                .setNegativeButton(R.string.btn_cancel, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(AccountsActivity.this);
+                        Editor editor = sharedPreferences.edit();
+                        editor.putBoolean(getString(R.string.key_enable_crashlytics), false);
+                        editor.commit();
+                    }
+                }).create().show();
 	}
 
     /**

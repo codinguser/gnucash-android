@@ -20,6 +20,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import com.crashlytics.android.Crashlytics;
 import org.gnucash.android.R;
 
 import java.util.Currency;
@@ -47,6 +48,10 @@ public class GnuCashApplication extends Application{
     public void onCreate(){
         super.onCreate();
         GnuCashApplication.context = getApplicationContext();
+        //only start logging if user gave consent
+        if (PreferenceManager.getDefaultSharedPreferences(this).getBoolean(getString(R.string.key_enable_crashlytics), false)) {
+            Crashlytics.start(this);
+        }
     }
 
     /**
