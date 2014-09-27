@@ -189,16 +189,19 @@ public class SplitEditorDialogFragment extends DialogFragment {
     private void initArgs() {
         mAccountsDbAdapter = GnuCashApplication.getAccountsDbAdapter();
 
-        Bundle args     = getArguments();
-        mAccountUID      = ((TransactionsActivity)getActivity()).getCurrentAccountUID();
-        mBaseAmount     = new BigDecimal(args.getString(UxArgument.AMOUNT_STRING));
+        Bundle args = getArguments();
+        mAccountUID = ((TransactionsActivity) getActivity()).getCurrentAccountUID();
+        mBaseAmount = new BigDecimal(args.getString(UxArgument.AMOUNT_STRING));
 
         String conditions = "(" //+ AccountEntry._ID + " != " + mAccountId + " AND "
-                + (mMultiCurrency ? "" : (DatabaseSchema.AccountEntry.COLUMN_CURRENCY + " = '" + mAccountsDbAdapter.getCurrencyCode(mAccountUID)
-                + "' AND ")) + DatabaseSchema.AccountEntry.COLUMN_UID + " != '" + mAccountsDbAdapter.getGnuCashRootAccountUID()
-                + "' AND " + DatabaseSchema.AccountEntry.COLUMN_PLACEHOLDER + " = 0"
+                + (mMultiCurrency ? "" : (DatabaseSchema.AccountEntry.COLUMN_CURRENCY + " = ? AND "))
+                + DatabaseSchema.AccountEntry.COLUMN_UID + " != ? AND "
+                + DatabaseSchema.AccountEntry.COLUMN_PLACEHOLDER + " = 0"
                 + ")";
-        mCursor = mAccountsDbAdapter.fetchAccountsOrderedByFullName(conditions);
+        mCursor = mAccountsDbAdapter.fetchAccountsOrderedByFullName(conditions,
+                mMultiCurrency ? new String[]{"" + mAccountsDbAdapter.getGnuCashRootAccountUID()} :
+                        new String[]{mAccountsDbAdapter.getCurrencyCode(mAccountUID), "" + mAccountsDbAdapter.getGnuCashRootAccountUID()}
+        );
     }
 
     /**

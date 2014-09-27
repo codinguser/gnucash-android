@@ -624,7 +624,7 @@ public class AccountsListFragment extends SherlockListFragment implements
 
             if (mFilter != null){
                 cursor = ((AccountsDbAdapter)mDatabaseAdapter)
-                        .fetchAccounts(DatabaseSchema.AccountEntry.COLUMN_NAME + " LIKE '%" + mFilter + "%'");
+                        .fetchAccounts(DatabaseSchema.AccountEntry.COLUMN_NAME + " LIKE '%" + mFilter + "%'", null);
             } else {
                 if (mParentAccountUID != null && mParentAccountUID.length() > 0)
                     cursor = ((AccountsDbAdapter) mDatabaseAdapter).fetchSubAccounts(mParentAccountUID);

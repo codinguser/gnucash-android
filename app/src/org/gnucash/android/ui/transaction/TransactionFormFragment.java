@@ -462,7 +462,7 @@ public class TransactionFormFragment extends SherlockFragment implements
         if (mCursor != null) {
             mCursor.close();
         }
-		mCursor = mAccountsDbAdapter.fetchAccountsOrderedByFullName(conditions);
+		mCursor = mAccountsDbAdapter.fetchAccountsOrderedByFullName(conditions, null);
 
         mCursorAdapter = new QualifiedAccountNameCursorAdapter(getActivity(),
                 android.R.layout.simple_spinner_item, mCursor);

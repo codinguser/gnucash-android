@@ -69,13 +69,8 @@ public class BulkMoveDialogFragment extends DialogFragment {
 	 * GUID of account from which to move the transactions
 	 */
 	String mOriginAccountUID = null;
-	
-	/**
-	 * Accounts database adapter
-	 */
-	private AccountsDbAdapter mAccountsDbAdapter;
-	
-	/**
+
+    /**
 	 * Creates the view and retrieves references to the dialog elements
 	 */
 	@Override
@@ -104,13 +99,20 @@ public class BulkMoveDialogFragment extends DialogFragment {
 				mTransactionIds.length);
 		getDialog().setTitle(title);
 		
-		mAccountsDbAdapter = GnuCashApplication.getAccountsDbAdapter();
-        String conditions = "(" + DatabaseSchema.AccountEntry.COLUMN_UID    + " != '" + mOriginAccountUID + "' AND "
-                + DatabaseSchema.AccountEntry.COLUMN_CURRENCY               + " = '" + mAccountsDbAdapter.getCurrencyCode(mOriginAccountUID)
-                + "' AND " + DatabaseSchema.AccountEntry.COLUMN_UID         + " != '" + mAccountsDbAdapter.getGnuCashRootAccountUID()
-                + "' AND " + DatabaseSchema.AccountEntry.COLUMN_PLACEHOLDER + " = 0"
+		/*
+	  Accounts database adapter
+	 */
+        AccountsDbAdapter accountsDbAdapter = GnuCashApplication.getAccountsDbAdapter();
+        String conditions = "(" + DatabaseSchema.AccountEntry.COLUMN_UID    + " != ? AND "
+                + DatabaseSchema.AccountEntry.COLUMN_CURRENCY               + " = ? AND "
+                + DatabaseSchema.AccountEntry.COLUMN_UID         + " != ? AND "
+                + DatabaseSchema.AccountEntry.COLUMN_PLACEHOLDER + " = 0"
                 + ")";
-		Cursor cursor = mAccountsDbAdapter.fetchAccountsOrderedByFullName(conditions);
+		Cursor cursor = accountsDbAdapter.fetchAccountsOrderedByFullName(conditions,
+                new String[]{mOriginAccountUID,
+                        accountsDbAdapter.getCurrencyCode(mOriginAccountUID),
+                        "" + accountsDbAdapter.getGnuCashRootAccountUID()
+                });
 
 		SimpleCursorAdapter mCursorAdapter = new QualifiedAccountNameCursorAdapter(getActivity(),
                 android.R.layout.simple_spinner_item, cursor);
@@ -148,7 +150,7 @@ public class BulkMoveDialogFragment extends DialogFragment {
                 String srcAccountUID    = ((TransactionsActivity)getActivity()).getCurrentAccountUID();
                 String dstAccountUID    = trxnAdapter.getAccountUID(dstAccountId);
 				for (long trxnId : mTransactionIds) {
-					trxnAdapter.moveTranscation(trxnAdapter.getUID(trxnId), srcAccountUID, dstAccountUID);
+					trxnAdapter.moveTransaction(trxnAdapter.getUID(trxnId), srcAccountUID, dstAccountUID);
 				}
 
 				WidgetConfigurationActivity.updateAllWidgets(getActivity());

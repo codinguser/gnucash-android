@@ -298,7 +298,7 @@ public class AccountFormFragment extends SherlockFragment {
 		ArrayAdapter<String> currencyArrayAdapter = new ArrayAdapter<String>(
 				getActivity(), 
 				android.R.layout.simple_spinner_item, 
-				getResources().getStringArray(R.array.currency_names));		
+				getResources().getStringArray(R.array.currency_names));
 		currencyArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		mCurrencySpinner.setAdapter(currencyArrayAdapter);
 
@@ -309,8 +309,11 @@ public class AccountFormFragment extends SherlockFragment {
             getSherlockActivity().getSupportActionBar().setTitle(R.string.title_edit_account);
         }
         mRootAccountUID = mAccountsDbAdapter.getGnuCashRootAccountUID();
-        mRootAccountId = mAccountsDbAdapter.getAccountID(mRootAccountUID);
-
+        if (mRootAccountUID == null) {
+            mRootAccountId = -1;
+        } else {
+            mRootAccountId = mAccountsDbAdapter.getAccountID(mRootAccountUID);
+        }
         //need to load the cursor adapters for the spinners before initializing the views
         loadAccountTypesList();
         loadDefaultTransferAccountList();
@@ -522,16 +525,17 @@ public class AccountFormFragment extends SherlockFragment {
     /**
      * Initializes the default transfer account spinner with eligible accounts
      */
-    private void loadDefaultTransferAccountList(){
-        String condition = DatabaseSchema.AccountEntry.COLUMN_UID + " != '" + mAccountUID + "' "
+    private void loadDefaultTransferAccountList() {
+        String condition = DatabaseSchema.AccountEntry.COLUMN_UID + " != ? "
                 + " AND " + DatabaseSchema.AccountEntry.COLUMN_PLACEHOLDER + "=0"
-                + " AND " + DatabaseSchema.AccountEntry.COLUMN_UID + " != '" + mAccountsDbAdapter.getGnuCashRootAccountUID() + "'";
+                + " AND " + DatabaseSchema.AccountEntry.COLUMN_UID + " != ?";
         /*
-      Cursor holding data set of eligible transfer accounts
-     */
-        Cursor defaultTransferAccountCursor = mAccountsDbAdapter.fetchAccountsOrderedByFullName(condition);
+         * Cursor holding data set of eligible transfer accounts
+         */
+        Cursor defaultTransferAccountCursor = mAccountsDbAdapter.fetchAccountsOrderedByFullName(condition,
+                new String[]{mAccountUID, "" + mAccountsDbAdapter.getGnuCashRootAccountUID()});
 
-        if (defaultTransferAccountCursor == null || mDefaulTransferAccountSpinner.getCount() <= 0){
+        if (mDefaulTransferAccountSpinner.getCount() <= 0) {
             setDefaultTransferAccountInputsVisible(false);
         }
 
@@ -563,8 +567,8 @@ public class AccountFormFragment extends SherlockFragment {
         if (mParentAccountCursor != null)
             mParentAccountCursor.close();
 
-		mParentAccountCursor = mAccountsDbAdapter.fetchAccountsOrderedByFullName(condition);
-		if (mParentAccountCursor == null || mParentAccountCursor.getCount() <= 0){
+		mParentAccountCursor = mAccountsDbAdapter.fetchAccountsOrderedByFullName(condition, null);
+		if (mParentAccountCursor.getCount() <= 0){
             final View view = getView();
             view.findViewById(R.id.layout_parent_account).setVisibility(View.GONE);
             view.findViewById(R.id.label_parent_account).setVisibility(View.GONE);

@@ -18,7 +18,6 @@
 package org.gnucash.android.export.xml;
 
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import org.gnucash.android.app.GnuCashApplication;
@@ -184,7 +183,7 @@ public class GncXmlExporter extends Exporter{
                         SplitEntry.TABLE_NAME+"."+ SplitEntry.COLUMN_TYPE + " AS split_type",
                         SplitEntry.TABLE_NAME+"."+ SplitEntry.COLUMN_AMOUNT + " AS split_amount",
                         SplitEntry.TABLE_NAME+"."+ SplitEntry.COLUMN_ACCOUNT_UID + " AS split_acct_uid"
-                }, null,
+                }, null, null,
                 TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_RECURRENCE_PERIOD + " ASC , " +
                         TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_TIMESTAMP + " ASC , " +
                         TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_UID + " ASC ");
@@ -454,19 +453,20 @@ public class GncXmlExporter extends Exporter{
         bookNode.appendChild(transactionCountNode);
 
         String rootAccountUID = mAccountsDbAdapter.getGnuCashRootAccountUID();
-        Account rootAccount = mAccountsDbAdapter.getAccount(rootAccountUID);
-        if (rootAccount != null){
+        if (rootAccountUID != null) {
+            Account rootAccount = mAccountsDbAdapter.getAccount(rootAccountUID);
             rootAccount.toGncXml(document, bookNode);
         }
         Cursor accountsCursor = mAccountsDbAdapter.fetchAllRecordsOrderedByFullName();
 
         //create accounts hierarchically by ordering by full name
-        if (accountsCursor != null){
-            while (accountsCursor.moveToNext()){
+        try {
+            while (accountsCursor.moveToNext()) {
                 long id = accountsCursor.getLong(accountsCursor.getColumnIndexOrThrow(DatabaseSchema.AccountEntry._ID));
                 Account account = mAccountsDbAdapter.getAccount(id);
                 account.toGncXml(document, bookNode);
             }
+        } finally {
             accountsCursor.close();
         }
 

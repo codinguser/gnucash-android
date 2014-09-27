@@ -186,7 +186,7 @@ public abstract class DatabaseAdapter {
 	 * @param rowId ID of record to be deleted
 	 * @return <code>true</code> if deletion was successful, <code>false</code> otherwise
 	 */
-	protected boolean deleteRecord(String tableName, long rowId){
+	protected boolean deleteRecord(@NonNull String tableName, long rowId){
 		return mDb.delete(tableName, DatabaseSchema.CommonColumns._ID + "=" + rowId, null) > 0;
 	}
 
@@ -194,7 +194,7 @@ public abstract class DatabaseAdapter {
      * Deletes all records in the database
      * @return Number of deleted records
      */
-    protected int deleteAllRecords(String tableName){
+    protected int deleteAllRecords(@NonNull String tableName){
         return mDb.delete(tableName, null, null);
     }
 
@@ -230,36 +230,35 @@ public abstract class DatabaseAdapter {
      * Returns the currency code (according to the ISO 4217 standard) of the account
      * with unique Identifier <code>accountUID</code>
      * @param accountUID Unique Identifier of the account
-     * @return Currency code of the account
+     * @return Currency code of the account. "" if accountUID
+     *      does not exist in DB
      */
-    @Nullable
+    @NonNull
     public String getCurrencyCode(@NonNull String accountUID) {
         Cursor cursor = mDb.query(DatabaseSchema.AccountEntry.TABLE_NAME,
                 new String[] {DatabaseSchema.AccountEntry.COLUMN_CURRENCY},
                 DatabaseSchema.AccountEntry.COLUMN_UID + "= ?",
                 new String[]{accountUID}, null, null, null);
-
-        if (cursor == null)
-            return null;
-        String currencyCode = null;
         try {
             if (cursor.moveToFirst()) {
-                currencyCode = cursor.getString(0);
+                return cursor.getString(0);
+            } else {
+                throw new IllegalArgumentException("account " + accountUID + " does not exist");
             }
-        }
-        finally {
+        } finally {
             cursor.close();
         }
-        return currencyCode;
     }
 
     /**
      * Returns the {@link org.gnucash.android.model.AccountType} of the account with unique ID <code>uid</code>
      * @param accountUID Unique ID of the account
-     * @return {@link org.gnucash.android.model.AccountType} of the account
+     * @return {@link org.gnucash.android.model.AccountType} of the account.
+     * @throws java.lang.IllegalArgumentException if accountUID does not exist in DB,
      */
-    public AccountType getAccountType(String accountUID){
-        String type = null;
+    @NonNull
+    public AccountType getAccountType(@NonNull String accountUID){
+        String type = "";
         Cursor c = mDb.query(DatabaseSchema.AccountEntry.TABLE_NAME,
                 new String[]{DatabaseSchema.AccountEntry.COLUMN_TYPE},
                 DatabaseSchema.AccountEntry.COLUMN_UID + "=?",
@@ -267,6 +266,8 @@ public abstract class DatabaseAdapter {
         try {
             if (c.moveToFirst()) {
                 type = c.getString(c.getColumnIndexOrThrow(DatabaseSchema.AccountEntry.COLUMN_TYPE));
+            } else {
+                throw new IllegalArgumentException("account " + accountUID + " does not exist in DB");
             }
         } finally {
             c.close();
@@ -278,43 +279,45 @@ public abstract class DatabaseAdapter {
      * Returns an account UID of the account with record id <code>accountRowID</code>
      * @param accountRowID Record ID of account as long parameter
      * @return String containing UID of account
+     * @throws java.lang.IllegalArgumentException if accountRowID does not exist
      */
-    @Nullable
-    public String getAccountUID(long accountRowID){
-        String uid = null;
+    @NonNull
+    public String getAccountUID(long accountRowID) {
         Cursor c = mDb.query(DatabaseSchema.AccountEntry.TABLE_NAME,
                 new String[]{DatabaseSchema.AccountEntry.COLUMN_UID},
                 DatabaseSchema.CommonColumns._ID + "=" + accountRowID,
                 null, null, null, null);
-        if (c != null) {
+        try {
             if (c.moveToFirst()) {
-                uid = c.getString(0);
+                return c.getString(0);
+            } else {
+                throw new IllegalArgumentException(String.format("account %d does not exist", accountRowID));
             }
+        } finally {
             c.close();
         }
-        return uid;
     }
 
     /**
      * Returns the database row Id of the account with unique Identifier <code>accountUID</code>
      * @param accountUID Unique identifier of the account
      * @return Database row ID of the account
+     * @throws java.lang.IllegalArgumentException if accountUID does not exist
      */
-    public long getAccountID(@Nullable String accountUID){
-        long id = -1;
-        if (accountUID == null)
-            return id;
+    public long getAccountID(@NonNull String accountUID){
         Cursor c = mDb.query(DatabaseSchema.AccountEntry.TABLE_NAME,
                 new String[]{DatabaseSchema.AccountEntry._ID},
                 DatabaseSchema.AccountEntry.COLUMN_UID + "= ?",
                 new String[]{accountUID}, null, null, null);
-        if (c != null) {
+        try {
             if (c.moveToFirst()) {
-                id = c.getLong(0);
+                return c.getLong(0);
+            } else {
+                throw new IllegalArgumentException("account " + accountUID + " does not exist");
             }
+        } finally {
             c.close();
         }
-        return id;
     }
 
     /**
@@ -322,13 +325,14 @@ public abstract class DatabaseAdapter {
      * @param uid GUID of the record
      * @return Long database identifier of the record
      */
-    public abstract long getID(String uid);
+    public abstract long getID(@NonNull String uid);
 
     /**
      * Returns the global unique identifier of the record
      * @param id Database record ID of the entry
      * @return String GUID of the record
      */
+    @NonNull
     public abstract String getUID(long id);
 
     /**
@@ -338,10 +342,13 @@ public abstract class DatabaseAdapter {
      * @param newValue  New value to be assigned to the columnKey
      * @return Number of records affected
      */
-    public int updateRecord(String tableName, long recordId, String columnKey, String newValue){
+    public int updateRecord(@NonNull String tableName, long recordId, @NonNull String columnKey, @Nullable String newValue) {
         ContentValues contentValues = new ContentValues();
-        contentValues.put(columnKey, newValue);
-
+        if (newValue == null) {
+            contentValues.putNull(columnKey);
+        } else {
+            contentValues.put(columnKey, newValue);
+        }
         return mDb.update(tableName, contentValues,
                 DatabaseSchema.CommonColumns._ID + "=" + recordId, null);
     }
