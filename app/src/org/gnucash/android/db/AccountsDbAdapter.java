@@ -241,7 +241,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
                 ContentValues contentValues = new ContentValues();
                 for (String acctUID : descendantAccountUIDs) {
                     Account acct = mapAccounts.get(acctUID);
-                    if (acct.getParentUID().equals(accountUID)) {
+                    if (accountUID.equals(acct.getParentUID())) {
                         // direct descendant
                         acct.setParentUID(parentAccountUID);
                         if (parentAccountFullName == null || parentAccountFullName.length() == 0) {
@@ -647,6 +647,9 @@ public class AccountsDbAdapter extends DatabaseAdapter {
      */
     @NonNull
     public String createAccountHierarchy(@NonNull String fullName, @NonNull AccountType accountType) {
+        if ("".equals(fullName)) {
+            throw new IllegalArgumentException("fullName cannot be empty");
+        }
         String[] tokens = fullName.trim().split(ACCOUNT_NAME_SEPARATOR);
         String uid = getGnuCashRootAccountUID();
         String parentName = "";
@@ -669,6 +672,8 @@ public class AccountsDbAdapter extends DatabaseAdapter {
         if (accountsList.size() > 0) {
             bulkAddAccounts(accountsList);
         }
+        // if fullName is not empty, loop will be entered and then uid will never be null
+        //noinspection ConstantConditions
         return uid;
     }
 
