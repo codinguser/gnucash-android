@@ -19,15 +19,20 @@ package org.gnucash.android.test.ui;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences.Editor;
+import android.database.SQLException;
+import android.database.sqlite.SQLiteDatabase;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.test.ActivityInstrumentationTestCase2;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import com.jayway.android.robotium.solo.Solo;
 import org.gnucash.android.R;
+import org.gnucash.android.db.DatabaseHelper;
+import org.gnucash.android.db.SplitsDbAdapter;
 import org.gnucash.android.model.Account;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.model.Transaction;
@@ -48,9 +53,23 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
 	private static final String DUMMY_ACCOUNT_NAME = "Dummy account";
     public static final String  DUMMY_ACCOUNT_UID   = "dummy-account";
 	private Solo mSolo;
-
+    private DatabaseHelper mDbHelper;
+    private SQLiteDatabase mDb;
+    private AccountsDbAdapter mAccountsDbAdapter;
+    private TransactionsDbAdapter mTransactionsDbAdapter;
+    private SplitsDbAdapter mSplitsDbAdapter;
 	public AccountsActivityTest() {
 		super(AccountsActivity.class);
+        mDbHelper = new DatabaseHelper(getInstrumentation().getTargetContext());
+        try {
+            mDb = mDbHelper.getWritableDatabase();
+        } catch (SQLException e) {
+            Log.e(getClass().getName(), "Error getting database: " + e.getMessage());
+            mDb = mDbHelper.getReadableDatabase();
+        }
+        mSplitsDbAdapter = new SplitsDbAdapter(mDb);
+        mTransactionsDbAdapter = new TransactionsDbAdapter(mDb, mSplitsDbAdapter);
+        mAccountsDbAdapter = new AccountsDbAdapter(mDb, mTransactionsDbAdapter);
 	}
 
 	protected void setUp() throws Exception {
@@ -61,12 +80,10 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
 		
 		mSolo = new Solo(getInstrumentation(), getActivity());	
 		
-		AccountsDbAdapter adapter = new AccountsDbAdapter(getActivity());
 		Account account = new Account(DUMMY_ACCOUNT_NAME);
         account.setUID(DUMMY_ACCOUNT_UID);
 		account.setCurrency(Currency.getInstance(DUMMY_ACCOUNT_CURRENCY_CODE));
-		adapter.addAccount(account);
-		adapter.close();
+		mAccountsDbAdapter.addAccount(account);
 
         //the What's new dialog is usually displayed on first run
         String dismissDialog = getActivity().getString(R.string.label_dismiss);
@@ -78,12 +95,10 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
 	
 	public void testDisplayAccountsList(){
         final int NUMBER_OF_ACCOUNTS = 15;
-        AccountsDbAdapter accountsDbAdapter = new AccountsDbAdapter(getActivity());
         for (int i = 0; i < NUMBER_OF_ACCOUNTS; i++) {
             Account account = new Account("Acct " + i);
-            accountsDbAdapter.addAccount(account);
+            mAccountsDbAdapter.addAccount(account);
         }
-        accountsDbAdapter.close();
 
         //there should exist a listview of accounts
         refreshAccountsList();
@@ -100,9 +115,7 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
 
         Account account = new Account(SEARCH_ACCOUNT_NAME);
         account.setParentUID(DUMMY_ACCOUNT_UID);
-        AccountsDbAdapter accountsDbAdapter = new AccountsDbAdapter(getActivity());
-        accountsDbAdapter.addAccount(account);
-        accountsDbAdapter.close();
+        mAccountsDbAdapter.addAccount(account);
 
         refreshAccountsList();
 
@@ -146,15 +159,12 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
 				.findViewById(R.id.primary_text);
 
 		assertEquals(NEW_ACCOUNT_NAME, v.getText().toString());
-		AccountsDbAdapter accAdapter = new AccountsDbAdapter(getActivity());
-		
-		List<Account> accounts = accAdapter.getAllAccounts();
+
+		List<Account> accounts = mAccountsDbAdapter.getAllAccounts();
 		Account newestAccount = accounts.get(0);
 		
 		assertEquals(NEW_ACCOUNT_NAME, newestAccount.getName());
 		assertEquals(Money.DEFAULT_CURRENCY_CODE, newestAccount.getCurrency().getCurrencyCode());
-
-		accAdapter.close();		
 	}
 
 	public void testEditAccount(){
@@ -186,14 +196,11 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
 				.findViewById(R.id.primary_text);
 		assertEquals(editedAccountName, tv.getText().toString());
 		
-		AccountsDbAdapter accAdapter = new AccountsDbAdapter(getActivity());
-		
-		List<Account> accounts = accAdapter.getAllAccounts();
+		List<Account> accounts = mAccountsDbAdapter.getAllAccounts();
 		Account latest = accounts.get(0);  //will be the first due to alphabetical sorting
 		
 		assertEquals(latest.getName(), "Edited Account");
 		assertEquals(DUMMY_ACCOUNT_CURRENCY_CODE, latest.getCurrency().getCurrencyCode());	
-		accAdapter.close();
 	}
 	
 	public void testDeleteAccount(){
@@ -205,8 +212,7 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
 
         Transaction transaction = new Transaction("hats");
         acc.addTransaction(transaction);
-        AccountsDbAdapter accDbAdapter = new AccountsDbAdapter(getActivity());
-        accDbAdapter.addAccount(acc);
+        mAccountsDbAdapter.addAccount(acc);
 
         Fragment fragment = getActivity()
                 .getSupportFragmentManager()
@@ -225,27 +231,21 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
         mSolo.waitForDialogToClose(1000);
         mSolo.waitForText("Accounts");
 
-        long id = accDbAdapter.getAccountID(accountUidToDelete);
+        long id = mAccountsDbAdapter.getAccountID(accountUidToDelete);
         assertEquals(-1, id);
 
-        TransactionsDbAdapter transDbAdapter = new TransactionsDbAdapter(getActivity());
-        List<Transaction> transactions = transDbAdapter.getAllTransactionsForAccount(accountUidToDelete);
+        List<Transaction> transactions = mTransactionsDbAdapter.getAllTransactionsForAccount(accountUidToDelete);
 
         assertEquals(0, transactions.size());
-
-        accDbAdapter.close();
-        transDbAdapter.close();
     }
 
 	public void testDisplayTransactionsList(){
         final int TRANSACTION_COUNT = 15;
         //first create a couple of transations
-        TransactionsDbAdapter transactionsDbAdapter = new TransactionsDbAdapter(getActivity());
         for (int i = 0; i < TRANSACTION_COUNT; i++) {
             Transaction transaction = new Transaction("Transaxion " + i);
-            transactionsDbAdapter.addTransaction(transaction);
+            mTransactionsDbAdapter.addTransaction(transaction);
         }
-        transactionsDbAdapter.close();
 
 		Fragment fragment = getActivity()
 				.getSupportFragmentManager()
@@ -292,9 +292,7 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
 			}
 		}
 				
-		AccountsDbAdapter dbAdapter = new AccountsDbAdapter(getActivity());
-		Account account = dbAdapter.getAccount("intent-account");
-		dbAdapter.close();
+		Account account = mAccountsDbAdapter.getAccount("intent-account");
 		assertNotNull(account);
 		assertEquals("Intent Account", account.getName());
 		assertEquals("intent-account", account.getUID());
@@ -303,10 +301,8 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
 	
 	
 	protected void tearDown() throws Exception {
-		AccountsDbAdapter adapter = new AccountsDbAdapter(getActivity());
-		adapter.deleteAllRecords();
-		adapter.close();
-		
+		mAccountsDbAdapter.deleteAllRecords();
+
 		mSolo.finishOpenedActivities();		
 		super.tearDown();
 	}

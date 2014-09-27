@@ -281,7 +281,7 @@ public class TransactionsActivity extends PassLockActivity implements
 
 		mAccountUID = getIntent().getStringExtra(UxArgument.SELECTED_ACCOUNT_UID);
 
-        mAccountsDbAdapter = new AccountsDbAdapter(this);
+        mAccountsDbAdapter = GnuCashApplication.getAccountsDbAdapter();
 
         setupActionBarNavigation();
 
@@ -409,9 +409,7 @@ public class TransactionsActivity extends PassLockActivity implements
         if (favoriteAccountMenuItem == null) //when the activity is used to edit a transaction
             return super.onPrepareOptionsMenu(menu);
 
-        AccountsDbAdapter accountsDbAdapter = new AccountsDbAdapter(this);
-        boolean isFavoriteAccount = accountsDbAdapter.isFavoriteAccount(mAccountsDbAdapter.getAccountID(mAccountUID));
-        accountsDbAdapter.close();
+        boolean isFavoriteAccount = GnuCashApplication.getAccountsDbAdapter().isFavoriteAccount(mAccountsDbAdapter.getAccountID(mAccountUID));
 
         int favoriteIcon = isFavoriteAccount ? android.R.drawable.btn_star_big_on : android.R.drawable.btn_star_big_off;
         favoriteAccountMenuItem.setIcon(favoriteIcon);
@@ -435,12 +433,11 @@ public class TransactionsActivity extends PassLockActivity implements
 	        return true;
 
             case R.id.menu_favorite_account:
-                AccountsDbAdapter accountsDbAdapter = new AccountsDbAdapter(this);
+                AccountsDbAdapter accountsDbAdapter = GnuCashApplication.getAccountsDbAdapter();
                 long accountId = accountsDbAdapter.getAccountID(mAccountUID);
                 boolean isFavorite = accountsDbAdapter.isFavoriteAccount(accountId);
                 //toggle favorite preference
                 accountsDbAdapter.updateAccount(accountId, DatabaseSchema.AccountEntry.COLUMN_FAVORITE, isFavorite ? "0" : "1");
-                accountsDbAdapter.close();
                 supportInvalidateOptionsMenu();
                 return true;
 
@@ -469,7 +466,6 @@ public class TransactionsActivity extends PassLockActivity implements
 	protected void onDestroy() {
 		super.onDestroy();
         mAccountsCursor.close();
-		mAccountsDbAdapter.close();
 	}
 	
 	/**

@@ -45,14 +45,10 @@ public class QifExporter extends Exporter{
         super(params);
     }
 
-    public QifExporter(ExportParams params,  SQLiteDatabase db){
-        super(params, db);
-    }
-
     @Override
     public void generateExport(Writer writer) throws ExporterException {
         final String newLine = "\n";
-        TransactionsDbAdapter transactionsDbAdapter = new TransactionsDbAdapter(GnuCashApplication.getAppContext());
+        TransactionsDbAdapter transactionsDbAdapter = GnuCashApplication.getTransactionDbAdapter();
         try {
             Cursor cursor = transactionsDbAdapter.fetchTransactionsWithSplitsWithTransactionAccount(
                     new String[]{
@@ -173,9 +169,6 @@ public class QifExporter extends Exporter{
         catch (IOException e)
         {
             throw new ExporterException(mParameters, e);
-        }
-        finally {
-            transactionsDbAdapter.close();
         }
     }
 }

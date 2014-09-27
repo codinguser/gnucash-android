@@ -17,6 +17,7 @@
 package org.gnucash.android.ui.transaction.dialog;
 
 import org.gnucash.android.R;
+import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.db.TransactionsDbAdapter;
@@ -103,7 +104,7 @@ public class BulkMoveDialogFragment extends DialogFragment {
 				mTransactionIds.length);
 		getDialog().setTitle(title);
 		
-		mAccountsDbAdapter = new AccountsDbAdapter(getActivity());
+		mAccountsDbAdapter = GnuCashApplication.getAccountsDbAdapter();
         String conditions = "(" + DatabaseSchema.AccountEntry.COLUMN_UID    + " != '" + mOriginAccountUID + "' AND "
                 + DatabaseSchema.AccountEntry.COLUMN_CURRENCY               + " = '" + mAccountsDbAdapter.getCurrencyCode(mOriginAccountUID)
                 + "' AND " + DatabaseSchema.AccountEntry.COLUMN_UID         + " != '" + mAccountsDbAdapter.getGnuCashRootAccountUID()
@@ -139,7 +140,7 @@ public class BulkMoveDialogFragment extends DialogFragment {
 				}
 				
 				long dstAccountId = mDestinationAccountSpinner.getSelectedItemId();
-				TransactionsDbAdapter trxnAdapter = new TransactionsDbAdapter(getActivity());
+				TransactionsDbAdapter trxnAdapter = GnuCashApplication.getTransactionDbAdapter();
 				if (!trxnAdapter.getCurrencyCode(dstAccountId).equals(trxnAdapter.getCurrencyCode(mOriginAccountUID))){
 					Toast.makeText(getActivity(), R.string.toast_incompatible_currency, Toast.LENGTH_LONG).show();
 					return;
@@ -149,7 +150,6 @@ public class BulkMoveDialogFragment extends DialogFragment {
 				for (long trxnId : mTransactionIds) {
 					trxnAdapter.moveTranscation(trxnAdapter.getUID(trxnId), srcAccountUID, dstAccountUID);
 				}
-				trxnAdapter.close();
 
 				WidgetConfigurationActivity.updateAllWidgets(getActivity());
 				((Refreshable)getTargetFragment()).refresh();

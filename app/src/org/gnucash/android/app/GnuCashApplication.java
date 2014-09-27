@@ -18,9 +18,16 @@ package org.gnucash.android.app;
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.database.SQLException;
+import android.database.sqlite.SQLiteDatabase;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.util.Log;
 import org.gnucash.android.R;
+import org.gnucash.android.db.AccountsDbAdapter;
+import org.gnucash.android.db.DatabaseHelper;
+import org.gnucash.android.db.SplitsDbAdapter;
+import org.gnucash.android.db.TransactionsDbAdapter;
 
 import java.util.Currency;
 import java.util.Locale;
@@ -44,9 +51,45 @@ public class GnuCashApplication extends Application{
 
     private static Context context;
 
+    private static DatabaseHelper mDbHelper;
+
+    private static SQLiteDatabase mDb;
+
+    private static AccountsDbAdapter mAccountsDbAdapter;
+
+    private static TransactionsDbAdapter mTransactionsDbAdapter;
+
+    private static SplitsDbAdapter mSplitsDbAdapter;
+
+    @Override
     public void onCreate(){
         super.onCreate();
         GnuCashApplication.context = getApplicationContext();
+        mDbHelper = new DatabaseHelper(getApplicationContext());
+        try {
+            mDb = mDbHelper.getWritableDatabase();
+        } catch (SQLException e) {
+            Log.e(getClass().getName(), "Error getting database: " + e.getMessage());
+            mDb = mDbHelper.getReadableDatabase();
+        }
+        mSplitsDbAdapter = new SplitsDbAdapter(mDb);
+        mTransactionsDbAdapter = new TransactionsDbAdapter(mDb, mSplitsDbAdapter);
+        mAccountsDbAdapter = new AccountsDbAdapter(mDb, mTransactionsDbAdapter);
+    }
+
+    @NonNull
+    public static AccountsDbAdapter getAccountsDbAdapter() {
+        return mAccountsDbAdapter;
+    }
+
+    @NonNull
+    public static TransactionsDbAdapter getTransactionDbAdapter() {
+        return mTransactionsDbAdapter;
+    }
+
+    @NonNull
+    public static SplitsDbAdapter getSplitsDbAdapter() {
+        return mSplitsDbAdapter;
     }
 
     /**

@@ -21,6 +21,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
+import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.DatabaseSchema;
 import static org.gnucash.android.db.DatabaseSchema.*;
 import org.gnucash.android.db.TransactionsDbAdapter;
@@ -62,18 +63,7 @@ public class GncXmlExporter extends Exporter{
 
     public GncXmlExporter(ExportParams params){
         super(params);
-        mTransactionsDbAdapter = new TransactionsDbAdapter(mContext);
-    }
-
-    /**
-     * Overloaded constructor.
-     * <p>This method is used mainly by the {@link org.gnucash.android.db.DatabaseHelper} for database migrations</p>
-     * @param params Export parameters
-     * @param db SQLite database from which to export
-     */
-    public GncXmlExporter(ExportParams params, SQLiteDatabase db){
-        super(params, db);
-        mTransactionsDbAdapter = new TransactionsDbAdapter(db);
+        mTransactionsDbAdapter = GnuCashApplication.getTransactionDbAdapter();
     }
 
     private void exportSlots(XmlSerializer xmlSerializer,
@@ -491,8 +481,6 @@ public class GncXmlExporter extends Exporter{
         }
 
         document.appendChild(rootElement);
-        mAccountsDbAdapter.close();
-        mTransactionsDbAdapter.close();
 
         StringWriter stringWriter = new StringWriter();
         try {

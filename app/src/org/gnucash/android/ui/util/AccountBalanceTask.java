@@ -22,6 +22,7 @@ import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.TextView;
 import org.gnucash.android.R;
+import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.model.Money;
 
@@ -40,7 +41,7 @@ public class AccountBalanceTask extends AsyncTask<String, Void, Money> {
 
     public AccountBalanceTask(TextView balanceTextView, Context context){
         accountBalanceTextViewReference = new WeakReference<TextView>(balanceTextView);
-        accountsDbAdapter = new AccountsDbAdapter(context);
+        accountsDbAdapter = GnuCashApplication.getAccountsDbAdapter();
     }
 
     @Override
@@ -68,7 +69,7 @@ public class AccountBalanceTask extends AsyncTask<String, Void, Money> {
     @Override
     protected void onPostExecute(Money balance) {
         if (accountBalanceTextViewReference.get() != null && balance != null){
-            final Context context = accountsDbAdapter.getContext();
+            final Context context = GnuCashApplication.getAppContext();
             final TextView balanceTextView = accountBalanceTextViewReference.get();
             if (balanceTextView != null){
                 balanceTextView.setText(balance.formattedString());
@@ -77,6 +78,5 @@ public class AccountBalanceTask extends AsyncTask<String, Void, Money> {
                 balanceTextView.setTextColor(fontColor);
             }
         }
-        accountsDbAdapter.close();
     }
 }

@@ -19,6 +19,8 @@ package org.gnucash.android.test.ui;
 import java.io.File;
 
 import org.gnucash.android.R;
+import org.gnucash.android.db.DatabaseHelper;
+import org.gnucash.android.db.SplitsDbAdapter;
 import org.gnucash.android.export.Exporter;
 import org.gnucash.android.model.Account;
 import org.gnucash.android.model.Transaction;
@@ -27,8 +29,11 @@ import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.export.ExportFormat;
 import org.gnucash.android.ui.account.AccountsActivity;
 
+import android.database.SQLException;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Environment;
 import android.test.ActivityInstrumentationTestCase2;
+import android.util.Log;
 import android.widget.Spinner;
 
 import com.jayway.android.robotium.solo.Solo;
@@ -37,9 +42,23 @@ public class ExportTransactionsTest extends
 		ActivityInstrumentationTestCase2<AccountsActivity> {
 
 	private Solo mSolo;
-	
+    private DatabaseHelper mDbHelper;
+    private SQLiteDatabase mDb;
+    private AccountsDbAdapter mAccountsDbAdapter;
+    private TransactionsDbAdapter mTransactionsDbAdapter;
+    private SplitsDbAdapter mSplitsDbAdapter;
 	public ExportTransactionsTest() {
 		super(AccountsActivity.class);
+        mDbHelper = new DatabaseHelper(getActivity());
+        try {
+            mDb = mDbHelper.getWritableDatabase();
+        } catch (SQLException e) {
+            Log.e(getClass().getName(), "Error getting database: " + e.getMessage());
+            mDb = mDbHelper.getReadableDatabase();
+        }
+        mSplitsDbAdapter = new SplitsDbAdapter(mDb);
+        mTransactionsDbAdapter = new TransactionsDbAdapter(mDb, mSplitsDbAdapter);
+        mAccountsDbAdapter = new AccountsDbAdapter(mDb, mTransactionsDbAdapter);
 	}
 	
 	@Override
@@ -54,9 +73,7 @@ public class ExportTransactionsTest extends
 		
 		account.addTransaction(transaction);
 		
-		AccountsDbAdapter adapter = new AccountsDbAdapter(getActivity());
-		adapter.addAccount(account);
-		adapter.close();	
+		mAccountsDbAdapter.addAccount(account);
 	}
 	
 	/**
@@ -126,8 +143,7 @@ public class ExportTransactionsTest extends
     }
 
 	public void testDeleteTransactionsAfterExport(){
-		TransactionsDbAdapter transAdapter = new TransactionsDbAdapter(getActivity());
-		assertTrue(transAdapter.getAllTransactionsCount() != 0);
+		assertTrue(mTransactionsDbAdapter.getAllTransactionsCount() != 0);
 		
         mSolo.clickOnActionBarItem(R.id.menu_export);
 //        ActionBarUtils.clickSherlockActionBarItem(mSolo, R.id.menu_export);
@@ -150,9 +166,8 @@ public class ExportTransactionsTest extends
 		mSolo.waitForDialogToClose(1000);
         mSolo.sleep(1000);
 
-		assertEquals(0, transAdapter.getAllTransactionsCount());
+		assertEquals(0, mTransactionsDbAdapter.getAllTransactionsCount());
 		
-		transAdapter.close();
         mSolo.goBack();
 	}
 	
@@ -227,9 +242,9 @@ public class ExportTransactionsTest extends
 	
 	@Override
 	protected void tearDown() throws Exception {
-		AccountsDbAdapter adapter = new AccountsDbAdapter(getActivity());
-		adapter.deleteAllRecords();
-		adapter.close();
+		mAccountsDbAdapter.deleteAllRecords();
+        mDbHelper.close();
+        mDb.close();
 		mSolo.finishOpenedActivities();
 		super.tearDown();
 	}

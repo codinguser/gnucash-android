@@ -58,20 +58,18 @@ public class DeleteAllTransacationsConfirmationDialog extends DialogFragment {
                                 GncXmlExporter.createBackup();
 
                                 Context context = getActivity();
-                                AccountsDbAdapter accountsDbAdapter = new AccountsDbAdapter(context);
+                                AccountsDbAdapter accountsDbAdapter = GnuCashApplication.getAccountsDbAdapter();
                                 List<Transaction> openingBalances = new ArrayList<Transaction>();
                                 boolean preserveOpeningBalances = GnuCashApplication.shouldSaveOpeningBalances(false);
                                 if (preserveOpeningBalances) {
                                     openingBalances = accountsDbAdapter.getAllOpeningBalanceTransactions();
-                                    accountsDbAdapter.close();
                                 }
-                                TransactionsDbAdapter transactionsDbAdapter = new TransactionsDbAdapter(context);
+                                TransactionsDbAdapter transactionsDbAdapter = GnuCashApplication.getTransactionDbAdapter();
                                 transactionsDbAdapter.deleteAllRecords();
 
                                 if (preserveOpeningBalances) {
                                     transactionsDbAdapter.bulkAddTransactions(openingBalances);
                                 }
-                                transactionsDbAdapter.close();
                                 Toast.makeText(context, R.string.toast_all_transactions_deleted, Toast.LENGTH_SHORT).show();
                                 WidgetConfigurationActivity.updateAllWidgets(getActivity());
                             }

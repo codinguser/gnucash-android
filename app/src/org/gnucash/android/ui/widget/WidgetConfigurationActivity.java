@@ -19,6 +19,7 @@ package org.gnucash.android.ui.widget;
 import java.util.Locale;
 
 import org.gnucash.android.R;
+import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.model.Account;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.db.AccountsDbAdapter;
@@ -70,7 +71,7 @@ public class WidgetConfigurationActivity extends Activity {
 		mOkButton 		= (Button) findViewById(R.id.btn_save);
 		mCancelButton 	= (Button) findViewById(R.id.btn_cancel);
 
-		mAccountsDbAdapter = new AccountsDbAdapter(this);
+		mAccountsDbAdapter = GnuCashApplication.getAccountsDbAdapter();
 		Cursor cursor = mAccountsDbAdapter.fetchAllRecordsOrderedByFullName();
 		
 		if (cursor.getCount() <= 0){
@@ -87,12 +88,6 @@ public class WidgetConfigurationActivity extends Activity {
 		bindListeners();
 	}
 
-	@Override
-	protected void onDestroy() {		
-		super.onDestroy();
-		mAccountsDbAdapter.close();
-	}
-	
 	/**
 	 * Sets click listeners for the buttons in the dialog
 	 */
@@ -150,7 +145,7 @@ public class WidgetConfigurationActivity extends Activity {
 		Log.i("WidgetConfiguration", "Updating widget: " + appWidgetId);
 		AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
 
-		AccountsDbAdapter accountsDbAdapter = new AccountsDbAdapter(context);
+		AccountsDbAdapter accountsDbAdapter = GnuCashApplication.getAccountsDbAdapter();
 		Account account = accountsDbAdapter.getAccount(accountUID);
 
 		
@@ -202,7 +197,6 @@ public class WidgetConfigurationActivity extends Activity {
 		views.setOnClickPendingIntent(R.id.btn_new_transaction, pendingIntent);
 		
 		appWidgetManager.updateAppWidget(appWidgetId, views);
-        accountsDbAdapter.close();
 	}
 	
 	/**

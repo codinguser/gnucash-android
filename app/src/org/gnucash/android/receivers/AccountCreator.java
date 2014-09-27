@@ -18,6 +18,7 @@ package org.gnucash.android.receivers;
 
 import java.util.Currency;
 
+import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.model.Account;
 import org.gnucash.android.db.AccountsDbAdapter;
 
@@ -57,9 +58,7 @@ public class AccountCreator extends BroadcastReceiver {
 		if (uid != null)
 			account.setUID(uid);
 		
-		AccountsDbAdapter accountsAdapter = new AccountsDbAdapter(context);
-		accountsAdapter.addAccount(account);
-		accountsAdapter.close();
+		GnuCashApplication.getAccountsDbAdapter().addAccount(account);
 	}
 
 }

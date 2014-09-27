@@ -23,6 +23,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.database.sqlite.SQLiteStatement;
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Log;
 import org.gnucash.android.model.AccountType;
@@ -48,11 +49,7 @@ public class SplitsDbAdapter extends DatabaseAdapter {
 
     protected static final String TAG = "SplitsDbAdapter";
 
-    public SplitsDbAdapter(Context context){
-        super(context);
-    }
-
-    public SplitsDbAdapter(SQLiteDatabase db) {
+    public SplitsDbAdapter(@NonNull SQLiteDatabase db) {
         super(db);
     }
 
@@ -469,7 +466,7 @@ public class SplitsDbAdapter extends DatabaseAdapter {
         Cursor cursor = fetchSplitsForTransaction(transactionUID);
         if (cursor != null){
             if (cursor.getCount() > 0){
-                result &= deleteTransaction(getTransactionID(transactionUID));
+                result = deleteTransaction(getTransactionID(transactionUID));
             }
             cursor.close();
         }

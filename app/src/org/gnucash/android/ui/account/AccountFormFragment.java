@@ -28,7 +28,6 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.text.TextUtils;
@@ -43,6 +42,7 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import org.gnucash.android.R;
+import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.model.Account;
@@ -84,11 +84,6 @@ public class AccountFormFragment extends SherlockFragment {
 	 */
 	private AccountsDbAdapter mAccountsDbAdapter;
 
-    /**
-     * Whether the AccountsDbAdapter is created inside this class.
-     * If so, it should be also closed by this class
-     */
-    private boolean mReleaseDbAdapter = false;
 	
 	/**
 	 * List of all currency codes (ISO 4217) supported by the app
@@ -213,10 +208,10 @@ public class AccountFormFragment extends SherlockFragment {
 	 * @param dbAdapter {@link AccountsDbAdapter} for saving the account
 	 * @return New instance of the dialog fragment
 	 */
-	static public AccountFormFragment newInstance(AccountsDbAdapter dbAdapter){
+    @NonNull
+	static public AccountFormFragment newInstance(@NonNull AccountsDbAdapter dbAdapter){
 		AccountFormFragment f = new AccountFormFragment();
 		f.mAccountsDbAdapter = dbAdapter;
-        f.mReleaseDbAdapter = false;
 		return f;
 	}
 	
@@ -224,10 +219,7 @@ public class AccountFormFragment extends SherlockFragment {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setHasOptionsMenu(true);
-        if (mAccountsDbAdapter == null){
-            mReleaseDbAdapter = true;
-            mAccountsDbAdapter = new AccountsDbAdapter(getSherlockActivity());
-        }
+        mAccountsDbAdapter = GnuCashApplication.getAccountsDbAdapter();
 
         SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
         mUseDoubleEntry = sharedPrefs.getBoolean(getString(R.string.key_use_double_entry), true);
@@ -236,7 +228,7 @@ public class AccountFormFragment extends SherlockFragment {
 	/**
 	 * Inflates the dialog view and retrieves references to the dialog elements
 	 */
-	@Override
+	@Override @NonNull
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.fragment_new_account, container, false);
@@ -675,11 +667,6 @@ public class AccountFormFragment extends SherlockFragment {
 		super.onDestroyView();
 		if (mParentAccountCursor != null)
 			mParentAccountCursor.close();
-        // The mAccountsDbAdapter should only be closed when it is not passed in
-        // by other Activities.
-		if (mReleaseDbAdapter && mAccountsDbAdapter != null) {
-            mAccountsDbAdapter.close();
-        }
         if (mDefaultTransferAccountCursorAdapter != null) {
             mDefaultTransferAccountCursorAdapter.getCursor().close();
         }
@@ -780,7 +767,7 @@ public class AccountFormFragment extends SherlockFragment {
         }
         accountsToUpdate.add(mAccount);
 		if (mAccountsDbAdapter == null)
-			mAccountsDbAdapter = new AccountsDbAdapter(getActivity());
+			mAccountsDbAdapter = GnuCashApplication.getAccountsDbAdapter();
         // bulk update, will not update transactions
 		mAccountsDbAdapter.bulkAddAccounts(accountsToUpdate);
 
@@ -791,6 +778,7 @@ public class AccountFormFragment extends SherlockFragment {
      * Returns the currently selected account type in the spinner
      * @return {@link org.gnucash.android.model.AccountType} currently selected
      */
+    @NonNull
     private AccountType getSelectedAccountType() {
         int selectedAccountTypeIndex = mAccountTypeSpinner.getSelectedItemPosition();
         String[] accountTypeEntries = getResources().getStringArray(R.array.key_account_type_entries);

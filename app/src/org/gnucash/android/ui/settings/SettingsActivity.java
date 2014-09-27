@@ -239,9 +239,8 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
                 Toast.makeText(this, R.string.toast_tap_again_to_confirm_delete, Toast.LENGTH_SHORT).show();
             } else {
                 GncXmlExporter.createBackup(); //create backup before deleting everything
-                AccountsDbAdapter accountsDbAdapter = new AccountsDbAdapter(this);
+                AccountsDbAdapter accountsDbAdapter = GnuCashApplication.getAccountsDbAdapter();
                 accountsDbAdapter.deleteAllRecords();
-                accountsDbAdapter.close();
                 Toast.makeText(this, R.string.toast_all_accounts_deleted, Toast.LENGTH_LONG).show();
             }
             Timer timer = new Timer();
@@ -258,17 +257,15 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
                 List<Transaction> openingBalances = new ArrayList<Transaction>();
                 boolean preserveOpeningBalances = GnuCashApplication.shouldSaveOpeningBalances(false);
                 if (preserveOpeningBalances) {
-                    AccountsDbAdapter accountsDbAdapter = new AccountsDbAdapter(this);
+                    AccountsDbAdapter accountsDbAdapter = GnuCashApplication.getAccountsDbAdapter();
                     openingBalances = accountsDbAdapter.getAllOpeningBalanceTransactions();
-                    accountsDbAdapter.close();
                 }
-                TransactionsDbAdapter transactionsDbAdapter = new TransactionsDbAdapter(this);
+                TransactionsDbAdapter transactionsDbAdapter = GnuCashApplication.getTransactionDbAdapter();
                 transactionsDbAdapter.deleteAllRecords();
 
                 if (preserveOpeningBalances) {
                     transactionsDbAdapter.bulkAddTransactions(openingBalances);
                 }
-                transactionsDbAdapter.close();
                 Toast.makeText(this, R.string.toast_all_transactions_deleted, Toast.LENGTH_LONG).show();
             }
             Timer timer = new Timer();

@@ -21,6 +21,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+
+import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.model.*;
 import org.gnucash.android.ui.widget.WidgetConfigurationActivity;
@@ -91,12 +93,9 @@ public class TransactionRecorder extends BroadcastReceiver {
             }
         }
 
-		TransactionsDbAdapter transactionsDbAdapter = new TransactionsDbAdapter(context);
-		transactionsDbAdapter.addTransaction(transaction);
+		GnuCashApplication.getTransactionDbAdapter().addTransaction(transaction);
 		
 		WidgetConfigurationActivity.updateAllWidgets(context);
-
-		transactionsDbAdapter.close();
 	}
 
 }

@@ -50,24 +50,15 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 	/**
 	 * Transactions database adapter for manipulating transactions associated with accounts
 	 */
-	private TransactionsDbAdapter mTransactionsAdapter;
-	
-	/**
-	 * Constructor. Creates a new adapter instance using the application context
-	 * @param context Application context
-	 */
-	public AccountsDbAdapter(Context context) {
-		super(context);
-		mTransactionsAdapter = new TransactionsDbAdapter(context);
-	}
+	private final TransactionsDbAdapter mTransactionsAdapter;
 
     /**
      * Overloaded constructor. Creates an adapter for an already open database
      * @param db SQliteDatabase instance
      */
-    public AccountsDbAdapter(SQLiteDatabase db) {
+    public AccountsDbAdapter(@NonNull SQLiteDatabase db, @NonNull TransactionsDbAdapter transactionsDbAdapter) {
         super(db);
-        mTransactionsAdapter = new TransactionsDbAdapter(db);
+        mTransactionsAdapter = transactionsDbAdapter;
     }
 
     /**
@@ -636,10 +627,8 @@ public class AccountsDbAdapter extends DatabaseAdapter {
      * @param accountType Type to assign to all accounts created
      * @return String unique ID of the account at bottom of hierarchy
      */
-    public String createAccountHierarchy(String fullName, AccountType accountType){
-        if (fullName == null)
-            throw new IllegalArgumentException("The account name cannot be null");
-
+    @NonNull
+    public String createAccountHierarchy(@NonNull String fullName, @NonNull AccountType accountType) {
         String[] tokens = fullName.trim().split(ACCOUNT_NAME_SEPARATOR);
         String uid = getGnuCashRootAccountUID();
         String parentName = "";
@@ -647,10 +636,9 @@ public class AccountsDbAdapter extends DatabaseAdapter {
         for (String token : tokens) {
             parentName += token;
             String parentUID = findAccountUidByFullName(parentName);
-            if (parentUID != null){ //the parent account exists, don't recreate
+            if (parentUID != null) { //the parent account exists, don't recreate
                 uid = parentUID;
-            }
-            else {
+            } else {
                 Account account = new Account(token);
                 account.setAccountType(accountType);
                 account.setParentUID(uid); //set its parent
@@ -809,9 +797,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
             }
         }
 
-        SplitsDbAdapter splitsDbAdapter = new SplitsDbAdapter(getContext());
-        Money splitSum = splitsDbAdapter.computeSplitBalance(getAccountUID(accountId));
-        splitsDbAdapter.close();
+        Money splitSum = mTransactionsAdapter.getSplitDbAdapter().computeSplitBalance(getAccountUID(accountId));
         return balance.add(splitSum);
     }
 
@@ -832,10 +818,8 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 
         accountsList.add(0, accountUID);
 
-        SplitsDbAdapter splitsDbAdapter = new SplitsDbAdapter(getContext());
         Log.d(TAG, "all account list : " + accountsList.size());
-        Money splitSum = splitsDbAdapter.computeSplitBalance(accountsList, currencyCode, hasDebitNormalBalance);
-        splitsDbAdapter.close();
+        Money splitSum = mTransactionsAdapter.getSplitDbAdapter().computeSplitBalance(accountsList, currencyCode, hasDebitNormalBalance);
         return balance.add(splitSum);
     }
 
@@ -930,15 +914,9 @@ public class AccountsDbAdapter extends DatabaseAdapter {
      */
     public Cursor fetchTopLevelAccounts(){
         //condition which selects accounts with no parent, whose UID is not ROOT and whose name is not ROOT
-        StringBuilder condition = new StringBuilder("(");
-        condition.append(AccountEntry.COLUMN_PARENT_ACCOUNT_UID + " IS NULL");
-        condition.append(" OR ");
-        condition.append(AccountEntry.COLUMN_PARENT_ACCOUNT_UID + " = ");
-        condition.append("'").append(getGnuCashRootAccountUID()).append("'");
-        condition.append(")");
-        condition.append(" AND ");
-        condition.append(AccountEntry.COLUMN_TYPE + " != " + "'").append(AccountType.ROOT.name()).append("'");
-        return fetchAccounts(condition.toString());
+        return fetchAccounts("(" + AccountEntry.COLUMN_PARENT_ACCOUNT_UID + " IS NULL OR "
+                + AccountEntry.COLUMN_PARENT_ACCOUNT_UID + " = '" + getGnuCashRootAccountUID() + "') AND "
+                + AccountEntry.COLUMN_TYPE + " != '" + AccountType.ROOT.name() + "'");
     }
 
     /**
@@ -1245,7 +1223,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
                 if (balance.asBigDecimal().compareTo(new BigDecimal(0)) == 0)
                     continue;
 
-                Transaction transaction = new Transaction(mContext.getString(R.string.account_name_opening_balances));
+                Transaction transaction = new Transaction(GnuCashApplication.getAppContext().getString(R.string.account_name_opening_balances));
                 transaction.setNote(getName(id));
                 transaction.setCurrencyCode(currencyCode);
                 TransactionType transactionType = Transaction.getTypeForBalance(getAccountType(accountUID),
@@ -1304,12 +1282,6 @@ public class AccountsDbAdapter extends DatabaseAdapter {
             cursor.close();
         }
         return currencyList;
-    }
-
-    @Override
-    public void close() {
-        super.close();
-        mTransactionsAdapter.close();
     }
 
     /**

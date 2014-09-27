@@ -22,10 +22,12 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.*;
 
+import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentManager;
 import android.text.Editable;
 import android.widget.*;
 import org.gnucash.android.R;
+import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.*;
 import org.gnucash.android.model.*;
 import org.gnucash.android.ui.transaction.dialog.DatePickerDialogFragment;
@@ -186,7 +188,7 @@ public class TransactionFormFragment extends SherlockFragment implements
     /**
 	 * Create the view and retrieve references to the UI elements
 	 */
-	@Override
+	@Override @NonNull
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		View v = inflater.inflate(R.layout.fragment_new_transaction, container, false);
@@ -222,7 +224,7 @@ public class TransactionFormFragment extends SherlockFragment implements
 		}
 
         mAccountUID = getArguments().getString(UxArgument.SELECTED_ACCOUNT_UID);
-		mAccountsDbAdapter = new AccountsDbAdapter(getActivity());
+		mAccountsDbAdapter = GnuCashApplication.getAccountsDbAdapter();
         mAccountType = mAccountsDbAdapter.getAccountType(mAccountUID);
 
         ArrayAdapter<CharSequence> recurrenceAdapter = ArrayAdapter.createFromResource(getActivity(),
@@ -231,7 +233,7 @@ public class TransactionFormFragment extends SherlockFragment implements
         mRecurringTransactionSpinner.setAdapter(recurrenceAdapter);
 
         String transactionUID = getArguments().getString(UxArgument.SELECTED_TRANSACTION_UID);
-		mTransactionsDbAdapter = new TransactionsDbAdapter(getActivity());
+		mTransactionsDbAdapter = GnuCashApplication.getTransactionDbAdapter();
 		mTransaction = mTransactionsDbAdapter.getTransaction(transactionUID);
         if (mTransaction != null) {
             mMultiCurrency = mTransactionsDbAdapter.getNumCurrencies(mTransaction.getUID()) > 1;
@@ -576,7 +578,7 @@ public class TransactionFormFragment extends SherlockFragment implements
             Toast.makeText(getActivity(), R.string.toast_error_edit_multi_currency_transaction, Toast.LENGTH_LONG).show();
             return;
         }
-        AccountsDbAdapter accountsDbAdapter = new AccountsDbAdapter(getActivity());
+        AccountsDbAdapter accountsDbAdapter = GnuCashApplication.getAccountsDbAdapter();
         String currencyCode = accountsDbAdapter.getCurrencyCode(newAccountId);
         Currency currency = Currency.getInstance(currencyCode);
         mCurrencyTextView.setText(currency.getSymbol(Locale.getDefault()));
@@ -585,8 +587,6 @@ public class TransactionFormFragment extends SherlockFragment implements
         mTransactionTypeButton.setAccountType(mAccountType);
 
         updateTransferAccountsList();
-
-        accountsDbAdapter.close();
     }
 
 	/**
@@ -626,11 +626,10 @@ public class TransactionFormFragment extends SherlockFragment implements
 		if (mTransaction != null){
             if (!mUseDoubleEntry){
                 //first remove old splits for this transaction, since there is only one split
-                SplitsDbAdapter splitsDbAdapter = new SplitsDbAdapter(getActivity());
+                SplitsDbAdapter splitsDbAdapter = GnuCashApplication.getSplitsDbAdapter();
                 for (Split split : mTransaction.getSplits()) {
                     splitsDbAdapter.deleteSplit(split.getUID());
                 }
-                splitsDbAdapter.close();
 
                 Split split = new Split(amount, accountUID);
                 split.setType(mTransactionTypeButton.getTransactionType());
@@ -709,8 +708,6 @@ public class TransactionFormFragment extends SherlockFragment implements
 		super.onDestroyView();
 		if (mCursor != null)
 			mCursor.close();
-		mAccountsDbAdapter.close();
-		mTransactionsDbAdapter.close();
 	}
 
 	@Override
@@ -760,11 +757,10 @@ public class TransactionFormFragment extends SherlockFragment implements
             setAmountEditViewVisible(View.GONE);
         }
 
-        SplitsDbAdapter splitsDbAdapter = new SplitsDbAdapter(getActivity());
+        SplitsDbAdapter splitsDbAdapter = GnuCashApplication.getSplitsDbAdapter();
         for (String removedSplitUID : removedSplitUIDs) {
             splitsDbAdapter.deleteRecord(splitsDbAdapter.getID(removedSplitUID));
         }
-        splitsDbAdapter.close();
     }
 
     /**
@@ -839,16 +835,16 @@ public class TransactionFormFragment extends SherlockFragment implements
 	 * @param amountString String with amount information
 	 * @return BigDecimal with the amount parsed from <code>amountString</code>
 	 */
+    @NonNull
 	public static BigDecimal parseInputToDecimal(String amountString){
 		String clean = stripCurrencyFormatting(amountString);
         if (clean.length() == 0) //empty string
                 return BigDecimal.ZERO;
 		//all amounts are input to 2 decimal places, so after removing decimal separator, divide by 100
         //TODO: Handle currencies with different kinds of decimal places
-		BigDecimal amount = new BigDecimal(clean).setScale(2,
+		return new BigDecimal(clean).setScale(2,
 				RoundingMode.HALF_EVEN).divide(new BigDecimal(100), 2,
 				RoundingMode.HALF_EVEN);
-		return amount;
 	}
 
     private class AmountTextWatcher extends AmountInputFormatter {

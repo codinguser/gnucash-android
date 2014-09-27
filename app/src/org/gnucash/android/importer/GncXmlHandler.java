@@ -123,8 +123,8 @@ public class GncXmlHandler extends DefaultHandler {
 
     private void init(Context context, boolean bulk) {
         mContext = context;
-        mAccountsDbAdapter = new AccountsDbAdapter(mContext);
-        mTransactionsDbAdapter = new TransactionsDbAdapter(mContext);
+        mAccountsDbAdapter = GnuCashApplication.getAccountsDbAdapter();
+        mTransactionsDbAdapter = GnuCashApplication.getTransactionDbAdapter();
         mContent = new StringBuilder();
         mBulk = bulk;
         if (bulk) {
@@ -133,15 +133,8 @@ public class GncXmlHandler extends DefaultHandler {
         }
     }
 
-    /**
-     * Instantiates handler to parse XML into already open db
-     * @param db SQLite Database
-     */
-    public GncXmlHandler(SQLiteDatabase db){
-        mContext = GnuCashApplication.getAppContext();
-        mAccountsDbAdapter = new AccountsDbAdapter(db);
-        mTransactionsDbAdapter = new TransactionsDbAdapter(db);
-        mContent = new StringBuilder();
+    public GncXmlHandler(){
+        init(GnuCashApplication.getAppContext(), false);
     }
 
     @Override
@@ -402,7 +395,5 @@ public class GncXmlHandler extends DefaultHandler {
             long endTime = System.nanoTime();
             Log.d("Handler:", String.format(" bulk insert time: %d", endTime - startTime));
         }
-        mAccountsDbAdapter.close();
-        mTransactionsDbAdapter.close();
     }
 }

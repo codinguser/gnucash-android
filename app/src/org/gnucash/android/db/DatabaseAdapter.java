@@ -17,12 +17,11 @@
 package org.gnucash.android.db;
 
 import android.content.ContentValues;
-import android.content.Context;
 import android.database.Cursor;
-import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
-import org.gnucash.android.app.GnuCashApplication;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+
 import org.gnucash.android.db.DatabaseSchema.*;
 import org.gnucash.android.model.AccountType;
 
@@ -40,38 +39,17 @@ public abstract class DatabaseAdapter {
 	protected static final String TAG = DatabaseAdapter.class.getName();
 
 	/**
-	 * {@link DatabaseHelper} for creating and opening the database
-	 */
-	protected DatabaseHelper mDbHelper;
-	
-	/**
 	 * SQLite database
 	 */
-	protected SQLiteDatabase mDb;
-	
-	/**
-	 * Application context
-	 */
-	protected Context mContext;
-	
-	/**
-	 * Opens (or creates if it doesn't exist) the database for reading and writing
-	 * @param context Application context to be used for opening database
-	 */
-	public DatabaseAdapter(Context context) {
-        mDbHelper = new DatabaseHelper(context);
-        mContext = context.getApplicationContext();
-        open();
-        createTempView();
-    }
+	@NonNull
+    protected final SQLiteDatabase mDb;
 
     /**
      * Opens the database adapter with an existing database
      * @param db SQLiteDatabase object
      */
-    public DatabaseAdapter(SQLiteDatabase db) {
+    public DatabaseAdapter(@NonNull SQLiteDatabase db) {
         this.mDb = db;
-        this.mContext = GnuCashApplication.getAppContext();
         if (!db.isOpen() || db.isReadOnly())
             throw new IllegalArgumentException("Database not open or is read-only. Require writeable database");
         createTempView();
@@ -170,33 +148,6 @@ public abstract class DatabaseAdapter {
         );
     }
 
-	/**
-	 * Opens/creates database to be used for reading or writing. 
-	 * @return Reference to self for database manipulation
-	 */
-	public DatabaseAdapter open(){
-		try {
-			mDb = mDbHelper.getWritableDatabase();
-		} catch (SQLException e) {
-			Log.e(TAG, "Error getting database: " + e.getMessage());
-			mDb = mDbHelper.getReadableDatabase();
-		}
-		
-		return this;
-	}
-	
-	/**
-	 * Close the database
-	 */
-	public void close(){
-        //only close if we opened the db ourselves (through the helper)
-        //if we received the database object (during migrations) leave it alone
-		if (mDbHelper != null) {
-            mDbHelper.close();
-            mDb.close();
-        }
-	}
-
     /**
      * Checks if the database is open
      * @return <code>true</code> if the database is open, <code>false</code> otherwise
@@ -205,21 +156,14 @@ public abstract class DatabaseAdapter {
         return mDb.isOpen();
     }
 
-    /**
-     * Returns the context used to create this adapter
-     * @return Android application context
-     */
-    public Context getContext(){
-        return mContext.getApplicationContext();
-    }
-
 	/**
 	 * Retrieves record with id <code>rowId</code> from table <code>tableName</code>
 	 * @param tableName Name of table where record is found
 	 * @param rowId ID of record to be retrieved
 	 * @return {@link Cursor} to record retrieved
 	 */
-	protected Cursor fetchRecord(String tableName, long rowId){
+    @NonNull
+	protected Cursor fetchRecord(@NonNull String tableName, long rowId){
 		return mDb.query(tableName, null, DatabaseSchema.CommonColumns._ID + "=" + rowId,
 				null, null, null, null);
 	}
@@ -229,7 +173,8 @@ public abstract class DatabaseAdapter {
 	 * @param tableName Name of table in database
 	 * @return {@link Cursor} to all records in table <code>tableName</code>
 	 */
-	protected Cursor fetchAllRecords(String tableName){
+    @NonNull
+	protected Cursor fetchAllRecords(@NonNull String tableName){
 		return mDb.query(tableName, 
         		null, null, null, null, null, null);
 	}
@@ -258,12 +203,14 @@ public abstract class DatabaseAdapter {
      * @param rowId ID of record to be retrieved
      * @return {@link Cursor} to record retrieved
      */
+    @NonNull
     public abstract Cursor fetchRecord(long rowId);
 
     /**
      * Retrieves all records from database table corresponding to this adapter
      * @return {@link Cursor} to all records in table
      */
+    @NonNull
     public abstract Cursor fetchAllRecords();
 
     /**
@@ -285,7 +232,8 @@ public abstract class DatabaseAdapter {
      * @param accountUID Unique Identifier of the account
      * @return Currency code of the account
      */
-    public String getCurrencyCode(String accountUID) {
+    @Nullable
+    public String getCurrencyCode(@NonNull String accountUID) {
         Cursor cursor = mDb.query(DatabaseSchema.AccountEntry.TABLE_NAME,
                 new String[] {DatabaseSchema.AccountEntry.COLUMN_CURRENCY},
                 DatabaseSchema.AccountEntry.COLUMN_UID + "= ?",
@@ -316,10 +264,11 @@ public abstract class DatabaseAdapter {
                 new String[]{DatabaseSchema.AccountEntry.COLUMN_TYPE},
                 DatabaseSchema.AccountEntry.COLUMN_UID + "=?",
                 new String[]{accountUID}, null, null, null);
-        if (c != null) {
+        try {
             if (c.moveToFirst()) {
                 type = c.getString(c.getColumnIndexOrThrow(DatabaseSchema.AccountEntry.COLUMN_TYPE));
             }
+        } finally {
             c.close();
         }
         return AccountType.valueOf(type);
@@ -327,9 +276,10 @@ public abstract class DatabaseAdapter {
 
     /**
      * Returns an account UID of the account with record id <code>accountRowID</code>
-     * @param accountRowID Record ID of account as long paramenter
+     * @param accountRowID Record ID of account as long parameter
      * @return String containing UID of account
      */
+    @Nullable
     public String getAccountUID(long accountRowID){
         String uid = null;
         Cursor c = mDb.query(DatabaseSchema.AccountEntry.TABLE_NAME,
@@ -350,7 +300,7 @@ public abstract class DatabaseAdapter {
      * @param accountUID Unique identifier of the account
      * @return Database row ID of the account
      */
-    public long getAccountID(String accountUID){
+    public long getAccountID(@Nullable String accountUID){
         long id = -1;
         if (accountUID == null)
             return id;

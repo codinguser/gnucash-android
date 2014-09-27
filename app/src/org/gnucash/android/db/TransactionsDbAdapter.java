@@ -25,8 +25,10 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.database.sqlite.SQLiteStatement;
+import android.support.annotation.NonNull;
 import android.util.Log;
 
+import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.model.*;
 
 import static org.gnucash.android.db.DatabaseSchema.*;
@@ -42,30 +44,20 @@ import java.util.List;
  */
 public class TransactionsDbAdapter extends DatabaseAdapter {
 
-    SplitsDbAdapter mSplitsDbAdapter;
-	/**
-	 * Constructor. 
-	 * Calls to the base class to open the database
-	 * @param context Application context
-	 */
-	public TransactionsDbAdapter(Context context) {
-		super(context);
-        mSplitsDbAdapter = new SplitsDbAdapter(context);
-	}
+    private final SplitsDbAdapter mSplitsDbAdapter;
 
     /**
      * Overloaded constructor. Creates adapter for already open db
      * @param db SQlite db instance
      */
-    public TransactionsDbAdapter(SQLiteDatabase db) {
+    public TransactionsDbAdapter(@NonNull SQLiteDatabase db, @NonNull SplitsDbAdapter splitsDbAdapter) {
         super(db);
-        mSplitsDbAdapter = new SplitsDbAdapter(db);
+        mSplitsDbAdapter = splitsDbAdapter;
     }
 
-    @Override
-    public void close() {
-        super.close();
-        mSplitsDbAdapter.close();
+    @NonNull
+    public SplitsDbAdapter getSplitDbAdapter() {
+        return mSplitsDbAdapter;
     }
 
     /**
@@ -242,6 +234,7 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
      * They are not considered when computing account balances</p>
      * @return Cursor holding set of all recurring transactions
      */
+    @NonNull
     public Cursor fetchAllRecurringTransactions(){
         return mDb.query(TransactionEntry.TABLE_NAME,
                 null,
@@ -545,14 +538,11 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
      * @param prefix Starting characters of the transaction name
      * @return Cursor to the data set containing all matching transactions
      */
-    public Cursor fetchTransactionsStartingWith(String prefix){
-        StringBuffer stringBuffer = new StringBuffer(TransactionEntry.COLUMN_DESCRIPTION)
-                .append(" LIKE '").append(prefix).append("%'");
-        String selection = stringBuffer.toString();
-
+    @NonNull
+    public Cursor fetchTransactionsStartingWith(@NonNull String prefix){
         return mDb.query(TransactionEntry.TABLE_NAME,
                 new String[]{TransactionEntry._ID, TransactionEntry.COLUMN_DESCRIPTION},
-                selection,
+                TransactionEntry.COLUMN_DESCRIPTION + " LIKE '" + prefix + "%'",
                 null, null, null,
                 TransactionEntry.COLUMN_DESCRIPTION + " ASC");
     }
@@ -582,9 +572,9 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
         long firstRunMillis = System.currentTimeMillis() + recurrencePeriodMillis;
         long recurringTransactionId = addTransaction(recurringTransaction);
 
-        PendingIntent recurringPendingIntent = PendingIntent.getBroadcast(mContext,
+        PendingIntent recurringPendingIntent = PendingIntent.getBroadcast(GnuCashApplication.getAppContext(),
                 (int)recurringTransactionId, Transaction.createIntent(recurringTransaction), PendingIntent.FLAG_UPDATE_CURRENT);
-        AlarmManager alarmManager = (AlarmManager) mContext.getSystemService(Context.ALARM_SERVICE);
+        AlarmManager alarmManager = (AlarmManager) GnuCashApplication.getAppContext().getSystemService(Context.ALARM_SERVICE);
         alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, firstRunMillis,
                 recurrencePeriodMillis, recurringPendingIntent);
     }

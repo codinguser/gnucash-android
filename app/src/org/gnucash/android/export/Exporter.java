@@ -62,18 +62,7 @@ public abstract class Exporter {
     public Exporter(ExportParams params){
         this.mParameters = params;
         mContext = GnuCashApplication.getAppContext();
-        mAccountsDbAdapter = new AccountsDbAdapter(mContext);
-    }
-
-    /**
-     * Overloaded constructor, provided the database object to use
-     * @param params Export parameters
-     * @param db Database from which to export (should be initialized and open)
-     */
-    public Exporter(ExportParams params, SQLiteDatabase db){
-        this.mParameters = params;
-        mAccountsDbAdapter = new AccountsDbAdapter(db);
-        mContext = GnuCashApplication.getAppContext();
+        mAccountsDbAdapter = GnuCashApplication.getAccountsDbAdapter();
     }
 
     /**

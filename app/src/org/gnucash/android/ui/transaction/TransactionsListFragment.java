@@ -47,6 +47,7 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import org.gnucash.android.R;
+import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.*;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.ui.transaction.dialog.BulkMoveDialogFragment;
@@ -117,11 +118,10 @@ public class TransactionsListFragment extends SherlockListFragment implements
 				return true;
 
 			case R.id.context_menu_delete:
-                SplitsDbAdapter splitsDbAdapter = new SplitsDbAdapter(getActivity());
+                SplitsDbAdapter splitsDbAdapter = GnuCashApplication.getSplitsDbAdapter();
 				for (long id : getListView().getCheckedItemIds()) {
                     splitsDbAdapter.deleteSplitsForTransactionAndAccount(mTransactionsDbAdapter.getUID(id), mAccountUID);
 				}
-                splitsDbAdapter.close();
 				refresh();
 				mode.finish();
 				WidgetConfigurationActivity.updateAllWidgets(getActivity());
@@ -140,7 +140,7 @@ public class TransactionsListFragment extends SherlockListFragment implements
 		Bundle args = getArguments();
 		mAccountUID = args.getString(UxArgument.SELECTED_ACCOUNT_UID);
 
-		mTransactionsDbAdapter = new TransactionsDbAdapter(getActivity());
+		mTransactionsDbAdapter = GnuCashApplication.getTransactionDbAdapter();
 		mCursorAdapter = new TransactionsCursorAdapter(
 				getActivity().getApplicationContext(), 
 				R.layout.list_item_transaction, null, 
@@ -212,7 +212,6 @@ public class TransactionsListFragment extends SherlockListFragment implements
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		mTransactionsDbAdapter.close();
 	}
 	
 	@Override
@@ -492,7 +491,7 @@ public class TransactionsListFragment extends SherlockListFragment implements
 		
 		@Override
 		public Cursor loadInBackground() {
-			mDatabaseAdapter = new TransactionsDbAdapter(getContext());
+			mDatabaseAdapter = GnuCashApplication.getTransactionDbAdapter();
 			Cursor c = ((TransactionsDbAdapter) mDatabaseAdapter).fetchAllTransactionsForAccount(accountUID);
 			if (c != null)
 				registerContentObserver(c);
