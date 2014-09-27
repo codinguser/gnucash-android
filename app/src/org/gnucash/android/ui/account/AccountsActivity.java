@@ -408,7 +408,7 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
         FragmentTransaction fragmentTransaction = fragmentManager
                 .beginTransaction();
 
-        AccountFormFragment accountFormFragment = AccountFormFragment.newInstance(null);
+        AccountFormFragment accountFormFragment = AccountFormFragment.newInstance();
         accountFormFragment.setArguments(args);
 
         fragmentTransaction.replace(R.id.fragment_container,

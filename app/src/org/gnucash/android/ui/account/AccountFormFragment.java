@@ -209,11 +209,11 @@ public class AccountFormFragment extends SherlockFragment {
 	 * @return New instance of the dialog fragment
 	 */
     @NonNull
-	static public AccountFormFragment newInstance(@NonNull AccountsDbAdapter dbAdapter){
-		AccountFormFragment f = new AccountFormFragment();
-		f.mAccountsDbAdapter = dbAdapter;
-		return f;
-	}
+	static public AccountFormFragment newInstance() {
+        AccountFormFragment f = new AccountFormFragment();
+        f.mAccountsDbAdapter = GnuCashApplication.getAccountsDbAdapter();
+        return f;
+    }
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -356,7 +356,8 @@ public class AccountFormFragment extends SherlockFragment {
         mNameEditText.setText(account.getName());
 
         if (mUseDoubleEntry) {
-            long doubleDefaultAccountId = mAccountsDbAdapter.getAccountID(account.getDefaultTransferAccountUID());
+            String defaultTransferUID = account.getDefaultTransferAccountUID();
+            long doubleDefaultAccountId = (defaultTransferUID == null ? -1 : mAccountsDbAdapter.getAccountID(defaultTransferUID));
             setDefaultTransferAccountSelection(doubleDefaultAccountId);
         }
 
@@ -388,7 +389,7 @@ public class AccountFormFragment extends SherlockFragment {
      * Initializes the preview of the color picker (color square) to the specified color
      * @param colorHex Color of the format #rgb or #rrggbb
      */
-    private void initializeColorSquarePreview(String colorHex){
+    private void initializeColorSquarePreview(@NonNull String colorHex){
         if (colorHex != null)
             mColorSquare.setBackgroundColor(Color.parseColor(colorHex));
         else
@@ -412,6 +413,7 @@ public class AccountFormFragment extends SherlockFragment {
     private void setDefaultTransferAccountInputsVisible(boolean visible) {
         final int visibility = visible ? View.VISIBLE : View.GONE;
         final View view = getView();
+        assert view != null;
         view.findViewById(R.id.layout_default_transfer_account).setVisibility(visibility);
         view.findViewById(R.id.label_default_transfer_account).setVisibility(visibility);
     }
@@ -570,6 +572,7 @@ public class AccountFormFragment extends SherlockFragment {
 		mParentAccountCursor = mAccountsDbAdapter.fetchAccountsOrderedByFullName(condition, null);
 		if (mParentAccountCursor.getCount() <= 0){
             final View view = getView();
+            assert view != null;
             view.findViewById(R.id.layout_parent_account).setVisibility(View.GONE);
             view.findViewById(R.id.label_parent_account).setVisibility(View.GONE);
         }
@@ -756,7 +759,7 @@ public class AccountFormFragment extends SherlockFragment {
                     // mAccountsDbAdapter.getDescendantAccountUIDs() will ensure a parent-child order
                     Account acct = mapAccount.get(uid);
                     // mAccount cannot be root, so acct here cannot be top level account.
-                    if (acct.getParentUID().equals(mAccount.getUID())) {
+                    if (mAccount.getUID().equals(acct.getParentUID())) {
                         acct.setFullName(mAccount.getFullName() + AccountsDbAdapter.ACCOUNT_NAME_SEPARATOR + acct.getName());
                     }
                     else {

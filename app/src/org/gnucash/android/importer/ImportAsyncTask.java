@@ -20,6 +20,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.support.annotation.Nullable;
 import android.util.Log;
 import android.widget.Toast;
 import org.gnucash.android.R;
@@ -41,7 +42,7 @@ public class ImportAsyncTask extends AsyncTask<InputStream, Void, Boolean> {
         this.context = context;
     }
 
-    public ImportAsyncTask(Activity context, TaskDelegate delegate){
+    public ImportAsyncTask(Activity context, @Nullable TaskDelegate delegate){
         this.context = context;
         this.mDelegate = delegate;
     }

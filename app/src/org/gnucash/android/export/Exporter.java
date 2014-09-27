@@ -20,6 +20,8 @@ package org.gnucash.android.export;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Environment;
+import android.support.annotation.Nullable;
+
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.AccountsDbAdapter;
 
@@ -103,6 +105,7 @@ public abstract class Exporter {
      * @return Last modified file from backup folder
      * @see #BACKUP_FOLDER_PATH
      */
+    @Nullable
     public static File getMostRecentBackupFile(){
         File backupFolder = new File(BACKUP_FOLDER_PATH);
         if (!backupFolder.exists())

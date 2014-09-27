@@ -472,11 +472,12 @@ public class GncXmlExporter extends Exporter{
 
         //more memory efficient approach than loading all transactions into memory first
         Cursor transactionsCursor = mTransactionsDbAdapter.fetchAllRecords();
-        if (transactionsCursor != null){
-            while (transactionsCursor.moveToNext()){
+        try {
+            while (transactionsCursor.moveToNext()) {
                 Transaction transaction = mTransactionsDbAdapter.buildTransactionInstance(transactionsCursor);
                 transaction.toGncXml(document, bookNode);
             }
+        } finally {
             transactionsCursor.close();
         }
 

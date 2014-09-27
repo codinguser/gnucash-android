@@ -151,7 +151,8 @@ public class ExportDialogFragment extends DialogFragment {
 	 */
 	private void bindViews(){		
 		View v = getView();
-		mDestinationSpinner = (Spinner) v.findViewById(R.id.spinner_export_destination);
+        assert v != null;
+        mDestinationSpinner = (Spinner) v.findViewById(R.id.spinner_export_destination);
 		ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getActivity(),
 		        R.array.export_destinations, android.R.layout.simple_spinner_item);		
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);		

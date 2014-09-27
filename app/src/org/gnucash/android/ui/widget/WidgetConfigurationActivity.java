@@ -146,10 +146,10 @@ public class WidgetConfigurationActivity extends Activity {
 		AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
 
 		AccountsDbAdapter accountsDbAdapter = GnuCashApplication.getAccountsDbAdapter();
-		Account account = accountsDbAdapter.getAccount(accountUID);
-
-		
-		if (account == null){
+		Account account;
+        try {
+            account = accountsDbAdapter.getAccount(accountUID);
+        } catch (IllegalArgumentException e) {
 			Log.i("WidgetConfiguration", "Account not found, resetting widget " + appWidgetId);
 			//if account has been deleted, let the user know
 			RemoteViews views = new RemoteViews(context.getPackageName(),
