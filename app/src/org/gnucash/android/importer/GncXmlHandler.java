@@ -19,8 +19,11 @@ package org.gnucash.android.importer;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.Log;
 import org.gnucash.android.app.GnuCashApplication;
+import org.gnucash.android.db.SplitsDbAdapter;
 import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.export.xml.GncXmlHelper;
 import org.gnucash.android.model.*;
@@ -110,31 +113,34 @@ public class GncXmlHandler extends DefaultHandler {
     boolean mInDefaultTransferAccount = false;
     boolean mInExported         = false;
 
-    private Context mContext;
     private TransactionsDbAdapter mTransactionsDbAdapter;
 
-    public GncXmlHandler(Context context) {
-        init(context, false);
+    public GncXmlHandler() {
+        init(false, null);
     }
 
-    public GncXmlHandler(Context context, boolean bulk) {
-        init(context, bulk);
+    public GncXmlHandler(boolean bulk) {
+        init(bulk, null);
     }
 
-    private void init(Context context, boolean bulk) {
-        mContext = context;
-        mAccountsDbAdapter = GnuCashApplication.getAccountsDbAdapter();
-        mTransactionsDbAdapter = GnuCashApplication.getTransactionDbAdapter();
+    public GncXmlHandler(boolean bulk, @NonNull SQLiteDatabase db) {
+        init(bulk, db);
+    }
+
+    private void init(boolean bulk, @Nullable SQLiteDatabase db) {
+        if (db == null) {
+            mAccountsDbAdapter = GnuCashApplication.getAccountsDbAdapter();
+            mTransactionsDbAdapter = GnuCashApplication.getTransactionDbAdapter();
+        } else {
+            mTransactionsDbAdapter = new TransactionsDbAdapter(db, new SplitsDbAdapter(db));
+            mAccountsDbAdapter = new AccountsDbAdapter(db, mTransactionsDbAdapter);
+        }
         mContent = new StringBuilder();
         mBulk = bulk;
         if (bulk) {
             mAccountList = new ArrayList<Account>();
             mTransactionList = new ArrayList<Transaction>();
         }
-    }
-
-    public GncXmlHandler(){
-        init(GnuCashApplication.getAppContext(), false);
     }
 
     @Override

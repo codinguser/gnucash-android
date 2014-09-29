@@ -22,10 +22,8 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.util.List;
 
-import android.database.sqlite.SQLiteDatabase;
 import android.preference.PreferenceManager;
 import org.gnucash.android.R;
-import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.export.ExportParams;
 import org.gnucash.android.export.Exporter;
 import org.gnucash.android.model.Account;
@@ -59,7 +57,7 @@ public class OfxExporter extends Exporter{
 	 * Builds an XML representation of the {@link Account}s and {@link Transaction}s in the database
 	 */
 	public OfxExporter(ExportParams params) {
-        super(params);
+        super(params, null);
 	}
 
     /**
@@ -80,7 +78,7 @@ public class OfxExporter extends Exporter{
 		
 		parent.appendChild(bankmsgs);		
 		
-		AccountsDbAdapter accountsDbAdapter = GnuCashApplication.getAccountsDbAdapter();
+		AccountsDbAdapter accountsDbAdapter = mAccountsDbAdapter;
 		for (Account account : mAccountsList) {		
 			if (account.getTransactionCount() == 0)
 				continue; 

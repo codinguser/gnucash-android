@@ -77,11 +77,23 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 		contentValues.put(AccountEntry.COLUMN_UID,          account.getUID());
 		contentValues.put(AccountEntry.COLUMN_CURRENCY,     account.getCurrency().getCurrencyCode());
         contentValues.put(AccountEntry.COLUMN_PLACEHOLDER,  account.isPlaceholderAccount() ? 1 : 0);
-        contentValues.put(AccountEntry.COLUMN_COLOR_CODE,   account.getColorHexCode());
+        if (account.getColorHexCode() != null) {
+            contentValues.put(AccountEntry.COLUMN_COLOR_CODE, account.getColorHexCode());
+        } else {
+            contentValues.putNull(AccountEntry.COLUMN_COLOR_CODE);
+        }
         contentValues.put(AccountEntry.COLUMN_FAVORITE,     account.isFavorite() ? 1 : 0);
         contentValues.put(AccountEntry.COLUMN_FULL_NAME,    account.getFullName());
-        contentValues.put(AccountEntry.COLUMN_PARENT_ACCOUNT_UID,           account.getParentUID());
-        contentValues.put(AccountEntry.COLUMN_DEFAULT_TRANSFER_ACCOUNT_UID, account.getDefaultTransferAccountUID());
+        if (account.getParentUID() != null) {
+            contentValues.put(AccountEntry.COLUMN_PARENT_ACCOUNT_UID, account.getParentUID());
+        } else {
+            contentValues.putNull(AccountEntry.COLUMN_PARENT_ACCOUNT_UID);
+        }
+        if (account.getDefaultTransferAccountUID() != null) {
+            contentValues.put(AccountEntry.COLUMN_DEFAULT_TRANSFER_ACCOUNT_UID, account.getDefaultTransferAccountUID());
+        } else {
+            contentValues.putNull(AccountEntry.COLUMN_DEFAULT_TRANSFER_ACCOUNT_UID);
+        }
 
         Log.d(TAG, "Replace account to db");
         long rowId =  mDb.replace(AccountEntry.TABLE_NAME, null, contentValues);

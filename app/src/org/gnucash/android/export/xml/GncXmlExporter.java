@@ -18,12 +18,12 @@
 package org.gnucash.android.export.xml;
 
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
-import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.DatabaseSchema;
 import static org.gnucash.android.db.DatabaseSchema.*;
-import org.gnucash.android.db.TransactionsDbAdapter;
+
 import org.gnucash.android.export.ExportFormat;
 import org.gnucash.android.export.ExportParams;
 import org.gnucash.android.export.Exporter;
@@ -58,11 +58,12 @@ import java.util.zip.GZIPOutputStream;
  */
 public class GncXmlExporter extends Exporter{
 
-    private TransactionsDbAdapter mTransactionsDbAdapter;
+    public GncXmlExporter(ExportParams params) {
+        super(params, null);
+    }
 
-    public GncXmlExporter(ExportParams params){
-        super(params);
-        mTransactionsDbAdapter = GnuCashApplication.getTransactionDbAdapter();
+    public GncXmlExporter(ExportParams params, SQLiteDatabase db) {
+        super(params, db);
     }
 
     private void exportSlots(XmlSerializer xmlSerializer,

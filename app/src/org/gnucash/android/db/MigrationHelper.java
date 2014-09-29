@@ -124,7 +124,7 @@ public class MigrationHelper {
                 + "/gnucash/" + Exporter.buildExportFilename(ExportFormat.GNC_XML));
 
         //we do not use the ExporterAsyncTask here because we want to use an already open db
-        GncXmlExporter exporter = new GncXmlExporter(exportParams);
+        GncXmlExporter exporter = new GncXmlExporter(exportParams, db);
         BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(
                 new FileOutputStream(exportParams.getTargetFilepath()), "UTF-8"));
         try {

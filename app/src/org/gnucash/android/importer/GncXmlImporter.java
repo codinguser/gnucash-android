@@ -18,6 +18,8 @@ package org.gnucash.android.importer;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.Log;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -46,7 +48,7 @@ public class GncXmlImporter {
      * @param db SQLite Database
      * @param gncXmlInputStream Input stream of GnuCash XML
      */
-    public static void parse(SQLiteDatabase db, InputStream gncXmlInputStream) throws Exception {
+    public static void parse(@NonNull SQLiteDatabase db, InputStream gncXmlInputStream) throws Exception {
         SAXParserFactory spf = SAXParserFactory.newInstance();
         SAXParser sp = spf.newSAXParser();
         XMLReader xr = sp.getXMLReader();
@@ -55,7 +57,8 @@ public class GncXmlImporter {
 
         /** Create handler to handle XML Tags ( extends DefaultHandler ) */
 
-        GncXmlHandler handler = new GncXmlHandler();
+        GncXmlHandler handler = new GncXmlHandler(false, db);
+
         xr.setContentHandler(handler);
         xr.parse(new InputSource(bos));
     }
@@ -82,7 +85,7 @@ public class GncXmlImporter {
 
         //TODO: Set an error handler which can log errors
 
-        GncXmlHandler handler = new GncXmlHandler(context, true);
+        GncXmlHandler handler = new GncXmlHandler(true);
         xr.setContentHandler(handler);
         long startTime = System.nanoTime();
         xr.parse(new InputSource(bos));

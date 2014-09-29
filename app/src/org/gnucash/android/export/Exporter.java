@@ -20,10 +20,13 @@ package org.gnucash.android.export;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Environment;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.AccountsDbAdapter;
+import org.gnucash.android.db.SplitsDbAdapter;
+import org.gnucash.android.db.TransactionsDbAdapter;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -58,13 +61,26 @@ public abstract class Exporter {
      * Adapter for retrieving accounts to export
      * Subclasses should close this object when they are done with exporting
      */
+    @NonNull
     protected AccountsDbAdapter mAccountsDbAdapter;
+    @NonNull
+    protected TransactionsDbAdapter mTransactionsDbAdapter;
+    @NonNull
+    protected SplitsDbAdapter mSplitsDbAdapter;
     protected Context mContext;
 
-    public Exporter(ExportParams params){
+    public Exporter(ExportParams params, @Nullable SQLiteDatabase db) {
         this.mParameters = params;
         mContext = GnuCashApplication.getAppContext();
-        mAccountsDbAdapter = GnuCashApplication.getAccountsDbAdapter();
+        if (db == null) {
+            mAccountsDbAdapter = GnuCashApplication.getAccountsDbAdapter();
+            mTransactionsDbAdapter = GnuCashApplication.getTransactionDbAdapter();
+            mSplitsDbAdapter = GnuCashApplication.getSplitsDbAdapter();
+        } else {
+            mSplitsDbAdapter = new SplitsDbAdapter(db);
+            mTransactionsDbAdapter = new TransactionsDbAdapter(db, mSplitsDbAdapter);
+            mAccountsDbAdapter = new AccountsDbAdapter(db, mTransactionsDbAdapter);
+        }
     }
 
     /**
