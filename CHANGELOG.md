@@ -1,6 +1,6 @@
 Change Log
 ===============================================================================
-Version 1.5.0 *(2014-09-xx)*
+Version 1.5.0 *(2014-10-01)*
 ----------------------------
 * Need for speed! Lots of performance optimizations in the application
   - Application balances are now computed faster
