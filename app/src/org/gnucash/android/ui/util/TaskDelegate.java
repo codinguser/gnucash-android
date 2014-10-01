@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013 - 2014 Ngewi Fet <ngewif@gmail.com>
+ * Copyright (c) 2014 Ngewi Fet <ngewif@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,22 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.gnucash.android.ui.util;
 
 /**
- * Interface for fragments which are refreshable
+ * Interface for delegates which can be used to execute functions when an AsyncTask is complete
+ * @see org.gnucash.android.importer.ImportAsyncTask
  * @author Ngewi Fet <ngewif@gmail.com>
  */
-public interface Refreshable {
+public interface TaskDelegate {
 
     /**
-     * Refresh the list, typically be restarting the loader
+     * Function to execute on completion of task
      */
-    public void refresh();
-
-    /**
-     * Refresh the list with modified parameters
-     * @param uid GUID of relevant item to be refreshed
-     */
-    public void refresh(String uid);
+    public void onTaskComplete();
 }

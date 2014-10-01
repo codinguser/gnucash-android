@@ -28,13 +28,13 @@ public interface OnTransactionClickedListener {
 
 	/**
 	 * Callback for creating a new transaction
-	 * @param accountRowId Database row ID of the account in which to create the new transaction
+	 * @param accountUID GUID of the account in which to create the new transaction
 	 */
-	public void createNewTransaction(long accountRowId);
+	public void createNewTransaction(String accountUID);
 	
 	/**
 	 * Callback request to edit a transaction
-	 * @param transactionId Database row Id of the transaction to be edited
+	 * @param transactionUID GUID of the transaction to be edited
 	 */
-	public void editTransaction(long transactionId);	
+	public void editTransaction(String transactionUID);
 }

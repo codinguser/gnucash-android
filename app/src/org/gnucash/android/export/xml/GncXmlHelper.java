@@ -1,3 +1,20 @@
+/*
+ * Copyright (c) 2014 Ngewi Fet <ngewif@gmail.com>
+ * Copyright (c) 2014 Yongxin Wang <fefe.wyx@gmail.com>
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.gnucash.android.export.xml;
 
 import org.gnucash.android.model.Money;
@@ -12,9 +29,10 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
- * Date: 17.07.2014
+ * Collection of helper tags and methods for Gnc XML export
  *
- * @author Ngewi
+ * @author Ngewi Fet <ngewif@gmail.com>
+ * @author Yongxin Wang <fefe.wyx@gmail.com>
  */
 public abstract class GncXmlHelper {
     public static final String TAG_PREFIX           = "gnc:";
@@ -81,6 +99,7 @@ public abstract class GncXmlHelper {
     public static final String KEY_FAVORITE         = "favorite";
     public static final String KEY_NOTES            = "notes";
     public static final String KEY_DEFAULT_TRANSFER_ACCOUNT = "default_transfer_account";
+    public static final String KEY_EXPORTED         = "exported";
 
     /**
      * Formats dates for the GnuCash XML format

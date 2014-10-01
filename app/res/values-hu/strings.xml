@@ -303,13 +303,11 @@
 	<string name="summary_xml_ofx_header">Enable this option when exporting to third-party application other than GnuCash for desktop</string>
 	<string name="title_whats_new">What\'s New</string>
 	<string name="whats_new">
-        - Create multiple splits per transaction\n
-        - Fixed computation of account balances for different account types\n
-        - Use account-specific labels for CREDIT/DEBITs\n
-        - Automated backup of database before deletion operations\n
-        - Restore most recent backup of database (in Settings -> General)\n
-        - Read transactions from GnuCash XML files (limited support)\n
-        - Option to save opening balances before deleting transactions\n
+        - General resource and performance optimization\n
+        - Faster computation of account balances\n
+        - Set passcode to restrict access to app (in Settings)\n
+        - Export separate QIF files for each currency in use\n
+        - Use currencey settings when creating account hierarchy\n
         - Multiple bug fixes and improvements\n
 	</string>
 	<string name="label_dismiss">Dismiss</string>
@@ -420,4 +418,6 @@
     <string name="summary_save_opening_balances">Enable to save the current account balance (before deleting transactions) as new opening balance after deleting transactions
     </string>
     <string name="title_save_opening_balances">Save account opening balances</string>
+    <string name="export_warning_ofx">OFX does not support double-entry transactions</string>
+    <string name="export_warning_qif">A separate QIF file will be generated for each currency in use</string>
 </resources>

@@ -304,14 +304,12 @@
 	<string name="summary_xml_ofx_header">Velg denne hvis du skal eksportere til annen programvare enn GnuCash for PC.</string>
 	<string name="title_whats_new">Hva er nytt</string>
 	<string name="whats_new">
-        - Lag flere splitter for en transaksjon\n
-        - Rettet kalkulering av balanse for ulike kontoer\n
-        - Bruk konto-spesifikke navn for KREDIT/DEBET\n
-        - Automatisk sikkerhetskopi av database før sletteoperasjoner\n
-        - Tilbakelegging av siste sikkerhetskopi av databasen (i Innstillinger->Generelt)\n
-        - Les transaksjoner fra GnuCash XML filer (begrenset støtte)\n
-        - Mulighet for å lagre inngående balanser før sletting av transaksjoner\n
-        - Mange feilrettinger og forbedringer\n
+        - General resource and performance optimization\n
+        - Faster computation of account balances\n
+        - Set passcode to restrict access to app (in Settings)\n
+        - Export separate QIF files for each currency in use\n
+        - Use currencey settings when creating account hierarchy\n
+        - Multiple bug fixes and improvements\n
 	</string>
 	<string name="label_dismiss">Ferdig</string>
     <string name="toast_transanction_amount_required">Oppgi et beløp for å lagre transaksjonen</string>
@@ -416,4 +414,6 @@
     <string name="account_name_equity">Egenkapital</string>
     <string name="summary_save_opening_balances">Merk for å lagre gjeldende konto balanse (før sletting) som ny inngående balanse (etter sletting av transaksjoner).</string>
     <string name="title_save_opening_balances">Lagre inngående balanser</string>
+    <string name="export_warning_ofx">OFX does not support double-entry transactions</string>
+    <string name="export_warning_qif">A separate QIF file will be generated for each currency in use</string>
 </resources>

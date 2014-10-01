@@ -76,7 +76,8 @@ public class TransactionsListFragment extends SherlockListFragment implements
 	private SimpleCursorAdapter mCursorAdapter;
 	private ActionMode mActionMode = null;
 	private boolean mInEditMode = false;
-	private long mAccountID;
+//	private long mAccountID;
+    private String mAccountUID;
 
 	/**
 	 * Callback listener for editing transactions
@@ -118,7 +119,7 @@ public class TransactionsListFragment extends SherlockListFragment implements
 			case R.id.context_menu_delete:
                 SplitsDbAdapter splitsDbAdapter = new SplitsDbAdapter(getActivity());
 				for (long id : getListView().getCheckedItemIds()) {
-                    splitsDbAdapter.deleteSplitsForTransactionAndAccount(id, mAccountID);
+                    splitsDbAdapter.deleteSplitsForTransactionAndAccount(mTransactionsDbAdapter.getUID(id), mAccountUID);
 				}
                 splitsDbAdapter.close();
 				refresh();
@@ -132,17 +133,12 @@ public class TransactionsListFragment extends SherlockListFragment implements
 		}
 	};
 
-	/**
-	 * Text view displaying the sum of the accounts
-	 */
-	private TextView mSumTextView;
-	
-	@Override
+    @Override
  	public void onCreate(Bundle savedInstanceState) {		
 		super.onCreate(savedInstanceState);
 		setHasOptionsMenu(true);
 		Bundle args = getArguments();
-		mAccountID = args.getLong(UxArgument.SELECTED_ACCOUNT_ID);
+		mAccountUID = args.getString(UxArgument.SELECTED_ACCOUNT_UID);
 
 		mTransactionsDbAdapter = new TransactionsDbAdapter(getActivity());
 		mCursorAdapter = new TransactionsCursorAdapter(
@@ -173,11 +169,11 @@ public class TransactionsListFragment extends SherlockListFragment implements
 
     /**
      * Refresh the list with transactions from account with ID <code>accountId</code>
-     * @param accountId Database ID of account to load transactions from
+     * @param accountUID GUID of account to load transactions from
      */
     @Override
-	public void refresh(long accountId){
-		mAccountID = accountId;
+	public void refresh(String accountUID){
+		mAccountUID = accountUID;
 		refresh();
 	}
 
@@ -188,8 +184,11 @@ public class TransactionsListFragment extends SherlockListFragment implements
 	public void refresh(){
 		getLoaderManager().restartLoader(0, null, this);
 
-        mSumTextView = (TextView) getView().findViewById(R.id.transactions_sum);
-        new AccountBalanceTask(mSumTextView, getActivity()).execute(mAccountID);
+        /*
+	  Text view displaying the sum of the accounts
+	 */
+        TextView mSumTextView = (TextView) getView().findViewById(R.id.transactions_sum);
+        new AccountBalanceTask(mSumTextView, getActivity()).execute(mAccountUID);
 
 	}
 			
@@ -207,7 +206,7 @@ public class TransactionsListFragment extends SherlockListFragment implements
 	public void onResume() {
 		super.onResume();
 		((TransactionsActivity)getSherlockActivity()).updateNavigationSelection();		
-		refresh(((TransactionsActivity) getActivity()).getCurrentAccountID());
+		refresh(((TransactionsActivity) getActivity()).getCurrentAccountUID());
 	}
 	
 	@Override
@@ -224,7 +223,7 @@ public class TransactionsListFragment extends SherlockListFragment implements
 			checkbox.setChecked(!checkbox.isChecked());
 			return;
 		}
-		mTransactionEditListener.editTransaction(id);
+		mTransactionEditListener.editTransaction(mTransactionsDbAdapter.getUID(id));
 	}
 	
 	@Override
@@ -236,7 +235,7 @@ public class TransactionsListFragment extends SherlockListFragment implements
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
             case R.id.menu_add_transaction:
-                mTransactionEditListener.createNewTransaction(mAccountID);
+                mTransactionEditListener.createNewTransaction(mAccountUID);
                 return true;
 
             default:
@@ -247,7 +246,7 @@ public class TransactionsListFragment extends SherlockListFragment implements
 	@Override
 	public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
 		Log.d(LOG_TAG, "Creating transactions loader");
-		return new TransactionsCursorLoader(getActivity(), mAccountID);
+		return new TransactionsCursorLoader(getActivity(), mAccountUID);
 	}
 
 	@Override
@@ -316,11 +315,10 @@ public class TransactionsListFragment extends SherlockListFragment implements
 	 */
 	private void stopActionMode(){
         int checkedCount = getListView().getCheckedItemIds().length;
-		if (checkedCount > 0 || mActionMode == null)
-			return;
-		else
-			mActionMode.finish();
-	}
+        if (checkedCount <= 0 && mActionMode != null) {
+            mActionMode.finish();
+        }
+    }
 		
 	/**
 	 * Prepares and displays the dialog for bulk moving transactions to another account
@@ -337,7 +335,7 @@ public class TransactionsListFragment extends SherlockListFragment implements
 	    // Create and show the dialog.
 	    DialogFragment bulkMoveFragment = new BulkMoveDialogFragment();
 	    Bundle args = new Bundle();
-	    args.putLong(UxArgument.ORIGIN_ACCOUNT_ID, mAccountID);
+	    args.putString(UxArgument.ORIGIN_ACCOUNT_UID, mAccountUID);
 	    args.putLongArray(UxArgument.SELECTED_TRANSACTION_IDS, getListView().getCheckedItemIds());
 	    bulkMoveFragment.setArguments(args);
         bulkMoveFragment.setTargetFragment(this, 0);
@@ -414,8 +412,8 @@ public class TransactionsListFragment extends SherlockListFragment implements
 		public void bindView(View view, Context context, Cursor cursor) {
 			super.bindView(view, context, cursor);
 
-            long transactionId = cursor.getLong(cursor.getColumnIndexOrThrow(DatabaseSchema.TransactionEntry._ID));
-			Money amount = mTransactionsDbAdapter.getBalance(transactionId, mAccountID);
+            String transactionUID = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.TransactionEntry.COLUMN_UID));
+			Money amount = mTransactionsDbAdapter.getBalance(transactionUID, mAccountUID);
 			TextView amountTextView = (TextView) view.findViewById(R.id.transaction_amount);
             TransactionsActivity.displayBalance(amountTextView, amount);
 
@@ -485,17 +483,17 @@ public class TransactionsListFragment extends SherlockListFragment implements
 	 * @author Ngewi Fet <ngewif@gmail.com>
 	 */
 	protected static class TransactionsCursorLoader extends DatabaseCursorLoader {
-		private long accountID; 
+		private String accountUID;
 		
-		public TransactionsCursorLoader(Context context, long accountID) {
+		public TransactionsCursorLoader(Context context, String accountUID) {
 			super(context);			
-			this.accountID = accountID;
+			this.accountUID = accountUID;
 		}
 		
 		@Override
 		public Cursor loadInBackground() {
 			mDatabaseAdapter = new TransactionsDbAdapter(getContext());
-			Cursor c = ((TransactionsDbAdapter) mDatabaseAdapter).fetchAllTransactionsForAccount(accountID);
+			Cursor c = ((TransactionsDbAdapter) mDatabaseAdapter).fetchAllTransactionsForAccount(accountUID);
 			if (c != null)
 				registerContentObserver(c);
 			return c;

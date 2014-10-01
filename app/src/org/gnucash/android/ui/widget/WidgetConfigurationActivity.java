@@ -48,7 +48,7 @@ import android.widget.Toast;
 import org.gnucash.android.util.QualifiedAccountNameCursorAdapter;
 
 /**
- * Activity for configuration which account to diplay on a widget. 
+ * Activity for configuration which account to display on a widget.
  * The activity is opened each time a widget is added to the homescreen
  * @author Ngewi Fet <ngewif@gmail.com>
  */
@@ -115,12 +115,13 @@ public class WidgetConfigurationActivity extends Activity {
 				}					
 				
 				long accountId = mAccountsSpinner.getSelectedItemId();
+                String accountUID = mAccountsDbAdapter.getUID(accountId);
 				SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(WidgetConfigurationActivity.this);
 				Editor editor = prefs.edit();
-				editor.putLong(UxArgument.SELECTED_ACCOUNT_ID + mAppWidgetId, accountId);
+				editor.putString(UxArgument.SELECTED_ACCOUNT_UID + mAppWidgetId, accountUID);
 				editor.commit();	
 				
-				updateWidget(WidgetConfigurationActivity.this, mAppWidgetId, accountId);
+				updateWidget(WidgetConfigurationActivity.this, mAppWidgetId, accountUID);
 						
 				Intent resultValue = new Intent();
 				resultValue.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, mAppWidgetId);
@@ -143,14 +144,14 @@ public class WidgetConfigurationActivity extends Activity {
 	 * account with record ID <code>accountId</code>
      * If the account has been deleted, then a notice is posted in the widget
      * @param appWidgetId ID of the widget to be updated
-     * @param accountId Database ID of the account tied to the widget
+     * @param accountUID GUID of the account tied to the widget
 	 */
-	public static void updateWidget(Context context, int appWidgetId, long accountId) {
+	public static void updateWidget(Context context, int appWidgetId, String accountUID) {
 		Log.i("WidgetConfiguration", "Updating widget: " + appWidgetId);
 		AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
 
 		AccountsDbAdapter accountsDbAdapter = new AccountsDbAdapter(context);
-		Account account = accountsDbAdapter.getAccount(accountId);
+		Account account = accountsDbAdapter.getAccount(accountUID);
 
 		
 		if (account == null){
@@ -167,7 +168,7 @@ public class WidgetConfigurationActivity extends Activity {
 			views.setOnClickPendingIntent(R.id.btn_new_transaction, pendingIntent);
 			appWidgetManager.updateAppWidget(appWidgetId, views);
 			Editor editor = PreferenceManager.getDefaultSharedPreferences(context).edit();
-			editor.remove(UxArgument.SELECTED_ACCOUNT_ID + appWidgetId);
+			editor.remove(UxArgument.SELECTED_ACCOUNT_UID + appWidgetId);
 			editor.commit();
 			return;
 		}
@@ -175,7 +176,7 @@ public class WidgetConfigurationActivity extends Activity {
 		RemoteViews views = new RemoteViews(context.getPackageName(),
 				R.layout.widget_4x1);
 		views.setTextViewText(R.id.account_name, account.getName());
-        Money accountBalance = accountsDbAdapter.getAccountBalance(accountId);
+        Money accountBalance = accountsDbAdapter.getAccountBalance(accountUID);
 
         views.setTextViewText(R.id.transactions_summary,
 				accountBalance.formattedString(Locale.getDefault()));
@@ -187,7 +188,7 @@ public class WidgetConfigurationActivity extends Activity {
 		Intent accountViewIntent = new Intent(context, TransactionsActivity.class);
 		accountViewIntent.setAction(Intent.ACTION_VIEW);
 		accountViewIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
-		accountViewIntent.putExtra(UxArgument.SELECTED_ACCOUNT_ID, accountId);
+		accountViewIntent.putExtra(UxArgument.SELECTED_ACCOUNT_UID, accountUID);
 		PendingIntent accountPendingIntent = PendingIntent
 				.getActivity(context, appWidgetId, accountViewIntent, 0);
 		views.setOnClickPendingIntent(R.id.widget_layout, accountPendingIntent);
@@ -195,7 +196,7 @@ public class WidgetConfigurationActivity extends Activity {
 		Intent newTransactionIntent = new Intent(context, TransactionsActivity.class);
 		newTransactionIntent.setAction(Intent.ACTION_INSERT_OR_EDIT);
 		newTransactionIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
-		newTransactionIntent.putExtra(UxArgument.SELECTED_ACCOUNT_ID, accountId);
+		newTransactionIntent.putExtra(UxArgument.SELECTED_ACCOUNT_UID, accountUID);
 		PendingIntent pendingIntent = PendingIntent
 				.getActivity(context, appWidgetId, newTransactionIntent, 0);	            
 		views.setOnClickPendingIntent(R.id.btn_new_transaction, pendingIntent);
@@ -216,12 +217,12 @@ public class WidgetConfigurationActivity extends Activity {
 
         SharedPreferences defaultSharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
 		for (int widgetId : appWidgetIds) {
-			long accountId = defaultSharedPrefs
-            		.getLong(UxArgument.SELECTED_ACCOUNT_ID + widgetId, -1);
+			String accountUID = defaultSharedPrefs
+            		.getString(UxArgument.SELECTED_ACCOUNT_UID + widgetId, null);
             
-			if (accountId <= 0)
+			if (accountUID == null)
 				continue;
-			updateWidget(context, widgetId, accountId);
+			updateWidget(context, widgetId, accountUID);
 		}
 	}
 }

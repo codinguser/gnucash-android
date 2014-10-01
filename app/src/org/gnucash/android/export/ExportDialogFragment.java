@@ -19,15 +19,18 @@ package org.gnucash.android.export;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.DialogFragment;
+import android.text.AndroidCharacter;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
 import org.gnucash.android.R;
+import org.gnucash.android.app.GnuCashApplication;
 
 import java.io.File;
 
@@ -64,7 +67,12 @@ public class ExportDialogFragment extends DialogFragment {
 	 * Cancels the export dialog
 	 */
 	Button mCancelButton;
-	
+
+    /**
+     * Text view for showing warnings based on chosen export format
+     */
+    TextView mExportWarningTextView;
+
 	/**
 	 * File path for saving the OFX files
 	 */
@@ -104,18 +112,30 @@ public class ExportDialogFragment extends DialogFragment {
         switch (view.getId()){
             case R.id.radio_ofx_format:
                 mExportFormat = ExportFormat.OFX;
+                if (GnuCashApplication.isDoubleEntryEnabled()){
+                    mExportWarningTextView.setText(getActivity().getString(R.string.export_warning_ofx));
+                    mExportWarningTextView.setVisibility(View.VISIBLE);
+                } else {
+                    mExportWarningTextView.setVisibility(View.GONE);
+                }
                 break;
             case R.id.radio_qif_format:
                 mExportFormat = ExportFormat.QIF;
+                //TODO: Also check that there exist transactions with multiple currencies before displaying warning
+                if (GnuCashApplication.isDoubleEntryEnabled()) {
+                    mExportWarningTextView.setText(getActivity().getString(R.string.export_warning_qif));
+                    mExportWarningTextView.setVisibility(View.VISIBLE);
+                } else {
+                    mExportWarningTextView.setVisibility(View.GONE);
+                }
         }
         mFilePath = getActivity().getExternalFilesDir(null) + "/" + Exporter.buildExportFilename(mExportFormat);
-        return;
     }
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		return inflater.inflate(R.layout.dialog_export_ofx, container, false);
+		return inflater.inflate(R.layout.dialog_export, container, false);
 	}
 	
 	@Override
@@ -158,6 +178,8 @@ public class ExportDialogFragment extends DialogFragment {
 		
 		mSaveButton.setOnClickListener(new ExportClickListener());
 
+        mExportWarningTextView = (TextView) v.findViewById(R.id.export_warning);
+
         String defaultExportFormat = sharedPrefs.getString(getString(R.string.key_default_export_format), ExportFormat.QIF.name());
         mExportFormat = ExportFormat.valueOf(defaultExportFormat);
         View.OnClickListener clickListener = new View.OnClickListener() {
@@ -168,12 +190,16 @@ public class ExportDialogFragment extends DialogFragment {
         };
 
         RadioButton ofxRadioButton = (RadioButton) v.findViewById(R.id.radio_ofx_format);
-        ofxRadioButton.setChecked(defaultExportFormat.equalsIgnoreCase(ExportFormat.OFX.name()));
         ofxRadioButton.setOnClickListener(clickListener);
+        if (defaultExportFormat.equalsIgnoreCase(ExportFormat.OFX.name())) {
+            ofxRadioButton.performClick();
+        }
 
         RadioButton qifRadioButton = (RadioButton) v.findViewById(R.id.radio_qif_format);
-        qifRadioButton.setChecked(defaultExportFormat.equalsIgnoreCase(ExportFormat.QIF.name()));
         qifRadioButton.setOnClickListener(clickListener);
+        if (defaultExportFormat.equalsIgnoreCase(ExportFormat.QIF.name())){
+            qifRadioButton.performClick();
+        }
 	}
 
 

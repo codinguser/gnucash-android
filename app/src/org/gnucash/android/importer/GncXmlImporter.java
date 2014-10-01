@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2014 Ngewi Fet <ngewif@gmail.com>
+ * Copyright (c) 2014 Yongxin Wang <fefe.wyx@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +18,7 @@ package org.gnucash.android.importer;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
@@ -25,8 +27,10 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import java.io.BufferedInputStream;
+import java.io.PushbackInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.zip.GZIPInputStream;
 
 /**
  * Importer for Gnucash XML files and GNCA (GnuCash Android) XML files
@@ -66,12 +70,23 @@ public class GncXmlImporter {
         SAXParser sp = spf.newSAXParser();
         XMLReader xr = sp.getXMLReader();
 
-        BufferedInputStream bos = new BufferedInputStream(gncXmlInputStream);
+        BufferedInputStream bos;
+        PushbackInputStream pb = new PushbackInputStream( gncXmlInputStream, 2 ); //we need a pushbackstream to look ahead
+        byte [] signature = new byte[2];
+        pb.read( signature ); //read the signature
+        pb.unread( signature ); //push back the signature to the stream
+        if( signature[ 0 ] == (byte) 0x1f && signature[ 1 ] == (byte) 0x8b ) //check if matches standard gzip magic number
+            bos = new BufferedInputStream(new GZIPInputStream(pb));
+        else
+            bos = new BufferedInputStream(pb);
 
         //TODO: Set an error handler which can log errors
 
-        GncXmlHandler handler = new GncXmlHandler(context);
+        GncXmlHandler handler = new GncXmlHandler(context, true);
         xr.setContentHandler(handler);
+        long startTime = System.nanoTime();
         xr.parse(new InputSource(bos));
+        long endTime = System.nanoTime();
+        Log.d("Import", String.format("%d ns spent on importing the file", endTime-startTime));
     }
 }

@@ -23,30 +23,30 @@ import android.util.Log;
 import org.gnucash.android.export.ExportFormat;
 import org.gnucash.android.export.ExportParams;
 import org.gnucash.android.export.Exporter;
-import org.gnucash.android.export.qif.QifExporter;
 import org.gnucash.android.export.xml.GncXmlExporter;
 import org.gnucash.android.importer.GncXmlImporter;
 import org.gnucash.android.model.AccountType;
 
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
 
 import static org.gnucash.android.db.DatabaseSchema.AccountEntry;
 
 /**
- * Date: 23.03.2014
+ * Collection of helper methods which are used during database migrations
  *
- * @author Ngewi
+ * @author Ngewi Fet <ngewif@gmail.com>
  */
 public class MigrationHelper {
     public static final String LOG_TAG = "MigrationHelper";
 
     /**
-     * Performs same functtion as {@link AccountsDbAdapter#getFullyQualifiedAccountName(String)}
+     * Performs same function as {@link AccountsDbAdapter#getFullyQualifiedAccountName(String)}
      * <p>This method is only necessary because we cannot open the database again (by instantiating {@link org.gnucash.android.db.AccountsDbAdapter}
-     * while it is locked for upgrades. So we reimplement the method here.</p>
+     * while it is locked for upgrades. So we re-implement the method here.</p>
      * @param db SQLite database
      * @param accountUID Unique ID of account whose fully qualified name is to be determined
-     * @return Fully qualified (colon-sepaated) account name
+     * @return Fully qualified (colon-separated) account name
      * @see AccountsDbAdapter#getFullyQualifiedAccountName(String)
      */
     static String getFullyQualifiedAccountName(SQLiteDatabase db, String accountUID){
@@ -112,34 +112,31 @@ public class MigrationHelper {
      * Exports the database to a GnuCash XML file and returns the path to the file
      * @return String with exported GnuCash XML
      */
-    static String exportDatabase(SQLiteDatabase db, ExportFormat format) throws IOException {
+    static String exportGnucashXML(SQLiteDatabase db) throws IOException {
         Log.i(LOG_TAG, "Exporting database to GnuCash XML");
-        ExportParams exportParams = new ExportParams(format);
+        ExportParams exportParams = new ExportParams(ExportFormat.GNC_XML);
         exportParams.setExportAllTransactions(true);
         exportParams.setExportTarget(ExportParams.ExportTarget.SD_CARD);
         exportParams.setDeleteTransactionsAfterExport(false);
 
         new File(Environment.getExternalStorageDirectory() + "/gnucash/").mkdirs();
         exportParams.setTargetFilepath(Environment.getExternalStorageDirectory()
-                + "/gnucash/" + Exporter.buildExportFilename(format));
+                + "/gnucash/" + Exporter.buildExportFilename(ExportFormat.GNC_XML));
 
         //we do not use the ExporterAsyncTask here because we want to use an already open db
-        Exporter exporter = null;
-        switch (format){
-            case QIF:
-                exporter = new QifExporter(exportParams, db);
-                break;
-            case GNC_XML:
-            default:
-                exporter = new GncXmlExporter(exportParams, db);
-        }
-
+        GncXmlExporter exporter = new GncXmlExporter(exportParams, db);
         BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(
                 new FileOutputStream(exportParams.getTargetFilepath()), "UTF-8"));
-        writer.write(exporter.generateExport());
+        try {
+            String xml = exporter.generateXML();
+            writer.write(xml);
+        } catch (ParserConfigurationException e) {
+            e.printStackTrace();
+        } finally {
+            writer.flush();
+            writer.close();
+        }
 
-        writer.flush();
-        writer.close();
         return exportParams.getTargetFilepath();
     }
 

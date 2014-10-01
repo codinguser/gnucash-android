@@ -57,7 +57,7 @@ public class DatePickerDialogFragment extends DialogFragment {
 	 * @param dateMillis Time in milliseconds to which to initialize the dialog
 	 */
 	public DatePickerDialogFragment(OnDateSetListener callback, long dateMillis) {
-		mDateSetListener = (OnDateSetListener) callback;
+		mDateSetListener = callback;
 		if (dateMillis > 0){
 			mDate = new GregorianCalendar();
 			mDate.setTimeInMillis(dateMillis);

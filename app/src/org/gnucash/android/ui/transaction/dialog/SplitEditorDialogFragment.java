@@ -62,7 +62,6 @@ public class SplitEditorDialogFragment extends DialogFragment {
     private Cursor mCursor;
     private SimpleCursorAdapter mCursorAdapter;
     private List<View> mSplitItemViewList;
-    private long mAccountId;
     private String mAccountUID;
 
     private BalanceTextWatcher mBalanceUpdater = new BalanceTextWatcher();
@@ -155,12 +154,11 @@ public class SplitEditorDialogFragment extends DialogFragment {
         mAccountsDbAdapter = new AccountsDbAdapter(getActivity());
 
         Bundle args     = getArguments();
-        mAccountId      = ((TransactionsActivity)getActivity()).getCurrentAccountID();
-        mAccountUID     = mAccountsDbAdapter.getAccountUID(mAccountId);
+        mAccountUID      = ((TransactionsActivity)getActivity()).getCurrentAccountUID();
         mBaseAmount     = new BigDecimal(args.getString(UxArgument.AMOUNT_STRING));
 
         String conditions = "(" //+ AccountEntry._ID + " != " + mAccountId + " AND "
-                + DatabaseSchema.AccountEntry.COLUMN_CURRENCY + " = '" + mAccountsDbAdapter.getCurrencyCode(mAccountId)
+                + DatabaseSchema.AccountEntry.COLUMN_CURRENCY + " = '" + mAccountsDbAdapter.getCurrencyCode(mAccountUID)
                 + "' AND " + DatabaseSchema.AccountEntry.COLUMN_UID + " != '" + mAccountsDbAdapter.getGnuCashRootAccountUID()
                 + "' AND " + DatabaseSchema.AccountEntry.COLUMN_PLACEHOLDER + " = 0"
                 + ")";
@@ -196,7 +194,7 @@ public class SplitEditorDialogFragment extends DialogFragment {
         updateTransferAccountsList(accountsSpinner);
         accountsSpinner.setOnItemSelectedListener(new TypeButtonLabelUpdater(splitTypeButton));
 
-        Currency accountCurrency = Currency.getInstance(mAccountsDbAdapter.getCurrencyCode(mAccountId));
+        Currency accountCurrency = Currency.getInstance(mAccountsDbAdapter.getCurrencyCode(mAccountUID));
         splitCurrencyTextView.setText(accountCurrency.getSymbol());
         splitTypeButton.setAmountFormattingListener(splitAmountEditText, splitCurrencyTextView);
         splitTypeButton.setChecked(mBaseAmount.signum() > 0);
@@ -307,7 +305,7 @@ public class SplitEditorDialogFragment extends DialogFragment {
      */
     private void updateTotal(){
         List<Split> splitList   = extractSplitsFromView();
-        String currencyCode     = mAccountsDbAdapter.getCurrencyCode(mAccountId);
+        String currencyCode     = mAccountsDbAdapter.getCurrencyCode(mAccountUID);
         Money splitSum          = Money.createZeroInstance(currencyCode);
 
         for (Split split : splitList) {

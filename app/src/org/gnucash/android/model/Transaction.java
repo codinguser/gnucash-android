@@ -20,13 +20,11 @@ import android.content.Intent;
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.export.ofx.OfxHelper;
-import org.gnucash.android.export.qif.QifHelper;
 import org.gnucash.android.export.xml.GncXmlHelper;
 import org.gnucash.android.model.Account.OfxAccountType;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import java.math.BigDecimal;
 import java.util.*;
 
 /**
@@ -515,96 +513,11 @@ public class Transaction {
 	}
 
     /**
-     * Builds a QIF entry representing this transaction
-     * @return String QIF representation of this transaction
+     * Generate the GncXML for the transaction and append to the DOM document
+     * @param doc XML document to which transaction should be added
+     * @param rootElement Parent node for the XML
+     * @deprecated Use the {@link org.gnucash.android.export.xml.GncXmlExporter} to generate XML
      */
-    public String toQIF(String accountUID){
-        final String newLine = "\n";
-        AccountsDbAdapter accountsDbAdapter = new AccountsDbAdapter(GnuCashApplication.getAppContext());
-        //all transactions are double transactions
-        String imbalanceAccountName = AccountsDbAdapter.getImbalanceAccountName(Currency.getInstance(mCurrencyCode));
-
-        StringBuilder transactionQIFBuilder = new StringBuilder();
-
-        transactionQIFBuilder.append(QifHelper.DATE_PREFIX).append(QifHelper.formatDate(mTimestamp)).append(newLine);
-        transactionQIFBuilder.append(QifHelper.MEMO_PREFIX).append(mDescription).append(newLine);
-
-        List<String> processedSplitUIDs = new ArrayList<String>();
-        final List<Split> splitList = getSplits();
-        if (splitList.size() > 2){
-            for (Split split : splitList) {
-                if (split.getAccountUID().equals(accountUID)){
-                    Money amount = split.getAmount();
-
-                    if (split.getType() == TransactionType.CREDIT)
-                        amount = amount.negate();
-
-                    transactionQIFBuilder.append(QifHelper.AMOUNT_PREFIX).append(amount.toPlainString())
-                            .append(newLine);
-                    processedSplitUIDs.add(split.getUID());
-                    break;
-                }
-            }
-        }
-        for (Split split : splitList) {
-            if (split.getAccountUID().equals(accountUID) || processedSplitUIDs.contains(split.getUID()))
-                continue;
-
-            String splitAccountName = accountsDbAdapter.getFullyQualifiedAccountName(split.getAccountUID());
-            transactionQIFBuilder.append(QifHelper.SPLIT_CATEGORY_PREFIX).append(splitAccountName).append(newLine);
-
-            String memo = split.getMemo();
-            if (memo != null && memo.length() > 0) {
-                transactionQIFBuilder.append(QifHelper.SPLIT_MEMO_PREFIX).append(memo).append(newLine);
-            }
-            Money amount = split.getAmount();
-            if (split.getAccountUID().equals(accountUID)) {
-                if (split.getType() == TransactionType.CREDIT)
-                    amount = amount.negate();
-            } else {
-                if (split.getType() == TransactionType.DEBIT)
-                    amount = amount.negate();
-            }
-            transactionQIFBuilder.append(QifHelper.SPLIT_AMOUNT_PREFIX).append(amount.asString()).append(newLine);
-        }
-        Money imbalanceAmount = getImbalance();
-        if (imbalanceAmount.asBigDecimal().compareTo(new BigDecimal(0)) != 0){
-            AccountType accountType = accountsDbAdapter.getAccountType(accountUID);
-            TransactionType imbalanceType = Transaction.getTypeForBalance(accountType,imbalanceAmount.isNegative());
-            imbalanceAmount = imbalanceAmount.absolute();
-            if (imbalanceType == TransactionType.DEBIT){
-                imbalanceAmount = imbalanceAmount.negate();
-            }
-            transactionQIFBuilder.append(QifHelper.SPLIT_CATEGORY_PREFIX).append(imbalanceAccountName).append(newLine);
-            transactionQIFBuilder.append(QifHelper.SPLIT_AMOUNT_PREFIX).append(imbalanceAmount.asString()).append(newLine);
-        }
-
-        transactionQIFBuilder.append(QifHelper.ENTRY_TERMINATOR).append(newLine);
-
-        accountsDbAdapter.close();
-        return transactionQIFBuilder.toString();
-    }
-
-    /**
-     * Creates an Intent with arguments from the <code>transaction</code>.
-     * This intent can be broadcast to create a new transaction
-     * @param transaction Transaction used to create intent
-     * @return Intent with transaction details as extras
-     */
-    public static Intent createIntent(Transaction transaction){
-        Intent intent = new Intent(Intent.ACTION_INSERT);
-        intent.setType(Transaction.MIME_TYPE);
-        intent.putExtra(Intent.EXTRA_TITLE, transaction.getDescription());
-        intent.putExtra(Intent.EXTRA_TEXT, transaction.getNote());
-        intent.putExtra(Account.EXTRA_CURRENCY_CODE, transaction.getCurrencyCode());
-        StringBuilder stringBuilder = new StringBuilder();
-        for (Split split : transaction.getSplits()) {
-            stringBuilder.append(split.toCsv()).append("\n");
-        }
-        intent.putExtra(Transaction.EXTRA_SPLITS, stringBuilder.toString());
-        return intent;
-    }
-
     public void toGncXml(Document doc, Element rootElement) {
         Element idNode = doc.createElement(GncXmlHelper.TAG_TRX_ID);
         idNode.setAttribute(GncXmlHelper.ATTR_KEY_TYPE, GncXmlHelper.ATTR_VALUE_GUID);
@@ -662,5 +575,25 @@ public class Transaction {
         transactionNode.appendChild(trnSplits);
 
         rootElement.appendChild(transactionNode);
+    }
+
+    /**
+     * Creates an Intent with arguments from the <code>transaction</code>.
+     * This intent can be broadcast to create a new transaction
+     * @param transaction Transaction used to create intent
+     * @return Intent with transaction details as extras
+     */
+    public static Intent createIntent(Transaction transaction){
+        Intent intent = new Intent(Intent.ACTION_INSERT);
+        intent.setType(Transaction.MIME_TYPE);
+        intent.putExtra(Intent.EXTRA_TITLE, transaction.getDescription());
+        intent.putExtra(Intent.EXTRA_TEXT, transaction.getNote());
+        intent.putExtra(Account.EXTRA_CURRENCY_CODE, transaction.getCurrencyCode());
+        StringBuilder stringBuilder = new StringBuilder();
+        for (Split split : transaction.getSplits()) {
+            stringBuilder.append(split.toCsv()).append("\n");
+        }
+        intent.putExtra(Transaction.EXTRA_SPLITS, stringBuilder.toString());
+        return intent;
     }
 }

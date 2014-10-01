@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2012 - 2014 Ngewi Fet <ngewif@gmail.com>
+ * Copyright (c) 2014 Yongxin Wang <fefe.wyx@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +26,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.database.sqlite.SQLiteStatement;
 import android.util.Log;
+
 import org.gnucash.android.model.*;
+
 import static org.gnucash.android.db.DatabaseSchema.*;
 
 import java.util.ArrayList;
@@ -35,7 +38,7 @@ import java.util.List;
  * Manages persistence of {@link Transaction}s in the database
  * Handles adding, modifying and deleting of transaction records.
  * @author Ngewi Fet <ngewif@gmail.com> 
- * 
+ * @author Yongxin Wang <fefe.wyx@gmail.com>
  */
 public class TransactionsDbAdapter extends DatabaseAdapter {
 
@@ -74,7 +77,7 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 	 */
 	public long addTransaction(Transaction transaction){
 		ContentValues contentValues = new ContentValues();
-		contentValues.put(TransactionEntry.COLUMN_DESCRIPTION,  transaction.getDescription());
+		contentValues.put(TransactionEntry.COLUMN_DESCRIPTION, transaction.getDescription());
 		contentValues.put(TransactionEntry.COLUMN_UID,          transaction.getUID());
 		contentValues.put(TransactionEntry.COLUMN_TIMESTAMP,    transaction.getTimeMillis());
 		contentValues.put(TransactionEntry.COLUMN_NOTES,        transaction.getNote());
@@ -82,15 +85,8 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
         contentValues.put(TransactionEntry.COLUMN_CURRENCY,     transaction.getCurrencyCode());
         contentValues.put(TransactionEntry.COLUMN_RECURRENCE_PERIOD, transaction.getRecurrencePeriod());
 
-		long rowId = -1;
-		if ((rowId = fetchTransactionWithUID(transaction.getUID())) > 0){
-			//if transaction already exists, then just update
-			Log.d(TAG, "Updating existing transaction");
-			mDb.update(TransactionEntry.TABLE_NAME, contentValues, TransactionEntry._ID + " = " + rowId, null);
-		} else {
-			Log.d(TAG, "Adding new transaction to db");
-			rowId = mDb.insert(TransactionEntry.TABLE_NAME, null, contentValues);
-		}	
+        Log.d(TAG, "Replacing transaction in db");
+        long rowId = mDb.replace(TransactionEntry.TABLE_NAME, null, contentValues);
 
         if (rowId > 0){
             Log.d(TAG, "Adding splits for transaction");
@@ -101,6 +97,67 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
         }
 		return rowId;
 	}
+
+    /**
+     * Adds an several transactions to the database.
+     * If a transaction already exists in the database with the same unique ID,
+     * then the record will just be updated instead. Recurrence Transactions will not
+     * be inserted, instead schedule Transaction would be called. If an exception
+     * occurs, no transaction would be inserted.
+     * @param transactionList {@link Transaction} transactions to be inserted to database
+     * @return Number of transactions inserted
+     */
+    public long bulkAddTransactions(List<Transaction> transactionList){
+        List<Split> splitList = new ArrayList<Split>(transactionList.size()*3);
+        long rowInserted = 0;
+        try {
+            mDb.beginTransaction();
+            SQLiteStatement replaceStatement = mDb.compileStatement("REPLACE INTO " + TransactionEntry.TABLE_NAME + " ( "
+                + TransactionEntry.COLUMN_UID 		    + " , "
+                + TransactionEntry.COLUMN_DESCRIPTION   + " , "
+                + TransactionEntry.COLUMN_NOTES         + " , "
+                + TransactionEntry.COLUMN_TIMESTAMP     + " , "
+                + TransactionEntry.COLUMN_EXPORTED      + " , "
+                + TransactionEntry.COLUMN_CURRENCY      + " , "
+                + TransactionEntry.COLUMN_RECURRENCE_PERIOD + " ) VALUES ( ? , ? , ? , ? , ? , ? , ?)");
+            for (Transaction transaction : transactionList) {
+                if (transaction.getRecurrencePeriod() > 0) {
+                    scheduleTransaction(transaction);
+                }
+                //Log.d(TAG, "Replacing transaction in db");
+                replaceStatement.clearBindings();
+                replaceStatement.bindString(1, transaction.getUID());
+                replaceStatement.bindString(2, transaction.getDescription());
+                replaceStatement.bindString(3, transaction.getNote());
+                replaceStatement.bindLong(4, transaction.getTimeMillis());
+                replaceStatement.bindLong(5, transaction.isExported() ? 1 : 0);
+                replaceStatement.bindString(6, transaction.getCurrencyCode());
+                replaceStatement.bindLong(7, transaction.getRecurrencePeriod());
+                replaceStatement.execute();
+                rowInserted ++;
+                splitList.addAll(transaction.getSplits());
+            }
+            mDb.setTransactionSuccessful();
+        }
+        finally {
+            mDb.endTransaction();
+        }
+        if (rowInserted != 0 && !splitList.isEmpty()) {
+            try {
+                long nSplits = mSplitsDbAdapter.bulkAddSplits(splitList);
+                Log.d(TAG, String.format("%d splits inserted", nSplits));
+            }
+            finally {
+                SQLiteStatement deleteEmptyTransaction = mDb.compileStatement("DELETE FROM " +
+                        TransactionEntry.TABLE_NAME + " WHERE NOT EXISTS ( SELECT * FROM " +
+                        SplitEntry.TABLE_NAME +
+                        " WHERE " + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_UID +
+                        " = " + SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_TRANSACTION_UID + " ) ");
+                deleteEmptyTransaction.execute();
+            }
+        }
+        return rowInserted;
+    }
 
     /**
 	 * Fetch a transaction from the database which has a unique ID <code>uid</code>
@@ -186,13 +243,11 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
      * @return Cursor holding set of all recurring transactions
      */
     public Cursor fetchAllRecurringTransactions(){
-        Cursor cursor = mDb.query(TransactionEntry.TABLE_NAME,
+        return mDb.query(TransactionEntry.TABLE_NAME,
                 null,
                 TransactionEntry.COLUMN_RECURRENCE_PERIOD + "!= 0",
                 null, null, null,
                 AccountEntry.COLUMN_NAME + " ASC, " + TransactionEntry.COLUMN_RECURRENCE_PERIOD + " ASC");
-//                DatabaseHelper.COLUMN_RECURRENCE_PERIOD + " ASC, " + DatabaseHelper.COLUMN_TIMESTAMP + " DESC");
-        return cursor;
     }
 
 	/**
@@ -237,6 +292,34 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
             cursor.close();
         }
         return transactions;
+    }
+
+    public Cursor fetchTransactionsWithSplits(String [] columns, String condition, String orderBy) {
+        return mDb.query(TransactionEntry.TABLE_NAME + " , " + SplitEntry.TABLE_NAME +
+                        " ON " + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_UID +
+                        " = " + SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_TRANSACTION_UID,
+                columns, condition, null, null, null,
+                orderBy);
+
+    }
+
+    public Cursor fetchTransactionsWithSplitsWithTransactionAccount(String [] columns, String where, String[] whereArgs, String orderBy) {
+        // table is :
+        // trans_split_acct , trans_extra_info ON trans_extra_info.trans_acct_t_uid = transactions_uid ,
+        // accounts AS account1 ON account1.uid = trans_extra_info.trans_acct_a_uid
+        //
+        // views effectively simplified this query
+        //
+        // account1 provides information for the grouped account. Splits from the grouped account
+        // can be eliminated with a WHERE clause. Transactions in QIF can be auto balanced.
+        //
+        // Account, transaction and split Information can be retrieve in a single query.
+        return mDb.query(
+                "trans_split_acct , trans_extra_info ON trans_extra_info.trans_acct_t_uid = trans_split_acct." +
+                TransactionEntry.TABLE_NAME + "_" + TransactionEntry.COLUMN_UID + " , " +
+                AccountEntry.TABLE_NAME + " AS account1 ON account1." + AccountEntry.COLUMN_UID +
+                " = trans_extra_info.trans_acct_a_uid",
+                columns, where, whereArgs, null, null , orderBy);
     }
 
     /**
@@ -316,13 +399,11 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
     /**
      * Returns the transaction balance for the transaction for the specified account.
      * <p>We consider only those splits which belong to this account</p>
-     * @param transactionId Database record ID of the transaction
-     * @param accountId Database record id of the account
+     * @param transactionUID GUID of the transaction
+     * @param accountUID GUID of the account
      * @return {@link org.gnucash.android.model.Money} balance of the transaction for that account
      */
-    public Money getBalance(long transactionId, long accountId){
-        String accountUID = getAccountUID(accountId);
-        String transactionUID = getUID(transactionId);
+    public Money getBalance(String transactionUID, String accountUID){
         List<Split> splitList = mSplitsDbAdapter.getSplitsForTransactionInAccount(
                 transactionUID, accountUID);
 
@@ -334,6 +415,7 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
      * @param transactionId Database record ID of transaction
      * @return String unique identifier of the transaction
      */
+    @Override
     public String getUID(long transactionId){
         String uid = null;
         Cursor c = mDb.query(TransactionEntry.TABLE_NAME,
@@ -378,20 +460,19 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 	public int deleteAllRecords(){
 		return deleteAllRecords(TransactionEntry.TABLE_NAME);
 	}
-	
-	/**
+
+    /**
 	 * Assigns transaction with id <code>rowId</code> to account with id <code>accountId</code>
-	 * @param rowId Record ID of the transaction to be assigned
-     * @param srcAccountId Record Id of the account from which the transaction is to be moved
-	 * @param dstAccountId Record Id of the account to which the transaction will be assigned
+	 * @param transactionUID GUID of the transaction
+     * @param srcAccountUID GUID of the account from which the transaction is to be moved
+	 * @param dstAccountUID GUID of the account to which the transaction will be assigned
 	 * @return Number of transactions splits affected
 	 */
-	public int moveTranscation(long rowId, long srcAccountId, long dstAccountId){
-		Log.i(TAG, "Moving transaction ID " + rowId + " splits from " + srcAccountId + " to account " + dstAccountId);
-		String srcAccountUID = getAccountUID(srcAccountId);
-        String dstAccountUID = getAccountUID(dstAccountId);
+	public int moveTranscation(String transactionUID, String srcAccountUID, String dstAccountUID){
+		Log.i(TAG, "Moving transaction ID " + transactionUID
+                + " splits from " + srcAccountUID + " to account " + dstAccountUID);
 
-		List<Split> splits = mSplitsDbAdapter.getSplitsForTransactionInAccount(getUID(rowId), srcAccountUID);
+		List<Split> splits = mSplitsDbAdapter.getSplitsForTransactionInAccount(transactionUID, srcAccountUID);
         for (Split split : splits) {
             split.setAccountUID(dstAccountUID);
             mSplitsDbAdapter.addSplit(split);
@@ -432,6 +513,7 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
      * @param transactionUID Unique idendtifier of the transaction
      * @return Database record ID for the transaction
      */
+    @Override
     public long getID(String transactionUID){
         long id = -1;
         Cursor c = mDb.query(TransactionEntry.TABLE_NAME,
@@ -468,12 +550,11 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
                 .append(" LIKE '").append(prefix).append("%'");
         String selection = stringBuffer.toString();
 
-        Cursor c = mDb.query(TransactionEntry.TABLE_NAME,
+        return mDb.query(TransactionEntry.TABLE_NAME,
                 new String[]{TransactionEntry._ID, TransactionEntry.COLUMN_DESCRIPTION},
                 selection,
                 null, null, null,
                 TransactionEntry.COLUMN_DESCRIPTION + " ASC");
-        return c;
     }
 
     /**
@@ -485,6 +566,10 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
      */
     public int updateTransaction(String transactionUID, String columnKey, String newValue){
         return updateRecord(TransactionEntry.TABLE_NAME, getID(transactionUID), columnKey, newValue);
+    }
+
+    public int updateTransaction(ContentValues contentValues, String whereClause, String[] whereArgs){
+        return mDb.update(TransactionEntry.TABLE_NAME, contentValues, whereClause, whereArgs);
     }
 
     /**
@@ -502,5 +587,14 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
         AlarmManager alarmManager = (AlarmManager) mContext.getSystemService(Context.ALARM_SERVICE);
         alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, firstRunMillis,
                 recurrencePeriodMillis, recurringPendingIntent);
+    }
+
+    /**
+     * Returns a transaction for the given transaction GUID
+     * @param transactionUID GUID of the transaction
+     * @return Retrieves a transaction from the database
+     */
+    public Transaction getTransaction(String transactionUID) {
+        return getTransaction(getID(transactionUID));
     }
 }

@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2014 Ngewi Fet <ngewif@gmail.com>
+ * Copyright (c) 2014 Yongxin Wang <fefe.wyx@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,21 +22,27 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
+import android.database.sqlite.SQLiteStatement;
+import android.text.TextUtils;
 import android.util.Log;
 import org.gnucash.android.model.AccountType;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.model.Split;
 import org.gnucash.android.model.TransactionType;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Currency;
 import java.util.List;
 
-import static org.gnucash.android.db.DatabaseSchema.*;
+import static org.gnucash.android.db.DatabaseSchema.SplitEntry;
+import static org.gnucash.android.db.DatabaseSchema.TransactionEntry;
 
 /**
  * Database adapter for managing transaction splits in the database
  *
  * @author Ngewi Fet <ngewif@gmail.com>
+ * @author Yongxin Wang <fefe.wyx@gmail.com>
  */
 public class SplitsDbAdapter extends DatabaseAdapter {
 
@@ -64,21 +71,56 @@ public class SplitsDbAdapter extends DatabaseAdapter {
         contentValues.put(SplitEntry.COLUMN_ACCOUNT_UID, split.getAccountUID());
         contentValues.put(SplitEntry.COLUMN_TRANSACTION_UID, split.getTransactionUID());
 
-        long rowId = -1;
-        if ((rowId = getID(split.getUID())) > 0){
-            //if split already exists, then just update
-            Log.d(TAG, "Updating existing transaction split");
-            mDb.update(SplitEntry.TABLE_NAME, contentValues,
-                    SplitEntry._ID + " = " + rowId, null);
-        } else {
-            Log.d(TAG, "Adding new transaction split to db");
-            rowId = mDb.insert(SplitEntry.TABLE_NAME, null, contentValues);
-        }
+        Log.d(TAG, "Replace transaction split in db");
+        long rowId = mDb.replace(SplitEntry.TABLE_NAME, null, contentValues);
 
         //when a split is updated, we want mark the transaction as not exported
         updateRecord(TransactionEntry.TABLE_NAME, getTransactionID(split.getTransactionUID()),
                 TransactionEntry.COLUMN_EXPORTED, String.valueOf(rowId > 0 ? 0 : 1));
         return rowId;
+    }
+
+    /**
+     * Adds some splits to the database.
+     * If the split already exists, then it is simply updated.
+     * This function will NOT update the exported status of corresponding transactions.
+     * All or none of the splits will be inserted/updated into the database.
+     * @param splitList {@link org.gnucash.android.model.Split} to be recorded in DB
+     * @return Number of records of the newly saved split
+     */
+    public long bulkAddSplits(List<Split> splitList) {
+        long nRow = 0;
+        try {
+            mDb.beginTransaction();
+            SQLiteStatement replaceStatement = mDb.compileStatement("REPLACE INTO " + SplitEntry.TABLE_NAME + " ( "
+                    + SplitEntry.COLUMN_UID             + " , "
+                    + SplitEntry.COLUMN_MEMO 	        + " , "
+                    + SplitEntry.COLUMN_TYPE            + " , "
+                    + SplitEntry.COLUMN_AMOUNT          + " , "
+                    + SplitEntry.COLUMN_ACCOUNT_UID 	+ " , "
+                    + SplitEntry.COLUMN_TRANSACTION_UID + " ) VALUES ( ? , ? , ? , ? , ? , ? ) ");
+            for (Split split : splitList) {
+                replaceStatement.clearBindings();
+                replaceStatement.bindString(1, split.getUID());
+                if (split.getMemo() != null) {
+                    replaceStatement.bindString(2, split.getMemo());
+                }
+                replaceStatement.bindString(3, split.getType().name());
+                replaceStatement.bindString(4, split.getAmount().absolute().toPlainString());
+                replaceStatement.bindString(5, split.getAccountUID());
+                replaceStatement.bindString(6, split.getTransactionUID());
+
+                //Log.d(TAG, "Replacing transaction split in db");
+                replaceStatement.execute();
+                nRow++;
+            }
+            mDb.setTransactionSuccessful();
+        }
+        finally {
+            mDb.endTransaction();
+        }
+
+        return nRow;
     }
 
     /**
@@ -181,6 +223,45 @@ public class SplitsDbAdapter extends DatabaseAdapter {
     }
 
     /**
+     * Returns the sum of the splits for given set of accounts.
+     * This takes into account the kind of movement caused by the split in the account (which also depends on account type)
+     * The Caller must make sure all accounts have the currency, which is passed in as currencyCode
+     * @param accountUIDList List of String unique IDs of given set of accounts
+     * @param currencyCode currencyCode for all the accounts in the list
+     * @param hasDebitNormalBalance Does the final balance has normal debit credit meaning
+     * @return Balance of the splits for this account
+     */
+    public Money computeSplitBalance(List<String> accountUIDList, String currencyCode, boolean hasDebitNormalBalance){
+        //Cursor cursor = fetchSplitsForAccount(accountUID);
+        if (accountUIDList == null || accountUIDList.size() == 0){
+            return new Money("0", currencyCode);
+        }
+
+        Cursor cursor;
+        cursor = mDb.query(SplitEntry.TABLE_NAME + " , " + TransactionEntry.TABLE_NAME,
+                new String[]{"TOTAL ( CASE WHEN " + SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_TYPE + " = 'DEBIT' THEN "+
+                        SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_AMOUNT + " ELSE - " + SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_AMOUNT + " END )"},
+                SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_ACCOUNT_UID + " in ( '" + TextUtils.join("' , '", accountUIDList) + "' ) AND " +
+                        SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_TRANSACTION_UID + " = " + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_UID + " AND " +
+                        TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_RECURRENCE_PERIOD + " = 0",
+                null, null, null, null);
+
+        if (cursor != null){
+            if (cursor.moveToFirst()) {
+                double amount = cursor.getDouble(0);
+                cursor.close();
+                Log.d(TAG, "amount return " + amount);
+                if (!hasDebitNormalBalance) {
+                    amount = -amount;
+                }
+                return new Money(BigDecimal.valueOf(amount).setScale(2, BigDecimal.ROUND_HALF_UP), Currency.getInstance(currencyCode));
+            }
+            cursor.close();
+        }
+        return new Money("0", currencyCode);
+    }
+
+    /**
      * Returns the list of splits for a transaction
      * @param transactionUID String unique ID of transaction
      * @return List of {@link org.gnucash.android.model.Split}s
@@ -242,6 +323,7 @@ public class SplitsDbAdapter extends DatabaseAdapter {
      * @param uid Unique Identifier String of the split transaction
      * @return Database record ID of split
      */
+    @Override
     public long getID(String uid){
         if (uid == null)
             return 0;
@@ -265,6 +347,7 @@ public class SplitsDbAdapter extends DatabaseAdapter {
      * @param id Database record ID of the split
      * @return String unique identifier of the split
      */
+    @Override
     public String getUID(long id){
         Cursor cursor = mDb.query(SplitEntry.TABLE_NAME,
                 new String[]{SplitEntry.COLUMN_UID},
@@ -443,17 +526,15 @@ public class SplitsDbAdapter extends DatabaseAdapter {
 
     /**
      * Deletes splits for a specific transaction and account and the transaction itself
-     * @param transactionId Database record ID of the transaction
-     * @param accountId Database ID of the account
+     * @param transactionUID String unique ID of transaction
+     * @param accountUID String unique ID of account
      * @return Number of records deleted
      */
-    public int deleteSplitsForTransactionAndAccount(long transactionId, long accountId){
-        String transactionUID  = getTransactionUID(transactionId);
-        String accountUID      = getAccountUID(accountId);
+    public int deleteSplitsForTransactionAndAccount(String transactionUID, String accountUID){
         int deletedCount = mDb.delete(SplitEntry.TABLE_NAME,
                 SplitEntry.COLUMN_TRANSACTION_UID + "= ? AND " + SplitEntry.COLUMN_ACCOUNT_UID + "= ?",
                 new String[]{transactionUID, accountUID});
-        deleteTransaction(transactionId);
+        deleteTransaction(getID(transactionUID));
         return deletedCount;
     }
 
@@ -469,4 +550,5 @@ public class SplitsDbAdapter extends DatabaseAdapter {
     public int deleteAllRecords() {
         return deleteAllRecords(SplitEntry.TABLE_NAME);
     }
+
 }

@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2012 Ngewi Fet <ngewif@gmail.com>
+ * Copyright (c) 2012 - 2014 Ngewi Fet <ngewif@gmail.com>
+ * Copyright (c) 2014 Yongxin Wang <fefe.wyx@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +17,7 @@
 
 package org.gnucash.android.ui.account;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -36,32 +38,38 @@ import android.support.v4.view.ViewPager;
 import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewGroup;
-import com.actionbarsherlock.app.SherlockFragmentActivity;
+import android.widget.ArrayAdapter;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import com.viewpagerindicator.TitlePageIndicator;
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
+import org.gnucash.android.db.AccountsDbAdapter;
+import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.importer.ImportAsyncTask;
 import org.gnucash.android.model.Money;
-import org.gnucash.android.ui.util.Refreshable;
 import org.gnucash.android.ui.UxArgument;
+import org.gnucash.android.ui.passcode.PassLockActivity;
 import org.gnucash.android.ui.settings.SettingsActivity;
 import org.gnucash.android.ui.transaction.ScheduledTransactionsListFragment;
 import org.gnucash.android.ui.transaction.TransactionsActivity;
 import org.gnucash.android.ui.util.OnAccountClickedListener;
+import org.gnucash.android.ui.util.Refreshable;
+import org.gnucash.android.ui.util.TaskDelegate;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.util.Arrays;
 
 /**
  * Manages actions related to accounts, displaying, exporting and creating new accounts
  * The various actions are implemented as Fragments which are then added to this activity
+ *
  * @author Ngewi Fet <ngewif@gmail.com>
- * 
+ * @author Oleksandr Tyshkovets <olexandr.tyshkovets@gmail.com>
  */
-public class AccountsActivity extends SherlockFragmentActivity implements OnAccountClickedListener {
+public class AccountsActivity extends PassLockActivity implements OnAccountClickedListener {
 
 	/**
 	 * Tag used for identifying the account list fragment when it is added to this activity
@@ -220,12 +228,12 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
             mPager.setVisibility(View.GONE);
             titlePageIndicator.setVisibility(View.GONE);
 
-            long accountId = intent.getLongExtra(UxArgument.SELECTED_ACCOUNT_ID, 0L);
-            if (accountId > 0)
-                showEditAccountFragment(accountId);
+            String accountUID = intent.getStringExtra(UxArgument.SELECTED_ACCOUNT_UID);
+            if (accountUID != null)
+                showEditAccountFragment(accountUID);
             else {
-                long parentAccountId = intent.getLongExtra(UxArgument.PARENT_ACCOUNT_ID, 0L);
-                showAddAccountFragment(parentAccountId);
+                String parentAccountUID = intent.getStringExtra(UxArgument.PARENT_ACCOUNT_UID);
+                showAddAccountFragment(parentAccountUID);
             }
         } else if (action != null && action.equals(ACTION_VIEW_RECURRING)) {
             mPager.setVisibility(View.GONE);
@@ -255,7 +263,7 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         boolean firstRun = prefs.getBoolean(getString(R.string.key_first_run), true);
         if (firstRun){
-            createDefaultAccounts();
+            showFirstRunDialog();
             //default to using double entry and save the preference explicitly
             prefs.edit().putBoolean(getString(R.string.key_use_double_entry), true).commit();
         }
@@ -264,12 +272,6 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
             showWhatsNewDialog(this);
         }
 
-    }
-
-     @Override
-    protected void onResume() {
-        super.onResume();
-        TransactionsActivity.sLastTitleColor = -1;
     }
 
     @Override
@@ -363,11 +365,11 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
 
     /**
      * Shows form fragment for creating a new account
-     * @param parentAccountId Record ID of the parent account present. Can be 0 for top-level account
+     * @param parentAccountUID GUID of the parent account present. Can be 0 for top-level account
      */
-    private void showAddAccountFragment(long parentAccountId){
+    private void showAddAccountFragment(String parentAccountUID){
         Bundle args = new Bundle();
-        args.putLong(UxArgument.PARENT_ACCOUNT_ID, parentAccountId);
+        args.putString(UxArgument.PARENT_ACCOUNT_UID, parentAccountUID);
         showAccountFormFragment(args);
     }
 
@@ -388,11 +390,11 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
     }
     /**
      * Shows the form fragment for editing the account with record ID <code>accountId</code>
-     * @param accountId Record ID of the account to be edited
+     * @param accountUID GUID of the account to be edited
      */
-    private void showEditAccountFragment(long accountId) {
+    private void showEditAccountFragment(String accountUID) {
         Bundle args = new Bundle();
-        args.putLong(UxArgument.SELECTED_ACCOUNT_ID, accountId);
+        args.putString(UxArgument.SELECTED_ACCOUNT_UID, accountUID);
         showAccountFormFragment(args);
     }
 
@@ -426,7 +428,7 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
 	/**
 	 * Shows the user dialog to create default account structure or import existing account structure
 	 */
-	private void createDefaultAccounts(){
+	private void showFirstRunDialog() {
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		builder.setTitle(R.string.title_default_accounts);
         builder.setMessage(R.string.msg_confirm_create_default_accounts_first_run);
@@ -435,9 +437,27 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
 			
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
-                InputStream accountFileInputStream = getResources().openRawResource(R.raw.default_accounts);
-                new ImportAsyncTask(AccountsActivity.this).execute(accountFileInputStream);
-                removeFirstRunFlag();
+                AlertDialog.Builder adb = new AlertDialog.Builder(AccountsActivity.this);
+                adb.setTitle(R.string.title_choose_currency);
+                ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(
+                        AccountsActivity.this,
+                        android.R.layout.select_dialog_singlechoice,
+                        getResources().getStringArray(R.array.currency_names));
+                adb.setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
+
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        String currency = Arrays.asList(getResources().getStringArray(R.array.key_currency_codes)).get(which);
+                        PreferenceManager.getDefaultSharedPreferences(AccountsActivity.this)
+                                .edit()
+                                .putString(getString(R.string.key_default_currency), currency)
+                                .commit();
+
+                        createDefaultAccounts(currency, AccountsActivity.this);
+                        removeFirstRunFlag();
+                    }
+                });
+                adb.create().show();
 			}
 		});
 		
@@ -461,6 +481,30 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
 		mDefaultAccountsDialog = builder.create();
 		mDefaultAccountsDialog.show();
 	}
+
+    /**
+     * Creates default accounts with the specified currency code.
+     * If the currency parameter is null, then locale currency will be used if available
+     *
+     * @param currencyCode Currency code to assign to the imported accounts
+     * @param activity Activity for providing context and displaying dialogs
+     */
+    public static void createDefaultAccounts(final String currencyCode, final Activity activity) {
+        TaskDelegate delegate = null;
+        if (currencyCode != null) {
+            delegate = new TaskDelegate() {
+                @Override
+                public void onTaskComplete() {
+                    AccountsDbAdapter accountsDbAdapter = new AccountsDbAdapter(activity);
+                    accountsDbAdapter.updateAllAccounts(DatabaseSchema.AccountEntry.COLUMN_CURRENCY, currencyCode);
+                    accountsDbAdapter.close();
+                }
+            };
+        }
+
+        InputStream accountFileInputStream = activity.getResources().openRawResource(R.raw.default_accounts);
+        new ImportAsyncTask(activity, delegate).execute(accountFileInputStream);
+    }
 
     /**
      * Starts Intent chooser for selecting a GnuCash accounts file to import.
@@ -506,10 +550,10 @@ public class AccountsActivity extends SherlockFragmentActivity implements OnAcco
     }
 
     @Override
-	public void accountSelected(long accountRowId) {
+	public void accountSelected(String accountUID) {
 		Intent intent = new Intent(this, TransactionsActivity.class);
 		intent.setAction(Intent.ACTION_VIEW);
-		intent.putExtra(UxArgument.SELECTED_ACCOUNT_ID, accountRowId);
+		intent.putExtra(UxArgument.SELECTED_ACCOUNT_UID, accountUID);
 
 		startActivity(intent);
 	}

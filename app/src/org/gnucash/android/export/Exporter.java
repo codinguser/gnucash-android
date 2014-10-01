@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2014 Ngewi Fet <ngewif@gmail.com>
+ * Copyright (c) 2014 Yongxin Wang <fefe.wyx@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +25,7 @@ import org.gnucash.android.db.AccountsDbAdapter;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.io.Writer;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -32,6 +34,7 @@ import java.util.Locale;
  * Base class for the different exporters
  *
  * @author Ngewi Fet <ngewif@gmail.com>
+ * @author Yongxin Wang <fefe.wyx@gmail.com>
  */
 public abstract class Exporter {
     /**
@@ -134,10 +137,10 @@ public abstract class Exporter {
 
     /**
      * Generates the export output
-     * @return Export output as String
+     * @param writer A Writer to export result to
      * @throws ExporterException if an error occurs during export
      */
-    public abstract String generateExport() throws ExporterException;
+    public abstract void generateExport(Writer writer) throws ExporterException;
 
     public static class ExporterException extends RuntimeException{
 

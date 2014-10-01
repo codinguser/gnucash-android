@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2012 - 2014 Ngewi Fet <ngewif@gmail.com>
+ * Copyright (c) 2014 Yongxin Wang <fefe.wyx@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +17,7 @@
 
 package org.gnucash.android.export.ofx;
 
+import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.List;
@@ -43,6 +45,7 @@ import javax.xml.transform.stream.StreamResult;
 /**
  * Exports the data in the database in OFX format
  * @author Ngewi Fet <ngewi.fet@gmail.com>
+ * @author Yongxin Wang <fefe.wyx@gmail.com>
  */
 public class OfxExporter extends Exporter{
 
@@ -100,7 +103,6 @@ public class OfxExporter extends Exporter{
 		accountsDbAdapter.close();
 	}
 
-    @Override
     public String generateExport() throws ExporterException {
         mAccountsList = mParameters.shouldExportAllTransactions() ?
                 mAccountsDbAdapter.getAllAccounts() : mAccountsDbAdapter.getExportableAccounts();
@@ -108,7 +110,7 @@ public class OfxExporter extends Exporter{
 
         DocumentBuilderFactory docFactory = DocumentBuilderFactory
                 .newInstance();
-        DocumentBuilder docBuilder = null;
+        DocumentBuilder docBuilder;
         try {
             docBuilder = docFactory.newDocumentBuilder();
         } catch (ParserConfigurationException e) {
@@ -141,6 +143,16 @@ public class OfxExporter extends Exporter{
             stringBuffer.append('\n');
             stringBuffer.append(stringWriter.toString());
             return stringBuffer.toString();
+        }
+    }
+
+    @Override
+    public void generateExport(Writer writer) throws ExporterException {
+        try {
+            writer.write(generateExport());
+        }
+        catch (IOException e) {
+            throw new ExporterException(mParameters, e);
         }
     }
 

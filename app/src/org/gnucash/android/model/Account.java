@@ -16,10 +16,7 @@
 
 package org.gnucash.android.model;
 
-import org.gnucash.android.app.GnuCashApplication;
-import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.export.ofx.OfxHelper;
-import org.gnucash.android.export.qif.QifHelper;
 import org.gnucash.android.export.xml.GncXmlHelper;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -543,42 +540,10 @@ public class Account {
 	}
 
     /**
-     * Exports the account info and transactions in the QIF format
-     * @param exportAllTransactions Flag to determine whether to export all transactions, or only new transactions since last export
-     * @param exportedTransactionUIDs List of unique IDs of transactions which have already been exported (in the current session). Used to avoid duplicating splits
-     * @return QIF representation of the account information
-     */
-    public String toQIF(boolean exportAllTransactions, List<String> exportedTransactionUIDs) {
-        StringBuilder accountQIFBuilder = new StringBuilder();
-        final String newLine = "\n";
-
-        AccountsDbAdapter accountsDbAdapter = new AccountsDbAdapter(GnuCashApplication.getAppContext());
-        String fullyQualifiedAccountName = accountsDbAdapter.getFullyQualifiedAccountName(mUID);
-        accountsDbAdapter.close();
-
-        accountQIFBuilder.append(QifHelper.ACCOUNT_HEADER).append(newLine);
-        accountQIFBuilder.append(QifHelper.ACCOUNT_NAME_PREFIX).append(fullyQualifiedAccountName).append(newLine);
-        accountQIFBuilder.append(QifHelper.ENTRY_TERMINATOR).append(newLine);
-
-        String header = QifHelper.getQifHeader(mAccountType);
-        accountQIFBuilder.append(header + newLine);
-
-        for (Transaction transaction : mTransactionsList) {
-            if (!exportAllTransactions && transaction.isExported())
-                continue;
-            if (exportedTransactionUIDs.contains(transaction.getUID()))
-                continue;
-
-            accountQIFBuilder.append(transaction.toQIF(mUID) + newLine);
-            exportedTransactionUIDs.add(transaction.getUID());
-        }
-        return accountQIFBuilder.toString();
-    }
-
-    /**
      * Method which generates the GnuCash XML DOM for this account
      * @param doc {@link org.w3c.dom.Document} for creating nodes
      * @param rootNode {@link org.w3c.dom.Element} node to which to attach the XML
+     * @deprecated Use the {@link org.gnucash.android.export.xml.GncXmlExporter} to generate XML
      */
     public void toGncXml(Document doc, Element rootNode) {
         Element nameNode = doc.createElement(GncXmlHelper.TAG_NAME);
@@ -641,5 +606,4 @@ public class Account {
 
         rootNode.appendChild(accountNode);
     }
-
 }

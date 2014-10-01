@@ -183,22 +183,28 @@ public class ScheduledTransactionsListFragment extends SherlockListFragment impl
             checkbox.setChecked(!checkbox.isChecked());
             return;
         }
-        String accountUID = mTransactionsDbAdapter.getTransaction(id).getSplits().get(0).getAccountUID();
-        long accountID = mTransactionsDbAdapter.getAccountID(accountUID);
+        Transaction transaction = mTransactionsDbAdapter.getTransaction(id);
 
-        openTransactionForEdit(accountID, id);
+        //this should actually never happen, but has happened once. So perform check for the future
+        if (transaction.getSplits().size() == 0){
+            Toast.makeText(getActivity(), "The selected transaction has no splits and cannot be opened", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String accountUID = transaction.getSplits().get(0).getAccountUID();
+        openTransactionForEdit(accountUID, mTransactionsDbAdapter.getUID(id));
     }
 
     /**
      * Opens the transaction editor to enable editing of the transaction
-     * @param accountId Account ID of the transaction
-     * @param transactionId Transaction to be edited
+     * @param accountUID GUID of account to which transaction belongs
+     * @param transactionUID GUID of transaction to be edited
      */
-    public void openTransactionForEdit(long accountId, long transactionId){
+    public void openTransactionForEdit(String accountUID, String transactionUID){
         Intent createTransactionIntent = new Intent(getActivity(), TransactionsActivity.class);
         createTransactionIntent.setAction(Intent.ACTION_INSERT_OR_EDIT);
-        createTransactionIntent.putExtra(UxArgument.SELECTED_ACCOUNT_ID, accountId);
-        createTransactionIntent.putExtra(UxArgument.SELECTED_TRANSACTION_ID, transactionId);
+        createTransactionIntent.putExtra(UxArgument.SELECTED_ACCOUNT_UID, accountUID);
+        createTransactionIntent.putExtra(UxArgument.SELECTED_TRANSACTION_UID, transactionUID);
         startActivity(createTransactionIntent);
     }
 
@@ -369,7 +375,7 @@ public class ScheduledTransactionsListFragment extends SherlockListFragment impl
          * @return String formatted representation of recurrence period
          */
         public String getRecurrenceAsString(long periodMillis){
-            String[] recurrencePeriods = getResources().getStringArray(R.array.recurrence_period_millis);
+            String[] recurrencePeriods = getResources().getStringArray(R.array.key_recurrence_period_millis);
             String[] recurrenceStrings = getResources().getStringArray(R.array.recurrence_period_strings);
 
             int index = 0;

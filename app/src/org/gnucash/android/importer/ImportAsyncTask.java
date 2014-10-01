@@ -12,7 +12,8 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */package org.gnucash.android.importer;
+ */
+package org.gnucash.android.importer;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -23,6 +24,7 @@ import android.util.Log;
 import android.widget.Toast;
 import org.gnucash.android.R;
 import org.gnucash.android.ui.account.AccountsActivity;
+import org.gnucash.android.ui.util.TaskDelegate;
 
 import java.io.InputStream;
 
@@ -32,10 +34,16 @@ import java.io.InputStream;
  */
 public class ImportAsyncTask extends AsyncTask<InputStream, Void, Boolean> {
     private final Activity context;
+    private TaskDelegate mDelegate;
     private ProgressDialog progressDialog;
 
     public ImportAsyncTask(Activity context){
         this.context = context;
+    }
+
+    public ImportAsyncTask(Activity context, TaskDelegate delegate){
+        this.context = context;
+        this.mDelegate = delegate;
     }
 
     @Override
@@ -45,11 +53,13 @@ public class ImportAsyncTask extends AsyncTask<InputStream, Void, Boolean> {
         progressDialog.setTitle(R.string.title_progress_importing_accounts);
         progressDialog.setIndeterminate(true);
         progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        progressDialog.show();
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.HONEYCOMB){
+            //these methods must be called after progressDialog.show()
             progressDialog.setProgressNumberFormat(null);
             progressDialog.setProgressPercentFormat(null);
         }
-        progressDialog.show();
+
     }
 
     @Override
@@ -59,7 +69,7 @@ public class ImportAsyncTask extends AsyncTask<InputStream, Void, Boolean> {
         } catch (Exception exception){
             exception.printStackTrace();
             final String err_msg = exception.getLocalizedMessage();
-            Log.e(ImportAsyncTask.class.getName(), exception.getMessage());
+            Log.e(ImportAsyncTask.class.getName(), "" + exception.getMessage());
             context.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
@@ -76,6 +86,9 @@ public class ImportAsyncTask extends AsyncTask<InputStream, Void, Boolean> {
 
     @Override
     protected void onPostExecute(Boolean importSuccess) {
+        if (mDelegate != null)
+            mDelegate.onTaskComplete();
+
         if (progressDialog != null && progressDialog.isShowing())
             progressDialog.dismiss();
 

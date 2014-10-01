@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="key_default_currency">default_currency</string>
+    <string name="key_first_run">key_first_run</string>
+    <string name="key_build_version">build_version</string>
+    <string name="key_license">app_license</string>
+    <string name="key_enable_passcode">enable_passcode</string>
+    <string name="key_change_passcode">change_passcode</string>
+    <string name="key_about">about_gnucash</string>
+    <string name="key_default_transaction_type">default_transaction_type</string>
+    <string name="key_export_all_transactions">export_all_transactions</string>
+    <string name="key_delete_transactions_after_export">delete_transactions_after_export</string>
+    <string name="key_default_export_email">export_email_target</string>
+    <string name="key_use_double_entry">use_double_entry</string>
+    <string name="key_xml_ofx_header">xml_ofx_header</string>
+    <string name="key_previous_minor_version">previous_minor_version</string>
+    <string name="key_import_accounts">import_gnucash_accounts</string>
+    <string name="key_delete_all_accounts">delete_all_accounts</string>
+    <string name="key_delete_all_transactions">delete_all_transactions</string>
+    <string name="key_default_export_format">default_export_format</string>
+    <string name="key_recurring_transaction_ids">recurring_transaction_ids</string>
+    <string name="key_create_default_accounts">create_default_accounts</string>
+    <string name="key_restore_backup">restore_backup</string>
+    <string name="key_save_opening_balances">save_opening_balances</string>
+
+    <string-array name="key_transaction_type_values">
+        <item>CREDIT</item>
+        <item>DEBIT</item>
+    </string-array>
+    <string-array name="key_account_type_entries">
+        <item>CASH</item>
+        <item>BANK</item>
+        <item>CREDIT</item>
+        <item>ASSET</item>
+        <item>LIABILITY</item>
+        <item>INCOME</item>
+        <item>EXPENSE</item>
+        <item>PAYABLE</item>
+        <item>RECEIVABLE</item>
+        <item>EQUITY</item>
+        <item>CURRENCY</item>
+        <item>STOCK</item>
+        <item>MUTUAL</item>
+    </string-array>
+    <string-array name="key_export_format_values">
+        <item>QIF</item>
+        <item>OFX</item>
+    </string-array>
+    <string-array name="key_recurrence_period_millis">
+        <item>0</item>
+        <item>86400000</item>
+        <item>604800000</item>
+        <item>2630000000</item>
+    </string-array>
+    <string-array name="key_currency_codes">
+        <item>AFN</item>
+        <item>DZD</item>
+        <item>ARS</item>
+        <item>AMD</item>
+        <item>AWG</item>
+        <item>AUD</item>
+        <item>AZN</item>
+        <item>BSD</item>
+        <item>BHD</item>
+        <item>THB</item>
+        <item>PAB</item>
+        <item>BBD</item>
+        <item>BYR</item>
+        <item>BZD</item>
+        <item>BMD</item>
+        <item>VEF</item>
+        <item>BOB</item>
+        <item>BRL</item>
+        <item>BND</item>
+        <item>BGN</item>
+        <item>BIF</item>
+        <item>CAD</item>
+        <item>CVE</item>
+        <item>KYD</item>
+        <item>XOF</item>
+        <item>XAF</item>
+        <item>XPF</item>
+        <item>CLP</item>
+        <item>XTS</item>
+        <item>COP</item>
+        <item>KMF</item>
+        <item>CDF</item>
+        <item>BAM</item>
+        <item>NIO</item>
+        <item>CRC</item>
+        <item>HRK</item>
+        <item>CUC</item>
+        <item>CUP</item>
+        <item>CZK</item>
+        <item>GMD</item>
+        <item>DKK</item>
+        <item>MKD</item>
+        <item>DJF</item>
+        <item>STD</item>
+        <item>DOP</item>
+        <item>VND</item>
+        <item>XCD</item>
+        <item>EGP</item>
+        <item>SVC</item>
+        <item>ETB</item>
+        <item>EUR</item>
+        <item>FKP</item>
+        <item>FJD</item>
+        <item>HUF</item>
+        <item>GHS</item>
+        <item>GIP</item>
+        <item>XAU</item>
+        <item>HTG</item>
+        <item>PYG</item>
+        <item>GNF</item>
+        <item>GYD</item>
+        <item>HKD</item>
+        <item>UAH</item>
+        <item>ISK</item>
+        <item>INR</item>
+        <item>IRR</item>
+        <item>IQD</item>
+        <item>JMD</item>
+        <item>JOD</item>
+        <item>KES</item>
+        <item>PGK</item>
+        <item>LAK</item>
+        <item>KWD</item>
+        <item>MWK</item>
+        <item>AOA</item>
+        <item>MMK</item>
+        <item>GEL</item>
+        <item>LVL</item>
+        <item>LBP</item>
+        <item>ALL</item>
+        <item>HNL</item>
+        <item>SLL</item>
+        <item>LRD</item>
+        <item>LYD</item>
+        <item>SZL</item>
+        <item>LTL</item>
+        <item>LSL</item>
+        <item>MGA</item>
+        <item>MYR</item>
+        <item>MUR</item>
+        <item>MXN</item>
+        <item>MXV</item>
+        <item>MDL</item>
+        <item>MAD</item>
+        <item>MZN</item>
+        <item>BOV</item>
+        <item>NGN</item>
+        <item>ERN</item>
+        <item>NAD</item>
+        <item>NPR</item>
+        <item>ANG</item>
+        <item>ILS</item>
+        <item>RON</item>
+        <item>TWD</item>
+        <item>NZD</item>
+        <item>BTN</item>
+        <item>KPW</item>
+        <item>NOK</item>
+        <item>PEN</item>
+        <item>MRO</item>
+        <item>TOP</item>
+        <item>PKR</item>
+        <item>XPD</item>
+        <item>MOP</item>
+        <item>PHP</item>
+        <item>XPT</item>
+        <item>GBP</item>
+        <item>BWP</item>
+        <item>QAR</item>
+        <item>GTQ</item>
+        <item>ZAR</item>
+        <item>OMR</item>
+        <item>KHR</item>
+        <item>MVR</item>
+        <item>IDR</item>
+        <item>RUB</item>
+        <item>RWF</item>
+        <item>SHP</item>
+        <item>SAR</item>
+        <item>XDR</item>
+        <item>RSD</item>
+        <item>SCR</item>
+        <item>XAG</item>
+        <item>SGD</item>
+        <item>SBD</item>
+        <item>KGS</item>
+        <item>SOS</item>
+        <item>TJS</item>
+        <item>SSP</item>
+        <item>LKR</item>
+        <item>XSU</item>
+        <item>SDG</item>
+        <item>SRD</item>
+        <item>SEK</item>
+        <item>CHF</item>
+        <item>SYP</item>
+        <item>BDT</item>
+        <item>WST</item>
+        <item>TZS</item>
+        <item>KZT</item>
+        <item>XXX</item>
+        <item>TTD</item>
+        <item>MNT</item>
+        <item>TND</item>
+        <item>TRY</item>
+        <item>TMT</item>
+        <item>AED</item>
+        <item>UGX</item>
+        <item>XFU</item>
+        <item>COU</item>
+        <item>CLF</item>
+        <item>UYI</item>
+        <item>UYU</item>
+        <item>USD</item>
+        <item>UZS</item>
+        <item>VUV</item>
+        <item>CHE</item>
+        <item>CHW</item>
+        <item>KRW</item>
+        <item>YER</item>
+        <item>JPY</item>
+        <item>CNY</item>
+        <item>ZMK</item>
+        <item>ZWL</item>
+        <item>PLN</item>
+    </string-array>
+</resources>

@@ -303,14 +303,12 @@
     <string name="summary_xml_ofx_header">Activez cette option lors d\'un export vers une application tierce autre que GnuCash pour PC</string>
     <string name="title_whats_new">Nouveautées</string>
 	<string name="whats_new">
-        - Création de multiples découpes par transactions\n
-        - Correction du calcul des soldes de comptes pour les comptes de différents types\n
-        - Utilisation de labels spécifiques pour les comptes CREDIT/DEBITs\n
-        - Sauvegarde automatique des données avant la suppression des opérations\n
-        - Restaurer la dernière sauvegarde des données (dans Paramètres -> Général)\n
-        - Lecture des transactions depuis les fichiers GnuCash XML (support limité)\n
-        - Options pour sauvegarder le solde des comptes avant la suppression des transactions\n
-        - Multiples améliorations et corrections de bugs\n
+        - General resource and performance optimization\n
+        - Faster computation of account balances\n
+        - Set passcode to restrict access to app (in Settings)\n
+        - Export separate QIF files for each currency in use\n
+        - Use currencey settings when creating account hierarchy\n
+        - Multiple bug fixes and improvements\n
 	</string>
     <string name="label_dismiss">Passer</string>
     <string name="toast_transanction_amount_required">Entrez un montant pour sauvegarder la transaction</string>
@@ -416,4 +414,6 @@
     <string name="summary_save_opening_balances">Permet d\'enregistrer le solde du compte courant (avant la suppression des transactions) comme le nouveau solde d\'ouverture après la suppression des transactions
     </string>
     <string name="title_save_opening_balances">Enregistrer les soldes des comptes d\'ouverture</string>
+    <string name="export_warning_ofx">OFX does not support double-entry transactions</string>
+    <string name="export_warning_qif">A separate QIF file will be generated for each currency in use</string>
 </resources>

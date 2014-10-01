@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2014 Ngewi Fet <ngewif@gmail.com>
+ * Copyright (c) 2014 Yongxin Wang <fefe.wyx@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +32,7 @@ import java.lang.ref.WeakReference;
  * This is done asynchronously because in cases of deeply nested accounts,
  * it can take some time and would block the UI thread otherwise.
  */
-public class AccountBalanceTask extends AsyncTask<Long, Void, Money> {
+public class AccountBalanceTask extends AsyncTask<String, Void, Money> {
     public static final String LOG_TAG = AccountBalanceTask.class.getName();
 
     private final WeakReference<TextView> accountBalanceTextViewReference;
@@ -43,7 +44,7 @@ public class AccountBalanceTask extends AsyncTask<Long, Void, Money> {
     }
 
     @Override
-    protected Money doInBackground(Long... params) {
+    protected Money doInBackground(String... params) {
         //if the view for which we are doing this job is dead, kill the job as well
         if (accountBalanceTextViewReference.get() == null){
             cancel(true);
@@ -57,6 +58,9 @@ public class AccountBalanceTask extends AsyncTask<Long, Void, Money> {
             //sometimes a load computation has been started and the data set changes.
             //the account ID may no longer exist. So we catch that exception here and do nothing
             Log.e(LOG_TAG, "Error computing account balance: " + ex);
+        } catch (Exception ex) {
+            Log.e(LOG_TAG, "Error computing account balance: " + ex);
+            ex.printStackTrace();
         }
         return balance;
     }

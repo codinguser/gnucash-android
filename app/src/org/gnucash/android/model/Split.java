@@ -172,27 +172,10 @@ public class Split {
     }
 
     /**
-     * Parses a split which is in the format "<amount>;<currency_code>;<account_uid>;<type>;<memo>".
-     * The split input string is the same produced by the {@link Split#toCsv()} method
-     *
-     * @param splitString String containing formatted split
-     * @return Split instance parsed from the string
-     */
-    public static Split parseSplit(String splitString) {
-        String[] tokens = splitString.split(";");
-        Money amount = new Money(tokens[0], tokens[1]);
-        Split split = new Split(amount, tokens[2]);
-        split.setType(TransactionType.valueOf(tokens[3]));
-        if (tokens.length == 5){
-            split.setMemo(tokens[4]);
-        }
-        return split;
-    }
-
-    /**
      * Creates a GnuCash XML representation of this split
      * @param doc XML {@link org.w3c.dom.Document} for creating the nodes
      * @param rootNode Parent node to append the split XML to
+     * @deprecated Use the {@link org.gnucash.android.export.xml.GncXmlExporter} to generate XML
      */
     public void toGncXml(Document doc, Element rootNode) {
         Element idNode = doc.createElement(GncXmlHelper.TAG_SPLIT_ID);
@@ -225,5 +208,23 @@ public class Split {
         splitNode.appendChild(accountNode);
 
         rootNode.appendChild(splitNode);
+    }
+
+    /**
+     * Parses a split which is in the format "<amount>;<currency_code>;<account_uid>;<type>;<memo>".
+     * The split input string is the same produced by the {@link Split#toCsv()} method
+     *
+     * @param splitString String containing formatted split
+     * @return Split instance parsed from the string
+     */
+    public static Split parseSplit(String splitString) {
+        String[] tokens = splitString.split(";");
+        Money amount = new Money(tokens[0], tokens[1]);
+        Split split = new Split(amount, tokens[2]);
+        split.setType(TransactionType.valueOf(tokens[3]));
+        if (tokens.length == 5){
+            split.setMemo(tokens[4]);
+        }
+        return split;
     }
 }

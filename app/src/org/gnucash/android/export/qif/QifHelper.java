@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2013 - 2014 Ngewi Fet <ngewif@gmail.com>
+ * Copyright (c) 2014 Yongxin Wang <fefe.wyx@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,16 +17,13 @@
 
 package org.gnucash.android.export.qif;
 
-import org.gnucash.android.R;
-import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.model.AccountType;
 
 import java.text.SimpleDateFormat;
-import java.util.Currency;
 import java.util.Date;
 
 /**
- * @author Ngewi
+ * @author Ngewi Fet <ngewif@gmail.com>
  */
 public class QifHelper {
     /*
@@ -42,6 +40,7 @@ public class QifHelper {
     public static final String ACCOUNT_HEADER           = "!Account";
     public static final String ACCOUNT_NAME_PREFIX      = "N";
 
+    public static final String INTERNAL_CURRENCY_PREFIX = "*";
 
     public static final String ENTRY_TERMINATOR = "^";
     private static final SimpleDateFormat QIF_DATE_FORMATTER = new SimpleDateFormat("yyyy/M/d");
@@ -80,4 +79,7 @@ public class QifHelper {
         }
     }
 
+    public static String getQifHeader(String accountType) {
+        return getQifHeader(AccountType.valueOf(accountType));
+    }
 }

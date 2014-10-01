@@ -42,15 +42,14 @@ public class TransactionAppWidgetProvider extends AppWidgetProvider {
         // Perform this loop procedure for each App Widget that belongs to this provider
         for (int i=0; i<N; i++) {
             int appWidgetId = appWidgetIds[i];
-            
-            long accountId = PreferenceManager
-            		.getDefaultSharedPreferences(context)
-            		.getLong(UxArgument.SELECTED_ACCOUNT_ID + appWidgetId, -1);
-            
-            if (accountId <= 0)
+
+            String accountUID = PreferenceManager
+                    .getDefaultSharedPreferences(context)
+                    .getString(UxArgument.SELECTED_ACCOUNT_UID + appWidgetId, null);
+            if (accountUID == null)
             	return;
             
-            WidgetConfigurationActivity.updateWidget(context, appWidgetId, accountId);            
+            WidgetConfigurationActivity.updateWidget(context, appWidgetId, accountUID);
         }
 	}
 
@@ -66,7 +65,7 @@ public class TransactionAppWidgetProvider extends AppWidgetProvider {
 		Editor editor = PreferenceManager.getDefaultSharedPreferences(context).edit();
 		
 		for (int appWidgetId : appWidgetIds) {
-			editor.remove(UxArgument.SELECTED_ACCOUNT_ID + appWidgetId);
+			editor.remove(UxArgument.SELECTED_ACCOUNT_UID + appWidgetId);
 		}
 		editor.commit();		
 	}
