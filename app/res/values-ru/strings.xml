@@ -303,14 +303,12 @@
 	<string name="summary_xml_ofx_header">Включите эту опцию, если экспортируете в программы отличные от GnuCash для ПК</string>
 	<string name="title_whats_new">Новости</string>
 	<string name="whats_new">
-        - Создание разделённых проводок\n
-        - Исправлено вычисление баланса счёта для счетов различных типов\n
-        - Подписи для дебетовых и кредитных проводок обозначаются согласно типу счёта\n
-        - Автоматическое резервное копирование базы перед операцией удаления\n
-        - Восстановление последней резервной копии базы (Настройки -&gt; Общие)\n
-        - Чтение транзакций из XML-файлов GnuCash (неполная функциональность)\n
-        - Возможность сохранять начальное сальдо при удалении транзакций\n
-        - Множественные исправления ошибок и улучшения\n
+        - General resource and performance optimization\n
+        - Faster computation of account balances\n
+        - Set passcode to restrict access to app (in Settings)\n
+        - Export separate QIF files for each currency in use\n
+        - Use currencey settings when creating account hierarchy\n
+        - Multiple bug fixes and improvements\n
 	</string>
 	<string name="label_dismiss">Отказаться</string>
     <string name="toast_transanction_amount_required">Введите сумму, чтобы сохранить проводку</string>

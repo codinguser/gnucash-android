@@ -1,5 +1,30 @@
 Change Log
 ===============================================================================
+Version 1.5.0 *(2014-10-01)*
+----------------------------
+* Need for speed! Lots of performance optimizations in the application
+  - Application balances are now computed faster
+  - App loads faster and is more responsive
+  - Faster recording of opening balances before delete operations
+  - Import and export operations rewritten to perform faster and use less resources
+* Fixed: Crash after saving opening balances and trying to create new transactions
+* Fixed: Parent account title color sometimes not propagated to child accounts
+* Fixed: Recurring transactions scheduled but not saved to database during import
+* Fixed: Crash caused by null exception message during import
+* Fixed: Poor word-wrap of transaction type labels
+* Fixed: Amount values not always displaying the correct sign
+* Feature: Select default currency upon first run of application
+* Feature: Creating account hierarchy uses the user currency preference
+* Feature: Support for reading and writing compressed GnuCash XML files.
+* Feature: Set a passcode lock to restrict access to the application
+* Feature: Export a QIF file for transactions of each currency in use  
+* Improved: Increased stability of import/export operations
+* Improved: Exclude multi-currency transactions from QIF exports
+* Improved: Display warnings/limitations of different export formats in the export dialog
+* Improved: Preserve split memos in QIF export (as much as possible)
+* Improved: Child accounts now assigned to account parent upon deletion of account
+* Improved: Descendant accounts cannot be selected as a parent account (no cyclic dependencies)
+
 Version 1.4.3 *(2014-09-09)*
 ----------------------------
 * Fixed: Cannot edit transactions when in single-entry mode
