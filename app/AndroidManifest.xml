@@ -73,6 +73,7 @@
 		        <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE"/>
 		    </intent-filter>
 		</activity>
+        <activity android:name=".ui.chart.PieChartActivity" />
         <receiver android:name=".receivers.TransactionRecorder"
             android:label="Records transactions received through intents"
             android:permission="org.gnucash.android.permission.RECORD_TRANSACTION">
