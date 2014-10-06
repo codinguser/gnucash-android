@@ -18,14 +18,17 @@ package org.gnucash.android.ui.chart;
 
 import android.graphics.Color;
 import android.os.Bundle;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 
 import org.achartengine.ChartFactory;
 import org.achartengine.GraphicalView;
 import org.achartengine.model.CategorySeries;
+import org.achartengine.model.SeriesSelection;
 import org.achartengine.renderer.DefaultRenderer;
 import org.achartengine.renderer.SimpleSeriesRenderer;
 import org.gnucash.android.R;
@@ -70,6 +73,25 @@ public class PieChartActivity extends SherlockFragmentActivity {
 
         mAccountsDbAdapter = new AccountsDbAdapter(this);
         setDataset(AccountType.EXPENSE);
+
+        mPieChartView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SeriesSelection selection = mPieChartView.getCurrentSeriesAndPoint();
+                if (selection != null) {
+                    for (int i = 0; i < mSeries.getItemCount(); i++) {
+                        mRenderer.getSeriesRendererAt(i).setHighlighted(i == selection.getPointIndex());
+                    }
+                    mPieChartView.repaint();
+
+                    double value = selection.getValue();
+                    double percent = (value / mBalanceSum) * 100;
+                    ((TextView) findViewById(R.id.selected_chart_slice))
+                            .setText(mSeries.getCategory(selection.getPointIndex()) + " - " + value
+                                    + " (" + String.format("%.2f", percent) + " %)");
+                }
+            }
+        });
 
         ((LinearLayout) findViewById(R.id.chart)).addView(mPieChartView,
                 new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
