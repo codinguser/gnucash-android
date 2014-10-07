@@ -20,7 +20,11 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
+import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
@@ -36,13 +40,14 @@ import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.model.Account;
 import org.gnucash.android.model.AccountType;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
  *
  * @author Oleksandr Tyshkovets <olexandr.tyshkovets@gmail.com>
  */
-public class PieChartActivity extends SherlockFragmentActivity {
+public class PieChartActivity extends SherlockFragmentActivity implements OnItemSelectedListener {
 
     private static final int[] COLORS = {
             Color.parseColor("#17ee4e"), Color.parseColor("#cc1f09"), Color.parseColor("#3940f7"),
@@ -67,13 +72,12 @@ public class PieChartActivity extends SherlockFragmentActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chart_reports);
 
+        mAccountsDbAdapter = new AccountsDbAdapter(this);
+
+        addItemsOnSpinner();
         renderSettings();
 
         mPieChartView = ChartFactory.getPieChartView(this, mSeries, mRenderer);
-
-        mAccountsDbAdapter = new AccountsDbAdapter(this);
-        setDataset(AccountType.EXPENSE);
-
         mPieChartView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -120,6 +124,28 @@ public class PieChartActivity extends SherlockFragmentActivity {
 
         mPieChartView.repaint();
     }
+
+    private void addItemsOnSpinner() {
+        Spinner spinner = (Spinner) findViewById(R.id.chart_data_spinner);
+        ArrayAdapter<AccountType> dataAdapter = new ArrayAdapter<AccountType>(this,
+                android.R.layout.simple_spinner_item,
+                Arrays.asList(AccountType.EXPENSE, AccountType.INCOME));
+        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(dataAdapter);
+
+        spinner.setOnItemSelectedListener(this);
+    }
+
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
+        AccountType type = (AccountType) ((Spinner) findViewById(R.id.chart_data_spinner)).getSelectedItem();
+        mRenderer.setChartTitle(type.toString());
+
+        setDataset(type);
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {}
 
     private void renderSettings() {
         mRenderer.setChartTitle("Expenses");
