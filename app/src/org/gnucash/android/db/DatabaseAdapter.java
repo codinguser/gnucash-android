@@ -62,7 +62,10 @@ public abstract class DatabaseAdapter {
         mDbHelper = new DatabaseHelper(context);
         mContext = context.getApplicationContext();
         open();
-        createTempView();
+
+        if (mDb.getVersion() >= DatabaseSchema.SPLITS_DB_VERSION) {
+            createTempView();
+        }
     }
 
     /**
@@ -74,7 +77,10 @@ public abstract class DatabaseAdapter {
         this.mContext = GnuCashApplication.getAppContext();
         if (!db.isOpen() || db.isReadOnly())
             throw new IllegalArgumentException("Database not open or is read-only. Require writeable database");
-        createTempView();
+
+        if (mDb.getVersion() >= DatabaseSchema.SPLITS_DB_VERSION) {
+            createTempView();
+        }
     }
 
     private void createTempView() {

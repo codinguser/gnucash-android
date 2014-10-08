@@ -1,5 +1,9 @@
 Change Log
 ===============================================================================
+Version 1.5.1 *(2014-10-08)*
+----------------------------
+* Fixed: Crash when upgrading from v1.4.x to v1.5.x
+
 Version 1.5.0 *(2014-10-01)*
 ----------------------------
 * Need for speed! Lots of performance optimizations in the application
