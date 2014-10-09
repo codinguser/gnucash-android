@@ -303,7 +303,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                             + TransactionEntry.TABLE_NAME + "_bak." + KEY_DOUBLE_ENTRY_ACCOUNT_UID + " , "
                             + TransactionEntry.TABLE_NAME + "_baK." + TransactionEntry.COLUMN_UID
                             + " FROM " + TransactionEntry.TABLE_NAME + "_bak , " + AccountEntry.TABLE_NAME
-                            + " ON " + TransactionEntry.TABLE_NAME + "_bak." + KEY_DOUBLE_ENTRY_ACCOUNT_UID + " = " + AccountEntry.TABLE_NAME + "." + AccountEntry.COLUMN_UID
+                            + " ON " + TransactionEntry.TABLE_NAME + "_bak.account_uid = " + AccountEntry.TABLE_NAME + "." + AccountEntry.COLUMN_UID
                             + " WHERE " + TransactionEntry.TABLE_NAME + "_bak." + KEY_DOUBLE_ENTRY_ACCOUNT_UID + " IS NOT NULL"
                     );
                     // drop backup transaction table
