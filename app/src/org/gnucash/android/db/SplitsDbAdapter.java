@@ -43,6 +43,7 @@ import static org.gnucash.android.db.DatabaseSchema.TransactionEntry;
  *
  * @author Ngewi Fet <ngewif@gmail.com>
  * @author Yongxin Wang <fefe.wyx@gmail.com>
+ * @author Oleksandr Tyshkovets <olexandr.tyshkovets@gmail.com>
  */
 public class SplitsDbAdapter extends DatabaseAdapter {
 
@@ -260,6 +261,58 @@ public class SplitsDbAdapter extends DatabaseAdapter {
         }
         return new Money("0", currencyCode);
     }
+
+    /**
+     * Returns the sum of the splits for given set of accounts within the specified range.
+     * This takes into account the kind of movement caused by the split in the account (which also depends on account type)
+     * The Caller must make sure all accounts have the currency, which is passed in as currencyCode
+     * @param accountUIDList List of String unique IDs of given set of accounts
+     * @param currencyCode currencyCode for all the accounts in the list
+     * @param hasDebitNormalBalance Does the final balance has normal debit credit meaning
+     * @param start the start timestamp of the range
+     * @param end the end timestamp of the range
+     * @return Balance of the splits for this account within the specified range
+     */
+    public Money computeSplitBalance(List<String> accountUIDList, String currencyCode, boolean hasDebitNormalBalance, long start, long end){
+        //ToDo refactor to avoid code duplication
+        //Cursor cursor = fetchSplitsForAccount(accountUID);
+        if (accountUIDList == null || accountUIDList.size() == 0){
+            return new Money("0", currencyCode);
+        }
+
+        Cursor cursor;
+        cursor = mDb.query(SplitEntry.TABLE_NAME + " , " + TransactionEntry.TABLE_NAME,
+                new String[]{"TOTAL ( CASE WHEN " + SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_TYPE + " = 'DEBIT' THEN "+
+                        SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_AMOUNT + " ELSE - " + SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_AMOUNT + " END )"},
+                SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_ACCOUNT_UID + " in ( '" + TextUtils.join("' , '", accountUIDList) + "' ) AND " +
+                        SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_TRANSACTION_UID + " = " + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_UID + " AND " +
+                        TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_RECURRENCE_PERIOD + " = 0 AND " +
+                        TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_TIMESTAMP + " BETWEEN ? AND ?",
+                new String[]{String.valueOf(start), String.valueOf(end)}, null, null, null);
+
+        if (cursor != null){
+            if (cursor.moveToFirst()) {
+                double amount = cursor.getDouble(0);
+                cursor.close();
+                Log.d(TAG, "amount return " + amount);
+                if (!hasDebitNormalBalance) {
+                    amount = -amount;
+                }
+                return new Money(BigDecimal.valueOf(amount).setScale(2, BigDecimal.ROUND_HALF_UP), Currency.getInstance(currencyCode));
+            }
+            cursor.close();
+        }
+        return new Money("0", currencyCode);
+    }
+
+//        SELECT TOTAL ( CASE WHEN splits.type = 'DEBIT' THEN splits.amount ELSE - splits.amount END ) FROM splits , transactions WHERE splits.account_uid in ( '532ee7592d4efae7fe2418891d598e59' ) AND splits.transaction_uid = transactions.uid AND transactions.recurrence_period = 0 AND transactions.timestamp BETWEEN ?x AND ?
+//        String query = "SELECT TOTAL ( CASE WHEN splits.type = 'DEBIT' THEN splits.amount ELSE - splits.amount END )" +
+//                " FROM splits " +
+//                " INNER JOIN transactions ON transactions.uid = splits.transaction_uid" +
+//                " WHERE splits.account_uid in ( '" + TextUtils.join("' , '", accountUIDList)  + "' )" +
+//                " AND transactions.recurrence_period = 0" +
+//                " AND transactions.timestamp > 1413109811000";
+
 
     /**
      * Returns the list of splits for a transaction

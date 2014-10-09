@@ -110,7 +110,9 @@ public class PieChartActivity extends SherlockFragmentActivity implements OnItem
         List<Account> accountList = mAccountsDbAdapter.getSimpleAccountList();
         for (Account account : accountList) {
             if (account.getAccountType() == type && !account.isPlaceholderAccount()) {
-                double balance = mAccountsDbAdapter.getAccountBalance(account.getUID()).asDouble();
+                long start = 0;
+                long end = Long.MAX_VALUE;
+                double balance = mAccountsDbAdapter.getAccountBalance(account.getUID(), start, end).asDouble();
                 // ToDo What with negative?
                 if (balance > 0) {
                     mBalanceSum += balance;

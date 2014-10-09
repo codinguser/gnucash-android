@@ -40,6 +40,7 @@ import static org.gnucash.android.db.DatabaseSchema.*;
  * Handles adding, modifying and deleting of account records.
  * @author Ngewi Fet <ngewif@gmail.com>
  * @author Yongxin Wang <fefe.wyx@gmail.com>
+ * @author Oleksandr Tyshkovets <olexandr.tyshkovets@gmail.com>
  */
 public class AccountsDbAdapter extends DatabaseAdapter {
     /**
@@ -835,6 +836,31 @@ public class AccountsDbAdapter extends DatabaseAdapter {
         SplitsDbAdapter splitsDbAdapter = new SplitsDbAdapter(getContext());
         Log.d(TAG, "all account list : " + accountsList.size());
         Money splitSum = splitsDbAdapter.computeSplitBalance(accountsList, currencyCode, hasDebitNormalBalance);
+        splitsDbAdapter.close();
+        return balance.add(splitSum);
+    }
+
+    /**
+     * Returns the balance of an account within the specified range while taking sub-accounts into consideration
+     * @return the balance of an account within the specified range including sub-accounts
+     */
+    public Money getAccountBalance(String accountUID, long start, long end) {
+        //ToDo refactor to avoid code duplication
+        Log.d(TAG, "Computing account balance for account ID " + accountUID);
+        String currencyCode = mTransactionsAdapter.getCurrencyCode(accountUID);
+        boolean hasDebitNormalBalance = getAccountType(accountUID).hasDebitNormalBalance();
+        currencyCode = currencyCode == null ? Money.DEFAULT_CURRENCY_CODE : currencyCode;
+        Money balance = Money.createZeroInstance(currencyCode);
+
+        List<String> accountsList = getDescendantAccountUIDs(accountUID,
+                AccountEntry.COLUMN_CURRENCY + " = ? ",
+                new String[]{currencyCode});
+
+        accountsList.add(0, accountUID);
+
+        SplitsDbAdapter splitsDbAdapter = new SplitsDbAdapter(getContext());
+        Log.d(TAG, "all account list : " + accountsList.size());
+        Money splitSum = splitsDbAdapter.computeSplitBalance(accountsList, currencyCode, hasDebitNormalBalance, start, end);
         splitsDbAdapter.close();
         return balance.add(splitSum);
     }
