@@ -23,6 +23,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -39,6 +40,7 @@ import org.gnucash.android.R;
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.model.Account;
 import org.gnucash.android.model.AccountType;
+import org.joda.time.LocalDateTime;
 
 import java.util.Arrays;
 import java.util.List;
@@ -59,6 +61,8 @@ public class PieChartActivity extends SherlockFragmentActivity implements OnItem
             Color.parseColor("#fddef8"), Color.parseColor("#fa0e6e"), Color.parseColor("#d9e7b5")
     };
 
+    private static final String datePattern = "MMMM\nYYYY";
+
     private DefaultRenderer mRenderer = new DefaultRenderer();
     private CategorySeries mSeries = new CategorySeries("");
     private GraphicalView mPieChartView;
@@ -67,10 +71,21 @@ public class PieChartActivity extends SherlockFragmentActivity implements OnItem
 
     private double mBalanceSum;
 
+    private ImageButton mPreviousMonthButton;
+    private ImageButton mNextMonthButton;
+
+    private LocalDateTime mChartDate = new LocalDateTime();
+    private TextView mChartDateTextView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chart_reports);
+
+        mPreviousMonthButton = (ImageButton) findViewById(R.id.previous_month_chart_button);
+        mNextMonthButton = (ImageButton) findViewById(R.id.next_month_chart_button);
+        mChartDateTextView = (TextView) findViewById(R.id.chart_date);
+        mChartDateTextView.setText("Overall");
 
         mAccountsDbAdapter = new AccountsDbAdapter(this);
 
@@ -99,10 +114,28 @@ public class PieChartActivity extends SherlockFragmentActivity implements OnItem
 
         ((LinearLayout) findViewById(R.id.chart)).addView(mPieChartView,
                 new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+
+        mPreviousMonthButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mChartDate = mChartDate.minusMonths(1);
+                mChartDateTextView.setText(mChartDate.toString(datePattern));
+                setDataset((AccountType) ((Spinner) findViewById(R.id.chart_data_spinner)).getSelectedItem(), true);
+            }
+        });
+
+        mNextMonthButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mChartDate = mChartDate.plusMonths(1);
+                mChartDateTextView.setText(mChartDate.toString(datePattern));
+                setDataset((AccountType) ((Spinner) findViewById(R.id.chart_data_spinner)).getSelectedItem(), true);
+            }
+        });
     }
 
 
-    private void setDataset(AccountType type) {
+    private void setDataset(AccountType type, boolean forCurrentMonth) {
         mRenderer.removeAllRenderers();
         mSeries.clear();
         mBalanceSum = 0;
@@ -110,9 +143,14 @@ public class PieChartActivity extends SherlockFragmentActivity implements OnItem
         List<Account> accountList = mAccountsDbAdapter.getSimpleAccountList();
         for (Account account : accountList) {
             if (account.getAccountType() == type && !account.isPlaceholderAccount()) {
-                long start = 0;
-                long end = Long.MAX_VALUE;
-                double balance = mAccountsDbAdapter.getAccountBalance(account.getUID(), start, end).asDouble();
+                double balance = 0;
+                if (forCurrentMonth) {
+                    long start = mChartDate.dayOfMonth().withMinimumValue().millisOfDay().withMinimumValue().toDate().getTime();
+                    long end = mChartDate.dayOfMonth().withMaximumValue().millisOfDay().withMaximumValue().toDate().getTime();
+                    balance = mAccountsDbAdapter.getAccountBalance(account.getUID(), start, end).asDouble();
+                } else {
+                    balance = mAccountsDbAdapter.getAccountBalance(account.getUID()).asDouble();
+                }
                 // ToDo What with negative?
                 if (balance > 0) {
                     mBalanceSum += balance;
@@ -143,7 +181,7 @@ public class PieChartActivity extends SherlockFragmentActivity implements OnItem
         AccountType type = (AccountType) ((Spinner) findViewById(R.id.chart_data_spinner)).getSelectedItem();
         mRenderer.setChartTitle(type.toString());
 
-        setDataset(type);
+        setDataset(type, false);
     }
 
     @Override
