@@ -281,7 +281,11 @@ public class AccountsDbAdapter extends DatabaseAdapter {
             }
             //delete splits in this account
             mDb.delete(SplitEntry.TABLE_NAME,
-                    SplitEntry.COLUMN_ACCOUNT_UID + "=?",
+                    SplitEntry.COLUMN_TRANSACTION_UID  + " IN ( SELECT DISTINCT "
+                    + TransactionEntry.TABLE_NAME + "_" + TransactionEntry.COLUMN_UID
+                    + " FROM trans_split_acct WHERE "
+                    + AccountEntry.TABLE_NAME + "_" + AccountEntry.COLUMN_UID
+                    + " = ? )",
                     new String[]{getAccountUID(rowId)});
             deleteRecord(AccountEntry.TABLE_NAME, rowId);
             mDb.setTransactionSuccessful();
