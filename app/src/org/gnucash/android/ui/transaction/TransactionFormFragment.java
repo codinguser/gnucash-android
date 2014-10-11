@@ -720,6 +720,7 @@ public class TransactionFormFragment extends SherlockFragment implements
         Money balance = Transaction.computeBalance(mAccountUID, mSplitsList);
 
         mAmountEditText.setText(balance.toPlainString());
+        mTransactionTypeButton.setChecked(balance.isNegative());
         //once we set the split list, do not allow direct editing of the total
         if (mSplitsList.size() > 1){
             mAmountEditText.setEnabled(false);
