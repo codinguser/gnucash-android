@@ -439,8 +439,7 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
     @Override
 	public boolean deleteRecord(long rowId){
 		Log.d(TAG, "Delete transaction with record Id: " + rowId);
-		return mSplitsDbAdapter.deleteSplitsForTransaction(rowId) &&
-                deleteRecord(TransactionEntry.TABLE_NAME, rowId);
+		return mSplitsDbAdapter.deleteSplitsForTransaction(rowId);
 	}
 	
 	/**

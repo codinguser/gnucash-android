@@ -296,7 +296,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
             mDb.delete(TransactionEntry.TABLE_NAME,
                     TransactionEntry.COLUMN_UID  + " NOT IN ( SELECT DISTINCT "
                             + TransactionEntry.TABLE_NAME + "_" + TransactionEntry.COLUMN_UID
-                            + " FROM trans_split_acct",
+                            + " FROM trans_split_acct )",
                     null);
             deleteRecord(AccountEntry.TABLE_NAME, rowId);
             mDb.setTransactionSuccessful();
