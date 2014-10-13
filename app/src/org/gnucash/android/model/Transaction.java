@@ -186,6 +186,9 @@ public class Transaction {
      */
     public void setSplits(List<Split> splitList){
         mSplitList = splitList;
+        for (Split split : splitList) {
+            split.setTransactionUID(mUID);
+        }
     }
 
     /**
