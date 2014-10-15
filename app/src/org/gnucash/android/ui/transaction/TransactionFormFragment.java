@@ -182,11 +182,6 @@ public class TransactionFormFragment extends SherlockFragment implements
     private String mAccountUID;
 
     private List<Split> mSplitsList = new ArrayList<Split>();
-    /**
-     * list to hold deleted splits. This split should only be deleted from
-     * DB when the transaction is saved.
-     */
-    private List<String> mDeletedSplitUIDList = new ArrayList<String>();
 
     /**
 	 * Create the view and retrieve references to the UI elements
@@ -767,11 +762,6 @@ public class TransactionFormFragment extends SherlockFragment implements
             mAmountEditText.setEnabled(false);
             setAmountEditViewVisible(View.GONE);
         }
-
-        // save the deleted UID list. Use add instead of assign in case this
-        // is called multiple times
-        // The splits will be actually deleted when the transaction is saved.
-        mDeletedSplitUIDList.addAll(removedSplitUIDs);
     }
 
     /**
