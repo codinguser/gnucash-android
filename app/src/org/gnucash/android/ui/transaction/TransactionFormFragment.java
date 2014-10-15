@@ -671,6 +671,8 @@ public class TransactionFormFragment extends SherlockFragment implements
 		mTransaction.setTime(cal.getTimeInMillis());
 		mTransaction.setNote(notes);
 
+        // set as not exported.
+        mTransaction.setExported(false);
         //save the normal transaction first
         mTransactionsDbAdapter.addTransaction(mTransaction);
         scheduleRecurringTransaction();
@@ -760,12 +762,6 @@ public class TransactionFormFragment extends SherlockFragment implements
             mAmountEditText.setEnabled(false);
             setAmountEditViewVisible(View.GONE);
         }
-
-        SplitsDbAdapter splitsDbAdapter = new SplitsDbAdapter(getActivity());
-        for (String removedSplitUID : removedSplitUIDs) {
-            splitsDbAdapter.deleteRecord(splitsDbAdapter.getID(removedSplitUID));
-        }
-        splitsDbAdapter.close();
     }
 
     /**
