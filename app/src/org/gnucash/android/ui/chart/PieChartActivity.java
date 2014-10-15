@@ -38,6 +38,7 @@ import org.achartengine.renderer.DefaultRenderer;
 import org.achartengine.renderer.SimpleSeriesRenderer;
 import org.gnucash.android.R;
 import org.gnucash.android.db.AccountsDbAdapter;
+import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.model.Account;
 import org.gnucash.android.model.AccountType;
 import org.joda.time.LocalDateTime;
@@ -77,6 +78,11 @@ public class PieChartActivity extends SherlockFragmentActivity implements OnItem
     private LocalDateTime mChartDate = new LocalDateTime();
     private TextView mChartDateTextView;
 
+    private LocalDateTime mEarliestTransaction;
+    private LocalDateTime mLatestTransaction;
+
+    private AccountType mAccountType = AccountType.EXPENSE;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -85,7 +91,10 @@ public class PieChartActivity extends SherlockFragmentActivity implements OnItem
         mPreviousMonthButton = (ImageButton) findViewById(R.id.previous_month_chart_button);
         mNextMonthButton = (ImageButton) findViewById(R.id.next_month_chart_button);
         mChartDateTextView = (TextView) findViewById(R.id.chart_date);
-        mChartDateTextView.setText("Overall");
+
+        TransactionsDbAdapter transactionsDbAdapter = new TransactionsDbAdapter(this);
+        mEarliestTransaction = new LocalDateTime(transactionsDbAdapter.getTimestampOfEarliestTransaction(mAccountType));
+        mLatestTransaction = new LocalDateTime(transactionsDbAdapter.getTimestampOfLatestTransaction(mAccountType));
 
         mAccountsDbAdapter = new AccountsDbAdapter(this);
 
@@ -119,8 +128,7 @@ public class PieChartActivity extends SherlockFragmentActivity implements OnItem
             @Override
             public void onClick(View view) {
                 mChartDate = mChartDate.minusMonths(1);
-                mChartDateTextView.setText(mChartDate.toString(datePattern));
-                setDataset((AccountType) ((Spinner) findViewById(R.id.chart_data_spinner)).getSelectedItem(), true);
+                setDataset(true);
             }
         });
 
@@ -128,21 +136,20 @@ public class PieChartActivity extends SherlockFragmentActivity implements OnItem
             @Override
             public void onClick(View view) {
                 mChartDate = mChartDate.plusMonths(1);
-                mChartDateTextView.setText(mChartDate.toString(datePattern));
-                setDataset((AccountType) ((Spinner) findViewById(R.id.chart_data_spinner)).getSelectedItem(), true);
+                setDataset(true);
             }
         });
     }
 
-
-    private void setDataset(AccountType type, boolean forCurrentMonth) {
+    private void setDataset(boolean forCurrentMonth) {
+        mChartDateTextView.setText(forCurrentMonth ? mChartDate.toString(datePattern) : "Overall");
         mRenderer.removeAllRenderers();
         mSeries.clear();
         mBalanceSum = 0;
 
         List<Account> accountList = mAccountsDbAdapter.getSimpleAccountList();
         for (Account account : accountList) {
-            if (account.getAccountType() == type && !account.isPlaceholderAccount()) {
+            if (account.getAccountType() == mAccountType && !account.isPlaceholderAccount()) {
                 double balance = 0;
                 if (forCurrentMonth) {
                     long start = mChartDate.dayOfMonth().withMinimumValue().millisOfDay().withMinimumValue().toDate().getTime();
@@ -162,6 +169,18 @@ public class PieChartActivity extends SherlockFragmentActivity implements OnItem
             }
         }
 
+        if (mChartDate.plusMonths(1).dayOfMonth().withMinimumValue().withMillisOfDay(0).isBefore(mLatestTransaction)) {
+            mNextMonthButton.setEnabled(true);
+        } else {
+            mNextMonthButton.setEnabled(false);
+        }
+        if (mEarliestTransaction.getYear() != 1970 && mChartDate.minusMonths(1).dayOfMonth()
+                .withMaximumValue().withMillisOfDay(86399999).isAfter(mEarliestTransaction)) {
+            mPreviousMonthButton.setEnabled(true);
+        } else {
+            mPreviousMonthButton.setEnabled(false);
+        }
+
         mPieChartView.repaint();
     }
 
@@ -178,10 +197,9 @@ public class PieChartActivity extends SherlockFragmentActivity implements OnItem
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
-        AccountType type = (AccountType) ((Spinner) findViewById(R.id.chart_data_spinner)).getSelectedItem();
-        mRenderer.setChartTitle(type.toString());
-
-        setDataset(type, false);
+        mAccountType = (AccountType) ((Spinner) findViewById(R.id.chart_data_spinner)).getSelectedItem();
+        mRenderer.setChartTitle(mAccountType.toString());
+        setDataset(false);
     }
 
     @Override
