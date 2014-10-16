@@ -16,8 +16,6 @@
 
 package org.gnucash.android.model;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 import org.gnucash.android.export.ofx.OfxHelper;
 import org.gnucash.android.export.xml.GncXmlHelper;
@@ -73,20 +71,17 @@ public class Account {
 	 * Unique Identifier of the account
 	 * It is generated when the account is created and can be set a posteriori as well
 	 */
-    @NonNull
 	private String mUID;
 	
 	/**
 	 * Name of this account
 	 */
-    @NonNull
 	private String mName;
 
     /**
      * Fully qualified name of this account including the parent hierarchy.
      * On instantiation of an account, the full name is set to the name by default
      */
-    @NonNull
     private String mFullName;
 
 	/**
@@ -98,26 +93,22 @@ public class Account {
 	 * Type of account
 	 * Defaults to {@link AccountType#CASH}
 	 */
-    @NonNull
 	private AccountType mAccountType = AccountType.CASH;
 	
 	/**
 	 * List of transactions in this account
 	 */
-    @NonNull
 	private List<Transaction> mTransactionsList = new ArrayList<Transaction>();
 
 	/**
 	 * Account UID of the parent account. Can be null
 	 */
-    @Nullable
 	private String mParentAccountUID;
 
     /**
      * Save UID of a default account for transfers.
      * All transactions in this account will by default be transfers to the other account
      */
-    @Nullable
     private String mDefaultTransferAccountUID;
 
     /**
@@ -129,7 +120,6 @@ public class Account {
     /**
      * Account color field in hex format #rrggbb
      */
-    @Nullable
     private String mColorCode;
 
     /**
@@ -153,7 +143,7 @@ public class Account {
 	 * Creates a new account with the default currency and a generated unique ID
 	 * @param name Name of the account
 	 */
-	public Account(@NonNull String name) {
+	public Account(String name) {
 		setName(name);
         this.mFullName  = mName;
 		this.mUID       = generateUID();
@@ -165,7 +155,7 @@ public class Account {
 	 * @param name Name of the account
 	 * @param currency {@link Currency} to be used by transactions in this account
 	 */
-	public Account(@NonNull String name, @NonNull Currency currency){
+	public Account(String name, Currency currency){
 		setName(name);
         this.mFullName  = mName;
 		this.mUID       = generateUID();
@@ -176,7 +166,7 @@ public class Account {
 	 * Sets the name of the account
 	 * @param name String name of the account
 	 */
-	public void setName(@NonNull String name) {
+	public void setName(String name) {
 		this.mName = name.trim();
 	}
 
@@ -184,7 +174,6 @@ public class Account {
 	 * Returns the name of the account
 	 * @return String containing name of the account
 	 */
-    @NonNull
 	public String getName() {
 		return mName;
 	}
@@ -194,7 +183,6 @@ public class Account {
      * The full name is the full account hierarchy name
      * @return Fully qualified name of the account
      */
-    @NonNull
     public String getFullName() {
         return mFullName;
     }
@@ -203,7 +191,7 @@ public class Account {
      * Sets the fully qualified name of the account
      * @param fullName Fully qualified account name
      */
-    public void setFullName(@NonNull String fullName) {
+    public void setFullName(String fullName) {
         this.mFullName = fullName;
     }
 
@@ -212,7 +200,6 @@ public class Account {
 	 * This represents the ACCTID in the exported OFX and should have a maximum of 22 alphanumeric characters
 	 * @return Generated Unique ID string
 	 */
-    @NonNull
 	protected String generateUID(){
 		String uuid = UUID.randomUUID().toString();
 		
@@ -233,7 +220,6 @@ public class Account {
 	 * Returns the unique ID of this account
 	 * @return String containing unique ID for the account
 	 */
-    @NonNull
 	public String getUID(){
 		return mUID;
 	}
@@ -242,7 +228,7 @@ public class Account {
 	 * Sets the unique identifier of this acocunt
 	 * @param uid Unique identifier to be set
 	 */
-	public void setUID(@NonNull String uid){
+	public void setUID(String uid){
 		this.mUID = uid;
 	}
 	
@@ -250,7 +236,6 @@ public class Account {
 	 * Get the type of account
 	 * @return {@link AccountType} type of account
 	 */
-    @NonNull
 	public AccountType getAccountType() {
 		return mAccountType;
 	}
@@ -260,7 +245,7 @@ public class Account {
 	 * @param mAccountType Type of account
 	 * @see AccountType
 	 */
-	public void setAccountType(@NonNull AccountType mAccountType) {
+	public void setAccountType(AccountType mAccountType) {
 		this.mAccountType = mAccountType;
 	}
 
@@ -268,7 +253,7 @@ public class Account {
 	 * Adds a transaction to this account
 	 * @param transaction {@link Transaction} to be added to the account
 	 */
-	public void addTransaction(@NonNull Transaction transaction){
+	public void addTransaction(Transaction transaction){
 		transaction.setCurrencyCode(mCurrency.getCurrencyCode());
 		mTransactionsList.add(transaction);
 	}
@@ -280,7 +265,7 @@ public class Account {
 	 * and currency of the account respectively
 	 * @param transactionsList List of {@link Transaction}s to be set.
 	 */
-	public void setTransactions(@NonNull List<Transaction> transactionsList){
+	public void setTransactions(List<Transaction> transactionsList){
 		this.mTransactionsList = transactionsList;
 	}
 		
@@ -288,7 +273,7 @@ public class Account {
 	 * Removes <code>transaction</code> from this account
 	 * @param transaction {@link Transaction} to be removed from account
 	 */
-	public void removeTransaction(@NonNull Transaction transaction){
+	public void removeTransaction(Transaction transaction){
 		mTransactionsList.remove(transaction);
 	}
 	
@@ -296,7 +281,6 @@ public class Account {
 	 * Returns a list of transactions for this account
 	 * @return Array list of transactions for the account
 	 */
-    @NonNull
 	public List<Transaction> getTransactions(){
 		return mTransactionsList;
 	}
@@ -327,7 +311,6 @@ public class Account {
 	 * It takes into account debit and credit amounts, it does not however consider sub-accounts
 	 * @return {@link Money} aggregate amount of all transactions in account.
 	 */
-    @NonNull
 	public Money getBalance(){
 		Money balance = Money.createZeroInstance(mCurrency.getCurrencyCode());
         for (Transaction transaction : mTransactionsList) {
@@ -340,7 +323,6 @@ public class Account {
      * Returns the color code of the account in the format #rrggbb
      * @return Color code of the account
      */
-    @Nullable
     public String getColorHexCode() {
         return mColorCode;
     }
@@ -350,7 +332,7 @@ public class Account {
      * @param colorCode Color code to be set in the format #rrggbb or #rgb
      * @throws java.lang.IllegalArgumentException if the color code is not properly formatted
      */
-    public void setColorCode(@Nullable String colorCode) {
+    public void setColorCode(String colorCode) {
         if (colorCode == null)
             return;
 
@@ -379,7 +361,6 @@ public class Account {
     /**
 	 * @return the mCurrency
 	 */
-    @NonNull
 	public Currency getCurrency() {
 		return mCurrency;
 	}
@@ -388,7 +369,7 @@ public class Account {
 	 * Sets the currency to be used by this account
 	 * @param mCurrency the mCurrency to set
 	 */
-	public void setCurrency(@NonNull Currency mCurrency) {
+	public void setCurrency(Currency mCurrency) {
 		this.mCurrency = mCurrency;
 		//TODO: Maybe at some time t, this method should convert all 
 		//transaction values to the corresponding value in the new currency
@@ -398,7 +379,7 @@ public class Account {
 	 * Sets the Unique Account Identifier of the parent account
 	 * @param parentUID String Unique ID of parent account
 	 */
-	public void setParentUID(@Nullable String parentUID){
+	public void setParentUID(String parentUID){
 		mParentAccountUID = parentUID;
 	}
 	
@@ -406,7 +387,6 @@ public class Account {
 	 * Returns the Unique Account Identifier of the parent account
 	 * @return String Unique ID of parent account
 	 */
-    @Nullable
 	public String getParentUID() {
 		return mParentAccountUID;
 	}
@@ -432,7 +412,6 @@ public class Account {
      * Return the unique ID of accounts to which to default transfer transactions to
      * @return Unique ID string of default transfer account
      */
-    @Nullable
     public String getDefaultTransferAccountUID() {
         return mDefaultTransferAccountUID;
     }
@@ -441,7 +420,7 @@ public class Account {
      * Set the unique ID of account which is the default transfer target
      * @param defaultTransferAccountUID Unique ID string of default transfer account
      */
-    public void setDefaultTransferAccountUID(@Nullable String defaultTransferAccountUID) {
+    public void setDefaultTransferAccountUID(String defaultTransferAccountUID) {
         this.mDefaultTransferAccountUID = defaultTransferAccountUID;
     }
 
@@ -454,8 +433,7 @@ public class Account {
 	 * @see AccountType
 	 * @see OfxAccountType
 	 */
-	@NonNull
-    public static OfxAccountType convertToOfxAccountType(@NonNull AccountType accountType){
+    public static OfxAccountType convertToOfxAccountType(AccountType accountType){
 		switch (accountType) {
 		case CREDIT:
 		case LIABILITY:
@@ -488,7 +466,7 @@ public class Account {
 	 * @param doc XML DOM document for the OFX data
 	 * @param parent Parent node to which to add this account's transactions in XML
 	 */
-	public void toOfx(@NonNull Document doc, @NonNull Element parent, boolean exportAllTransactions){
+	public void toOfx(Document doc, Element parent, boolean exportAllTransactions){
 		Element currency = doc.createElement(OfxHelper.TAG_CURRENCY_DEF);
 		currency.appendChild(doc.createTextNode(mCurrency.getCurrencyCode()));						
 		
@@ -567,7 +545,7 @@ public class Account {
      * @param rootNode {@link org.w3c.dom.Element} node to which to attach the XML
      * @deprecated Use the {@link org.gnucash.android.export.xml.GncXmlExporter} to generate XML
      */
-    public void toGncXml(@NonNull Document doc, @NonNull Element rootNode) {
+    public void toGncXml(Document doc, Element rootNode) {
         Element nameNode = doc.createElement(GncXmlHelper.TAG_NAME);
         nameNode.appendChild(doc.createTextNode(mName));
 

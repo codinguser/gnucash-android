@@ -18,8 +18,6 @@ package org.gnucash.android.importer;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.util.Log;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -48,7 +46,7 @@ public class GncXmlImporter {
      * @param db SQLite Database
      * @param gncXmlInputStream Input stream of GnuCash XML
      */
-    public static void parse(@NonNull SQLiteDatabase db, InputStream gncXmlInputStream) throws Exception {
+    public static void parse(SQLiteDatabase db, InputStream gncXmlInputStream) throws Exception {
         SAXParserFactory spf = SAXParserFactory.newInstance();
         SAXParser sp = spf.newSAXParser();
         XMLReader xr = sp.getXMLReader();

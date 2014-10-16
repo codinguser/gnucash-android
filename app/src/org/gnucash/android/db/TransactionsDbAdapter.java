@@ -25,8 +25,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.database.sqlite.SQLiteStatement;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.util.Log;
 
 import org.gnucash.android.app.GnuCashApplication;
@@ -45,19 +43,17 @@ import java.util.List;
  */
 public class TransactionsDbAdapter extends DatabaseAdapter {
 
-    @NonNull
     private final SplitsDbAdapter mSplitsDbAdapter;
 
     /**
      * Overloaded constructor. Creates adapter for already open db
      * @param db SQlite db instance
      */
-    public TransactionsDbAdapter(@NonNull SQLiteDatabase db, @NonNull SplitsDbAdapter splitsDbAdapter) {
+    public TransactionsDbAdapter(SQLiteDatabase db, SplitsDbAdapter splitsDbAdapter) {
         super(db);
         mSplitsDbAdapter = splitsDbAdapter;
     }
 
-    @NonNull
     public SplitsDbAdapter getSplitDbAdapter() {
         return mSplitsDbAdapter;
     }
@@ -69,7 +65,7 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 	 * @param transaction {@link Transaction} to be inserted to database
 	 * @return Database row ID of the inserted transaction
 	 */
-	public long addTransaction(@NonNull Transaction transaction){
+	public long addTransaction(Transaction transaction){
 		ContentValues contentValues = new ContentValues();
 		contentValues.put(TransactionEntry.COLUMN_DESCRIPTION, transaction.getDescription());
 		contentValues.put(TransactionEntry.COLUMN_UID,          transaction.getUID());
@@ -101,7 +97,7 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
      * @param transactionList {@link Transaction} transactions to be inserted to database
      * @return Number of transactions inserted
      */
-    public long bulkAddTransactions(@NonNull List<Transaction> transactionList){
+    public long bulkAddTransactions(List<Transaction> transactionList){
         List<Split> splitList = new ArrayList<Split>(transactionList.size()*3);
         long rowInserted = 0;
         try {
@@ -158,7 +154,7 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 	 * @param uid Unique Identifier of transaction to be retrieved
 	 * @return Database row ID of transaction with UID <code>uid</code>
 	 */
-	public long fetchTransactionWithUID(@NonNull String uid){
+	public long fetchTransactionWithUID(String uid){
 		Cursor cursor = mDb.query(TransactionEntry.TABLE_NAME,
 				new String[] {TransactionEntry._ID},
                 TransactionEntry.COLUMN_UID + " = ?",
@@ -180,7 +176,6 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 	 * @param rowId Identifier of the transaction record to be retrieved
 	 * @return {@link Transaction} object corresponding to database record
 	 */
-	@NonNull
     public Transaction getTransaction(long rowId) {
         Log.v(TAG, "Fetching transaction with id " + rowId);
         Cursor c = fetchRecord(TransactionEntry.TABLE_NAME, rowId);
@@ -203,8 +198,7 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 	 * @return Cursor holding set of transactions for particular account
      * @throws java.lang.IllegalArgumentException if the accountUID is null
 	 */
-    @NonNull
-	public Cursor fetchAllTransactionsForAccount(@NonNull String accountUID){
+	public Cursor fetchAllTransactionsForAccount(String accountUID){
         if (mDb.getVersion() < DatabaseSchema.SPLITS_DB_VERSION){ //legacy from previous database format
             return mDb.query(TransactionEntry.TABLE_NAME, null,
                     "((" + SplitEntry.COLUMN_ACCOUNT_UID + " = '" + accountUID + "') "
@@ -234,7 +228,6 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
      * They are not considered when computing account balances</p>
      * @return Cursor holding set of all recurring transactions
      */
-    @NonNull
     public Cursor fetchAllRecurringTransactions(){
         return mDb.query(TransactionEntry.TABLE_NAME,
                 null,
@@ -249,7 +242,6 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 	 * @param accountID ID of the account whose transactions are to be retrieved
 	 * @return Cursor holding set of transactions for particular account
 	 */
-    @NonNull
 	public Cursor fetchAllTransactionsForAccount(long accountID){
 		return fetchAllTransactionsForAccount(getAccountUID(accountID));
 	}
@@ -259,8 +251,7 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 	 * @param accountUID UID of account whose transactions are to be retrieved
 	 * @return List of {@link Transaction}s for account with UID <code>accountUID</code>
 	 */
-	@NonNull
-    public List<Transaction> getAllTransactionsForAccount(@NonNull String accountUID){
+    public List<Transaction> getAllTransactionsForAccount(String accountUID){
 		Cursor c = fetchAllTransactionsForAccount(accountUID);
 		ArrayList<Transaction> transactionsList = new ArrayList<Transaction>();
         try {
@@ -277,7 +268,6 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
      * Returns all transaction instances in the database.
      * @return List of all transactions
      */
-    @NonNull
     public List<Transaction> getAllTransactions(){
         Cursor cursor = fetchAllRecords();
         List<Transaction> transactions = new ArrayList<Transaction>();
@@ -291,8 +281,7 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
         return transactions;
     }
 
-    @NonNull
-    public Cursor fetchTransactionsWithSplits(@Nullable String [] columns, @Nullable String where, @Nullable String[] whereArgs, @NonNull String orderBy) {
+    public Cursor fetchTransactionsWithSplits(String [] columns, String where, String[] whereArgs, String orderBy) {
         return mDb.query(TransactionEntry.TABLE_NAME + " , " + SplitEntry.TABLE_NAME +
                         " ON " + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_UID +
                         " = " + SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_TRANSACTION_UID,
@@ -300,8 +289,7 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
                 orderBy);
     }
 
-    @NonNull
-    public Cursor fetchTransactionsWithSplitsWithTransactionAccount(@Nullable String [] columns, @Nullable String where, @Nullable String[] whereArgs, @Nullable String orderBy) {
+    public Cursor fetchTransactionsWithSplitsWithTransactionAccount(String [] columns, String where, String[] whereArgs, String orderBy) {
         // table is :
         // trans_split_acct , trans_extra_info ON trans_extra_info.trans_acct_t_uid = transactions_uid ,
         // accounts AS account1 ON account1.uid = trans_extra_info.trans_acct_a_uid
@@ -342,8 +330,7 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 	 * @param c Cursor pointing to transaction record in database
 	 * @return {@link Transaction} object constructed from database record
 	 */
-	@NonNull
-    public Transaction buildTransactionInstance(@NonNull Cursor c){
+    public Transaction buildTransactionInstance(Cursor c){
 		String name   = c.getString(c.getColumnIndexOrThrow(TransactionEntry.COLUMN_DESCRIPTION));
 		Transaction transaction = new Transaction(name);
 		transaction.setUID(c.getString(c.getColumnIndexOrThrow(TransactionEntry.COLUMN_UID)));
@@ -389,7 +376,6 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 	 * @return Currency code of the account with Id <code>accountId</code>
 	 * @see #getCurrencyCode(String)
 	 */
-	@NonNull
     public String getCurrencyCode(long accountId){
 		String accountUID = getAccountUID(accountId);
 		return getCurrencyCode(accountUID);
@@ -402,8 +388,7 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
      * @param accountUID GUID of the account
      * @return {@link org.gnucash.android.model.Money} balance of the transaction for that account
      */
-    @NonNull
-    public Money getBalance(@NonNull String transactionUID, @NonNull String accountUID){
+    public Money getBalance(String transactionUID, String accountUID){
         List<Split> splitList = mSplitsDbAdapter.getSplitsForTransactionInAccount(
                 transactionUID, accountUID);
 
@@ -415,7 +400,6 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
      * @param transactionId Database record ID of transaction
      * @return String unique identifier of the transaction
      */
-    @NonNull
     @Override
     public String getUID(long transactionId) {
         Cursor c = mDb.query(TransactionEntry.TABLE_NAME,
@@ -450,7 +434,7 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 	 * @param uid String unique ID of transaction
 	 * @return <code>true</code> if deletion was successful, <code>false</code> otherwise
 	 */
-	public boolean deleteTransaction(@NonNull String uid){
+	public boolean deleteTransaction(String uid){
         return deleteRecord(getID(uid));
 	}
 	
@@ -470,7 +454,7 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 	 * @param dstAccountUID GUID of the account to which the transaction will be assigned
 	 * @return Number of transactions splits affected
 	 */
-	public int moveTransaction(@NonNull String transactionUID, @NonNull String srcAccountUID, @NonNull String dstAccountUID){
+	public int moveTransaction(String transactionUID, String srcAccountUID, String dstAccountUID){
 		Log.i(TAG, "Moving transaction ID " + transactionUID
                 + " splits from " + srcAccountUID + " to account " + dstAccountUID);
 
@@ -513,7 +497,7 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
      * @return Database record ID for the transaction
      */
     @Override
-    public long getID(@NonNull String transactionUID){
+    public long getID(String transactionUID){
         Cursor c = mDb.query(TransactionEntry.TABLE_NAME,
                 new String[]{TransactionEntry._ID},
                 TransactionEntry.COLUMN_UID + "='" + transactionUID + "'",
@@ -529,13 +513,11 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
         }
     }
 
-    @NonNull
     @Override
     public Cursor fetchAllRecords() {
         return fetchAllRecords(TransactionEntry.TABLE_NAME);
     }
 
-    @NonNull
     @Override
     public Cursor fetchRecord(long rowId) {
         return fetchRecord(TransactionEntry.TABLE_NAME, rowId);
@@ -547,8 +529,7 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
      * @param prefix Starting characters of the transaction name
      * @return Cursor to the data set containing all matching transactions
      */
-    @NonNull
-    public Cursor fetchTransactionsStartingWith(@NonNull String prefix){
+    public Cursor fetchTransactionsStartingWith(String prefix){
         return mDb.query(TransactionEntry.TABLE_NAME,
                 new String[]{TransactionEntry._ID, TransactionEntry.COLUMN_DESCRIPTION},
                 TransactionEntry.COLUMN_DESCRIPTION + " LIKE '" + prefix + "%'",
@@ -563,11 +544,11 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
      * @param newValue  New value to be assigned to the columnKey
      * @return Number of records affected
      */
-    public int updateTransaction(@NonNull String transactionUID, @NonNull String columnKey, @Nullable String newValue){
+    public int updateTransaction(String transactionUID, String columnKey, String newValue){
         return updateRecord(TransactionEntry.TABLE_NAME, getID(transactionUID), columnKey, newValue);
     }
 
-    public int updateTransaction(@NonNull ContentValues contentValues, @Nullable String whereClause, @Nullable String[] whereArgs){
+    public int updateTransaction(ContentValues contentValues, String whereClause, String[] whereArgs){
         return mDb.update(TransactionEntry.TABLE_NAME, contentValues, whereClause, whereArgs);
     }
 
@@ -576,7 +557,7 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
      * The interval period is packaged within the transaction
      * @param recurringTransaction Transaction which is to be recurring
      */
-    public void scheduleTransaction(@NonNull Transaction recurringTransaction) {
+    public void scheduleTransaction(Transaction recurringTransaction) {
         long recurrencePeriodMillis = recurringTransaction.getRecurrencePeriod();
         long firstRunMillis = System.currentTimeMillis() + recurrencePeriodMillis;
         long recurringTransactionId = addTransaction(recurringTransaction);
@@ -593,12 +574,11 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
      * @param transactionUID GUID of the transaction
      * @return Retrieves a transaction from the database
      */
-    @NonNull
-    public Transaction getTransaction(@NonNull String transactionUID) {
+    public Transaction getTransaction(String transactionUID) {
         return getTransaction(getID(transactionUID));
     }
 
-    public int getNumCurrencies(@NonNull String transactionUID) {
+    public int getNumCurrencies(String transactionUID) {
         Cursor cursor = mDb.query("trans_extra_info",
                 new String[]{"trans_currency_count"},
                 "trans_acct_t_uid=?",

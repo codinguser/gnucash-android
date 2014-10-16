@@ -23,7 +23,6 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Rect;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.SimpleCursorAdapter;
@@ -411,8 +410,7 @@ public class ScheduledTransactionsListFragment extends SherlockListFragment impl
             super(context);
         }
 
-        @Override @NonNull
-        public Cursor loadInBackground() {
+        @Override        public Cursor loadInBackground() {
             mDatabaseAdapter = GnuCashApplication.getTransactionDbAdapter();
             Cursor c = ((TransactionsDbAdapter) mDatabaseAdapter).fetchAllRecurringTransactions();
 

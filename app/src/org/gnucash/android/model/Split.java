@@ -1,7 +1,5 @@
 package org.gnucash.android.model;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 import org.gnucash.android.export.xml.GncXmlHelper;
 import org.w3c.dom.Document;
@@ -23,37 +21,31 @@ public class Split {
     /**
      * Amount value of this split
      */
-    @NonNull
     private Money mAmount;
 
     /**
      * Unique ID of this split
      */
-    @NonNull
     private String mUID;
 
     /**
      * Transaction UID which this split belongs to
      */
-    @NonNull
     private String mTransactionUID = "";
 
     /**
      * Account UID which this split belongs to
      */
-    @NonNull
     private String mAccountUID;
 
     /**
      * The type of this transaction, credit or debit
      */
-    @NonNull
     private TransactionType mSplitType = TransactionType.CREDIT;
 
     /**
      * Memo associated with this split
      */
-    @Nullable
     private String mMemo;
 
     /**
@@ -61,7 +53,7 @@ public class Split {
      * @param amount Money amount of this split
      * @param accountUID String UID of transfer account
      */
-    public Split(@NonNull Money amount, @NonNull String accountUID){
+    public Split(Money amount, String accountUID){
         setAmount(amount);
         setAccountUID(accountUID);
         mUID = UUID.randomUUID().toString().replaceAll("-","");
@@ -72,7 +64,7 @@ public class Split {
      * @param sourceSplit Split to be cloned
      * @param generateUID Determines if the clone should have a new UID or should maintain the one from source
      */
-    public Split(@NonNull Split sourceSplit, boolean generateUID){
+    public Split(Split sourceSplit, boolean generateUID){
         this.mMemo          = sourceSplit.mMemo;
         this.mAccountUID    = sourceSplit.mAccountUID;
         this.mSplitType     = sourceSplit.mSplitType;
@@ -86,62 +78,55 @@ public class Split {
         }
     }
 
-    @NonNull
     public Money getAmount() {
         return mAmount;
     }
 
-    public void setAmount(@NonNull Money amount) {
+    public void setAmount(Money amount) {
         this.mAmount = amount;
     }
 
-    @NonNull
     public String getUID() {
         return mUID;
     }
 
-    public void setUID(@NonNull String uid) {
+    public void setUID(String uid) {
         this.mUID = uid;
     }
 
-    @NonNull
     public String getTransactionUID() {
         return mTransactionUID;
     }
 
-    public void setTransactionUID(@NonNull String transactionUID) {
+    public void setTransactionUID(String transactionUID) {
         this.mTransactionUID = transactionUID;
     }
 
-    @NonNull
     public String getAccountUID() {
         return mAccountUID;
     }
 
-    public void setAccountUID(@NonNull String accountUID) {
+    public void setAccountUID(String accountUID) {
         this.mAccountUID = accountUID;
     }
 
-    @NonNull
     public TransactionType getType() {
         return mSplitType;
     }
 
-    public void setType(@NonNull TransactionType transactionType) {
+    public void setType(TransactionType transactionType) {
         this.mSplitType = transactionType;
     }
 
-    @Nullable
     public String getMemo() {
         return mMemo;
     }
 
-    public void setMemo(@Nullable String memo) {
+    public void setMemo(String memo) {
         this.mMemo = memo;
     }
 
-    @NonNull
-    public Split createPair(@NonNull String accountUID){
+    public Split createPair(String accountUID){
         Split pair = new Split(mAmount.absolute(), accountUID);
         pair.setType(mSplitType.invert());
         pair.setMemo(mMemo);
@@ -149,7 +134,6 @@ public class Split {
         return pair;
     }
 
-    @NonNull
     protected Split clone() {
         Split split = new Split(mAmount, mAccountUID);
         split.mUID = mUID;
@@ -165,12 +149,11 @@ public class Split {
      * @param other the other split of the pair to be tested
      * @return whether the two splits are a pair
      */
-    public boolean isPairOf(@NonNull Split other) {
+    public boolean isPairOf(Split other) {
         return mAmount.absolute().equals(other.mAmount.absolute())
                 && mSplitType.invert().equals(other.mSplitType);
     }
 
-    @NonNull
     @Override
     public String toString() {
         return mSplitType.name() + " of " + mAmount.toString() + " in account: " + mAccountUID;
@@ -180,7 +163,6 @@ public class Split {
      * Returns a string representation of the split which can be parsed again using {@link org.gnucash.android.model.Split#parseSplit(String)}
      * @return the converted CSV string of this split
      */
-    @NonNull
     public String toCsv(){
         String splitString = mAmount.toString() + ";" + mAmount.getCurrency().getCurrencyCode() + ";"
                 + mAccountUID + ";" + mSplitType.name();
@@ -196,7 +178,7 @@ public class Split {
      * @param rootNode Parent node to append the split XML to
      * @deprecated Use the {@link org.gnucash.android.export.xml.GncXmlExporter} to generate XML
      */
-    public void toGncXml(@NonNull Document doc, @NonNull Element rootNode) {
+    public void toGncXml(Document doc, Element rootNode) {
         Element idNode = doc.createElement(GncXmlHelper.TAG_SPLIT_ID);
         idNode.setAttribute("type", "guid");
         idNode.appendChild(doc.createTextNode(mUID));
@@ -236,8 +218,7 @@ public class Split {
      * @param splitString String containing formatted split
      * @return Split instance parsed from the string
      */
-    @NonNull
-    public static Split parseSplit(@NonNull String splitString) {
+    public static Split parseSplit(String splitString) {
         String[] tokens = splitString.split(";");
         Money amount = new Money(tokens[0], tokens[1]);
         Split split = new Split(amount, tokens[2]);

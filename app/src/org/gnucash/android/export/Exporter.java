@@ -20,8 +20,6 @@ package org.gnucash.android.export;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Environment;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.AccountsDbAdapter;
@@ -61,15 +59,12 @@ public abstract class Exporter {
      * Adapter for retrieving accounts to export
      * Subclasses should close this object when they are done with exporting
      */
-    @NonNull
     protected AccountsDbAdapter mAccountsDbAdapter;
-    @NonNull
     protected TransactionsDbAdapter mTransactionsDbAdapter;
-    @NonNull
     protected SplitsDbAdapter mSplitsDbAdapter;
     protected Context mContext;
 
-    public Exporter(ExportParams params, @Nullable SQLiteDatabase db) {
+    public Exporter(ExportParams params, SQLiteDatabase db) {
         this.mParameters = params;
         mContext = GnuCashApplication.getAppContext();
         if (db == null) {
@@ -121,7 +116,6 @@ public abstract class Exporter {
      * @return Last modified file from backup folder
      * @see #BACKUP_FOLDER_PATH
      */
-    @Nullable
     public static File getMostRecentBackupFile(){
         File backupFolder = new File(BACKUP_FOLDER_PATH);
         if (!backupFolder.exists())

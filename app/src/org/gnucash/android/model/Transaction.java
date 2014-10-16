@@ -17,7 +17,6 @@
 package org.gnucash.android.model;
 
 import android.content.Intent;
-import android.support.annotation.NonNull;
 
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.AccountsDbAdapter;
@@ -78,32 +77,27 @@ public class Transaction {
     /**
      * Currency used by splits in this transaction
      */
-    @NonNull
     private String mCurrencyCode = Money.DEFAULT_CURRENCY_CODE;
 
     /**
      * The splits making up this transaction
      */
-    @NonNull
     private List<Split> mSplitList = new ArrayList<Split>();
 
 	/**
 	 * Unique identifier of the transaction.
 	 * This is automatically generated when the transaction is created.
 	 */
-    @NonNull
 	private String mUID;
 
 	/**
 	 * Name describing the transaction
 	 */
-    @NonNull
 	private String mDescription;
 
 	/**
 	 * An extra note giving details about the transaction
 	 */
-    @NonNull
 	private String mNotes = "";
 
 	/**
@@ -129,7 +123,7 @@ public class Transaction {
 	 * provided data and initializes the rest to default values.
 	 * @param name Name of the transaction
 	 */
-	public Transaction(@NonNull String name) {
+	public Transaction(String name) {
 		initDefaults();
 		setDescription(name);
 	}
@@ -142,7 +136,7 @@ public class Transaction {
      * @param transaction Transaction to be cloned
      * @param generateNewUID Flag to determine if new UID should be assigned or not
      */
-    public Transaction(@NonNull Transaction transaction, boolean generateNewUID){
+    public Transaction(Transaction transaction, boolean generateNewUID){
         initDefaults();
         setDescription(transaction.getDescription());
         setNote(transaction.getNote());
@@ -167,7 +161,6 @@ public class Transaction {
      * Returns list of splits for this transaction
      * @return {@link java.util.List} of splits in the transaction
      */
-    @NonNull
     public List<Split> getSplits(){
         return mSplitList;
     }
@@ -177,7 +170,6 @@ public class Transaction {
      * @param accountUID Unique Identifier of the account
      * @return List of {@link org.gnucash.android.model.Split}s
      */
-    @NonNull
     public List<Split> getSplits(String accountUID){
         List<Split> splits = new ArrayList<Split>();
         for (Split split : mSplitList) {
@@ -193,7 +185,7 @@ public class Transaction {
      * <p>All the splits in the list will have their transaction UID set to this transaction</p>
      * @param splitList List of splits for this transaction
      */
-    public void setSplits(@NonNull List<Split> splitList){
+    public void setSplits(List<Split> splitList){
         mSplitList = splitList;
     }
 
@@ -202,7 +194,7 @@ public class Transaction {
      * <p>Sets the split UID and currency to that of this transaction</p>
      * @param split Split for this transaction
      */
-    public void addSplit(@NonNull Split split){
+    public void addSplit(Split split){
         //sets the currency of the split to the currency of the transaction
         split.setAmount(split.getAmount().withCurrency(Currency.getInstance(mCurrencyCode)));
         split.setTransactionUID(mUID);
@@ -216,7 +208,7 @@ public class Transaction {
      * @return Money balance of the transaction for the specified account
      * @see #computeBalance(String, java.util.List)
      */
-    public Money getBalance(@NonNull String accountUID){
+    public Money getBalance(String accountUID){
         return computeBalance(accountUID, mSplitList);
     }
 
@@ -226,7 +218,6 @@ public class Transaction {
      * means there is an extra amount which is unresolved.
      * @return Money imbalance of the transaction
      */
-    @NonNull
     public Money getImbalance(){
         Money imbalance = Money.createZeroInstance(mCurrencyCode);
         for (Split split : mSplitList) {
@@ -246,8 +237,7 @@ public class Transaction {
      * @param splitList List of splits
      * @return Money list of splits
      */
-    @NonNull
-    public static Money computeBalance(@NonNull String accountUID, @NonNull List<Split> splitList) {
+    public static Money computeBalance(String accountUID, List<Split> splitList) {
         AccountsDbAdapter accountsDbAdapter = GnuCashApplication.getAccountsDbAdapter();
         AccountType accountType = accountsDbAdapter.getAccountType(accountUID);
         String currencyCode = accountsDbAdapter.getCurrencyCode(accountUID);
@@ -280,7 +270,6 @@ public class Transaction {
      * Returns the currency code of this transaction.
      * @return ISO 4217 currency code string
      */
-    @NonNull
     public String getCurrencyCode() {
         return mCurrencyCode;
     }
@@ -291,7 +280,7 @@ public class Transaction {
      * Transactions always use the currency of their accounts. </p>
      * @param currencyCode String with ISO 4217 currency code
      */
-    public void setCurrencyCode(@NonNull String currencyCode) {
+    public void setCurrencyCode(String currencyCode) {
         this.mCurrencyCode = currencyCode;
     }
 
@@ -300,7 +289,6 @@ public class Transaction {
      * @return Currency of the transaction
      * @see #getCurrencyCode()
      */
-    @NonNull
     public Currency getCurrency(){
         return Currency.getInstance(this.mCurrencyCode);
     }
@@ -309,7 +297,6 @@ public class Transaction {
 	 * Returns the description of the transaction
 	 * @return Transaction description
 	 */
-	@NonNull
     public String getDescription() {
 		return mDescription;
 	}
@@ -318,7 +305,7 @@ public class Transaction {
 	 * Sets the transaction description
 	 * @param description String description
 	 */
-	public void setDescription(@NonNull String description) {
+	public void setDescription(String description) {
 		this.mDescription = description.trim();
 	}
 
@@ -326,7 +313,7 @@ public class Transaction {
 	 * Add notes to the transaction
 	 * @param notes String containing notes for the transaction
 	 */
-	public void setNote(@NonNull String notes) {
+	public void setNote(String notes) {
 		this.mNotes = notes;
 	}
 
@@ -334,7 +321,6 @@ public class Transaction {
 	 * Returns the transaction notes
 	 * @return String notes of transaction
 	 */
-	@NonNull
     public String getNote() {
 		return mNotes;
 	}
@@ -343,7 +329,7 @@ public class Transaction {
 	 * Set the time of the transaction
 	 * @param timestamp Time when transaction occurred as {@link Date}
 	 */
-	public void setTime(@NonNull Date timestamp){
+	public void setTime(Date timestamp){
 		this.mTimestamp = timestamp.getTime();
 	}
 
@@ -370,7 +356,7 @@ public class Transaction {
 	 * @param transactionUID Unique ID string
      * @see #resetUID()
 	 */
-	public void setUID(@NonNull String transactionUID) {
+	public void setUID(String transactionUID) {
 		this.mUID = transactionUID;
 	}
 
@@ -384,7 +370,6 @@ public class Transaction {
 	 * Returns unique ID string for transaction
 	 * @return String with Unique ID of transaction
 	 */
-	@NonNull
     public String getUID() {
 		return mUID;
 	}
@@ -396,8 +381,7 @@ public class Transaction {
      * @param shouldReduceBalance <code>true</code> if type should reduce balance, <code>false</code> otherwise
      * @return TransactionType for the account
      */
-    @NonNull
-    public static TransactionType getTypeForBalance(@NonNull AccountType accountType, boolean shouldReduceBalance){
+    public static TransactionType getTypeForBalance(AccountType accountType, boolean shouldReduceBalance){
         TransactionType type;
         if (accountType.hasDebitNormalBalance()) {
             type = shouldReduceBalance ? TransactionType.CREDIT : TransactionType.DEBIT;
@@ -412,7 +396,7 @@ public class Transaction {
      * @return true if the amount represents a decrease in the account balance, false otherwise
      * @see #getTypeForBalance(AccountType, boolean)
      */
-    public static boolean shouldDecreaseBalance(@NonNull AccountType accountType, @NonNull TransactionType transactionType) {
+    public static boolean shouldDecreaseBalance(AccountType accountType, TransactionType transactionType) {
         if (accountType.hasDebitNormalBalance()) {
             return transactionType == TransactionType.CREDIT;
         } else
@@ -458,7 +442,7 @@ public class Transaction {
      * @param doc XML document to which transaction should be added
      * @param accountUID Unique Identifier of the account which called the method.  @return Element in DOM corresponding to transaction
      */
-	public Element toOFX(@NonNull Document doc, @NonNull String accountUID){
+	public Element toOFX(Document doc, String accountUID){
         Money balance = getBalance(accountUID);
         TransactionType transactionType = balance.isNegative() ? TransactionType.DEBIT : TransactionType.CREDIT;
 
@@ -530,7 +514,7 @@ public class Transaction {
      * @param rootElement Parent node for the XML
      * @deprecated Use the {@link org.gnucash.android.export.xml.GncXmlExporter} to generate XML
      */
-    public void toGncXml(@NonNull Document doc, @NonNull Element rootElement) {
+    public void toGncXml(Document doc, Element rootElement) {
         Element idNode = doc.createElement(GncXmlHelper.TAG_TRX_ID);
         idNode.setAttribute(GncXmlHelper.ATTR_KEY_TYPE, GncXmlHelper.ATTR_VALUE_GUID);
         idNode.appendChild(doc.createTextNode(mUID));
@@ -595,8 +579,7 @@ public class Transaction {
      * @param transaction Transaction used to create intent
      * @return Intent with transaction details as extras
      */
-    @NonNull
-    public static Intent createIntent(@NonNull Transaction transaction){
+    public static Intent createIntent(Transaction transaction){
         Intent intent = new Intent(Intent.ACTION_INSERT);
         intent.setType(Transaction.MIME_TYPE);
         intent.putExtra(Intent.EXTRA_TITLE, transaction.getDescription());

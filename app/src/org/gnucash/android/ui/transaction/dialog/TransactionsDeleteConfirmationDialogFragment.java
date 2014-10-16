@@ -29,7 +29,6 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 
 import com.actionbarsherlock.app.SherlockDialogFragment;
 import org.gnucash.android.ui.widget.WidgetConfigurationActivity;
@@ -54,8 +53,7 @@ public class TransactionsDeleteConfirmationDialogFragment extends SherlockDialog
         return frag;
     }
 
-    @Override @NonNull
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
+    @Override    public Dialog onCreateDialog(Bundle savedInstanceState) {
         int title = getArguments().getInt("title");
         final long rowId = getArguments().getLong(UxArgument.SELECTED_TRANSACTION_IDS);
         int message = rowId == 0 ? R.string.msg_delete_all_transactions_confirmation : R.string.msg_delete_transaction_confirmation;

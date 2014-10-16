@@ -19,8 +19,6 @@ package org.gnucash.android.db;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 import org.gnucash.android.db.DatabaseSchema.*;
 import org.gnucash.android.model.AccountType;
@@ -41,14 +39,13 @@ public abstract class DatabaseAdapter {
 	/**
 	 * SQLite database
 	 */
-	@NonNull
     protected final SQLiteDatabase mDb;
 
     /**
      * Opens the database adapter with an existing database
      * @param db SQLiteDatabase object
      */
-    public DatabaseAdapter(@NonNull SQLiteDatabase db) {
+    public DatabaseAdapter(SQLiteDatabase db) {
         this.mDb = db;
         if (!db.isOpen() || db.isReadOnly())
             throw new IllegalArgumentException("Database not open or is read-only. Require writeable database");
@@ -162,8 +159,7 @@ public abstract class DatabaseAdapter {
 	 * @param rowId ID of record to be retrieved
 	 * @return {@link Cursor} to record retrieved
 	 */
-    @NonNull
-	protected Cursor fetchRecord(@NonNull String tableName, long rowId){
+	protected Cursor fetchRecord(String tableName, long rowId){
 		return mDb.query(tableName, null, DatabaseSchema.CommonColumns._ID + "=" + rowId,
 				null, null, null, null);
 	}
@@ -173,8 +169,7 @@ public abstract class DatabaseAdapter {
 	 * @param tableName Name of table in database
 	 * @return {@link Cursor} to all records in table <code>tableName</code>
 	 */
-    @NonNull
-	protected Cursor fetchAllRecords(@NonNull String tableName){
+	protected Cursor fetchAllRecords(String tableName){
 		return mDb.query(tableName, 
         		null, null, null, null, null, null);
 	}
@@ -186,7 +181,7 @@ public abstract class DatabaseAdapter {
 	 * @param rowId ID of record to be deleted
 	 * @return <code>true</code> if deletion was successful, <code>false</code> otherwise
 	 */
-	protected boolean deleteRecord(@NonNull String tableName, long rowId){
+	protected boolean deleteRecord(String tableName, long rowId){
 		return mDb.delete(tableName, DatabaseSchema.CommonColumns._ID + "=" + rowId, null) > 0;
 	}
 
@@ -194,7 +189,7 @@ public abstract class DatabaseAdapter {
      * Deletes all records in the database
      * @return Number of deleted records
      */
-    protected int deleteAllRecords(@NonNull String tableName){
+    protected int deleteAllRecords(String tableName){
         return mDb.delete(tableName, null, null);
     }
 
@@ -203,14 +198,12 @@ public abstract class DatabaseAdapter {
      * @param rowId ID of record to be retrieved
      * @return {@link Cursor} to record retrieved
      */
-    @NonNull
     public abstract Cursor fetchRecord(long rowId);
 
     /**
      * Retrieves all records from database table corresponding to this adapter
      * @return {@link Cursor} to all records in table
      */
-    @NonNull
     public abstract Cursor fetchAllRecords();
 
     /**
@@ -233,8 +226,7 @@ public abstract class DatabaseAdapter {
      * @return Currency code of the account. "" if accountUID
      *      does not exist in DB
      */
-    @NonNull
-    public String getCurrencyCode(@NonNull String accountUID) {
+    public String getCurrencyCode(String accountUID) {
         Cursor cursor = mDb.query(DatabaseSchema.AccountEntry.TABLE_NAME,
                 new String[] {DatabaseSchema.AccountEntry.COLUMN_CURRENCY},
                 DatabaseSchema.AccountEntry.COLUMN_UID + "= ?",
@@ -256,8 +248,7 @@ public abstract class DatabaseAdapter {
      * @return {@link org.gnucash.android.model.AccountType} of the account.
      * @throws java.lang.IllegalArgumentException if accountUID does not exist in DB,
      */
-    @NonNull
-    public AccountType getAccountType(@NonNull String accountUID){
+    public AccountType getAccountType(String accountUID){
         String type = "";
         Cursor c = mDb.query(DatabaseSchema.AccountEntry.TABLE_NAME,
                 new String[]{DatabaseSchema.AccountEntry.COLUMN_TYPE},
@@ -281,7 +272,6 @@ public abstract class DatabaseAdapter {
      * @return String containing UID of account
      * @throws java.lang.IllegalArgumentException if accountRowID does not exist
      */
-    @NonNull
     public String getAccountUID(long accountRowID) {
         Cursor c = mDb.query(DatabaseSchema.AccountEntry.TABLE_NAME,
                 new String[]{DatabaseSchema.AccountEntry.COLUMN_UID},
@@ -304,7 +294,7 @@ public abstract class DatabaseAdapter {
      * @return Database row ID of the account
      * @throws java.lang.IllegalArgumentException if accountUID does not exist
      */
-    public long getAccountID(@NonNull String accountUID){
+    public long getAccountID(String accountUID){
         Cursor c = mDb.query(DatabaseSchema.AccountEntry.TABLE_NAME,
                 new String[]{DatabaseSchema.AccountEntry._ID},
                 DatabaseSchema.AccountEntry.COLUMN_UID + "= ?",
@@ -325,14 +315,13 @@ public abstract class DatabaseAdapter {
      * @param uid GUID of the record
      * @return Long database identifier of the record
      */
-    public abstract long getID(@NonNull String uid);
+    public abstract long getID(String uid);
 
     /**
      * Returns the global unique identifier of the record
      * @param id Database record ID of the entry
      * @return String GUID of the record
      */
-    @NonNull
     public abstract String getUID(long id);
 
     /**
@@ -342,7 +331,7 @@ public abstract class DatabaseAdapter {
      * @param newValue  New value to be assigned to the columnKey
      * @return Number of records affected
      */
-    public int updateRecord(@NonNull String tableName, long recordId, @NonNull String columnKey, @Nullable String newValue) {
+    public int updateRecord(String tableName, long recordId, String columnKey, String newValue) {
         ContentValues contentValues = new ContentValues();
         if (newValue == null) {
             contentValues.putNull(columnKey);

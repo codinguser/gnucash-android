@@ -22,7 +22,6 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.*;
 
-import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentManager;
 import android.text.Editable;
 import android.widget.*;
@@ -188,8 +187,7 @@ public class TransactionFormFragment extends SherlockFragment implements
     /**
 	 * Create the view and retrieve references to the UI elements
 	 */
-	@Override @NonNull
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+	@Override	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		View v = inflater.inflate(R.layout.fragment_new_transaction, container, false);
 
@@ -835,7 +833,6 @@ public class TransactionFormFragment extends SherlockFragment implements
 	 * @param amountString String with amount information
 	 * @return BigDecimal with the amount parsed from <code>amountString</code>
 	 */
-    @NonNull
 	public static BigDecimal parseInputToDecimal(String amountString){
 		String clean = stripCurrencyFormatting(amountString);
         if (clean.length() == 0) //empty string

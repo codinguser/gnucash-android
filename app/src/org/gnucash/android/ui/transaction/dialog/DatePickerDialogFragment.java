@@ -23,7 +23,6 @@ import android.app.DatePickerDialog;
 import android.app.DatePickerDialog.OnDateSetListener;
 import android.app.Dialog;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 
 /**
@@ -68,7 +67,6 @@ public class DatePickerDialogFragment extends DialogFragment {
 	/**
 	 * Creates and returns an Android {@link DatePickerDialog}
 	 */
-    @NonNull
     @Override
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
 		Calendar cal = mDate == null ? Calendar.getInstance() : mDate;

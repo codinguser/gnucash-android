@@ -19,8 +19,6 @@ package org.gnucash.android.importer;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.util.Log;
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.SplitsDbAdapter;
@@ -123,11 +121,11 @@ public class GncXmlHandler extends DefaultHandler {
         init(bulk, null);
     }
 
-    public GncXmlHandler(boolean bulk, @NonNull SQLiteDatabase db) {
+    public GncXmlHandler(boolean bulk, SQLiteDatabase db) {
         init(bulk, db);
     }
 
-    private void init(boolean bulk, @Nullable SQLiteDatabase db) {
+    private void init(boolean bulk, SQLiteDatabase db) {
         if (db == null) {
             mAccountsDbAdapter = GnuCashApplication.getAccountsDbAdapter();
             mTransactionsDbAdapter = GnuCashApplication.getTransactionDbAdapter();

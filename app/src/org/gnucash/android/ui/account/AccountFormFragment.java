@@ -27,7 +27,6 @@ import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.text.TextUtils;
@@ -208,7 +207,6 @@ public class AccountFormFragment extends SherlockFragment {
 	 * @param dbAdapter {@link AccountsDbAdapter} for saving the account
 	 * @return New instance of the dialog fragment
 	 */
-    @NonNull
 	static public AccountFormFragment newInstance() {
         AccountFormFragment f = new AccountFormFragment();
         f.mAccountsDbAdapter = GnuCashApplication.getAccountsDbAdapter();
@@ -228,8 +226,7 @@ public class AccountFormFragment extends SherlockFragment {
 	/**
 	 * Inflates the dialog view and retrieves references to the dialog elements
 	 */
-	@Override @NonNull
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+	@Override	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.fragment_new_account, container, false);
 		getSherlockActivity().getSupportActionBar().setTitle(R.string.title_add_account);
@@ -389,7 +386,7 @@ public class AccountFormFragment extends SherlockFragment {
      * Initializes the preview of the color picker (color square) to the specified color
      * @param colorHex Color of the format #rgb or #rrggbb
      */
-    private void initializeColorSquarePreview(@NonNull String colorHex){
+    private void initializeColorSquarePreview(String colorHex){
         if (colorHex != null)
             mColorSquare.setBackgroundColor(Color.parseColor(colorHex));
         else
@@ -785,7 +782,6 @@ public class AccountFormFragment extends SherlockFragment {
      * Returns the currently selected account type in the spinner
      * @return {@link org.gnucash.android.model.AccountType} currently selected
      */
-    @NonNull
     private AccountType getSelectedAccountType() {
         int selectedAccountTypeIndex = mAccountTypeSpinner.getSelectedItemPosition();
         String[] accountTypeEntries = getResources().getStringArray(R.array.key_account_type_entries);

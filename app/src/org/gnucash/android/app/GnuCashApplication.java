@@ -21,7 +21,6 @@ import android.content.SharedPreferences;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.preference.PreferenceManager;
-import android.support.annotation.NonNull;
 import android.util.Log;
 import org.gnucash.android.R;
 import org.gnucash.android.db.AccountsDbAdapter;
@@ -77,17 +76,14 @@ public class GnuCashApplication extends Application{
         mAccountsDbAdapter = new AccountsDbAdapter(mDb, mTransactionsDbAdapter);
     }
 
-    @NonNull
     public static AccountsDbAdapter getAccountsDbAdapter() {
         return mAccountsDbAdapter;
     }
 
-    @NonNull
     public static TransactionsDbAdapter getTransactionDbAdapter() {
         return mTransactionsDbAdapter;
     }
 
-    @NonNull
     public static SplitsDbAdapter getSplitsDbAdapter() {
         return mSplitsDbAdapter;
     }
