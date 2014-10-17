@@ -118,9 +118,8 @@ public class TransactionsListFragment extends SherlockListFragment implements
 				return true;
 
 			case R.id.context_menu_delete:
-                SplitsDbAdapter splitsDbAdapter = GnuCashApplication.getSplitsDbAdapter();
 				for (long id : getListView().getCheckedItemIds()) {
-                    splitsDbAdapter.deleteSplitsForTransactionAndAccount(mTransactionsDbAdapter.getUID(id), mAccountUID);
+                    mTransactionsDbAdapter.deleteRecord(id);
 				}
 				refresh();
 				mode.finish();

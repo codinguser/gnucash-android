@@ -24,6 +24,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 import android.widget.Toast;
 import org.gnucash.android.model.AccountType;
+import org.gnucash.android.model.Transaction;
 
 import static org.gnucash.android.db.DatabaseSchema.*;
 
@@ -33,6 +34,7 @@ import static org.gnucash.android.db.DatabaseSchema.*;
  * @author Ngewi Fet <ngewif@gmail.com>
  *
  */
+@SuppressWarnings("deprecation")
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     /**
@@ -222,27 +224,95 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
             if (oldVersion == 6 && newVersion >= DatabaseSchema.SPLITS_DB_VERSION){
                 Log.i(LOG_TAG, "Upgrading database to version 7");
-
-                //for users who do not have double-entry activated, we create imbalance accounts for their splits
-                //TODO: Enable when we can hide imbalance accounts from user
-//                List<Currency> currencies = MigrationHelper.getCurrencies(db);
-//                AccountsDbAdapter accountsDbAdapter = new AccountsDbAdapter(db);
-//                for (Currency currency : currencies) {
-//                    accountsDbAdapter.getOrCreateImbalanceAccountUID(currency);
-//                }
-
+                db.beginTransaction();
                 try {
-                    String filepath = MigrationHelper.exportGnucashXML(db);
-
-                    dropAllDatabaseTables(db);
-                    createDatabaseTables(db);
-
-                    MigrationHelper.importGnucashXML(db, filepath);
-                } catch (Exception e){
-                    Toast.makeText(mContext, "Error upgrading database.\n" + e.getMessage(), Toast.LENGTH_LONG).show();
-                    throw new RuntimeException(e);
+                    // backup transaction table
+                    db.execSQL("ALTER TABLE " + TransactionEntry.TABLE_NAME + " RENAME TO " + TransactionEntry.TABLE_NAME + "_bak");
+                    // create new transaction table
+                    db.execSQL("create table " + TransactionEntry.TABLE_NAME + " ("
+                            + TransactionEntry._ID + " integer primary key autoincrement, "
+                            + TransactionEntry.COLUMN_UID + " varchar(255) not null, "
+                            + TransactionEntry.COLUMN_DESCRIPTION + " varchar(255), "
+                            + TransactionEntry.COLUMN_NOTES + " text, "
+                            + TransactionEntry.COLUMN_TIMESTAMP + " integer not null, "
+                            + TransactionEntry.COLUMN_EXPORTED + " tinyint default 0, "
+                            + TransactionEntry.COLUMN_CURRENCY + " varchar(255) not null, "
+                            + TransactionEntry.COLUMN_RECURRENCE_PERIOD + " integer default 0, "
+                            + "UNIQUE (" + TransactionEntry.COLUMN_UID + ") "
+                            + ");");
+                    // initialize new transaction table wiht data from old table
+                    db.execSQL("INSERT INTO " + TransactionEntry.TABLE_NAME + " ( "
+                                    + TransactionEntry._ID + " , "
+                                    + TransactionEntry.COLUMN_UID + " , "
+                                    + TransactionEntry.COLUMN_DESCRIPTION + " , "
+                                    + TransactionEntry.COLUMN_NOTES + " , "
+                                    + TransactionEntry.COLUMN_TIMESTAMP + " , "
+                                    + TransactionEntry.COLUMN_EXPORTED + " , "
+                                    + TransactionEntry.COLUMN_CURRENCY + " , "
+                                    + TransactionEntry.COLUMN_RECURRENCE_PERIOD + " )  SELECT "
+                                    + TransactionEntry.TABLE_NAME + "_bak." + TransactionEntry._ID + " , "
+                                    + TransactionEntry.TABLE_NAME + "_bak." + TransactionEntry.COLUMN_UID + " , "
+                                    + TransactionEntry.TABLE_NAME + "_bak." + TransactionEntry.COLUMN_DESCRIPTION + " , "
+                                    + TransactionEntry.TABLE_NAME + "_bak." + TransactionEntry.COLUMN_NOTES + " , "
+                                    + TransactionEntry.TABLE_NAME + "_bak." + TransactionEntry.COLUMN_TIMESTAMP + " , "
+                                    + TransactionEntry.TABLE_NAME + "_bak." + TransactionEntry.COLUMN_EXPORTED + " , "
+                                    + AccountEntry.TABLE_NAME + "." + AccountEntry.COLUMN_CURRENCY + " , "
+                                    + TransactionEntry.TABLE_NAME + "_bak." + TransactionEntry.COLUMN_RECURRENCE_PERIOD
+                                    + " FROM " + TransactionEntry.TABLE_NAME + "_bak , " + AccountEntry.TABLE_NAME
+                                    + " ON " + TransactionEntry.TABLE_NAME + "_bak.account_uid == " + AccountEntry.TABLE_NAME + "." + AccountEntry.COLUMN_UID
+                    );
+                    // create split table
+                    db.execSQL("CREATE TABLE " + SplitEntry.TABLE_NAME + " ("
+                            + SplitEntry._ID + " integer primary key autoincrement, "
+                            + SplitEntry.COLUMN_UID + " varchar(255) not null, "
+                            + SplitEntry.COLUMN_MEMO + " text, "
+                            + SplitEntry.COLUMN_TYPE + " varchar(255) not null, "
+                            + SplitEntry.COLUMN_AMOUNT + " varchar(255) not null, "
+                            + SplitEntry.COLUMN_ACCOUNT_UID + " varchar(255) not null, "
+                            + SplitEntry.COLUMN_TRANSACTION_UID + " varchar(255) not null, "
+                            + "FOREIGN KEY (" + SplitEntry.COLUMN_ACCOUNT_UID + ") REFERENCES " + AccountEntry.TABLE_NAME + " (" + AccountEntry.COLUMN_UID + "), "
+                            + "FOREIGN KEY (" + SplitEntry.COLUMN_TRANSACTION_UID + ") REFERENCES " + TransactionEntry.TABLE_NAME + " (" + TransactionEntry.COLUMN_UID + "), "
+                            + "UNIQUE (" + SplitEntry.COLUMN_UID + ") "
+                            + ");");
+                    // Initialize split table with data from backup transaction table
+                    // New split table is initialized after the new transaction table as the
+                    // foreign key constraint will stop any data from being inserted
+                    // If new split table is created before the backup is made, the foreign key
+                    // constraint will be rewritten to refer to the backup transaction table
+                    db.execSQL("INSERT INTO " + SplitEntry.TABLE_NAME + " ( "
+                            + SplitEntry.COLUMN_UID + " , "
+                            + SplitEntry.COLUMN_TYPE + " , "
+                            + SplitEntry.COLUMN_AMOUNT + " , "
+                            + SplitEntry.COLUMN_ACCOUNT_UID + " , "
+                            + SplitEntry.COLUMN_TRANSACTION_UID + " ) SELECT "
+                            + "LOWER(HEX(RANDOMBLOB(16))) , "
+                            + "CASE WHEN " + AccountEntry.TABLE_NAME + "." + AccountEntry.COLUMN_TYPE + " IN ( 'CASH' , 'BANK', 'ASSET', 'EXPENSE', 'RECEIVABLE', 'STOCK', 'MUTUAL' ) THEN CASE WHEN "
+                                    + SplitEntry.COLUMN_AMOUNT + " < 0 THEN 'CREDIT' ELSE 'DEBIT' END ELSE CASE WHEN "
+                                    + SplitEntry.COLUMN_AMOUNT + " < 0 THEN 'DEBIT' ELSE 'CREDIT' END END , "
+                            + "ABS ( " + TransactionEntry.TABLE_NAME + "_bak.amount ) , "
+                            + TransactionEntry.TABLE_NAME + "_bak.account_uid , "
+                            + TransactionEntry.TABLE_NAME + "_bak." + TransactionEntry.COLUMN_UID
+                            + " FROM " + TransactionEntry.TABLE_NAME + "_bak , " + AccountEntry.TABLE_NAME
+                            + " ON " + TransactionEntry.TABLE_NAME + "_bak.account_uid = " + AccountEntry.TABLE_NAME + "." + AccountEntry.COLUMN_UID
+                            + " UNION SELECT "
+                            + "LOWER(HEX(RANDOMBLOB(16))) AS " + SplitEntry.COLUMN_UID + " , "
+                            + "CASE WHEN " + AccountEntry.TABLE_NAME + "." + AccountEntry.COLUMN_TYPE + " IN ( 'CASH' , 'BANK', 'ASSET', 'EXPENSE', 'RECEIVABLE', 'STOCK', 'MUTUAL' ) THEN CASE WHEN "
+                                    + SplitEntry.COLUMN_AMOUNT + " < 0 THEN 'DEBIT' ELSE 'CREDIT' END ELSE CASE WHEN "
+                                    + SplitEntry.COLUMN_AMOUNT + " < 0 THEN 'CREDIT' ELSE 'DEBIT' END END , "
+                            + "ABS ( " + TransactionEntry.TABLE_NAME + "_bak.amount ) , "
+                            + TransactionEntry.TABLE_NAME + "_bak." + KEY_DOUBLE_ENTRY_ACCOUNT_UID + " , "
+                            + TransactionEntry.TABLE_NAME + "_baK." + TransactionEntry.COLUMN_UID
+                            + " FROM " + TransactionEntry.TABLE_NAME + "_bak , " + AccountEntry.TABLE_NAME
+                            + " ON " + TransactionEntry.TABLE_NAME + "_bak.account_uid = " + AccountEntry.TABLE_NAME + "." + AccountEntry.COLUMN_UID
+                            + " WHERE " + TransactionEntry.TABLE_NAME + "_bak." + KEY_DOUBLE_ENTRY_ACCOUNT_UID + " IS NOT NULL"
+                    );
+                    // drop backup transaction table
+                    db.execSQL("DROP TABLE " + TransactionEntry.TABLE_NAME + "_bak");
+                    db.setTransactionSuccessful();
+                    oldVersion = DatabaseSchema.SPLITS_DB_VERSION;
+                } finally {
+                    db.endTransaction();
                 }
-                oldVersion = DatabaseSchema.SPLITS_DB_VERSION;
             }
 		}
 

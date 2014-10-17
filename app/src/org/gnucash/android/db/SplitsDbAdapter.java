@@ -511,11 +511,17 @@ public class SplitsDbAdapter extends DatabaseAdapter {
      */
     public boolean deleteSplitsForTransaction(long transactionId) {
         String trxUID = getTransactionUID(transactionId);
-        boolean result = mDb.delete(SplitEntry.TABLE_NAME,
-                SplitEntry.COLUMN_TRANSACTION_UID + "=?",
-                new String[]{trxUID}) > 0;
-        result &= deleteTransaction(transactionId);
-        return result;
+        mDb.beginTransaction();
+        try {
+            mDb.delete(SplitEntry.TABLE_NAME,
+                    SplitEntry.COLUMN_TRANSACTION_UID + "=?",
+                    new String[]{trxUID});
+            boolean result = deleteTransaction(transactionId);
+            mDb.setTransactionSuccessful();
+            return result;
+        } finally {
+            mDb.endTransaction();
+        }
     }
 
     /**

@@ -187,7 +187,8 @@ public class TransactionFormFragment extends SherlockFragment implements
     /**
 	 * Create the view and retrieve references to the UI elements
 	 */
-	@Override	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+	@Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		View v = inflater.inflate(R.layout.fragment_new_transaction, container, false);
 
@@ -668,6 +669,8 @@ public class TransactionFormFragment extends SherlockFragment implements
 		mTransaction.setTime(cal.getTimeInMillis());
 		mTransaction.setNote(notes);
 
+        // set as not exported.
+        mTransaction.setExported(false);
         //save the normal transaction first
         mTransactionsDbAdapter.addTransaction(mTransaction);
         scheduleRecurringTransaction();
@@ -749,15 +752,11 @@ public class TransactionFormFragment extends SherlockFragment implements
         Money balance = Transaction.computeBalance(mAccountUID, mSplitsList);
 
         mAmountEditText.setText(balance.toPlainString());
+        mTransactionTypeButton.setChecked(balance.isNegative());
         //once we set the split list, do not allow direct editing of the total
         if (mSplitsList.size() > 1){
             mAmountEditText.setEnabled(false);
             setAmountEditViewVisible(View.GONE);
-        }
-
-        SplitsDbAdapter splitsDbAdapter = GnuCashApplication.getSplitsDbAdapter();
-        for (String removedSplitUID : removedSplitUIDs) {
-            splitsDbAdapter.deleteRecord(splitsDbAdapter.getID(removedSplitUID));
         }
     }
 

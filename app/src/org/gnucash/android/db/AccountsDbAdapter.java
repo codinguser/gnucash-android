@@ -284,10 +284,25 @@ public class AccountsDbAdapter extends DatabaseAdapter {
                     }
                 }
             }
+            // TODO: with "ON DELETE CASCADE", the first two delete will not be necessary.
+            //       deleteRecord(AccountEntry.TABLE_NAME, rowId); will delete related
+            //       transactions and splits
             //delete splits in this account
             mDb.delete(SplitEntry.TABLE_NAME,
-                    SplitEntry.COLUMN_ACCOUNT_UID + "=?",
+                    SplitEntry.COLUMN_TRANSACTION_UID  + " IN ( SELECT DISTINCT "
+                    + TransactionEntry.TABLE_NAME + "_" + TransactionEntry.COLUMN_UID
+                    + " FROM trans_split_acct WHERE "
+                    + AccountEntry.TABLE_NAME + "_" + AccountEntry.COLUMN_UID
+                    + " = ? )",
                     new String[]{getAccountUID(rowId)});
+            // delete empty transactions
+            // trans_split_acct is an inner joint, empty transactions will
+            // not be selected in this view
+            mDb.delete(TransactionEntry.TABLE_NAME,
+                    TransactionEntry.COLUMN_UID  + " NOT IN ( SELECT DISTINCT "
+                            + TransactionEntry.TABLE_NAME + "_" + TransactionEntry.COLUMN_UID
+                            + " FROM trans_split_acct )",
+                    null);
             deleteRecord(AccountEntry.TABLE_NAME, rowId);
             mDb.setTransactionSuccessful();
             return true;
