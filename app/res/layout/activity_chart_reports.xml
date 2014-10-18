@@ -50,7 +50,8 @@
         <ImageButton android:id="@+id/previous_month_chart_button"
                      android:layout_width="0dp"
                      android:layout_height="match_parent"
-                     android:layout_weight="0.9" />
+                     android:layout_weight="0.9"
+                     android:src="@drawable/navigation_previous_item" />
 
         <TextView android:id="@+id/chart_date"
                   android:layout_width="0dp"
@@ -62,7 +63,8 @@
         <ImageButton android:id="@+id/next_month_chart_button"
                      android:layout_width="0dp"
                      android:layout_height="match_parent"
-                     android:layout_weight="0.9" />
+                     android:layout_weight="0.9"
+                     android:src="@drawable/navigation_next_item" />
 
     </LinearLayout>
 
