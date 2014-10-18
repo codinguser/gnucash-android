@@ -351,7 +351,9 @@ public class TransactionFormFragment extends SherlockFragment implements
                 }
             }
         } else {
-            setAmountEditViewVisible(View.GONE);
+            if (mUseDoubleEntry) {
+                setAmountEditViewVisible(View.GONE);
+            }
         }
         mSplitsList = new ArrayList<Split>(mTransaction.getSplits()); //we need a copy so we can modify with impunity
         mAmountEditText.setEnabled(mSplitsList.size() <= 2);
