@@ -68,6 +68,11 @@
                          android:layout_width="wrap_content"
                          android:layout_height="wrap_content"
                          android:text="OFX"/>
+
+            <RadioButton android:id="@+id/radio_log_format"
+                         android:layout_width="wrap_content"
+                         android:layout_height="wrap_content"
+                         android:text="LOG"/>
         </RadioGroup>
         <TextView android:id="@+id/export_warning"
                   android:layout_marginLeft="@dimen/dialog_padding"

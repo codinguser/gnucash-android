@@ -30,6 +30,7 @@ import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.widget.Toast;
 import org.gnucash.android.R;
+import org.gnucash.android.export.log.LogExporter;
 import org.gnucash.android.export.ofx.OfxExporter;
 import org.gnucash.android.export.qif.QifExporter;
 import org.gnucash.android.export.qif.QifHelper;
@@ -102,6 +103,10 @@ public class ExporterAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
 
                 case OFX:
                     mExporter = new OfxExporter(mExportParams);
+                    break;
+
+                case LOG:
+                    mExporter = new LogExporter(mExportParams);
                     break;
 
                 case GNC_XML:

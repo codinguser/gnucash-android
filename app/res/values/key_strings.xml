@@ -45,6 +45,7 @@
     <string-array name="key_export_format_values">
         <item>QIF</item>
         <item>OFX</item>
+        <item>LOG</item>
     </string-array>
     <string-array name="key_recurrence_period_millis">
         <item>0</item>
