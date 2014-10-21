@@ -30,7 +30,7 @@ public class LogExporter extends Exporter {
         TransactionsDbAdapter transactionsDbAdapter = new TransactionsDbAdapter(GnuCashApplication.getAppContext());
         try {
             Cursor cursor = transactionsDbAdapter.query (
-                    "trans_split_acct, trans_extra_info ON ON trans_extra_info.trans_acct_t_uid = trans_split_acct." +
+                    "trans_split_acct, trans_extra_info ON trans_extra_info.trans_acct_t_uid = trans_split_acct." +
                             DatabaseSchema.TransactionEntry.TABLE_NAME + "_" + DatabaseSchema.TransactionEntry.COLUMN_UID,
                     new String[]{
                             "*"
@@ -56,6 +56,7 @@ public class LogExporter extends Exporter {
                         if (!currentTransactionUID.equals("")) {
                             writer.append(LogHelper.end).append(LogHelper.lineEnd);
                         }
+                        currentTransactionUID = transactionUID;
                         writer.append(LogHelper.start).append(LogHelper.lineEnd);
                     }
                     // mod
@@ -85,10 +86,10 @@ public class LogExporter extends Exporter {
                     writer.append(description).append(LogHelper.separator);
                     // notes
                     String notes = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.TransactionEntry.TABLE_NAME + "_" + DatabaseSchema.TransactionEntry.COLUMN_NOTES));
-                    writer.append(notes).append(LogHelper.separator);
+                    writer.append(notes==null?"":notes).append(LogHelper.separator);
                     // memo
                     String memo = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.SplitEntry.TABLE_NAME + "_" + DatabaseSchema.SplitEntry.COLUMN_MEMO));
-                    writer.append(memo).append(LogHelper.separator);
+                    writer.append(memo==null?"":memo).append(LogHelper.separator);
                     // action
                     writer.append(LogHelper.separator);
                     // reconciled
