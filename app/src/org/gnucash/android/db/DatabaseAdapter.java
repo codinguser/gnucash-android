@@ -240,6 +240,12 @@ public abstract class DatabaseAdapter {
         		null, null, null, null, null, null);
 	}
 
+    public Cursor query(String table, String[] columns, String where, String[] whereArgs, String groupBy,
+                                 String having, String orderBy)
+    {
+        return mDb.query(table, columns, where, whereArgs, groupBy, having, orderBy);
+    }
+
 	/**
 	 * Deletes record with ID <code>rowID</code> from database table <code>tableName</code>
      * This does not delete the transactions and splits associated with the account
