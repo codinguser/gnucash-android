@@ -17,6 +17,8 @@
 package org.gnucash.android.ui.chart;
 
 import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
@@ -170,18 +172,35 @@ public class PieChartActivity extends SherlockFragmentActivity implements OnItem
         }
 
         if (mChartDate.plusMonths(1).dayOfMonth().withMinimumValue().withMillisOfDay(0).isBefore(mLatestTransaction)) {
-            mNextMonthButton.setEnabled(true);
+            setImageButtonEnabled(mNextMonthButton, true);
         } else {
-            mNextMonthButton.setEnabled(false);
+            setImageButtonEnabled(mNextMonthButton, false);
         }
         if (mEarliestTransaction.getYear() != 1970 && mChartDate.minusMonths(1).dayOfMonth()
                 .withMaximumValue().withMillisOfDay(86399999).isAfter(mEarliestTransaction)) {
-            mPreviousMonthButton.setEnabled(true);
+            setImageButtonEnabled(mPreviousMonthButton, true);
         } else {
-            mPreviousMonthButton.setEnabled(false);
+            setImageButtonEnabled(mPreviousMonthButton, false);
         }
 
         mPieChartView.repaint();
+    }
+
+    /**
+     * Sets the image button to the given state and grays-out the icon
+     *
+     * @param enabled the button's state
+     * @param button the button item to modify
+     */
+    private void setImageButtonEnabled(ImageButton button, boolean enabled) {
+        button.setEnabled(enabled);
+        Drawable originalIcon = button.getDrawable();
+        if (enabled) {
+            originalIcon.clearColorFilter();
+        } else {
+            originalIcon.setColorFilter(Color.GRAY, PorterDuff.Mode.SRC_IN);
+        }
+        button.setImageDrawable(originalIcon);
     }
 
     private void addItemsOnSpinner() {
