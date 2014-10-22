@@ -18,6 +18,7 @@ import java.io.Writer;
 import java.math.BigDecimal;
 import java.util.Currency;
 import java.util.Date;
+import java.util.UUID;
 
 public class LogExporter extends Exporter {
 
@@ -49,6 +50,7 @@ public class LogExporter extends Exporter {
             );
             try {
                 String currentTransactionUID = "";
+                String randomUID = "";
                 writer.append(LogHelper.header).append(LogHelper.lineEnd);
                 while (cursor.moveToNext()) {
                     String transactionUID = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.TransactionEntry.TABLE_NAME + "_" + DatabaseSchema.TransactionEntry.COLUMN_UID));
@@ -57,15 +59,16 @@ public class LogExporter extends Exporter {
                             writer.append(LogHelper.end).append(LogHelper.lineEnd);
                         }
                         currentTransactionUID = transactionUID;
+                        randomUID = UUID.randomUUID().toString().replaceAll("-", "");
                         writer.append(LogHelper.start).append(LogHelper.lineEnd);
                     }
                     // mod
                     writer.append(LogHelper.LOG_COMMIT).append(LogHelper.separator);
                     // trans_guid
-                    writer.append(transactionUID).append(LogHelper.separator);
+                    writer.append(randomUID).append(LogHelper.separator);
                     // split_guid
-                    String splitUID = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.SplitEntry.TABLE_NAME + "_" + DatabaseSchema.SplitEntry.COLUMN_UID));
-                    writer.append(splitUID).append(LogHelper.separator);
+                    // String splitUID = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.SplitEntry.TABLE_NAME + "_" + DatabaseSchema.SplitEntry.COLUMN_UID));
+                    writer.append(UUID.randomUUID().toString().replaceAll("-", "")).append(LogHelper.separator);
                     // time_now
                     writer.append(LogHelper.getLogFormattedTime((new Date()).getTime())).append(LogHelper.separator);
                     // date_entered
