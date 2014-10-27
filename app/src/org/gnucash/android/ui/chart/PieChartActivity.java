@@ -31,6 +31,8 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuItem;
 
 import org.achartengine.ChartFactory;
 import org.achartengine.GraphicalView;
@@ -201,6 +203,43 @@ public class PieChartActivity extends SherlockFragmentActivity implements OnItem
             originalIcon.setColorFilter(Color.GRAY, PorterDuff.Mode.SRC_IN);
         }
         button.setImageDrawable(originalIcon);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getSupportMenuInflater().inflate(R.menu.pie_chart_actions, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.menu_order_by_size) {
+            mSeries = bubbleSort(mSeries);
+            mPieChartView.repaint();
+            return true;
+        }
+        return false;
+    }
+
+    private CategorySeries bubbleSort(CategorySeries series) {
+        boolean swapped = true;
+        int j = 0;
+        double tmp1;
+        String tmp2;
+        while (swapped) {
+            swapped = false;
+            j++;
+            for (int i = 0; i < series.getItemCount() - j; i++) {
+                if (series.getValue(i) > series.getValue(i + 1)) {
+                    tmp1 = series.getValue(i);
+                    tmp2 = series.getCategory(i);
+                    series.set(i, series.getCategory(i + 1), series.getValue(i + 1));
+                    series.set(i + 1, tmp2, tmp1);
+                    swapped = true;
+                }
+            }
+        }
+        return series;
     }
 
     private void addItemsOnSpinner() {

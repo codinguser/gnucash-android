@@ -352,6 +352,7 @@
     <string name="summary_default_export_format">File format to use by default when exporting transactions</string>
     <string name="menu_export_transactions">Export transactions…</string>
     <string name="label_recurring_transaction">Recurrence</string>
+    <string name="menu_order_by_size">Order by size</string>
     <!-- This should be the same name used by GnuCash desktop for imbalance accounts -->
     <string name="imbalance_account_name">Imbalance</string>
     <string name="title_progress_exporting_transactions">Exporting transactions</string>
