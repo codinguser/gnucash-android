@@ -216,6 +216,10 @@ public class PieChartActivity extends SherlockFragmentActivity implements OnItem
         if (item.getItemId() == R.id.menu_order_by_size) {
             mSeries = bubbleSort(mSeries);
             mPieChartView.repaint();
+            for (int i = 0; i < mRenderer.getSeriesRendererCount(); i++) {
+                mRenderer.getSeriesRendererAt(i).setHighlighted(false);
+            }
+            mPieChartView.repaint();
             return true;
         }
         return false;
@@ -226,6 +230,8 @@ public class PieChartActivity extends SherlockFragmentActivity implements OnItem
         int j = 0;
         double tmp1;
         String tmp2;
+        SimpleSeriesRenderer tmp3;
+        SimpleSeriesRenderer tmp4;
         while (swapped) {
             swapped = false;
             j++;
@@ -235,10 +241,19 @@ public class PieChartActivity extends SherlockFragmentActivity implements OnItem
                     tmp2 = series.getCategory(i);
                     series.set(i, series.getCategory(i + 1), series.getValue(i + 1));
                     series.set(i + 1, tmp2, tmp1);
+
+                    tmp3 = mRenderer.getSeriesRendererAt(i);
+                    tmp4 = mRenderer.getSeriesRendererAt(i + 1);
+                    mRenderer.removeSeriesRenderer(tmp3);
+                    mRenderer.removeSeriesRenderer(tmp4);
+                    mRenderer.addSeriesRenderer(i, tmp4);
+                    mRenderer.addSeriesRenderer(i + 1, tmp3);
                     swapped = true;
                 }
             }
         }
+        series.add("START", 0);
+        mRenderer.addSeriesRenderer(new SimpleSeriesRenderer());
         return series;
     }
 
