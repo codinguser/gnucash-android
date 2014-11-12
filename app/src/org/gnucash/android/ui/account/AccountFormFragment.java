@@ -554,10 +554,10 @@ public class AccountFormFragment extends SherlockFragment {
 
         if (mAccount != null){  //if editing an account
             mDescendantAccountUIDs = mAccountsDbAdapter.getDescendantAccountUIDs(mAccount.getUID(), null, null);
-            mDescendantAccountUIDs.add(mAccountUID); //cannot set self as parent
             // limit cyclic account hierarchies.
             condition += " AND (" + DatabaseSchema.AccountEntry.COLUMN_PARENT_ACCOUNT_UID + " IS NULL "
-                    + " OR " + DatabaseSchema.AccountEntry.COLUMN_UID + " NOT IN ( '" + TextUtils.join("','", mDescendantAccountUIDs) + "' ) )";
+                    + " OR " + DatabaseSchema.AccountEntry.COLUMN_UID + " NOT IN ( '"
+                    + TextUtils.join("','", mDescendantAccountUIDs) + "','" + mAccountUID + "' ) )";
         }
 
         //if we are reloading the list, close the previous cursor first
@@ -684,6 +684,7 @@ public class AccountFormFragment extends SherlockFragment {
 	private void saveAccount() {
         // accounts to update, in case we're updating full names of a sub account tree
         ArrayList<Account> accountsToUpdate = new ArrayList<Account>();
+        boolean nameChanged = false;
 		if (mAccount == null){
 			String name = getEnteredName();
 			if (name == null || name.length() == 0){
@@ -694,8 +695,10 @@ public class AccountFormFragment extends SherlockFragment {
 			}
 			mAccount = new Account(getEnteredName());
 		}
-		else
-			mAccount.setName(getEnteredName());
+		else {
+            nameChanged = !mAccount.getName().equals(getEnteredName());
+            mAccount.setName(getEnteredName());
+        }
 			
 		String curCode = mCurrencyCodes.get(mCurrencySpinner
 				.getSelectedItemPosition());
@@ -730,8 +733,8 @@ public class AccountFormFragment extends SherlockFragment {
 
         long parentAccountId = mAccountsDbAdapter.getID(mParentAccountUID);
         // update full names
-        if (mDescendantAccountUIDs == null || newParentAccountId != parentAccountId) {
-            // new Account or parent account changed
+        if (nameChanged || mDescendantAccountUIDs == null || newParentAccountId != parentAccountId) {
+            // current account name changed or new Account or parent account changed
             String newAccountFullName;
             if (newParentAccountId == mRootAccountId){
                 newAccountFullName = mAccount.getName();
@@ -742,8 +745,8 @@ public class AccountFormFragment extends SherlockFragment {
             }
             mAccount.setFullName(newAccountFullName);
             if (mDescendantAccountUIDs != null) {
-                // modifying existing account
-                if (parentAccountId != newParentAccountId && mDescendantAccountUIDs.size() > 0) {
+                // modifying existing account, e.t. name changed and/or parent changed
+                if ((nameChanged || parentAccountId != newParentAccountId) && mDescendantAccountUIDs.size() > 0) {
                     // parent change, update all full names of descent accounts
                     accountsToUpdate.addAll(mAccountsDbAdapter.getSimpleAccountList(
                             DatabaseSchema.AccountEntry.COLUMN_UID + " IN ('" +
