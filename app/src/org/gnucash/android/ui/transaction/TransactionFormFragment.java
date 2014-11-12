@@ -284,7 +284,7 @@ public class TransactionFormFragment extends SherlockFragment implements
         adapter.setFilterQueryProvider(new FilterQueryProvider() {
             @Override
             public Cursor runQuery(CharSequence name) {
-                return mTransactionsDbAdapter.fetchTransactionsStartingWith(name.toString());
+                return mTransactionsDbAdapter.fetchTransactionsStartingWith(name==null?"":name.toString());
             }
         });
 
