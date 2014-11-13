@@ -546,14 +546,10 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
      * @return Cursor to the data set containing all matching transactions
      */
     public Cursor fetchTransactionsStartingWith(String prefix){
-        StringBuffer stringBuffer = new StringBuffer(TransactionEntry.COLUMN_DESCRIPTION)
-                .append(" LIKE '").append(prefix).append("%'");
-        String selection = stringBuffer.toString();
-
         return mDb.query(TransactionEntry.TABLE_NAME,
                 new String[]{TransactionEntry._ID, TransactionEntry.COLUMN_DESCRIPTION},
-                selection,
-                null, null, null,
+                TransactionEntry.COLUMN_DESCRIPTION + " LIKE ?",
+                new String[]{prefix+"%"}, null, null,
                 TransactionEntry.COLUMN_DESCRIPTION + " ASC");
     }
 
