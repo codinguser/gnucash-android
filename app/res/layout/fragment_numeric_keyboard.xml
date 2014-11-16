@@ -53,58 +53,25 @@
 
             <EditText
                 android:id="@+id/passcode1"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:cursorVisible="false"
-                android:focusableInTouchMode="false"
-                android:hint="*"
-                android:inputType="textPassword|number"
-                android:password="true"
-                android:maxLength="1"
-                android:textSize="33sp" />
+                style="@style/PasscodeEditText" />
 
             <EditText
                 android:id="@+id/passcode2"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:cursorVisible="false"
-                android:focusableInTouchMode="false"
-                android:hint="*"
-                android:inputType="textPassword|number"
-                android:password="true"
-                android:maxLength="1"
-                android:textSize="33sp" />
+                style="@style/PasscodeEditText" />
 
             <EditText
                 android:id="@+id/passcode3"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:cursorVisible="false"
-                android:focusableInTouchMode="false"
-                android:hint="*"
-                android:inputType="textPassword|number"
-                android:password="true"
-                android:maxLength="1"
-                android:textSize="33sp" />
+                style="@style/PasscodeEditText" />
 
             <EditText
                 android:id="@+id/passcode4"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:cursorVisible="false"
-                android:focusableInTouchMode="false"
-                android:hint="*"
-                android:inputType="textPassword|number"
-                android:password="true"
-                android:maxLength="1"
-                android:textSize="33sp" />
+                style="@style/PasscodeEditText" />
 
         </LinearLayout>
 
     </LinearLayout>
 
-    <LinearLayout android:id="@+id/keypad"
-                  android:layout_width="fill_parent"
+    <LinearLayout android:layout_width="fill_parent"
                   android:layout_height="fill_parent"
                   android:orientation="vertical"
                   android:layout_weight="1.2"
@@ -119,27 +86,18 @@
 
             <Button
                 android:id="@+id/one_btn"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
                 android:text="1"
-                android:textSize="25sp" />
+                style="@style/NumericButton" />
 
             <Button
                 android:id="@+id/two_btn"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
                 android:text="2"
-                android:textSize="25sp" />
+                style="@style/NumericButton" />
 
             <Button
                 android:id="@+id/three_btn"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
                 android:text="3"
-                android:textSize="25sp" />
+                style="@style/NumericButton" />
         </LinearLayout>
 
         <LinearLayout android:id="@+id/four_to_six"
@@ -151,27 +109,18 @@
 
             <Button
                 android:id="@+id/four_btn"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
                 android:text="4"
-                android:textSize="25sp" />
+                style="@style/NumericButton" />
 
             <Button
                 android:id="@+id/five_btn"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
                 android:text="5"
-                android:textSize="25sp" />
+                style="@style/NumericButton" />
 
             <Button
                 android:id="@+id/six_btn"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
                 android:text="6"
-                android:textSize="25sp" />
+                style="@style/NumericButton" />
         </LinearLayout>
 
         <LinearLayout android:id="@+id/seven_to_nine"
@@ -183,60 +132,42 @@
 
             <Button
                 android:id="@+id/seven_btn"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
                 android:text="7"
-                android:textSize="25sp" />
+                style="@style/NumericButton" />
 
             <Button
                 android:id="@+id/eight_btn"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
                 android:text="8"
-                android:textSize="25sp" />
+                style="@style/NumericButton" />
 
             <Button
                 android:id="@+id/nine_btn"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
                 android:text="9"
-                android:textSize="25sp" />
+                style="@style/NumericButton" />
         </LinearLayout>
 
-        <LinearLayout
-            android:id="@+id/zero"
-            android:layout_width="match_parent"
-            android:layout_height="fill_parent"
-            android:orientation="horizontal"
-            android:weightSum="3"
-            android:layout_weight="1">
+        <LinearLayout android:id="@+id/zero"
+                      android:layout_width="match_parent"
+                      android:layout_height="fill_parent"
+                      android:orientation="horizontal"
+                      android:weightSum="3"
+                      android:layout_weight="1">
 
             <Button
                 android:id="@+id/empty_btn"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
                 android:text=""
-                android:textSize="25sp"
-                android:enabled="false" />
+                android:enabled="false"
+                style="@style/NumericButton" />
 
             <Button
                 android:id="@+id/zero_btn"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
                 android:text="0"
-                android:textSize="25sp"/>
+                style="@style/NumericButton" />
 
             <ImageButton
                 android:id="@+id/delete_btn"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:src="@drawable/clear_btn" />
+                android:src="@drawable/clear_btn"
+                style="@style/NumericButton" />
         </LinearLayout>
 
     </LinearLayout>

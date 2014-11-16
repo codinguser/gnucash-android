@@ -90,4 +90,25 @@
         <item name="android:orientation">vertical</item>
         <item name="android:layout_marginBottom">@dimen/form_row_bottom_margin</item>
     </style>
+
+    <style name="NumericButton" parent="@android:style/Widget.Button">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:layout_margin">1dp</item>
+        <item name="android:textSize">25sp</item>
+        <item name="android:background">@drawable/numeric_button</item>
+    </style>
+
+    <style name="PasscodeEditText" parent="@android:style/Widget.EditText">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:cursorVisible">false</item>
+        <item name="android:focusableInTouchMode">false</item>
+        <item name="android:inputType">textPassword|number</item>
+        <item name="android:password">true</item>
+        <item name="android:maxLength">1</item>
+        <item name="android:hint">*</item>
+        <item name="android:textSize">33sp</item>
+    </style>
 </resources>
