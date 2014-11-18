@@ -67,11 +67,16 @@ public class PasscodePreferenceFragment extends PreferenceFragment {
         final Intent intent = new Intent(getActivity(), PasscodePreferenceActivity.class);
 
         checkBoxPreference = (CheckBoxPreference) findPreference(getString(R.string.key_enable_passcode));
+        final String passcodeEnabled = getString(R.string.title_passcode_enabled);
+        final String passcodeDisabled = getString(R.string.title_passcode_disabled);
+        checkBoxPreference.setTitle(checkBoxPreference.isChecked() ? passcodeEnabled : passcodeDisabled);
         checkBoxPreference.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
                     @Override
                     public boolean onPreferenceChange(Preference preference, Object newValue) {
                         if ((Boolean) newValue) {
                             startActivityForResult(intent, PASSCODE_REQUEST_CODE);
+                        } else {
+                            checkBoxPreference.setTitle(passcodeDisabled);
                         }
                         editor.putBoolean(UxArgument.ENABLED_PASSCODE, (Boolean) newValue);
                         editor.commit();
@@ -95,6 +100,7 @@ public class PasscodePreferenceFragment extends PreferenceFragment {
         if (resultCode == Activity.RESULT_OK && requestCode == PASSCODE_REQUEST_CODE && data!= null) {
             editor.putString(UxArgument.PASSCODE, data.getStringExtra(UxArgument.PASSCODE));
             Toast.makeText(getActivity(), R.string.toast_passcode_set, Toast.LENGTH_SHORT).show();
+            checkBoxPreference.setTitle(getString(R.string.title_passcode_enabled));
         } else {
             editor.putBoolean(UxArgument.ENABLED_PASSCODE, false);
             checkBoxPreference.setChecked(false);
