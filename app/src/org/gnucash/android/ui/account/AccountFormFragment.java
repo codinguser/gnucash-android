@@ -27,6 +27,8 @@ import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.text.TextUtils;
@@ -350,6 +352,11 @@ public class AccountFormFragment extends SherlockFragment {
 
         String currencyCode = account.getCurrency().getCurrencyCode();
         setSelectedCurrency(currencyCode);
+
+        if (mAccountsDbAdapter.getTransactionMaxSplitNum(mAccount.getUID()) > 1)
+        {
+            mCurrencySpinner.setEnabled(false);
+        }
 
         mNameEditText.setText(account.getName());
 

@@ -117,11 +117,9 @@ public class TransactionsListFragment extends SherlockListFragment implements
 				return true;
 
 			case R.id.context_menu_delete:
-                SplitsDbAdapter splitsDbAdapter = new SplitsDbAdapter(getActivity());
 				for (long id : getListView().getCheckedItemIds()) {
-                    splitsDbAdapter.deleteSplitsForTransactionAndAccount(mTransactionsDbAdapter.getUID(id), mAccountUID);
+                    mTransactionsDbAdapter.deleteRecord(id);
 				}
-                splitsDbAdapter.close();
 				refresh();
 				mode.finish();
 				WidgetConfigurationActivity.updateAllWidgets(getActivity());

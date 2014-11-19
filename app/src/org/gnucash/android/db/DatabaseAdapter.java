@@ -147,7 +147,8 @@ public abstract class DatabaseAdapter {
         //          ) ,
         //          2
         //      ) as trans_acct_a_uid ,
-        //   TOTAL ( CASE WHEN splits_type = 'DEBIT' THEN splits_amount ELSE - splits_amount END ) AS trans_acct_balance
+        //   TOTAL ( CASE WHEN splits_type = 'DEBIT' THEN splits_amount ELSE - splits_amount END ) AS trans_acct_balance,
+        //   COUNT ( DISTINCT accounts_currency ) as trans_currency_count
         //   FROM trans_split_acct GROUP BY transactions_uid
         //
         // This temporary view would pick one Account_UID for each
@@ -170,7 +171,7 @@ public abstract class DatabaseAdapter {
                 SplitEntry.COLUMN_AMOUNT + " ELSE - " + SplitEntry.TABLE_NAME + "_" +
                 SplitEntry.COLUMN_AMOUNT + " END ) AS trans_acct_balance , COUNT ( DISTINCT " +
                 AccountEntry.TABLE_NAME + "_" + AccountEntry.COLUMN_CURRENCY +
-                " ) AS trans_currency_count FROM trans_split_acct " +
+                " ) AS trans_currency_count , COUNT (*) AS trans_split_count FROM trans_split_acct " +
                 " GROUP BY " + TransactionEntry.TABLE_NAME + "_" + TransactionEntry.COLUMN_UID
         );
     }

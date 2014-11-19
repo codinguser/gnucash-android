@@ -185,9 +185,9 @@ public class Transaction {
      * @param splitList List of splits for this transaction
      */
     public void setSplits(List<Split> splitList){
-        mSplitList.clear();
+        mSplitList = splitList;
         for (Split split : splitList) {
-            addSplit(split);
+            split.setTransactionUID(mUID);
         }
     }
 
