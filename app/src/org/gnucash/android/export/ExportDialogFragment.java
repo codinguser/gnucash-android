@@ -128,6 +128,11 @@ public class ExportDialogFragment extends DialogFragment {
                 } else {
                     mExportWarningTextView.setVisibility(View.GONE);
                 }
+                break;
+            case R.id.radio_log_format:
+                mExportFormat = ExportFormat.LOG;
+                mExportWarningTextView.setText("This only works well with newly created transactions");
+                mExportWarningTextView.setVisibility(View.VISIBLE);
         }
         mFilePath = getActivity().getExternalFilesDir(null) + "/" + Exporter.buildExportFilename(mExportFormat);
     }
@@ -199,6 +204,12 @@ public class ExportDialogFragment extends DialogFragment {
         qifRadioButton.setOnClickListener(clickListener);
         if (defaultExportFormat.equalsIgnoreCase(ExportFormat.QIF.name())){
             qifRadioButton.performClick();
+        }
+
+        RadioButton logRadioButton = (RadioButton) v.findViewById(R.id.radio_log_format);
+        logRadioButton.setOnClickListener(clickListener);
+        if (defaultExportFormat.equalsIgnoreCase(ExportFormat.LOG.name())){
+            logRadioButton.performClick();
         }
 	}
 

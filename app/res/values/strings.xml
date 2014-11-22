@@ -382,6 +382,7 @@
     <string-array name="export_formats">
         <item>QIF</item>
         <item>OFX</item>
+        <item>LOG</item>
     </string-array>
     <string-array name="recurrence_period_strings">
         <item>NONE</item>
