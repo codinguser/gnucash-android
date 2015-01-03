@@ -21,25 +21,22 @@ import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
+import com.github.mikephil.charting.charts.PieChart;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.PieData;
+import com.github.mikephil.charting.data.PieDataSet;
+import com.github.mikephil.charting.interfaces.OnChartValueSelectedListener;
 
-import org.achartengine.ChartFactory;
-import org.achartengine.GraphicalView;
-import org.achartengine.model.CategorySeries;
-import org.achartengine.model.SeriesSelection;
-import org.achartengine.renderer.DefaultRenderer;
-import org.achartengine.renderer.SimpleSeriesRenderer;
 import org.gnucash.android.R;
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.TransactionsDbAdapter;
@@ -47,14 +44,14 @@ import org.gnucash.android.model.Account;
 import org.gnucash.android.model.AccountType;
 import org.joda.time.LocalDateTime;
 
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 /**
  *
  * @author Oleksandr Tyshkovets <olexandr.tyshkovets@gmail.com>
  */
-public class PieChartActivity extends SherlockFragmentActivity implements OnItemSelectedListener {
+public class PieChartActivity extends SherlockFragmentActivity implements OnChartValueSelectedListener, OnItemSelectedListener {
 
     private static final int[] COLORS = {
             Color.parseColor("#17ee4e"), Color.parseColor("#cc1f09"), Color.parseColor("#3940f7"),
@@ -68,24 +65,22 @@ public class PieChartActivity extends SherlockFragmentActivity implements OnItem
 
     private static final String datePattern = "MMMM\nYYYY";
 
-    private DefaultRenderer mRenderer = new DefaultRenderer();
-    private CategorySeries mSeries = new CategorySeries("");
-    private GraphicalView mPieChartView;
+    private PieChart mChart;
 
-    private AccountsDbAdapter mAccountsDbAdapter;
-
-    private double mBalanceSum;
+    private LocalDateTime mChartDate = new LocalDateTime();
+    private TextView mChartDateTextView;
 
     private ImageButton mPreviousMonthButton;
     private ImageButton mNextMonthButton;
 
-    private LocalDateTime mChartDate = new LocalDateTime();
-    private TextView mChartDateTextView;
+    private AccountsDbAdapter mAccountsDbAdapter;
 
     private LocalDateTime mEarliestTransaction;
     private LocalDateTime mLatestTransaction;
 
     private AccountType mAccountType = AccountType.EXPENSE;
+
+    private double mBalanceSum;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,43 +91,22 @@ public class PieChartActivity extends SherlockFragmentActivity implements OnItem
         mNextMonthButton = (ImageButton) findViewById(R.id.next_month_chart_button);
         mChartDateTextView = (TextView) findViewById(R.id.chart_date);
 
+        mAccountsDbAdapter = new AccountsDbAdapter(this);
         TransactionsDbAdapter transactionsDbAdapter = new TransactionsDbAdapter(this);
         mEarliestTransaction = new LocalDateTime(transactionsDbAdapter.getTimestampOfEarliestTransaction(mAccountType));
         mLatestTransaction = new LocalDateTime(transactionsDbAdapter.getTimestampOfLatestTransaction(mAccountType));
 
-        mAccountsDbAdapter = new AccountsDbAdapter(this);
-
         addItemsOnSpinner();
-        renderSettings();
 
-        mPieChartView = ChartFactory.getPieChartView(this, mSeries, mRenderer);
-        mPieChartView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                SeriesSelection selection = mPieChartView.getCurrentSeriesAndPoint();
-                if (selection != null) {
-                    for (int i = 0; i < mSeries.getItemCount(); i++) {
-                        mRenderer.getSeriesRendererAt(i).setHighlighted(i == selection.getPointIndex());
-                    }
-                    mPieChartView.repaint();
-
-                    double value = selection.getValue();
-                    double percent = (value / mBalanceSum) * 100;
-                    ((TextView) findViewById(R.id.selected_chart_slice))
-                            .setText(mSeries.getCategory(selection.getPointIndex()) + " - " + value
-                                    + " (" + String.format("%.2f", percent) + " %)");
-                }
-            }
-        });
-
-        ((LinearLayout) findViewById(R.id.chart)).addView(mPieChartView,
-                new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        mChart = (PieChart) findViewById(R.id.chart);
+        mChart.setOnChartValueSelectedListener(this);
+        setData(false);
 
         mPreviousMonthButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 mChartDate = mChartDate.minusMonths(1);
-                setDataset(true);
+                setData(true);
             }
         });
 
@@ -140,24 +114,25 @@ public class PieChartActivity extends SherlockFragmentActivity implements OnItem
             @Override
             public void onClick(View view) {
                 mChartDate = mChartDate.plusMonths(1);
-                setDataset(true);
+                setData(true);
             }
         });
     }
 
-    private void setDataset(boolean forCurrentMonth) {
+    private void setData(boolean forCurrentMonth) {
         mChartDateTextView.setText(forCurrentMonth ? mChartDate.toString(datePattern) : "Overall");
-        mRenderer.removeAllRenderers();
-        mSeries.clear();
+        mChart.clear();
         mBalanceSum = 0;
 
-        List<Account> accountList = mAccountsDbAdapter.getSimpleAccountList();
-        for (Account account : accountList) {
+        long start = mChartDate.dayOfMonth().withMinimumValue().millisOfDay().withMinimumValue().toDate().getTime();
+        long end = mChartDate.dayOfMonth().withMaximumValue().millisOfDay().withMaximumValue().toDate().getTime();
+        ArrayList<Entry> values = new ArrayList<Entry>();
+        ArrayList<String> names = new ArrayList<String>();
+        ArrayList<Integer> colors = new ArrayList<Integer>();
+        for (Account account : mAccountsDbAdapter.getSimpleAccountList()) {
             if (account.getAccountType() == mAccountType && !account.isPlaceholderAccount()) {
                 double balance = 0;
                 if (forCurrentMonth) {
-                    long start = mChartDate.dayOfMonth().withMinimumValue().millisOfDay().withMinimumValue().toDate().getTime();
-                    long end = mChartDate.dayOfMonth().withMaximumValue().millisOfDay().withMaximumValue().toDate().getTime();
                     balance = mAccountsDbAdapter.getAccountBalance(account.getUID(), start, end).asDouble();
                 } else {
                     balance = mAccountsDbAdapter.getAccountBalance(account.getUID()).asDouble();
@@ -165,13 +140,16 @@ public class PieChartActivity extends SherlockFragmentActivity implements OnItem
                 // ToDo What with negative?
                 if (balance > 0) {
                     mBalanceSum += balance;
-                    mSeries.add(account.getName(), balance);
-                    SimpleSeriesRenderer renderer = new SimpleSeriesRenderer();
-                    renderer.setColor(COLORS[(mSeries.getItemCount() - 1) % COLORS.length]);
-                    mRenderer.addSeriesRenderer(renderer);
+                    values.add(new Entry((float) balance, values.size()));
+                    names.add(account.getName());
+                    colors.add(COLORS[(values.size() - 1) % COLORS.length]);
                 }
             }
         }
+
+        PieDataSet set = new PieDataSet(values, "");
+        set.setColors(colors);
+        mChart.setData(new PieData(names, set));
 
         if (mChartDate.plusMonths(1).dayOfMonth().withMinimumValue().withMillisOfDay(0).isBefore(mLatestTransaction)) {
             setImageButtonEnabled(mNextMonthButton, true);
@@ -185,7 +163,9 @@ public class PieChartActivity extends SherlockFragmentActivity implements OnItem
             setImageButtonEnabled(mPreviousMonthButton, false);
         }
 
-        mPieChartView.repaint();
+        mChart.setDrawYValues(false);
+        mChart.setDescription("");
+        mChart.invalidate();
     }
 
     /**
@@ -205,56 +185,43 @@ public class PieChartActivity extends SherlockFragmentActivity implements OnItem
         button.setImageDrawable(originalIcon);
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getSupportMenuInflater().inflate(R.menu.pie_chart_actions, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.menu_order_by_size) {
-            mSeries = bubbleSort(mSeries);
-            mPieChartView.repaint();
-            for (int i = 0; i < mRenderer.getSeriesRendererCount(); i++) {
-                mRenderer.getSeriesRendererAt(i).setHighlighted(false);
-            }
-            mPieChartView.repaint();
-            return true;
-        }
-        return false;
-    }
-
-    private CategorySeries bubbleSort(CategorySeries series) {
+    private void bubbleSort() {
+        ArrayList<String> names = mChart.getData().getXVals();
+        ArrayList<Entry> values = mChart.getData().getDataSet().getYVals();
+        ArrayList<Integer> colors = mChart.getData().getDataSet().getColors();
         boolean swapped = true;
         int j = 0;
-        double tmp1;
+        float tmp1;
         String tmp2;
-        SimpleSeriesRenderer tmp3;
-        SimpleSeriesRenderer tmp4;
+        Integer tmp3;
         while (swapped) {
             swapped = false;
             j++;
-            for (int i = 0; i < series.getItemCount() - j; i++) {
-                if (series.getValue(i) > series.getValue(i + 1)) {
-                    tmp1 = series.getValue(i);
-                    tmp2 = series.getCategory(i);
-                    series.set(i, series.getCategory(i + 1), series.getValue(i + 1));
-                    series.set(i + 1, tmp2, tmp1);
+            for (int i = 0; i < values.size() - j; i++) {
+                if (values.get(i).getVal() > values.get(i + 1).getVal()) {
+                    tmp1 = values.get(i).getVal();
+                    values.get(i).setVal(values.get(i + 1).getVal());
+                    values.get(i + 1).setVal(tmp1);
 
-                    tmp3 = mRenderer.getSeriesRendererAt(i);
-                    tmp4 = mRenderer.getSeriesRendererAt(i + 1);
-                    mRenderer.removeSeriesRenderer(tmp3);
-                    mRenderer.removeSeriesRenderer(tmp4);
-                    mRenderer.addSeriesRenderer(i, tmp4);
-                    mRenderer.addSeriesRenderer(i + 1, tmp3);
+                    tmp2 = names.get(i);
+                    names.set(i, names.get(i + 1));
+                    names.set(i + 1, tmp2);
+
+                    tmp3 = colors.get(i);
+                    colors.set(i, colors.get(i + 1));
+                    colors.set(i + 1, tmp3);
+
                     swapped = true;
                 }
             }
         }
-        series.add("START", 0);
-        mRenderer.addSeriesRenderer(new SimpleSeriesRenderer());
-        return series;
+
+        mChart.clear();
+        PieDataSet set = new PieDataSet(values, "");
+        set.setColors(colors);
+        mChart.setData(new PieData(names, set));
+        mChart.highlightValues(null);
+        mChart.invalidate();
     }
 
     private void addItemsOnSpinner() {
@@ -268,29 +235,44 @@ public class PieChartActivity extends SherlockFragmentActivity implements OnItem
         spinner.setOnItemSelectedListener(this);
     }
 
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getSupportMenuInflater().inflate(R.menu.pie_chart_actions, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.menu_order_by_size) {
+            bubbleSort();
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public void onValueSelected(Entry e, int dataSetIndex) {
+        if (e == null) {
+            return;
+        }
+
+        ((TextView) findViewById(R.id.selected_chart_slice))
+                .setText(mChart.getData().getXVals().get(e.getXIndex()) + " - " + e.getVal()
+                        + " (" + String.format("%.2f", (e.getVal() / mBalanceSum) * 100) + " %)");
+    }
+
+    @Override
+    public void onNothingSelected() {
+    }
+
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
         mAccountType = (AccountType) ((Spinner) findViewById(R.id.chart_data_spinner)).getSelectedItem();
-        mRenderer.setChartTitle(mAccountType.toString());
-        setDataset(false);
+        setData(false);
     }
 
     @Override
     public void onNothingSelected(AdapterView<?> parent) {}
-
-    private void renderSettings() {
-        mRenderer.setChartTitle("Expenses");
-        mRenderer.setChartTitleTextSize(25);
-
-        mRenderer.setShowLabels(true);
-        mRenderer.setLabelsColor(Color.BLACK);
-        mRenderer.setLabelsTextSize(15);
-
-        mRenderer.setShowLegend(false);
-
-        mRenderer.setClickEnabled(true);
-        mRenderer.setZoomButtonsVisible(true);
-        mRenderer.setStartAngle(180);
-    }
 
 }

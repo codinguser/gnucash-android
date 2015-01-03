@@ -21,11 +21,11 @@
               android:layout_width="match_parent"
               android:layout_height="match_parent">
 
-    <LinearLayout android:id="@+id/chart"
-                  android:orientation="horizontal"
-                  android:layout_width="fill_parent"
-                  android:layout_height="0dip"
-                  android:layout_weight="1" />
+    <com.github.mikephil.charting.charts.PieChart android:id="@+id/chart"
+                                                  android:orientation="horizontal"
+                                                  android:layout_width="fill_parent"
+                                                  android:layout_height="0dip"
+                                                  android:layout_weight="1" />
 
     <Spinner android:id="@+id/chart_data_spinner"
              android:layout_width="match_parent"

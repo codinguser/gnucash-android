@@ -52,11 +52,6 @@
             <type>apklib</type>
         </dependency>
         <dependency>
-            <groupId>org.achartengine</groupId>
-            <artifactId>achartengine</artifactId>
-            <version>1.1.0</version>
-        </dependency>
-        <dependency>
             <groupId>joda-time</groupId>
             <artifactId>joda-time</artifactId>
             <version>2.4</version>
@@ -71,13 +66,5 @@
             </plugin>
         </plugins>
     </build>
-
-    <repositories>
-        <repository>
-            <id>achartengine</id>
-            <name>Public AChartEngine repository</name>
-            <url>https://repository-achartengine.forge.cloudbees.com/snapshot/</url>
-        </repository>
-    </repositories>
 
 </project>
