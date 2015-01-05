@@ -121,6 +121,8 @@ public class PieChartActivity extends SherlockFragmentActivity implements OnChar
 
     private void setData(boolean forCurrentMonth) {
         mChartDateTextView.setText(forCurrentMonth ? mChartDate.toString(datePattern) : "Overall");
+        ((TextView) findViewById(R.id.selected_chart_slice)).setText("");
+        mChart.highlightValues(null);
         mChart.clear();
         mBalanceSum = 0;
 
@@ -264,6 +266,7 @@ public class PieChartActivity extends SherlockFragmentActivity implements OnChar
 
     @Override
     public void onNothingSelected() {
+        ((TextView) findViewById(R.id.selected_chart_slice)).setText("");
     }
 
     @Override
