@@ -165,6 +165,8 @@ public class PieChartActivity extends SherlockFragmentActivity implements OnChar
             setImageButtonEnabled(mPreviousMonthButton, false);
         }
 
+        mChart.setCenterTextSize(18);
+        mChart.setCenterText("Total\n" + (float) mBalanceSum);
         mChart.setDrawYValues(false);
         mChart.setDescription("");
         mChart.invalidate();
