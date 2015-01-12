@@ -80,8 +80,6 @@ public class PieChartActivity extends SherlockFragmentActivity implements OnChar
 
     private AccountType mAccountType = AccountType.EXPENSE;
 
-    private double mBalanceSum;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -124,7 +122,6 @@ public class PieChartActivity extends SherlockFragmentActivity implements OnChar
         ((TextView) findViewById(R.id.selected_chart_slice)).setText("");
         mChart.highlightValues(null);
         mChart.clear();
-        mBalanceSum = 0;
 
         long start = mChartDate.dayOfMonth().withMinimumValue().millisOfDay().withMinimumValue().toDate().getTime();
         long end = mChartDate.dayOfMonth().withMaximumValue().millisOfDay().withMaximumValue().toDate().getTime();
@@ -141,7 +138,6 @@ public class PieChartActivity extends SherlockFragmentActivity implements OnChar
                 }
                 // ToDo What with negative?
                 if (balance > 0) {
-                    mBalanceSum += balance;
                     values.add(new Entry((float) balance, values.size()));
                     names.add(account.getName());
                     colors.add(COLORS[(values.size() - 1) % COLORS.length]);
@@ -150,8 +146,23 @@ public class PieChartActivity extends SherlockFragmentActivity implements OnChar
         }
 
         PieDataSet set = new PieDataSet(values, "");
+        if (set.getYValueSum() == 0) {
+            values.add(new Entry(1, 0));
+            names.add("");
+            colors.add(Color.LTGRAY);
+            mChart.setCenterText("No chart data available");
+            mChart.setTouchEnabled(false);
+        } else {
+            mChart.setCenterText("Total\n" + set.getYValueSum());
+            mChart.setTouchEnabled(true);
+        }
         set.setColors(colors);
         mChart.setData(new PieData(names, set));
+
+        mChart.setCenterTextSize(18);
+        mChart.setDrawYValues(false);
+        mChart.setDescription("");
+        mChart.invalidate();
 
         if (mChartDate.plusMonths(1).dayOfMonth().withMinimumValue().withMillisOfDay(0).isBefore(mLatestTransaction)) {
             setImageButtonEnabled(mNextMonthButton, true);
@@ -164,12 +175,6 @@ public class PieChartActivity extends SherlockFragmentActivity implements OnChar
         } else {
             setImageButtonEnabled(mPreviousMonthButton, false);
         }
-
-        mChart.setCenterTextSize(18);
-        mChart.setCenterText("Total\n" + (float) mBalanceSum);
-        mChart.setDrawYValues(false);
-        mChart.setDescription("");
-        mChart.invalidate();
     }
 
     /**
@@ -263,7 +268,7 @@ public class PieChartActivity extends SherlockFragmentActivity implements OnChar
 
         ((TextView) findViewById(R.id.selected_chart_slice))
                 .setText(mChart.getData().getXVals().get(e.getXIndex()) + " - " + e.getVal()
-                        + " (" + String.format("%.2f", (e.getVal() / mBalanceSum) * 100) + " %)");
+                        + " (" + String.format("%.2f", (e.getVal() / mChart.getYValueSum()) * 100) + " %)");
     }
 
     @Override
