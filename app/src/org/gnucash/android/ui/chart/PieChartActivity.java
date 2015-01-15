@@ -46,6 +46,7 @@ import org.joda.time.LocalDateTime;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  *
@@ -128,19 +129,25 @@ public class PieChartActivity extends SherlockFragmentActivity implements OnChar
         ArrayList<Entry> values = new ArrayList<Entry>();
         ArrayList<String> names = new ArrayList<String>();
         ArrayList<Integer> colors = new ArrayList<Integer>();
+        List<String> skipUUID = new ArrayList<String>();
         for (Account account : mAccountsDbAdapter.getSimpleAccountList()) {
             if (account.getAccountType() == mAccountType && !account.isPlaceholderAccount()) {
-                double balance = 0;
-                if (forCurrentMonth) {
-                    balance = mAccountsDbAdapter.getAccountBalance(account.getUID(), start, end).asDouble();
-                } else {
-                    balance = mAccountsDbAdapter.getAccountBalance(account.getUID()).asDouble();
+                if (mAccountsDbAdapter.getSubAccountCount(account.getUID()) > 0) {
+                    skipUUID.addAll(mAccountsDbAdapter.getDescendantAccountUIDs(account.getUID(), null, null));
                 }
-                // ToDo What with negative?
-                if (balance > 0) {
-                    values.add(new Entry((float) balance, values.size()));
-                    names.add(account.getName());
-                    colors.add(COLORS[(values.size() - 1) % COLORS.length]);
+                if (!skipUUID.contains(account.getUID())) {
+                    double balance = 0;
+                    if (forCurrentMonth) {
+                        balance = mAccountsDbAdapter.getAccountBalance(account.getUID(), start, end).asDouble();
+                    } else {
+                        balance = mAccountsDbAdapter.getAccountBalance(account.getUID()).asDouble();
+                    }
+                    // ToDo What with negative?
+                    if (balance > 0) {
+                        values.add(new Entry((float) balance, values.size()));
+                        names.add(account.getName());
+                        colors.add(COLORS[(values.size() - 1) % COLORS.length]);
+                    }
                 }
             }
         }
