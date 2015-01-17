@@ -75,6 +75,7 @@ public class PieChartActivity extends SherlockFragmentActivity implements OnChar
     private ImageButton mNextMonthButton;
 
     private AccountsDbAdapter mAccountsDbAdapter;
+    private TransactionsDbAdapter mTransactionsDbAdapter;
 
     private LocalDateTime mEarliestTransaction;
     private LocalDateTime mLatestTransaction;
@@ -91,15 +92,12 @@ public class PieChartActivity extends SherlockFragmentActivity implements OnChar
         mChartDateTextView = (TextView) findViewById(R.id.chart_date);
 
         mAccountsDbAdapter = new AccountsDbAdapter(this);
-        TransactionsDbAdapter transactionsDbAdapter = new TransactionsDbAdapter(this);
-        mEarliestTransaction = new LocalDateTime(transactionsDbAdapter.getTimestampOfEarliestTransaction(mAccountType));
-        mLatestTransaction = new LocalDateTime(transactionsDbAdapter.getTimestampOfLatestTransaction(mAccountType));
+        mTransactionsDbAdapter = new TransactionsDbAdapter(this);
 
         addItemsOnSpinner();
 
         mChart = (PieChart) findViewById(R.id.chart);
         mChart.setOnChartValueSelectedListener(this);
-        setData(false);
 
         mPreviousMonthButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -286,6 +284,11 @@ public class PieChartActivity extends SherlockFragmentActivity implements OnChar
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
         mAccountType = (AccountType) ((Spinner) findViewById(R.id.chart_data_spinner)).getSelectedItem();
+        mEarliestTransaction = new LocalDateTime(mTransactionsDbAdapter.getTimestampOfEarliestTransaction(mAccountType));
+        mLatestTransaction = new LocalDateTime(mTransactionsDbAdapter.getTimestampOfLatestTransaction(mAccountType));
+
+        mChartDate = mLatestTransaction;
+
         setData(false);
     }
 
