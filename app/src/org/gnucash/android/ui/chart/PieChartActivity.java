@@ -36,6 +36,8 @@ import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.interfaces.OnChartValueSelectedListener;
+import com.github.mikephil.charting.utils.Legend.LegendForm;
+import com.github.mikephil.charting.utils.Legend.LegendPosition;
 
 import org.gnucash.android.R;
 import org.gnucash.android.db.AccountsDbAdapter;
@@ -167,6 +169,10 @@ public class PieChartActivity extends SherlockFragmentActivity implements OnChar
         mChart.setCenterTextSize(18);
         mChart.setDrawYValues(false);
         mChart.setDescription("");
+        mChart.setDrawLegend(false);
+        mChart.getLegend().setForm(LegendForm.CIRCLE);
+        mChart.getLegend().setPosition(LegendPosition.RIGHT_OF_CHART_CENTER);
+
         mChart.invalidate();
 
         if (mChartDate.plusMonths(1).dayOfMonth().withMinimumValue().withMillisOfDay(0).isBefore(mLatestTransaction)) {
@@ -258,11 +264,19 @@ public class PieChartActivity extends SherlockFragmentActivity implements OnChar
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.menu_order_by_size) {
-            bubbleSort();
-            return true;
+        switch (item.getItemId()) {
+            case R.id.menu_order_by_size: {
+                bubbleSort();
+                break;
+            }
+            case R.id.menu_toggle_legend: {
+                mChart.setDrawLegend(!mChart.isDrawLegendEnabled());
+                mChart.notifyDataSetChanged();
+                mChart.invalidate();
+                break;
+            }
         }
-        return false;
+        return true;
     }
 
     @Override
