@@ -25,4 +25,8 @@
           android:title="@string/menu_toggle_legend"
           android:showAsAction="never" />
 
+    <item android:id="@+id/menu_toggle_labels"
+          android:title="@string/menu_toggle_labels"
+          android:showAsAction="never" />
+
 </menu>

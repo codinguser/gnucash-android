@@ -166,6 +166,8 @@ public class PieChartActivity extends SherlockFragmentActivity implements OnChar
         set.setColors(colors);
         mChart.setData(new PieData(names, set));
 
+        mChart.setValueTextSize(12);
+        mChart.setValueTextColor(Color.BLACK);
         mChart.setCenterTextSize(18);
         mChart.setDrawYValues(false);
         mChart.setDescription("");
@@ -272,6 +274,11 @@ public class PieChartActivity extends SherlockFragmentActivity implements OnChar
             case R.id.menu_toggle_legend: {
                 mChart.setDrawLegend(!mChart.isDrawLegendEnabled());
                 mChart.notifyDataSetChanged();
+                mChart.invalidate();
+                break;
+            }
+            case R.id.menu_toggle_labels: {
+                mChart.setDrawXValues(!mChart.isDrawXValuesEnabled());
                 mChart.invalidate();
                 break;
             }
