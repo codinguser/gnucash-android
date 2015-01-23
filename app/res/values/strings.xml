@@ -17,7 +17,7 @@
 
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="app_name">GnuCash</string>
-    <string name="app_version_name">1.5.1</string>
+    <string name="app_version_name">1.5.2</string>
     <string name="title_add_account">Create Account</string>
     <string name="title_edit_account">Edit Account</string>
     <string name="info_details">Info</string>
