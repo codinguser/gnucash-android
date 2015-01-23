@@ -93,6 +93,7 @@ public class TransactionTypeToggleButton extends ToggleButton {
                 break;
             case CURRENCY:
             case ROOT:
+            default:
                 setTextOn(context.getString(R.string.label_debit));
                 setTextOff(context.getString(R.string.label_credit));
                 break;
