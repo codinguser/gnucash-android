@@ -6,6 +6,8 @@ Version 1.5.2 *(2015-01-26)*
 * Fixed: Full name not updated when account name is changed
 * Fixed: Toggle button shown when double-entry is disabled
 * Fixed: Amount input problems on some devices or keyboards
+* Fixed: Crash when changing the parent of an account
+* Fixed: Deleting a transaction only deletes some splits, not the whole.
 
 Version 1.5.1 *(2014-10-08)*
 ----------------------------
