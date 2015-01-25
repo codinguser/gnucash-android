@@ -61,6 +61,9 @@ import org.gnucash.android.ui.util.TaskDelegate;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.Currency;
+import java.util.List;
+import java.util.Locale;
 
 /**
  * Manages actions related to accounts, displaying, exporting and creating new accounts
@@ -443,11 +446,16 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
                         AccountsActivity.this,
                         android.R.layout.select_dialog_singlechoice,
                         getResources().getStringArray(R.array.currency_names));
-                adb.setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
 
+                final List<String> currencyCodes = Arrays.asList(
+                                        getResources().getStringArray(R.array.key_currency_codes));
+                String userCurrencyCode = Currency.getInstance(Locale.getDefault()).getCurrencyCode();
+                int currencyIndex = currencyCodes.indexOf(userCurrencyCode.toUpperCase());
+
+                adb.setSingleChoiceItems(arrayAdapter, currencyIndex, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        String currency = Arrays.asList(getResources().getStringArray(R.array.key_currency_codes)).get(which);
+                        String currency = currencyCodes.get(which);
                         PreferenceManager.getDefaultSharedPreferences(AccountsActivity.this)
                                 .edit()
                                 .putString(getString(R.string.key_default_currency), currency)
