@@ -118,7 +118,7 @@ public class TransactionsListFragment extends SherlockListFragment implements
 
 			case R.id.context_menu_delete:
 				for (long id : getListView().getCheckedItemIds()) {
-                    mTransactionsDbAdapter.deleteRecord(id);
+					mTransactionsDbAdapter.deleteRecord(id);
 				}
 				refresh();
 				mode.finish();

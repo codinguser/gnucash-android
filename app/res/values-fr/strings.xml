@@ -362,6 +362,7 @@
         <item>DEVISES</item>
         <item>ACTIONS</item>
         <item>FONDS COMMUNS</item>
+        <item>TRADING</item>
     </string-array>
     <string-array name="export_formats">
         <item>QIF</item>

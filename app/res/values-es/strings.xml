@@ -364,6 +364,7 @@
         <item>DIVISA</item>
         <item>ACCIONES</item>
         <item>FONDOS</item>
+		<item>TRADING</item>
     </string-array>
     <string-array name="export_formats">
         <item>QIF</item>
