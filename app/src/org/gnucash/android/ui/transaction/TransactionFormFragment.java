@@ -284,7 +284,7 @@ public class TransactionFormFragment extends SherlockFragment implements
         adapter.setFilterQueryProvider(new FilterQueryProvider() {
             @Override
             public Cursor runQuery(CharSequence name) {
-                return mTransactionsDbAdapter.fetchTransactionsStartingWith(name.toString());
+                return mTransactionsDbAdapter.fetchTransactionsStartingWith(name==null?"":name.toString());
             }
         });
 
@@ -343,14 +343,16 @@ public class TransactionFormFragment extends SherlockFragment implements
 
         //if there are more than two splits (which is the default for one entry), then
         //disable editing of the transfer account. User should open editor
-        if (mTransaction.getSplits().size() > 2) {
-            setAmountEditViewVisible(View.GONE);
-        } else {
+        if (mSplitsList.size() == 2 && mSplitsList.get(0).isPairOf(mSplitsList.get(1))) {
             for (Split split : mTransaction.getSplits()) {
                 //two splits, one belongs to this account and the other to another account
                 if (mUseDoubleEntry && !split.getAccountUID().equals(mAccountUID)) {
                     setSelectedTransferAccount(mAccountsDbAdapter.getAccountID(split.getAccountUID()));
                 }
+            }
+        } else {
+            if (mUseDoubleEntry) {
+                setAmountEditViewVisible(View.GONE);
             }
         }
         mSplitsList = new ArrayList<Split>(mTransaction.getSplits()); //we need a copy so we can modify with impunity
@@ -720,6 +722,7 @@ public class TransactionFormFragment extends SherlockFragment implements
         Money balance = Transaction.computeBalance(mAccountUID, mSplitsList);
 
         mAmountEditText.setText(balance.toPlainString());
+        mTransactionTypeButton.setChecked(balance.isNegative());
         //once we set the split list, do not allow direct editing of the total
         if (mSplitsList.size() > 1){
             mAmountEditText.setEnabled(false);

@@ -362,6 +362,7 @@
         <item>СОБСТВЕННЫЕ СРЕДСТВА</item>
         <item>ТОРГОВЛЯ</item>
         <item>ВЗАИМНЫЙ ФОНД</item>
+		<item>TRADING</item>
     </string-array>
     <string-array name="export_formats">
         <item>QIF</item>

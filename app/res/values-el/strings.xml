@@ -379,6 +379,7 @@
         <item>ΝΟΜΙΣΜΑ</item>
         <item>ΜΕΤΟΧΗ</item>
         <item>ΑΜΟΙΒΑΙΟ ΚΕΦΑΛΑΙΟ</item>
+		<item>TRADING</item>
     </string-array>
     <string-array name="export_formats">
         <item>QIF</item>

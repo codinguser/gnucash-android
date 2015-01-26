@@ -366,6 +366,7 @@
         <item>CURRENCY</item>
         <item>STOCK</item>
         <item>MUTUAL FUND</item>
+		<item>TRADING</item>
     </string-array>
     <string-array name="export_formats">
         <item>QIF</item>

@@ -47,7 +47,7 @@ public class AmountInputFormatter implements TextWatcher {
 
     @Override
     public void afterTextChanged(Editable s) {
-        if (s.length() == 0)
+        if (s.length() == 0 || s.toString().equals(current))
             return;
 //make sure that the sign of the input is in line with the type button state
         BigDecimal amount = TransactionFormFragment.parseInputToDecimal(s.toString());

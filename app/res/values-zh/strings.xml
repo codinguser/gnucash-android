@@ -362,6 +362,7 @@
         <item>货币</item>
         <item>股票</item>
         <item>共同基金</item>
+        <item>TRADING</item>
     </string-array>
     <string-array name="export_formats">
         <item>QIF</item>

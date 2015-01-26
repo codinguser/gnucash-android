@@ -41,6 +41,7 @@
         <item>CURRENCY</item>
         <item>STOCK</item>
         <item>MUTUAL</item>
+        <item>TRADING</item>
     </string-array>
     <string-array name="key_export_format_values">
         <item>QIF</item>
