@@ -149,7 +149,9 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
 
             pref = findPreference(getString(R.string.key_enable_passcode));
             pref.setOnPreferenceChangeListener(this);
-		}
+            pref.setTitle(((CheckBoxPreference) pref).isChecked() ?
+                    getString(R.string.title_passcode_enabled) : getString(R.string.title_passcode_disabled));
+        }
 	}
 
     @Override
@@ -195,6 +197,8 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
             if ((Boolean) newValue) {
                 startActivityForResult(new Intent(this, PasscodePreferenceActivity.class),
                         PasscodePreferenceFragment.PASSCODE_REQUEST_CODE);
+            } else {
+                preference.setTitle(getString(R.string.title_passcode_disabled));
             }
             PreferenceManager.getDefaultSharedPreferences(getApplicationContext())
                     .edit()
@@ -357,6 +361,7 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
                             .putString(UxArgument.PASSCODE, data.getStringExtra(UxArgument.PASSCODE))
                             .commit();
                     Toast.makeText(getApplicationContext(), R.string.toast_passcode_set, Toast.LENGTH_SHORT).show();
+                    findPreference(getString(R.string.key_enable_passcode)).setTitle(getString(R.string.title_passcode_enabled));
                 }
                 break;
         }
