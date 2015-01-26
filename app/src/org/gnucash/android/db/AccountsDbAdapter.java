@@ -25,7 +25,6 @@ import android.database.sqlite.SQLiteStatement;
 import android.text.TextUtils;
 
 import android.util.Log;
-import android.support.annotation.NonNull;
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.model.*;
@@ -1338,7 +1337,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
         return mDb.delete(AccountEntry.TABLE_NAME, null, null);
 	}
 
-    public int getTransactionMaxSplitNum(@NonNull String accountUID) {
+    public int getTransactionMaxSplitNum(String accountUID) {
         Cursor cursor = mDb.query("trans_extra_info",
                 new String[]{"MAX(trans_split_count)"},
                 "trans_acct_t_uid IN ( SELECT DISTINCT " + TransactionEntry.TABLE_NAME + "_" + TransactionEntry.COLUMN_UID +
