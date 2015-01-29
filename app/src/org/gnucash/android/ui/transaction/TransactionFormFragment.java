@@ -350,6 +350,10 @@ public class TransactionFormFragment extends SherlockFragment implements
 		cal.setTimeInMillis(mTransaction.getTimeMillis());
 		mDate = mTime = cal;
 
+        //TODO: deep copy the split list. We need a copy so we can modify with impunity
+        mSplitsList = new ArrayList<Split>(mTransaction.getSplits());
+        mAmountEditText.setEnabled(mSplitsList.size() <= 2);
+
         //if there are more than two splits (which is the default for one entry), then
         //disable editing of the transfer account. User should open editor
         if (mSplitsList.size() == 2 && mSplitsList.get(0).isPairOf(mSplitsList.get(1))) {
@@ -364,8 +368,6 @@ public class TransactionFormFragment extends SherlockFragment implements
                 setAmountEditViewVisible(View.GONE);
             }
         }
-        mSplitsList = new ArrayList<Split>(mTransaction.getSplits()); //we need a copy so we can modify with impunity
-        mAmountEditText.setEnabled(mSplitsList.size() <= 2);
 
 		String currencyCode = mTransactionsDbAdapter.getCurrencyCode(mAccountUID);
 		Currency accountCurrency = Currency.getInstance(currencyCode);
