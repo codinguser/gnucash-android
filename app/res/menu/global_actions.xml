@@ -30,7 +30,8 @@
           android:orderInCategory="10"/>
 
     <item android:id="@+id/menu_pie_chart"
-          android:title="Pie Chart"
-          android:showAsAction="never"/>
+          android:title="@string/menu_chart_report"
+          android:icon="@drawable/chart_icon"
+          android:showAsAction="collapseActionView|ifRoom" />
 
 </menu>

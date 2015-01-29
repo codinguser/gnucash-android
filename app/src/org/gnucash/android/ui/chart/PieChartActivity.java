@@ -28,7 +28,6 @@ import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.github.mikephil.charting.charts.PieChart;
@@ -44,6 +43,7 @@ import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.model.Account;
 import org.gnucash.android.model.AccountType;
+import org.gnucash.android.ui.passcode.PassLockActivity;
 import org.joda.time.LocalDateTime;
 
 import java.util.ArrayList;
@@ -54,7 +54,7 @@ import java.util.List;
  *
  * @author Oleksandr Tyshkovets <olexandr.tyshkovets@gmail.com>
  */
-public class PieChartActivity extends SherlockFragmentActivity implements OnChartValueSelectedListener, OnItemSelectedListener {
+public class PieChartActivity extends PassLockActivity implements OnChartValueSelectedListener, OnItemSelectedListener {
 
     private static final int[] COLORS = {
             Color.parseColor("#17ee4e"), Color.parseColor("#cc1f09"), Color.parseColor("#3940f7"),

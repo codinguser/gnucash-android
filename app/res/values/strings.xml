@@ -352,6 +352,7 @@
     <string name="summary_default_export_format">File format to use by default when exporting transactions</string>
     <string name="menu_export_transactions">Export transactions…</string>
     <string name="label_recurring_transaction">Recurrence</string>
+    <string name="menu_chart_report">Chart report</string>
     <string name="menu_order_by_size">Order by size</string>
     <string name="menu_toggle_legend">Toggle legend</string>
     <string name="menu_toggle_labels">Toggle labels</string>
