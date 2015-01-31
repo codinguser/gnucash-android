@@ -1,5 +1,12 @@
 Change Log
 ===============================================================================
+Version 1.5.3 *(2015-02-02)*
+----------------------------
+* Fixed: Unable to edit double-entry transactions
+* Fixed: Edited transactions not flagged unexported
+* Fixed: Random crashes when editing transaction splits
+* Improved: Long press on transactions triggers context menu
+
 Version 1.5.2 *(2015-01-26)*
 ----------------------------
 * Fixed: Crash when importing XML with TRADING accounts

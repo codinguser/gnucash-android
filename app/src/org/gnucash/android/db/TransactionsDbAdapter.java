@@ -22,9 +22,11 @@ import android.app.PendingIntent;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.database.sqlite.SQLiteStatement;
+import android.text.TextUtils;
 import android.util.Log;
 
 import org.gnucash.android.model.*;
@@ -86,16 +88,40 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
         contentValues.put(TransactionEntry.COLUMN_RECURRENCE_PERIOD, transaction.getRecurrencePeriod());
 
         Log.d(TAG, "Replacing transaction in db");
-        long rowId = mDb.replace(TransactionEntry.TABLE_NAME, null, contentValues);
+        long rowId = -1;
+        mDb.beginTransaction();
+        try {
+            rowId = mDb.replaceOrThrow(TransactionEntry.TABLE_NAME, null, contentValues);
 
-        if (rowId > 0){
             Log.d(TAG, "Adding splits for transaction");
+            ArrayList<String> splitUIDs = new ArrayList<String>(transaction.getSplits().size());
             for (Split split : transaction.getSplits()) {
-                mSplitsDbAdapter.addSplit(split);
+                contentValues.clear();
+                contentValues.put(SplitEntry.COLUMN_UID,        split.getUID());
+                contentValues.put(SplitEntry.COLUMN_AMOUNT,     split.getAmount().absolute().toPlainString());
+                contentValues.put(SplitEntry.COLUMN_TYPE,       split.getType().name());
+                contentValues.put(SplitEntry.COLUMN_MEMO,       split.getMemo());
+                contentValues.put(SplitEntry.COLUMN_ACCOUNT_UID, split.getAccountUID());
+                contentValues.put(SplitEntry.COLUMN_TRANSACTION_UID, split.getTransactionUID());
+                splitUIDs.add(split.getUID());
+
+                Log.d(TAG, "Replace transaction split in db");
+                mDb.replaceOrThrow(SplitEntry.TABLE_NAME, null, contentValues);
             }
             Log.d(TAG, transaction.getSplits().size() + " splits added");
+
+            long deleted = mDb.delete(SplitEntry.TABLE_NAME,
+                    SplitEntry.COLUMN_TRANSACTION_UID + " = ? AND "
+                            + SplitEntry.COLUMN_UID + " NOT IN ('" + TextUtils.join("' , '", splitUIDs) + "')",
+                    new String[]{transaction.getUID()});
+            Log.d(TAG, deleted + " splits deleted");
+            mDb.setTransactionSuccessful();
+        } catch (SQLException sqle) {
+            sqle.printStackTrace();
+        } finally {
+            mDb.endTransaction();
         }
-		return rowId;
+        return rowId;
 	}
 
     /**
@@ -439,8 +465,7 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
     @Override
 	public boolean deleteRecord(long rowId){
 		Log.d(TAG, "Delete transaction with record Id: " + rowId);
-		return mSplitsDbAdapter.deleteSplitsForTransaction(rowId) &&
-                deleteRecord(TransactionEntry.TABLE_NAME, rowId);
+		return mSplitsDbAdapter.deleteSplitsForTransaction(rowId);
 	}
 	
 	/**
@@ -592,5 +617,23 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
      */
     public Transaction getTransaction(String transactionUID) {
         return getTransaction(getID(transactionUID));
+    }
+
+    public int getNumCurrencies(String transactionUID) {
+        Cursor cursor = mDb.query("trans_extra_info",
+                new String[]{"trans_currency_count"},
+                "trans_acct_t_uid=?",
+                new String[]{transactionUID},
+                null, null, null);
+        int numCurrencies = 0;
+        try {
+            if (cursor.moveToFirst()) {
+                numCurrencies = cursor.getInt(0);
+            }
+        }
+        finally {
+            cursor.close();
+        }
+        return numCurrencies;
     }
 }

@@ -351,6 +351,11 @@ public class AccountFormFragment extends SherlockFragment {
         String currencyCode = account.getCurrency().getCurrencyCode();
         setSelectedCurrency(currencyCode);
 
+        if (mAccountsDbAdapter.getTransactionMaxSplitNum(mAccount.getUID()) > 1)
+        {
+            mCurrencySpinner.setEnabled(false);
+        }
+
         mNameEditText.setText(account.getName());
 
         if (mUseDoubleEntry) {

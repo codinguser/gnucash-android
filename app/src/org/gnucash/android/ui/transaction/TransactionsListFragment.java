@@ -35,11 +35,8 @@ import android.view.LayoutInflater;
 import android.view.TouchDelegate;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
+import android.widget.*;
 import android.widget.CompoundButton.OnCheckedChangeListener;
-import android.widget.ListView;
-import android.widget.TextView;
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockListFragment;
 import com.actionbarsherlock.view.ActionMode;
@@ -65,7 +62,7 @@ import java.util.Date;
  *
  */
 public class TransactionsListFragment extends SherlockListFragment implements
-        Refreshable, LoaderCallbacks<Cursor> {
+        Refreshable, LoaderCallbacks<Cursor>, AdapterView.OnItemLongClickListener{
 
 	/**
 	 * Logging tag
@@ -76,7 +73,6 @@ public class TransactionsListFragment extends SherlockListFragment implements
 	private SimpleCursorAdapter mCursorAdapter;
 	private ActionMode mActionMode = null;
 	private boolean mInEditMode = false;
-//	private long mAccountID;
     private String mAccountUID;
 
 	/**
@@ -162,6 +158,7 @@ public class TransactionsListFragment extends SherlockListFragment implements
 		aBar.setDisplayHomeAsUpEnabled(true);
 
         getListView().setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
+		getListView().setOnItemLongClickListener(this);
 		setHasOptionsMenu(true);		
 	}
 
@@ -223,7 +220,16 @@ public class TransactionsListFragment extends SherlockListFragment implements
 		}
 		mTransactionEditListener.editTransaction(mTransactionsDbAdapter.getUID(id));
 	}
-	
+
+	@Override
+	public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long id) {
+		getListView().setItemChecked(position, true);
+		CheckBox checkbox = (CheckBox) view.findViewById(R.id.checkbox_parent_account);
+		checkbox.setChecked(true);
+		startActionMode();
+		return true;
+	}
+
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {		
 		inflater.inflate(R.menu.transactions_list_actions, menu);	
