@@ -356,6 +356,9 @@
     <string name="menu_order_by_size">Order by size</string>
     <string name="menu_toggle_legend">Toggle legend</string>
     <string name="menu_toggle_labels">Toggle labels</string>
+    <string name="label_chart_no_data">No chart data available</string>
+    <string name="label_chart_overall">Overall</string>
+    <string name="label_chart_total">Total\n</string>
     <!-- This should be the same name used by GnuCash desktop for imbalance accounts -->
     <string name="imbalance_account_name">Imbalance</string>
     <string name="title_progress_exporting_transactions">Exporting transactions</string>

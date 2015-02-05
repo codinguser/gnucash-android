@@ -54,7 +54,7 @@ import java.util.List;
  *
  * @author Oleksandr Tyshkovets <olexandr.tyshkovets@gmail.com>
  */
-public class PieChartActivity extends PassLockActivity implements OnChartValueSelectedListener, OnItemSelectedListener {
+public class PieChartActivity extends PassLockActivity implements OnChartValueSelectedListener {
 
     private static final int[] COLORS = {
             Color.parseColor("#17ee4e"), Color.parseColor("#cc1f09"), Color.parseColor("#3940f7"),
@@ -96,10 +96,11 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
         mAccountsDbAdapter = new AccountsDbAdapter(this);
         mTransactionsDbAdapter = new TransactionsDbAdapter(this);
 
-        addItemsOnSpinner();
-
         mChart = (PieChart) findViewById(R.id.chart);
         mChart.setOnChartValueSelectedListener(this);
+        applyChartSetting();
+
+        addItemsOnSpinner();
 
         mPreviousMonthButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -119,16 +120,13 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
     }
 
     private void setData(boolean forCurrentMonth) {
-        mChartDateTextView.setText(forCurrentMonth ? mChartDate.toString(datePattern) : "Overall");
+        mChartDateTextView.setText(forCurrentMonth ? mChartDate.toString(datePattern) : getResources().getString(R.string.label_chart_overall));
         ((TextView) findViewById(R.id.selected_chart_slice)).setText("");
         mChart.highlightValues(null);
         mChart.clear();
 
-        long start = mChartDate.dayOfMonth().withMinimumValue().millisOfDay().withMinimumValue().toDate().getTime();
-        long end = mChartDate.dayOfMonth().withMaximumValue().millisOfDay().withMaximumValue().toDate().getTime();
-        ArrayList<Entry> values = new ArrayList<Entry>();
+        PieDataSet dataSet = new PieDataSet(null, "");
         ArrayList<String> names = new ArrayList<String>();
-        ArrayList<Integer> colors = new ArrayList<Integer>();
         List<String> skipUUID = new ArrayList<String>();
         for (Account account : mAccountsDbAdapter.getSimpleAccountList()) {
             if (account.getAccountType() == mAccountType && !account.isPlaceholderAccount()) {
@@ -138,56 +136,38 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
                 if (!skipUUID.contains(account.getUID())) {
                     double balance = 0;
                     if (forCurrentMonth) {
+                        long start = mChartDate.dayOfMonth().withMinimumValue().millisOfDay().withMinimumValue().toDate().getTime();
+                        long end = mChartDate.dayOfMonth().withMaximumValue().millisOfDay().withMaximumValue().toDate().getTime();
                         balance = mAccountsDbAdapter.getAccountBalance(account.getUID(), start, end).asDouble();
                     } else {
                         balance = mAccountsDbAdapter.getAccountBalance(account.getUID()).asDouble();
                     }
-                    // ToDo What with negative?
                     if (balance > 0) {
-                        values.add(new Entry((float) balance, values.size()));
+                        dataSet.addEntry(new Entry((float) balance, dataSet.getEntryCount()));
+                        dataSet.addColor(COLORS[(dataSet.getEntryCount() - 1) % COLORS.length]);
                         names.add(account.getName());
-                        colors.add(COLORS[(values.size() - 1) % COLORS.length]);
                     }
                 }
             }
         }
 
-        PieDataSet set = new PieDataSet(values, "");
-        if (set.getYValueSum() == 0) {
-            values.add(new Entry(1, 0));
+        if (dataSet.getEntryCount() == 0) {
+            dataSet.addEntry(new Entry(1, 0));
+            dataSet.setColor(Color.LTGRAY);
             names.add("");
-            colors.add(Color.LTGRAY);
-            mChart.setCenterText("No chart data available");
+            mChart.setCenterText(getResources().getString(R.string.label_chart_no_data));
             mChart.setTouchEnabled(false);
         } else {
-            mChart.setCenterText("Total\n" + set.getYValueSum());
+            mChart.setCenterText(getResources().getString(R.string.label_chart_total) + dataSet.getYValueSum());
             mChart.setTouchEnabled(true);
         }
-        set.setColors(colors);
-        mChart.setData(new PieData(names, set));
-
-        mChart.setValueTextSize(12);
-        mChart.setValueTextColor(Color.BLACK);
-        mChart.setCenterTextSize(18);
-        mChart.setDrawYValues(false);
-        mChart.setDescription("");
-        mChart.setDrawLegend(false);
-        mChart.getLegend().setForm(LegendForm.CIRCLE);
-        mChart.getLegend().setPosition(LegendPosition.RIGHT_OF_CHART_CENTER);
-
+        mChart.setData(new PieData(names, dataSet));
         mChart.invalidate();
 
-        if (mChartDate.plusMonths(1).dayOfMonth().withMinimumValue().withMillisOfDay(0).isBefore(mLatestTransaction)) {
-            setImageButtonEnabled(mNextMonthButton, true);
-        } else {
-            setImageButtonEnabled(mNextMonthButton, false);
-        }
-        if (mEarliestTransaction.getYear() != 1970 && mChartDate.minusMonths(1).dayOfMonth()
-                .withMaximumValue().withMillisOfDay(86399999).isAfter(mEarliestTransaction)) {
-            setImageButtonEnabled(mPreviousMonthButton, true);
-        } else {
-            setImageButtonEnabled(mPreviousMonthButton, false);
-        }
+        setImageButtonEnabled(mNextMonthButton,
+                mChartDate.plusMonths(1).dayOfMonth().withMinimumValue().withMillisOfDay(0).isBefore(mLatestTransaction));
+        setImageButtonEnabled(mPreviousMonthButton, (mEarliestTransaction.getYear() != 1970
+                && mChartDate.minusMonths(1).dayOfMonth().withMaximumValue().withMillisOfDay(86399999).isAfter(mEarliestTransaction)));
     }
 
     /**
@@ -208,42 +188,42 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
     }
 
     private void bubbleSort() {
-        ArrayList<String> names = mChart.getData().getXVals();
+        ArrayList<String> labels = mChart.getData().getXVals();
         ArrayList<Entry> values = mChart.getData().getDataSet().getYVals();
         ArrayList<Integer> colors = mChart.getData().getDataSet().getColors();
-        boolean swapped = true;
-        int j = 0;
         float tmp1;
         String tmp2;
         Integer tmp3;
-        while (swapped) {
-            swapped = false;
-            j++;
-            for (int i = 0; i < values.size() - j; i++) {
-                if (values.get(i).getVal() > values.get(i + 1).getVal()) {
-                    tmp1 = values.get(i).getVal();
-                    values.get(i).setVal(values.get(i + 1).getVal());
-                    values.get(i + 1).setVal(tmp1);
+        for(int i = 0; i < values.size() - 1; i++) {
+            for(int j = 1; j < values.size() - i; j++) {
+                if (values.get(j-1).getVal() > values.get(j).getVal()) {
+                    tmp1 = values.get(j - 1).getVal();
+                    values.get(j - 1).setVal(values.get(j).getVal());
+                    values.get(j).setVal(tmp1);
 
-                    tmp2 = names.get(i);
-                    names.set(i, names.get(i + 1));
-                    names.set(i + 1, tmp2);
+                    tmp2 = labels.get(j - 1);
+                    labels.set(j - 1, labels.get(j));
+                    labels.set(j, tmp2);
 
-                    tmp3 = colors.get(i);
-                    colors.set(i, colors.get(i + 1));
-                    colors.set(i + 1, tmp3);
-
-                    swapped = true;
+                    tmp3 = colors.get(j - 1);
+                    colors.set(j - 1, colors.get(j));
+                    colors.set(j, tmp3);
                 }
             }
         }
 
-        mChart.clear();
-        PieDataSet set = new PieDataSet(values, "");
-        set.setColors(colors);
-        mChart.setData(new PieData(names, set));
+        mChart.notifyDataSetChanged();
         mChart.highlightValues(null);
         mChart.invalidate();
+    }
+
+    private void applyChartSetting() {
+        mChart.setValueTextSize(12);
+        mChart.setValueTextColor(Color.BLACK);
+        mChart.setCenterTextSize(18);
+        mChart.setDrawYValues(false);
+        mChart.setDescription("");
+        mChart.setDrawLegend(false);
     }
 
     private void addItemsOnSpinner() {
@@ -253,10 +233,20 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
                 Arrays.asList(AccountType.EXPENSE, AccountType.INCOME));
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(dataAdapter);
+        spinner.setOnItemSelectedListener(new OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                mAccountType = (AccountType) ((Spinner) findViewById(R.id.chart_data_spinner)).getSelectedItem();
+                mEarliestTransaction = new LocalDateTime(mTransactionsDbAdapter.getTimestampOfEarliestTransaction(mAccountType));
+                mLatestTransaction = new LocalDateTime(mTransactionsDbAdapter.getTimestampOfLatestTransaction(mAccountType));
+                mChartDate = mLatestTransaction;
+                setData(false);
+            }
 
-        spinner.setOnItemSelectedListener(this);
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {}
+        });
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -273,6 +263,8 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
             }
             case R.id.menu_toggle_legend: {
                 mChart.setDrawLegend(!mChart.isDrawLegendEnabled());
+                mChart.getLegend().setForm(LegendForm.CIRCLE);
+                mChart.getLegend().setPosition(LegendPosition.RIGHT_OF_CHART_CENTER);
                 mChart.notifyDataSetChanged();
                 mChart.invalidate();
                 break;
@@ -288,10 +280,7 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
 
     @Override
     public void onValueSelected(Entry e, int dataSetIndex) {
-        if (e == null) {
-            return;
-        }
-
+        if (e == null) return;
         ((TextView) findViewById(R.id.selected_chart_slice))
                 .setText(mChart.getData().getXVals().get(e.getXIndex()) + " - " + e.getVal()
                         + " (" + String.format("%.2f", (e.getVal() / mChart.getYValueSum()) * 100) + " %)");
@@ -301,19 +290,5 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
     public void onNothingSelected() {
         ((TextView) findViewById(R.id.selected_chart_slice)).setText("");
     }
-
-    @Override
-    public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
-        mAccountType = (AccountType) ((Spinner) findViewById(R.id.chart_data_spinner)).getSelectedItem();
-        mEarliestTransaction = new LocalDateTime(mTransactionsDbAdapter.getTimestampOfEarliestTransaction(mAccountType));
-        mLatestTransaction = new LocalDateTime(mTransactionsDbAdapter.getTimestampOfLatestTransaction(mAccountType));
-
-        mChartDate = mLatestTransaction;
-
-        setData(false);
-    }
-
-    @Override
-    public void onNothingSelected(AdapterView<?> parent) {}
 
 }
