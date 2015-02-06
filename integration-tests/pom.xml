@@ -27,7 +27,7 @@
 	<description>Instrumentation tests for Gnucash for Android</description>
 	
 	<properties>
-		<robotium.version>4.2</robotium.version>
+		<robotium.version>5.2.1</robotium.version>
         <spoon-client.version>1.0.5</spoon-client.version>
         <fest-android.version>1.0.6</fest-android.version>
         <android.device>usb</android.device>

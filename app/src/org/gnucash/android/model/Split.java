@@ -56,6 +56,7 @@ public class Split {
         setAmount(amount);
         setAccountUID(accountUID);
         mUID = UUID.randomUUID().toString().replaceAll("-","");
+        mSplitType = amount.isNegative() ? TransactionType.DEBIT : TransactionType.CREDIT;
     }
 
     /**

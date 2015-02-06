@@ -24,20 +24,19 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.test.ActivityInstrumentationTestCase2;
 import android.view.View;
-import android.widget.Spinner;
-import android.widget.TextView;
-import android.widget.ToggleButton;
-import com.jayway.android.robotium.solo.Solo;
+import android.widget.*;
+import com.robotium.solo.Solo;
 import org.gnucash.android.R;
-import org.gnucash.android.model.Account;
-import org.gnucash.android.model.Money;
-import org.gnucash.android.model.Transaction;
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.TransactionsDbAdapter;
+import org.gnucash.android.model.*;
 import org.gnucash.android.ui.UxArgument;
 import org.gnucash.android.ui.transaction.TransactionFormFragment;
 import org.gnucash.android.ui.transaction.TransactionsActivity;
+import org.gnucash.android.ui.transaction.TransactionsListFragment;
+import org.gnucash.android.ui.util.TransactionTypeToggleButton;
 
+import java.math.BigDecimal;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.Currency;
@@ -49,11 +48,16 @@ import static org.fest.assertions.api.ANDROID.assertThat;
 
 public class TransactionsActivityTest extends
 		ActivityInstrumentationTestCase2<TransactionsActivity> {
-	private static final String TRANSACTION_AMOUNT = "9.99";
+    private static final String TRANSACTION_AMOUNT = "9.99";
 	private static final String TRANSACTION_NAME = "Pizza";
 	private static final String DUMMY_ACCOUNT_UID = "transactions-account";
 	private static final String DUMMY_ACCOUNT_NAME = "Transactions Account";
-	private Solo mSolo;
+
+    private static final String TRANSFER_ACCOUNT_NAME   = "Transfer account";
+    private static final String TRANSFER_ACCOUNT_UID    = "transfer_account";
+    public static final String CURRENCY_CODE = "USD";
+
+    private Solo mSolo;
 	private Transaction mTransaction;
 	private long mTransactionTimeMillis;
 	
@@ -66,21 +70,33 @@ public class TransactionsActivityTest extends
         mTransactionTimeMillis = System.currentTimeMillis();
         Account account = new Account(DUMMY_ACCOUNT_NAME);
         account.setUID(DUMMY_ACCOUNT_UID);
-        account.setCurrency(Currency.getInstance(Locale.getDefault()));
+        account.setCurrency(Currency.getInstance(CURRENCY_CODE));
+
+        Account account2 = new Account(TRANSFER_ACCOUNT_NAME);
+        account2.setUID(TRANSFER_ACCOUNT_UID);
+        account2.setCurrency(Currency.getInstance(CURRENCY_CODE));
+
         mTransaction = new Transaction(TRANSACTION_NAME);
         mTransaction.setNote("What up?");
         mTransaction.setTime(mTransactionTimeMillis);
+        Split split = new Split(new Money(TRANSACTION_AMOUNT, CURRENCY_CODE), DUMMY_ACCOUNT_UID);
+        split.setType(TransactionType.DEBIT);
 
+        mTransaction.addSplit(split);
+        mTransaction.addSplit(split.createPair(TRANSFER_ACCOUNT_UID));
         account.addTransaction(mTransaction);
 
         Context context = getInstrumentation().getTargetContext();
         AccountsDbAdapter adapter = new AccountsDbAdapter(context);
-        long id = adapter.addAccount(account);
+        long id1 = adapter.addAccount(account);
+        long id2 = adapter.addAccount(account2);
+
         adapter.close();
-        assertTrue(id > 0);
+        assertTrue(id1 > 0);
+        assertTrue(id2 > 0);
 
         Intent intent = new Intent(Intent.ACTION_VIEW);
-        intent.putExtra(UxArgument.SELECTED_ACCOUNT_UID, id);
+        intent.putExtra(UxArgument.SELECTED_ACCOUNT_UID, DUMMY_ACCOUNT_UID);
         setActivityIntent(intent);
 
         mSolo = new Solo(getInstrumentation(), getActivity());
@@ -96,16 +112,13 @@ public class TransactionsActivityTest extends
     }
 
 	private void validateTransactionListDisplayed(){
-		Fragment fragment = getActivity()
-				.getSupportFragmentManager()
-				.findFragmentByTag(TransactionsActivity.FRAGMENT_TRANSACTIONS_LIST);
-		
+		Fragment fragment = getActivity().getCurrentPagerFragment();
 		assertNotNull(fragment);
 	}
 	
 	private int getTranscationCount(){
 		TransactionsDbAdapter transactionsDb = new TransactionsDbAdapter(getActivity());
-		int count = transactionsDb.getAllTransactionsForAccount(DUMMY_ACCOUNT_UID).size();
+		int count = transactionsDb.fetchAllTransactionsForAccount(DUMMY_ACCOUNT_UID).getCount();
 		transactionsDb.close();
 		return count;
 	}
@@ -147,10 +160,11 @@ public class TransactionsActivityTest extends
 	
 	private void validateEditTransactionFields(Transaction transaction){
 		
-		String name = mSolo.getEditText(0).getText().toString();
+		String name = ((EditText)mSolo.getView(R.id.input_transaction_name)).getText().toString();
 		assertEquals(transaction.getDescription(), name);
-		
-		String amountString = mSolo.getEditText(1).getText().toString();
+
+        EditText amountEdittext = (EditText) mSolo.getView(R.id.input_transaction_amount);
+		String amountString = amountEdittext.getText().toString();
 		NumberFormat formatter = NumberFormat.getInstance();
 		try {
 			amountString = formatter.parse(amountString).toString();
@@ -159,9 +173,10 @@ public class TransactionsActivityTest extends
 		}
 		Money amount = new Money(amountString, Currency.getInstance(Locale.getDefault()).getCurrencyCode());
 		assertEquals(transaction.getBalance(DUMMY_ACCOUNT_UID), amount);
-		
-		String description = mSolo.getEditText(2).getText().toString();
-		assertEquals(transaction.getNote(), description);
+
+        EditText notesEditText = (EditText) mSolo.getView(R.id.input_description);
+		String transactionNotes = notesEditText.getText().toString();
+		assertEquals(transaction.getNote(), transactionNotes);
 		
 		String expectedValue = TransactionFormFragment.DATE_FORMATTER.format(transaction.getTimeMillis());
 		TextView dateView = (TextView) mSolo.getView(R.id.input_date);
@@ -175,40 +190,55 @@ public class TransactionsActivityTest extends
 	}
 	
 	public void testAddTransaction(){
-			mSolo.waitForText(TRANSACTION_NAME);
-//            mSolo.waitForFragmentByTag(TransactionsActivity.FRAGMENT_TRANSACTIONS_LIST);
+        setDoubleEntryEnabled(true);
+        mSolo.waitForText(TRANSACTION_NAME);
 
         validateTransactionListDisplayed();
+        clickSherlockActionBarItem(R.id.menu_add_transaction);
 
-//			mSolo.clickOnActionBarItem(R.id.menu_add_transaction);
-            clickSherlockActionBarItem(R.id.menu_add_transaction);
-
-//			mSolo.waitForView(EditText.class);
-            mSolo.waitForText("New transaction");
-
-//			validateNewTransactionFields();
-
+        mSolo.waitForText("New transaction");
 
         //validate creation of transaction
-			mSolo.enterText(0, "Lunch");
-			mSolo.enterText(1, "899");
-			//check that the amount is correctly converted in the input field
-			String value = mSolo.getEditText(1).getText().toString();
-			String expectedValue = NumberFormat.getInstance().format(-8.99);
-			assertEquals(expectedValue, value);
+        mSolo.enterText(0, "Lunch");
+        mSolo.enterText(1, "899");
 
-			int transactionsCount = getTranscationCount();
+        TransactionTypeToggleButton typeToggleButton = (TransactionTypeToggleButton) mSolo.getView(R.id.input_transaction_type);
+        String text = typeToggleButton.getText().toString();
 
-			//Android 2.2 cannot handle this for some reason
-//			mSolo.clickOnActionBarItem(R.id.menu_save);
-//			mSolo.clickOnImage(3);
-        clickSherlockActionBarItem(R.id.menu_save);
+        assertTrue(mSolo.searchToggleButton(text));
+        if (!mSolo.isToggleButtonChecked(0)){
+            mSolo.clickOnToggleButton(text);
+        }
 
-			mSolo.waitForText(DUMMY_ACCOUNT_NAME);
-			validateTransactionListDisplayed();
+        //check that the amount is correctly converted in the input field
+        String value = mSolo.getEditText(1).getText().toString();
+        String expectedValue = NumberFormat.getInstance().format(-8.99);
+        assertEquals(expectedValue, value);
 
-			assertEquals(transactionsCount + 1, getTranscationCount());
-		}
+        int transactionsCount = getTranscationCount();
+
+//        clickSherlockActionBarItem(R.id.menu_save);
+        mSolo.clickOnActionBarItem(R.id.menu_save);
+
+        mSolo.waitForText(DUMMY_ACCOUNT_NAME);
+        validateTransactionListDisplayed();
+
+        mSolo.sleep(1000);
+
+        TransactionsDbAdapter transactionsDbAdapter = new TransactionsDbAdapter(getActivity());
+        List<Transaction> transactions = transactionsDbAdapter.getAllTransactionsForAccount(DUMMY_ACCOUNT_UID);
+        assertEquals(2, transactions.size());
+        Transaction transaction = transactions.get(0);
+
+        assertEquals(2, transaction.getSplits().size());
+        Split split = transaction.getSplits(TRANSFER_ACCOUNT_UID).get(0);
+        //the main account is a CASH account which has debit normal type, so a negative value means actually CREDIT
+        //so the other side of the split has to be a debit
+        assertEquals(TransactionType.DEBIT, split.getType());
+        assertEquals(transactionsCount + 1, getTranscationCount());
+
+        transactionsDbAdapter.close();
+    }
 
 	public void testEditTransaction(){		
 		//open transactions
@@ -227,7 +257,14 @@ public class TransactionsActivityTest extends
 		//if we see the text, then it was successfully created
 		mSolo.waitForText("Pasta");
 	}
-	
+
+    private void setDoubleEntryEnabled(boolean enabled){
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        Editor editor = prefs.edit();
+        editor.putBoolean(getActivity().getString(R.string.key_use_double_entry), enabled);
+        editor.commit();
+    }
+
 	public void testDefaultTransactionType(){
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
 		Editor editor = prefs.edit();
@@ -238,7 +275,7 @@ public class TransactionsActivityTest extends
 		mSolo.waitForText(getActivity().getString(R.string.label_transaction_name));
 		
 		ToggleButton transactionTypeButton = (ToggleButton) mSolo.getButton(0);
-		assertThat(transactionTypeButton).isNotChecked();
+		assertThat(transactionTypeButton).isChecked();
 
 		clickSherlockActionBarItem(R.id.menu_cancel);
 
@@ -251,7 +288,7 @@ public class TransactionsActivityTest extends
 		mSolo.waitForText(getActivity().getString(R.string.label_transaction_name));
 		
 		transactionTypeButton = (ToggleButton) mSolo.getButton(0);
-		assertThat(transactionTypeButton).isChecked();
+		assertThat(transactionTypeButton).isNotChecked();
         clickSherlockActionBarItem(R.id.menu_cancel);
         mSolo.goBack();
 	}
@@ -261,11 +298,19 @@ public class TransactionsActivityTest extends
 		
 		validateTransactionListDisplayed();
 		mSolo.clickOnText(TRANSACTION_NAME);
-		mSolo.waitForText("Note");
+		mSolo.waitForText(getActivity().getString(R.string.title_edit_transaction));
 		
 		validateEditTransactionFields(mTransaction);
-		
-		mSolo.clickOnButton(getActivity().getString(R.string.label_credit));
+
+        TransactionTypeToggleButton toggleButton = (TransactionTypeToggleButton) mSolo.getView(R.id.input_transaction_type);
+        assertThat(toggleButton).isVisible();
+
+        String label = toggleButton.getText().toString();
+        assertTrue(mSolo.searchToggleButton(label));
+		assertEquals(getActivity().getString(R.string.label_receive), label);
+
+//		mSolo.clickOnButton(getActivity().getString(R.string.label_credit));
+        mSolo.clickOnView(toggleButton);
 		String amountString = mSolo.getEditText(1).getText().toString();
 		NumberFormat formatter = NumberFormat.getInstance();
 		try {
@@ -327,14 +372,14 @@ public class TransactionsActivityTest extends
 		mSolo.waitForText(DUMMY_ACCOUNT_NAME);
 		
 		mSolo.clickOnCheckBox(0);		
-		clickSherlockActionBarItem(R.id.context_menu_delete);
-		
-		AccountsDbAdapter accountsDbAdapter = new AccountsDbAdapter(getActivity());
-		long id = accountsDbAdapter.getID(DUMMY_ACCOUNT_UID);
-		TransactionsDbAdapter adapter = new TransactionsDbAdapter(getActivity());
+//		mSolo.clickOnActionBarItem(R.id.context_menu_delete);
+        clickSherlockActionBarItem(R.id.context_menu_delete);
+
+        mSolo.sleep(500);
+		TransactionsDbAdapter adapter = new TransactionsDbAdapter(getInstrumentation().getTargetContext());
+        long id = adapter.getAccountID(DUMMY_ACCOUNT_UID);
 		assertEquals(0, adapter.getTransactionsCount(id));
-		
-		accountsDbAdapter.close();
+
 		adapter.close();
 		
 	}
@@ -368,7 +413,7 @@ public class TransactionsActivityTest extends
 		
 		mSolo.waitForDialogToClose(2000);
 		
-		int targetCount = accountsDbAdapter.getAccount(account.getUID()).getTransactionCount();		
+		int targetCount = accountsDbAdapter.getAccount(account.getUID()).getTransactionCount();
 		assertEquals(1, targetCount);
 		
 		int afterOriginCount = accountsDbAdapter.getAccount(DUMMY_ACCOUNT_UID).getTransactionCount();
@@ -378,21 +423,24 @@ public class TransactionsActivityTest extends
 		
 	}
 	
-	public void testIntentTransactionRecording(){
-		TransactionsDbAdapter trxnAdapter = new TransactionsDbAdapter(getActivity());
-		int beforeCount = trxnAdapter.getTransactionsCount(trxnAdapter.getAccountID(DUMMY_ACCOUNT_UID));
-		Intent transactionIntent = new Intent(Intent.ACTION_INSERT);
+	public void testLegacyIntentTransactionRecording(){
+        final Context context = getInstrumentation().getTargetContext();
+		TransactionsDbAdapter trxnAdapter = new TransactionsDbAdapter(context);
+		int beforeCount = trxnAdapter.getTransactionsCount(DUMMY_ACCOUNT_UID);
+
+        Intent transactionIntent = new Intent(Intent.ACTION_INSERT);
 		transactionIntent.setType(Transaction.MIME_TYPE);
 		transactionIntent.putExtra(Intent.EXTRA_TITLE, "Power intents");
 		transactionIntent.putExtra(Intent.EXTRA_TEXT, "Intents for sale");
-		transactionIntent.putExtra(Transaction.EXTRA_AMOUNT, 4.99);
+		transactionIntent.putExtra(Transaction.EXTRA_AMOUNT, new BigDecimal(4.99));
 		transactionIntent.putExtra(Transaction.EXTRA_ACCOUNT_UID, DUMMY_ACCOUNT_UID);
-		
-		getActivity().sendBroadcast(transactionIntent);
+		transactionIntent.putExtra(Transaction.EXTRA_TRANSACTION_TYPE, TransactionType.DEBIT.name());
+
+		context.sendBroadcast(transactionIntent);
 
         mSolo.sleep(2000);
 
-		int afterCount = trxnAdapter.getTransactionsCount(trxnAdapter.getAccountID(DUMMY_ACCOUNT_UID));
+		int afterCount = trxnAdapter.getTransactionsCount(DUMMY_ACCOUNT_UID);
 		
 		assertEquals(beforeCount + 1, afterCount);
 		

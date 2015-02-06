@@ -17,7 +17,7 @@
 package org.gnucash.android.test.util;
 
 import android.view.View;
-import com.jayway.android.robotium.solo.Solo;
+import com.robotium.solo.Solo;
 
 /**
  * @author Ngewi

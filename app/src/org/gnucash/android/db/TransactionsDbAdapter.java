@@ -228,9 +228,8 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 	}
 	
 	/**
-	 * Returns a cursor to a set of all transactions for the account with UID <code>accountUID</code>
-	 * or for which this account is the origin account (double entry) 
-	 * i.e <code>accountUID</code> is double entry account UID
+	 * Returns a cursor to a set of all transactions which have a split belonging to the accound with unique ID
+	 * <code>accountUID</code>.
 	 * @param accountUID UID of the account whose transactions are to be retrieved
 	 * @return Cursor holding set of transactions for particular account
      * @throws java.lang.IllegalArgumentException if the accountUID is null
@@ -521,8 +520,25 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 		}
 		return count;
 	}
-	
-	/**
+
+    /**
+     * Returns the number of transactions belonging to an account
+     * @param accountUID GUID of the account
+     * @return Number of transactions with splits in the account
+     */
+    public int getTransactionsCount(String accountUID){
+        Cursor cursor = fetchAllTransactionsForAccount(accountUID);
+        int count = 0;
+        if (cursor == null)
+            return count;
+        else {
+            count = cursor.getCount();
+            cursor.close();
+        }
+        return count;
+    }
+
+    /**
 	 * Returns the total number of transactions in the database
 	 * regardless of what account they belong to
 	 * @return Number of transaction in the database

@@ -24,19 +24,17 @@ import android.support.v4.app.Fragment;
 import android.test.ActivityInstrumentationTestCase2;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.ListView;
-import android.widget.TextView;
-import com.jayway.android.robotium.solo.Solo;
+import com.robotium.solo.Solo;
 import org.gnucash.android.R;
-import org.gnucash.android.model.Account;
-import org.gnucash.android.model.Money;
-import org.gnucash.android.model.Transaction;
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.TransactionsDbAdapter;
+import org.gnucash.android.model.Account;
+import org.gnucash.android.model.Money;
+import org.gnucash.android.model.Split;
+import org.gnucash.android.model.Transaction;
 import org.gnucash.android.test.util.ActionBarUtils;
 import org.gnucash.android.ui.account.AccountsActivity;
 import org.gnucash.android.ui.account.AccountsListFragment;
-import org.gnucash.android.ui.transaction.TransactionsActivity;
 
 import java.util.Currency;
 import java.util.List;
@@ -59,7 +57,7 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
 		editor.putBoolean(context.getString(R.string.key_first_run), false);
 		editor.commit();
 		
-		mSolo = new Solo(getInstrumentation(), getActivity());	
+		mSolo = new Solo(getInstrumentation(), getActivity());
 		
 		AccountsDbAdapter adapter = new AccountsDbAdapter(getActivity());
 		Account account = new Account(DUMMY_ACCOUNT_NAME);
@@ -68,14 +66,22 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
 		adapter.addAccount(account);
 		adapter.close();
 
+        getInstrumentation().runOnMainSync(new Runnable() {
+            @Override
+            public void run() {
+                getActivity().setTab(AccountsActivity.INDEX_TOP_LEVEL_ACCOUNTS_FRAGMENT);
+            }
+        });
+
+
         //the What's new dialog is usually displayed on first run
         String dismissDialog = getActivity().getString(R.string.label_dismiss);
-        if (mSolo.waitForText(dismissDialog)){
+        if (mSolo.waitForText(dismissDialog,1,1000)){
             mSolo.clickOnText(dismissDialog);
         }
 	}
 
-	
+/*
 	public void testDisplayAccountsList(){
         final int NUMBER_OF_ACCOUNTS = 15;
         AccountsDbAdapter accountsDbAdapter = new AccountsDbAdapter(getActivity());
@@ -88,13 +94,13 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
         //there should exist a listview of accounts
         refreshAccountsList();
         mSolo.waitForText("Acct");
+        mSolo.scrollToBottom();
 
-        ListView accountsListView = mSolo.getCurrentViews(ListView.class).get(0);
+        ListView accountsListView = (ListView) mSolo.getView(android.R.id.list);
 		assertNotNull(accountsListView);
-
         assertEquals(NUMBER_OF_ACCOUNTS + 1, accountsListView.getCount());
 	}
-
+*/
     public void testSearchAccounts(){
         String SEARCH_ACCOUNT_NAME = "Search Account";
 
@@ -125,14 +131,16 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
      * Tests that an account can be created successfully and that the account list is sorted alphabetically.
      */
 	public void testCreateAccount(){
-        mSolo.waitForFragmentByTag(AccountsActivity.FRAGMENT_ACCOUNTS_LIST);
-		mSolo.clickOnActionBarItem(R.id.menu_add_account);
+        mSolo.clickOnActionBarItem(R.id.menu_add_account);
 		mSolo.waitForText(getActivity().getString(R.string.title_add_account));
 
+        View checkbox = mSolo.getCurrentActivity().findViewById(R.id.checkbox_parent_account);
         //there already exists one eligible parent account in the system
-        assertThat(getActivity().findViewById(R.id.checkbox_parent_account)).isVisible();
+        assertThat(checkbox).isVisible();
 
-        EditText inputAccountName = (EditText) getActivity().findViewById(R.id.edit_text_account_name);
+        mSolo.clickOnCheckBox(0);
+
+        EditText inputAccountName = (EditText) mSolo.getCurrentActivity().findViewById(R.id.edit_text_account_name);
         String NEW_ACCOUNT_NAME = "A New Account";
 //        mSolo.enterText(0, NEW_ACCOUNT_NAME);
         mSolo.enterText(inputAccountName, NEW_ACCOUNT_NAME);
@@ -140,29 +148,50 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
 
         mSolo.waitForText(NEW_ACCOUNT_NAME);
 
-		ListView lv = mSolo.getCurrentViews(ListView.class).get(0);
-		assertNotNull(lv);
-		TextView v = (TextView) lv.getChildAt(0) //accounts are sorted alphabetically
-				.findViewById(R.id.primary_text);
-
-		assertEquals(NEW_ACCOUNT_NAME, v.getText().toString());
 		AccountsDbAdapter accAdapter = new AccountsDbAdapter(getActivity());
-		
-		List<Account> accounts = accAdapter.getAllAccounts();
+
+		List<Account> accounts = accAdapter.getAllAccounts(); //sorted alphabetically
 		Account newestAccount = accounts.get(0);
-		
+
 		assertEquals(NEW_ACCOUNT_NAME, newestAccount.getName());
 		assertEquals(Money.DEFAULT_CURRENCY_CODE, newestAccount.getCurrency().getCurrencyCode());
-
+        assertTrue(newestAccount.isPlaceholderAccount());
 		accAdapter.close();		
 	}
 
+    public void testChangeParentAccount(){
+        AccountsDbAdapter accountsDbAdapter = new AccountsDbAdapter(getActivity());
+        final String accountName = "Euro Account";
+        final String accountUID = "my-euro_account";
+        Account account = new Account(accountName, Currency.getInstance("EUR"));
+        account.setUID(accountUID);
+        accountsDbAdapter.addAccount(account);
+
+        refreshAccountsList();
+        mSolo.waitForText(accountName);
+
+        mSolo.clickLongOnText(accountName);
+        clickSherlockActionBarItem(R.id.context_menu_edit_accounts);
+        mSolo.waitForView(EditText.class);
+
+        mSolo.clickOnCheckBox(1);
+        mSolo.pressSpinnerItem(2, 0);
+//        mSolo.clickOnText(DUMMY_ACCOUNT_NAME);
+
+        clickSherlockActionBarItem(R.id.menu_save);
+
+        mSolo.waitForText(getActivity().getString(R.string.title_accounts));
+        Account editedAccount = accountsDbAdapter.getAccount(accountUID);
+        String parentUID = editedAccount.getParentUID();
+
+        assertNotNull(parentUID);
+        assertEquals(DUMMY_ACCOUNT_UID, parentUID);
+
+        accountsDbAdapter.close();
+    }
+
 	public void testEditAccount(){
-		Fragment fragment = getActivity()
-				.getSupportFragmentManager()
-				.findFragmentByTag(AccountsActivity.FRAGMENT_ACCOUNTS_LIST);
-		((AccountsListFragment) fragment).refresh();
-		
+        refreshAccountsList();
 		mSolo.waitForText(DUMMY_ACCOUNT_NAME);
 		
 		String editedAccountName = "Edited Account";
@@ -181,17 +210,12 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
 		mSolo.waitForDialogToClose(2000);
         mSolo.waitForText("Accounts");
 
-		ListView lv = mSolo.getCurrentViews(ListView.class).get(0);
-		TextView tv = (TextView) lv.getChildAt(0)
-				.findViewById(R.id.primary_text);
-		assertEquals(editedAccountName, tv.getText().toString());
-		
 		AccountsDbAdapter accAdapter = new AccountsDbAdapter(getActivity());
 		
 		List<Account> accounts = accAdapter.getAllAccounts();
 		Account latest = accounts.get(0);  //will be the first due to alphabetical sorting
 		
-		assertEquals(latest.getName(), "Edited Account");
+		assertEquals("Edited Account", latest.getName());
 		assertEquals(DUMMY_ACCOUNT_CURRENCY_CODE, latest.getCurrency().getCurrencyCode());	
 		accAdapter.close();
 	}
@@ -204,13 +228,12 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
         acc.setUID(accountUidToDelete);
 
         Transaction transaction = new Transaction("hats");
+        transaction.addSplit(new Split(Money.getZeroInstance(), accountUidToDelete));
         acc.addTransaction(transaction);
         AccountsDbAdapter accDbAdapter = new AccountsDbAdapter(getActivity());
         accDbAdapter.addAccount(acc);
 
-        Fragment fragment = getActivity()
-                .getSupportFragmentManager()
-                .findFragmentByTag(AccountsActivity.FRAGMENT_ACCOUNTS_LIST);
+        Fragment fragment = getActivity().getCurrentAccountListFragment();
         assertNotNull(fragment);
 
         ((AccountsListFragment) fragment).refresh();
@@ -219,8 +242,7 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
 
         clickSherlockActionBarItem(R.id.context_menu_delete);
 
-        String deleteConfirm = getActivity().getString(R.string.alert_dialog_ok_delete);
-        mSolo.clickOnText(deleteConfirm);
+        mSolo.clickOnView(mSolo.getView(android.R.id.button1));
 
         mSolo.waitForDialogToClose(1000);
         mSolo.waitForText("Accounts");
@@ -230,50 +252,12 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
 
         TransactionsDbAdapter transDbAdapter = new TransactionsDbAdapter(getActivity());
         List<Transaction> transactions = transDbAdapter.getAllTransactionsForAccount(accountUidToDelete);
-
         assertEquals(0, transactions.size());
 
         accDbAdapter.close();
         transDbAdapter.close();
     }
 
-	public void testDisplayTransactionsList(){
-        final int TRANSACTION_COUNT = 15;
-        //first create a couple of transations
-        TransactionsDbAdapter transactionsDbAdapter = new TransactionsDbAdapter(getActivity());
-        for (int i = 0; i < TRANSACTION_COUNT; i++) {
-            Transaction transaction = new Transaction("Transaxion " + i);
-            transactionsDbAdapter.addTransaction(transaction);
-        }
-        transactionsDbAdapter.close();
-
-		Fragment fragment = getActivity()
-				.getSupportFragmentManager()
-				.findFragmentByTag(AccountsActivity.FRAGMENT_ACCOUNTS_LIST);
-		((AccountsListFragment) fragment).refresh();
-		
-		mSolo.waitForText(DUMMY_ACCOUNT_NAME);
-		mSolo.clickOnText(DUMMY_ACCOUNT_NAME);
-		mSolo.waitForText("Transaxion");
-
-        mSolo.scrollDown();
-
-		String classname = mSolo.getCurrentActivity().getComponentName().getClassName();
-		assertEquals(TransactionsActivity.class.getName(), classname);
-		
-		fragment = ((TransactionsActivity)mSolo.getCurrentActivity())
-				.getSupportFragmentManager()
-				.findFragmentByTag(TransactionsActivity.FRAGMENT_TRANSACTIONS_LIST);
-
-		assertNotNull(fragment);
-
-        //there are two list views in the transactions activity, one for sub-accounts and another for transactions
-        assertEquals(2, mSolo.getCurrentViews(ListView.class).size());
-        ListView listView = mSolo.getCurrentViews(ListView.class).get(1);
-        assertNotNull(listView);
-        assertEquals(TRANSACTION_COUNT, listView.getCount());
-
-	}
 		
 	public void testIntentAccountCreation(){
 		Intent intent = new Intent(Intent.ACTION_INSERT);
@@ -324,9 +308,7 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
      * Refresh the account list fragment
      */
     private void refreshAccountsList(){
-        Fragment fragment = getActivity()
-                .getSupportFragmentManager()
-                .findFragmentByTag(AccountsActivity.FRAGMENT_ACCOUNTS_LIST);
+        Fragment fragment = getActivity().getCurrentAccountListFragment();
         ((AccountsListFragment)fragment).refresh();
     }
 }

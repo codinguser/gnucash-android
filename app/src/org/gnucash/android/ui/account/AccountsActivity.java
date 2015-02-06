@@ -255,6 +255,10 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
 
 	}
 
+    public void setTab(int index){
+        mPager.setCurrentItem(index);
+    }
+
     /**
      * Loads default setting for currency and performs app first-run initialization
      */

@@ -133,6 +133,8 @@ public class TransactionsActivity extends PassLockActivity implements
     private TextView mSectionHeaderTransactions;
     private TitlePageIndicator mTitlePageIndicator;
 
+    private ViewPager mPager;
+
     private SparseArray<Refreshable> mFragmentPageReferenceMap = new SparseArray<Refreshable>();
 
 	private OnNavigationListener mTransactionListNavigationListener = new OnNavigationListener() {
@@ -275,7 +277,7 @@ public class TransactionsActivity extends PassLockActivity implements
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_transactions);
 
-        ViewPager pager = (ViewPager) findViewById(R.id.pager);
+        mPager = (ViewPager) findViewById(R.id.pager);
         mTitlePageIndicator = (TitlePageIndicator) findViewById(R.id.titles);
         mSectionHeaderTransactions = (TextView) findViewById(R.id.section_header_transactions);
 
@@ -286,7 +288,7 @@ public class TransactionsActivity extends PassLockActivity implements
         setupActionBarNavigation();
 
 		if (getIntent().getAction().equals(Intent.ACTION_INSERT_OR_EDIT)) {
-            pager.setVisibility(View.GONE);
+            mPager.setVisibility(View.GONE);
             mTitlePageIndicator.setVisibility(View.GONE);
 
             initializeCreateOrEditTransaction();
@@ -294,10 +296,10 @@ public class TransactionsActivity extends PassLockActivity implements
             mSectionHeaderTransactions.setVisibility(View.GONE);
 
             PagerAdapter pagerAdapter = new AccountViewPagerAdapter(getSupportFragmentManager());
-            pager.setAdapter(pagerAdapter);
-            mTitlePageIndicator.setViewPager(pager);
+            mPager.setAdapter(pagerAdapter);
+            mTitlePageIndicator.setViewPager(mPager);
 
-            pager.setCurrentItem(INDEX_TRANSACTIONS_FRAGMENT);
+            mPager.setCurrentItem(INDEX_TRANSACTIONS_FRAGMENT);
 		}
 
 		// done creating, activity now running
@@ -471,7 +473,16 @@ public class TransactionsActivity extends PassLockActivity implements
         mAccountsCursor.close();
 		mAccountsDbAdapter.close();
 	}
-	
+
+    /**
+     * Returns the current fragment (either sub-accounts, or transactions) displayed in the activity
+     * @return Current fragment displayed by the view pager
+     */
+    public Fragment getCurrentPagerFragment(){
+        int index = mPager.getCurrentItem();
+        return (Fragment) mFragmentPageReferenceMap.get(index);
+    }
+
 	/**
 	 * Returns the global unique ID of the current account
 	 * @return GUID of the current account

@@ -241,7 +241,7 @@ public class AccountFormFragment extends SherlockFragment {
 		getSherlockActivity().getSupportActionBar().setTitle(R.string.title_add_account);
 		mCurrencySpinner = (Spinner) view.findViewById(R.id.input_currency_spinner);
 		mNameEditText = (EditText) view.findViewById(R.id.edit_text_account_name);
-		mNameEditText.requestFocus();
+		//mNameEditText.requestFocus();
 
         mAccountTypeSpinner = (Spinner) view.findViewById(R.id.input_account_type_spinner);
         mAccountTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
