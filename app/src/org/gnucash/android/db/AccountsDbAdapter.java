@@ -821,31 +821,21 @@ public class AccountsDbAdapter extends DatabaseAdapter {
      * @return Account Balance of an account including sub-accounts
      */
     public Money getAccountBalance(String accountUID){
-        Log.d(TAG, "Computing account balance for account ID " + accountUID);
-        String currencyCode = mTransactionsAdapter.getCurrencyCode(accountUID);
-        boolean hasDebitNormalBalance = getAccountType(accountUID).hasDebitNormalBalance();
-        currencyCode = currencyCode == null ? Money.DEFAULT_CURRENCY_CODE : currencyCode;
-        Money balance = Money.createZeroInstance(currencyCode);
-
-        List<String> accountsList = getDescendantAccountUIDs(accountUID,
-                AccountEntry.COLUMN_CURRENCY + " = ? ",
-                new String[]{currencyCode});
-
-        accountsList.add(0, accountUID);
-
-        SplitsDbAdapter splitsDbAdapter = new SplitsDbAdapter(getContext());
-        Log.d(TAG, "all account list : " + accountsList.size());
-        Money splitSum = splitsDbAdapter.computeSplitBalance(accountsList, currencyCode, hasDebitNormalBalance);
-        splitsDbAdapter.close();
-        return balance.add(splitSum);
+        return computeBalance(accountUID, -1, -1);
     }
 
     /**
-     * Returns the balance of an account within the specified range while taking sub-accounts into consideration
+     * Returns the balance of an account within the specified time range while taking sub-accounts into consideration
+     * @param accountUID the account's UUID
+     * @param startTimestamp the start timestamp of the time range
+     * @param endTimestamp the end timestamp of the time range
      * @return the balance of an account within the specified range including sub-accounts
      */
-    public Money getAccountBalance(String accountUID, long start, long end) {
-        //ToDo refactor to avoid code duplication
+    public Money getAccountBalance(String accountUID, long startTimestamp, long endTimestamp) {
+        return computeBalance(accountUID, startTimestamp, endTimestamp);
+    }
+
+    private Money computeBalance(String accountUID, long startTimestamp, long endTimestamp) {
         Log.d(TAG, "Computing account balance for account ID " + accountUID);
         String currencyCode = mTransactionsAdapter.getCurrencyCode(accountUID);
         boolean hasDebitNormalBalance = getAccountType(accountUID).hasDebitNormalBalance();
@@ -860,7 +850,9 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 
         SplitsDbAdapter splitsDbAdapter = new SplitsDbAdapter(getContext());
         Log.d(TAG, "all account list : " + accountsList.size());
-        Money splitSum = splitsDbAdapter.computeSplitBalance(accountsList, currencyCode, hasDebitNormalBalance, start, end);
+        Money splitSum = (startTimestamp == -1 && endTimestamp == -1)
+                ? splitsDbAdapter.computeSplitBalance(accountsList, currencyCode, hasDebitNormalBalance)
+                : splitsDbAdapter.computeSplitBalance(accountsList, currencyCode, hasDebitNormalBalance, startTimestamp, endTimestamp);
         splitsDbAdapter.close();
         return balance.add(splitSum);
     }
