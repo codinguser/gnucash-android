@@ -21,7 +21,7 @@ There are different ways to get the Gnucash app for Android; through the app sto
 ## Building
 
 The build requires [Maven](http://maven.apache.org/download.html)
-v3.0.3+ and the [Android SDK](http://developer.android.com/sdk/index.html)
+v3.1.1+ and the [Android SDK](http://developer.android.com/sdk/index.html)
 to be installed in your development environment. In addition you'll need to set
 the `ANDROID_HOME` environment variable to the location of your SDK:
 
@@ -51,7 +51,7 @@ You could as well contribute code, fixing bugs, new features or automated tests.
 Take a look at the [bug tracker](https://github.com/codinguser/gnucash-android/issues?state=open)
 for ideas where to start.
 
-For development, it is recommended to use the IntelliJ IDEA 13+ IDE for development which is available as free
+For development, it is recommended to use the IntelliJ IDEA 14+ IDE for development which is available as free
 community edition. Import the project into the IDE from an external (maven) model.The IDE will resolve dependencies automatically.
 
 #Licence

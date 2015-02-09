@@ -28,8 +28,8 @@
 	
 	<properties>
 		<robotium.version>5.2.1</robotium.version>
-        <spoon-client.version>1.0.5</spoon-client.version>
-        <fest-android.version>1.0.6</fest-android.version>
+        <spoon-client.version>1.1.2</spoon-client.version>
+        <fest-android.version>1.0.6</fest-android.version> <!-- TODO: Upgrade to AssertJ -->
         <android.device>usb</android.device>
 	</properties>
 	
@@ -78,12 +78,28 @@
     </dependencies>
     
     <build>
-        <sourceDirectory>src</sourceDirectory>
         <plugins>
             <plugin>
-                <groupId>com.jayway.maven.plugins.android.generation2</groupId>
+                <groupId>com.simpligility.maven.plugins</groupId>
                 <artifactId>android-maven-plugin</artifactId>
                 <extensions>true</extensions>
+            </plugin>
+            <plugin>
+                <groupId>com.squareup.spoon</groupId>
+                <artifactId>spoon-maven-plugin</artifactId>
+                <version>${spoon-client.version}</version>
+                <configuration>
+                    <title>GnuCash Android Integration Tests</title>
+                    <debug>true</debug>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>integration-test</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
