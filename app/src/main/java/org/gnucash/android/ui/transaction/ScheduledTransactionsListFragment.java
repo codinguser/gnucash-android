@@ -112,9 +112,10 @@ public class ScheduledTransactionsListFragment extends SherlockListFragment impl
                             Toast.makeText(getActivity(), R.string.toast_recurring_transaction_deleted, Toast.LENGTH_SHORT).show();
                         }
                     }
-                    refreshList();
                     mode.finish();
                     WidgetConfigurationActivity.updateAllWidgets(getActivity());
+                    getLoaderManager().destroyLoader(0);
+                    refreshList();
                     return true;
 
                 default:

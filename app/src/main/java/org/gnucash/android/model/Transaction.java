@@ -139,10 +139,15 @@ public class Transaction {
         initDefaults();
         setDescription(transaction.getDescription());
         setNote(transaction.getNote());
+        setTime(transaction.getTimeMillis());
+        mCurrencyCode = transaction.mCurrencyCode;
+        mRecurrencePeriod = transaction.mRecurrencePeriod;
+        //exported flag is left at default value of false
+
         for (Split split : transaction.mSplitList) {
             addSplit(new Split(split, true));
         }
-        setTime(transaction.getTimeMillis());
+
         if (!generateNewUID){
             setUID(transaction.getUID());
         }

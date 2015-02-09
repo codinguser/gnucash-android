@@ -164,7 +164,7 @@ public class Split {
      * @return
      */
     public String toCsv(){
-        String splitString = mAmount.toString() + ";" + mAmount.getCurrency().getCurrencyCode() + ";"
+        String splitString = mAmount.asString() + ";" + mAmount.getCurrency().getCurrencyCode() + ";"
                 + mAccountUID + ";" + mSplitType.name();
         if (mMemo != null){
             splitString = splitString + ";" + mMemo;

@@ -464,6 +464,7 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
     @Override
 	public boolean deleteRecord(long rowId){
 		Log.d(TAG, "Delete transaction with record Id: " + rowId);
+        //the splits db adapter handles deletion of the transaction
 		return mSplitsDbAdapter.deleteSplitsForTransaction(rowId);
 	}
 	

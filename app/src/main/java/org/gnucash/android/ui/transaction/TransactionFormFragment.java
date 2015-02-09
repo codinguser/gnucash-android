@@ -861,7 +861,7 @@ public class TransactionFormFragment extends SherlockFragment implements
         @Override
         public void afterTextChanged(Editable s) {
             String value = s.toString();
-            if (mTransactionTypeButton.isChecked()){
+            if (value.length() > 0 && mTransactionTypeButton.isChecked()){
                 if (s.charAt(0) != '-'){
                     s = Editable.Factory.getInstance().newEditable("-" + value);
                 }
