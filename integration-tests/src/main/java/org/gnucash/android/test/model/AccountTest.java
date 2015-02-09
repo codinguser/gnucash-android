@@ -1,4 +1,4 @@
-package org.gnucash.android.test.unit;
+package org.gnucash.android.test.model;
 
 import org.gnucash.android.model.Account;
 
