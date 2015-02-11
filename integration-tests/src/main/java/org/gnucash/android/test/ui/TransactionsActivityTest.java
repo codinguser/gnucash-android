@@ -188,7 +188,9 @@ public class TransactionsActivityTest extends
 		actualValue = timeView.getText().toString();// mSolo.getText(7).getText().toString();
 		assertEquals(expectedValue, actualValue);
 	}
-	
+
+    //TODO: Add test for only one account but with double-entry enabled
+
 	public void testAddTransaction(){
         setDoubleEntryEnabled(true);
         mSolo.waitForText(TRANSACTION_NAME);
