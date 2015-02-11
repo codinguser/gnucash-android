@@ -1,5 +1,15 @@
 Change Log
 ===============================================================================
+Version 1.5.4 *(2015-02-16)*
+----------------------------
+* Fixed: Crash when creating TRADING accounts
+* Fixed: Crash when deleting scheduled transactions
+* Fixed: Account parent can be set to self, creating a cyclic hierarchy
+* Fixed: Transactions not saved when double-entry is enabled but no transfer account is specified
+* Improved: Auto-select the device locale currency in the account-creation dialog
+* Improved: Upgraded structure of repository to match latest Android conventions
+* Improved: Updated instrumentation tests and enabled better test reporting with Spoon
+
 Version 1.5.3 *(2015-02-02)*
 ----------------------------
 * Fixed: Unable to edit double-entry transactions
