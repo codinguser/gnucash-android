@@ -559,9 +559,9 @@ public class AccountFormFragment extends SherlockFragment {
 
         if (mAccount != null){  //if editing an account
             mDescendantAccountUIDs = mAccountsDbAdapter.getDescendantAccountUIDs(mAccount.getUID(), null, null);
+            mDescendantAccountUIDs.add(mAccountsDbAdapter.getGnuCashRootAccountUID());
             // limit cyclic account hierarchies.
-            condition += " AND (" + DatabaseSchema.AccountEntry.COLUMN_PARENT_ACCOUNT_UID + " IS NULL "
-                    + " OR " + DatabaseSchema.AccountEntry.COLUMN_UID + " NOT IN ( '"
+            condition += " AND (" + DatabaseSchema.AccountEntry.COLUMN_UID + " NOT IN ( '"
                     + TextUtils.join("','", mDescendantAccountUIDs) + "','" + mAccountUID + "' ) )";
         }
 
