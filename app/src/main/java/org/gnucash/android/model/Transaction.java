@@ -17,6 +17,7 @@
 package org.gnucash.android.model;
 
 import android.content.Intent;
+
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.export.ofx.OfxHelper;
@@ -244,11 +245,10 @@ public class Transaction {
      * @param splitList List of splits
      * @return Money list of splits
      */
-    public static Money computeBalance(String accountUID, List<Split> splitList){
-        AccountsDbAdapter accountsDbAdapter = new AccountsDbAdapter(GnuCashApplication.getAppContext());
+    public static Money computeBalance(String accountUID, List<Split> splitList) {
+        AccountsDbAdapter accountsDbAdapter = GnuCashApplication.getAccountsDbAdapter();
         AccountType accountType = accountsDbAdapter.getAccountType(accountUID);
         String currencyCode = accountsDbAdapter.getCurrencyCode(accountUID);
-        accountsDbAdapter.close();
 
         boolean isDebitAccount = accountType.hasDebitNormalBalance();
         Money balance = Money.createZeroInstance(currencyCode);
@@ -305,7 +305,7 @@ public class Transaction {
 	 * Returns the description of the transaction
 	 * @return Transaction description
 	 */
-	public String getDescription() {
+    public String getDescription() {
 		return mDescription;
 	}
 
@@ -329,7 +329,7 @@ public class Transaction {
 	 * Returns the transaction notes
 	 * @return String notes of transaction
 	 */
-	public String getNote() {
+    public String getNote() {
 		return mNotes;
 	}
 
@@ -378,7 +378,7 @@ public class Transaction {
 	 * Returns unique ID string for transaction
 	 * @return String with Unique ID of transaction
 	 */
-	public String getUID() {
+    public String getUID() {
 		return mUID;
 	}
 
@@ -404,8 +404,8 @@ public class Transaction {
      * @return true if the amount represents a decrease in the account balance, false otherwise
      * @see #getTypeForBalance(AccountType, boolean)
      */
-    public static boolean shouldDecreaseBalance(AccountType accountType, TransactionType transactionType){
-        if (accountType.hasDebitNormalBalance()){
+    public static boolean shouldDecreaseBalance(AccountType accountType, TransactionType transactionType) {
+        if (accountType.hasDebitNormalBalance()) {
             return transactionType == TransactionType.CREDIT;
         } else
             return transactionType == TransactionType.DEBIT;
@@ -501,10 +501,9 @@ public class Transaction {
             acctId.appendChild(doc.createTextNode(transferAccountUID));
 
             Element accttype = doc.createElement(OfxHelper.TAG_ACCOUNT_TYPE);
-            AccountsDbAdapter acctDbAdapter = new AccountsDbAdapter(GnuCashApplication.getAppContext());
+            AccountsDbAdapter acctDbAdapter = GnuCashApplication.getAccountsDbAdapter();
             OfxAccountType ofxAccountType = Account.convertToOfxAccountType(acctDbAdapter.getAccountType(transferAccountUID));
             accttype.appendChild(doc.createTextNode(ofxAccountType.toString()));
-            acctDbAdapter.close();
 
             Element bankAccountTo = doc.createElement(OfxHelper.TAG_BANK_ACCOUNT_TO);
             bankAccountTo.appendChild(bankId);

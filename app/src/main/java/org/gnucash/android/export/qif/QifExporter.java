@@ -18,16 +18,13 @@ package org.gnucash.android.export.qif;
 
 import android.content.ContentValues;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 
-import org.gnucash.android.app.GnuCashApplication;
 import static org.gnucash.android.db.DatabaseSchema.*;
 
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.export.ExportParams;
 import org.gnucash.android.export.Exporter;
-import org.gnucash.android.model.Account;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -42,17 +39,13 @@ import java.util.Currency;
  */
 public class QifExporter extends Exporter{
     public QifExporter(ExportParams params){
-        super(params);
-    }
-
-    public QifExporter(ExportParams params,  SQLiteDatabase db){
-        super(params, db);
+        super(params, null);
     }
 
     @Override
     public void generateExport(Writer writer) throws ExporterException {
         final String newLine = "\n";
-        TransactionsDbAdapter transactionsDbAdapter = new TransactionsDbAdapter(GnuCashApplication.getAppContext());
+        TransactionsDbAdapter transactionsDbAdapter = mTransactionsDbAdapter;
         try {
             Cursor cursor = transactionsDbAdapter.fetchTransactionsWithSplitsWithTransactionAccount(
                     new String[]{
@@ -173,9 +166,6 @@ public class QifExporter extends Exporter{
         catch (IOException e)
         {
             throw new ExporterException(mParameters, e);
-        }
-        finally {
-            transactionsDbAdapter.close();
         }
     }
 }

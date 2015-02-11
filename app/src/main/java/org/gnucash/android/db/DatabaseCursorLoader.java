@@ -140,10 +140,6 @@ public abstract class DatabaseCursorLoader extends AsyncTaskLoader<Cursor> {
      */
 	protected void onReleaseResources(Cursor c) {
 		if (c != null)
-			c.close();		
-		
-		if (mDatabaseAdapter != null){
-			mDatabaseAdapter.close();
-		}
+			c.close();
 	}
 }

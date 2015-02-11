@@ -53,8 +53,7 @@ public class TransactionsDeleteConfirmationDialogFragment extends SherlockDialog
         return frag;
     }
 
-    @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
+    @Override    public Dialog onCreateDialog(Bundle savedInstanceState) {
         int title = getArguments().getInt("title");
         final long rowId = getArguments().getLong(UxArgument.SELECTED_TRANSACTION_IDS);
         int message = rowId == 0 ? R.string.msg_delete_all_transactions_confirmation : R.string.msg_delete_transaction_confirmation;
@@ -64,15 +63,13 @@ public class TransactionsDeleteConfirmationDialogFragment extends SherlockDialog
                 .setPositiveButton(R.string.alert_dialog_ok_delete,
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int whichButton) {
-                                TransactionsDbAdapter transactionsDbAdapter = new TransactionsDbAdapter(getSherlockActivity());
+                                TransactionsDbAdapter transactionsDbAdapter = GnuCashApplication.getTransactionDbAdapter();
                                 if (rowId == 0) {
                                     GncXmlExporter.createBackup(); //create backup before deleting everything
                                     List<Transaction> openingBalances = new ArrayList<Transaction>();
                                     boolean preserveOpeningBalances = GnuCashApplication.shouldSaveOpeningBalances(false);
                                     if (preserveOpeningBalances) {
-                                        AccountsDbAdapter accountsDbAdapter = new AccountsDbAdapter(getActivity());
-                                        openingBalances = accountsDbAdapter.getAllOpeningBalanceTransactions();
-                                        accountsDbAdapter.close();
+                                        openingBalances = GnuCashApplication.getAccountsDbAdapter().getAllOpeningBalanceTransactions();
                                     }
 
                                     transactionsDbAdapter.deleteAllRecords();
@@ -83,7 +80,6 @@ public class TransactionsDeleteConfirmationDialogFragment extends SherlockDialog
                                 } else {
                                     transactionsDbAdapter.deleteRecord(rowId);
                                 }
-                                transactionsDbAdapter.close();
                                 if (getTargetFragment() instanceof AccountsListFragment) {
                                     ((AccountsListFragment) getTargetFragment()).refresh();
                                 }

@@ -257,8 +257,7 @@ public class ExporterAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
             } finally {
                 if (inChannel != null)
                     inChannel.close();
-                if (outChannel != null)
-                    outChannel.close();
+                outChannel.close();
             }
         }
     }

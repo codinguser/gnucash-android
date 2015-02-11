@@ -40,6 +40,7 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import org.gnucash.android.R;
+import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.model.Transaction;
 import org.gnucash.android.db.*;
 import org.gnucash.android.ui.UxArgument;
@@ -128,7 +129,7 @@ public class ScheduledTransactionsListFragment extends SherlockListFragment impl
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mTransactionsDbAdapter = new TransactionsDbAdapter(getActivity());
+        mTransactionsDbAdapter = GnuCashApplication.getTransactionDbAdapter();
         mCursorAdapter = new TransactionsCursorAdapter(
                 getActivity().getApplicationContext(),
                 R.layout.list_item_scheduled_trxn, null,
@@ -168,12 +169,6 @@ public class ScheduledTransactionsListFragment extends SherlockListFragment impl
     public void onResume() {
         super.onResume();
         refreshList();
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        mTransactionsDbAdapter.close();
     }
 
     @Override
@@ -416,13 +411,11 @@ public class ScheduledTransactionsListFragment extends SherlockListFragment impl
             super(context);
         }
 
-        @Override
-        public Cursor loadInBackground() {
-            mDatabaseAdapter = new TransactionsDbAdapter(getContext());
+        @Override        public Cursor loadInBackground() {
+            mDatabaseAdapter = GnuCashApplication.getTransactionDbAdapter();
             Cursor c = ((TransactionsDbAdapter) mDatabaseAdapter).fetchAllRecurringTransactions();
 
-            if (c != null)
-                registerContentObserver(c);
+            registerContentObserver(c);
             return c;
         }
     }

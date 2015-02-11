@@ -16,12 +16,17 @@
 
 package org.gnucash.android.test.ui;
 
+import android.database.SQLException;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Environment;
 import android.test.ActivityInstrumentationTestCase2;
+import android.util.Log;
 import android.widget.Spinner;
 import com.robotium.solo.Solo;
 import org.gnucash.android.R;
 import org.gnucash.android.db.AccountsDbAdapter;
+import org.gnucash.android.db.DatabaseHelper;
+import org.gnucash.android.db.SplitsDbAdapter;
 import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.export.ExportFormat;
 import org.gnucash.android.export.Exporter;
@@ -37,16 +42,32 @@ public class ExportTransactionsTest extends
 		ActivityInstrumentationTestCase2<AccountsActivity> {
 
 	private Solo mSolo;
-	
-	public ExportTransactionsTest() {
+    private DatabaseHelper mDbHelper;
+    private SQLiteDatabase mDb;
+    private AccountsDbAdapter mAccountsDbAdapter;
+    private TransactionsDbAdapter mTransactionsDbAdapter;
+    private SplitsDbAdapter mSplitsDbAdapter;
+
+    public ExportTransactionsTest() {
 		super(AccountsActivity.class);
 	}
 	
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
-		mSolo = new Solo(getInstrumentation(), getActivity());	
-		
+		mSolo = new Solo(getInstrumentation(), getActivity());
+
+        mDbHelper = new DatabaseHelper(getActivity());
+        try {
+            mDb = mDbHelper.getWritableDatabase();
+        } catch (SQLException e) {
+            Log.e(getClass().getName(), "Error getting database: " + e.getMessage());
+            mDb = mDbHelper.getReadableDatabase();
+        }
+        mSplitsDbAdapter = new SplitsDbAdapter(mDb);
+        mTransactionsDbAdapter = new TransactionsDbAdapter(mDb, mSplitsDbAdapter);
+        mAccountsDbAdapter = new AccountsDbAdapter(mDb, mTransactionsDbAdapter);
+
 		Account account = new Account("Exportable");		
 		Transaction transaction = new Transaction("Pizza");
 		transaction.setNote("What up?");
@@ -55,9 +76,7 @@ public class ExportTransactionsTest extends
         transaction.addSplit(split);
 		account.addTransaction(transaction);
 		
-		AccountsDbAdapter adapter = new AccountsDbAdapter(getActivity());
-		adapter.addAccount(account);
-		adapter.close();	
+		mAccountsDbAdapter.addAccount(account);
 	}
 	
 	/**
@@ -123,12 +142,12 @@ public class ExportTransactionsTest extends
 
         //if this is not deleted, we cannot be certain that the next test will pass on its own merits
         boolean isDeleted = file.delete();
+        mSolo.sleep(1000);
         assertTrue(isDeleted);
     }
 
 	public void testDeleteTransactionsAfterExport(){
-		TransactionsDbAdapter transAdapter = new TransactionsDbAdapter(getActivity());
-		assertTrue(transAdapter.getAllTransactionsCount() != 0);
+		assertTrue(mTransactionsDbAdapter.getAllTransactionsCount() != 0);
 		
         mSolo.clickOnActionBarItem(R.id.menu_export);
 //        ActionBarUtils.clickSherlockActionBarItem(mSolo, R.id.menu_export);
@@ -151,9 +170,8 @@ public class ExportTransactionsTest extends
 		mSolo.waitForDialogToClose(1000);
         mSolo.sleep(1000);
 
-		assertEquals(0, transAdapter.getAllTransactionsCount());
+		assertEquals(0, mTransactionsDbAdapter.getAllTransactionsCount());
 		
-		transAdapter.close();
         mSolo.goBack();
 	}
 	
@@ -228,9 +246,9 @@ public class ExportTransactionsTest extends
 	
 	@Override
 	protected void tearDown() throws Exception {
-		AccountsDbAdapter adapter = new AccountsDbAdapter(getActivity());
-		adapter.deleteAllRecords();
-		adapter.close();
+		mAccountsDbAdapter.deleteAllRecords();
+        mDbHelper.close();
+        mDb.close();
 		mSolo.finishOpenedActivities();
 		super.tearDown();
 	}

@@ -21,6 +21,7 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 import org.gnucash.android.app.GnuCashApplication;
+import org.gnucash.android.db.SplitsDbAdapter;
 import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.export.xml.GncXmlHelper;
 import org.gnucash.android.model.*;
@@ -110,38 +111,34 @@ public class GncXmlHandler extends DefaultHandler {
     boolean mInDefaultTransferAccount = false;
     boolean mInExported         = false;
 
-    private Context mContext;
     private TransactionsDbAdapter mTransactionsDbAdapter;
 
-    public GncXmlHandler(Context context) {
-        init(context, false);
+    public GncXmlHandler() {
+        init(false, null);
     }
 
-    public GncXmlHandler(Context context, boolean bulk) {
-        init(context, bulk);
+    public GncXmlHandler(boolean bulk) {
+        init(bulk, null);
     }
 
-    private void init(Context context, boolean bulk) {
-        mContext = context;
-        mAccountsDbAdapter = new AccountsDbAdapter(mContext);
-        mTransactionsDbAdapter = new TransactionsDbAdapter(mContext);
+    public GncXmlHandler(boolean bulk, SQLiteDatabase db) {
+        init(bulk, db);
+    }
+
+    private void init(boolean bulk, SQLiteDatabase db) {
+        if (db == null) {
+            mAccountsDbAdapter = GnuCashApplication.getAccountsDbAdapter();
+            mTransactionsDbAdapter = GnuCashApplication.getTransactionDbAdapter();
+        } else {
+            mTransactionsDbAdapter = new TransactionsDbAdapter(db, new SplitsDbAdapter(db));
+            mAccountsDbAdapter = new AccountsDbAdapter(db, mTransactionsDbAdapter);
+        }
         mContent = new StringBuilder();
         mBulk = bulk;
         if (bulk) {
             mAccountList = new ArrayList<Account>();
             mTransactionList = new ArrayList<Transaction>();
         }
-    }
-
-    /**
-     * Instantiates handler to parse XML into already open db
-     * @param db SQLite Database
-     */
-    public GncXmlHandler(SQLiteDatabase db){
-        mContext = GnuCashApplication.getAppContext();
-        mAccountsDbAdapter = new AccountsDbAdapter(db);
-        mTransactionsDbAdapter = new TransactionsDbAdapter(db);
-        mContent = new StringBuilder();
     }
 
     @Override
@@ -402,7 +399,5 @@ public class GncXmlHandler extends DefaultHandler {
             long endTime = System.nanoTime();
             Log.d("Handler:", String.format(" bulk insert time: %d", endTime - startTime));
         }
-        mAccountsDbAdapter.close();
-        mTransactionsDbAdapter.close();
     }
 }

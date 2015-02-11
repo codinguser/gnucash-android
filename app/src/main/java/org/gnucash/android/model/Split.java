@@ -1,5 +1,6 @@
 package org.gnucash.android.model;
 
+
 import org.gnucash.android.export.xml.GncXmlHelper;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -30,7 +31,7 @@ public class Split {
     /**
      * Transaction UID which this split belongs to
      */
-    private String mTransactionUID;
+    private String mTransactionUID = "";
 
     /**
      * Account UID which this split belongs to
@@ -40,7 +41,7 @@ public class Split {
     /**
      * The type of this transaction, credit or debit
      */
-    private TransactionType mSplitType;
+    private TransactionType mSplitType = TransactionType.CREDIT;
 
     /**
      * Memo associated with this split
@@ -134,7 +135,7 @@ public class Split {
         return pair;
     }
 
-    protected Split clone(){
+    protected Split clone() {
         Split split = new Split(mAmount, mAccountUID);
         split.mUID = mUID;
         split.setType(mSplitType);
@@ -146,8 +147,8 @@ public class Split {
     /**
      * Checks is this <code>other</code> is a pair split of this.
      * <p>Two splits are considered a pair if they have the same amount and opposite split types</p>
-     * @param other
-     * @return
+     * @param other the other split of the pair to be tested
+     * @return whether the two splits are a pair
      */
     public boolean isPairOf(Split other) {
         return mAmount.absolute().equals(other.mAmount.absolute())
@@ -161,7 +162,7 @@ public class Split {
 
     /**
      * Returns a string representation of the split which can be parsed again using {@link org.gnucash.android.model.Split#parseSplit(String)}
-     * @return
+     * @return the converted CSV string of this split
      */
     public String toCsv(){
         String splitString = mAmount.asString() + ";" + mAmount.getCurrency().getCurrencyCode() + ";"

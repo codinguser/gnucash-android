@@ -23,7 +23,7 @@ import android.util.Log;
 
 import org.gnucash.android.db.DatabaseSchema;
 import static org.gnucash.android.db.DatabaseSchema.*;
-import org.gnucash.android.db.TransactionsDbAdapter;
+
 import org.gnucash.android.export.ExportFormat;
 import org.gnucash.android.export.ExportParams;
 import org.gnucash.android.export.Exporter;
@@ -58,22 +58,12 @@ import java.util.zip.GZIPOutputStream;
  */
 public class GncXmlExporter extends Exporter{
 
-    private TransactionsDbAdapter mTransactionsDbAdapter;
-
-    public GncXmlExporter(ExportParams params){
-        super(params);
-        mTransactionsDbAdapter = new TransactionsDbAdapter(mContext);
+    public GncXmlExporter(ExportParams params) {
+        super(params, null);
     }
 
-    /**
-     * Overloaded constructor.
-     * <p>This method is used mainly by the {@link org.gnucash.android.db.DatabaseHelper} for database migrations</p>
-     * @param params Export parameters
-     * @param db SQLite database from which to export
-     */
-    public GncXmlExporter(ExportParams params, SQLiteDatabase db){
+    public GncXmlExporter(ExportParams params, SQLiteDatabase db) {
         super(params, db);
-        mTransactionsDbAdapter = new TransactionsDbAdapter(db);
     }
 
     private void exportSlots(XmlSerializer xmlSerializer,
@@ -194,7 +184,7 @@ public class GncXmlExporter extends Exporter{
                         SplitEntry.TABLE_NAME+"."+ SplitEntry.COLUMN_TYPE + " AS split_type",
                         SplitEntry.TABLE_NAME+"."+ SplitEntry.COLUMN_AMOUNT + " AS split_amount",
                         SplitEntry.TABLE_NAME+"."+ SplitEntry.COLUMN_ACCOUNT_UID + " AS split_acct_uid"
-                }, null,
+                }, null, null,
                 TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_RECURRENCE_PERIOD + " ASC , " +
                         TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_TIMESTAMP + " ASC , " +
                         TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_UID + " ASC ");
@@ -464,35 +454,35 @@ public class GncXmlExporter extends Exporter{
         bookNode.appendChild(transactionCountNode);
 
         String rootAccountUID = mAccountsDbAdapter.getGnuCashRootAccountUID();
-        Account rootAccount = mAccountsDbAdapter.getAccount(rootAccountUID);
-        if (rootAccount != null){
+        if (rootAccountUID != null) {
+            Account rootAccount = mAccountsDbAdapter.getAccount(rootAccountUID);
             rootAccount.toGncXml(document, bookNode);
         }
         Cursor accountsCursor = mAccountsDbAdapter.fetchAllRecordsOrderedByFullName();
 
         //create accounts hierarchically by ordering by full name
-        if (accountsCursor != null){
-            while (accountsCursor.moveToNext()){
+        try {
+            while (accountsCursor.moveToNext()) {
                 long id = accountsCursor.getLong(accountsCursor.getColumnIndexOrThrow(DatabaseSchema.AccountEntry._ID));
                 Account account = mAccountsDbAdapter.getAccount(id);
                 account.toGncXml(document, bookNode);
             }
+        } finally {
             accountsCursor.close();
         }
 
         //more memory efficient approach than loading all transactions into memory first
         Cursor transactionsCursor = mTransactionsDbAdapter.fetchAllRecords();
-        if (transactionsCursor != null){
-            while (transactionsCursor.moveToNext()){
+        try {
+            while (transactionsCursor.moveToNext()) {
                 Transaction transaction = mTransactionsDbAdapter.buildTransactionInstance(transactionsCursor);
                 transaction.toGncXml(document, bookNode);
             }
+        } finally {
             transactionsCursor.close();
         }
 
         document.appendChild(rootElement);
-        mAccountsDbAdapter.close();
-        mTransactionsDbAdapter.close();
 
         StringWriter stringWriter = new StringWriter();
         try {

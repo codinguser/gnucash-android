@@ -22,7 +22,6 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.util.List;
 
-import android.database.sqlite.SQLiteDatabase;
 import android.preference.PreferenceManager;
 import org.gnucash.android.R;
 import org.gnucash.android.export.ExportParams;
@@ -58,17 +57,8 @@ public class OfxExporter extends Exporter{
 	 * Builds an XML representation of the {@link Account}s and {@link Transaction}s in the database
 	 */
 	public OfxExporter(ExportParams params) {
-        super(params);
+        super(params, null);
 	}
-
-    /**
-     * Initializes the OFX exporter with a specific database to export from
-     * @param params Export parameters/options
-     * @param db SQLite database object (should be already open)
-     */
-    public OfxExporter(ExportParams params, SQLiteDatabase db){
-        super(params, db);
-    }
 
     /**
 	 * Converts all expenses into OFX XML format and adds them to the XML document
@@ -88,7 +78,7 @@ public class OfxExporter extends Exporter{
 		
 		parent.appendChild(bankmsgs);		
 		
-		AccountsDbAdapter accountsDbAdapter = new AccountsDbAdapter(mContext);
+		AccountsDbAdapter accountsDbAdapter = mAccountsDbAdapter;
 		for (Account account : mAccountsList) {		
 			if (account.getTransactionCount() == 0)
 				continue; 
@@ -100,13 +90,11 @@ public class OfxExporter extends Exporter{
 			accountsDbAdapter.markAsExported(account.getUID());
 			
 		}
-		accountsDbAdapter.close();
 	}
 
     public String generateExport() throws ExporterException {
         mAccountsList = mParameters.shouldExportAllTransactions() ?
                 mAccountsDbAdapter.getAllAccounts() : mAccountsDbAdapter.getExportableAccounts();
-        mAccountsDbAdapter.close();
 
         DocumentBuilderFactory docFactory = DocumentBuilderFactory
                 .newInstance();

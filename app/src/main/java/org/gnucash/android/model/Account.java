@@ -16,6 +16,7 @@
 
 package org.gnucash.android.model;
 
+
 import org.gnucash.android.export.ofx.OfxHelper;
 import org.gnucash.android.export.xml.GncXmlHelper;
 import org.w3c.dom.Document;
@@ -202,7 +203,7 @@ public class Account {
 	protected String generateUID(){
 		String uuid = UUID.randomUUID().toString();
 		
-		if (mName == null || mName.length() == 0){
+		if (mName.length() == 0){
 			//if we do not have a name, return pure random
 			return uuid.substring(0, 22);
 		}
@@ -368,7 +369,7 @@ public class Account {
 	 * Sets the currency to be used by this account
 	 * @param mCurrency the mCurrency to set
 	 */
-	public void setCurrency(Currency mCurrency) {		
+	public void setCurrency(Currency mCurrency) {
 		this.mCurrency = mCurrency;
 		//TODO: Maybe at some time t, this method should convert all 
 		//transaction values to the corresponding value in the new currency
@@ -388,7 +389,6 @@ public class Account {
 	 */
 	public String getParentUID() {
 		return mParentAccountUID;
-		
 	}
 
     /**
@@ -433,7 +433,7 @@ public class Account {
 	 * @see AccountType
 	 * @see OfxAccountType
 	 */
-	public static OfxAccountType convertToOfxAccountType(AccountType accountType){
+    public static OfxAccountType convertToOfxAccountType(AccountType accountType){
 		switch (accountType) {
 		case CREDIT:
 		case LIABILITY:

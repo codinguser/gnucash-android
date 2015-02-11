@@ -16,24 +16,30 @@
 
 package org.gnucash.android.test.ui;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.database.SQLException;
+import android.database.sqlite.SQLiteDatabase;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.test.ActivityInstrumentationTestCase2;
+import android.util.Log;
 import android.view.View;
-import android.widget.*;
+import android.widget.EditText;
+import android.widget.Spinner;
+import android.widget.TextView;
+import android.widget.ToggleButton;
 import com.robotium.solo.Solo;
 import org.gnucash.android.R;
 import org.gnucash.android.db.AccountsDbAdapter;
+import org.gnucash.android.db.DatabaseHelper;
+import org.gnucash.android.db.SplitsDbAdapter;
 import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.model.*;
 import org.gnucash.android.ui.UxArgument;
 import org.gnucash.android.ui.transaction.TransactionFormFragment;
 import org.gnucash.android.ui.transaction.TransactionsActivity;
-import org.gnucash.android.ui.transaction.TransactionsListFragment;
 import org.gnucash.android.ui.util.TransactionTypeToggleButton;
 
 import java.math.BigDecimal;
@@ -60,6 +66,12 @@ public class TransactionsActivityTest extends
     private Solo mSolo;
 	private Transaction mTransaction;
 	private long mTransactionTimeMillis;
+
+    private SQLiteDatabase mDb;
+    private DatabaseHelper mDbHelper;
+    private AccountsDbAdapter mAccountsDbAdapter;
+    private TransactionsDbAdapter mTransactionsDbAdapter;
+    private SplitsDbAdapter mSplitsDbAdapter;
 	
 	public TransactionsActivityTest() {
 		super(TransactionsActivity.class);
@@ -67,6 +79,17 @@ public class TransactionsActivityTest extends
 	
 	@Override
 	protected void setUp() throws Exception {
+        mDbHelper = new DatabaseHelper(getInstrumentation().getTargetContext());
+        try {
+            mDb = mDbHelper.getWritableDatabase();
+        } catch (SQLException e) {
+            Log.e(getClass().getName(), "Error getting database: " + e.getMessage());
+            mDb = mDbHelper.getReadableDatabase();
+        }
+        mSplitsDbAdapter = new SplitsDbAdapter(mDb);
+        mTransactionsDbAdapter = new TransactionsDbAdapter(mDb, mSplitsDbAdapter);
+        mAccountsDbAdapter = new AccountsDbAdapter(mDb, mTransactionsDbAdapter);
+
         mTransactionTimeMillis = System.currentTimeMillis();
         Account account = new Account(DUMMY_ACCOUNT_NAME);
         account.setUID(DUMMY_ACCOUNT_UID);
@@ -86,12 +109,8 @@ public class TransactionsActivityTest extends
         mTransaction.addSplit(split.createPair(TRANSFER_ACCOUNT_UID));
         account.addTransaction(mTransaction);
 
-        Context context = getInstrumentation().getTargetContext();
-        AccountsDbAdapter adapter = new AccountsDbAdapter(context);
-        long id1 = adapter.addAccount(account);
-        long id2 = adapter.addAccount(account2);
-
-        adapter.close();
+        long id1 = mAccountsDbAdapter.addAccount(account);
+        long id2 = mAccountsDbAdapter.addAccount(account2);
         assertTrue(id1 > 0);
         assertTrue(id2 > 0);
 
@@ -117,9 +136,7 @@ public class TransactionsActivityTest extends
 	}
 	
 	private int getTranscationCount(){
-		TransactionsDbAdapter transactionsDb = new TransactionsDbAdapter(getActivity());
-		int count = transactionsDb.fetchAllTransactionsForAccount(DUMMY_ACCOUNT_UID).getCount();
-		transactionsDb.close();
+		int count = mTransactionsDbAdapter.getAllTransactionsForAccount(DUMMY_ACCOUNT_UID).size();
 		return count;
 	}
 	
@@ -140,8 +157,7 @@ public class TransactionsActivityTest extends
 		mSolo.waitForText(TRANSACTION_NAME);
 		validateTransactionListDisplayed();
 		
-		TransactionsDbAdapter adapter = new TransactionsDbAdapter(getActivity());
-		int beforeCount = adapter.getTransactionsCount(adapter.getAccountID(DUMMY_ACCOUNT_UID));
+		int beforeCount = mTransactionsDbAdapter.getTransactionsCount(mTransactionsDbAdapter.getAccountID(DUMMY_ACCOUNT_UID));
         clickSherlockActionBarItem(R.id.menu_add_transaction);
 		mSolo.waitForText("Description");
 		mSolo.enterText(0, "Lunch");
@@ -151,10 +167,9 @@ public class TransactionsActivityTest extends
 		boolean toastFound = mSolo.waitForText(toastAmountRequired);
         assertTrue(toastFound);
 
-		int afterCount = adapter.getTransactionsCount(adapter.getAccountID(DUMMY_ACCOUNT_UID));
+		int afterCount = mTransactionsDbAdapter.getTransactionsCount(mTransactionsDbAdapter.getAccountID(DUMMY_ACCOUNT_UID));
 		assertEquals(beforeCount, afterCount);
 
-        adapter.close();
         mSolo.goBack();
 	}
 	
@@ -227,8 +242,7 @@ public class TransactionsActivityTest extends
 
         mSolo.sleep(1000);
 
-        TransactionsDbAdapter transactionsDbAdapter = new TransactionsDbAdapter(getActivity());
-        List<Transaction> transactions = transactionsDbAdapter.getAllTransactionsForAccount(DUMMY_ACCOUNT_UID);
+        List<Transaction> transactions = mTransactionsDbAdapter.getAllTransactionsForAccount(DUMMY_ACCOUNT_UID);
         assertEquals(2, transactions.size());
         Transaction transaction = transactions.get(0);
 
@@ -239,7 +253,6 @@ public class TransactionsActivityTest extends
         assertEquals(TransactionType.DEBIT, split.getType());
         assertEquals(transactionsCount + 1, getTranscationCount());
 
-        transactionsDbAdapter.close();
     }
 
 	public void testEditTransaction(){		
@@ -326,8 +339,7 @@ public class TransactionsActivityTest extends
 		clickSherlockActionBarItem(R.id.menu_save);
 		mSolo.waitForText(DUMMY_ACCOUNT_NAME);
 		
-		TransactionsDbAdapter adapter = new TransactionsDbAdapter(getActivity());
-		List<Transaction> transactions = adapter.getAllTransactionsForAccount(DUMMY_ACCOUNT_UID);
+		List<Transaction> transactions = mTransactionsDbAdapter.getAllTransactionsForAccount(DUMMY_ACCOUNT_UID);
 		
 		assertEquals(1, transactions.size());
 		Transaction trx = transactions.get(0);
@@ -350,8 +362,7 @@ public class TransactionsActivityTest extends
 
 			mSolo.waitForText(DUMMY_ACCOUNT_NAME);
 			
-			TransactionsDbAdapter adapter = new TransactionsDbAdapter(getActivity());
-			List<Transaction> transactions = adapter.getAllTransactionsForAccount(DUMMY_ACCOUNT_UID);
+			List<Transaction> transactions = mTransactionsDbAdapter.getAllTransactionsForAccount(DUMMY_ACCOUNT_UID);
 			
 			assertEquals(1, transactions.size());
 			Transaction trx = transactions.get(0);
@@ -374,26 +385,21 @@ public class TransactionsActivityTest extends
 		mSolo.waitForText(DUMMY_ACCOUNT_NAME);
 		
 		mSolo.clickOnCheckBox(0);		
-//		mSolo.clickOnActionBarItem(R.id.context_menu_delete);
-        clickSherlockActionBarItem(R.id.context_menu_delete);
-
-        mSolo.sleep(500);
-		TransactionsDbAdapter adapter = new TransactionsDbAdapter(getInstrumentation().getTargetContext());
-        long id = adapter.getAccountID(DUMMY_ACCOUNT_UID);
-		assertEquals(0, adapter.getTransactionsCount(id));
-
-		adapter.close();
+		clickSherlockActionBarItem(R.id.context_menu_delete);
 		
+		mSolo.sleep(500);
+
+		long id = mAccountsDbAdapter.getID(DUMMY_ACCOUNT_UID);
+		assertEquals(0, mTransactionsDbAdapter.getTransactionsCount(id));
 	}
 	
 	public void testBulkMoveTransactions(){
         String targetAccountName = "Target";
         Account account = new Account(targetAccountName);
 		account.setCurrency(Currency.getInstance(Locale.getDefault()));
-		AccountsDbAdapter accountsDbAdapter = new AccountsDbAdapter(getActivity());
-		accountsDbAdapter.addAccount(account);
+		mAccountsDbAdapter.addAccount(account);
 		
-		int beforeOriginCount = accountsDbAdapter.getAccount(DUMMY_ACCOUNT_UID).getTransactionCount();
+		int beforeOriginCount = mAccountsDbAdapter.getAccount(DUMMY_ACCOUNT_UID).getTransactionCount();
 		
 		mSolo.waitForText(DUMMY_ACCOUNT_NAME);
 		
@@ -415,22 +421,16 @@ public class TransactionsActivityTest extends
 		
 		mSolo.waitForDialogToClose(2000);
 		
-		int targetCount = accountsDbAdapter.getAccount(account.getUID()).getTransactionCount();
+		int targetCount = mAccountsDbAdapter.getAccount(account.getUID()).getTransactionCount();
 		assertEquals(1, targetCount);
 		
-		int afterOriginCount = accountsDbAdapter.getAccount(DUMMY_ACCOUNT_UID).getTransactionCount();
+		int afterOriginCount = mAccountsDbAdapter.getAccount(DUMMY_ACCOUNT_UID).getTransactionCount();
 		assertEquals(beforeOriginCount-1, afterOriginCount);
-		
-		accountsDbAdapter.close();
-		
 	}
 	
 	public void testLegacyIntentTransactionRecording(){
-        final Context context = getInstrumentation().getTargetContext();
-		TransactionsDbAdapter trxnAdapter = new TransactionsDbAdapter(context);
-		int beforeCount = trxnAdapter.getTransactionsCount(DUMMY_ACCOUNT_UID);
-
-        Intent transactionIntent = new Intent(Intent.ACTION_INSERT);
+		int beforeCount = mTransactionsDbAdapter.getTransactionsCount(DUMMY_ACCOUNT_UID);
+		Intent transactionIntent = new Intent(Intent.ACTION_INSERT);
 		transactionIntent.setType(Transaction.MIME_TYPE);
 		transactionIntent.putExtra(Intent.EXTRA_TITLE, "Power intents");
 		transactionIntent.putExtra(Intent.EXTRA_TEXT, "Intents for sale");
@@ -438,15 +438,15 @@ public class TransactionsActivityTest extends
 		transactionIntent.putExtra(Transaction.EXTRA_ACCOUNT_UID, DUMMY_ACCOUNT_UID);
 		transactionIntent.putExtra(Transaction.EXTRA_TRANSACTION_TYPE, TransactionType.DEBIT.name());
 
-		context.sendBroadcast(transactionIntent);
+		getActivity().sendBroadcast(transactionIntent);
 
         mSolo.sleep(2000);
 
-		int afterCount = trxnAdapter.getTransactionsCount(DUMMY_ACCOUNT_UID);
+		int afterCount = mTransactionsDbAdapter.getTransactionsCount(DUMMY_ACCOUNT_UID);
 		
 		assertEquals(beforeCount + 1, afterCount);
 		
-		List<Transaction> transactions = trxnAdapter.getAllTransactionsForAccount(DUMMY_ACCOUNT_UID);
+		List<Transaction> transactions = mTransactionsDbAdapter.getAllTransactionsForAccount(DUMMY_ACCOUNT_UID);
 		
 		for (Transaction transaction : transactions) {
 			if (transaction.getDescription().equals("Power intents")){
@@ -454,18 +454,15 @@ public class TransactionsActivityTest extends
 				assertEquals(4.99, transaction.getBalance(DUMMY_ACCOUNT_UID).asDouble());
 			}
 		}
-		
-		trxnAdapter.close();
 	}
 
 	@Override
 	protected void tearDown() throws Exception {	
-		AccountsDbAdapter adapter = new AccountsDbAdapter(getActivity());
-		adapter.deleteAllRecords();
-		adapter.close();
-		
+		mAccountsDbAdapter.deleteAllRecords();
+
 		mSolo.finishOpenedActivities();
-		
+		mDbHelper.close();
+        mDb.close();
 		super.tearDown();
 	}
 }

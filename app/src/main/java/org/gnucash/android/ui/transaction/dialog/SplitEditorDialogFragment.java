@@ -27,6 +27,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.*;
 import org.gnucash.android.R;
+import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.db.SplitsDbAdapter;
@@ -105,7 +106,7 @@ public class SplitEditorDialogFragment extends DialogFragment {
         getDialog().setTitle(R.string.title_transaction_splits);
 
         mSplitItemViewList = new ArrayList<View>();
-        mSplitsDbAdapter = new SplitsDbAdapter(getActivity());
+        mSplitsDbAdapter = GnuCashApplication.getSplitsDbAdapter();
 
         //we are editing splits for a new transaction.
         // But the user may have already created some splits before. Let's check
@@ -186,18 +187,21 @@ public class SplitEditorDialogFragment extends DialogFragment {
      * Extracts arguments passed to the view and initializes necessary adapters and cursors
      */
     private void initArgs() {
-        mAccountsDbAdapter = new AccountsDbAdapter(getActivity());
+        mAccountsDbAdapter = GnuCashApplication.getAccountsDbAdapter();
 
-        Bundle args     = getArguments();
-        mAccountUID      = ((TransactionsActivity)getActivity()).getCurrentAccountUID();
-        mBaseAmount     = new BigDecimal(args.getString(UxArgument.AMOUNT_STRING));
+        Bundle args = getArguments();
+        mAccountUID = ((TransactionsActivity) getActivity()).getCurrentAccountUID();
+        mBaseAmount = new BigDecimal(args.getString(UxArgument.AMOUNT_STRING));
 
         String conditions = "(" //+ AccountEntry._ID + " != " + mAccountId + " AND "
-                + (mMultiCurrency ? "" : (DatabaseSchema.AccountEntry.COLUMN_CURRENCY + " = '" + mAccountsDbAdapter.getCurrencyCode(mAccountUID)
-                + "' AND ")) + DatabaseSchema.AccountEntry.COLUMN_UID + " != '" + mAccountsDbAdapter.getGnuCashRootAccountUID()
-                + "' AND " + DatabaseSchema.AccountEntry.COLUMN_PLACEHOLDER + " = 0"
+                + (mMultiCurrency ? "" : (DatabaseSchema.AccountEntry.COLUMN_CURRENCY + " = ? AND "))
+                + DatabaseSchema.AccountEntry.COLUMN_UID + " != '" + mAccountsDbAdapter.getGnuCashRootAccountUID() + "' AND "
+                + DatabaseSchema.AccountEntry.COLUMN_PLACEHOLDER + " = 0"
                 + ")";
-        mCursor = mAccountsDbAdapter.fetchAccountsOrderedByFullName(conditions);
+        mCursor = mAccountsDbAdapter.fetchAccountsOrderedByFullName(conditions,
+                mMultiCurrency ? new String[]{"" + mAccountsDbAdapter.getGnuCashRootAccountUID()} :
+                        new String[]{mAccountsDbAdapter.getCurrencyCode(mAccountUID)}
+        );
     }
 
     /**
@@ -367,8 +371,6 @@ public class SplitEditorDialogFragment extends DialogFragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        mAccountsDbAdapter.close();
-        mSplitsDbAdapter.close();
     }
 
     /**

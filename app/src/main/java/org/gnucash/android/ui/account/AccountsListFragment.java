@@ -51,6 +51,7 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import org.gnucash.android.R;
+import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.model.Account;
 import org.gnucash.android.db.*;
 import org.gnucash.android.export.ExportDialogFragment;
@@ -212,7 +213,7 @@ public class AccountsListFragment extends SherlockListFragment implements
         if (args != null)
             mParentAccountUID = args.getString(UxArgument.PARENT_ACCOUNT_UID);
 
-        mAccountsDbAdapter = new AccountsDbAdapter(getActivity());
+        mAccountsDbAdapter = GnuCashApplication.getAccountsDbAdapter();
         mAccountsCursorAdapter = new AccountsCursorAdapter(
                 getActivity().getApplicationContext(),
                 R.layout.list_item_account, null,
@@ -429,8 +430,6 @@ public class AccountsListFragment extends SherlockListFragment implements
     @Override
     public void onDestroy() {
         super.onDestroy();
-        mAccountsDbAdapter.close();
-        mAccountsCursorAdapter.close();
     }
 
     /**
@@ -541,7 +540,7 @@ public class AccountsListFragment extends SherlockListFragment implements
             return frag;
         }
 
-        @Override
+            @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
             int title = getArguments().getInt("title");
             final String uid = getArguments().getString(UxArgument.SELECTED_ACCOUNT_UID);
@@ -556,7 +555,7 @@ public class AccountsListFragment extends SherlockListFragment implements
                             new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int whichButton) {
                                     Context context = getDialog().getContext();
-                                    AccountsDbAdapter accountsDbAdapter = new AccountsDbAdapter(context);
+                                    AccountsDbAdapter accountsDbAdapter = GnuCashApplication.getAccountsDbAdapter();
                                     if (uid == null) {
                                         accountsDbAdapter.deleteAllRecords();
                                         Toast.makeText(context, R.string.toast_all_accounts_deleted, Toast.LENGTH_SHORT).show();
@@ -566,7 +565,6 @@ public class AccountsListFragment extends SherlockListFragment implements
                                         long rowId = accountsDbAdapter.getID(uid);
                                         ((AccountsListFragment) getTargetFragment()).deleteAccount(rowId, deleteSubAccountsCheckBox.isChecked());
                                     }
-                                    accountsDbAdapter.close();
                                 }
                             })
                     .setNegativeButton(R.string.alert_dialog_cancel,
@@ -621,12 +619,12 @@ public class AccountsListFragment extends SherlockListFragment implements
 
         @Override
         public Cursor loadInBackground() {
-            mDatabaseAdapter = new AccountsDbAdapter(getContext());
+            mDatabaseAdapter = GnuCashApplication.getAccountsDbAdapter();
             Cursor cursor;
 
             if (mFilter != null){
                 cursor = ((AccountsDbAdapter)mDatabaseAdapter)
-                        .fetchAccounts(DatabaseSchema.AccountEntry.COLUMN_NAME + " LIKE '%" + mFilter + "%'");
+                        .fetchAccounts(DatabaseSchema.AccountEntry.COLUMN_NAME + " LIKE '%" + mFilter + "%'", null);
             } else {
                 if (mParentAccountUID != null && mParentAccountUID.length() > 0)
                     cursor = ((AccountsDbAdapter) mDatabaseAdapter).fetchSubAccounts(mParentAccountUID);
@@ -665,11 +663,7 @@ public class AccountsListFragment extends SherlockListFragment implements
         public AccountsCursorAdapter(Context context, int layout, Cursor c,
                                      String[] from, int[] to) {
             super(context, layout, c, from, to, 0);
-            transactionsDBAdapter = new TransactionsDbAdapter(context);
-        }
-
-        public void close() {
-            transactionsDBAdapter.close();
+            transactionsDBAdapter = GnuCashApplication.getTransactionDbAdapter();
         }
 
         @Override

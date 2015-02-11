@@ -41,6 +41,7 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import org.gnucash.android.R;
+import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.model.Account;
@@ -82,11 +83,6 @@ public class AccountFormFragment extends SherlockFragment {
 	 */
 	private AccountsDbAdapter mAccountsDbAdapter;
 
-    /**
-     * Whether the AccountsDbAdapter is created inside this class.
-     * If so, it should be also closed by this class
-     */
-    private boolean mReleaseDbAdapter = false;
 	
 	/**
 	 * List of all currency codes (ISO 4217) supported by the app
@@ -211,21 +207,17 @@ public class AccountFormFragment extends SherlockFragment {
 	 * @param dbAdapter {@link AccountsDbAdapter} for saving the account
 	 * @return New instance of the dialog fragment
 	 */
-	static public AccountFormFragment newInstance(AccountsDbAdapter dbAdapter){
-		AccountFormFragment f = new AccountFormFragment();
-		f.mAccountsDbAdapter = dbAdapter;
-        f.mReleaseDbAdapter = false;
-		return f;
-	}
+	static public AccountFormFragment newInstance() {
+        AccountFormFragment f = new AccountFormFragment();
+        f.mAccountsDbAdapter = GnuCashApplication.getAccountsDbAdapter();
+        return f;
+    }
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setHasOptionsMenu(true);
-        if (mAccountsDbAdapter == null){
-            mReleaseDbAdapter = true;
-            mAccountsDbAdapter = new AccountsDbAdapter(getSherlockActivity());
-        }
+        mAccountsDbAdapter = GnuCashApplication.getAccountsDbAdapter();
 
         SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
         mUseDoubleEntry = sharedPrefs.getBoolean(getString(R.string.key_use_double_entry), true);
@@ -234,8 +226,7 @@ public class AccountFormFragment extends SherlockFragment {
 	/**
 	 * Inflates the dialog view and retrieves references to the dialog elements
 	 */
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+	@Override	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.fragment_new_account, container, false);
 		getSherlockActivity().getSupportActionBar().setTitle(R.string.title_add_account);
@@ -304,7 +295,7 @@ public class AccountFormFragment extends SherlockFragment {
 		ArrayAdapter<String> currencyArrayAdapter = new ArrayAdapter<String>(
 				getActivity(), 
 				android.R.layout.simple_spinner_item, 
-				getResources().getStringArray(R.array.currency_names));		
+				getResources().getStringArray(R.array.currency_names));
 		currencyArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		mCurrencySpinner.setAdapter(currencyArrayAdapter);
 
@@ -315,8 +306,11 @@ public class AccountFormFragment extends SherlockFragment {
             getSherlockActivity().getSupportActionBar().setTitle(R.string.title_edit_account);
         }
         mRootAccountUID = mAccountsDbAdapter.getGnuCashRootAccountUID();
-        mRootAccountId = mAccountsDbAdapter.getAccountID(mRootAccountUID);
-
+        if (mRootAccountUID == null) {
+            mRootAccountId = -1;
+        } else {
+            mRootAccountId = mAccountsDbAdapter.getAccountID(mRootAccountUID);
+        }
         //need to load the cursor adapters for the spinners before initializing the views
         loadAccountTypesList();
         loadDefaultTransferAccountList();
@@ -359,7 +353,8 @@ public class AccountFormFragment extends SherlockFragment {
         mNameEditText.setText(account.getName());
 
         if (mUseDoubleEntry) {
-            long doubleDefaultAccountId = mAccountsDbAdapter.getAccountID(account.getDefaultTransferAccountUID());
+            String defaultTransferUID = account.getDefaultTransferAccountUID();
+            long doubleDefaultAccountId = (defaultTransferUID == null ? -1 : mAccountsDbAdapter.getAccountID(defaultTransferUID));
             setDefaultTransferAccountSelection(doubleDefaultAccountId);
         }
 
@@ -415,6 +410,7 @@ public class AccountFormFragment extends SherlockFragment {
     private void setDefaultTransferAccountInputsVisible(boolean visible) {
         final int visibility = visible ? View.VISIBLE : View.GONE;
         final View view = getView();
+        assert view != null;
         view.findViewById(R.id.layout_default_transfer_account).setVisibility(visibility);
         view.findViewById(R.id.label_default_transfer_account).setVisibility(visibility);
     }
@@ -532,12 +528,12 @@ public class AccountFormFragment extends SherlockFragment {
         String condition = DatabaseSchema.AccountEntry.COLUMN_UID + " != '" + mAccountUID + "' "
                 + " AND " + DatabaseSchema.AccountEntry.COLUMN_PLACEHOLDER + "=0"
                 + " AND " + DatabaseSchema.AccountEntry.COLUMN_UID + " != '" + mAccountsDbAdapter.getGnuCashRootAccountUID() + "'";
-        /*
-      Cursor holding data set of eligible transfer accounts
-     */
-        Cursor defaultTransferAccountCursor = mAccountsDbAdapter.fetchAccountsOrderedByFullName(condition);
 
-        if (defaultTransferAccountCursor == null || mDefaulTransferAccountSpinner.getCount() <= 0){
+        //using whereArgs (2nd parameter) would produce safer sql,
+        // however we get an exception because mAccountUID can be null, or the root account may be null as well
+        Cursor defaultTransferAccountCursor = mAccountsDbAdapter.fetchAccountsOrderedByFullName(condition, null);
+
+        if (mDefaulTransferAccountSpinner.getCount() <= 0) {
             setDefaultTransferAccountInputsVisible(false);
         }
 
@@ -559,7 +555,9 @@ public class AccountFormFragment extends SherlockFragment {
 
         if (mAccount != null){  //if editing an account
             mDescendantAccountUIDs = mAccountsDbAdapter.getDescendantAccountUIDs(mAccount.getUID(), null, null);
-            mDescendantAccountUIDs.add(mAccountsDbAdapter.getGnuCashRootAccountUID());
+            String rootAccountUID = mAccountsDbAdapter.getGnuCashRootAccountUID();
+            if (rootAccountUID != null)
+                mDescendantAccountUIDs.add(rootAccountUID);
             // limit cyclic account hierarchies.
             condition += " AND (" + DatabaseSchema.AccountEntry.COLUMN_UID + " NOT IN ( '"
                     + TextUtils.join("','", mDescendantAccountUIDs) + "','" + mAccountUID + "' ) )";
@@ -569,9 +567,10 @@ public class AccountFormFragment extends SherlockFragment {
         if (mParentAccountCursor != null)
             mParentAccountCursor.close();
 
-		mParentAccountCursor = mAccountsDbAdapter.fetchAccountsOrderedByFullName(condition);
-		if (mParentAccountCursor == null || mParentAccountCursor.getCount() <= 0){
+		mParentAccountCursor = mAccountsDbAdapter.fetchAccountsOrderedByFullName(condition, null);
+		if (mParentAccountCursor.getCount() <= 0){
             final View view = getView();
+            assert view != null;
             view.findViewById(R.id.layout_parent_account).setVisibility(View.GONE);
             view.findViewById(R.id.label_parent_account).setVisibility(View.GONE);
         }
@@ -676,11 +675,6 @@ public class AccountFormFragment extends SherlockFragment {
 		super.onDestroyView();
 		if (mParentAccountCursor != null)
 			mParentAccountCursor.close();
-        // The mAccountsDbAdapter should only be closed when it is not passed in
-        // by other Activities.
-		if (mReleaseDbAdapter && mAccountsDbAdapter != null) {
-            mAccountsDbAdapter.close();
-        }
         if (mDefaultTransferAccountCursorAdapter != null) {
             mDefaultTransferAccountCursorAdapter.getCursor().close();
         }
@@ -769,7 +763,7 @@ public class AccountFormFragment extends SherlockFragment {
                     // mAccountsDbAdapter.getDescendantAccountUIDs() will ensure a parent-child order
                     Account acct = mapAccount.get(uid);
                     // mAccount cannot be root, so acct here cannot be top level account.
-                    if (acct.getParentUID().equals(mAccount.getUID())) {
+                    if (mAccount.getUID().equals(acct.getParentUID())) {
                         acct.setFullName(mAccount.getFullName() + AccountsDbAdapter.ACCOUNT_NAME_SEPARATOR + acct.getName());
                     }
                     else {
@@ -784,7 +778,7 @@ public class AccountFormFragment extends SherlockFragment {
         }
         accountsToUpdate.add(mAccount);
 		if (mAccountsDbAdapter == null)
-			mAccountsDbAdapter = new AccountsDbAdapter(getActivity());
+			mAccountsDbAdapter = GnuCashApplication.getAccountsDbAdapter();
         // bulk update, will not update transactions
 		mAccountsDbAdapter.bulkAddAccounts(accountsToUpdate);
 

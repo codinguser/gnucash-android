@@ -415,7 +415,7 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
         FragmentTransaction fragmentTransaction = fragmentManager
                 .beginTransaction();
 
-        AccountFormFragment accountFormFragment = AccountFormFragment.newInstance(null);
+        AccountFormFragment accountFormFragment = AccountFormFragment.newInstance();
         accountFormFragment.setArguments(args);
 
         fragmentTransaction.replace(R.id.fragment_container,
@@ -507,9 +507,7 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
             delegate = new TaskDelegate() {
                 @Override
                 public void onTaskComplete() {
-                    AccountsDbAdapter accountsDbAdapter = new AccountsDbAdapter(activity);
-                    accountsDbAdapter.updateAllAccounts(DatabaseSchema.AccountEntry.COLUMN_CURRENCY, currencyCode);
-                    accountsDbAdapter.close();
+                    GnuCashApplication.getAccountsDbAdapter().updateAllAccounts(DatabaseSchema.AccountEntry.COLUMN_CURRENCY, currencyCode);
                 }
             };
         }
