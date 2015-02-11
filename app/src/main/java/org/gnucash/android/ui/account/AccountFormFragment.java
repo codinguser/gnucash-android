@@ -598,7 +598,7 @@ public class AccountFormFragment extends SherlockFragment {
 
             case INCOME:
             case EXPENSE:
-                return "'" + AccountType.EXPENSE + "', '" + AccountType.INCOME + "'";
+                return "'" + AccountType.EXPENSE.name() + "', '" + AccountType.INCOME.name() + "'";
 
             case CASH:
             case BANK:
@@ -617,6 +617,9 @@ public class AccountFormFragment extends SherlockFragment {
                 accountTypeStrings.remove(AccountType.ROOT.name());
                 return "'" + TextUtils.join("','", accountTypeStrings) + "'";
             }
+
+            case TRADING:
+                return "'" + AccountType.TRADING.name() + "'";
 
             case ROOT:
             default:
