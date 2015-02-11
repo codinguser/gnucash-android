@@ -84,7 +84,7 @@ public class ExportTransactionsTest extends
 		String filename = Exporter.buildExportFilename(ExportFormat.OFX);
 		
 		mSolo.waitForDialogToClose(2000);
-        mSolo.sleep(2000);
+        mSolo.sleep(5000);
 		
 		
 		File file = new File(Environment.getExternalStorageDirectory() + "/gnucash/" + filename);
