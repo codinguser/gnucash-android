@@ -1,5 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- ==================================================================== -->
+    <!-- TODO: Move these strings to proper language files when feature is done -->
+    <string-array name="recurrence_period_strings">
+        <item>NONE</item>
+        <item>DAILY</item>
+        <item>WEEKLY</item>
+        <item>MONTHLY</item>
+    </string-array>
+    <string-array name="nav_drawer_entries">
+        <item>Accounts</item>
+        <item>Favorites</item>
+        <item>Export Transactions</item>
+        <item>Recurring Transactions</item>
+    </string-array>
+
+    <!-- ==================================================================== -->
+    <string name="app_version_name">1.5.3</string>
     <string name="key_default_currency">default_currency</string>
     <string name="key_first_run">key_first_run</string>
     <string name="key_build_version">build_version</string>

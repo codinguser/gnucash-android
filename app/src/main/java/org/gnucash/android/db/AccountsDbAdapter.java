@@ -829,7 +829,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
             }
         }
 
-        Money splitSum = mTransactionsAdapter.getSplitDbAdapter().computeSplitBalance(getAccountUID(accountId));
+        Money splitSum = mTransactionsAdapter.getSplitDbAdapter().computeSplitBalance(getUID(accountId));
         return balance.add(splitSum);
     }
 
@@ -905,7 +905,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
         List<Long> subAccounts = new ArrayList<Long>();
         String accountUID;
         try {
-            accountUID = getAccountUID(accountId);
+            accountUID = getUID(accountId);
         } catch (IllegalArgumentException e) {
             return subAccounts;
         }
@@ -1104,7 +1104,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
                 if (uid == null)
                     return 0;
                 else
-                    return getAccountID(uid);
+                    return getID(uid);
             } else {
                 return 0;
             }
@@ -1190,13 +1190,13 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 
     /**
      * Returns true if the account is a favorite account, false otherwise
-     * @param accountId Record ID of the account
+     * @param accountUID GUID of the account
      * @return <code>true</code> if the account is a favorite account, <code>false</code> otherwise
      */
-    public boolean isFavoriteAccount(long accountId){
+    public boolean isFavoriteAccount(String accountUID){
         Cursor cursor = mDb.query(AccountEntry.TABLE_NAME,
                 new String[]{AccountEntry.COLUMN_FAVORITE},
-                AccountEntry._ID + " = " + accountId, null,
+                AccountEntry.COLUMN_UID + " = ?", new String[]{accountUID},
                 null, null, null);
 
         boolean isFavorite = false;

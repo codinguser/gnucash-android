@@ -272,7 +272,6 @@
 	<string name="title_about_gnucash">&#220;ber GnuCash</string>
 	<string name="summary_about_gnucash">GnuCashMobile ist eine mobile Datenaufzeichungs-App f&#252;r Android. \nEs erm&#246;glicht die schnelle und flexible Registrierung von Zahlungsvorg&#228;ngen unterwegs, die dann als Datei im OFX-Format exportiert und von der GnuCash-Anwendung an einem Desktop-PC importiert werden k&#246;nnen.</string>
 	<string name="title_about">&#220;ber</string>
-	<string name="ofx_file_exported_to">OFX-Datei exportiert nach:</string>
 	<string name="toast_format_exported_to">%1$s-Datei erfolgreich exportiert nach:\n</string>
 	<string name="title_export_email">GnuCash Android exportierte %1$s-Datei</string>
 	<string name="description_export_email">GnuCash-Android-Konten-Export von </string>
@@ -383,12 +382,6 @@
     <string name="menu_scheduled_transactions">Eingeplante Buchungen</string>
     <string name="msg_confirm_create_default_accounts_first_run">Willkommen bei GnuCash Android!\nSie können entweder eine Hierarchie der für gewöhnlich verwendeten Konten erstellen oder Ihre eigene GnuCash-Kontenstruktur importieren.\n\nBeide Optionen sind auch in den Einstellungen verfügbar, sodass Sie dies später entscheiden können.
     </string>
-    <string-array name="recurrence_values">
-        <item>KEINE</item>
-        <item>TÄGLICH</item>
-        <item>WÖCHENTLICH</item>
-        <item>MONATLICH</item>
-    </string-array>
     <string name="title_scheduled_transactions">Eingeplante Buchungen</string>
     <string name="title_select_export_destination">Exportziel auswählen</string>
     <string name="hint_split_memo">Buchungstext</string>
@@ -420,4 +413,16 @@
     <string name="title_transaction_splits">Transaction splits</string>
     <string name="label_imbalance">Imbalance:</string>
     <string name="btn_add_split">Add split</string>
+    <string name="label_passcode">Enter Passcode</string>
+    <string name="toast_wrong_passcode">Wrong passcode, please try again</string>
+    <string name="toast_passcode_set">Passcode set</string>
+    <string name="toast_confirm_passcode">Please confirm your passcode</string>
+    <string name="toast_invalid_passcode_confirmation">Invalid passcode confirmation. Please try again</string>
+    <string name="header_passcode_settings">Passcode</string>
+    <string name="title_passcode_preferences">Passcode Preferences</string>
+    <string name="title_passcode_enabled">Passcode Turned On</string>
+    <string name="title_passcode_disabled">Passcode Turned Off</string>
+    <string name="title_change_passcode">Change Passcode</string>
+    <string name="toast_error_edit_multi_currency_transaction">Multi-currency transactions cannot be modified</string>
+    <string name="menu_title_favorite">Favorite</string>
 </resources>

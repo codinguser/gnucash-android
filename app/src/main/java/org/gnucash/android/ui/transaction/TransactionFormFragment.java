@@ -391,7 +391,6 @@ public class TransactionFormFragment extends SherlockFragment implements
         mDoubleAccountSpinner.setEnabled(b);
         // the next is always enabled, so the user can check the detailed info of splits
         // mOpenSplitsButton;
-        mRecurringTransactionSpinner.setEnabled(b);
     }
 
     private void setAmountEditViewVisible(int visibility) {
@@ -509,7 +508,7 @@ public class TransactionFormFragment extends SherlockFragment implements
 				} catch (ParseException e) {
 					Log.e(getTag(), "Error converting input time to Date object");
 				}
-				DialogFragment newFragment = new DatePickerDialogFragment(TransactionFormFragment.this, dateMillis);
+				DialogFragment newFragment = DatePickerDialogFragment.newInstance(TransactionFormFragment.this, dateMillis);
 				newFragment.show(ft, "date_dialog");
 			}
 		});
@@ -526,7 +525,7 @@ public class TransactionFormFragment extends SherlockFragment implements
                 } catch (ParseException e) {
                     Log.e(getTag(), "Error converting input time to Date object");
                 }
-                DialogFragment fragment = new TimePickerDialogFragment(TransactionFormFragment.this, timeMillis);
+                DialogFragment fragment = TimePickerDialogFragment.newInstance(TransactionFormFragment.this, timeMillis);
                 fragment.show(ft, "time_dialog");
             }
         });
@@ -580,13 +579,13 @@ public class TransactionFormFragment extends SherlockFragment implements
      * Callback when the account in the navigation bar is changed by the user
      * @param newAccountUID GUID of the newly selected account
      */
-    public void onAccountChanged(long newAccountId) {
+    public void onAccountChanged(String newAccountUID) {
         if (mMultiCurrency) {
             Toast.makeText(getActivity(), R.string.toast_error_edit_multi_currency_transaction, Toast.LENGTH_LONG).show();
             return;
         }
         AccountsDbAdapter accountsDbAdapter = GnuCashApplication.getAccountsDbAdapter();
-        String currencyCode = accountsDbAdapter.getCurrencyCode(newAccountId);
+        String currencyCode = accountsDbAdapter.getCurrencyCode(newAccountUID);
         Currency currency = Currency.getInstance(currencyCode);
         mCurrencyTextView.setText(currency.getSymbol(Locale.getDefault()));
 
@@ -707,7 +706,7 @@ public class TransactionFormFragment extends SherlockFragment implements
         }
         mTransactionsDbAdapter.addTransaction(recurringTransaction);
 
-        ScheduledEventDbAdapter scheduledEventDbAdapter = new ScheduledEventDbAdapter(getActivity());
+        ScheduledEventDbAdapter scheduledEventDbAdapter = GnuCashApplication.getScheduledEventDbAdapter();
         Toast.makeText(getActivity(), "Found " + events.size() + " events", Toast.LENGTH_LONG).show();
         for (ScheduledEvent event : events) {
             scheduledEventDbAdapter.addScheduledEvent(event);
@@ -716,7 +715,6 @@ public class TransactionFormFragment extends SherlockFragment implements
 
             Log.d("TransactionFormFragment", event.toString());
         }
-        scheduledEventDbAdapter.close();
     }
 
 

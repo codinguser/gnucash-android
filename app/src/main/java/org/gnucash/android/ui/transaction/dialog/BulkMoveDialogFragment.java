@@ -148,7 +148,7 @@ public class BulkMoveDialogFragment extends DialogFragment {
 					return;
 				}
                 String srcAccountUID    = ((TransactionsActivity)getActivity()).getCurrentAccountUID();
-                String dstAccountUID    = mAccountsDbAdapter.getUID(dstAccountId);
+                String dstAccountUID    = GnuCashApplication.getAccountsDbAdapter().getUID(dstAccountId);
 				for (long trxnId : mTransactionIds) {
 					trxnAdapter.moveTransaction(trxnAdapter.getUID(trxnId), srcAccountUID, dstAccountUID);
 				}

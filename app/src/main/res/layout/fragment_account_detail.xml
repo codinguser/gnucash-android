@@ -40,7 +40,6 @@
             android:id="@+id/add_preference_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:onClick="onAddNewPreferenceClick"
             android:text="@string/title_add_account" />
     </LinearLayout>
 </LinearLayout>

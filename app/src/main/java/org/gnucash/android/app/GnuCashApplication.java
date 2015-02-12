@@ -23,10 +23,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import org.gnucash.android.R;
-import org.gnucash.android.db.AccountsDbAdapter;
-import org.gnucash.android.db.DatabaseHelper;
-import org.gnucash.android.db.SplitsDbAdapter;
-import org.gnucash.android.db.TransactionsDbAdapter;
+import org.gnucash.android.db.*;
 
 import java.util.Currency;
 import java.util.Locale;
@@ -60,6 +57,8 @@ public class GnuCashApplication extends Application{
 
     private static SplitsDbAdapter mSplitsDbAdapter;
 
+    private static ScheduledEventDbAdapter mScheduledEventDbAdapter;
+
     @Override
     public void onCreate(){
         super.onCreate();
@@ -74,6 +73,7 @@ public class GnuCashApplication extends Application{
         mSplitsDbAdapter = new SplitsDbAdapter(mDb);
         mTransactionsDbAdapter = new TransactionsDbAdapter(mDb, mSplitsDbAdapter);
         mAccountsDbAdapter = new AccountsDbAdapter(mDb, mTransactionsDbAdapter);
+        mScheduledEventDbAdapter = new ScheduledEventDbAdapter(mDb);
     }
 
     public static AccountsDbAdapter getAccountsDbAdapter() {
@@ -86,6 +86,10 @@ public class GnuCashApplication extends Application{
 
     public static SplitsDbAdapter getSplitsDbAdapter() {
         return mSplitsDbAdapter;
+    }
+
+    public static ScheduledEventDbAdapter getScheduledEventDbAdapter(){
+        return mScheduledEventDbAdapter;
     }
 
     /**

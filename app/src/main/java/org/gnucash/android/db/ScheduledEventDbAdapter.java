@@ -30,10 +30,6 @@ import org.gnucash.android.model.ScheduledEvent;
  */
 public class ScheduledEventDbAdapter extends DatabaseAdapter {
 
-    public ScheduledEventDbAdapter(Context context){
-        super(context);
-    }
-
     public ScheduledEventDbAdapter(SQLiteDatabase db){
         super(db);
     }

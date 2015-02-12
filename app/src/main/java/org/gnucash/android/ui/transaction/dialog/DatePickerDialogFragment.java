@@ -17,6 +17,7 @@
 package org.gnucash.android.ui.transaction.dialog;
 
 import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
 
 import android.app.DatePickerDialog;
@@ -56,12 +57,14 @@ public class DatePickerDialogFragment extends DialogFragment {
 	 * @param callback Listener to notify when the date is set and the dialog is closed
 	 * @param dateMillis Time in milliseconds to which to initialize the dialog
 	 */
-	public DatePickerDialogFragment(OnDateSetListener callback, long dateMillis) {
-		mDateSetListener = callback;
+	public static DatePickerDialogFragment newInstance(OnDateSetListener callback, long dateMillis) {
+		DatePickerDialogFragment datePickerDialogFragment = new DatePickerDialogFragment();
+        datePickerDialogFragment.mDateSetListener = callback;
 		if (dateMillis > 0){
-			mDate = new GregorianCalendar();
-			mDate.setTimeInMillis(dateMillis);
+			datePickerDialogFragment.mDate = new GregorianCalendar();
+			datePickerDialogFragment.mDate.setTimeInMillis(dateMillis);
 		}
+        return datePickerDialogFragment;
 	}
 
 	/**

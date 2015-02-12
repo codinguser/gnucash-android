@@ -438,4 +438,16 @@
     <string name="title_transaction_splits">Transaction splits</string>
     <string name="label_imbalance">Imbalance:</string>
     <string name="btn_add_split">Add split</string>
+    <string name="label_passcode">Enter Passcode</string>
+    <string name="toast_wrong_passcode">Wrong passcode, please try again</string>
+    <string name="toast_passcode_set">Passcode set</string>
+    <string name="toast_confirm_passcode">Please confirm your passcode</string>
+    <string name="toast_invalid_passcode_confirmation">Invalid passcode confirmation. Please try again</string>
+    <string name="header_passcode_settings">Passcode</string>
+    <string name="title_passcode_preferences">Passcode Preferences</string>
+    <string name="title_passcode_enabled">Passcode Turned On</string>
+    <string name="title_passcode_disabled">Passcode Turned Off</string>
+    <string name="title_change_passcode">Change Passcode</string>
+    <string name="toast_error_edit_multi_currency_transaction">Multi-currency transactions cannot be modified</string>
+    <string name="menu_title_favorite">Favorite</string>
 </resources>

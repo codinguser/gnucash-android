@@ -54,12 +54,14 @@ public class TimePickerDialogFragment extends DialogFragment {
 	 * @param listener {@link OnTimeSetListener} to notify when the time has been set
 	 * @param timeMillis Time in milliseconds to initialize the dialog to
 	 */
-	public TimePickerDialogFragment(OnTimeSetListener listener, long timeMillis){
-		mListener = listener;
+	public static TimePickerDialogFragment newInstance(OnTimeSetListener listener, long timeMillis){
+		TimePickerDialogFragment timePickerDialogFragment = new TimePickerDialogFragment();
+        timePickerDialogFragment.mListener = listener;
 		if (timeMillis > 0){
-			mCurrentTime = new GregorianCalendar();
-			mCurrentTime.setTimeInMillis(timeMillis);
+			timePickerDialogFragment.mCurrentTime = new GregorianCalendar();
+			timePickerDialogFragment.mCurrentTime.setTimeInMillis(timeMillis);
 		}
+        return timePickerDialogFragment;
 	}
 	
 	/**

@@ -1,3 +1,5 @@
+build
+.gradle
 *.apk
 .DS_Store
 .metadata

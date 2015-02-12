@@ -17,6 +17,7 @@
 package org.gnucash.android.db;
 
 import android.content.Context;
+import android.support.v4.content.Loader;
 import android.database.Cursor;
 import android.support.v4.content.AsyncTaskLoader;
 
@@ -46,7 +47,7 @@ public abstract class DatabaseCursorLoader extends AsyncTaskLoader<Cursor> {
 	 * the dataset backing the cursor changes. You need to register the oberserver on
 	 * your cursor using {@link #registerContentObserver(Cursor)}
 	 */
-	protected final ForceLoadContentObserver mObserver;
+	protected final Loader.ForceLoadContentObserver mObserver;
 	
 	/**
 	 * Constructor
