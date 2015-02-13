@@ -157,7 +157,7 @@ public class TransactionsActivityTest extends
 		mSolo.waitForText(TRANSACTION_NAME);
 		validateTransactionListDisplayed();
 		
-		int beforeCount = mTransactionsDbAdapter.getTransactionsCount(mTransactionsDbAdapter.getAccountID(DUMMY_ACCOUNT_UID));
+		int beforeCount = mTransactionsDbAdapter.getTransactionsCount(DUMMY_ACCOUNT_UID);
         clickSherlockActionBarItem(R.id.menu_add_transaction);
 		mSolo.waitForText("Description");
 		mSolo.enterText(0, "Lunch");
@@ -167,7 +167,7 @@ public class TransactionsActivityTest extends
 		boolean toastFound = mSolo.waitForText(toastAmountRequired);
         assertTrue(toastFound);
 
-		int afterCount = adapter.getTransactionsCount(adapter.getID(DUMMY_ACCOUNT_UID));
+		int afterCount = mTransactionsDbAdapter.getTransactionsCount(DUMMY_ACCOUNT_UID);
 		assertEquals(beforeCount, afterCount);
 
         mSolo.goBack();

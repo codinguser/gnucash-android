@@ -253,7 +253,7 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
 
         Exception expectedException = null;
         try {
-            mAccountsDbAdapter.getAccountID(accountUidToDelete);
+            mAccountsDbAdapter.getID(accountUidToDelete);
         } catch (IllegalArgumentException e){
             expectedException = e;
         }

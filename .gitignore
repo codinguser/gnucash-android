@@ -1,5 +1,7 @@
 build
 .gradle
+local.properties
+gradle/local.properties
 *.apk
 .DS_Store
 .metadata
