@@ -62,6 +62,7 @@ public class ScheduledEvent {
     public ScheduledEvent(EventType eventType){
         mUID = UUID.randomUUID().toString().replaceAll("-", "");
         mEventType = eventType;
+        mStartDate = System.currentTimeMillis();
     }
 
     public String getUID(){
@@ -123,7 +124,12 @@ public class ScheduledEvent {
     @Override
     public String toString() {
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
-        return mEventType.name() + " recurring every " + mPeriod/ RecurrenceParser.DAY_MILLIS + " days starting on "
+        String eventString = mEventType.name() + " recurring every " + mPeriod/ RecurrenceParser.DAY_MILLIS + " days starting on "
                 + dateFormat.format(new Date(mStartDate));
+        if (mEndDate > 0){
+            eventString += " until " + dateFormat.format(mEndDate);
+        }
+
+        return eventString;
     }
 }

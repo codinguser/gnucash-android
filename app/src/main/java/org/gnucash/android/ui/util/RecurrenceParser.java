@@ -35,7 +35,7 @@ public class RecurrenceParser {
     public static final long MINUTE_MILLIS  = 60*SECOND_MILLIS;
     public static final long DAY_MILLIS     = 24*60*MINUTE_MILLIS;
     public static final long WEEK_MILLIS    = 7*DAY_MILLIS;
-    public static final long MONTH_MILLIS   = 4*WEEK_MILLIS;
+    public static final long MONTH_MILLIS   = 30*DAY_MILLIS;
     public static final long YEAR_MILLIS    = 12*MONTH_MILLIS;
 
 
@@ -51,60 +51,62 @@ public class RecurrenceParser {
         long period = 0;
         List<ScheduledEvent> scheduledEventList = new ArrayList<ScheduledEvent>();
         switch(eventRecurrence.freq){
-            case EventRecurrence.DAILY:
-                period = DAY_MILLIS;
+            case EventRecurrence.DAILY: {
+                if (eventRecurrence.interval == 0) //I assume this is a bug from the picker library
+                    period = DAY_MILLIS;
+                else
+                    period = eventRecurrence.interval * DAY_MILLIS;
+
+                ScheduledEvent scheduledEvent = new ScheduledEvent(eventType);
+                scheduledEvent.setPeriod(period);
+                parseEndTime(eventRecurrence, scheduledEvent);
+                scheduledEventList.add(scheduledEvent);
+            }
                 break;
 
             case EventRecurrence.WEEKLY: {
-                period = WEEK_MILLIS;
+                if (eventRecurrence.interval == 0)
+                    period = WEEK_MILLIS;
+                else
+                    period = eventRecurrence.interval * WEEK_MILLIS;
                 for (int day : eventRecurrence.byday) {
                     ScheduledEvent scheduledEvent = new ScheduledEvent(eventType);
                     scheduledEvent.setPeriod(period);
 
-                    scheduledEvent.setStartTime(nextDayOfWeek(day).getTimeInMillis());
-                    if (eventRecurrence.until != null && eventRecurrence.until.length() > 0) {
-                        Time endTime = new Time();
-                        endTime.parse(eventRecurrence.until);
-                        scheduledEvent.setEndTime(endTime.toMillis(false));
-                    } else if (eventRecurrence.count > 0){
-                        scheduledEvent.setEndTime(scheduledEvent.getStartTime() + (scheduledEvent.getPeriod() * eventRecurrence.count));
-                    }
+                    scheduledEvent.setStartTime(nextDayOfWeek(day2CalendarDay(day)).getTimeInMillis());
+                    parseEndTime(eventRecurrence, scheduledEvent);
                     scheduledEventList.add(scheduledEvent);
                 }
             }
             break;
 
             case EventRecurrence.MONTHLY: {
+                if (eventRecurrence.interval == 0)
+                    period = MONTH_MILLIS;
+                else
+                    period = eventRecurrence.interval * MONTH_MILLIS;
                 ScheduledEvent event = new ScheduledEvent(eventType);
-                event.setPeriod(MONTH_MILLIS);
+                event.setPeriod(period);
                 Calendar now = Calendar.getInstance();
                 now.add(Calendar.MONTH, 1);
                 event.setStartTime(now.getTimeInMillis());
-                if (eventRecurrence.until != null && eventRecurrence.until.length() > 0) {
-                    Time endTime = new Time();
-                    endTime.parse(eventRecurrence.until);
-                    event.setEndTime(endTime.toMillis(false));
-                } else if (eventRecurrence.count > 0){
-                    event.setEndTime(event.getStartTime() + (event.getPeriod()*eventRecurrence.count));
-                }
+                parseEndTime(eventRecurrence, event);
 
                 scheduledEventList.add(event);
             }
                 break;
 
             case EventRecurrence.YEARLY: {
+                if (eventRecurrence.interval == 0)
+                    period = YEAR_MILLIS;
+                else
+                    period = eventRecurrence.interval * YEAR_MILLIS;
                 ScheduledEvent event = new ScheduledEvent(eventType);
-                event.setPeriod(YEAR_MILLIS);
+                event.setPeriod(period);
                 Calendar now = Calendar.getInstance();
                 now.add(Calendar.YEAR, 1);
                 event.setStartTime(now.getTimeInMillis());
-                if (eventRecurrence.until != null && eventRecurrence.until.length() > 0) {
-                    Time endTime = new Time();
-                    endTime.parse(eventRecurrence.until);
-                    event.setEndTime(endTime.toMillis(false));
-                } else if (eventRecurrence.count > 0){
-                    event.setEndTime(event.getStartTime() + (event.getPeriod()*eventRecurrence.count));
-                }
+                parseEndTime(eventRecurrence, event);
                 scheduledEventList.add(event);
             }
                 break;
@@ -112,6 +114,27 @@ public class RecurrenceParser {
         return scheduledEventList;
     }
 
+    /**
+     * Parses the end time from an EventRecurrence object and sets it to the <code>scheduledEvent</code>.
+     * The end time is specified in the dialog either by number of occurences or a date.
+     * @param eventRecurrence Event recurrence pattern obtained from dialog
+     * @param scheduledEvent ScheduledEvent to be to updated
+     */
+    private static void parseEndTime(EventRecurrence eventRecurrence, ScheduledEvent scheduledEvent) {
+        if (eventRecurrence.until != null && eventRecurrence.until.length() > 0) {
+            Time endTime = new Time();
+            endTime.parse(eventRecurrence.until);
+            scheduledEvent.setEndTime(endTime.toMillis(false));
+        } else if (eventRecurrence.count > 0){
+            scheduledEvent.setEndTime(scheduledEvent.getStartTime() + (scheduledEvent.getPeriod() * eventRecurrence.count));
+        }
+    }
+
+    /**
+     * Returns the date for the next day of the week
+     * @param dow Day of the week (Calendar constants)
+     * @return Calendar instance with the next day of the week
+     */
     private static Calendar nextDayOfWeek(int dow) {
         Calendar date = Calendar.getInstance();
         int diff = dow - date.get(Calendar.DAY_OF_WEEK);
@@ -120,5 +143,33 @@ public class RecurrenceParser {
         }
         date.add(Calendar.DAY_OF_MONTH, diff);
         return date;
+    }
+
+    /**
+     * Converts one of the SU, MO, etc. constants to the Calendar.SUNDAY
+     * constants.  btw, I think we should switch to those here too, to
+     * get rid of this function, if possible.
+     */
+    public static int day2CalendarDay(int day)
+    {
+        switch (day)
+        {
+            case EventRecurrence.SU:
+                return Calendar.SUNDAY;
+            case EventRecurrence.MO:
+                return Calendar.MONDAY;
+            case EventRecurrence.TU:
+                return Calendar.TUESDAY;
+            case EventRecurrence.WE:
+                return Calendar.WEDNESDAY;
+            case EventRecurrence.TH:
+                return Calendar.THURSDAY;
+            case EventRecurrence.FR:
+                return Calendar.FRIDAY;
+            case EventRecurrence.SA:
+                return Calendar.SATURDAY;
+            default:
+                throw new RuntimeException("bad day of week: " + day);
+        }
     }
 }
