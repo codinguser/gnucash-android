@@ -27,10 +27,6 @@ import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.SimpleCursorAdapter;
@@ -54,7 +50,6 @@ import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.model.Account;
 import org.gnucash.android.db.*;
-import org.gnucash.android.export.ExportDialogFragment;
 import org.gnucash.android.ui.util.AccountBalanceTask;
 import org.gnucash.android.ui.util.Refreshable;
 import org.gnucash.android.ui.UxArgument;
@@ -382,7 +377,7 @@ public class AccountsListFragment extends SherlockListFragment implements
                 return true;
 
             case R.id.menu_export:
-                showExportDialog();
+                AccountsActivity.showExportDialog(getActivity());
                 return true;
 
             default:
@@ -442,23 +437,6 @@ public class AccountsListFragment extends SherlockListFragment implements
         editAccountIntent.setAction(Intent.ACTION_INSERT_OR_EDIT);
         editAccountIntent.putExtra(UxArgument.SELECTED_ACCOUNT_UID, mAccountsDbAdapter.getUID(accountId));
         startActivityForResult(editAccountIntent, AccountsActivity.REQUEST_EDIT_ACCOUNT);
-    }
-
-    /**
-     * Displays the dialog for exporting transactions in OFX
-     */
-    public void showExportDialog() {
-        FragmentManager manager = getSherlockActivity().getSupportFragmentManager();
-        FragmentTransaction ft = manager.beginTransaction();
-        Fragment prev = manager.findFragmentByTag(AccountsActivity.FRAGMENT_EXPORT_OFX);
-        if (prev != null) {
-            ft.remove(prev);
-        }
-        ft.addToBackStack(null);
-
-        // Create and show the dialog.
-        DialogFragment exportFragment = new ExportDialogFragment();
-        exportFragment.show(ft, AccountsActivity.FRAGMENT_EXPORT_OFX);
     }
 
     @Override

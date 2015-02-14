@@ -3,13 +3,14 @@ buildscript {
 		jcenter()
 	}
 	dependencies {
-		classpath 'com.android.tools.build:gradle:1.0.0'
+		classpath 'com.android.tools.build:gradle:1.0.1'
 	}
 }
 
 allprojects {
     repositories {
 		maven { url "http://dl.bintray.com/populov/maven" }
+        maven { url "https://repo.commonsware.com.s3.amazonaws.com"}
         jcenter()		
         mavenCentral()
     }

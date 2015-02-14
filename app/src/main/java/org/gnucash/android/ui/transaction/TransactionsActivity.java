@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012 - 2014 Ngewi Fet <ngewif@gmail.com>
+ * Copyright (c) 2012 - 2015 Ngewi Fet <ngewif@gmail.com>
  * Copyright (c) 2014 Yongxin Wang <fefe.wyx@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -100,11 +100,6 @@ public class TransactionsActivity extends PassLockActivity implements
      * Menu item for marking an account as a favorite
      */
     MenuItem mFavoriteAccountMenu;
-
-    /**
-	 * Database ID of {@link Account} whose transactions are displayed 
-	 */
-//	private long mAccountId 	= 0;
 
     /**
      * GUID of {@link Account} whose transactions are displayed
@@ -274,8 +269,9 @@ public class TransactionsActivity extends PassLockActivity implements
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+        //it is necessary to set the view first before calling super because of the nav drawer in BaseDrawerActivity
 		setContentView(R.layout.activity_transactions);
+        super.onCreate(savedInstanceState);
 
         mPager = (ViewPager) findViewById(R.id.pager);
         mTitlePageIndicator = (TitlePageIndicator) findViewById(R.id.titles);

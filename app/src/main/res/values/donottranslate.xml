@@ -11,8 +11,9 @@
     <string-array name="nav_drawer_entries">
         <item>Accounts</item>
         <item>Favorites</item>
-        <item>Export Transactions</item>
-        <item>Recurring Transactions</item>
+        <item>Export Transactions…</item>
+        <item>Scheduled Transactions</item>
+        <item>Settings</item>
     </string-array>
 
     <!-- ==================================================================== -->

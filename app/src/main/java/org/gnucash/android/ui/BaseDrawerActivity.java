@@ -15,17 +15,27 @@
  */
 package org.gnucash.android.ui;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
+
 import com.actionbarsherlock.app.SherlockFragmentActivity;
+import com.commonsware.cwac.merge.MergeAdapter;
+
 import org.gnucash.android.R;
+import org.gnucash.android.ui.account.AccountsActivity;
 import org.gnucash.android.ui.transaction.ScheduledTransactionsListFragment;
+import org.w3c.dom.Text;
+
+import java.util.ArrayList;
 
 
 /**
@@ -55,18 +65,88 @@ public class BaseDrawerActivity extends SherlockFragmentActivity {
         mDrawerList     = (ListView) findViewById(R.id.left_drawer);
         mNavDrawerEntries = getResources().getStringArray(R.array.nav_drawer_entries);
 
-        mDrawerList.setAdapter(new ArrayAdapter<String>(this,
-                R.layout.drawer_list_item, mNavDrawerEntries));
+//        mDrawerList.setAdapter(new ArrayAdapter<String>(this,
+//                R.layout.drawer_list_item, mNavDrawerEntries));
+//        mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
+
+        ArrayList<String> accountNavOptions = new ArrayList<String>();
+        accountNavOptions.add("Accounts");
+        accountNavOptions.add("Favorites");
+        accountNavOptions.add("Open...");
+
+        ArrayAdapter<String> accountsNavAdapter = new ArrayAdapter<String>(this,
+                R.layout.drawer_list_item, accountNavOptions);
+
+
+        ArrayList<String> transactionsNavOptions = new ArrayList<String>();
+        transactionsNavOptions.add("Transactions");
+        transactionsNavOptions.add("Scheduled Transactions");
+        transactionsNavOptions.add("Export...");
+
+        ArrayAdapter<String> transactionsNavAdapter = new ArrayAdapter<String>(this,
+                R.layout.drawer_list_item, transactionsNavOptions);
+
+        LayoutInflater inflater = getLayoutInflater();
+        TextView accountHeader = (TextView) inflater.inflate(R.layout.drawer_section_header, null);
+        accountHeader.setText("Accounts");
+
+        TextView transactionHeader = (TextView) inflater.inflate(R.layout.drawer_section_header, null);
+        transactionHeader.setText("Transactions");
+        MergeAdapter mergeAdapter = new MergeAdapter();
+        mergeAdapter.addView(accountHeader);
+        mergeAdapter.addAdapter(accountsNavAdapter);
+        mergeAdapter.addView(transactionHeader);
+        mergeAdapter.addAdapter(transactionsNavAdapter);
+
+        mergeAdapter.addView(inflater.inflate(R.layout.horizontal_line, null));
+        TextView settingsHeader = (TextView) inflater.inflate(R.layout.drawer_section_header, null);
+        settingsHeader.setText("Settings");
+        TextView settingsTextView = (TextView) inflater.inflate(R.layout.drawer_list_item, null);
+        settingsTextView.setText("Settings");
+
+        mergeAdapter.addView(settingsHeader);
+        mergeAdapter.addView(settingsTextView);
+
+        mDrawerList.setAdapter(mergeAdapter);
         mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
+
+        getSupportActionBar().setHomeButtonEnabled(true);
     }
 
     /** Swaps fragments in the main content view */
     protected void selectItem(int position) {
+        switch (position){
+            case 0: {
+                Intent intent = new Intent(this, AccountsActivity.class);
+                intent.putExtra(AccountsActivity.EXTRA_TAB_INDEX,
+                        AccountsActivity.INDEX_TOP_LEVEL_ACCOUNTS_FRAGMENT);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                startActivity(intent);
+            }
+                break;
+
+            case 1: {
+                Intent intent = new Intent(this, AccountsActivity.class);
+                intent.putExtra(AccountsActivity.EXTRA_TAB_INDEX,
+                        AccountsActivity.INDEX_FAVORITE_ACCOUNTS_FRAGMENT);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                startActivity(intent);
+            }
+                break;
+
+            case 2:{
+                AccountsActivity.showExportDialog(this);
+            }
+                break;
+
+        }
+
         // Create a new fragment and specify the planet to show based on position
         Fragment fragment = new ScheduledTransactionsListFragment();
         Bundle args = new Bundle();
         args.putInt("account_list_type", position);
         fragment.setArguments(args);
+
 
         // Insert the fragment by replacing any existing fragment
         FragmentManager fragmentManager = getSupportFragmentManager();
@@ -83,7 +163,7 @@ public class BaseDrawerActivity extends SherlockFragmentActivity {
     @Override
     public void setTitle(CharSequence title) {
         mTitle = title;
-        getActionBar().setTitle(mTitle);
+        getSupportActionBar().setTitle(mTitle);
     }
 
 }

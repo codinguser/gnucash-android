@@ -29,7 +29,9 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.app.FragmentTransaction;
@@ -47,6 +49,7 @@ import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.DatabaseSchema;
+import org.gnucash.android.export.ExportDialogFragment;
 import org.gnucash.android.importer.ImportAsyncTask;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.ui.UxArgument;
@@ -92,7 +95,7 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
     /**
 	 * Tag used for identifying the account export fragment
 	 */
-	protected static final String FRAGMENT_EXPORT_OFX  = "export_ofx";
+	public static final String FRAGMENT_EXPORT_DIALOG = "export_fragment";
 
 	/**
 	 * Tag for identifying the "New account" fragment
@@ -133,6 +136,11 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
      * Used to save the index of the last open tab and restore the pager to that index
      */
     public static final String LAST_OPEN_TAB_INDEX = "last_open_tab";
+
+    /**
+     * Key for putting argument for tab into bundle arguments
+     */
+    public static final String EXTRA_TAB_INDEX = "org.gnucash.android.extra.TAB_INDEX";
 
     /**
      * Map containing fragments for the different tabs
@@ -216,6 +224,7 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
+        //it is necessary to set the view first before calling super because of the nav drawer in BaseDrawerActivity
         setContentView(R.layout.activity_accounts);
         super.onCreate(savedInstanceState);
 
@@ -250,10 +259,18 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
 
             SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
             int lastTabIndex = preferences.getInt(LAST_OPEN_TAB_INDEX, INDEX_TOP_LEVEL_ACCOUNTS_FRAGMENT);
-            mPager.setCurrentItem(lastTabIndex);
+            int index = intent.getIntExtra(EXTRA_TAB_INDEX, lastTabIndex);
+            mPager.setCurrentItem(index);
         }
 
 	}
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        int index = intent.getIntExtra(EXTRA_TAB_INDEX, INDEX_TOP_LEVEL_ACCOUNTS_FRAGMENT);
+        setTab(index);
+    }
 
     public void setTab(int index){
         mPager.setCurrentItem(index);
@@ -334,8 +351,25 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
 			}
 		}).show();
 	}
-	
-	@Override
+
+    /**
+     * Displays the dialog for exporting transactions
+     */
+    public static void showExportDialog(FragmentActivity activity) {
+        FragmentManager manager = activity.getSupportFragmentManager();
+        FragmentTransaction ft = manager.beginTransaction();
+        Fragment prev = manager.findFragmentByTag(FRAGMENT_EXPORT_DIALOG);
+        if (prev != null) {
+            ft.remove(prev);
+        }
+        ft.addToBackStack(null);
+
+        // Create and show the dialog.
+        DialogFragment exportFragment = new ExportDialogFragment();
+        exportFragment.show(ft, FRAGMENT_EXPORT_DIALOG);
+    }
+
+    @Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getSupportMenuInflater();
 		inflater.inflate(R.menu.global_actions, menu);

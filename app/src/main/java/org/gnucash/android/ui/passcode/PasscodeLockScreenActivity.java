@@ -35,7 +35,7 @@ import org.gnucash.android.ui.UxArgument;
 public class PasscodeLockScreenActivity extends SherlockFragmentActivity
         implements KeyboardFragment.OnPasscodeEnteredListener {
 
-    private static final String TAG = "PasscodeLockScreenActivity";
+    private static final String TAG = "PassLockScreenActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

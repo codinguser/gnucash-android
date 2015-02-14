@@ -7,6 +7,7 @@ import android.preference.PreferenceManager;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 
 import org.gnucash.android.app.GnuCashApplication;
+import org.gnucash.android.ui.BaseDrawerActivity;
 import org.gnucash.android.ui.UxArgument;
 
 /**
@@ -16,7 +17,7 @@ import org.gnucash.android.ui.UxArgument;
  * @see org.gnucash.android.ui.account.AccountsActivity
  * @see org.gnucash.android.ui.transaction.TransactionsActivity
  */
-public class PassLockActivity extends SherlockFragmentActivity {
+public class PassLockActivity extends BaseDrawerActivity {
 
     private static final String TAG = "PassLockActivity";
 
