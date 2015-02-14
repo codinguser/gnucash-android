@@ -146,7 +146,7 @@ public class Transaction {
         //exported flag is left at default value of false
 
         for (Split split : transaction.mSplitList) {
-            addSplit(new Split(split, true));
+            addSplit(new Split(split, generateNewUID));
         }
 
         if (!generateNewUID){

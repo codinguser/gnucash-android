@@ -16,6 +16,7 @@
  */
 package org.gnucash.android.ui.settings;
 
+import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
@@ -40,6 +41,7 @@ import java.util.List;
  * @author ngewif <ngewif@gmail.com>
  * @author Yongxin Wang <fefe.wyx@gmail.com>
  */
+@TargetApi(11)
 public class DeleteAllTransacationsConfirmationDialog extends DialogFragment {
 
     public static DeleteAllTransacationsConfirmationDialog newInstance() {

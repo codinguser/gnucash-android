@@ -105,6 +105,9 @@ public class DatabaseSchema {
         public static final String COLUMN_END_TIME      = "end_time";
         public static final String COLUMN_LAST_RUN      = "last_run";
         public static final String COLUMN_PERIOD        = "period";
-
+        /**
+         * Tags for any scheduled event specific information
+         */
+        public static final String COLUMN_TAG           = "tag";
     }
 }

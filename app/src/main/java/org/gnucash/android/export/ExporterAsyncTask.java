@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013 - 2014 Ngewi Fet <ngewif@gmail.com>
+ * Copyright (c) 2013 - 2015 Ngewi Fet <ngewif@gmail.com>
  * Copyright (c) 2014 Yongxin Wang <fefe.wyx@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,6 +17,7 @@
 
 package org.gnucash.android.export;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -53,7 +54,7 @@ public class ExporterAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
     /**
      * App context
      */
-    private final Activity mContext;
+    private final Context mContext;
 
     private ProgressDialog mProgressDialog;
 
@@ -67,22 +68,25 @@ public class ExporterAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
      */
     private ExportParams mExportParams;
 
-    public ExporterAsyncTask(Activity context){
+    public ExporterAsyncTask(Context context){
         this.mContext = context;
     }
 
     @Override
+    @TargetApi(11)
     protected void onPreExecute() {
         super.onPreExecute();
-        mProgressDialog = new ProgressDialog(mContext);
-        mProgressDialog.setTitle(R.string.title_progress_exporting_transactions);
-        mProgressDialog.setIndeterminate(true);
-        mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.HONEYCOMB){
-            mProgressDialog.setProgressNumberFormat(null);
-            mProgressDialog.setProgressPercentFormat(null);
+        if (mContext instanceof Activity) {
+            mProgressDialog = new ProgressDialog(mContext);
+            mProgressDialog.setTitle(R.string.title_progress_exporting_transactions);
+            mProgressDialog.setIndeterminate(true);
+            mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.HONEYCOMB) {
+                mProgressDialog.setProgressNumberFormat(null);
+                mProgressDialog.setProgressPercentFormat(null);
+            }
+            mProgressDialog.show();
         }
-        mProgressDialog.show();
     }
 
     /**
@@ -123,16 +127,18 @@ public class ExporterAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
             e.printStackTrace();
             Log.e(TAG, "" + e.getMessage());
             final String err_msg = e.getLocalizedMessage();
-            mContext.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    Toast.makeText(mContext, R.string.toast_export_error,
-                            Toast.LENGTH_SHORT).show();
-                    if (err_msg != null) {
-                        Toast.makeText(mContext, err_msg, Toast.LENGTH_LONG).show();
+            if (mContext instanceof Activity) {
+                ((Activity)mContext).runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(mContext, R.string.toast_export_error,
+                                Toast.LENGTH_SHORT).show();
+                        if (err_msg != null) {
+                            Toast.makeText(mContext, err_msg, Toast.LENGTH_LONG).show();
+                        }
                     }
-                }
-            });
+                });
+            }
             return false;
         }
         return true;
@@ -144,11 +150,13 @@ public class ExporterAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
      */
     @Override
     protected void onPostExecute(Boolean exportResult) {
-        if (!exportResult){
-            Toast.makeText(mContext,
-                    mContext.getString(R.string.toast_export_error, mExportParams.getExportFormat().name()),
-                    Toast.LENGTH_LONG).show();
-            return;
+        if (mContext instanceof Activity) {
+            if (!exportResult) {
+                Toast.makeText(mContext,
+                        mContext.getString(R.string.toast_export_error, mExportParams.getExportFormat().name()),
+                        Toast.LENGTH_LONG).show();
+                return;
+            }
         }
 
         switch (mExportParams.getExportTarget()) {
@@ -163,39 +171,46 @@ public class ExporterAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
                 try {
                     copyFile(src, dst);
                 } catch (IOException e) {
-                    Toast.makeText(mContext,
-                            mContext.getString(R.string.toast_export_error, mExportParams.getExportFormat().name())
-                                    + dst.getAbsolutePath(),
-                            Toast.LENGTH_LONG).show();
-                    Log.e(TAG, e.getMessage());
+                    if (mContext instanceof Activity) {
+                        Toast.makeText(mContext,
+                                mContext.getString(R.string.toast_export_error, mExportParams.getExportFormat().name())
+                                        + dst.getAbsolutePath(),
+                                Toast.LENGTH_LONG).show();
+                        Log.e(TAG, e.getMessage());
+                    } else {
+                        Log.e(TAG, e.getMessage());
+                    }
                     break;
                 }
 
-                //file already exists, just let the user know
-                Toast.makeText(mContext,
-                        mContext.getString(R.string.toast_format_exported_to, mExportParams.getExportFormat().name())
-                                + dst.getAbsolutePath(),
-                        Toast.LENGTH_LONG).show();
+                if (mContext instanceof Activity) {
+                    //file already exists, just let the user know
+                    Toast.makeText(mContext,
+                            mContext.getString(R.string.toast_format_exported_to, mExportParams.getExportFormat().name())
+                                    + dst.getAbsolutePath(),
+                            Toast.LENGTH_LONG).show();
+                }
                 break;
 
             default:
                 break;
         }
 
-        if (mExportParams.shouldDeleteTransactionsAfterExport()){
-            android.support.v4.app.FragmentManager fragmentManager = ((FragmentActivity)mContext).getSupportFragmentManager();
-            Fragment currentFragment = ((AccountsActivity)mContext).getCurrentAccountListFragment();
+        if (mContext instanceof Activity) {
+            if (mExportParams.shouldDeleteTransactionsAfterExport()) {
+                android.support.v4.app.FragmentManager fragmentManager = ((FragmentActivity) mContext).getSupportFragmentManager();
+                Fragment currentFragment = ((AccountsActivity) mContext).getCurrentAccountListFragment();
 
-            TransactionsDeleteConfirmationDialogFragment alertFragment =
-                    TransactionsDeleteConfirmationDialogFragment.newInstance(R.string.title_confirm_delete, 0);
-            alertFragment.setTargetFragment(currentFragment, 0);
+                TransactionsDeleteConfirmationDialogFragment alertFragment =
+                        TransactionsDeleteConfirmationDialogFragment.newInstance(R.string.title_confirm_delete, 0);
+                alertFragment.setTargetFragment(currentFragment, 0);
 
-            alertFragment.show(fragmentManager, "transactions_delete_confirmation_dialog");
+                alertFragment.show(fragmentManager, "transactions_delete_confirmation_dialog");
+            }
+
+            if (mProgressDialog != null && mProgressDialog.isShowing())
+                mProgressDialog.dismiss();
         }
-
-        if (mProgressDialog != null && mProgressDialog.isShowing())
-            mProgressDialog.dismiss();
-
     }
 
     /**
@@ -236,7 +251,8 @@ public class ExporterAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
                 + " " + formatter.format(new Date(System.currentTimeMillis())));
         shareIntent.putExtra(Intent.EXTRA_TEXT, extraText);
 
-        mContext.startActivity(Intent.createChooser(shareIntent, mContext.getString(R.string.title_select_export_destination)));
+        if (mContext instanceof Activity)
+            mContext.startActivity(Intent.createChooser(shareIntent, mContext.getString(R.string.title_select_export_destination)));
     }
 
     /**

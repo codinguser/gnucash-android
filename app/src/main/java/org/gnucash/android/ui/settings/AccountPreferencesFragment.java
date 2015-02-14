@@ -16,6 +16,7 @@
 
 package org.gnucash.android.ui.settings;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -38,6 +39,7 @@ import org.gnucash.android.ui.account.AccountsActivity;
  * @author Ngewi Fet <ngewi.fet@gmail.com>
  * @author Oleksandr Tyshkovets <olexandr.tyshkovets@gmail.com>
  */
+@TargetApi(11)
 public class AccountPreferencesFragment extends PreferenceFragment {
 
     private Activity activity;

@@ -18,6 +18,7 @@ package org.gnucash.android.ui.settings;
 
 import org.gnucash.android.R;
 
+import android.annotation.TargetApi;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.Preference;
@@ -34,6 +35,7 @@ import org.gnucash.android.ui.account.AccountsActivity;
  * @author Ngewi Fet <ngewif@gmail.com>
  *
  */
+@TargetApi(11)
 public class AboutPreferenceFragment extends PreferenceFragment{
 	
 	@Override

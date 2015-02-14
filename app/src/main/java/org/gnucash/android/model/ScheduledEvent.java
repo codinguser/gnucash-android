@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 Ngewi Fet <ngewif@gmail.com>
+ * Copyright (c) 2014 - 2015 Ngewi Fet <ngewif@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,11 +32,12 @@ public class ScheduledEvent {
     private long mPeriod;
     private long mStartDate;
     private long mEndDate;
+    private String mTag;
 
     /**
      * Types of events which can be scheduled
      */
-    public enum EventType {TRANSACTION};
+    public enum EventType {TRANSACTION, EXPORT}
 
     /**
      * Unique ID of scheduled event
@@ -63,6 +64,7 @@ public class ScheduledEvent {
         mUID = UUID.randomUUID().toString().replaceAll("-", "");
         mEventType = eventType;
         mStartDate = System.currentTimeMillis();
+        mEndDate = 0;
     }
 
     public String getUID(){
@@ -119,6 +121,14 @@ public class ScheduledEvent {
 
     public void setEndTime(long endDate) {
         this.mEndDate = endDate;
+    }
+
+    public String getTag() {
+        return mTag;
+    }
+
+    public void setTag(String tag) {
+        this.mTag = tag;
     }
 
     @Override

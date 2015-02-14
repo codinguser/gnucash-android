@@ -1,15 +1,15 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 19
+    compileSdkVersion 18
     buildToolsVersion "21.1.2"
 
     defaultConfig {
         applicationId "org.gnucash.android"
-        minSdkVersion 15
-        targetSdkVersion 19
-        versionCode 47
-        versionName "1.5.3"
+        minSdkVersion 9
+        targetSdkVersion 18
+        versionCode 48
+        versionName "1.5.4"
     }
 
     buildTypes {
@@ -20,6 +20,10 @@ android {
         debug {
             debuggable true
         }
+    }
+
+    lintOptions {
+        abortOnError false
     }
 }
 

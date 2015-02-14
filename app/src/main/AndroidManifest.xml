@@ -44,7 +44,8 @@
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.VIBRATE"
                      android:label="Allow device to vibrate with notifications" />
-	    
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+
     <application android:name="org.gnucash.android.app.GnuCashApplication"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name" 
@@ -75,6 +76,11 @@
 		        <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE"/>
 		    </intent-filter>
 		</activity>
+        <service android:name=".service.SchedulerService"
+            android:exported="false"
+            android:label="GnuCash Android Scheduler Execution Service"/>
+        <receiver android:name=".receivers.SchedulerReceiver"
+            android:exported="false"/>
         <receiver android:name=".receivers.TransactionRecorder"
             android:label="Records transactions received through intents"
             android:permission="org.gnucash.android.permission.RECORD_TRANSACTION">

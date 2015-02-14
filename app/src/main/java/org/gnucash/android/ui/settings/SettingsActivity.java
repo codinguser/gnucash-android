@@ -17,6 +17,7 @@
 
 package org.gnucash.android.ui.settings;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -89,6 +90,7 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
 	 * Constructs the headers to display in the header list when the Settings activity is first opened
 	 * Only available on Honeycomb and above
 	 */
+    @TargetApi(11)
 	@Override
 	public void onBuildHeaders(List<Header> target) {
 		loadHeadersFromResource(R.xml.preference_headers, target);
@@ -167,6 +169,7 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
         GnuCashApplication.PASSCODE_SESSION_INIT_TIME = System.currentTimeMillis();
     }
 
+    @TargetApi(11)
     @Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {

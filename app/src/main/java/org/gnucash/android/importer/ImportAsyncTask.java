@@ -15,6 +15,7 @@
  */
 package org.gnucash.android.importer;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -46,6 +47,7 @@ public class ImportAsyncTask extends AsyncTask<InputStream, Void, Boolean> {
         this.mDelegate = delegate;
     }
 
+    @TargetApi(11)
     @Override
     protected void onPreExecute() {
         super.onPreExecute();

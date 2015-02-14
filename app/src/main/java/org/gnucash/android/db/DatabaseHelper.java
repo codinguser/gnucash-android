@@ -22,11 +22,13 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
-import android.widget.Toast;
-import org.gnucash.android.model.AccountType;
-import org.gnucash.android.model.Transaction;
 
-import static org.gnucash.android.db.DatabaseSchema.*;
+import org.gnucash.android.model.AccountType;
+
+import static org.gnucash.android.db.DatabaseSchema.AccountEntry;
+import static org.gnucash.android.db.DatabaseSchema.ScheduledEventEntry;
+import static org.gnucash.android.db.DatabaseSchema.SplitEntry;
+import static org.gnucash.android.db.DatabaseSchema.TransactionEntry;
 
 /**
  * Helper class for managing the SQLite database.
@@ -113,14 +115,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + ScheduledEventEntry.COLUMN_LAST_RUN       + " integer default 0, "
             + ScheduledEventEntry.COLUMN_START_TIME     + " integer not null, "
             + ScheduledEventEntry.COLUMN_END_TIME       + " integer default 0, "
-            + "UNIQUE (" 		+ ScheduledEventEntry.COLUMN_UID + ") "
+            + ScheduledEventEntry.COLUMN_TAG            + " text, "
+            + "UNIQUE (" + ScheduledEventEntry.COLUMN_UID + ") "
             + ");";
 
-
-    /**
-     * Context passed in for database upgrade. Keep reference so as to be able to display UI dialogs
-     */
-    private Context mContext;
 
     /**
 	 * Constructor
@@ -128,7 +126,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	 */
 	public DatabaseHelper(Context context){
 		super(context, DATABASE_NAME, null, DatabaseSchema.DATABASE_VERSION);
-        mContext = context;
+
 	}
 	
 	@Override

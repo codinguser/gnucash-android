@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 Ngewi Fet <ngewif@gmail.com>
+ * Copyright (c) 2014 - 2015 Ngewi Fet <ngewif@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 import org.gnucash.android.db.DatabaseSchema.ScheduledEventEntry;
 import org.gnucash.android.model.ScheduledEvent;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Database adapter for fetching/saving/modifying scheduled events
@@ -48,6 +51,7 @@ public class ScheduledEventDbAdapter extends DatabaseAdapter {
         contentValues.put(ScheduledEventEntry.COLUMN_END_TIME,  scheduledEvent.getEndTime());
         contentValues.put(ScheduledEventEntry.COLUMN_LAST_RUN,  scheduledEvent.getLastRun());
         contentValues.put(ScheduledEventEntry.COLUMN_TYPE,      scheduledEvent.getEventType().name());
+        contentValues.put(ScheduledEventEntry.COLUMN_TAG,       scheduledEvent.getTag());
 
         Log.d(TAG, "Replace scheduled event in the db");
         return mDb.replace(ScheduledEventEntry.TABLE_NAME, null, contentValues);
@@ -67,6 +71,7 @@ public class ScheduledEventDbAdapter extends DatabaseAdapter {
         long endTime    = cursor.getLong(cursor.getColumnIndexOrThrow(ScheduledEventEntry.COLUMN_END_TIME));
         long lastRun    = cursor.getLong(cursor.getColumnIndexOrThrow(ScheduledEventEntry.COLUMN_LAST_RUN));
         String typeString = cursor.getString(cursor.getColumnIndexOrThrow(ScheduledEventEntry.COLUMN_TYPE));
+        String tag      = cursor.getString(cursor.getColumnIndexOrThrow(ScheduledEventEntry.COLUMN_TAG));
 
         ScheduledEvent event = new ScheduledEvent(ScheduledEvent.EventType.valueOf(typeString));
         event.setPeriod(period);
@@ -75,6 +80,7 @@ public class ScheduledEventDbAdapter extends DatabaseAdapter {
         event.setEventUID(eventUid);
         event.setUID(uid);
         event.setLastRun(lastRun);
+        event.setTag(tag);
 
         return event;
     }
@@ -95,6 +101,19 @@ public class ScheduledEventDbAdapter extends DatabaseAdapter {
             cursor.close();
         }
         return scheduledEvent;
+    }
+
+    /**
+     * Returns all scheduled events in the database
+     * @return List with all scheduled events
+     */
+    public List<ScheduledEvent> getAllScheduledEvents(){
+        Cursor cursor = fetchAllRecords();
+        List<ScheduledEvent> scheduledEvents = new ArrayList<ScheduledEvent>();
+        while (cursor.moveToNext()){
+            scheduledEvents.add(buildScheduledEventInstance(cursor));
+        }
+        return scheduledEvents;
     }
 
     @Override

@@ -16,6 +16,7 @@
 
 package org.gnucash.android.ui.settings;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -38,6 +39,7 @@ import org.gnucash.android.ui.passcode.PasscodePreferenceActivity;
  * Fragment for configuring passcode to the application
  * @author Oleksandr Tyshkovets <olexandr.tyshkovets@gmail.com>
  */
+@TargetApi(11)
 public class PasscodePreferenceFragment extends PreferenceFragment {
 
     /**

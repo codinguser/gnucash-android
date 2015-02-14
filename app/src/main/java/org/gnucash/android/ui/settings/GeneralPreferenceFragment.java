@@ -19,6 +19,7 @@ package org.gnucash.android.ui.settings;
 import org.gnucash.android.R;
 import org.gnucash.android.model.Money;
 
+import android.annotation.TargetApi;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.Preference;
@@ -35,6 +36,7 @@ import com.actionbarsherlock.app.SherlockPreferenceActivity;
  * @author Ngewi Fet <ngewif@gmail.com>
  *
  */
+@TargetApi(11)
 public class GeneralPreferenceFragment extends PreferenceFragment implements OnPreferenceChangeListener{
 	
 	@Override
