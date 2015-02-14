@@ -17,10 +17,10 @@
 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="org.gnucash.android"
-    android:versionCode="46"
+    android:versionCode="47"
     android:versionName="@string/app_version_name" >
 
-    <uses-sdk android:minSdkVersion="8" android:targetSdkVersion="16"/>
+    <uses-sdk android:minSdkVersion="8" android:targetSdkVersion="18"/>
     
     <permission-group 
         android:name="org.gnucash.android.permission.group.GNUCASH"
