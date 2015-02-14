@@ -17,7 +17,7 @@
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-	<version>1.5.3-SNAPSHOT</version>
+	<version>1.5.4-SNAPSHOT</version>
     <groupId>org.gnucash.android</groupId>
     <artifactId>gnucash-android-parent</artifactId>
     <name>GnuCash Android parent</name>
@@ -32,20 +32,21 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <android.version>4.1.1.4</android.version>
+        <android.maven.plugin.version>4.1.1</android.maven.plugin.version>
     </properties>
 
     <build>
         <pluginManagement>
             <plugins>
                 <plugin>
-                    <groupId>com.jayway.maven.plugins.android.generation2</groupId>
+                    <groupId>com.simpligility.maven.plugins</groupId>
                     <artifactId>android-maven-plugin</artifactId>
-                    <version>3.6.0</version>
+                    <version>${android.maven.plugin.version}</version>
                     <extensions>true</extensions>
                     <configuration>
                         <sdk>
                             <path>${env.ANDROID_HOME}</path>
-                            <platform>16</platform>
+                            <platform>19</platform>
                         </sdk>
                         <undeployBeforeDeploy>true</undeployBeforeDeploy>
                     </configuration>

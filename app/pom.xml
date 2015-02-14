@@ -22,7 +22,7 @@
     <description>Gnucash Android companion application</description>
 
     <parent>
-        <version>1.5.3-SNAPSHOT</version>
+        <version>1.5.4-SNAPSHOT</version>
         <groupId>org.gnucash.android</groupId>
         <artifactId>gnucash-android-parent</artifactId>
     </parent>
@@ -53,10 +53,9 @@
         </dependency>
     </dependencies>
     <build>
-        <sourceDirectory>src</sourceDirectory>
         <plugins>
             <plugin>
-                <groupId>com.jayway.maven.plugins.android.generation2</groupId>
+                <groupId>com.simpligility.maven.plugins</groupId>
                 <artifactId>android-maven-plugin</artifactId>
             </plugin>
         </plugins>
