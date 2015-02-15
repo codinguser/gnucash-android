@@ -318,7 +318,7 @@
         - Faster computation of account balances\n
         - Set passcode to restrict access to app (in Settings)\n
         - Export separate QIF files for each currency in use\n
-        - Use currencey settings when creating account hierarchy\n
+        - Use currency settings when creating account hierarchy\n
         - Multiple bug fixes and improvements\n
 	</string>
 	<string name="label_dismiss">Dismiss</string>
