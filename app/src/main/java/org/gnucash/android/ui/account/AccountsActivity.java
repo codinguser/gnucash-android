@@ -55,6 +55,7 @@ import org.gnucash.android.model.Money;
 import org.gnucash.android.ui.UxArgument;
 import org.gnucash.android.ui.passcode.PassLockActivity;
 import org.gnucash.android.ui.settings.SettingsActivity;
+import org.gnucash.android.ui.transaction.ScheduledEventsActivity;
 import org.gnucash.android.ui.transaction.ScheduledTransactionsListFragment;
 import org.gnucash.android.ui.transaction.TransactionsActivity;
 import org.gnucash.android.ui.util.OnAccountClickedListener;
@@ -106,11 +107,6 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
 	 * Logging tag
 	 */
 	protected static final String LOG_TAG = "AccountsActivity";
-
-    /**
-     * Intent action for viewing recurring transactions
-     */
-    public static final String ACTION_VIEW_RECURRING = "org.gnucash.android.action.VEIW_RECURRING";
 
     /**
      * Number of pages to show
@@ -247,10 +243,6 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
                 String parentAccountUID = intent.getStringExtra(UxArgument.PARENT_ACCOUNT_UID);
                 showAddAccountFragment(parentAccountUID);
             }
-        } else if (action != null && action.equals(ACTION_VIEW_RECURRING)) {
-            mPager.setVisibility(View.GONE);
-            titlePageIndicator.setVisibility(View.GONE);
-            showRecurringTransactionsFragment();
         } else {
             //show the simple accounts list
             PagerAdapter mPagerAdapter = new AccountViewPagerAdapter(getSupportFragmentManager());
@@ -290,6 +282,7 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
             showFirstRunDialog();
             //default to using double entry and save the preference explicitly
             prefs.edit().putBoolean(getString(R.string.key_use_double_entry), true).commit();
+
         }
 
         if (hasNewFeatures()){
@@ -379,9 +372,13 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
+            case android.R.id.home:
+                return super.onOptionsItemSelected(item);
+
             case R.id.menu_recurring_transactions:
-                Intent intent = new Intent(this, AccountsActivity.class);
-                intent.setAction(ACTION_VIEW_RECURRING);
+                Intent intent = new Intent(this, ScheduledEventsActivity.class);
+                intent.putExtra(ScheduledEventsActivity.EXTRA_DISPLAY_MODE,
+                        ScheduledEventsActivity.DisplayMode.TRANSACTION_EVENTS);
                 startActivity(intent);
                 return true;
 
@@ -414,21 +411,6 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
         showAccountFormFragment(args);
     }
 
-    /**
-     * Launches the fragment which lists the recurring transactions in the database
-     */
-    private void showRecurringTransactionsFragment(){
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager
-                .beginTransaction();
-
-        ScheduledTransactionsListFragment recurringTransactionsFragment = new ScheduledTransactionsListFragment();
-
-        fragmentTransaction.replace(R.id.fragment_container,
-                recurringTransactionsFragment, "fragment_recurring_transactions");
-
-        fragmentTransaction.commit();
-    }
     /**
      * Shows the form fragment for editing the account with record ID <code>accountId</code>
      * @param accountUID GUID of the account to be edited

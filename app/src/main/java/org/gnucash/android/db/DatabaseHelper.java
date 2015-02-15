@@ -23,7 +23,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.model.AccountType;
+import org.gnucash.android.model.ScheduledEvent;
 
 import static org.gnucash.android.db.DatabaseSchema.AccountEntry;
 import static org.gnucash.android.db.DatabaseSchema.ScheduledEventEntry;
@@ -332,6 +334,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 Log.i(LOG_TAG, "Creating scheduled events table");
 
                 db.execSQL(SCHEDULED_EVENTS_TABLE_CREATE);
+                //TODO: Migrate existing scheduled transactions (cancel pending intents)
+
+                GnuCashApplication.startScheduledEventExecutionService();
+
+
             }
 		}
 
@@ -360,9 +367,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         String createSplitUidIndex = "CREATE UNIQUE INDEX '" + SplitEntry.INDEX_UID +"' ON "
                 + SplitEntry.TABLE_NAME + "(" + SplitEntry.COLUMN_UID + ")";
 
+        String createScheduledEventUidIndex = "CREATE UNIQUE INDEX '" + ScheduledEventEntry.INDEX_UID
+                +"' ON " + ScheduledEventEntry.TABLE_NAME + "(" + ScheduledEventEntry.COLUMN_UID + ")";
+
         db.execSQL(createAccountUidIndex);
         db.execSQL(createTransactionUidIndex);
         db.execSQL(createSplitUidIndex);
+        db.execSQL(createScheduledEventUidIndex);
     }
 
     /**

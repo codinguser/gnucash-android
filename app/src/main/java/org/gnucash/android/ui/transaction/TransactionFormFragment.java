@@ -758,7 +758,7 @@ public class TransactionFormFragment extends SherlockFragment implements
 			return true;
 
 		default:
-			return false;
+			return super.onOptionsItemSelected(item);
 		}
 	}
 

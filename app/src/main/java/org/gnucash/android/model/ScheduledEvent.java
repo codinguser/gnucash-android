@@ -134,7 +134,7 @@ public class ScheduledEvent {
     @Override
     public String toString() {
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
-        String eventString = mEventType.name() + " recurring every " + mPeriod/ RecurrenceParser.DAY_MILLIS + " days starting on "
+        String eventString = mEventType.name() + " recurring every " + mPeriod/RecurrenceParser.DAY_MILLIS + " days starting on "
                 + dateFormat.format(new Date(mStartDate));
         if (mEndDate > 0){
             eventString += " until " + dateFormat.format(mEndDate);

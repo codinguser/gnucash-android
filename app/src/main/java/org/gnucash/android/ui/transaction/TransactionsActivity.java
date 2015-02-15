@@ -418,17 +418,8 @@ public class TransactionsActivity extends PassLockActivity implements
     @Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
-		case android.R.id.home:
-			InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-			imm.hideSoftInputFromWindow(findViewById(android.R.id.content).getWindowToken(), 0);
-	        FragmentManager fm = getSupportFragmentManager();
-	        if (fm.getBackStackEntryCount() > 0) {
-	            fm.popBackStack();
-	        } else {
-	        	AccountsActivity.start(this);
-	        	finish();
-	        }
-	        return true;
+            case android.R.id.home:
+                return super.onOptionsItemSelected(item);
 
             case R.id.menu_favorite_account:
                 AccountsDbAdapter accountsDbAdapter = GnuCashApplication.getAccountsDbAdapter();

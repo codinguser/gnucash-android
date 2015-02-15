@@ -68,7 +68,7 @@ public class TransactionsListFragment extends SherlockListFragment implements
 	/**
 	 * Logging tag
 	 */
-	protected static final String LOG_TAG = "TransactionsListFragment";
+	protected static final String LOG_TAG = "TransactionListFragment";
 
     private TransactionsDbAdapter mTransactionsDbAdapter;
 	private SimpleCursorAdapter mCursorAdapter;
@@ -243,7 +243,7 @@ public class TransactionsListFragment extends SherlockListFragment implements
                 return true;
 
             default:
-                return false;
+                return super.onOptionsItemSelected(item);
         }
 	}
 	

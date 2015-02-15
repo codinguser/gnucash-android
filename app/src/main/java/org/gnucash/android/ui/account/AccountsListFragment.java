@@ -224,11 +224,7 @@ public class AccountsListFragment extends SherlockListFragment implements
 
         ActionBar actionbar = getSherlockActivity().getSupportActionBar();
         actionbar.setTitle(R.string.title_accounts);
-        if (getActivity() instanceof TransactionsActivity){
-            actionbar.setDisplayHomeAsUpEnabled(true);
-        } else {
-            actionbar.setDisplayHomeAsUpEnabled(false);
-        }
+        actionbar.setDisplayHomeAsUpEnabled(true);
 
         setHasOptionsMenu(true);
 
@@ -381,7 +377,7 @@ public class AccountsListFragment extends SherlockListFragment implements
                 return true;
 
             default:
-                return false;
+                return super.onOptionsItemSelected(item);
         }
     }
 

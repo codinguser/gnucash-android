@@ -15,15 +15,20 @@
  */
 package org.gnucash.android.app;
 
+import android.app.AlarmManager;
 import android.app.Application;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import org.gnucash.android.R;
 import org.gnucash.android.db.*;
+import org.gnucash.android.service.SchedulerService;
 
 import java.util.Currency;
 import java.util.Locale;
@@ -148,5 +153,18 @@ public class GnuCashApplication extends Application{
             currencyCode = prefs.getString(context.getString(R.string.key_default_currency), currencyCode);
         }
         return currencyCode;
+    }
+
+    public static void startScheduledEventExecutionService(){
+        Context context = getAppContext();
+        Intent alarmIntent = new Intent(context, SchedulerService.class);
+        PendingIntent pendingIntent = PendingIntent.getService(context, 0, alarmIntent, 0);
+
+        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        alarmManager.cancel(pendingIntent);
+        alarmManager.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,
+                SystemClock.elapsedRealtime() + AlarmManager.INTERVAL_DAY,
+                AlarmManager.INTERVAL_DAY, pendingIntent);
+
     }
 }

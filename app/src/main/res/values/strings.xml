@@ -435,4 +435,6 @@
     <string name="label_imbalance">Imbalance:</string>
     <string name="btn_add_split">Add split</string>
     <string name="menu_title_favorite">Favorite</string>
+    <string name="drawer_open">Navigation drawer opened</string>
+    <string name="drawer_close">Navigation drawer closed</string>
 </resources>

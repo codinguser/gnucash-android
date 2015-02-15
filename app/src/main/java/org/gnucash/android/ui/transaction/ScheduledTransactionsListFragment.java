@@ -16,8 +16,6 @@
 
 package org.gnucash.android.ui.transaction;
 
-import android.app.AlarmManager;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -32,19 +30,28 @@ import android.view.LayoutInflater;
 import android.view.TouchDelegate;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.*;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
+
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockListFragment;
 import com.actionbarsherlock.view.ActionMode;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
+
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
+import org.gnucash.android.db.DatabaseCursorLoader;
+import org.gnucash.android.db.DatabaseSchema;
+import org.gnucash.android.db.ScheduledEventDbAdapter;
+import org.gnucash.android.db.TransactionsDbAdapter;
+import org.gnucash.android.model.ScheduledEvent;
 import org.gnucash.android.model.Transaction;
-import org.gnucash.android.db.*;
 import org.gnucash.android.ui.UxArgument;
-import org.gnucash.android.ui.widget.WidgetConfigurationActivity;
 
 /**
  * Fragment which displays the recurring transactions in the system.
@@ -56,7 +63,7 @@ public class ScheduledTransactionsListFragment extends SherlockListFragment impl
     /**
      * Logging tag
      */
-    protected static final String TAG = "RecurringTransactionsFragment";
+    protected static final String TAG = "ScheduledTrxnFragment";
 
     private TransactionsDbAdapter mTransactionsDbAdapter;
     private SimpleCursorAdapter mCursorAdapter;
@@ -95,26 +102,19 @@ public class ScheduledTransactionsListFragment extends SherlockListFragment impl
         @Override
         public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
             switch (item.getItemId()) {
-                case R.id.context_menu_move_transactions:
-                    mode.finish();
-                    WidgetConfigurationActivity.updateAllWidgets(getActivity());
-                    return true;
-
                 case R.id.context_menu_delete:
                     for (long id : getListView().getCheckedItemIds()) {
-                        Log.i(TAG, "Cancelling recurring transaction(s)");
+                        Log.i(TAG, "Cancelling scheduled transaction(s)");
+                        String trnUID = mTransactionsDbAdapter.getUID(id);
+                        ScheduledEventDbAdapter scheduledEventDbAdapter = GnuCashApplication.getScheduledEventDbAdapter();
+                        ScheduledEvent event = scheduledEventDbAdapter.getScheduledEventWithUID(trnUID);
 
-                        PendingIntent recurringPendingIntent = PendingIntent.getBroadcast(getActivity().getApplicationContext(),
-                                (int)id, Transaction.createIntent(mTransactionsDbAdapter.getTransaction(id)), PendingIntent.FLAG_UPDATE_CURRENT);
-                        recurringPendingIntent.cancel();
-                        AlarmManager alarmManager = (AlarmManager) getActivity().getSystemService(Context.ALARM_SERVICE);
-                        alarmManager.cancel(recurringPendingIntent);
                         if (mTransactionsDbAdapter.deleteRecord(id)){
                             Toast.makeText(getActivity(), R.string.toast_recurring_transaction_deleted, Toast.LENGTH_SHORT).show();
+                            scheduledEventDbAdapter.deleteRecord(event.getUID());
                         }
                     }
                     mode.finish();
-                    WidgetConfigurationActivity.updateAllWidgets(getActivity());
                     getLoaderManager().destroyLoader(0);
                     refreshList();
                     return true;
@@ -141,7 +141,7 @@ public class ScheduledTransactionsListFragment extends SherlockListFragment impl
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_recurring_transactions_list, container, false);
+        return inflater.inflate(R.layout.fragment_scheduled_events_list, container, false);
     }
 
     @Override
@@ -226,7 +226,7 @@ public class ScheduledTransactionsListFragment extends SherlockListFragment impl
     @Override
     public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
         Log.d(TAG, "Creating transactions loader");
-        return new RecurringTransactionsCursorLoader(getActivity());
+        return new ScheduledTransactionsCursorLoader(getActivity());
     }
 
     @Override
@@ -394,8 +394,11 @@ public class ScheduledTransactionsListFragment extends SherlockListFragment impl
             amountTextView.setText(transaction.getSplits().size() + " splits");
 
             TextView trNote = (TextView) view.findViewById(R.id.secondary_text);
-            trNote.setText(context.getString(R.string.label_repeats) + " " +
-                    getRecurrenceAsString(cursor.getLong(cursor.getColumnIndexOrThrow(DatabaseSchema.TransactionEntry.COLUMN_RECURRENCE_PERIOD)))) ;
+//            trNote.setText(context.getString(R.string.label_repeats) + " " +
+//                    getRecurrenceAsString(cursor.getLong(cursor.getColumnIndexOrThrow(DatabaseSchema.TransactionEntry.COLUMN_RECURRENCE_PERIOD)))) ;
+            ScheduledEventDbAdapter scheduledEventDbAdapter = GnuCashApplication.getScheduledEventDbAdapter();
+            ScheduledEvent event = scheduledEventDbAdapter.getScheduledEventWithUID(transaction.getUID());
+            trNote.setText(event.toString());
 
         }
 
@@ -405,14 +408,16 @@ public class ScheduledTransactionsListFragment extends SherlockListFragment impl
      * {@link DatabaseCursorLoader} for loading recurring transactions asynchronously from the database
      * @author Ngewi Fet <ngewif@gmail.com>
      */
-    protected static class RecurringTransactionsCursorLoader extends DatabaseCursorLoader {
+    protected static class ScheduledTransactionsCursorLoader extends DatabaseCursorLoader {
 
-        public RecurringTransactionsCursorLoader(Context context) {
+        public ScheduledTransactionsCursorLoader(Context context) {
             super(context);
         }
 
-        @Override        public Cursor loadInBackground() {
+        @Override
+        public Cursor loadInBackground() {
             mDatabaseAdapter = GnuCashApplication.getTransactionDbAdapter();
+
             Cursor c = ((TransactionsDbAdapter) mDatabaseAdapter).fetchAllRecurringTransactions();
 
             registerContentObserver(c);

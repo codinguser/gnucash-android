@@ -450,4 +450,6 @@
     <string name="title_change_passcode">Change Passcode</string>
     <string name="toast_error_edit_multi_currency_transaction">Multi-currency transactions cannot be modified</string>
     <string name="menu_title_favorite">Favorite</string>
+    <string name="drawer_open">Navigation drawer opened</string>
+    <string name="drawer_close">Navigation drawer closed</string>
 </resources>

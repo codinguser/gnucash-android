@@ -104,6 +104,26 @@ public class ScheduledEventDbAdapter extends DatabaseAdapter {
     }
 
     /**
+     * Returns an instance of {@link org.gnucash.android.model.ScheduledEvent} from the database record
+     * @param eventUID GUID of the event itself
+     * @return ScheduledEvent object instance
+     */
+    public ScheduledEvent getScheduledEventWithUID(String eventUID){
+        Cursor cursor = mDb.query(ScheduledEventEntry.TABLE_NAME, null,
+                ScheduledEventEntry.COLUMN_EVENT_UID + "= ?",
+                new String[]{eventUID}, null, null, null);
+
+        ScheduledEvent scheduledEvent = null;
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                scheduledEvent = buildScheduledEventInstance(cursor);
+            }
+            cursor.close();
+        }
+        return scheduledEvent;
+    }
+
+    /**
      * Returns all scheduled events in the database
      * @return List with all scheduled events
      */
@@ -129,6 +149,10 @@ public class ScheduledEventDbAdapter extends DatabaseAdapter {
     @Override
     public boolean deleteRecord(long rowId) {
         return deleteRecord(ScheduledEventEntry.TABLE_NAME, rowId);
+    }
+
+    public boolean deleteRecord(String uid){
+        return deleteRecord(getID(uid));
     }
 
     @Override

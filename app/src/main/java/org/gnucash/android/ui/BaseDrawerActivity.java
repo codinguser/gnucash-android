@@ -15,10 +15,11 @@
  */
 package org.gnucash.android.ui;
 
+import android.app.Activity;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
+import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,15 +27,20 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
+import com.actionbarsherlock.view.MenuItem;
 import com.commonsware.cwac.merge.MergeAdapter;
 
 import org.gnucash.android.R;
+import org.gnucash.android.importer.ImportAsyncTask;
 import org.gnucash.android.ui.account.AccountsActivity;
-import org.gnucash.android.ui.transaction.ScheduledTransactionsListFragment;
-import org.w3c.dom.Text;
+import org.gnucash.android.ui.settings.SettingsActivity;
+import org.gnucash.android.ui.transaction.ScheduledEventsActivity;
 
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.ArrayList;
 
 
@@ -46,9 +52,9 @@ import java.util.ArrayList;
 public class BaseDrawerActivity extends SherlockFragmentActivity {
     protected DrawerLayout  mDrawerLayout;
     protected ListView      mDrawerList;
-    protected String[]      mNavDrawerEntries;
 
     protected CharSequence  mTitle;
+    private ActionBarDrawerToggle mDrawerToggle;
 
     private class DrawerItemClickListener implements ListView.OnItemClickListener {
         @Override
@@ -63,14 +69,40 @@ public class BaseDrawerActivity extends SherlockFragmentActivity {
 
         mDrawerLayout   = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerList     = (ListView) findViewById(R.id.left_drawer);
-        mNavDrawerEntries = getResources().getStringArray(R.array.nav_drawer_entries);
 
-//        mDrawerList.setAdapter(new ArrayAdapter<String>(this,
-//                R.layout.drawer_list_item, mNavDrawerEntries));
-//        mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
+        MergeAdapter mergeAdapter = createNavDrawerMergeAdapter();
 
+        mDrawerList.setAdapter(mergeAdapter);
+        mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
+
+        //FIXME: Migrate to the non-deprecated version when we remove ActionBarSherlock and support only API level 15 and above
+        mDrawerToggle = new ActionBarDrawerToggle(
+                this,                  /* host Activity */
+                mDrawerLayout,         /* DrawerLayout object */
+                R.drawable.ic_drawer,  /* nav drawer icon to replace 'Up' caret */
+                R.string.drawer_open,  /* "open drawer" description */
+                R.string.drawer_close  /* "close drawer" description */
+        ) {
+
+            /** Called when a drawer has settled in a completely closed state. */
+            public void onDrawerClosed(View view) {
+                super.onDrawerClosed(view);
+            }
+
+            /** Called when a drawer has settled in a completely open state. */
+            public void onDrawerOpened(View drawerView) {
+                super.onDrawerOpened(drawerView);
+                getSupportActionBar().setTitle("GnuCash");
+            }
+        };
+
+        mDrawerLayout.setDrawerListener(mDrawerToggle);
+        getSupportActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    }
+
+    private MergeAdapter createNavDrawerMergeAdapter() {
         ArrayList<String> accountNavOptions = new ArrayList<String>();
-        accountNavOptions.add("Accounts");
         accountNavOptions.add("Favorites");
         accountNavOptions.add("Open...");
 
@@ -79,7 +111,6 @@ public class BaseDrawerActivity extends SherlockFragmentActivity {
 
 
         ArrayList<String> transactionsNavOptions = new ArrayList<String>();
-        transactionsNavOptions.add("Transactions");
         transactionsNavOptions.add("Scheduled Transactions");
         transactionsNavOptions.add("Export...");
 
@@ -101,31 +132,45 @@ public class BaseDrawerActivity extends SherlockFragmentActivity {
         mergeAdapter.addView(inflater.inflate(R.layout.horizontal_line, null));
         TextView settingsHeader = (TextView) inflater.inflate(R.layout.drawer_section_header, null);
         settingsHeader.setText("Settings");
-        TextView settingsTextView = (TextView) inflater.inflate(R.layout.drawer_list_item, null);
-        settingsTextView.setText("Settings");
+
+        ArrayList<String> aboutNavOptions = new ArrayList<String>();
+        aboutNavOptions.add("Backup & Export");
+        aboutNavOptions.add("Settings");
+        //TODO: add help view
+        ArrayAdapter<String> aboutNavAdapter = new ArrayAdapter<String>(this,
+                R.layout.drawer_list_item, aboutNavOptions);
 
         mergeAdapter.addView(settingsHeader);
-        mergeAdapter.addView(settingsTextView);
+        mergeAdapter.addAdapter(aboutNavAdapter);
+        return mergeAdapter;
+    }
 
-        mDrawerList.setAdapter(mergeAdapter);
-        mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        mDrawerToggle.syncState();
+    }
 
-        getSupportActionBar().setHomeButtonEnabled(true);
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        mDrawerToggle.onConfigurationChanged(newConfig);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (!mDrawerLayout.isDrawerOpen(mDrawerList))
+            mDrawerLayout.openDrawer(mDrawerList);
+        else
+            mDrawerLayout.closeDrawer(mDrawerList);
+
+        return super.onOptionsItemSelected(item);
     }
 
     /** Swaps fragments in the main content view */
     protected void selectItem(int position) {
         switch (position){
-            case 0: {
-                Intent intent = new Intent(this, AccountsActivity.class);
-                intent.putExtra(AccountsActivity.EXTRA_TAB_INDEX,
-                        AccountsActivity.INDEX_TOP_LEVEL_ACCOUNTS_FRAGMENT);
-                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_SINGLE_TOP);
-                startActivity(intent);
-            }
-                break;
-
-            case 1: {
+            case 1: { //favorite accounts
                 Intent intent = new Intent(this, AccountsActivity.class);
                 intent.putExtra(AccountsActivity.EXTRA_TAB_INDEX,
                         AccountsActivity.INDEX_FAVORITE_ACCOUNTS_FRAGMENT);
@@ -134,29 +179,45 @@ public class BaseDrawerActivity extends SherlockFragmentActivity {
             }
                 break;
 
-            case 2:{
+            case 2: { //Open... files
+                //TODO: open/import GnuCash files
+                Intent pickIntent = new Intent(Intent.ACTION_GET_CONTENT);
+                pickIntent.setType("application/*");
+                Intent chooser = Intent.createChooser(pickIntent, "Select GnuCash account file");
+
+                startActivityForResult(chooser, AccountsActivity.REQUEST_PICK_ACCOUNTS_FILE);
+            }
+                break;
+
+            case 4: { //show scheduled transactions
+                Intent intent = new Intent(this, ScheduledEventsActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                intent.putExtra(ScheduledEventsActivity.EXTRA_DISPLAY_MODE,
+                        ScheduledEventsActivity.DisplayMode.TRANSACTION_EVENTS);
+                startActivity(intent);
+            }
+                break;
+
+            case 5:{
                 AccountsActivity.showExportDialog(this);
             }
                 break;
 
+            case 8: { //Backup and Export
+
+            }
+                break;
+
+            case 9: //Settings activity
+                startActivity(new Intent(this, SettingsActivity.class));
+                break;
+
+            //TODO: add help option
         }
-
-        // Create a new fragment and specify the planet to show based on position
-        Fragment fragment = new ScheduledTransactionsListFragment();
-        Bundle args = new Bundle();
-        args.putInt("account_list_type", position);
-        fragment.setArguments(args);
-
-
-        // Insert the fragment by replacing any existing fragment
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction()
-                .replace(R.id.fragment_container, fragment)
-                .commit();
 
         // Highlight the selected item, update the title, and close the drawer
         mDrawerList.setItemChecked(position, true);
-        setTitle(mNavDrawerEntries[position]);
+//        setTitle(mNavDrawerEntries[position]);
         mDrawerLayout.closeDrawer(mDrawerList);
     }
 
@@ -166,4 +227,22 @@ public class BaseDrawerActivity extends SherlockFragmentActivity {
         getSupportActionBar().setTitle(mTitle);
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == Activity.RESULT_CANCELED){
+            return;
+        }
+
+        switch (requestCode) {
+            case AccountsActivity.REQUEST_PICK_ACCOUNTS_FILE:
+                try {
+                    InputStream accountInputStream = getContentResolver().openInputStream(data.getData());
+                    new ImportAsyncTask(this).execute(accountInputStream);
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                    Toast.makeText(this, R.string.toast_error_importing_accounts, Toast.LENGTH_SHORT).show();
+                }
+                break;
+        }
+    }
 }

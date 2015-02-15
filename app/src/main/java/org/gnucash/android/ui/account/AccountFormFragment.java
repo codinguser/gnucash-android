@@ -514,7 +514,7 @@ public class AccountFormFragment extends SherlockFragment {
 			return true;
 		}
 		
-		return false;
+		return super.onOptionsItemSelected(item);
 	}
 
     /**
