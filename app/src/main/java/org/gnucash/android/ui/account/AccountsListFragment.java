@@ -208,7 +208,7 @@ public class AccountsListFragment extends SherlockListFragment implements
         if (args != null)
             mParentAccountUID = args.getString(UxArgument.PARENT_ACCOUNT_UID);
 
-        mAccountsDbAdapter = GnuCashApplication.getAccountsDbAdapter();
+        mAccountsDbAdapter = AccountsDbAdapter.getInstance();
         mAccountsCursorAdapter = new AccountsCursorAdapter(
                 getActivity().getApplicationContext(),
                 R.layout.list_item_account, null,
@@ -529,7 +529,7 @@ public class AccountsListFragment extends SherlockListFragment implements
                             new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int whichButton) {
                                     Context context = getDialog().getContext();
-                                    AccountsDbAdapter accountsDbAdapter = GnuCashApplication.getAccountsDbAdapter();
+                                    AccountsDbAdapter accountsDbAdapter = AccountsDbAdapter.getInstance();
                                     if (uid == null) {
                                         accountsDbAdapter.deleteAllRecords();
                                         Toast.makeText(context, R.string.toast_all_accounts_deleted, Toast.LENGTH_SHORT).show();
@@ -593,7 +593,7 @@ public class AccountsListFragment extends SherlockListFragment implements
 
         @Override
         public Cursor loadInBackground() {
-            mDatabaseAdapter = GnuCashApplication.getAccountsDbAdapter();
+            mDatabaseAdapter = AccountsDbAdapter.getInstance();
             Cursor cursor;
 
             if (mFilter != null){
@@ -637,7 +637,7 @@ public class AccountsListFragment extends SherlockListFragment implements
         public AccountsCursorAdapter(Context context, int layout, Cursor c,
                                      String[] from, int[] to) {
             super(context, layout, c, from, to, 0);
-            transactionsDBAdapter = GnuCashApplication.getTransactionDbAdapter();
+            transactionsDBAdapter = TransactionsDbAdapter.getInstance();
         }
 
         @Override

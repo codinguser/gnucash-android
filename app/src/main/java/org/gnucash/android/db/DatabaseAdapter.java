@@ -42,11 +42,14 @@ public abstract class DatabaseAdapter {
 	 */
     protected final SQLiteDatabase mDb;
 
+    protected final String mTableName;
+
     /**
      * Opens the database adapter with an existing database
      * @param db SQLiteDatabase object
      */
-    public DatabaseAdapter(SQLiteDatabase db) {
+    public DatabaseAdapter(SQLiteDatabase db, String tableName) {
+        this.mTableName = tableName;
         this.mDb = db;
         if (!db.isOpen() || db.isReadOnly())
             throw new IllegalArgumentException("Database not open or is read-only. Require writeable database");
@@ -158,66 +161,64 @@ public abstract class DatabaseAdapter {
     }
 
 	/**
-	 * Retrieves record with id <code>rowId</code> from table <code>tableName</code>
-	 * @param tableName Name of table where record is found
+	 * Retrieves record with id <code>rowId</code> from database table
 	 * @param rowId ID of record to be retrieved
 	 * @return {@link Cursor} to record retrieved
 	 */
-	protected Cursor fetchRecord(String tableName, long rowId){
-		return mDb.query(tableName, null, DatabaseSchema.CommonColumns._ID + "=" + rowId,
+	public Cursor fetchRecord(long rowId){
+		return mDb.query(mTableName, null, DatabaseSchema.CommonColumns._ID + "=" + rowId,
 				null, null, null, null);
 	}
 	
 	/**
-	 * Retrieves all records from database table <code>tableName</code>
-	 * @param tableName Name of table in database
+	 * Retrieves all records from database table
 	 * @return {@link Cursor} to all records in table <code>tableName</code>
 	 */
-	protected Cursor fetchAllRecords(String tableName){
-		return mDb.query(tableName, 
+	public Cursor fetchAllRecords(){
+		return mDb.query(mTableName,
         		null, null, null, null, null, null);
 	}
 
 	/**
-	 * Deletes record with ID <code>rowID</code> from database table <code>tableName</code>
-     * This does not delete the transactions and splits associated with the account
-	 * @param tableName Name of table in database
+	 * Deletes record with ID <code>rowID</code> from database table.
 	 * @param rowId ID of record to be deleted
 	 * @return <code>true</code> if deletion was successful, <code>false</code> otherwise
 	 */
-	protected boolean deleteRecord(String tableName, long rowId){
-		return mDb.delete(tableName, DatabaseSchema.CommonColumns._ID + "=" + rowId, null) > 0;
+	public boolean deleteRecord(long rowId){
+		return mDb.delete(mTableName, DatabaseSchema.CommonColumns._ID + "=" + rowId, null) > 0;
 	}
 
     /**
      * Deletes all records in the database
      * @return Number of deleted records
      */
-    protected int deleteAllRecords(String tableName){
-        return mDb.delete(tableName, null, null);
+    public int deleteAllRecords(){
+        return mDb.delete(mTableName, null, null);
     }
 
     /**
      * Returns the string unique ID (GUID) of a record in the database
-     * @param tableName Name of table where record is found
      * @param uid GUID of the record
      * @return Long record ID
      */
-    protected long getID(String tableName, String uid){
+    public long getID(String uid){
         if (uid == null)
             return 0;
 
-        Cursor cursor = mDb.query(tableName,
+        Cursor cursor = mDb.query(mTableName,
                 new String[] {DatabaseSchema.CommonColumns._ID},
                 DatabaseSchema.CommonColumns.COLUMN_UID + " = ?",
                 new String[]{uid},
                 null, null, null);
         long result = -1;
-        if (cursor != null){
+        try{
             if (cursor.moveToFirst()) {
                 Log.d(TAG, "Transaction already exists. Returning existing id");
                 result = cursor.getLong(cursor.getColumnIndexOrThrow(DatabaseSchema.CommonColumns._ID));
+            } else {
+                throw new IllegalArgumentException("Account UID " + uid + " does not exist in the db");
             }
+        } finally {
             cursor.close();
         }
         return result;
@@ -225,51 +226,27 @@ public abstract class DatabaseAdapter {
 
     /**
      * Returns the string unique ID (GUID) of a record in the database
-     * @param tableName Name of table where record is found
      * @param id long database record ID
      * @return GUID of the record
      */
-    protected String getUID(String tableName, long id){
-        Cursor cursor = mDb.query(tableName,
+    public String getUID(long id){
+        Cursor cursor = mDb.query(mTableName,
                 new String[]{DatabaseSchema.CommonColumns.COLUMN_UID},
                 DatabaseSchema.CommonColumns._ID + " = " + id,
                 null, null, null, null);
 
         String uid = null;
-        if (cursor != null){
+        try {
             if (cursor.moveToFirst()) {
                 uid = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.CommonColumns.COLUMN_UID));
+            } else {
+                throw new IllegalArgumentException("Account record ID " + id + " does not exist in the db");
             }
+        } finally {
             cursor.close();
         }
         return uid;
     }
-
-    /**
-     * Retrieves record with id <code>rowId</code> from table
-     * @param rowId ID of record to be retrieved
-     * @return {@link Cursor} to record retrieved
-     */
-    public abstract Cursor fetchRecord(long rowId);
-
-    /**
-     * Retrieves all records from database table corresponding to this adapter
-     * @return {@link Cursor} to all records in table
-     */
-    public abstract Cursor fetchAllRecords();
-
-    /**
-     * Deletes record with ID <code>rowID</code> from database table
-     * @param rowId ID of record to be deleted
-     * @return <code>true</code> if deletion was successful, <code>false</code> otherwise
-     */
-    public abstract boolean deleteRecord(long rowId);
-
-    /**
-     * Deletes all records in the database table
-     * @return Count of database records which have been deleted
-     */
-    public abstract int deleteAllRecords();
 
     /**
      * Returns the currency code (according to the ISO 4217 standard) of the account
@@ -319,20 +296,6 @@ public abstract class DatabaseAdapter {
     }
 
     /**
-     * Returns the database record ID of the entry
-     * @param uid GUID of the record
-     * @return Long database identifier of the record
-     */
-    public abstract long getID(String uid);
-
-    /**
-     * Returns the global unique identifier of the record
-     * @param id Database record ID of the entry
-     * @return String GUID of the record
-     */
-    public abstract String getUID(long id);
-
-    /**
      * Updates a record in the table
      * @param recordId Database ID of the record to be updated
      * @param columnKey Name of column to be updated
@@ -348,5 +311,16 @@ public abstract class DatabaseAdapter {
         }
         return mDb.update(tableName, contentValues,
                 DatabaseSchema.CommonColumns._ID + "=" + recordId, null);
+    }
+
+    /**
+     * Deletes a record from the database given its unique identifier.
+     * <p>Overload of the method {@link #deleteRecord(long)}</p>
+     * @param uid GUID of the record
+     * @return <code>true</code> if deletion was successful, <code>false</code> otherwise
+     * @see #deleteRecord(long)
+     */
+    public boolean deleteRecord(String uid){
+        return deleteRecord(getID(uid));
     }
 }

@@ -127,8 +127,8 @@ public class GncXmlHandler extends DefaultHandler {
 
     private void init(boolean bulk, SQLiteDatabase db) {
         if (db == null) {
-            mAccountsDbAdapter = GnuCashApplication.getAccountsDbAdapter();
-            mTransactionsDbAdapter = GnuCashApplication.getTransactionDbAdapter();
+            mAccountsDbAdapter = AccountsDbAdapter.getInstance();
+            mTransactionsDbAdapter = TransactionsDbAdapter.getInstance();
         } else {
             mTransactionsDbAdapter = new TransactionsDbAdapter(db, new SplitsDbAdapter(db));
             mAccountsDbAdapter = new AccountsDbAdapter(db, mTransactionsDbAdapter);

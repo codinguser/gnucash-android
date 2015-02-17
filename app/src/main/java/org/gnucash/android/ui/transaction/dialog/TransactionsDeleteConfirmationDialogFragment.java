@@ -63,13 +63,13 @@ public class TransactionsDeleteConfirmationDialogFragment extends SherlockDialog
                 .setPositiveButton(R.string.alert_dialog_ok_delete,
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int whichButton) {
-                                TransactionsDbAdapter transactionsDbAdapter = GnuCashApplication.getTransactionDbAdapter();
+                                TransactionsDbAdapter transactionsDbAdapter = TransactionsDbAdapter.getInstance();
                                 if (rowId == 0) {
                                     GncXmlExporter.createBackup(); //create backup before deleting everything
                                     List<Transaction> openingBalances = new ArrayList<Transaction>();
                                     boolean preserveOpeningBalances = GnuCashApplication.shouldSaveOpeningBalances(false);
                                     if (preserveOpeningBalances) {
-                                        openingBalances = GnuCashApplication.getAccountsDbAdapter().getAllOpeningBalanceTransactions();
+                                        openingBalances = AccountsDbAdapter.getInstance().getAllOpeningBalanceTransactions();
                                     }
 
                                     transactionsDbAdapter.deleteAllRecords();

@@ -56,8 +56,16 @@ public class AccountsDbAdapter extends DatabaseAdapter {
      * @param db SQliteDatabase instance
      */
     public AccountsDbAdapter(SQLiteDatabase db, TransactionsDbAdapter transactionsDbAdapter) {
-        super(db);
+        super(db, AccountEntry.TABLE_NAME);
         mTransactionsAdapter = transactionsDbAdapter;
+    }
+
+    /**
+     * Returns an application-wide instance of this database adapter
+     * @return Instance of Accounts db adapter
+     */
+    public static AccountsDbAdapter getInstance(){
+        return GnuCashApplication.getAccountsDbAdapter();
     }
 
     /**
@@ -303,7 +311,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
                             + TransactionEntry.TABLE_NAME + "_" + TransactionEntry.COLUMN_UID
                             + " FROM trans_split_acct )",
                     null);
-            deleteRecord(AccountEntry.TABLE_NAME, rowId);
+            deleteRecord(rowId);
             mDb.setTransactionSuccessful();
             return true;
         }
@@ -472,7 +480,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 	 */
     public Account getAccount(long rowId){
 		Log.v(TAG, "Fetching account with id " + rowId);
-		Cursor c =	fetchRecord(AccountEntry.TABLE_NAME, rowId);
+		Cursor c =	fetchRecord(rowId);
 		try {
             if (c.moveToFirst()) {
                 return buildAccountInstance(c);
@@ -531,7 +539,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 	 * @return Name of the account 
 	 */
     public String getName(long accountID) {
-		Cursor c = fetchRecord(AccountEntry.TABLE_NAME, accountID);
+		Cursor c = fetchRecord(accountID);
         try {
             if (c.moveToFirst()) {
                 return c.getString(c.getColumnIndexOrThrow(AccountEntry.COLUMN_NAME));
@@ -752,23 +760,6 @@ public class AccountsDbAdapter extends DatabaseAdapter {
                 AccountEntry.COLUMN_FULL_NAME + " ASC");
     }
 
-    @Override
-    public Cursor fetchRecord(long rowId) {
-        return fetchRecord(AccountEntry.TABLE_NAME, rowId);
-    }
-
-    /**
-     * Deletes an account and its transactions from the database.
-     * This is equivalent to calling {@link #destructiveDeleteAccount(long)}
-     * @param rowId ID of record to be deleted
-     * @return <code>true</code> if successful, <code>false</code> otherwise
-     */
-    @Override
-    public boolean deleteRecord(long rowId) {
-        return destructiveDeleteAccount(rowId);
-        //return deleteRecord(DatabaseHelper.TABLE_NAME, rowId);
-    }
-
     /**
 	 * Returns a Cursor set of accounts which fulfill <code>where</code>
 	 * @param where SQL WHERE statement without the 'WHERE' itself
@@ -791,7 +782,11 @@ public class AccountsDbAdapter extends DatabaseAdapter {
      * @return Cursor set of accounts which fulfill <code>where</code>
      */
     public Cursor fetchAccounts(String where, String[] whereArgs, String orderBy){
+        if (orderBy == null){
+            orderBy = AccountEntry.COLUMN_NAME + " ASC";
+        }
         Log.v(TAG, "Fetching all accounts from db where " + where + " order by " + orderBy);
+
         return mDb.query(AccountEntry.TABLE_NAME,
                 null, where, whereArgs, null, null,
                 orderBy);
@@ -1038,21 +1033,6 @@ public class AccountsDbAdapter extends DatabaseAdapter {
         } finally {
             cursor.close();
         }
-    }
-
-	/**
-	 * Return the record ID for the account with UID <code>accountUID</code>
-	 * @param accountUID String Unique ID of the account
-	 * @return Record ID belonging to account UID
-	 */
-    @Override
-	public long getID(String accountUID){
-		return getID(AccountEntry.TABLE_NAME, accountUID);
-	}
-
-    @Override
-    public String getUID(long id) {
-        return getUID(AccountEntry.TABLE_NAME, id);
     }
 
     /**

@@ -78,7 +78,7 @@ public class SchedulerService extends IntentService {
         switch (scheduledEvent.getEventType()){
             case TRANSACTION:
                 String eventUID = scheduledEvent.getEventUID();
-                TransactionsDbAdapter transactionsDbAdapter = GnuCashApplication.getTransactionDbAdapter();
+                TransactionsDbAdapter transactionsDbAdapter = TransactionsDbAdapter.getInstance();
                 Transaction trxnTemplate = transactionsDbAdapter.getTransaction(eventUID);
                 Transaction recurringTrxn = new Transaction(trxnTemplate, true);
                 recurringTrxn.setTime(System.currentTimeMillis());

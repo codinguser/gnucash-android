@@ -16,10 +16,11 @@
 package org.gnucash.android.db;
 
 import android.content.ContentValues;
-import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
+
+import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.DatabaseSchema.ScheduledEventEntry;
 import org.gnucash.android.model.ScheduledEvent;
 
@@ -34,7 +35,15 @@ import java.util.List;
 public class ScheduledEventDbAdapter extends DatabaseAdapter {
 
     public ScheduledEventDbAdapter(SQLiteDatabase db){
-        super(db);
+        super(db, ScheduledEventEntry.TABLE_NAME);
+    }
+
+    /**
+     * Returns application-wide instance of database adapter
+     * @return ScheduledEventDbAdapter instance
+     */
+    public static ScheduledEventDbAdapter getInstance(){
+        return GnuCashApplication.getScheduledEventDbAdapter();
     }
 
     /**
@@ -136,37 +145,4 @@ public class ScheduledEventDbAdapter extends DatabaseAdapter {
         return scheduledEvents;
     }
 
-    @Override
-    public Cursor fetchRecord(long rowId) {
-        return fetchRecord(ScheduledEventEntry.TABLE_NAME, rowId);
-    }
-
-    @Override
-    public Cursor fetchAllRecords() {
-        return fetchAllRecords(ScheduledEventEntry.TABLE_NAME);
-    }
-
-    @Override
-    public boolean deleteRecord(long rowId) {
-        return deleteRecord(ScheduledEventEntry.TABLE_NAME, rowId);
-    }
-
-    public boolean deleteRecord(String uid){
-        return deleteRecord(getID(uid));
-    }
-
-    @Override
-    public int deleteAllRecords() {
-        return deleteAllRecords(ScheduledEventEntry.TABLE_NAME);
-    }
-
-    @Override
-    public long getID(String uid) {
-        return getID(ScheduledEventEntry.TABLE_NAME, uid);
-    }
-
-    @Override
-    public String getUID(long id) {
-        return getUID(ScheduledEventEntry.TABLE_NAME, id);
-    }
 }

@@ -58,7 +58,7 @@ public class AccountCreator extends BroadcastReceiver {
 		if (uid != null)
 			account.setUID(uid);
 		
-		GnuCashApplication.getAccountsDbAdapter().addAccount(account);
+		AccountsDbAdapter.getInstance().addAccount(account);
 	}
 
 }

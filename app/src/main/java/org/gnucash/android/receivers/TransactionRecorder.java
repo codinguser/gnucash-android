@@ -93,7 +93,7 @@ public class TransactionRecorder extends BroadcastReceiver {
             }
         }
 
-		GnuCashApplication.getTransactionDbAdapter().addTransaction(transaction);
+		TransactionsDbAdapter.getInstance().addTransaction(transaction);
 		
 		WidgetConfigurationActivity.updateAllWidgets(context);
 	}

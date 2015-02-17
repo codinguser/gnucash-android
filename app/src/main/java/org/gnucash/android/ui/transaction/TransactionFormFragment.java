@@ -229,11 +229,11 @@ public class TransactionFormFragment extends SherlockFragment implements
 		}
 
         mAccountUID = getArguments().getString(UxArgument.SELECTED_ACCOUNT_UID);
-		mAccountsDbAdapter = GnuCashApplication.getAccountsDbAdapter();
+		mAccountsDbAdapter = AccountsDbAdapter.getInstance();
         mAccountType = mAccountsDbAdapter.getAccountType(mAccountUID);
 
         String transactionUID = getArguments().getString(UxArgument.SELECTED_TRANSACTION_UID);
-		mTransactionsDbAdapter = GnuCashApplication.getTransactionDbAdapter();
+		mTransactionsDbAdapter = TransactionsDbAdapter.getInstance();
 		if (transactionUID != null)
             mTransaction = mTransactionsDbAdapter.getTransaction(transactionUID);
         if (mTransaction != null) {
@@ -584,7 +584,7 @@ public class TransactionFormFragment extends SherlockFragment implements
             Toast.makeText(getActivity(), R.string.toast_error_edit_multi_currency_transaction, Toast.LENGTH_LONG).show();
             return;
         }
-        AccountsDbAdapter accountsDbAdapter = GnuCashApplication.getAccountsDbAdapter();
+        AccountsDbAdapter accountsDbAdapter = AccountsDbAdapter.getInstance();
         String currencyCode = accountsDbAdapter.getCurrencyCode(newAccountUID);
         Currency currency = Currency.getInstance(currencyCode);
         mCurrencyTextView.setText(currency.getSymbol(Locale.getDefault()));
@@ -632,7 +632,7 @@ public class TransactionFormFragment extends SherlockFragment implements
 		if (mTransaction != null){
             if (!mUseDoubleEntry){
                 //first remove old splits for this transaction, since there is only one split
-                SplitsDbAdapter splitsDbAdapter = GnuCashApplication.getSplitsDbAdapter();
+                SplitsDbAdapter splitsDbAdapter = SplitsDbAdapter.getInstance();
                 for (Split split : mTransaction.getSplits()) {
                     splitsDbAdapter.deleteSplit(split.getUID());
                 }

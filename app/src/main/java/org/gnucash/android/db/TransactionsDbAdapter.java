@@ -52,8 +52,16 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
      * @param db SQlite db instance
      */
     public TransactionsDbAdapter(SQLiteDatabase db, SplitsDbAdapter splitsDbAdapter) {
-        super(db);
+        super(db, TransactionEntry.TABLE_NAME);
         mSplitsDbAdapter = splitsDbAdapter;
+    }
+
+    /**
+     * Returns an application-wide instance of the database adapter
+     * @return Transaction database adapter
+     */
+    public static TransactionsDbAdapter getInstance(){
+        return GnuCashApplication.getTransactionDbAdapter();
     }
 
     public SplitsDbAdapter getSplitDbAdapter() {
@@ -204,7 +212,7 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 	 */
     public Transaction getTransaction(long rowId) {
         Log.v(TAG, "Fetching transaction with id " + rowId);
-        Cursor c = fetchRecord(TransactionEntry.TABLE_NAME, rowId);
+        Cursor c = fetchRecord(rowId);
         try {
             if (c.moveToFirst()) {
                 return buildTransactionInstance(c);
@@ -268,7 +276,8 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 	 * @return Cursor holding set of transactions for particular account
 	 */
 	public Cursor fetchAllTransactionsForAccount(long accountID){
-		return fetchAllTransactionsForAccount(getUID(AccountEntry.TABLE_NAME, accountID));
+        String accountUID = AccountsDbAdapter.getInstance().getUID(accountID);
+		return fetchAllTransactionsForAccount(accountUID);
 	}
 	
 	/**
@@ -396,13 +405,13 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 
 	/**
 	 * Returns the currency code (ISO 4217) used by the account with id <code>accountId</code>
-	 * If you do not have the database record Id, you can call {@link #getID(String, String)}  instead.
+	 * If you do not have the database record Id, you can call {@link #getID(String)}  instead.
 	 * @param accountId Database record id of the account 
 	 * @return Currency code of the account with Id <code>accountId</code>
 	 * @see #getAccountCurrencyCode(String)
 	 */
 	public String getAccountCurrencyCode(long accountId){
-		String accountUID = getUID(AccountEntry.TABLE_NAME, accountId);
+		String accountUID = AccountsDbAdapter.getInstance().getUID(accountId);
 		return getAccountCurrencyCode(accountUID);
 	}
 
@@ -420,16 +429,6 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
         return Transaction.computeBalance(accountUID, splitList);
     }
 
-    /**
-     * Returns the string unique identifier of the transaction
-     * @param transactionId Database record ID of transaction
-     * @return String unique identifier of the transaction
-     */
-    @Override
-    public String getUID(long transactionId){
-        return getUID(TransactionEntry.TABLE_NAME, transactionId);
-    }
-
 	/**
 	 * Deletes transaction record with id <code>rowId</code> and all it's splits
 	 * @param rowId Long database record id
@@ -439,25 +438,8 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 	public boolean deleteRecord(long rowId){
 		Log.d(TAG, "Delete transaction with record Id: " + rowId);
         //the splits db adapter handles deletion of the transaction
-		return mSplitsDbAdapter.deleteSplitsForTransaction(rowId);
-	}
-	
-	/**
-	 * Deletes transaction record with unique ID <code>uid</code> and all its splits
-	 * @param uid String unique ID of transaction
-	 * @return <code>true</code> if deletion was successful, <code>false</code> otherwise
-	 */
-	public boolean deleteTransaction(String uid){
-        return deleteRecord(getID(uid));
-	}
-	
-	/**
-	 * Deletes all transactions in the database
-	 * @return Number of affected transaction records
-	 */
-    @Override
-	public int deleteAllRecords(){
-		return deleteAllRecords(TransactionEntry.TABLE_NAME);
+		mSplitsDbAdapter.deleteSplitsForTransaction(rowId);
+        return mDb.delete(TransactionEntry.TABLE_NAME, TransactionEntry._ID + "=" + rowId, null) > 0;
 	}
 
     /**
@@ -520,26 +502,6 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
         SQLiteStatement statement = mDb.compileStatement(sql);
         return statement.simpleQueryForLong();
     }
-	
-    /**
-     * Returns the database record ID for the specified transaction UID
-     * @param transactionUID Unique idendtifier of the transaction
-     * @return Database record ID for the transaction
-     */
-    @Override
-    public long getID(String transactionUID){
-        return getID(TransactionEntry.TABLE_NAME, transactionUID);
-    }
-
-    @Override
-    public Cursor fetchAllRecords() {
-        return fetchAllRecords(TransactionEntry.TABLE_NAME);
-    }
-
-    @Override
-    public Cursor fetchRecord(long rowId) {
-        return fetchRecord(TransactionEntry.TABLE_NAME, rowId);
-    }
 
     /**
      * Returns a cursor to transactions whose name (UI: description) start with the <code>prefix</code>
@@ -557,15 +519,11 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 
     /**
      * Updates a specific entry of an transaction
-     * @param transactionUID Unique ID of the transaction
-     * @param columnKey Name of column to be updated
-     * @param newValue  New value to be assigned to the columnKey
+     * @param contentValues Values with which to update the record
+     * @param whereClause Conditions for updating formatted as SQL where statement
+     * @param whereArgs Arguments for the SQL wehere statement
      * @return Number of records affected
      */
-    public int updateTransaction(String transactionUID, String columnKey, String newValue){
-        return updateRecord(TransactionEntry.TABLE_NAME, getID(transactionUID), columnKey, newValue);
-    }
-
     public int updateTransaction(ContentValues contentValues, String whereClause, String[] whereArgs){
         return mDb.update(TransactionEntry.TABLE_NAME, contentValues, whereClause, whereArgs);
     }

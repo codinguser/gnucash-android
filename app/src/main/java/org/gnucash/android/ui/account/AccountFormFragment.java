@@ -209,7 +209,7 @@ public class AccountFormFragment extends SherlockFragment {
 	 */
 	static public AccountFormFragment newInstance() {
         AccountFormFragment f = new AccountFormFragment();
-        f.mAccountsDbAdapter = GnuCashApplication.getAccountsDbAdapter();
+        f.mAccountsDbAdapter = AccountsDbAdapter.getInstance();
         return f;
     }
 	
@@ -217,7 +217,7 @@ public class AccountFormFragment extends SherlockFragment {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setHasOptionsMenu(true);
-        mAccountsDbAdapter = GnuCashApplication.getAccountsDbAdapter();
+        mAccountsDbAdapter = AccountsDbAdapter.getInstance();
 
         SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
         mUseDoubleEntry = sharedPrefs.getBoolean(getString(R.string.key_use_double_entry), true);
@@ -774,7 +774,7 @@ public class AccountFormFragment extends SherlockFragment {
         }
         accountsToUpdate.add(mAccount);
 		if (mAccountsDbAdapter == null)
-			mAccountsDbAdapter = GnuCashApplication.getAccountsDbAdapter();
+			mAccountsDbAdapter = AccountsDbAdapter.getInstance();
         // bulk update, will not update transactions
 		mAccountsDbAdapter.bulkAddAccounts(accountsToUpdate);
 

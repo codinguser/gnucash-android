@@ -523,7 +523,7 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
             delegate = new TaskDelegate() {
                 @Override
                 public void onTaskComplete() {
-                    GnuCashApplication.getAccountsDbAdapter().updateAllAccounts(DatabaseSchema.AccountEntry.COLUMN_CURRENCY, currencyCode);
+                    AccountsDbAdapter.getInstance().updateAllAccounts(DatabaseSchema.AccountEntry.COLUMN_CURRENCY, currencyCode);
                 }
             };
         }

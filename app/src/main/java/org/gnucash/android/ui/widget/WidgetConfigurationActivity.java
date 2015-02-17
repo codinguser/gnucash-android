@@ -71,7 +71,7 @@ public class WidgetConfigurationActivity extends Activity {
 		mOkButton 		= (Button) findViewById(R.id.btn_save);
 		mCancelButton 	= (Button) findViewById(R.id.btn_cancel);
 
-		mAccountsDbAdapter = GnuCashApplication.getAccountsDbAdapter();
+		mAccountsDbAdapter = AccountsDbAdapter.getInstance();
 		Cursor cursor = mAccountsDbAdapter.fetchAllRecordsOrderedByFullName();
 		
 		if (cursor.getCount() <= 0){
@@ -145,7 +145,7 @@ public class WidgetConfigurationActivity extends Activity {
 		Log.i("WidgetConfiguration", "Updating widget: " + appWidgetId);
 		AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
 
-		AccountsDbAdapter accountsDbAdapter = GnuCashApplication.getAccountsDbAdapter();
+		AccountsDbAdapter accountsDbAdapter = AccountsDbAdapter.getInstance();
 		Account account;
         try {
             account = accountsDbAdapter.getAccount(accountUID);

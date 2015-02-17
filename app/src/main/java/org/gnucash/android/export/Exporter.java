@@ -68,9 +68,9 @@ public abstract class Exporter {
         this.mParameters = params;
         mContext = GnuCashApplication.getAppContext();
         if (db == null) {
-            mAccountsDbAdapter = GnuCashApplication.getAccountsDbAdapter();
-            mTransactionsDbAdapter = GnuCashApplication.getTransactionDbAdapter();
-            mSplitsDbAdapter = GnuCashApplication.getSplitsDbAdapter();
+            mAccountsDbAdapter = AccountsDbAdapter.getInstance();
+            mTransactionsDbAdapter = TransactionsDbAdapter.getInstance();
+            mSplitsDbAdapter = SplitsDbAdapter.getInstance();
         } else {
             mSplitsDbAdapter = new SplitsDbAdapter(db);
             mTransactionsDbAdapter = new TransactionsDbAdapter(db, mSplitsDbAdapter);

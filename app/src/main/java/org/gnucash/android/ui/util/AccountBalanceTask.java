@@ -41,7 +41,7 @@ public class AccountBalanceTask extends AsyncTask<String, Void, Money> {
 
     public AccountBalanceTask(TextView balanceTextView, Context context){
         accountBalanceTextViewReference = new WeakReference<TextView>(balanceTextView);
-        accountsDbAdapter = GnuCashApplication.getAccountsDbAdapter();
+        accountsDbAdapter = AccountsDbAdapter.getInstance();
     }
 
     @Override

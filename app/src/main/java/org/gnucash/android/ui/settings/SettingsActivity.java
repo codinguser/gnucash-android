@@ -246,7 +246,7 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
                 Toast.makeText(this, R.string.toast_tap_again_to_confirm_delete, Toast.LENGTH_SHORT).show();
             } else {
                 GncXmlExporter.createBackup(); //create backup before deleting everything
-                AccountsDbAdapter accountsDbAdapter = GnuCashApplication.getAccountsDbAdapter();
+                AccountsDbAdapter accountsDbAdapter = AccountsDbAdapter.getInstance();
                 accountsDbAdapter.deleteAllRecords();
                 Toast.makeText(this, R.string.toast_all_accounts_deleted, Toast.LENGTH_LONG).show();
             }
@@ -264,10 +264,10 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
                 List<Transaction> openingBalances = new ArrayList<Transaction>();
                 boolean preserveOpeningBalances = GnuCashApplication.shouldSaveOpeningBalances(false);
                 if (preserveOpeningBalances) {
-                    AccountsDbAdapter accountsDbAdapter = GnuCashApplication.getAccountsDbAdapter();
+                    AccountsDbAdapter accountsDbAdapter = AccountsDbAdapter.getInstance();
                     openingBalances = accountsDbAdapter.getAllOpeningBalanceTransactions();
                 }
-                TransactionsDbAdapter transactionsDbAdapter = GnuCashApplication.getTransactionDbAdapter();
+                TransactionsDbAdapter transactionsDbAdapter = TransactionsDbAdapter.getInstance();
                 transactionsDbAdapter.deleteAllRecords();
 
                 if (preserveOpeningBalances) {

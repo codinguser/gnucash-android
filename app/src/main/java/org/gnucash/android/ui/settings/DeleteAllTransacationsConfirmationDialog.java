@@ -60,13 +60,13 @@ public class DeleteAllTransacationsConfirmationDialog extends DialogFragment {
                                 GncXmlExporter.createBackup();
 
                                 Context context = getActivity();
-                                AccountsDbAdapter accountsDbAdapter = GnuCashApplication.getAccountsDbAdapter();
+                                AccountsDbAdapter accountsDbAdapter = AccountsDbAdapter.getInstance();
                                 List<Transaction> openingBalances = new ArrayList<Transaction>();
                                 boolean preserveOpeningBalances = GnuCashApplication.shouldSaveOpeningBalances(false);
                                 if (preserveOpeningBalances) {
                                     openingBalances = accountsDbAdapter.getAllOpeningBalanceTransactions();
                                 }
-                                TransactionsDbAdapter transactionsDbAdapter = GnuCashApplication.getTransactionDbAdapter();
+                                TransactionsDbAdapter transactionsDbAdapter = TransactionsDbAdapter.getInstance();
                                 transactionsDbAdapter.deleteAllRecords();
 
                                 if (preserveOpeningBalances) {

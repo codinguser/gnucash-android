@@ -279,7 +279,7 @@ public class TransactionsActivity extends PassLockActivity implements
 
 		mAccountUID = getIntent().getStringExtra(UxArgument.SELECTED_ACCOUNT_UID);
 
-        mAccountsDbAdapter = GnuCashApplication.getAccountsDbAdapter();
+        mAccountsDbAdapter = AccountsDbAdapter.getInstance();
 
         setupActionBarNavigation();
 
@@ -407,7 +407,7 @@ public class TransactionsActivity extends PassLockActivity implements
         if (favoriteAccountMenuItem == null) //when the activity is used to edit a transaction
             return super.onPrepareOptionsMenu(menu);
 
-        boolean isFavoriteAccount = GnuCashApplication.getAccountsDbAdapter().isFavoriteAccount(mAccountUID);
+        boolean isFavoriteAccount = AccountsDbAdapter.getInstance().isFavoriteAccount(mAccountUID);
 
         int favoriteIcon = isFavoriteAccount ? android.R.drawable.btn_star_big_on : android.R.drawable.btn_star_big_off;
         favoriteAccountMenuItem.setIcon(favoriteIcon);
@@ -422,7 +422,7 @@ public class TransactionsActivity extends PassLockActivity implements
                 return super.onOptionsItemSelected(item);
 
             case R.id.menu_favorite_account:
-                AccountsDbAdapter accountsDbAdapter = GnuCashApplication.getAccountsDbAdapter();
+                AccountsDbAdapter accountsDbAdapter = AccountsDbAdapter.getInstance();
                 long accountId = accountsDbAdapter.getID(mAccountUID);
                 boolean isFavorite = accountsDbAdapter.isFavoriteAccount(mAccountUID);
                 //toggle favorite preference

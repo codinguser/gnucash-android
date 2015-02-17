@@ -246,7 +246,7 @@ public class Transaction {
      * @return Money list of splits
      */
     public static Money computeBalance(String accountUID, List<Split> splitList) {
-        AccountsDbAdapter accountsDbAdapter = GnuCashApplication.getAccountsDbAdapter();
+        AccountsDbAdapter accountsDbAdapter = AccountsDbAdapter.getInstance();
         AccountType accountType = accountsDbAdapter.getAccountType(accountUID);
         String currencyCode = accountsDbAdapter.getAccountCurrencyCode(accountUID);
 
@@ -501,7 +501,7 @@ public class Transaction {
             acctId.appendChild(doc.createTextNode(transferAccountUID));
 
             Element accttype = doc.createElement(OfxHelper.TAG_ACCOUNT_TYPE);
-            AccountsDbAdapter acctDbAdapter = GnuCashApplication.getAccountsDbAdapter();
+            AccountsDbAdapter acctDbAdapter = AccountsDbAdapter.getInstance();
             OfxAccountType ofxAccountType = Account.convertToOfxAccountType(acctDbAdapter.getAccountType(transferAccountUID));
             accttype.appendChild(doc.createTextNode(ofxAccountType.toString()));
 

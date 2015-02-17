@@ -19,7 +19,7 @@ package org.gnucash.android.db;
 import android.provider.BaseColumns;
 
 /**
- * Holds the
+ * Holds the database schema
  *
  * @author Ngewi Fet <ngewif@gmail.com>
  */

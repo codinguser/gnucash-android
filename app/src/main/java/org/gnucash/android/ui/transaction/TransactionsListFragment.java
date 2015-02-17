@@ -135,7 +135,7 @@ public class TransactionsListFragment extends SherlockListFragment implements
 		Bundle args = getArguments();
 		mAccountUID = args.getString(UxArgument.SELECTED_ACCOUNT_UID);
 
-		mTransactionsDbAdapter = GnuCashApplication.getTransactionDbAdapter();
+		mTransactionsDbAdapter = TransactionsDbAdapter.getInstance();
 		mCursorAdapter = new TransactionsCursorAdapter(
 				getActivity().getApplicationContext(), 
 				R.layout.list_item_transaction, null, 
@@ -496,7 +496,7 @@ public class TransactionsListFragment extends SherlockListFragment implements
 		
 		@Override
 		public Cursor loadInBackground() {
-			mDatabaseAdapter = GnuCashApplication.getTransactionDbAdapter();
+			mDatabaseAdapter = TransactionsDbAdapter.getInstance();
 			Cursor c = ((TransactionsDbAdapter) mDatabaseAdapter).fetchAllTransactionsForAccount(accountUID);
 			if (c != null)
 				registerContentObserver(c);

@@ -129,7 +129,7 @@ public class ScheduledTransactionsListFragment extends SherlockListFragment impl
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mTransactionsDbAdapter = GnuCashApplication.getTransactionDbAdapter();
+        mTransactionsDbAdapter = TransactionsDbAdapter.getInstance();
         mCursorAdapter = new TransactionsCursorAdapter(
                 getActivity().getApplicationContext(),
                 R.layout.list_item_scheduled_trxn, null,
@@ -416,7 +416,7 @@ public class ScheduledTransactionsListFragment extends SherlockListFragment impl
 
         @Override
         public Cursor loadInBackground() {
-            mDatabaseAdapter = GnuCashApplication.getTransactionDbAdapter();
+            mDatabaseAdapter = TransactionsDbAdapter.getInstance();
 
             Cursor c = ((TransactionsDbAdapter) mDatabaseAdapter).fetchAllRecurringTransactions();
 
