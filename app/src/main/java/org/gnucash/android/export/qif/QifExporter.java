@@ -56,6 +56,7 @@ public class QifExporter extends Exporter{
                             SplitEntry.TABLE_NAME + "_" + SplitEntry.COLUMN_TYPE + " AS split_type",
                             SplitEntry.TABLE_NAME + "_" + SplitEntry.COLUMN_MEMO + " AS split_memo",
                             "trans_extra_info.trans_acct_balance AS trans_acct_balance",
+                            "trans_extra_info.trans_split_count AS trans_split_count",
                             "account1." + AccountEntry.COLUMN_UID + " AS acct1_uid",
                             "account1." + AccountEntry.COLUMN_FULL_NAME + " AS acct1_full_name",
                             "account1." + AccountEntry.COLUMN_CURRENCY + " AS acct1_currency",
@@ -67,7 +68,9 @@ public class QifExporter extends Exporter{
                             // exclude transactions involving multiple currencies
                             "trans_extra_info.trans_currency_count = 1 AND " +
                             // in qif, split from the one account entry is not recorded (will be auto balanced)
-                            AccountEntry.TABLE_NAME + "_" + AccountEntry.COLUMN_UID + " != account1." + AccountEntry.COLUMN_UID +
+                            "( " + AccountEntry.TABLE_NAME + "_" + AccountEntry.COLUMN_UID + " != account1." + AccountEntry.COLUMN_UID + " OR " +
+                            // or if the transaction has only one split (the whole transaction would be lost if it is not selected)
+                            "trans_split_count == 1 )" +
                             (
                             mParameters.shouldExportAllTransactions() ?
                                     "" : " AND " + TransactionEntry.TABLE_NAME + "_" + TransactionEntry.COLUMN_EXPORTED + "== 0"
@@ -132,6 +135,10 @@ public class QifExporter extends Exporter{
                                     .append(decimalImbalance.toPlainString())
                                     .append(newLine);
                         }
+                    }
+                    if (cursor.getInt(cursor.getColumnIndexOrThrow("trans_split_count")) == 1) {
+                        // No other splits should be recorded if this is the only split.
+                        continue;
                     }
                     // all splits
                     // amount associated with the header account will not be exported.
