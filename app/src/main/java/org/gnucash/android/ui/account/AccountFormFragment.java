@@ -560,11 +560,12 @@ public class AccountFormFragment extends SherlockFragment {
         if (mAccount != null){  //if editing an account
             mDescendantAccountUIDs = mAccountsDbAdapter.getDescendantAccountUIDs(mAccount.getUID(), null, null);
             String rootAccountUID = mAccountsDbAdapter.getGnuCashRootAccountUID();
+            List<String> descendantAccountUIDs = new ArrayList<String>(mDescendantAccountUIDs);
             if (rootAccountUID != null)
-                mDescendantAccountUIDs.add(rootAccountUID);
+                descendantAccountUIDs.add(rootAccountUID);
             // limit cyclic account hierarchies.
             condition += " AND (" + DatabaseSchema.AccountEntry.COLUMN_UID + " NOT IN ( '"
-                    + TextUtils.join("','", mDescendantAccountUIDs) + "','" + mAccountUID + "' ) )";
+                    + TextUtils.join("','", descendantAccountUIDs) + "','" + mAccountUID + "' ) )";
         }
 
         //if we are reloading the list, close the previous cursor first
