@@ -16,14 +16,17 @@
 
 package org.gnucash.android.ui.chart;
 
+import android.app.DatePickerDialog;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
+import android.widget.DatePicker;
 import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -54,7 +57,7 @@ import java.util.List;
  *
  * @author Oleksandr Tyshkovets <olexandr.tyshkovets@gmail.com>
  */
-public class PieChartActivity extends PassLockActivity implements OnChartValueSelectedListener {
+public class PieChartActivity extends PassLockActivity implements OnChartValueSelectedListener, DatePickerDialog.OnDateSetListener {
 
     private static final int[] COLORS = {
             Color.parseColor("#17ee4e"), Color.parseColor("#cc1f09"), Color.parseColor("#3940f7"),
@@ -117,6 +120,29 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
                 setData(true);
             }
         });
+
+        mChartDateTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                DialogFragment newFragment = new ChartDatePickerFragment(PieChartActivity.this,
+                        mChartDate.toDate().getTime(),
+                        mEarliestTransaction.toDate().getTime(),
+                        mLatestTransaction.toDate().getTime());
+                newFragment.show(getSupportFragmentManager(), "date_dialog");
+            }
+        });
+    }
+
+    /**
+     * Since JellyBean, the onDateSet() method of the DatePicker class is called twice i.e. once when
+     * OK button is pressed and then when the DatePickerDialog is dismissed. It is a known bug.
+     */
+    @Override
+    public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+        if (view.isShown()) {
+            mChartDate = new LocalDateTime(year, monthOfYear + 1, dayOfMonth, 0, 0);
+            setData(true);
+        }
     }
 
     private void setData(boolean forCurrentMonth) {

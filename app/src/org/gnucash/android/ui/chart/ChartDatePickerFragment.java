@@ -22,6 +22,8 @@ public class ChartDatePickerFragment extends DialogFragment {
 
     private OnDateSetListener callback;
     private Calendar mCalendar = Calendar.getInstance();
+    private long minDate;
+    private long maxDate;
 
     /**
      * Required for when the device is rotated while the dialog is open.
@@ -33,10 +35,14 @@ public class ChartDatePickerFragment extends DialogFragment {
      * Creates the date picker fragment without day field.
      * @param callback the listener to notify when the date is set and the dialog is closed
      * @param time the dialog init time in milliseconds
+     * @param minDate the earliest allowed date
+     * @param maxDate the latest allowed date
      */
-    public ChartDatePickerFragment(OnDateSetListener callback, long time) {
+    public ChartDatePickerFragment(OnDateSetListener callback, long time, long minDate, long maxDate) {
         this.callback = callback;
         mCalendar.setTimeInMillis(time);
+        this.minDate = minDate;
+        this.maxDate = maxDate;
     }
 
     /**
@@ -51,6 +57,8 @@ public class ChartDatePickerFragment extends DialogFragment {
             Field datePickerField = dialog.getClass().getDeclaredField("mDatePicker");
             datePickerField.setAccessible(true);
             DatePicker datePicker = (DatePicker) datePickerField.get(dialog);
+            datePicker.setMinDate(minDate);
+            datePicker.setMaxDate(maxDate);
 
             for (Field field : datePicker.getClass().getDeclaredFields()) {
                 if (field.getName().equals("mDaySpinner") || field.getName().equals("mDayPicker")) {

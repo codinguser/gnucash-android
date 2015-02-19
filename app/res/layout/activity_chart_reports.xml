@@ -58,7 +58,8 @@
                   android:layout_height="match_parent"
                   android:layout_weight="1.2"
                   android:gravity="center"
-                  android:textAppearance="?android:attr/textAppearanceMedium" />
+                  android:textAppearance="?android:attr/textAppearanceMedium"
+                  style="@style/Dropdown.TextView" />
 
         <ImageButton android:id="@+id/next_month_chart_button"
                      android:layout_width="0dp"
