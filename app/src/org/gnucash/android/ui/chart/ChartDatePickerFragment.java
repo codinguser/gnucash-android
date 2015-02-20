@@ -3,6 +3,7 @@ package org.gnucash.android.ui.chart;
 import android.app.DatePickerDialog;
 import android.app.DatePickerDialog.OnDateSetListener;
 import android.app.Dialog;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.util.Log;
@@ -57,8 +58,11 @@ public class ChartDatePickerFragment extends DialogFragment {
             Field datePickerField = dialog.getClass().getDeclaredField("mDatePicker");
             datePickerField.setAccessible(true);
             DatePicker datePicker = (DatePicker) datePickerField.get(dialog);
-            datePicker.setMinDate(minDate);
-            datePicker.setMaxDate(maxDate);
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB ) {
+                datePicker.setMinDate(minDate);
+                datePicker.setMaxDate(maxDate);
+            }
 
             for (Field field : datePicker.getClass().getDeclaredFields()) {
                 if (field.getName().equals("mDaySpinner") || field.getName().equals("mDayPicker")) {
