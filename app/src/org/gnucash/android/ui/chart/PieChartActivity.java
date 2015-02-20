@@ -317,4 +317,11 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
         ((TextView) findViewById(R.id.selected_chart_slice)).setText("");
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mAccountsDbAdapter.close();
+        mTransactionsDbAdapter.close();
+    }
+
 }
