@@ -26,8 +26,7 @@ import java.util.UUID;
 *
 * @author Ngewi Fet <ngewif@gmail.com>
 */
-public class ScheduledEvent {
-
+public class ScheduledEvent extends BaseModel{
 
     private long mPeriod;
     private long mStartDate;
@@ -38,11 +37,6 @@ public class ScheduledEvent {
      * Types of events which can be scheduled
      */
     public enum EventType {TRANSACTION, EXPORT}
-
-    /**
-     * Unique ID of scheduled event
-     */
-    private String mUID;
 
     /**
      * Next scheduled run of Event
@@ -61,18 +55,9 @@ public class ScheduledEvent {
     private EventType mEventType;
 
     public ScheduledEvent(EventType eventType){
-        mUID = UUID.randomUUID().toString().replaceAll("-", "");
         mEventType = eventType;
         mStartDate = System.currentTimeMillis();
         mEndDate = 0;
-    }
-
-    public String getUID(){
-        return mUID;
-    }
-
-    public void setUID(String uid){
-        this.mUID = uid;
     }
 
     public EventType getEventType() {

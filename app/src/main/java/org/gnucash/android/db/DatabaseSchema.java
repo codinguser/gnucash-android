@@ -40,6 +40,8 @@ public class DatabaseSchema {
 
     public interface CommonColumns extends BaseColumns {
         public static final String COLUMN_UID       = "uid";
+        public static final String COLUMN_CREATED_AT    = "created_at";
+        public static final String COLUMN_MODIFIED_AT   = "modified_at";
     }
 
     /**

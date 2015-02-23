@@ -17,16 +17,11 @@ import java.util.UUID;
  *
  * @author Ngewi Fet <ngewif@gmail.com>
  */
-public class Split {
+public class Split extends BaseModel{
     /**
      * Amount value of this split
      */
     private Money mAmount;
-
-    /**
-     * Unique ID of this split
-     */
-    private String mUID;
 
     /**
      * Transaction UID which this split belongs to
@@ -56,7 +51,6 @@ public class Split {
     public Split(Money amount, String accountUID){
         setAmount(amount);
         setAccountUID(accountUID);
-        mUID = UUID.randomUUID().toString().replaceAll("-","");
         mSplitType = amount.isNegative() ? TransactionType.DEBIT : TransactionType.CREDIT;
     }
 
@@ -73,7 +67,7 @@ public class Split {
         this.mAmount        = sourceSplit.mAmount.absolute();
 
         if (generateUID){
-            mUID = UUID.randomUUID().toString().replaceAll("-","");
+            mUID = generateUID();
         } else {
             this.mUID           = sourceSplit.mUID;
         }
@@ -85,14 +79,6 @@ public class Split {
 
     public void setAmount(Money amount) {
         this.mAmount = amount;
-    }
-
-    public String getUID() {
-        return mUID;
-    }
-
-    public void setUID(String uid) {
-        this.mUID = uid;
     }
 
     public String getTransactionUID() {

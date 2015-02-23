@@ -149,4 +149,24 @@ public class MigrationHelper {
         FileInputStream inputStream = new FileInputStream(filepath);
         GncXmlImporter.parse(db, inputStream);
     }
+
+    /**
+     * Add created_at and modified_at columns to a table in the database and create a trigger
+     * for updating the modified_at columns
+     * @param db SQLite database
+     * @param tableName Name of the table
+     */
+    static void createUpdatedAndModifiedColumns(SQLiteDatabase db, String tableName){
+        String addCreatedColumn = "ALTER TABLE " + tableName
+                + " ADD COLUMN " + DatabaseSchema.CommonColumns.COLUMN_CREATED_AT
+                + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP";
+
+        String addModifiedColumn = "ALTER TABLE " + tableName
+                + " ADD COLUMN " + DatabaseSchema.CommonColumns.COLUMN_MODIFIED_AT
+                + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP";
+
+        db.execSQL(addCreatedColumn);
+        db.execSQL(addModifiedColumn);
+        db.execSQL(DatabaseHelper.createUpdatedAtTrigger(tableName));
+    }
 }

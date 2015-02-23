@@ -52,8 +52,7 @@ public class ScheduledEventDbAdapter extends DatabaseAdapter {
      * @return Database row ID of the newly created/replaced instance
      */
     public long addScheduledEvent(ScheduledEvent scheduledEvent){
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(ScheduledEventEntry.COLUMN_UID,       scheduledEvent.getUID());
+        ContentValues contentValues = getContentValues(scheduledEvent);
         contentValues.put(ScheduledEventEntry.COLUMN_EVENT_UID, scheduledEvent.getEventUID());
         contentValues.put(ScheduledEventEntry.COLUMN_PERIOD,    scheduledEvent.getPeriod());
         contentValues.put(ScheduledEventEntry.COLUMN_START_TIME, scheduledEvent.getStartTime());
@@ -73,7 +72,6 @@ public class ScheduledEventDbAdapter extends DatabaseAdapter {
      * @return ScheduledEvent object instance
      */
     private ScheduledEvent buildScheduledEventInstance(final Cursor cursor){
-        String uid      = cursor.getString(cursor.getColumnIndexOrThrow(ScheduledEventEntry.COLUMN_UID));
         String eventUid = cursor.getString(cursor.getColumnIndexOrThrow(ScheduledEventEntry.COLUMN_EVENT_UID));
         long period     = cursor.getLong(cursor.getColumnIndexOrThrow(ScheduledEventEntry.COLUMN_PERIOD));
         long startTime  = cursor.getLong(cursor.getColumnIndexOrThrow(ScheduledEventEntry.COLUMN_START_TIME));
@@ -83,11 +81,11 @@ public class ScheduledEventDbAdapter extends DatabaseAdapter {
         String tag      = cursor.getString(cursor.getColumnIndexOrThrow(ScheduledEventEntry.COLUMN_TAG));
 
         ScheduledEvent event = new ScheduledEvent(ScheduledEvent.EventType.valueOf(typeString));
+        populateModel(cursor, event);
         event.setPeriod(period);
         event.setStartTime(startTime);
         event.setEndTime(endTime);
         event.setEventUID(eventUid);
-        event.setUID(uid);
         event.setLastRun(lastRun);
         event.setTag(tag);
 

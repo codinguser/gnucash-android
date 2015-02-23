@@ -35,6 +35,7 @@ import org.gnucash.android.model.*;
 import static org.gnucash.android.db.DatabaseSchema.*;
 
 import java.util.ArrayList;
+import java.util.Currency;
 import java.util.List;
 
 /**
@@ -76,9 +77,8 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 	 * @return Database row ID of the inserted transaction
 	 */
 	public long addTransaction(Transaction transaction){
-		ContentValues contentValues = new ContentValues();
+		ContentValues contentValues = getContentValues(transaction);
 		contentValues.put(TransactionEntry.COLUMN_DESCRIPTION, transaction.getDescription());
-		contentValues.put(TransactionEntry.COLUMN_UID,          transaction.getUID());
 		contentValues.put(TransactionEntry.COLUMN_TIMESTAMP,    transaction.getTimeMillis());
 		contentValues.put(TransactionEntry.COLUMN_NOTES,        transaction.getNote());
 		contentValues.put(TransactionEntry.COLUMN_EXPORTED,     transaction.isExported() ? 1 : 0);
@@ -94,8 +94,7 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
             Log.d(TAG, "Adding splits for transaction");
             ArrayList<String> splitUIDs = new ArrayList<String>(transaction.getSplits().size());
             for (Split split : transaction.getSplits()) {
-                contentValues.clear();
-                contentValues.put(SplitEntry.COLUMN_UID,        split.getUID());
+                contentValues = getContentValues(split);
                 contentValues.put(SplitEntry.COLUMN_AMOUNT,     split.getAmount().absolute().toPlainString());
                 contentValues.put(SplitEntry.COLUMN_TYPE,       split.getType().name());
                 contentValues.put(SplitEntry.COLUMN_MEMO,       split.getMemo());
@@ -143,7 +142,8 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
                 + TransactionEntry.COLUMN_TIMESTAMP     + " , "
                 + TransactionEntry.COLUMN_EXPORTED      + " , "
                 + TransactionEntry.COLUMN_CURRENCY      + " , "
-                + TransactionEntry.COLUMN_RECURRENCE_PERIOD + " ) VALUES ( ? , ? , ? , ? , ? , ? , ?)");
+                + TransactionEntry.COLUMN_CREATED_AT    + " , "
+                + TransactionEntry.COLUMN_RECURRENCE_PERIOD + " ) VALUES ( ? , ? , ? , ?, ? , ? , ? , ?)");
             for (Transaction transaction : transactionList) {
                 if (transaction.getRecurrencePeriod() > 0) {
                     scheduleTransaction(transaction);
@@ -151,12 +151,13 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
                 //Log.d(TAG, "Replacing transaction in db");
                 replaceStatement.clearBindings();
                 replaceStatement.bindString(1, transaction.getUID());
-                replaceStatement.bindString(2, transaction.getDescription());
-                replaceStatement.bindString(3, transaction.getNote());
+                replaceStatement.bindString(2,  transaction.getDescription());
+                replaceStatement.bindString(3,  transaction.getNote());
                 replaceStatement.bindLong(4, transaction.getTimeMillis());
-                replaceStatement.bindLong(5, transaction.isExported() ? 1 : 0);
+                replaceStatement.bindLong(5,    transaction.isExported() ? 1 : 0);
                 replaceStatement.bindString(6, transaction.getCurrencyCode());
-                replaceStatement.bindLong(7, transaction.getRecurrencePeriod());
+                replaceStatement.bindString(7,  transaction.getCreatedTimestamp().toString());
+                replaceStatement.bindLong(8,    transaction.getRecurrencePeriod());
                 replaceStatement.execute();
                 rowInserted ++;
                 splitList.addAll(transaction.getSplits());
@@ -367,7 +368,8 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
     public Transaction buildTransactionInstance(Cursor c){
 		String name   = c.getString(c.getColumnIndexOrThrow(TransactionEntry.COLUMN_DESCRIPTION));
 		Transaction transaction = new Transaction(name);
-		transaction.setUID(c.getString(c.getColumnIndexOrThrow(TransactionEntry.COLUMN_UID)));
+        populateModel(c, transaction);
+
 		transaction.setTime(c.getLong(c.getColumnIndexOrThrow(TransactionEntry.COLUMN_TIMESTAMP)));
 		transaction.setNote(c.getString(c.getColumnIndexOrThrow(TransactionEntry.COLUMN_NOTES)));
 		transaction.setExported(c.getInt(c.getColumnIndexOrThrow(TransactionEntry.COLUMN_EXPORTED)) == 1);

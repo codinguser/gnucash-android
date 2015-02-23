@@ -34,7 +34,7 @@ import java.util.*;
  * The default type is a debit, unless otherwise specified.
  * @author Ngewi Fet <ngewif@gmail.com>
  */
-public class Transaction {
+public class Transaction extends BaseModel{
 
 	/**
 	 * Mime type for transactions in Gnucash.
@@ -83,12 +83,6 @@ public class Transaction {
      * The splits making up this transaction
      */
     private List<Split> mSplitList = new ArrayList<Split>();
-
-	/**
-	 * Unique identifier of the transaction.
-	 * This is automatically generated when the transaction is created.
-	 */
-	private String mUID;
 
 	/**
 	 * Name describing the transaction
@@ -159,7 +153,6 @@ public class Transaction {
 	 */
 	private void initDefaults(){
 		this.mTimestamp = System.currentTimeMillis();
-		mUID = UUID.randomUUID().toString().replaceAll("-", "");
 	}
 
     /**
@@ -355,31 +348,6 @@ public class Transaction {
 	 */
 	public long getTimeMillis(){
 		return mTimestamp;
-	}
-
-	/**
-	 * Set Unique Identifier for this transaction.
-     * <p>Remember that the unique ID is auto-generated when transaction is created.
-     * So this method is only for cases like building an object instance of a persisted transaction.</p>
-	 * @param transactionUID Unique ID string
-     * @see #resetUID()
-	 */
-	public void setUID(String transactionUID) {
-		this.mUID = transactionUID;
-	}
-
-    /**
-     * Resets the UID of this transaction to a newly generated one
-     */
-    public void resetUID(){
-        this.mUID = UUID.randomUUID().toString();
-    }
-	/**
-	 * Returns unique ID string for transaction
-	 * @return String with Unique ID of transaction
-	 */
-    public String getUID() {
-		return mUID;
 	}
 
     /**

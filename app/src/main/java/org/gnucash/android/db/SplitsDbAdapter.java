@@ -29,7 +29,6 @@ import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.model.AccountType;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.model.Split;
-import org.gnucash.android.model.Transaction;
 import org.gnucash.android.model.TransactionType;
 
 import java.math.BigDecimal;
@@ -69,8 +68,7 @@ public class SplitsDbAdapter extends DatabaseAdapter {
      * @return Record ID of the newly saved split
      */
     public long addSplit(Split split){
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(SplitEntry.COLUMN_UID,        split.getUID());
+        ContentValues contentValues = getContentValues(split);
         contentValues.put(SplitEntry.COLUMN_AMOUNT,     split.getAmount().absolute().toPlainString());
         contentValues.put(SplitEntry.COLUMN_TYPE,       split.getType().name());
         contentValues.put(SplitEntry.COLUMN_MEMO,       split.getMemo());
@@ -103,8 +101,9 @@ public class SplitsDbAdapter extends DatabaseAdapter {
                     + SplitEntry.COLUMN_MEMO 	        + " , "
                     + SplitEntry.COLUMN_TYPE            + " , "
                     + SplitEntry.COLUMN_AMOUNT          + " , "
+                    + SplitEntry.COLUMN_CREATED_AT      + " , "
                     + SplitEntry.COLUMN_ACCOUNT_UID 	+ " , "
-                    + SplitEntry.COLUMN_TRANSACTION_UID + " ) VALUES ( ? , ? , ? , ? , ? , ? ) ");
+                    + SplitEntry.COLUMN_TRANSACTION_UID + " ) VALUES ( ? , ? , ? , ? , ? , ? , ? ) ");
             for (Split split : splitList) {
                 replaceStatement.clearBindings();
                 replaceStatement.bindString(1, split.getUID());
@@ -113,8 +112,9 @@ public class SplitsDbAdapter extends DatabaseAdapter {
                 }
                 replaceStatement.bindString(3, split.getType().name());
                 replaceStatement.bindString(4, split.getAmount().absolute().toPlainString());
-                replaceStatement.bindString(5, split.getAccountUID());
-                replaceStatement.bindString(6, split.getTransactionUID());
+                replaceStatement.bindString(5, split.getCreatedTimestamp().toString());
+                replaceStatement.bindString(6, split.getAccountUID());
+                replaceStatement.bindString(7, split.getTransactionUID());
 
                 //Log.d(TAG, "Replacing transaction split in db");
                 replaceStatement.execute();
@@ -136,7 +136,6 @@ public class SplitsDbAdapter extends DatabaseAdapter {
      * @return {@link org.gnucash.android.model.Split} instance
      */
     public Split buildSplitInstance(Cursor cursor){
-        String uid          = cursor.getString(cursor.getColumnIndexOrThrow(SplitEntry.COLUMN_UID));
         String amountString = cursor.getString(cursor.getColumnIndexOrThrow(SplitEntry.COLUMN_AMOUNT));
         String typeName     = cursor.getString(cursor.getColumnIndexOrThrow(SplitEntry.COLUMN_TYPE));
         String accountUID   = cursor.getString(cursor.getColumnIndexOrThrow(SplitEntry.COLUMN_ACCOUNT_UID));
@@ -147,7 +146,7 @@ public class SplitsDbAdapter extends DatabaseAdapter {
         Money amount = new Money(amountString, currencyCode);
 
         Split split = new Split(amount, accountUID);
-        split.setUID(uid);
+        populateModel(cursor, split);
         split.setTransactionUID(transxUID);
         split.setType(TransactionType.valueOf(typeName));
         split.setMemo(memo);

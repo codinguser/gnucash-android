@@ -23,6 +23,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 import org.gnucash.android.db.DatabaseSchema.*;
 import org.gnucash.android.model.AccountType;
+import org.gnucash.android.model.BaseModel;
+
+import java.sql.Timestamp;
 
 /**
  * Adapter to be used for creating and opening the database for read/write operations.
@@ -158,6 +161,38 @@ public abstract class DatabaseAdapter {
      */
     public boolean isOpen(){
         return mDb.isOpen();
+    }
+
+    /**
+     * Returns a ContentValues object which has the data of the base model
+     * @param model {@link org.gnucash.android.model.BaseModel} from which to extract values
+     * @return {@link android.content.ContentValues} with the data to be inserted into the db
+     */
+    protected ContentValues getContentValues(BaseModel model){
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(CommonColumns.COLUMN_UID, model.getUID());
+        contentValues.put(CommonColumns.COLUMN_CREATED_AT, model.getCreatedTimestamp().toString());
+        //there is a trigger in the database for updated the modified_at column
+        /* Due to the use of SQL REPLACE syntax, we insert the created_at values each time
+        * (maintain the original creation time and not the time of creation of the replacement)
+        * The updated_at column has a trigger in the database which will update the column
+         */
+        return contentValues;
+    }
+
+    /**
+     * Initializes the model with values from the database record common to all models (i.e. in the BaseModel)
+     * @param cursor Cursor pointing to database record
+     * @param model Model instance to be initialized
+     */
+    protected static void populateModel(Cursor cursor, BaseModel model){
+        String uid = cursor.getString(cursor.getColumnIndexOrThrow(CommonColumns.COLUMN_UID));
+        String created = cursor.getString(cursor.getColumnIndexOrThrow(CommonColumns.COLUMN_CREATED_AT));
+        String modified= cursor.getString(cursor.getColumnIndexOrThrow(CommonColumns.COLUMN_MODIFIED_AT));
+
+        model.setUID(uid);
+        model.setCreatedTimestamp(Timestamp.valueOf(created));
+        model.setModifiedTimestamp(Timestamp.valueOf(modified));
     }
 
 	/**

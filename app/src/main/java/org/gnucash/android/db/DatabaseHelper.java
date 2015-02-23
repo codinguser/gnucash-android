@@ -63,7 +63,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	 */
 	private static final String ACCOUNTS_TABLE_CREATE = "create table " + AccountEntry.TABLE_NAME + " ("
 			+ AccountEntry._ID                      + " integer primary key autoincrement, "
-			+ AccountEntry.COLUMN_UID 	            + " varchar(255) not null, "
+			+ AccountEntry.COLUMN_UID 	            + " varchar(255) not null UNIQUE, "
 			+ AccountEntry.COLUMN_NAME 	            + " varchar(255) not null, "
 			+ AccountEntry.COLUMN_TYPE              + " varchar(255) not null, "
 			+ AccountEntry.COLUMN_CURRENCY          + " varchar(255) not null, "
@@ -73,44 +73,47 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + AccountEntry.COLUMN_PLACEHOLDER           + " tinyint default 0, "
             + AccountEntry.COLUMN_PARENT_ACCOUNT_UID    + " varchar(255), "
             + AccountEntry.COLUMN_DEFAULT_TRANSFER_ACCOUNT_UID   + " varchar(255), "
-            + "UNIQUE (" + AccountEntry.COLUMN_UID       + ")"
-			+ ");";
+            + AccountEntry.COLUMN_CREATED_AT       + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
+            + AccountEntry.COLUMN_MODIFIED_AT      + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP "
+			+ ");" + createUpdatedAtTrigger(AccountEntry.TABLE_NAME);
 	
 	/**
 	 * SQL statement to create the transactions table in the database
 	 */
 	private static final String TRANSACTIONS_TABLE_CREATE = "create table " + TransactionEntry.TABLE_NAME + " ("
 			+ TransactionEntry._ID 		            + " integer primary key autoincrement, "
-			+ TransactionEntry.COLUMN_UID 		    + " varchar(255) not null, "
+			+ TransactionEntry.COLUMN_UID 		    + " varchar(255) not null UNIQUE, "
 			+ TransactionEntry.COLUMN_DESCRIPTION   + " varchar(255), "
 			+ TransactionEntry.COLUMN_NOTES         + " text, "
 			+ TransactionEntry.COLUMN_TIMESTAMP     + " integer not null, "
 			+ TransactionEntry.COLUMN_EXPORTED      + " tinyint default 0, "
             + TransactionEntry.COLUMN_CURRENCY      + " varchar(255) not null, "
             + TransactionEntry.COLUMN_RECURRENCE_PERIOD + " integer default 0, "
-			+ "UNIQUE (" 		+ TransactionEntry.COLUMN_UID + ") "
-			+ ");";
+            + TransactionEntry.COLUMN_CREATED_AT       + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
+            + TransactionEntry.COLUMN_MODIFIED_AT      + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP "
+			+ ");" + createUpdatedAtTrigger(TransactionEntry.TABLE_NAME);
 
     /**
      * SQL statement to create the transaction splits table
      */
     private static final String SPLITS_TABLE_CREATE = "CREATE TABLE " + SplitEntry.TABLE_NAME + " ("
             + SplitEntry._ID                    + " integer primary key autoincrement, "
-            + SplitEntry.COLUMN_UID             + " varchar(255) not null, "
+            + SplitEntry.COLUMN_UID             + " varchar(255) not null UNIQUE, "
             + SplitEntry.COLUMN_MEMO 	        + " text, "
             + SplitEntry.COLUMN_TYPE            + " varchar(255) not null, "
             + SplitEntry.COLUMN_AMOUNT          + " varchar(255) not null, "
             + SplitEntry.COLUMN_ACCOUNT_UID 	+ " varchar(255) not null, "
             + SplitEntry.COLUMN_TRANSACTION_UID + " varchar(255) not null, "
+            + SplitEntry.COLUMN_CREATED_AT       + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
+            + SplitEntry.COLUMN_MODIFIED_AT      + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
             + "FOREIGN KEY (" 	+ SplitEntry.COLUMN_ACCOUNT_UID + ") REFERENCES " + AccountEntry.TABLE_NAME + " (" + AccountEntry.COLUMN_UID + "), "
-            + "FOREIGN KEY (" 	+ SplitEntry.COLUMN_TRANSACTION_UID + ") REFERENCES " + TransactionEntry.TABLE_NAME + " (" + TransactionEntry.COLUMN_UID + "), "
-            + "UNIQUE (" 		+ SplitEntry.COLUMN_UID + ") "
-            + ");";
+            + "FOREIGN KEY (" 	+ SplitEntry.COLUMN_TRANSACTION_UID + ") REFERENCES " + TransactionEntry.TABLE_NAME + " (" + TransactionEntry.COLUMN_UID + ") ON DELETE CASCADE "
+            + ");" + createUpdatedAtTrigger(SplitEntry.TABLE_NAME);
 
 
     public static final String SCHEDULED_EVENTS_TABLE_CREATE = "CREATE TABLE " + ScheduledEventEntry.TABLE_NAME + " ("
             + ScheduledEventEntry._ID                   + " integer primary key autoincrement, "
-            + ScheduledEventEntry.COLUMN_UID            + " varchar(255) not null, "
+            + ScheduledEventEntry.COLUMN_UID            + " varchar(255) not null UNIQUE, "
             + ScheduledEventEntry.COLUMN_EVENT_UID      + " varchar(255) not null, "
             + ScheduledEventEntry.COLUMN_TYPE           + " varchar(255) not null, "
             + ScheduledEventEntry.COLUMN_PERIOD         + " integer not null, "
@@ -118,8 +121,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + ScheduledEventEntry.COLUMN_START_TIME     + " integer not null, "
             + ScheduledEventEntry.COLUMN_END_TIME       + " integer default 0, "
             + ScheduledEventEntry.COLUMN_TAG            + " text, "
-            + "UNIQUE (" + ScheduledEventEntry.COLUMN_UID + ") "
-            + ");";
+            + ScheduledEventEntry.COLUMN_CREATED_AT     + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
+            + ScheduledEventEntry.COLUMN_MODIFIED_AT    + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP "
+            + ");" + createUpdatedAtTrigger(ScheduledEventEntry.TABLE_NAME);
 
 
     /**
@@ -130,7 +134,21 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		super(context, DATABASE_NAME, null, DatabaseSchema.DATABASE_VERSION);
 
 	}
-	
+
+    /**
+     * Creates an update trigger to update the updated_at column for all records in the database.
+     * This has to be run per table, and is currently appended to the create table statement.
+     * @param tableName Name of table on which to create trigger
+     * @return SQL statement for creating trigger
+     */
+    static String createUpdatedAtTrigger(String tableName){
+        return "CREATE TRIGGER update_time_trigger "
+                + "  AFTER UPDATE ON " + tableName + " FOR EACH ROW"
+                + "  BEGIN " + "UPDATE " + tableName
+                + "  SET " + DatabaseSchema.CommonColumns.COLUMN_MODIFIED_AT + " = CURRENT_TIMESTAMP;"
+                + "  END;";
+    }
+
 	@Override
 	public void onCreate(SQLiteDatabase db) {
 		createDatabaseTables(db);
@@ -331,8 +349,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
             if (oldVersion == 7 && newVersion >= 8){
                 Log.i(LOG_TAG, "Upgrading database to version 8");
-                Log.i(LOG_TAG, "Creating scheduled events table");
 
+                //TODO: consider just backing up, recreating database and reimporting
+
+                Log.i(LOG_TAG, "Adding created_at and modified_at columns to database tables");
+                MigrationHelper.createUpdatedAndModifiedColumns(db, AccountEntry.TABLE_NAME);
+                MigrationHelper.createUpdatedAndModifiedColumns(db, TransactionEntry.TABLE_NAME);
+                MigrationHelper.createUpdatedAndModifiedColumns(db, SplitEntry.TABLE_NAME);
+
+                Log.i(LOG_TAG, "Creating scheduled events table");
                 db.execSQL(SCHEDULED_EVENTS_TABLE_CREATE);
                 //TODO: Migrate existing scheduled transactions (cancel pending intents)
 

@@ -36,7 +36,7 @@ import java.util.regex.Pattern;
  * @author Ngewi Fet <ngewif@gmail.com>
  * @see AccountType
  */
-public class Account {
+public class Account extends BaseModel{
 
 	/**
 	 * The MIME type for accounts in GnucashMobile
@@ -67,12 +67,6 @@ public class Account {
      */
 	public enum OfxAccountType {CHECKING, SAVINGS, MONEYMRKT, CREDITLINE }
 
-    /**
-	 * Unique Identifier of the account
-	 * It is generated when the account is created and can be set a posteriori as well
-	 */
-	private String mUID;
-	
 	/**
 	 * Name of this account
 	 */
@@ -146,7 +140,6 @@ public class Account {
 	public Account(String name) {
 		setName(name);
         this.mFullName  = mName;
-		this.mUID       = generateUID();
 		this.mCurrency  = Currency.getInstance(Money.DEFAULT_CURRENCY_CODE);
 	}
 	
@@ -158,7 +151,6 @@ public class Account {
 	public Account(String name, Currency currency){
 		setName(name);
         this.mFullName  = mName;
-		this.mUID       = generateUID();
 		this.mCurrency  = currency;
 	}
 
@@ -195,43 +187,6 @@ public class Account {
         this.mFullName = fullName;
     }
 
-    /**
-	 * Generates a unique ID for the account based on the name and a random string. 
-	 * This represents the ACCTID in the exported OFX and should have a maximum of 22 alphanumeric characters
-	 * @return Generated Unique ID string
-	 */
-	protected String generateUID(){
-		String uuid = UUID.randomUUID().toString();
-		
-		if (mName.length() == 0){
-			//if we do not have a name, return pure random
-			return uuid.substring(0, 22);
-		}
-		
-		uuid = uuid.substring(uuid.lastIndexOf("-"));
-		String name = mName.replaceAll("[^A-Za-z0-9]", "").toLowerCase(Locale.US);
-		if (name.length() > 9)
-			name = name.substring(0, 10);
-		uuid = name + uuid;		
-		return uuid;
-	}
-	
-	/**
-	 * Returns the unique ID of this account
-	 * @return String containing unique ID for the account
-	 */
-	public String getUID(){
-		return mUID;
-	}
-	
-	/**
-	 * Sets the unique identifier of this acocunt
-	 * @param uid Unique identifier to be set
-	 */
-	public void setUID(String uid){
-		this.mUID = uid;
-	}
-	
 	/**
 	 * Get the type of account
 	 * @return {@link AccountType} type of account

@@ -76,10 +76,9 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 	 * @return Database row ID of the inserted account
 	 */
 	public long addAccount(Account account){
-		ContentValues contentValues = new ContentValues();
+		ContentValues contentValues = getContentValues(account);
 		contentValues.put(AccountEntry.COLUMN_NAME,         account.getName());
 		contentValues.put(AccountEntry.COLUMN_TYPE,         account.getAccountType().name());
-		contentValues.put(AccountEntry.COLUMN_UID,          account.getUID());
 		contentValues.put(AccountEntry.COLUMN_CURRENCY,     account.getCurrency().getCurrencyCode());
         contentValues.put(AccountEntry.COLUMN_PLACEHOLDER,  account.isPlaceholderAccount() ? 1 : 0);
         if (account.getColorHexCode() != null) {
@@ -135,9 +134,10 @@ public class AccountsDbAdapter extends DatabaseAdapter {
                     + AccountEntry.COLUMN_COLOR_CODE        + " , "
                     + AccountEntry.COLUMN_FAVORITE 		    + " , "
                     + AccountEntry.COLUMN_FULL_NAME 	    + " , "
-                    + AccountEntry.COLUMN_PLACEHOLDER           + " , "
+                    + AccountEntry.COLUMN_PLACEHOLDER       + " , "
+                    + AccountEntry.COLUMN_CREATED_AT        + " , "
                     + AccountEntry.COLUMN_PARENT_ACCOUNT_UID    + " , "
-                    + AccountEntry.COLUMN_DEFAULT_TRANSFER_ACCOUNT_UID   + " ) VALUES ( ? , ? , ? , ? , ? , ? , ? , ? , ? , ? )");
+                    + AccountEntry.COLUMN_DEFAULT_TRANSFER_ACCOUNT_UID   + " ) VALUES ( ? , ? , ? , ? , ? , ? , ? , ? , ? , ?, ? )");
             for (Account account:accountList) {
                 replaceStatement.clearBindings();
                 replaceStatement.bindString(1, account.getUID());
@@ -150,11 +150,12 @@ public class AccountsDbAdapter extends DatabaseAdapter {
                 replaceStatement.bindLong(6, account.isFavorite() ? 1 : 0);
                 replaceStatement.bindString(7, account.getFullName());
                 replaceStatement.bindLong(8, account.isPlaceholderAccount() ? 1 : 0);
+                replaceStatement.bindString(9, account.getCreatedTimestamp().toString());
                 if (account.getParentUID() != null) {
-                    replaceStatement.bindString(9, account.getParentUID());
+                    replaceStatement.bindString(10, account.getParentUID());
                 }
                 if (account.getDefaultTransferAccountUID() != null) {
-                    replaceStatement.bindString(10, account.getDefaultTransferAccountUID());
+                    replaceStatement.bindString(11, account.getDefaultTransferAccountUID());
                 }
                 //Log.d(TAG, "Replacing account in db");
                 replaceStatement.execute();
@@ -424,8 +425,8 @@ public class AccountsDbAdapter extends DatabaseAdapter {
      */
     private Account buildSimpleAccountInstance(Cursor c) {
         Account account = new Account(c.getString(c.getColumnIndexOrThrow(AccountEntry.COLUMN_NAME)));
-        String uid = c.getString(c.getColumnIndexOrThrow(AccountEntry.COLUMN_UID));
-        account.setUID(uid);
+        populateModel(c, account);
+
         account.setParentUID(c.getString(c.getColumnIndexOrThrow(AccountEntry.COLUMN_PARENT_ACCOUNT_UID)));
         account.setAccountType(AccountType.valueOf(c.getString(c.getColumnIndexOrThrow(AccountEntry.COLUMN_TYPE))));
         Currency currency = Currency.getInstance(c.getString(c.getColumnIndexOrThrow(AccountEntry.COLUMN_CURRENCY)));
