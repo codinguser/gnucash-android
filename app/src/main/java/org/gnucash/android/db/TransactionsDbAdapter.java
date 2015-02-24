@@ -389,14 +389,11 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
             transaction.addSplit(split);
 
             String transferAccountUID = c.getString(c.getColumnIndexOrThrow(DatabaseHelper.KEY_DOUBLE_ENTRY_ACCOUNT_UID));
-            //TODO: Enable this when we can successfully hide imbalance accounts from the user
-//            if (transferAccountUID == null) {
-//                AccountsDbAdapter accountsDbAdapter = new AccountsDbAdapter(mDb);
-//                transferAccountUID = accountsDbAdapter.getOrCreateImbalanceAccountUID(Currency.getInstance(currencyCode));
-//                accountsDbAdapter.close();
-//            }
-            if (transferAccountUID != null)
-                transaction.addSplit(split.createPair(transferAccountUID));
+            if (transferAccountUID == null) {
+                AccountsDbAdapter accountsDbAdapter = AccountsDbAdapter.getInstance();
+                transferAccountUID = accountsDbAdapter.getOrCreateImbalanceAccountUID(Currency.getInstance(currencyCode));
+            }
+            transaction.addSplit(split.createPair(transferAccountUID));
         } else {
             transaction.setCurrencyCode(c.getString(c.getColumnIndexOrThrow(TransactionEntry.COLUMN_CURRENCY)));
             long transactionID = c.getLong(c.getColumnIndexOrThrow(TransactionEntry._ID));

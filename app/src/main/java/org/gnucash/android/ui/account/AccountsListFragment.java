@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012 - 2014 Ngewi Fet <ngewif@gmail.com>
+ * Copyright (c) 2012 - 2015 Ngewi Fet <ngewif@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -598,7 +598,9 @@ public class AccountsListFragment extends SherlockListFragment implements
 
             if (mFilter != null){
                 cursor = ((AccountsDbAdapter)mDatabaseAdapter)
-                        .fetchAccounts(DatabaseSchema.AccountEntry.COLUMN_NAME + " LIKE '%" + mFilter + "%'", null);
+                        .fetchAccounts(DatabaseSchema.AccountEntry.COLUMN_HIDDEN + "= 0 AND "
+                                + DatabaseSchema.AccountEntry.COLUMN_NAME + " LIKE '%" + mFilter + "%'",
+                                null, null);
             } else {
                 if (mParentAccountUID != null && mParentAccountUID.length() > 0)
                     cursor = ((AccountsDbAdapter) mDatabaseAdapter).fetchSubAccounts(mParentAccountUID);

@@ -20,6 +20,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
+import android.support.annotation.NonNull;
 import android.util.Log;
 import org.gnucash.android.db.DatabaseSchema.*;
 import org.gnucash.android.model.AccountType;
@@ -346,6 +347,24 @@ public abstract class DatabaseAdapter {
         }
         return mDb.update(tableName, contentValues,
                 DatabaseSchema.CommonColumns._ID + "=" + recordId, null);
+    }
+
+    /**
+     * Updates a record in the table
+     * @param uid GUID of the record
+     * @param columnKey Name of column to be updated
+     * @param newValue  New value to be assigned to the columnKey
+     * @return Number of records affected
+     */
+    public int updateRecord(@NonNull String tableName, @NonNull String uid, String columnKey, String newValue) {
+        ContentValues contentValues = new ContentValues();
+        if (newValue == null) {
+            contentValues.putNull(columnKey);
+        } else {
+            contentValues.put(columnKey, newValue);
+        }
+        return mDb.update(tableName, contentValues,
+                CommonColumns.COLUMN_UID + "= ?", new String[]{uid});
     }
 
     /**

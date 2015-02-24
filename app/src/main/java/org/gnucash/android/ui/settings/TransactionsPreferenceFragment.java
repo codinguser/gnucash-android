@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012 Ngewi Fet <ngewif@gmail.com>
+ * Copyright (c) 2012 - 2015 Ngewi Fet <ngewif@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,6 +57,9 @@ public class TransactionsPreferenceFragment extends PreferenceFragment implement
 		setLocalizedSummary(pref, defaultTransactionType);
 		pref.setOnPreferenceChangeListener(this);
 
+        pref = findPreference(getString(R.string.key_use_double_entry));
+        pref.setOnPreferenceChangeListener(this);
+
         Preference preference = findPreference(getString(R.string.key_delete_all_transactions));
         preference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
@@ -70,7 +73,11 @@ public class TransactionsPreferenceFragment extends PreferenceFragment implement
 
 	@Override
 	public boolean onPreferenceChange(Preference preference, Object newValue) {
-		setLocalizedSummary(preference, newValue.toString());
+		if (preference.getKey().equals(getString(R.string.key_use_double_entry))){
+            ((SettingsActivity)getActivity()).setImbalanceAccountsHidden((Boolean)newValue);
+        } else {
+            setLocalizedSummary(preference, newValue.toString());
+        }
 		return true;
 	}
 

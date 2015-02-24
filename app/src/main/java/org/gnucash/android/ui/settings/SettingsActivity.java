@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012 Ngewi Fet <ngewif@gmail.com>
+ * Copyright (c) 2012 - 2015 Ngewi Fet <ngewif@gmail.com>
  * Copyright (c) 2014 Yongxin Wang <fefe.wyx@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -39,6 +39,7 @@ import com.actionbarsherlock.view.MenuItem;
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.AccountsDbAdapter;
+import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.export.Exporter;
 import org.gnucash.android.export.xml.GncXmlExporter;
@@ -54,6 +55,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Currency;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -134,6 +136,9 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
             pref = findPreference(getString(R.string.key_import_accounts));
             pref.setOnPreferenceClickListener(this);
 
+            pref = findPreference(getString(R.string.key_use_double_entry));
+            pref.setOnPreferenceChangeListener(this);
+
             pref = findPreference(getString(R.string.key_delete_all_transactions));
             pref.setOnPreferenceClickListener(this);
 
@@ -207,12 +212,27 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
                     .edit()
                     .putBoolean(UxArgument.ENABLED_PASSCODE, (Boolean) newValue)
                     .commit();
+        } else if (preference.getKey().equals(getString(R.string.key_use_double_entry))){
+            setImbalanceAccountsHidden((Boolean) newValue);
         }
 
 		return true;
 	}
-	
-	private void setDefaultCurrencyListener() {
+
+    public void setImbalanceAccountsHidden(boolean useDoubleEntry) {
+        String isHidden = useDoubleEntry ? "0" : "1";
+        AccountsDbAdapter accountsDbAdapter = AccountsDbAdapter.getInstance();
+        List<Currency> currencies = accountsDbAdapter.getCurrencies();
+        for (Currency currency : currencies) {
+            String uid = accountsDbAdapter.getImbalanceAccountUID(currency);
+            if (uid != null){
+                accountsDbAdapter.updateRecord(DatabaseSchema.AccountEntry.TABLE_NAME,
+                        uid, DatabaseSchema.AccountEntry.COLUMN_HIDDEN, isHidden);
+            }
+        }
+    }
+
+    private void setDefaultCurrencyListener() {
 		SharedPreferences manager = PreferenceManager.getDefaultSharedPreferences(this);
 		String defaultCurrency = manager.getString(getString(R.string.key_default_currency), Money.DEFAULT_CURRENCY_CODE);
 		@SuppressWarnings("deprecation")

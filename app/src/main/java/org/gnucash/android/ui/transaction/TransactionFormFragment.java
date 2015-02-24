@@ -629,30 +629,11 @@ public class TransactionFormFragment extends SherlockFragment implements
             }
         }
 
-		if (mTransaction != null){
-            if (!mUseDoubleEntry){
-                //first remove old splits for this transaction, since there is only one split
-                SplitsDbAdapter splitsDbAdapter = SplitsDbAdapter.getInstance();
-                for (Split split : mTransaction.getSplits()) {
-                    splitsDbAdapter.deleteSplit(split.getUID());
-                }
-
-                Split split = new Split(amount, accountUID);
-                split.setType(mTransactionTypeButton.getTransactionType());
-                mTransaction.getSplits().clear();
-                mTransaction.addSplit(split);
-            } else {
-                mTransaction.setSplits(mSplitsList);
-            }
-			mTransaction.setDescription(description);
+		if (mTransaction != null){ //if editing an existing transaction
+            mTransaction.setSplits(mSplitsList);
+            mTransaction.setDescription(description);
 		} else {
 			mTransaction = new Transaction(description);
-            if (!mUseDoubleEntry){
-                Split split = new Split(amount, accountUID);
-                split.setType(mTransactionTypeButton.getTransactionType());
-                mSplitsList.clear();
-                mSplitsList.add(split);
-            }
 
             if (mSplitsList.isEmpty()) { //amount entered in the simple interface (not using splits Editor)
                 Split split = new Split(amount, accountUID);
@@ -663,15 +644,15 @@ public class TransactionFormFragment extends SherlockFragment implements
                 if (mUseDoubleEntry) {
                     long transferAcctId = mDoubleAccountSpinner.getSelectedItemId();
                     transferAcctUID = mAccountsDbAdapter.getUID(transferAcctId);
-                    mTransaction.addSplit(split.createPair(transferAcctUID));
                 } else {
-                      //TODO: enable this when we can hide certain accounts from the user
-//                    transferAcctUID = mAccountsDbAdapter.getOrCreateImbalanceAccountUID(currency);
+                    transferAcctUID = mAccountsDbAdapter.getOrCreateImbalanceAccountUID(currency);
                 }
+                mTransaction.addSplit(split.createPair(transferAcctUID));
             } else { //split editor was used to enter splits
                 mTransaction.setSplits(mSplitsList);
             }
 		}
+
         mTransaction.setCurrencyCode(mAccountsDbAdapter.getAccountCurrencyCode(mAccountUID));
 		mTransaction.setTime(cal.getTimeInMillis());
 		mTransaction.setNote(notes);
@@ -707,13 +688,15 @@ public class TransactionFormFragment extends SherlockFragment implements
         mTransactionsDbAdapter.addTransaction(recurringTransaction);
 
         ScheduledEventDbAdapter scheduledEventDbAdapter = GnuCashApplication.getScheduledEventDbAdapter();
-        Toast.makeText(getActivity(), "Found " + events.size() + " events", Toast.LENGTH_LONG).show();
+
         for (ScheduledEvent event : events) {
             event.setEventUID(recurringTransaction.getUID());
             scheduledEventDbAdapter.addScheduledEvent(event);
 
             Log.i("TransactionFormFragment", event.toString());
         }
+        if (events.size() > 0)
+            Toast.makeText(getActivity(), "Scheduled transaction", Toast.LENGTH_SHORT).show();
     }
 
 

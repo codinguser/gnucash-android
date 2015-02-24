@@ -59,6 +59,7 @@ public class DatabaseSchema {
         public static final String COLUMN_FAVORITE              = "favorite";
         public static final String COLUMN_FULL_NAME             = "full_name";
         public static final String COLUMN_TYPE                  = "type";
+        public static final String COLUMN_HIDDEN                = "is_hidden";
         public static final String COLUMN_DEFAULT_TRANSFER_ACCOUNT_UID = "default_transfer_account_uid";
 
         public static final String INDEX_UID                    = "account_uid_index";

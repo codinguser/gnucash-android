@@ -69,6 +69,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			+ AccountEntry.COLUMN_CURRENCY          + " varchar(255) not null, "
             + AccountEntry.COLUMN_COLOR_CODE        + " varchar(255), "
             + AccountEntry.COLUMN_FAVORITE 		    + " tinyint default 0, "
+            + AccountEntry.COLUMN_HIDDEN 		    + " tinyint default 0, "
             + AccountEntry.COLUMN_FULL_NAME 	    + " varchar(255), "
             + AccountEntry.COLUMN_PLACEHOLDER           + " tinyint default 0, "
             + AccountEntry.COLUMN_PARENT_ACCOUNT_UID    + " varchar(255), "
@@ -106,7 +107,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + SplitEntry.COLUMN_TRANSACTION_UID + " varchar(255) not null, "
             + SplitEntry.COLUMN_CREATED_AT       + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
             + SplitEntry.COLUMN_MODIFIED_AT      + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
-            + "FOREIGN KEY (" 	+ SplitEntry.COLUMN_ACCOUNT_UID + ") REFERENCES " + AccountEntry.TABLE_NAME + " (" + AccountEntry.COLUMN_UID + "), "
+            + "FOREIGN KEY (" 	+ SplitEntry.COLUMN_ACCOUNT_UID + ") REFERENCES " + AccountEntry.TABLE_NAME + " (" + AccountEntry.COLUMN_UID + ") ON DELETE CASCADE, "
             + "FOREIGN KEY (" 	+ SplitEntry.COLUMN_TRANSACTION_UID + ") REFERENCES " + TransactionEntry.TABLE_NAME + " (" + TransactionEntry.COLUMN_UID + ") ON DELETE CASCADE "
             + ");" + createUpdatedAtTrigger(SplitEntry.TABLE_NAME);
 
@@ -154,7 +155,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		createDatabaseTables(db);
 	}
 
-	@Override
+    @Override
+    public void onOpen(SQLiteDatabase db) {
+        super.onOpen(db);
+        db.execSQL("PRAGMA foreign_keys=ON");
+    }
+
+    @Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 		Log.i(LOG_TAG, "Upgrading database from version "
 				+ oldVersion + " to " + newVersion);
@@ -349,8 +356,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
             if (oldVersion == 7 && newVersion >= 8){
                 Log.i(LOG_TAG, "Upgrading database to version 8");
-
                 //TODO: consider just backing up, recreating database and reimporting
+                //FIXME: We really need to do this because the ON DELETE CASCADE constraint does not exist on older db versions
+                //TODO: Also, we need to go through db and add second split with imbalance account wherever only one split exists.
+
+                Log.i(LOG_TAG, "Adding hidden flag to accounts table");
+                String addHiddenFlagSql = "ALTER TABLE " + AccountEntry.TABLE_NAME +
+                        " ADD COLUMN " + AccountEntry.COLUMN_HIDDEN + " tinyint default 0";
+                db.execSQL(addHiddenFlagSql);
 
                 Log.i(LOG_TAG, "Adding created_at and modified_at columns to database tables");
                 MigrationHelper.createUpdatedAndModifiedColumns(db, AccountEntry.TABLE_NAME);

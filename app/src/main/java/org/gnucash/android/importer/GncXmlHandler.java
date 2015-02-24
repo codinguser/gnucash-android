@@ -183,7 +183,9 @@ public class GncXmlHandler extends DefaultHandler {
             mAccount.setUID(characterString);
         }
         else if (qualifiedName.equalsIgnoreCase(GncXmlHelper.TAG_TYPE)){
-            mAccount.setAccountType(AccountType.valueOf(characterString));
+            AccountType accountType = AccountType.valueOf(characterString);
+            mAccount.setAccountType(accountType);
+            mAccount.setHidden(accountType == AccountType.ROOT); //flag root account as hidden
         }
         else if (qualifiedName.equalsIgnoreCase(GncXmlHelper.TAG_COMMODITY_SPACE)){
             if (characterString.equalsIgnoreCase("ISO4217")){

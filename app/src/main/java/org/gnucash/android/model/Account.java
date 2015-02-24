@@ -121,6 +121,11 @@ public class Account extends BaseModel{
      */
     private boolean mIsFavorite;
 
+    /**
+     * Flag which indicates if this account is a hidden account or not
+     */
+    private boolean mIsHidden;
+
 	/**
 	 * An extra key for passing the currency code (according ISO 4217) in an intent
 	 */
@@ -352,6 +357,24 @@ public class Account extends BaseModel{
      */
     public boolean isPlaceholderAccount(){
         return mIsPlaceholderAccount;
+    }
+
+    /**
+     * Returns the hidden property of this account.
+     * <p>Hidden accounts are not visible in the UI</p>
+     * @return <code>true</code> if the account is hidden, <code>false</code> otherwise.
+     */
+    public boolean isHidden(){
+        return mIsHidden;
+    }
+
+    /**
+     * Toggles the hidden property of the account.
+     * <p>Hidden accounts are not visible in the UI</p>
+     * @param hidden boolean specifying is hidden or not
+     */
+    public void setHidden(boolean hidden){
+        this.mIsHidden = hidden;
     }
 
     /**
