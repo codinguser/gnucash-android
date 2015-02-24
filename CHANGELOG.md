@@ -1,5 +1,11 @@
 Change Log
 ===============================================================================
+Version 1.5.5 *(2015-02-20)*
+----------------------------
+Fixed: QIF not exported when using single-entry transactions
+Fixed: Passcode screen can be by-passed using SwipeBack
+Fixed: Crash when changing the account name
+
 Version 1.5.4 *(2015-02-16)*
 ----------------------------
 * Fixed: Crash when creating TRADING accounts
