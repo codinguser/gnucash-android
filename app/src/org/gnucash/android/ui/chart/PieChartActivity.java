@@ -31,6 +31,7 @@ import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.github.mikephil.charting.charts.PieChart;
@@ -91,6 +92,11 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chart_reports);
+
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setTitle(R.string.title_pie_chart);
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setHomeButtonEnabled(true);
 
         mPreviousMonthButton = (ImageButton) findViewById(R.id.previous_month_chart_button);
         mNextMonthButton = (ImageButton) findViewById(R.id.next_month_chart_button);
@@ -169,7 +175,7 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
                         balance = mAccountsDbAdapter.getAccountBalance(account.getUID()).asDouble();
                     }
                     if (balance > 0) {
-                        dataSet.addEntry(new Entry((float) balance, dataSet.getEntryCount()));
+                        dataSet.addEntry(new Entry((float) Math.abs(balance), dataSet.getEntryCount()));
                         dataSet.addColor(COLORS[(dataSet.getEntryCount() - 1) % COLORS.length]);
                         names.add(account.getName());
                     }
@@ -188,6 +194,7 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
             mChart.setTouchEnabled(true);
         }
         mChart.setData(new PieData(names, dataSet));
+        mChart.animateXY(1800, 1800);
         mChart.invalidate();
 
         setImageButtonEnabled(mNextMonthButton,
@@ -298,6 +305,10 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
             case R.id.menu_toggle_labels: {
                 mChart.setDrawXValues(!mChart.isDrawXValuesEnabled());
                 mChart.invalidate();
+                break;
+            }
+            case android.R.id.home: {
+                finish();
                 break;
             }
         }
