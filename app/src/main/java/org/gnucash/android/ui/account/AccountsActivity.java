@@ -41,22 +41,24 @@ import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import com.viewpagerindicator.TitlePageIndicator;
+
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.export.ExportDialogFragment;
+import org.gnucash.android.export.ExporterAsyncTask;
 import org.gnucash.android.importer.ImportAsyncTask;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.ui.UxArgument;
 import org.gnucash.android.ui.passcode.PassLockActivity;
 import org.gnucash.android.ui.settings.SettingsActivity;
 import org.gnucash.android.ui.transaction.ScheduledEventsActivity;
-import org.gnucash.android.ui.transaction.ScheduledTransactionsListFragment;
 import org.gnucash.android.ui.transaction.TransactionsActivity;
 import org.gnucash.android.ui.util.OnAccountClickedListener;
 import org.gnucash.android.ui.util.Refreshable;
@@ -548,7 +550,7 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_CANCELED){
+        if (resultCode == RESULT_CANCELED && requestCode != ExporterAsyncTask.REQUEST_UPDATE_PASSCODE_SESSION) {
             return;
         }
 
@@ -560,6 +562,10 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
                 }
+                break;
+            // A little hack to skip the passcode screen after select destination for export transactions
+            case ExporterAsyncTask.REQUEST_UPDATE_PASSCODE_SESSION:
+                GnuCashApplication.PASSCODE_SESSION_INIT_TIME = System.currentTimeMillis();
                 break;
         }
     }

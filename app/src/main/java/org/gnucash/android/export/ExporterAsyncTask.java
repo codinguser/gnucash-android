@@ -64,6 +64,11 @@ public class ExporterAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
     public static final String TAG = "ExporterAsyncTask";
 
     /**
+     * Request code for updating the passcode session
+     */
+    public static final int REQUEST_UPDATE_PASSCODE_SESSION = 0xAAA;
+
+    /**
      * Export parameters
      */
     private ExportParams mExportParams;
@@ -252,7 +257,8 @@ public class ExporterAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
         shareIntent.putExtra(Intent.EXTRA_TEXT, extraText);
 
         if (mContext instanceof Activity)
-            mContext.startActivity(Intent.createChooser(shareIntent, mContext.getString(R.string.title_select_export_destination)));
+            ((Activity) mContext).startActivityForResult(Intent.createChooser(shareIntent,
+                    mContext.getString(R.string.title_select_export_destination)), REQUEST_UPDATE_PASSCODE_SESSION);
     }
 
     /**
