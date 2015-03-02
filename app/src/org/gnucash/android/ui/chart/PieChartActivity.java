@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 Oleksandr Tyshkovets <olexandr.tyshkovets@gmail.com>
+ * Copyright (c) 2014-2015 Oleksandr Tyshkovets <olexandr.tyshkovets@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,6 +55,7 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
+ * Activity used for drawing a pie chart
  *
  * @author Oleksandr Tyshkovets <olexandr.tyshkovets@gmail.com>
  */
@@ -83,8 +84,8 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
     private AccountsDbAdapter mAccountsDbAdapter;
     private TransactionsDbAdapter mTransactionsDbAdapter;
 
-    private LocalDateTime mEarliestTransaction;
-    private LocalDateTime mLatestTransaction;
+    private LocalDateTime mEarliestTransactionDate;
+    private LocalDateTime mLatestTransactionDate;
 
     private AccountType mAccountType = AccountType.EXPENSE;
 
@@ -106,20 +107,26 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
         mTransactionsDbAdapter = new TransactionsDbAdapter(this);
 
         mChart = (PieChart) findViewById(R.id.chart);
+        mChart.setValueTextSize(12);
+        mChart.setValueTextColor(Color.BLACK);
+        mChart.setCenterTextSize(18);
+        mChart.setDrawYValues(false);
+        mChart.setDescription("");
+        mChart.setDrawLegend(false);
         mChart.setOnChartValueSelectedListener(this);
-        applyChartSetting();
 
-        addItemsOnSpinner();
+        setUpSpinner();
 
         mPreviousMonthButton.setOnClickListener(new View.OnClickListener() {
+
             @Override
             public void onClick(View view) {
                 mChartDate = mChartDate.minusMonths(1);
                 setData(true);
             }
         });
-
         mNextMonthButton.setOnClickListener(new View.OnClickListener() {
+
             @Override
             public void onClick(View view) {
                 mChartDate = mChartDate.plusMonths(1);
@@ -128,29 +135,23 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
         });
 
         mChartDateTextView.setOnClickListener(new View.OnClickListener() {
+
             @Override
             public void onClick(View view) {
                 DialogFragment newFragment = new ChartDatePickerFragment(PieChartActivity.this,
                         mChartDate.toDate().getTime(),
-                        mEarliestTransaction.toDate().getTime(),
-                        mLatestTransaction.toDate().getTime());
+                        mEarliestTransactionDate.toDate().getTime(),
+                        mLatestTransactionDate.toDate().getTime());
                 newFragment.show(getSupportFragmentManager(), "date_dialog");
             }
         });
     }
 
     /**
-     * Since JellyBean, the onDateSet() method of the DatePicker class is called twice i.e. once when
-     * OK button is pressed and then when the DatePickerDialog is dismissed. It is a known bug.
+     * Sets the chart data
+     *
+     * @param forCurrentMonth sets data only for current month if {@code true}, otherwise for all time
      */
-    @Override
-    public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-        if (view.isShown()) {
-            mChartDate = new LocalDateTime(year, monthOfYear + 1, dayOfMonth, 0, 0);
-            setData(true);
-        }
-    }
-
     private void setData(boolean forCurrentMonth) {
         mChartDateTextView.setText(forCurrentMonth ? mChartDate.toString(datePattern) : getResources().getString(R.string.label_chart_overall));
         ((TextView) findViewById(R.id.selected_chart_slice)).setText("");
@@ -198,9 +199,9 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
         mChart.invalidate();
 
         setImageButtonEnabled(mNextMonthButton,
-                mChartDate.plusMonths(1).dayOfMonth().withMinimumValue().withMillisOfDay(0).isBefore(mLatestTransaction));
-        setImageButtonEnabled(mPreviousMonthButton, (mEarliestTransaction.getYear() != 1970
-                && mChartDate.minusMonths(1).dayOfMonth().withMaximumValue().withMillisOfDay(86399999).isAfter(mEarliestTransaction)));
+                mChartDate.plusMonths(1).dayOfMonth().withMinimumValue().withMillisOfDay(0).isBefore(mLatestTransactionDate));
+        setImageButtonEnabled(mPreviousMonthButton, (mEarliestTransactionDate.getYear() != 1970
+                && mChartDate.minusMonths(1).dayOfMonth().withMaximumValue().withMillisOfDay(86399999).isAfter(mEarliestTransactionDate)));
     }
 
     /**
@@ -220,6 +221,9 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
         button.setImageDrawable(originalIcon);
     }
 
+    /**
+     * Sorts the pie's slices in ascending order
+     */
     private void bubbleSort() {
         ArrayList<String> labels = mChart.getData().getXVals();
         ArrayList<Entry> values = mChart.getData().getDataSet().getYVals();
@@ -250,16 +254,11 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
         mChart.invalidate();
     }
 
-    private void applyChartSetting() {
-        mChart.setValueTextSize(12);
-        mChart.setValueTextColor(Color.BLACK);
-        mChart.setCenterTextSize(18);
-        mChart.setDrawYValues(false);
-        mChart.setDescription("");
-        mChart.setDrawLegend(false);
-    }
-
-    private void addItemsOnSpinner() {
+    /**
+     * Sets up settings and data for the account type spinner. Currently used only {@code EXPENSE} and {@code INCOME}
+     * account types.
+     */
+    private void setUpSpinner() {
         Spinner spinner = (Spinner) findViewById(R.id.chart_data_spinner);
         ArrayAdapter<AccountType> dataAdapter = new ArrayAdapter<AccountType>(this,
                 android.R.layout.simple_spinner_item,
@@ -270,9 +269,9 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 mAccountType = (AccountType) ((Spinner) findViewById(R.id.chart_data_spinner)).getSelectedItem();
-                mEarliestTransaction = new LocalDateTime(mTransactionsDbAdapter.getTimestampOfEarliestTransaction(mAccountType));
-                mLatestTransaction = new LocalDateTime(mTransactionsDbAdapter.getTimestampOfLatestTransaction(mAccountType));
-                mChartDate = mLatestTransaction;
+                mEarliestTransactionDate = new LocalDateTime(mTransactionsDbAdapter.getTimestampOfEarliestTransaction(mAccountType));
+                mLatestTransactionDate = new LocalDateTime(mTransactionsDbAdapter.getTimestampOfLatestTransaction(mAccountType));
+                mChartDate = mLatestTransactionDate;
                 setData(false);
             }
 
@@ -313,6 +312,18 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
             }
         }
         return true;
+    }
+
+    /**
+     * Since JellyBean, the onDateSet() method of the DatePicker class is called twice i.e. once when
+     * OK button is pressed and then when the DatePickerDialog is dismissed. It is a known bug.
+     */
+    @Override
+    public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+        if (view.isShown()) {
+            mChartDate = new LocalDateTime(year, monthOfYear + 1, dayOfMonth, 0, 0);
+            setData(true);
+        }
     }
 
     @Override

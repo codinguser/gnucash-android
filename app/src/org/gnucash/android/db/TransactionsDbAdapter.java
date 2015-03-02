@@ -46,6 +46,7 @@ import static org.gnucash.android.db.DatabaseSchema.TransactionEntry;
  * Handles adding, modifying and deleting of transaction records.
  * @author Ngewi Fet <ngewif@gmail.com> 
  * @author Yongxin Wang <fefe.wyx@gmail.com>
+ * @author Oleksandr Tyshkovets <olexandr.tyshkovets@gmail.com>
  */
 public class TransactionsDbAdapter extends DatabaseAdapter {
 
