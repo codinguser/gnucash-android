@@ -439,4 +439,12 @@
     <string name="menu_title_favorite">Favorite</string>
     <string name="drawer_open">Navigation drawer opened</string>
     <string name="drawer_close">Navigation drawer closed</string>
+    <string name="title_pie_chart">Pie Chart</string>
+    <string name="menu_chart_report">Chart report</string>
+    <string name="menu_order_by_size">Order by size</string>
+    <string name="menu_toggle_legend">Toggle legend</string>
+    <string name="menu_toggle_labels">Toggle labels</string>
+    <string name="label_chart_no_data">No chart data available</string>
+    <string name="label_chart_overall">Overall</string>
+    <string name="label_chart_total">Total\n</string>
 </resources>

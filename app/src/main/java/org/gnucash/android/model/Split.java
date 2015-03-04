@@ -117,6 +117,7 @@ public class Split extends BaseModel{
         Split pair = new Split(mAmount.absolute(), accountUID);
         pair.setType(mSplitType.invert());
         pair.setMemo(mMemo);
+        pair.setTransactionUID(mTransactionUID);
 
         return pair;
     }

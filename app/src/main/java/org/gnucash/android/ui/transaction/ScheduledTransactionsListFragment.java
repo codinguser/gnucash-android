@@ -396,7 +396,7 @@ public class ScheduledTransactionsListFragment extends SherlockListFragment impl
             TextView trNote = (TextView) view.findViewById(R.id.secondary_text);
 //            trNote.setText(context.getString(R.string.label_repeats) + " " +
 //                    getRecurrenceAsString(cursor.getLong(cursor.getColumnIndexOrThrow(DatabaseSchema.TransactionEntry.COLUMN_RECURRENCE_PERIOD)))) ;
-            ScheduledEventDbAdapter scheduledEventDbAdapter = GnuCashApplication.getScheduledEventDbAdapter();
+            ScheduledEventDbAdapter scheduledEventDbAdapter = ScheduledEventDbAdapter.getInstance();
             ScheduledEvent event = scheduledEventDbAdapter.getScheduledEventWithUID(transaction.getUID());
             trNote.setText(event.toString());
 

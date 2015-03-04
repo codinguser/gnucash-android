@@ -33,7 +33,6 @@ import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.model.*;
 
 import static org.gnucash.android.db.DatabaseSchema.*;
-
 import java.util.ArrayList;
 import java.util.Currency;
 import java.util.List;
@@ -43,6 +42,7 @@ import java.util.List;
  * Handles adding, modifying and deleting of transaction records.
  * @author Ngewi Fet <ngewif@gmail.com> 
  * @author Yongxin Wang <fefe.wyx@gmail.com>
+ * @author Oleksandr Tyshkovets <olexandr.tyshkovets@gmail.com>
  */
 public class TransactionsDbAdapter extends DatabaseAdapter {
 
@@ -114,6 +114,7 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
             Log.d(TAG, deleted + " splits deleted");
             mDb.setTransactionSuccessful();
         } catch (SQLException sqle) {
+            Log.e(TAG, sqle.getMessage());
             sqle.printStackTrace();
         } finally {
             mDb.endTransaction();
@@ -570,4 +571,44 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
         }
         return numCurrencies;
     }
+
+    /**
+     * Returns a timestamp of the earliest transaction for the specified account type
+     * @param type the account type
+     * @return the earliest transaction's timestamp. Returns 1970-01-01 00:00:00.000 if no transaction found
+     */
+    public long getTimestampOfEarliestTransaction(AccountType type) {
+        return getTimestamp("MIN", type);
+    }
+
+    /**
+     * Returns a timestamp of the latest transaction for the specified account type
+     * @param type the account type
+     * @return the latest transaction's timestamp. Returns 1970-01-01 00:00:00.000 if no transaction found
+     */
+    public long getTimestampOfLatestTransaction(AccountType type) {
+        return getTimestamp("MAX", type);
+    }
+
+    private long getTimestamp(String mod, AccountType type) {
+        String sql = "SELECT " + mod + "(" + TransactionEntry.COLUMN_TIMESTAMP + ")" +
+                " FROM " + TransactionEntry.TABLE_NAME +
+                " INNER JOIN " + SplitEntry.TABLE_NAME + " ON "
+                + SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_TRANSACTION_UID + " = "
+                + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_UID +
+                " INNER JOIN " + AccountEntry.TABLE_NAME + " ON "
+                + AccountEntry.TABLE_NAME + "." + AccountEntry.COLUMN_UID + " = "
+                + SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_ACCOUNT_UID +
+                " WHERE " + AccountEntry.TABLE_NAME + "." + AccountEntry.COLUMN_TYPE + " = ?";
+        Cursor cursor = mDb.rawQuery(sql, new String[]{type.toString()});
+        long timestamp= 0;
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                timestamp = cursor.getLong(0);
+            }
+            cursor.close();
+        }
+        return timestamp;
+    }
+
 }

@@ -28,4 +28,10 @@
           android:title="@string/title_settings"
           android:showAsAction="never"
           android:orderInCategory="10"/>
+
+    <item android:id="@+id/menu_pie_chart"
+          android:title="@string/menu_chart_report"
+          android:icon="@drawable/chart_icon"
+          android:showAsAction="collapseActionView|ifRoom" />
+
 </menu>

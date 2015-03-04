@@ -109,6 +109,7 @@ public class TransactionsActivityTest extends
         mTransaction.addSplit(split.createPair(TRANSFER_ACCOUNT_UID));
         account.addTransaction(mTransaction);
 
+        //FIXME: Accounts are not saved to database because FOREIGN_KEY constraint on Split table fails
         long id1 = mAccountsDbAdapter.addAccount(account);
         long id2 = mAccountsDbAdapter.addAccount(account2);
         assertTrue(id1 > 0);
@@ -136,8 +137,7 @@ public class TransactionsActivityTest extends
 	}
 	
 	private int getTranscationCount(){
-		int count = mTransactionsDbAdapter.getAllTransactionsForAccount(DUMMY_ACCOUNT_UID).size();
-		return count;
+        return mTransactionsDbAdapter.getAllTransactionsForAccount(DUMMY_ACCOUNT_UID).size();
 	}
 	
 	private void validateNewTransactionFields(){

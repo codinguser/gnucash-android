@@ -17,7 +17,7 @@
     </string-array>
 
     <!-- ==================================================================== -->
-    <string name="app_version_name">1.5.3</string>
+    <string name="app_version_name">1.6.x</string>
     <string name="key_default_currency">default_currency</string>
     <string name="key_first_run">key_first_run</string>
     <string name="key_build_version">build_version</string>

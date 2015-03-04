@@ -20,7 +20,7 @@
     android:versionCode="48"
     android:versionName="@string/app_version_name" >
 
-    <uses-sdk android:minSdkVersion="8" android:targetSdkVersion="18"/>
+    <uses-sdk android:minSdkVersion="9" android:targetSdkVersion="18"/>
     
     <permission-group 
         android:name="org.gnucash.android.permission.group.GNUCASH"
@@ -77,6 +77,7 @@
 		        <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE"/>
 		    </intent-filter>
 		</activity>
+        <activity android:name=".ui.chart.PieChartActivity" />
         <service android:name=".service.SchedulerService"
             android:exported="false"
             android:label="GnuCash Android Scheduler Execution Service"/>

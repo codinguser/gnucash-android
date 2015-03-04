@@ -9,7 +9,7 @@ android {
         minSdkVersion 9
         targetSdkVersion 18
         versionCode 48
-        versionName "1.5.4"
+        versionName "1.6.x"
     }
 
     buildTypes {
@@ -33,7 +33,10 @@ dependencies {
             'com.actionbarsherlock:actionbarsherlock:4.4.0@aar',			
             'com.viewpagerindicator:library:2.4.1@aar',
             'com.doomonafireball.betterpickers:library:1.5.2',
-            'com.commonsware.cwac:merge:1.1.+')
+            'com.commonsware.cwac:merge:1.1.+',
+            'org.quanqi:mpandroidchart:1.7.4', //TODO: Upgrade only when we support Android API 14 and over)
+            'joda-time:joda-time:2.7'
+    )
 			
 	androidTestCompile ('com.jayway.android.robotium:robotium-solo:5.2.1',
 			'com.squareup:fest-android:1.0.6')

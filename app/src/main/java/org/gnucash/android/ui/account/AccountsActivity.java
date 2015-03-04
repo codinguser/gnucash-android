@@ -41,10 +41,12 @@ import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import com.viewpagerindicator.TitlePageIndicator;
+
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.AccountsDbAdapter;
@@ -53,6 +55,7 @@ import org.gnucash.android.export.ExportDialogFragment;
 import org.gnucash.android.importer.ImportAsyncTask;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.ui.UxArgument;
+import org.gnucash.android.ui.chart.PieChartActivity;
 import org.gnucash.android.ui.passcode.PassLockActivity;
 import org.gnucash.android.ui.settings.SettingsActivity;
 import org.gnucash.android.ui.transaction.ScheduledEventsActivity;
@@ -384,6 +387,10 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
 
             case R.id.menu_settings:
                 startActivity(new Intent(this, SettingsActivity.class));
+                return true;
+
+            case R.id.menu_pie_chart:
+                startActivity(new Intent(this, PieChartActivity.class));
                 return true;
 
 		default:

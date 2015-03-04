@@ -39,6 +39,7 @@ import static org.gnucash.android.db.DatabaseSchema.*;
  * Handles adding, modifying and deleting of account records.
  * @author Ngewi Fet <ngewif@gmail.com>
  * @author Yongxin Wang <fefe.wyx@gmail.com>
+ * @author Oleksandr Tyshkovets <olexandr.tyshkovets@gmail.com>
  */
 public class AccountsDbAdapter extends DatabaseAdapter {
     /**
@@ -837,6 +838,21 @@ public class AccountsDbAdapter extends DatabaseAdapter {
      * @return Account Balance of an account including sub-accounts
      */
     public Money getAccountBalance(String accountUID){
+        return computeBalance(accountUID, -1, -1);
+    }
+
+    /**
+     * Returns the balance of an account within the specified time range while taking sub-accounts into consideration
+     * @param accountUID the account's UUID
+     * @param startTimestamp the start timestamp of the time range
+     * @param endTimestamp the end timestamp of the time range
+     * @return the balance of an account within the specified range including sub-accounts
+     */
+    public Money getAccountBalance(String accountUID, long startTimestamp, long endTimestamp) {
+        return computeBalance(accountUID, startTimestamp, endTimestamp);
+    }
+
+    private Money computeBalance(String accountUID, long startTimestamp, long endTimestamp) {
         Log.d(TAG, "Computing account balance for account ID " + accountUID);
         String currencyCode = mTransactionsAdapter.getAccountCurrencyCode(accountUID);
         boolean hasDebitNormalBalance = getAccountType(accountUID).hasDebitNormalBalance();
@@ -849,7 +865,11 @@ public class AccountsDbAdapter extends DatabaseAdapter {
         accountsList.add(0, accountUID);
 
         Log.d(TAG, "all account list : " + accountsList.size());
-        Money splitSum = mTransactionsAdapter.getSplitDbAdapter().computeSplitBalance(accountsList, currencyCode, hasDebitNormalBalance);
+		SplitsDbAdapter splitsDbAdapter = SplitsDbAdapter.getInstance();
+        Money splitSum = (startTimestamp == -1 && endTimestamp == -1)
+                ? splitsDbAdapter.computeSplitBalance(accountsList, currencyCode, hasDebitNormalBalance)
+                : splitsDbAdapter.computeSplitBalance(accountsList, currencyCode, hasDebitNormalBalance, startTimestamp, endTimestamp);
+        
         return balance.add(splitSum);
     }
 

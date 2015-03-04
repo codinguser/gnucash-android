@@ -36,6 +36,7 @@ import com.commonsware.cwac.merge.MergeAdapter;
 import org.gnucash.android.R;
 import org.gnucash.android.importer.ImportAsyncTask;
 import org.gnucash.android.ui.account.AccountsActivity;
+import org.gnucash.android.ui.chart.PieChartActivity;
 import org.gnucash.android.ui.settings.SettingsActivity;
 import org.gnucash.android.ui.transaction.ScheduledEventsActivity;
 
@@ -105,6 +106,7 @@ public class BaseDrawerActivity extends SherlockFragmentActivity {
         ArrayList<String> accountNavOptions = new ArrayList<String>();
         accountNavOptions.add("Favorites");
         accountNavOptions.add("Open...");
+        accountNavOptions.add("Reports");
 
         ArrayAdapter<String> accountsNavAdapter = new ArrayAdapter<String>(this,
                 R.layout.drawer_list_item, accountNavOptions);
@@ -189,7 +191,11 @@ public class BaseDrawerActivity extends SherlockFragmentActivity {
             }
                 break;
 
-            case 4: { //show scheduled transactions
+            case 3:
+                startActivity(new Intent(this, PieChartActivity.class));
+                break;
+
+            case 5: { //show scheduled transactions
                 Intent intent = new Intent(this, ScheduledEventsActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_SINGLE_TOP);
                 intent.putExtra(ScheduledEventsActivity.EXTRA_DISPLAY_MODE,
@@ -198,17 +204,17 @@ public class BaseDrawerActivity extends SherlockFragmentActivity {
             }
                 break;
 
-            case 5:{
+            case 6:{
                 AccountsActivity.showExportDialog(this);
             }
                 break;
 
-            case 8: { //Backup and Export
+            case 9: { //Backup and Export
 
             }
                 break;
 
-            case 9: //Settings activity
+            case 10: //Settings activity
                 startActivity(new Intent(this, SettingsActivity.class));
                 break;
 
