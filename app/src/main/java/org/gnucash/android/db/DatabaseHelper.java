@@ -374,7 +374,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 db.execSQL(SCHEDULED_EVENTS_TABLE_CREATE);
                 //TODO: Migrate existing scheduled transactions (cancel pending intents)
 
-                GnuCashApplication.startScheduledEventExecutionService();
+                GnuCashApplication.startScheduledEventExecutionService(GnuCashApplication.getAppContext());
 
 
             }

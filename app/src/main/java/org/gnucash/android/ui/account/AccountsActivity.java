@@ -59,7 +59,6 @@ import org.gnucash.android.ui.chart.PieChartActivity;
 import org.gnucash.android.ui.passcode.PassLockActivity;
 import org.gnucash.android.ui.settings.SettingsActivity;
 import org.gnucash.android.ui.transaction.ScheduledEventsActivity;
-import org.gnucash.android.ui.transaction.ScheduledTransactionsListFragment;
 import org.gnucash.android.ui.transaction.TransactionsActivity;
 import org.gnucash.android.ui.util.OnAccountClickedListener;
 import org.gnucash.android.ui.util.Refreshable;

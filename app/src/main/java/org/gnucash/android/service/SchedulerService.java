@@ -18,6 +18,7 @@ package org.gnucash.android.service;
 
 import android.app.IntentService;
 import android.content.Intent;
+import android.os.PowerManager;
 import android.os.SystemClock;
 import android.util.Log;
 
@@ -28,7 +29,6 @@ import org.gnucash.android.export.ExportParams;
 import org.gnucash.android.export.ExporterAsyncTask;
 import org.gnucash.android.model.ScheduledEvent;
 import org.gnucash.android.model.Transaction;
-import org.gnucash.android.receivers.SchedulerReceiver;
 
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -51,6 +51,11 @@ public class SchedulerService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
+        PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
+        PowerManager.WakeLock wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
+                LOG_TAG);
+        wakeLock.acquire();
+
         ScheduledEventDbAdapter scheduledEventDbAdapter = GnuCashApplication.getScheduledEventDbAdapter();
         List<ScheduledEvent> scheduledEvents = scheduledEventDbAdapter.getAllScheduledEvents();
 
@@ -67,7 +72,8 @@ public class SchedulerService extends IntentService {
         }
 
         Log.i(LOG_TAG, "Completed service @ " + SystemClock.elapsedRealtime());
-        SchedulerReceiver.completeWakefulIntent(intent);
+
+        wakeLock.release();
     }
 
     /**

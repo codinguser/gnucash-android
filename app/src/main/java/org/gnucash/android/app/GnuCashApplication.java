@@ -155,13 +155,16 @@ public class GnuCashApplication extends Application{
         return currencyCode;
     }
 
-    public static void startScheduledEventExecutionService(){
-        Context context = getAppContext();
+    /**
+     * Starts the service for scheduled events and makes the service run daily.
+     * @param context Application context
+     */
+    public static void startScheduledEventExecutionService(Context context){
         Intent alarmIntent = new Intent(context, SchedulerService.class);
         PendingIntent pendingIntent = PendingIntent.getService(context, 0, alarmIntent, 0);
 
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        alarmManager.cancel(pendingIntent);
+        alarmManager.cancel(pendingIntent); //if it already exists
         alarmManager.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,
                 SystemClock.elapsedRealtime() + AlarmManager.INTERVAL_DAY,
                 AlarmManager.INTERVAL_DAY, pendingIntent);

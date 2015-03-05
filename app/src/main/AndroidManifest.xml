@@ -45,6 +45,8 @@
     <uses-permission android:name="android.permission.VIBRATE"
                      android:label="Allow device to vibrate with notifications" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"
+        android:label="Schedule repeating transactions when device is rebooted"/>
 
     <application android:name="org.gnucash.android.app.GnuCashApplication"
         android:icon="@drawable/ic_launcher"
@@ -81,8 +83,6 @@
         <service android:name=".service.SchedulerService"
             android:exported="false"
             android:label="GnuCash Android Scheduler Execution Service"/>
-        <receiver android:name=".receivers.SchedulerReceiver"
-            android:exported="false"/>
         <receiver android:name=".receivers.TransactionRecorder"
             android:label="Records transactions received through intents"
             android:permission="org.gnucash.android.permission.RECORD_TRANSACTION">
@@ -109,7 +109,13 @@
 		    <meta-data android:name="android.appwidget.provider"
 		               android:resource="@xml/transaction_appwidget_info" />
 		</receiver>
-        
+        <receiver android:name=".receivers.BootReceiver"
+            android:label="Schedules regular runs for the scheduled events service"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>
