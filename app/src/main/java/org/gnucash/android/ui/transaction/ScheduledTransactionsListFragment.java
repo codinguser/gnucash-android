@@ -18,6 +18,7 @@ package org.gnucash.android.ui.transaction;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Rect;
 import android.os.Bundle;
@@ -52,6 +53,8 @@ import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.model.ScheduledEvent;
 import org.gnucash.android.model.Transaction;
 import org.gnucash.android.ui.UxArgument;
+
+import java.util.List;
 
 /**
  * Fragment which displays the recurring transactions in the system.
@@ -316,7 +319,11 @@ public class ScheduledTransactionsListFragment extends SherlockListFragment impl
         public View getView(int position, View convertView, ViewGroup parent) {
             final View view = super.getView(position, convertView, parent);
             final int itemPosition = position;
-            CheckBox checkbox = (CheckBox) view.findViewById(R.id.checkbox_parent_account);
+            CheckBox checkbox = (CheckBox) view.findViewById(R.id.checkbox);
+            //TODO: Revisit this if we ever change the application theme
+            int id = Resources.getSystem().getIdentifier("btn_check_holo_light", "drawable", "android");
+            checkbox.setButtonDrawable(id);
+
             final TextView secondaryText = (TextView) view.findViewById(R.id.secondary_text);
 
             checkbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -390,15 +397,20 @@ public class ScheduledTransactionsListFragment extends SherlockListFragment impl
             super.bindView(view, context, cursor);
 
             Transaction transaction = mTransactionsDbAdapter.buildTransactionInstance(cursor);
-            TextView amountTextView = (TextView) view.findViewById(R.id.transaction_amount);
-            amountTextView.setText(transaction.getSplits().size() + " splits");
 
-            TextView trNote = (TextView) view.findViewById(R.id.secondary_text);
-//            trNote.setText(context.getString(R.string.label_repeats) + " " +
-//                    getRecurrenceAsString(cursor.getLong(cursor.getColumnIndexOrThrow(DatabaseSchema.TransactionEntry.COLUMN_RECURRENCE_PERIOD)))) ;
+            TextView amountTextView = (TextView) view.findViewById(R.id.right_text);
+            if (transaction.getSplits().size() == 2){
+                if (transaction.getSplits().get(0).isPairOf(transaction.getSplits().get(1))){
+                    amountTextView.setText(transaction.getSplits().get(0).getAmount().formattedString());
+                }
+            } else {
+                amountTextView.setText(transaction.getSplits().size() + " splits");
+            }
+            TextView descriptionTextView = (TextView) view.findViewById(R.id.secondary_text);
+
             ScheduledEventDbAdapter scheduledEventDbAdapter = ScheduledEventDbAdapter.getInstance();
             ScheduledEvent event = scheduledEventDbAdapter.getScheduledEventWithUID(transaction.getUID());
-            trNote.setText(event.toString());
+            descriptionTextView.setText(event.getRepeatString());
 
         }
 
@@ -418,7 +430,7 @@ public class ScheduledTransactionsListFragment extends SherlockListFragment impl
         public Cursor loadInBackground() {
             mDatabaseAdapter = TransactionsDbAdapter.getInstance();
 
-            Cursor c = ((TransactionsDbAdapter) mDatabaseAdapter).fetchAllRecurringTransactions();
+            Cursor c = ((TransactionsDbAdapter) mDatabaseAdapter).fetchAllScheduledTransactions();
 
             registerContentObserver(c);
             return c;

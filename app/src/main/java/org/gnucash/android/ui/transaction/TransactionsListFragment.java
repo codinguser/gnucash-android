@@ -18,6 +18,7 @@ package org.gnucash.android.ui.transaction;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Rect;
 import android.os.Bundle;
@@ -364,6 +365,9 @@ public class TransactionsListFragment extends SherlockListFragment implements
 			CheckBox checkbox = (CheckBox) view.findViewById(R.id.checkbox_parent_account);
             final TextView secondaryText = (TextView) view.findViewById(R.id.secondary_text);
 
+            //TODO: Revisit this if we ever change the application theme
+            int id = Resources.getSystem().getIdentifier("btn_check_holo_light", "drawable", "android");
+            checkbox.setButtonDrawable(id);
             checkbox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 				
 				@Override

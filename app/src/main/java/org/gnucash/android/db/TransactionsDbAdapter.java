@@ -234,6 +234,7 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
      * @throws java.lang.IllegalArgumentException if the accountUID is null
 	 */
 	public Cursor fetchAllTransactionsForAccount(String accountUID){
+        //TODO: Remove this legacy code. Database has been upgraded
         if (mDb.getVersion() < DatabaseSchema.SPLITS_DB_VERSION){ //legacy from previous database format
             return mDb.query(TransactionEntry.TABLE_NAME, null,
                     "((" + SplitEntry.COLUMN_ACCOUNT_UID + " = '" + accountUID + "') "
@@ -259,16 +260,19 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 
     /**
      * Fetches all recurring transactions from the database.
-     * <p>These transactions are not considered "normal" transactions, but only serve to note recurring transactions.
-     * They are not considered when computing account balances</p>
+     * <p>Recurring transactions are the transaction templates which have an entry in the scheduled events table</p>
      * @return Cursor holding set of all recurring transactions
      */
-    public Cursor fetchAllRecurringTransactions(){
-        return mDb.query(TransactionEntry.TABLE_NAME,
-                null,
-                TransactionEntry.COLUMN_RECURRENCE_PERIOD + "!= 0",
-                null, null, null,
-                AccountEntry.COLUMN_NAME + " ASC, " + TransactionEntry.COLUMN_RECURRENCE_PERIOD + " ASC");
+    public Cursor fetchAllScheduledTransactions(){
+        SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
+        queryBuilder.setTables(TransactionEntry.TABLE_NAME + " INNER JOIN " + ScheduledEventEntry.TABLE_NAME + " ON "
+                + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_UID + " = "
+                + ScheduledEventEntry.TABLE_NAME + "." + ScheduledEventEntry.COLUMN_EVENT_UID);
+
+        String[] projectionIn = new String[]{TransactionEntry.TABLE_NAME + ".*"};
+        String sortOrder = TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_DESCRIPTION + " ASC";
+
+        return queryBuilder.query(mDb, projectionIn, null, null, null, null, sortOrder);
     }
 
 	/**

@@ -18,6 +18,7 @@ package org.gnucash.android.db;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 import org.gnucash.android.app.GnuCashApplication;
@@ -115,16 +116,17 @@ public class ScheduledEventDbAdapter extends DatabaseAdapter {
      * @param eventUID GUID of the event itself
      * @return ScheduledEvent object instance
      */
-    public ScheduledEvent getScheduledEventWithUID(String eventUID){
+    public ScheduledEvent getScheduledEventWithUID(@NonNull String eventUID){
         Cursor cursor = mDb.query(ScheduledEventEntry.TABLE_NAME, null,
                 ScheduledEventEntry.COLUMN_EVENT_UID + "= ?",
                 new String[]{eventUID}, null, null, null);
 
         ScheduledEvent scheduledEvent = null;
-        if (cursor != null) {
+        try {
             if (cursor.moveToFirst()) {
                 scheduledEvent = buildScheduledEventInstance(cursor);
             }
+        } finally {
             cursor.close();
         }
         return scheduledEvent;

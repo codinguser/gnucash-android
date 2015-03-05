@@ -15,10 +15,12 @@
  */
 package org.gnucash.android.model;
 
+import org.gnucash.android.R;
 import org.gnucash.android.ui.util.RecurrenceParser;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 import java.util.UUID;
 
 /**
@@ -116,14 +118,25 @@ public class ScheduledEvent extends BaseModel{
         this.mTag = tag;
     }
 
-    @Override
-    public String toString() {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
-        String eventString = mEventType.name() + " recurring every " + mPeriod/RecurrenceParser.DAY_MILLIS + " days starting on "
+    /**
+     * Returns the event schedule (start, end and recurrence)
+     * @return String description of repeat schedule
+     */
+    public String getRepeatString(){
+        //TODO: localize the string
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy", Locale.US);
+        String repeatString = "Repeats every " + mPeriod/RecurrenceParser.DAY_MILLIS + " days starting on "
                 + dateFormat.format(new Date(mStartDate));
         if (mEndDate > 0){
-            eventString += " until " + dateFormat.format(mEndDate);
+            repeatString += " until " + dateFormat.format(mEndDate);
         }
+        return repeatString;
+    }
+
+    @Override
+    public String toString() {
+
+        String eventString = mEventType.name() + " - " + getRepeatString();
 
         return eventString;
     }
