@@ -432,10 +432,9 @@ public class TransactionFormFragment extends SherlockFragment implements
      * Only accounts with the same currency can be transferred to
      */
 	private void updateTransferAccountsList(){
-		String accountUID = ((TransactionsActivity)getActivity()).getCurrentAccountUID();
 
-		String conditions = "(" + DatabaseSchema.AccountEntry.COLUMN_UID + " != '" + accountUID
-                            + "' AND " + (mMultiCurrency ? "" : (DatabaseSchema.AccountEntry.COLUMN_CURRENCY + " = '" + mAccountsDbAdapter.getCurrencyCode(accountUID)
+		String conditions = "(" + DatabaseSchema.AccountEntry.COLUMN_UID + " != '" + mAccountUID
+                            + "' AND " + (mMultiCurrency ? "" : (DatabaseSchema.AccountEntry.COLUMN_CURRENCY + " = '" + mAccountsDbAdapter.getCurrencyCode(mAccountUID)
                             + "' AND ")) + DatabaseSchema.AccountEntry.COLUMN_UID + " != '" + mAccountsDbAdapter.getGnuCashRootAccountUID()
                             + "' AND " + DatabaseSchema.AccountEntry.COLUMN_PLACEHOLDER + " = 0"
                             + ")";
@@ -591,7 +590,7 @@ public class TransactionFormFragment extends SherlockFragment implements
 
         mAccountType = accountsDbAdapter.getAccountType(newAccountUID);
         mTransactionTypeButton.setAccountType(mAccountType);
-
+        mAccountUID = newAccountUID;
         updateTransferAccountsList();
     }
 
@@ -611,15 +610,14 @@ public class TransactionFormFragment extends SherlockFragment implements
 		String notes = mNotesEditText.getText().toString();
 		BigDecimal amountBigd = parseInputToDecimal(mAmountEditText.getText().toString());
 
-		String accountUID 	= ((TransactionsActivity) getSherlockActivity()).getCurrentAccountUID();
-		Currency currency = Currency.getInstance(mTransactionsDbAdapter.getAccountCurrencyCode(accountUID));
+		Currency currency = Currency.getInstance(mTransactionsDbAdapter.getAccountCurrencyCode(mAccountUID));
 		Money amount 	= new Money(amountBigd, currency).absolute();
 
         //capture any edits which were done directly (not using split editor)
         if (mSplitsList.size() == 2 && mSplitsList.get(0).isPairOf(mSplitsList.get(1))) {
             //if it is a simple transfer where the editor was not used, then respect the button
             for (Split split : mSplitsList) {
-                if (split.getAccountUID().equals(accountUID)){
+                if (split.getAccountUID().equals(mAccountUID)){
                     split.setType(mTransactionTypeButton.getTransactionType());
                     split.setAmount(amount);
                 } else {
@@ -636,7 +634,7 @@ public class TransactionFormFragment extends SherlockFragment implements
 			mTransaction = new Transaction(description);
 
             if (mSplitsList.isEmpty()) { //amount entered in the simple interface (not using splits Editor)
-                Split split = new Split(amount, accountUID);
+                Split split = new Split(amount, mAccountUID);
                 split.setType(mTransactionTypeButton.getTransactionType());
                 mTransaction.addSplit(split);
 

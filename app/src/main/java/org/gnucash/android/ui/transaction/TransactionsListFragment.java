@@ -203,7 +203,7 @@ public class TransactionsListFragment extends SherlockListFragment implements
 	public void onResume() {
 		super.onResume();
 		((TransactionsActivity)getSherlockActivity()).updateNavigationSelection();		
-		refresh(((TransactionsActivity) getActivity()).getCurrentAccountUID());
+		refresh();
 	}
 	
 	@Override

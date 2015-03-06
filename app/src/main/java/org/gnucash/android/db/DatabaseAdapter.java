@@ -52,7 +52,7 @@ public abstract class DatabaseAdapter {
      * Opens the database adapter with an existing database
      * @param db SQLiteDatabase object
      */
-    public DatabaseAdapter(SQLiteDatabase db, String tableName) {
+    public DatabaseAdapter(SQLiteDatabase db, @NonNull String tableName) {
         this.mTableName = tableName;
         this.mDb = db;
         if (!db.isOpen() || db.isReadOnly())
@@ -237,10 +237,7 @@ public abstract class DatabaseAdapter {
      * @param uid GUID of the record
      * @return Long record ID
      */
-    public long getID(String uid){
-        if (uid == null)
-            return 0;
-
+    public long getID(@NonNull String uid){
         Cursor cursor = mDb.query(mTableName,
                 new String[] {DatabaseSchema.CommonColumns._ID},
                 DatabaseSchema.CommonColumns.COLUMN_UID + " = ?",
@@ -291,7 +288,7 @@ public abstract class DatabaseAdapter {
      * @return Currency code of the account. "" if accountUID
      *      does not exist in DB
      */
-    public String getAccountCurrencyCode(String accountUID) {
+    public String getAccountCurrencyCode(@NonNull String accountUID) {
         Cursor cursor = mDb.query(DatabaseSchema.AccountEntry.TABLE_NAME,
                 new String[] {DatabaseSchema.AccountEntry.COLUMN_CURRENCY},
                 DatabaseSchema.AccountEntry.COLUMN_UID + "= ?",
@@ -313,7 +310,7 @@ public abstract class DatabaseAdapter {
      * @return {@link org.gnucash.android.model.AccountType} of the account.
      * @throws java.lang.IllegalArgumentException if accountUID does not exist in DB,
      */
-    public AccountType getAccountType(String accountUID){
+    public AccountType getAccountType(@NonNull String accountUID){
         String type = "";
         Cursor c = mDb.query(DatabaseSchema.AccountEntry.TABLE_NAME,
                 new String[]{DatabaseSchema.AccountEntry.COLUMN_TYPE},
@@ -374,7 +371,7 @@ public abstract class DatabaseAdapter {
      * @return <code>true</code> if deletion was successful, <code>false</code> otherwise
      * @see #deleteRecord(long)
      */
-    public boolean deleteRecord(String uid){
+    public boolean deleteRecord(@NonNull String uid){
         return deleteRecord(getID(uid));
     }
 }

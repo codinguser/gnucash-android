@@ -33,7 +33,6 @@ import android.util.Log;
 import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 
@@ -147,11 +146,12 @@ public class TransactionsActivity extends PassLockActivity implements
 		    	//if we do not return, the transactions list fragment could also be found (although it's not visible)
 		    	return true;
 		    }
-
+            //refresh any fragments in the tab with the new account UID
             refresh();
             return true;
 		  }
 	};
+    private PagerAdapter mPagerAdapter;
 
 
     /**
@@ -265,6 +265,7 @@ public class TransactionsActivity extends PassLockActivity implements
     public void refresh(){
         refresh(mAccountUID);
         setTitleIndicatorColor();
+        mPagerAdapter.notifyDataSetChanged();
     }
 
 	@Override
@@ -291,8 +292,8 @@ public class TransactionsActivity extends PassLockActivity implements
         } else {	//load the transactions list
             mSectionHeaderTransactions.setVisibility(View.GONE);
 
-            PagerAdapter pagerAdapter = new AccountViewPagerAdapter(getSupportFragmentManager());
-            mPager.setAdapter(pagerAdapter);
+            mPagerAdapter = new AccountViewPagerAdapter(getSupportFragmentManager());
+            mPager.setAdapter(mPagerAdapter);
             mTitlePageIndicator.setViewPager(mPager);
 
             mPager.setCurrentItem(INDEX_TRANSACTIONS_FRAGMENT);
@@ -473,7 +474,7 @@ public class TransactionsActivity extends PassLockActivity implements
 	public String getCurrentAccountUID(){
 		return mAccountUID;
 	}
-	
+
 	/**
 	 * Opens a fragment to create a new transaction. 
 	 * Is called from the XML views
