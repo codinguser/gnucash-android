@@ -94,7 +94,7 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         //it is necessary to set the view first before calling super because of the nav drawer in BaseDrawerActivity
-        setContentView(R.layout.activity_chart_reports);
+        setContentView(R.layout.activity_pie_chart);
         super.onCreate(savedInstanceState);
 
         ActionBar actionBar = getSupportActionBar();
