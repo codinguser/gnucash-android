@@ -36,12 +36,13 @@ import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.github.mikephil.charting.charts.PieChart;
+import com.github.mikephil.charting.components.Legend.LegendForm;
+import com.github.mikephil.charting.components.Legend.LegendPosition;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
-import com.github.mikephil.charting.interfaces.OnChartValueSelectedListener;
-import com.github.mikephil.charting.utils.Legend.LegendForm;
-import com.github.mikephil.charting.utils.Legend.LegendPosition;
+import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
+import com.github.mikephil.charting.utils.Highlight;
 
 import org.gnucash.android.R;
 import org.gnucash.android.db.AccountsDbAdapter;
@@ -110,12 +111,8 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
         mTransactionsDbAdapter = TransactionsDbAdapter.getInstance();
 
         mChart = (PieChart) findViewById(R.id.chart);
-        mChart.setValueTextSize(12);
-        mChart.setValueTextColor(Color.BLACK);
         mChart.setCenterTextSize(18);
-        mChart.setDrawYValues(false);
         mChart.setDescription("");
-        mChart.setDrawLegend(false);
         mChart.setOnChartValueSelectedListener(this);
 
         setUpSpinner();
@@ -190,6 +187,7 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
         if (dataSet.getEntryCount() == 0) {
             dataSet.addEntry(new Entry(1, 0));
             dataSet.setColor(Color.LTGRAY);
+            dataSet.setDrawValues(false);
             names.add("");
             mChart.setCenterText(getResources().getString(R.string.label_chart_no_data));
             mChart.setTouchEnabled(false);
@@ -276,6 +274,7 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
                 mLatestTransactionDate = new LocalDateTime(mTransactionsDbAdapter.getTimestampOfLatestTransaction(mAccountType));
                 mChartDate = mLatestTransactionDate;
                 setData(false);
+                mChart.getLegend().setEnabled(false);
             }
 
             @Override
@@ -297,7 +296,7 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
                 break;
             }
             case R.id.menu_toggle_legend: {
-                mChart.setDrawLegend(!mChart.isDrawLegendEnabled());
+                mChart.getLegend().setEnabled(!mChart.getLegend().isEnabled());
                 mChart.getLegend().setForm(LegendForm.CIRCLE);
                 mChart.getLegend().setPosition(LegendPosition.RIGHT_OF_CHART_CENTER);
                 mChart.notifyDataSetChanged();
@@ -305,7 +304,8 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
                 break;
             }
             case R.id.menu_toggle_labels: {
-                mChart.setDrawXValues(!mChart.isDrawXValuesEnabled());
+                mChart.getData().setDrawValues(!mChart.isDrawSliceTextEnabled());
+                mChart.setDrawSliceText(!mChart.isDrawSliceTextEnabled());
                 mChart.invalidate();
                 break;
             }
@@ -330,7 +330,7 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
     }
 
     @Override
-    public void onValueSelected(Entry e, int dataSetIndex) {
+    public void onValueSelected(Entry e, int dataSetIndex, Highlight h) {
         if (e == null) return;
         ((TextView) findViewById(R.id.selected_chart_slice))
                 .setText(mChart.getData().getXVals().get(e.getXIndex()) + " - " + e.getVal()
