@@ -25,6 +25,14 @@ android {
     lintOptions {
         abortOnError false
     }
+    productFlavors {
+        development {
+            applicationId 'org.gnucash.android.devel'
+            testApplicationId 'org.gnucash.android.test.devel'
+        }
+        production {
+        }
+    }
 }
 
 dependencies {
