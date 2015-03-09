@@ -29,8 +29,10 @@ android {
         development {
             applicationId 'org.gnucash.android.devel'
             testApplicationId 'org.gnucash.android.test.devel'
+            resValue "string", "app_name", "GnuCash (devel)"
         }
         production {
+            resValue "string", "app_name", "GnuCash"
         }
     }
 }

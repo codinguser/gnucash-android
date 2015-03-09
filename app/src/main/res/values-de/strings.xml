@@ -16,7 +16,6 @@
  limitations under the License.
 -->
 <resources>
-    <string name="app_name">GnuCash</string>
     <string name="title_add_account">Neues Konto</string>
     <string name="title_edit_account">Konto bearbeiten</string>
     <string name="info_details">Info</string>

@@ -17,7 +17,6 @@
 -->
 
 <resources>
-    <string name="app_name">GnuCash</string>
     <string name="title_add_account">Cr&#233;er un compte</string>
     <string name="title_edit_account">Éditer le compte</string>
     <string name="info_details">Informations</string>
