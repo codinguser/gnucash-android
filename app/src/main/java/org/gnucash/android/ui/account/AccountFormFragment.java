@@ -204,7 +204,6 @@ public class AccountFormFragment extends SherlockFragment {
 	
 	/**
 	 * Construct a new instance of the dialog
-	 * @param dbAdapter {@link AccountsDbAdapter} for saving the account
 	 * @return New instance of the dialog fragment
 	 */
 	static public AccountFormFragment newInstance() {
@@ -239,7 +238,8 @@ public class AccountFormFragment extends SherlockFragment {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
                 loadParentAccountList(getSelectedAccountType());
-                setParentAccountSelection(mAccountsDbAdapter.getID(mParentAccountUID));
+                if (mParentAccountUID != null)
+                    setParentAccountSelection(mAccountsDbAdapter.getID(mParentAccountUID));
             }
 
             @Override
