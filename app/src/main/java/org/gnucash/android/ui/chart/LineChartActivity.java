@@ -4,12 +4,15 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
+import com.github.mikephil.charting.utils.Highlight;
 
 import org.gnucash.android.R;
 import org.gnucash.android.db.AccountsDbAdapter;
@@ -28,7 +31,7 @@ import java.util.List;
  *
  * @author Oleksandr Tyshkovets <olexandr.tyshkovets@gmail.com>
  */
-public class LineChartActivity extends PassLockActivity {
+public class LineChartActivity extends PassLockActivity implements OnChartValueSelectedListener {
 
     private static final String TAG = "LineChartActivity";
 
@@ -46,6 +49,7 @@ public class LineChartActivity extends PassLockActivity {
         mChart = new LineChart(this);
         ((LinearLayout) findViewById(R.id.chart)).addView(mChart);
 
+        mChart.setOnChartValueSelectedListener(this);
         mChart.setDescription("");
         // TEST THIS!!!
         mChart.setNoDataTextDescription("You need to provide data for the chart.");
@@ -157,4 +161,16 @@ public class LineChartActivity extends PassLockActivity {
         mChart.setData(data);
     }
 
+    @Override
+    public void onValueSelected(Entry e, int dataSetIndex, Highlight h) {
+        if (e == null) return;
+        ((TextView) findViewById(R.id.selected_chart_slice))
+                .setText(mChart.getData().getXVals().get(e.getXIndex()) + " - " + e.getVal()
+                        + " (" + String.format("%.2f", (e.getVal() / mChart.getData().getDataSetByIndex(dataSetIndex).getYValueSum()) * 100) + " %)");
+    }
+
+    @Override
+    public void onNothingSelected() {
+        ((TextView) findViewById(R.id.selected_chart_slice)).setText("");
+    }
 }
