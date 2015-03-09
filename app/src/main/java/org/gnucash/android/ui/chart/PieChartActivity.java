@@ -110,7 +110,7 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
         mAccountsDbAdapter = AccountsDbAdapter.getInstance();
         mTransactionsDbAdapter = TransactionsDbAdapter.getInstance();
 
-        mChart = (PieChart) findViewById(R.id.chart);
+        mChart = (PieChart) findViewById(R.id.pie_chart);
         mChart.setCenterTextSize(18);
         mChart.setDescription("");
         mChart.setOnChartValueSelectedListener(this);

@@ -28,7 +28,7 @@ public class ChartReportActivity extends PassLockActivity {
         findViewById(R.id.line_chart_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                startActivity(new Intent(view.getContext(), LineChartActivity.class));
+                startActivity(new Intent(view.getContext(), LineChartActivity.class));
             }
         });
         findViewById(R.id.bar_chart_button).setOnClickListener(new View.OnClickListener() {
