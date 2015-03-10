@@ -25,7 +25,11 @@ import org.joda.time.LocalDateTime;
 import org.joda.time.Months;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -34,9 +38,13 @@ import java.util.List;
 public class LineChartActivity extends PassLockActivity implements OnChartValueSelectedListener {
 
     private static final String TAG = "LineChartActivity";
+    private static final String X_AXIS_PATTERN = "MMM YY";
 
     private LineChart mChart;
     private AccountsDbAdapter mAccountsDbAdapter;
+    private Map<AccountType, Long> mEarliestTimestampsMap = new HashMap<AccountType, Long>();
+    private Map<AccountType, Long> mLatestTimestampsMap = new HashMap<AccountType, Long>();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,10 +62,6 @@ public class LineChartActivity extends PassLockActivity implements OnChartValueS
         // TEST THIS!!!
         mChart.setNoDataTextDescription("You need to provide data for the chart.");
 
-        mChart.setDragEnabled(true);
-        mChart.setScaleEnabled(true);
-        mChart.setPinchZoom(false);
-
         mChart.getAxisRight().setEnabled(false);
 
         setData();
@@ -71,9 +75,8 @@ public class LineChartActivity extends PassLockActivity implements OnChartValueS
     }
 
     private ArrayList<Entry> setData(AccountType accountType) {
-        TransactionsDbAdapter transactionsDbAdapter = TransactionsDbAdapter.getInstance();
-        LocalDateTime earliest = new LocalDateTime(transactionsDbAdapter.getTimestampOfEarliestTransaction(accountType));
-        LocalDateTime latest = new LocalDateTime(transactionsDbAdapter.getTimestampOfLatestTransaction(accountType));
+        LocalDateTime earliest = new LocalDateTime(mEarliestTimestampsMap.get(accountType));
+        LocalDateTime latest = new LocalDateTime(mLatestTimestampsMap.get(accountType));
         Log.w(TAG, "START: " + earliest.toString("dd MM yyyy"));
         Log.w(TAG, "END: " + latest.toString("dd MM yyyy"));
         int diff = Months.monthsBetween(earliest.withDayOfMonth(1).withMillisOfDay(0), latest.withDayOfMonth(1).withMillisOfDay(0)).getMonths();
@@ -122,8 +125,22 @@ public class LineChartActivity extends PassLockActivity implements OnChartValueS
     private void setData() {
         //TODO comparing Joda dates with TIME!
 
+        setEarliestAndLatestTimestamps(Arrays.asList(AccountType.INCOME, AccountType.EXPENSE));
+        //TODO what if account has no transaction and list contain zero
+        List<Long> xTimestamps = new ArrayList<Long>(mEarliestTimestampsMap.values());
+        xTimestamps.addAll(mLatestTimestampsMap.values());
+        Collections.sort(xTimestamps);
+        LocalDate start = new LocalDate(xTimestamps.get(0));
+        LocalDate end = new LocalDate(xTimestamps.get(xTimestamps.size() - 1));
+
+        ArrayList<String> xValues = new ArrayList<String>();
+        while (!start.isAfter(end)) {
+            xValues.add(start.toString(X_AXIS_PATTERN));
+            Log.w(TAG, "xValues " + start.toString("MM yy"));
+            start = start.plusMonths(1);
+        }
+
         LineDataSet set1 = new LineDataSet(setData(AccountType.INCOME), AccountType.INCOME.toString());
-        set1.setDrawCubic(true);
         set1.setDrawFilled(true);
         set1.setDrawCircles(true);
         set1.setLineWidth(2f);
@@ -132,7 +149,6 @@ public class LineChartActivity extends PassLockActivity implements OnChartValueS
         set1.setFillColor(getResources().getColor(R.color.account_green));
 
         LineDataSet set2 = new LineDataSet(setData(AccountType.EXPENSE), AccountType.EXPENSE.toString());
-        set2.setDrawCubic(true);
         set2.setDrawFilled(true);
         set2.setDrawCircles(true);
         set2.setLineWidth(2f);
@@ -144,21 +160,17 @@ public class LineChartActivity extends PassLockActivity implements OnChartValueS
         dataSets.add(set1);
         dataSets.add(set2);
 
-        LocalDate start = new LocalDate(2014, 1, 1);
-        LocalDate end = new LocalDate(2015, 1, 1);
-
-        ArrayList<String> xVals = new ArrayList<String>();
-        while (!start.isAfter(end)) {
-            xVals.add(start.toString("MMM yy"));
-            Log.w(TAG, "xVals " + start.toString("MM yy"));
-            start = start.plusMonths(1);
-        }
-
-        Log.w(TAG, "X AXIS SIZE " + xVals.size());
-
-        LineData data = new LineData(xVals, dataSets);
+        LineData data = new LineData(xValues, dataSets);
 
         mChart.setData(data);
+    }
+
+    private void setEarliestAndLatestTimestamps(List<AccountType> accountTypeList) {
+        TransactionsDbAdapter transactionsDbAdapter = TransactionsDbAdapter.getInstance();
+        for (AccountType type : accountTypeList) {
+            mEarliestTimestampsMap.put(type, transactionsDbAdapter.getTimestampOfEarliestTransaction(type));
+            mLatestTimestampsMap.put(type, transactionsDbAdapter.getTimestampOfLatestTransaction(type));
+        }
     }
 
     @Override
