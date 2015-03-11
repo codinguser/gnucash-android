@@ -44,7 +44,8 @@ public class LineChartActivity extends PassLockActivity implements OnChartValueS
     private AccountsDbAdapter mAccountsDbAdapter;
     private Map<AccountType, Long> mEarliestTimestampsMap = new HashMap<AccountType, Long>();
     private Map<AccountType, Long> mLatestTimestampsMap = new HashMap<AccountType, Long>();
-
+    private long mEarliestTransactionTimestamp;
+    private long mLatestTransactionTimestamp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -111,10 +112,12 @@ public class LineChartActivity extends PassLockActivity implements OnChartValueS
             }
         }
 
+        int offset = getXAxisOffset(accountType);
+        Log.w(TAG, "OFFSET OF " + accountType + " IS " + offset);
         ArrayList<Entry> values = new ArrayList<Entry>();
         for (int i = 0; i < months.length; i++) {
             Log.w(TAG, accountType + " MONTH " + months[i]);
-            values.add(new Entry((float) months[i], i));
+            values.add(new Entry((float) months[i], i + offset));
         }
 
         Log.w(TAG, accountType + " ENTRY SIZE " + values.size());
@@ -126,18 +129,14 @@ public class LineChartActivity extends PassLockActivity implements OnChartValueS
         //TODO comparing Joda dates with TIME!
 
         setEarliestAndLatestTimestamps(Arrays.asList(AccountType.INCOME, AccountType.EXPENSE));
-        //TODO what if account has no transaction and list contain zero
-        List<Long> xTimestamps = new ArrayList<Long>(mEarliestTimestampsMap.values());
-        xTimestamps.addAll(mLatestTimestampsMap.values());
-        Collections.sort(xTimestamps);
-        LocalDate start = new LocalDate(xTimestamps.get(0));
-        LocalDate end = new LocalDate(xTimestamps.get(xTimestamps.size() - 1));
 
+        LocalDate startDate = new LocalDate(mEarliestTransactionTimestamp);
+        LocalDate endDate = new LocalDate(mLatestTransactionTimestamp);
         ArrayList<String> xValues = new ArrayList<String>();
-        while (!start.isAfter(end)) {
-            xValues.add(start.toString(X_AXIS_PATTERN));
-            Log.w(TAG, "xValues " + start.toString("MM yy"));
-            start = start.plusMonths(1);
+        while (!startDate.isAfter(endDate)) {
+            xValues.add(startDate.toString(X_AXIS_PATTERN));
+            Log.w(TAG, "xValues " + startDate.toString("MM yy"));
+            startDate = startDate.plusMonths(1);
         }
 
         LineDataSet set1 = new LineDataSet(setData(AccountType.INCOME), AccountType.INCOME.toString());
@@ -171,6 +170,20 @@ public class LineChartActivity extends PassLockActivity implements OnChartValueS
             mEarliestTimestampsMap.put(type, transactionsDbAdapter.getTimestampOfEarliestTransaction(type));
             mLatestTimestampsMap.put(type, transactionsDbAdapter.getTimestampOfLatestTransaction(type));
         }
+
+        //TODO what if account has no transaction and list contain zero items
+        List<Long> timestamps = new ArrayList<Long>(mEarliestTimestampsMap.values());
+        timestamps.addAll(mLatestTimestampsMap.values());
+        Collections.sort(timestamps);
+        mEarliestTransactionTimestamp = timestamps.get(0);
+        mLatestTransactionTimestamp = timestamps.get(timestamps.size() - 1);
+    }
+
+    private int getXAxisOffset(AccountType accountType) {
+        return Months.monthsBetween(
+                new LocalDate(mEarliestTransactionTimestamp).withDayOfMonth(1),
+                new LocalDate(mEarliestTimestampsMap.get(accountType)).withDayOfMonth(1)
+                ).getMonths();
     }
 
     @Override
