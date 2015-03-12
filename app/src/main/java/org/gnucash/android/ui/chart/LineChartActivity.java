@@ -76,51 +76,34 @@ public class LineChartActivity extends PassLockActivity implements OnChartValueS
     }
 
     private ArrayList<Entry> setData(AccountType accountType) {
+        List<String> accountUIDList = new ArrayList<String>();
+        for (Account account : mAccountsDbAdapter.getSimpleAccountList()) {
+            if (account.getAccountType() == accountType && !account.isPlaceholderAccount()) {
+                accountUIDList.add(account.getUID());
+            }
+        }
+
         LocalDateTime earliest = new LocalDateTime(mEarliestTimestampsMap.get(accountType));
         LocalDateTime latest = new LocalDateTime(mLatestTimestampsMap.get(accountType));
         Log.w(TAG, "START: " + earliest.toString("dd MM yyyy"));
         Log.w(TAG, "END: " + latest.toString("dd MM yyyy"));
-        int diff = Months.monthsBetween(earliest.withDayOfMonth(1).withMillisOfDay(0), latest.withDayOfMonth(1).withMillisOfDay(0)).getMonths();
-        Log.w(TAG, "DIFF: " + diff);
-        // TODO change type to float
-        double[] months = new double[diff + 1];
-
-        List<String> skippedUUID = new ArrayList<String>();
-        for (Account account : mAccountsDbAdapter.getSimpleAccountList()) {
-            if (account.getAccountType() == accountType && !account.isPlaceholderAccount()) {
-                // TODO sum of sub accounts?
-                if (mAccountsDbAdapter.getSubAccountCount(account.getUID()) > 0) {
-                    skippedUUID.addAll(mAccountsDbAdapter.getDescendantAccountUIDs(account.getUID(), null, null));
-                }
-                if (!skippedUUID.contains(account.getUID())) {
-                    LocalDateTime tmpDate = earliest;
-                    for (int i = 0; i < months.length; i++) {
-                        Log.i(TAG, "ACCOUNT " + account.getName());
-                        Log.i(TAG, "MONTHS " + tmpDate.toString("MMMM yyyy"));
-
-                        long start = tmpDate.dayOfMonth().withMinimumValue().millisOfDay().withMinimumValue().toDate().getTime();
-                        long end = tmpDate.dayOfMonth().withMaximumValue().millisOfDay().withMaximumValue().toDate().getTime();
-                        double balance = mAccountsDbAdapter.getAccountBalance(account.getUID(), start, end).absolute().asDouble();
-                        months[i] += balance;
-
-                        Log.i(TAG, "Balance of current month " + balance);
-                        Log.i(TAG, "Balance total " + months[i]);
-
-                        tmpDate = tmpDate.plusMonths(1);
-                    }
-                }
-            }
-        }
+        int months = Months.monthsBetween(earliest.withDayOfMonth(1).withMillisOfDay(0),
+                latest.withDayOfMonth(1).withMillisOfDay(0)).getMonths();
 
         int offset = getXAxisOffset(accountType);
         Log.w(TAG, "OFFSET OF " + accountType + " IS " + offset);
-        ArrayList<Entry> values = new ArrayList<Entry>();
-        for (int i = 0; i < months.length; i++) {
-            Log.w(TAG, accountType + " MONTH " + months[i]);
-            values.add(new Entry((float) months[i], i + offset));
-        }
+        ArrayList<Entry> values = new ArrayList<Entry>(months + 1);
+        for (int i = 0; i < months + 1; i++) {
+            long start = earliest.dayOfMonth().withMinimumValue().millisOfDay().withMinimumValue().toDate().getTime();
+            long end = earliest.dayOfMonth().withMaximumValue().millisOfDay().withMaximumValue().toDate().getTime();
 
-        Log.w(TAG, accountType + " ENTRY SIZE " + values.size());
+            float balance = (float) mAccountsDbAdapter.getAccountsBalance(accountUIDList, start, end).asDouble();
+            values.add(new Entry(balance, i + offset));
+
+            Log.w(TAG, accountType + earliest.toString(" MMMM yyyy") + ", balance = " + balance);
+
+            earliest = earliest.plusMonths(1);
+        }
 
         return values;
     }

@@ -874,6 +874,26 @@ public class AccountsDbAdapter extends DatabaseAdapter {
     }
 
     /**
+     * Returns the absolute balance of account list within the specified time range while taking sub-accounts
+     * into consideration. The default currency takes as base currency.
+     * @param accountUIDList list of account UIDs
+     * @param startTimestamp the start timestamp of the time range
+     * @param endTimestamp the end timestamp of the time range
+     * @return the absolute balance of account list
+     */
+    public Money getAccountsBalance(List<String> accountUIDList, long startTimestamp, long endTimestamp) {
+        String currencyCode = GnuCashApplication.getDefaultCurrency();
+        Money balance = Money.createZeroInstance(currencyCode);
+
+        SplitsDbAdapter splitsDbAdapter = SplitsDbAdapter.getInstance();
+        Money splitSum = (startTimestamp == -1 && endTimestamp == -1)
+                ? splitsDbAdapter.computeSplitBalance(accountUIDList, currencyCode, true)
+                : splitsDbAdapter.computeSplitBalance(accountUIDList, currencyCode, true, startTimestamp, endTimestamp);
+
+        return balance.add(splitSum).absolute();
+    }
+
+    /**
      * Retrieve all descendant accounts of an account
      * Note, in filtering, once an account is filtered out, all its descendants
      * will also be filtered out, even they don't meet the filter where
