@@ -40,6 +40,11 @@ public class LineChartActivity extends PassLockActivity implements OnChartValueS
     private static final String TAG = "LineChartActivity";
     private static final String X_AXIS_PATTERN = "MMM YY";
 
+    private static final int[] COLORS = {
+            Color.parseColor("#68F1AF"), Color.parseColor("#cc1f09"), Color.parseColor("#EE8600"),
+            Color.parseColor("#1469EB"), Color.parseColor("#B304AD"),
+    };
+
     private LineChart mChart;
     private AccountsDbAdapter mAccountsDbAdapter;
     private Map<AccountType, Long> mEarliestTimestampsMap = new HashMap<AccountType, Long>();
@@ -75,7 +80,37 @@ public class LineChartActivity extends PassLockActivity implements OnChartValueS
         mChart.invalidate();
     }
 
-    private ArrayList<Entry> setData(AccountType accountType) {
+    private void setData() {
+        //TODO comparing Joda dates with TIME!
+        List<AccountType> accountTypes = Arrays.asList(AccountType.INCOME, AccountType.EXPENSE);
+        setEarliestAndLatestTimestamps(accountTypes);
+
+        LocalDate startDate = new LocalDate(mEarliestTransactionTimestamp);
+        LocalDate endDate = new LocalDate(mLatestTransactionTimestamp);
+        ArrayList<String> xValues = new ArrayList<String>();
+        while (!startDate.isAfter(endDate)) {
+            xValues.add(startDate.toString(X_AXIS_PATTERN));
+            Log.d(TAG, "X axis " + startDate.toString("MM yy"));
+            startDate = startDate.plusMonths(1);
+        }
+
+        ArrayList<LineDataSet> dataSets = new ArrayList<LineDataSet>();
+        for (AccountType accountType : accountTypes) {
+            LineDataSet set = new LineDataSet(getEntryList(accountType), accountType.toString());
+            set.setDrawFilled(true);
+            set.setDrawCircles(true);
+            set.setLineWidth(2f);
+            set.setCircleSize(5f);
+            set.setColor(COLORS[dataSets.size()]);
+            set.setFillColor(COLORS[dataSets.size()]);
+
+            dataSets.add(set);
+        }
+
+        mChart.setData(new LineData(xValues, dataSets));
+    }
+
+    private ArrayList<Entry> getEntryList(AccountType accountType) {
         List<String> accountUIDList = new ArrayList<String>();
         for (Account account : mAccountsDbAdapter.getSimpleAccountList()) {
             if (account.getAccountType() == accountType && !account.isPlaceholderAccount()) {
@@ -85,66 +120,23 @@ public class LineChartActivity extends PassLockActivity implements OnChartValueS
 
         LocalDateTime earliest = new LocalDateTime(mEarliestTimestampsMap.get(accountType));
         LocalDateTime latest = new LocalDateTime(mLatestTimestampsMap.get(accountType));
-        Log.w(TAG, "START: " + earliest.toString("dd MM yyyy"));
-        Log.w(TAG, "END: " + latest.toString("dd MM yyyy"));
+        Log.d(TAG, "Earliest " + accountType + "date " + earliest.toString("dd MM yyyy"));
+        Log.d(TAG, "Latest " + accountType + "date " + latest.toString("dd MM yyyy"));
         int months = Months.monthsBetween(earliest.withDayOfMonth(1).withMillisOfDay(0),
                 latest.withDayOfMonth(1).withMillisOfDay(0)).getMonths();
 
         int offset = getXAxisOffset(accountType);
-        Log.w(TAG, "OFFSET OF " + accountType + " IS " + offset);
         ArrayList<Entry> values = new ArrayList<Entry>(months + 1);
         for (int i = 0; i < months + 1; i++) {
             long start = earliest.dayOfMonth().withMinimumValue().millisOfDay().withMinimumValue().toDate().getTime();
             long end = earliest.dayOfMonth().withMaximumValue().millisOfDay().withMaximumValue().toDate().getTime();
-
             float balance = (float) mAccountsDbAdapter.getAccountsBalance(accountUIDList, start, end).asDouble();
             values.add(new Entry(balance, i + offset));
-
-            Log.w(TAG, accountType + earliest.toString(" MMMM yyyy") + ", balance = " + balance);
-
+            Log.d(TAG, accountType + earliest.toString(" MMM yyyy") + ", balance = " + balance);
             earliest = earliest.plusMonths(1);
         }
 
         return values;
-    }
-
-    private void setData() {
-        //TODO comparing Joda dates with TIME!
-
-        setEarliestAndLatestTimestamps(Arrays.asList(AccountType.INCOME, AccountType.EXPENSE));
-
-        LocalDate startDate = new LocalDate(mEarliestTransactionTimestamp);
-        LocalDate endDate = new LocalDate(mLatestTransactionTimestamp);
-        ArrayList<String> xValues = new ArrayList<String>();
-        while (!startDate.isAfter(endDate)) {
-            xValues.add(startDate.toString(X_AXIS_PATTERN));
-            Log.w(TAG, "xValues " + startDate.toString("MM yy"));
-            startDate = startDate.plusMonths(1);
-        }
-
-        LineDataSet set1 = new LineDataSet(setData(AccountType.INCOME), AccountType.INCOME.toString());
-        set1.setDrawFilled(true);
-        set1.setDrawCircles(true);
-        set1.setLineWidth(2f);
-        set1.setCircleSize(5f);
-        set1.setColor(Color.rgb(104, 241, 175));
-        set1.setFillColor(getResources().getColor(R.color.account_green));
-
-        LineDataSet set2 = new LineDataSet(setData(AccountType.EXPENSE), AccountType.EXPENSE.toString());
-        set2.setDrawFilled(true);
-        set2.setDrawCircles(true);
-        set2.setLineWidth(2f);
-        set2.setCircleSize(5f);
-        set2.setColor(Color.RED);
-        set2.setFillColor(getResources().getColor(R.color.account_red));
-
-        ArrayList<LineDataSet> dataSets = new ArrayList<LineDataSet>();
-        dataSets.add(set1);
-        dataSets.add(set2);
-
-        LineData data = new LineData(xValues, dataSets);
-
-        mChart.setData(data);
     }
 
     private void setEarliestAndLatestTimestamps(List<AccountType> accountTypeList) {
