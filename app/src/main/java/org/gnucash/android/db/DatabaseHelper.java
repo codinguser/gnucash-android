@@ -88,10 +88,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			+ TransactionEntry.COLUMN_NOTES         + " text, "
 			+ TransactionEntry.COLUMN_TIMESTAMP     + " integer not null, "
 			+ TransactionEntry.COLUMN_EXPORTED      + " tinyint default 0, "
+			+ TransactionEntry.COLUMN_TEMPLATE      + " tinyint default 0, "
             + TransactionEntry.COLUMN_CURRENCY      + " varchar(255) not null, "
-            + TransactionEntry.COLUMN_RECURRENCE_PERIOD + " integer default 0, "
-            + TransactionEntry.COLUMN_CREATED_AT       + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
-            + TransactionEntry.COLUMN_MODIFIED_AT      + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP "
+            + TransactionEntry.COLUMN_CREATED_AT    + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
+            + TransactionEntry.COLUMN_MODIFIED_AT   + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP "
 			+ ");" + createUpdatedAtTrigger(TransactionEntry.TABLE_NAME);
 
     /**
@@ -358,6 +358,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 Log.i(LOG_TAG, "Upgrading database to version 8");
                 //TODO: consider just backing up, recreating database and reimporting
                 //FIXME: We really need to do this because the ON DELETE CASCADE constraint does not exist on older db versions
+
                 //TODO: Also, we need to go through db and add second split with imbalance account wherever only one split exists.
 
                 Log.i(LOG_TAG, "Adding hidden flag to accounts table");
@@ -371,9 +372,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 MigrationHelper.createUpdatedAndModifiedColumns(db, SplitEntry.TABLE_NAME);
 
                 Log.i(LOG_TAG, "Creating scheduled events table");
-                db.execSQL(SCHEDULED_EVENTS_TABLE_CREATE);
+                db.execSQL(SCHEDULED_EVENTS_TABLE_CREATE); //TODO: Use the actual SQL statements
                 //TODO: Migrate existing scheduled transactions (cancel pending intents)
 
+                //TODO: Migrate old scheduled events using only SQL, code had changed
                 GnuCashApplication.startScheduledEventExecutionService(GnuCashApplication.getAppContext());
 
 

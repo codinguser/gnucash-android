@@ -226,8 +226,7 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
         for (Currency currency : currencies) {
             String uid = accountsDbAdapter.getImbalanceAccountUID(currency);
             if (uid != null){
-                accountsDbAdapter.updateRecord(DatabaseSchema.AccountEntry.TABLE_NAME,
-                        uid, DatabaseSchema.AccountEntry.COLUMN_HIDDEN, isHidden);
+                accountsDbAdapter.updateRecord(uid, DatabaseSchema.AccountEntry.COLUMN_HIDDEN, isHidden);
             }
         }
     }

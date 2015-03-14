@@ -112,24 +112,24 @@ public class ScheduledEventDbAdapter extends DatabaseAdapter {
     }
 
     /**
-     * Returns an instance of {@link org.gnucash.android.model.ScheduledEvent} from the database record
+     * Returns all {@link org.gnucash.android.model.ScheduledEvent}s from the database with the specified event UID
      * @param eventUID GUID of the event itself
-     * @return ScheduledEvent object instance
+     * @return List of ScheduledEvents
      */
-    public ScheduledEvent getScheduledEventWithUID(@NonNull String eventUID){
+    public List<ScheduledEvent> getScheduledEventsWithUID(@NonNull String eventUID){
         Cursor cursor = mDb.query(ScheduledEventEntry.TABLE_NAME, null,
                 ScheduledEventEntry.COLUMN_EVENT_UID + "= ?",
                 new String[]{eventUID}, null, null, null);
 
-        ScheduledEvent scheduledEvent = null;
+        List<ScheduledEvent> scheduledEvents = new ArrayList<ScheduledEvent>();
         try {
-            if (cursor.moveToFirst()) {
-                scheduledEvent = buildScheduledEventInstance(cursor);
+            while (cursor.moveToNext()) {
+                scheduledEvents.add(buildScheduledEventInstance(cursor));
             }
         } finally {
             cursor.close();
         }
-        return scheduledEvent;
+        return scheduledEvents;
     }
 
     /**

@@ -18,10 +18,8 @@ package org.gnucash.android.model;
 
 import android.content.Intent;
 
-import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.export.ofx.OfxHelper;
-import org.gnucash.android.export.xml.GncXmlHelper;
 import org.gnucash.android.model.Account.OfxAccountType;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -44,18 +42,21 @@ public class Transaction extends BaseModel{
 
 	/**
 	 * Key for passing the account unique Identifier as an argument through an {@link Intent}
+     * @deprecated use {@link Split}s instead
 	 */
     @Deprecated
 	public static final String EXTRA_ACCOUNT_UID 	= "org.gnucash.android.extra.account_uid";
 
 	/**
 	 * Key for specifying the double entry account
+     * @deprecated use {@link Split}s instead
 	 */
     @Deprecated
 	public static final String EXTRA_DOUBLE_ACCOUNT_UID = "org.gnucash.android.extra.double_account_uid";
 
 	/**
 	 * Key for identifying the amount of the transaction through an Intent
+     * @deprecated use {@link Split}s instead
 	 */
     @Deprecated
 	public static final String EXTRA_AMOUNT 		= "org.gnucash.android.extra.amount";
@@ -63,6 +64,7 @@ public class Transaction extends BaseModel{
     /**
      * Extra key for the transaction type.
      * This value should typically be set by calling {@link TransactionType#name()}
+     * @deprecated use {@link Split}s instead
      */
     @Deprecated
     public static final String EXTRA_TRANSACTION_TYPE = "org.gnucash.android.extra.transaction_type";
@@ -106,11 +108,9 @@ public class Transaction extends BaseModel{
 	private long mTimestamp;
 
     /**
-     * Recurrence period of this transaction.
-     * <p>If this value is set then it means this transaction is a template which will be used to
-     * create a transaction every turn of the recurrence period</p>
+     * Flag indicating that this transaction is a template
      */
-    private long mRecurrencePeriod = 0;
+    private int mIsTemplate = 0;
 
 	/**
 	 * Overloaded constructor. Creates a new transaction instance with the
@@ -126,7 +126,8 @@ public class Transaction extends BaseModel{
      * Copy constructor.
      * Creates a new transaction object which is a clone of the parameter.
      * <p><b>Note:</b> The unique ID of the transaction is not cloned if the parameter <code>generateNewUID</code>,
-     * is set to false. Otherwise, a new one is generated.</p>
+     * is set to false. Otherwise, a new one is generated.<br/>
+     * The export flag and the template flag are not copied from the old transaction to the new.</p>
      * @param transaction Transaction to be cloned
      * @param generateNewUID Flag to determine if new UID should be assigned or not
      */
@@ -136,7 +137,6 @@ public class Transaction extends BaseModel{
         setNote(transaction.getNote());
         setTime(transaction.getTimeMillis());
         mCurrencyCode = transaction.mCurrencyCode;
-        mRecurrencePeriod = transaction.mRecurrencePeriod;
         //exported flag is left at default value of false
 
         for (Split split : transaction.mSplitList) {
@@ -396,19 +396,19 @@ public class Transaction extends BaseModel{
 	}
 
     /**
-     * Returns the recurrence period for this transaction
-     * @return Recurrence period for this transaction in milliseconds
+     * Returns {@code true} if this transaction is a template, {@code false} otherwise
+     * @return {@code true} if this transaction is a template, {@code false} otherwise
      */
-    public long getRecurrencePeriod() {
-        return mRecurrencePeriod;
+    public boolean isTemplate(){
+        return mIsTemplate == 1;
     }
 
     /**
-     * Sets the recurrence period for this transaction
-     * @param recurrenceId Recurrence period in milliseconds
+     * Sets flag indicating whether this transaction is a template or not
+     * @param isTemplate Flag indicating if transaction is a template or not
      */
-    public void setRecurrencePeriod(long recurrenceId) {
-        this.mRecurrencePeriod = recurrenceId;
+    public void setTemplate(boolean isTemplate){
+        mIsExported = isTemplate ? 1 : 0;
     }
 
     /**
@@ -483,71 +483,6 @@ public class Transaction extends BaseModel{
 
         return transactionNode;
 	}
-
-    /**
-     * Generate the GncXML for the transaction and append to the DOM document
-     * @param doc XML document to which transaction should be added
-     * @param rootElement Parent node for the XML
-     * @deprecated Use the {@link org.gnucash.android.export.xml.GncXmlExporter} to generate XML
-     */
-    public void toGncXml(Document doc, Element rootElement) {
-        Element idNode = doc.createElement(GncXmlHelper.TAG_TRX_ID);
-        idNode.setAttribute(GncXmlHelper.ATTR_KEY_TYPE, GncXmlHelper.ATTR_VALUE_GUID);
-        idNode.appendChild(doc.createTextNode(mUID));
-
-        Element currencyNode = doc.createElement(GncXmlHelper.TAG_TRX_CURRENCY);
-        Element cmdtySpacenode = doc.createElement(GncXmlHelper.TAG_COMMODITY_SPACE);
-        cmdtySpacenode.appendChild(doc.createTextNode("ISO4217"));
-        currencyNode.appendChild(cmdtySpacenode);
-        Element cmdtyIdNode = doc.createElement(GncXmlHelper.TAG_COMMODITY_ID);
-        cmdtyIdNode.appendChild(doc.createTextNode(mCurrencyCode));
-        currencyNode.appendChild(cmdtyIdNode);
-
-        Element datePostedNode = doc.createElement(GncXmlHelper.TAG_DATE_POSTED);
-        Element datePNode = doc.createElement(GncXmlHelper.TAG_DATE);
-        datePNode.appendChild(doc.createTextNode(GncXmlHelper.formatDate(mTimestamp)));
-        datePostedNode.appendChild(datePNode);
-
-        Element dateEneteredNode = doc.createElement(GncXmlHelper.TAG_DATE_ENTERED);
-        Element dateENode = doc.createElement(GncXmlHelper.TAG_DATE);
-        dateENode.appendChild(doc.createTextNode(GncXmlHelper.formatDate(mTimestamp)));
-        dateEneteredNode.appendChild(dateENode);
-
-        Element descriptionNode = doc.createElement(GncXmlHelper.TAG_TRN_DESCRIPTION);
-        if (mDescription != null) {
-            descriptionNode.appendChild(doc.createTextNode(mDescription));
-        }
-
-        Element trnSlotsNode = doc.createElement(GncXmlHelper.TAG_TRN_SLOTS);
-        if (mNotes != null && mNotes.length() > 0) {
-            trnSlotsNode.appendChild(GncXmlHelper.createSlot(doc, GncXmlHelper.KEY_NOTES, mNotes, GncXmlHelper.ATTR_VALUE_STRING));
-            //TODO: Consider adding future transactions date as slot here too
-        }
-        Element trnSplits = doc.createElement(GncXmlHelper.TAG_TRN_SPLITS);
-        for (Split split : mSplitList) {
-            split.toGncXml(doc, trnSplits);
-        }
-
-        Element transactionNode = doc.createElement(GncXmlHelper.TAG_TRANSACTION);
-        transactionNode.setAttribute(GncXmlHelper.ATTR_KEY_VERSION, GncXmlHelper.BOOK_VERSION);
-        transactionNode.appendChild(idNode);
-        transactionNode.appendChild(currencyNode);
-        transactionNode.appendChild(datePostedNode);
-        transactionNode.appendChild(dateEneteredNode);
-        transactionNode.appendChild(descriptionNode);
-        if (mNotes != null && mNotes.length() > 0){
-            transactionNode.appendChild(trnSlotsNode);
-        }
-        //TODO: Improve xml compatibilty with desktop for scheduled actions
-        if (mRecurrencePeriod != 0) {
-            Element recurrenceNode = doc.createElement(GncXmlHelper.TAG_RECURRENCE_PERIOD);
-            recurrenceNode.appendChild(doc.createTextNode(String.valueOf(mRecurrencePeriod)));
-            transactionNode.appendChild(recurrenceNode);
-        }
-        transactionNode.appendChild(trnSplits);
-
-        rootElement.appendChild(transactionNode);
-    }
 
     /**
      * Creates an Intent with arguments from the <code>transaction</code>.

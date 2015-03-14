@@ -88,6 +88,7 @@ public abstract class GncXmlHelper {
     public static final String TAG_SPLIT_QUANTITY   = "split:quantity";
 
     //TODO: Remove this in the future when scheduled transactions are improved
+    @Deprecated
     public static final String TAG_RECURRENCE_PERIOD = "trn:recurrence_period";
 
     public static final String BOOK_VERSION         = "2.0.0";

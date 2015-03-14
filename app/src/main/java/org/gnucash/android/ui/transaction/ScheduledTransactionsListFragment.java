@@ -110,11 +110,13 @@ public class ScheduledTransactionsListFragment extends SherlockListFragment impl
                         Log.i(TAG, "Cancelling scheduled transaction(s)");
                         String trnUID = mTransactionsDbAdapter.getUID(id);
                         ScheduledEventDbAdapter scheduledEventDbAdapter = GnuCashApplication.getScheduledEventDbAdapter();
-                        ScheduledEvent event = scheduledEventDbAdapter.getScheduledEventWithUID(trnUID);
+                        List<ScheduledEvent> events = scheduledEventDbAdapter.getScheduledEventsWithUID(trnUID);
 
                         if (mTransactionsDbAdapter.deleteRecord(id)){
                             Toast.makeText(getActivity(), R.string.toast_recurring_transaction_deleted, Toast.LENGTH_SHORT).show();
-                            scheduledEventDbAdapter.deleteRecord(event.getUID());
+                            for (ScheduledEvent event : events) {
+                                scheduledEventDbAdapter.deleteRecord(event.getUID());
+                            }
                         }
                     }
                     mode.finish();
@@ -409,11 +411,14 @@ public class ScheduledTransactionsListFragment extends SherlockListFragment impl
             TextView descriptionTextView = (TextView) view.findViewById(R.id.secondary_text);
 
             ScheduledEventDbAdapter scheduledEventDbAdapter = ScheduledEventDbAdapter.getInstance();
-            ScheduledEvent event = scheduledEventDbAdapter.getScheduledEventWithUID(transaction.getUID());
-            descriptionTextView.setText(event.getRepeatString());
+            List<ScheduledEvent> events = scheduledEventDbAdapter.getScheduledEventsWithUID(transaction.getUID());
+            StringBuilder repeatStringBuilder = new StringBuilder();
+            for (ScheduledEvent event : events) {
+                repeatStringBuilder.append(event.getRepeatString()).append("\n");
+            }
+            descriptionTextView.setText(repeatStringBuilder.toString());
 
         }
-
     }
 
     /**

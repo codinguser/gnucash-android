@@ -82,8 +82,8 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 		contentValues.put(TransactionEntry.COLUMN_TIMESTAMP,    transaction.getTimeMillis());
 		contentValues.put(TransactionEntry.COLUMN_NOTES,        transaction.getNote());
 		contentValues.put(TransactionEntry.COLUMN_EXPORTED,     transaction.isExported() ? 1 : 0);
+		contentValues.put(TransactionEntry.COLUMN_TEMPLATE,     transaction.isTemplate() ? 1 : 0);
         contentValues.put(TransactionEntry.COLUMN_CURRENCY,     transaction.getCurrencyCode());
-        contentValues.put(TransactionEntry.COLUMN_RECURRENCE_PERIOD, transaction.getRecurrencePeriod());
 
         Log.d(TAG, "Replacing transaction in db");
         long rowId = -1;
@@ -144,21 +144,21 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
                 + TransactionEntry.COLUMN_EXPORTED      + " , "
                 + TransactionEntry.COLUMN_CURRENCY      + " , "
                 + TransactionEntry.COLUMN_CREATED_AT    + " , "
-                + TransactionEntry.COLUMN_RECURRENCE_PERIOD + " ) VALUES ( ? , ? , ? , ?, ? , ? , ? , ?)");
+                + TransactionEntry.COLUMN_TEMPLATE + " ) VALUES ( ? , ? , ? , ?, ? , ? , ? , ?)");
             for (Transaction transaction : transactionList) {
-                if (transaction.getRecurrencePeriod() > 0) {
+                if (transaction.isTemplate()) { //TODO: Properly schedule transactions
                     scheduleTransaction(transaction);
                 }
                 //Log.d(TAG, "Replacing transaction in db");
                 replaceStatement.clearBindings();
-                replaceStatement.bindString(1, transaction.getUID());
+                replaceStatement.bindString(1,  transaction.getUID());
                 replaceStatement.bindString(2,  transaction.getDescription());
                 replaceStatement.bindString(3,  transaction.getNote());
-                replaceStatement.bindLong(4, transaction.getTimeMillis());
+                replaceStatement.bindLong(4,    transaction.getTimeMillis());
                 replaceStatement.bindLong(5,    transaction.isExported() ? 1 : 0);
-                replaceStatement.bindString(6, transaction.getCurrencyCode());
+                replaceStatement.bindString(6,  transaction.getCurrencyCode());
                 replaceStatement.bindString(7,  transaction.getCreatedTimestamp().toString());
-                replaceStatement.bindLong(8,    transaction.getRecurrencePeriod());
+                replaceStatement.bindLong(8,    transaction.isTemplate() ? 1 : 0);
                 replaceStatement.execute();
                 rowInserted ++;
                 splitList.addAll(transaction.getSplits());
@@ -184,28 +184,6 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
         }
         return rowInserted;
     }
-
-    /**
-	 * Fetch a transaction from the database which has a unique ID <code>uid</code>
-	 * @param uid Unique Identifier of transaction to be retrieved
-	 * @return Database row ID of transaction with UID <code>uid</code>
-	 */
-	public long fetchTransactionWithUID(String uid){
-		Cursor cursor = mDb.query(TransactionEntry.TABLE_NAME,
-				new String[] {TransactionEntry._ID},
-                TransactionEntry.COLUMN_UID + " = ?",
-				new String[]{uid}, null, null, null);
-		long result = -1;
-		try {
-            if (cursor.moveToFirst()) {
-                Log.d(TAG, "Transaction already exists. Returning existing id");
-                result = cursor.getLong(cursor.getColumnIndexOrThrow(TransactionEntry._ID)); //0 because only one row was requested
-            }
-        } finally {
-            cursor.close();
-        }
-		return result;
-	}
 
 	/**
 	 * Retrieves a transaction object from a database with database ID <code>rowId</code>
@@ -239,7 +217,7 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
             return mDb.query(TransactionEntry.TABLE_NAME, null,
                     "((" + SplitEntry.COLUMN_ACCOUNT_UID + " = '" + accountUID + "') "
                             + "OR (" + DatabaseHelper.KEY_DOUBLE_ENTRY_ACCOUNT_UID + " = '" + accountUID + "' ))"
-                            + " AND " + TransactionEntry.COLUMN_RECURRENCE_PERIOD + " = 0",
+                            + " AND " + TransactionEntry.COLUMN_TEMPLATE + " = 0",
                     null, null, null, TransactionEntry.COLUMN_TIMESTAMP + " DESC");
         } else {
             SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
@@ -250,7 +228,7 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
             queryBuilder.setDistinct(true);
             String[] projectionIn = new String[]{TransactionEntry.TABLE_NAME + ".*"};
             String selection = SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_ACCOUNT_UID + " = ?"
-                    + " AND " + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_RECURRENCE_PERIOD + " = 0";
+                    + " AND " + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_TEMPLATE + " = 0";
             String[] selectionArgs = new String[]{accountUID};
             String sortOrder = TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_TIMESTAMP + " DESC";
 
@@ -271,6 +249,7 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 
         String[] projectionIn = new String[]{TransactionEntry.TABLE_NAME + ".*"};
         String sortOrder = TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_DESCRIPTION + " ASC";
+        queryBuilder.setDistinct(true);
 
         return queryBuilder.query(mDb, projectionIn, null, null, null, null, sortOrder);
     }
@@ -354,7 +333,7 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
      */
     public int getTotalTransactionsCount() {
         String queryCount = "SELECT COUNT(*) FROM " + TransactionEntry.TABLE_NAME +
-                " WHERE " + TransactionEntry.COLUMN_RECURRENCE_PERIOD + " =0";
+                " WHERE " + TransactionEntry.COLUMN_TEMPLATE + " =0";
         Cursor cursor = mDb.rawQuery(queryCount, null);
         try {
             cursor.moveToFirst();
@@ -378,9 +357,7 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 		transaction.setTime(c.getLong(c.getColumnIndexOrThrow(TransactionEntry.COLUMN_TIMESTAMP)));
 		transaction.setNote(c.getString(c.getColumnIndexOrThrow(TransactionEntry.COLUMN_NOTES)));
 		transaction.setExported(c.getInt(c.getColumnIndexOrThrow(TransactionEntry.COLUMN_EXPORTED)) == 1);
-
-        long recurrencePeriod = c.getLong(c.getColumnIndexOrThrow(TransactionEntry.COLUMN_RECURRENCE_PERIOD));
-        transaction.setRecurrencePeriod(recurrencePeriod);
+		transaction.setTemplate(c.getInt(c.getColumnIndexOrThrow(TransactionEntry.COLUMN_TEMPLATE)) == 1);
 
         if (mDb.getVersion() < SPLITS_DB_VERSION){ //legacy, will be used once, when migrating the database
             String accountUID = c.getString(c.getColumnIndexOrThrow(SplitEntry.COLUMN_ACCOUNT_UID));
@@ -433,6 +410,7 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
         return Transaction.computeBalance(accountUID, splitList);
     }
 
+    //TODO: When "on delete cascade" is successfully migrated, we can remove this method and use the base implementation
 	/**
 	 * Deletes transaction record with id <code>rowId</code> and all it's splits
 	 * @param rowId Long database record id
@@ -538,15 +516,12 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
      * @param recurringTransaction Transaction which is to be recurring
      */
     public void scheduleTransaction(Transaction recurringTransaction) {
-        long recurrencePeriodMillis = recurringTransaction.getRecurrencePeriod();
+        long recurrencePeriodMillis = System.currentTimeMillis(); //recurringTransaction.getRecurrencePeriod();
         long firstRunMillis = System.currentTimeMillis() + recurrencePeriodMillis;
         long recurringTransactionId = addTransaction(recurringTransaction);
 
-        PendingIntent recurringPendingIntent = PendingIntent.getBroadcast(GnuCashApplication.getAppContext(),
-                (int)recurringTransactionId, Transaction.createIntent(recurringTransaction), PendingIntent.FLAG_UPDATE_CURRENT);
-        AlarmManager alarmManager = (AlarmManager) GnuCashApplication.getAppContext().getSystemService(Context.ALARM_SERVICE);
-        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, firstRunMillis,
-                recurrencePeriodMillis, recurringPendingIntent);
+
+        //TODO: Properly create ScheduledEvent
     }
 
     /**

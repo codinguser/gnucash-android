@@ -28,7 +28,7 @@ public class DatabaseSchema {
      * Database version.
      * With any change to the database schema, this number must increase
      */
-    static final int DATABASE_VERSION = 7;
+    static final int DATABASE_VERSION = 7; //TODO: Upgrade database version when migration code is complete
 
     /**
      * Database version where Splits were introduced
@@ -78,6 +78,10 @@ public class DatabaseSchema {
         public static final String COLUMN_CURRENCY              = "currency_code";
         public static final String COLUMN_TIMESTAMP             = "timestamp";
         public static final String COLUMN_EXPORTED              = "is_exported";
+        public static final String COLUMN_TEMPLATE              = "is_template";
+
+        //TODO: find all recurrences and fix
+        @Deprecated
         public static final String COLUMN_RECURRENCE_PERIOD     = "recurrence_period";
 
         public static final String INDEX_UID                    = "transaction_uid_index";

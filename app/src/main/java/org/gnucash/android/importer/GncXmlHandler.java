@@ -292,7 +292,7 @@ public class GncXmlHandler extends DefaultHandler {
             mTransaction.setDescription(characterString);
         }
         else if (qualifiedName.equalsIgnoreCase(GncXmlHelper.TAG_DATE)){
-            try {
+            try { //TODO: Use the created_at and modified_at dates in the xml
                 if (mIsDatePosted && mTransaction != null) {
                     mTransaction.setTime(GncXmlHelper.parseDate(characterString));
                     mIsDatePosted = false;
@@ -303,7 +303,8 @@ public class GncXmlHandler extends DefaultHandler {
             }
         }
         else if (qualifiedName.equalsIgnoreCase(GncXmlHelper.TAG_RECURRENCE_PERIOD)){
-            mTransaction.setRecurrencePeriod(Long.parseLong(characterString));
+            mTransaction.setTemplate(Long.parseLong(characterString) > 0);
+            //TODO: Remove this and properly parse recurrence events
         }
         else if (qualifiedName.equalsIgnoreCase(GncXmlHelper.TAG_SPLIT_ID)){
             mSplit.setUID(characterString);
@@ -327,7 +328,7 @@ public class GncXmlHandler extends DefaultHandler {
                 mTransactionList.add(mTransaction);
             }
             else {
-                if (mTransaction.getRecurrencePeriod() > 0) { //TODO: Fix this when scheduled actions are expanded
+                if (mTransaction.isTemplate()) { //TODO: Fix this when scheduled actions are expanded
                     mTransactionsDbAdapter.scheduleTransaction(mTransaction);
                     mTransactionsDbAdapter.addTransaction(mTransaction);
                 } else {

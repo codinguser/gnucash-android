@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012 - 2014 Ngewi Fet <ngewif@gmail.com>
+ * Copyright (c) 2012 - 2015 Ngewi Fet <ngewif@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -84,8 +84,8 @@ public abstract class DatabaseAdapter {
                         + TransactionEntry.TABLE_NAME + "_" + TransactionEntry.COLUMN_TIMESTAMP + " , "
                         + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_EXPORTED + " AS "
                         + TransactionEntry.TABLE_NAME + "_" + TransactionEntry.COLUMN_EXPORTED + " , "
-                        + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_RECURRENCE_PERIOD + " AS "
-                        + TransactionEntry.TABLE_NAME + "_" + TransactionEntry.COLUMN_RECURRENCE_PERIOD + " , "
+                        + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_TEMPLATE + " AS "
+                        + TransactionEntry.TABLE_NAME + "_" + TransactionEntry.COLUMN_TEMPLATE + " , "
                         + SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_UID + " AS "
                         + SplitEntry.TABLE_NAME + "_" + SplitEntry.COLUMN_UID + " , "
                         + SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_TYPE + " AS "
@@ -335,7 +335,7 @@ public abstract class DatabaseAdapter {
      * @param newValue  New value to be assigned to the columnKey
      * @return Number of records affected
      */
-    public int updateRecord(String tableName, long recordId, String columnKey, String newValue) {
+    protected int updateRecord(String tableName, long recordId, String columnKey, String newValue) {
         ContentValues contentValues = new ContentValues();
         if (newValue == null) {
             contentValues.putNull(columnKey);
@@ -353,14 +353,14 @@ public abstract class DatabaseAdapter {
      * @param newValue  New value to be assigned to the columnKey
      * @return Number of records affected
      */
-    public int updateRecord(@NonNull String tableName, @NonNull String uid, String columnKey, String newValue) {
+    public int updateRecord(@NonNull String uid, @NonNull String columnKey, String newValue) {
         ContentValues contentValues = new ContentValues();
         if (newValue == null) {
             contentValues.putNull(columnKey);
         } else {
             contentValues.put(columnKey, newValue);
         }
-        return mDb.update(tableName, contentValues,
+        return mDb.update(mTableName, contentValues,
                 CommonColumns.COLUMN_UID + "= ?", new String[]{uid});
     }
 

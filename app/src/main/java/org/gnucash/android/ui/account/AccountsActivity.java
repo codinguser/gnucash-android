@@ -266,12 +266,17 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
         setTab(index);
     }
 
+    /**
+     * Sets the current tab in the ViewPager
+     * @param index Index of fragment to be loaded
+     */
     public void setTab(int index){
         mPager.setCurrentItem(index);
     }
 
     /**
-     * Loads default setting for currency and performs app first-run initialization
+     * Loads default setting for currency and performs app first-run initialization.
+     * <p>Also handles displaying the What's New dialog</p>
      */
     private void init() {
         PreferenceManager.setDefaultValues(this, R.xml.fragment_transaction_preferences, false);
@@ -283,21 +288,20 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
         if (firstRun){
             showFirstRunDialog();
             //default to using double entry and save the preference explicitly
-            prefs.edit().putBoolean(getString(R.string.key_use_double_entry), true).commit();
-
+            prefs.edit().putBoolean(getString(R.string.key_use_double_entry), true).apply();
         }
 
         if (hasNewFeatures()){
             showWhatsNewDialog(this);
+            GnuCashApplication.startScheduledEventExecutionService(this);
         }
-
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-        preferences.edit().putInt(LAST_OPEN_TAB_INDEX, mPager.getCurrentItem()).commit();
+        preferences.edit().putInt(LAST_OPEN_TAB_INDEX, mPager.getCurrentItem()).apply();
     }
 
     /**
@@ -315,7 +319,7 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
         if (currentMinor > previousMinor){
             Editor editor = prefs.edit();
             editor.putInt(getString(R.string.key_previous_minor_version), currentMinor);
-            editor.commit();
+            editor.apply();
             return true;
         }
         return false;

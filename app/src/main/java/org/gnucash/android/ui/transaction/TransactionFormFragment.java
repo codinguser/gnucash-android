@@ -674,21 +674,20 @@ public class TransactionFormFragment extends SherlockFragment implements
      */
     private void scheduleRecurringTransaction() {
         List<ScheduledEvent> events = RecurrenceParser.parse(mEventRecurrence, ScheduledEvent.EventType.TRANSACTION);
+
+        if (events.size() == 0) //there are no scheduled events detected
+            return;
+
         Transaction recurringTransaction;
-        if (mTransaction.getRecurrencePeriod() > 0) //if we are editing the recurring transaction itself...
-            recurringTransaction = mTransaction;
-        else {
-            recurringTransaction = new Transaction(mTransaction, true);
-            mTransactionsDbAdapter.addTransaction(recurringTransaction);
-            //value does not matter, just should be > 0 to mark as a recurring transaction
-            recurringTransaction.setRecurrencePeriod(RecurrenceParser.DAY_MILLIS);
-        }
+        //creating a new recurring transaction
+        recurringTransaction = new Transaction(mTransaction, true);
+        recurringTransaction.setTemplate(true);
         mTransactionsDbAdapter.addTransaction(recurringTransaction);
 
         ScheduledEventDbAdapter scheduledEventDbAdapter = GnuCashApplication.getScheduledEventDbAdapter();
-
         for (ScheduledEvent event : events) {
             event.setEventUID(recurringTransaction.getUID());
+            event.setLastRun(System.currentTimeMillis());
             scheduledEventDbAdapter.addScheduledEvent(event);
 
             Log.i("TransactionFormFragment", event.toString());

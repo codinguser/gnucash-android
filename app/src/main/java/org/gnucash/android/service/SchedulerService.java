@@ -23,6 +23,7 @@ import android.os.SystemClock;
 import android.util.Log;
 
 import org.gnucash.android.app.GnuCashApplication;
+import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.db.ScheduledEventDbAdapter;
 import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.export.ExportParams;
@@ -30,11 +31,16 @@ import org.gnucash.android.export.ExporterAsyncTask;
 import org.gnucash.android.model.ScheduledEvent;
 import org.gnucash.android.model.Transaction;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 /**
- * Service for running scheduled events
+ * Service for running scheduled events.
+ * <p>The service is started and goes through all scheduled event entries in the the database and executes them.
+ * Then it is stopped until the next time it is run. <br>
+ * Scheduled runs of the service should be achieved using an {@link android.app.AlarmManager}</p>
  * @author Ngewi Fet <ngewif@gmail.com>
  */
 public class SchedulerService extends IntentService {
@@ -46,7 +52,7 @@ public class SchedulerService extends IntentService {
      *
      */
     public SchedulerService() {
-        super("SchedulerService");
+        super(LOG_TAG);
     }
 
     @Override
@@ -65,8 +71,8 @@ public class SchedulerService extends IntentService {
             long endTime    = scheduledEvent.getEndTime();
 
             long now = System.currentTimeMillis();
-            //if we did not exceed the endtime, and one execution period has passed since last run
-            if (endTime > 0 && now < endTime && (lastRun + period) < now ){
+            //if we did not exceed the endtime (if there is one), and one execution period has passed since last run
+            if (((endTime > 0 && now < endTime) || endTime == 0) && (lastRun + period) < now ){
                 executeScheduledEvent(scheduledEvent);
             }
         }
@@ -99,13 +105,21 @@ public class SchedulerService extends IntentService {
                 } catch (InterruptedException e) {
                     //TODO: Create special log for scheduler service
                     Log.e(LOG_TAG, e.getMessage());
+                    return; //return immediately, do not update last run time of event
                 } catch (ExecutionException e) {
                     //TODO: Log to crashlytics
                     e.printStackTrace();
                     Log.e(LOG_TAG, e.getMessage());
+                    return; //return immediately, do not update last run time of event
                 }
                 break;
         }
 
+        //update last run time
+        ScheduledEventDbAdapter.getInstance().updateRecord(
+                scheduledEvent.getUID(),
+                DatabaseSchema.ScheduledEventEntry.COLUMN_LAST_RUN,
+                Long.toString(System.currentTimeMillis())
+        );
     }
 }

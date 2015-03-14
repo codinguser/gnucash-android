@@ -109,38 +109,6 @@ public class MigrationHelper {
     }
 
     /**
-     * Exports the database to a GnuCash XML file and returns the path to the file
-     * @return String with exported GnuCash XML
-     */
-    static String exportGnucashXML(SQLiteDatabase db) throws IOException {
-        Log.i(LOG_TAG, "Exporting database to GnuCash XML");
-        ExportParams exportParams = new ExportParams(ExportFormat.GNC_XML);
-        exportParams.setExportAllTransactions(true);
-        exportParams.setExportTarget(ExportParams.ExportTarget.SD_CARD);
-        exportParams.setDeleteTransactionsAfterExport(false);
-
-        new File(Environment.getExternalStorageDirectory() + "/gnucash/").mkdirs();
-        exportParams.setTargetFilepath(Environment.getExternalStorageDirectory()
-                + "/gnucash/" + Exporter.buildExportFilename(ExportFormat.GNC_XML));
-
-        //we do not use the ExporterAsyncTask here because we want to use an already open db
-        GncXmlExporter exporter = new GncXmlExporter(exportParams, db);
-        BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(
-                new FileOutputStream(exportParams.getTargetFilepath()), "UTF-8"));
-        try {
-            String xml = exporter.generateXML();
-            writer.write(xml);
-        } catch (ParserConfigurationException e) {
-            e.printStackTrace();
-        } finally {
-            writer.flush();
-            writer.close();
-        }
-
-        return exportParams.getTargetFilepath();
-    }
-
-    /**
      * Imports GnuCash XML into the database from file
      * @param filepath Path to GnuCash XML file
      */

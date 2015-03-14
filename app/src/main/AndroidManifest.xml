@@ -20,7 +20,7 @@
     android:versionCode="48"
     android:versionName="@string/app_version_name" >
 
-    <uses-sdk android:minSdkVersion="9" android:targetSdkVersion="18"/>
+    <uses-sdk android:minSdkVersion="9" android:targetSdkVersion="19"/>
     
     <permission-group 
         android:name="org.gnucash.android.permission.group.GNUCASH"
