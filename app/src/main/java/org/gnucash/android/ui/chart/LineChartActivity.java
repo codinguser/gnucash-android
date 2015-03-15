@@ -81,12 +81,11 @@ public class LineChartActivity extends PassLockActivity implements OnChartValueS
     }
 
     private void setData() {
-        //TODO comparing Joda dates with TIME!
         List<AccountType> accountTypes = Arrays.asList(AccountType.INCOME, AccountType.EXPENSE);
         setEarliestAndLatestTimestamps(accountTypes);
 
-        LocalDate startDate = new LocalDate(mEarliestTransactionTimestamp);
-        LocalDate endDate = new LocalDate(mLatestTransactionTimestamp);
+        LocalDate startDate = new LocalDate(mEarliestTransactionTimestamp).withDayOfMonth(1);
+        LocalDate endDate = new LocalDate(mLatestTransactionTimestamp).withDayOfMonth(1);
         ArrayList<String> xValues = new ArrayList<String>();
         while (!startDate.isAfter(endDate)) {
             xValues.add(startDate.toString(X_AXIS_PATTERN));
