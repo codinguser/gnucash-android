@@ -27,9 +27,9 @@ import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.model.AccountType;
 
 import static org.gnucash.android.db.DatabaseSchema.AccountEntry;
+import static org.gnucash.android.db.DatabaseSchema.ScheduledActionEntry;
 import static org.gnucash.android.db.DatabaseSchema.SplitEntry;
 import static org.gnucash.android.db.DatabaseSchema.TransactionEntry;
-import static org.gnucash.android.db.DatabaseSchema.ScheduledActionEntry;
 /**
  * Helper class for managing the SQLite database.
  * Creates the database and handles upgrades
@@ -113,7 +113,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String SCHEDULED_ACTIONS_TABLE_CREATE = "CREATE TABLE " + ScheduledActionEntry.TABLE_NAME + " ("
             + ScheduledActionEntry._ID                   + " integer primary key autoincrement, "
             + ScheduledActionEntry.COLUMN_UID            + " varchar(255) not null UNIQUE, "
-            + ScheduledActionEntry.COLUMN_EVENT_UID      + " varchar(255) not null, "
+            + ScheduledActionEntry.COLUMN_ACTION_UID + " varchar(255) not null, "
             + ScheduledActionEntry.COLUMN_TYPE           + " varchar(255) not null, "
             + ScheduledActionEntry.COLUMN_PERIOD         + " integer not null, "
             + ScheduledActionEntry.COLUMN_LAST_RUN       + " integer default 0, "

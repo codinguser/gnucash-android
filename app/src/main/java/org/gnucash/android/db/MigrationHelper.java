@@ -18,17 +18,12 @@ package org.gnucash.android.db;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.os.Environment;
 import android.util.Log;
-import org.gnucash.android.export.ExportFormat;
-import org.gnucash.android.export.ExportParams;
-import org.gnucash.android.export.Exporter;
-import org.gnucash.android.export.xml.GncXmlExporter;
+
 import org.gnucash.android.importer.GncXmlImporter;
 import org.gnucash.android.model.AccountType;
 
-import javax.xml.parsers.ParserConfigurationException;
-import java.io.*;
+import java.io.FileInputStream;
 
 import static org.gnucash.android.db.DatabaseSchema.AccountEntry;
 

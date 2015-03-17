@@ -16,18 +16,6 @@
 
 package org.gnucash.android.ui.widget;
 
-import java.util.Locale;
-
-import org.gnucash.android.R;
-import org.gnucash.android.app.GnuCashApplication;
-import org.gnucash.android.model.Account;
-import org.gnucash.android.model.Money;
-import org.gnucash.android.db.AccountsDbAdapter;
-import org.gnucash.android.receivers.TransactionAppWidgetProvider;
-import org.gnucash.android.ui.UxArgument;
-import org.gnucash.android.ui.account.AccountsActivity;
-import org.gnucash.android.ui.transaction.TransactionsActivity;
-
 import android.app.Activity;
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
@@ -46,7 +34,18 @@ import android.widget.Button;
 import android.widget.RemoteViews;
 import android.widget.Spinner;
 import android.widget.Toast;
+
+import org.gnucash.android.R;
+import org.gnucash.android.db.AccountsDbAdapter;
+import org.gnucash.android.model.Account;
+import org.gnucash.android.model.Money;
+import org.gnucash.android.receivers.TransactionAppWidgetProvider;
+import org.gnucash.android.ui.UxArgument;
+import org.gnucash.android.ui.account.AccountsActivity;
+import org.gnucash.android.ui.transaction.TransactionsActivity;
 import org.gnucash.android.util.QualifiedAccountNameCursorAdapter;
+
+import java.util.Locale;
 
 /**
  * Activity for configuration which account to display on a widget.

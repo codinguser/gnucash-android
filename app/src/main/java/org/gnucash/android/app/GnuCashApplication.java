@@ -25,8 +25,13 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.preference.PreferenceManager;
 import android.util.Log;
+
 import org.gnucash.android.R;
-import org.gnucash.android.db.*;
+import org.gnucash.android.db.AccountsDbAdapter;
+import org.gnucash.android.db.DatabaseHelper;
+import org.gnucash.android.db.ScheduledActionDbAdapter;
+import org.gnucash.android.db.SplitsDbAdapter;
+import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.service.SchedulerService;
 
 import java.util.Currency;

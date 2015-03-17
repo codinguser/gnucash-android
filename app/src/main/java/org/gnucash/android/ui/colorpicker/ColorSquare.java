@@ -20,6 +20,7 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.widget.QuickContactBadge;
+
 import org.gnucash.android.R;
 
 /**

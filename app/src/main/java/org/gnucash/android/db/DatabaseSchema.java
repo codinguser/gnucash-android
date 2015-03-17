@@ -107,7 +107,7 @@ public class DatabaseSchema {
         public static final String TABLE_NAME           = "scheduled_actions";
 
         public static final String COLUMN_TYPE          = "type";
-        public static final String COLUMN_EVENT_UID     = "action_uid";
+        public static final String COLUMN_ACTION_UID    = "action_uid";
         public static final String COLUMN_START_TIME    = "start_time";
         public static final String COLUMN_END_TIME      = "end_time";
         public static final String COLUMN_LAST_RUN      = "last_run";

@@ -19,8 +19,6 @@ package org.gnucash.android.export.qif;
 import android.content.ContentValues;
 import android.database.Cursor;
 
-import static org.gnucash.android.db.DatabaseSchema.*;
-
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.export.ExportParams;
@@ -30,6 +28,10 @@ import java.io.IOException;
 import java.io.Writer;
 import java.math.BigDecimal;
 import java.util.Currency;
+
+import static org.gnucash.android.db.DatabaseSchema.AccountEntry;
+import static org.gnucash.android.db.DatabaseSchema.SplitEntry;
+import static org.gnucash.android.db.DatabaseSchema.TransactionEntry;
 
 /**
  * Exports the accounts and transactions in the database to the QIF format

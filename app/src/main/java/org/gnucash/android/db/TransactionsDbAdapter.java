@@ -27,12 +27,21 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import org.gnucash.android.app.GnuCashApplication;
-import org.gnucash.android.model.*;
+import org.gnucash.android.model.AccountType;
+import org.gnucash.android.model.Money;
+import org.gnucash.android.model.Split;
+import org.gnucash.android.model.Transaction;
+import org.gnucash.android.model.TransactionType;
 
-import static org.gnucash.android.db.DatabaseSchema.*;
 import java.util.ArrayList;
 import java.util.Currency;
 import java.util.List;
+
+import static org.gnucash.android.db.DatabaseSchema.AccountEntry;
+import static org.gnucash.android.db.DatabaseSchema.SPLITS_DB_VERSION;
+import static org.gnucash.android.db.DatabaseSchema.ScheduledActionEntry;
+import static org.gnucash.android.db.DatabaseSchema.SplitEntry;
+import static org.gnucash.android.db.DatabaseSchema.TransactionEntry;
 
 /**
  * Manages persistence of {@link Transaction}s in the database
@@ -242,7 +251,7 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
         SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
         queryBuilder.setTables(TransactionEntry.TABLE_NAME + " INNER JOIN " + ScheduledActionEntry.TABLE_NAME + " ON "
                 + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_UID + " = "
-                + ScheduledActionEntry.TABLE_NAME + "." + ScheduledActionEntry.COLUMN_EVENT_UID);
+                + ScheduledActionEntry.TABLE_NAME + "." + ScheduledActionEntry.COLUMN_ACTION_UID);
 
         String[] projectionIn = new String[]{TransactionEntry.TABLE_NAME + ".*"};
         String sortOrder = TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_DESCRIPTION + " ASC";

@@ -16,32 +16,6 @@
 
 package org.gnucash.android.ui.transaction;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.util.*;
-
-import android.support.v4.app.FragmentManager;
-import android.text.format.Time;
-import android.text.Editable;
-import android.widget.*;
-import com.doomonafireball.betterpickers.recurrencepicker.EventRecurrence;
-import com.doomonafireball.betterpickers.recurrencepicker.EventRecurrenceFormatter;
-import com.doomonafireball.betterpickers.recurrencepicker.RecurrencePickerDialog;
-import org.gnucash.android.R;
-import org.gnucash.android.app.GnuCashApplication;
-import org.gnucash.android.db.*;
-import org.gnucash.android.model.*;
-import org.gnucash.android.ui.transaction.dialog.DatePickerDialogFragment;
-import org.gnucash.android.ui.transaction.dialog.SplitEditorDialogFragment;
-import org.gnucash.android.ui.transaction.dialog.TimePickerDialogFragment;
-import org.gnucash.android.ui.UxArgument;
-import org.gnucash.android.ui.util.AmountInputFormatter;
-import org.gnucash.android.ui.util.RecurrenceParser;
-import org.gnucash.android.ui.util.TransactionTypeToggleButton;
-import org.gnucash.android.ui.widget.WidgetConfigurationActivity;
-
 import android.app.DatePickerDialog;
 import android.app.DatePickerDialog.OnDateSetListener;
 import android.app.TimePickerDialog;
@@ -52,20 +26,70 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.SimpleCursorAdapter;
+import android.text.Editable;
+import android.text.format.Time;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
+import android.widget.AutoCompleteTextView;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.DatePicker;
+import android.widget.EditText;
+import android.widget.FilterQueryProvider;
+import android.widget.Spinner;
+import android.widget.TextView;
+import android.widget.TimePicker;
+import android.widget.Toast;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockFragment;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
+import com.doomonafireball.betterpickers.recurrencepicker.EventRecurrence;
+import com.doomonafireball.betterpickers.recurrencepicker.EventRecurrenceFormatter;
+import com.doomonafireball.betterpickers.recurrencepicker.RecurrencePickerDialog;
+
+import org.gnucash.android.R;
+import org.gnucash.android.app.GnuCashApplication;
+import org.gnucash.android.db.AccountsDbAdapter;
+import org.gnucash.android.db.DatabaseSchema;
+import org.gnucash.android.db.ScheduledActionDbAdapter;
+import org.gnucash.android.db.TransactionsDbAdapter;
+import org.gnucash.android.model.AccountType;
+import org.gnucash.android.model.Money;
+import org.gnucash.android.model.ScheduledAction;
+import org.gnucash.android.model.Split;
+import org.gnucash.android.model.Transaction;
+import org.gnucash.android.model.TransactionType;
+import org.gnucash.android.ui.UxArgument;
+import org.gnucash.android.ui.transaction.dialog.DatePickerDialogFragment;
+import org.gnucash.android.ui.transaction.dialog.SplitEditorDialogFragment;
+import org.gnucash.android.ui.transaction.dialog.TimePickerDialogFragment;
+import org.gnucash.android.ui.util.AmountInputFormatter;
+import org.gnucash.android.ui.util.RecurrenceParser;
+import org.gnucash.android.ui.util.TransactionTypeToggleButton;
+import org.gnucash.android.ui.widget.WidgetConfigurationActivity;
 import org.gnucash.android.util.QualifiedAccountNameCursorAdapter;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Currency;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.List;
+import java.util.Locale;
 
 /**
  * Fragment for creating or editing transactions

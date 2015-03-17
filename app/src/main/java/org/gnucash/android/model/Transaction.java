@@ -24,7 +24,10 @@ import org.gnucash.android.model.Account.OfxAccountType;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Currency;
+import java.util.Date;
+import java.util.List;
 
 /**
  * Represents a financial transaction, either credit or debit.

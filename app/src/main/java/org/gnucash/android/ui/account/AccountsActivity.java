@@ -58,7 +58,7 @@ import org.gnucash.android.ui.UxArgument;
 import org.gnucash.android.ui.chart.PieChartActivity;
 import org.gnucash.android.ui.passcode.PassLockActivity;
 import org.gnucash.android.ui.settings.SettingsActivity;
-import org.gnucash.android.ui.transaction.ScheduledEventsActivity;
+import org.gnucash.android.ui.transaction.ScheduledActionsActivity;
 import org.gnucash.android.ui.transaction.TransactionsActivity;
 import org.gnucash.android.ui.util.OnAccountClickedListener;
 import org.gnucash.android.ui.util.Refreshable;
@@ -382,9 +382,9 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
                 return super.onOptionsItemSelected(item);
 
             case R.id.menu_recurring_transactions:
-                Intent intent = new Intent(this, ScheduledEventsActivity.class);
-                intent.putExtra(ScheduledEventsActivity.EXTRA_DISPLAY_MODE,
-                        ScheduledEventsActivity.DisplayMode.TRANSACTION_EVENTS);
+                Intent intent = new Intent(this, ScheduledActionsActivity.class);
+                intent.putExtra(ScheduledActionsActivity.EXTRA_DISPLAY_MODE,
+                        ScheduledActionsActivity.DisplayMode.TRANSACTION_ACTIONS);
                 startActivity(intent);
                 return true;
 

@@ -27,7 +27,7 @@ import org.gnucash.android.model.ScheduledAction;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.gnucash.android.db.DatabaseSchema.*;
+import static org.gnucash.android.db.DatabaseSchema.ScheduledActionEntry;
 
 /**
  * Database adapter for fetching/saving/modifying scheduled events
@@ -55,7 +55,7 @@ public class ScheduledActionDbAdapter extends DatabaseAdapter {
      */
     public long addScheduledEvent(ScheduledAction scheduledAction){
         ContentValues contentValues = getContentValues(scheduledAction);
-        contentValues.put(ScheduledActionEntry.COLUMN_EVENT_UID, scheduledAction.getEventUID());
+        contentValues.put(ScheduledActionEntry.COLUMN_ACTION_UID, scheduledAction.getEventUID());
         contentValues.put(ScheduledActionEntry.COLUMN_PERIOD,    scheduledAction.getPeriod());
         contentValues.put(ScheduledActionEntry.COLUMN_START_TIME, scheduledAction.getStartTime());
         contentValues.put(ScheduledActionEntry.COLUMN_END_TIME,  scheduledAction.getEndTime());
@@ -77,7 +77,7 @@ public class ScheduledActionDbAdapter extends DatabaseAdapter {
      * @return ScheduledEvent object instance
      */
     private ScheduledAction buildScheduledEventInstance(final Cursor cursor){
-        String eventUid = cursor.getString(cursor.getColumnIndexOrThrow(ScheduledActionEntry.COLUMN_EVENT_UID));
+        String eventUid = cursor.getString(cursor.getColumnIndexOrThrow(ScheduledActionEntry.COLUMN_ACTION_UID));
         long period     = cursor.getLong(cursor.getColumnIndexOrThrow(ScheduledActionEntry.COLUMN_PERIOD));
         long startTime  = cursor.getLong(cursor.getColumnIndexOrThrow(ScheduledActionEntry.COLUMN_START_TIME));
         long endTime    = cursor.getLong(cursor.getColumnIndexOrThrow(ScheduledActionEntry.COLUMN_END_TIME));
@@ -128,7 +128,7 @@ public class ScheduledActionDbAdapter extends DatabaseAdapter {
      */
     public List<ScheduledAction> getScheduledEventsWithUID(@NonNull String eventUID){
         Cursor cursor = mDb.query(ScheduledActionEntry.TABLE_NAME, null,
-                ScheduledActionEntry.COLUMN_EVENT_UID + "= ?",
+                ScheduledActionEntry.COLUMN_ACTION_UID + "= ?",
                 new String[]{eventUID}, null, null, null);
 
         List<ScheduledAction> scheduledActions = new ArrayList<ScheduledAction>();

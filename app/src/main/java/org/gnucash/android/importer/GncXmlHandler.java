@@ -17,26 +17,30 @@
 
 package org.gnucash.android.importer;
 
-import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
-import org.gnucash.android.app.GnuCashApplication;
+
+import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.SplitsDbAdapter;
 import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.export.xml.GncXmlHelper;
-import org.gnucash.android.model.*;
-import org.gnucash.android.db.AccountsDbAdapter;
+import org.gnucash.android.model.Account;
+import org.gnucash.android.model.AccountType;
+import org.gnucash.android.model.Money;
+import org.gnucash.android.model.Split;
+import org.gnucash.android.model.Transaction;
+import org.gnucash.android.model.TransactionType;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Currency;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Stack;
 import java.util.regex.Pattern;
-import java.util.List;
-import java.util.ArrayList;
 
 /**
  * Handler for parsing the GnuCash XML file.

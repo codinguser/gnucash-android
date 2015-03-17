@@ -1,12 +1,6 @@
 package org.gnucash.android.model;
 
 
-import org.gnucash.android.export.xml.GncXmlHelper;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-
-import java.util.UUID;
-
 /**
  * A split amount in a transaction.
  * Every transaction is made up of at least two splits (representing a double entry transaction)

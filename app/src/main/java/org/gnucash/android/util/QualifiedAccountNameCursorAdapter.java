@@ -22,9 +22,7 @@ import android.support.v4.widget.SimpleCursorAdapter;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.TextView;
-import org.gnucash.android.db.AccountsDbAdapter;
-import org.gnucash.android.db.DatabaseAdapter;
-import org.gnucash.android.db.DatabaseHelper;
+
 import org.gnucash.android.db.DatabaseSchema;
 
 /**

@@ -19,10 +19,13 @@ package org.gnucash.android.db;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-
 import android.support.annotation.NonNull;
 import android.util.Log;
-import org.gnucash.android.db.DatabaseSchema.*;
+
+import org.gnucash.android.db.DatabaseSchema.AccountEntry;
+import org.gnucash.android.db.DatabaseSchema.CommonColumns;
+import org.gnucash.android.db.DatabaseSchema.SplitEntry;
+import org.gnucash.android.db.DatabaseSchema.TransactionEntry;
 import org.gnucash.android.model.AccountType;
 import org.gnucash.android.model.BaseModel;
 

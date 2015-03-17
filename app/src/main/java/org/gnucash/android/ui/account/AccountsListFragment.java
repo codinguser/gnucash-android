@@ -36,8 +36,15 @@ import android.view.LayoutInflater;
 import android.view.TouchDelegate;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.*;
+import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemLongClickListener;
+import android.widget.CheckBox;
+import android.widget.ImageButton;
+import android.widget.ListAdapter;
+import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
+
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockDialogFragment;
 import com.actionbarsherlock.app.SherlockListFragment;
@@ -46,16 +53,19 @@ import com.actionbarsherlock.view.ActionMode.Callback;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
+
 import org.gnucash.android.R;
-import org.gnucash.android.app.GnuCashApplication;
+import org.gnucash.android.db.AccountsDbAdapter;
+import org.gnucash.android.db.DatabaseCursorLoader;
+import org.gnucash.android.db.DatabaseSchema;
+import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.model.Account;
-import org.gnucash.android.db.*;
-import org.gnucash.android.ui.util.AccountBalanceTask;
-import org.gnucash.android.ui.util.Refreshable;
 import org.gnucash.android.ui.UxArgument;
 import org.gnucash.android.ui.transaction.TransactionsActivity;
-import org.gnucash.android.ui.widget.WidgetConfigurationActivity;
+import org.gnucash.android.ui.util.AccountBalanceTask;
 import org.gnucash.android.ui.util.OnAccountClickedListener;
+import org.gnucash.android.ui.util.Refreshable;
+import org.gnucash.android.ui.widget.WidgetConfigurationActivity;
 
 /**
  * Fragment for displaying the list of accounts in the database

@@ -16,6 +16,13 @@
  */
 package org.gnucash.android.ui.transaction.dialog;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
+import android.os.Bundle;
+
+import com.actionbarsherlock.app.SherlockDialogFragment;
+
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.AccountsDbAdapter;
@@ -24,13 +31,6 @@ import org.gnucash.android.export.xml.GncXmlExporter;
 import org.gnucash.android.model.Transaction;
 import org.gnucash.android.ui.UxArgument;
 import org.gnucash.android.ui.account.AccountsListFragment;
-
-import android.app.AlertDialog;
-import android.app.Dialog;
-import android.content.DialogInterface;
-import android.os.Bundle;
-
-import com.actionbarsherlock.app.SherlockDialogFragment;
 import org.gnucash.android.ui.widget.WidgetConfigurationActivity;
 
 import java.util.ArrayList;

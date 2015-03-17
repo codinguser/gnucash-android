@@ -21,7 +21,9 @@ import org.gnucash.android.export.ofx.OfxHelper;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Currency;
+import java.util.List;
 import java.util.regex.Pattern;
 
 /**

@@ -22,8 +22,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import org.gnucash.android.db.DatabaseSchema;
-import static org.gnucash.android.db.DatabaseSchema.*;
-
 import org.gnucash.android.export.ExportFormat;
 import org.gnucash.android.export.ExportParams;
 import org.gnucash.android.export.Exporter;
@@ -31,7 +29,11 @@ import org.gnucash.android.model.ScheduledAction;
 import org.xmlpull.v1.XmlPullParserFactory;
 import org.xmlpull.v1.XmlSerializer;
 
-import java.io.*;
+import java.io.BufferedOutputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -39,6 +41,10 @@ import java.util.Currency;
 import java.util.List;
 import java.util.UUID;
 import java.util.zip.GZIPOutputStream;
+
+import static org.gnucash.android.db.DatabaseSchema.ScheduledActionEntry;
+import static org.gnucash.android.db.DatabaseSchema.SplitEntry;
+import static org.gnucash.android.db.DatabaseSchema.TransactionEntry;
 
 /**
  * Creates a GnuCash XML representation of the accounts and transactions
@@ -376,7 +382,7 @@ public class GncXmlExporter extends Exporter{
             }
             //Ignoring GnuCash XML template account: <sx:templ-acct type="guid">2da76df09056540bb3a37e4a04547d82</sx:templ-acct>
 
-            String actionUID = cursor.getString(cursor.getColumnIndexOrThrow(ScheduledActionEntry.COLUMN_EVENT_UID));
+            String actionUID = cursor.getString(cursor.getColumnIndexOrThrow(ScheduledActionEntry.COLUMN_ACTION_UID));
             xmlSerializer.startTag(null, GncXmlHelper.TAG_SX_TEMPL_ACTION);
             xmlSerializer.attribute(null, GncXmlHelper.ATTR_VALUE_GUID, actionUID);
             xmlSerializer.endTag(null, GncXmlHelper.TAG_SX_TEMPL_ACTION);

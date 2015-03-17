@@ -18,6 +18,7 @@ package org.gnucash.android.ui.util;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.widget.EditText;
+
 import org.gnucash.android.ui.transaction.TransactionFormFragment;
 
 import java.math.BigDecimal;

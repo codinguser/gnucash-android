@@ -38,7 +38,7 @@ import org.gnucash.android.importer.ImportAsyncTask;
 import org.gnucash.android.ui.account.AccountsActivity;
 import org.gnucash.android.ui.chart.PieChartActivity;
 import org.gnucash.android.ui.settings.SettingsActivity;
-import org.gnucash.android.ui.transaction.ScheduledEventsActivity;
+import org.gnucash.android.ui.transaction.ScheduledActionsActivity;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
@@ -196,10 +196,10 @@ public class BaseDrawerActivity extends SherlockFragmentActivity {
                 break;
 
             case 5: { //show scheduled transactions
-                Intent intent = new Intent(this, ScheduledEventsActivity.class);
+                Intent intent = new Intent(this, ScheduledActionsActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_SINGLE_TOP);
-                intent.putExtra(ScheduledEventsActivity.EXTRA_DISPLAY_MODE,
-                        ScheduledEventsActivity.DisplayMode.TRANSACTION_EVENTS);
+                intent.putExtra(ScheduledActionsActivity.EXTRA_DISPLAY_MODE,
+                        ScheduledActionsActivity.DisplayMode.TRANSACTION_ACTIONS);
                 startActivity(intent);
             }
                 break;
