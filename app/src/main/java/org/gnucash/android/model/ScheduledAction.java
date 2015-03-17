@@ -26,7 +26,7 @@ import java.util.Locale;
 *
 * @author Ngewi Fet <ngewif@gmail.com>
 */
-public class ScheduledEvent extends BaseModel{
+public class ScheduledAction extends BaseModel{
 
     private long mPeriod;
     private long mStartDate;
@@ -36,7 +36,7 @@ public class ScheduledEvent extends BaseModel{
     /**
      * Types of events which can be scheduled
      */
-    public enum EventType {TRANSACTION, EXPORT}
+    public enum ActionType {TRANSACTION, EXPORT}
 
     public enum PeriodType {DAILY, WEEKLY, FORTNIGHTLY, MONTHLY, YEARLY}
 
@@ -59,7 +59,7 @@ public class ScheduledEvent extends BaseModel{
     /**
      * Type of event being scheduled
      */
-    private EventType mEventType;
+    private ActionType mActionType;
 
     /**
      * Number of occurences of this event
@@ -71,19 +71,19 @@ public class ScheduledEvent extends BaseModel{
      */
     private int mNumberOfExecutions = 0;
 
-    public ScheduledEvent(EventType eventType){
-        mEventType = eventType;
+    public ScheduledAction(ActionType actionType){
+        mActionType = actionType;
         mStartDate = System.currentTimeMillis();
         mEndDate = 0;
         mIsEnabled = true; //all actions are enabled by default
     }
 
-    public EventType getEventType() {
-        return mEventType;
+    public ActionType getActionType() {
+        return mActionType;
     }
 
-    public void setEventType(EventType eventType) {
-        this.mEventType = eventType;
+    public void setActionType(ActionType actionType) {
+        this.mActionType = actionType;
     }
 
     public String getEventUID() {
@@ -227,7 +227,7 @@ public class ScheduledEvent extends BaseModel{
     @Override
     public String toString() {
 
-        String eventString = mEventType.name() + " - " + getRepeatString();
+        String eventString = mActionType.name() + " - " + getRepeatString();
 
         return eventString;
     }

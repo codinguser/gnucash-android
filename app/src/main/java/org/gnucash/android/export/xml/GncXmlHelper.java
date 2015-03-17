@@ -18,7 +18,7 @@
 package org.gnucash.android.export.xml;
 
 import org.gnucash.android.model.Money;
-import org.gnucash.android.model.ScheduledEvent;
+import org.gnucash.android.model.ScheduledAction;
 import org.gnucash.android.model.Split;
 import org.gnucash.android.model.TransactionType;
 import org.w3c.dom.Document;
@@ -140,7 +140,7 @@ public abstract class GncXmlHelper {
      * @param periodType PeriodType from the scheduled action
      * @return Period type as a noun
      */
-    public static String getScheduledPeriodType(ScheduledEvent.PeriodType periodType){
+    public static String getScheduledPeriodType(ScheduledAction.PeriodType periodType){
         switch (periodType) {
             case DAILY:
                 return "day";

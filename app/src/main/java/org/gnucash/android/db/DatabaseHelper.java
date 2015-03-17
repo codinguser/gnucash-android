@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012 - 2014 Ngewi Fet <ngewif@gmail.com>
+ * Copyright (c) 2012 - 2015 Ngewi Fet <ngewif@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,13 +25,11 @@ import android.util.Log;
 
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.model.AccountType;
-import org.gnucash.android.model.ScheduledEvent;
 
 import static org.gnucash.android.db.DatabaseSchema.AccountEntry;
-import static org.gnucash.android.db.DatabaseSchema.ScheduledEventEntry;
 import static org.gnucash.android.db.DatabaseSchema.SplitEntry;
 import static org.gnucash.android.db.DatabaseSchema.TransactionEntry;
-
+import static org.gnucash.android.db.DatabaseSchema.ScheduledActionEntry;
 /**
  * Helper class for managing the SQLite database.
  * Creates the database and handles upgrades
@@ -112,22 +110,22 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + ");" + createUpdatedAtTrigger(SplitEntry.TABLE_NAME);
 
 
-    public static final String SCHEDULED_EVENTS_TABLE_CREATE = "CREATE TABLE " + ScheduledEventEntry.TABLE_NAME + " ("
-            + ScheduledEventEntry._ID                   + " integer primary key autoincrement, "
-            + ScheduledEventEntry.COLUMN_UID            + " varchar(255) not null UNIQUE, "
-            + ScheduledEventEntry.COLUMN_EVENT_UID      + " varchar(255) not null, "
-            + ScheduledEventEntry.COLUMN_TYPE           + " varchar(255) not null, "
-            + ScheduledEventEntry.COLUMN_PERIOD         + " integer not null, "
-            + ScheduledEventEntry.COLUMN_LAST_RUN       + " integer default 0, "
-            + ScheduledEventEntry.COLUMN_START_TIME     + " integer not null, "
-            + ScheduledEventEntry.COLUMN_END_TIME       + " integer default 0, "
-            + ScheduledEventEntry.COLUMN_TAG            + " text, "
-            + ScheduledEventEntry.COLUMN_ENABLED        + " tinyint default 1, " //enabled by default
-            + ScheduledEventEntry.COLUMN_NUM_OCCURRENCES+ " integer default 0, "
-            + ScheduledEventEntry.COLUMN_EXECUTION_COUNT+ " integer default 0, "
-            + ScheduledEventEntry.COLUMN_CREATED_AT     + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
-            + ScheduledEventEntry.COLUMN_MODIFIED_AT    + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP "
-            + ");" + createUpdatedAtTrigger(ScheduledEventEntry.TABLE_NAME);
+    public static final String SCHEDULED_ACTIONS_TABLE_CREATE = "CREATE TABLE " + ScheduledActionEntry.TABLE_NAME + " ("
+            + ScheduledActionEntry._ID                   + " integer primary key autoincrement, "
+            + ScheduledActionEntry.COLUMN_UID            + " varchar(255) not null UNIQUE, "
+            + ScheduledActionEntry.COLUMN_EVENT_UID      + " varchar(255) not null, "
+            + ScheduledActionEntry.COLUMN_TYPE           + " varchar(255) not null, "
+            + ScheduledActionEntry.COLUMN_PERIOD         + " integer not null, "
+            + ScheduledActionEntry.COLUMN_LAST_RUN       + " integer default 0, "
+            + ScheduledActionEntry.COLUMN_START_TIME     + " integer not null, "
+            + ScheduledActionEntry.COLUMN_END_TIME       + " integer default 0, "
+            + ScheduledActionEntry.COLUMN_TAG            + " text, "
+            + ScheduledActionEntry.COLUMN_ENABLED        + " tinyint default 1, " //enabled by default
+            + ScheduledActionEntry.COLUMN_NUM_OCCURRENCES+ " integer default 0, "
+            + ScheduledActionEntry.COLUMN_EXECUTION_COUNT+ " integer default 0, "
+            + ScheduledActionEntry.COLUMN_CREATED_AT     + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
+            + ScheduledActionEntry.COLUMN_MODIFIED_AT    + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP "
+            + ");" + createUpdatedAtTrigger(ScheduledActionEntry.TABLE_NAME);
 
 
     /**
@@ -375,7 +373,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 MigrationHelper.createUpdatedAndModifiedColumns(db, SplitEntry.TABLE_NAME);
 
                 Log.i(LOG_TAG, "Creating scheduled events table");
-                db.execSQL(SCHEDULED_EVENTS_TABLE_CREATE); //TODO: Use the actual SQL statements
+                db.execSQL(SCHEDULED_ACTIONS_TABLE_CREATE); //TODO: Use the actual SQL statements
                 //TODO: Migrate existing scheduled transactions (cancel pending intents)
 
                 //TODO: Migrate old scheduled events using only SQL, code had changed
@@ -399,7 +397,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(ACCOUNTS_TABLE_CREATE);
         db.execSQL(TRANSACTIONS_TABLE_CREATE);
         db.execSQL(SPLITS_TABLE_CREATE);
-        db.execSQL(SCHEDULED_EVENTS_TABLE_CREATE);
+        db.execSQL(SCHEDULED_ACTIONS_TABLE_CREATE);
 
         String createAccountUidIndex = "CREATE UNIQUE INDEX '" + AccountEntry.INDEX_UID + "' ON "
                 + AccountEntry.TABLE_NAME + "(" + AccountEntry.COLUMN_UID + ")";
@@ -410,8 +408,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         String createSplitUidIndex = "CREATE UNIQUE INDEX '" + SplitEntry.INDEX_UID +"' ON "
                 + SplitEntry.TABLE_NAME + "(" + SplitEntry.COLUMN_UID + ")";
 
-        String createScheduledEventUidIndex = "CREATE UNIQUE INDEX '" + ScheduledEventEntry.INDEX_UID
-                +"' ON " + ScheduledEventEntry.TABLE_NAME + "(" + ScheduledEventEntry.COLUMN_UID + ")";
+        String createScheduledEventUidIndex = "CREATE UNIQUE INDEX '" + ScheduledActionEntry.INDEX_UID
+                +"' ON " + ScheduledActionEntry.TABLE_NAME + "(" + ScheduledActionEntry.COLUMN_UID + ")";
 
         db.execSQL(createAccountUidIndex);
         db.execSQL(createTransactionUidIndex);
@@ -428,7 +426,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + AccountEntry.TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS " + TransactionEntry.TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS " + SplitEntry.TABLE_NAME);
-        db.execSQL("DROP TABLE IF EXISTS " + ScheduledEventEntry.TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS " + ScheduledActionEntry.TABLE_NAME);
     }
 
 

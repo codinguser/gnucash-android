@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 Ngewi Fet <ngewif@gmail.com>
+ * Copyright (c) 2014 - 2015 Ngewi Fet <ngewif@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -103,23 +103,23 @@ public class DatabaseSchema {
         public static final String INDEX_UID                    = "split_uid_index";
     }
 
-    public static abstract class ScheduledEventEntry implements CommonColumns {
-        public static final String TABLE_NAME           = "scheduled_events";
+    public static abstract class ScheduledActionEntry implements CommonColumns {
+        public static final String TABLE_NAME           = "scheduled_actions";
 
         public static final String COLUMN_TYPE          = "type";
-        public static final String COLUMN_EVENT_UID     = "event_uid";
+        public static final String COLUMN_EVENT_UID     = "action_uid";
         public static final String COLUMN_START_TIME    = "start_time";
         public static final String COLUMN_END_TIME      = "end_time";
         public static final String COLUMN_LAST_RUN      = "last_run";
         public static final String COLUMN_PERIOD        = "period";
         /**
-         * Tags for any scheduled event specific information
+         * Tags for any scheduled action-specific information
          */
         public static final String COLUMN_TAG               = "tag";
         public static final String COLUMN_ENABLED           = "is_enabled";
         public static final String COLUMN_NUM_OCCURRENCES   = "num_occurrences";
         public static final String COLUMN_EXECUTION_COUNT   = "execution_count";
 
-        public static final String INDEX_UID            = "scheduled_event_uid_index";
+        public static final String INDEX_UID            = "scheduled_action_uid_index";
     }
 }

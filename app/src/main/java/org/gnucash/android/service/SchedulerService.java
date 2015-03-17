@@ -24,11 +24,11 @@ import android.util.Log;
 
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.DatabaseSchema;
-import org.gnucash.android.db.ScheduledEventDbAdapter;
+import org.gnucash.android.db.ScheduledActionDbAdapter;
 import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.export.ExportParams;
 import org.gnucash.android.export.ExporterAsyncTask;
-import org.gnucash.android.model.ScheduledEvent;
+import org.gnucash.android.model.ScheduledAction;
 import org.gnucash.android.model.Transaction;
 
 import java.util.List;
@@ -60,19 +60,19 @@ public class SchedulerService extends IntentService {
                 LOG_TAG);
         wakeLock.acquire();
 
-        ScheduledEventDbAdapter scheduledEventDbAdapter = GnuCashApplication.getScheduledEventDbAdapter();
-        List<ScheduledEvent> scheduledEvents = scheduledEventDbAdapter.getAllEnabledScheduledActions();
+        ScheduledActionDbAdapter scheduledActionDbAdapter = GnuCashApplication.getScheduledEventDbAdapter();
+        List<ScheduledAction> scheduledActions = scheduledActionDbAdapter.getAllEnabledScheduledActions();
 
-        for (ScheduledEvent scheduledEvent : scheduledEvents) {
-            long lastRun    = scheduledEvent.getLastRun();
-            long period     = scheduledEvent.getPeriod();
-            long endTime    = scheduledEvent.getEndTime();
+        for (ScheduledAction scheduledAction : scheduledActions) {
+            long lastRun    = scheduledAction.getLastRun();
+            long period     = scheduledAction.getPeriod();
+            long endTime    = scheduledAction.getEndTime();
 
             long now = System.currentTimeMillis();
             //if we did not exceed the endtime (if there is one), and one execution period has passed since last run
-            if (((endTime > 0 && now < endTime) || (scheduledEvent.getExecutionCount() < scheduledEvent.getNumberOfOccurences()) || endTime == 0)
+            if (((endTime > 0 && now < endTime) || (scheduledAction.getExecutionCount() < scheduledAction.getNumberOfOccurences()) || endTime == 0)
                     && (lastRun + period) < now ){
-                executeScheduledEvent(scheduledEvent);
+                executeScheduledEvent(scheduledAction);
             }
         }
 
@@ -83,12 +83,12 @@ public class SchedulerService extends IntentService {
 
     /**
      * Executes a scheduled event according to the specified parameters
-     * @param scheduledEvent ScheduledEvent to be executed
+     * @param scheduledAction ScheduledEvent to be executed
      */
-    private void executeScheduledEvent(ScheduledEvent scheduledEvent){
-        switch (scheduledEvent.getEventType()){
+    private void executeScheduledEvent(ScheduledAction scheduledAction){
+        switch (scheduledAction.getActionType()){
             case TRANSACTION:
-                String eventUID = scheduledEvent.getEventUID();
+                String eventUID = scheduledAction.getEventUID();
                 TransactionsDbAdapter transactionsDbAdapter = TransactionsDbAdapter.getInstance();
                 Transaction trxnTemplate = transactionsDbAdapter.getTransaction(eventUID);
                 Transaction recurringTrxn = new Transaction(trxnTemplate, true);
@@ -98,7 +98,7 @@ public class SchedulerService extends IntentService {
                 break;
 
             case EXPORT:
-                ExportParams params = ExportParams.parseCsv(scheduledEvent.getTag());
+                ExportParams params = ExportParams.parseCsv(scheduledAction.getTag());
                 try {
                     new ExporterAsyncTask(GnuCashApplication.getAppContext()).execute(params).get();
                 } catch (InterruptedException e) {
@@ -115,15 +115,15 @@ public class SchedulerService extends IntentService {
         }
 
         //update last run time
-        ScheduledEventDbAdapter.getInstance().updateRecord(
-                scheduledEvent.getUID(),
-                DatabaseSchema.ScheduledEventEntry.COLUMN_LAST_RUN,
+        ScheduledActionDbAdapter.getInstance().updateRecord(
+                scheduledAction.getUID(),
+                DatabaseSchema.ScheduledActionEntry.COLUMN_LAST_RUN,
                 Long.toString(System.currentTimeMillis()));
 
         //update the execution count
-        ScheduledEventDbAdapter.getInstance().updateRecord(
-                scheduledEvent.getUID(),
-                DatabaseSchema.ScheduledEventEntry.COLUMN_EXECUTION_COUNT,
-                Integer.toString(scheduledEvent.getExecutionCount()+1));
+        ScheduledActionDbAdapter.getInstance().updateRecord(
+                scheduledAction.getUID(),
+                DatabaseSchema.ScheduledActionEntry.COLUMN_EXECUTION_COUNT,
+                Integer.toString(scheduledAction.getExecutionCount()+1));
     }
 }

@@ -17,10 +17,7 @@
 
 package org.gnucash.android.db;
 
-import android.app.AlarmManager;
-import android.app.PendingIntent;
 import android.content.ContentValues;
-import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
@@ -243,9 +240,9 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
      */
     public Cursor fetchAllScheduledTransactions(){
         SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
-        queryBuilder.setTables(TransactionEntry.TABLE_NAME + " INNER JOIN " + ScheduledEventEntry.TABLE_NAME + " ON "
+        queryBuilder.setTables(TransactionEntry.TABLE_NAME + " INNER JOIN " + ScheduledActionEntry.TABLE_NAME + " ON "
                 + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_UID + " = "
-                + ScheduledEventEntry.TABLE_NAME + "." + ScheduledEventEntry.COLUMN_EVENT_UID);
+                + ScheduledActionEntry.TABLE_NAME + "." + ScheduledActionEntry.COLUMN_EVENT_UID);
 
         String[] projectionIn = new String[]{TransactionEntry.TABLE_NAME + ".*"};
         String sortOrder = TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_DESCRIPTION + " ASC";

@@ -673,7 +673,7 @@ public class TransactionFormFragment extends SherlockFragment implements
      * @see #saveNewTransaction()
      */
     private void scheduleRecurringTransaction() {
-        List<ScheduledEvent> events = RecurrenceParser.parse(mEventRecurrence, ScheduledEvent.EventType.TRANSACTION);
+        List<ScheduledAction> events = RecurrenceParser.parse(mEventRecurrence, ScheduledAction.ActionType.TRANSACTION);
 
         if (events.size() == 0) //there are no scheduled events detected
             return;
@@ -684,11 +684,11 @@ public class TransactionFormFragment extends SherlockFragment implements
         recurringTransaction.setTemplate(true);
         mTransactionsDbAdapter.addTransaction(recurringTransaction);
 
-        ScheduledEventDbAdapter scheduledEventDbAdapter = GnuCashApplication.getScheduledEventDbAdapter();
-        for (ScheduledEvent event : events) {
+        ScheduledActionDbAdapter scheduledActionDbAdapter = GnuCashApplication.getScheduledEventDbAdapter();
+        for (ScheduledAction event : events) {
             event.setEventUID(recurringTransaction.getUID());
             event.setLastRun(System.currentTimeMillis());
-            scheduledEventDbAdapter.addScheduledEvent(event);
+            scheduledActionDbAdapter.addScheduledEvent(event);
 
             Log.i("TransactionFormFragment", event.toString());
         }

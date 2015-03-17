@@ -27,7 +27,7 @@ import static org.gnucash.android.db.DatabaseSchema.*;
 import org.gnucash.android.export.ExportFormat;
 import org.gnucash.android.export.ExportParams;
 import org.gnucash.android.export.Exporter;
-import org.gnucash.android.model.ScheduledEvent;
+import org.gnucash.android.model.ScheduledAction;
 import org.xmlpull.v1.XmlPullParserFactory;
 import org.xmlpull.v1.XmlSerializer;
 
@@ -306,24 +306,24 @@ public class GncXmlExporter extends Exporter{
     }
 
     /**
-     * Serializes {@link org.gnucash.android.model.ScheduledEvent}s from the database to XML
+     * Serializes {@link org.gnucash.android.model.ScheduledAction}s from the database to XML
      * @param xmlSerializer XML serializer
      * @throws IOException
      */
     private void exportScheduledActions(XmlSerializer xmlSerializer) throws IOException{
-        Cursor cursor = mScheduledEventDbAdapter.fetchAllRecords();
+        Cursor cursor = mScheduledActionDbAdapter.fetchAllRecords();
         while (cursor.moveToNext()) {
             xmlSerializer.startTag(null, GncXmlHelper.TAG_SCHEDULED_ACTION);
             xmlSerializer.attribute(null, GncXmlHelper.ATTR_KEY_VERSION, GncXmlHelper.BOOK_VERSION);
             xmlSerializer.startTag(null, GncXmlHelper.TAG_SX_ID);
-            String actionUID = cursor.getString(cursor.getColumnIndexOrThrow(ScheduledEventEntry.COLUMN_UID));
+            String actionUID = cursor.getString(cursor.getColumnIndexOrThrow(ScheduledActionEntry.COLUMN_UID));
             xmlSerializer.attribute(null, GncXmlHelper.ATTR_VALUE_GUID, actionUID);
             xmlSerializer.endTag(null, GncXmlHelper.TAG_SX_ID);
             xmlSerializer.startTag(null, GncXmlHelper.TAG_SX_NAME);
-            xmlSerializer.text(cursor.getString(cursor.getColumnIndexOrThrow(ScheduledEventEntry.COLUMN_TYPE)));
+            xmlSerializer.text(cursor.getString(cursor.getColumnIndexOrThrow(ScheduledActionEntry.COLUMN_TYPE)));
             xmlSerializer.endTag(null, GncXmlHelper.TAG_SX_NAME);
             xmlSerializer.startTag(null, GncXmlHelper.TAG_SX_ENABLED);
-            boolean enabled = cursor.getShort(cursor.getColumnIndexOrThrow(ScheduledEventEntry.COLUMN_ENABLED)) > 0;
+            boolean enabled = cursor.getShort(cursor.getColumnIndexOrThrow(ScheduledActionEntry.COLUMN_ENABLED)) > 0;
             xmlSerializer.text(enabled ? "y" : "n");
             xmlSerializer.endTag(null, GncXmlHelper.TAG_SX_ENABLED);
             xmlSerializer.startTag(null, GncXmlHelper.TAG_SX_AUTO_CREATE);
@@ -343,32 +343,32 @@ public class GncXmlExporter extends Exporter{
             xmlSerializer.endTag(null, GncXmlHelper.TAG_SX_INSTANCE_COUNT);
 
             //start date
-            long startTime = cursor.getLong(cursor.getColumnIndexOrThrow(ScheduledEventEntry.COLUMN_START_TIME));
+            long startTime = cursor.getLong(cursor.getColumnIndexOrThrow(ScheduledActionEntry.COLUMN_START_TIME));
             serializeDate(xmlSerializer, GncXmlHelper.TAG_SX_START, startTime);
 
-            long lastRunTime = cursor.getLong(cursor.getColumnIndexOrThrow(ScheduledEventEntry.COLUMN_LAST_RUN));
+            long lastRunTime = cursor.getLong(cursor.getColumnIndexOrThrow(ScheduledActionEntry.COLUMN_LAST_RUN));
             if (lastRunTime > 0){
                 serializeDate(xmlSerializer, GncXmlHelper.TAG_SX_LAST, lastRunTime);
             }
 
-            long endTime = cursor.getLong(cursor.getColumnIndexOrThrow(ScheduledEventEntry.COLUMN_END_TIME));
+            long endTime = cursor.getLong(cursor.getColumnIndexOrThrow(ScheduledActionEntry.COLUMN_END_TIME));
             if (endTime > 0) {
                 //end date
                 serializeDate(xmlSerializer, GncXmlHelper.TAG_SX_END, endTime);
             } else { //add number of occurrences
-                int numOccurrences = cursor.getInt(cursor.getColumnIndexOrThrow(ScheduledEventEntry.COLUMN_NUM_OCCURRENCES));
+                int numOccurrences = cursor.getInt(cursor.getColumnIndexOrThrow(ScheduledActionEntry.COLUMN_NUM_OCCURRENCES));
                 xmlSerializer.startTag(null, GncXmlHelper.TAG_SX_NUM_OCCUR);
                 xmlSerializer.text(Integer.toString(numOccurrences));
                 xmlSerializer.endTag(null, GncXmlHelper.TAG_SX_NUM_OCCUR);
 
                 //remaining occurrences
-                int executionCount = cursor.getInt(cursor.getColumnIndexOrThrow(ScheduledEventEntry.COLUMN_EXECUTION_COUNT));
+                int executionCount = cursor.getInt(cursor.getColumnIndexOrThrow(ScheduledActionEntry.COLUMN_EXECUTION_COUNT));
                 xmlSerializer.startTag(null, GncXmlHelper.TAG_SX_REM_OCCUR);
                 xmlSerializer.text(Integer.toString(numOccurrences - executionCount));
                 xmlSerializer.endTag(null, GncXmlHelper.TAG_SX_REM_OCCUR);
             }
 
-            String tag = cursor.getString(cursor.getColumnIndexOrThrow(ScheduledEventEntry.COLUMN_TAG));
+            String tag = cursor.getString(cursor.getColumnIndexOrThrow(ScheduledActionEntry.COLUMN_TAG));
             if (tag != null && !tag.isEmpty()){
                 xmlSerializer.startTag(null, GncXmlHelper.TAG_SX_TAG);
                 xmlSerializer.text(tag);
@@ -383,8 +383,8 @@ public class GncXmlExporter extends Exporter{
             xmlSerializer.text("1");
             xmlSerializer.endTag(null, GncXmlHelper.TAG_RX_MULT);
             xmlSerializer.startTag(null, GncXmlHelper.TAG_RX_PERIOD_TYPE);
-            long period = cursor.getLong(cursor.getColumnIndexOrThrow(ScheduledEventEntry.COLUMN_PERIOD));
-            xmlSerializer.text(GncXmlHelper.getScheduledPeriodType(ScheduledEvent.getPeriodType(period)));
+            long period = cursor.getLong(cursor.getColumnIndexOrThrow(ScheduledActionEntry.COLUMN_PERIOD));
+            xmlSerializer.text(GncXmlHelper.getScheduledPeriodType(ScheduledAction.getPeriodType(period)));
             xmlSerializer.endTag(null, GncXmlHelper.TAG_RX_PERIOD_TYPE);
 
             serializeDate(xmlSerializer, GncXmlHelper.TAG_RX_START, startTime);

@@ -48,9 +48,9 @@ import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.DatabaseCursorLoader;
 import org.gnucash.android.db.DatabaseSchema;
-import org.gnucash.android.db.ScheduledEventDbAdapter;
+import org.gnucash.android.db.ScheduledActionDbAdapter;
 import org.gnucash.android.db.TransactionsDbAdapter;
-import org.gnucash.android.model.ScheduledEvent;
+import org.gnucash.android.model.ScheduledAction;
 import org.gnucash.android.model.Transaction;
 import org.gnucash.android.ui.UxArgument;
 
@@ -109,13 +109,13 @@ public class ScheduledTransactionsListFragment extends SherlockListFragment impl
                     for (long id : getListView().getCheckedItemIds()) {
                         Log.i(TAG, "Cancelling scheduled transaction(s)");
                         String trnUID = mTransactionsDbAdapter.getUID(id);
-                        ScheduledEventDbAdapter scheduledEventDbAdapter = GnuCashApplication.getScheduledEventDbAdapter();
-                        List<ScheduledEvent> events = scheduledEventDbAdapter.getScheduledEventsWithUID(trnUID);
+                        ScheduledActionDbAdapter scheduledActionDbAdapter = GnuCashApplication.getScheduledEventDbAdapter();
+                        List<ScheduledAction> events = scheduledActionDbAdapter.getScheduledEventsWithUID(trnUID);
 
                         if (mTransactionsDbAdapter.deleteRecord(id)){
                             Toast.makeText(getActivity(), R.string.toast_recurring_transaction_deleted, Toast.LENGTH_SHORT).show();
-                            for (ScheduledEvent event : events) {
-                                scheduledEventDbAdapter.deleteRecord(event.getUID());
+                            for (ScheduledAction event : events) {
+                                scheduledActionDbAdapter.deleteRecord(event.getUID());
                             }
                         }
                     }
@@ -410,10 +410,10 @@ public class ScheduledTransactionsListFragment extends SherlockListFragment impl
             }
             TextView descriptionTextView = (TextView) view.findViewById(R.id.secondary_text);
 
-            ScheduledEventDbAdapter scheduledEventDbAdapter = ScheduledEventDbAdapter.getInstance();
-            List<ScheduledEvent> events = scheduledEventDbAdapter.getScheduledEventsWithUID(transaction.getUID());
+            ScheduledActionDbAdapter scheduledActionDbAdapter = ScheduledActionDbAdapter.getInstance();
+            List<ScheduledAction> events = scheduledActionDbAdapter.getScheduledEventsWithUID(transaction.getUID());
             StringBuilder repeatStringBuilder = new StringBuilder();
-            for (ScheduledEvent event : events) {
+            for (ScheduledAction event : events) {
                 repeatStringBuilder.append(event.getRepeatString()).append("\n");
             }
             descriptionTextView.setText(repeatStringBuilder.toString());
