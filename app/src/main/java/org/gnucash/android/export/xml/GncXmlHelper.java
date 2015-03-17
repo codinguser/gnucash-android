@@ -108,6 +108,7 @@ public abstract class GncXmlHelper {
     public static final String TAG_SX_NUM_OCCUR             = "sx:num-occur";
     public static final String TAG_SX_REM_OCCUR             = "sx:rem-occur";
     public static final String TAG_SX_TAG                   = "sx:tag";
+    public static final String TAG_SX_TEMPL_ACTION          = "sx:templ-action";
     public static final String TAG_SX_SCHEDULE              = "sx:schedule";
     public static final String TAG_RECURRENCE               = "gnc:recurrence";
     public static final String TAG_RX_MULT                  = "recurrence:mult";

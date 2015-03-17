@@ -316,8 +316,8 @@ public class GncXmlExporter extends Exporter{
             xmlSerializer.startTag(null, GncXmlHelper.TAG_SCHEDULED_ACTION);
             xmlSerializer.attribute(null, GncXmlHelper.ATTR_KEY_VERSION, GncXmlHelper.BOOK_VERSION);
             xmlSerializer.startTag(null, GncXmlHelper.TAG_SX_ID);
-            String actionUID = cursor.getString(cursor.getColumnIndexOrThrow(ScheduledActionEntry.COLUMN_UID));
-            xmlSerializer.attribute(null, GncXmlHelper.ATTR_VALUE_GUID, actionUID);
+            String scheduledActionUID = cursor.getString(cursor.getColumnIndexOrThrow(ScheduledActionEntry.COLUMN_UID));
+            xmlSerializer.attribute(null, GncXmlHelper.ATTR_VALUE_GUID, scheduledActionUID);
             xmlSerializer.endTag(null, GncXmlHelper.TAG_SX_ID);
             xmlSerializer.startTag(null, GncXmlHelper.TAG_SX_NAME);
             xmlSerializer.text(cursor.getString(cursor.getColumnIndexOrThrow(ScheduledActionEntry.COLUMN_TYPE)));
@@ -375,6 +375,11 @@ public class GncXmlExporter extends Exporter{
                 xmlSerializer.endTag(null, GncXmlHelper.TAG_SX_TAG);
             }
             //Ignoring GnuCash XML template account: <sx:templ-acct type="guid">2da76df09056540bb3a37e4a04547d82</sx:templ-acct>
+
+            String actionUID = cursor.getString(cursor.getColumnIndexOrThrow(ScheduledActionEntry.COLUMN_EVENT_UID));
+            xmlSerializer.startTag(null, GncXmlHelper.TAG_SX_TEMPL_ACTION);
+            xmlSerializer.attribute(null, GncXmlHelper.ATTR_VALUE_GUID, actionUID);
+            xmlSerializer.endTag(null, GncXmlHelper.TAG_SX_TEMPL_ACTION);
 
             xmlSerializer.startTag(null, GncXmlHelper.TAG_SX_SCHEDULE);
             xmlSerializer.startTag(null, GncXmlHelper.TAG_RECURRENCE);
