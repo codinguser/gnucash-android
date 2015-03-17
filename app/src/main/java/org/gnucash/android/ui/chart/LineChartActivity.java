@@ -62,27 +62,25 @@ public class LineChartActivity extends PassLockActivity implements OnChartValueS
 
         mChart = new LineChart(this);
         ((LinearLayout) findViewById(R.id.chart)).addView(mChart);
-
         mChart.setOnChartValueSelectedListener(this);
         mChart.setDescription("");
-        // TEST THIS!!!
-        mChart.setNoDataTextDescription("You need to provide data for the chart.");
-
         mChart.getAxisRight().setEnabled(false);
+        mChart.setData(getDataSet(Arrays.asList(AccountType.INCOME, AccountType.EXPENSE)));
 
-        setData();
+        Legend legend = mChart.getLegend();
+        legend.setPosition(Legend.LegendPosition.RIGHT_OF_CHART_INSIDE);
+        legend.setForm(Legend.LegendForm.CIRCLE);
 
-        Legend l = mChart.getLegend();
-        l.setPosition(Legend.LegendPosition.RIGHT_OF_CHART_INSIDE);
-        l.setForm(Legend.LegendForm.CIRCLE);
-
-        mChart.animateX(2500);
+        mChart.animateX(3000);
         mChart.invalidate();
     }
 
-    private void setData() {
-        List<AccountType> accountTypes = Arrays.asList(AccountType.INCOME, AccountType.EXPENSE);
+    private LineData getDataSet(List<AccountType> accountTypes) {
         setEarliestAndLatestTimestamps(accountTypes);
+
+        if (mEarliestTransactionTimestamp == 0 && mLatestTransactionTimestamp == 0) {
+            return getEmptyDataSet();
+        }
 
         LocalDate startDate = new LocalDate(mEarliestTransactionTimestamp).withDayOfMonth(1);
         LocalDate endDate = new LocalDate(mLatestTransactionTimestamp).withDayOfMonth(1);
@@ -97,16 +95,35 @@ public class LineChartActivity extends PassLockActivity implements OnChartValueS
         for (AccountType accountType : accountTypes) {
             LineDataSet set = new LineDataSet(getEntryList(accountType), accountType.toString());
             set.setDrawFilled(true);
-            set.setDrawCircles(true);
-            set.setLineWidth(2f);
-            set.setCircleSize(5f);
             set.setColor(COLORS[dataSets.size()]);
             set.setFillColor(COLORS[dataSets.size()]);
 
             dataSets.add(set);
         }
 
-        mChart.setData(new LineData(xValues, dataSets));
+        return new LineData(xValues, dataSets);
+    }
+
+    private LineData getEmptyDataSet() {
+        ArrayList<String> xValues = new ArrayList<String>();
+        ArrayList<Entry> yValues = new ArrayList<Entry>();
+        for (int i = 0; i < 5; i++) {
+            xValues.add("");
+            yValues.add(new Entry(i % 2 == 0 ? 5f : 4.5f, i));
+        }
+        LineDataSet set = new LineDataSet(yValues, getResources().getString(R.string.label_chart_no_data));
+        set.setDrawFilled(true);
+        set.setDrawValues(false);
+        set.setColor(Color.GRAY);
+        set.setFillColor(Color.GRAY);
+
+        mChart.getAxisLeft().setAxisMaxValue(10);
+        mChart.getAxisLeft().setDrawLabels(false);
+        mChart.getXAxis().setDrawLabels(false);
+        mChart.setTouchEnabled(false);
+        ((TextView) findViewById(R.id.selected_chart_slice)).setText(getResources().getString(R.string.label_chart_no_data));
+
+        return new LineData(xValues, new ArrayList<LineDataSet>(Arrays.asList(set)));
     }
 
     private ArrayList<Entry> getEntryList(AccountType accountType) {
@@ -145,7 +162,6 @@ public class LineChartActivity extends PassLockActivity implements OnChartValueS
             mLatestTimestampsMap.put(type, transactionsDbAdapter.getTimestampOfLatestTransaction(type));
         }
 
-        //TODO what if account has no transaction and list contain zero items
         List<Long> timestamps = new ArrayList<Long>(mEarliestTimestampsMap.values());
         timestamps.addAll(mLatestTimestampsMap.values());
         Collections.sort(timestamps);
