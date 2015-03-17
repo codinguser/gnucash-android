@@ -100,7 +100,7 @@ public class Transaction extends BaseModel{
 	 * Flag indicating if this transaction has been exported before or not
 	 * The transactions are typically exported as bank statement in the OFX format
 	 */
-	private int mIsExported = 0;
+	private boolean mIsExported = false;
 
 	/**
 	 * Timestamp when this transaction occurred
@@ -110,7 +110,7 @@ public class Transaction extends BaseModel{
     /**
      * Flag indicating that this transaction is a template
      */
-    private int mIsTemplate = 0;
+    private boolean mIsTemplate = false;
 
 	/**
 	 * Overloaded constructor. Creates a new transaction instance with the
@@ -384,7 +384,7 @@ public class Transaction extends BaseModel{
 	 * @param isExported <code>true</code> if the transaction has been exported, <code>false</code> otherwise
 	 */
 	public void setExported(boolean isExported){
-		mIsExported = isExported ? 1 : 0;
+		mIsExported = isExported;
 	}
 
 	/**
@@ -392,7 +392,7 @@ public class Transaction extends BaseModel{
 	 * @return <code>true</code> if the transaction has been exported, <code>false</code> otherwise
 	 */
 	public boolean isExported(){
-		return mIsExported == 1;
+		return mIsExported;
 	}
 
     /**
@@ -400,7 +400,7 @@ public class Transaction extends BaseModel{
      * @return {@code true} if this transaction is a template, {@code false} otherwise
      */
     public boolean isTemplate(){
-        return mIsTemplate == 1;
+        return mIsTemplate;
     }
 
     /**
@@ -408,7 +408,7 @@ public class Transaction extends BaseModel{
      * @param isTemplate Flag indicating if transaction is a template or not
      */
     public void setTemplate(boolean isTemplate){
-        mIsExported = isTemplate ? 1 : 0;
+        mIsTemplate = isTemplate;
     }
 
     /**

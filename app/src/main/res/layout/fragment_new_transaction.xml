@@ -171,9 +171,14 @@
                       android:layout_width="match_parent"
                       android:layout_height="wrap_content"
                       android:gravity="center"
-                      android:text="Not scheduled"
+                      android:text="Tap to create schedule"
                       style="@style/Dropdown.TextView" />
 
         </LinearLayout>
+        <CheckBox android:id="@+id/checkbox_save_template"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/form_row_bottom_margin"
+            android:text="@string/label_save_template" />
 	</LinearLayout>
 </ScrollView>

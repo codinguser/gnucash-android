@@ -488,10 +488,11 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
      * @param prefix Starting characters of the transaction name
      * @return Cursor to the data set containing all matching transactions
      */
-    public Cursor fetchTransactionsStartingWith(String prefix){
+    public Cursor fetchTemplatesStartingWith(String prefix){
         return mDb.query(TransactionEntry.TABLE_NAME,
                 new String[]{TransactionEntry._ID, TransactionEntry.COLUMN_DESCRIPTION},
-                TransactionEntry.COLUMN_DESCRIPTION + " LIKE '" + prefix + "%'",
+                TransactionEntry.COLUMN_TEMPLATE + "=1 AND "
+                        + TransactionEntry.COLUMN_DESCRIPTION + " LIKE '" + prefix + "%'",
                 null, null, null,
                 TransactionEntry.COLUMN_DESCRIPTION + " ASC");
     }

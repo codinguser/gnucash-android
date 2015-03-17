@@ -447,4 +447,5 @@
     <string name="label_chart_no_data">No chart data available</string>
     <string name="label_chart_overall">Overall</string>
     <string name="label_chart_total">Total\n</string>
+    <string name="label_save_template">Save as template</string>
 </resources>

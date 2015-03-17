@@ -164,6 +164,11 @@ public class TransactionFormFragment extends SherlockFragment implements
 	private Spinner mDoubleAccountSpinner;
 
     /**
+     * Checkbox indicating if this transaction should be saved as a template or not
+     */
+    private CheckBox mSaveTemplate;
+
+    /**
      * Flag to note if double entry accounting is in use or not
      */
 	private boolean mUseDoubleEntry;
@@ -209,7 +214,8 @@ public class TransactionFormFragment extends SherlockFragment implements
 		mDoubleAccountSpinner   = (Spinner) v.findViewById(R.id.input_double_entry_accounts_spinner);
         mOpenSplitsButton       = (Button) v.findViewById(R.id.btn_open_splits);
         mRecurrenceTextView     = (TextView) v.findViewById(R.id.input_recurrence);
-		return v;
+        mSaveTemplate           = (CheckBox) v.findViewById(R.id.checkbox_save_template);
+        return v;
 	}
 
 	@Override
@@ -296,7 +302,7 @@ public class TransactionFormFragment extends SherlockFragment implements
         adapter.setFilterQueryProvider(new FilterQueryProvider() {
             @Override
             public Cursor runQuery(CharSequence name) {
-                return mTransactionsDbAdapter.fetchTransactionsStartingWith(name==null?"":name.toString());
+                return mTransactionsDbAdapter.fetchTemplatesStartingWith(name == null ? "" : name.toString());
             }
         });
 
@@ -378,6 +384,8 @@ public class TransactionFormFragment extends SherlockFragment implements
         if (mMultiCurrency) {
             enableControls(false);
         }
+
+        mSaveTemplate.setChecked(mTransaction.isTemplate());
     }
 
     private void enableControls(boolean b) {
@@ -659,8 +667,17 @@ public class TransactionFormFragment extends SherlockFragment implements
         mTransaction.setExported(false);
         //save the normal transaction first
         mTransactionsDbAdapter.addTransaction(mTransaction);
-        scheduleRecurringTransaction();
 
+        if (mSaveTemplate.isChecked()){
+            Transaction templateTransaction;
+            //creating a new recurring transaction
+            templateTransaction = new Transaction(mTransaction, true);
+            templateTransaction.setTemplate(true);
+            mTransactionsDbAdapter.addTransaction(templateTransaction);
+
+            //inside the if statement becuase scheduling always creates a template
+            scheduleRecurringTransaction(templateTransaction.getUID());
+        }
 
         //update widgets, if any
 		WidgetConfigurationActivity.updateAllWidgets(getActivity().getApplicationContext());
@@ -672,27 +689,22 @@ public class TransactionFormFragment extends SherlockFragment implements
      * Schedules a recurring transaction (if necessary) after the transaction has been saved
      * @see #saveNewTransaction()
      */
-    private void scheduleRecurringTransaction() {
-        List<ScheduledAction> events = RecurrenceParser.parse(mEventRecurrence, ScheduledAction.ActionType.TRANSACTION);
+    private void scheduleRecurringTransaction(String transactionUID) {
+        List<ScheduledAction> events = RecurrenceParser.parse(mEventRecurrence,
+                ScheduledAction.ActionType.TRANSACTION);
 
         if (events.size() == 0) //there are no scheduled events detected
             return;
 
-        Transaction recurringTransaction;
-        //creating a new recurring transaction
-        recurringTransaction = new Transaction(mTransaction, true);
-        recurringTransaction.setTemplate(true);
-        mTransactionsDbAdapter.addTransaction(recurringTransaction);
-
         ScheduledActionDbAdapter scheduledActionDbAdapter = GnuCashApplication.getScheduledEventDbAdapter();
         for (ScheduledAction event : events) {
-            event.setEventUID(recurringTransaction.getUID());
+            event.setEventUID(transactionUID);
             event.setLastRun(System.currentTimeMillis());
             scheduledActionDbAdapter.addScheduledEvent(event);
 
             Log.i("TransactionFormFragment", event.toString());
         }
-        if (events.size() > 0)
+        if (events.size() > 0) //TODO: localize this toast string for all supported locales
             Toast.makeText(getActivity(), "Scheduled transaction", Toast.LENGTH_SHORT).show();
     }
 
@@ -846,11 +858,17 @@ public class TransactionFormFragment extends SherlockFragment implements
     @Override
     public void onRecurrenceSet(String rrule) {
         mRecurrenceRule = rrule;
-        String repeatString = "Not scheduled";
+        String repeatString = "Not scheduled"; //TODO: localize this string
         if (mRecurrenceRule != null){
             mEventRecurrence.parse(mRecurrenceRule);
             repeatString = EventRecurrenceFormatter.getRepeatString(getActivity(), getResources(), mEventRecurrence, true);
 
+            //when recurrence is set, we will definitely be saving a template
+            mSaveTemplate.setChecked(true);
+            mSaveTemplate.setEnabled(false);
+        } else {
+            mSaveTemplate.setEnabled(true);
+            mSaveTemplate.setChecked(false);
         }
 
         mRecurrenceTextView.setText(repeatString);
