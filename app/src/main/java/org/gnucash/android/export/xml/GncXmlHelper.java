@@ -18,6 +18,7 @@
 package org.gnucash.android.export.xml;
 
 import org.gnucash.android.model.Money;
+import org.gnucash.android.model.ScheduledEvent;
 import org.gnucash.android.model.Split;
 import org.gnucash.android.model.TransactionType;
 import org.w3c.dom.Document;
@@ -27,6 +28,7 @@ import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 /**
  * Collection of helper tags and methods for Gnc XML export
@@ -43,7 +45,7 @@ public abstract class GncXmlHelper {
     public static final String ATTR_VALUE_STRING    = "string";
     public static final String ATTR_VALUE_GUID      = "guid";
     public static final String ATTR_VALUE_BOOK      = "book";
-    public static final String ATTR_VALUE_GDATE     = "gdate";
+    public static final String TAG_GDATE = "gdate";
 
     /*
     Qualified GnuCash XML tag names
@@ -91,9 +93,32 @@ public abstract class GncXmlHelper {
     @Deprecated
     public static final String TAG_RECURRENCE_PERIOD = "trn:recurrence_period";
 
-    public static final String BOOK_VERSION         = "2.0.0";
-    public static final SimpleDateFormat TIME_FORMATTER = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z");
+    public static final String TAG_SCHEDULED_ACTION         = "gnc:schedxaction";
+    public static final String TAG_SX_ID                    = "sx:id";
+    public static final String TAG_SX_NAME                  = "sx:name";
+    public static final String TAG_SX_ENABLED               = "sx:enabled";
+    public static final String TAG_SX_AUTO_CREATE           = "sx:autoCreate";
+    public static final String TAG_SX_AUTO_CREATE_NOTIFY    = "sx:autoCreateNotify";
+    public static final String TAG_SX_ADVANCE_CREATE_DAYS   = "sx:advanceCreateDays";
+    public static final String TAG_SX_ADVANCE_REMIND_DAYS   = "sx:advanceRemindDays";
+    public static final String TAG_SX_INSTANCE_COUNT        = "sx:instanceCount";
+    public static final String TAG_SX_START                 = "sx:start";
+    public static final String TAG_SX_LAST                  = "sx:last";
+    public static final String TAG_SX_END                   = "sx:end";
+    public static final String TAG_SX_NUM_OCCUR             = "sx:num-occur";
+    public static final String TAG_SX_REM_OCCUR             = "sx:rem-occur";
+    public static final String TAG_SX_TAG                   = "sx:tag";
+    public static final String TAG_SX_SCHEDULE              = "sx:schedule";
+    public static final String TAG_RECURRENCE               = "gnc:recurrence";
+    public static final String TAG_RX_MULT                  = "recurrence:mult";
+    public static final String TAG_RX_PERIOD_TYPE           = "recurrence:period_type";
+    public static final String TAG_RX_START                 = "recurrence:start";
 
+
+    public static final String RECURRENCE_VERSION   = "1.0.0";
+    public static final String BOOK_VERSION         = "2.0.0";
+    public static final SimpleDateFormat TIME_FORMATTER = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z", Locale.US);
+    public static final SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
 
     public static final String KEY_PLACEHOLDER      = "placeholder";
     public static final String KEY_COLOR            = "color";
@@ -110,6 +135,27 @@ public abstract class GncXmlHelper {
         return TIME_FORMATTER.format(new Date(milliseconds));
     }
 
+    /**
+     * Converts the adjective describing the period type into a noun for the XML format
+     * @param periodType PeriodType from the scheduled action
+     * @return Period type as a noun
+     */
+    public static String getScheduledPeriodType(ScheduledEvent.PeriodType periodType){
+        switch (periodType) {
+            case DAILY:
+                return "day";
+            case WEEKLY:
+                return "week";
+            case FORTNIGHTLY:
+                return "fortnight";
+            case MONTHLY:
+                return "month";
+            case YEARLY:
+                return "year";
+            default:
+                return "";
+        }
+    }
     /**
      * Parses a date string formatted in the format "yyyy-MM-dd HH:mm:ss Z"
      * @param dateString String date representation

@@ -205,7 +205,17 @@ public abstract class DatabaseAdapter {
 		return mDb.query(mTableName, null, DatabaseSchema.CommonColumns._ID + "=" + rowId,
 				null, null, null, null);
 	}
-	
+
+    /**
+     * Retrieves record with GUID {@code uid} from database table
+     * @param uid GUID of record to be retrieved
+     * @return {@link Cursor} to record retrieved
+     */
+    public Cursor fetchRecord(@NonNull String uid){
+        return mDb.query(mTableName, null, CommonColumns.COLUMN_UID + "=?" ,
+                new String[]{uid}, null, null, null);
+    }
+
 	/**
 	 * Retrieves all records from database table
 	 * @return {@link Cursor} to all records in table <code>tableName</code>

@@ -115,7 +115,10 @@ public class DatabaseSchema {
         /**
          * Tags for any scheduled event specific information
          */
-        public static final String COLUMN_TAG           = "tag";
+        public static final String COLUMN_TAG               = "tag";
+        public static final String COLUMN_ENABLED           = "is_enabled";
+        public static final String COLUMN_NUM_OCCURRENCES   = "num_occurrences";
+        public static final String COLUMN_EXECUTION_COUNT   = "execution_count";
 
         public static final String INDEX_UID            = "scheduled_event_uid_index";
     }

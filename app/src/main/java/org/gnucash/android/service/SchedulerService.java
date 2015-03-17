@@ -31,8 +31,6 @@ import org.gnucash.android.export.ExporterAsyncTask;
 import org.gnucash.android.model.ScheduledEvent;
 import org.gnucash.android.model.Transaction;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -63,7 +61,7 @@ public class SchedulerService extends IntentService {
         wakeLock.acquire();
 
         ScheduledEventDbAdapter scheduledEventDbAdapter = GnuCashApplication.getScheduledEventDbAdapter();
-        List<ScheduledEvent> scheduledEvents = scheduledEventDbAdapter.getAllScheduledEvents();
+        List<ScheduledEvent> scheduledEvents = scheduledEventDbAdapter.getAllEnabledScheduledActions();
 
         for (ScheduledEvent scheduledEvent : scheduledEvents) {
             long lastRun    = scheduledEvent.getLastRun();
@@ -72,7 +70,8 @@ public class SchedulerService extends IntentService {
 
             long now = System.currentTimeMillis();
             //if we did not exceed the endtime (if there is one), and one execution period has passed since last run
-            if (((endTime > 0 && now < endTime) || endTime == 0) && (lastRun + period) < now ){
+            if (((endTime > 0 && now < endTime) || (scheduledEvent.getExecutionCount() < scheduledEvent.getNumberOfOccurences()) || endTime == 0)
+                    && (lastRun + period) < now ){
                 executeScheduledEvent(scheduledEvent);
             }
         }
@@ -119,7 +118,12 @@ public class SchedulerService extends IntentService {
         ScheduledEventDbAdapter.getInstance().updateRecord(
                 scheduledEvent.getUID(),
                 DatabaseSchema.ScheduledEventEntry.COLUMN_LAST_RUN,
-                Long.toString(System.currentTimeMillis())
-        );
+                Long.toString(System.currentTimeMillis()));
+
+        //update the execution count
+        ScheduledEventDbAdapter.getInstance().updateRecord(
+                scheduledEvent.getUID(),
+                DatabaseSchema.ScheduledEventEntry.COLUMN_EXECUTION_COUNT,
+                Integer.toString(scheduledEvent.getExecutionCount()+1));
     }
 }

@@ -23,6 +23,7 @@ import android.util.Log;
 
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.DatabaseSchema.ScheduledEventEntry;
+import org.gnucash.android.export.ExportParams;
 import org.gnucash.android.model.ScheduledEvent;
 
 import java.util.ArrayList;
@@ -61,6 +62,9 @@ public class ScheduledEventDbAdapter extends DatabaseAdapter {
         contentValues.put(ScheduledEventEntry.COLUMN_LAST_RUN,  scheduledEvent.getLastRun());
         contentValues.put(ScheduledEventEntry.COLUMN_TYPE,      scheduledEvent.getEventType().name());
         contentValues.put(ScheduledEventEntry.COLUMN_TAG,       scheduledEvent.getTag());
+        contentValues.put(ScheduledEventEntry.COLUMN_ENABLED,   scheduledEvent.isEnabled() ? "1":"0");
+        contentValues.put(ScheduledEventEntry.COLUMN_NUM_OCCURRENCES, scheduledEvent.getNumberOfOccurences());
+        contentValues.put(ScheduledEventEntry.COLUMN_EXECUTION_COUNT, scheduledEvent.getExecutionCount());
 
         Log.d(TAG, "Replace scheduled event in the db");
         return mDb.replace(ScheduledEventEntry.TABLE_NAME, null, contentValues);
@@ -80,6 +84,9 @@ public class ScheduledEventDbAdapter extends DatabaseAdapter {
         long lastRun    = cursor.getLong(cursor.getColumnIndexOrThrow(ScheduledEventEntry.COLUMN_LAST_RUN));
         String typeString = cursor.getString(cursor.getColumnIndexOrThrow(ScheduledEventEntry.COLUMN_TYPE));
         String tag      = cursor.getString(cursor.getColumnIndexOrThrow(ScheduledEventEntry.COLUMN_TAG));
+        boolean enabled = cursor.getInt(cursor.getColumnIndexOrThrow(ScheduledEventEntry.COLUMN_ENABLED)) > 0;
+        int numOccurrences = cursor.getInt(cursor.getColumnIndexOrThrow(ScheduledEventEntry.COLUMN_NUM_OCCURRENCES));
+        int execCount = cursor.getInt(cursor.getColumnIndexOrThrow(ScheduledEventEntry.COLUMN_EXECUTION_COUNT));
 
         ScheduledEvent event = new ScheduledEvent(ScheduledEvent.EventType.valueOf(typeString));
         populateModel(cursor, event);
@@ -89,6 +96,9 @@ public class ScheduledEventDbAdapter extends DatabaseAdapter {
         event.setEventUID(eventUid);
         event.setLastRun(lastRun);
         event.setTag(tag);
+        event.setEnabled(enabled);
+        event.setNumberOfOccurences(numOccurrences);
+        event.setExecutionCount(execCount);
 
         return event;
     }
@@ -138,6 +148,20 @@ public class ScheduledEventDbAdapter extends DatabaseAdapter {
      */
     public List<ScheduledEvent> getAllScheduledEvents(){
         Cursor cursor = fetchAllRecords();
+        List<ScheduledEvent> scheduledEvents = new ArrayList<ScheduledEvent>();
+        while (cursor.moveToNext()){
+            scheduledEvents.add(buildScheduledEventInstance(cursor));
+        }
+        return scheduledEvents;
+    }
+
+    /**
+     * Returns all enabled scheduled actions in the database
+     * @return List of enalbed scheduled actions
+     */
+    public List<ScheduledEvent> getAllEnabledScheduledActions(){
+        Cursor cursor = mDb.query(mTableName,
+                        null, ScheduledEventEntry.COLUMN_ENABLED + "=1", null, null, null, null);
         List<ScheduledEvent> scheduledEvents = new ArrayList<ScheduledEvent>();
         while (cursor.moveToNext()){
             scheduledEvents.add(buildScheduledEventInstance(cursor));

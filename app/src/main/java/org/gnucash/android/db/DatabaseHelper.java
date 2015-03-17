@@ -122,6 +122,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + ScheduledEventEntry.COLUMN_START_TIME     + " integer not null, "
             + ScheduledEventEntry.COLUMN_END_TIME       + " integer default 0, "
             + ScheduledEventEntry.COLUMN_TAG            + " text, "
+            + ScheduledEventEntry.COLUMN_ENABLED        + " tinyint default 1, " //enabled by default
+            + ScheduledEventEntry.COLUMN_NUM_OCCURRENCES+ " integer default 0, "
+            + ScheduledEventEntry.COLUMN_EXECUTION_COUNT+ " integer default 0, "
             + ScheduledEventEntry.COLUMN_CREATED_AT     + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
             + ScheduledEventEntry.COLUMN_MODIFIED_AT    + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP "
             + ");" + createUpdatedAtTrigger(ScheduledEventEntry.TABLE_NAME);
@@ -377,7 +380,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
                 //TODO: Migrate old scheduled events using only SQL, code had changed
                 GnuCashApplication.startScheduledEventExecutionService(GnuCashApplication.getAppContext());
-
+                //TODO: Take care to properly migrate the created_at dates for transactions (use the date already in the transaction)
 
             }
 		}

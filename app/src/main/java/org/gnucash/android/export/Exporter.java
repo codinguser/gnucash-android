@@ -23,6 +23,7 @@ import android.os.Environment;
 
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.AccountsDbAdapter;
+import org.gnucash.android.db.ScheduledEventDbAdapter;
 import org.gnucash.android.db.SplitsDbAdapter;
 import org.gnucash.android.db.TransactionsDbAdapter;
 
@@ -62,6 +63,7 @@ public abstract class Exporter {
     protected AccountsDbAdapter mAccountsDbAdapter;
     protected TransactionsDbAdapter mTransactionsDbAdapter;
     protected SplitsDbAdapter mSplitsDbAdapter;
+    protected ScheduledEventDbAdapter mScheduledEventDbAdapter;
     protected Context mContext;
 
     public Exporter(ExportParams params, SQLiteDatabase db) {
@@ -71,10 +73,12 @@ public abstract class Exporter {
             mAccountsDbAdapter = AccountsDbAdapter.getInstance();
             mTransactionsDbAdapter = TransactionsDbAdapter.getInstance();
             mSplitsDbAdapter = SplitsDbAdapter.getInstance();
+            mScheduledEventDbAdapter = ScheduledEventDbAdapter.getInstance();
         } else {
             mSplitsDbAdapter = new SplitsDbAdapter(db);
             mTransactionsDbAdapter = new TransactionsDbAdapter(db, mSplitsDbAdapter);
             mAccountsDbAdapter = new AccountsDbAdapter(db, mTransactionsDbAdapter);
+            mScheduledEventDbAdapter = new ScheduledEventDbAdapter(db);
         }
     }
 
