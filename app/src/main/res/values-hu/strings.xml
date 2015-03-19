@@ -16,7 +16,6 @@
 -->
 
 <resources>
-    <string name="app_name">GnuCash</string>
     <string name="title_add_account">Create Account</string>
     <string name="title_edit_account">Edit Account</string>
     <string name="info_details">Info</string>
