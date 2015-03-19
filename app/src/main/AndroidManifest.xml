@@ -80,6 +80,7 @@
         <activity android:name=".ui.chart.ChartReportActivity" />
         <activity android:name=".ui.chart.PieChartActivity" />
         <activity android:name=".ui.chart.LineChartActivity" />
+        <activity android:name=".ui.chart.BarChartActivity" />
         <service android:name=".service.SchedulerService"
             android:exported="false"
             android:label="GnuCash Android Scheduler Execution Service"/>
