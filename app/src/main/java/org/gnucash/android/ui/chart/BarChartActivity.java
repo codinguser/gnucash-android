@@ -4,12 +4,16 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
+import com.github.mikephil.charting.utils.Highlight;
 import com.github.mikephil.charting.utils.LargeValueFormatter;
 
 import org.gnucash.android.R;
@@ -31,7 +35,7 @@ import java.util.Map;
  *
  * @author Oleksandr Tyshkovets <olexandr.tyshkovets@gmail.com>
  */
-public class BarChartActivity extends PassLockActivity {
+public class BarChartActivity extends PassLockActivity implements OnChartValueSelectedListener {
 
     private static final String TAG = "BarChartActivity";
     private static final String X_AXIS_PATTERN = "MMM YY";
@@ -54,6 +58,7 @@ public class BarChartActivity extends PassLockActivity {
 
         mChart = new com.github.mikephil.charting.charts.BarChart(this);
         ((LinearLayout) findViewById(R.id.chart)).addView(mChart);
+        mChart.setOnChartValueSelectedListener(this);
         mChart.setDescription("");
 //        mChart.setValueFormatter(new LargeValueFormatter());
         mChart.setDrawValuesForWholeStack(false);
@@ -147,4 +152,16 @@ public class BarChartActivity extends PassLockActivity {
         mLatestTransactionTimestamp = timestamps.get(timestamps.size() - 1);
     }
 
+    @Override
+    public void onValueSelected(Entry e, int dataSetIndex, Highlight h) {
+        if (e == null) return;
+        ((TextView) findViewById(R.id.selected_chart_slice))
+                .setText(mChart.getData().getXVals().get(e.getXIndex()) + " - " + e.getVal()
+                        + " (" + String.format("%.2f", (e.getVal() / mChart.getData().getDataSetByIndex(dataSetIndex).getYValueSum()) * 100) + " %)");
+    }
+
+    @Override
+    public void onNothingSelected() {
+        ((TextView) findViewById(R.id.selected_chart_slice)).setText("");
+    }
 }
