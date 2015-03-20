@@ -14,6 +14,7 @@ import com.github.mikephil.charting.utils.LargeValueFormatter;
 
 import org.gnucash.android.R;
 import org.gnucash.android.db.AccountsDbAdapter;
+import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.model.Account;
 import org.gnucash.android.model.AccountType;
 import org.gnucash.android.ui.passcode.PassLockActivity;
@@ -21,6 +22,7 @@ import org.joda.time.LocalDateTime;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +34,7 @@ import java.util.Map;
 public class BarChartActivity extends PassLockActivity {
 
     private static final String TAG = "BarChartActivity";
+    private static final String X_AXIS_PATTERN = "MMM YY";
 
     private static final int[] COLORS = {
             Color.rgb(104, 241, 175), Color.RED
@@ -39,6 +42,10 @@ public class BarChartActivity extends PassLockActivity {
 
     private BarChart mChart;
     private List<AccountType> mAccountTypeList;
+    private Map<AccountType, Long> mEarliestTimestampsMap = new HashMap<AccountType, Long>();
+    private Map<AccountType, Long> mLatestTimestampsMap = new HashMap<AccountType, Long>();
+    private long mEarliestTransactionTimestamp;
+    private long mLatestTransactionTimestamp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,8 +78,10 @@ public class BarChartActivity extends PassLockActivity {
     protected void setStackedData() {
         AccountsDbAdapter mAccountsDbAdapter = AccountsDbAdapter.getInstance();
 
-        LocalDateTime start = new LocalDateTime().minusMonths(5).withDayOfMonth(1).withMillisOfDay(0);
-        LocalDateTime end = new LocalDateTime().withDayOfMonth(1).withMillisOfDay(0);
+        setEarliestAndLatestTimestamps(mAccountTypeList);
+
+        LocalDateTime start = new LocalDateTime(mEarliestTransactionTimestamp).withDayOfMonth(1).withMillisOfDay(0);
+        LocalDateTime end = new LocalDateTime(mLatestTransactionTimestamp).withDayOfMonth(1).withMillisOfDay(0);
         Log.w(TAG, "X AXIS START DATE: " + start.toString("dd MM yyyy"));
         Log.w(TAG, "X AXIS END DATE: " + end.toString("dd MM yyyy"));
 
@@ -94,9 +103,8 @@ public class BarChartActivity extends PassLockActivity {
         ArrayList<String> xVals = new ArrayList<String>();
         int z = 0;
         while (!start.isAfter(end)) {
-            xVals.add(start.toString("MMM yy"));
+            xVals.add(start.toString(X_AXIS_PATTERN));
             Log.i(TAG, "xVals " + start.toString("MM yy"));
-
 
             long startPeriod = start.dayOfMonth().withMinimumValue().millisOfDay().withMinimumValue().toDate().getTime();
             long endPeriod = start.dayOfMonth().withMaximumValue().millisOfDay().withMaximumValue().toDate().getTime();
@@ -123,6 +131,20 @@ public class BarChartActivity extends PassLockActivity {
 
         BarData bd = new BarData(xVals, dataSets);
         mChart.setData(bd);
+    }
+
+    private void setEarliestAndLatestTimestamps(List<AccountType> accountTypeList) {
+        TransactionsDbAdapter transactionsDbAdapter = TransactionsDbAdapter.getInstance();
+        for (AccountType type : accountTypeList) {
+            mEarliestTimestampsMap.put(type, transactionsDbAdapter.getTimestampOfEarliestTransaction(type));
+            mLatestTimestampsMap.put(type, transactionsDbAdapter.getTimestampOfLatestTransaction(type));
+        }
+
+        List<Long> timestamps = new ArrayList<Long>(mEarliestTimestampsMap.values());
+        timestamps.addAll(mLatestTimestampsMap.values());
+        Collections.sort(timestamps);
+        mEarliestTransactionTimestamp = timestamps.get(0);
+        mLatestTransactionTimestamp = timestamps.get(timestamps.size() - 1);
     }
 
 }
