@@ -39,6 +39,7 @@ public class BarChartActivity extends PassLockActivity implements OnChartValueSe
 
     private static final String TAG = "BarChartActivity";
     private static final String X_AXIS_PATTERN = "MMM YY";
+    private static final String SELECTED_VALUE_PATTERN = "%s : %.2f (%.2f %%)";
 
     private static final int[] COLORS = {
             Color.rgb(104, 241, 175), Color.RED
@@ -155,9 +156,11 @@ public class BarChartActivity extends PassLockActivity implements OnChartValueSe
     @Override
     public void onValueSelected(Entry e, int dataSetIndex, Highlight h) {
         if (e == null) return;
-        ((TextView) findViewById(R.id.selected_chart_slice))
-                .setText(mChart.getData().getXVals().get(e.getXIndex()) + " - " + e.getVal()
-                        + " (" + String.format("%.2f", (e.getVal() / mChart.getData().getDataSetByIndex(dataSetIndex).getYValueSum()) * 100) + " %)");
+        BarEntry entry = (BarEntry) e;
+        String label = mChart.getData().getXVals().get(entry.getXIndex());
+        double value = entry.getVals()[h.getStackIndex()];
+        double percent = value / mChart.getData().getDataSetByIndex(dataSetIndex).getYValueSum() * 100;
+        ((TextView) findViewById(R.id.selected_chart_slice)).setText(String.format(SELECTED_VALUE_PATTERN, label, value, percent));
     }
 
     @Override
