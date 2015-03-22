@@ -5,7 +5,10 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuItem;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.data.BarData;
@@ -39,7 +42,7 @@ public class BarChartActivity extends PassLockActivity implements OnChartValueSe
 
     private static final String TAG = "BarChartActivity";
     private static final String X_AXIS_PATTERN = "MMM YY";
-    private static final String SELECTED_VALUE_PATTERN = "%s : %.2f (%.2f %%)";
+    private static final String SELECTED_VALUE_PATTERN = "%s - %.2f (%.2f %%)";
 
     private static final int[] COLORS = {
             Color.rgb(104, 241, 175), Color.RED
@@ -51,6 +54,8 @@ public class BarChartActivity extends PassLockActivity implements OnChartValueSe
     private Map<AccountType, Long> mLatestTimestampsMap = new HashMap<AccountType, Long>();
     private long mEarliestTransactionTimestamp;
     private long mLatestTransactionTimestamp;
+    private boolean mTotalPercentageMode = true;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,7 +79,7 @@ public class BarChartActivity extends PassLockActivity implements OnChartValueSe
         setStackedData();
 
         Legend l = mChart.getLegend();
-        l.setForm(Legend.LegendForm.SQUARE);
+        l.setForm(Legend.LegendForm.CIRCLE);
         l.setPosition(Legend.LegendPosition.RIGHT_OF_CHART_INSIDE);
 
         mChart.animateX(3000);
@@ -154,13 +159,42 @@ public class BarChartActivity extends PassLockActivity implements OnChartValueSe
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getSupportMenuInflater().inflate(R.menu.chart_actions, menu);
+        // hide pie and bar chart specific menu items
+        menu.findItem(R.id.menu_order_by_size).setVisible(false);
+        menu.findItem(R.id.menu_toggle_labels).setVisible(false);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_toggle_legend: {
+                mChart.getLegend().setEnabled(!mChart.getLegend().isEnabled());
+                mChart.invalidate();
+                break;
+            }
+            case R.id.menu_percentage_mode: {
+                mTotalPercentageMode = !mTotalPercentageMode;
+                int msgId = mTotalPercentageMode ? R.string.toast_chart_percentage_mode_total
+                        : R.string.toast_chart_percentage_mode_current_bar;
+                Toast.makeText(this, msgId, Toast.LENGTH_LONG).show();
+                break;
+            }
+        }
+        return true;
+    }
+
+    @Override
     public void onValueSelected(Entry e, int dataSetIndex, Highlight h) {
         if (e == null) return;
         BarEntry entry = (BarEntry) e;
         String label = mChart.getData().getXVals().get(entry.getXIndex());
         double value = entry.getVals()[h.getStackIndex()];
-        double percent = value / mChart.getData().getDataSetByIndex(dataSetIndex).getYValueSum() * 100;
-        ((TextView) findViewById(R.id.selected_chart_slice)).setText(String.format(SELECTED_VALUE_PATTERN, label, value, percent));
+        double sum = mTotalPercentageMode ? mChart.getData().getDataSetByIndex(dataSetIndex).getYValueSum() : entry.getVal();
+        ((TextView) findViewById(R.id.selected_chart_slice))
+                .setText(String.format(SELECTED_VALUE_PATTERN, label, value, value / sum * 100));
     }
 
     @Override

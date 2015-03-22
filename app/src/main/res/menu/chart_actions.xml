@@ -29,4 +29,8 @@
           android:title="@string/menu_toggle_labels"
           android:showAsAction="never" />
 
+    <item android:id="@+id/menu_percentage_mode"
+          android:title="@string/menu_toggle_percentage_mode"
+          android:showAsAction="never" />
+
 </menu>

@@ -442,7 +442,10 @@
     <string name="menu_order_by_size">Order by size</string>
     <string name="menu_toggle_legend">Toggle legend</string>
     <string name="menu_toggle_labels">Toggle labels</string>
+    <string name="menu_toggle_percentage_mode">Toggle percentage</string>
     <string name="label_chart_no_data">No chart data available</string>
     <string name="label_chart_overall">Overall</string>
     <string name="label_chart_total">Total\n</string>
+    <string name="toast_chart_percentage_mode_total">The percentage of selected value calculated from the total amount</string>
+    <string name="toast_chart_percentage_mode_current_bar">The percentage of selected value calculated from the current stacked bar amount</string>
 </resources>

@@ -284,7 +284,9 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getSupportMenuInflater().inflate(R.menu.pie_chart_actions, menu);
+        getSupportMenuInflater().inflate(R.menu.chart_actions, menu);
+        // hide bar chart specific menu items
+        menu.findItem(R.id.menu_percentage_mode).setVisible(false);
         return true;
     }
 

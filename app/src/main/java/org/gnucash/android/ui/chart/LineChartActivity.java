@@ -6,6 +6,8 @@ import android.util.Log;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuItem;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.data.Entry;
@@ -174,6 +176,28 @@ public class LineChartActivity extends PassLockActivity implements OnChartValueS
                 new LocalDate(mEarliestTransactionTimestamp).withDayOfMonth(1),
                 new LocalDate(mEarliestTimestampsMap.get(accountType)).withDayOfMonth(1)
                 ).getMonths();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getSupportMenuInflater().inflate(R.menu.chart_actions, menu);
+        // hide pie chart specific menu items
+        menu.findItem(R.id.menu_order_by_size).setVisible(false);
+        menu.findItem(R.id.menu_toggle_labels).setVisible(false);
+        menu.findItem(R.id.menu_percentage_mode).setVisible(false);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_toggle_legend: {
+                mChart.getLegend().setEnabled(!mChart.getLegend().isEnabled());
+                mChart.invalidate();
+                break;
+            }
+        }
+        return true;
     }
 
     @Override
