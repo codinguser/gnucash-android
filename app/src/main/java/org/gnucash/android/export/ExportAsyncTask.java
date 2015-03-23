@@ -59,7 +59,7 @@ import java.util.List;
  *
  * @author Ngewi Fet <ngewif@gmail.com>
  */
-public class ExporterAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
+public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
     /**
      * App context
      */
@@ -77,7 +77,7 @@ public class ExporterAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
      */
     private ExportParams mExportParams;
 
-    public ExporterAsyncTask(Context context){
+    public ExportAsyncTask(Context context){
         this.mContext = context;
     }
 

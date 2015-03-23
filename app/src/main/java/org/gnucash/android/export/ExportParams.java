@@ -21,7 +21,7 @@ package org.gnucash.android.export;
  * The parameters are determined by the user in the export dialog and are then transmitted to the asynchronous task which
  * actually performs the export.
  * @see org.gnucash.android.export.ExportDialogFragment
- * @see ExporterAsyncTask
+ * @see ExportAsyncTask
  *
  * @author Ngewi Fet <ngewif@gmail.com>
  */

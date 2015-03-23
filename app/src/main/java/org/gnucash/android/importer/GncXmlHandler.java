@@ -141,7 +141,8 @@ public class GncXmlHandler extends DefaultHandler {
     int mRecurrenceMultiplier   = 1;
 
     /**
-     * Used for parsing old backup files where recurrence was saved inside the transaction
+     * Used for parsing old backup files where recurrence was saved inside the transaction.
+     * Newer backup files will not require this
      * @deprecated Use the new scheduled action elements instead
      */
     @Deprecated
@@ -187,37 +188,39 @@ public class GncXmlHandler extends DefaultHandler {
     @Override
     public void startElement(String uri, String localName,
                              String qualifiedName, Attributes attributes) throws SAXException {
-        if (qualifiedName.equalsIgnoreCase(GncXmlHelper.TAG_ACCOUNT)) {
-            mAccount = new Account(""); // dummy name, will be replaced when we find name tag
-        }
-        else if (qualifiedName.equalsIgnoreCase(GncXmlHelper.TAG_TRANSACTION)){
-            mTransaction = new Transaction(""); // dummy name will be replaced
-            mTransaction.setExported(true);     // default to exported when import transactions
-        }
-        else if (qualifiedName.equalsIgnoreCase(GncXmlHelper.TAG_TRN_SPLIT)){
-            mSplit = new Split(Money.getZeroInstance(),"");
-        }
-        else if (qualifiedName.equalsIgnoreCase(GncXmlHelper.TAG_DATE_POSTED)){
-            mIsDatePosted = true;
-        }
-        else if (qualifiedName.equalsIgnoreCase(GncXmlHelper.TAG_DATE_ENTERED)){
-            mIsDateEntered = true;
-        }
-        else if (qualifiedName.equalsIgnoreCase(GncXmlHelper.TAG_TEMPLATE_TRANSACTIONS)) {
-            mInTemplates = true;
-        }
-        else if (qualifiedName.equalsIgnoreCase(GncXmlHelper.TAG_SCHEDULED_ACTION)){
-            //default to transaction type, will be changed during parsing
-            mScheduledAction = new ScheduledAction(ScheduledAction.ActionType.TRANSACTION);
-        }
-        else if (qualifiedName.equalsIgnoreCase(GncXmlHelper.TAG_SX_START)){
-            mIsScheduledStart = true;
-        }
-        else if (qualifiedName.equalsIgnoreCase(GncXmlHelper.TAG_SX_END)){
-            mIsScheduledEnd = true;
-        }
-        else if (qualifiedName.equalsIgnoreCase(GncXmlHelper.TAG_SX_LAST)){
-            mIsLastRun = true;
+        switch (qualifiedName.toLowerCase()){
+            case GncXmlHelper.TAG_ACCOUNT:
+                mAccount = new Account(""); // dummy name, will be replaced when we find name tag
+                break;
+            case GncXmlHelper.TAG_TRANSACTION:
+                mTransaction = new Transaction(""); // dummy name will be replaced
+                mTransaction.setExported(true);     // default to exported when import transactions
+                break;
+            case GncXmlHelper.TAG_TRN_SPLIT:
+                mSplit = new Split(Money.getZeroInstance(),"");
+                break;
+            case GncXmlHelper.TAG_DATE_POSTED:
+                mIsDatePosted = true;
+                break;
+            case GncXmlHelper.TAG_DATE_ENTERED:
+                mIsDateEntered = true;
+                break;
+            case GncXmlHelper.TAG_TEMPLATE_TRANSACTIONS:
+                mInTemplates = true;
+                break;
+            case GncXmlHelper.TAG_SCHEDULED_ACTION:
+                //default to transaction type, will be changed during parsing
+                mScheduledAction = new ScheduledAction(ScheduledAction.ActionType.TRANSACTION);
+                break;
+            case GncXmlHelper.TAG_SX_START:
+                mIsScheduledStart = true;
+                break;
+            case GncXmlHelper.TAG_SX_END:
+                mIsScheduledEnd = true;
+                break;
+            case GncXmlHelper.TAG_SX_LAST:
+                mIsLastRun = true;
+                break;
         }
     }
 
@@ -272,29 +275,34 @@ public class GncXmlHandler extends DefaultHandler {
             }
         }
         else if (qualifiedName.equalsIgnoreCase(GncXmlHelper.TAG_SLOT_KEY)){
-            if (characterString.equals(GncXmlHelper.KEY_PLACEHOLDER)){
-                mInPlaceHolderSlot = true;
-            }
-            else if (characterString.equals(GncXmlHelper.KEY_COLOR)){
-                mInColorSlot = true;
-            }
-            else if (characterString.equals(GncXmlHelper.KEY_FAVORITE)){
-                mInFavoriteSlot = true;
-            }
-            else if (characterString.equals(GncXmlHelper.KEY_NOTES)){
-                mIsNote = true;
-            }
-            else if (characterString.equals(GncXmlHelper.KEY_DEFAULT_TRANSFER_ACCOUNT)){
-                mInDefaultTransferAccount = true;
-            }
-            else if (characterString.equals(GncXmlHelper.KEY_EXPORTED)){
-                mInExported = true;
-            } else if (characterString.equals(GncXmlHelper.KEY_SPLIT_ACCOUNT)){
-                mInSplitAccountSlot = true;
-            } else if (characterString.equals(GncXmlHelper.KEY_CREDIT_FORMULA)){
-                mInCreditFormulaSlot = true;
-            } else if (characterString.equals(GncXmlHelper.KEY_DEBIT_FORMULA)){
-                mInDebitFormulaSlot = true;
+            switch (characterString) {
+                case GncXmlHelper.KEY_PLACEHOLDER:
+                    mInPlaceHolderSlot = true;
+                    break;
+                case GncXmlHelper.KEY_COLOR:
+                    mInColorSlot = true;
+                    break;
+                case GncXmlHelper.KEY_FAVORITE:
+                    mInFavoriteSlot = true;
+                    break;
+                case GncXmlHelper.KEY_NOTES:
+                    mIsNote = true;
+                    break;
+                case GncXmlHelper.KEY_DEFAULT_TRANSFER_ACCOUNT:
+                    mInDefaultTransferAccount = true;
+                    break;
+                case GncXmlHelper.KEY_EXPORTED:
+                    mInExported = true;
+                    break;
+                case GncXmlHelper.KEY_SPLIT_ACCOUNT:
+                    mInSplitAccountSlot = true;
+                    break;
+                case GncXmlHelper.KEY_CREDIT_FORMULA:
+                    mInCreditFormulaSlot = true;
+                    break;
+                case GncXmlHelper.KEY_DEBIT_FORMULA:
+                    mInDebitFormulaSlot = true;
+                    break;
             }
         }
         else if (qualifiedName.equalsIgnoreCase(GncXmlHelper.TAG_SLOT_VALUE)){
@@ -355,6 +363,8 @@ public class GncXmlHandler extends DefaultHandler {
                 } catch (ParseException e) {
                     Log.e(LOG_TAG, "Error parsing template split amount. " + e.getMessage());
                     e.printStackTrace();
+                } finally {
+                    mInCreditFormulaSlot = false;
                 }
             }
             else if (mInTemplates && mInDebitFormulaSlot){
@@ -367,6 +377,8 @@ public class GncXmlHandler extends DefaultHandler {
                 } catch (ParseException e) {
                     Log.e(LOG_TAG, "Error parsing template split amount. " + e.getMessage());
                     e.printStackTrace();
+                } finally {
+                    mInDebitFormulaSlot = false;
                 }
             }
         }
@@ -390,16 +402,19 @@ public class GncXmlHandler extends DefaultHandler {
                     mTransaction.setCreatedTimestamp(timestamp);
                     mIsDateEntered = false;
                 }
-                if (mIsScheduledStart){
+                if (mIsScheduledStart && mScheduledAction != null){
                     mScheduledAction.setStartTime(GncXmlHelper.DATE_FORMATTER.parse(characterString).getTime());
+                    mIsScheduledStart = false;
                 }
 
-                if (mIsScheduledEnd){
+                if (mIsScheduledEnd && mScheduledAction != null){
                     mScheduledAction.setEndTime(GncXmlHelper.DATE_FORMATTER.parse(characterString).getTime());
+                    mIsScheduledEnd = false;
                 }
 
-                if (mIsLastRun){
+                if (mIsLastRun && mScheduledAction != null){
                     mScheduledAction.setLastRun(GncXmlHelper.DATE_FORMATTER.parse(characterString).getTime());
+                    mIsLastRun = false;
                 }
             } catch (ParseException e) {
                 e.printStackTrace();
@@ -482,13 +497,13 @@ public class GncXmlHandler extends DefaultHandler {
     @Override
     public void endDocument() throws SAXException {
         super.endDocument();
-        HashMap<String, Account> map = new HashMap<String, Account>(mAccountList.size());
-        HashMap<String, String> mapFullName = new HashMap<String, String>(mAccountList.size());
+        HashMap<String, Account> map = new HashMap<>(mAccountList.size());
+        HashMap<String, String> mapFullName = new HashMap<>(mAccountList.size());
         for(Account account:mAccountList) {
             map.put(account.getUID(), account);
             mapFullName.put(account.getUID(), null);
         }
-        java.util.Stack<Account> stack = new Stack<Account>();
+        java.util.Stack<Account> stack = new Stack<>();
         for (Account account:mAccountList){
             if (mapFullName.get(account.getUID()) != null) {
                 continue;

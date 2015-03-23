@@ -26,8 +26,8 @@ import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.db.ScheduledActionDbAdapter;
 import org.gnucash.android.db.TransactionsDbAdapter;
+import org.gnucash.android.export.ExportAsyncTask;
 import org.gnucash.android.export.ExportParams;
-import org.gnucash.android.export.ExporterAsyncTask;
 import org.gnucash.android.model.ScheduledAction;
 import org.gnucash.android.model.Transaction;
 
@@ -100,7 +100,7 @@ public class SchedulerService extends IntentService {
             case EXPORT:
                 ExportParams params = ExportParams.parseCsv(scheduledAction.getTag());
                 try {
-                    new ExporterAsyncTask(GnuCashApplication.getAppContext()).execute(params).get();
+                    new ExportAsyncTask(GnuCashApplication.getAppContext()).execute(params).get();
                 } catch (InterruptedException e) {
                     //TODO: Create special log for scheduler service
                     Log.e(LOG_TAG, e.getMessage());

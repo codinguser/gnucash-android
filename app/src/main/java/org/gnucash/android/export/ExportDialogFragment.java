@@ -107,7 +107,7 @@ public class ExportDialogFragment extends DialogFragment {
             dismiss();
 
             Log.i(TAG, "Commencing async export of transactions");
-            new ExporterAsyncTask(getActivity()).execute(exportParameters);
+            new ExportAsyncTask(getActivity()).execute(exportParameters);
 		}
 		
 	}
