@@ -111,6 +111,7 @@ public class BaseDrawerActivity extends SherlockFragmentActivity {
         ArrayAdapter<String> accountsNavAdapter = new ArrayAdapter<String>(this,
                 R.layout.drawer_list_item, accountNavOptions);
 
+        int titleColorGreen = getResources().getColor(R.color.title_green);
 
         ArrayList<String> transactionsNavOptions = new ArrayList<String>();
         transactionsNavOptions.add("Scheduled Transactions");
@@ -122,9 +123,11 @@ public class BaseDrawerActivity extends SherlockFragmentActivity {
         LayoutInflater inflater = getLayoutInflater();
         TextView accountHeader = (TextView) inflater.inflate(R.layout.drawer_section_header, null);
         accountHeader.setText("Accounts");
+        accountHeader.setTextColor(titleColorGreen);
 
         TextView transactionHeader = (TextView) inflater.inflate(R.layout.drawer_section_header, null);
         transactionHeader.setText("Transactions");
+        transactionHeader.setTextColor(titleColorGreen);
         MergeAdapter mergeAdapter = new MergeAdapter();
         mergeAdapter.addView(accountHeader);
         mergeAdapter.addAdapter(accountsNavAdapter);
@@ -134,6 +137,7 @@ public class BaseDrawerActivity extends SherlockFragmentActivity {
         mergeAdapter.addView(inflater.inflate(R.layout.horizontal_line, null));
         TextView settingsHeader = (TextView) inflater.inflate(R.layout.drawer_section_header, null);
         settingsHeader.setText("Settings");
+        settingsHeader.setTextColor(titleColorGreen);
 
         ArrayList<String> aboutNavOptions = new ArrayList<String>();
         aboutNavOptions.add("Backup & Export");
