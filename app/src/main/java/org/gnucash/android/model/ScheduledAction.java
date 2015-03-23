@@ -38,7 +38,29 @@ public class ScheduledAction extends BaseModel{
      */
     public enum ActionType {TRANSACTION, EXPORT}
 
-    public enum PeriodType {DAILY, WEEKLY, FORTNIGHTLY, MONTHLY, YEARLY}
+    public enum PeriodType {
+        DAY, WEEK, MONTH, YEAR;
+
+        int mMultiplier = 1; //multiplier for the period type
+
+        /**
+         * Sets the multiplier for this period type
+         * e.g. bi-weekly actions have period type {@link PeriodType#WEEK} and multiplier 2
+         * @param multiplier Multiplier for this period type
+         */
+        public void setMultiplier(int multiplier){
+            mMultiplier = multiplier;
+        }
+
+        /**
+         * Returns the multiplier for this period type. The default multiplier is 1.
+         * e.g. bi-weekly actions have period type {@link PeriodType#WEEK} and multiplier 2
+         * @return  Multiplier for this period type
+         */
+        public int getMultiplier(){
+            return mMultiplier;
+        }
+    }
 
     /**
      * Next scheduled run of Event
@@ -49,7 +71,7 @@ public class ScheduledAction extends BaseModel{
      * Unique ID of the template from which the recurring event will be executed.
      * For example, transaction UID
      */
-    private String mEventUID;
+    private String mActionUID;
 
     /**
      * Flag indicating if this event is enabled or not
@@ -86,12 +108,12 @@ public class ScheduledAction extends BaseModel{
         this.mActionType = actionType;
     }
 
-    public String getEventUID() {
-        return mEventUID;
+    public String getActionUID() {
+        return mActionUID;
     }
 
-    public void setEventUID(String eventUID) {
-        this.mEventUID = eventUID;
+    public void setActionUID(String actionUID) {
+        this.mActionUID = actionUID;
     }
 
     public long getLastRun() {
@@ -110,28 +132,74 @@ public class ScheduledAction extends BaseModel{
         this.mPeriod = period;
     }
 
+    /**
+     * Sets the period given the period type.
+     * The {@link org.gnucash.android.model.ScheduledAction.PeriodType} should have the multiplier set,
+     * e.g. bi-weekly actions have period type {@link PeriodType#WEEK} and multiplier 2
+     * @param periodType Type of period
+     */
+    public void setPeriod(PeriodType periodType){
+        int multiplier = periodType.getMultiplier();
+        switch (periodType){
+            case DAY:
+                mPeriod = RecurrenceParser.DAY_MILLIS * multiplier;
+                break;
+            case WEEK:
+                mPeriod = RecurrenceParser.WEEK_MILLIS * multiplier;
+                break;
+            case MONTH:
+                mPeriod = RecurrenceParser.MONTH_MILLIS * multiplier;
+                break;
+            case YEAR:
+                mPeriod = RecurrenceParser.YEAR_MILLIS * multiplier;
+                break;
+        }
+    }
+
+    /**
+     * Returns the period type for this scheduled action
+     * @return Period type of the action
+     */
+    public PeriodType getPeriodType(){
+        return getPeriodType(mPeriod);
+    }
+
+    /**
+     * Computes the {@link org.gnucash.android.model.ScheduledAction.PeriodType} for a given {@code period}
+     * @param period Period in milliseconds since Epoch
+     * @return PeriodType corresponding to the period
+     */
     public static PeriodType getPeriodType(long period){
-        int result = (int) (period/RecurrenceParser.DAY_MILLIS);
-        if (result == 0)
-            return PeriodType.DAILY;
-
-        result = (int) (period/RecurrenceParser.WEEK_MILLIS);
-        if (result == 0)
-            return PeriodType.WEEKLY;
-
-        result = (int) (period/(2*RecurrenceParser.WEEK_MILLIS));
-        if (result == 0)
-            return PeriodType.FORTNIGHTLY;
+        PeriodType periodType = PeriodType.DAY;
+        int result = (int) (period/RecurrenceParser.YEAR_MILLIS);
+        if (result > 0) {
+            periodType = PeriodType.YEAR;
+            periodType.setMultiplier(result);
+            return periodType;
+        }
 
         result = (int) (period/RecurrenceParser.MONTH_MILLIS);
-        if (result == 0)
-            return PeriodType.MONTHLY;
+        if (result > 0) {
+            periodType = PeriodType.MONTH;
+            periodType.setMultiplier(result);
+            return periodType;
+        }
 
-        result = (int) (period/RecurrenceParser.YEAR_MILLIS);
-        if (result == 0)
-            return PeriodType.YEARLY;
+        result = (int) (period/RecurrenceParser.WEEK_MILLIS);
+        if (result > 0) {
+            periodType = PeriodType.WEEK;
+            periodType.setMultiplier(result);
+            return periodType;
+        }
 
-        return PeriodType.DAILY;
+        result = (int) (period/RecurrenceParser.DAY_MILLIS);
+        if (result > 0) {
+            periodType = PeriodType.DAY;
+            periodType.setMultiplier(result);
+            return periodType;
+        }
+
+        return periodType;
     }
 
     public long getStartTime() {
@@ -155,6 +223,7 @@ public class ScheduledAction extends BaseModel{
     public long getApproxEndTime(){
         return mStartDate + (mPeriod * mNumberOfOccurences);
     }
+
     public void setEndTime(long endDate) {
         this.mEndDate = endDate;
     }
@@ -222,6 +291,13 @@ public class ScheduledAction extends BaseModel{
             repeatString += " until " + dateFormat.format(mEndDate);
         }
         return repeatString;
+    }
+
+    public static ScheduledAction parseScheduledAction(Transaction transaction, long period){
+        ScheduledAction scheduledAction = new ScheduledAction(ActionType.TRANSACTION);
+        scheduledAction.mActionUID = transaction.getUID();
+        scheduledAction.mPeriod = period;
+        return scheduledAction;
     }
 
     @Override

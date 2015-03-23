@@ -88,7 +88,7 @@ public class SchedulerService extends IntentService {
     private void executeScheduledEvent(ScheduledAction scheduledAction){
         switch (scheduledAction.getActionType()){
             case TRANSACTION:
-                String eventUID = scheduledAction.getEventUID();
+                String eventUID = scheduledAction.getActionUID();
                 TransactionsDbAdapter transactionsDbAdapter = TransactionsDbAdapter.getInstance();
                 Transaction trxnTemplate = transactionsDbAdapter.getTransaction(eventUID);
                 Transaction recurringTrxn = new Transaction(trxnTemplate, true);

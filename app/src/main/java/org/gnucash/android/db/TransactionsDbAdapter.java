@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012 - 2014 Ngewi Fet <ngewif@gmail.com>
+ * Copyright (c) 2012 - 2015 Ngewi Fet <ngewif@gmail.com>
  * Copyright (c) 2014 Yongxin Wang <fefe.wyx@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -152,9 +152,6 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
                 + TransactionEntry.COLUMN_CREATED_AT    + " , "
                 + TransactionEntry.COLUMN_TEMPLATE + " ) VALUES ( ? , ? , ? , ?, ? , ? , ? , ?)");
             for (Transaction transaction : transactionList) {
-                if (transaction.isTemplate()) { //TODO: Properly schedule transactions
-                    scheduleTransaction(transaction);
-                }
                 //Log.d(TAG, "Replacing transaction in db");
                 replaceStatement.clearBindings();
                 replaceStatement.bindString(1,  transaction.getUID());
@@ -515,20 +512,6 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
      */
     public int updateTransaction(ContentValues contentValues, String whereClause, String[] whereArgs){
         return mDb.update(TransactionEntry.TABLE_NAME, contentValues, whereClause, whereArgs);
-    }
-
-    /**
-     * Schedules <code>recurringTransaction</code> to be executed at specific intervals.
-     * The interval period is packaged within the transaction
-     * @param recurringTransaction Transaction which is to be recurring
-     */
-    public void scheduleTransaction(Transaction recurringTransaction) {
-        long recurrencePeriodMillis = System.currentTimeMillis(); //recurringTransaction.getRecurrencePeriod();
-        long firstRunMillis = System.currentTimeMillis() + recurrencePeriodMillis;
-        long recurringTransactionId = addTransaction(recurringTransaction);
-
-
-        //TODO: Properly create ScheduledEvent
     }
 
     /**

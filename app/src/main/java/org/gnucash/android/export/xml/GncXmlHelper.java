@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 Ngewi Fet <ngewif@gmail.com>
+ * Copyright (c) 2014 - 2015 Ngewi Fet <ngewif@gmail.com>
  * Copyright (c) 2014 Yongxin Wang <fefe.wyx@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,13 +18,13 @@
 package org.gnucash.android.export.xml;
 
 import org.gnucash.android.model.Money;
-import org.gnucash.android.model.ScheduledAction;
 import org.gnucash.android.model.Split;
 import org.gnucash.android.model.TransactionType;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import java.math.BigDecimal;
+import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -45,7 +45,7 @@ public abstract class GncXmlHelper {
     public static final String ATTR_VALUE_STRING    = "string";
     public static final String ATTR_VALUE_GUID      = "guid";
     public static final String ATTR_VALUE_BOOK      = "book";
-    public static final String TAG_GDATE = "gdate";
+    public static final String TAG_GDATE            = "gdate";
 
     /*
     Qualified GnuCash XML tag names
@@ -68,7 +68,7 @@ public abstract class GncXmlHelper {
     public static final String TAG_SLOT_VALUE       = "slot:value";
     public static final String TAG_ACT_SLOTS        = "act:slots";
     public static final String TAG_SLOT             = "slot";
-    public static final String TAG_ACCT_DESCRIPTION = "act:description";
+    public static final String TAG_ACCT_DESCRIPTION = "act:description"; //TODO: Use this when we add descriptions to the database
 
     public static final String TAG_TRANSACTION      = "gnc:transaction";
     public static final String TAG_TRX_ID           = "trn:id";
@@ -80,7 +80,7 @@ public abstract class GncXmlHelper {
     public static final String TAG_TRN_SPLITS       = "trn:splits";
     public static final String TAG_TRN_SPLIT        = "trn:split";
     public static final String TAG_TRN_SLOTS        = "trn:slots";
-    public static final String TAG_TEMPLATE_TRANSACTION = "gnc:template-transactions";
+    public static final String TAG_TEMPLATE_TRANSACTIONS = "gnc:template-transactions";
 
     public static final String TAG_SPLIT_ID         = "split:id";
     public static final String TAG_SPLIT_MEMO       = "split:memo";
@@ -88,6 +88,7 @@ public abstract class GncXmlHelper {
     public static final String TAG_SPLIT_ACCOUNT    = "split:account";
     public static final String TAG_SPLIT_VALUE      = "split:value";
     public static final String TAG_SPLIT_QUANTITY   = "split:quantity";
+    public static final String TAG_SPLIT_SLOTS      = "split:slots";
 
     //TODO: Remove this in the future when scheduled transactions are improved
     @Deprecated
@@ -127,6 +128,11 @@ public abstract class GncXmlHelper {
     public static final String KEY_NOTES            = "notes";
     public static final String KEY_DEFAULT_TRANSFER_ACCOUNT = "default_transfer_account";
     public static final String KEY_EXPORTED         = "exported";
+    public static final String KEY_SCHEDX_ACTION = "sched-xaction";
+    public static final String KEY_SPLIT_ACCOUNT    = "key_account";
+    public static final String KEY_DEBIT_FORMULA    = "debit-formula";
+    public static final String KEY_CREDIT_FORMULA   = "credit-formula";
+
 
     /**
      * Formats dates for the GnuCash XML format
@@ -136,27 +142,6 @@ public abstract class GncXmlHelper {
         return TIME_FORMATTER.format(new Date(milliseconds));
     }
 
-    /**
-     * Converts the adjective describing the period type into a noun for the XML format
-     * @param periodType PeriodType from the scheduled action
-     * @return Period type as a noun
-     */
-    public static String getScheduledPeriodType(ScheduledAction.PeriodType periodType){
-        switch (periodType) {
-            case DAILY:
-                return "day";
-            case WEEKLY:
-                return "week";
-            case FORTNIGHTLY:
-                return "fortnight";
-            case MONTHLY:
-                return "month";
-            case YEARLY:
-                return "year";
-            default:
-                return "";
-        }
-    }
     /**
      * Parses a date string formatted in the format "yyyy-MM-dd HH:mm:ss Z"
      * @param dateString String date representation
@@ -193,23 +178,12 @@ public abstract class GncXmlHelper {
     }
 
     /**
-     * Helper method for creating slot key-value pairs in the GnuCash XML structure.
-     * <p>This method is only a helper for creating slots whose values are of string type</p>
-     * @param doc {@link org.w3c.dom.Document} for creating nodes
-     * @param key Slot key as string
-     * @param value Slot value as String
-     * @return Element node containing the key-value pair
+     * Returns a {@link java.text.NumberFormat} for parsing or writing amounts in template splits
+     * @return NumberFormat object
      */
-    public static Element createSlot(Document doc, String key, String value, String valueType){
-        Element slotNode  = doc.createElement(TAG_SLOT);
-        Element slotKeyNode = doc.createElement(TAG_SLOT_KEY);
-        slotKeyNode.appendChild(doc.createTextNode(key));
-        Element slotValueNode = doc.createElement(TAG_SLOT_VALUE);
-        slotValueNode.setAttribute(ATTR_KEY_TYPE, valueType);
-        slotValueNode.appendChild(doc.createTextNode(value));
-        slotNode.appendChild(slotKeyNode);
-        slotNode.appendChild(slotValueNode);
-
-        return slotNode;
+    public static NumberFormat getNumberFormatForTemplateSplits(){
+        //TODO: Check if GnuCash desktop always using this formatting or if it is device locale specific
+        return NumberFormat.getNumberInstance(Locale.GERMANY);
     }
+
 }

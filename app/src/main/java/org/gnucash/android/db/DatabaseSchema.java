@@ -104,18 +104,15 @@ public class DatabaseSchema {
     }
 
     public static abstract class ScheduledActionEntry implements CommonColumns {
-        public static final String TABLE_NAME           = "scheduled_actions";
+        public static final String TABLE_NAME               = "scheduled_actions";
 
-        public static final String COLUMN_TYPE          = "type";
-        public static final String COLUMN_ACTION_UID    = "action_uid";
-        public static final String COLUMN_START_TIME    = "start_time";
-        public static final String COLUMN_END_TIME      = "end_time";
-        public static final String COLUMN_LAST_RUN      = "last_run";
-        public static final String COLUMN_PERIOD        = "period";
-        /**
-         * Tags for any scheduled action-specific information
-         */
-        public static final String COLUMN_TAG               = "tag";
+        public static final String COLUMN_TYPE              = "type";
+        public static final String COLUMN_ACTION_UID        = "action_uid";
+        public static final String COLUMN_START_TIME        = "start_time";
+        public static final String COLUMN_END_TIME          = "end_time";
+        public static final String COLUMN_LAST_RUN          = "last_run";
+        public static final String COLUMN_PERIOD            = "period";
+        public static final String COLUMN_TAG               = "tag"; //for any action-specific information
         public static final String COLUMN_ENABLED           = "is_enabled";
         public static final String COLUMN_NUM_OCCURRENCES   = "num_occurrences";
         public static final String COLUMN_EXECUTION_COUNT   = "execution_count";

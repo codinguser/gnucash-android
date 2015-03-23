@@ -722,9 +722,9 @@ public class TransactionFormFragment extends SherlockFragment implements
 
         ScheduledActionDbAdapter scheduledActionDbAdapter = GnuCashApplication.getScheduledEventDbAdapter();
         for (ScheduledAction event : events) {
-            event.setEventUID(transactionUID);
+            event.setActionUID(transactionUID);
             event.setLastRun(System.currentTimeMillis());
-            scheduledActionDbAdapter.addScheduledEvent(event);
+            scheduledActionDbAdapter.addScheduledAction(event);
 
             Log.i("TransactionFormFragment", event.toString());
         }

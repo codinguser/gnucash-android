@@ -18,6 +18,7 @@ package org.gnucash.android.db;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteStatement;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
@@ -53,9 +54,9 @@ public class ScheduledActionDbAdapter extends DatabaseAdapter {
      * @param scheduledAction {@link org.gnucash.android.model.ScheduledAction} to be added
      * @return Database row ID of the newly created/replaced instance
      */
-    public long addScheduledEvent(ScheduledAction scheduledAction){
+    public long addScheduledAction(ScheduledAction scheduledAction){
         ContentValues contentValues = getContentValues(scheduledAction);
-        contentValues.put(ScheduledActionEntry.COLUMN_ACTION_UID, scheduledAction.getEventUID());
+        contentValues.put(ScheduledActionEntry.COLUMN_ACTION_UID, scheduledAction.getActionUID());
         contentValues.put(ScheduledActionEntry.COLUMN_PERIOD,    scheduledAction.getPeriod());
         contentValues.put(ScheduledActionEntry.COLUMN_START_TIME, scheduledAction.getStartTime());
         contentValues.put(ScheduledActionEntry.COLUMN_END_TIME,  scheduledAction.getEndTime());
@@ -71,13 +72,61 @@ public class ScheduledActionDbAdapter extends DatabaseAdapter {
     }
 
     /**
+     * Adds a multiple scheduled actions to the database in one transaction.
+     * @param scheduledActionList List of ScheduledActions
+     * @return Returns the number of rows inserted
+     */
+    public int bulkAddScheduledActions(List<ScheduledAction> scheduledActionList){
+        Log.d(TAG, "Bulk adding scheduled actions to the database");
+        int nRow = 0;
+        try {
+            mDb.beginTransaction();
+            SQLiteStatement replaceStatement = mDb.compileStatement("REPLACE INTO " + ScheduledActionEntry.TABLE_NAME + " ( "
+                    + ScheduledActionEntry.COLUMN_UID 	            + " , "
+                    + ScheduledActionEntry.COLUMN_ACTION_UID        + " , "
+                    + ScheduledActionEntry.COLUMN_TYPE              + " , "
+                    + ScheduledActionEntry.COLUMN_START_TIME        + " , "
+                    + ScheduledActionEntry.COLUMN_END_TIME          + " , "
+                    + ScheduledActionEntry.COLUMN_LAST_RUN 		    + " , "
+                    + ScheduledActionEntry.COLUMN_PERIOD 	        + " , "
+                    + ScheduledActionEntry.COLUMN_ENABLED           + " , "
+                    + ScheduledActionEntry.COLUMN_CREATED_AT        + " , "
+                    + ScheduledActionEntry.COLUMN_TAG               + " , "
+                    + ScheduledActionEntry.COLUMN_NUM_OCCURRENCES   + " , "
+                    + ScheduledActionEntry.COLUMN_EXECUTION_COUNT   + " ) VALUES ( ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? )");
+            for (ScheduledAction schedxAction:scheduledActionList) {
+                replaceStatement.clearBindings();
+                replaceStatement.bindString(1,  schedxAction.getUID());
+                replaceStatement.bindString(2,  schedxAction.getActionUID());
+                replaceStatement.bindString(3,  schedxAction.getActionType().name());
+                replaceStatement.bindLong(4,    schedxAction.getStartTime());
+                replaceStatement.bindLong(5,    schedxAction.getEndTime());
+                replaceStatement.bindLong(6,    schedxAction.getLastRun());
+                replaceStatement.bindLong(7,    schedxAction.getPeriod());
+                replaceStatement.bindLong(8,    schedxAction.isEnabled() ? 1 : 0);
+                replaceStatement.bindString(9,  schedxAction.getCreatedTimestamp().toString());
+                replaceStatement.bindString(10, schedxAction.getTag());
+                replaceStatement.bindString(11, Integer.toString(schedxAction.getNumberOfOccurences()));
+                replaceStatement.bindString(12, Integer.toString(schedxAction.getExecutionCount()));
+
+                replaceStatement.execute();
+                nRow ++;
+            }
+            mDb.setTransactionSuccessful();
+        }
+        finally {
+            mDb.endTransaction();
+        }
+        return nRow;
+    }
+    /**
      * Builds a {@link org.gnucash.android.model.ScheduledAction} instance from a row to cursor in the database.
      * The cursor should be already pointing to the right entry in the data set. It will not be modified in any way
      * @param cursor Cursor pointing to data set
      * @return ScheduledEvent object instance
      */
     private ScheduledAction buildScheduledEventInstance(final Cursor cursor){
-        String eventUid = cursor.getString(cursor.getColumnIndexOrThrow(ScheduledActionEntry.COLUMN_ACTION_UID));
+        String actionUid = cursor.getString(cursor.getColumnIndexOrThrow(ScheduledActionEntry.COLUMN_ACTION_UID));
         long period     = cursor.getLong(cursor.getColumnIndexOrThrow(ScheduledActionEntry.COLUMN_PERIOD));
         long startTime  = cursor.getLong(cursor.getColumnIndexOrThrow(ScheduledActionEntry.COLUMN_START_TIME));
         long endTime    = cursor.getLong(cursor.getColumnIndexOrThrow(ScheduledActionEntry.COLUMN_END_TIME));
@@ -93,7 +142,7 @@ public class ScheduledActionDbAdapter extends DatabaseAdapter {
         event.setPeriod(period);
         event.setStartTime(startTime);
         event.setEndTime(endTime);
-        event.setEventUID(eventUid);
+        event.setActionUID(actionUid);
         event.setLastRun(lastRun);
         event.setTag(tag);
         event.setEnabled(enabled);
