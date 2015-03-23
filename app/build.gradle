@@ -32,6 +32,10 @@ android {
             resValue "string", "app_name", "GnuCash"
         }
     }
+    compileOptions { //we want switch with strings during xml parsing
+        sourceCompatibility JavaVersion.VERSION_1_7
+        targetCompatibility JavaVersion.VERSION_1_7
+    }
 }
 
 dependencies {

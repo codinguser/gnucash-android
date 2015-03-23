@@ -219,6 +219,15 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
 		return true;
 	}
 
+    @Override
+    protected boolean isValidFragment(String fragmentName) {
+        return GeneralPreferenceFragment.class.getName().equals(fragmentName)
+                || AccountPreferencesFragment.class.getName().equals(fragmentName)
+                || PasscodePreferenceFragment.class.getName().equals(fragmentName)
+                || TransactionsPreferenceFragment.class.getName().equals(fragmentName)
+                || AboutPreferenceFragment.class.getName().equals(fragmentName);
+    }
+
     public void setImbalanceAccountsHidden(boolean useDoubleEntry) {
         String isHidden = useDoubleEntry ? "0" : "1";
         AccountsDbAdapter accountsDbAdapter = AccountsDbAdapter.getInstance();

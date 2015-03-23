@@ -316,8 +316,10 @@ public class AccountFormFragment extends SherlockFragment {
             mAccount = mAccountsDbAdapter.getAccount(mAccountUID);
             getSherlockActivity().getSupportActionBar().setTitle(R.string.title_edit_account);
         }
+
         mRootAccountUID = mAccountsDbAdapter.getGnuCashRootAccountUID();
-        mRootAccountId = mAccountsDbAdapter.getID(mRootAccountUID);
+        if (mRootAccountUID != null)
+            mRootAccountId = mAccountsDbAdapter.getID(mRootAccountUID);
 
         //need to load the cursor adapters for the spinners before initializing the views
         loadAccountTypesList();
@@ -348,7 +350,10 @@ public class AccountFormFragment extends SherlockFragment {
             // null parent, set Parent as root
             mParentAccountUID = mRootAccountUID;
         }
-        setParentAccountSelection(mAccountsDbAdapter.getID(mParentAccountUID));
+
+        if (mParentAccountUID != null) {
+            setParentAccountSelection(mAccountsDbAdapter.getID(mParentAccountUID));
+        }
 
         String currencyCode = account.getCurrency().getCurrencyCode();
         setSelectedCurrency(currencyCode);
@@ -360,7 +365,7 @@ public class AccountFormFragment extends SherlockFragment {
 
         mNameEditText.setText(account.getName());
 
-        if (mUseDoubleEntry) {
+        if (mUseDoubleEntry && account.getDefaultTransferAccountUID() != null) {
             long doubleDefaultAccountId = mAccountsDbAdapter.getID(account.getDefaultTransferAccountUID());
             setDefaultTransferAccountSelection(doubleDefaultAccountId);
         }
@@ -741,7 +746,7 @@ public class AccountFormFragment extends SherlockFragment {
             mAccount.setDefaultTransferAccountUID(null);
         }
 
-        long parentAccountId = mAccountsDbAdapter.getID(mParentAccountUID);
+        long parentAccountId = mParentAccountUID == null ? -1 : mAccountsDbAdapter.getID(mParentAccountUID);
         // update full names
         if (nameChanged || mDescendantAccountUIDs == null || newParentAccountId != parentAccountId) {
             // current account name changed or new Account or parent account changed
