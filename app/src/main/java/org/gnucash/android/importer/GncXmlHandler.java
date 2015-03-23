@@ -117,10 +117,6 @@ public class GncXmlHandler extends DefaultHandler {
      */
     List<ScheduledAction> mScheduledActionsList;
 
-    /**
-     * Showing whether we are in bulk import mode
-     */
-    boolean mBulk = false;
 
     boolean mInColorSlot        = false;
     boolean mInPlaceHolderSlot  = false;
@@ -155,19 +151,23 @@ public class GncXmlHandler extends DefaultHandler {
 
     private ScheduledActionDbAdapter mScheduledActionsDbAdapter;
 
+    /**
+     * Creates a handler for handling XML stream events when parsing the XML backup file
+     */
     public GncXmlHandler() {
-        init(true, null);
+        init(null);
     }
 
-    public GncXmlHandler(boolean bulk) {
-        init(bulk, null);
+    /**
+     * Overloaded constructor.
+     * Useful when reading XML into an already open database connection e.g. during migration
+     * @param db SQLite database object
+     */
+    public GncXmlHandler(SQLiteDatabase db) {
+        init(db);
     }
 
-    public GncXmlHandler(boolean bulk, SQLiteDatabase db) {
-        init(bulk, db);
-    }
-
-    private void init(boolean bulk, SQLiteDatabase db) {
+    private void init(SQLiteDatabase db) {
         if (db == null) {
             mAccountsDbAdapter = AccountsDbAdapter.getInstance();
             mTransactionsDbAdapter = TransactionsDbAdapter.getInstance();
@@ -178,12 +178,10 @@ public class GncXmlHandler extends DefaultHandler {
             mScheduledActionsDbAdapter = new ScheduledActionDbAdapter(db);
         }
         mContent = new StringBuilder();
-        mBulk = bulk;
-        if (bulk) {
-            mAccountList = new ArrayList<>();
-            mTransactionList = new ArrayList<>();
-            mScheduledActionsList = new ArrayList<>();
-        }
+
+        mAccountList = new ArrayList<>();
+        mTransactionList = new ArrayList<>();
+        mScheduledActionsList = new ArrayList<>();
     }
 
     @Override
@@ -267,12 +265,7 @@ public class GncXmlHandler extends DefaultHandler {
         }
         else if (qualifiedName.equalsIgnoreCase(GncXmlHelper.TAG_ACCOUNT)){
             if (!mInTemplates) { //we ignore template accounts, we have no use for them
-                if (mBulk) {
-                    mAccountList.add(mAccount);
-                } else {
-                    Log.d(LOG_TAG, "Saving account...");
-                    mAccountsDbAdapter.addAccount(mAccount);
-                }
+                mAccountList.add(mAccount);
                 mAccount = null;
                 //reset ISO 4217 flag for next account
                 mISO4217Currency = false;
@@ -436,17 +429,11 @@ public class GncXmlHandler extends DefaultHandler {
         }
         else if (qualifiedName.equalsIgnoreCase(GncXmlHelper.TAG_TRANSACTION)){
             mTransaction.setTemplate(mInTemplates);
-            if (mBulk) {
-                mTransactionList.add(mTransaction);
-            } else {
-                if (mRecurrencePeriod > 0) { //if we find an old format recurrence period, parse it
-                    mTransaction.setTemplate(true);
-                    mTransactionsDbAdapter.addTransaction(mTransaction);
-                    ScheduledAction scheduledAction = ScheduledAction.parseScheduledAction(mTransaction, mRecurrencePeriod);
-                    mScheduledActionsDbAdapter.addScheduledAction(scheduledAction);
-                } else {
-                    mTransactionsDbAdapter.addTransaction(mTransaction);
-                }
+            mTransactionList.add(mTransaction);
+            if (mRecurrencePeriod > 0) { //if we find an old format recurrence period, parse it
+                mTransaction.setTemplate(true);
+                ScheduledAction scheduledAction = ScheduledAction.parseScheduledAction(mTransaction, mRecurrencePeriod);
+                mScheduledActionsList.add(scheduledAction);
             }
             mRecurrencePeriod = 0;
             mTransaction = null;
@@ -480,11 +467,7 @@ public class GncXmlHandler extends DefaultHandler {
             mScheduledAction.setActionUID(characterString);
         }
         else if (qualifiedName.equals(GncXmlHelper.TAG_SCHEDULED_ACTION)){
-            if (mBulk){
-                mScheduledActionsList.add(mScheduledAction);
-            } else {
-                mScheduledActionsDbAdapter.addScheduledAction(mScheduledAction);
-            }
+            mScheduledActionsList.add(mScheduledAction);
         }
 
         //reset the accumulated characters
@@ -499,62 +482,61 @@ public class GncXmlHandler extends DefaultHandler {
     @Override
     public void endDocument() throws SAXException {
         super.endDocument();
-        if (mBulk) {
-            HashMap<String, Account> map = new HashMap<String, Account>(mAccountList.size());
-            HashMap<String, String> mapFullName = new HashMap<String, String>(mAccountList.size());
-            for(Account account:mAccountList) {
-                map.put(account.getUID(), account);
-                mapFullName.put(account.getUID(), null);
+        HashMap<String, Account> map = new HashMap<String, Account>(mAccountList.size());
+        HashMap<String, String> mapFullName = new HashMap<String, String>(mAccountList.size());
+        for(Account account:mAccountList) {
+            map.put(account.getUID(), account);
+            mapFullName.put(account.getUID(), null);
+        }
+        java.util.Stack<Account> stack = new Stack<Account>();
+        for (Account account:mAccountList){
+            if (mapFullName.get(account.getUID()) != null) {
+                continue;
             }
-            java.util.Stack<Account> stack = new Stack<Account>();
-            for (Account account:mAccountList){
-                if (mapFullName.get(account.getUID()) != null) {
+            stack.push(account);
+            String parentAccountFullName;
+            while (!stack.isEmpty()) {
+                Account acc = stack.peek();
+                if (acc.getAccountType() == AccountType.ROOT) {
+                    // append blank to Root Account, ensure it always sorts first
+                    mapFullName.put(acc.getUID(), " " + acc.getName());
+                    stack.pop();
                     continue;
                 }
-                stack.push(account);
-                String parentAccountFullName;
-                while (!stack.isEmpty()) {
-                    Account acc = stack.peek();
-                    if (acc.getAccountType() == AccountType.ROOT) {
-                        // append blank to Root Account, ensure it always sorts first
-                        mapFullName.put(acc.getUID(), " " + acc.getName());
-                        stack.pop();
-                        continue;
-                    }
-                    String parentUID = acc.getParentUID();
-                    Account parentAccount = map.get(parentUID);
-                    // In accounts tree that are not imported, top level ROOT account
-                    // does not exist, which will make all top level accounts have a
-                    // null parent
-                    if (parentAccount == null || parentAccount.getAccountType() == AccountType.ROOT) {
-                        // top level account, full name is the same as its name
-                        mapFullName.put(acc.getUID(), acc.getName());
-                        stack.pop();
-                        continue;
-                    }
-                    parentAccountFullName = mapFullName.get(parentUID);
-                    if (parentAccountFullName == null) {
-                        // non-top-level account, parent full name still unknown
-                        stack.push(parentAccount);
-                        continue;
-                    }
-                    mapFullName.put(acc.getUID(), parentAccountFullName +
-                            AccountsDbAdapter.ACCOUNT_NAME_SEPARATOR + acc.getName());
+                String parentUID = acc.getParentUID();
+                Account parentAccount = map.get(parentUID);
+                // In accounts tree that are not imported, top level ROOT account
+                // does not exist, which will make all top level accounts have a
+                // null parent
+                if (parentAccount == null || parentAccount.getAccountType() == AccountType.ROOT) {
+                    // top level account, full name is the same as its name
+                    mapFullName.put(acc.getUID(), acc.getName());
                     stack.pop();
+                    continue;
                 }
+                parentAccountFullName = mapFullName.get(parentUID);
+                if (parentAccountFullName == null) {
+                    // non-top-level account, parent full name still unknown
+                    stack.push(parentAccount);
+                    continue;
+                }
+                mapFullName.put(acc.getUID(), parentAccountFullName +
+                        AccountsDbAdapter.ACCOUNT_NAME_SEPARATOR + acc.getName());
+                stack.pop();
             }
-            for (Account account:mAccountList){
-                account.setFullName(mapFullName.get(account.getUID()));
-            }
-            long startTime = System.nanoTime();
-            long nAccounts = mAccountsDbAdapter.bulkAddAccounts(mAccountList);
-            Log.d("Handler:", String.format("%d accounts inserted", nAccounts));
-            long nTransactions = mTransactionsDbAdapter.bulkAddTransactions(mTransactionList);
-            Log.d("Handler:", String.format("%d transactions inserted", nTransactions));
-            int nSchedActions = mScheduledActionsDbAdapter.bulkAddScheduledActions(mScheduledActionsList);
-            Log.d("Handler:", String.format("%d scheduled actions inserted", nSchedActions));
-            long endTime = System.nanoTime();
-            Log.d("Handler:", String.format(" bulk insert time: %d", endTime - startTime));
         }
+        for (Account account:mAccountList){
+            account.setFullName(mapFullName.get(account.getUID()));
+        }
+        long startTime = System.nanoTime();
+        long nAccounts = mAccountsDbAdapter.bulkAddAccounts(mAccountList);
+        Log.d("Handler:", String.format("%d accounts inserted", nAccounts));
+        long nTransactions = mTransactionsDbAdapter.bulkAddTransactions(mTransactionList);
+        Log.d("Handler:", String.format("%d transactions inserted", nTransactions));
+        int nSchedActions = mScheduledActionsDbAdapter.bulkAddScheduledActions(mScheduledActionsList);
+        Log.d("Handler:", String.format("%d scheduled actions inserted", nSchedActions));
+        long endTime = System.nanoTime();
+        Log.d("Handler:", String.format(" bulk insert time: %d", endTime - startTime));
+
     }
 }

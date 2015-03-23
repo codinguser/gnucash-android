@@ -57,7 +57,7 @@ public class GncXmlImporter {
 
         /** Create handler to handle XML Tags ( extends DefaultHandler ) */
 
-        GncXmlHandler handler = new GncXmlHandler(false, db);
+        GncXmlHandler handler = new GncXmlHandler(db);
 
         xr.setContentHandler(handler);
         xr.parse(new InputSource(bos));
@@ -85,7 +85,7 @@ public class GncXmlImporter {
 
         //TODO: Set an error handler which can log errors
 
-        GncXmlHandler handler = new GncXmlHandler(true);
+        GncXmlHandler handler = new GncXmlHandler();
         xr.setContentHandler(handler);
         long startTime = System.nanoTime();
         xr.parse(new InputSource(bos));
