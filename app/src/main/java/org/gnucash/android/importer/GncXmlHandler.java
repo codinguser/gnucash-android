@@ -378,7 +378,10 @@ public class GncXmlHandler extends DefaultHandler {
                     }
                     String parentUID = acc.getParentUID();
                     Account parentAccount = map.get(parentUID);
-                    if (parentAccount.getAccountType() == AccountType.ROOT) {
+                    // In accounts tree that are not imported, top level ROOT account
+                    // does not exist, which will make all top level accounts have a
+                    // null parent
+                    if (parentAccount == null || parentAccount.getAccountType() == AccountType.ROOT) {
                         // top level account, full name is the same as its name
                         mapFullName.put(acc.getUID(), acc.getName());
                         stack.pop();
