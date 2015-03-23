@@ -19,6 +19,8 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 
+import com.actionbarsherlock.view.MenuItem;
+
 import org.gnucash.android.R;
 import org.gnucash.android.ui.passcode.PassLockActivity;
 

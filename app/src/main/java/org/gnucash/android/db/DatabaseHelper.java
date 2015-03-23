@@ -53,6 +53,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	 * Account which the origin account this transaction in double entry mode.
      * This is no longer used since the introduction of splits
 	 */
+    //TODO: find and eliminate uses. Its services are no longer required
     @Deprecated
 	public static final String KEY_DOUBLE_ENTRY_ACCOUNT_UID 	= "double_account_uid";
 

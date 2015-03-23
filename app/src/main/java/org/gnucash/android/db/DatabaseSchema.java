@@ -80,7 +80,6 @@ public class DatabaseSchema {
         public static final String COLUMN_EXPORTED              = "is_exported";
         public static final String COLUMN_TEMPLATE              = "is_template";
 
-        //TODO: find all recurrences and fix
         @Deprecated
         public static final String COLUMN_RECURRENCE_PERIOD     = "recurrence_period";
 

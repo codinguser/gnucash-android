@@ -218,17 +218,6 @@ public class ScheduledTransactionsListFragment extends SherlockListFragment impl
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()){
-            case android.R.id.home:
-                getActivity().finish();
-                return true;
-            default:
-                return false;
-        }
-    }
-
-    @Override
     public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
         Log.d(TAG, "Creating transactions loader");
         return new ScheduledTransactionsCursorLoader(getActivity());
