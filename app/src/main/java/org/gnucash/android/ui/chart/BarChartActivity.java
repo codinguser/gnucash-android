@@ -44,9 +44,7 @@ public class BarChartActivity extends PassLockActivity implements OnChartValueSe
     private static final String X_AXIS_PATTERN = "MMM YY";
     private static final String SELECTED_VALUE_PATTERN = "%s - %.2f (%.2f %%)";
 
-    private static final int[] COLORS = {
-            Color.rgb(104, 241, 175), Color.RED
-    };
+    private static final int[] COLORS = { Color.rgb(104, 241, 175), Color.RED };
 
     private BarChart mChart;
     private List<AccountType> mAccountTypeList;
@@ -75,7 +73,7 @@ public class BarChartActivity extends PassLockActivity implements OnChartValueSe
         mChart.getAxisRight().setEnabled(false);
 
 //        mAccountTypeList = Arrays.asList(AccountType.EXPENSE, AccountType.INCOME);
-        mAccountTypeList = Arrays.asList(AccountType.INCOME, AccountType.EXPENSE);
+        mAccountTypeList = new ArrayList<AccountType>(Arrays.asList(AccountType.INCOME, AccountType.EXPENSE));
         setStackedData();
 
         Legend l = mChart.getLegend();
@@ -90,6 +88,20 @@ public class BarChartActivity extends PassLockActivity implements OnChartValueSe
         AccountsDbAdapter mAccountsDbAdapter = AccountsDbAdapter.getInstance();
 
         setEarliestAndLatestTimestamps(mAccountTypeList);
+
+        if (mEarliestTransactionTimestamp == 0) {
+            if (mLatestTransactionTimestamp == 0) {
+                Log.w(TAG, "empty bar chart");
+                return;
+            }
+            for (Map.Entry<AccountType, Long> entry : mEarliestTimestampsMap.entrySet()) {
+                if (entry.getValue() == 0) {
+                    mAccountTypeList.remove(entry.getKey());
+                }
+            }
+            Log.d(TAG, mAccountTypeList.toString());
+            setEarliestAndLatestTimestamps(mAccountTypeList);
+        }
 
         LocalDateTime start = new LocalDateTime(mEarliestTransactionTimestamp).withDayOfMonth(1).withMillisOfDay(0);
         LocalDateTime end = new LocalDateTime(mLatestTransactionTimestamp).withDayOfMonth(1).withMillisOfDay(0);
@@ -135,8 +147,9 @@ public class BarChartActivity extends PassLockActivity implements OnChartValueSe
 
         BarDataSet set = new BarDataSet(values, "");
 //        set.setValueFormatter();
-        set.setStackLabels(new String[] { AccountType.INCOME.toString(), AccountType.EXPENSE.toString() });
-        set.setColors(COLORS);
+        // conversion enum list to string array
+        set.setStackLabels(mAccountTypeList.toString().substring(1, mAccountTypeList.toString().length() - 1).split(", "));
+        set.setColors(Arrays.copyOfRange(COLORS, 0, mAccountTypeList.size()));
 
         dataSets.add(set);
 
@@ -146,6 +159,8 @@ public class BarChartActivity extends PassLockActivity implements OnChartValueSe
 
     private void setEarliestAndLatestTimestamps(List<AccountType> accountTypeList) {
         TransactionsDbAdapter transactionsDbAdapter = TransactionsDbAdapter.getInstance();
+        mEarliestTimestampsMap.clear();
+        mLatestTimestampsMap.clear();
         for (AccountType type : accountTypeList) {
             mEarliestTimestampsMap.put(type, transactionsDbAdapter.getTimestampOfEarliestTransaction(type));
             mLatestTimestampsMap.put(type, transactionsDbAdapter.getTimestampOfLatestTransaction(type));

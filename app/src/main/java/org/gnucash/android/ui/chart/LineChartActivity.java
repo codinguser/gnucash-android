@@ -67,7 +67,7 @@ public class LineChartActivity extends PassLockActivity implements OnChartValueS
         mChart.setOnChartValueSelectedListener(this);
         mChart.setDescription("");
         mChart.getAxisRight().setEnabled(false);
-        mChart.setData(getDataSet(Arrays.asList(AccountType.INCOME, AccountType.EXPENSE)));
+        mChart.setData(getDataSet(new ArrayList<AccountType>(Arrays.asList(AccountType.INCOME, AccountType.EXPENSE))));
 
         Legend legend = mChart.getLegend();
         legend.setPosition(Legend.LegendPosition.RIGHT_OF_CHART_INSIDE);
@@ -80,8 +80,17 @@ public class LineChartActivity extends PassLockActivity implements OnChartValueS
     private LineData getDataSet(List<AccountType> accountTypes) {
         setEarliestAndLatestTimestamps(accountTypes);
 
-        if (mEarliestTransactionTimestamp == 0 && mLatestTransactionTimestamp == 0) {
-            return getEmptyDataSet();
+        if (mEarliestTransactionTimestamp == 0) {
+            if (mLatestTransactionTimestamp == 0) {
+                return getEmptyDataSet();
+            }
+            for (Map.Entry<AccountType, Long> entry : mEarliestTimestampsMap.entrySet()) {
+                if (entry.getValue() == 0) {
+                    accountTypes.remove(entry.getKey());
+                }
+            }
+            Log.w(TAG, accountTypes.toString());
+            setEarliestAndLatestTimestamps(accountTypes);
         }
 
         LocalDate startDate = new LocalDate(mEarliestTransactionTimestamp).withDayOfMonth(1);
@@ -138,8 +147,8 @@ public class LineChartActivity extends PassLockActivity implements OnChartValueS
 
         LocalDateTime earliest = new LocalDateTime(mEarliestTimestampsMap.get(accountType));
         LocalDateTime latest = new LocalDateTime(mLatestTimestampsMap.get(accountType));
-        Log.d(TAG, "Earliest " + accountType + "date " + earliest.toString("dd MM yyyy"));
-        Log.d(TAG, "Latest " + accountType + "date " + latest.toString("dd MM yyyy"));
+        Log.d(TAG, "Earliest " + accountType + " date " + earliest.toString("dd MM yyyy"));
+        Log.d(TAG, "Latest " + accountType + " date " + latest.toString("dd MM yyyy"));
         int months = Months.monthsBetween(earliest.withDayOfMonth(1).withMillisOfDay(0),
                 latest.withDayOfMonth(1).withMillisOfDay(0)).getMonths();
 
@@ -159,6 +168,8 @@ public class LineChartActivity extends PassLockActivity implements OnChartValueS
 
     private void setEarliestAndLatestTimestamps(List<AccountType> accountTypeList) {
         TransactionsDbAdapter transactionsDbAdapter = TransactionsDbAdapter.getInstance();
+        mEarliestTimestampsMap.clear();
+        mLatestTimestampsMap.clear();
         for (AccountType type : accountTypeList) {
             mEarliestTimestampsMap.put(type, transactionsDbAdapter.getTimestampOfEarliestTransaction(type));
             mLatestTimestampsMap.put(type, transactionsDbAdapter.getTimestampOfLatestTransaction(type));
@@ -167,6 +178,7 @@ public class LineChartActivity extends PassLockActivity implements OnChartValueS
         List<Long> timestamps = new ArrayList<Long>(mEarliestTimestampsMap.values());
         timestamps.addAll(mLatestTimestampsMap.values());
         Collections.sort(timestamps);
+        Log.d(TAG, "X-axis timestamps list: " + timestamps.toString());
         mEarliestTransactionTimestamp = timestamps.get(0);
         mLatestTransactionTimestamp = timestamps.get(timestamps.size() - 1);
     }
