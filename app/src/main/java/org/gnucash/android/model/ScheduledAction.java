@@ -256,7 +256,7 @@ public class ScheduledAction extends BaseModel{
 
     /**
      * Sets the number of occurences of this action
-     * @param occurencesCount
+     * @param occurencesCount Number of occurences
      */
     public void setNumberOfOccurences(int occurencesCount){
         this.mNumberOfOccurences = occurencesCount;
@@ -285,8 +285,8 @@ public class ScheduledAction extends BaseModel{
     public String getRepeatString(){
         //TODO: localize the string
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy", Locale.US);
-        String repeatString = "Repeats every " + mPeriod/RecurrenceParser.DAY_MILLIS + " days starting on "
-                + dateFormat.format(new Date(mStartDate));
+        String repeatString = String.format("Repeats every %d %s starting on %s", getPeriodType().getMultiplier(), getPeriodType().name().toLowerCase(),
+                dateFormat.format(new Date(mStartDate)));
         if (mEndDate > 0){
             repeatString += " until " + dateFormat.format(mEndDate);
         }

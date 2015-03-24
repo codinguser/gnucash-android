@@ -494,24 +494,4 @@ public class SplitsDbAdapter extends DatabaseAdapter {
         }
     }
 
-    //TODO: After adding ON DELETE CASCADE to db (and migration), remove this method
-    /**
-     * Deletes all splits for a particular transaction and the transaction itself
-     * @param transactionId Database record ID of the transaction
-     * @return <code>true</code> if at least one split was deleted, <code>false</code> otherwise.
-     */
-    public boolean deleteSplitsForTransaction(long transactionId) {
-        String trxUID = getTransactionUID(transactionId);
-        mDb.beginTransaction();
-        try {
-            boolean result = mDb.delete(SplitEntry.TABLE_NAME,
-                    SplitEntry.COLUMN_TRANSACTION_UID + "=?",
-                    new String[]{trxUID}) > 0;
-            mDb.setTransactionSuccessful();
-            return result;
-        } finally {
-            mDb.endTransaction();
-        }
-    }
-
 }

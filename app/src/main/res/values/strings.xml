@@ -328,7 +328,7 @@
     <string name="toast_error_importing_accounts">An error occurred while importing the GnuCash accounts</string>
     <string name="toast_success_importing_accounts">GnuCash Accounts successfully imported</string>
     <string name="summary_import_accounts">Import account structure exported from GnuCash desktop</string>
-    <string name="title_import_accounts">Import GnuCash accounts</string>
+    <string name="title_import_accounts">Import GnuCash XML</string>
     <string name="summary_delete_all_accounts">Delete all accounts in the database. All transactions will be deleted as
         well.
     </string>
@@ -445,4 +445,9 @@
     <string name="label_chart_overall">Overall</string>
     <string name="label_chart_total">Total\n</string>
     <string name="label_save_template">Save as template</string>
+    <string name="label_delete_account_transactions_description">This account contains transactions. \nWhat would you like to do with these transactions</string>
+    <string name="label_delete_account_subaccounts_description">This account contains sub-accounts. \nWhat would you like to do with these sub-accounts</string>
+    <string name="label_delete_transactions">Delete transactions</string>
+    <string name="toast_disable_double_entry_to_save_transaction">Create and specify a transfer account OR disable double-entry in settings to save the transaction</string>
+    <string name="label_tap_to_create_schedule">Tap to create schedule</string>
 </resources>

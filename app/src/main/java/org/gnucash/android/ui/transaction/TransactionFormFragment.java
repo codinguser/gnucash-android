@@ -766,7 +766,7 @@ public class TransactionFormFragment extends SherlockFragment implements
             } else if (mUseDoubleEntry && mDoubleAccountSpinner.getCount() == 0){
                 //TODO: Localize string
                 Toast.makeText(getActivity(),
-                        "Create & specify a transfer account OR disable double-entry in settings to save the transaction",
+                        R.string.toast_disable_double_entry_to_save_transaction,
                         Toast.LENGTH_LONG).show();
             } else {
                 saveNewTransaction();
@@ -882,7 +882,7 @@ public class TransactionFormFragment extends SherlockFragment implements
     @Override
     public void onRecurrenceSet(String rrule) {
         mRecurrenceRule = rrule;
-        String repeatString = "Not scheduled"; //TODO: localize this string
+        String repeatString = getString(R.string.label_tap_to_create_schedule);
         if (mRecurrenceRule != null){
             mEventRecurrence.parse(mRecurrenceRule);
             repeatString = EventRecurrenceFormatter.getRepeatString(getActivity(), getResources(), mEventRecurrence, true);

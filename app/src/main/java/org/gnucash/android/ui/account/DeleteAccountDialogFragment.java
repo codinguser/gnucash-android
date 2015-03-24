@@ -37,6 +37,7 @@ import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.db.SplitsDbAdapter;
 import org.gnucash.android.db.TransactionsDbAdapter;
+import org.gnucash.android.model.AccountType;
 import org.gnucash.android.ui.util.Refreshable;
 import org.gnucash.android.ui.widget.WidgetConfigurationActivity;
 import org.gnucash.android.util.QualifiedAccountNameCursorAdapter;
@@ -92,11 +93,11 @@ public class DeleteAccountDialogFragment extends SherlockDialogFragment {
      * @return New instance of the delete confirmation dialog
      */
     public static DeleteAccountDialogFragment newInstance(String accountUID) {
-        DeleteAccountDialogFragment frag = new DeleteAccountDialogFragment();
-        frag.mOriginAccountUID = accountUID;
-        frag.mSubAccountCount = AccountsDbAdapter.getInstance().getSubAccountCount(accountUID);
-        frag.mTransactionCount = TransactionsDbAdapter.getInstance().getTransactionsCount(accountUID);
-        return frag;
+        DeleteAccountDialogFragment fragment = new DeleteAccountDialogFragment();
+        fragment.mOriginAccountUID = accountUID;
+        fragment.mSubAccountCount = AccountsDbAdapter.getInstance().getSubAccountCount(accountUID);
+        fragment.mTransactionCount = TransactionsDbAdapter.getInstance().getTransactionsCount(accountUID);
+        return fragment;
     }
 
     @Override
@@ -104,21 +105,19 @@ public class DeleteAccountDialogFragment extends SherlockDialogFragment {
         View view = inflater.inflate(R.layout.dialog_account_delete, container, false);
         mTransactionOptionsView = view.findViewById(R.id.transactions_options);
         ((TextView)mTransactionOptionsView.findViewById(R.id.title_content)).setText(R.string.section_header_transactions);
-        ((TextView)mTransactionOptionsView.findViewById(R.id.description)).setText("This account contains transactions. \nWhat would you like to do with these transactions");
+        ((TextView)mTransactionOptionsView.findViewById(R.id.description)).setText(R.string.label_delete_account_transactions_description);
         mDeleteTransactionsRadioButton = (RadioButton) mTransactionOptionsView.findViewById(R.id.radio_delete);
-        mDeleteTransactionsRadioButton.setText("Delete transactions");
+        mDeleteTransactionsRadioButton.setText(R.string.label_delete_transactions);
         mMoveTransactionsRadioButton = ((RadioButton)mTransactionOptionsView.findViewById(R.id.radio_move));
         mTransactionsDestinationAccountSpinner = (Spinner) mTransactionOptionsView.findViewById(R.id.target_accounts_spinner);
 
         mAccountOptionsView = view.findViewById(R.id.accounts_options);
         ((TextView)mAccountOptionsView.findViewById(R.id.title_content)).setText(R.string.section_header_subaccounts);
-        ((TextView)mAccountOptionsView.findViewById(R.id.description)).setText("This account contains sub-accounts. \nWhat would you like to do with these sub-accounts");
+        ((TextView)mAccountOptionsView.findViewById(R.id.description)).setText(R.string.label_delete_account_subaccounts_description);
         mDeleteAccountsRadioButton = (RadioButton) mAccountOptionsView.findViewById(R.id.radio_delete);
         mDeleteAccountsRadioButton.setText(R.string.label_delete_sub_accounts);
         mMoveAccountsRadioButton = (RadioButton)mAccountOptionsView.findViewById(R.id.radio_move);
-
         mAccountsDestinationAccountSpinner = (Spinner) mAccountOptionsView.findViewById(R.id.target_accounts_spinner);
-
 
         mTransactionOptionsView.setVisibility(mTransactionCount > 0 ? View.VISIBLE : View.GONE);
         mAccountOptionsView.setVisibility(mSubAccountCount > 0 ? View.VISIBLE : View.GONE);
@@ -126,8 +125,7 @@ public class DeleteAccountDialogFragment extends SherlockDialogFragment {
         mCancelButton = (Button) view.findViewById(R.id.btn_cancel);
         mOkButton = (Button) view.findViewById(R.id.btn_save);
         mOkButton.setText(R.string.alert_dialog_ok_delete);
-        mOkButton.setCompoundDrawables(getResources().getDrawable(R.drawable.content_discard_holo_light),
-                null, null, null);
+        mOkButton.setCompoundDrawablesWithIntrinsicBounds(R.drawable.content_discard_holo_light,0,0,0);
         return view;
     }
 
@@ -135,26 +133,38 @@ public class DeleteAccountDialogFragment extends SherlockDialogFragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         String accountName = AccountsDbAdapter.getInstance().getAccountName(mOriginAccountUID);
-        getDialog().setTitle("Delete: " + accountName);
+        getDialog().setTitle(getString(R.string.alert_dialog_ok_delete) + ": " + accountName);
         AccountsDbAdapter accountsDbAdapter = AccountsDbAdapter.getInstance();
         List<String> descendantAccountUIDs = accountsDbAdapter.getDescendantAccountUIDs(mOriginAccountUID, null, null);
 
-        String conditions = "(" + DatabaseSchema.AccountEntry.COLUMN_UID    + " != ? AND "
+        String currencyCode = accountsDbAdapter.getCurrencyCode(mOriginAccountUID);
+        AccountType accountType = accountsDbAdapter.getAccountType(mOriginAccountUID);
+
+        String transactionDeleteConditions = "(" + DatabaseSchema.AccountEntry.COLUMN_UID + " != ? AND "
                 + DatabaseSchema.AccountEntry.COLUMN_CURRENCY               + " = ? AND "
                 + DatabaseSchema.AccountEntry.COLUMN_TYPE         + " = ? AND "
                 + DatabaseSchema.AccountEntry.COLUMN_PLACEHOLDER + " = 0 AND "
                 + DatabaseSchema.AccountEntry.COLUMN_UID + " NOT IN ('" + TextUtils.join("','", descendantAccountUIDs) + "')"
                 + ")";
-        Cursor cursor = accountsDbAdapter.fetchAccountsOrderedByFullName(conditions,
-                new String[]{mOriginAccountUID,
-                        accountsDbAdapter.getCurrencyCode(mOriginAccountUID),
-                        accountsDbAdapter.getAccountType(mOriginAccountUID).name()
-                });
+        Cursor cursor = accountsDbAdapter.fetchAccountsOrderedByFullName(transactionDeleteConditions,
+                new String[]{mOriginAccountUID, currencyCode, accountType.name()});
 
         SimpleCursorAdapter mCursorAdapter = new QualifiedAccountNameCursorAdapter(getActivity(),
                 android.R.layout.simple_spinner_item, cursor);
         mCursorAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mTransactionsDestinationAccountSpinner.setAdapter(mCursorAdapter);
+
+        //target accounts for transactions and accounts have different conditions
+        String accountMoveConditions = "(" + DatabaseSchema.AccountEntry.COLUMN_UID + " != ? AND "
+                + DatabaseSchema.AccountEntry.COLUMN_CURRENCY               + " = ? AND "
+                + DatabaseSchema.AccountEntry.COLUMN_TYPE         + " = ? AND "
+                + DatabaseSchema.AccountEntry.COLUMN_UID + " NOT IN ('" + TextUtils.join("','", descendantAccountUIDs) + "')"
+                + ")";
+        cursor = accountsDbAdapter.fetchAccountsOrderedByFullName(accountMoveConditions,
+                new String[]{mOriginAccountUID, currencyCode, accountType.name()});
+        mCursorAdapter = new QualifiedAccountNameCursorAdapter(getActivity(),
+                android.R.layout.simple_spinner_item, cursor);
+        mCursorAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mAccountsDestinationAccountSpinner.setAdapter(mCursorAdapter);
 
         setListeners();
@@ -225,9 +235,11 @@ public class DeleteAccountDialogFragment extends SherlockDialogFragment {
                             new String[]{mOriginAccountUID},
                             DatabaseSchema.SplitEntry.COLUMN_ACCOUNT_UID,
                             imbalanceAccountUID);
-                } else { //kill them all!!
-                    accountsDbAdapter.recursiveDeleteAccount(accountsDbAdapter.getID(mOriginAccountUID));
                 }
+
+                //now kill them all!!
+                accountsDbAdapter.recursiveDeleteAccount(accountsDbAdapter.getID(mOriginAccountUID));
+
                 WidgetConfigurationActivity.updateAllWidgets(getActivity());
                 ((Refreshable)getTargetFragment()).refresh();
                 dismiss();

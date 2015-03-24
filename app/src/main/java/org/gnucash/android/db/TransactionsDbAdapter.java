@@ -527,6 +527,12 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
         return getTransaction(getID(transactionUID));
     }
 
+    /**
+     * Return the number of currencies used in the transaction.
+     * For example if there are different splits with different currencies
+     * @param transactionUID GUID of the transaction
+     * @return Number of currencies within the transaction
+     */
     public int getNumCurrencies(String transactionUID) {
         Cursor cursor = mDb.query("trans_extra_info",
                 new String[]{"trans_currency_count"},
