@@ -30,6 +30,7 @@ import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.text.format.DateFormat;
+import android.text.format.DateUtils;
 import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
@@ -469,8 +470,8 @@ public class TransactionsListFragment extends SherlockListFragment implements
             TextView dateHeader = (TextView) view.findViewById(R.id.date_section_header);
 
             if (hasSectionHeader){
-                java.text.DateFormat format = DateFormat.getLongDateFormat(getActivity());
-                String dateString = format.format(new Date(transactionTime));
+                String dateString = DateUtils.formatDateTime(getActivity(), transactionTime,
+                        DateUtils.FORMAT_SHOW_WEEKDAY | DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_YEAR);
                 dateHeader.setText(dateString);
                 dateHeader.setVisibility(View.VISIBLE);
             } else {
