@@ -206,7 +206,7 @@ public class BarChartActivity extends PassLockActivity implements OnChartValueSe
         if (e == null) return;
         BarEntry entry = (BarEntry) e;
         String label = mChart.getData().getXVals().get(entry.getXIndex());
-        double value = entry.getVals()[h.getStackIndex()];
+        double value = entry.getVals()[ h.getStackIndex() == -1 ? 0 : h.getStackIndex() ];
         double sum = mTotalPercentageMode ? mChart.getData().getDataSetByIndex(dataSetIndex).getYValueSum() : entry.getVal();
         ((TextView) findViewById(R.id.selected_chart_slice))
                 .setText(String.format(SELECTED_VALUE_PATTERN, label, value, value / sum * 100));
