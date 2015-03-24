@@ -156,23 +156,40 @@ public class AccountsListFragment extends SherlockListFragment implements
      */
     private ActionMode.Callback mActionModeCallbacks = new Callback() {
 
+        String mSelectedAccountUID;
+
         @Override
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
             MenuInflater inflater = mode.getMenuInflater();
             inflater.inflate(R.menu.account_context_menu, menu);
             mode.setTitle(getString(R.string.title_selected, 1));
+            mSelectedAccountUID = mAccountsDbAdapter.getUID(mSelectedItemId);
             return true;
         }
 
         @Override
         public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
             // nothing to see here, move along
-            return false;
+            MenuItem favoriteAccountMenuItem = menu.findItem(R.id.menu_favorite_account);
+            boolean isFavoriteAccount = AccountsDbAdapter.getInstance().isFavoriteAccount(mSelectedAccountUID);
+
+            int favoriteIcon = isFavoriteAccount ? android.R.drawable.btn_star_big_on : android.R.drawable.btn_star_big_off;
+            favoriteAccountMenuItem.setIcon(favoriteIcon);
+
+            return true;
         }
 
         @Override
         public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
             switch (item.getItemId()) {
+                case R.id.menu_favorite_account:
+                    boolean isFavorite = mAccountsDbAdapter.isFavoriteAccount(mSelectedAccountUID);
+                    //toggle favorite preference
+                    mAccountsDbAdapter.updateAccount(mSelectedItemId,
+                            DatabaseSchema.AccountEntry.COLUMN_FAVORITE, isFavorite ? "0" : "1");
+                    mode.invalidate();
+                    return true;
+
                 case R.id.context_menu_edit_accounts:
                     openCreateOrEditActivity(mSelectedItemId);
                     mode.finish();
@@ -404,25 +421,6 @@ public class AccountsListFragment extends SherlockListFragment implements
     @Override
     public void refresh() {
         getLoaderManager().restartLoader(0, null, this);
-
-/*
-        //TODO: Figure out a way to display account balances per currency
-		boolean doubleEntryActive = PreferenceManager.getDefaultSharedPreferences(getActivity())
-				.getBoolean(getString(R.string.key_use_double_entry), false);
-
-		TextView tv = (TextView) getView().findViewById(R.id.transactions_sum);
-		Money balance = null;
-		if (doubleEntryActive){
-			balance = mAccountsDbAdapter.getDoubleEntryAccountsBalance();
-		} else {
-			balance = mAccountsDbAdapter.getAllAccountsBalance();
-		}
-		tv.setText(balance.formattedString(Locale.getDefault()));
-		if (balance.isNegative())
-			tv.setTextColor(getResources().getColor(R.color.debit_red));
-		else
-			tv.setTextColor(getResources().getColor(R.color.credit_green));
-*/
     }
 
     /**

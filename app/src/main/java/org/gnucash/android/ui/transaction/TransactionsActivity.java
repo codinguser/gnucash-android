@@ -96,11 +96,6 @@ public class TransactionsActivity extends PassLockActivity implements
     private static final int DEFAULT_NUM_PAGES = 2;
 
     /**
-     * Menu item for marking an account as a favorite
-     */
-    MenuItem mFavoriteAccountMenu;
-
-    /**
      * GUID of {@link Account} whose transactions are displayed
      */
     private String mAccountUID = null;
@@ -402,7 +397,6 @@ public class TransactionsActivity extends PassLockActivity implements
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        mFavoriteAccountMenu = menu.findItem(R.id.menu_favorite_account);
         MenuItem favoriteAccountMenuItem = menu.findItem(R.id.menu_favorite_account);
 
         if (favoriteAccountMenuItem == null) //when the activity is used to edit a transaction
