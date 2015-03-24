@@ -367,14 +367,25 @@ public abstract class DatabaseAdapter {
      * @return Number of records affected
      */
     public int updateRecord(@NonNull String uid, @NonNull String columnKey, String newValue) {
+        return updateRecords(CommonColumns.COLUMN_UID + "= ?", new String[]{uid}, columnKey, newValue);
+    }
+
+    /**
+     * Updates all records which match the {@code where} clause with the {@code newValue} for the column
+     * @param where SQL where clause
+     * @param whereArgs String arguments for where clause
+     * @param columnKey Name of column to be updated
+     * @param newValue New value to be assigned to the columnKey
+     * @return Number of records affected
+     */
+    public int updateRecords(String where, String[] whereArgs, @NonNull String columnKey, String newValue){
         ContentValues contentValues = new ContentValues();
         if (newValue == null) {
             contentValues.putNull(columnKey);
         } else {
             contentValues.put(columnKey, newValue);
         }
-        return mDb.update(mTableName, contentValues,
-                CommonColumns.COLUMN_UID + "= ?", new String[]{uid});
+        return mDb.update(mTableName, contentValues, where, whereArgs);
     }
 
     /**

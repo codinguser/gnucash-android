@@ -215,29 +215,47 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
      * @throws java.lang.IllegalArgumentException if the accountUID is null
 	 */
 	public Cursor fetchAllTransactionsForAccount(String accountUID){
-        //TODO: Remove this legacy code. Database has been upgraded
-        if (mDb.getVersion() < DatabaseSchema.SPLITS_DB_VERSION){ //legacy from previous database format
-            return mDb.query(TransactionEntry.TABLE_NAME, null,
-                    "((" + SplitEntry.COLUMN_ACCOUNT_UID + " = '" + accountUID + "') "
-                            + "OR (" + DatabaseHelper.KEY_DOUBLE_ENTRY_ACCOUNT_UID + " = '" + accountUID + "' ))"
-                            + " AND " + TransactionEntry.COLUMN_TEMPLATE + " = 0",
-                    null, null, null, TransactionEntry.COLUMN_TIMESTAMP + " DESC");
-        } else {
-            SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
-            queryBuilder.setTables(TransactionEntry.TABLE_NAME
-                    + " INNER JOIN " + SplitEntry.TABLE_NAME + " ON "
-                    + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_UID + " = "
-                    + SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_TRANSACTION_UID);
-            queryBuilder.setDistinct(true);
-            String[] projectionIn = new String[]{TransactionEntry.TABLE_NAME + ".*"};
-            String selection = SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_ACCOUNT_UID + " = ?"
-                    + " AND " + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_TEMPLATE + " = 0";
-            String[] selectionArgs = new String[]{accountUID};
-            String sortOrder = TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_TIMESTAMP + " DESC";
+        SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
+        queryBuilder.setTables(TransactionEntry.TABLE_NAME
+                + " INNER JOIN " + SplitEntry.TABLE_NAME + " ON "
+                + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_UID + " = "
+                + SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_TRANSACTION_UID);
+        queryBuilder.setDistinct(true);
+        String[] projectionIn = new String[]{TransactionEntry.TABLE_NAME + ".*"};
+        String selection = SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_ACCOUNT_UID + " = ?"
+                + " AND " + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_TEMPLATE + " = 0";
+        String[] selectionArgs = new String[]{accountUID};
+        String sortOrder = TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_TIMESTAMP + " DESC";
 
-            return queryBuilder.query(mDb, projectionIn, selection, selectionArgs, null, null, sortOrder);
-        }
-	}
+        return queryBuilder.query(mDb, projectionIn, selection, selectionArgs, null, null, sortOrder);
+    }
+
+    /**
+     * Deletes all transactions which contain a split in the account.
+     * <p><b>Note:</b>As long as the transaction has one split which belongs to the account {@code accountUID},
+     * it will be deleted. The other splits belonging to the transaction will also go away</p>
+     * @param accountUID GUID of the account
+     */
+    public void deleteTransactionsForAccount(String accountUID){
+        String rawDeleteQuery = "DELETE FROM " + TransactionEntry.TABLE_NAME + " WHERE " + TransactionEntry.COLUMN_UID + " IN "
+                + " (SELECT " + SplitEntry.COLUMN_TRANSACTION_UID + " FROM " + SplitEntry.TABLE_NAME + " WHERE "
+                + SplitEntry.COLUMN_ACCOUNT_UID + " = ?)";
+        mDb.execSQL(rawDeleteQuery, new String[]{accountUID});
+    }
+
+    /**
+     * Deletes all transactions which have no splits associated with them
+     * @return Number of records deleted
+     */
+    public int deleteTransactionsWithNoSplits(){
+        return mDb.delete(
+                TransactionEntry.TABLE_NAME,
+                "NOT EXISTS ( SELECT * FROM " + SplitEntry.TABLE_NAME +
+                        " WHERE " + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_UID +
+                        " = " + SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_TRANSACTION_UID + " ) ",
+                null
+        );
+    }
 
     /**
      * Fetches all recurring transactions from the database.
@@ -412,20 +430,6 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 
         return Transaction.computeBalance(accountUID, splitList);
     }
-
-    //TODO: When "on delete cascade" is successfully migrated, we can remove this method and use the base implementation
-	/**
-	 * Deletes transaction record with id <code>rowId</code> and all it's splits
-	 * @param rowId Long database record id
-	 * @return <code>true</code> if deletion was successful, <code>false</code> otherwise
-	 */
-    @Override
-	public boolean deleteRecord(long rowId){
-		Log.d(TAG, "Delete transaction with record Id: " + rowId);
-        //the splits db adapter handles deletion of the transaction
-		mSplitsDbAdapter.deleteSplitsForTransaction(rowId);
-        return mDb.delete(TransactionEntry.TABLE_NAME, TransactionEntry._ID + "=" + rowId, null) > 0;
-	}
 
     /**
 	 * Assigns transaction with id <code>rowId</code> to account with id <code>accountId</code>
