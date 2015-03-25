@@ -74,7 +74,7 @@ public class BarChartActivity extends PassLockActivity implements OnChartValueSe
 
 //        mAccountTypeList = Arrays.asList(AccountType.EXPENSE, AccountType.INCOME);
         mAccountTypeList = new ArrayList<AccountType>(Arrays.asList(AccountType.INCOME, AccountType.EXPENSE));
-        setStackedData();
+        mChart.setData(getDataSet());
 
         Legend l = mChart.getLegend();
         l.setForm(Legend.LegendForm.CIRCLE);
@@ -84,15 +84,14 @@ public class BarChartActivity extends PassLockActivity implements OnChartValueSe
         mChart.invalidate();
     }
 
-    protected void setStackedData() {
+    private BarData getDataSet() {
         AccountsDbAdapter mAccountsDbAdapter = AccountsDbAdapter.getInstance();
 
         setEarliestAndLatestTimestamps(mAccountTypeList);
 
         if (mEarliestTransactionTimestamp == 0) {
             if (mLatestTransactionTimestamp == 0) {
-                Log.w(TAG, "empty bar chart");
-                return;
+                return getEmptyDataSet();
             }
             for (Map.Entry<AccountType, Long> entry : mEarliestTimestampsMap.entrySet()) {
                 if (entry.getValue() == 0) {
@@ -153,8 +152,28 @@ public class BarChartActivity extends PassLockActivity implements OnChartValueSe
 
         dataSets.add(set);
 
-        BarData bd = new BarData(xVals, dataSets);
-        mChart.setData(bd);
+        return new BarData(xVals, dataSets);
+    }
+
+    private BarData getEmptyDataSet() {
+        ArrayList<String> xValues = new ArrayList<String>();
+        ArrayList<BarEntry> yValues = new ArrayList<BarEntry>();
+        for (int i = 0; i < 3; i++) {
+            xValues.add("");
+            yValues.add(new BarEntry(i % 2 == 0 ? 5f : 4.5f, i));
+        }
+        String noDataMsg = getResources().getString(R.string.label_chart_no_data);
+        BarDataSet set = new BarDataSet(yValues, noDataMsg);
+        set.setDrawValues(false);
+        set.setColor(Color.GRAY);
+
+        mChart.getAxisLeft().setAxisMaxValue(10);
+        mChart.getAxisLeft().setDrawLabels(false);
+        mChart.getXAxis().setDrawLabels(false);
+        mChart.setTouchEnabled(false);
+        ((TextView) findViewById(R.id.selected_chart_slice)).setText(noDataMsg);
+
+        return new BarData(xValues, new ArrayList<BarDataSet>(Arrays.asList(set)));
     }
 
     private void setEarliestAndLatestTimestamps(List<AccountType> accountTypeList) {
