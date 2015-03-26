@@ -92,6 +92,8 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
 
     private AccountType mAccountType = AccountType.EXPENSE;
 
+    private boolean mChartDataPresent = true;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         //it is necessary to set the view first before calling super because of the nav drawer in BaseDrawerActivity
@@ -185,6 +187,7 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
         }
 
         if (dataSet.getEntryCount() == 0) {
+            mChartDataPresent = false;
             dataSet.addEntry(new Entry(1, 0));
             dataSet.setColor(Color.LTGRAY);
             dataSet.setDrawValues(false);
@@ -192,6 +195,7 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
             mChart.setCenterText(getResources().getString(R.string.label_chart_no_data));
             mChart.setTouchEnabled(false);
         } else {
+            mChartDataPresent = true;
             mChart.setCenterText(getResources().getString(R.string.label_chart_total) + dataSet.getYValueSum());
             mChart.setTouchEnabled(true);
         }
@@ -285,6 +289,12 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getSupportMenuInflater().inflate(R.menu.chart_actions, menu);
+        return true;
+    }
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        menu.findItem(R.id.menu_order_by_size).setVisible(mChartDataPresent);
+        menu.findItem(R.id.menu_toggle_labels).setVisible(mChartDataPresent);
         // hide bar chart specific menu items
         menu.findItem(R.id.menu_percentage_mode).setVisible(false);
         return true;

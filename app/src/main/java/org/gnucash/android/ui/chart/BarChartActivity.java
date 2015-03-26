@@ -53,7 +53,7 @@ public class BarChartActivity extends PassLockActivity implements OnChartValueSe
     private long mEarliestTransactionTimestamp;
     private long mLatestTransactionTimestamp;
     private boolean mTotalPercentageMode = true;
-
+    private boolean mChartDataPresent = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -156,6 +156,8 @@ public class BarChartActivity extends PassLockActivity implements OnChartValueSe
     }
 
     private BarData getEmptyDataSet() {
+        mChartDataPresent = false;
+
         ArrayList<String> xValues = new ArrayList<String>();
         ArrayList<BarEntry> yValues = new ArrayList<BarEntry>();
         for (int i = 0; i < 3; i++) {
@@ -165,7 +167,7 @@ public class BarChartActivity extends PassLockActivity implements OnChartValueSe
         String noDataMsg = getResources().getString(R.string.label_chart_no_data);
         BarDataSet set = new BarDataSet(yValues, noDataMsg);
         set.setDrawValues(false);
-        set.setColor(Color.GRAY);
+        set.setColor(Color.LTGRAY);
 
         mChart.getAxisLeft().setAxisMaxValue(10);
         mChart.getAxisLeft().setDrawLabels(false);
@@ -195,6 +197,12 @@ public class BarChartActivity extends PassLockActivity implements OnChartValueSe
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getSupportMenuInflater().inflate(R.menu.chart_actions, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        menu.findItem(R.id.menu_percentage_mode).setVisible(mChartDataPresent);
         // hide pie and bar chart specific menu items
         menu.findItem(R.id.menu_order_by_size).setVisible(false);
         menu.findItem(R.id.menu_toggle_labels).setVisible(false);

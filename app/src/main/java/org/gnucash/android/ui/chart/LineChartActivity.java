@@ -193,7 +193,12 @@ public class LineChartActivity extends PassLockActivity implements OnChartValueS
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getSupportMenuInflater().inflate(R.menu.chart_actions, menu);
-        // hide pie chart specific menu items
+        return true;
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        // hide pie and bar chart specific menu items
         menu.findItem(R.id.menu_order_by_size).setVisible(false);
         menu.findItem(R.id.menu_toggle_labels).setVisible(false);
         menu.findItem(R.id.menu_percentage_mode).setVisible(false);
