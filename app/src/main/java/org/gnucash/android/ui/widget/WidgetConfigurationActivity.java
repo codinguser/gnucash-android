@@ -170,7 +170,7 @@ public class WidgetConfigurationActivity extends Activity {
 		RemoteViews views = new RemoteViews(context.getPackageName(),
 				R.layout.widget_4x1);
 		views.setTextViewText(R.id.account_name, account.getName());
-        Money accountBalance = accountsDbAdapter.getAccountBalance(accountUID);
+        Money accountBalance = accountsDbAdapter.getAccountBalance(accountUID, -1, System.currentTimeMillis());
 
         views.setTextViewText(R.id.transactions_summary,
 				accountBalance.formattedString(Locale.getDefault()));

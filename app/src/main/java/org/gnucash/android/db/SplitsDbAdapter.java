@@ -277,8 +277,14 @@ public class SplitsDbAdapter extends DatabaseAdapter {
                 TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_TEMPLATE + " = 0";
 
         if (startTimestamp != -1 && endTimestamp != -1) {
-            selection += " AND " + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_TIMESTAMP + " BETWEEN ? AND ?";
+            selection += " AND " + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_TIMESTAMP + " BETWEEN ? AND ? ";
             selectionArgs = new String[]{String.valueOf(startTimestamp), String.valueOf(endTimestamp)};
+        } else if (startTimestamp == -1 && endTimestamp != -1) {
+            selection += " AND " + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_TIMESTAMP + " <= ?";
+            selectionArgs = new String[]{String.valueOf(endTimestamp)};
+        } else if (startTimestamp != -1 && endTimestamp == -1) {
+            selection += " AND " + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_TIMESTAMP + " >= ?";
+            selectionArgs = new String[]{String.valueOf(startTimestamp)};
         }
 
         cursor = mDb.query(SplitEntry.TABLE_NAME + " , " + TransactionEntry.TABLE_NAME,
