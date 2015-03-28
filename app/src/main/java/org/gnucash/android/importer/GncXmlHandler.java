@@ -18,6 +18,7 @@
 package org.gnucash.android.importer;
 
 import android.database.sqlite.SQLiteDatabase;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import org.gnucash.android.db.AccountsDbAdapter;
@@ -168,7 +169,7 @@ public class GncXmlHandler extends DefaultHandler {
         init(db);
     }
 
-    private void init(SQLiteDatabase db) {
+    private void init(@Nullable SQLiteDatabase db) {
         if (db == null) {
             mAccountsDbAdapter = AccountsDbAdapter.getInstance();
             mTransactionsDbAdapter = TransactionsDbAdapter.getInstance();
@@ -499,9 +500,22 @@ public class GncXmlHandler extends DefaultHandler {
         super.endDocument();
         HashMap<String, Account> map = new HashMap<>(mAccountList.size());
         HashMap<String, String> mapFullName = new HashMap<>(mAccountList.size());
+        Account rootAccount = null;
         for(Account account:mAccountList) {
             map.put(account.getUID(), account);
             mapFullName.put(account.getUID(), null);
+            if (account.getAccountType() == AccountType.ROOT) {
+                if (rootAccount == null) {
+                    rootAccount = account;
+                } else {
+                    throw new SAXException("Multiple ROOT accounts exists in the import file");
+                }
+            }
+        }
+        if (mAccountsDbAdapter.getTotalAccountCount() != 0) {
+            if (rootAccount == null || !rootAccount.getUID().equals(mAccountsDbAdapter.getGnuCashRootAccountUID())) {
+                throw new SAXException("ROOT in db is different from the import file");
+            }
         }
         java.util.Stack<Account> stack = new Stack<>();
         for (Account account:mAccountList){
