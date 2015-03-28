@@ -512,11 +512,6 @@ public class GncXmlHandler extends DefaultHandler {
                 }
             }
         }
-        if (mAccountsDbAdapter.getTotalAccountCount() != 0) {
-            if (rootAccount == null || !rootAccount.getUID().equals(mAccountsDbAdapter.getGnuCashRootAccountUID())) {
-                throw new SAXException("ROOT in db is different from the import file");
-            }
-        }
         java.util.Stack<Account> stack = new Stack<>();
         for (Account account:mAccountList){
             if (mapFullName.get(account.getUID()) != null) {
@@ -558,14 +553,20 @@ public class GncXmlHandler extends DefaultHandler {
             account.setFullName(mapFullName.get(account.getUID()));
         }
         long startTime = System.nanoTime();
-        long nAccounts = mAccountsDbAdapter.bulkAddAccounts(mAccountList);
-        Log.d("Handler:", String.format("%d accounts inserted", nAccounts));
-        long nTransactions = mTransactionsDbAdapter.bulkAddTransactions(mTransactionList);
-        Log.d("Handler:", String.format("%d transactions inserted", nTransactions));
-        int nSchedActions = mScheduledActionsDbAdapter.bulkAddScheduledActions(mScheduledActionsList);
-        Log.d("Handler:", String.format("%d scheduled actions inserted", nSchedActions));
-        long endTime = System.nanoTime();
-        Log.d("Handler:", String.format(" bulk insert time: %d", endTime - startTime));
-
+        mAccountsDbAdapter.beginTransaction();
+        try {
+            mAccountsDbAdapter.deleteAllRecords();
+            long nAccounts = mAccountsDbAdapter.bulkAddAccounts(mAccountList);
+            Log.d("Handler:", String.format("%d accounts inserted", nAccounts));
+            long nTransactions = mTransactionsDbAdapter.bulkAddTransactions(mTransactionList);
+            Log.d("Handler:", String.format("%d transactions inserted", nTransactions));
+            int nSchedActions = mScheduledActionsDbAdapter.bulkAddScheduledActions(mScheduledActionsList);
+            Log.d("Handler:", String.format("%d scheduled actions inserted", nSchedActions));
+            long endTime = System.nanoTime();
+            Log.d("Handler:", String.format(" bulk insert time: %d", endTime - startTime));
+            mAccountsDbAdapter.setTransactionSuccessful();
+        } finally {
+            mAccountsDbAdapter.endTransaction();
+        }
     }
 }
