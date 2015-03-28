@@ -27,21 +27,21 @@
         android:layout_height="match_parent"
         android:gravity="center_horizontal|center_vertical">
 
-        <Button
+        <ImageButton
             android:id="@+id/bar_chart_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Bar Chart" />
-        <Button
+            android:src="@drawable/chart_bar_button" />
+        <ImageButton
             android:id="@+id/pie_chart_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Pie Chart" />
-        <Button
+            android:src="@drawable/chart_pie_button" />
+        <ImageButton
             android:id="@+id/line_chart_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Line Chart" />
+            android:src="@drawable/chart_line_button" />
 
     </LinearLayout>
 
