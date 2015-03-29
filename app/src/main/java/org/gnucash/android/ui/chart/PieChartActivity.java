@@ -74,7 +74,8 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
             Color.parseColor("#fddef8"), Color.parseColor("#fa0e6e"), Color.parseColor("#d9e7b5")
     };
 
-    private static final String datePattern = "MMMM\nYYYY";
+    private static final String DATE_PATTERN = "MMMM\nYYYY";
+    private static final int ANIMATION_DURATION = 1800;
 
     private PieChart mChart;
 
@@ -151,15 +152,29 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
 
     /**
      * Sets the chart data
-     *
      * @param forCurrentMonth sets data only for current month if {@code true}, otherwise for all time
      */
     private void setData(boolean forCurrentMonth) {
-        mChartDateTextView.setText(forCurrentMonth ? mChartDate.toString(datePattern) : getResources().getString(R.string.label_chart_overall));
+        mChartDateTextView.setText(forCurrentMonth ? mChartDate.toString(DATE_PATTERN) : getResources().getString(R.string.label_chart_overall));
         ((TextView) findViewById(R.id.selected_chart_slice)).setText("");
         mChart.highlightValues(null);
         mChart.clear();
 
+        mChart.setData(getPieData(forCurrentMonth));
+        mChart.animateXY(ANIMATION_DURATION, ANIMATION_DURATION);
+
+        setImageButtonEnabled(mNextMonthButton,
+                mChartDate.plusMonths(1).dayOfMonth().withMinimumValue().withMillisOfDay(0).isBefore(mLatestTransactionDate));
+        setImageButtonEnabled(mPreviousMonthButton, (mEarliestTransactionDate.getYear() != 1970
+                && mChartDate.minusMonths(1).dayOfMonth().withMaximumValue().withMillisOfDay(86399999).isAfter(mEarliestTransactionDate)));
+    }
+
+    /**
+     * Returns {@code PieData} instance with data entries and labels
+     * @param forCurrentMonth sets data only for current month if {@code true}, otherwise for all time
+     * @return {@code PieData} instance
+     */
+    private PieData getPieData(boolean forCurrentMonth) {
         PieDataSet dataSet = new PieDataSet(null, "");
         ArrayList<String> names = new ArrayList<String>();
         List<String> skipUUID = new ArrayList<String>();
@@ -169,16 +184,16 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
                     skipUUID.addAll(mAccountsDbAdapter.getDescendantAccountUIDs(account.getUID(), null, null));
                 }
                 if (!skipUUID.contains(account.getUID())) {
-                    double balance = 0;
+                    double balance;
                     if (forCurrentMonth) {
                         long start = mChartDate.dayOfMonth().withMinimumValue().millisOfDay().withMinimumValue().toDate().getTime();
                         long end = mChartDate.dayOfMonth().withMaximumValue().millisOfDay().withMaximumValue().toDate().getTime();
-                        balance = mAccountsDbAdapter.getAccountBalance(account.getUID(), start, end).asDouble();
+                        balance = mAccountsDbAdapter.getAccountBalance(account.getUID(), start, end).absolute().asDouble();
                     } else {
-                        balance = mAccountsDbAdapter.getAccountBalance(account.getUID()).asDouble();
+                        balance = mAccountsDbAdapter.getAccountBalance(account.getUID()).absolute().asDouble();
                     }
                     if (balance > 0) {
-                        dataSet.addEntry(new Entry((float) Math.abs(balance), dataSet.getEntryCount()));
+                        dataSet.addEntry(new Entry((float) balance, dataSet.getEntryCount()));
                         dataSet.addColor(COLORS[(dataSet.getEntryCount() - 1) % COLORS.length]);
                         names.add(account.getName());
                     }
@@ -199,14 +214,8 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
             mChart.setCenterText(getResources().getString(R.string.label_chart_total) + dataSet.getYValueSum());
             mChart.setTouchEnabled(true);
         }
-        mChart.setData(new PieData(names, dataSet));
-        mChart.animateXY(1800, 1800);
-        mChart.invalidate();
 
-        setImageButtonEnabled(mNextMonthButton,
-                mChartDate.plusMonths(1).dayOfMonth().withMinimumValue().withMillisOfDay(0).isBefore(mLatestTransactionDate));
-        setImageButtonEnabled(mPreviousMonthButton, (mEarliestTransactionDate.getYear() != 1970
-                && mChartDate.minusMonths(1).dayOfMonth().withMaximumValue().withMillisOfDay(86399999).isAfter(mEarliestTransactionDate)));
+        return new PieData(names, dataSet);
     }
 
     /**
