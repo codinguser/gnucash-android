@@ -18,6 +18,7 @@
 package org.gnucash.android.importer;
 
 import android.database.sqlite.SQLiteDatabase;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import org.gnucash.android.db.AccountsDbAdapter;
@@ -168,7 +169,7 @@ public class GncXmlHandler extends DefaultHandler {
         init(db);
     }
 
-    private void init(SQLiteDatabase db) {
+    private void init(@Nullable SQLiteDatabase db) {
         if (db == null) {
             mAccountsDbAdapter = AccountsDbAdapter.getInstance();
             mTransactionsDbAdapter = TransactionsDbAdapter.getInstance();
@@ -499,9 +500,17 @@ public class GncXmlHandler extends DefaultHandler {
         super.endDocument();
         HashMap<String, Account> map = new HashMap<>(mAccountList.size());
         HashMap<String, String> mapFullName = new HashMap<>(mAccountList.size());
+        Account rootAccount = null;
         for(Account account:mAccountList) {
             map.put(account.getUID(), account);
             mapFullName.put(account.getUID(), null);
+            if (account.getAccountType() == AccountType.ROOT) {
+                if (rootAccount == null) {
+                    rootAccount = account;
+                } else {
+                    throw new SAXException("Multiple ROOT accounts exists in the import file");
+                }
+            }
         }
         java.util.Stack<Account> stack = new Stack<>();
         for (Account account:mAccountList){
@@ -544,14 +553,20 @@ public class GncXmlHandler extends DefaultHandler {
             account.setFullName(mapFullName.get(account.getUID()));
         }
         long startTime = System.nanoTime();
-        long nAccounts = mAccountsDbAdapter.bulkAddAccounts(mAccountList);
-        Log.d("Handler:", String.format("%d accounts inserted", nAccounts));
-        long nTransactions = mTransactionsDbAdapter.bulkAddTransactions(mTransactionList);
-        Log.d("Handler:", String.format("%d transactions inserted", nTransactions));
-        int nSchedActions = mScheduledActionsDbAdapter.bulkAddScheduledActions(mScheduledActionsList);
-        Log.d("Handler:", String.format("%d scheduled actions inserted", nSchedActions));
-        long endTime = System.nanoTime();
-        Log.d("Handler:", String.format(" bulk insert time: %d", endTime - startTime));
-
+        mAccountsDbAdapter.beginTransaction();
+        try {
+            mAccountsDbAdapter.deleteAllRecords();
+            long nAccounts = mAccountsDbAdapter.bulkAddAccounts(mAccountList);
+            Log.d("Handler:", String.format("%d accounts inserted", nAccounts));
+            long nTransactions = mTransactionsDbAdapter.bulkAddTransactions(mTransactionList);
+            Log.d("Handler:", String.format("%d transactions inserted", nTransactions));
+            int nSchedActions = mScheduledActionsDbAdapter.bulkAddScheduledActions(mScheduledActionsList);
+            Log.d("Handler:", String.format("%d scheduled actions inserted", nSchedActions));
+            long endTime = System.nanoTime();
+            Log.d("Handler:", String.format(" bulk insert time: %d", endTime - startTime));
+            mAccountsDbAdapter.setTransactionSuccessful();
+        } finally {
+            mAccountsDbAdapter.endTransaction();
+        }
     }
 }

@@ -398,4 +398,25 @@ public abstract class DatabaseAdapter {
     public boolean deleteRecord(@NonNull String uid){
         return deleteRecord(getID(uid));
     }
+
+    /**
+     * Expose mDb.beginTransaction()
+     */
+    public void beginTransaction() {
+        mDb.beginTransaction();
+    }
+
+    /**
+     * Expose mDb.setTransactionSuccessful()
+     */
+    public void setTransactionSuccessful() {
+        mDb.setTransactionSuccessful();
+    }
+
+    /**
+     * Expose mDb.endTransaction()
+     */
+    public void endTransaction() {
+        mDb.endTransaction();
+    }
 }
