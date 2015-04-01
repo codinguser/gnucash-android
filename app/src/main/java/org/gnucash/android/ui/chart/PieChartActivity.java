@@ -300,12 +300,14 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
         getSupportMenuInflater().inflate(R.menu.chart_actions, menu);
         return true;
     }
+
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         menu.findItem(R.id.menu_order_by_size).setVisible(mChartDataPresent);
         menu.findItem(R.id.menu_toggle_labels).setVisible(mChartDataPresent);
-        // hide bar chart specific menu items
+        // hide line/bar chart specific menu items
         menu.findItem(R.id.menu_percentage_mode).setVisible(false);
+        menu.findItem(R.id.menu_toggle_average_lines).setVisible(false);
         return true;
     }
 

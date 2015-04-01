@@ -10,6 +10,7 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.Legend;
+import com.github.mikephil.charting.components.LimitLine;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
@@ -53,6 +54,8 @@ public class LineChartActivity extends PassLockActivity implements OnChartValueS
     private Map<AccountType, Long> mLatestTimestampsMap = new HashMap<AccountType, Long>();
     private long mEarliestTransactionTimestamp;
     private long mLatestTransactionTimestamp;
+
+    private boolean mChartDataPresent = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -116,6 +119,8 @@ public class LineChartActivity extends PassLockActivity implements OnChartValueS
     }
 
     private LineData getEmptyDataSet() {
+        mChartDataPresent = false;
+
         ArrayList<String> xValues = new ArrayList<String>();
         ArrayList<Entry> yValues = new ArrayList<Entry>();
         for (int i = 0; i < 5; i++) {
@@ -198,7 +203,8 @@ public class LineChartActivity extends PassLockActivity implements OnChartValueS
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        // hide pie and bar chart specific menu items
+        menu.findItem(R.id.menu_toggle_average_lines).setVisible(mChartDataPresent);
+        // hide pie/bar chart specific menu items
         menu.findItem(R.id.menu_order_by_size).setVisible(false);
         menu.findItem(R.id.menu_toggle_labels).setVisible(false);
         menu.findItem(R.id.menu_percentage_mode).setVisible(false);
@@ -210,6 +216,21 @@ public class LineChartActivity extends PassLockActivity implements OnChartValueS
         switch (item.getItemId()) {
             case R.id.menu_toggle_legend: {
                 mChart.getLegend().setEnabled(!mChart.getLegend().isEnabled());
+                mChart.invalidate();
+                break;
+            }
+            case R.id.menu_toggle_average_lines: {
+                if (mChart.getAxisLeft().getLimitLines().isEmpty()) {
+                    for (LineDataSet set : mChart.getData().getDataSets()) {
+                        LimitLine line = new LimitLine(set.getYValueSum() / set.getEntryCount(), set.getLabel());
+                        line.enableDashedLine(10, 5, 0);
+                        line.setLineColor(set.getColor());
+                        mChart.getAxisLeft().addLimitLine(line);
+                    }
+                } else {
+                    mChart.getAxisLeft().removeAllLimitLines();
+                }
+
                 mChart.invalidate();
                 break;
             }

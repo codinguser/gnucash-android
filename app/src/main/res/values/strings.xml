@@ -443,6 +443,7 @@
     <string name="menu_toggle_legend">Toggle legend</string>
     <string name="menu_toggle_labels">Toggle labels</string>
     <string name="menu_toggle_percentage_mode">Toggle percentage</string>
+    <string name="menu_toggle_average_lines">Toggle average lines</string>
     <string name="label_chart_no_data">No chart data available</string>
     <string name="label_chart_overall">Overall</string>
     <string name="label_chart_total">Total\n</string>

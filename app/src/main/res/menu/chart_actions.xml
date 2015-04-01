@@ -33,4 +33,8 @@
           android:title="@string/menu_toggle_percentage_mode"
           android:showAsAction="never" />
 
+    <item android:id="@+id/menu_toggle_average_lines"
+          android:title="@string/menu_toggle_average_lines"
+          android:showAsAction="never" />
+
 </menu>

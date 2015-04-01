@@ -203,9 +203,10 @@ public class BarChartActivity extends PassLockActivity implements OnChartValueSe
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         menu.findItem(R.id.menu_percentage_mode).setVisible(mChartDataPresent);
-        // hide pie and bar chart specific menu items
+        // hide pie/line chart specific menu items
         menu.findItem(R.id.menu_order_by_size).setVisible(false);
         menu.findItem(R.id.menu_toggle_labels).setVisible(false);
+        menu.findItem(R.id.menu_toggle_average_lines).setVisible(false);
         return true;
     }
 
