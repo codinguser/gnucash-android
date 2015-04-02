@@ -166,7 +166,7 @@
 
             <ImageButton
                 android:id="@+id/delete_btn"
-                android:src="@drawable/clear_btn"
+                android:src="@drawable/ic_action_backspace"
                 style="@style/NumericButton" />
         </LinearLayout>
 

@@ -27,13 +27,13 @@
         android:label="@string/label_permission_group" 
         android:description="@string/description_permission_group" />
     
-    <permission android:name="org.gnucash.android.permission.CREATE_ACCOUNT" 
+    <permission android:name="${applicationId}.permission.CREATE_ACCOUNT"
         android:label="@string/label_permission_create_account"
-        android:permissionGroup="org.gnucash.android.permission.group.GNUCASH"
+        android:permissionGroup="${applicationId}.permission.group.GNUCASH"
         android:protectionLevel="dangerous" />
-    <permission android:name="org.gnucash.android.permission.RECORD_TRANSACTION" 
+    <permission android:name="${applicationId}.permission.RECORD_TRANSACTION"
         android:label="@string/label_permission_record_transaction"
-        android:permissionGroup="org.gnucash.android.permission.group.GNUCASH"
+        android:permissionGroup="${applicationId}.permission.group.GNUCASH"
         android:protectionLevel="dangerous" />
     
     <uses-permission android:label="@string/label_permission_record_transactions"
