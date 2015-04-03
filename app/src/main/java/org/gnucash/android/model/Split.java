@@ -45,6 +45,9 @@ public class Split extends BaseModel{
     public Split(Money amount, String accountUID){
         setAmount(amount);
         setAccountUID(accountUID);
+        //NOTE: This is a rather simplististic approach to the split type.
+        //It typically also depends on the account type of the account. But we do not want to access
+        //the database everytime a split is created. So we keep it simple here. Set the type you want explicity.
         mSplitType = amount.isNegative() ? TransactionType.DEBIT : TransactionType.CREDIT;
     }
 
