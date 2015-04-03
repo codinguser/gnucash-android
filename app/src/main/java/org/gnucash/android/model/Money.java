@@ -466,4 +466,8 @@ public final class Money implements Comparable<Money>{
     public Money absolute() {
         return new Money(mAmount.abs(), mCurrency);
     }
+
+    public boolean isAmountZero() {
+        return mAmount.equals(BigDecimal.ZERO);
+    }
 }
