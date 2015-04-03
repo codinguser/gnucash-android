@@ -659,48 +659,67 @@ public class TransactionFormFragment extends SherlockFragment implements
             }
         }
 
-		if (mTransaction != null){ //if editing an existing transaction
-            mTransaction.setSplits(mSplitsList);
-            mTransaction.setDescription(description);
-		} else {
-			mTransaction = new Transaction(description);
-
-            if (mSplitsList.isEmpty()) { //amount entered in the simple interface (not using splits Editor)
-                Split split = new Split(amount, mAccountUID);
-                split.setType(mTransactionTypeButton.getTransactionType());
-                mTransaction.addSplit(split);
-
-                String transferAcctUID;
-                if (mUseDoubleEntry) {
-                    long transferAcctId = mDoubleAccountSpinner.getSelectedItemId();
-                    transferAcctUID = mAccountsDbAdapter.getUID(transferAcctId);
-                } else {
-                    transferAcctUID = mAccountsDbAdapter.getOrCreateImbalanceAccountUID(currency);
-                }
-                mTransaction.addSplit(split.createPair(transferAcctUID));
-            } else { //split editor was used to enter splits
-                mTransaction.setSplits(mSplitsList);
+        Money splitSum = Money.createZeroInstance(currency.getCurrencyCode());
+        for (Split split : mSplitsList) {
+            Money amt = split.getAmount().absolute();
+            if (split.getType() == TransactionType.DEBIT)
+                splitSum = splitSum.subtract(amt);
+            else
+                splitSum = splitSum.add(amt);
+        }
+        mAccountsDbAdapter.beginTransaction();
+        try {
+            if (!splitSum.isAmountZero()) {
+                Split imbSplit = new Split(splitSum.negate(), mAccountsDbAdapter.getOrCreateImbalanceAccountUID(currency));
+                mSplitsList.add(imbSplit);
             }
-		}
+            if (mTransaction != null) { //if editing an existing transaction
+                mTransaction.setSplits(mSplitsList);
+                mTransaction.setDescription(description);
+            } else {
+                mTransaction = new Transaction(description);
 
-        mTransaction.setCurrencyCode(mAccountsDbAdapter.getAccountCurrencyCode(mAccountUID));
-		mTransaction.setTime(cal.getTimeInMillis());
-		mTransaction.setNote(notes);
+                if (mSplitsList.isEmpty()) { //amount entered in the simple interface (not using splits Editor)
+                    Split split = new Split(amount, mAccountUID);
+                    split.setType(mTransactionTypeButton.getTransactionType());
+                    mTransaction.addSplit(split);
 
-        // set as not exported.
-        mTransaction.setExported(false);
-        //save the normal transaction first
-        mTransactionsDbAdapter.addTransaction(mTransaction);
+                    String transferAcctUID;
+                    if (mUseDoubleEntry) {
+                        long transferAcctId = mDoubleAccountSpinner.getSelectedItemId();
+                        transferAcctUID = mAccountsDbAdapter.getUID(transferAcctId);
+                    } else {
+                        transferAcctUID = mAccountsDbAdapter.getOrCreateImbalanceAccountUID(currency);
+                    }
+                    mTransaction.addSplit(split.createPair(transferAcctUID));
+                } else { //split editor was used to enter splits
+                    mTransaction.setSplits(mSplitsList);
+                }
+            }
 
-        if (mSaveTemplate.isChecked()){
-            Transaction templateTransaction;
-            //creating a new recurring transaction
-            templateTransaction = new Transaction(mTransaction, true);
-            templateTransaction.setTemplate(true);
-            mTransactionsDbAdapter.addTransaction(templateTransaction);
+            mTransaction.setCurrencyCode(mAccountsDbAdapter.getAccountCurrencyCode(mAccountUID));
+            mTransaction.setTime(cal.getTimeInMillis());
+            mTransaction.setNote(notes);
 
-            //inside the if statement becuase scheduling always creates a template
-            scheduleRecurringTransaction(templateTransaction.getUID());
+            // set as not exported.
+            mTransaction.setExported(false);
+            //save the normal transaction first
+            mTransactionsDbAdapter.addTransaction(mTransaction);
+
+            if (mSaveTemplate.isChecked()) {
+                Transaction templateTransaction;
+                //creating a new recurring transaction
+                templateTransaction = new Transaction(mTransaction, true);
+                templateTransaction.setTemplate(true);
+                mTransactionsDbAdapter.addTransaction(templateTransaction);
+
+                //inside the if statement because scheduling always creates a template
+                scheduleRecurringTransaction(templateTransaction.getUID());
+            }
+            mAccountsDbAdapter.setTransactionSuccessful();
+        }
+        finally {
+            mAccountsDbAdapter.endTransaction();
         }
 
         //update widgets, if any
