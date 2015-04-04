@@ -81,7 +81,9 @@ public class BarChartActivity extends PassLockActivity implements OnChartValueSe
         l.setForm(Legend.LegendForm.CIRCLE);
         l.setPosition(Legend.LegendPosition.RIGHT_OF_CHART_INSIDE);
 
-        mChart.animateX(3000);
+        if (mChartDataPresent) {
+            mChart.animateX(3000);
+        }
         mChart.invalidate();
     }
 

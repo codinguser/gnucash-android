@@ -156,7 +156,10 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
         mChart.clear();
 
         mChart.setData(getPieData(forCurrentMonth));
-        mChart.animateXY(ANIMATION_DURATION, ANIMATION_DURATION);
+        if (mChartDataPresent) {
+            mChart.animateXY(ANIMATION_DURATION, ANIMATION_DURATION);
+        }
+        mChart.invalidate();
 
         setImageButtonEnabled(mNextMonthButton,
                 mChartDate.plusMonths(1).dayOfMonth().withMinimumValue().withMillisOfDay(0).isBefore(mLatestTransactionDate));

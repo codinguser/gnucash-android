@@ -54,7 +54,6 @@ public class LineChartActivity extends PassLockActivity implements OnChartValueS
     private Map<AccountType, Long> mLatestTimestampsMap = new HashMap<AccountType, Long>();
     private long mEarliestTransactionTimestamp;
     private long mLatestTransactionTimestamp;
-
     private boolean mChartDataPresent = true;
 
     @Override
@@ -77,7 +76,9 @@ public class LineChartActivity extends PassLockActivity implements OnChartValueS
         legend.setPosition(Legend.LegendPosition.RIGHT_OF_CHART_INSIDE);
         legend.setForm(Legend.LegendForm.CIRCLE);
 
-        mChart.animateX(3000);
+        if (mChartDataPresent) {
+            mChart.animateX(3000);
+        }
         mChart.invalidate();
     }
 
