@@ -32,7 +32,6 @@ import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.github.mikephil.charting.charts.PieChart;
@@ -100,11 +99,7 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
         //it is necessary to set the view first before calling super because of the nav drawer in BaseDrawerActivity
         setContentView(R.layout.activity_pie_chart);
         super.onCreate(savedInstanceState);
-
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setTitle(R.string.title_pie_chart);
-        actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setHomeButtonEnabled(true);
+        getSupportActionBar().setTitle(R.string.title_pie_chart);
 
         mPreviousMonthButton = (ImageButton) findViewById(R.id.previous_month_chart_button);
         mNextMonthButton = (ImageButton) findViewById(R.id.next_month_chart_button);

@@ -18,6 +18,7 @@ public class ChartReportActivity extends PassLockActivity {
         //it is necessary to set the view first before calling super because of the nav drawer in BaseDrawerActivity
         setContentView(R.layout.activity_chart_report);
         super.onCreate(savedInstanceState);
+        getSupportActionBar().setTitle(R.string.title_reports);
 
         findViewById(R.id.pie_chart_button).setOnClickListener(new View.OnClickListener() {
             @Override

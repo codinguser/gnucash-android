@@ -62,6 +62,7 @@ public class LineChartActivity extends PassLockActivity implements OnChartValueS
         //it is necessary to set the view first before calling super because of the nav drawer in BaseDrawerActivity
         setContentView(R.layout.activity_line_chart);
         super.onCreate(savedInstanceState);
+        getSupportActionBar().setTitle(R.string.title_line_chart);
 
         mAccountsDbAdapter = AccountsDbAdapter.getInstance();
 
@@ -232,6 +233,10 @@ public class LineChartActivity extends PassLockActivity implements OnChartValueS
                 }
 
                 mChart.invalidate();
+                break;
+            }
+            case android.R.id.home: {
+                finish();
                 break;
             }
         }

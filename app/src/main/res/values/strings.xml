@@ -437,7 +437,10 @@
     <string name="menu_title_favorite">Favorite</string>
     <string name="drawer_open">Navigation drawer opened</string>
     <string name="drawer_close">Navigation drawer closed</string>
+    <string name="title_reports">Reports</string>
 	<string name="title_pie_chart">Pie Chart</string>
+    <string name="title_line_chart">Line Chart</string>
+    <string name="title_bar_chart">Bar Chart</string>
     <string name="menu_chart_report">Chart report</string>
     <string name="menu_order_by_size">Order by size</string>
     <string name="menu_toggle_legend">Toggle legend</string>

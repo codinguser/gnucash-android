@@ -435,4 +435,7 @@
     <string name="label_chart_no_data">No chart data available</string>
     <string name="label_chart_overall">Overall</string>
     <string name="label_chart_total">Total\n</string>
+    <string name="title_bar_chart">Bar Chart</string>
+    <string name="title_line_chart">Line Chart</string>
+    <string name="title_reports">Reports</string>
 </resources>

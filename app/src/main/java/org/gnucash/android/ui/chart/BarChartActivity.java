@@ -59,6 +59,7 @@ public class BarChartActivity extends PassLockActivity implements OnChartValueSe
     protected void onCreate(Bundle savedInstanceState) {
         setContentView(R.layout.activity_line_chart);
         super.onCreate(savedInstanceState);
+        getSupportActionBar().setTitle(R.string.title_bar_chart);
 
         mChart = new com.github.mikephil.charting.charts.BarChart(this);
         ((LinearLayout) findViewById(R.id.chart)).addView(mChart);
@@ -223,6 +224,10 @@ public class BarChartActivity extends PassLockActivity implements OnChartValueSe
                 int msgId = mTotalPercentageMode ? R.string.toast_chart_percentage_mode_total
                         : R.string.toast_chart_percentage_mode_current_bar;
                 Toast.makeText(this, msgId, Toast.LENGTH_LONG).show();
+                break;
+            }
+            case android.R.id.home: {
+                finish();
                 break;
             }
         }
