@@ -26,6 +26,7 @@ import org.gnucash.android.model.Account;
 import org.gnucash.android.model.AccountType;
 import org.gnucash.android.ui.passcode.PassLockActivity;
 import org.joda.time.LocalDateTime;
+import org.joda.time.Months;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -43,11 +44,16 @@ public class BarChartActivity extends PassLockActivity implements OnChartValueSe
     private static final String TAG = "BarChartActivity";
     private static final String X_AXIS_PATTERN = "MMM YY";
     private static final String SELECTED_VALUE_PATTERN = "%s - %.2f (%.2f %%)";
+    private static final int ANIMATION_DURATION = 3000;
 
-    private static final int[] COLORS = { Color.rgb(104, 241, 175), Color.RED };
+    private static final int[] COLORS = {
+            Color.parseColor("#68F1AF"), Color.parseColor("#CC1f09"), Color.parseColor("#EE8600"),
+            Color.parseColor("#1469EB"), Color.parseColor("#B304AD"),
+    };
+
+    private AccountsDbAdapter mAccountsDbAdapter = AccountsDbAdapter.getInstance();
 
     private BarChart mChart;
-    private List<AccountType> mAccountTypeList;
     private Map<AccountType, Long> mEarliestTimestampsMap = new HashMap<AccountType, Long>();
     private Map<AccountType, Long> mLatestTimestampsMap = new HashMap<AccountType, Long>();
     private long mEarliestTransactionTimestamp;
@@ -65,102 +71,77 @@ public class BarChartActivity extends PassLockActivity implements OnChartValueSe
         ((LinearLayout) findViewById(R.id.chart)).addView(mChart);
         mChart.setOnChartValueSelectedListener(this);
         mChart.setDescription("");
-//        mChart.setValueFormatter(new LargeValueFormatter());
         mChart.setDrawValuesForWholeStack(false);
         mChart.setDrawBarShadow(false);
-//        XLabels xl  = mChart.getXLabels();
-//        xl.setCenterXLabelText(true);
         mChart.getAxisLeft().setValueFormatter(new LargeValueFormatter());
         mChart.getAxisRight().setEnabled(false);
 
-//        mAccountTypeList = Arrays.asList(AccountType.EXPENSE, AccountType.INCOME);
-        mAccountTypeList = new ArrayList<AccountType>(Arrays.asList(AccountType.INCOME, AccountType.EXPENSE));
-        mChart.setData(getDataSet());
-
-        Legend l = mChart.getLegend();
-        l.setForm(Legend.LegendForm.CIRCLE);
-        l.setPosition(Legend.LegendPosition.RIGHT_OF_CHART_INSIDE);
+        mChart.setData(getData(new ArrayList<AccountType>(Arrays.asList(AccountType.INCOME, AccountType.EXPENSE))));
+        Legend legend = mChart.getLegend();
+        legend.setForm(Legend.LegendForm.CIRCLE);
+        legend.setPosition(Legend.LegendPosition.RIGHT_OF_CHART_INSIDE);
 
         if (mChartDataPresent) {
-            mChart.animateX(3000);
+            mChart.animateX(ANIMATION_DURATION);
         }
         mChart.invalidate();
     }
 
-    private BarData getDataSet() {
-        AccountsDbAdapter mAccountsDbAdapter = AccountsDbAdapter.getInstance();
-
-        setEarliestAndLatestTimestamps(mAccountTypeList);
-
-        if (mEarliestTransactionTimestamp == 0) {
-            if (mLatestTransactionTimestamp == 0) {
-                return getEmptyDataSet();
-            }
-            for (Map.Entry<AccountType, Long> entry : mEarliestTimestampsMap.entrySet()) {
-                if (entry.getValue() == 0) {
-                    mAccountTypeList.remove(entry.getKey());
-                }
-            }
-            Log.d(TAG, mAccountTypeList.toString());
-            setEarliestAndLatestTimestamps(mAccountTypeList);
+    private BarData getData(ArrayList<AccountType> accountTypeList) {
+        if (!calculateEarliestAndLatestTimestamps(accountTypeList)) {
+            mChartDataPresent = false;
+            return getEmptyDataSet();
         }
 
-        LocalDateTime start = new LocalDateTime(mEarliestTransactionTimestamp).withDayOfMonth(1).withMillisOfDay(0);
-        LocalDateTime end = new LocalDateTime(mLatestTransactionTimestamp).withDayOfMonth(1).withMillisOfDay(0);
-        Log.w(TAG, "X AXIS START DATE: " + start.toString("dd MM yyyy"));
-        Log.w(TAG, "X AXIS END DATE: " + end.toString("dd MM yyyy"));
-
-        Map<AccountType, List<String>> accountUIDMap = new HashMap<AccountType, List<String>>();
-        for (AccountType accountType : mAccountTypeList) {
-            List<String> accountUIDList = new ArrayList<String>();
-
-            for (Account account : mAccountsDbAdapter.getSimpleAccountList()) {
-                if (account.getAccountType() == accountType && !account.isPlaceholderAccount()) {
-                    accountUIDList.add(account.getUID());
-
-                }
-                accountUIDMap.put(accountType, accountUIDList);
-            }
-        }
+        LocalDateTime startDate = new LocalDateTime(mEarliestTransactionTimestamp).withDayOfMonth(1).withMillisOfDay(0);
+        LocalDateTime endDate = new LocalDateTime(mLatestTransactionTimestamp).withDayOfMonth(1).withMillisOfDay(0);
+        Log.d(TAG, "X-axis star date: " + startDate.toString("dd MM yyyy"));
+        Log.d(TAG, "X-axis end date: " + endDate.toString("dd MM yyyy"));
+        int months = Months.monthsBetween(startDate, endDate).getMonths();
 
         ArrayList<BarDataSet> dataSets = new ArrayList<BarDataSet>();
         ArrayList<BarEntry> values = new ArrayList<BarEntry>();
-        ArrayList<String> xVals = new ArrayList<String>();
-        int z = 0;
-        while (!start.isAfter(end)) {
-            xVals.add(start.toString(X_AXIS_PATTERN));
-            Log.i(TAG, "xVals " + start.toString("MM yy"));
+        ArrayList<String> xValues = new ArrayList<String>();
+        for (int i = 0; i <= months; i++) {
+            xValues.add(startDate.toString(X_AXIS_PATTERN));
 
-            long startPeriod = start.dayOfMonth().withMinimumValue().millisOfDay().withMinimumValue().toDate().getTime();
-            long endPeriod = start.dayOfMonth().withMaximumValue().millisOfDay().withMaximumValue().toDate().getTime();
-
-            float stackedValues[] = new float[mAccountTypeList.size()];
-            int i = 0;
-            for (Map.Entry<AccountType, List<String>> entry : accountUIDMap.entrySet()) {
-                float balance = (float) mAccountsDbAdapter.getAccountsBalance(entry.getValue(), startPeriod, endPeriod).absolute().asDouble();
-                stackedValues[i++] = balance;
-                Log.w(TAG, entry.getKey() + "" + start.toString(" MMMM yyyy") + ", balance = " + balance);
+            long start = startDate.dayOfMonth().withMinimumValue().millisOfDay().withMinimumValue().toDate().getTime();
+            long end = startDate.dayOfMonth().withMaximumValue().millisOfDay().withMaximumValue().toDate().getTime();
+            float stack[] = new float[accountTypeList.size()];
+            int j = 0;
+            for (Map.Entry<AccountType, List<String>> entry : getAccountMap(accountTypeList).entrySet()) {
+                stack[j++] = (float) mAccountsDbAdapter.getAccountsBalance(entry.getValue(), start, end).absolute().asDouble();
+                Log.d(TAG, entry.getKey() + startDate.toString(" MMMM yyyy") + ", balance = " + stack[j - 1]);
             }
-            values.add(new BarEntry(stackedValues, z));
-            z++;
+            values.add(new BarEntry(stack, i));
 
-            start = start.plusMonths(1);
+            startDate = startDate.plusMonths(1);
         }
 
         BarDataSet set = new BarDataSet(values, "");
-//        set.setValueFormatter();
         // conversion enum list to string array
-        set.setStackLabels(mAccountTypeList.toString().substring(1, mAccountTypeList.toString().length() - 1).split(", "));
-        set.setColors(Arrays.copyOfRange(COLORS, 0, mAccountTypeList.size()));
-
+        set.setStackLabels(accountTypeList.toString().substring(1, accountTypeList.toString().length() - 1).split(", "));
+        set.setColors(Arrays.copyOfRange(COLORS, 0, accountTypeList.size()));
         dataSets.add(set);
 
-        return new BarData(xVals, dataSets);
+        return new BarData(xValues, dataSets);
+    }
+
+    private Map<AccountType, List<String>> getAccountMap(List<AccountType> accountTypeList) {
+        Map<AccountType, List<String>> accountMap = new HashMap<AccountType, List<String>>();
+        for (AccountType accountType : accountTypeList) {
+            List<String> accountUIDList = new ArrayList<String>();
+            for (Account account : mAccountsDbAdapter.getSimpleAccountList()) {
+                if (account.getAccountType() == accountType && !account.isPlaceholderAccount()) {
+                    accountUIDList.add(account.getUID());
+                }
+                accountMap.put(accountType, accountUIDList);
+            }
+        }
+        return accountMap;
     }
 
     private BarData getEmptyDataSet() {
-        mChartDataPresent = false;
-
         ArrayList<String> xValues = new ArrayList<String>();
         ArrayList<BarEntry> yValues = new ArrayList<BarEntry>();
         for (int i = 0; i < 3; i++) {
@@ -181,13 +162,25 @@ public class BarChartActivity extends PassLockActivity implements OnChartValueSe
         return new BarData(xValues, new ArrayList<BarDataSet>(Arrays.asList(set)));
     }
 
-    private void setEarliestAndLatestTimestamps(List<AccountType> accountTypeList) {
-        TransactionsDbAdapter transactionsDbAdapter = TransactionsDbAdapter.getInstance();
-        mEarliestTimestampsMap.clear();
-        mLatestTimestampsMap.clear();
+    /**
+     *
+     * @param accountTypeList
+     * @return {@code false} if no data present, {@code true} otherwise
+     */
+    private boolean calculateEarliestAndLatestTimestamps(List<AccountType> accountTypeList) {
         for (AccountType type : accountTypeList) {
-            mEarliestTimestampsMap.put(type, transactionsDbAdapter.getTimestampOfEarliestTransaction(type));
-            mLatestTimestampsMap.put(type, transactionsDbAdapter.getTimestampOfLatestTransaction(type));
+            long earliest = TransactionsDbAdapter.getInstance().getTimestampOfEarliestTransaction(type);
+            long latest = TransactionsDbAdapter.getInstance().getTimestampOfLatestTransaction(type);
+            if (earliest > 0 && latest > 0) {
+                mEarliestTimestampsMap.put(type, earliest);
+                mLatestTimestampsMap.put(type, latest);
+            } else {
+                accountTypeList.remove(type);
+            }
+        }
+
+        if (mEarliestTimestampsMap.isEmpty()) {
+            return false;
         }
 
         List<Long> timestamps = new ArrayList<Long>(mEarliestTimestampsMap.values());
@@ -195,6 +188,8 @@ public class BarChartActivity extends PassLockActivity implements OnChartValueSe
         Collections.sort(timestamps);
         mEarliestTransactionTimestamp = timestamps.get(0);
         mLatestTransactionTimestamp = timestamps.get(timestamps.size() - 1);
+
+        return true;
     }
 
     @Override
