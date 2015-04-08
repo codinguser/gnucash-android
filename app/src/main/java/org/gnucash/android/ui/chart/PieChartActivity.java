@@ -161,6 +161,7 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
         }
         mChart.invalidate();
 
+        mChartDateTextView.setEnabled(mChartDataPresent);
         setImageButtonEnabled(mNextMonthButton,
                 mChartDate.plusMonths(1).dayOfMonth().withMinimumValue().withMillisOfDay(0).isBefore(mLatestTransactionDate));
         setImageButtonEnabled(mPreviousMonthButton, (mEarliestTransactionDate.getYear() != 1970
