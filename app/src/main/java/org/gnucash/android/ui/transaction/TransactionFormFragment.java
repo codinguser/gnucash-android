@@ -670,11 +670,7 @@ public class TransactionFormFragment extends SherlockFragment implements
         mAccountsDbAdapter.beginTransaction();
         try {
             if (!splitSum.isAmountZero()) {
-                String imbalanceAccountUID = mAccountsDbAdapter.getOrCreateImbalanceAccountUID(currency);
-                //imbalance accounts always have the account type BANK
-                TransactionType splitType = Transaction.getTypeForBalance(AccountType.BANK, splitSum.negate().isNegative());
-                Split imbSplit = new Split(splitSum.absolute(), imbalanceAccountUID);
-                imbSplit.setType(splitType);
+                Split imbSplit = new Split(splitSum.negate(), mAccountsDbAdapter.getOrCreateImbalanceAccountUID(currency));
                 mSplitsList.add(imbSplit);
             }
             if (mTransaction != null) { //if editing an existing transaction

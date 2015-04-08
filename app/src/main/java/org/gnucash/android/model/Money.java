@@ -149,16 +149,6 @@ public final class Money implements Comparable<Money>{
 		setAmount(parseToDecimal(amount));
 	}
 
-	/**
-	 * Overloaded constructor. 
-	 * Initializes the currency to that specified by {@link Money#DEFAULT_CURRENCY_CODE}
-	 * @param amount Value associated with this Money object
-	 */
-	public Money(BigDecimal amount){
-		init();
-		setAmount(amount);
-	}
-
     /**
      * Copy constructor.
      * Creates a new Money object which is a clone of <code>money</code>
@@ -175,7 +165,7 @@ public final class Money implements Comparable<Money>{
      * @return Money object with value 0 and currency <code>currencyCode</code>
      */
     public static Money createZeroInstance(String currencyCode){
-        return new Money("0", currencyCode);
+        return new Money(BigDecimal.ZERO, Currency.getInstance(currencyCode));
     }
 
 	/**
@@ -467,7 +457,16 @@ public final class Money implements Comparable<Money>{
         return new Money(mAmount.abs(), mCurrency);
     }
 
+	/**
+	 * Checks if the value of this amount is exactly equal to zero.
+	 * @return {@code true} if this money amount is zero, {@code false} otherwise
+	 */
     public boolean isAmountZero() {
-        return mAmount.equals(BigDecimal.ZERO);
-    }
+		try {
+			return mAmount.intValueExact() == 0;
+		} catch (ArithmeticException e){
+			e.printStackTrace();
+			return false;
+		}
+	}
 }
