@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 Ngewi Fet <ngewif@gmail.com>
+ * Copyright (c) 2014 - 2015 Ngewi Fet <ngewif@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,12 +18,19 @@ package org.gnucash.android.db;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.Environment;
 import android.util.Log;
 
+import org.gnucash.android.export.Exporter;
 import org.gnucash.android.importer.GncXmlImporter;
 import org.gnucash.android.model.AccountType;
 
+import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOError;
+import java.io.IOException;
+import java.nio.channels.FileChannel;
 
 import static org.gnucash.android.db.DatabaseSchema.AccountEntry;
 
@@ -132,4 +139,67 @@ public class MigrationHelper {
         db.execSQL(addModifiedColumn);
         db.execSQL(DatabaseHelper.createUpdatedAtTrigger(tableName));
     }
+
+    /**
+     * Copies the contents of the file in {@code src} to {@code dst} and then deletes the {@code src} if copy was successful.
+     * If the file copy was unsuccessful, the src file will not be deleted.
+     * @param src Source file
+     * @param dst Destination file
+     * @throws IOException if an error occurred during the file copy
+     */
+    static void moveFile(File src, File dst) throws IOException {
+        FileChannel inChannel = new FileInputStream(src).getChannel();
+        FileChannel outChannel = new FileOutputStream(dst).getChannel();
+        try {
+            long bytesCopied = inChannel.transferTo(0, inChannel.size(), outChannel);
+            if(bytesCopied >= src.length())
+                src.delete();
+        } finally {
+            if (inChannel != null)
+                inChannel.close();
+            outChannel.close();
+        }
+    }
+
+    /**
+     * Runnable which moves all exported files (exports and backups) from the old SD card location which
+     * was generic to the new folder structure which uses the application ID as folder name.
+     * <p>The new folder structure also futher enables parallel installation of multiple flavours of
+     * the program (like development and production) on the same device.</p>
+     */
+    static final Runnable moveExportedFilesToNewDefaultLocation = new Runnable() {
+        @Override
+        public void run() {
+            File oldExportFolder = new File(Environment.getExternalStorageDirectory() + "/gnucash");
+            if (oldExportFolder.exists()){
+                for (File src : oldExportFolder.listFiles()) {
+                    if (src.isDirectory())
+                        continue;
+                    File dst = new File(Exporter.EXPORT_FOLDER_PATH + "/" + src.getName());
+                    try {
+                        MigrationHelper.moveFile(src, dst);
+                    } catch (IOException e) {
+                        Log.e(LOG_TAG, "Error migrating " + src.getName());
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            File oldBackupFolder = new File(oldExportFolder, "backup");
+            if (oldBackupFolder.exists()){
+                for (File src : new File(oldExportFolder, "backup").listFiles()) {
+                    File dst = new File(Exporter.BACKUP_FOLDER_PATH + "/" + src.getName());
+                    try {
+                        MigrationHelper.moveFile(src, dst);
+                    } catch (IOException e) {
+                        Log.e(LOG_TAG, "Error migrating backup: " + src.getName());
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            if (oldBackupFolder.delete())
+                oldExportFolder.delete();
+        }
+    };
 }

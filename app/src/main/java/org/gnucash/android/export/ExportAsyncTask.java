@@ -32,11 +32,13 @@ import android.util.Log;
 import android.widget.Toast;
 
 import org.gnucash.android.R;
+import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.export.ofx.OfxExporter;
 import org.gnucash.android.export.qif.QifExporter;
 import org.gnucash.android.export.qif.QifHelper;
 import org.gnucash.android.export.xml.GncXmlExporter;
 import org.gnucash.android.ui.account.AccountsActivity;
+import org.gnucash.android.ui.transaction.TransactionsActivity;
 import org.gnucash.android.ui.transaction.dialog.TransactionsDeleteConfirmationDialogFragment;
 
 import java.io.BufferedReader;
@@ -205,20 +207,21 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
                 break;
         }
 
-        if (mContext instanceof Activity) {
-            if (mExportParams.shouldDeleteTransactionsAfterExport()) {
-                android.support.v4.app.FragmentManager fragmentManager = ((FragmentActivity) mContext).getSupportFragmentManager();
-                Fragment currentFragment = ((AccountsActivity) mContext).getCurrentAccountListFragment();
+        if (mExportParams.shouldDeleteTransactionsAfterExport()) {
+            //TODO: we delete with impunity here, make sure files are backed-up first
+            TransactionsDbAdapter.getInstance().deleteAllRecords();
 
-                TransactionsDeleteConfirmationDialogFragment alertFragment =
-                        TransactionsDeleteConfirmationDialogFragment.newInstance(R.string.title_confirm_delete, 0);
-                alertFragment.setTargetFragment(currentFragment, 0);
-
-                alertFragment.show(fragmentManager, "transactions_delete_confirmation_dialog");
+            //now refresh the respective views
+            if (mContext instanceof AccountsActivity){
+                ((AccountsActivity) mContext).getCurrentAccountListFragment().refresh();
             }
-
-            if (mProgressDialog != null && mProgressDialog.isShowing())
-                mProgressDialog.dismiss();
+            if (mContext instanceof TransactionsActivity){
+                ((TransactionsActivity) mContext).refresh();
+            }
+            if (mContext instanceof Activity) {
+                if (mProgressDialog != null && mProgressDialog.isShowing())
+                    mProgressDialog.dismiss();
+            }
         }
     }
 

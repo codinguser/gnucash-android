@@ -39,7 +39,7 @@ public class DatabaseSchema {
     private DatabaseSchema(){}
 
     public interface CommonColumns extends BaseColumns {
-        public static final String COLUMN_UID       = "uid";
+        public static final String COLUMN_UID           = "uid";
         public static final String COLUMN_CREATED_AT    = "created_at";
         public static final String COLUMN_MODIFIED_AT   = "modified_at";
     }
@@ -113,7 +113,7 @@ public class DatabaseSchema {
         public static final String COLUMN_PERIOD            = "period";
         public static final String COLUMN_TAG               = "tag"; //for any action-specific information
         public static final String COLUMN_ENABLED           = "is_enabled";
-        public static final String COLUMN_NUM_OCCURRENCES   = "num_occurrences";
+        public static final String COLUMN_NUM_OCCURRENCES   = "num_occurrences"; //FIXME: This should not be here, rather transactions table should store UID of action which created it
         public static final String COLUMN_EXECUTION_COUNT   = "execution_count";
 
         public static final String INDEX_UID            = "scheduled_action_uid_index";

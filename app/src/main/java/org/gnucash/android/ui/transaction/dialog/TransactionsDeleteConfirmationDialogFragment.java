@@ -31,6 +31,7 @@ import org.gnucash.android.export.xml.GncXmlExporter;
 import org.gnucash.android.model.Transaction;
 import org.gnucash.android.ui.UxArgument;
 import org.gnucash.android.ui.account.AccountsListFragment;
+import org.gnucash.android.ui.util.Refreshable;
 import org.gnucash.android.ui.widget.WidgetConfigurationActivity;
 
 import java.util.ArrayList;
@@ -80,8 +81,8 @@ public class TransactionsDeleteConfirmationDialogFragment extends SherlockDialog
                                 } else {
                                     transactionsDbAdapter.deleteRecord(rowId);
                                 }
-                                if (getTargetFragment() instanceof AccountsListFragment) {
-                                    ((AccountsListFragment) getTargetFragment()).refresh();
+                                if (getTargetFragment() instanceof Refreshable) {
+                                    ((Refreshable) getTargetFragment()).refresh();
                                 }
                                 WidgetConfigurationActivity.updateAllWidgets(getActivity());
                             }

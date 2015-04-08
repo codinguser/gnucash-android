@@ -233,66 +233,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
             if (oldVersion == 5 && newVersion >= 6){
                 Log.i(LOG_TAG, "Upgrading database to version 6");
-
-                String addFullAccountNameQuery = " ALTER TABLE " + AccountEntry.TABLE_NAME
-                        + " ADD COLUMN " + AccountEntry.COLUMN_FULL_NAME + " varchar(255) ";
-                db.execSQL(addFullAccountNameQuery);
-
-                //update all existing accounts with their fully qualified name
-                Cursor cursor = db.query(AccountEntry.TABLE_NAME,
-                        new String[]{AccountEntry._ID, AccountEntry.COLUMN_UID},
-                        null, null, null, null, null);
-                while(cursor != null && cursor.moveToNext()){
-                    String uid = cursor.getString(cursor.getColumnIndexOrThrow(AccountEntry.COLUMN_UID));
-                    String fullName = MigrationHelper.getFullyQualifiedAccountName(db, uid);
-
-                    if (fullName == null)
-                        continue;
-
-                    ContentValues contentValues = new ContentValues();
-                    contentValues.put(AccountEntry.COLUMN_FULL_NAME, fullName);
-
-                    long id = cursor.getLong(cursor.getColumnIndexOrThrow(AccountEntry._ID));
-                    db.update(AccountEntry.TABLE_NAME, contentValues, AccountEntry._ID + " = " + id, null);
-                }
-
-                if (cursor != null) {
-                    cursor.close();
-                }
-
-                oldVersion = 6;
+                oldVersion = upgradeDbToVersion6(db);
             }
 
             if (oldVersion == 6 && newVersion >= DatabaseSchema.SPLITS_DB_VERSION){
                 Log.i(LOG_TAG, "Upgrading database to version 7");
-                oldVersion = upgradeToVersion7(db);
+                oldVersion = upgradeDbToVersion7(db);
             }
 
             if (oldVersion == 7 && newVersion >= 8){
                 Log.i(LOG_TAG, "Upgrading database to version 8");
-                //TODO: consider just backing up, recreating database and reimporting
-                //FIXME: We really need to do this because the ON DELETE CASCADE constraint does not exist on older db versions
-
-                //TODO: Also, we need to go through db and add second split with imbalance account wherever only one split exists.
-
-                Log.i(LOG_TAG, "Adding hidden flag to accounts table");
-                String addHiddenFlagSql = "ALTER TABLE " + AccountEntry.TABLE_NAME +
-                        " ADD COLUMN " + AccountEntry.COLUMN_HIDDEN + " tinyint default 0";
-                db.execSQL(addHiddenFlagSql);
-
-                Log.i(LOG_TAG, "Adding created_at and modified_at columns to database tables");
-                MigrationHelper.createUpdatedAndModifiedColumns(db, AccountEntry.TABLE_NAME);
-                MigrationHelper.createUpdatedAndModifiedColumns(db, TransactionEntry.TABLE_NAME);
-                MigrationHelper.createUpdatedAndModifiedColumns(db, SplitEntry.TABLE_NAME);
-
-                Log.i(LOG_TAG, "Creating scheduled events table");
-                db.execSQL(SCHEDULED_ACTIONS_TABLE_CREATE); //TODO: Use the actual SQL statements
-                //TODO: Migrate existing scheduled transactions (cancel pending intents)
-
-                //TODO: Migrate old scheduled events using only SQL, code had changed
-                GnuCashApplication.startScheduledEventExecutionService(GnuCashApplication.getAppContext());
-                //TODO: Take care to properly migrate the created_at dates for transactions (use the date already in the transaction)
-
+                oldVersion = upgradeDbToVersion8(db);
             }
 		}
 
@@ -302,12 +253,73 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	}
 
     /**
-     * Code for upgrading the database to the {@link DatabaseSchema#SPLITS_DB_VERSION}
-     * Main new featurs is the introduction of multiple-splits for transactions
-     * @param db SQLite Database
-     * @return The new database version is upgrade was successful, or the old db version if it failed
+     * Upgrades the database from version 7 to version 8.
+     * <p>This migration accomplishes the following:
+     *      <ul>
+     *          <li>Added created_at and modified_at columns to all tables (including triggers for updating the columns).</li>
+     *          <li>New table for scheduled actions</li>
+     *          <li>Auto-balancing of all existing splits</li>
+     *          <li>Added "hidden" flag to accounts table</li>
+     *          <li>Add flag for transaction templates</li>
+     *          <li>Migrate all export/backup files to new locations on SD card</li>
+     *      </ul>
+     * </p>
+     * @param db SQLite Database to be upgraded
+     * @return New database version (8) if upgrade successful, old version (7) if unsuccessful
      */
-    private int upgradeToVersion7(SQLiteDatabase db) {
+    private int upgradeDbToVersion8(SQLiteDatabase db) {
+        Log.i(LOG_TAG, "Upgrading database to version 8");
+        int oldVersion = 7;
+        //start moving the files in background thread before we do the database stuff
+        new Thread(MigrationHelper.moveExportedFilesToNewDefaultLocation).start();
+
+        db.beginTransaction();
+        try {
+            //TODO: Use raw sql to do all migrations (avoid using code constructs)
+
+            Log.i(LOG_TAG, "Adding hidden flag to accounts table");
+            String addHiddenFlagSql = "ALTER TABLE " + AccountEntry.TABLE_NAME +
+                    " ADD COLUMN " + AccountEntry.COLUMN_HIDDEN + " tinyint default 0";
+            db.execSQL(addHiddenFlagSql);
+
+            //TODO: Add flag for transaction templates
+            //TODO: ADD uid of originating scheduled event to transactions
+
+            Log.i(LOG_TAG, "Adding created_at and modified_at columns to database tables");
+            MigrationHelper.createUpdatedAndModifiedColumns(db, AccountEntry.TABLE_NAME);
+            MigrationHelper.createUpdatedAndModifiedColumns(db, TransactionEntry.TABLE_NAME);
+            MigrationHelper.createUpdatedAndModifiedColumns(db, SplitEntry.TABLE_NAME);
+
+            Log.i(LOG_TAG, "Creating scheduled events table");
+            db.execSQL(SCHEDULED_ACTIONS_TABLE_CREATE); //TODO: Use the actual SQL statements, in case this string changes in the future
+
+            //TODO: Migrate existing scheduled transactions (cancel pending intents)
+            //TODO: Migrate old scheduled events using only SQL, code had changed
+            //TODO: Take care to properly migrate the created_at dates for transactions (use the date already in the transaction)
+            //TODO: auto-balance existing splits during migration
+
+            db.setTransactionSuccessful();
+            oldVersion = 8;
+        } finally {
+            db.endTransaction();
+        }
+
+        GnuCashApplication.startScheduledEventExecutionService(GnuCashApplication.getAppContext());
+
+        return oldVersion;
+    }
+
+    /**
+     * Code for upgrading the database to the {@link DatabaseSchema#SPLITS_DB_VERSION} from version 6.<br>
+     * Tasks accomplished in migration:
+     *  <ul>
+     *      <li>Added new splits table for transaction splits</li>
+     *      <li>Extract existing info from transactions table to populate split table</li>
+     *  </ul>
+     * @param db SQLite Database
+     * @return The new database version if upgrade was successful, or the old db version if it failed
+     */
+    private int upgradeDbToVersion7(SQLiteDatabase db) {
         int oldVersion = 6;
         db.beginTransaction();
         try {
@@ -398,6 +410,44 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         } finally {
             db.endTransaction();
         }
+        return oldVersion;
+    }
+
+    /**
+     * Upgrades the database from version 5 to version 6.<br>
+     * This migration adds support for fully qualified account names and updates existing accounts.
+     * @param db SQLite Database to be upgraded
+     * @return New database version (6) if upgrade successful, old version (5) if unsuccessful
+     */
+    private int upgradeDbToVersion6(SQLiteDatabase db) {
+        int oldVersion = 5;
+        String addFullAccountNameQuery = " ALTER TABLE " + AccountEntry.TABLE_NAME
+                + " ADD COLUMN " + AccountEntry.COLUMN_FULL_NAME + " varchar(255) ";
+        db.execSQL(addFullAccountNameQuery);
+
+        //update all existing accounts with their fully qualified name
+        Cursor cursor = db.query(AccountEntry.TABLE_NAME,
+                new String[]{AccountEntry._ID, AccountEntry.COLUMN_UID},
+                null, null, null, null, null);
+        while(cursor != null && cursor.moveToNext()){
+            String uid = cursor.getString(cursor.getColumnIndexOrThrow(AccountEntry.COLUMN_UID));
+            String fullName = MigrationHelper.getFullyQualifiedAccountName(db, uid);
+
+            if (fullName == null)
+                continue;
+
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(AccountEntry.COLUMN_FULL_NAME, fullName);
+
+            long id = cursor.getLong(cursor.getColumnIndexOrThrow(AccountEntry._ID));
+            db.update(AccountEntry.TABLE_NAME, contentValues, AccountEntry._ID + " = " + id, null);
+        }
+
+        if (cursor != null) {
+            cursor.close();
+        }
+
+        oldVersion = 6;
         return oldVersion;
     }
 
