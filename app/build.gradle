@@ -1,4 +1,21 @@
+import java.text.SimpleDateFormat
+
 apply plugin: 'com.android.application'
+
+def versionMajor = 1
+def versionMinor = 6
+def versionPatch = 0
+def versionBuild = 0
+
+def buildTime() {
+    def df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm'Z'")
+    df.setTimeZone(TimeZone.getTimeZone("UTC"))
+    return df.format(new Date())
+}
+
+def gitSha() {
+    return 'git rev-parse --short HEAD'.execute().text.trim()
+}
 
 android {
     compileSdkVersion 19
@@ -7,8 +24,8 @@ android {
         applicationId "org.gnucash.android"
         minSdkVersion 9
         targetSdkVersion 19
-        versionCode 48
-        versionName "1.6.x"
+        versionCode versionMajor * 10000 + versionMinor * 1000 + versionPatch * 100 + versionBuild
+        versionName "${versionMajor}.${versionMinor}.${versionPatch}"
     }
     buildTypes {
         release {
@@ -22,15 +39,24 @@ android {
     lintOptions {
         abortOnError false
     }
+
     productFlavors {
         development {
             applicationId 'org.gnucash.android.devel'
             testApplicationId 'org.gnucash.android.test.devel'
             resValue "string", "app_name", "GnuCash (devel)"
+            versionName "${versionMajor}.${versionMinor}.${versionPatch}-dev${versionBuild} @rev ${gitSha()} - BuildTime ${buildTime()} "
         }
+
+        beta {
+            resValue "string", "app_name", "GnuCash (beta)"
+            versionName "${versionMajor}.${versionMinor}.${versionPatch}-beta${versionBuild} @rev ${gitSha()} - BuildTime ${buildTime()}"
+        }
+
         production {
             resValue "string", "app_name", "GnuCash"
         }
+
     }
     compileOptions { //we want switch with strings during xml parsing
         sourceCompatibility JavaVersion.VERSION_1_7
