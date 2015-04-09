@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+ Copyright (c) 2012 - 2014 Ngewi Fet <ngewif@gmail.com>
+ 
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+ 
+    http://www.apache.org/licenses/LICENSE-2.0
+ 
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+<preference-headers xmlns:android="http://schemas.android.com/apk/res/android">
+    <header android:fragment="org.gnucash.android.ui.settings.GeneralPreferenceFragment"        
+        android:title="@string/header_general_settings" />
+    <header android:fragment="org.gnucash.android.ui.settings.AccountPreferencesFragment"
+            android:title="@string/header_account_settings" />
+    <header android:fragment="org.gnucash.android.ui.settings.TransactionsPreferenceFragment" 
+        android:title="@string/header_transaction_settings" />
+    <header android:fragment="org.gnucash.android.ui.settings.PasscodePreferenceFragment"
+        android:title="@string/header_passcode_settings" />
+    <header android:fragment="org.gnucash.android.ui.settings.AboutPreferenceFragment"
+        android:title="@string/header_about_gnucash" />
+    <header android:title="Rate in Play Store">
+        <intent android:action="android.intent.action.VIEW"
+                android:data="market://details?id=org.gnucash.android" />
+    </header>
+    <header android:title="Send feedback">
+        <intent android:action="android.intent.action.VIEW"
+                android:data="mailto:gnucash.org@gmail.com" >
+            <extra android:name="android.intent.extra.SUBJECT" android:value="GnuCash Android Feedback" />
+            <extra android:name="android.intent.extra.TEXT" android:value="@string/app_version_name" />
+        </intent>
+    </header>
+</preference-headers>

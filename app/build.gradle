@@ -1,0 +1,53 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 19
+    buildToolsVersion "21.1.2"
+    defaultConfig {
+        applicationId "org.gnucash.android"
+        minSdkVersion 9
+        targetSdkVersion 19
+        versionCode 48
+        versionName "1.6.x"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+        debug {
+            debuggable true
+        }
+    }
+    lintOptions {
+        abortOnError false
+    }
+    productFlavors {
+        development {
+            applicationId 'org.gnucash.android.devel'
+            testApplicationId 'org.gnucash.android.test.devel'
+            resValue "string", "app_name", "GnuCash (devel)"
+        }
+        production {
+            resValue "string", "app_name", "GnuCash"
+        }
+    }
+    compileOptions { //we want switch with strings during xml parsing
+        sourceCompatibility JavaVersion.VERSION_1_7
+        targetCompatibility JavaVersion.VERSION_1_7
+    }
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile('com.android.support:support-v4:21.0.+',
+            'com.actionbarsherlock:actionbarsherlock:4.4.0@aar',
+            'com.viewpagerindicator:library:2.4.1@aar',
+            'com.doomonafireball.betterpickers:library:1.5.2',
+            'com.commonsware.cwac:merge:1.1.+',
+            'org.quanqi:mpandroidchart:1.7.4', //TODO: Upgrade only when we support Android API 14 and over)
+            'joda-time:joda-time:2.7'
+    )
+    androidTestCompile('com.jayway.android.robotium:robotium-solo:5.2.1',
+            'com.squareup:fest-android:1.0.6')
+}

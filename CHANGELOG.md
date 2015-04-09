@@ -1,6 +1,87 @@
 Change Log
 ===============================================================================
-Version 1.4.0 *(2014-08-04)*
+Version 1.5.5 *(2015-02-20)*
+----------------------------
+Fixed: QIF not exported when using single-entry transactions
+Fixed: Passcode screen can be by-passed using SwipeBack
+Fixed: Crash when changing the account name
+
+Version 1.5.4 *(2015-02-16)*
+----------------------------
+* Fixed: Crash when creating TRADING accounts
+* Fixed: Crash when deleting scheduled transactions
+* Fixed: Account parent can be set to self, creating a cyclic hierarchy
+* Fixed: Transactions not saved when double-entry is enabled but no transfer account is specified
+* Improved: Auto-select the device locale currency in the account-creation dialog
+* Improved: Upgraded structure of repository to match latest Android conventions
+* Improved: Updated instrumentation tests and enabled better test reporting with Spoon
+
+Version 1.5.3 *(2015-02-02)*
+----------------------------
+* Fixed: Unable to edit double-entry transactions
+* Fixed: Edited transactions not flagged unexported
+* Fixed: Random crashes when editing transaction splits
+* Improved: Long press on transactions triggers context menu
+
+Version 1.5.2 *(2015-01-26)*
+----------------------------
+* Fixed: Crash when importing XML with TRADING accounts
+* Fixed: Full name not updated when account name is changed
+* Fixed: Toggle button shown when double-entry is disabled
+* Fixed: Amount input problems on some devices or keyboards
+* Fixed: Crash when changing the parent of an account
+* Fixed: Deleting a transaction only deletes some splits, not the whole.
+
+Version 1.5.1 *(2014-10-08)*
+----------------------------
+* Fixed: Crash when upgrading from v1.4.x to v1.5.x
+
+Version 1.5.0 *(2014-10-01)*
+----------------------------
+* Need for speed! Lots of performance optimizations in the application
+  - Application balances are now computed faster
+  - App loads faster and is more responsive
+  - Faster recording of opening balances before delete operations
+  - Import and export operations rewritten to perform faster and use less resources
+* Fixed: Crash after saving opening balances and trying to create new transactions
+* Fixed: Parent account title color sometimes not propagated to child accounts
+* Fixed: Recurring transactions scheduled but not saved to database during import
+* Fixed: Crash caused by null exception message during import
+* Fixed: Poor word-wrap of transaction type labels
+* Fixed: Amount values not always displaying the correct sign
+* Feature: Select default currency upon first run of application
+* Feature: Creating account hierarchy uses the user currency preference
+* Feature: Support for reading and writing compressed GnuCash XML files.
+* Feature: Set a passcode lock to restrict access to the application
+* Feature: Export a QIF file for transactions of each currency in use  
+* Improved: Increased stability of import/export operations
+* Improved: Exclude multi-currency transactions from QIF exports
+* Improved: Display warnings/limitations of different export formats in the export dialog
+* Improved: Preserve split memos in QIF export (as much as possible)
+* Improved: Child accounts now assigned to account parent upon deletion of account
+* Improved: Descendant accounts cannot be selected as a parent account (no cyclic dependencies)
+
+Version 1.4.3 *(2014-09-09)*
+----------------------------
+* Fixed: Cannot edit transactions when in single-entry mode
+* Fixed: Transaction type button sometimes hidden in single-entry mode
+* Fixed: Problems saving new transactions from templates
+
+Version 1.4.2 *(2014-08-30)*
+----------------------------
+* Fixed: Newly added transactions cannot be exported
+
+Version 1.4.1 *(2014-08-25)*
+----------------------------
+* Fixed: Transaction edits not saved
+* Fixed: Crash during import due to template transactions
+* Fixed: Cursors potentially left unclosed
+* Fixed: Fatal crash when error occurs in importing/exporting transaction (instead of displaying error message)
+* Fixed: Editing a transfer transaction does not edit other side of the transaction
+* Removed progress dialog from database migration (seems to be cause of some crashes)
+* Updated German translation
+
+Version 1.4.0 *(2014-08-15)*
 ----------------------------
 Since transactions are at the core of this app, this release touches almost all subsystems and is therefore huge.
 Transactions are now composed of multiple splits, which belong to different accounts and are no longer bound to accounts,

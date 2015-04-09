@@ -1,0 +1,468 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+ Copyright (c) 2012 - 2014 Ngewi Fet <ngewif@gmail.com>
+ Copyright (c) 2012 - 2014 Menelaos Maglis <mmaglis@metacom.gr>
+ 
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+ 
+    http://www.apache.org/licenses/LICENSE-2.0
+ 
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+
+<resources>
+    <string name="title_add_account">Δημιουργία Λογαριασμού</string>
+    <string name="title_edit_account">Επεξεργασία Λογαριασμού</string>
+    <string name="info_details">Πληροφορίες</string>
+    <string name="menu_export">Εξαγωγή OFX</string>
+    <string name="description_add_transaction_icon">Προσθήκη μιας νέας συναλλαγής σε ένα λογαριασμό</string>
+    <string name="label_no_accounts">Δεν υπάρχουν λογαριασμοί για εμφάνιση</string>
+    <string name="label_account_name">Όνομα λογαριασμού</string>
+    <string name="btn_cancel">Ακύρωση</string>
+    <string name="btn_save">Αποθήκευση</string>
+    <string name="label_transaction_name">Περιγραφή</string>
+    <string name="label_transaction_amount">Ποσό</string>
+    <string name="title_add_transaction">Νέα συναλλαγή</string>
+    <string name="label_no_transactions">Δεν υπάρχουν συναλλαγές για εμφάνιση</string>
+    <string name="label_timeanddate">ΗΜΕΡΟΜΗΝΙΑ &amp; ΩΡΑ</string>
+    <string name="label_account">Λογιαριασμός</string>
+    <string name="label_debit">ΧΡΕΩΣΗ</string>
+    <string name="label_credit">ΠΙΣΤΩΣΗ</string>
+    <string name="title_accounts">Λογαριασμοί</string>
+    <string name="title_transactions">Συναλλαγές</string>
+    <string name="menu_delete">ΔΙΑΓΡΑΦΗ</string>
+    <string name="alert_dialog_ok_delete">Διαγραφή</string>
+    <string name="alert_dialog_cancel">Ακύρωση</string>
+    <string name="toast_account_deleted">Ο λογαριασμός διαγράφηκε</string>
+    <string name="title_confirm_delete">Επιβεβαίωση διαγραφής</string>
+    <string name="delete_account_confirmation_message">Όλες οι συναλλαγές αυτού λογαριασμού θα διαγραφούν επίσης.</string>
+    <string name="title_edit_transaction">Επεξεργασία Συναλλαγής</string>
+    <string name="label_transaction_description">Σημείωση</string>
+    <string name="menu_move">ΜΕΤΑΚΙΝΗΣΗ</string>
+    <string name="title_selected">%1$d επιλέχθηκε</string>
+    <string name="label_export_destination">Προορισμός Εξαγωγής</string>
+    <string name="title_export_dialog">Export transactions</string>
+    <string name="option_export_all_transactions">Εξαγωγή όλων των συναλλαγών</string>
+    <string name="hint_export_choice">Προεπιλεγμένα, μόνο οι νέες συναλλαγές από τη τελευταία εξαγωγή θα εξαχθούν. Ενεργοποίησε αυτή την επιλογή για την εξαγωγή όλων των συναλλαγών</string>
+    <string name="toast_export_error">Σφάλμα εξαγωγής δεδομένων %1$s</string>
+    <string name="btn_export">Εξαγωγή</string>
+    <string name="option_delete_after_export">Διαγραφή μετά την εξαγωγή</string>
+    <string name="hint_delete_after_export">Όλες οι συναλλαγές που εξάγονται, θα διαγραφούν με την ολοκλήρωση της εξαγωγής</string>
+    <string name="title_settings">Ρυθμίσεις</string>
+    <string-array name="export_destinations">
+        <item>Μοίρασμα αρχείου&#8230;</item>
+        <item>Κάρτα SD</item>
+    </string-array>
+    <string name="btn_move">Μετακίνηση</string>
+    <string name="title_move_transactions">Μετακίνησε %1$d συναλλαγή(ες)</string>
+    <string name="label_move_destination">Λογιαριασμός Προορισμού</string>
+    <string name="permission_access_sdcard">Πρόσβαση κάρτας SD</string>
+    <string name="toast_incompatible_currency">Αδυναμία μετακίνησης	συναλλαγών.\nΟ λογαριασμός προορισμού χρησιμοποιεί διαφορετικό νόμισμα από το λογαριασμό προέλευσης</string>
+    <string name="header_general_settings">Γενικές</string>
+    <string name="header_about_gnucash">Πληροφορίες</string>
+    <string name="title_choose_currency">Προεπιλογή νομίσματος</string>
+    <string name="title_default_currency">Προεπιλεγμένο νόμισμα</string>
+    <string name="summary_default_currency">Προεπιλεγμένο νόμισμα για νέους λογαριασμούς</string>
+    <string name="label_permission_record_transactions">Ενεργοποίηση καταγραφής	συναλλαγών στο GnuCash για Android</string>
+    <string name="label_permission_create_accounts">Ενεργοποίηση δημιουργίας λογαριασμών στο GnuCash για Android</string>
+    <string name="label_permission_group">Τα δεδομένα σας στο GnuCash</string>
+    <string name="description_permission_group">Ανάγνωση και επεξεργασία δεδομένων GnuCash</string>
+    <string name="label_permission_record_transaction">εγγραφή συναλλαγών</string>
+    <string name="label_permission_create_account">δημιουργία λογαριασμών</string>
+    <string name="label_display_account">Εμφάνιση λογαριασμού</string>
+    <string name="btn_create_accounts">Δημιουργία Λογαριασμών</string>
+    <string name="title_default_accounts">Επιλογή λογαριασμών για δημιουργία</string>
+    <string-array name="currency_names">
+        <item>Afghani</item>
+		<item>Algerian Dinar</item>
+		<item>Argentine Peso</item>
+		<item>Armenian Dram</item>
+		<item>Aruban Florin</item>
+		<item>Australian Dollar</item>
+		<item>Azerbaijanian Manat</item>
+		<item>Bahamian Dollar</item>
+		<item>Bahraini Dinar</item>
+		<item>Baht</item>
+		<item>Balboa</item>
+		<item>Barbados Dollar</item>
+		<item>Belarussian Ruble</item>
+		<item>Belize Dollar</item>
+		<item>Bermudian Dollar</item>
+		<item>Bolivar Fuerte</item>
+		<item>Boliviano</item>
+		<item>Brazilian Real</item>
+		<item>Brunei Dollar</item>
+		<item>Bulgarian Lev</item>
+		<item>Burundi Franc</item>
+		<item>Canadian Dollar</item>
+		<item>Cape Verde Escudo</item>
+		<item>Cayman Islands Dollar</item>
+		<item>CFA Franc BCEAO</item>
+		<item>CFA Franc BEAC</item>
+		<item>CFP Franc</item>
+		<item>Chilean Peso</item>
+		<item>Δοκιμαστικό νόμισμα</item>
+		<item>Colombian Peso</item>
+		<item>Comoro Franc</item>
+		<item>Congolese Franc</item>
+		<item>Convertible Mark</item>
+		<item>Cordoba Oro</item>
+		<item>Costa Rican Colon</item>
+		<item>Croatian Kuna</item>
+        <item>Cuban Convertible Peso</item>
+        <item>Cuban Peso</item>
+		<item>Czech Koruna</item>
+		<item>Dalasi</item>
+		<item>Danish Krone</item>
+		<item>Denar</item>
+		<item>Djibouti Franc</item>
+		<item>Dobra</item>
+		<item>Dominican Peso</item>
+		<item>Dong</item>
+		<item>East Caribbean Dollar</item>
+		<item>Egyptian Pound</item>
+		<item>El Salvador Colon</item>
+		<item>Ethiopian Birr</item>
+		<item>Ευρώ</item>
+		<item>Falkland Islands Pound</item>
+		<item>Fiji Dollar</item>
+		<item>Forint</item>
+		<item>Ghana Cedi</item>
+		<item>Gibraltar Pound</item>
+		<item>Gold</item>
+		<item>Gourde</item>
+		<item>Guarani</item>
+		<item>Guinea Franc</item>
+		<item>Guyana Dollar</item>
+		<item>Hong Kong Dollar</item>
+		<item>Hryvnia</item>
+		<item>Iceland Krona</item>
+		<item>Indian Rupee</item>
+		<item>Iranian Rial</item>
+		<item>Iraqi Dinar</item>
+		<item>Jamaican Dollar</item>
+		<item>Jordanian Dinar</item>
+		<item>Kenyan Shilling</item>
+		<item>Kina</item>
+		<item>Kip</item>
+		<item>Kuwaiti Dinar</item>
+		<item>Kwacha</item>
+		<item>Kwanza</item>
+		<item>Kyat</item>
+		<item>Lari</item>
+		<item>Latvian Lats</item>
+		<item>Lebanese Pound</item>
+		<item>Lek</item>
+		<item>Lempira</item>
+		<item>Leone</item>
+		<item>Liberian Dollar</item>
+		<item>Libyan Dinar</item>
+		<item>Lilangeni</item>
+		<item>Lithuanian Litas</item>
+		<item>Loti</item>
+		<item>Malagasy Ariary</item>
+		<item>Malaysian Ringgit</item>
+		<item>Mauritius Rupee</item>
+		<item>Mexican Peso</item>
+		<item>Mexican Unidad de Inversion (UDI)</item>
+		<item>Moldovan Leu</item>
+		<item>Moroccan Dirham</item>
+		<item>Mozambique Metical</item>
+		<item>Mvdol</item>
+		<item>Naira</item>
+		<item>Nakfa</item>
+		<item>Namibia Dollar</item>
+		<item>Nepalese Rupee</item>
+		<item>Netherlands Antillean Guilder</item>
+		<item>New Israeli Sheqel</item>
+		<item>New Romanian Leu</item>
+		<item>New Taiwan Dollar</item>
+		<item>New Zealand Dollar</item>
+		<item>Ngultrum</item>
+		<item>North Korean Won</item>
+		<item>Norwegian Krone</item>
+		<item>Nuevo Sol</item>
+		<item>Ouguiya</item>
+		<item>Pa’anga</item>
+		<item>Pakistan Rupee</item>
+		<item>Palladium</item>
+		<item>Pataca</item>
+		<item>Philippine Peso</item>
+		<item>Platinum</item>
+		<item>Pound Sterling</item>
+		<item>Pula</item>
+		<item>Qatari Rial</item>
+		<item>Quetzal</item>
+		<item>Rand</item>
+		<item>Rial Omani</item>
+		<item>Riel</item>
+		<item>Rufiyaa</item>
+		<item>Rupiah</item>
+		<item>Russian Ruble</item>
+		<item>Rwanda Franc</item>
+		<item>Saint Helena Pound</item>
+		<item>Saudi Riyal</item>
+		<item>SDR (Special Drawing Right)</item>
+		<item>Serbian Dinar</item>
+		<item>Seychelles Rupee</item>
+		<item>Silver</item>
+		<item>Singapore Dollar</item>
+		<item>Solomon Islands Dollar</item>
+		<item>Som</item>
+		<item>Somali Shilling</item>
+		<item>Somoni</item>
+		<item>South Sudanese Pound</item>
+		<item>Sri Lanka Rupee</item>
+		<item>Sucre</item>
+		<item>Sudanese Pound</item>
+		<item>Surinam Dollar</item>
+		<item>Swedish Krona</item>
+		<item>Swiss Franc</item>
+		<item>Syrian Pound</item>
+		<item>Taka</item>
+		<item>Tala</item>
+		<item>Tanzanian Shilling</item>
+		<item>Tenge</item>
+		<item>Χωρίς νόμισμα</item>
+		<item>Trinidad and Tobago Dollar</item>
+		<item>Tugrik</item>
+		<item>Tunisian Dinar</item>
+		<item>Turkish Lira</item>
+		<item>Turkmenistan New Manat</item>
+		<item>UAE Dirham</item>
+		<item>Uganda Shilling</item>
+		<item>UIC-Franc</item>
+		<item>Unidad de Valor Real</item>
+		<item>Unidades de fomento</item>
+		<item>Uruguay Peso en Unidades Indexadas (URUIURUI)</item>
+        <item>Uruguayan Peso</item>
+        <item>US Dolar</item>
+		<item>Uzbekistan Sum</item>
+		<item>Vatu</item>
+		<item>WIR Euro</item>
+		<item>WIR Franc</item>
+		<item>Won</item>
+		<item>Yemeni Rial</item>
+		<item>Yen</item>
+		<item>Yuan Renminbi</item>
+		<item>Zambian Kwacha</item>
+		<item>Zimbabwe Dollar</item>
+		<item>Zloty</item>
+    </string-array>
+	<string-array name="default_accounts">
+	    <item>Έξοδα</item>
+	    <item>Έσοδα</item>
+	    <item>Πάγια</item>	    
+	    <item>Καθαρή Αξία</item>
+	    <item>Παθητικό</item>
+	</string-array>
+	<string name="error_no_accounts">Δεν υπάρχουν λογαριασμοί στο
+	GnuCash.\nΔημιουργήστε ενα λογαριασμό πριν προσθέσετε ένα γραφικό στοιχείο</string>
+	<string name="title_build_version">Έκδοση</string>
+	<string name="title_license">Άδεια χρήσης</string>
+	<string name="summary_licence_details">Άδεια χρήσης Apache v2.0. Επιλέξτε για λεπτομέρειες</string>
+	<string name="title_general_prefs">Γενικά</string>
+	<string name="label_widget_configuration">Επιλογή Λογαριασμού</string>
+	<string name="toast_no_transactions_to_export">Δεν υπάρχουν διαθέσιμες συναλλαγές για εξαγωγή</string>
+	<string name="title_about_gnucash">Πληροφορίες για GnuCash</string>
+	<string name="summary_about_gnucash">Το GnuCash είναι μια εφαρμογή
+	παρακολούθησης εξόδων για κινητά Android.\nΕπιτρέπει ευέλικτη παρακολούθηση
+	εξόδων εν κινήσει τα οποία μπορούν να εξαχθούν σε μορφή Open Financial
+	eXchange (OFX) και να εισαχθούν στην εφαρμογή GnuCash για τον
+	υπολογιστή.</string>
+	<string name="title_about">Πληροφορίες</string>
+	<string name="toast_format_exported_to">Αρχείο %1$s εξήχθη σε:\n</string>
+	<string name="title_export_email">Εξαγωγή GnuCash Android %1$s</string>
+	<string name="description_export_email">Εξαγωγή GnuCash Android προς </string>
+	<string name="header_transaction_settings">Κινήσεις</string>
+	<string name="title_transaction_preferences">Προτιμήσεις Κινήσεων</string>
+	<string name="title_account_preferences">Προτιμήσεις Λογαριασμών</string>
+	<string name="title_default_transaction_type">Προεπιλογή Τύπου Κίνησης</string>
+	<string name="summary_default_transaction_type">Ο προεπιλεγμένος τύπος κίνησης, ΠΙΣΤΩΣΗ ή ΧΡΕΩΣΗ</string>
+	<string-array name="transaction_types">
+		<item>ΠΙΣΤΩΣΗ</item>
+		<item>ΧΡΕΩΣΗ</item>
+	</string-array>
+	<string name="msg_delete_all_transactions_confirmation">Σίγουρα θέλετε να διαγράψετε ΌΛΕΣ τις κινήσεις;</string>
+	<string name="msg_delete_transaction_confirmation">Σίγουρα θέλετε να διαγράψετε αυτή τη κίνηση;</string>
+	<string name="title_export_preference_category">Εξαγωγή</string>
+	<string name="title_export_all_transactions">Εξαγωγή όλων των κινήσεων</string>
+	<string name="title_always_delete_exported_transactions">Διαγραφή εξηγμένων κινήσεων</string>
+	<string name="title_default_export_email">Προεπιλεγμένο email εξαγωγής</string>
+	<string name="summary_default_export_email">Η προεπιλεγμένη διεύθυνση email για αποστολή εξαγωγών. Μπορείτε να το αλλάξετε και κατα την εξαγωγή.</string>		
+	<string name="label_double_entry_account">Λογαριασμός Μεταφοράς</string>
+	<string name="summary_use_double_entry">Όλες οι κινήσεις θα μεταφερθούν από τον ένα λογαριασμό στον άλλο.</string>
+	<string name="title_use_double_entry">Ενεργοποίηση Διπλών Λογιστικών Εγγραφών</string>
+	<string name="account_balance">Υπόλοιπο</string>
+	<string name="toast_no_account_name_entered">Εισαγωγή ονόματος λογαριασμού
+	για τη δημιουργία του</string>
+	<string name="label_account_currency">Νόμισμα</string>
+	<string name="label_parent_account">Γονικός λογαριασμός</string>
+	<string name="title_xml_ofx_header">Χρήση κεφαλίδας XML OFX</string>
+	<string name="summary_xml_ofx_header">Ενεργοποίηση αυτής της επιλογής για εξαγωγή σε εφαρμογές τρίτων, εκτός του GnuCash για επιτραπέζιο υπολογιστή.</string>
+	<string name="title_whats_new">Τι νέο υπάρχει</string>
+	<string name="whats_new">
+        - General resource and performance optimization\n
+        - Faster computation of account balances\n
+        - Set passcode to restrict access to app (in Settings)\n
+        - Export separate QIF files for each currency in use\n
+        - Use currencey settings when creating account hierarchy\n
+        - Multiple bug fixes and improvements\n
+	</string>
+	<string name="label_dismiss">Απόρριψη</string>
+    <string name="toast_transanction_amount_required">Εισαγωγή ποσού για
+	αποθήκευση κίνησης</string>
+    <string name="menu_import_accounts">Εισαγωγή Λογαριασμών GnuCash</string>
+    <string name="btn_import_accounts">Εισαγωγή Λογαριασμών</string>
+    <string name="toast_error_importing_accounts">Προέκυψε σφάλμα κατά την
+	εισαγωγή λογαριασμών GnuCash</string>
+    <string name="toast_success_importing_accounts">Λογαριασμοί GnuCash
+	εισήχθησαν με επιτυχία</string>
+    <string name="summary_import_accounts">Το εισαγόμενο λογιστικό σχέδιο
+	εξήχθει από το GnuCash για επιτραπέζιους υπολογιστές</string>
+    <string name="title_import_accounts">Εισαγωγή λογαριασμών GnuCash</string>
+    <string name="summary_delete_all_accounts">Διαγραφή όλων των λογαριασμών
+	στη βάση δεδομένων. Όλες οι κινήσεις θα διαγραφούν επίσης.
+    </string>
+    <string name="title_delete_all_accounts">Διαγραφή όλων των λογαριασμών</string>
+    <string name="header_account_settings">Λογαριασμοί</string>
+    <string name="toast_all_accounts_deleted">Όλοι οι λογαριασμοί διαγράφηκαν
+	με επιτυχία</string>
+    <string name="confirm_delete_all_accounts">Σίγουρα θέλετε να διαγράψετε
+	όλους του λογαριασμούς και τις κινήσεις; \nΑυτή η ενέργεια δε μπορεί να αναιρεθεί!
+    </string>
+    <string name="label_account_type">Τύπος Λογαριασμού</string>
+    <string name="summary_delete_all_transactions">Όλες οι κινήσεις σε όλους
+	τους λογαριασμούς θα διαγραφούν!</string>
+    <string name="title_delete_all_transactions">Διαγραφή όλων των κινήσεων</string>
+    <string name="toast_all_transactions_deleted">Όλες οι κινήσεις διαγράφηκαν
+	με επιτυχία!</string>
+    <string name="title_progress_importing_accounts">Εισαγωγή λογαριασμών</string>
+    <string name="toast_tap_again_to_confirm_delete">Πατήστε ξανά για επιβεβαίωση. ΌΛΕΣ οι καταχωρήσεις θα διαγραφούν!!</string>
+    <string name="section_header_transactions">Κινήσεις</string>
+    <string name="section_header_subaccounts">Υπο-Λογαριασμοί</string>
+    <string name="menu_search_accounts">Αναζήτηση</string>
+    <string name="title_default_export_format">Προεπιλεγμένη Μορφή Εξόδου</string>
+    <string name="summary_default_export_format">Μορφή αρχείου για προεπιλεγμένη χρήση κατά την εξαγωγή κινήσεων.</string>
+    <string name="menu_export_transactions">Εξαγωγή κινήσεων…</string>
+    <string name="label_recurring_transaction">Επαναλαμβανόμενη</string>
+    <!-- This should be the same name used by GnuCash desktop for imbalance accounts -->
+    <string name="imbalance_account_name">Imbalance</string>
+    <string name="title_progress_exporting_transactions">Εξαγωγή κινήσεων</string>
+    <string name="label_no_recurring_transactions">Δεν υπάρχουν επαναλαμβανόμενες κινήσεις για εμφάνιση.</string>
+    <string name="toast_recurring_transaction_deleted">Επιτυχία διαγραφής επαναλαμβανόμενης κίνησης</string>
+    <string name="label_placeholder_account">Λογαριασμός κράτησης θέσης</string>
+    <string name="label_default_transfer_account">Προεπιλεγμένος Λογαριασμός Μεταφοράς</string>
+    <string name="label_account_color_and_type">Χρώμα Λογαριασμού &amp; Τύπος</string>
+    <plurals name="label_sub_accounts">
+        <item quantity="one">%d υπο-λογαριασμός</item>
+        <item quantity="other">%d υπο-λογαριασμοί</item>
+    </plurals>
+    <string-array name="account_type_entry_values">
+        <item>ΡΕΥΣΤΟ</item>
+        <item>ΤΡΑΠΕΖΑ</item>
+        <item>ΠΙΣΤΩΤΙΚΗ ΚΑΡΤΑ</item>
+        <item>ΠΑΓΙΟ</item>
+        <item>ΠΑΘΗΤΙΚΟ</item>
+        <item>ΕΣΟΔΟ</item>
+        <item>ΕΞΟΔΟ</item>
+        <item>ΠΛΗΡΩΤΕΟ</item>
+        <item>ΕΙΣΠΡΑΚΤΕΟ</item>
+        <item>ΚΑΘΑΡΗ ΑΞΙΑ</item>
+        <item>ΝΟΜΙΣΜΑ</item>
+        <item>ΜΕΤΟΧΗ</item>
+        <item>ΑΜΟΙΒΑΙΟ ΚΕΦΑΛΑΙΟ</item>
+		<item>TRADING</item>
+    </string-array>
+    <string-array name="export_formats">
+        <item>QIF</item>
+        <item>OFX</item>
+    </string-array>
+    <!-- Default title for color picker dialog [CHAR LIMIT=30] -->
+    <string name="color_picker_default_title">Επιλογή χρώματος</string>
+    <string name="label_delete_sub_accounts">Διαγραφή υπο-λογαριασμών</string>
+    <string name="title_recent_accounts">Πρόσφατοι</string>
+    <string name="title_favorite_accounts">Αγαπημένοι</string>
+    <string name="title_all_accounts">Όλοι</string>
+    <string name="summary_create_default_accounts">Δημιουργία προεπιλεγμένης συχνά χρησιμοποιούμενης δομής λογαριασμών GnuCash</string>
+    <string name="title_create_default_accounts">Δημιουργία προεπιλεγμένων λογαριασμών</string>
+    <string name="msg_confirm_create_default_accounts_setting">Νέοι λογαριασμοί θα δημιουργηθούν επιπλέον της υπάρχουσας
+        δομής λογαριασμών.\n\nΕάν επιθυμείτε να αντικαταστήσετε υπάρχοντες λογαριασμούς, διαγράψτε τους πριν προχωρήσετε!
+    </string>
+    <string name="menu_scheduled_transactions">Προγραμματισμένες Κινήσεις</string>
+    <string name="msg_confirm_create_default_accounts_first_run">GnuCash Android. Καλώς ήρθατε! \nΜπορείτε είτε να δημιουργήσετε
+        μια ιεραρχία συνηθισμένων λογαριασμών, ή να εισάγετε τη δική σας δομή λογαριασμών GnuCash. \n\nΚαι οι δύο επιλογές είναι επίσης
+        διαθέσιμες στις Επιλογές της εφαρμογής γι\' αυτό μπορείτε να αποφασίσετε αργότερα.
+    </string>
+    <string-array name="recurrence_period_strings">
+        <item>ΚΑΜΙΑ</item>
+        <item>ΗΜΕΡΗΣΙΑ</item>
+        <item>ΕΒΔΟΜΑΔΙΑΙΑ</item>
+        <item>ΜΗΝΙΑΙΑ</item>
+    </string-array>
+    <string name="title_scheduled_transactions">Προγραμματισμένες Κινήσεις</string>
+    <string name="title_select_export_destination">Select destination for export</string>
+    <string name="hint_split_memo">Memo</string>
+    <string name="label_spend">Spend</string>
+    <string name="label_receive">Receive</string>
+    <string name="label_withdrawal">Withdrawal</string>
+    <string name="label_deposit">Deposit</string>
+    <string name="label_payment">Payment</string>
+    <string name="label_charge">Charge</string>
+    <string name="label_decrease">Decrease</string>
+    <string name="label_increase">Increase</string>
+    <string name="label_income">Income</string>
+    <string name="label_rebate">Rebate</string>
+    <string name="label_expense">Expense</string>
+    <string name="label_bill">Bill</string>
+    <string name="label_invoice">Invoice</string>
+    <string name="label_buy">Buy</string>
+    <string name="label_sell">Sell</string>
+    <string name="label_repeats">Repeats</string>
+    <string name="label_account_balance">Balance:</string>
+    <string name="toast_no_recent_backup">No recent backup found</string>
+    <string name="account_name_opening_balances">Αρχικά υπόλοιπα</string>
+    <string name="account_name_equity">Καθαρή Θέση</string>
+    <string name="summary_save_opening_balances">Enable to save the current account balance (before deleting transactions) as new opening balance after deleting transactions
+    </string>
+    <string name="title_save_opening_balances">Save account opening balances</string>
+    <string name="export_warning_ofx">OFX does not support double-entry transactions</string>
+    <string name="export_warning_qif">A separate QIF file will be generated for each currency in use</string>
+    <string name="title_transaction_splits">Transaction splits</string>
+    <string name="label_imbalance">Imbalance:</string>
+    <string name="btn_add_split">Add split</string>
+    <string name="label_passcode">Enter Passcode</string>
+    <string name="toast_wrong_passcode">Wrong passcode, please try again</string>
+    <string name="toast_passcode_set">Passcode set</string>
+    <string name="toast_confirm_passcode">Please confirm your passcode</string>
+    <string name="toast_invalid_passcode_confirmation">Invalid passcode confirmation. Please try again</string>
+    <string name="header_passcode_settings">Passcode</string>
+    <string name="title_passcode_preferences">Passcode Preferences</string>
+    <string name="title_passcode_enabled">Passcode Turned On</string>
+    <string name="title_passcode_disabled">Passcode Turned Off</string>
+    <string name="title_change_passcode">Change Passcode</string>
+    <string name="toast_error_edit_multi_currency_transaction">Multi-currency transactions cannot be modified</string>
+    <string name="menu_title_favorite">Favorite</string>
+    <string name="drawer_open">Navigation drawer opened</string>
+    <string name="drawer_close">Navigation drawer closed</string>
+    <string name="title_pie_chart">Pie Chart</string>
+    <string name="menu_chart_report">Chart report</string>
+    <string name="menu_order_by_size">Order by size</string>
+    <string name="menu_toggle_legend">Toggle legend</string>
+    <string name="menu_toggle_labels">Toggle labels</string>
+    <string name="label_chart_no_data">No chart data available</string>
+    <string name="label_chart_overall">Overall</string>
+    <string name="label_chart_total">Total\n</string>
+    <string name="label_save_template">Save as template</string>
+    <string name="label_delete_account_transactions_description">This account contains transactions. \nWhat would you like to do with these transactions</string>
+    <string name="label_delete_account_subaccounts_description">This account contains sub-accounts. \nWhat would you like to do with these sub-accounts</string>
+    <string name="label_delete_transactions">Delete transactions</string>
+    <string name="toast_disable_double_entry_to_save_transaction">Create and specify a transfer account OR disable double-entry in settings to save the transaction</string>
+    <string name="label_tap_to_create_schedule">Tap to create schedule</string>
+</resources>
