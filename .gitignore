@@ -18,4 +18,8 @@ gen-external-apklibs
 *.iws
 out/
 *.project
+<<<<<<< HEAD
 *.classpath
+=======
+*.classpath
+>>>>>>> root/develop
