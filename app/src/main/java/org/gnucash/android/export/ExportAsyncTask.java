@@ -26,20 +26,20 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.preference.PreferenceManager;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.widget.Toast;
 
 import org.gnucash.android.R;
+import org.gnucash.android.app.GnuCashApplication;
+import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.export.ofx.OfxExporter;
 import org.gnucash.android.export.qif.QifExporter;
 import org.gnucash.android.export.qif.QifHelper;
 import org.gnucash.android.export.xml.GncXmlExporter;
+import org.gnucash.android.model.Transaction;
 import org.gnucash.android.ui.account.AccountsActivity;
 import org.gnucash.android.ui.transaction.TransactionsActivity;
-import org.gnucash.android.ui.transaction.dialog.TransactionsDeleteConfirmationDialogFragment;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -208,8 +208,7 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
         }
 
         if (mExportParams.shouldDeleteTransactionsAfterExport()) {
-            //TODO: we delete with impunity here, make sure files are backed-up first
-            TransactionsDbAdapter.getInstance().deleteAllRecords();
+            backupAndDeleteTransactions();
 
             //now refresh the respective views
             if (mContext instanceof AccountsActivity){
@@ -222,6 +221,26 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
                 if (mProgressDialog != null && mProgressDialog.isShowing())
                     mProgressDialog.dismiss();
             }
+        }
+    }
+
+    /**
+     * Backups of the database, saves opening balances (if necessary)
+     * and deletes all non-template transactions in the database.
+     */
+    private void backupAndDeleteTransactions(){
+        GncXmlExporter.createBackup(); //create backup before deleting everything
+        List<Transaction> openingBalances = new ArrayList<Transaction>();
+        boolean preserveOpeningBalances = GnuCashApplication.shouldSaveOpeningBalances(false);
+        if (preserveOpeningBalances) {
+            openingBalances = AccountsDbAdapter.getInstance().getAllOpeningBalanceTransactions();
+        }
+
+        TransactionsDbAdapter transactionsDbAdapter = TransactionsDbAdapter.getInstance();
+        transactionsDbAdapter.deleteAllNonTemplateTransactions();
+
+        if (preserveOpeningBalances) {
+            transactionsDbAdapter.bulkAddTransactions(openingBalances);
         }
     }
 

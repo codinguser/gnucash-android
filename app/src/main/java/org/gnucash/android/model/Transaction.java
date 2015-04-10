@@ -159,6 +159,31 @@ public class Transaction extends BaseModel{
 	}
 
     /**
+     * Auto-balance the transaction by creating an imbalance split where necessary
+     * <p><b>Note:</b>If a transaction has splits with different currencies, not auto-balancing will be performed.</p>
+     */
+    public void autoBalance(){
+        //FIXME: when multiple currencies per transaction are supported
+        Currency lastCurrency = null;
+        for (Split split : mSplitList) {
+            Currency currentCurrency = split.getAmount().getCurrency();
+            if (lastCurrency == null)
+                lastCurrency = currentCurrency;
+            else if (lastCurrency != currentCurrency){
+                return;
+            }
+        }
+
+        Money imbalance = getImbalance();
+        if (!imbalance.isAmountZero()){
+            Currency currency = Currency.getInstance(mCurrencyCode);
+            Split split = new Split(imbalance.negate(),
+                    AccountsDbAdapter.getInstance().getOrCreateImbalanceAccountUID(currency));
+            mSplitList.add(split);
+        }
+    }
+
+    /**
      * Returns list of splits for this transaction
      * @return {@link java.util.List} of splits in the transaction
      */
@@ -236,7 +261,9 @@ public class Transaction extends BaseModel{
 
     /**
      * Computes the balance of the splits belonging to a particular account.
-     * Only those splits which belong to the account will be considered.
+     * <p>Only those splits which belong to the account will be considered.
+     * If the {@code accountUID} is null, then the imbalance of the transaction is computed. This means that either
+     * zero is returned (for balanced transactions) or the imbalance amount will be returned.</p>
      * @param accountUID Unique Identifier of the account
      * @param splitList List of splits
      * @return Money list of splits
