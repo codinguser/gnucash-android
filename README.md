@@ -62,8 +62,8 @@ You could as well contribute code, fixing bugs, new features or automated tests.
 Take a look at the [bug tracker](https://github.com/codinguser/gnucash-android/issues?state=open)
 for ideas where to start.
 
-For development, it is recommended to use the IntelliJ IDEA 14+ IDE for development which is available as free
-community edition. Import the project into the IDE from an external (maven) model.The IDE will resolve dependencies automatically.
+For development, it is recommended to use the Android Studio for development which is available for free.
+Import the project into the IDE using the build.gradle file. The IDE will resolve dependencies automatically.
 
 #Licence
 Gnucash for Android is free software; you can redistribute it and/or 

@@ -494,17 +494,29 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 
     /**
      * Returns a cursor to transactions whose name (UI: description) start with the <code>prefix</code>
-     * <p>This method is used for autocomplete suggestions when creating new transactions</p>
+     * <p>This method is used for autocomplete suggestions when creating new transactions. <br/>
+     * The suggestions are either transactions which have at least one split with {@code accountUID} or templates.</p>
      * @param prefix Starting characters of the transaction name
+     * @param accountUID GUID of account within which to search for transactions
      * @return Cursor to the data set containing all matching transactions
      */
-    public Cursor fetchTemplatesStartingWith(String prefix){
-        return mDb.query(TransactionEntry.TABLE_NAME,
-                new String[]{TransactionEntry._ID, TransactionEntry.COLUMN_DESCRIPTION},
-                TransactionEntry.COLUMN_TEMPLATE + "=1 AND "
-                        + TransactionEntry.COLUMN_DESCRIPTION + " LIKE '" + prefix + "%'",
-                null, null, null,
-                TransactionEntry.COLUMN_DESCRIPTION + " ASC");
+    public Cursor fetchTransactionSuggestions(String prefix, String accountUID){
+        SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
+        queryBuilder.setTables(TransactionEntry.TABLE_NAME
+                + " INNER JOIN " + SplitEntry.TABLE_NAME + " ON "
+                + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_UID + " = "
+                + SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_TRANSACTION_UID);
+        queryBuilder.setDistinct(true);
+        String[] projectionIn = new String[]{TransactionEntry.TABLE_NAME + ".*"};
+        String selection = "(" + SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_ACCOUNT_UID + " = ?"
+                + " OR " + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_TEMPLATE + "=1 )"
+                + " AND " + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_DESCRIPTION + " LIKE '" + prefix + "%'";
+        String[] selectionArgs = new String[]{accountUID};
+        String sortOrder = TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_TIMESTAMP + " DESC";
+        String groupBy = TransactionEntry.COLUMN_DESCRIPTION;
+        String limit = Integer.toString(5);
+
+        return queryBuilder.query(mDb, projectionIn, selection, selectionArgs, groupBy, null, sortOrder, limit);
     }
 
     /**
