@@ -1255,8 +1255,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 	 */
     @Override
 	public int deleteAllRecords(){
-		mDb.delete(TransactionEntry.TABLE_NAME, null, null);
-        mDb.delete(SplitEntry.TABLE_NAME, null, null);
+		mDb.delete(TransactionEntry.TABLE_NAME, null, null); //this will take the splits along with it
         return mDb.delete(AccountEntry.TABLE_NAME, null, null);
 	}
 

@@ -564,6 +564,16 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
     }
 
     /**
+     * Deletes all transactions except those which are marked as templates.
+     * <p>If you want to delete really all transaction records, use {@link #deleteAllRecords()}</p>
+     * @return Number of records deleted
+     */
+    public int deleteAllNonTemplateTransactions(){
+        String where = TransactionEntry.COLUMN_TEMPLATE + "!=0";
+        return mDb.delete(mTableName, where, null);
+    }
+
+    /**
      * Returns a timestamp of the earliest transaction for the specified account type
      * @param type the account type
      * @return the earliest transaction's timestamp. Returns 1970-01-01 00:00:00.000 if no transaction found
@@ -581,6 +591,14 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
         return getTimestamp("MAX", type);
     }
 
+    /**
+     * Returns the earliest or latest timestamp of transactions for a specific account type
+     * @param mod Mode (either MAX or MIN)
+     * @param type AccountType
+     * @return earliest or latest timestamp of transactions
+     * @see #getTimestampOfLatestTransaction(AccountType)
+     * @see #getTimestampOfEarliestTransaction(AccountType)
+     */
     private long getTimestamp(String mod, AccountType type) {
         String sql = "SELECT " + mod + "(" + TransactionEntry.COLUMN_TIMESTAMP + ")" +
                 " FROM " + TransactionEntry.TABLE_NAME +
