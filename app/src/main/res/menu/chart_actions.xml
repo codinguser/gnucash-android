@@ -37,4 +37,8 @@
           android:title="@string/menu_toggle_average_lines"
           android:showAsAction="never" />
 
+    <item android:id="@+id/menu_group_other_slice"
+          android:title="@string/menu_group_smaller_slices"
+          android:showAsAction="never" />
+
 </menu>

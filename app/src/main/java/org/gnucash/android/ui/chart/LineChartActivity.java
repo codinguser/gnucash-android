@@ -210,6 +210,7 @@ public class LineChartActivity extends PassLockActivity implements OnChartValueS
         menu.findItem(R.id.menu_order_by_size).setVisible(false);
         menu.findItem(R.id.menu_toggle_labels).setVisible(false);
         menu.findItem(R.id.menu_percentage_mode).setVisible(false);
+        menu.findItem(R.id.menu_group_other_slice).setVisible(false);
         return true;
     }
 

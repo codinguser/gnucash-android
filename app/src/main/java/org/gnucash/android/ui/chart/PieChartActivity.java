@@ -23,6 +23,7 @@ import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
@@ -54,6 +55,8 @@ import org.joda.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import static org.gnucash.android.db.DatabaseSchema.AccountEntry;
 
 /**
  * Activity used for drawing a pie chart
@@ -93,6 +96,8 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
     private AccountType mAccountType = AccountType.EXPENSE;
 
     private boolean mChartDataPresent = true;
+
+    private double mSlicePercentThreshold = 6;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -174,30 +179,54 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
      * @return {@code PieData} instance
      */
     private PieData getPieData(boolean forCurrentMonth) {
+        List<Account> accountList = mAccountsDbAdapter.getSimpleAccountList(
+                AccountEntry.COLUMN_TYPE + " = ? AND " + AccountEntry.COLUMN_PLACEHOLDER + " = ?",
+                new String[]{ mAccountType.name(), "0" }, null);
+        List<String> uidList = new ArrayList<String>();
+        for (Account account : accountList) {
+            uidList.add(account.getUID());
+        }
+        double sum = mAccountsDbAdapter.getAccountsBalance(uidList, -1, -1).absolute().asDouble();
+        if (forCurrentMonth) {
+            long start = mChartDate.dayOfMonth().withMinimumValue().millisOfDay().withMinimumValue().toDate().getTime();
+            long end = mChartDate.dayOfMonth().withMaximumValue().millisOfDay().withMaximumValue().toDate().getTime();
+            sum = mAccountsDbAdapter.getAccountsBalance(uidList, start, end).absolute().asDouble();
+        }
+        Log.w("Tag", "Total Balance " + sum);
+
+        double otherSlice = 0;
         PieDataSet dataSet = new PieDataSet(null, "");
         ArrayList<String> names = new ArrayList<String>();
         List<String> skipUUID = new ArrayList<String>();
-        for (Account account : mAccountsDbAdapter.getSimpleAccountList()) {
-            if (account.getAccountType() == mAccountType && !account.isPlaceholderAccount()) {
-                if (mAccountsDbAdapter.getSubAccountCount(account.getUID()) > 0) {
-                    skipUUID.addAll(mAccountsDbAdapter.getDescendantAccountUIDs(account.getUID(), null, null));
+        for (Account account : accountList) {
+            if (mAccountsDbAdapter.getSubAccountCount(account.getUID()) > 0) {
+                skipUUID.addAll(mAccountsDbAdapter.getDescendantAccountUIDs(account.getUID(), null, null));
+            }
+            if (!skipUUID.contains(account.getUID())) {
+                double balance;
+                if (forCurrentMonth) {
+                    long start = mChartDate.dayOfMonth().withMinimumValue().millisOfDay().withMinimumValue().toDate().getTime();
+                    long end = mChartDate.dayOfMonth().withMaximumValue().millisOfDay().withMaximumValue().toDate().getTime();
+                    balance = mAccountsDbAdapter.getAccountBalance(account.getUID(), start, end).absolute().asDouble();
+                } else {
+                    balance = mAccountsDbAdapter.getAccountBalance(account.getUID()).absolute().asDouble();
                 }
-                if (!skipUUID.contains(account.getUID())) {
-                    double balance;
-                    if (forCurrentMonth) {
-                        long start = mChartDate.dayOfMonth().withMinimumValue().millisOfDay().withMinimumValue().toDate().getTime();
-                        long end = mChartDate.dayOfMonth().withMaximumValue().millisOfDay().withMaximumValue().toDate().getTime();
-                        balance = mAccountsDbAdapter.getAccountBalance(account.getUID(), start, end).absolute().asDouble();
-                    } else {
-                        balance = mAccountsDbAdapter.getAccountBalance(account.getUID()).absolute().asDouble();
-                    }
-                    if (balance > 0) {
-                        dataSet.addEntry(new Entry((float) balance, dataSet.getEntryCount()));
-                        dataSet.addColor(COLORS[(dataSet.getEntryCount() - 1) % COLORS.length]);
-                        names.add(account.getName());
-                    }
+
+                Log.w("Tag", "Percent = " + balance / sum * 100);
+                if (balance / sum * 100 > mSlicePercentThreshold) {
+                    dataSet.addEntry(new Entry((float) balance, dataSet.getEntryCount()));
+                    dataSet.addColor(COLORS[(dataSet.getEntryCount() - 1) % COLORS.length]);
+                    names.add(account.getName());
+                } else {
+                    otherSlice += balance;
+                    Log.w("Tag", "Other = " + otherSlice);
                 }
             }
+        }
+        if (otherSlice > 0) {
+            dataSet.addEntry(new Entry((float) otherSlice, dataSet.getEntryCount()));
+            dataSet.getColors().set(dataSet.getColors().size() - 1, Color.LTGRAY);
+            names.add(getResources().getString(R.string.label_other_slice));
         }
 
         if (dataSet.getEntryCount() == 0) {
@@ -304,6 +333,7 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
     public boolean onPrepareOptionsMenu(Menu menu) {
         menu.findItem(R.id.menu_order_by_size).setVisible(mChartDataPresent);
         menu.findItem(R.id.menu_toggle_labels).setVisible(mChartDataPresent);
+        menu.findItem(R.id.menu_group_other_slice).setVisible(mChartDataPresent);
         // hide line/bar chart specific menu items
         menu.findItem(R.id.menu_percentage_mode).setVisible(false);
         menu.findItem(R.id.menu_toggle_average_lines).setVisible(false);
@@ -329,6 +359,11 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
                 mChart.getData().setDrawValues(!mChart.isDrawSliceTextEnabled());
                 mChart.setDrawSliceText(!mChart.isDrawSliceTextEnabled());
                 mChart.invalidate();
+                break;
+            }
+            case R.id.menu_group_other_slice: {
+                mSlicePercentThreshold = Math.abs(mSlicePercentThreshold - 6);
+                setData(false);
                 break;
             }
             case android.R.id.home: {

@@ -451,4 +451,6 @@
     <string name="title_bar_chart">Bar Chart</string>
     <string name="title_line_chart">Line Chart</string>
     <string name="title_reports">Reports</string>
+    <string name="label_other_slice">Other</string>
+    <string name="menu_group_smaller_slices">Group Smaller Slices</string>
 </resources>

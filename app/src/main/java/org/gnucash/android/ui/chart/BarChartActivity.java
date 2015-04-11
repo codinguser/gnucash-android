@@ -205,6 +205,7 @@ public class BarChartActivity extends PassLockActivity implements OnChartValueSe
         menu.findItem(R.id.menu_order_by_size).setVisible(false);
         menu.findItem(R.id.menu_toggle_labels).setVisible(false);
         menu.findItem(R.id.menu_toggle_average_lines).setVisible(false);
+        menu.findItem(R.id.menu_group_other_slice).setVisible(false);
         return true;
     }
 
