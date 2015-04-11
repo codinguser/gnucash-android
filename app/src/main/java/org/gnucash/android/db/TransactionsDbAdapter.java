@@ -90,6 +90,7 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 		contentValues.put(TransactionEntry.COLUMN_EXPORTED,     transaction.isExported() ? 1 : 0);
 		contentValues.put(TransactionEntry.COLUMN_TEMPLATE,     transaction.isTemplate() ? 1 : 0);
         contentValues.put(TransactionEntry.COLUMN_CURRENCY,     transaction.getCurrencyCode());
+        contentValues.put(TransactionEntry.COLUMN_SCHEDX_ACTION_UID, transaction.getScheduledActionUID());
 
         Log.d(TAG, "Replacing transaction in db");
         long rowId = -1;
@@ -150,7 +151,8 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
                 + TransactionEntry.COLUMN_EXPORTED      + " , "
                 + TransactionEntry.COLUMN_CURRENCY      + " , "
                 + TransactionEntry.COLUMN_CREATED_AT    + " , "
-                + TransactionEntry.COLUMN_TEMPLATE + " ) VALUES ( ? , ? , ? , ?, ? , ? , ? , ?)");
+                + TransactionEntry.COLUMN_SCHEDX_ACTION_UID + " , "
+                + TransactionEntry.COLUMN_TEMPLATE + " ) VALUES ( ? , ? , ? , ?, ? , ? , ? , ? , ?)");
             for (Transaction transaction : transactionList) {
                 //Log.d(TAG, "Replacing transaction in db");
                 replaceStatement.clearBindings();
@@ -161,7 +163,8 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
                 replaceStatement.bindLong(5,    transaction.isExported() ? 1 : 0);
                 replaceStatement.bindString(6,  transaction.getCurrencyCode());
                 replaceStatement.bindString(7,  transaction.getCreatedTimestamp().toString());
-                replaceStatement.bindLong(8,    transaction.isTemplate() ? 1 : 0);
+                replaceStatement.bindString(8,  transaction.getScheduledActionUID());
+                replaceStatement.bindLong(9,    transaction.isTemplate() ? 1 : 0);
                 replaceStatement.execute();
                 rowInserted ++;
                 splitList.addAll(transaction.getSplits());
@@ -379,29 +382,11 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 		transaction.setNote(c.getString(c.getColumnIndexOrThrow(TransactionEntry.COLUMN_NOTES)));
 		transaction.setExported(c.getInt(c.getColumnIndexOrThrow(TransactionEntry.COLUMN_EXPORTED)) == 1);
 		transaction.setTemplate(c.getInt(c.getColumnIndexOrThrow(TransactionEntry.COLUMN_TEMPLATE)) == 1);
+        transaction.setCurrencyCode(c.getString(c.getColumnIndexOrThrow(TransactionEntry.COLUMN_CURRENCY)));
+        transaction.setScheduledActionUID(c.getString(c.getColumnIndexOrThrow(TransactionEntry.COLUMN_SCHEDX_ACTION_UID)));
+        long transactionID = c.getLong(c.getColumnIndexOrThrow(TransactionEntry._ID));
+        transaction.setSplits(mSplitsDbAdapter.getSplitsForTransaction(transactionID));
 
-        if (mDb.getVersion() < SPLITS_DB_VERSION){ //legacy, will be used once, when migrating the database
-            String accountUID = c.getString(c.getColumnIndexOrThrow(SplitEntry.COLUMN_ACCOUNT_UID));
-            String amountString = c.getString(c.getColumnIndexOrThrow(SplitEntry.COLUMN_AMOUNT));
-            String currencyCode = getAccountCurrencyCode(accountUID);
-            Money amount = new Money(amountString, currencyCode);
-
-            Split split = new Split(amount.absolute(), accountUID);
-            TransactionType type = Transaction.getTypeForBalance(getAccountType(accountUID), amount.isNegative());
-            split.setType(type);
-            transaction.addSplit(split);
-
-            String transferAccountUID = c.getString(c.getColumnIndexOrThrow(DatabaseHelper.KEY_DOUBLE_ENTRY_ACCOUNT_UID));
-            if (transferAccountUID == null) {
-                AccountsDbAdapter accountsDbAdapter = AccountsDbAdapter.getInstance();
-                transferAccountUID = accountsDbAdapter.getOrCreateImbalanceAccountUID(Currency.getInstance(currencyCode));
-            }
-            transaction.addSplit(split.createPair(transferAccountUID));
-        } else {
-            transaction.setCurrencyCode(c.getString(c.getColumnIndexOrThrow(TransactionEntry.COLUMN_CURRENCY)));
-            long transactionID = c.getLong(c.getColumnIndexOrThrow(TransactionEntry._ID));
-            transaction.setSplits(mSplitsDbAdapter.getSplitsForTransaction(transactionID));
-        }
 		return transaction;
 	}
 
@@ -494,17 +479,29 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 
     /**
      * Returns a cursor to transactions whose name (UI: description) start with the <code>prefix</code>
-     * <p>This method is used for autocomplete suggestions when creating new transactions</p>
+     * <p>This method is used for autocomplete suggestions when creating new transactions. <br/>
+     * The suggestions are either transactions which have at least one split with {@code accountUID} or templates.</p>
      * @param prefix Starting characters of the transaction name
+     * @param accountUID GUID of account within which to search for transactions
      * @return Cursor to the data set containing all matching transactions
      */
-    public Cursor fetchTemplatesStartingWith(String prefix){
-        return mDb.query(TransactionEntry.TABLE_NAME,
-                new String[]{TransactionEntry._ID, TransactionEntry.COLUMN_DESCRIPTION},
-                TransactionEntry.COLUMN_TEMPLATE + "=1 AND "
-                        + TransactionEntry.COLUMN_DESCRIPTION + " LIKE '" + prefix + "%'",
-                null, null, null,
-                TransactionEntry.COLUMN_DESCRIPTION + " ASC");
+    public Cursor fetchTransactionSuggestions(String prefix, String accountUID){
+        SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
+        queryBuilder.setTables(TransactionEntry.TABLE_NAME
+                + " INNER JOIN " + SplitEntry.TABLE_NAME + " ON "
+                + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_UID + " = "
+                + SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_TRANSACTION_UID);
+        queryBuilder.setDistinct(true);
+        String[] projectionIn = new String[]{TransactionEntry.TABLE_NAME + ".*"};
+        String selection = "(" + SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_ACCOUNT_UID + " = ?"
+                + " OR " + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_TEMPLATE + "=1 )"
+                + " AND " + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_DESCRIPTION + " LIKE '" + prefix + "%'";
+        String[] selectionArgs = new String[]{accountUID};
+        String sortOrder = TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_TIMESTAMP + " DESC";
+        String groupBy = TransactionEntry.COLUMN_DESCRIPTION;
+        String limit = Integer.toString(5);
+
+        return queryBuilder.query(mDb, projectionIn, selection, selectionArgs, groupBy, null, sortOrder, limit);
     }
 
     /**
@@ -552,6 +549,16 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
     }
 
     /**
+     * Deletes all transactions except those which are marked as templates.
+     * <p>If you want to delete really all transaction records, use {@link #deleteAllRecords()}</p>
+     * @return Number of records deleted
+     */
+    public int deleteAllNonTemplateTransactions(){
+        String where = TransactionEntry.COLUMN_TEMPLATE + "!=0";
+        return mDb.delete(mTableName, where, null);
+    }
+
+    /**
      * Returns a timestamp of the earliest transaction for the specified account type
      * @param type the account type
      * @return the earliest transaction's timestamp. Returns 1970-01-01 00:00:00.000 if no transaction found
@@ -569,6 +576,14 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
         return getTimestamp("MAX", type);
     }
 
+    /**
+     * Returns the earliest or latest timestamp of transactions for a specific account type
+     * @param mod Mode (either MAX or MIN)
+     * @param type AccountType
+     * @return earliest or latest timestamp of transactions
+     * @see #getTimestampOfLatestTransaction(AccountType)
+     * @see #getTimestampOfEarliestTransaction(AccountType)
+     */
     private long getTimestamp(String mod, AccountType type) {
         String sql = "SELECT " + mod + "(" + TransactionEntry.COLUMN_TIMESTAMP + ")" +
                 " FROM " + TransactionEntry.TABLE_NAME +

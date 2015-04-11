@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013 - 2014 Ngewi Fet <ngewif@gmail.com>
+ * Copyright (c) 2013 - 2015 Ngewi Fet <ngewif@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -110,7 +110,7 @@ public class ScheduledTransactionsListFragment extends SherlockListFragment impl
                         Log.i(TAG, "Cancelling scheduled transaction(s)");
                         String trnUID = mTransactionsDbAdapter.getUID(id);
                         ScheduledActionDbAdapter scheduledActionDbAdapter = GnuCashApplication.getScheduledEventDbAdapter();
-                        List<ScheduledAction> events = scheduledActionDbAdapter.getScheduledEventsWithUID(trnUID);
+                        List<ScheduledAction> events = scheduledActionDbAdapter.getScheduledActionsWithUID(trnUID);
 
                         if (mTransactionsDbAdapter.deleteRecord(id)){
                             Toast.makeText(getActivity(), R.string.toast_recurring_transaction_deleted, Toast.LENGTH_SHORT).show();
@@ -179,8 +179,8 @@ public class ScheduledTransactionsListFragment extends SherlockListFragment impl
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
         super.onListItemClick(l, v, position, id);
-        if (mInEditMode){
-            CheckBox checkbox = (CheckBox) v.findViewById(R.id.checkbox_parent_account);
+        if (mActionMode != null){
+            CheckBox checkbox = (CheckBox) v.findViewById(R.id.checkbox);
             checkbox.setChecked(!checkbox.isChecked());
             return;
         }
@@ -400,7 +400,7 @@ public class ScheduledTransactionsListFragment extends SherlockListFragment impl
             TextView descriptionTextView = (TextView) view.findViewById(R.id.secondary_text);
 
             ScheduledActionDbAdapter scheduledActionDbAdapter = ScheduledActionDbAdapter.getInstance();
-            List<ScheduledAction> events = scheduledActionDbAdapter.getScheduledEventsWithUID(transaction.getUID());
+            List<ScheduledAction> events = scheduledActionDbAdapter.getScheduledActionsWithUID(transaction.getUID());
             StringBuilder repeatStringBuilder = new StringBuilder();
             for (ScheduledAction event : events) {
                 repeatStringBuilder.append(event.getRepeatString()).append("\n");

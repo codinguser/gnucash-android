@@ -64,7 +64,7 @@ public class ScheduledActionDbAdapter extends DatabaseAdapter {
         contentValues.put(ScheduledActionEntry.COLUMN_TYPE,      scheduledAction.getActionType().name());
         contentValues.put(ScheduledActionEntry.COLUMN_TAG,       scheduledAction.getTag());
         contentValues.put(ScheduledActionEntry.COLUMN_ENABLED,   scheduledAction.isEnabled() ? "1":"0");
-        contentValues.put(ScheduledActionEntry.COLUMN_NUM_OCCURRENCES, scheduledAction.getNumberOfOccurences());
+        contentValues.put(ScheduledActionEntry.COLUMN_TOTAL_FREQUENCY, scheduledAction.getTotalFrequency());
         contentValues.put(ScheduledActionEntry.COLUMN_EXECUTION_COUNT, scheduledAction.getExecutionCount());
 
         Log.d(TAG, "Replace scheduled event in the db");
@@ -92,7 +92,7 @@ public class ScheduledActionDbAdapter extends DatabaseAdapter {
                     + ScheduledActionEntry.COLUMN_ENABLED           + " , "
                     + ScheduledActionEntry.COLUMN_CREATED_AT        + " , "
                     + ScheduledActionEntry.COLUMN_TAG               + " , "
-                    + ScheduledActionEntry.COLUMN_NUM_OCCURRENCES   + " , "
+                    + ScheduledActionEntry.COLUMN_TOTAL_FREQUENCY + " , "
                     + ScheduledActionEntry.COLUMN_EXECUTION_COUNT   + " ) VALUES ( ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? )");
             for (ScheduledAction schedxAction:scheduledActionList) {
                 replaceStatement.clearBindings();
@@ -106,7 +106,7 @@ public class ScheduledActionDbAdapter extends DatabaseAdapter {
                 replaceStatement.bindLong(8,    schedxAction.isEnabled() ? 1 : 0);
                 replaceStatement.bindString(9,  schedxAction.getCreatedTimestamp().toString());
                 replaceStatement.bindString(10, schedxAction.getTag());
-                replaceStatement.bindString(11, Integer.toString(schedxAction.getNumberOfOccurences()));
+                replaceStatement.bindString(11, Integer.toString(schedxAction.getTotalFrequency()));
                 replaceStatement.bindString(12, Integer.toString(schedxAction.getExecutionCount()));
 
                 replaceStatement.execute();
@@ -134,7 +134,7 @@ public class ScheduledActionDbAdapter extends DatabaseAdapter {
         String typeString = cursor.getString(cursor.getColumnIndexOrThrow(ScheduledActionEntry.COLUMN_TYPE));
         String tag      = cursor.getString(cursor.getColumnIndexOrThrow(ScheduledActionEntry.COLUMN_TAG));
         boolean enabled = cursor.getInt(cursor.getColumnIndexOrThrow(ScheduledActionEntry.COLUMN_ENABLED)) > 0;
-        int numOccurrences = cursor.getInt(cursor.getColumnIndexOrThrow(ScheduledActionEntry.COLUMN_NUM_OCCURRENCES));
+        int numOccurrences = cursor.getInt(cursor.getColumnIndexOrThrow(ScheduledActionEntry.COLUMN_TOTAL_FREQUENCY));
         int execCount = cursor.getInt(cursor.getColumnIndexOrThrow(ScheduledActionEntry.COLUMN_EXECUTION_COUNT));
 
         ScheduledAction event = new ScheduledAction(ScheduledAction.ActionType.valueOf(typeString));
@@ -146,7 +146,7 @@ public class ScheduledActionDbAdapter extends DatabaseAdapter {
         event.setLastRun(lastRun);
         event.setTag(tag);
         event.setEnabled(enabled);
-        event.setNumberOfOccurences(numOccurrences);
+        event.setTotalFrequency(numOccurrences);
         event.setExecutionCount(execCount);
 
         return event;
@@ -175,7 +175,7 @@ public class ScheduledActionDbAdapter extends DatabaseAdapter {
      * @param eventUID GUID of the event itself
      * @return List of ScheduledEvents
      */
-    public List<ScheduledAction> getScheduledEventsWithUID(@NonNull String eventUID){
+    public List<ScheduledAction> getScheduledActionsWithUID(@NonNull String eventUID){
         Cursor cursor = mDb.query(ScheduledActionEntry.TABLE_NAME, null,
                 ScheduledActionEntry.COLUMN_ACTION_UID + "= ?",
                 new String[]{eventUID}, null, null, null);

@@ -70,7 +70,7 @@ public class SchedulerService extends IntentService {
 
             long now = System.currentTimeMillis();
             //if we did not exceed the endtime (if there is one), and one execution period has passed since last run
-            if (((endTime > 0 && now < endTime) || (scheduledAction.getExecutionCount() < scheduledAction.getNumberOfOccurences()) || endTime == 0)
+            if (((endTime > 0 && now < endTime) || (scheduledAction.getExecutionCount() < scheduledAction.getTotalFrequency()) || endTime == 0)
                     && (lastRun + period) < now ){
                 executeScheduledEvent(scheduledAction);
             }

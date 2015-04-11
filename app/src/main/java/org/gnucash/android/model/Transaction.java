@@ -115,6 +115,11 @@ public class Transaction extends BaseModel{
      */
     private boolean mIsTemplate = false;
 
+    /**
+     * GUID of ScheduledAction which created this transaction
+     */
+    private String mScheduledActionUID = null;
+
 	/**
 	 * Overloaded constructor. Creates a new transaction instance with the
 	 * provided data and initializes the rest to default values.
@@ -157,6 +162,31 @@ public class Transaction extends BaseModel{
 	private void initDefaults(){
 		this.mTimestamp = System.currentTimeMillis();
 	}
+
+    /**
+     * Auto-balance the transaction by creating an imbalance split where necessary
+     * <p><b>Note:</b>If a transaction has splits with different currencies, not auto-balancing will be performed.</p>
+     */
+    public void autoBalance(){
+        //FIXME: when multiple currencies per transaction are supported
+        Currency lastCurrency = null;
+        for (Split split : mSplitList) {
+            Currency currentCurrency = split.getAmount().getCurrency();
+            if (lastCurrency == null)
+                lastCurrency = currentCurrency;
+            else if (lastCurrency != currentCurrency){
+                return;
+            }
+        }
+
+        Money imbalance = getImbalance();
+        if (!imbalance.isAmountZero()){
+            Currency currency = Currency.getInstance(mCurrencyCode);
+            Split split = new Split(imbalance.negate(),
+                    AccountsDbAdapter.getInstance().getOrCreateImbalanceAccountUID(currency));
+            mSplitList.add(split);
+        }
+    }
 
     /**
      * Returns list of splits for this transaction
@@ -236,7 +266,9 @@ public class Transaction extends BaseModel{
 
     /**
      * Computes the balance of the splits belonging to a particular account.
-     * Only those splits which belong to the account will be considered.
+     * <p>Only those splits which belong to the account will be considered.
+     * If the {@code accountUID} is null, then the imbalance of the transaction is computed. This means that either
+     * zero is returned (for balanced transactions) or the imbalance amount will be returned.</p>
      * @param accountUID Unique Identifier of the account
      * @param splitList List of splits
      * @return Money list of splits
@@ -486,6 +518,22 @@ public class Transaction extends BaseModel{
 
         return transactionNode;
 	}
+
+    /**
+     * Returns the GUID of the {@link org.gnucash.android.model.ScheduledAction} which created this transaction
+     * @return GUID of scheduled action
+     */
+    public String getScheduledActionUID() {
+        return mScheduledActionUID;
+    }
+
+    /**
+     * Sets the GUID of the {@link org.gnucash.android.model.ScheduledAction} which created this transaction
+     * @param scheduledActionUID GUID of the scheduled action
+     */
+    public void setScheduledActionUID(String scheduledActionUID) {
+        mScheduledActionUID = scheduledActionUID;
+    }
 
     /**
      * Creates an Intent with arguments from the <code>transaction</code>.

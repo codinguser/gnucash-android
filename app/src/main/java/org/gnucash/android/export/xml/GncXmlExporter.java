@@ -182,6 +182,7 @@ public class GncXmlExporter extends Exporter{
                         TransactionEntry.TABLE_NAME+"."+ TransactionEntry.COLUMN_EXPORTED + " AS trans_exported",
                         TransactionEntry.TABLE_NAME+"."+ TransactionEntry.COLUMN_CURRENCY + " AS trans_currency",
                         TransactionEntry.TABLE_NAME+"."+ TransactionEntry.COLUMN_CREATED_AT + " AS trans_date_posted",
+                        TransactionEntry.TABLE_NAME+"."+ TransactionEntry.COLUMN_SCHEDX_ACTION_UID + " AS trans_from_sched_action",
                         SplitEntry.TABLE_NAME+"."+ SplitEntry.COLUMN_UID + " AS split_uid",
                         SplitEntry.TABLE_NAME+"."+ SplitEntry.COLUMN_MEMO + " AS split_memo",
                         SplitEntry.TABLE_NAME+"."+ SplitEntry.COLUMN_TYPE + " AS split_type",
@@ -267,6 +268,12 @@ public class GncXmlExporter extends Exporter{
                     slotValue.add("false");
                 }
 
+                String scheduledActionUID = cursor.getString(cursor.getColumnIndexOrThrow("trans_from_sched_action"));
+                if (scheduledActionUID != null && !scheduledActionUID.isEmpty()){
+                    slotKey.add(GncXmlHelper.KEY_FROM_SCHED_ACTION);
+                    slotType.add(GncXmlHelper.ATTR_VALUE_GUID);
+                    slotValue.add(scheduledActionUID);
+                }
                 xmlSerializer.startTag(null, GncXmlHelper.TAG_TRN_SLOTS);
                 exportSlots(xmlSerializer, slotKey, slotType, slotValue);
                 xmlSerializer.endTag(null, GncXmlHelper.TAG_TRN_SLOTS);
@@ -399,7 +406,7 @@ public class GncXmlExporter extends Exporter{
                 //end date
                 serializeDate(xmlSerializer, GncXmlHelper.TAG_SX_END, endTime);
             } else { //add number of occurrences
-                int numOccurrences = cursor.getInt(cursor.getColumnIndexOrThrow(ScheduledActionEntry.COLUMN_NUM_OCCURRENCES));
+                int numOccurrences = cursor.getInt(cursor.getColumnIndexOrThrow(ScheduledActionEntry.COLUMN_TOTAL_FREQUENCY));
                 xmlSerializer.startTag(null, GncXmlHelper.TAG_SX_NUM_OCCUR);
                 xmlSerializer.text(Integer.toString(numOccurrences));
                 xmlSerializer.endTag(null, GncXmlHelper.TAG_SX_NUM_OCCUR);
@@ -533,6 +540,9 @@ public class GncXmlExporter extends Exporter{
             xmlSerializer.startTag(null, GncXmlHelper.TAG_TEMPLATE_TRANSACTIONS);
             exportTransactions(xmlSerializer, true);
             xmlSerializer.endTag(null, GncXmlHelper.TAG_TEMPLATE_TRANSACTIONS);
+
+            //scheduled actions
+            exportScheduledActions(xmlSerializer);
 
             xmlSerializer.endTag(null, GncXmlHelper.TAG_BOOK);
             xmlSerializer.endTag(null, GncXmlHelper.TAG_ROOT);

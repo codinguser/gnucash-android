@@ -68,7 +68,7 @@ public class DeleteAllTransacationsConfirmationDialog extends DialogFragment {
                                     openingBalances = accountsDbAdapter.getAllOpeningBalanceTransactions();
                                 }
                                 TransactionsDbAdapter transactionsDbAdapter = TransactionsDbAdapter.getInstance();
-                                transactionsDbAdapter.deleteAllRecords();
+                                transactionsDbAdapter.deleteAllNonTemplateTransactions();
 
                                 if (preserveOpeningBalances) {
                                     transactionsDbAdapter.bulkAddTransactions(openingBalances);

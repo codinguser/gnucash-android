@@ -175,10 +175,13 @@
                       style="@style/Dropdown.TextView" />
 
         </LinearLayout>
+
         <CheckBox android:id="@+id/checkbox_save_template"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/form_row_bottom_margin"
+			android:visibility="gone"
             android:text="@string/label_save_template" />
+		<!-- Not exposing the transaction template checkbox to the UI at this time -->
 	</LinearLayout>
 </ScrollView>

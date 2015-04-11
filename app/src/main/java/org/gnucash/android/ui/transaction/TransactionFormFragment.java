@@ -30,6 +30,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.text.Editable;
+import android.text.format.DateUtils;
 import android.text.format.Time;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -305,15 +306,39 @@ public class TransactionFormFragment extends SherlockFragment implements
 	}
 
     /**
+     * Extension of SimpleCursorAdapter which is used to populate the fields for the list items
+     * in the transactions suggestions (auto-complete transaction description).
+     */
+    private class DropDownCursorAdapter extends SimpleCursorAdapter{
+
+        public DropDownCursorAdapter(Context context, int layout, Cursor c, String[] from, int[] to) {
+            super(context, layout, c, from, to, 0);
+        }
+
+        @Override
+        public void bindView(View view, Context context, Cursor cursor) {
+            super.bindView(view, context, cursor);
+            String transactionUID = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.TransactionEntry.COLUMN_UID));
+            Money balance = TransactionsDbAdapter.getInstance().getBalance(transactionUID, mAccountUID);
+
+            long timestamp = cursor.getLong(cursor.getColumnIndexOrThrow(DatabaseSchema.TransactionEntry.COLUMN_TIMESTAMP));
+            String dateString = DateUtils.formatDateTime(getActivity(), timestamp,
+                    DateUtils.FORMAT_SHOW_WEEKDAY | DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_YEAR);
+
+            TextView secondaryTextView = (TextView) view.findViewById(R.id.secondary_text);
+            secondaryTextView.setText(balance.formattedString() + " on " + dateString); //TODO: Extract string
+        }
+    }
+
+    /**
      * Initializes the transaction name field for autocompletion with existing transaction names in the database
      */
     private void initTransactionNameAutocomplete() {
-        final int[] to = new int[]{android.R.id.text1};
+        final int[] to = new int[]{R.id.primary_text};
         final String[] from = new String[]{DatabaseSchema.TransactionEntry.COLUMN_DESCRIPTION};
 
-        SimpleCursorAdapter adapter = new SimpleCursorAdapter(
-                getActivity(), android.R.layout.simple_dropdown_item_1line,
-                null, from, to, 0);
+        SimpleCursorAdapter adapter = new DropDownCursorAdapter(
+                getActivity(), R.layout.dropdown_item_2lines, null, from, to);
 
         adapter.setCursorToStringConverter(new SimpleCursorAdapter.CursorToStringConverter() {
             @Override
@@ -326,7 +351,7 @@ public class TransactionFormFragment extends SherlockFragment implements
         adapter.setFilterQueryProvider(new FilterQueryProvider() {
             @Override
             public Cursor runQuery(CharSequence name) {
-                return mTransactionsDbAdapter.fetchTemplatesStartingWith(name == null ? "" : name.toString());
+                return mTransactionsDbAdapter.fetchTransactionSuggestions(name == null ? "" : name.toString(), mAccountUID);
             }
         });
 
@@ -410,6 +435,10 @@ public class TransactionFormFragment extends SherlockFragment implements
         }
 
         mSaveTemplate.setChecked(mTransaction.isTemplate());
+        List<ScheduledAction> scheduledActions = ScheduledActionDbAdapter.getInstance().getScheduledActionsWithUID(mTransaction.getUID());
+        if (!scheduledActions.isEmpty()){
+            mRecurrenceTextView.setText(scheduledActions.get(0).getRuleString());
+        }
     }
 
     private void enableControls(boolean b) {

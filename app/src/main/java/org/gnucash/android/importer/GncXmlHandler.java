@@ -29,6 +29,7 @@ import org.gnucash.android.export.xml.GncXmlHelper;
 import org.gnucash.android.model.Account;
 import org.gnucash.android.model.AccountType;
 import org.gnucash.android.model.Money;
+import org.gnucash.android.model.PeriodType;
 import org.gnucash.android.model.ScheduledAction;
 import org.gnucash.android.model.Split;
 import org.gnucash.android.model.Transaction;
@@ -435,19 +436,25 @@ public class GncXmlHandler extends DefaultHandler {
             mSplit.setMemo(characterString);
         }
         else if (qualifiedName.equalsIgnoreCase(GncXmlHelper.TAG_SPLIT_VALUE)){
+            //the split amount uses the transaction currency, but in the db it will correctly use the account currency
             Money amount = new Money(GncXmlHelper.parseMoney(characterString), mTransaction.getCurrency());
+
+            //this is intentional: GnuCash XML formats split amounts, credits are negative, debits are positive.
             mSplit.setType(amount.isNegative() ? TransactionType.CREDIT : TransactionType.DEBIT);
             mSplit.setAmount(amount.absolute());
         }
         else if (qualifiedName.equalsIgnoreCase(GncXmlHelper.TAG_SPLIT_ACCOUNT)){
             mSplit.setAccountUID(characterString);
+            mSplit.setAmount(mSplit.getAmount().withCurrency(getCurrencyForAccount(characterString)));
         }
         else if (qualifiedName.equals(GncXmlHelper.TAG_TRN_SPLIT)){
             mTransaction.addSplit(mSplit);
         }
         else if (qualifiedName.equalsIgnoreCase(GncXmlHelper.TAG_TRANSACTION)){
             mTransaction.setTemplate(mInTemplates);
+            mTransaction.autoBalance();
             mTransactionList.add(mTransaction);
+
             if (mRecurrencePeriod > 0) { //if we find an old format recurrence period, parse it
                 mTransaction.setTemplate(true);
                 ScheduledAction scheduledAction = ScheduledAction.parseScheduledAction(mTransaction, mRecurrencePeriod);
@@ -471,13 +478,13 @@ public class GncXmlHandler extends DefaultHandler {
             mScheduledAction.setEnabled(characterString.equalsIgnoreCase("y"));
         }
         else if (qualifiedName.equals(GncXmlHelper.TAG_SX_NUM_OCCUR)){
-            mScheduledAction.setNumberOfOccurences(Integer.parseInt(characterString));
+            mScheduledAction.setTotalFrequency(Integer.parseInt(characterString));
         }
         else if (qualifiedName.equals(GncXmlHelper.TAG_RX_MULT)){
             mRecurrenceMultiplier = Integer.parseInt(characterString);
         }
         else if (qualifiedName.equals(GncXmlHelper.TAG_RX_PERIOD_TYPE)){
-            ScheduledAction.PeriodType periodType = ScheduledAction.PeriodType.valueOf(characterString.toUpperCase());
+            PeriodType periodType = PeriodType.valueOf(characterString.toUpperCase());
             periodType.setMultiplier(mRecurrenceMultiplier);
             mScheduledAction.setPeriod(periodType);
         }
@@ -570,5 +577,19 @@ public class GncXmlHandler extends DefaultHandler {
         } finally {
             mAccountsDbAdapter.endTransaction();
         }
+    }
+
+    /**
+     * Returns the currency for an account which has been parsed (but not yet saved to the db)
+     * <p>This is used when parsing splits to assign the right currencies to the splits</p>
+     * @param accountUID GUID of the account
+     * @return Currency of the account
+     */
+    private Currency getCurrencyForAccount(String accountUID){
+        for (Account account : mAccountList) {
+            if (account.getUID().equals(accountUID))
+                return account.getCurrency();
+        }
+        return Currency.getInstance(Money.DEFAULT_CURRENCY_CODE);
     }
 }
