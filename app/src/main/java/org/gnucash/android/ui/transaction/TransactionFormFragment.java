@@ -435,9 +435,11 @@ public class TransactionFormFragment extends SherlockFragment implements
         }
 
         mSaveTemplate.setChecked(mTransaction.isTemplate());
-        List<ScheduledAction> scheduledActions = ScheduledActionDbAdapter.getInstance().getScheduledActionsWithUID(mTransaction.getUID());
-        if (!scheduledActions.isEmpty()){
-            mRecurrenceTextView.setText(scheduledActions.get(0).getRuleString());
+        String scheduledActionUID = getArguments().getString(UxArgument.SCHEDULED_ACTION_UID);
+        if (scheduledActionUID != null && !scheduledActionUID.isEmpty()) {
+            ScheduledAction scheduledAction = ScheduledActionDbAdapter.getInstance().getScheduledAction(scheduledActionUID);
+            mRecurrenceRule = scheduledAction.getRuleString();
+            mRecurrenceTextView.setText(scheduledAction.getRepeatString());
         }
     }
 

@@ -16,10 +16,15 @@
 package org.gnucash.android.model;
 
 import org.gnucash.android.ui.util.RecurrenceParser;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
+import java.io.IOException;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.TimeZone;
 
 /**
 * Represents a scheduled event which is stored in the database and run at regular mPeriod
@@ -257,42 +262,62 @@ public class ScheduledAction extends BaseModel{
      * @return String description of repeat schedule
      */
     public String getRepeatString(){
-        String dayOfWeek = new SimpleDateFormat("E", Locale.US).format(new Date(mStartDate));
+        String dayOfWeek = new SimpleDateFormat("EE", Locale.US).format(new Date(mStartDate));
         PeriodType periodType = getPeriodType();
-        StringBuilder ruleBuilder = new StringBuilder(periodType.getLocalizedFrequencyDescription());
-        ruleBuilder.append(" on " + dayOfWeek);
+        StringBuilder ruleBuilder = new StringBuilder(periodType.getFrequencyRepeatString());
+        ruleBuilder.append(" on ").append(dayOfWeek);
         ruleBuilder.append(";");
         if (mEndDate > 0){
-            ruleBuilder.append(" until " + new SimpleDateFormat("M/d", Locale.US).format(new Date(mEndDate)) + ";");
+            ruleBuilder.append(" until ")
+                    .append(SimpleDateFormat.getDateInstance(DateFormat.SHORT).format(new Date(mEndDate)))
+                    .append(";");
         } else if (mTotalFrequency > 0){
-            ruleBuilder.append(" for " + mTotalFrequency + " times;");
+            ruleBuilder.append(" for ").append(mTotalFrequency).append(" times;");
         }
         return ruleBuilder.toString();
     }
 
     /**
      * Creates an RFC 2445 string which describes this recurring event
+     * <p>See http://recurrance.sourceforge.net/</p>
      * @return String describing event
      */
     public String getRuleString(){
-        String dayOfWeek = new SimpleDateFormat("EE", Locale.US).format(new Date(mStartDate));
+        String separator = ";";
         PeriodType periodType = getPeriodType();
-        StringBuilder ruleBuilder = new StringBuilder(periodType.getFrequencyDescription());
-        ruleBuilder.append(" on " + dayOfWeek);
-        ruleBuilder.append(";");
+
+        StringBuilder ruleBuilder = new StringBuilder();
+
+//        =======================================================================
+        //This section complies with the formal rules, but the betterpickers library doesn't like/need it
+
+//        SimpleDateFormat startDateFormat = new SimpleDateFormat("'TZID'=zzzz':'yyyyMMdd'T'HHmmss", Locale.US);
+//        ruleBuilder.append("DTSTART;");
+//        ruleBuilder.append(startDateFormat.format(new Date(mStartDate)));
+//            ruleBuilder.append("\n");
+//        ruleBuilder.append("RRULE:");
+//        ========================================================================
+
+        ruleBuilder.append("FREQ=").append(periodType.getFrequencyDescription()).append(separator);
+        ruleBuilder.append("INTERVAL=").append(periodType.getMultiplier()).append(separator);
+        ruleBuilder.append(periodType.getByParts(mStartDate)).append(separator);
+
         if (mEndDate > 0){
-            ruleBuilder.append(" until " + new SimpleDateFormat("M/d/yyyy", Locale.US).format(new Date(mEndDate)) + ";");
+            SimpleDateFormat df = new SimpleDateFormat("yyyyMMdd'T'HHmmss'Z'", Locale.US);
+            df.setTimeZone(TimeZone.getTimeZone("UTC"));
+            ruleBuilder.append("UNTIL=").append(df.format(new Date(mEndDate))).append(separator);
         } else if (mTotalFrequency > 0){
-            ruleBuilder.append(" for " + mTotalFrequency + " times;");
+            ruleBuilder.append("COUNT=").append(mTotalFrequency).append(separator);
         }
+
         return ruleBuilder.toString();
     }
 
     /**
      * Creates a ScheduledAction from a Transaction and a period
-     * @param transaction
-     * @param period
-     * @return
+     * @param transaction Transaction to be scheduled
+     * @param period Period in milliseconds since Epoch
+     * @return Scheduled Action
      */
     public static ScheduledAction parseScheduledAction(Transaction transaction, long period){
         ScheduledAction scheduledAction = new ScheduledAction(ActionType.TRANSACTION);

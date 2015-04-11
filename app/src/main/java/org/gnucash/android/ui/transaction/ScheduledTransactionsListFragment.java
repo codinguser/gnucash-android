@@ -193,7 +193,8 @@ public class ScheduledTransactionsListFragment extends SherlockListFragment impl
         }
 
         String accountUID = transaction.getSplits().get(0).getAccountUID();
-        openTransactionForEdit(accountUID, mTransactionsDbAdapter.getUID(id));
+        openTransactionForEdit(accountUID, mTransactionsDbAdapter.getUID(id),
+                v.getTag().toString());
     }
 
     /**
@@ -201,11 +202,12 @@ public class ScheduledTransactionsListFragment extends SherlockListFragment impl
      * @param accountUID GUID of account to which transaction belongs
      * @param transactionUID GUID of transaction to be edited
      */
-    public void openTransactionForEdit(String accountUID, String transactionUID){
+    public void openTransactionForEdit(String accountUID, String transactionUID, String scheduledActionUid){
         Intent createTransactionIntent = new Intent(getActivity(), TransactionsActivity.class);
         createTransactionIntent.setAction(Intent.ACTION_INSERT_OR_EDIT);
         createTransactionIntent.putExtra(UxArgument.SELECTED_ACCOUNT_UID, accountUID);
         createTransactionIntent.putExtra(UxArgument.SELECTED_TRANSACTION_UID, transactionUID);
+        createTransactionIntent.putExtra(UxArgument.SCHEDULED_ACTION_UID, scheduledActionUid);
         startActivity(createTransactionIntent);
     }
 
@@ -363,26 +365,6 @@ public class ScheduledTransactionsListFragment extends SherlockListFragment impl
             return view;
         }
 
-        /**
-         * Returns the string representation of the recurrence period of the transaction
-         * @param periodMillis Recurrence period in milliseconds
-         * @return String formatted representation of recurrence period
-         */
-        public String getRecurrenceAsString(long periodMillis){
-            String[] recurrencePeriods = getResources().getStringArray(R.array.key_recurrence_period_millis);
-            String[] recurrenceStrings = getResources().getStringArray(R.array.recurrence_period_strings);
-
-            int index = 0;
-            for (String recurrencePeriod : recurrencePeriods) {
-                long period = Long.parseLong(recurrencePeriod);
-                if (period == periodMillis){
-                    break;
-                }
-                index++;
-            }
-            return recurrenceStrings[index];
-        }
-
         @Override
         public void bindView(View view, Context context, Cursor cursor) {
             super.bindView(view, context, cursor);
@@ -400,12 +382,10 @@ public class ScheduledTransactionsListFragment extends SherlockListFragment impl
             TextView descriptionTextView = (TextView) view.findViewById(R.id.secondary_text);
 
             ScheduledActionDbAdapter scheduledActionDbAdapter = ScheduledActionDbAdapter.getInstance();
-            List<ScheduledAction> events = scheduledActionDbAdapter.getScheduledActionsWithUID(transaction.getUID());
-            StringBuilder repeatStringBuilder = new StringBuilder();
-            for (ScheduledAction event : events) {
-                repeatStringBuilder.append(event.getRepeatString()).append("\n");
-            }
-            descriptionTextView.setText(repeatStringBuilder.toString());
+            String scheduledActionUID = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.ScheduledActionEntry.TABLE_NAME+"."+ DatabaseSchema.ScheduledActionEntry.COLUMN_UID));
+            view.setTag(scheduledActionUID);
+            ScheduledAction scheduledAction = scheduledActionDbAdapter.getScheduledAction(scheduledActionUID);
+            descriptionTextView.setText(scheduledAction.getRepeatString());
 
         }
     }

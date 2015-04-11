@@ -21,6 +21,10 @@ import android.content.res.Resources;
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
 /**
 * Represents a type of period which can be associated with a recurring event
  * @author Ngewi Fet <ngewif@gmail.com>
@@ -55,32 +59,17 @@ public enum PeriodType {
      * @return Frequency description
      */
     public String getFrequencyDescription() {
-        if (mMultiplier > 1){
-            switch (this) {
-                case DAY:
-                    return "Every " + mMultiplier + " days";
-                case WEEK:
-                    return "Every " + mMultiplier + " weeks";
-                case MONTH:
-                    return "Every " + mMultiplier + " months";
-                case YEAR:
-                    return "Every " + mMultiplier + " years";
-                default:
-                    return "Every " + mMultiplier + " days";
-            }
-        } else {
-            switch (this) {
-                case DAY:
-                    return "Daily";
-                case WEEK:
-                    return "Weekly";
-                case MONTH:
-                    return "Monthly";
-                case YEAR:
-                    return "Yearly";
-                default:
-                    return "Daily";
-            }
+        switch (this) {
+            case DAY:
+                return "DAILY";
+            case WEEK:
+                return "WEEKLY";
+            case MONTH:
+                return "MONTHLY";
+            case YEAR:
+                return "YEARLY";
+            default:
+                return "";
         }
     }
 
@@ -88,7 +77,7 @@ public enum PeriodType {
      * Returns a localized string describing this period type's frequency.
      * @return String describing period type
      */
-    public String getLocalizedFrequencyDescription(){
+    public String getFrequencyRepeatString(){
         Resources res = GnuCashApplication.getAppContext().getResources();
 
         switch (this) {
@@ -101,8 +90,26 @@ public enum PeriodType {
             case YEAR:
                 return res.getQuantityString(R.plurals.label_every_x_years, mMultiplier);
             default:
-                return res.getQuantityString(R.plurals.label_every_x_days, mMultiplier);
+                return "";
         }
     }
+
+    public String getByParts(long startTime){
+        String partString = "";
+        switch (this){
+            case DAY:
+                break;
+            case WEEK:
+                String dayOfWeek = new SimpleDateFormat("E", Locale.US).format(new Date(startTime));
+                //our parser only supports two-letter day names
+                partString = "BYDAY=" + dayOfWeek.substring(0, dayOfWeek.length()-1).toUpperCase();
+            case MONTH:
+                break;
+            case YEAR:
+                break;
+        }
+        return partString;
+    }
+
 
 }

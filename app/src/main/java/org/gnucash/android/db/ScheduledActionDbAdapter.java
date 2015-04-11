@@ -157,7 +157,7 @@ public class ScheduledActionDbAdapter extends DatabaseAdapter {
      * @param uid GUID of event
      * @return ScheduledEvent object instance
      */
-    public ScheduledAction getScheduledEvent(String uid){
+    public ScheduledAction getScheduledAction(String uid){
         Cursor cursor = fetchRecord(getID(uid));
 
         ScheduledAction scheduledAction = null;

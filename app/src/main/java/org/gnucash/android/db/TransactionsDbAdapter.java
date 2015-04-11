@@ -271,9 +271,10 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
                 + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_UID + " = "
                 + ScheduledActionEntry.TABLE_NAME + "." + ScheduledActionEntry.COLUMN_ACTION_UID);
 
-        String[] projectionIn = new String[]{TransactionEntry.TABLE_NAME + ".*"};
+        String[] projectionIn = new String[]{TransactionEntry.TABLE_NAME + ".*",
+                ScheduledActionEntry.TABLE_NAME+"."+ScheduledActionEntry.COLUMN_UID};
         String sortOrder = TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_DESCRIPTION + " ASC";
-        queryBuilder.setDistinct(true);
+//        queryBuilder.setDistinct(true);
 
         return queryBuilder.query(mDb, projectionIn, null, null, null, null, sortOrder);
     }
