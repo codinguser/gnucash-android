@@ -38,30 +38,6 @@ public class ScheduledAction extends BaseModel{
      */
     public enum ActionType {TRANSACTION, EXPORT}
 
-    public enum PeriodType {
-        DAY, WEEK, MONTH, YEAR;
-
-        int mMultiplier = 1; //multiplier for the period type
-
-        /**
-         * Sets the multiplier for this period type
-         * e.g. bi-weekly actions have period type {@link PeriodType#WEEK} and multiplier 2
-         * @param multiplier Multiplier for this period type
-         */
-        public void setMultiplier(int multiplier){
-            mMultiplier = multiplier;
-        }
-
-        /**
-         * Returns the multiplier for this period type. The default multiplier is 1.
-         * e.g. bi-weekly actions have period type {@link PeriodType#WEEK} and multiplier 2
-         * @return  Multiplier for this period type
-         */
-        public int getMultiplier(){
-            return mMultiplier;
-        }
-    }
-
     /**
      * Next scheduled run of Event
      */
@@ -84,14 +60,14 @@ public class ScheduledAction extends BaseModel{
     private ActionType mActionType;
 
     /**
-     * Number of occurences of this event
+     * Number of times this event is to be executed
      */
-    private int mNumberOfOccurences = 0;
+    private int mTotalFrequency = 0;
 
     /**
      * How many times this action has already been executed
      */
-    private int mNumberOfExecutions = 0;
+    private int mExecutionCount = 0;
 
     public ScheduledAction(ActionType actionType){
         mActionType = actionType;
@@ -134,7 +110,7 @@ public class ScheduledAction extends BaseModel{
 
     /**
      * Sets the period given the period type.
-     * The {@link org.gnucash.android.model.ScheduledAction.PeriodType} should have the multiplier set,
+     * The {@link PeriodType} should have the multiplier set,
      * e.g. bi-weekly actions have period type {@link PeriodType#WEEK} and multiplier 2
      * @param periodType Type of period
      */
@@ -165,7 +141,7 @@ public class ScheduledAction extends BaseModel{
     }
 
     /**
-     * Computes the {@link org.gnucash.android.model.ScheduledAction.PeriodType} for a given {@code period}
+     * Computes the {@link PeriodType} for a given {@code period}
      * @param period Period in milliseconds since Epoch
      * @return PeriodType corresponding to the period
      */
@@ -221,7 +197,7 @@ public class ScheduledAction extends BaseModel{
      * @return End time in milliseconds for the scheduled action
      */
     public long getApproxEndTime(){
-        return mStartDate + (mPeriod * mNumberOfOccurences);
+        return mStartDate + (mPeriod * mTotalFrequency);
     }
 
     public void setEndTime(long endDate) {
@@ -246,20 +222,18 @@ public class ScheduledAction extends BaseModel{
 
     /**
      * Returns the total number of occurences of this scheduled action.
-     * <p>Typically, this is set explicity, but if not, then it is computed from the values of
-     * the start date, end date and period.</p>
      * @return Total number of occurences of this action
      */
-    public int getNumberOfOccurences(){
-        return mNumberOfOccurences;
+    public int getTotalFrequency(){
+        return mTotalFrequency;
     }
 
     /**
      * Sets the number of occurences of this action
      * @param occurencesCount Number of occurences
      */
-    public void setNumberOfOccurences(int occurencesCount){
-        this.mNumberOfOccurences = occurencesCount;
+    public void setTotalFrequency(int occurencesCount){
+        this.mTotalFrequency = occurencesCount;
     }
 
     /**
@@ -267,7 +241,7 @@ public class ScheduledAction extends BaseModel{
      * @return Number of times this action has been executed
      */
     public int getExecutionCount(){
-        return mNumberOfExecutions;
+        return mExecutionCount;
     }
 
     /**
@@ -275,7 +249,7 @@ public class ScheduledAction extends BaseModel{
      * @param executionCount Number of executions
      */
     public void setExecutionCount(int executionCount){
-        mNumberOfExecutions = executionCount;
+        mExecutionCount = executionCount;
     }
 
     /**
@@ -283,16 +257,43 @@ public class ScheduledAction extends BaseModel{
      * @return String description of repeat schedule
      */
     public String getRepeatString(){
-        //TODO: localize the string
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy", Locale.US);
-        String repeatString = String.format("Repeats every %d %s starting on %s", getPeriodType().getMultiplier(), getPeriodType().name().toLowerCase(),
-                dateFormat.format(new Date(mStartDate)));
+        String dayOfWeek = new SimpleDateFormat("E", Locale.US).format(new Date(mStartDate));
+        PeriodType periodType = getPeriodType();
+        StringBuilder ruleBuilder = new StringBuilder(periodType.getLocalizedFrequencyDescription());
+        ruleBuilder.append(" on " + dayOfWeek);
+        ruleBuilder.append(";");
         if (mEndDate > 0){
-            repeatString += " until " + dateFormat.format(mEndDate);
+            ruleBuilder.append(" until " + new SimpleDateFormat("M/d", Locale.US).format(new Date(mEndDate)) + ";");
+        } else if (mTotalFrequency > 0){
+            ruleBuilder.append(" for " + mTotalFrequency + " times;");
         }
-        return repeatString;
+        return ruleBuilder.toString();
     }
 
+    /**
+     * Creates an RFC 2445 string which describes this recurring event
+     * @return String describing event
+     */
+    public String getRuleString(){
+        String dayOfWeek = new SimpleDateFormat("EE", Locale.US).format(new Date(mStartDate));
+        PeriodType periodType = getPeriodType();
+        StringBuilder ruleBuilder = new StringBuilder(periodType.getFrequencyDescription());
+        ruleBuilder.append(" on " + dayOfWeek);
+        ruleBuilder.append(";");
+        if (mEndDate > 0){
+            ruleBuilder.append(" until " + new SimpleDateFormat("M/d/yyyy", Locale.US).format(new Date(mEndDate)) + ";");
+        } else if (mTotalFrequency > 0){
+            ruleBuilder.append(" for " + mTotalFrequency + " times;");
+        }
+        return ruleBuilder.toString();
+    }
+
+    /**
+     * Creates a ScheduledAction from a Transaction and a period
+     * @param transaction
+     * @param period
+     * @return
+     */
     public static ScheduledAction parseScheduledAction(Transaction transaction, long period){
         ScheduledAction scheduledAction = new ScheduledAction(ActionType.TRANSACTION);
         scheduledAction.mActionUID = transaction.getUID();

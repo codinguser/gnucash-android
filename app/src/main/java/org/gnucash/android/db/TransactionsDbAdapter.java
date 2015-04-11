@@ -90,6 +90,7 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 		contentValues.put(TransactionEntry.COLUMN_EXPORTED,     transaction.isExported() ? 1 : 0);
 		contentValues.put(TransactionEntry.COLUMN_TEMPLATE,     transaction.isTemplate() ? 1 : 0);
         contentValues.put(TransactionEntry.COLUMN_CURRENCY,     transaction.getCurrencyCode());
+        contentValues.put(TransactionEntry.COLUMN_SCHEDX_ACTION_UID, transaction.getScheduledActionUID());
 
         Log.d(TAG, "Replacing transaction in db");
         long rowId = -1;
@@ -150,7 +151,8 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
                 + TransactionEntry.COLUMN_EXPORTED      + " , "
                 + TransactionEntry.COLUMN_CURRENCY      + " , "
                 + TransactionEntry.COLUMN_CREATED_AT    + " , "
-                + TransactionEntry.COLUMN_TEMPLATE + " ) VALUES ( ? , ? , ? , ?, ? , ? , ? , ?)");
+                + TransactionEntry.COLUMN_SCHEDX_ACTION_UID + " , "
+                + TransactionEntry.COLUMN_TEMPLATE + " ) VALUES ( ? , ? , ? , ?, ? , ? , ? , ? , ?)");
             for (Transaction transaction : transactionList) {
                 //Log.d(TAG, "Replacing transaction in db");
                 replaceStatement.clearBindings();
@@ -161,7 +163,8 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
                 replaceStatement.bindLong(5,    transaction.isExported() ? 1 : 0);
                 replaceStatement.bindString(6,  transaction.getCurrencyCode());
                 replaceStatement.bindString(7,  transaction.getCreatedTimestamp().toString());
-                replaceStatement.bindLong(8,    transaction.isTemplate() ? 1 : 0);
+                replaceStatement.bindString(8,  transaction.getScheduledActionUID());
+                replaceStatement.bindLong(9,    transaction.isTemplate() ? 1 : 0);
                 replaceStatement.execute();
                 rowInserted ++;
                 splitList.addAll(transaction.getSplits());
@@ -379,29 +382,11 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 		transaction.setNote(c.getString(c.getColumnIndexOrThrow(TransactionEntry.COLUMN_NOTES)));
 		transaction.setExported(c.getInt(c.getColumnIndexOrThrow(TransactionEntry.COLUMN_EXPORTED)) == 1);
 		transaction.setTemplate(c.getInt(c.getColumnIndexOrThrow(TransactionEntry.COLUMN_TEMPLATE)) == 1);
+        transaction.setCurrencyCode(c.getString(c.getColumnIndexOrThrow(TransactionEntry.COLUMN_CURRENCY)));
+        transaction.setScheduledActionUID(c.getString(c.getColumnIndexOrThrow(TransactionEntry.COLUMN_SCHEDX_ACTION_UID)));
+        long transactionID = c.getLong(c.getColumnIndexOrThrow(TransactionEntry._ID));
+        transaction.setSplits(mSplitsDbAdapter.getSplitsForTransaction(transactionID));
 
-        if (mDb.getVersion() < SPLITS_DB_VERSION){ //legacy, will be used once, when migrating the database
-            String accountUID = c.getString(c.getColumnIndexOrThrow(SplitEntry.COLUMN_ACCOUNT_UID));
-            String amountString = c.getString(c.getColumnIndexOrThrow(SplitEntry.COLUMN_AMOUNT));
-            String currencyCode = getAccountCurrencyCode(accountUID);
-            Money amount = new Money(amountString, currencyCode);
-
-            Split split = new Split(amount.absolute(), accountUID);
-            TransactionType type = Transaction.getTypeForBalance(getAccountType(accountUID), amount.isNegative());
-            split.setType(type);
-            transaction.addSplit(split);
-
-            String transferAccountUID = c.getString(c.getColumnIndexOrThrow(DatabaseHelper.KEY_DOUBLE_ENTRY_ACCOUNT_UID));
-            if (transferAccountUID == null) {
-                AccountsDbAdapter accountsDbAdapter = AccountsDbAdapter.getInstance();
-                transferAccountUID = accountsDbAdapter.getOrCreateImbalanceAccountUID(Currency.getInstance(currencyCode));
-            }
-            transaction.addSplit(split.createPair(transferAccountUID));
-        } else {
-            transaction.setCurrencyCode(c.getString(c.getColumnIndexOrThrow(TransactionEntry.COLUMN_CURRENCY)));
-            long transactionID = c.getLong(c.getColumnIndexOrThrow(TransactionEntry._ID));
-            transaction.setSplits(mSplitsDbAdapter.getSplitsForTransaction(transactionID));
-        }
 		return transaction;
 	}
 

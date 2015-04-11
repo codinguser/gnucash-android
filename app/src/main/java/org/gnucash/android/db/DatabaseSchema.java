@@ -79,9 +79,7 @@ public class DatabaseSchema {
         public static final String COLUMN_TIMESTAMP             = "timestamp";
         public static final String COLUMN_EXPORTED              = "is_exported";
         public static final String COLUMN_TEMPLATE              = "is_template";
-
-        @Deprecated
-        public static final String COLUMN_RECURRENCE_PERIOD     = "recurrence_period";
+        public static final String COLUMN_SCHEDX_ACTION_UID     = "schedx_action_uid";
 
         public static final String INDEX_UID                    = "transaction_uid_index";
     }
@@ -113,7 +111,7 @@ public class DatabaseSchema {
         public static final String COLUMN_PERIOD            = "period";
         public static final String COLUMN_TAG               = "tag"; //for any action-specific information
         public static final String COLUMN_ENABLED           = "is_enabled";
-        public static final String COLUMN_NUM_OCCURRENCES   = "num_occurrences"; //FIXME: This should not be here, rather transactions table should store UID of action which created it
+        public static final String COLUMN_TOTAL_FREQUENCY   = "total_frequency";
         public static final String COLUMN_EXECUTION_COUNT   = "execution_count";
 
         public static final String INDEX_UID            = "scheduled_action_uid_index";

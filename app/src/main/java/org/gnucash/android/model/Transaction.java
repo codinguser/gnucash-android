@@ -115,6 +115,11 @@ public class Transaction extends BaseModel{
      */
     private boolean mIsTemplate = false;
 
+    /**
+     * GUID of ScheduledAction which created this transaction
+     */
+    private String mScheduledActionUID = null;
+
 	/**
 	 * Overloaded constructor. Creates a new transaction instance with the
 	 * provided data and initializes the rest to default values.
@@ -513,6 +518,22 @@ public class Transaction extends BaseModel{
 
         return transactionNode;
 	}
+
+    /**
+     * Returns the GUID of the {@link org.gnucash.android.model.ScheduledAction} which created this transaction
+     * @return GUID of scheduled action
+     */
+    public String getScheduledActionUID() {
+        return mScheduledActionUID;
+    }
+
+    /**
+     * Sets the GUID of the {@link org.gnucash.android.model.ScheduledAction} which created this transaction
+     * @param scheduledActionUID GUID of the scheduled action
+     */
+    public void setScheduledActionUID(String scheduledActionUID) {
+        mScheduledActionUID = scheduledActionUID;
+    }
 
     /**
      * Creates an Intent with arguments from the <code>transaction</code>.

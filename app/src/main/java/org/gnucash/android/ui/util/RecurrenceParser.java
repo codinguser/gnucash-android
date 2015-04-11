@@ -128,7 +128,7 @@ public class RecurrenceParser {
             endTime.parse(eventRecurrence.until);
             scheduledAction.setEndTime(endTime.toMillis(false));
         } else if (eventRecurrence.count > 0){
-            scheduledAction.setNumberOfOccurences(eventRecurrence.count);
+            scheduledAction.setTotalFrequency(eventRecurrence.count);
         }
     }
 

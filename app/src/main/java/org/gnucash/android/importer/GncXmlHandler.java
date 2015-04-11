@@ -29,6 +29,7 @@ import org.gnucash.android.export.xml.GncXmlHelper;
 import org.gnucash.android.model.Account;
 import org.gnucash.android.model.AccountType;
 import org.gnucash.android.model.Money;
+import org.gnucash.android.model.PeriodType;
 import org.gnucash.android.model.ScheduledAction;
 import org.gnucash.android.model.Split;
 import org.gnucash.android.model.Transaction;
@@ -475,13 +476,13 @@ public class GncXmlHandler extends DefaultHandler {
             mScheduledAction.setEnabled(characterString.equalsIgnoreCase("y"));
         }
         else if (qualifiedName.equals(GncXmlHelper.TAG_SX_NUM_OCCUR)){
-            mScheduledAction.setNumberOfOccurences(Integer.parseInt(characterString));
+            mScheduledAction.setTotalFrequency(Integer.parseInt(characterString));
         }
         else if (qualifiedName.equals(GncXmlHelper.TAG_RX_MULT)){
             mRecurrenceMultiplier = Integer.parseInt(characterString);
         }
         else if (qualifiedName.equals(GncXmlHelper.TAG_RX_PERIOD_TYPE)){
-            ScheduledAction.PeriodType periodType = ScheduledAction.PeriodType.valueOf(characterString.toUpperCase());
+            PeriodType periodType = PeriodType.valueOf(characterString.toUpperCase());
             periodType.setMultiplier(mRecurrenceMultiplier);
             mScheduledAction.setPeriod(periodType);
         }

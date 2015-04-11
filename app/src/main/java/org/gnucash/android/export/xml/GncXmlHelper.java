@@ -126,12 +126,13 @@ public abstract class GncXmlHelper {
     public static final String KEY_COLOR            = "color";
     public static final String KEY_FAVORITE         = "favorite";
     public static final String KEY_NOTES            = "notes";
-    public static final String KEY_DEFAULT_TRANSFER_ACCOUNT = "default_transfer_account";
     public static final String KEY_EXPORTED         = "exported";
-    public static final String KEY_SCHEDX_ACTION = "sched-xaction";
+    public static final String KEY_SCHEDX_ACTION    = "sched-xaction";
     public static final String KEY_SPLIT_ACCOUNT    = "key_account";
     public static final String KEY_DEBIT_FORMULA    = "debit-formula";
     public static final String KEY_CREDIT_FORMULA   = "credit-formula";
+    public static final String KEY_FROM_SCHED_ACTION        = "from-sched-xaction";
+    public static final String KEY_DEFAULT_TRANSFER_ACCOUNT = "default_transfer_account";
 
 
     /**

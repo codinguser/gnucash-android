@@ -435,6 +435,10 @@ public class TransactionFormFragment extends SherlockFragment implements
         }
 
         mSaveTemplate.setChecked(mTransaction.isTemplate());
+        List<ScheduledAction> scheduledActions = ScheduledActionDbAdapter.getInstance().getScheduledActionsWithUID(mTransaction.getUID());
+        if (!scheduledActions.isEmpty()){
+            mRecurrenceTextView.setText(scheduledActions.get(0).getRuleString());
+        }
     }
 
     private void enableControls(boolean b) {

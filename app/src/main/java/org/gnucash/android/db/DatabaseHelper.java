@@ -89,6 +89,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			+ TransactionEntry.COLUMN_EXPORTED      + " tinyint default 0, "
 			+ TransactionEntry.COLUMN_TEMPLATE      + " tinyint default 0, "
             + TransactionEntry.COLUMN_CURRENCY      + " varchar(255) not null, "
+            + TransactionEntry.COLUMN_SCHEDX_ACTION_UID + " varchar(255), "
             + TransactionEntry.COLUMN_CREATED_AT    + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
             + TransactionEntry.COLUMN_MODIFIED_AT   + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP "
 			+ ");" + createUpdatedAtTrigger(TransactionEntry.TABLE_NAME);
@@ -122,7 +123,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + ScheduledActionEntry.COLUMN_END_TIME       + " integer default 0, "
             + ScheduledActionEntry.COLUMN_TAG            + " text, "
             + ScheduledActionEntry.COLUMN_ENABLED        + " tinyint default 1, " //enabled by default
-            + ScheduledActionEntry.COLUMN_NUM_OCCURRENCES+ " integer default 0, "
+            + ScheduledActionEntry.COLUMN_TOTAL_FREQUENCY + " integer default 0, "
             + ScheduledActionEntry.COLUMN_EXECUTION_COUNT+ " integer default 0, "
             + ScheduledActionEntry.COLUMN_CREATED_AT     + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
             + ScheduledActionEntry.COLUMN_MODIFIED_AT    + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP "
@@ -207,7 +208,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             if (oldVersion == 3 && newVersion >= 4){
                 Log.i(LOG_TAG, "Updating database to version 4");
                 String addRecurrencePeriod = "ALTER TABLE " + TransactionEntry.TABLE_NAME +
-                        " ADD COLUMN " + TransactionEntry.COLUMN_RECURRENCE_PERIOD + " integer default 0";
+                        " ADD COLUMN recurrence_period integer default 0";
 
                 String addDefaultTransferAccount = "ALTER TABLE " + AccountEntry.TABLE_NAME
                         + " ADD COLUMN " + AccountEntry.COLUMN_DEFAULT_TRANSFER_ACCOUNT_UID + " varchar(255)";
@@ -297,7 +298,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             //TODO: Migrate old scheduled events using only SQL, code had changed
             //TODO: Take care to properly migrate the created_at dates for transactions (use the date already in the transaction)
             //TODO: auto-balance existing splits during migration
-
+            //TODO: add schedx_action_uid column to transactions table
             db.setTransactionSuccessful();
             oldVersion = 8;
         } finally {
@@ -334,7 +335,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     + TransactionEntry.COLUMN_TIMESTAMP + " integer not null, "
                     + TransactionEntry.COLUMN_EXPORTED + " tinyint default 0, "
                     + TransactionEntry.COLUMN_CURRENCY + " varchar(255) not null, "
-                    + TransactionEntry.COLUMN_RECURRENCE_PERIOD + " integer default 0, "
+                    + "recurrence_period integer default 0, "
                     + "UNIQUE (" + TransactionEntry.COLUMN_UID + ") "
                     + ");");
             // initialize new transaction table wiht data from old table
@@ -346,7 +347,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                             + TransactionEntry.COLUMN_TIMESTAMP + " , "
                             + TransactionEntry.COLUMN_EXPORTED + " , "
                             + TransactionEntry.COLUMN_CURRENCY + " , "
-                            + TransactionEntry.COLUMN_RECURRENCE_PERIOD + " )  SELECT "
+                            + "recurrence_period )  SELECT "
                             + TransactionEntry.TABLE_NAME + "_bak." + TransactionEntry._ID + " , "
                             + TransactionEntry.TABLE_NAME + "_bak." + TransactionEntry.COLUMN_UID + " , "
                             + TransactionEntry.TABLE_NAME + "_bak." + TransactionEntry.COLUMN_DESCRIPTION + " , "
@@ -354,7 +355,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                             + TransactionEntry.TABLE_NAME + "_bak." + TransactionEntry.COLUMN_TIMESTAMP + " , "
                             + TransactionEntry.TABLE_NAME + "_bak." + TransactionEntry.COLUMN_EXPORTED + " , "
                             + AccountEntry.TABLE_NAME + "." + AccountEntry.COLUMN_CURRENCY + " , "
-                            + TransactionEntry.TABLE_NAME + "_bak." + TransactionEntry.COLUMN_RECURRENCE_PERIOD
+                            + TransactionEntry.TABLE_NAME + "_bak.recurrence_period"
                             + " FROM " + TransactionEntry.TABLE_NAME + "_bak , " + AccountEntry.TABLE_NAME
                             + " ON " + TransactionEntry.TABLE_NAME + "_bak.account_uid == " + AccountEntry.TABLE_NAME + "." + AccountEntry.COLUMN_UID
             );
