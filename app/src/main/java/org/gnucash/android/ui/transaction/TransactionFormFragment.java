@@ -814,7 +814,6 @@ public class TransactionFormFragment extends SherlockFragment implements
             else if (mAmountEditText.getText().length() == 0) {
                 Toast.makeText(getActivity(), R.string.toast_transanction_amount_required, Toast.LENGTH_SHORT).show();
             } else if (mUseDoubleEntry && mDoubleAccountSpinner.getCount() == 0){
-                //TODO: Localize string
                 Toast.makeText(getActivity(),
                         R.string.toast_disable_double_entry_to_save_transaction,
                         Toast.LENGTH_LONG).show();

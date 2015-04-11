@@ -32,6 +32,11 @@ public enum TransactionType {
         CREDIT.opposite = DEBIT;
     }
 
+    /**
+     * Inverts the transaction type.
+     * <p>{@link TransactionType#CREDIT} becomes {@link TransactionType#DEBIT} and vice versa</p>
+     * @return Inverted transaction type
+     */
     public TransactionType invert() {
         return opposite;
     }

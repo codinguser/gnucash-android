@@ -94,6 +94,12 @@ public enum PeriodType {
         }
     }
 
+    /**
+     * Returns the parts of the recurrence rule which describe the day or month on which to run the
+     * scheduled transaction. These parts are the BYxxx
+     * @param startTime Start time of transaction used to determine the start day of execution
+     * @return String describing the BYxxx parts of the recurrence rule
+     */
     public String getByParts(long startTime){
         String partString = "";
         switch (this){

@@ -50,14 +50,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	private static final String DATABASE_NAME = "gnucash_db";
 
 	/**
-	 * Account which the origin account this transaction in double entry mode.
-     * This is no longer used since the introduction of splits
-	 */
-    //TODO: find and eliminate uses. Its services are no longer required
-    @Deprecated
-	public static final String KEY_DOUBLE_ENTRY_ACCOUNT_UID 	= "double_account_uid";
-
-	/**
 	 * SQL statement to create the accounts table in the database
 	 */
 	private static final String ACCOUNTS_TABLE_CREATE = "create table " + AccountEntry.TABLE_NAME + " ("
@@ -175,7 +167,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			if (oldVersion == 1 && newVersion >= 2){
 				Log.i(LOG_TAG, "Adding column for double-entry transactions");
 				String addColumnSql = "ALTER TABLE " + TransactionEntry.TABLE_NAME +
-									" ADD COLUMN " + KEY_DOUBLE_ENTRY_ACCOUNT_UID + " varchar(255)";
+									" ADD COLUMN double_account_uid varchar(255)";
 				
 				//introducing sub accounts
 				Log.i(LOG_TAG, "Adding column for parent accounts");
@@ -398,11 +390,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                             + SplitEntry.COLUMN_AMOUNT + " < 0 THEN 'DEBIT' ELSE 'CREDIT' END ELSE CASE WHEN "
                             + SplitEntry.COLUMN_AMOUNT + " < 0 THEN 'CREDIT' ELSE 'DEBIT' END END , "
                     + "ABS ( " + TransactionEntry.TABLE_NAME + "_bak.amount ) , "
-                    + TransactionEntry.TABLE_NAME + "_bak." + KEY_DOUBLE_ENTRY_ACCOUNT_UID + " , "
+                    + TransactionEntry.TABLE_NAME + "_bak.double_account_uid , "
                     + TransactionEntry.TABLE_NAME + "_baK." + TransactionEntry.COLUMN_UID
                     + " FROM " + TransactionEntry.TABLE_NAME + "_bak , " + AccountEntry.TABLE_NAME
                     + " ON " + TransactionEntry.TABLE_NAME + "_bak.account_uid = " + AccountEntry.TABLE_NAME + "." + AccountEntry.COLUMN_UID
-                    + " WHERE " + TransactionEntry.TABLE_NAME + "_bak." + KEY_DOUBLE_ENTRY_ACCOUNT_UID + " IS NOT NULL"
+                    + " WHERE " + TransactionEntry.TABLE_NAME + "_bak.double_account_uid IS NOT NULL"
             );
             // drop backup transaction table
             db.execSQL("DROP TABLE " + TransactionEntry.TABLE_NAME + "_bak");

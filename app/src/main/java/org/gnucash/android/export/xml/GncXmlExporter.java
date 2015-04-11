@@ -55,10 +55,20 @@ import static org.gnucash.android.db.DatabaseSchema.TransactionEntry;
  */
 public class GncXmlExporter extends Exporter{
 
+    /**
+     * Construct a new exporter with export parameters
+     * @param params Parameters for the export
+     */
     public GncXmlExporter(ExportParams params) {
         super(params, null);
     }
 
+    /**
+     * Overloaded constructor.
+     * Creates an exporter with an already open database instance.
+     * @param params Parameters for the export
+     * @param db SQLite database
+     */
     public GncXmlExporter(ExportParams params, SQLiteDatabase db) {
         super(params, db);
     }
@@ -168,6 +178,12 @@ public class GncXmlExporter extends Exporter{
         cursor.close();
     }
 
+    /**
+     * Serializes transactions from the database to XML
+     * @param xmlSerializer XML serializer
+     * @param exportTemplates Flag whether to export templates or normal transactions
+     * @throws IOException if the XML serializer cannot be written to
+     */
     private void exportTransactions(XmlSerializer xmlSerializer, boolean exportTemplates) throws IOException {
         String where = null;
         if (exportTemplates){
@@ -356,7 +372,7 @@ public class GncXmlExporter extends Exporter{
     }
 
     /**
-     * Serializes {@link org.gnucash.android.model.ScheduledAction}s from the database to XML
+     * Serializes {@link ScheduledAction}s from the database to XML
      * @param xmlSerializer XML serializer
      * @throws IOException
      */

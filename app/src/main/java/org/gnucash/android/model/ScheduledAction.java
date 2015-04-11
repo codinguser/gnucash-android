@@ -81,34 +81,66 @@ public class ScheduledAction extends BaseModel{
         mIsEnabled = true; //all actions are enabled by default
     }
 
+    /**
+     * Returns the type of action to be performed by this scheduled action
+     * @return ActionType of the scheduled action
+     */
     public ActionType getActionType() {
         return mActionType;
     }
 
+    /**
+     * Sets the {@link ActionType}
+     * @param actionType Type of action
+     */
     public void setActionType(ActionType actionType) {
         this.mActionType = actionType;
     }
 
+    /**
+     * Returns the GUID of the action covered by this scheduled action
+     * @return GUID of action
+     */
     public String getActionUID() {
         return mActionUID;
     }
 
+    /**
+     * Sets the GUID of the action being scheduled
+     * @param actionUID GUID of the action
+     */
     public void setActionUID(String actionUID) {
         this.mActionUID = actionUID;
     }
 
+    /**
+     * Returns the timestamp of the last execution of this scheduled action
+     * @return Timestamp in milliseconds since Epoch
+     */
     public long getLastRun() {
         return mLastRun;
     }
 
+    /**
+     * Set time of last execution of the scheduled action
+     * @param nextRun Timestamp in milliseconds since Epoch
+     */
     public void setLastRun(long nextRun) {
         this.mLastRun = nextRun;
     }
 
+    /**
+     * Returns the period of this scheduled action
+     * @return Period in milliseconds since Epoch
+     */
     public long getPeriod() {
         return mPeriod;
     }
 
+    /**
+     * Sets the period of the scheduled action
+     * @param period Period in milliseconds since Epoch
+     */
     public void setPeriod(long period) {
         this.mPeriod = period;
     }
@@ -183,14 +215,26 @@ public class ScheduledAction extends BaseModel{
         return periodType;
     }
 
+    /**
+     * Returns the time of first execution of the scheduled action
+     * @return Start time of scheduled action in milliseconds since Epoch
+     */
     public long getStartTime() {
         return mStartDate;
     }
 
+    /**
+     * Sets the time of first execution of the scheduled action
+     * @param startDate Timestamp in milliseconds since Epoch
+     */
     public void setStartTime(long startDate) {
         this.mStartDate = startDate;
     }
 
+    /**
+     * Returns the time of last execution of the scheduled action
+     * @return Timestamp in milliseconds since Epoch
+     */
     public long getEndTime() {
         return mEndDate;
     }
@@ -205,22 +249,47 @@ public class ScheduledAction extends BaseModel{
         return mStartDate + (mPeriod * mTotalFrequency);
     }
 
+    /**
+     * Sets the end time of the scheduled action
+     * @param endDate Timestamp in milliseconds since Epoch
+     */
     public void setEndTime(long endDate) {
         this.mEndDate = endDate;
     }
 
+    /**
+     * Returns the tag of this scheduled action
+     * <p>The tag saves additional information about the scheduled action,
+     * e.g. such as export parameters for scheduled backups</p>
+     * @return Tag of scheduled action
+     */
     public String getTag() {
         return mTag;
     }
 
+    /**
+     * Sets the tag of the schedules action.
+     * <p>The tag saves additional information about the scheduled action,
+     * e.g. such as export parameters for scheduled backups</p>
+     * @param tag Tag of scheduled action
+     */
     public void setTag(String tag) {
         this.mTag = tag;
     }
 
+    /**
+     * Returns {@code true} if the scheduled action is enabled, {@code false} otherwise
+     * @return {@code true} if the scheduled action is enabled, {@code false} otherwise
+     */
     public boolean isEnabled(){
         return mIsEnabled;
     }
 
+    /**
+     * Toggles the enabled state of the scheduled action
+     * Disabled scheduled actions will not be executed
+     * @param enabled Flag if the scheduled action is enabled or not
+     */
     public void setEnabled(boolean enabled){
         this.mIsEnabled = enabled;
     }
@@ -328,9 +397,6 @@ public class ScheduledAction extends BaseModel{
 
     @Override
     public String toString() {
-
-        String eventString = mActionType.name() + " - " + getRepeatString();
-
-        return eventString;
+        return mActionType.name() + " - " + getRepeatString();
     }
 }
