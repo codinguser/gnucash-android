@@ -48,6 +48,11 @@ public class LineChartActivity extends PassLockActivity implements OnChartValueS
             Color.parseColor("#1469EB"), Color.parseColor("#B304AD"),
     };
 
+    private static final int[] FILL_COLORS = {
+            Color.parseColor("#008000"), Color.parseColor("#FF0000"), Color.parseColor("#BE6B00"),
+            Color.parseColor("#0065FF"), Color.parseColor("#8F038A"),
+    };
+
     private LineChart mChart;
     private AccountsDbAdapter mAccountsDbAdapter;
     private Map<AccountType, Long> mEarliestTimestampsMap = new HashMap<AccountType, Long>();
@@ -111,8 +116,9 @@ public class LineChartActivity extends PassLockActivity implements OnChartValueS
         for (AccountType accountType : accountTypes) {
             LineDataSet set = new LineDataSet(getEntryList(accountType), accountType.toString());
             set.setDrawFilled(true);
+            set.setLineWidth(2);
             set.setColor(COLORS[dataSets.size()]);
-            set.setFillColor(COLORS[dataSets.size()]);
+            set.setFillColor(FILL_COLORS[dataSets.size()]);
 
             dataSets.add(set);
         }

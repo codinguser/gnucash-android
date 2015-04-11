@@ -239,6 +239,7 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
             mChart.setTouchEnabled(false);
         } else {
             mChartDataPresent = true;
+            dataSet.setSliceSpace(2);
             mChart.setCenterText(getResources().getString(R.string.label_chart_total) + dataSet.getYValueSum());
             mChart.setTouchEnabled(true);
         }
