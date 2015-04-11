@@ -193,12 +193,12 @@ public class GncXmlHandler extends DefaultHandler {
         switch (qualifiedName.toLowerCase()){
             case GncXmlHelper.TAG_ACCOUNT:
                 mAccount = new Account(""); // dummy name, will be replaced when we find name tag
-                mISO4217Currency = false;   // reset commodity class tag
+                mISO4217Currency = false;
                 break;
             case GncXmlHelper.TAG_TRANSACTION:
                 mTransaction = new Transaction(""); // dummy name will be replaced
                 mTransaction.setExported(true);     // default to exported when import transactions
-                mISO4217Currency = false; // reset commodity class tag
+                mISO4217Currency = false;
                 break;
             case GncXmlHelper.TAG_TRN_SPLIT:
                 mSplit = new Split(Money.getZeroInstance(),"");
