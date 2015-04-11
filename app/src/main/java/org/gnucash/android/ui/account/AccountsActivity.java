@@ -555,25 +555,6 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
 
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_CANCELED){
-            return;
-        }
-
-        switch (requestCode){
-            case REQUEST_PICK_ACCOUNTS_FILE:
-                try {
-                    InputStream accountInputStream = getContentResolver().openInputStream(data.getData());
-                    new ImportAsyncTask(this).execute(accountInputStream);
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                }
-                break;
-        }
-    }
-
     /**
      * Starts the AccountsActivity and clears the activity stack
      * @param context Application context
