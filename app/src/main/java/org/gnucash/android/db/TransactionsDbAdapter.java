@@ -23,6 +23,7 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.database.sqlite.SQLiteStatement;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -144,15 +145,15 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
         try {
             mDb.beginTransaction();
             SQLiteStatement replaceStatement = mDb.compileStatement("REPLACE INTO " + TransactionEntry.TABLE_NAME + " ( "
-                + TransactionEntry.COLUMN_UID 		    + " , "
-                + TransactionEntry.COLUMN_DESCRIPTION   + " , "
-                + TransactionEntry.COLUMN_NOTES         + " , "
-                + TransactionEntry.COLUMN_TIMESTAMP     + " , "
-                + TransactionEntry.COLUMN_EXPORTED      + " , "
-                + TransactionEntry.COLUMN_CURRENCY      + " , "
-                + TransactionEntry.COLUMN_CREATED_AT    + " , "
-                + TransactionEntry.COLUMN_SCHEDX_ACTION_UID + " , "
-                + TransactionEntry.COLUMN_TEMPLATE + " ) VALUES ( ? , ? , ? , ?, ? , ? , ? , ? , ?)");
+                    + TransactionEntry.COLUMN_UID + " , "
+                    + TransactionEntry.COLUMN_DESCRIPTION + " , "
+                    + TransactionEntry.COLUMN_NOTES + " , "
+                    + TransactionEntry.COLUMN_TIMESTAMP + " , "
+                    + TransactionEntry.COLUMN_EXPORTED + " , "
+                    + TransactionEntry.COLUMN_CURRENCY + " , "
+                    + TransactionEntry.COLUMN_CREATED_AT + " , "
+                    + TransactionEntry.COLUMN_SCHEDX_ACTION_UID + " , "
+                    + TransactionEntry.COLUMN_TEMPLATE + " ) VALUES ( ? , ? , ? , ?, ? , ? , ? , ? , ?)");
             for (Transaction transaction : transactionList) {
                 //Log.d(TAG, "Replacing transaction in db");
                 replaceStatement.clearBindings();
@@ -163,7 +164,12 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
                 replaceStatement.bindLong(5,    transaction.isExported() ? 1 : 0);
                 replaceStatement.bindString(6,  transaction.getCurrencyCode());
                 replaceStatement.bindString(7,  transaction.getCreatedTimestamp().toString());
-                replaceStatement.bindString(8,  transaction.getScheduledActionUID());
+                if (transaction.getScheduledActionUID() == null) {
+                    replaceStatement.bindNull(8);
+                }
+                else {
+                    replaceStatement.bindString(8, transaction.getScheduledActionUID());
+                }
                 replaceStatement.bindLong(9,    transaction.isTemplate() ? 1 : 0);
                 replaceStatement.execute();
                 rowInserted ++;
@@ -324,10 +330,11 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
         return transactions;
     }
 
-    public Cursor fetchTransactionsWithSplits(String [] columns, String where, String[] whereArgs, String orderBy) {
+    public Cursor fetchTransactionsWithSplits(String [] columns, @Nullable String where, @Nullable String[] whereArgs, @Nullable String orderBy) {
         return mDb.query(TransactionEntry.TABLE_NAME + " , " + SplitEntry.TABLE_NAME +
                         " ON " + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_UID +
-                        " = " + SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_TRANSACTION_UID,
+                        " = " + SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_TRANSACTION_UID +
+                        " , trans_extra_info ON trans_extra_info.trans_acct_t_uid = " + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_UID ,
                 columns, where, whereArgs, null, null,
                 orderBy);
     }
@@ -360,6 +367,25 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
                 " WHERE " + TransactionEntry.COLUMN_TEMPLATE + " =0";
         Cursor cursor = mDb.rawQuery(queryCount, null);
         try {
+            cursor.moveToFirst();
+            return cursor.getInt(0);
+        } finally {
+            cursor.close();
+        }
+    }
+
+    public int getTotalTransactionsCount(@Nullable String where, @Nullable String[] whereArgs) {
+        Cursor cursor = mDb.query(true, TransactionEntry.TABLE_NAME + " , trans_extra_info ON "
+                        + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_UID
+                        + " = trans_extra_info.trans_acct_t_uid",
+                new String[]{"COUNT(*)"},
+                where,
+                whereArgs,
+                null,
+                null,
+                null,
+                null);
+        try{
             cursor.moveToFirst();
             return cursor.getInt(0);
         } finally {

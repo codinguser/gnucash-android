@@ -23,6 +23,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteStatement;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -728,7 +729,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
      * @param orderBy orderBy clause
      * @return Cursor set of accounts which fulfill <code>where</code>
      */
-    public Cursor fetchAccounts(String where, String[] whereArgs, String orderBy){
+    public Cursor fetchAccounts(@Nullable String where, @Nullable String[] whereArgs, @Nullable String orderBy){
         if (orderBy == null){
             orderBy = AccountEntry.COLUMN_NAME + " ASC";
         }
@@ -952,24 +953,20 @@ public class AccountsDbAdapter extends DatabaseAdapter {
     /**
      * Returns the GnuCash ROOT account UID.
      * <p>In GnuCash desktop account structure, there is a root account (which is not visible in the UI) from which
-     * other top level accounts derive. GnuCash Android does not have this ROOT account by default unless the account
-     * structure was imported from GnuCash for desktop. Hence this method also returns <code>null</code> as an
-     * acceptable result.</p>
-     * <p><b>Note:</b> NULL is an acceptable response, be sure to check for it</p>
+     * other top level accounts derive. GnuCash Android also enforces a ROOT account now</p>
      * @return Unique ID of the GnuCash root account.
      */
     public String getGnuCashRootAccountUID() {
         Cursor cursor = fetchAccounts(AccountEntry.COLUMN_TYPE + "= ?",
                 new String[]{AccountType.ROOT.name()}, null);
-        String rootUID = null;
         try {
             if (cursor.moveToFirst()) {
-                rootUID = cursor.getString(cursor.getColumnIndexOrThrow(AccountEntry.COLUMN_UID));
+                return cursor.getString(cursor.getColumnIndexOrThrow(AccountEntry.COLUMN_UID));
             }
         } finally {
             cursor.close();
         }
-        return rootUID;
+        throw new IllegalArgumentException("ROOT account doesn't exist in DB");
     }
 
     /**
@@ -1097,7 +1094,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
         finally {
             cursor.close();
         }
-        return null;
+        throw new IllegalArgumentException("account UID: " + accountUID + " does not exist");
     }
 
     /**
