@@ -18,7 +18,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="org.gnucash.android"
     android:versionCode="48"
-    android:versionName="@string/app_version_name" >
+    android:versionName="@string/app_version_name"
+    android:installLocation="auto">
 
     <uses-sdk android:minSdkVersion="9" android:targetSdkVersion="19"/>
     
