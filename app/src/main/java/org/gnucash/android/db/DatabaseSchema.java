@@ -79,7 +79,7 @@ public class DatabaseSchema {
         public static final String COLUMN_TIMESTAMP             = "timestamp";
         public static final String COLUMN_EXPORTED              = "is_exported";
         public static final String COLUMN_TEMPLATE              = "is_template";
-        public static final String COLUMN_SCHEDX_ACTION_UID     = "schedx_action_uid";
+        public static final String COLUMN_SCHEDX_ACTION_UID     = "scheduled_action_uid";
 
         public static final String INDEX_UID                    = "transaction_uid_index";
     }

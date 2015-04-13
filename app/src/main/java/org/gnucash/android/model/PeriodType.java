@@ -82,13 +82,13 @@ public enum PeriodType {
 
         switch (this) {
             case DAY:
-                return res.getQuantityString(R.plurals.label_every_x_days, mMultiplier);
+                return res.getQuantityString(R.plurals.label_every_x_days, mMultiplier, mMultiplier);
             case WEEK:
-                return res.getQuantityString(R.plurals.label_every_x_weeks, mMultiplier);
+                return res.getQuantityString(R.plurals.label_every_x_weeks, mMultiplier, mMultiplier);
             case MONTH:
-                return res.getQuantityString(R.plurals.label_every_x_months, mMultiplier);
+                return res.getQuantityString(R.plurals.label_every_x_months, mMultiplier, mMultiplier);
             case YEAR:
-                return res.getQuantityString(R.plurals.label_every_x_years, mMultiplier);
+                return res.getQuantityString(R.plurals.label_every_x_years, mMultiplier, mMultiplier);
             default:
                 return "";
         }

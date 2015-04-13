@@ -110,12 +110,12 @@ public class ScheduledTransactionsListFragment extends SherlockListFragment impl
                         Log.i(TAG, "Cancelling scheduled transaction(s)");
                         String trnUID = mTransactionsDbAdapter.getUID(id);
                         ScheduledActionDbAdapter scheduledActionDbAdapter = GnuCashApplication.getScheduledEventDbAdapter();
-                        List<ScheduledAction> events = scheduledActionDbAdapter.getScheduledActionsWithUID(trnUID);
+                        List<ScheduledAction> actions = scheduledActionDbAdapter.getScheduledActionsWithUID(trnUID);
 
                         if (mTransactionsDbAdapter.deleteRecord(id)){
                             Toast.makeText(getActivity(), R.string.toast_recurring_transaction_deleted, Toast.LENGTH_SHORT).show();
-                            for (ScheduledAction event : events) {
-                                scheduledActionDbAdapter.deleteRecord(event.getUID());
+                            for (ScheduledAction action : actions) {
+                                scheduledActionDbAdapter.deleteRecord(action.getUID());
                             }
                         }
                     }
@@ -382,7 +382,7 @@ public class ScheduledTransactionsListFragment extends SherlockListFragment impl
             TextView descriptionTextView = (TextView) view.findViewById(R.id.secondary_text);
 
             ScheduledActionDbAdapter scheduledActionDbAdapter = ScheduledActionDbAdapter.getInstance();
-            String scheduledActionUID = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.ScheduledActionEntry.TABLE_NAME+"."+ DatabaseSchema.ScheduledActionEntry.COLUMN_UID));
+            String scheduledActionUID = cursor.getString(cursor.getColumnIndexOrThrow("origin_scheduled_action_uid"));
             view.setTag(scheduledActionUID);
             ScheduledAction scheduledAction = scheduledActionDbAdapter.getScheduledAction(scheduledActionUID);
             descriptionTextView.setText(scheduledAction.getRepeatString());

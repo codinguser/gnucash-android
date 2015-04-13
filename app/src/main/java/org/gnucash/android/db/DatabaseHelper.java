@@ -83,7 +83,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + TransactionEntry.COLUMN_CURRENCY      + " varchar(255) not null, "
             + TransactionEntry.COLUMN_SCHEDX_ACTION_UID + " varchar(255), "
             + TransactionEntry.COLUMN_CREATED_AT    + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
-            + TransactionEntry.COLUMN_MODIFIED_AT   + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP "
+            + TransactionEntry.COLUMN_MODIFIED_AT   + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
+            + "FOREIGN KEY (" 	+ TransactionEntry.COLUMN_SCHEDX_ACTION_UID + ") REFERENCES " + ScheduledActionEntry.TABLE_NAME + " (" + ScheduledActionEntry.COLUMN_UID + ") ON DELETE SET NULL "
 			+ ");" + createUpdatedAtTrigger(TransactionEntry.TABLE_NAME);
 
     /**
@@ -107,7 +108,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String SCHEDULED_ACTIONS_TABLE_CREATE = "CREATE TABLE " + ScheduledActionEntry.TABLE_NAME + " ("
             + ScheduledActionEntry._ID                   + " integer primary key autoincrement, "
             + ScheduledActionEntry.COLUMN_UID            + " varchar(255) not null UNIQUE, "
-            + ScheduledActionEntry.COLUMN_ACTION_UID + " varchar(255) not null, "
+            + ScheduledActionEntry.COLUMN_ACTION_UID    + " varchar(255) not null, "
             + ScheduledActionEntry.COLUMN_TYPE           + " varchar(255) not null, "
             + ScheduledActionEntry.COLUMN_PERIOD         + " integer not null, "
             + ScheduledActionEntry.COLUMN_LAST_RUN       + " integer default 0, "

@@ -331,17 +331,21 @@ public class ScheduledAction extends BaseModel{
      * @return String description of repeat schedule
      */
     public String getRepeatString(){
-        String dayOfWeek = new SimpleDateFormat("EE", Locale.US).format(new Date(mStartDate));
+        String dayOfWeek = new SimpleDateFormat("EEEE", Locale.US).format(new Date(mStartDate));
         PeriodType periodType = getPeriodType();
         StringBuilder ruleBuilder = new StringBuilder(periodType.getFrequencyRepeatString());
-        ruleBuilder.append(" on ").append(dayOfWeek);
-        ruleBuilder.append(";");
+
+        if (periodType == PeriodType.WEEK) {
+            ruleBuilder.append(" on ").append(dayOfWeek);
+        }
+
         if (mEndDate > 0){
+            ruleBuilder.append(", ");
             ruleBuilder.append(" until ")
-                    .append(SimpleDateFormat.getDateInstance(DateFormat.SHORT).format(new Date(mEndDate)))
-                    .append(";");
+                    .append(SimpleDateFormat.getDateInstance(DateFormat.SHORT).format(new Date(mEndDate)));
         } else if (mTotalFrequency > 0){
-            ruleBuilder.append(" for ").append(mTotalFrequency).append(" times;");
+            ruleBuilder.append(", ");
+            ruleBuilder.append(" for ").append(mTotalFrequency).append(" times");
         }
         return ruleBuilder.toString();
     }
