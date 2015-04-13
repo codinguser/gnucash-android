@@ -388,7 +388,7 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
                 startActivity(new Intent(this, SettingsActivity.class));
                 return true;
 
-            case R.id.menu_chart_report:
+            case R.id.menu_reports:
                 startActivity(new Intent(this, ChartReportActivity.class));
                 return true;
 
