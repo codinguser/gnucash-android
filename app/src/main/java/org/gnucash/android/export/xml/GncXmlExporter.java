@@ -157,7 +157,7 @@ public class GncXmlExporter extends Exporter{
             String parentUID = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.AccountEntry.COLUMN_PARENT_ACCOUNT_UID));
             if (!acct_type.equals("ROOT") && parentUID != null && parentUID.length() > 0) {
                 xmlSerializer.startTag(null, GncXmlHelper.TAG_PARENT_UID);
-                xmlSerializer.attribute(null, GncXmlHelper.ATTR_KEY_TYPE, GncXmlHelper.ATTR_VALUE_STRING);
+                xmlSerializer.attribute(null, GncXmlHelper.ATTR_KEY_TYPE, GncXmlHelper.ATTR_VALUE_GUID);
                 xmlSerializer.text(parentUID);
                 xmlSerializer.endTag(null, GncXmlHelper.TAG_PARENT_UID);
             } else {
