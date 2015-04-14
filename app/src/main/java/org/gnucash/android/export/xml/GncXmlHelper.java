@@ -61,6 +61,7 @@ public abstract class GncXmlHelper {
     public static final String TAG_TYPE             = "act:type";
     public static final String TAG_COMMODITY_ID     = "cmdty:id";
     public static final String TAG_COMMODITY_SPACE  = "cmdty:space";
+    public static final String TAG_ACCOUNT_COMMODITY = "act:commodity";
     public static final String TAG_COMMODITY_SCU    = "act:commodity-scu";
     public static final String TAG_PARENT_UID       = "act:parent";
     public static final String TAG_ACCOUNT          = "gnc:account";
@@ -84,7 +85,7 @@ public abstract class GncXmlHelper {
 
     public static final String TAG_SPLIT_ID         = "split:id";
     public static final String TAG_SPLIT_MEMO       = "split:memo";
-    public static final String TAG_RECONCILED_STATE = "split:reconciled_state";
+    public static final String TAG_RECONCILED_STATE = "split:reconciled-state";
     public static final String TAG_SPLIT_ACCOUNT    = "split:account";
     public static final String TAG_SPLIT_VALUE      = "split:value";
     public static final String TAG_SPLIT_QUANTITY   = "split:quantity";

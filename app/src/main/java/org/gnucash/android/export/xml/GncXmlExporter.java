@@ -86,7 +86,7 @@ public class GncXmlExporter extends Exporter{
     }
 
     private void exportAccounts(XmlSerializer xmlSerializer) throws IOException {
-        Cursor cursor = mAccountsDbAdapter.fetchAccounts(null, null, null);
+        Cursor cursor = mAccountsDbAdapter.fetchAccounts(null, null, DatabaseSchema.AccountEntry.COLUMN_FULL_NAME + " ASC");
         while (cursor.moveToNext()) {
             // write account
             xmlSerializer.startTag(null, GncXmlHelper.TAG_ACCOUNT);
@@ -106,7 +106,7 @@ public class GncXmlExporter extends Exporter{
             xmlSerializer.text(acct_type);
             xmlSerializer.endTag(null, GncXmlHelper.TAG_TYPE);
             // commodity
-            xmlSerializer.startTag(null, GncXmlHelper.TAG_COMMODITY);
+            xmlSerializer.startTag(null, GncXmlHelper.TAG_ACCOUNT_COMMODITY);
             xmlSerializer.startTag(null, GncXmlHelper.TAG_COMMODITY_SPACE);
             xmlSerializer.text("ISO4217");
             xmlSerializer.endTag(null, GncXmlHelper.TAG_COMMODITY_SPACE);
@@ -114,7 +114,7 @@ public class GncXmlExporter extends Exporter{
             String acctCurrencyCode = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.AccountEntry.COLUMN_CURRENCY));
             xmlSerializer.text(acctCurrencyCode);
             xmlSerializer.endTag(null, GncXmlHelper.TAG_COMMODITY_ID);
-            xmlSerializer.endTag(null, GncXmlHelper.TAG_COMMODITY);
+            xmlSerializer.endTag(null, GncXmlHelper.TAG_ACCOUNT_COMMODITY);
             // commodity scu
             xmlSerializer.startTag(null, GncXmlHelper.TAG_COMMODITY_SCU);
             xmlSerializer.text(Integer.toString((int) Math.pow(10, Currency.getInstance(acctCurrencyCode).getDefaultFractionDigits())));
@@ -169,11 +169,10 @@ public class GncXmlExporter extends Exporter{
     }
 
     private void exportTransactions(XmlSerializer xmlSerializer, boolean exportTemplates) throws IOException {
-        String where = TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_TEMPLATE + "=0 AND trans_extra_info.trans_currency_count = 1";
+        String where = TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_TEMPLATE + "=0";
         if (exportTemplates) {
             where = TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_TEMPLATE + "=1";
         }
-        Log.d(getClass().getSimpleName(), where == null ? "null": where);
         Cursor cursor = mTransactionsDbAdapter.fetchTransactionsWithSplits(
                 new String[]{
                         TransactionEntry.TABLE_NAME+"."+ TransactionEntry.COLUMN_UID + " AS trans_uid",
@@ -192,7 +191,6 @@ public class GncXmlExporter extends Exporter{
                         where, null,
                         TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_TIMESTAMP + " ASC , " +
                         TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_UID + " ASC ");
-        Log.d(getClass().getSimpleName(), "finish query : " + cursor.getCount());
         String lastTrxUID = "";
         Currency trxCurrency;
         int fractionDigits;
@@ -200,7 +198,6 @@ public class GncXmlExporter extends Exporter{
         String denomString = "100";
         while (cursor.moveToNext()){
             String curTrxUID = cursor.getString(cursor.getColumnIndexOrThrow("trans_uid"));
-            Log.d(getClass().getSimpleName(), "trans : " + curTrxUID);
             if (!lastTrxUID.equals(curTrxUID)) { // new transaction starts
                 if (!lastTrxUID.equals("")) { // there's an old transaction, close it
                     xmlSerializer.endTag(null, GncXmlHelper.TAG_TRN_SPLITS);
@@ -251,7 +248,6 @@ public class GncXmlExporter extends Exporter{
                 xmlSerializer.startTag(null, GncXmlHelper.TAG_TRN_DESCRIPTION);
                 xmlSerializer.text(cursor.getString(cursor.getColumnIndexOrThrow("trans_desc")));
                 xmlSerializer.endTag(null, GncXmlHelper.TAG_TRN_DESCRIPTION);
-                Log.d(getClass().getSimpleName(), "trans : " + cursor.getString(cursor.getColumnIndexOrThrow("trans_desc")));
                 lastTrxUID = curTrxUID;
                 // slots
                 ArrayList<String> slotKey = new ArrayList<>();
@@ -531,18 +527,13 @@ public class GncXmlExporter extends Exporter{
             //transaction count
             xmlSerializer.startTag(null, GncXmlHelper.TAG_COUNT_DATA);
             xmlSerializer.attribute(null, GncXmlHelper.ATTR_KEY_CD_TYPE, "transaction");
-            xmlSerializer.text(mTransactionsDbAdapter.getTotalTransactionsCount(
-                    TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_TEMPLATE + " = 0 AND " +
-                    "trans_extra_info.trans_currency_count = 1",
-                    null
-            ) + "");
+            xmlSerializer.text(mTransactionsDbAdapter.getTotalTransactionsCount() + "");
             xmlSerializer.endTag(null, GncXmlHelper.TAG_COUNT_DATA);
             // export the commodities used in the DB
             exportCommodity(xmlSerializer, currencies);
             // accounts. bulk import does not rely on account order
             // the cursor gather account in arbitrary order
             exportAccounts(xmlSerializer);
-            Log.d(getClass().getSimpleName(), "finish export accounts");
             // transactions.
             exportTransactions(xmlSerializer, false);
 
