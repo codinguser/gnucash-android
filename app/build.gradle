@@ -72,7 +72,8 @@ dependencies {
             'com.doomonafireball.betterpickers:library:1.5.2',
             'com.commonsware.cwac:merge:1.1.+',
             'com.github.PhilJay:MPAndroidChart:v2.0.8',
-            'joda-time:joda-time:2.7'
+            'joda-time:joda-time:2.7',
+            'com.google.android.gms:play-services-drive:7.0.0'
     )
     androidTestCompile('com.jayway.android.robotium:robotium-solo:5.2.1',
             'com.squareup:fest-android:1.0.6')
