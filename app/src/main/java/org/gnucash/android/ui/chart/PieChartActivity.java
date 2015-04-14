@@ -23,7 +23,6 @@ import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
@@ -160,7 +159,7 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
         mChart.highlightValues(null);
         mChart.clear();
 
-        mChart.setData(getPieData(forCurrentMonth));
+        mChart.setData(getData(forCurrentMonth));
         if (mChartDataPresent) {
             mChart.animateXY(ANIMATION_DURATION, ANIMATION_DURATION);
         }
@@ -178,7 +177,7 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
      * @param forCurrentMonth sets data only for current month if {@code true}, otherwise for all time
      * @return {@code PieData} instance
      */
-    private PieData getPieData(boolean forCurrentMonth) {
+    private PieData getData(boolean forCurrentMonth) {
         List<Account> accountList = mAccountsDbAdapter.getSimpleAccountList(
                 AccountEntry.COLUMN_TYPE + " = ? AND " + AccountEntry.COLUMN_PLACEHOLDER + " = ?",
                 new String[]{ mAccountType.name(), "0" }, null);
@@ -186,13 +185,14 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
         for (Account account : accountList) {
             uidList.add(account.getUID());
         }
-        double sum = mAccountsDbAdapter.getAccountsBalance(uidList, -1, -1).absolute().asDouble();
+        double sum;
         if (forCurrentMonth) {
             long start = mChartDate.dayOfMonth().withMinimumValue().millisOfDay().withMinimumValue().toDate().getTime();
             long end = mChartDate.dayOfMonth().withMaximumValue().millisOfDay().withMaximumValue().toDate().getTime();
             sum = mAccountsDbAdapter.getAccountsBalance(uidList, start, end).absolute().asDouble();
+        } else {
+            sum = mAccountsDbAdapter.getAccountsBalance(uidList, -1, -1).absolute().asDouble();
         }
-        Log.w("Tag", "Total Balance " + sum);
 
         double otherSlice = 0;
         PieDataSet dataSet = new PieDataSet(null, "");
@@ -212,14 +212,12 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
                     balance = mAccountsDbAdapter.getAccountBalance(account.getUID()).absolute().asDouble();
                 }
 
-                Log.w("Tag", "Percent = " + balance / sum * 100);
                 if (balance / sum * 100 > mSlicePercentThreshold) {
                     dataSet.addEntry(new Entry((float) balance, dataSet.getEntryCount()));
                     dataSet.addColor(COLORS[(dataSet.getEntryCount() - 1) % COLORS.length]);
                     names.add(account.getName());
                 } else {
                     otherSlice += balance;
-                    Log.w("Tag", "Other = " + otherSlice);
                 }
             }
         }

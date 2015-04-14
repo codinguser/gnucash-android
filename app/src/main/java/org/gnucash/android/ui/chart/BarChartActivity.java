@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2015 Oleksandr Tyshkovets <olexandr.tyshkovets@gmail.com>
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.gnucash.android.ui.chart;
 
 import android.graphics.Color;
@@ -36,6 +52,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * Activity used for drawing a bar chart
  *
  * @author Oleksandr Tyshkovets <olexandr.tyshkovets@gmail.com>
  */
@@ -45,15 +62,15 @@ public class BarChartActivity extends PassLockActivity implements OnChartValueSe
     private static final String X_AXIS_PATTERN = "MMM YY";
     private static final String SELECTED_VALUE_PATTERN = "%s - %.2f (%.2f %%)";
     private static final int ANIMATION_DURATION = 3000;
-
+    private static final int NO_DATA_COLOR = Color.LTGRAY;
+    private static final int NO_DATA_BAR_COUNTS = 3;
     private static final int[] COLORS = {
             Color.parseColor("#68F1AF"), Color.parseColor("#CC1f09"), Color.parseColor("#EE8600"),
             Color.parseColor("#1469EB"), Color.parseColor("#B304AD"),
     };
 
-    private AccountsDbAdapter mAccountsDbAdapter = AccountsDbAdapter.getInstance();
-
     private BarChart mChart;
+    private AccountsDbAdapter mAccountsDbAdapter = AccountsDbAdapter.getInstance();
     private Map<AccountType, Long> mEarliestTimestampsMap = new HashMap<AccountType, Long>();
     private Map<AccountType, Long> mLatestTimestampsMap = new HashMap<AccountType, Long>();
     private long mEarliestTransactionTimestamp;
@@ -63,11 +80,12 @@ public class BarChartActivity extends PassLockActivity implements OnChartValueSe
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        //it is necessary to set the view first before calling super because of the nav drawer in BaseDrawerActivity
         setContentView(R.layout.activity_line_chart);
         super.onCreate(savedInstanceState);
         getSupportActionBar().setTitle(R.string.title_bar_chart);
 
-        mChart = new com.github.mikephil.charting.charts.BarChart(this);
+        mChart = new BarChart(this);
         ((LinearLayout) findViewById(R.id.chart)).addView(mChart);
         mChart.setOnChartValueSelectedListener(this);
         mChart.setDescription("");
@@ -76,21 +94,34 @@ public class BarChartActivity extends PassLockActivity implements OnChartValueSe
         mChart.getAxisLeft().setValueFormatter(new LargeValueFormatter());
         mChart.getAxisRight().setEnabled(false);
 
+        // below we can add/remove displayed account's types
         mChart.setData(getData(new ArrayList<AccountType>(Arrays.asList(AccountType.INCOME, AccountType.EXPENSE))));
+
         Legend legend = mChart.getLegend();
         legend.setForm(Legend.LegendForm.CIRCLE);
         legend.setPosition(Legend.LegendPosition.RIGHT_OF_CHART_INSIDE);
 
-        if (mChartDataPresent) {
+        if (!mChartDataPresent) {
+            mChart.getAxisLeft().setAxisMaxValue(10);
+            mChart.getAxisLeft().setDrawLabels(false);
+            mChart.getXAxis().setDrawLabels(false);
+            mChart.setTouchEnabled(false);
+            ((TextView) findViewById(R.id.selected_chart_slice)).setText(getResources().getString(R.string.label_chart_no_data));
+        } else {
             mChart.animateY(ANIMATION_DURATION);
         }
         mChart.invalidate();
     }
 
+    /**
+     * Returns a data object that represents a user data of the specified account types
+     * @param accountTypeList account's types which will be displayed
+     * @return a {@code BarData} instance that represents a user data
+     */
     private BarData getData(ArrayList<AccountType> accountTypeList) {
         if (!calculateEarliestAndLatestTimestamps(accountTypeList)) {
             mChartDataPresent = false;
-            return getEmptyDataSet();
+            return getEmptyData();
         }
 
         LocalDateTime startDate = new LocalDateTime(mEarliestTransactionTimestamp).withDayOfMonth(1).withMillisOfDay(0);
@@ -119,7 +150,7 @@ public class BarChartActivity extends PassLockActivity implements OnChartValueSe
         }
 
         BarDataSet set = new BarDataSet(values, "");
-        // conversion enum list to string array
+        // conversion an enum list to a string array
         set.setStackLabels(accountTypeList.toString().substring(1, accountTypeList.toString().length() - 1).split(", "));
         set.setColors(Arrays.copyOfRange(COLORS, 0, accountTypeList.size()));
         dataSets.add(set);
@@ -127,6 +158,40 @@ public class BarChartActivity extends PassLockActivity implements OnChartValueSe
         return new BarData(xValues, dataSets);
     }
 
+    /**
+     * Calculates the earliest and latest transaction's timestamps of the specified account types
+     * @param accountTypeList account's types which will be processed
+     * @return {@code false} if no data available, {@code true} otherwise
+     */
+    private boolean calculateEarliestAndLatestTimestamps(List<AccountType> accountTypeList) {
+        for (AccountType type : accountTypeList) {
+            long earliest = TransactionsDbAdapter.getInstance().getTimestampOfEarliestTransaction(type);
+            long latest = TransactionsDbAdapter.getInstance().getTimestampOfLatestTransaction(type);
+            if (earliest > 0 && latest > 0) {
+                mEarliestTimestampsMap.put(type, earliest);
+                mLatestTimestampsMap.put(type, latest);
+            } else {
+                accountTypeList.remove(type);
+            }
+        }
+
+        if (mEarliestTimestampsMap.isEmpty() && mLatestTimestampsMap.isEmpty()) {
+            return false;
+        }
+
+        List<Long> timestamps = new ArrayList<Long>(mEarliestTimestampsMap.values());
+        timestamps.addAll(mLatestTimestampsMap.values());
+        Collections.sort(timestamps);
+        mEarliestTransactionTimestamp = timestamps.get(0);
+        mLatestTransactionTimestamp = timestamps.get(timestamps.size() - 1);
+        return true;
+    }
+
+    /**
+     * Returns a map with an account type as key and correspond accounts UIDs as value
+     * @param accountTypeList account's types which will be used as keys
+     * @return
+     */
     private Map<AccountType, List<String>> getAccountMap(List<AccountType> accountTypeList) {
         Map<AccountType, List<String>> accountMap = new HashMap<AccountType, List<String>>();
         for (AccountType accountType : accountTypeList) {
@@ -141,55 +206,22 @@ public class BarChartActivity extends PassLockActivity implements OnChartValueSe
         return accountMap;
     }
 
-    private BarData getEmptyDataSet() {
+    /**
+     * Returns a data object that represents situation when no user data available
+     * @return a {@code BarData} instance for situation when no user data available
+     */
+    private BarData getEmptyData() {
         ArrayList<String> xValues = new ArrayList<String>();
         ArrayList<BarEntry> yValues = new ArrayList<BarEntry>();
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < NO_DATA_BAR_COUNTS; i++) {
             xValues.add("");
             yValues.add(new BarEntry(i % 2 == 0 ? 5f : 4.5f, i));
         }
-        String noDataMsg = getResources().getString(R.string.label_chart_no_data);
-        BarDataSet set = new BarDataSet(yValues, noDataMsg);
+        BarDataSet set = new BarDataSet(yValues, getResources().getString(R.string.label_chart_no_data));
         set.setDrawValues(false);
-        set.setColor(Color.LTGRAY);
-
-        mChart.getAxisLeft().setAxisMaxValue(10);
-        mChart.getAxisLeft().setDrawLabels(false);
-        mChart.getXAxis().setDrawLabels(false);
-        mChart.setTouchEnabled(false);
-        ((TextView) findViewById(R.id.selected_chart_slice)).setText(noDataMsg);
+        set.setColor(NO_DATA_COLOR);
 
         return new BarData(xValues, new ArrayList<BarDataSet>(Arrays.asList(set)));
-    }
-
-    /**
-     *
-     * @param accountTypeList
-     * @return {@code false} if no data present, {@code true} otherwise
-     */
-    private boolean calculateEarliestAndLatestTimestamps(List<AccountType> accountTypeList) {
-        for (AccountType type : accountTypeList) {
-            long earliest = TransactionsDbAdapter.getInstance().getTimestampOfEarliestTransaction(type);
-            long latest = TransactionsDbAdapter.getInstance().getTimestampOfLatestTransaction(type);
-            if (earliest > 0 && latest > 0) {
-                mEarliestTimestampsMap.put(type, earliest);
-                mLatestTimestampsMap.put(type, latest);
-            } else {
-                accountTypeList.remove(type);
-            }
-        }
-
-        if (mEarliestTimestampsMap.isEmpty()) {
-            return false;
-        }
-
-        List<Long> timestamps = new ArrayList<Long>(mEarliestTimestampsMap.values());
-        timestamps.addAll(mLatestTimestampsMap.values());
-        Collections.sort(timestamps);
-        mEarliestTransactionTimestamp = timestamps.get(0);
-        mLatestTransactionTimestamp = timestamps.get(timestamps.size() - 1);
-
-        return true;
     }
 
     @Override
@@ -212,22 +244,21 @@ public class BarChartActivity extends PassLockActivity implements OnChartValueSe
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.menu_toggle_legend: {
+            case R.id.menu_toggle_legend:
                 mChart.getLegend().setEnabled(!mChart.getLegend().isEnabled());
                 mChart.invalidate();
                 break;
-            }
-            case R.id.menu_percentage_mode: {
+
+            case R.id.menu_percentage_mode:
                 mTotalPercentageMode = !mTotalPercentageMode;
                 int msgId = mTotalPercentageMode ? R.string.toast_chart_percentage_mode_total
                         : R.string.toast_chart_percentage_mode_current_bar;
                 Toast.makeText(this, msgId, Toast.LENGTH_LONG).show();
                 break;
-            }
-            case android.R.id.home: {
+
+            case android.R.id.home:
                 finish();
                 break;
-            }
         }
         return true;
     }
