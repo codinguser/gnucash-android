@@ -236,7 +236,7 @@ public class ScheduledActionDbAdapter extends DatabaseAdapter {
      */
     public List<ScheduledAction> getAllEnabledScheduledActions(){
         Cursor cursor = mDb.query(mTableName,
-                        null, ScheduledActionEntry.COLUMN_ENABLED + "=1", null, null, null, null);
+                null, ScheduledActionEntry.COLUMN_ENABLED + "=1", null, null, null, null);
         List<ScheduledAction> scheduledActions = new ArrayList<ScheduledAction>();
         while (cursor.moveToNext()){
             scheduledActions.add(buildScheduledEventInstance(cursor));
@@ -244,4 +244,16 @@ public class ScheduledActionDbAdapter extends DatabaseAdapter {
         return scheduledActions;
     }
 
+    /**
+     * Returns the number of instances of the action which have been created from this scheduled action
+     * @param scheduledActionUID GUID of scheduled action
+     * @return Number of transactions created from scheduled action
+     */
+    public long getActionInstanceCount(String scheduledActionUID) {
+        String sql = "SELECT COUNT(*) FROM " + DatabaseSchema.TransactionEntry.TABLE_NAME
+                + " WHERE " + DatabaseSchema.TransactionEntry.COLUMN_SCHEDX_ACTION_UID + "=?";
+        SQLiteStatement statement = mDb.compileStatement(sql);
+        statement.bindString(1, scheduledActionUID);
+        return statement.simpleQueryForLong();
+    }
 }

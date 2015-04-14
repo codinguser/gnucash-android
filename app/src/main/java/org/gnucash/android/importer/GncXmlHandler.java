@@ -471,6 +471,7 @@ public class GncXmlHandler extends DefaultHandler {
             mScheduledAction.setUID(characterString);
         }
         else if (qualifiedName.equals(GncXmlHelper.TAG_SX_NAME)){
+            //FIXME: Do not rely on the type, rather lookup the SX_ID from previous tag to find action type
             ScheduledAction.ActionType type = ScheduledAction.ActionType.valueOf(characterString);
             mScheduledAction.setActionType(type);
         }

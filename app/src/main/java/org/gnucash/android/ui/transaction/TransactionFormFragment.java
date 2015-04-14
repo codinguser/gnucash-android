@@ -441,6 +441,7 @@ public class TransactionFormFragment extends SherlockFragment implements
         if (scheduledActionUID != null && !scheduledActionUID.isEmpty()) {
             ScheduledAction scheduledAction = ScheduledActionDbAdapter.getInstance().getScheduledAction(scheduledActionUID);
             mRecurrenceRule = scheduledAction.getRuleString();
+            mEventRecurrence.parse(mRecurrenceRule);
             mRecurrenceTextView.setText(scheduledAction.getRepeatString());
         }
     }
@@ -734,19 +735,19 @@ public class TransactionFormFragment extends SherlockFragment implements
             mTransaction.setTime(cal.getTimeInMillis());
             mTransaction.setNote(notes);
 
-            // set as not exported.
+            // set as not exported because we have just edited it
             mTransaction.setExported(false);
             mTransaction.setTemplate(mSaveTemplateCheckbox.isChecked());
             mTransactionsDbAdapter.addTransaction(mTransaction);
 
-            if (mSaveTemplateCheckbox.isChecked()) {
-                Transaction templateTransaction = mTransaction;
+            if (mSaveTemplateCheckbox.isChecked()) {//template is automatically checked when a transaction is scheduled
                 if (!mEditMode) { //means it was new transaction, so a new template
-                    templateTransaction = new Transaction(mTransaction, true);
+                    Transaction templateTransaction = new Transaction(mTransaction, true);
                     templateTransaction.setTemplate(true);
                     mTransactionsDbAdapter.addTransaction(templateTransaction);
-                }
-                scheduleRecurringTransaction(templateTransaction.getUID());
+                    scheduleRecurringTransaction(templateTransaction.getUID());
+                } else
+                    scheduleRecurringTransaction(mTransaction.getUID());
             } else {
                 String scheduledActionUID = getArguments().getString(UxArgument.SCHEDULED_ACTION_UID);
                 if (scheduledActionUID != null){ //we were editing a schedule and it was turned off
@@ -794,7 +795,6 @@ public class TransactionFormFragment extends SherlockFragment implements
 
         for (ScheduledAction event : events) {
             event.setActionUID(transactionUID);
-            event.setLastRun(System.currentTimeMillis());
             scheduledActionDbAdapter.addScheduledAction(event);
 
             Log.i("TransactionFormFragment", event.toString());

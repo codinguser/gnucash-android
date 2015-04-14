@@ -46,7 +46,7 @@ public class ScheduledAction extends BaseModel{
     /**
      * Next scheduled run of Event
      */
-    private long mLastRun;
+    private long mLastRun = 0;
 
     /**
      * Unique ID of the template from which the recurring event will be executed.

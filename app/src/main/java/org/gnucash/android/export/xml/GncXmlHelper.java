@@ -110,7 +110,7 @@ public abstract class GncXmlHelper {
     public static final String TAG_SX_NUM_OCCUR             = "sx:num-occur";
     public static final String TAG_SX_REM_OCCUR             = "sx:rem-occur";
     public static final String TAG_SX_TAG                   = "sx:tag";
-    public static final String TAG_SX_TEMPL_ACTION          = "sx:templ-action";
+    public static final String TAG_SX_TEMPL_ACTION          = "sx:templ-action"; //FIXME: This tag is unknown to GnuCash desktop. For full compat, we will need to fix it
     public static final String TAG_SX_SCHEDULE              = "sx:schedule";
     public static final String TAG_RECURRENCE               = "gnc:recurrence";
     public static final String TAG_RX_MULT                  = "recurrence:mult";
@@ -129,7 +129,7 @@ public abstract class GncXmlHelper {
     public static final String KEY_NOTES            = "notes";
     public static final String KEY_EXPORTED         = "exported";
     public static final String KEY_SCHEDX_ACTION    = "sched-xaction";
-    public static final String KEY_SPLIT_ACCOUNT    = "key_account";
+    public static final String KEY_SPLIT_ACCOUNT    = "account";
     public static final String KEY_DEBIT_FORMULA    = "debit-formula";
     public static final String KEY_CREDIT_FORMULA   = "credit-formula";
     public static final String KEY_FROM_SCHED_ACTION        = "from-sched-xaction";
