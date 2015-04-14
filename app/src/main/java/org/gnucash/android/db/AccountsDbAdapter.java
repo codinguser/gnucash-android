@@ -118,7 +118,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
         long rowId =  mDb.replace(AccountEntry.TABLE_NAME, null, contentValues);
 
 		//now add transactions if there are any
-		if (rowId > 0){
+		if (rowId > 0 && account.getAccountType() != AccountType.ROOT){
             //update the fully qualified account name
             updateAccount(rowId, AccountEntry.COLUMN_FULL_NAME, getFullyQualifiedAccountName(rowId));
 			for (Transaction t : account.getTransactions()) {
@@ -966,7 +966,12 @@ public class AccountsDbAdapter extends DatabaseAdapter {
         } finally {
             cursor.close();
         }
-        throw new IllegalArgumentException("ROOT account doesn't exist in DB");
+        // No ROOT exits, create a new one
+        Account rootAccount = new Account("ROOT Account");
+        rootAccount.setAccountType(AccountType.ROOT);
+        rootAccount.setFullName(" ");
+        addAccount(rootAccount);
+        return rootAccount.getUID();
     }
 
     /**
