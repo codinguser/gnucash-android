@@ -103,11 +103,12 @@ public class AccountsDbAdapter extends DatabaseAdapter {
         }
         contentValues.put(AccountEntry.COLUMN_FAVORITE,     account.isFavorite() ? 1 : 0);
         contentValues.put(AccountEntry.COLUMN_FULL_NAME,    account.getFullName());
-        if (account.getParentUID() != null) {
-            contentValues.put(AccountEntry.COLUMN_PARENT_ACCOUNT_UID, account.getParentUID());
-        } else {
-            contentValues.putNull(AccountEntry.COLUMN_PARENT_ACCOUNT_UID);
+        String parentAccountUID = account.getParentUID();
+        if (parentAccountUID == null && account.getAccountType() != AccountType.ROOT) {
+            parentAccountUID = getOrCreateGnuCashRootAccountUID();
         }
+        contentValues.put(AccountEntry.COLUMN_PARENT_ACCOUNT_UID, parentAccountUID);
+
         if (account.getDefaultTransferAccountUID() != null) {
             contentValues.put(AccountEntry.COLUMN_DEFAULT_TRANSFER_ACCOUNT_UID, account.getDefaultTransferAccountUID());
         } else {
@@ -629,7 +630,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
             throw new IllegalArgumentException("fullName cannot be empty");
         }
         String[] tokens = fullName.trim().split(ACCOUNT_NAME_SEPARATOR);
-        String uid = getGnuCashRootAccountUID();
+        String uid = getOrCreateGnuCashRootAccountUID();
         String parentName = "";
         ArrayList<Account> accountsList = new ArrayList<Account>();
         for (String token : tokens) {
@@ -914,7 +915,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
                         + AccountEntry.COLUMN_PARENT_ACCOUNT_UID + " = ?) AND "
                         + AccountEntry.COLUMN_HIDDEN + " = 0 AND "
                         + AccountEntry.COLUMN_TYPE + " != ?",
-                new String[]{"" + getGnuCashRootAccountUID(), AccountType.ROOT.name()}, null);
+                new String[]{"" + getOrCreateGnuCashRootAccountUID(), AccountType.ROOT.name()}, null);
     }
 
     /**
@@ -951,12 +952,12 @@ public class AccountsDbAdapter extends DatabaseAdapter {
     }
 
     /**
-     * Returns the GnuCash ROOT account UID.
+     * Returns the GnuCash ROOT account UID if one exists (or creates one if necessary).
      * <p>In GnuCash desktop account structure, there is a root account (which is not visible in the UI) from which
      * other top level accounts derive. GnuCash Android also enforces a ROOT account now</p>
      * @return Unique ID of the GnuCash root account.
      */
-    public String getGnuCashRootAccountUID() {
+    public String getOrCreateGnuCashRootAccountUID() {
         Cursor cursor = fetchAccounts(AccountEntry.COLUMN_TYPE + "= ?",
                 new String[]{AccountType.ROOT.name()}, null);
         try {
@@ -1073,7 +1074,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
         String accountName = getAccountName(accountUID);
         String parentAccountUID = getParentAccountUID(accountUID);
 
-        if (parentAccountUID == null || parentAccountUID.equalsIgnoreCase(getGnuCashRootAccountUID())){
+        if (parentAccountUID == null || parentAccountUID.equalsIgnoreCase(getOrCreateGnuCashRootAccountUID())){
             return accountName;
         }
 

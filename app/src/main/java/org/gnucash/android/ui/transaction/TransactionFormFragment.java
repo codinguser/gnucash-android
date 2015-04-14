@@ -500,7 +500,7 @@ public class TransactionFormFragment extends SherlockFragment implements
 
 		String conditions = "(" + DatabaseSchema.AccountEntry.COLUMN_UID + " != '" + mAccountUID
                             + "' AND " + (mMultiCurrency ? "" : (DatabaseSchema.AccountEntry.COLUMN_CURRENCY + " = '" + mAccountsDbAdapter.getCurrencyCode(mAccountUID)
-                            + "' AND ")) + DatabaseSchema.AccountEntry.COLUMN_UID + " != '" + mAccountsDbAdapter.getGnuCashRootAccountUID()
+                            + "' AND ")) + DatabaseSchema.AccountEntry.COLUMN_UID + " != '" + mAccountsDbAdapter.getOrCreateGnuCashRootAccountUID()
                             + "' AND " + DatabaseSchema.AccountEntry.COLUMN_PLACEHOLDER + " = 0"
                             + ")";
 

@@ -110,7 +110,7 @@ public class BulkMoveDialogFragment extends DialogFragment {
 		Cursor cursor = accountsDbAdapter.fetchAccountsOrderedByFullName(conditions,
                 new String[]{mOriginAccountUID,
                         accountsDbAdapter.getCurrencyCode(mOriginAccountUID),
-                        "" + accountsDbAdapter.getGnuCashRootAccountUID()
+                        "" + accountsDbAdapter.getOrCreateGnuCashRootAccountUID()
                 });
 
 		SimpleCursorAdapter mCursorAdapter = new QualifiedAccountNameCursorAdapter(getActivity(),

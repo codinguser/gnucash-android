@@ -206,11 +206,11 @@ public class SplitEditorDialogFragment extends DialogFragment {
 
         String conditions = "(" //+ AccountEntry._ID + " != " + mAccountId + " AND "
                 + (mMultiCurrency ? "" : (DatabaseSchema.AccountEntry.COLUMN_CURRENCY + " = ? AND "))
-                + DatabaseSchema.AccountEntry.COLUMN_UID + " != '" + mAccountsDbAdapter.getGnuCashRootAccountUID() + "' AND "
+                + DatabaseSchema.AccountEntry.COLUMN_UID + " != '" + mAccountsDbAdapter.getOrCreateGnuCashRootAccountUID() + "' AND "
                 + DatabaseSchema.AccountEntry.COLUMN_PLACEHOLDER + " = 0"
                 + ")";
         mCursor = mAccountsDbAdapter.fetchAccountsOrderedByFullName(conditions,
-                mMultiCurrency ? new String[]{"" + mAccountsDbAdapter.getGnuCashRootAccountUID()} :
+                mMultiCurrency ? new String[]{"" + mAccountsDbAdapter.getOrCreateGnuCashRootAccountUID()} :
                         new String[]{mAccountsDbAdapter.getCurrencyCode(mAccountUID)}
         );
     }

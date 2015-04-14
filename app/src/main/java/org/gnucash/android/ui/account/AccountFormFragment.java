@@ -317,7 +317,7 @@ public class AccountFormFragment extends SherlockFragment {
             getSherlockActivity().getSupportActionBar().setTitle(R.string.title_edit_account);
         }
 
-        mRootAccountUID = mAccountsDbAdapter.getGnuCashRootAccountUID();
+        mRootAccountUID = mAccountsDbAdapter.getOrCreateGnuCashRootAccountUID();
         if (mRootAccountUID != null)
             mRootAccountId = mAccountsDbAdapter.getID(mRootAccountUID);
 
@@ -539,7 +539,7 @@ public class AccountFormFragment extends SherlockFragment {
     private void loadDefaultTransferAccountList(){
         String condition = DatabaseSchema.AccountEntry.COLUMN_UID + " != '" + mAccountUID + "' "
                 + " AND " + DatabaseSchema.AccountEntry.COLUMN_PLACEHOLDER + "=0"
-                + " AND " + DatabaseSchema.AccountEntry.COLUMN_UID + " != '" + mAccountsDbAdapter.getGnuCashRootAccountUID() + "'";
+                + " AND " + DatabaseSchema.AccountEntry.COLUMN_UID + " != '" + mAccountsDbAdapter.getOrCreateGnuCashRootAccountUID() + "'";
 
         //using whereArgs (2nd parameter) would produce safer sql,
         // however we get an exception because mAccountUID can be null, or the root account may be null as well
@@ -567,7 +567,7 @@ public class AccountFormFragment extends SherlockFragment {
 
         if (mAccount != null){  //if editing an account
             mDescendantAccountUIDs = mAccountsDbAdapter.getDescendantAccountUIDs(mAccount.getUID(), null, null);
-            String rootAccountUID = mAccountsDbAdapter.getGnuCashRootAccountUID();
+            String rootAccountUID = mAccountsDbAdapter.getOrCreateGnuCashRootAccountUID();
             List<String> descendantAccountUIDs = new ArrayList<String>(mDescendantAccountUIDs);
             if (rootAccountUID != null)
                 descendantAccountUIDs.add(rootAccountUID);
