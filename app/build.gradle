@@ -22,7 +22,7 @@ android {
     buildToolsVersion "21.1.2"
     defaultConfig {
         applicationId "org.gnucash.android"
-        minSdkVersion 9
+        minSdkVersion 10
         targetSdkVersion 19
         versionCode versionMajor * 10000 + versionMinor * 1000 + versionPatch * 100 + versionBuild
         versionName "${versionMajor}.${versionMinor}.${versionPatch}"
