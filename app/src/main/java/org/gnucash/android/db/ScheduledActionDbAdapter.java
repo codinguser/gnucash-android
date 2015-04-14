@@ -72,6 +72,29 @@ public class ScheduledActionDbAdapter extends DatabaseAdapter {
     }
 
     /**
+     * Updates only the recurrence attributes of the scheduled action.
+     * The recurrence attributes are the period, start time, end time and/or total frequency.
+     * All other properties of a scheduled event are only used for interal database tracking and are
+     * not central to the recurrence schedule.
+     * <p><b>The GUID of the scheduled action should already exist in the database</b></p>
+     * @param scheduledAction Scheduled action
+     * @return Database record ID of the edited scheduled action
+     */
+    public long updateRecurrenceAttributes(ScheduledAction scheduledAction){
+        ContentValues contentValues = getContentValues(scheduledAction);
+        contentValues.put(ScheduledActionEntry.COLUMN_PERIOD,    scheduledAction.getPeriod());
+        contentValues.put(ScheduledActionEntry.COLUMN_START_TIME, scheduledAction.getStartTime());
+        contentValues.put(ScheduledActionEntry.COLUMN_END_TIME,  scheduledAction.getEndTime());
+        contentValues.put(ScheduledActionEntry.COLUMN_TAG,       scheduledAction.getTag());
+        contentValues.put(ScheduledActionEntry.COLUMN_TOTAL_FREQUENCY, scheduledAction.getTotalFrequency());
+
+        Log.d(TAG, "Updating scheduled event recurrence attributes");
+        String where = ScheduledActionEntry.COLUMN_UID + "=?";
+        String[] whereArgs = new String[]{scheduledAction.getUID()};
+        return mDb.update(ScheduledActionEntry.TABLE_NAME, contentValues, where, whereArgs);
+    }
+
+    /**
      * Adds a multiple scheduled actions to the database in one transaction.
      * @param scheduledActionList List of ScheduledActions
      * @return Returns the number of rows inserted
@@ -96,16 +119,19 @@ public class ScheduledActionDbAdapter extends DatabaseAdapter {
                     + ScheduledActionEntry.COLUMN_EXECUTION_COUNT   + " ) VALUES ( ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? )");
             for (ScheduledAction schedxAction:scheduledActionList) {
                 replaceStatement.clearBindings();
-                replaceStatement.bindString(1,  schedxAction.getUID());
-                replaceStatement.bindString(2,  schedxAction.getActionUID());
-                replaceStatement.bindString(3,  schedxAction.getActionType().name());
-                replaceStatement.bindLong(4,    schedxAction.getStartTime());
-                replaceStatement.bindLong(5,    schedxAction.getEndTime());
-                replaceStatement.bindLong(6,    schedxAction.getLastRun());
-                replaceStatement.bindLong(7,    schedxAction.getPeriod());
+                replaceStatement.bindString(1, schedxAction.getUID());
+                replaceStatement.bindString(2, schedxAction.getActionUID());
+                replaceStatement.bindString(3, schedxAction.getActionType().name());
+                replaceStatement.bindLong(4, schedxAction.getStartTime());
+                replaceStatement.bindLong(5, schedxAction.getEndTime());
+                replaceStatement.bindLong(6, schedxAction.getLastRun());
+                replaceStatement.bindLong(7, schedxAction.getPeriod());
                 replaceStatement.bindLong(8,    schedxAction.isEnabled() ? 1 : 0);
                 replaceStatement.bindString(9,  schedxAction.getCreatedTimestamp().toString());
-                replaceStatement.bindString(10, schedxAction.getTag());
+                if (schedxAction.getTag() == null)
+                    replaceStatement.bindNull(10);
+                else
+                    replaceStatement.bindString(10, schedxAction.getTag());
                 replaceStatement.bindString(11, Integer.toString(schedxAction.getTotalFrequency()));
                 replaceStatement.bindString(12, Integer.toString(schedxAction.getExecutionCount()));
 
@@ -157,7 +183,7 @@ public class ScheduledActionDbAdapter extends DatabaseAdapter {
      * @param uid GUID of event
      * @return ScheduledEvent object instance
      */
-    public ScheduledAction getScheduledEvent(String uid){
+    public ScheduledAction getScheduledAction(String uid){
         Cursor cursor = fetchRecord(getID(uid));
 
         ScheduledAction scheduledAction = null;

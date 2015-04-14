@@ -67,6 +67,11 @@ public final class UxArgument {
      */
     public static final String PARENT_ACCOUNT_UID = "parent_account_uid";
 
+    /**
+     * Key for passing the scheduled action UID to the transactions editor
+     */
+    public static final String SCHEDULED_ACTION_UID = "scheduled_action_uid";
+
     //prevent initialization of instances of this class
     private UxArgument(){
         //prevent even the native class from calling the ctor

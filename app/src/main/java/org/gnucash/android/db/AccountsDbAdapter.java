@@ -1113,17 +1113,8 @@ public class AccountsDbAdapter extends DatabaseAdapter {
      * @return <code>true</code> if the account is a placeholder account, <code>false</code> otherwise
      */
     public boolean isPlaceholderAccount(String accountUID) {
-        Cursor cursor = mDb.query(AccountEntry.TABLE_NAME,
-                new String[]{AccountEntry.COLUMN_PLACEHOLDER},
-                AccountEntry.COLUMN_UID + " = ?",
-                new String[]{accountUID}, null, null, null);
-
-        try {
-            return cursor.moveToFirst()
-                    && cursor.getInt(cursor.getColumnIndexOrThrow(AccountEntry.COLUMN_PLACEHOLDER)) == 1;
-        } finally {
-            cursor.close();
-        }
+        String isPlaceholder = getAttribute(accountUID, AccountEntry.COLUMN_PLACEHOLDER);
+        return Integer.parseInt(isPlaceholder) == 1;
     }
 
     /**
@@ -1132,17 +1123,8 @@ public class AccountsDbAdapter extends DatabaseAdapter {
      * @return <code>true</code> if the account is hidden, <code>false</code> otherwise
      */
     public boolean isHiddenAccount(String accountUID){
-        Cursor cursor = mDb.query(AccountEntry.TABLE_NAME,
-                new String[]{AccountEntry.COLUMN_HIDDEN},
-                AccountEntry.COLUMN_UID + " = ?",
-                new String[]{accountUID}, null, null, null);
-
-        try {
-            return cursor.moveToFirst()
-                    && cursor.getInt(cursor.getColumnIndexOrThrow(AccountEntry.COLUMN_HIDDEN)) == 1;
-        } finally {
-            cursor.close();
-        }
+        String isHidden = getAttribute(accountUID, AccountEntry.COLUMN_HIDDEN);
+        return Integer.parseInt(isHidden) == 1;
     }
 
     /**
@@ -1151,17 +1133,8 @@ public class AccountsDbAdapter extends DatabaseAdapter {
      * @return <code>true</code> if the account is a favorite account, <code>false</code> otherwise
      */
     public boolean isFavoriteAccount(String accountUID){
-        Cursor cursor = mDb.query(AccountEntry.TABLE_NAME,
-                new String[]{AccountEntry.COLUMN_FAVORITE},
-                AccountEntry.COLUMN_UID + " = ?", new String[]{accountUID},
-                null, null, null);
-
-        try {
-            return cursor.moveToFirst()
-                    && cursor.getInt(cursor.getColumnIndexOrThrow(AccountEntry.COLUMN_FAVORITE)) == 1;
-        } finally {
-            cursor.close();
-        }
+        String isFavorite = getAttribute(accountUID, AccountEntry.COLUMN_FAVORITE);
+        return Integer.parseInt(isFavorite) == 1;
     }
 
     /**

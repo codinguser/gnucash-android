@@ -157,19 +157,17 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
             for (Transaction transaction : transactionList) {
                 //Log.d(TAG, "Replacing transaction in db");
                 replaceStatement.clearBindings();
-                replaceStatement.bindString(1,  transaction.getUID());
-                replaceStatement.bindString(2,  transaction.getDescription());
-                replaceStatement.bindString(3,  transaction.getNote());
-                replaceStatement.bindLong(4,    transaction.getTimeMillis());
-                replaceStatement.bindLong(5,    transaction.isExported() ? 1 : 0);
+                replaceStatement.bindString(1, transaction.getUID());
+                replaceStatement.bindString(2, transaction.getDescription());
+                replaceStatement.bindString(3, transaction.getNote());
+                replaceStatement.bindLong(4, transaction.getTimeMillis());
+                replaceStatement.bindLong(5, transaction.isExported() ? 1 : 0);
                 replaceStatement.bindString(6,  transaction.getCurrencyCode());
                 replaceStatement.bindString(7,  transaction.getCreatedTimestamp().toString());
-                if (transaction.getScheduledActionUID() == null) {
+                if (transaction.getScheduledActionUID() == null)
                     replaceStatement.bindNull(8);
-                }
-                else {
-                    replaceStatement.bindString(8, transaction.getScheduledActionUID());
-                }
+                else
+                    replaceStatement.bindString(8,  transaction.getScheduledActionUID());
                 replaceStatement.bindLong(9,    transaction.isTemplate() ? 1 : 0);
                 replaceStatement.execute();
                 rowInserted ++;
@@ -277,9 +275,10 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
                 + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_UID + " = "
                 + ScheduledActionEntry.TABLE_NAME + "." + ScheduledActionEntry.COLUMN_ACTION_UID);
 
-        String[] projectionIn = new String[]{TransactionEntry.TABLE_NAME + ".*"};
+        String[] projectionIn = new String[]{TransactionEntry.TABLE_NAME + ".*",
+                ScheduledActionEntry.TABLE_NAME+"."+ScheduledActionEntry.COLUMN_UID + " AS " + "origin_scheduled_action_uid"};
         String sortOrder = TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_DESCRIPTION + " ASC";
-        queryBuilder.setDistinct(true);
+//        queryBuilder.setDistinct(true);
 
         return queryBuilder.query(mDb, projectionIn, null, null, null, null, sortOrder);
     }

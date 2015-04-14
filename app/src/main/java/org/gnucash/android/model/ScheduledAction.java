@@ -16,10 +16,15 @@
 package org.gnucash.android.model;
 
 import org.gnucash.android.ui.util.RecurrenceParser;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
+import java.io.IOException;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.TimeZone;
 
 /**
 * Represents a scheduled event which is stored in the database and run at regular mPeriod
@@ -76,34 +81,66 @@ public class ScheduledAction extends BaseModel{
         mIsEnabled = true; //all actions are enabled by default
     }
 
+    /**
+     * Returns the type of action to be performed by this scheduled action
+     * @return ActionType of the scheduled action
+     */
     public ActionType getActionType() {
         return mActionType;
     }
 
+    /**
+     * Sets the {@link ActionType}
+     * @param actionType Type of action
+     */
     public void setActionType(ActionType actionType) {
         this.mActionType = actionType;
     }
 
+    /**
+     * Returns the GUID of the action covered by this scheduled action
+     * @return GUID of action
+     */
     public String getActionUID() {
         return mActionUID;
     }
 
+    /**
+     * Sets the GUID of the action being scheduled
+     * @param actionUID GUID of the action
+     */
     public void setActionUID(String actionUID) {
         this.mActionUID = actionUID;
     }
 
+    /**
+     * Returns the timestamp of the last execution of this scheduled action
+     * @return Timestamp in milliseconds since Epoch
+     */
     public long getLastRun() {
         return mLastRun;
     }
 
+    /**
+     * Set time of last execution of the scheduled action
+     * @param nextRun Timestamp in milliseconds since Epoch
+     */
     public void setLastRun(long nextRun) {
         this.mLastRun = nextRun;
     }
 
+    /**
+     * Returns the period of this scheduled action
+     * @return Period in milliseconds since Epoch
+     */
     public long getPeriod() {
         return mPeriod;
     }
 
+    /**
+     * Sets the period of the scheduled action
+     * @param period Period in milliseconds since Epoch
+     */
     public void setPeriod(long period) {
         this.mPeriod = period;
     }
@@ -178,14 +215,26 @@ public class ScheduledAction extends BaseModel{
         return periodType;
     }
 
+    /**
+     * Returns the time of first execution of the scheduled action
+     * @return Start time of scheduled action in milliseconds since Epoch
+     */
     public long getStartTime() {
         return mStartDate;
     }
 
+    /**
+     * Sets the time of first execution of the scheduled action
+     * @param startDate Timestamp in milliseconds since Epoch
+     */
     public void setStartTime(long startDate) {
         this.mStartDate = startDate;
     }
 
+    /**
+     * Returns the time of last execution of the scheduled action
+     * @return Timestamp in milliseconds since Epoch
+     */
     public long getEndTime() {
         return mEndDate;
     }
@@ -200,22 +249,47 @@ public class ScheduledAction extends BaseModel{
         return mStartDate + (mPeriod * mTotalFrequency);
     }
 
+    /**
+     * Sets the end time of the scheduled action
+     * @param endDate Timestamp in milliseconds since Epoch
+     */
     public void setEndTime(long endDate) {
         this.mEndDate = endDate;
     }
 
+    /**
+     * Returns the tag of this scheduled action
+     * <p>The tag saves additional information about the scheduled action,
+     * e.g. such as export parameters for scheduled backups</p>
+     * @return Tag of scheduled action
+     */
     public String getTag() {
         return mTag;
     }
 
+    /**
+     * Sets the tag of the schedules action.
+     * <p>The tag saves additional information about the scheduled action,
+     * e.g. such as export parameters for scheduled backups</p>
+     * @param tag Tag of scheduled action
+     */
     public void setTag(String tag) {
         this.mTag = tag;
     }
 
+    /**
+     * Returns {@code true} if the scheduled action is enabled, {@code false} otherwise
+     * @return {@code true} if the scheduled action is enabled, {@code false} otherwise
+     */
     public boolean isEnabled(){
         return mIsEnabled;
     }
 
+    /**
+     * Toggles the enabled state of the scheduled action
+     * Disabled scheduled actions will not be executed
+     * @param enabled Flag if the scheduled action is enabled or not
+     */
     public void setEnabled(boolean enabled){
         this.mIsEnabled = enabled;
     }
@@ -257,42 +331,66 @@ public class ScheduledAction extends BaseModel{
      * @return String description of repeat schedule
      */
     public String getRepeatString(){
-        String dayOfWeek = new SimpleDateFormat("E", Locale.US).format(new Date(mStartDate));
+        String dayOfWeek = new SimpleDateFormat("EEEE", Locale.US).format(new Date(mStartDate));
         PeriodType periodType = getPeriodType();
-        StringBuilder ruleBuilder = new StringBuilder(periodType.getLocalizedFrequencyDescription());
-        ruleBuilder.append(" on " + dayOfWeek);
-        ruleBuilder.append(";");
+        StringBuilder ruleBuilder = new StringBuilder(periodType.getFrequencyRepeatString());
+
+        if (periodType == PeriodType.WEEK) {
+            ruleBuilder.append(" on ").append(dayOfWeek);
+        }
+
         if (mEndDate > 0){
-            ruleBuilder.append(" until " + new SimpleDateFormat("M/d", Locale.US).format(new Date(mEndDate)) + ";");
+            ruleBuilder.append(", ");
+            ruleBuilder.append(" until ")
+                    .append(SimpleDateFormat.getDateInstance(DateFormat.SHORT).format(new Date(mEndDate)));
         } else if (mTotalFrequency > 0){
-            ruleBuilder.append(" for " + mTotalFrequency + " times;");
+            ruleBuilder.append(", ");
+            ruleBuilder.append(" for ").append(mTotalFrequency).append(" times");
         }
         return ruleBuilder.toString();
     }
 
     /**
      * Creates an RFC 2445 string which describes this recurring event
+     * <p>See http://recurrance.sourceforge.net/</p>
      * @return String describing event
      */
     public String getRuleString(){
-        String dayOfWeek = new SimpleDateFormat("EE", Locale.US).format(new Date(mStartDate));
+        String separator = ";";
         PeriodType periodType = getPeriodType();
-        StringBuilder ruleBuilder = new StringBuilder(periodType.getFrequencyDescription());
-        ruleBuilder.append(" on " + dayOfWeek);
-        ruleBuilder.append(";");
+
+        StringBuilder ruleBuilder = new StringBuilder();
+
+//        =======================================================================
+        //This section complies with the formal rules, but the betterpickers library doesn't like/need it
+
+//        SimpleDateFormat startDateFormat = new SimpleDateFormat("'TZID'=zzzz':'yyyyMMdd'T'HHmmss", Locale.US);
+//        ruleBuilder.append("DTSTART;");
+//        ruleBuilder.append(startDateFormat.format(new Date(mStartDate)));
+//            ruleBuilder.append("\n");
+//        ruleBuilder.append("RRULE:");
+//        ========================================================================
+
+        ruleBuilder.append("FREQ=").append(periodType.getFrequencyDescription()).append(separator);
+        ruleBuilder.append("INTERVAL=").append(periodType.getMultiplier()).append(separator);
+        ruleBuilder.append(periodType.getByParts(mStartDate)).append(separator);
+
         if (mEndDate > 0){
-            ruleBuilder.append(" until " + new SimpleDateFormat("M/d/yyyy", Locale.US).format(new Date(mEndDate)) + ";");
+            SimpleDateFormat df = new SimpleDateFormat("yyyyMMdd'T'HHmmss'Z'", Locale.US);
+            df.setTimeZone(TimeZone.getTimeZone("UTC"));
+            ruleBuilder.append("UNTIL=").append(df.format(new Date(mEndDate))).append(separator);
         } else if (mTotalFrequency > 0){
-            ruleBuilder.append(" for " + mTotalFrequency + " times;");
+            ruleBuilder.append("COUNT=").append(mTotalFrequency).append(separator);
         }
+
         return ruleBuilder.toString();
     }
 
     /**
      * Creates a ScheduledAction from a Transaction and a period
-     * @param transaction
-     * @param period
-     * @return
+     * @param transaction Transaction to be scheduled
+     * @param period Period in milliseconds since Epoch
+     * @return Scheduled Action
      */
     public static ScheduledAction parseScheduledAction(Transaction transaction, long period){
         ScheduledAction scheduledAction = new ScheduledAction(ActionType.TRANSACTION);
@@ -303,9 +401,6 @@ public class ScheduledAction extends BaseModel{
 
     @Override
     public String toString() {
-
-        String eventString = mActionType.name() + " - " + getRepeatString();
-
-        return eventString;
+        return mActionType.name() + " - " + getRepeatString();
     }
 }

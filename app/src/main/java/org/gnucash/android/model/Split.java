@@ -70,46 +70,94 @@ public class Split extends BaseModel{
         }
     }
 
+    /**
+     * Returns the amount of the split
+     * @return Money amount of the split
+     */
     public Money getAmount() {
         return mAmount;
     }
 
+    /**
+     * Sets the amount of the split
+     * @param amount Money amount of this split
+     */
     public void setAmount(Money amount) {
         this.mAmount = amount;
     }
 
+    /**
+     * Returns transaction GUID to which the split belongs
+     * @return String GUID of the transaction
+     */
     public String getTransactionUID() {
         return mTransactionUID;
     }
 
+    /**
+     * Sets the transaction to which the split belongs
+     * @param transactionUID GUID of transaction
+     */
     public void setTransactionUID(String transactionUID) {
         this.mTransactionUID = transactionUID;
     }
 
+    /**
+     * Returns the account GUID of this split
+     * @return GUID of the account
+     */
     public String getAccountUID() {
         return mAccountUID;
     }
 
+    /**
+     * Sets the GUID of the account of this split
+     * @param accountUID GUID of account
+     */
     public void setAccountUID(String accountUID) {
         this.mAccountUID = accountUID;
     }
 
+    /**
+     * Returns the type of the split
+     * @return {@link TransactionType} of the split
+     */
     public TransactionType getType() {
         return mSplitType;
     }
 
-    public void setType(TransactionType transactionType) {
-        this.mSplitType = transactionType;
+    /**
+     * Sets the type of this split
+     * @param splitType Type of the split
+     */
+    public void setType(TransactionType splitType) {
+        this.mSplitType = splitType;
     }
 
+    /**
+     * Returns the memo of this split
+     * @return String memo of this split
+     */
     public String getMemo() {
         return mMemo;
     }
 
+    /**
+     * Sets this split memo
+     * @param memo String memo of this split
+     */
     public void setMemo(String memo) {
         this.mMemo = memo;
     }
 
+    /**
+     * Creates a split which is a pair of this instance.
+     * A pair split has all the same attributes except that the SplitType is inverted and it belongs
+     * to another account.
+     * @param accountUID GUID of account
+     * @return New split pair of current split
+     * @see TransactionType#invert()
+     */
     public Split createPair(String accountUID){
         Split pair = new Split(mAmount.absolute(), accountUID);
         pair.setType(mSplitType.invert());
@@ -119,6 +167,10 @@ public class Split extends BaseModel{
         return pair;
     }
 
+    /**
+     * Clones this split and returns an exact copy.
+     * @return New instance of a split which is a copy of the current one
+     */
     protected Split clone() {
         Split split = new Split(mAmount, mAccountUID);
         split.mUID = mUID;

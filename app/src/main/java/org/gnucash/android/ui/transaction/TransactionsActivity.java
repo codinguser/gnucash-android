@@ -303,11 +303,13 @@ public class TransactionsActivity extends PassLockActivity implements
      */
     private void initializeCreateOrEditTransaction() {
         String transactionUID = getIntent().getStringExtra(UxArgument.SELECTED_TRANSACTION_UID);
+        String scheduledActionUID = getIntent().getStringExtra(UxArgument.SCHEDULED_ACTION_UID);
         Bundle args = new Bundle();
         if (transactionUID != null) {
             mSectionHeaderTransactions.setText(R.string.title_edit_transaction);
             args.putString(UxArgument.SELECTED_TRANSACTION_UID, transactionUID);
             args.putString(UxArgument.SELECTED_ACCOUNT_UID, mAccountUID);
+            args.putString(UxArgument.SCHEDULED_ACTION_UID, scheduledActionUID);
         } else {
             mSectionHeaderTransactions.setText(R.string.title_add_transaction);
             args.putString(UxArgument.SELECTED_ACCOUNT_UID, mAccountUID);

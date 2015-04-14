@@ -103,9 +103,10 @@ public class BaseDrawerActivity extends SherlockFragmentActivity {
     }
 
     private MergeAdapter createNavDrawerMergeAdapter() {
+        //TODO: Localize nav drawer entries when features are finalized
         ArrayList<String> accountNavOptions = new ArrayList<String>();
         accountNavOptions.add("Favorites");
-        accountNavOptions.add("Open...");
+//        accountNavOptions.add("Open...");
         accountNavOptions.add("Reports");
 
         ArrayAdapter<String> accountsNavAdapter = new ArrayAdapter<String>(this,
@@ -140,7 +141,7 @@ public class BaseDrawerActivity extends SherlockFragmentActivity {
         settingsHeader.setTextColor(titleColorGreen);
 
         ArrayList<String> aboutNavOptions = new ArrayList<String>();
-        aboutNavOptions.add("Backup & Export");
+//        aboutNavOptions.add("Backup & Export");
         aboutNavOptions.add("Settings");
         //TODO: add help view
         ArrayAdapter<String> aboutNavAdapter = new ArrayAdapter<String>(this,
@@ -173,7 +174,9 @@ public class BaseDrawerActivity extends SherlockFragmentActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    /** Swaps fragments in the main content view */
+    /**
+     * Handler for the navigation drawer items
+     * */
     protected void selectItem(int position) {
         switch (position){
             case 1: { //favorite accounts
@@ -184,22 +187,25 @@ public class BaseDrawerActivity extends SherlockFragmentActivity {
                 startActivity(intent);
             }
                 break;
+/*
 
             case 2: { //Open... files
                 //TODO: open/import GnuCash files
                 Intent pickIntent = new Intent(Intent.ACTION_GET_CONTENT);
-                pickIntent.setType("application/*");
+                pickIntent.setType("application*/
+/*");
                 Intent chooser = Intent.createChooser(pickIntent, "Select GnuCash account file");
 
                 startActivityForResult(chooser, AccountsActivity.REQUEST_PICK_ACCOUNTS_FILE);
             }
                 break;
+*/
 
-            case 3:
+            case 2:
                 startActivity(new Intent(this, PieChartActivity.class));
                 break;
 
-            case 5: { //show scheduled transactions
+            case 4: { //show scheduled transactions
                 Intent intent = new Intent(this, ScheduledActionsActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_SINGLE_TOP);
                 intent.putExtra(ScheduledActionsActivity.EXTRA_DISPLAY_MODE,
@@ -208,17 +214,12 @@ public class BaseDrawerActivity extends SherlockFragmentActivity {
             }
                 break;
 
-            case 6:{
+            case 5:{
                 AccountsActivity.showExportDialog(this);
             }
                 break;
 
-            case 9: { //Backup and Export
-
-            }
-                break;
-
-            case 10: //Settings activity
+            case 8: //Settings activity
                 startActivity(new Intent(this, SettingsActivity.class));
                 break;
 

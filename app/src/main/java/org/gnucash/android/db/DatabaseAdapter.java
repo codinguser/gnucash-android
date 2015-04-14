@@ -400,6 +400,31 @@ public abstract class DatabaseAdapter {
     }
 
     /**
+     * Returns an attribute from a specific column in the database for a specific record.
+     * <p>The attribute is returned as a string which can then be converted to another type if
+     * the caller was expecting something other type </p>
+     * @param recordUID GUID of the record
+     * @param columnName Name of the column to be retrieved
+     * @return String value of the column entry
+     * @throws IllegalArgumentException if either the {@code recordUID} or {@code columnName} do not exist in the database
+     */
+    protected String getAttribute(@NonNull String recordUID, @NonNull String columnName){
+        Cursor cursor = mDb.query(mTableName,
+                new String[]{columnName},
+                AccountEntry.COLUMN_UID + " = ?",
+                new String[]{recordUID}, null, null, null);
+
+        try {
+            if (cursor.moveToFirst())
+                return cursor.getString(cursor.getColumnIndexOrThrow(columnName));
+            else
+                throw new IllegalArgumentException("Column or GUID does not exist in the db");
+        } finally {
+            cursor.close();
+        }
+    }
+
+    /**
      * Expose mDb.beginTransaction()
      */
     public void beginTransaction() {

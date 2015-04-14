@@ -59,7 +59,6 @@ import com.doomonafireball.betterpickers.recurrencepicker.EventRecurrenceFormatt
 import com.doomonafireball.betterpickers.recurrencepicker.RecurrencePickerDialog;
 
 import org.gnucash.android.R;
-import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.db.ScheduledActionDbAdapter;
@@ -191,7 +190,7 @@ public class TransactionFormFragment extends SherlockFragment implements
     /**
      * Checkbox indicating if this transaction should be saved as a template or not
      */
-    private CheckBox mSaveTemplate;
+    private CheckBox mSaveTemplateCheckbox;
 
     /**
      * Flag to note if double entry accounting is in use or not
@@ -221,6 +220,8 @@ public class TransactionFormFragment extends SherlockFragment implements
 
     private List<Split> mSplitsList = new ArrayList<Split>();
 
+    private boolean mEditMode = false;
+
     /**
 	 * Create the view and retrieve references to the UI elements
 	 */
@@ -239,7 +240,7 @@ public class TransactionFormFragment extends SherlockFragment implements
 		mDoubleAccountSpinner   = (Spinner) v.findViewById(R.id.input_double_entry_accounts_spinner);
         mOpenSplitsButton       = (Button) v.findViewById(R.id.btn_open_splits);
         mRecurrenceTextView     = (TextView) v.findViewById(R.id.input_recurrence);
-        mSaveTemplate           = (CheckBox) v.findViewById(R.id.checkbox_save_template);
+        mSaveTemplateCheckbox = (CheckBox) v.findViewById(R.id.checkbox_save_template);
         return v;
 	}
 
@@ -300,6 +301,7 @@ public class TransactionFormFragment extends SherlockFragment implements
             initTransactionNameAutocomplete();
         } else {
 			initializeViewsWithTransaction();
+            mEditMode = true;
 		}
 
 
@@ -434,10 +436,12 @@ public class TransactionFormFragment extends SherlockFragment implements
             enableControls(false);
         }
 
-        mSaveTemplate.setChecked(mTransaction.isTemplate());
-        List<ScheduledAction> scheduledActions = ScheduledActionDbAdapter.getInstance().getScheduledActionsWithUID(mTransaction.getUID());
-        if (!scheduledActions.isEmpty()){
-            mRecurrenceTextView.setText(scheduledActions.get(0).getRuleString());
+        mSaveTemplateCheckbox.setChecked(mTransaction.isTemplate());
+        String scheduledActionUID = getArguments().getString(UxArgument.SCHEDULED_ACTION_UID);
+        if (scheduledActionUID != null && !scheduledActionUID.isEmpty()) {
+            ScheduledAction scheduledAction = ScheduledActionDbAdapter.getInstance().getScheduledAction(scheduledActionUID);
+            mRecurrenceRule = scheduledAction.getRuleString();
+            mRecurrenceTextView.setText(scheduledAction.getRepeatString());
         }
     }
 
@@ -732,19 +736,24 @@ public class TransactionFormFragment extends SherlockFragment implements
 
             // set as not exported.
             mTransaction.setExported(false);
-            //save the normal transaction first
+            mTransaction.setTemplate(mSaveTemplateCheckbox.isChecked());
             mTransactionsDbAdapter.addTransaction(mTransaction);
 
-            if (mSaveTemplate.isChecked()) {
-                Transaction templateTransaction;
-                //creating a new recurring transaction
-                templateTransaction = new Transaction(mTransaction, true);
-                templateTransaction.setTemplate(true);
-                mTransactionsDbAdapter.addTransaction(templateTransaction);
-
-                //inside the if statement because scheduling always creates a template
+            if (mSaveTemplateCheckbox.isChecked()) {
+                Transaction templateTransaction = mTransaction;
+                if (!mEditMode) { //means it was new transaction, so a new template
+                    templateTransaction = new Transaction(mTransaction, true);
+                    templateTransaction.setTemplate(true);
+                    mTransactionsDbAdapter.addTransaction(templateTransaction);
+                }
                 scheduleRecurringTransaction(templateTransaction.getUID());
+            } else {
+                String scheduledActionUID = getArguments().getString(UxArgument.SCHEDULED_ACTION_UID);
+                if (scheduledActionUID != null){ //we were editing a schedule and it was turned off
+                    ScheduledActionDbAdapter.getInstance().deleteRecord(scheduledActionUID);
+                }
             }
+
             mAccountsDbAdapter.setTransactionSuccessful();
         }
         finally {
@@ -762,13 +771,27 @@ public class TransactionFormFragment extends SherlockFragment implements
      * @see #saveNewTransaction()
      */
     private void scheduleRecurringTransaction(String transactionUID) {
+        ScheduledActionDbAdapter scheduledActionDbAdapter = ScheduledActionDbAdapter.getInstance();
+
         List<ScheduledAction> events = RecurrenceParser.parse(mEventRecurrence,
                 ScheduledAction.ActionType.TRANSACTION);
 
-        if (events.size() == 0) //there are no scheduled events detected
-            return;
+        String scheduledActionUID = getArguments().getString(UxArgument.SCHEDULED_ACTION_UID);
 
-        ScheduledActionDbAdapter scheduledActionDbAdapter = GnuCashApplication.getScheduledEventDbAdapter();
+        if (scheduledActionUID != null) { //if we are editing an existing schedule
+            if ( events.size() == 1) {
+                ScheduledAction scheduledAction = events.get(0);
+                scheduledAction.setUID(scheduledActionUID);
+                scheduledActionDbAdapter.updateRecurrenceAttributes(scheduledAction);
+                Toast.makeText(getActivity(), "Updated transaction schedule", Toast.LENGTH_SHORT).show();
+                return;
+            } else {
+                //if user changed scheduled action so that more than one new schedule would be saved,
+                // then remove the old one
+                ScheduledActionDbAdapter.getInstance().deleteRecord(scheduledActionUID);
+            }
+        }
+
         for (ScheduledAction event : events) {
             event.setActionUID(transactionUID);
             event.setLastRun(System.currentTimeMillis());
@@ -776,8 +799,10 @@ public class TransactionFormFragment extends SherlockFragment implements
 
             Log.i("TransactionFormFragment", event.toString());
         }
-        if (events.size() > 0) //TODO: localize this toast string for all supported locales
-            Toast.makeText(getActivity(), "Scheduled transaction", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getActivity(), "Scheduled transaction", Toast.LENGTH_SHORT).show();
+
+        //TODO: localize this toast string for all supported locales
+
     }
 
 
@@ -812,7 +837,6 @@ public class TransactionFormFragment extends SherlockFragment implements
             else if (mAmountEditText.getText().length() == 0) {
                 Toast.makeText(getActivity(), R.string.toast_transanction_amount_required, Toast.LENGTH_SHORT).show();
             } else if (mUseDoubleEntry && mDoubleAccountSpinner.getCount() == 0){
-                //TODO: Localize string
                 Toast.makeText(getActivity(),
                         R.string.toast_disable_double_entry_to_save_transaction,
                         Toast.LENGTH_LONG).show();
@@ -936,11 +960,11 @@ public class TransactionFormFragment extends SherlockFragment implements
             repeatString = EventRecurrenceFormatter.getRepeatString(getActivity(), getResources(), mEventRecurrence, true);
 
             //when recurrence is set, we will definitely be saving a template
-            mSaveTemplate.setChecked(true);
-            mSaveTemplate.setEnabled(false);
+            mSaveTemplateCheckbox.setChecked(true);
+            mSaveTemplateCheckbox.setEnabled(false);
         } else {
-            mSaveTemplate.setEnabled(true);
-            mSaveTemplate.setChecked(false);
+            mSaveTemplateCheckbox.setEnabled(true);
+            mSaveTemplateCheckbox.setChecked(false);
         }
 
         mRecurrenceTextView.setText(repeatString);

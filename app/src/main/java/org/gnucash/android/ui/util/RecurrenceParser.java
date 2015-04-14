@@ -50,8 +50,11 @@ public class RecurrenceParser {
      * @return List of ScheduledEvents
      */
     public static List<ScheduledAction> parse(EventRecurrence eventRecurrence, ScheduledAction.ActionType actionType){
-        long period = 0;
+        long period;
         List<ScheduledAction> scheduledActionList = new ArrayList<ScheduledAction>();
+        if (eventRecurrence == null)
+            return scheduledActionList;
+
         switch(eventRecurrence.freq){
             case EventRecurrence.DAILY: {
                 if (eventRecurrence.interval == 0) //I assume this is a bug from the picker library
