@@ -48,6 +48,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -164,16 +165,18 @@ public class BarChartActivity extends PassLockActivity implements OnChartValueSe
      * @return {@code false} if no data available, {@code true} otherwise
      */
     private boolean calculateEarliestAndLatestTimestamps(List<AccountType> accountTypeList) {
-        for (AccountType type : accountTypeList) {
+        for (Iterator<AccountType> iter = accountTypeList.iterator(); iter.hasNext();) {
+            AccountType type = iter.next();
             long earliest = TransactionsDbAdapter.getInstance().getTimestampOfEarliestTransaction(type);
             long latest = TransactionsDbAdapter.getInstance().getTimestampOfLatestTransaction(type);
             if (earliest > 0 && latest > 0) {
                 mEarliestTimestampsMap.put(type, earliest);
                 mLatestTimestampsMap.put(type, latest);
             } else {
-                accountTypeList.remove(type);
+                iter.remove();
             }
         }
+
 
         if (mEarliestTimestampsMap.isEmpty() && mLatestTimestampsMap.isEmpty()) {
             return false;
