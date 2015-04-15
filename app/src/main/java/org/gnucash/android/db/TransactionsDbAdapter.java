@@ -591,15 +591,16 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
     }
 
     private long getTimestamp(String mod, AccountType type) {
-        String sql = "SELECT " + mod + "(" + TransactionEntry.COLUMN_TIMESTAMP + ")" +
-                " FROM " + TransactionEntry.TABLE_NAME +
-                " INNER JOIN " + SplitEntry.TABLE_NAME + " ON "
+        String sql = "SELECT " + mod + "(" + TransactionEntry.COLUMN_TIMESTAMP + ")"
+                + " FROM " + TransactionEntry.TABLE_NAME
+                + " INNER JOIN " + SplitEntry.TABLE_NAME + " ON "
                 + SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_TRANSACTION_UID + " = "
-                + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_UID +
-                " INNER JOIN " + AccountEntry.TABLE_NAME + " ON "
+                + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_UID
+                + " INNER JOIN " + AccountEntry.TABLE_NAME + " ON "
                 + AccountEntry.TABLE_NAME + "." + AccountEntry.COLUMN_UID + " = "
-                + SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_ACCOUNT_UID +
-                " WHERE " + AccountEntry.TABLE_NAME + "." + AccountEntry.COLUMN_TYPE + " = ?";
+                + SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_ACCOUNT_UID
+                + " WHERE " + AccountEntry.TABLE_NAME + "." + AccountEntry.COLUMN_TYPE + " = ? AND "
+                + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_RECURRENCE_PERIOD + " = 0";
         Cursor cursor = mDb.rawQuery(sql, new String[]{type.toString()});
         long timestamp= 0;
         if (cursor != null) {

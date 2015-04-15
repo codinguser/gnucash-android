@@ -177,7 +177,6 @@ public class BarChartActivity extends PassLockActivity implements OnChartValueSe
             }
         }
 
-
         if (mEarliestTimestampsMap.isEmpty() && mLatestTimestampsMap.isEmpty()) {
             return false;
         }
