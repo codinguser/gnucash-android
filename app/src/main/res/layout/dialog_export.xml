@@ -67,7 +67,13 @@
             <RadioButton android:id="@+id/radio_ofx_format"
                          android:layout_width="wrap_content"
                          android:layout_height="wrap_content"
+                android:layout_marginRight="20dp"
                          android:text="OFX"/>
+
+            <RadioButton android:id="@+id/radio_xml_format"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="XML"/>
         </RadioGroup>
         <TextView android:id="@+id/export_warning"
                   android:layout_marginLeft="@dimen/dialog_padding"
@@ -81,10 +87,12 @@
 	        android:layout_height="wrap_content"
 	        android:layout_marginLeft="10dp"
 	        android:textAppearance="?android:attr/textAppearanceMedium"
-	        android:text="@string/option_export_all_transactions"        
+	        android:text="@string/option_export_all_transactions"
+            android:visibility="gone"
 	        />
 	    <TextView android:layout_marginLeft="@dimen/dialog_padding"
 	        android:text="@string/hint_export_choice"
+            android:visibility="gone"
 	        style="@style/TextAppearance.Hint" />
 	    
 	    <CheckBox android:id="@+id/checkbox_post_export_delete"
@@ -97,9 +105,31 @@
 	        />
 	        
 	    <TextView android:layout_marginLeft="@dimen/dialog_padding"
+            android:layout_marginBottom="@dimen/dialog_padding"
 	        android:text="@string/hint_delete_after_export"
 	        style="@style/TextAppearance.Hint" />
-    	
+
+        <LinearLayout
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            style="@style/FormRow">
+            <TextView
+                android:id="@+id/label_recurring_transaction"
+                android:text="@string/label_recurring_transaction"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:layout_marginBottom="-8dip"
+                style="@style/TextAppearance.EditTransaction_LabelSmall" />
+
+            <TextView android:id="@+id/input_recurrence"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/label_tap_to_create_schedule"
+                style="@style/Dropdown.TextView" />
+
+        </LinearLayout>
+
     	<include layout="@layout/default_buttons"/>
 
 	</LinearLayout>

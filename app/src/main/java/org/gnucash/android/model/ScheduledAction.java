@@ -41,7 +41,8 @@ public class ScheduledAction extends BaseModel{
     /**
      * Types of events which can be scheduled
      */
-    public enum ActionType {TRANSACTION, EXPORT}
+    public enum ActionType {TRANSACTION, BACKUP
+    }
 
     /**
      * Next scheduled run of Event

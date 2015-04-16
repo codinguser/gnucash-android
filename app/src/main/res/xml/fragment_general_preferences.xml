@@ -16,7 +16,16 @@
 -->
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+    <PreferenceCategory android:title="Backup">
+        <Preference android:summary="@string/summary_restore_last_backup"
+            android:key="@string/key_restore_last_backup"
+            android:title="@string/title_restore_last_backup" />
+        <Preference android:title="@string/title_restore_backup"
+            android:key="@string/key_restore_backup"
+            android:summary="Select a specific backup to restore from. \nBackups are located on SDCARD/org.gnucash.android/backups" />
+    </PreferenceCategory>
     <PreferenceCategory android:title="@string/title_export_preference_category">
+
         <ListPreference android:title="@string/title_default_export_format"
                         android:entryValues="@array/key_export_format_values"
                         android:entries="@array/export_formats"
@@ -29,7 +38,6 @@
         <CheckBoxPreference android:summary="@string/hint_export_choice" android:key="@string/key_export_all_transactions" android:title="@string/title_export_all_transactions"/>
         <CheckBoxPreference android:summary="@string/hint_delete_after_export" android:key="@string/key_delete_transactions_after_export" android:title="@string/title_always_delete_exported_transactions"/>
         <CheckBoxPreference android:key="@string/key_xml_ofx_header" android:summary="@string/summary_xml_ofx_header" android:title="@string/title_xml_ofx_header"/>
-        <Preference android:summary="Restore accounts and transactions from the last backup" android:key="@string/key_restore_backup" android:title="Restore last backup" />
     </PreferenceCategory>
     
     

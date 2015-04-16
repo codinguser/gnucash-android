@@ -22,6 +22,8 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentManager;
+import android.text.format.Time;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -33,16 +35,26 @@ import android.widget.RadioButton;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.doomonafireball.betterpickers.recurrencepicker.EventRecurrence;
+import com.doomonafireball.betterpickers.recurrencepicker.EventRecurrenceFormatter;
+import com.doomonafireball.betterpickers.recurrencepicker.RecurrencePickerDialog;
+
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
+import org.gnucash.android.db.ScheduledActionDbAdapter;
+import org.gnucash.android.model.BaseModel;
+import org.gnucash.android.model.ScheduledAction;
+import org.gnucash.android.ui.util.RecurrenceParser;
 
 import java.io.File;
+import java.util.List;
+import java.util.UUID;
 
 /**
  * Dialog fragment for exporting account information as OFX files.
  * @author Ngewi Fet <ngewif@gmail.com>
  */
-public class ExportDialogFragment extends DialogFragment {
+public class ExportDialogFragment extends DialogFragment implements RecurrencePickerDialog.OnRecurrenceSetListener {
 		
 	/**
 	 * Spinner for selecting destination for the exported file.
@@ -81,12 +93,30 @@ public class ExportDialogFragment extends DialogFragment {
 	 * File path for saving the OFX files
 	 */
 	String mFilePath;
-	
+
+	/**
+	 * Recurrence text view
+	 */
+	TextView mRecurrenceTextView;
+
+	/**
+	 * Event recurrence options
+	 */
+	EventRecurrence mEventRecurrence = new EventRecurrence();
+
+	/**
+	 * Recurrence rule
+	 */
+	String mRecurrenceRule;
+
 	/**
 	 * Tag for logging
 	 */
 	private static final String TAG = "ExportDialogFragment";
 
+	/**
+	 * Export format
+	 */
     private ExportFormat mExportFormat = ExportFormat.QIF;
 
 	/**
@@ -101,9 +131,23 @@ public class ExportDialogFragment extends DialogFragment {
             exportParameters.setExportAllTransactions(mExportAllCheckBox.isChecked());
             exportParameters.setTargetFilepath(mFilePath);
             int position = mDestinationSpinner.getSelectedItemPosition();
+			//TODO: accomodate all the different export targets
             exportParameters.setExportTarget(position == 0 ? ExportParams.ExportTarget.SHARING : ExportParams.ExportTarget.SD_CARD);
             exportParameters.setDeleteTransactionsAfterExport(mDeleteAllCheckBox.isChecked());
 
+			//TODO: Block from creating scheduled action with SHARE target
+			ScheduledActionDbAdapter scheduledActionDbAdapter = ScheduledActionDbAdapter.getInstance();
+			scheduledActionDbAdapter.deleteScheduledBackupAction(mExportFormat);
+			List<ScheduledAction> events = RecurrenceParser.parse(mEventRecurrence,
+					ScheduledAction.ActionType.BACKUP);
+			//this is done on purpose, we will add only one scheduled action per export type
+			//FIXME: Prevent user from setting multiple days in dialog or update scheduled action parser to return only one recurrence
+			if (!events.isEmpty()){
+				ScheduledAction scheduledAction = events.get(0);
+				scheduledAction.setTag(exportParameters.toCsv());
+				scheduledAction.setActionUID(UUID.randomUUID().toString().replaceAll("-", ""));
+				scheduledActionDbAdapter.addScheduledAction(scheduledAction);
+			}
             dismiss();
 
             Log.i(TAG, "Commencing async export of transactions");
@@ -123,6 +167,7 @@ public class ExportDialogFragment extends DialogFragment {
                     mExportWarningTextView.setVisibility(View.GONE);
                 }
                 break;
+
             case R.id.radio_qif_format:
                 mExportFormat = ExportFormat.QIF;
                 //TODO: Also check that there exist transactions with multiple currencies before displaying warning
@@ -132,9 +177,32 @@ public class ExportDialogFragment extends DialogFragment {
                 } else {
                     mExportWarningTextView.setVisibility(View.GONE);
                 }
+				break;
+
+			case R.id.radio_xml_format:
+				mExportFormat = ExportFormat.GNC_XML;
+				mExportWarningTextView.setVisibility(View.GONE);
+				break;
         }
+		refreshRecurrenceTextView(mExportFormat);
         mFilePath = getActivity().getExternalFilesDir(null) + "/" + Exporter.buildExportFilename(mExportFormat);
     }
+
+	/**
+	 * Refreshes the recurrence text view for the specified backup format
+	 * This is meant to be called every time the backup format is changed in the dialog
+	 * @param exportFormat ExportFormat
+	 */
+	private void refreshRecurrenceTextView(ExportFormat exportFormat){
+		String repeatString	= getString(R.string.label_tap_to_create_schedule);
+		ScheduledActionDbAdapter scheduledActionDbAdapter = ScheduledActionDbAdapter.getInstance();
+		ScheduledAction scheduledBackup = scheduledActionDbAdapter.getScheduledBackupAction(exportFormat);
+		if (scheduledBackup != null){
+			repeatString = scheduledBackup.getRepeatString();
+			mRecurrenceRule = scheduledBackup.getRuleString();
+		}
+		mRecurrenceTextView.setText(repeatString);
+	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -158,7 +226,7 @@ public class ExportDialogFragment extends DialogFragment {
         assert v != null;
         mDestinationSpinner = (Spinner) v.findViewById(R.id.spinner_export_destination);
 		ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getActivity(),
-		        R.array.export_destinations, android.R.layout.simple_spinner_item);		
+		        R.array.export_destinations, android.R.layout.simple_spinner_item);
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);		
 		mDestinationSpinner.setAdapter(adapter);
 		
@@ -174,17 +242,44 @@ public class ExportDialogFragment extends DialogFragment {
 		mCancelButton = (Button) v.findViewById(R.id.btn_cancel);
 		
 		mCancelButton.setOnClickListener(new View.OnClickListener() {
-			
+
 			@Override
-			public void onClick(View v) {				
+			public void onClick(View v) {
 				dismiss();
 			}
 		});
 		
 		mSaveButton.setOnClickListener(new ExportClickListener());
 
+		mRecurrenceTextView     = (TextView) v.findViewById(R.id.input_recurrence);
+		mRecurrenceTextView.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				FragmentManager fm = getActivity().getSupportFragmentManager();
+				Bundle b = new Bundle();
+				Time t = new Time();
+				t.setToNow();
+				b.putLong(RecurrencePickerDialog.BUNDLE_START_TIME_MILLIS, t.toMillis(false));
+				b.putString(RecurrencePickerDialog.BUNDLE_TIME_ZONE, t.timezone);
+
+				// may be more efficient to serialize and pass in EventRecurrence
+				b.putString(RecurrencePickerDialog.BUNDLE_RRULE, mRecurrenceRule);
+
+				RecurrencePickerDialog rpd = (RecurrencePickerDialog) fm.findFragmentByTag(
+						"recurrence_picker");
+				if (rpd != null) {
+					rpd.dismiss();
+				}
+				rpd = new RecurrencePickerDialog();
+				rpd.setArguments(b);
+				rpd.setOnRecurrenceSetListener(ExportDialogFragment.this);
+				rpd.show(fm, "recurrence_picker");
+			}
+		});
+
         mExportWarningTextView = (TextView) v.findViewById(R.id.export_warning);
 
+		//this part (setting the export format) must come after the recurrence view bindings above
         String defaultExportFormat = sharedPrefs.getString(getString(R.string.key_default_export_format), ExportFormat.QIF.name());
         mExportFormat = ExportFormat.valueOf(defaultExportFormat);
         View.OnClickListener clickListener = new View.OnClickListener() {
@@ -205,8 +300,26 @@ public class ExportDialogFragment extends DialogFragment {
         if (defaultExportFormat.equalsIgnoreCase(ExportFormat.QIF.name())){
             qifRadioButton.performClick();
         }
+
+		RadioButton xmlRadioButton = (RadioButton) v.findViewById(R.id.radio_xml_format);
+		xmlRadioButton.setOnClickListener(clickListener);
+		if (defaultExportFormat.equalsIgnoreCase(ExportFormat.GNC_XML.name())){
+			xmlRadioButton.performClick();
+		}
 	}
 
+	@Override
+	public void onRecurrenceSet(String rrule) {
+		mRecurrenceRule = rrule;
+		String repeatString = getString(R.string.label_tap_to_create_schedule);
+
+		if (mRecurrenceRule != null){
+			mEventRecurrence.parse(mRecurrenceRule);
+			repeatString = EventRecurrenceFormatter.getRepeatString(getActivity(), getResources(),
+					mEventRecurrence, true);
+		}
+		mRecurrenceTextView.setText(repeatString);
+	}
 
 	/**
 	 * Callback for when the activity chooser dialog is completed

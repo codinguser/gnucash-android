@@ -16,6 +16,8 @@
 
 package org.gnucash.android.export;
 
+import org.gnucash.android.app.GnuCashApplication;
+
 /**
  * Encapsulation of the parameters used for exporting transactions.
  * The parameters are determined by the user in the export dialog and are then transmitted to the asynchronous task which
@@ -26,11 +28,13 @@ package org.gnucash.android.export;
  * @author Ngewi Fet <ngewif@gmail.com>
  */
 public class ExportParams {
+    final static private String DROPBOX_APP_KEY = "INSERT_APP_KEY";
+    final static private String DROPBOX_APP_SECRET = "INSERT_APP_SECRET";
     /**
      * Options for the destination of the exported transctions file.
      * It could be stored on the {@link #SD_CARD} or exported through another program via {@link #SHARING}
      */
-    public enum ExportTarget {SD_CARD, SHARING};
+    public enum ExportTarget {SD_CARD, SHARING, DROPBOX, GOOGLE_DRIVE }
 
     /**
      * Format to use for the exported transactions
@@ -65,7 +69,7 @@ public class ExportParams {
      * @param format Format to use when exporting the transactions
      */
     public ExportParams(ExportFormat format){
-        mExportFormat = format;
+        setExportFormat(format);
     }
 
     /**
@@ -82,6 +86,7 @@ public class ExportParams {
      */
     public void setExportFormat(ExportFormat exportFormat) {
         this.mExportFormat = exportFormat;
+        mTargetFilepath = GnuCashApplication.getAppContext().getExternalFilesDir(null) + "/" + Exporter.buildExportFilename(mExportFormat);
     }
 
     /**

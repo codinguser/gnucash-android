@@ -456,6 +456,9 @@
     <string name="label_delete_transactions">删除交易</string>
     <string name="toast_disable_double_entry_to_save_transaction">Create and specify a transfer account OR disable double-entry in settings to save the transaction</string>
     <string name="label_tap_to_create_schedule">点击然后创建计划交易</string>
+    <string name="title_restore_last_backup">Restore last backup</string>
+    <string name="summary_restore_last_backup">Restore accounts and transactions from the last backup</string>
+    <string name="title_restore_backup">Restore Backup...</string>
     <plurals name="label_every_x_days">
         <item quantity="one">Daily</item>
         <item quantity="other">Every %d days</item>

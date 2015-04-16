@@ -21,8 +21,9 @@
     <string name="key_default_export_format">default_export_format</string>
     <string name="key_recurring_transaction_ids">recurring_transaction_ids</string>
     <string name="key_create_default_accounts">create_default_accounts</string>
-    <string name="key_restore_backup">restore_backup</string>
+    <string name="key_restore_last_backup">restore_last_backup</string>
     <string name="key_save_opening_balances">save_opening_balances</string>
+    <string name="key_restore_backup">restore_backup</string>
 
     <string-array name="key_transaction_type_values">
         <item>CREDIT</item>

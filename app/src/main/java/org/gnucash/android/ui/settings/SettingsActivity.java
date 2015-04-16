@@ -136,6 +136,9 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
             pref = findPreference(getString(R.string.key_import_accounts));
             pref.setOnPreferenceClickListener(this);
 
+            pref = findPreference(getString(R.string.key_restore_backup));
+            pref.setOnPreferenceClickListener(this);
+
             pref = findPreference(getString(R.string.key_use_double_entry));
             pref.setOnPreferenceChangeListener(this);
 
@@ -148,7 +151,7 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
             pref = findPreference(getString(R.string.key_build_version));
             pref.setOnPreferenceClickListener(this);
 
-            pref = findPreference(getString(R.string.key_restore_backup));
+            pref = findPreference(getString(R.string.key_restore_last_backup));
             pref.setOnPreferenceClickListener(this);
 
             pref = findPreference(getString(R.string.key_change_passcode));
@@ -252,7 +255,7 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
     @Override
     public boolean onPreferenceClick(Preference preference) {
         String key = preference.getKey();
-        if (key.equals(getString(R.string.key_import_accounts))){
+        if (key.equals(getString(R.string.key_import_accounts)) || key.equals(getString(R.string.key_restore_backup))){
             importAccounts();
             return true;
         }
@@ -262,7 +265,7 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
             return true;
         }
 
-        if (key.equals(getString(R.string.key_restore_backup))){
+        if (key.equals(getString(R.string.key_restore_last_backup))){
             importMostRecentBackup();
         }
 

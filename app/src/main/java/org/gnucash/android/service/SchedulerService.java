@@ -97,7 +97,7 @@ public class SchedulerService extends IntentService {
                 transactionsDbAdapter.addTransaction(recurringTrxn);
                 break;
 
-            case EXPORT:
+            case BACKUP:
                 ExportParams params = ExportParams.parseCsv(scheduledAction.getTag());
                 try {
                     new ExportAsyncTask(GnuCashApplication.getAppContext()).execute(params).get();
