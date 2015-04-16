@@ -217,10 +217,11 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
             if (mContext instanceof TransactionsActivity){
                 ((TransactionsActivity) mContext).refresh();
             }
-            if (mContext instanceof Activity) {
-                if (mProgressDialog != null && mProgressDialog.isShowing())
-                    mProgressDialog.dismiss();
-            }
+        }
+
+        if (mContext instanceof Activity) {
+            if (mProgressDialog != null && mProgressDialog.isShowing())
+                mProgressDialog.dismiss();
         }
     }
 
