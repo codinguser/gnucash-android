@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <!--
- Copyright (c) 2014 Oleksandr Tyshkovets <olexandr.tyshkovets@gmail.com>
- Copyright (c) 2015 Ngewi Fet <ngewif@gmail.com>
+ Copyright (c) 2015 Oleksandr Tyshkovets <olexandr.tyshkovets@gmail.com>
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -27,15 +26,11 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <com.github.mikephil.charting.charts.PieChart android:id="@+id/chart"
+        <LinearLayout android:id="@+id/chart"
             android:orientation="horizontal"
             android:layout_width="fill_parent"
             android:layout_height="0dip"
             android:layout_weight="1" />
-
-        <Spinner android:id="@+id/chart_data_spinner"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
 
         <LinearLayout android:layout_width="fill_parent"
             android:layout_height="wrap_content"
@@ -48,32 +43,6 @@
 
         </LinearLayout>
 
-        <LinearLayout android:orientation="horizontal"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:weightSum="3">
-
-            <ImageButton android:id="@+id/previous_month_chart_button"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="0.9"
-                android:src="@drawable/navigation_previous_item" />
-
-            <TextView android:id="@+id/chart_date"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1.2"
-                android:gravity="center"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                style="@style/Dropdown.TextView" />
-
-            <ImageButton android:id="@+id/next_month_chart_button"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="0.9"
-                android:src="@drawable/navigation_next_item" />
-
-        </LinearLayout>
     </LinearLayout>
     <ListView android:id="@+id/left_drawer"
         android:layout_width="240dp"

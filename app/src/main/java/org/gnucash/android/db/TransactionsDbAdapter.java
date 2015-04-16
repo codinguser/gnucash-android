@@ -32,14 +32,11 @@ import org.gnucash.android.model.AccountType;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.model.Split;
 import org.gnucash.android.model.Transaction;
-import org.gnucash.android.model.TransactionType;
 
 import java.util.ArrayList;
-import java.util.Currency;
 import java.util.List;
 
 import static org.gnucash.android.db.DatabaseSchema.AccountEntry;
-import static org.gnucash.android.db.DatabaseSchema.SPLITS_DB_VERSION;
 import static org.gnucash.android.db.DatabaseSchema.ScheduledActionEntry;
 import static org.gnucash.android.db.DatabaseSchema.SplitEntry;
 import static org.gnucash.android.db.DatabaseSchema.TransactionEntry;
@@ -610,15 +607,16 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
      * @see #getTimestampOfEarliestTransaction(AccountType)
      */
     private long getTimestamp(String mod, AccountType type) {
-        String sql = "SELECT " + mod + "(" + TransactionEntry.COLUMN_TIMESTAMP + ")" +
-                " FROM " + TransactionEntry.TABLE_NAME +
-                " INNER JOIN " + SplitEntry.TABLE_NAME + " ON "
+        String sql = "SELECT " + mod + "(" + TransactionEntry.COLUMN_TIMESTAMP + ")"
+                + " FROM " + TransactionEntry.TABLE_NAME
+                + " INNER JOIN " + SplitEntry.TABLE_NAME + " ON "
                 + SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_TRANSACTION_UID + " = "
-                + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_UID +
-                " INNER JOIN " + AccountEntry.TABLE_NAME + " ON "
+                + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_UID
+                + " INNER JOIN " + AccountEntry.TABLE_NAME + " ON "
                 + AccountEntry.TABLE_NAME + "." + AccountEntry.COLUMN_UID + " = "
-                + SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_ACCOUNT_UID +
-                " WHERE " + AccountEntry.TABLE_NAME + "." + AccountEntry.COLUMN_TYPE + " = ?";
+                + SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_ACCOUNT_UID
+                + " WHERE " + AccountEntry.TABLE_NAME + "." + AccountEntry.COLUMN_TYPE + " = ? AND "
+                + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_TEMPLATE + " = 0";
         Cursor cursor = mDb.rawQuery(sql, new String[]{type.toString()});
         long timestamp= 0;
         if (cursor != null) {

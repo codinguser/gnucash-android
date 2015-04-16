@@ -71,7 +71,7 @@ dependencies {
             'com.viewpagerindicator:library:2.4.1@aar',
             'com.doomonafireball.betterpickers:library:1.5.2',
             'com.commonsware.cwac:merge:1.1.+',
-            'org.quanqi:mpandroidchart:1.7.4', //TODO: Upgrade only when we support Android API 14 and over)
+            'com.github.PhilJay:MPAndroidChart:v2.0.8',
             'joda-time:joda-time:2.7'
     )
     androidTestCompile('com.jayway.android.robotium:robotium-solo:5.2.1',

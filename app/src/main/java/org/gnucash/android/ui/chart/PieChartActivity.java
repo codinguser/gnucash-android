@@ -32,16 +32,16 @@ import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.github.mikephil.charting.charts.PieChart;
+import com.github.mikephil.charting.components.Legend.LegendForm;
+import com.github.mikephil.charting.components.Legend.LegendPosition;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
-import com.github.mikephil.charting.interfaces.OnChartValueSelectedListener;
-import com.github.mikephil.charting.utils.Legend.LegendForm;
-import com.github.mikephil.charting.utils.Legend.LegendPosition;
+import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
+import com.github.mikephil.charting.utils.Highlight;
 
 import org.gnucash.android.R;
 import org.gnucash.android.db.AccountsDbAdapter;
@@ -54,6 +54,8 @@ import org.joda.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import static org.gnucash.android.db.DatabaseSchema.AccountEntry;
 
 /**
  * Activity used for drawing a pie chart
@@ -73,7 +75,8 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
             Color.parseColor("#fddef8"), Color.parseColor("#fa0e6e"), Color.parseColor("#d9e7b5")
     };
 
-    private static final String datePattern = "MMMM\nYYYY";
+    private static final String DATE_PATTERN = "MMMM\nYYYY";
+    private static final int ANIMATION_DURATION = 1800;
 
     private PieChart mChart;
 
@@ -91,16 +94,16 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
 
     private AccountType mAccountType = AccountType.EXPENSE;
 
+    private boolean mChartDataPresent = true;
+
+    private double mSlicePercentThreshold = 6;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         //it is necessary to set the view first before calling super because of the nav drawer in BaseDrawerActivity
-        setContentView(R.layout.activity_chart_reports);
+        setContentView(R.layout.activity_pie_chart);
         super.onCreate(savedInstanceState);
-
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setTitle(R.string.title_pie_chart);
-        actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setHomeButtonEnabled(true);
+        getSupportActionBar().setTitle(R.string.title_pie_chart);
 
         mPreviousMonthButton = (ImageButton) findViewById(R.id.previous_month_chart_button);
         mNextMonthButton = (ImageButton) findViewById(R.id.next_month_chart_button);
@@ -109,13 +112,9 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
         mAccountsDbAdapter = AccountsDbAdapter.getInstance();
         mTransactionsDbAdapter = TransactionsDbAdapter.getInstance();
 
-        mChart = (PieChart) findViewById(R.id.chart);
-        mChart.setValueTextSize(12);
-        mChart.setValueTextColor(Color.BLACK);
+        mChart = (PieChart) findViewById(R.id.pie_chart);
         mChart.setCenterTextSize(18);
-        mChart.setDrawYValues(false);
         mChart.setDescription("");
-        mChart.setDrawLegend(false);
         mChart.setOnChartValueSelectedListener(this);
 
         setUpSpinner();
@@ -152,59 +151,98 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
 
     /**
      * Sets the chart data
-     *
      * @param forCurrentMonth sets data only for current month if {@code true}, otherwise for all time
      */
     private void setData(boolean forCurrentMonth) {
-        mChartDateTextView.setText(forCurrentMonth ? mChartDate.toString(datePattern) : getResources().getString(R.string.label_chart_overall));
+        mChartDateTextView.setText(forCurrentMonth ? mChartDate.toString(DATE_PATTERN) : getResources().getString(R.string.label_chart_overall));
         ((TextView) findViewById(R.id.selected_chart_slice)).setText("");
         mChart.highlightValues(null);
         mChart.clear();
 
-        PieDataSet dataSet = new PieDataSet(null, "");
-        ArrayList<String> names = new ArrayList<String>();
-        List<String> skipUUID = new ArrayList<String>();
-        for (Account account : mAccountsDbAdapter.getSimpleAccountList()) {
-            if (account.getAccountType() == mAccountType && !account.isPlaceholderAccount()) {
-                if (mAccountsDbAdapter.getSubAccountCount(account.getUID()) > 0) {
-                    skipUUID.addAll(mAccountsDbAdapter.getDescendantAccountUIDs(account.getUID(), null, null));
-                }
-                if (!skipUUID.contains(account.getUID())) {
-                    double balance = 0;
-                    if (forCurrentMonth) {
-                        long start = mChartDate.dayOfMonth().withMinimumValue().millisOfDay().withMinimumValue().toDate().getTime();
-                        long end = mChartDate.dayOfMonth().withMaximumValue().millisOfDay().withMaximumValue().toDate().getTime();
-                        balance = mAccountsDbAdapter.getAccountBalance(account.getUID(), start, end).asDouble();
-                    } else {
-                        balance = mAccountsDbAdapter.getAccountBalance(account.getUID()).asDouble();
-                    }
-                    if (balance > 0) {
-                        dataSet.addEntry(new Entry((float) Math.abs(balance), dataSet.getEntryCount()));
-                        dataSet.addColor(COLORS[(dataSet.getEntryCount() - 1) % COLORS.length]);
-                        names.add(account.getName());
-                    }
-                }
-            }
+        mChart.setData(getData(forCurrentMonth));
+        if (mChartDataPresent) {
+            mChart.animateXY(ANIMATION_DURATION, ANIMATION_DURATION);
         }
-
-        if (dataSet.getEntryCount() == 0) {
-            dataSet.addEntry(new Entry(1, 0));
-            dataSet.setColor(Color.LTGRAY);
-            names.add("");
-            mChart.setCenterText(getResources().getString(R.string.label_chart_no_data));
-            mChart.setTouchEnabled(false);
-        } else {
-            mChart.setCenterText(getResources().getString(R.string.label_chart_total) + dataSet.getYValueSum());
-            mChart.setTouchEnabled(true);
-        }
-        mChart.setData(new PieData(names, dataSet));
-        mChart.animateXY(1800, 1800);
         mChart.invalidate();
 
+        mChartDateTextView.setEnabled(mChartDataPresent);
         setImageButtonEnabled(mNextMonthButton,
                 mChartDate.plusMonths(1).dayOfMonth().withMinimumValue().withMillisOfDay(0).isBefore(mLatestTransactionDate));
         setImageButtonEnabled(mPreviousMonthButton, (mEarliestTransactionDate.getYear() != 1970
                 && mChartDate.minusMonths(1).dayOfMonth().withMaximumValue().withMillisOfDay(86399999).isAfter(mEarliestTransactionDate)));
+    }
+
+    /**
+     * Returns {@code PieData} instance with data entries and labels
+     * @param forCurrentMonth sets data only for current month if {@code true}, otherwise for all time
+     * @return {@code PieData} instance
+     */
+    private PieData getData(boolean forCurrentMonth) {
+        List<Account> accountList = mAccountsDbAdapter.getSimpleAccountList(
+                AccountEntry.COLUMN_TYPE + " = ? AND " + AccountEntry.COLUMN_PLACEHOLDER + " = ?",
+                new String[]{ mAccountType.name(), "0" }, null);
+        List<String> uidList = new ArrayList<String>();
+        for (Account account : accountList) {
+            uidList.add(account.getUID());
+        }
+        double sum;
+        if (forCurrentMonth) {
+            long start = mChartDate.dayOfMonth().withMinimumValue().millisOfDay().withMinimumValue().toDate().getTime();
+            long end = mChartDate.dayOfMonth().withMaximumValue().millisOfDay().withMaximumValue().toDate().getTime();
+            sum = mAccountsDbAdapter.getAccountsBalance(uidList, start, end).absolute().asDouble();
+        } else {
+            sum = mAccountsDbAdapter.getAccountsBalance(uidList, -1, -1).absolute().asDouble();
+        }
+
+        double otherSlice = 0;
+        PieDataSet dataSet = new PieDataSet(null, "");
+        ArrayList<String> names = new ArrayList<String>();
+        List<String> skipUUID = new ArrayList<String>();
+        for (Account account : accountList) {
+            if (mAccountsDbAdapter.getSubAccountCount(account.getUID()) > 0) {
+                skipUUID.addAll(mAccountsDbAdapter.getDescendantAccountUIDs(account.getUID(), null, null));
+            }
+            if (!skipUUID.contains(account.getUID())) {
+                double balance;
+                if (forCurrentMonth) {
+                    long start = mChartDate.dayOfMonth().withMinimumValue().millisOfDay().withMinimumValue().toDate().getTime();
+                    long end = mChartDate.dayOfMonth().withMaximumValue().millisOfDay().withMaximumValue().toDate().getTime();
+                    balance = mAccountsDbAdapter.getAccountBalance(account.getUID(), start, end).absolute().asDouble();
+                } else {
+                    balance = mAccountsDbAdapter.getAccountBalance(account.getUID()).absolute().asDouble();
+                }
+
+                if (balance / sum * 100 > mSlicePercentThreshold) {
+                    dataSet.addEntry(new Entry((float) balance, dataSet.getEntryCount()));
+                    dataSet.addColor(COLORS[(dataSet.getEntryCount() - 1) % COLORS.length]);
+                    names.add(account.getName());
+                } else {
+                    otherSlice += balance;
+                }
+            }
+        }
+        if (otherSlice > 0) {
+            dataSet.addEntry(new Entry((float) otherSlice, dataSet.getEntryCount()));
+            dataSet.getColors().set(dataSet.getColors().size() - 1, Color.LTGRAY);
+            names.add(getResources().getString(R.string.label_other_slice));
+        }
+
+        if (dataSet.getEntryCount() == 0) {
+            mChartDataPresent = false;
+            dataSet.addEntry(new Entry(1, 0));
+            dataSet.setColor(Color.LTGRAY);
+            dataSet.setDrawValues(false);
+            names.add("");
+            mChart.setCenterText(getResources().getString(R.string.label_chart_no_data));
+            mChart.setTouchEnabled(false);
+        } else {
+            mChartDataPresent = true;
+            dataSet.setSliceSpace(2);
+            mChart.setCenterText(getResources().getString(R.string.label_chart_total) + dataSet.getYValueSum());
+            mChart.setTouchEnabled(true);
+        }
+
+        return new PieData(names, dataSet);
     }
 
     /**
@@ -276,6 +314,7 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
                 mLatestTransactionDate = new LocalDateTime(mTransactionsDbAdapter.getTimestampOfLatestTransaction(mAccountType));
                 mChartDate = mLatestTransactionDate;
                 setData(false);
+                mChart.getLegend().setEnabled(false);
             }
 
             @Override
@@ -285,7 +324,18 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getSupportMenuInflater().inflate(R.menu.pie_chart_actions, menu);
+        getSupportMenuInflater().inflate(R.menu.chart_actions, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        menu.findItem(R.id.menu_order_by_size).setVisible(mChartDataPresent);
+        menu.findItem(R.id.menu_toggle_labels).setVisible(mChartDataPresent);
+        menu.findItem(R.id.menu_group_other_slice).setVisible(mChartDataPresent);
+        // hide line/bar chart specific menu items
+        menu.findItem(R.id.menu_percentage_mode).setVisible(false);
+        menu.findItem(R.id.menu_toggle_average_lines).setVisible(false);
         return true;
     }
 
@@ -297,7 +347,7 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
                 break;
             }
             case R.id.menu_toggle_legend: {
-                mChart.setDrawLegend(!mChart.isDrawLegendEnabled());
+                mChart.getLegend().setEnabled(!mChart.getLegend().isEnabled());
                 mChart.getLegend().setForm(LegendForm.CIRCLE);
                 mChart.getLegend().setPosition(LegendPosition.RIGHT_OF_CHART_CENTER);
                 mChart.notifyDataSetChanged();
@@ -305,8 +355,14 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
                 break;
             }
             case R.id.menu_toggle_labels: {
-                mChart.setDrawXValues(!mChart.isDrawXValuesEnabled());
+                mChart.getData().setDrawValues(!mChart.isDrawSliceTextEnabled());
+                mChart.setDrawSliceText(!mChart.isDrawSliceTextEnabled());
                 mChart.invalidate();
+                break;
+            }
+            case R.id.menu_group_other_slice: {
+                mSlicePercentThreshold = Math.abs(mSlicePercentThreshold - 6);
+                setData(false);
                 break;
             }
             case android.R.id.home: {
@@ -330,7 +386,7 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
     }
 
     @Override
-    public void onValueSelected(Entry e, int dataSetIndex) {
+    public void onValueSelected(Entry e, int dataSetIndex, Highlight h) {
         if (e == null) return;
         ((TextView) findViewById(R.id.selected_chart_slice))
                 .setText(mChart.getData().getXVals().get(e.getXIndex()) + " - " + e.getVal()

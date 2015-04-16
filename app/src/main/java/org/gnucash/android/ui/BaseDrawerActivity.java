@@ -36,7 +36,7 @@ import com.commonsware.cwac.merge.MergeAdapter;
 import org.gnucash.android.R;
 import org.gnucash.android.importer.ImportAsyncTask;
 import org.gnucash.android.ui.account.AccountsActivity;
-import org.gnucash.android.ui.chart.PieChartActivity;
+import org.gnucash.android.ui.chart.ChartReportActivity;
 import org.gnucash.android.ui.settings.SettingsActivity;
 import org.gnucash.android.ui.transaction.ScheduledActionsActivity;
 
@@ -202,7 +202,7 @@ public class BaseDrawerActivity extends SherlockFragmentActivity {
 */
 
             case 2:
-                startActivity(new Intent(this, PieChartActivity.class));
+                startActivity(new Intent(this, ChartReportActivity.class));
                 break;
 
             case 4: { //show scheduled transactions

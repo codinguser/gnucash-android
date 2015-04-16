@@ -29,4 +29,16 @@
           android:title="@string/menu_toggle_labels"
           android:showAsAction="never" />
 
+    <item android:id="@+id/menu_percentage_mode"
+          android:title="@string/menu_toggle_percentage_mode"
+          android:showAsAction="never" />
+
+    <item android:id="@+id/menu_toggle_average_lines"
+          android:title="@string/menu_toggle_average_lines"
+          android:showAsAction="never" />
+
+    <item android:id="@+id/menu_group_other_slice"
+          android:title="@string/menu_group_smaller_slices"
+          android:showAsAction="never" />
+
 </menu>
