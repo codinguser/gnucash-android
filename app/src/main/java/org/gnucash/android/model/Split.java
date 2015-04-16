@@ -1,12 +1,6 @@
 package org.gnucash.android.model;
 
 
-import org.gnucash.android.export.xml.GncXmlHelper;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-
-import java.util.UUID;
-
 /**
  * A split amount in a transaction.
  * Every transaction is made up of at least two splits (representing a double entry transaction)
@@ -51,6 +45,9 @@ public class Split extends BaseModel{
     public Split(Money amount, String accountUID){
         setAmount(amount);
         setAccountUID(accountUID);
+        //NOTE: This is a rather simplististic approach to the split type.
+        //It typically also depends on the account type of the account. But we do not want to access
+        //the database everytime a split is created. So we keep it simple here. Set the type you want explicity.
         mSplitType = amount.isNegative() ? TransactionType.DEBIT : TransactionType.CREDIT;
     }
 
@@ -73,46 +70,94 @@ public class Split extends BaseModel{
         }
     }
 
+    /**
+     * Returns the amount of the split
+     * @return Money amount of the split
+     */
     public Money getAmount() {
         return mAmount;
     }
 
+    /**
+     * Sets the amount of the split
+     * @param amount Money amount of this split
+     */
     public void setAmount(Money amount) {
         this.mAmount = amount;
     }
 
+    /**
+     * Returns transaction GUID to which the split belongs
+     * @return String GUID of the transaction
+     */
     public String getTransactionUID() {
         return mTransactionUID;
     }
 
+    /**
+     * Sets the transaction to which the split belongs
+     * @param transactionUID GUID of transaction
+     */
     public void setTransactionUID(String transactionUID) {
         this.mTransactionUID = transactionUID;
     }
 
+    /**
+     * Returns the account GUID of this split
+     * @return GUID of the account
+     */
     public String getAccountUID() {
         return mAccountUID;
     }
 
+    /**
+     * Sets the GUID of the account of this split
+     * @param accountUID GUID of account
+     */
     public void setAccountUID(String accountUID) {
         this.mAccountUID = accountUID;
     }
 
+    /**
+     * Returns the type of the split
+     * @return {@link TransactionType} of the split
+     */
     public TransactionType getType() {
         return mSplitType;
     }
 
-    public void setType(TransactionType transactionType) {
-        this.mSplitType = transactionType;
+    /**
+     * Sets the type of this split
+     * @param splitType Type of the split
+     */
+    public void setType(TransactionType splitType) {
+        this.mSplitType = splitType;
     }
 
+    /**
+     * Returns the memo of this split
+     * @return String memo of this split
+     */
     public String getMemo() {
         return mMemo;
     }
 
+    /**
+     * Sets this split memo
+     * @param memo String memo of this split
+     */
     public void setMemo(String memo) {
         this.mMemo = memo;
     }
 
+    /**
+     * Creates a split which is a pair of this instance.
+     * A pair split has all the same attributes except that the SplitType is inverted and it belongs
+     * to another account.
+     * @param accountUID GUID of account
+     * @return New split pair of current split
+     * @see TransactionType#invert()
+     */
     public Split createPair(String accountUID){
         Split pair = new Split(mAmount.absolute(), accountUID);
         pair.setType(mSplitType.invert());
@@ -122,6 +167,10 @@ public class Split extends BaseModel{
         return pair;
     }
 
+    /**
+     * Clones this split and returns an exact copy.
+     * @return New instance of a split which is a copy of the current one
+     */
     protected Split clone() {
         Split split = new Split(mAmount, mAccountUID);
         split.mUID = mUID;
@@ -158,45 +207,6 @@ public class Split extends BaseModel{
             splitString = splitString + ";" + mMemo;
         }
         return splitString;
-    }
-
-    /**
-     * Creates a GnuCash XML representation of this split
-     * @param doc XML {@link org.w3c.dom.Document} for creating the nodes
-     * @param rootNode Parent node to append the split XML to
-     * @deprecated Use the {@link org.gnucash.android.export.xml.GncXmlExporter} to generate XML
-     */
-    public void toGncXml(Document doc, Element rootNode) {
-        Element idNode = doc.createElement(GncXmlHelper.TAG_SPLIT_ID);
-        idNode.setAttribute("type", "guid");
-        idNode.appendChild(doc.createTextNode(mUID));
-
-        Element memoNode = doc.createElement(GncXmlHelper.TAG_SPLIT_MEMO);
-        if (mMemo != null)
-            memoNode.appendChild(doc.createTextNode(mMemo));
-
-        Element stateNode = doc.createElement(GncXmlHelper.TAG_RECONCILED_STATE);
-        stateNode.appendChild(doc.createTextNode("n"));
-
-        Element valueNode = doc.createElement(GncXmlHelper.TAG_SPLIT_VALUE);
-        valueNode.appendChild(doc.createTextNode(GncXmlHelper.formatMoney(this)));
-
-        Element quantityNode = doc.createElement(GncXmlHelper.TAG_SPLIT_QUANTITY);
-        quantityNode.appendChild(doc.createTextNode(GncXmlHelper.formatMoney(this)));
-
-        Element accountNode = doc.createElement(GncXmlHelper.TAG_SPLIT_ACCOUNT);
-        accountNode.setAttribute("type", "guid");
-        accountNode.appendChild(doc.createTextNode(mAccountUID));
-
-        Element splitNode = doc.createElement(GncXmlHelper.TAG_TRN_SPLIT);
-        splitNode.appendChild(idNode);
-        splitNode.appendChild(memoNode);
-        splitNode.appendChild(stateNode);
-        splitNode.appendChild(valueNode);
-        splitNode.appendChild(quantityNode);
-        splitNode.appendChild(accountNode);
-
-        rootNode.appendChild(splitNode);
     }
 
     /**

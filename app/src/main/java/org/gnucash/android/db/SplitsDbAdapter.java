@@ -79,9 +79,14 @@ public class SplitsDbAdapter extends DatabaseAdapter {
         Log.d(TAG, "Replace transaction split in db");
         long rowId = mDb.replace(SplitEntry.TABLE_NAME, null, contentValues);
 
+        long transactionId = getTransactionID(split.getTransactionUID());
         //when a split is updated, we want mark the transaction as not exported
-        updateRecord(TransactionEntry.TABLE_NAME, getTransactionID(split.getTransactionUID()),
+        updateRecord(TransactionEntry.TABLE_NAME, transactionId,
                 TransactionEntry.COLUMN_EXPORTED, String.valueOf(rowId > 0 ? 0 : 1));
+
+        //modifying a split means modifying the accompanying transaction as well
+        updateRecord(TransactionEntry.TABLE_NAME, transactionId,
+                TransactionEntry.COLUMN_MODIFIED_AT, Long.toString(System.currentTimeMillis()));
         return rowId;
     }
 
@@ -269,11 +274,17 @@ public class SplitsDbAdapter extends DatabaseAdapter {
         String[] selectionArgs = null;
         String selection = SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_ACCOUNT_UID + " in ( '" + TextUtils.join("' , '", accountUIDList) + "' ) AND " +
                 SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_TRANSACTION_UID + " = " + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_UID + " AND " +
-                TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_RECURRENCE_PERIOD + " = 0";
+                TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_TEMPLATE + " = 0";
 
         if (startTimestamp != -1 && endTimestamp != -1) {
-            selection += " AND " + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_TIMESTAMP + " BETWEEN ? AND ?";
+            selection += " AND " + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_TIMESTAMP + " BETWEEN ? AND ? ";
             selectionArgs = new String[]{String.valueOf(startTimestamp), String.valueOf(endTimestamp)};
+        } else if (startTimestamp == -1 && endTimestamp != -1) {
+            selection += " AND " + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_TIMESTAMP + " <= ?";
+            selectionArgs = new String[]{String.valueOf(endTimestamp)};
+        } else if (startTimestamp != -1 && endTimestamp == -1) {
+            selection += " AND " + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_TIMESTAMP + " >= ?";
+            selectionArgs = new String[]{String.valueOf(startTimestamp)};
         }
 
         cursor = mDb.query(SplitEntry.TABLE_NAME + " , " + TransactionEntry.TABLE_NAME,
@@ -396,7 +407,7 @@ public class SplitsDbAdapter extends DatabaseAdapter {
         queryBuilder.setDistinct(true);
         String[] projectionIn = new String[]{SplitEntry.TABLE_NAME + ".*"};
         String selection = SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_ACCOUNT_UID + " = ?"
-                + " AND " + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_RECURRENCE_PERIOD + " = 0";
+                + " AND " + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_TEMPLATE + " = 0";
         String[] selectionArgs = new String[]{accountUID};
         String sortOrder = TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_TIMESTAMP + " DESC";
 
@@ -458,23 +469,14 @@ public class SplitsDbAdapter extends DatabaseAdapter {
         Cursor cursor = fetchSplitsForTransaction(transactionUID);
         try {
             if (cursor.getCount() > 0) {
-                result = deleteTransaction(getTransactionID(transactionUID));
+                long transactionID = getTransactionID(transactionUID);
+                result = mDb.delete(TransactionEntry.TABLE_NAME,
+                        TransactionEntry._ID + "=" + transactionID, null) > 0;
             }
         } finally {
             cursor.close();
         }
         return result;
-    }
-
-    /**
-     * Deletes a split from the database.
-     * This is a convenience method which essentially calls {@link #deleteRecord(long)}
-     * @param uid String unique ID of split
-     * @return <code>true</code> if the split was deleted, <code>false</code> otherwise
-     */
-    public boolean deleteSplit(String uid) {
-        long id = getID(uid);
-        return deleteRecord(id);
     }
 
     /**
@@ -498,31 +500,4 @@ public class SplitsDbAdapter extends DatabaseAdapter {
         }
     }
 
-    //TODO: After adding ON DELETE CASCADE to db, remove this method
-    /**
-     * Deletes all splits for a particular transaction and the transaction itself
-     * @param transactionId Database record ID of the transaction
-     * @return <code>true</code> if at least one split was deleted, <code>false</code> otherwise.
-     */
-    public boolean deleteSplitsForTransaction(long transactionId) {
-        String trxUID = getTransactionUID(transactionId);
-        mDb.beginTransaction();
-        try {
-            boolean result = mDb.delete(SplitEntry.TABLE_NAME,
-                    SplitEntry.COLUMN_TRANSACTION_UID + "=?",
-                    new String[]{trxUID}) > 0;
-            mDb.setTransactionSuccessful();
-            return result;
-        } finally {
-            mDb.endTransaction();
-        }
-    }
-
-    /**
-     * Deletes the transaction from the the database
-     * @param transactionId Database record ID of the transaction
-     */
-    private boolean deleteTransaction(long transactionId) {
-        return TransactionsDbAdapter.getInstance().deleteRecord(transactionId);
-    }
 }

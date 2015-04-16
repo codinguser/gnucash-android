@@ -16,8 +16,6 @@
 
 package org.gnucash.android.ui.settings;
 
-import org.gnucash.android.R;
-
 import android.annotation.TargetApi;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -27,6 +25,8 @@ import android.preference.PreferenceManager;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockPreferenceActivity;
+
+import org.gnucash.android.R;
 import org.gnucash.android.ui.account.AccountsActivity;
 
 

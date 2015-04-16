@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013 - 2014 Ngewi Fet <ngewif@gmail.com>
+ * Copyright (c) 2013 - 2015 Ngewi Fet <ngewif@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.gnucash.android.ui.transaction;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Rect;
 import android.os.Bundle;
@@ -47,11 +48,13 @@ import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.DatabaseCursorLoader;
 import org.gnucash.android.db.DatabaseSchema;
-import org.gnucash.android.db.ScheduledEventDbAdapter;
+import org.gnucash.android.db.ScheduledActionDbAdapter;
 import org.gnucash.android.db.TransactionsDbAdapter;
-import org.gnucash.android.model.ScheduledEvent;
+import org.gnucash.android.model.ScheduledAction;
 import org.gnucash.android.model.Transaction;
 import org.gnucash.android.ui.UxArgument;
+
+import java.util.List;
 
 /**
  * Fragment which displays the recurring transactions in the system.
@@ -106,12 +109,14 @@ public class ScheduledTransactionsListFragment extends SherlockListFragment impl
                     for (long id : getListView().getCheckedItemIds()) {
                         Log.i(TAG, "Cancelling scheduled transaction(s)");
                         String trnUID = mTransactionsDbAdapter.getUID(id);
-                        ScheduledEventDbAdapter scheduledEventDbAdapter = GnuCashApplication.getScheduledEventDbAdapter();
-                        ScheduledEvent event = scheduledEventDbAdapter.getScheduledEventWithUID(trnUID);
+                        ScheduledActionDbAdapter scheduledActionDbAdapter = GnuCashApplication.getScheduledEventDbAdapter();
+                        List<ScheduledAction> actions = scheduledActionDbAdapter.getScheduledActionsWithUID(trnUID);
 
                         if (mTransactionsDbAdapter.deleteRecord(id)){
                             Toast.makeText(getActivity(), R.string.toast_recurring_transaction_deleted, Toast.LENGTH_SHORT).show();
-                            scheduledEventDbAdapter.deleteRecord(event.getUID());
+                            for (ScheduledAction action : actions) {
+                                scheduledActionDbAdapter.deleteRecord(action.getUID());
+                            }
                         }
                     }
                     mode.finish();
@@ -174,8 +179,8 @@ public class ScheduledTransactionsListFragment extends SherlockListFragment impl
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
         super.onListItemClick(l, v, position, id);
-        if (mInEditMode){
-            CheckBox checkbox = (CheckBox) v.findViewById(R.id.checkbox_parent_account);
+        if (mActionMode != null){
+            CheckBox checkbox = (CheckBox) v.findViewById(R.id.checkbox);
             checkbox.setChecked(!checkbox.isChecked());
             return;
         }
@@ -188,7 +193,8 @@ public class ScheduledTransactionsListFragment extends SherlockListFragment impl
         }
 
         String accountUID = transaction.getSplits().get(0).getAccountUID();
-        openTransactionForEdit(accountUID, mTransactionsDbAdapter.getUID(id));
+        openTransactionForEdit(accountUID, mTransactionsDbAdapter.getUID(id),
+                v.getTag().toString());
     }
 
     /**
@@ -196,11 +202,12 @@ public class ScheduledTransactionsListFragment extends SherlockListFragment impl
      * @param accountUID GUID of account to which transaction belongs
      * @param transactionUID GUID of transaction to be edited
      */
-    public void openTransactionForEdit(String accountUID, String transactionUID){
+    public void openTransactionForEdit(String accountUID, String transactionUID, String scheduledActionUid){
         Intent createTransactionIntent = new Intent(getActivity(), TransactionsActivity.class);
         createTransactionIntent.setAction(Intent.ACTION_INSERT_OR_EDIT);
         createTransactionIntent.putExtra(UxArgument.SELECTED_ACCOUNT_UID, accountUID);
         createTransactionIntent.putExtra(UxArgument.SELECTED_TRANSACTION_UID, transactionUID);
+        createTransactionIntent.putExtra(UxArgument.SCHEDULED_ACTION_UID, scheduledActionUid);
         startActivity(createTransactionIntent);
     }
 
@@ -210,17 +217,6 @@ public class ScheduledTransactionsListFragment extends SherlockListFragment impl
         //remove menu items from the AccountsActivity
         menu.removeItem(R.id.menu_search);
 //        menu.removeItem(R.id.menu_settings);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()){
-            case android.R.id.home:
-                getActivity().finish();
-                return true;
-            default:
-                return false;
-        }
     }
 
     @Override
@@ -316,7 +312,11 @@ public class ScheduledTransactionsListFragment extends SherlockListFragment impl
         public View getView(int position, View convertView, ViewGroup parent) {
             final View view = super.getView(position, convertView, parent);
             final int itemPosition = position;
-            CheckBox checkbox = (CheckBox) view.findViewById(R.id.checkbox_parent_account);
+            CheckBox checkbox = (CheckBox) view.findViewById(R.id.checkbox);
+            //TODO: Revisit this if we ever change the application theme
+            int id = Resources.getSystem().getIdentifier("btn_check_holo_light", "drawable", "android");
+            checkbox.setButtonDrawable(id);
+
             final TextView secondaryText = (TextView) view.findViewById(R.id.secondary_text);
 
             checkbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -365,43 +365,29 @@ public class ScheduledTransactionsListFragment extends SherlockListFragment impl
             return view;
         }
 
-        /**
-         * Returns the string representation of the recurrence period of the transaction
-         * @param periodMillis Recurrence period in milliseconds
-         * @return String formatted representation of recurrence period
-         */
-        public String getRecurrenceAsString(long periodMillis){
-            String[] recurrencePeriods = getResources().getStringArray(R.array.key_recurrence_period_millis);
-            String[] recurrenceStrings = getResources().getStringArray(R.array.recurrence_period_strings);
-
-            int index = 0;
-            for (String recurrencePeriod : recurrencePeriods) {
-                long period = Long.parseLong(recurrencePeriod);
-                if (period == periodMillis){
-                    break;
-                }
-                index++;
-            }
-            return recurrenceStrings[index];
-        }
-
         @Override
         public void bindView(View view, Context context, Cursor cursor) {
             super.bindView(view, context, cursor);
 
             Transaction transaction = mTransactionsDbAdapter.buildTransactionInstance(cursor);
-            TextView amountTextView = (TextView) view.findViewById(R.id.transaction_amount);
-            amountTextView.setText(transaction.getSplits().size() + " splits");
 
-            TextView trNote = (TextView) view.findViewById(R.id.secondary_text);
-//            trNote.setText(context.getString(R.string.label_repeats) + " " +
-//                    getRecurrenceAsString(cursor.getLong(cursor.getColumnIndexOrThrow(DatabaseSchema.TransactionEntry.COLUMN_RECURRENCE_PERIOD)))) ;
-            ScheduledEventDbAdapter scheduledEventDbAdapter = ScheduledEventDbAdapter.getInstance();
-            ScheduledEvent event = scheduledEventDbAdapter.getScheduledEventWithUID(transaction.getUID());
-            trNote.setText(event.toString());
+            TextView amountTextView = (TextView) view.findViewById(R.id.right_text);
+            if (transaction.getSplits().size() == 2){
+                if (transaction.getSplits().get(0).isPairOf(transaction.getSplits().get(1))){
+                    amountTextView.setText(transaction.getSplits().get(0).getAmount().formattedString());
+                }
+            } else {
+                amountTextView.setText(transaction.getSplits().size() + " splits");
+            }
+            TextView descriptionTextView = (TextView) view.findViewById(R.id.secondary_text);
+
+            ScheduledActionDbAdapter scheduledActionDbAdapter = ScheduledActionDbAdapter.getInstance();
+            String scheduledActionUID = cursor.getString(cursor.getColumnIndexOrThrow("origin_scheduled_action_uid"));
+            view.setTag(scheduledActionUID);
+            ScheduledAction scheduledAction = scheduledActionDbAdapter.getScheduledAction(scheduledActionUID);
+            descriptionTextView.setText(scheduledAction.getRepeatString());
 
         }
-
     }
 
     /**
@@ -418,7 +404,7 @@ public class ScheduledTransactionsListFragment extends SherlockListFragment impl
         public Cursor loadInBackground() {
             mDatabaseAdapter = TransactionsDbAdapter.getInstance();
 
-            Cursor c = ((TransactionsDbAdapter) mDatabaseAdapter).fetchAllRecurringTransactions();
+            Cursor c = ((TransactionsDbAdapter) mDatabaseAdapter).fetchAllScheduledTransactions();
 
             registerContentObserver(c);
             return c;

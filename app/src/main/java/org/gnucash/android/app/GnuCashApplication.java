@@ -23,11 +23,15 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
-import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.util.Log;
+
 import org.gnucash.android.R;
-import org.gnucash.android.db.*;
+import org.gnucash.android.db.AccountsDbAdapter;
+import org.gnucash.android.db.DatabaseHelper;
+import org.gnucash.android.db.ScheduledActionDbAdapter;
+import org.gnucash.android.db.SplitsDbAdapter;
+import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.service.SchedulerService;
 
 import java.util.Currency;
@@ -62,7 +66,7 @@ public class GnuCashApplication extends Application{
 
     private static SplitsDbAdapter mSplitsDbAdapter;
 
-    private static ScheduledEventDbAdapter mScheduledEventDbAdapter;
+    private static ScheduledActionDbAdapter mScheduledActionDbAdapter;
 
     @Override
     public void onCreate(){
@@ -78,7 +82,7 @@ public class GnuCashApplication extends Application{
         mSplitsDbAdapter = new SplitsDbAdapter(mDb);
         mTransactionsDbAdapter = new TransactionsDbAdapter(mDb, mSplitsDbAdapter);
         mAccountsDbAdapter = new AccountsDbAdapter(mDb, mTransactionsDbAdapter);
-        mScheduledEventDbAdapter = new ScheduledEventDbAdapter(mDb);
+        mScheduledActionDbAdapter = new ScheduledActionDbAdapter(mDb);
     }
 
     public static AccountsDbAdapter getAccountsDbAdapter() {
@@ -93,8 +97,8 @@ public class GnuCashApplication extends Application{
         return mSplitsDbAdapter;
     }
 
-    public static ScheduledEventDbAdapter getScheduledEventDbAdapter(){
-        return mScheduledEventDbAdapter;
+    public static ScheduledActionDbAdapter getScheduledEventDbAdapter(){
+        return mScheduledActionDbAdapter;
     }
 
     /**
@@ -155,15 +159,18 @@ public class GnuCashApplication extends Application{
         return currencyCode;
     }
 
-    public static void startScheduledEventExecutionService(){
-        Context context = getAppContext();
+    /**
+     * Starts the service for scheduled events and makes the service run daily.
+     * @param context Application context
+     */
+    public static void startScheduledEventExecutionService(Context context){
         Intent alarmIntent = new Intent(context, SchedulerService.class);
         PendingIntent pendingIntent = PendingIntent.getService(context, 0, alarmIntent, 0);
 
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        alarmManager.cancel(pendingIntent);
-        alarmManager.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,
-                SystemClock.elapsedRealtime() + AlarmManager.INTERVAL_DAY,
+        alarmManager.cancel(pendingIntent); //if it already exists
+        alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP,
+                System.currentTimeMillis() + AlarmManager.INTERVAL_DAY,
                 AlarmManager.INTERVAL_DAY, pendingIntent);
 
     }

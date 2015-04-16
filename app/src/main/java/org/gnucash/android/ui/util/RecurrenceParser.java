@@ -17,8 +17,10 @@
 package org.gnucash.android.ui.util;
 
 import android.text.format.Time;
+
 import com.doomonafireball.betterpickers.recurrencepicker.EventRecurrence;
-import org.gnucash.android.model.ScheduledEvent;
+
+import org.gnucash.android.model.ScheduledAction;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -26,7 +28,7 @@ import java.util.List;
 
 /**
  * Parses {@link com.doomonafireball.betterpickers.recurrencepicker.EventRecurrence}s to generate
- * {@link org.gnucash.android.model.ScheduledEvent}s
+ * {@link org.gnucash.android.model.ScheduledAction}s
  *
  * @author Ngewi Fet <ngewif@gmail.com>
  */
@@ -40,16 +42,19 @@ public class RecurrenceParser {
 
 
     /**
-     * Parses an event recurrence to produce {@link org.gnucash.android.model.ScheduledEvent}s for each recurrence.
-     * <p>Each {@link org.gnucash.android.model.ScheduledEvent} represents just one simple repeating schedule, e.g. every Monday.
+     * Parses an event recurrence to produce {@link org.gnucash.android.model.ScheduledAction}s for each recurrence.
+     * <p>Each {@link org.gnucash.android.model.ScheduledAction} represents just one simple repeating schedule, e.g. every Monday.
      * If there are multiple schedules in the recurrence e.g. every Monday and Tuesday, then two ScheduledEvents will be generated</p>
      * @param eventRecurrence Event recurrence pattern obtained from dialog
-     * @param eventType Type of event recurrence
+     * @param actionType Type of event recurrence
      * @return List of ScheduledEvents
      */
-    public static List<ScheduledEvent> parse(EventRecurrence eventRecurrence, ScheduledEvent.EventType eventType){
-        long period = 0;
-        List<ScheduledEvent> scheduledEventList = new ArrayList<ScheduledEvent>();
+    public static List<ScheduledAction> parse(EventRecurrence eventRecurrence, ScheduledAction.ActionType actionType){
+        long period;
+        List<ScheduledAction> scheduledActionList = new ArrayList<ScheduledAction>();
+        if (eventRecurrence == null)
+            return scheduledActionList;
+
         switch(eventRecurrence.freq){
             case EventRecurrence.DAILY: {
                 if (eventRecurrence.interval == 0) //I assume this is a bug from the picker library
@@ -57,10 +62,10 @@ public class RecurrenceParser {
                 else
                     period = eventRecurrence.interval * DAY_MILLIS;
 
-                ScheduledEvent scheduledEvent = new ScheduledEvent(eventType);
-                scheduledEvent.setPeriod(period);
-                parseEndTime(eventRecurrence, scheduledEvent);
-                scheduledEventList.add(scheduledEvent);
+                ScheduledAction scheduledAction = new ScheduledAction(actionType);
+                scheduledAction.setPeriod(period);
+                parseEndTime(eventRecurrence, scheduledAction);
+                scheduledActionList.add(scheduledAction);
             }
                 break;
 
@@ -70,12 +75,12 @@ public class RecurrenceParser {
                 else
                     period = eventRecurrence.interval * WEEK_MILLIS;
                 for (int day : eventRecurrence.byday) {
-                    ScheduledEvent scheduledEvent = new ScheduledEvent(eventType);
-                    scheduledEvent.setPeriod(period);
+                    ScheduledAction scheduledAction = new ScheduledAction(actionType);
+                    scheduledAction.setPeriod(period);
 
-                    scheduledEvent.setStartTime(nextDayOfWeek(day2CalendarDay(day)).getTimeInMillis());
-                    parseEndTime(eventRecurrence, scheduledEvent);
-                    scheduledEventList.add(scheduledEvent);
+                    scheduledAction.setStartTime(nextDayOfWeek(day2CalendarDay(day)).getTimeInMillis());
+                    parseEndTime(eventRecurrence, scheduledAction);
+                    scheduledActionList.add(scheduledAction);
                 }
             }
             break;
@@ -85,14 +90,14 @@ public class RecurrenceParser {
                     period = MONTH_MILLIS;
                 else
                     period = eventRecurrence.interval * MONTH_MILLIS;
-                ScheduledEvent event = new ScheduledEvent(eventType);
+                ScheduledAction event = new ScheduledAction(actionType);
                 event.setPeriod(period);
                 Calendar now = Calendar.getInstance();
                 now.add(Calendar.MONTH, 1);
                 event.setStartTime(now.getTimeInMillis());
                 parseEndTime(eventRecurrence, event);
 
-                scheduledEventList.add(event);
+                scheduledActionList.add(event);
             }
                 break;
 
@@ -101,32 +106,32 @@ public class RecurrenceParser {
                     period = YEAR_MILLIS;
                 else
                     period = eventRecurrence.interval * YEAR_MILLIS;
-                ScheduledEvent event = new ScheduledEvent(eventType);
+                ScheduledAction event = new ScheduledAction(actionType);
                 event.setPeriod(period);
                 Calendar now = Calendar.getInstance();
                 now.add(Calendar.YEAR, 1);
                 event.setStartTime(now.getTimeInMillis());
                 parseEndTime(eventRecurrence, event);
-                scheduledEventList.add(event);
+                scheduledActionList.add(event);
             }
                 break;
         }
-        return scheduledEventList;
+        return scheduledActionList;
     }
 
     /**
      * Parses the end time from an EventRecurrence object and sets it to the <code>scheduledEvent</code>.
      * The end time is specified in the dialog either by number of occurences or a date.
      * @param eventRecurrence Event recurrence pattern obtained from dialog
-     * @param scheduledEvent ScheduledEvent to be to updated
+     * @param scheduledAction ScheduledEvent to be to updated
      */
-    private static void parseEndTime(EventRecurrence eventRecurrence, ScheduledEvent scheduledEvent) {
+    private static void parseEndTime(EventRecurrence eventRecurrence, ScheduledAction scheduledAction) {
         if (eventRecurrence.until != null && eventRecurrence.until.length() > 0) {
             Time endTime = new Time();
             endTime.parse(eventRecurrence.until);
-            scheduledEvent.setEndTime(endTime.toMillis(false));
+            scheduledAction.setEndTime(endTime.toMillis(false));
         } else if (eventRecurrence.count > 0){
-            scheduledEvent.setEndTime(scheduledEvent.getStartTime() + (scheduledEvent.getPeriod() * eventRecurrence.count));
+            scheduledAction.setTotalFrequency(eventRecurrence.count);
         }
     }
 

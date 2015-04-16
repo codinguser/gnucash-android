@@ -20,20 +20,20 @@
     android:versionCode="48"
     android:versionName="@string/app_version_name" >
 
-    <uses-sdk android:minSdkVersion="9" android:targetSdkVersion="18"/>
+    <uses-sdk android:minSdkVersion="9" android:targetSdkVersion="19"/>
     
     <permission-group 
         android:name="org.gnucash.android.permission.group.GNUCASH"
         android:label="@string/label_permission_group" 
         android:description="@string/description_permission_group" />
     
-    <permission android:name="org.gnucash.android.permission.CREATE_ACCOUNT" 
+    <permission android:name="${applicationId}.permission.CREATE_ACCOUNT"
         android:label="@string/label_permission_create_account"
-        android:permissionGroup="org.gnucash.android.permission.group.GNUCASH"
+        android:permissionGroup="${applicationId}.permission.group.GNUCASH"
         android:protectionLevel="dangerous" />
-    <permission android:name="org.gnucash.android.permission.RECORD_TRANSACTION" 
+    <permission android:name="${applicationId}.permission.RECORD_TRANSACTION"
         android:label="@string/label_permission_record_transaction"
-        android:permissionGroup="org.gnucash.android.permission.group.GNUCASH"
+        android:permissionGroup="${applicationId}.permission.group.GNUCASH"
         android:protectionLevel="dangerous" />
     
     <uses-permission android:label="@string/label_permission_record_transactions"
@@ -45,6 +45,8 @@
     <uses-permission android:name="android.permission.VIBRATE"
                      android:label="Allow device to vibrate with notifications" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"
+        android:label="Schedule repeating transactions when device is rebooted"/>
 
     <application android:name="org.gnucash.android.app.GnuCashApplication"
         android:icon="@drawable/ic_launcher"
@@ -64,7 +66,7 @@
             android:windowSoftInputMode="stateAlwaysHidden">
         </activity>
         <activity android:name=".ui.settings.SettingsActivity"/>
-        <activity android:name=".ui.transaction.ScheduledEventsActivity" />
+        <activity android:name=".ui.transaction.ScheduledActionsActivity" />
         <activity android:name=".ui.passcode.PasscodePreferenceActivity" />
         <activity android:name=".ui.transaction.TransactionsActivity"
             android:configChanges="orientation|screenSize">
@@ -84,8 +86,6 @@
         <service android:name=".service.SchedulerService"
             android:exported="false"
             android:label="GnuCash Android Scheduler Execution Service"/>
-        <receiver android:name=".receivers.SchedulerReceiver"
-            android:exported="false"/>
         <receiver android:name=".receivers.TransactionRecorder"
             android:label="Records transactions received through intents"
             android:permission="org.gnucash.android.permission.RECORD_TRANSACTION">
@@ -112,7 +112,13 @@
 		    <meta-data android:name="android.appwidget.provider"
 		               android:resource="@xml/transaction_appwidget_info" />
 		</receiver>
-        
+        <receiver android:name=".receivers.BootReceiver"
+            android:label="Schedules regular runs for the scheduled events service"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

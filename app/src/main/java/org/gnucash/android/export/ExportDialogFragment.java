@@ -19,16 +19,20 @@ package org.gnucash.android.export;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.DialogFragment;
-import android.text.AndroidCharacter;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.*;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.RadioButton;
+import android.widget.Spinner;
+import android.widget.TextView;
+
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
 
@@ -103,7 +107,7 @@ public class ExportDialogFragment extends DialogFragment {
             dismiss();
 
             Log.i(TAG, "Commencing async export of transactions");
-            new ExporterAsyncTask(getActivity()).execute(exportParameters);
+            new ExportAsyncTask(getActivity()).execute(exportParameters);
 		}
 		
 	}

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
 <!--
  Copyright (c) 2012 - 2014 Ngewi Fet <ngewif@gmail.com>
- Copyright (c) 2013 - 2014 Lei Xiao Bao <lxbzmy@gmail.com>
+ Copyright (c) 2013 - 2014 Alex Lei <lxbzmy@gmail.com>
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -15,8 +15,7 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<resources>
-    <string name="app_name">GnuCash</string>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="title_add_account">创建科目</string>
     <string name="title_edit_account">修改科目</string>
     <string name="info_details">信息</string>
@@ -26,6 +25,11 @@
     <string name="label_account_name">科目名称</string>
     <string name="btn_cancel">取消</string>
     <string name="btn_save">保存</string>
+    <string name="label_passcode">输入密码</string>
+    <string name="toast_wrong_passcode">密码错误，请再试一次</string>
+    <string name="toast_passcode_set">密码已设置</string>
+    <string name="toast_confirm_passcode">请再输入一次</string>
+    <string name="toast_invalid_passcode_confirmation">密码不一致，请重试</string>
     <string name="label_transaction_name">描述</string>
     <string name="label_transaction_amount">金额</string>
     <string name="title_add_transaction">新交易</string>
@@ -46,6 +50,7 @@
     <string name="label_transaction_description">备注</string>
     <string name="menu_move">移动</string>
     <string name="title_selected">%1$d 已选中</string>
+    <string name="label_account_balance">合计：</string>
     <string name="label_export_destination">导出到</string>
     <string name="title_export_dialog">导出交易资料</string>
     <string name="option_export_all_transactions">导出所有交易</string>
@@ -211,7 +216,7 @@
         <item>SDR (Special Drawing Right)</item>
         <item>Serbian Dinar</item>
         <item>Seychelles Rupee</item>
-        <item>银</item>
+        <item>白银</item>
         <item>新加坡元</item>
         <item>Solomon Islands Dollar</item>
         <item>Som</item>
@@ -245,7 +250,7 @@
         <item>美元</item>
         <item>Uzbekistan Sum</item>
         <item>Vatu</item>
-        <item>世界投资报告”欧元</item>
+        <item>“世界投资报告”欧元</item>
         <item>“世界投资报告”法郎</item>
         <item>韩元</item>
         <item>Yemeni Rial</item>
@@ -269,6 +274,11 @@
     <string name="title_general_prefs">常规</string>
     <string name="label_widget_configuration">选择科目</string>
     <string name="toast_no_transactions_to_export">没有需要导出的交易</string>
+    <string name="header_passcode_settings">密码</string>
+    <string name="title_passcode_preferences">密码设置</string>
+    <string name="title_passcode_enabled">已开启密码保护</string>
+    <string name="title_passcode_disabled">没有设置密码</string>
+    <string name="title_change_passcode">修改密码</string>
     <string name="title_about_gnucash">关于GnuCash</string>
     <string name="summary_about_gnucash">Gnucash for android是一个移动版的财务管理软件。提供灵活的跟踪开支的功能，可以导出OFX格式（开放金融交易格式）数据，并导入到桌面版的 GnuCash中。</string>
     <string name="title_about">关于</string>
@@ -302,13 +312,13 @@
     <string name="summary_xml_ofx_header">当导出数据到GnuCash桌面版以外的程序时需要开启这个选项。</string>
     <string name="title_whats_new">新功能</string>
     <string name="whats_new">
-        - General resource and performance optimization\n
-        - Faster computation of account balances\n
-        - Set passcode to restrict access to app (in Settings)\n
-        - Export separate QIF files for each currency in use\n
-        - Use currencey settings when creating account hierarchy\n
-        - Multiple bug fixes and improvements\n
-	</string>
+        - 提高了性能General resource and performance optimization\n
+        - 计算科目合计金额更快\n
+        - 可以设置密码保护（在设置页中）\n
+        - 按货币导入QIF文件\n
+        - 创建科目时可以沿用上一级的货币设置\n
+        - 修补了以前发现的问题\n
+    </string>
     <string name="label_dismiss">知道了</string>
     <string name="toast_transanction_amount_required">输入金额才能保存交易</string>
     <string name="menu_import_accounts">导入GnuCash科目</string>
@@ -344,8 +354,8 @@
     <string name="toast_recurring_transaction_deleted">计划交易已删除</string>
     <string name="label_placeholder_account">占位符</string>
     <string name="label_default_transfer_account">默认的转账帐户</string>
-    <string name="label_account_color_and_type">科目颜色和类型</string>
     <plurals name="label_sub_accounts">
+        <item quantity="one">%d 子科目</item>
         <item quantity="other">%d 子科目</item>
     </plurals>
     <string-array name="account_type_entry_values">
@@ -362,7 +372,7 @@
         <item>货币</item>
         <item>股票</item>
         <item>共同基金</item>
-        <item>TRADING</item>
+        <item>贸易</item>
     </string-array>
     <string-array name="export_formats">
         <item>QIF</item>
@@ -370,6 +380,11 @@
     </string-array>
     <!-- Default title for color picker dialog [CHAR LIMIT=30] -->
     <string name="color_picker_default_title">选择一种颜色</string>
+    <!-- Content description for a color square. -->
+    <string name="color_swatch_description" translatable="false">Color <xliff:g id="color_index" example="14">%1$d</xliff:g></string>
+    <!-- Content description for a selected color square. -->
+    <string name="color_swatch_description_selected" translatable="false">Color <xliff:g id="color_index" example="14">%1$d</xliff:g> selected</string>
+    <string name="label_account_color_and_type">科目颜色和类型</string>
     <string name="label_delete_sub_accounts">删除子科目</string>
     <string name="title_recent_accounts">最近的</string>
     <string name="title_favorite_accounts">已加星标</string>
@@ -388,19 +403,19 @@
         <item>每月</item>
     </string-array>
     <string name="title_scheduled_transactions">计划的交易</string>
-    <string name="title_select_export_destination">Select destination for export</string>
+    <string name="title_select_export_destination">选择存储的位置</string>
     <string name="hint_split_memo">描述</string>
     <string name="label_spend">花费</string>
     <string name="label_receive">收到</string>
     <string name="label_withdrawal">取款</string>
     <string name="label_deposit">存款</string>
     <string name="label_payment">支付</string>
-    <string name="label_charge">费用（charge）</string>
+    <string name="label_charge">费用</string>
     <string name="label_decrease">减少</string>
     <string name="label_increase">增加</string>
     <string name="label_income">收入</string>
-    <string name="label_rebate">回扣（Rebate）</string>
-    <string name="label_expense">费用（Expense）</string>
+    <string name="label_rebate">回扣</string>
+    <string name="label_expense">费用</string>
     <string name="label_bill">支付</string>
     <string name="label_invoice">发票</string>
     <string name="label_buy">买入</string>
@@ -411,40 +426,50 @@
     <string name="account_name_equity">所有者权益</string>
     <string name="summary_save_opening_balances">当删除所有交易后，还保持曾经的账户余额作为新的期初余额。</string>
     <string name="title_save_opening_balances">保存账户的期初余额</string>
-    <string name="export_warning_ofx">OFX does not support double-entry transactions</string>
-    <string name="export_warning_qif">A separate QIF file will be generated for each currency in use</string>
-    <string name="title_transaction_splits">Transaction splits</string>
+    <string name="export_warning_ofx">OFX 格式不支持复式簿记</string>
+    <string name="export_warning_qif">每种货币会生成一个独立的“QIF”文件</string>
+    <string name="title_transaction_splits">拆分交易</string>
     <string name="label_imbalance">Imbalance:</string>
-    <string name="btn_add_split">Add split</string>
-    <string name="label_account_balance">Balance:</string>
-    <string name="label_passcode">Enter Passcode</string>
-    <string name="toast_wrong_passcode">Wrong passcode, please try again</string>
-    <string name="toast_passcode_set">Passcode set</string>
-    <string name="toast_confirm_passcode">Please confirm your passcode</string>
-    <string name="toast_invalid_passcode_confirmation">Invalid passcode confirmation. Please try again</string>
-    <string name="header_passcode_settings">Passcode</string>
-    <string name="title_passcode_preferences">Passcode Preferences</string>
-    <string name="title_passcode_enabled">Passcode Turned On</string>
-    <string name="title_passcode_disabled">Passcode Turned Off</string>
-    <string name="title_change_passcode">Change Passcode</string>
-    <string name="toast_error_edit_multi_currency_transaction">Multi-currency transactions cannot be modified</string>
-    <string name="menu_title_favorite">Favorite</string>
+    <string name="btn_add_split">添加一行</string>
+    <string name="menu_title_favorite">收藏</string>
     <string name="drawer_open">Navigation drawer opened</string>
     <string name="drawer_close">Navigation drawer closed</string>
-    <string name="title_reports">Reports</string>
-    <string name="title_pie_chart">Pie Chart</string>
+    <string name="title_reports">报表</string>
+    <string name="title_pie_chart">饼图</string>
     <string name="title_line_chart">Line Chart</string>
     <string name="title_bar_chart">Bar Chart</string>
-    <string name="menu_order_by_size">Order by size</string>
-    <string name="menu_toggle_legend">Toggle legend</string>
-    <string name="menu_toggle_labels">Toggle labels</string>
+    <string name="menu_order_by_size">按数量排序</string>
+    <string name="menu_toggle_legend">显示图例</string>
+    <string name="menu_toggle_labels">显示标签</string>
     <string name="menu_toggle_percentage_mode">Toggle percentage</string>
     <string name="menu_toggle_average_lines">Toggle average lines</string>
     <string name="menu_group_smaller_slices">Group Smaller Slices</string>
-    <string name="label_chart_no_data">No chart data available</string>
-    <string name="label_chart_overall">Overall</string>
-    <string name="label_chart_total">Total\n</string>
+    <string name="label_chart_no_data">没有数据可显示</string>
+    <string name="label_chart_overall">概要</string>
+    <string name="label_chart_total">总计\n</string>
     <string name="label_other_slice">Other</string>
     <string name="toast_chart_percentage_mode_total">The percentage of selected value calculated from the total amount</string>
     <string name="toast_chart_percentage_mode_current_bar">The percentage of selected value calculated from the current stacked bar amount</string>
+    <string name="label_save_template">保存成模板</string>
+    <string name="label_delete_account_transactions_description">科目中包含交易信息。 \n如何处理交易信息</string>
+    <string name="label_delete_account_subaccounts_description">还存在子科目。 \n如何处理这些子科目</string>
+    <string name="label_delete_transactions">删除交易</string>
+    <string name="toast_disable_double_entry_to_save_transaction">Create and specify a transfer account OR disable double-entry in settings to save the transaction</string>
+    <string name="label_tap_to_create_schedule">点击然后创建计划交易</string>
+    <plurals name="label_every_x_days">
+        <item quantity="one">Daily</item>
+        <item quantity="other">Every %d days</item>
+    </plurals>
+    <plurals name="label_every_x_weeks">
+        <item quantity="one">Weekly</item>
+        <item quantity="other">Every %d weeks</item>
+    </plurals>
+    <plurals name="label_every_x_months">
+        <item quantity="one">Monthly</item>
+        <item quantity="other">Every %d months</item>
+    </plurals>
+    <plurals name="label_every_x_years">
+        <item quantity="one">Yearly</item>
+        <item quantity="other">Every %d years</item>
+    </plurals>
 </resources>

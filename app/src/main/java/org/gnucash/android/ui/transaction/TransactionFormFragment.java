@@ -16,32 +16,6 @@
 
 package org.gnucash.android.ui.transaction;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.util.*;
-
-import android.support.v4.app.FragmentManager;
-import android.text.format.Time;
-import android.text.Editable;
-import android.widget.*;
-import com.doomonafireball.betterpickers.recurrencepicker.EventRecurrence;
-import com.doomonafireball.betterpickers.recurrencepicker.EventRecurrenceFormatter;
-import com.doomonafireball.betterpickers.recurrencepicker.RecurrencePickerDialog;
-import org.gnucash.android.R;
-import org.gnucash.android.app.GnuCashApplication;
-import org.gnucash.android.db.*;
-import org.gnucash.android.model.*;
-import org.gnucash.android.ui.transaction.dialog.DatePickerDialogFragment;
-import org.gnucash.android.ui.transaction.dialog.SplitEditorDialogFragment;
-import org.gnucash.android.ui.transaction.dialog.TimePickerDialogFragment;
-import org.gnucash.android.ui.UxArgument;
-import org.gnucash.android.ui.util.AmountInputFormatter;
-import org.gnucash.android.ui.util.RecurrenceParser;
-import org.gnucash.android.ui.util.TransactionTypeToggleButton;
-import org.gnucash.android.ui.widget.WidgetConfigurationActivity;
-
 import android.app.DatePickerDialog;
 import android.app.DatePickerDialog.OnDateSetListener;
 import android.app.TimePickerDialog;
@@ -52,20 +26,70 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.SimpleCursorAdapter;
+import android.text.Editable;
+import android.text.format.DateUtils;
+import android.text.format.Time;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
+import android.widget.AutoCompleteTextView;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.DatePicker;
+import android.widget.EditText;
+import android.widget.FilterQueryProvider;
+import android.widget.Spinner;
+import android.widget.TextView;
+import android.widget.TimePicker;
+import android.widget.Toast;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockFragment;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
+import com.doomonafireball.betterpickers.recurrencepicker.EventRecurrence;
+import com.doomonafireball.betterpickers.recurrencepicker.EventRecurrenceFormatter;
+import com.doomonafireball.betterpickers.recurrencepicker.RecurrencePickerDialog;
+
+import org.gnucash.android.R;
+import org.gnucash.android.db.AccountsDbAdapter;
+import org.gnucash.android.db.DatabaseSchema;
+import org.gnucash.android.db.ScheduledActionDbAdapter;
+import org.gnucash.android.db.TransactionsDbAdapter;
+import org.gnucash.android.model.AccountType;
+import org.gnucash.android.model.Money;
+import org.gnucash.android.model.ScheduledAction;
+import org.gnucash.android.model.Split;
+import org.gnucash.android.model.Transaction;
+import org.gnucash.android.model.TransactionType;
+import org.gnucash.android.ui.UxArgument;
+import org.gnucash.android.ui.transaction.dialog.DatePickerDialogFragment;
+import org.gnucash.android.ui.transaction.dialog.SplitEditorDialogFragment;
+import org.gnucash.android.ui.transaction.dialog.TimePickerDialogFragment;
+import org.gnucash.android.ui.util.AmountInputFormatter;
+import org.gnucash.android.ui.util.RecurrenceParser;
+import org.gnucash.android.ui.util.TransactionTypeToggleButton;
+import org.gnucash.android.ui.widget.WidgetConfigurationActivity;
 import org.gnucash.android.util.QualifiedAccountNameCursorAdapter;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Currency;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.List;
+import java.util.Locale;
 
 /**
  * Fragment for creating or editing transactions
@@ -164,6 +188,11 @@ public class TransactionFormFragment extends SherlockFragment implements
 	private Spinner mDoubleAccountSpinner;
 
     /**
+     * Checkbox indicating if this transaction should be saved as a template or not
+     */
+    private CheckBox mSaveTemplateCheckbox;
+
+    /**
      * Flag to note if double entry accounting is in use or not
      */
 	private boolean mUseDoubleEntry;
@@ -191,6 +220,8 @@ public class TransactionFormFragment extends SherlockFragment implements
 
     private List<Split> mSplitsList = new ArrayList<Split>();
 
+    private boolean mEditMode = false;
+
     /**
 	 * Create the view and retrieve references to the UI elements
 	 */
@@ -209,7 +240,8 @@ public class TransactionFormFragment extends SherlockFragment implements
 		mDoubleAccountSpinner   = (Spinner) v.findViewById(R.id.input_double_entry_accounts_spinner);
         mOpenSplitsButton       = (Button) v.findViewById(R.id.btn_open_splits);
         mRecurrenceTextView     = (TextView) v.findViewById(R.id.input_recurrence);
-		return v;
+        mSaveTemplateCheckbox = (CheckBox) v.findViewById(R.id.checkbox_save_template);
+        return v;
 	}
 
 	@Override
@@ -269,21 +301,46 @@ public class TransactionFormFragment extends SherlockFragment implements
             initTransactionNameAutocomplete();
         } else {
 			initializeViewsWithTransaction();
+            mEditMode = true;
 		}
 
 
 	}
 
     /**
+     * Extension of SimpleCursorAdapter which is used to populate the fields for the list items
+     * in the transactions suggestions (auto-complete transaction description).
+     */
+    private class DropDownCursorAdapter extends SimpleCursorAdapter{
+
+        public DropDownCursorAdapter(Context context, int layout, Cursor c, String[] from, int[] to) {
+            super(context, layout, c, from, to, 0);
+        }
+
+        @Override
+        public void bindView(View view, Context context, Cursor cursor) {
+            super.bindView(view, context, cursor);
+            String transactionUID = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.TransactionEntry.COLUMN_UID));
+            Money balance = TransactionsDbAdapter.getInstance().getBalance(transactionUID, mAccountUID);
+
+            long timestamp = cursor.getLong(cursor.getColumnIndexOrThrow(DatabaseSchema.TransactionEntry.COLUMN_TIMESTAMP));
+            String dateString = DateUtils.formatDateTime(getActivity(), timestamp,
+                    DateUtils.FORMAT_SHOW_WEEKDAY | DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_YEAR);
+
+            TextView secondaryTextView = (TextView) view.findViewById(R.id.secondary_text);
+            secondaryTextView.setText(balance.formattedString() + " on " + dateString); //TODO: Extract string
+        }
+    }
+
+    /**
      * Initializes the transaction name field for autocompletion with existing transaction names in the database
      */
     private void initTransactionNameAutocomplete() {
-        final int[] to = new int[]{android.R.id.text1};
+        final int[] to = new int[]{R.id.primary_text};
         final String[] from = new String[]{DatabaseSchema.TransactionEntry.COLUMN_DESCRIPTION};
 
-        SimpleCursorAdapter adapter = new SimpleCursorAdapter(
-                getActivity(), android.R.layout.simple_dropdown_item_1line,
-                null, from, to, 0);
+        SimpleCursorAdapter adapter = new DropDownCursorAdapter(
+                getActivity(), R.layout.dropdown_item_2lines, null, from, to);
 
         adapter.setCursorToStringConverter(new SimpleCursorAdapter.CursorToStringConverter() {
             @Override
@@ -296,7 +353,7 @@ public class TransactionFormFragment extends SherlockFragment implements
         adapter.setFilterQueryProvider(new FilterQueryProvider() {
             @Override
             public Cursor runQuery(CharSequence name) {
-                return mTransactionsDbAdapter.fetchTransactionsStartingWith(name==null?"":name.toString());
+                return mTransactionsDbAdapter.fetchTransactionSuggestions(name == null ? "" : name.toString(), mAccountUID);
             }
         });
 
@@ -378,6 +435,15 @@ public class TransactionFormFragment extends SherlockFragment implements
         if (mMultiCurrency) {
             enableControls(false);
         }
+
+        mSaveTemplateCheckbox.setChecked(mTransaction.isTemplate());
+        String scheduledActionUID = getArguments().getString(UxArgument.SCHEDULED_ACTION_UID);
+        if (scheduledActionUID != null && !scheduledActionUID.isEmpty()) {
+            ScheduledAction scheduledAction = ScheduledActionDbAdapter.getInstance().getScheduledAction(scheduledActionUID);
+            mRecurrenceRule = scheduledAction.getRuleString();
+            mEventRecurrence.parse(mRecurrenceRule);
+            mRecurrenceTextView.setText(scheduledAction.getRepeatString());
+        }
     }
 
     private void enableControls(boolean b) {
@@ -432,11 +498,10 @@ public class TransactionFormFragment extends SherlockFragment implements
      * Only accounts with the same currency can be transferred to
      */
 	private void updateTransferAccountsList(){
-		String accountUID = ((TransactionsActivity)getActivity()).getCurrentAccountUID();
 
-		String conditions = "(" + DatabaseSchema.AccountEntry.COLUMN_UID + " != '" + accountUID
-                            + "' AND " + (mMultiCurrency ? "" : (DatabaseSchema.AccountEntry.COLUMN_CURRENCY + " = '" + mAccountsDbAdapter.getCurrencyCode(accountUID)
-                            + "' AND ")) + DatabaseSchema.AccountEntry.COLUMN_UID + " != '" + mAccountsDbAdapter.getGnuCashRootAccountUID()
+		String conditions = "(" + DatabaseSchema.AccountEntry.COLUMN_UID + " != '" + mAccountUID
+                            + "' AND " + (mMultiCurrency ? "" : (DatabaseSchema.AccountEntry.COLUMN_CURRENCY + " = '" + mAccountsDbAdapter.getCurrencyCode(mAccountUID)
+                            + "' AND ")) + DatabaseSchema.AccountEntry.COLUMN_UID + " != '" + mAccountsDbAdapter.getOrCreateGnuCashRootAccountUID()
                             + "' AND " + DatabaseSchema.AccountEntry.COLUMN_PLACEHOLDER + " = 0"
                             + ")";
 
@@ -591,7 +656,7 @@ public class TransactionFormFragment extends SherlockFragment implements
 
         mAccountType = accountsDbAdapter.getAccountType(newAccountUID);
         mTransactionTypeButton.setAccountType(mAccountType);
-
+        mAccountUID = newAccountUID;
         updateTransferAccountsList();
     }
 
@@ -611,15 +676,14 @@ public class TransactionFormFragment extends SherlockFragment implements
 		String notes = mNotesEditText.getText().toString();
 		BigDecimal amountBigd = parseInputToDecimal(mAmountEditText.getText().toString());
 
-		String accountUID 	= ((TransactionsActivity) getSherlockActivity()).getCurrentAccountUID();
-		Currency currency = Currency.getInstance(mTransactionsDbAdapter.getAccountCurrencyCode(accountUID));
+		Currency currency = Currency.getInstance(mTransactionsDbAdapter.getAccountCurrencyCode(mAccountUID));
 		Money amount 	= new Money(amountBigd, currency).absolute();
 
         //capture any edits which were done directly (not using split editor)
         if (mSplitsList.size() == 2 && mSplitsList.get(0).isPairOf(mSplitsList.get(1))) {
             //if it is a simple transfer where the editor was not used, then respect the button
             for (Split split : mSplitsList) {
-                if (split.getAccountUID().equals(accountUID)){
+                if (split.getAccountUID().equals(mAccountUID)){
                     split.setType(mTransactionTypeButton.getTransactionType());
                     split.setAmount(amount);
                 } else {
@@ -629,40 +693,73 @@ public class TransactionFormFragment extends SherlockFragment implements
             }
         }
 
-		if (mTransaction != null){ //if editing an existing transaction
-            mTransaction.setSplits(mSplitsList);
-            mTransaction.setDescription(description);
-		} else {
-			mTransaction = new Transaction(description);
-
-            if (mSplitsList.isEmpty()) { //amount entered in the simple interface (not using splits Editor)
-                Split split = new Split(amount, accountUID);
-                split.setType(mTransactionTypeButton.getTransactionType());
-                mTransaction.addSplit(split);
-
-                String transferAcctUID;
-                if (mUseDoubleEntry) {
-                    long transferAcctId = mDoubleAccountSpinner.getSelectedItemId();
-                    transferAcctUID = mAccountsDbAdapter.getUID(transferAcctId);
-                } else {
-                    transferAcctUID = mAccountsDbAdapter.getOrCreateImbalanceAccountUID(currency);
-                }
-                mTransaction.addSplit(split.createPair(transferAcctUID));
-            } else { //split editor was used to enter splits
-                mTransaction.setSplits(mSplitsList);
+        Money splitSum = Money.createZeroInstance(currency.getCurrencyCode());
+        for (Split split : mSplitsList) {
+            Money amt = split.getAmount().absolute();
+            if (split.getType() == TransactionType.DEBIT)
+                splitSum = splitSum.subtract(amt);
+            else
+                splitSum = splitSum.add(amt);
+        }
+        mAccountsDbAdapter.beginTransaction();
+        try {
+            if (!splitSum.isAmountZero()) {
+                Split imbSplit = new Split(splitSum.negate(), mAccountsDbAdapter.getOrCreateImbalanceAccountUID(currency));
+                mSplitsList.add(imbSplit);
             }
-		}
+            if (mTransaction != null) { //if editing an existing transaction
+                mTransaction.setSplits(mSplitsList);
+                mTransaction.setDescription(description);
+            } else {
+                mTransaction = new Transaction(description);
 
-        mTransaction.setCurrencyCode(mAccountsDbAdapter.getAccountCurrencyCode(mAccountUID));
-		mTransaction.setTime(cal.getTimeInMillis());
-		mTransaction.setNote(notes);
+                if (mSplitsList.isEmpty()) { //amount entered in the simple interface (not using splits Editor)
+                    Split split = new Split(amount, mAccountUID);
+                    split.setType(mTransactionTypeButton.getTransactionType());
+                    mTransaction.addSplit(split);
 
-        // set as not exported.
-        mTransaction.setExported(false);
-        //save the normal transaction first
-        mTransactionsDbAdapter.addTransaction(mTransaction);
-        scheduleRecurringTransaction();
+                    String transferAcctUID;
+                    if (mUseDoubleEntry) {
+                        long transferAcctId = mDoubleAccountSpinner.getSelectedItemId();
+                        transferAcctUID = mAccountsDbAdapter.getUID(transferAcctId);
+                    } else {
+                        transferAcctUID = mAccountsDbAdapter.getOrCreateImbalanceAccountUID(currency);
+                    }
+                    mTransaction.addSplit(split.createPair(transferAcctUID));
+                } else { //split editor was used to enter splits
+                    mTransaction.setSplits(mSplitsList);
+                }
+            }
 
+            mTransaction.setCurrencyCode(mAccountsDbAdapter.getAccountCurrencyCode(mAccountUID));
+            mTransaction.setTime(cal.getTimeInMillis());
+            mTransaction.setNote(notes);
+
+            // set as not exported because we have just edited it
+            mTransaction.setExported(false);
+            mTransaction.setTemplate(mSaveTemplateCheckbox.isChecked());
+            mTransactionsDbAdapter.addTransaction(mTransaction);
+
+            if (mSaveTemplateCheckbox.isChecked()) {//template is automatically checked when a transaction is scheduled
+                if (!mEditMode) { //means it was new transaction, so a new template
+                    Transaction templateTransaction = new Transaction(mTransaction, true);
+                    templateTransaction.setTemplate(true);
+                    mTransactionsDbAdapter.addTransaction(templateTransaction);
+                    scheduleRecurringTransaction(templateTransaction.getUID());
+                } else
+                    scheduleRecurringTransaction(mTransaction.getUID());
+            } else {
+                String scheduledActionUID = getArguments().getString(UxArgument.SCHEDULED_ACTION_UID);
+                if (scheduledActionUID != null){ //we were editing a schedule and it was turned off
+                    ScheduledActionDbAdapter.getInstance().deleteRecord(scheduledActionUID);
+                }
+            }
+
+            mAccountsDbAdapter.setTransactionSuccessful();
+        }
+        finally {
+            mAccountsDbAdapter.endTransaction();
+        }
 
         //update widgets, if any
 		WidgetConfigurationActivity.updateAllWidgets(getActivity().getApplicationContext());
@@ -674,29 +771,38 @@ public class TransactionFormFragment extends SherlockFragment implements
      * Schedules a recurring transaction (if necessary) after the transaction has been saved
      * @see #saveNewTransaction()
      */
-    private void scheduleRecurringTransaction() {
-        List<ScheduledEvent> events = RecurrenceParser.parse(mEventRecurrence, ScheduledEvent.EventType.TRANSACTION);
-        Transaction recurringTransaction;
-        if (mTransaction.getRecurrencePeriod() > 0) //if we are editing the recurring transaction itself...
-            recurringTransaction = mTransaction;
-        else {
-            recurringTransaction = new Transaction(mTransaction, true);
-            mTransactionsDbAdapter.addTransaction(recurringTransaction);
-            //value does not matter, just should be > 0 to mark as a recurring transaction
-            recurringTransaction.setRecurrencePeriod(RecurrenceParser.DAY_MILLIS);
+    private void scheduleRecurringTransaction(String transactionUID) {
+        ScheduledActionDbAdapter scheduledActionDbAdapter = ScheduledActionDbAdapter.getInstance();
+
+        List<ScheduledAction> events = RecurrenceParser.parse(mEventRecurrence,
+                ScheduledAction.ActionType.TRANSACTION);
+
+        String scheduledActionUID = getArguments().getString(UxArgument.SCHEDULED_ACTION_UID);
+
+        if (scheduledActionUID != null) { //if we are editing an existing schedule
+            if ( events.size() == 1) {
+                ScheduledAction scheduledAction = events.get(0);
+                scheduledAction.setUID(scheduledActionUID);
+                scheduledActionDbAdapter.updateRecurrenceAttributes(scheduledAction);
+                Toast.makeText(getActivity(), "Updated transaction schedule", Toast.LENGTH_SHORT).show();
+                return;
+            } else {
+                //if user changed scheduled action so that more than one new schedule would be saved,
+                // then remove the old one
+                ScheduledActionDbAdapter.getInstance().deleteRecord(scheduledActionUID);
+            }
         }
-        mTransactionsDbAdapter.addTransaction(recurringTransaction);
 
-        ScheduledEventDbAdapter scheduledEventDbAdapter = GnuCashApplication.getScheduledEventDbAdapter();
-
-        for (ScheduledEvent event : events) {
-            event.setEventUID(recurringTransaction.getUID());
-            scheduledEventDbAdapter.addScheduledEvent(event);
+        for (ScheduledAction event : events) {
+            event.setActionUID(transactionUID);
+            scheduledActionDbAdapter.addScheduledAction(event);
 
             Log.i("TransactionFormFragment", event.toString());
         }
-        if (events.size() > 0)
-            Toast.makeText(getActivity(), "Scheduled transaction", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getActivity(), "Scheduled transaction", Toast.LENGTH_SHORT).show();
+
+        //TODO: localize this toast string for all supported locales
+
     }
 
 
@@ -731,9 +837,8 @@ public class TransactionFormFragment extends SherlockFragment implements
             else if (mAmountEditText.getText().length() == 0) {
                 Toast.makeText(getActivity(), R.string.toast_transanction_amount_required, Toast.LENGTH_SHORT).show();
             } else if (mUseDoubleEntry && mDoubleAccountSpinner.getCount() == 0){
-                //TODO: Or automatically create an imbalance account
                 Toast.makeText(getActivity(),
-                        "Create & specify a transfer account OR disable double-entry in settings to save the transaction",
+                        R.string.toast_disable_double_entry_to_save_transaction,
                         Toast.LENGTH_LONG).show();
             } else {
                 saveNewTransaction();
@@ -849,11 +954,17 @@ public class TransactionFormFragment extends SherlockFragment implements
     @Override
     public void onRecurrenceSet(String rrule) {
         mRecurrenceRule = rrule;
-        String repeatString = "Not scheduled";
+        String repeatString = getString(R.string.label_tap_to_create_schedule);
         if (mRecurrenceRule != null){
             mEventRecurrence.parse(mRecurrenceRule);
             repeatString = EventRecurrenceFormatter.getRepeatString(getActivity(), getResources(), mEventRecurrence, true);
 
+            //when recurrence is set, we will definitely be saving a template
+            mSaveTemplateCheckbox.setChecked(true);
+            mSaveTemplateCheckbox.setEnabled(false);
+        } else {
+            mSaveTemplateCheckbox.setEnabled(true);
+            mSaveTemplateCheckbox.setChecked(false);
         }
 
         mRecurrenceTextView.setText(repeatString);

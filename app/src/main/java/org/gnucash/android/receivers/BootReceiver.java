@@ -13,26 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.gnucash.android.receivers;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.os.SystemClock;
-import android.support.v4.content.WakefulBroadcastReceiver;
-import android.util.Log;
 
-import org.gnucash.android.service.SchedulerService;
+import org.gnucash.android.app.GnuCashApplication;
 
 /**
- * Broadcast receiver which starts the schedule execution service
+ * Receiver which is called when the device finishes booting.
+ * It starts the service for running scheduled events
  * @author Ngewi Fet <ngewif@gmail.com>
  */
-public class SchedulerReceiver extends WakefulBroadcastReceiver {
+public class BootReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        Log.i("SchedulerReceiver", "Starting service @ " + SystemClock.elapsedRealtime());
-        Intent service = new Intent(context, SchedulerService.class);
-        startWakefulService(context, service);
+        GnuCashApplication.startScheduledEventExecutionService(context);
     }
 }

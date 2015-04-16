@@ -18,15 +18,16 @@ package org.gnucash.android.model;
 
 import android.content.Intent;
 
-import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.export.ofx.OfxHelper;
-import org.gnucash.android.export.xml.GncXmlHelper;
 import org.gnucash.android.model.Account.OfxAccountType;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Currency;
+import java.util.Date;
+import java.util.List;
 
 /**
  * Represents a financial transaction, either credit or debit.
@@ -44,18 +45,21 @@ public class Transaction extends BaseModel{
 
 	/**
 	 * Key for passing the account unique Identifier as an argument through an {@link Intent}
+     * @deprecated use {@link Split}s instead
 	 */
     @Deprecated
 	public static final String EXTRA_ACCOUNT_UID 	= "org.gnucash.android.extra.account_uid";
 
 	/**
 	 * Key for specifying the double entry account
+     * @deprecated use {@link Split}s instead
 	 */
     @Deprecated
 	public static final String EXTRA_DOUBLE_ACCOUNT_UID = "org.gnucash.android.extra.double_account_uid";
 
 	/**
 	 * Key for identifying the amount of the transaction through an Intent
+     * @deprecated use {@link Split}s instead
 	 */
     @Deprecated
 	public static final String EXTRA_AMOUNT 		= "org.gnucash.android.extra.amount";
@@ -63,6 +67,7 @@ public class Transaction extends BaseModel{
     /**
      * Extra key for the transaction type.
      * This value should typically be set by calling {@link TransactionType#name()}
+     * @deprecated use {@link Split}s instead
      */
     @Deprecated
     public static final String EXTRA_TRANSACTION_TYPE = "org.gnucash.android.extra.transaction_type";
@@ -98,7 +103,7 @@ public class Transaction extends BaseModel{
 	 * Flag indicating if this transaction has been exported before or not
 	 * The transactions are typically exported as bank statement in the OFX format
 	 */
-	private int mIsExported = 0;
+	private boolean mIsExported = false;
 
 	/**
 	 * Timestamp when this transaction occurred
@@ -106,11 +111,14 @@ public class Transaction extends BaseModel{
 	private long mTimestamp;
 
     /**
-     * Recurrence period of this transaction.
-     * <p>If this value is set then it means this transaction is a template which will be used to
-     * create a transaction every turn of the recurrence period</p>
+     * Flag indicating that this transaction is a template
      */
-    private long mRecurrencePeriod = 0;
+    private boolean mIsTemplate = false;
+
+    /**
+     * GUID of ScheduledAction which created this transaction
+     */
+    private String mScheduledActionUID = null;
 
 	/**
 	 * Overloaded constructor. Creates a new transaction instance with the
@@ -126,7 +134,8 @@ public class Transaction extends BaseModel{
      * Copy constructor.
      * Creates a new transaction object which is a clone of the parameter.
      * <p><b>Note:</b> The unique ID of the transaction is not cloned if the parameter <code>generateNewUID</code>,
-     * is set to false. Otherwise, a new one is generated.</p>
+     * is set to false. Otherwise, a new one is generated.<br/>
+     * The export flag and the template flag are not copied from the old transaction to the new.</p>
      * @param transaction Transaction to be cloned
      * @param generateNewUID Flag to determine if new UID should be assigned or not
      */
@@ -136,7 +145,6 @@ public class Transaction extends BaseModel{
         setNote(transaction.getNote());
         setTime(transaction.getTimeMillis());
         mCurrencyCode = transaction.mCurrencyCode;
-        mRecurrencePeriod = transaction.mRecurrencePeriod;
         //exported flag is left at default value of false
 
         for (Split split : transaction.mSplitList) {
@@ -154,6 +162,31 @@ public class Transaction extends BaseModel{
 	private void initDefaults(){
 		this.mTimestamp = System.currentTimeMillis();
 	}
+
+    /**
+     * Auto-balance the transaction by creating an imbalance split where necessary
+     * <p><b>Note:</b>If a transaction has splits with different currencies, not auto-balancing will be performed.</p>
+     */
+    public void autoBalance(){
+        //FIXME: when multiple currencies per transaction are supported
+        Currency lastCurrency = null;
+        for (Split split : mSplitList) {
+            Currency currentCurrency = split.getAmount().getCurrency();
+            if (lastCurrency == null)
+                lastCurrency = currentCurrency;
+            else if (lastCurrency != currentCurrency){
+                return;
+            }
+        }
+
+        Money imbalance = getImbalance();
+        if (!imbalance.isAmountZero()){
+            Currency currency = Currency.getInstance(mCurrencyCode);
+            Split split = new Split(imbalance.negate(),
+                    AccountsDbAdapter.getInstance().getOrCreateImbalanceAccountUID(currency));
+            mSplitList.add(split);
+        }
+    }
 
     /**
      * Returns list of splits for this transaction
@@ -233,7 +266,9 @@ public class Transaction extends BaseModel{
 
     /**
      * Computes the balance of the splits belonging to a particular account.
-     * Only those splits which belong to the account will be considered.
+     * <p>Only those splits which belong to the account will be considered.
+     * If the {@code accountUID} is null, then the imbalance of the transaction is computed. This means that either
+     * zero is returned (for balanced transactions) or the imbalance amount will be returned.</p>
      * @param accountUID Unique Identifier of the account
      * @param splitList List of splits
      * @return Money list of splits
@@ -384,7 +419,7 @@ public class Transaction extends BaseModel{
 	 * @param isExported <code>true</code> if the transaction has been exported, <code>false</code> otherwise
 	 */
 	public void setExported(boolean isExported){
-		mIsExported = isExported ? 1 : 0;
+		mIsExported = isExported;
 	}
 
 	/**
@@ -392,23 +427,23 @@ public class Transaction extends BaseModel{
 	 * @return <code>true</code> if the transaction has been exported, <code>false</code> otherwise
 	 */
 	public boolean isExported(){
-		return mIsExported == 1;
+		return mIsExported;
 	}
 
     /**
-     * Returns the recurrence period for this transaction
-     * @return Recurrence period for this transaction in milliseconds
+     * Returns {@code true} if this transaction is a template, {@code false} otherwise
+     * @return {@code true} if this transaction is a template, {@code false} otherwise
      */
-    public long getRecurrencePeriod() {
-        return mRecurrencePeriod;
+    public boolean isTemplate(){
+        return mIsTemplate;
     }
 
     /**
-     * Sets the recurrence period for this transaction
-     * @param recurrenceId Recurrence period in milliseconds
+     * Sets flag indicating whether this transaction is a template or not
+     * @param isTemplate Flag indicating if transaction is a template or not
      */
-    public void setRecurrencePeriod(long recurrenceId) {
-        this.mRecurrencePeriod = recurrenceId;
+    public void setTemplate(boolean isTemplate){
+        mIsTemplate = isTemplate;
     }
 
     /**
@@ -485,68 +520,19 @@ public class Transaction extends BaseModel{
 	}
 
     /**
-     * Generate the GncXML for the transaction and append to the DOM document
-     * @param doc XML document to which transaction should be added
-     * @param rootElement Parent node for the XML
-     * @deprecated Use the {@link org.gnucash.android.export.xml.GncXmlExporter} to generate XML
+     * Returns the GUID of the {@link org.gnucash.android.model.ScheduledAction} which created this transaction
+     * @return GUID of scheduled action
      */
-    public void toGncXml(Document doc, Element rootElement) {
-        Element idNode = doc.createElement(GncXmlHelper.TAG_TRX_ID);
-        idNode.setAttribute(GncXmlHelper.ATTR_KEY_TYPE, GncXmlHelper.ATTR_VALUE_GUID);
-        idNode.appendChild(doc.createTextNode(mUID));
+    public String getScheduledActionUID() {
+        return mScheduledActionUID;
+    }
 
-        Element currencyNode = doc.createElement(GncXmlHelper.TAG_TRX_CURRENCY);
-        Element cmdtySpacenode = doc.createElement(GncXmlHelper.TAG_COMMODITY_SPACE);
-        cmdtySpacenode.appendChild(doc.createTextNode("ISO4217"));
-        currencyNode.appendChild(cmdtySpacenode);
-        Element cmdtyIdNode = doc.createElement(GncXmlHelper.TAG_COMMODITY_ID);
-        cmdtyIdNode.appendChild(doc.createTextNode(mCurrencyCode));
-        currencyNode.appendChild(cmdtyIdNode);
-
-        Element datePostedNode = doc.createElement(GncXmlHelper.TAG_DATE_POSTED);
-        Element datePNode = doc.createElement(GncXmlHelper.TAG_DATE);
-        datePNode.appendChild(doc.createTextNode(GncXmlHelper.formatDate(mTimestamp)));
-        datePostedNode.appendChild(datePNode);
-
-        Element dateEneteredNode = doc.createElement(GncXmlHelper.TAG_DATE_ENTERED);
-        Element dateENode = doc.createElement(GncXmlHelper.TAG_DATE);
-        dateENode.appendChild(doc.createTextNode(GncXmlHelper.formatDate(mTimestamp)));
-        dateEneteredNode.appendChild(dateENode);
-
-        Element descriptionNode = doc.createElement(GncXmlHelper.TAG_TRN_DESCRIPTION);
-        if (mDescription != null) {
-            descriptionNode.appendChild(doc.createTextNode(mDescription));
-        }
-
-        Element trnSlotsNode = doc.createElement(GncXmlHelper.TAG_TRN_SLOTS);
-        if (mNotes != null && mNotes.length() > 0) {
-            trnSlotsNode.appendChild(GncXmlHelper.createSlot(doc, GncXmlHelper.KEY_NOTES, mNotes, GncXmlHelper.ATTR_VALUE_STRING));
-            //TODO: Consider adding future transactions date as slot here too
-        }
-        Element trnSplits = doc.createElement(GncXmlHelper.TAG_TRN_SPLITS);
-        for (Split split : mSplitList) {
-            split.toGncXml(doc, trnSplits);
-        }
-
-        Element transactionNode = doc.createElement(GncXmlHelper.TAG_TRANSACTION);
-        transactionNode.setAttribute(GncXmlHelper.ATTR_KEY_VERSION, GncXmlHelper.BOOK_VERSION);
-        transactionNode.appendChild(idNode);
-        transactionNode.appendChild(currencyNode);
-        transactionNode.appendChild(datePostedNode);
-        transactionNode.appendChild(dateEneteredNode);
-        transactionNode.appendChild(descriptionNode);
-        if (mNotes != null && mNotes.length() > 0){
-            transactionNode.appendChild(trnSlotsNode);
-        }
-        //TODO: Improve xml compatibilty with desktop for scheduled actions
-        if (mRecurrencePeriod != 0) {
-            Element recurrenceNode = doc.createElement(GncXmlHelper.TAG_RECURRENCE_PERIOD);
-            recurrenceNode.appendChild(doc.createTextNode(String.valueOf(mRecurrencePeriod)));
-            transactionNode.appendChild(recurrenceNode);
-        }
-        transactionNode.appendChild(trnSplits);
-
-        rootElement.appendChild(transactionNode);
+    /**
+     * Sets the GUID of the {@link org.gnucash.android.model.ScheduledAction} which created this transaction
+     * @param scheduledActionUID GUID of the scheduled action
+     */
+    public void setScheduledActionUID(String scheduledActionUID) {
+        mScheduledActionUID = scheduledActionUID;
     }
 
     /**

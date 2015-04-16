@@ -58,7 +58,7 @@ import org.gnucash.android.ui.UxArgument;
 import org.gnucash.android.ui.chart.ChartReportActivity;
 import org.gnucash.android.ui.passcode.PassLockActivity;
 import org.gnucash.android.ui.settings.SettingsActivity;
-import org.gnucash.android.ui.transaction.ScheduledEventsActivity;
+import org.gnucash.android.ui.transaction.ScheduledActionsActivity;
 import org.gnucash.android.ui.transaction.TransactionsActivity;
 import org.gnucash.android.ui.util.OnAccountClickedListener;
 import org.gnucash.android.ui.util.Refreshable;
@@ -266,12 +266,17 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
         setTab(index);
     }
 
+    /**
+     * Sets the current tab in the ViewPager
+     * @param index Index of fragment to be loaded
+     */
     public void setTab(int index){
         mPager.setCurrentItem(index);
     }
 
     /**
-     * Loads default setting for currency and performs app first-run initialization
+     * Loads default setting for currency and performs app first-run initialization.
+     * <p>Also handles displaying the What's New dialog</p>
      */
     private void init() {
         PreferenceManager.setDefaultValues(this, R.xml.fragment_transaction_preferences, false);
@@ -283,21 +288,20 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
         if (firstRun){
             showFirstRunDialog();
             //default to using double entry and save the preference explicitly
-            prefs.edit().putBoolean(getString(R.string.key_use_double_entry), true).commit();
-
+            prefs.edit().putBoolean(getString(R.string.key_use_double_entry), true).apply();
         }
 
         if (hasNewFeatures()){
             showWhatsNewDialog(this);
+            GnuCashApplication.startScheduledEventExecutionService(this);
         }
-
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-        preferences.edit().putInt(LAST_OPEN_TAB_INDEX, mPager.getCurrentItem()).commit();
+        preferences.edit().putInt(LAST_OPEN_TAB_INDEX, mPager.getCurrentItem()).apply();
     }
 
     /**
@@ -315,7 +319,7 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
         if (currentMinor > previousMinor){
             Editor editor = prefs.edit();
             editor.putInt(getString(R.string.key_previous_minor_version), currentMinor);
-            editor.commit();
+            editor.apply();
             return true;
         }
         return false;
@@ -378,9 +382,9 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
                 return super.onOptionsItemSelected(item);
 
             case R.id.menu_recurring_transactions:
-                Intent intent = new Intent(this, ScheduledEventsActivity.class);
-                intent.putExtra(ScheduledEventsActivity.EXTRA_DISPLAY_MODE,
-                        ScheduledEventsActivity.DisplayMode.TRANSACTION_EVENTS);
+                Intent intent = new Intent(this, ScheduledActionsActivity.class);
+                intent.putExtra(ScheduledActionsActivity.EXTRA_DISPLAY_MODE,
+                        ScheduledActionsActivity.DisplayMode.TRANSACTION_ACTIONS);
                 startActivity(intent);
                 return true;
 
@@ -549,25 +553,6 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
 
         startActivityForResult(chooser, REQUEST_PICK_ACCOUNTS_FILE);
 
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_CANCELED){
-            return;
-        }
-
-        switch (requestCode){
-            case REQUEST_PICK_ACCOUNTS_FILE:
-                try {
-                    InputStream accountInputStream = getContentResolver().openInputStream(data.getData());
-                    new ImportAsyncTask(this).execute(accountInputStream);
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                }
-                break;
-        }
     }
 
     /**

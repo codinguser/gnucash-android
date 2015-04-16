@@ -22,17 +22,30 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteStatement;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
-
 import android.util.Log;
+
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
-import org.gnucash.android.model.*;
+import org.gnucash.android.model.Account;
+import org.gnucash.android.model.AccountType;
+import org.gnucash.android.model.Money;
+import org.gnucash.android.model.Split;
+import org.gnucash.android.model.Transaction;
+import org.gnucash.android.model.TransactionType;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Currency;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 
-import static org.gnucash.android.db.DatabaseSchema.*;
+import static org.gnucash.android.db.DatabaseSchema.AccountEntry;
+import static org.gnucash.android.db.DatabaseSchema.SplitEntry;
+import static org.gnucash.android.db.DatabaseSchema.TransactionEntry;
 
 /**
  * Manages persistence of {@link Account}s in the database
@@ -90,11 +103,12 @@ public class AccountsDbAdapter extends DatabaseAdapter {
         }
         contentValues.put(AccountEntry.COLUMN_FAVORITE,     account.isFavorite() ? 1 : 0);
         contentValues.put(AccountEntry.COLUMN_FULL_NAME,    account.getFullName());
-        if (account.getParentUID() != null) {
-            contentValues.put(AccountEntry.COLUMN_PARENT_ACCOUNT_UID, account.getParentUID());
-        } else {
-            contentValues.putNull(AccountEntry.COLUMN_PARENT_ACCOUNT_UID);
+        String parentAccountUID = account.getParentUID();
+        if (parentAccountUID == null && account.getAccountType() != AccountType.ROOT) {
+            parentAccountUID = getOrCreateGnuCashRootAccountUID();
         }
+        contentValues.put(AccountEntry.COLUMN_PARENT_ACCOUNT_UID, parentAccountUID);
+
         if (account.getDefaultTransferAccountUID() != null) {
             contentValues.put(AccountEntry.COLUMN_DEFAULT_TRANSFER_ACCOUNT_UID, account.getDefaultTransferAccountUID());
         } else {
@@ -105,7 +119,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
         long rowId =  mDb.replace(AccountEntry.TABLE_NAME, null, contentValues);
 
 		//now add transactions if there are any
-		if (rowId > 0){
+		if (rowId > 0 && account.getAccountType() != AccountType.ROOT){
             //update the fully qualified account name
             updateAccount(rowId, AccountEntry.COLUMN_FULL_NAME, getFullyQualifiedAccountName(rowId));
 			for (Transaction t : account.getTransactions()) {
@@ -226,171 +240,101 @@ public class AccountsDbAdapter extends DatabaseAdapter {
         return updateRecord(AccountEntry.TABLE_NAME, accountId, columnKey, newValue);
     }
 
-	/**
-	 * Deletes an account with database id <code>rowId</code>
-	 * All the transactions in the account will also be deleted
-     * All descendant account will be assigned to the account's parent
-	 * @param rowId Database id of the account record to be deleted
-	 * @return <code>true</code> if deletion was successful, <code>false</code> otherwise.
-	 */
-	public boolean destructiveDeleteAccount(long rowId){
-        String accountUID = getUID(rowId);
+    /**
+     * This method goes through all the children of {@code accountUID} and updates the parent account
+     * to {@code newParentAccountUID}. The fully qualified account names for all descendant accounts will also be updated.
+     * @param accountUID GUID of the account
+     * @param newParentAccountUID GUID of the new parent account
+     */
+    public void reassignDescendantAccounts(@NonNull String accountUID, @NonNull String newParentAccountUID) {
+        List<String> descendantAccountUIDs = getDescendantAccountUIDs(accountUID, null, null);
+        if (descendantAccountUIDs.size() > 0) {
+            List<Account> descendantAccounts = getSimpleAccountList(
+                    AccountEntry.COLUMN_UID + " IN ('" + TextUtils.join("','", descendantAccountUIDs) + "')",
+                    null,
+                    null
+            );
+            HashMap<String, Account> mapAccounts = new HashMap<>();
+            for (Account account : descendantAccounts)
+                mapAccounts.put(account.getUID(), account);
+            String parentAccountFullName;
+            if (newParentAccountUID == null || getAccountType(newParentAccountUID) == AccountType.ROOT) {
+                parentAccountFullName = "";
+            } else {
+                parentAccountFullName = getAccountFullName(newParentAccountUID);
+            }
+            ContentValues contentValues = new ContentValues();
+            for (String acctUID : descendantAccountUIDs) {
+                Account acct = mapAccounts.get(acctUID);
+                if (accountUID.equals(acct.getParentUID())) {
+                    // direct descendant
+                    acct.setParentUID(newParentAccountUID);
+                    if (parentAccountFullName == null || parentAccountFullName.isEmpty()) {
+                        acct.setFullName(acct.getName());
+                    } else {
+                        acct.setFullName(parentAccountFullName + ACCOUNT_NAME_SEPARATOR + acct.getName());
+                    }
+                    // update DB
+                    contentValues.clear();
+                    contentValues.put(AccountEntry.COLUMN_PARENT_ACCOUNT_UID, newParentAccountUID);
+                    contentValues.put(AccountEntry.COLUMN_FULL_NAME, acct.getFullName());
+                    mDb.update(
+                            AccountEntry.TABLE_NAME, contentValues,
+                            AccountEntry.COLUMN_UID + " = ?",
+                            new String[]{acct.getUID()}
+                    );
+                } else {
+                    // indirect descendant
+                    acct.setFullName(
+                            mapAccounts.get(acct.getParentUID()).getFullName() +
+                                    ACCOUNT_NAME_SEPARATOR + acct.getName()
+                    );
+                    // update DB
+                    contentValues.clear();
+                    contentValues.put(AccountEntry.COLUMN_FULL_NAME, acct.getFullName());
+                    mDb.update(
+                            AccountEntry.TABLE_NAME, contentValues,
+                            AccountEntry.COLUMN_UID + " = ?",
+                            new String[]{acct.getUID()}
+                    );
+                }
+            }
+        }
+    }
+
+    /**
+     * Deletes an account and its transactions, and all its sub-accounts and their transactions.
+     * <p>Not only the splits belonging to the account and its descendants will be deleted, rather,
+     * the complete transactions associated with this account and its descendants
+     * (i.e. as long as the transaction has at least one split belonging to one of the accounts).
+     * This prevents an split imbalance from being caused.</p>
+     * <p>If you want to preserve transactions, make sure to first reassign the children accounts (see {@link #reassignDescendantAccounts(String, String)}
+     * before calling this method. This method will however not delete a root account. </p>
+     * <p><b>This method does a thorough delete, use with caution!!!</b></p>
+     * @param accountId Database record ID of account
+     * @return <code>true</code> if the account and subaccounts were all successfully deleted, <code>false</code> if
+     * even one was not deleted
+     * @see #reassignDescendantAccounts(String, String)
+     */
+    public boolean recursiveDeleteAccount(long accountId){
+        String accountUID = getUID(accountId);
         if (getAccountType(accountUID) == AccountType.ROOT) {
             // refuse to delete ROOT
             return false;
         }
-		Log.d(TAG, "Delete account with rowId and all its associated splits: " + rowId);
-        List<String> descendantAccountUIDs = getDescendantAccountUIDs(accountUID, null, null);
 
-        mDb.beginTransaction();
-        try {
-            if (descendantAccountUIDs.size() > 0) {
-                List<Account> descendantAccounts = getSimpleAccountList(
-                        AccountEntry.COLUMN_UID + " IN ('" + TextUtils.join("','", descendantAccountUIDs) + "')",
-                        null,
-                        null
-                );
-                HashMap<String, Account> mapAccounts = new HashMap<String, Account>();
-                for (Account account : descendantAccounts)
-                    mapAccounts.put(account.getUID(), account);
-                String parentAccountFullName;
-                String parentAccountUID = getParentAccountUID(accountUID);
-                if (parentAccountUID == null || getAccountType(parentAccountUID) == AccountType.ROOT) {
-                    parentAccountFullName = "";
-                } else {
-                    parentAccountFullName = getAccountFullName(parentAccountUID);
-                }
-                ContentValues contentValues = new ContentValues();
-                for (String acctUID : descendantAccountUIDs) {
-                    Account acct = mapAccounts.get(acctUID);
-                    if (accountUID.equals(acct.getParentUID())) {
-                        // direct descendant
-                        acct.setParentUID(parentAccountUID);
-                        if (parentAccountFullName == null || parentAccountFullName.length() == 0) {
-                            acct.setFullName(acct.getName());
-                        } else {
-                            acct.setFullName(parentAccountFullName + ACCOUNT_NAME_SEPARATOR + acct.getName());
-                        }
-                        // update DB
-                        contentValues.clear();
-                        contentValues.put(AccountEntry.COLUMN_PARENT_ACCOUNT_UID, parentAccountUID);
-                        contentValues.put(AccountEntry.COLUMN_FULL_NAME, acct.getFullName());
-                        mDb.update(
-                                AccountEntry.TABLE_NAME, contentValues,
-                                AccountEntry.COLUMN_UID + " = ?",
-                                new String[]{acct.getUID()}
-                        );
-                    } else {
-                        // indirect descendant
-                        acct.setFullName(
-                                mapAccounts.get(acct.getParentUID()).getFullName() +
-                                        ACCOUNT_NAME_SEPARATOR + acct.getName()
-                        );
-                        // update DB
-                        contentValues.clear();
-                        contentValues.put(AccountEntry.COLUMN_FULL_NAME, acct.getFullName());
-                        mDb.update(
-                                AccountEntry.TABLE_NAME, contentValues,
-                                AccountEntry.COLUMN_UID + " = ?",
-                                new String[]{acct.getUID()}
-                        );
-                    }
-                }
-            }
-            // TODO: with "ON DELETE CASCADE", re-assign to imbalance accounts before delete.
-            //       deleteRecord(AccountEntry.TABLE_NAME, rowId); will delete related
-            //       transactions and splits
-            //delete splits in this account
-            mDb.delete(SplitEntry.TABLE_NAME,
-                    SplitEntry.COLUMN_TRANSACTION_UID  + " IN ( SELECT DISTINCT "
-                    + TransactionEntry.TABLE_NAME + "_" + TransactionEntry.COLUMN_UID
-                    + " FROM trans_split_acct WHERE "
-                    + AccountEntry.TABLE_NAME + "_" + AccountEntry.COLUMN_UID
-                    + " = ? )",
-                    new String[]{getUID(rowId)});
-            // delete empty transactions
-            // trans_split_acct is an inner joint, empty transactions will
-            // not be selected in this view
-            mDb.delete(TransactionEntry.TABLE_NAME,
-                    TransactionEntry.COLUMN_UID  + " NOT IN ( SELECT DISTINCT "
-                            + TransactionEntry.TABLE_NAME + "_" + TransactionEntry.COLUMN_UID
-                            + " FROM trans_split_acct )",
-                    null);
-            deleteRecord(rowId);
-            mDb.setTransactionSuccessful();
-            return true;
-        }
-        finally {
-            mDb.endTransaction();
-        }
-	}
-
-    /**
-     * Reassigns all accounts with parent UID <code>oldParentUID</code> to <code>newParentUID</code>
-     * @param oldParentUID Old parent account Unique ID
-     * @param newParentUID Unique ID of new parent account
-     * @return Number of records which are modified
-     */
-    public int reassignParent(String oldParentUID, String newParentUID){
-        ContentValues contentValues = new ContentValues();
-        if (newParentUID == null)
-            contentValues.putNull(AccountEntry.COLUMN_PARENT_ACCOUNT_UID);
-        else
-            contentValues.put(AccountEntry.COLUMN_PARENT_ACCOUNT_UID, newParentUID);
-
-        return mDb.update(AccountEntry.TABLE_NAME,
-                contentValues,
-                AccountEntry.COLUMN_PARENT_ACCOUNT_UID + "= ?",
-                new String[]{oldParentUID});
-    }
-
-	/**
-	 * Deletes an account while preserving the linked transactions
-	 * Reassigns all transactions belonging to the account with id <code>rowId</code> to 
-	 * the account with id <code>accountReassignId</code> before deleting the account.
-	 * @param accountId Database record ID of the account to be deleted
-	 * @param accountReassignId Record ID of the account to which to reassign the transactions from the previous
-	 * @return <code>true</code> if deletion was successful, <code>false</code> otherwise.
-	 */
-	public boolean transactionPreservingDelete(long accountId, long accountReassignId){
-        Log.d(TAG, "Migrating transaction splits to new account");
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(SplitEntry.COLUMN_ACCOUNT_UID, accountReassignId);
-        mDb.update(SplitEntry.TABLE_NAME,
-                contentValues,
-                SplitEntry.COLUMN_ACCOUNT_UID + "=?",
-                new String[]{getUID(accountId)});
-        return destructiveDeleteAccount(accountId);
-    }
-
-    /**
-     * Deletes an account and all its sub-accounts and splits with it
-     * @param accountId Database record ID of account
-     * @return <code>true</code> if the account and subaccounts were all successfully deleted, <code>false</code> if
-     * even one was not deleted
-     */
-    public boolean recursiveDestructiveDelete(long accountId){
         Log.d(TAG, "Delete account with rowId with its transactions and sub-accounts: " + accountId);
-        String accountUID = getUID(accountId);
+
         List<String> descendantAccountUIDs = getDescendantAccountUIDs(accountUID, null, null);
         mDb.beginTransaction();
         try {
-            descendantAccountUIDs.add(accountUID);
+            descendantAccountUIDs.add(accountUID); //add account to descendants list just for convenience
+            for (String descendantAccountUID : descendantAccountUIDs) {
+                mTransactionsAdapter.deleteTransactionsForAccount(descendantAccountUID);
+            }
+
             String accountUIDList = "'" + TextUtils.join("','", descendantAccountUIDs) + "'";
-            // delete splits
-            mDb.delete(
-                    SplitEntry.TABLE_NAME,
-                    SplitEntry.COLUMN_ACCOUNT_UID + " IN (" + accountUIDList + ")",
-                    null
-            );
-            // delete transactions that do not have any splits associate them any more
-            mDb.delete(
-                    TransactionEntry.TABLE_NAME,
-                    "NOT EXISTS ( SELECT * FROM " + SplitEntry.TABLE_NAME +
-                    " WHERE " + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_UID +
-                    " = " + SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_TRANSACTION_UID + " ) ",
-                    null
-            );
+
             // delete accounts
             mDb.delete(
                     AccountEntry.TABLE_NAME,
@@ -686,7 +630,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
             throw new IllegalArgumentException("fullName cannot be empty");
         }
         String[] tokens = fullName.trim().split(ACCOUNT_NAME_SEPARATOR);
-        String uid = getGnuCashRootAccountUID();
+        String uid = getOrCreateGnuCashRootAccountUID();
         String parentName = "";
         ArrayList<Account> accountsList = new ArrayList<Account>();
         for (String token : tokens) {
@@ -786,7 +730,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
      * @param orderBy orderBy clause
      * @return Cursor set of accounts which fulfill <code>where</code>
      */
-    public Cursor fetchAccounts(String where, String[] whereArgs, String orderBy){
+    public Cursor fetchAccounts(@Nullable String where, @Nullable String[] whereArgs, @Nullable String orderBy){
         if (orderBy == null){
             orderBy = AccountEntry.COLUMN_NAME + " ASC";
         }
@@ -991,7 +935,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
                         + AccountEntry.COLUMN_PARENT_ACCOUNT_UID + " = ?) AND "
                         + AccountEntry.COLUMN_HIDDEN + " = 0 AND "
                         + AccountEntry.COLUMN_TYPE + " != ?",
-                new String[]{"" + getGnuCashRootAccountUID(), AccountType.ROOT.name()}, null);
+                new String[]{"" + getOrCreateGnuCashRootAccountUID(), AccountType.ROOT.name()}, null);
     }
 
     /**
@@ -1028,26 +972,27 @@ public class AccountsDbAdapter extends DatabaseAdapter {
     }
 
     /**
-     * Returns the GnuCash ROOT account UID.
+     * Returns the GnuCash ROOT account UID if one exists (or creates one if necessary).
      * <p>In GnuCash desktop account structure, there is a root account (which is not visible in the UI) from which
-     * other top level accounts derive. GnuCash Android does not have this ROOT account by default unless the account
-     * structure was imported from GnuCash for desktop. Hence this method also returns <code>null</code> as an
-     * acceptable result.</p>
-     * <p><b>Note:</b> NULL is an acceptable response, be sure to check for it</p>
+     * other top level accounts derive. GnuCash Android also enforces a ROOT account now</p>
      * @return Unique ID of the GnuCash root account.
      */
-    public String getGnuCashRootAccountUID() {
+    public String getOrCreateGnuCashRootAccountUID() {
         Cursor cursor = fetchAccounts(AccountEntry.COLUMN_TYPE + "= ?",
                 new String[]{AccountType.ROOT.name()}, null);
-        String rootUID = null;
         try {
             if (cursor.moveToFirst()) {
-                rootUID = cursor.getString(cursor.getColumnIndexOrThrow(AccountEntry.COLUMN_UID));
+                return cursor.getString(cursor.getColumnIndexOrThrow(AccountEntry.COLUMN_UID));
             }
         } finally {
             cursor.close();
         }
-        return rootUID;
+        // No ROOT exits, create a new one
+        Account rootAccount = new Account("ROOT Account");
+        rootAccount.setAccountType(AccountType.ROOT);
+        rootAccount.setFullName(" ");
+        addAccount(rootAccount);
+        return rootAccount.getUID();
     }
 
     /**
@@ -1149,7 +1094,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
         String accountName = getAccountName(accountUID);
         String parentAccountUID = getParentAccountUID(accountUID);
 
-        if (parentAccountUID == null || parentAccountUID.equalsIgnoreCase(getGnuCashRootAccountUID())){
+        if (parentAccountUID == null || parentAccountUID.equalsIgnoreCase(getOrCreateGnuCashRootAccountUID())){
             return accountName;
         }
 
@@ -1175,7 +1120,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
         finally {
             cursor.close();
         }
-        return null;
+        throw new IllegalArgumentException("account UID: " + accountUID + " does not exist");
     }
 
     /**
@@ -1194,17 +1139,8 @@ public class AccountsDbAdapter extends DatabaseAdapter {
      * @return <code>true</code> if the account is a placeholder account, <code>false</code> otherwise
      */
     public boolean isPlaceholderAccount(String accountUID) {
-        Cursor cursor = mDb.query(AccountEntry.TABLE_NAME,
-                new String[]{AccountEntry.COLUMN_PLACEHOLDER},
-                AccountEntry.COLUMN_UID + " = ?",
-                new String[]{accountUID}, null, null, null);
-
-        try {
-            return cursor.moveToFirst()
-                    && cursor.getInt(cursor.getColumnIndexOrThrow(AccountEntry.COLUMN_PLACEHOLDER)) == 1;
-        } finally {
-            cursor.close();
-        }
+        String isPlaceholder = getAttribute(accountUID, AccountEntry.COLUMN_PLACEHOLDER);
+        return Integer.parseInt(isPlaceholder) == 1;
     }
 
     /**
@@ -1213,17 +1149,8 @@ public class AccountsDbAdapter extends DatabaseAdapter {
      * @return <code>true</code> if the account is hidden, <code>false</code> otherwise
      */
     public boolean isHiddenAccount(String accountUID){
-        Cursor cursor = mDb.query(AccountEntry.TABLE_NAME,
-                new String[]{AccountEntry.COLUMN_HIDDEN},
-                AccountEntry.COLUMN_UID + " = ?",
-                new String[]{accountUID}, null, null, null);
-
-        try {
-            return cursor.moveToFirst()
-                    && cursor.getInt(cursor.getColumnIndexOrThrow(AccountEntry.COLUMN_HIDDEN)) == 1;
-        } finally {
-            cursor.close();
-        }
+        String isHidden = getAttribute(accountUID, AccountEntry.COLUMN_HIDDEN);
+        return Integer.parseInt(isHidden) == 1;
     }
 
     /**
@@ -1232,17 +1159,8 @@ public class AccountsDbAdapter extends DatabaseAdapter {
      * @return <code>true</code> if the account is a favorite account, <code>false</code> otherwise
      */
     public boolean isFavoriteAccount(String accountUID){
-        Cursor cursor = mDb.query(AccountEntry.TABLE_NAME,
-                new String[]{AccountEntry.COLUMN_FAVORITE},
-                AccountEntry.COLUMN_UID + " = ?", new String[]{accountUID},
-                null, null, null);
-
-        try {
-            return cursor.moveToFirst()
-                    && cursor.getInt(cursor.getColumnIndexOrThrow(AccountEntry.COLUMN_FAVORITE)) == 1;
-        } finally {
-            cursor.close();
-        }
+        String isFavorite = getAttribute(accountUID, AccountEntry.COLUMN_FAVORITE);
+        return Integer.parseInt(isFavorite) == 1;
     }
 
     /**
@@ -1333,8 +1251,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 	 */
     @Override
 	public int deleteAllRecords(){
-		mDb.delete(TransactionEntry.TABLE_NAME, null, null);
-        mDb.delete(SplitEntry.TABLE_NAME, null, null);
+		mDb.delete(TransactionEntry.TABLE_NAME, null, null); //this will take the splits along with it
         return mDb.delete(AccountEntry.TABLE_NAME, null, null);
 	}
 

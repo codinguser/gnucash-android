@@ -19,8 +19,6 @@ package org.gnucash.android.export.qif;
 import android.content.ContentValues;
 import android.database.Cursor;
 
-import static org.gnucash.android.db.DatabaseSchema.*;
-
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.export.ExportParams;
@@ -30,6 +28,10 @@ import java.io.IOException;
 import java.io.Writer;
 import java.math.BigDecimal;
 import java.util.Currency;
+
+import static org.gnucash.android.db.DatabaseSchema.AccountEntry;
+import static org.gnucash.android.db.DatabaseSchema.SplitEntry;
+import static org.gnucash.android.db.DatabaseSchema.TransactionEntry;
 
 /**
  * Exports the accounts and transactions in the database to the QIF format
@@ -64,7 +66,7 @@ public class QifExporter extends Exporter{
                             AccountEntry.TABLE_NAME + "_" + AccountEntry.COLUMN_FULL_NAME + " AS acct2_full_name"
                     },
                     // no recurrence transactions
-                    TransactionEntry.TABLE_NAME + "_" + TransactionEntry.COLUMN_RECURRENCE_PERIOD + " == 0 AND " +
+                    TransactionEntry.TABLE_NAME + "_" + TransactionEntry.COLUMN_TEMPLATE + " == 0 AND " +
                             // exclude transactions involving multiple currencies
                             "trans_extra_info.trans_currency_count = 1 AND " +
                             // in qif, split from the one account entry is not recorded (will be auto balanced)

@@ -99,6 +99,11 @@ public class TransactionsActivityTest extends
         account2.setUID(TRANSFER_ACCOUNT_UID);
         account2.setCurrency(Currency.getInstance(CURRENCY_CODE));
 
+        long id1 = mAccountsDbAdapter.addAccount(account);
+        long id2 = mAccountsDbAdapter.addAccount(account2);
+        assertTrue(id1 > 0);
+        assertTrue(id2 > 0);
+
         mTransaction = new Transaction(TRANSACTION_NAME);
         mTransaction.setNote("What up?");
         mTransaction.setTime(mTransactionTimeMillis);
@@ -109,11 +114,7 @@ public class TransactionsActivityTest extends
         mTransaction.addSplit(split.createPair(TRANSFER_ACCOUNT_UID));
         account.addTransaction(mTransaction);
 
-        //FIXME: Accounts are not saved to database because FOREIGN_KEY constraint on Split table fails
-        long id1 = mAccountsDbAdapter.addAccount(account);
-        long id2 = mAccountsDbAdapter.addAccount(account2);
-        assertTrue(id1 > 0);
-        assertTrue(id2 > 0);
+        mTransactionsDbAdapter.addTransaction(mTransaction);
 
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.putExtra(UxArgument.SELECTED_ACCOUNT_UID, DUMMY_ACCOUNT_UID);

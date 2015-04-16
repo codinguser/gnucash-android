@@ -17,7 +17,6 @@
 -->
 
 <resources>
-    <string name="app_name">GnuCash</string>
     <string name="title_add_account">Crea conto</string>
     <string name="title_edit_account">Modifica conto</string>
     <string name="info_details">Informazioni</string>
@@ -454,4 +453,26 @@
     <string name="label_other_slice">Other</string>
     <string name="toast_chart_percentage_mode_total">The percentage of selected value calculated from the total amount</string>
     <string name="toast_chart_percentage_mode_current_bar">The percentage of selected value calculated from the current stacked bar amount</string>
+    <string name="label_save_template">Save as template</string>
+    <string name="label_delete_account_transactions_description">This account contains transactions. \nWhat would you like to do with these transactions</string>
+    <string name="label_delete_account_subaccounts_description">This account contains sub-accounts. \nWhat would you like to do with these sub-accounts</string>
+    <string name="label_delete_transactions">Delete transactions</string>
+    <string name="toast_disable_double_entry_to_save_transaction">Create and specify a transfer account OR disable double-entry in settings to save the transaction</string>
+    <string name="label_tap_to_create_schedule">Tap to create schedule</string>
+    <plurals name="label_every_x_days">
+        <item quantity="one">Daily</item>
+        <item quantity="other">Every %d days</item>
+    </plurals>
+    <plurals name="label_every_x_weeks">
+        <item quantity="one">Weekly</item>
+        <item quantity="other">Every %d weeks</item>
+    </plurals>
+    <plurals name="label_every_x_months">
+        <item quantity="one">Monthly</item>
+        <item quantity="other">Every %d months</item>
+    </plurals>
+    <plurals name="label_every_x_years">
+        <item quantity="one">Yearly</item>
+        <item quantity="other">Every %d years</item>
+    </plurals>
 </resources>

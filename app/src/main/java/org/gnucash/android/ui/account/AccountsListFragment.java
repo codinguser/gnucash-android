@@ -17,11 +17,8 @@
 package org.gnucash.android.ui.account;
 
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.Dialog;
 import android.app.SearchManager;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
@@ -36,26 +33,32 @@ import android.view.LayoutInflater;
 import android.view.TouchDelegate;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.*;
+import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemLongClickListener;
+import android.widget.ImageButton;
+import android.widget.ListAdapter;
+import android.widget.ListView;
+import android.widget.TextView;
+
 import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.SherlockDialogFragment;
 import com.actionbarsherlock.app.SherlockListFragment;
 import com.actionbarsherlock.view.ActionMode;
 import com.actionbarsherlock.view.ActionMode.Callback;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
+
 import org.gnucash.android.R;
-import org.gnucash.android.app.GnuCashApplication;
+import org.gnucash.android.db.AccountsDbAdapter;
+import org.gnucash.android.db.DatabaseCursorLoader;
+import org.gnucash.android.db.DatabaseSchema;
+import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.model.Account;
-import org.gnucash.android.db.*;
-import org.gnucash.android.ui.util.AccountBalanceTask;
-import org.gnucash.android.ui.util.Refreshable;
 import org.gnucash.android.ui.UxArgument;
 import org.gnucash.android.ui.transaction.TransactionsActivity;
-import org.gnucash.android.ui.widget.WidgetConfigurationActivity;
+import org.gnucash.android.ui.util.AccountBalanceTask;
 import org.gnucash.android.ui.util.OnAccountClickedListener;
+import org.gnucash.android.ui.util.Refreshable;
 
 /**
  * Fragment for displaying the list of accounts in the database
@@ -146,23 +149,40 @@ public class AccountsListFragment extends SherlockListFragment implements
      */
     private ActionMode.Callback mActionModeCallbacks = new Callback() {
 
+        String mSelectedAccountUID;
+
         @Override
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
             MenuInflater inflater = mode.getMenuInflater();
             inflater.inflate(R.menu.account_context_menu, menu);
             mode.setTitle(getString(R.string.title_selected, 1));
+            mSelectedAccountUID = mAccountsDbAdapter.getUID(mSelectedItemId);
             return true;
         }
 
         @Override
         public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
             // nothing to see here, move along
-            return false;
+            MenuItem favoriteAccountMenuItem = menu.findItem(R.id.menu_favorite_account);
+            boolean isFavoriteAccount = AccountsDbAdapter.getInstance().isFavoriteAccount(mSelectedAccountUID);
+
+            int favoriteIcon = isFavoriteAccount ? android.R.drawable.btn_star_big_on : android.R.drawable.btn_star_big_off;
+            favoriteAccountMenuItem.setIcon(favoriteIcon);
+
+            return true;
         }
 
         @Override
         public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
             switch (item.getItemId()) {
+                case R.id.menu_favorite_account:
+                    boolean isFavorite = mAccountsDbAdapter.isFavoriteAccount(mSelectedAccountUID);
+                    //toggle favorite preference
+                    mAccountsDbAdapter.updateAccount(mSelectedItemId,
+                            DatabaseSchema.AccountEntry.COLUMN_FAVORITE, isFavorite ? "0" : "1");
+                    mode.invalidate();
+                    return true;
+
                 case R.id.context_menu_edit_accounts:
                     openCreateOrEditActivity(mSelectedItemId);
                     mode.finish();
@@ -297,24 +317,9 @@ public class AccountsListFragment extends SherlockListFragment implements
         if (acc.getTransactionCount() > 0 || mAccountsDbAdapter.getSubAccountCount(acc.getUID()) > 0) {
             showConfirmationDialog(rowId);
         } else {
-            deleteAccount(rowId, false);
+            mAccountsDbAdapter.deleteRecord(rowId);
+            refresh();
         }
-    }
-
-    /**
-     * Deletes an account and show a {@link Toast} notification on success.
-     * When an account is deleted, all it's child accounts will be reassigned as children to its parent account
-     * @param rowId Record ID of the account to be deleted
-     */
-    protected void deleteAccount(long rowId, boolean deleteSubAccounts) {
-        boolean deleted     = deleteSubAccounts ?
-                mAccountsDbAdapter.recursiveDestructiveDelete(rowId)
-                : mAccountsDbAdapter.destructiveDeleteAccount(rowId);
-        if (deleted) {
-            Toast.makeText(getActivity(), R.string.toast_account_deleted, Toast.LENGTH_SHORT).show();
-            WidgetConfigurationActivity.updateAllWidgets(getActivity().getApplicationContext());
-        }
-        refresh();
     }
 
     /**
@@ -323,10 +328,10 @@ public class AccountsListFragment extends SherlockListFragment implements
      * @param id Record ID of account to be deleted after confirmation
      */
     public void showConfirmationDialog(long id) {
-        DeleteConfirmationDialogFragment alertFragment =
-                DeleteConfirmationDialogFragment.newInstance(R.string.title_confirm_delete, mAccountsDbAdapter.getUID(id));
+        DeleteAccountDialogFragment alertFragment =
+                DeleteAccountDialogFragment.newInstance(mAccountsDbAdapter.getUID(id));
         alertFragment.setTargetFragment(this, 0);
-        alertFragment.show(getSherlockActivity().getSupportFragmentManager(), "dialog");
+        alertFragment.show(getSherlockActivity().getSupportFragmentManager(), "delete_confirmation_dialog");
     }
 
     /**
@@ -394,25 +399,6 @@ public class AccountsListFragment extends SherlockListFragment implements
     @Override
     public void refresh() {
         getLoaderManager().restartLoader(0, null, this);
-
-/*
-        //TODO: Figure out a way to display account balances per currency
-		boolean doubleEntryActive = PreferenceManager.getDefaultSharedPreferences(getActivity())
-				.getBoolean(getString(R.string.key_use_double_entry), false);
-
-		TextView tv = (TextView) getView().findViewById(R.id.transactions_sum);
-		Money balance = null;
-		if (doubleEntryActive){
-			balance = mAccountsDbAdapter.getDoubleEntryAccountsBalance();
-		} else {
-			balance = mAccountsDbAdapter.getAllAccountsBalance();
-		}
-		tv.setText(balance.formattedString(Locale.getDefault()));
-		if (balance.isNegative())
-			tv.setTextColor(getResources().getColor(R.color.debit_red));
-		else
-			tv.setTextColor(getResources().getColor(R.color.credit_green));
-*/
     }
 
     /**
@@ -489,70 +475,6 @@ public class AccountsListFragment extends SherlockListFragment implements
         }
         return true;
     }
-
-    /**
-     * Delete confirmation dialog
-     * Is displayed when deleting an account which has transactions.
-     * If an account has no transactions, it is deleted immediately with no confirmation required
-     *
-     * @author Ngewi Fet <ngewif@gmail.com>
-     */
-    public static class DeleteConfirmationDialogFragment extends SherlockDialogFragment {
-
-        /**
-         * Creates new instance of the delete confirmation dialog and provides parameters for it
-         * @param title Title to use for the dialog
-         * @param uid GUID of the account to be deleted
-         * @return New instance of the delete confirmation dialog
-         */
-        public static DeleteConfirmationDialogFragment newInstance(int title, String uid) {
-            DeleteConfirmationDialogFragment frag = new DeleteConfirmationDialogFragment();
-            Bundle args = new Bundle();
-            args.putInt("title", title);
-            args.putString(UxArgument.SELECTED_ACCOUNT_UID, uid);
-            frag.setArguments(args);
-            return frag;
-        }
-
-            @Override
-        public Dialog onCreateDialog(Bundle savedInstanceState) {
-            int title = getArguments().getInt("title");
-            final String uid = getArguments().getString(UxArgument.SELECTED_ACCOUNT_UID);
-
-            LayoutInflater layoutInflater = getSherlockActivity().getLayoutInflater();
-            final View dialogLayout = layoutInflater.inflate(R.layout.dialog_account_delete, (ViewGroup) getView());
-            AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity())
-                    .setIcon(android.R.drawable.ic_delete)
-                    .setTitle(title).setMessage(R.string.delete_account_confirmation_message)
-                    .setView(dialogLayout)
-                    .setPositiveButton(R.string.alert_dialog_ok_delete,
-                            new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int whichButton) {
-                                    Context context = getDialog().getContext();
-                                    AccountsDbAdapter accountsDbAdapter = AccountsDbAdapter.getInstance();
-                                    if (uid == null) {
-                                        accountsDbAdapter.deleteAllRecords();
-                                        Toast.makeText(context, R.string.toast_all_accounts_deleted, Toast.LENGTH_SHORT).show();
-                                    } else {
-                                        CheckBox deleteSubAccountsCheckBox = (CheckBox) dialogLayout
-                                                .findViewById(R.id.checkbox_delete_sub_accounts);
-                                        long rowId = accountsDbAdapter.getID(uid);
-                                        ((AccountsListFragment) getTargetFragment()).deleteAccount(rowId, deleteSubAccountsCheckBox.isChecked());
-                                    }
-                                }
-                            })
-                    .setNegativeButton(R.string.alert_dialog_cancel,
-                            new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int whichButton) {
-                                    dismiss();
-                                }
-                            }
-
-                    );
-            return dialogBuilder.create();
-        }
-
-        }
 
     /**
      * Extends {@link DatabaseCursorLoader} for loading of {@link Account} from the

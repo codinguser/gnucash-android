@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 Ngewi Fet <ngewif@gmail.com>
+ * Copyright (c) 2014 - 2015 Ngewi Fet <ngewif@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ public class DatabaseSchema {
      * Database version.
      * With any change to the database schema, this number must increase
      */
-    static final int DATABASE_VERSION = 7;
+    static final int DATABASE_VERSION = 7; //TODO: Upgrade database version when migration code is complete
 
     /**
      * Database version where Splits were introduced
@@ -39,7 +39,7 @@ public class DatabaseSchema {
     private DatabaseSchema(){}
 
     public interface CommonColumns extends BaseColumns {
-        public static final String COLUMN_UID       = "uid";
+        public static final String COLUMN_UID           = "uid";
         public static final String COLUMN_CREATED_AT    = "created_at";
         public static final String COLUMN_MODIFIED_AT   = "modified_at";
     }
@@ -78,7 +78,8 @@ public class DatabaseSchema {
         public static final String COLUMN_CURRENCY              = "currency_code";
         public static final String COLUMN_TIMESTAMP             = "timestamp";
         public static final String COLUMN_EXPORTED              = "is_exported";
-        public static final String COLUMN_RECURRENCE_PERIOD     = "recurrence_period";
+        public static final String COLUMN_TEMPLATE              = "is_template";
+        public static final String COLUMN_SCHEDX_ACTION_UID     = "scheduled_action_uid";
 
         public static final String INDEX_UID                    = "transaction_uid_index";
     }
@@ -99,20 +100,20 @@ public class DatabaseSchema {
         public static final String INDEX_UID                    = "split_uid_index";
     }
 
-    public static abstract class ScheduledEventEntry implements CommonColumns {
-        public static final String TABLE_NAME           = "scheduled_events";
+    public static abstract class ScheduledActionEntry implements CommonColumns {
+        public static final String TABLE_NAME               = "scheduled_actions";
 
-        public static final String COLUMN_TYPE          = "type";
-        public static final String COLUMN_EVENT_UID     = "event_uid";
-        public static final String COLUMN_START_TIME    = "start_time";
-        public static final String COLUMN_END_TIME      = "end_time";
-        public static final String COLUMN_LAST_RUN      = "last_run";
-        public static final String COLUMN_PERIOD        = "period";
-        /**
-         * Tags for any scheduled event specific information
-         */
-        public static final String COLUMN_TAG           = "tag";
+        public static final String COLUMN_TYPE              = "type";
+        public static final String COLUMN_ACTION_UID        = "action_uid";
+        public static final String COLUMN_START_TIME        = "start_time";
+        public static final String COLUMN_END_TIME          = "end_time";
+        public static final String COLUMN_LAST_RUN          = "last_run";
+        public static final String COLUMN_PERIOD            = "period";
+        public static final String COLUMN_TAG               = "tag"; //for any action-specific information
+        public static final String COLUMN_ENABLED           = "is_enabled";
+        public static final String COLUMN_TOTAL_FREQUENCY   = "total_frequency";
+        public static final String COLUMN_EXECUTION_COUNT   = "execution_count";
 
-        public static final String INDEX_UID            = "scheduled_event_uid_index";
+        public static final String INDEX_UID            = "scheduled_action_uid_index";
     }
 }

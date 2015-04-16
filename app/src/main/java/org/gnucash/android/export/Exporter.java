@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 Ngewi Fet <ngewif@gmail.com>
+ * Copyright (c) 2014 - 2015 Ngewi Fet <ngewif@gmail.com>
  * Copyright (c) 2014 Yongxin Wang <fefe.wyx@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,8 +21,10 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Environment;
 
+import org.gnucash.android.BuildConfig;
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.AccountsDbAdapter;
+import org.gnucash.android.db.ScheduledActionDbAdapter;
 import org.gnucash.android.db.SplitsDbAdapter;
 import org.gnucash.android.db.TransactionsDbAdapter;
 
@@ -40,15 +42,21 @@ import java.util.Locale;
  * @author Yongxin Wang <fefe.wyx@gmail.com>
  */
 public abstract class Exporter {
+
+    /**
+     * Application folder on external storage
+     */
+    public static final String BASE_FOLDER_PATH = Environment.getExternalStorageDirectory() + "/" + BuildConfig.APPLICATION_ID;
+
     /**
      * Folder where exports like QIF and OFX will be saved for access by external programs
      */
-    public static final String EXPORT_FOLDER_PATH = Environment.getExternalStorageDirectory() + "/gnucash/";
+    public static final String EXPORT_FOLDER_PATH =  BASE_FOLDER_PATH + "/exports/";
 
     /**
      * Folder where GNC_XML backups will be saved
      */
-    public static final String BACKUP_FOLDER_PATH = EXPORT_FOLDER_PATH + "backup/";
+    public static final String BACKUP_FOLDER_PATH = BASE_FOLDER_PATH + "/backups/";
 
     /**
      * Export options
@@ -62,6 +70,7 @@ public abstract class Exporter {
     protected AccountsDbAdapter mAccountsDbAdapter;
     protected TransactionsDbAdapter mTransactionsDbAdapter;
     protected SplitsDbAdapter mSplitsDbAdapter;
+    protected ScheduledActionDbAdapter mScheduledActionDbAdapter;
     protected Context mContext;
 
     public Exporter(ExportParams params, SQLiteDatabase db) {
@@ -71,10 +80,12 @@ public abstract class Exporter {
             mAccountsDbAdapter = AccountsDbAdapter.getInstance();
             mTransactionsDbAdapter = TransactionsDbAdapter.getInstance();
             mSplitsDbAdapter = SplitsDbAdapter.getInstance();
+            mScheduledActionDbAdapter = ScheduledActionDbAdapter.getInstance();
         } else {
             mSplitsDbAdapter = new SplitsDbAdapter(db);
             mTransactionsDbAdapter = new TransactionsDbAdapter(db, mSplitsDbAdapter);
             mAccountsDbAdapter = new AccountsDbAdapter(db, mTransactionsDbAdapter);
+            mScheduledActionDbAdapter = new ScheduledActionDbAdapter(db);
         }
     }
 

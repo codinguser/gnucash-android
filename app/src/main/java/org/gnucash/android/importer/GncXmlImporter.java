@@ -19,18 +19,20 @@ package org.gnucash.android.importer;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
+
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PushbackInputStream;
+import java.util.zip.GZIPInputStream;
+
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
-import java.io.BufferedInputStream;
-import java.io.PushbackInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.zip.GZIPInputStream;
 
 /**
  * Importer for Gnucash XML files and GNCA (GnuCash Android) XML files
@@ -55,7 +57,7 @@ public class GncXmlImporter {
 
         /** Create handler to handle XML Tags ( extends DefaultHandler ) */
 
-        GncXmlHandler handler = new GncXmlHandler(false, db);
+        GncXmlHandler handler = new GncXmlHandler(db);
 
         xr.setContentHandler(handler);
         xr.parse(new InputSource(bos));
@@ -83,7 +85,7 @@ public class GncXmlImporter {
 
         //TODO: Set an error handler which can log errors
 
-        GncXmlHandler handler = new GncXmlHandler(true);
+        GncXmlHandler handler = new GncXmlHandler();
         xr.setContentHandler(handler);
         long startTime = System.nanoTime();
         xr.parse(new InputSource(bos));

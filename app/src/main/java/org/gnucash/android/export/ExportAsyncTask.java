@@ -26,19 +26,30 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.preference.PreferenceManager;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.widget.Toast;
+
 import org.gnucash.android.R;
+import org.gnucash.android.app.GnuCashApplication;
+import org.gnucash.android.db.AccountsDbAdapter;
+import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.export.ofx.OfxExporter;
 import org.gnucash.android.export.qif.QifExporter;
 import org.gnucash.android.export.qif.QifHelper;
 import org.gnucash.android.export.xml.GncXmlExporter;
+import org.gnucash.android.model.Transaction;
 import org.gnucash.android.ui.account.AccountsActivity;
-import org.gnucash.android.ui.transaction.dialog.TransactionsDeleteConfirmationDialogFragment;
+import org.gnucash.android.ui.transaction.TransactionsActivity;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.nio.channels.FileChannel;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -50,7 +61,7 @@ import java.util.List;
  *
  * @author Ngewi Fet <ngewif@gmail.com>
  */
-public class ExporterAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
+public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
     /**
      * App context
      */
@@ -68,7 +79,7 @@ public class ExporterAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
      */
     private ExportParams mExportParams;
 
-    public ExporterAsyncTask(Context context){
+    public ExportAsyncTask(Context context){
         this.mContext = context;
     }
 
@@ -196,20 +207,40 @@ public class ExporterAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
                 break;
         }
 
-        if (mContext instanceof Activity) {
-            if (mExportParams.shouldDeleteTransactionsAfterExport()) {
-                android.support.v4.app.FragmentManager fragmentManager = ((FragmentActivity) mContext).getSupportFragmentManager();
-                Fragment currentFragment = ((AccountsActivity) mContext).getCurrentAccountListFragment();
+        if (mExportParams.shouldDeleteTransactionsAfterExport()) {
+            backupAndDeleteTransactions();
 
-                TransactionsDeleteConfirmationDialogFragment alertFragment =
-                        TransactionsDeleteConfirmationDialogFragment.newInstance(R.string.title_confirm_delete, 0);
-                alertFragment.setTargetFragment(currentFragment, 0);
-
-                alertFragment.show(fragmentManager, "transactions_delete_confirmation_dialog");
+            //now refresh the respective views
+            if (mContext instanceof AccountsActivity){
+                ((AccountsActivity) mContext).getCurrentAccountListFragment().refresh();
             }
+            if (mContext instanceof TransactionsActivity){
+                ((TransactionsActivity) mContext).refresh();
+            }
+            if (mContext instanceof Activity) {
+                if (mProgressDialog != null && mProgressDialog.isShowing())
+                    mProgressDialog.dismiss();
+            }
+        }
+    }
 
-            if (mProgressDialog != null && mProgressDialog.isShowing())
-                mProgressDialog.dismiss();
+    /**
+     * Backups of the database, saves opening balances (if necessary)
+     * and deletes all non-template transactions in the database.
+     */
+    private void backupAndDeleteTransactions(){
+        GncXmlExporter.createBackup(); //create backup before deleting everything
+        List<Transaction> openingBalances = new ArrayList<Transaction>();
+        boolean preserveOpeningBalances = GnuCashApplication.shouldSaveOpeningBalances(false);
+        if (preserveOpeningBalances) {
+            openingBalances = AccountsDbAdapter.getInstance().getAllOpeningBalanceTransactions();
+        }
+
+        TransactionsDbAdapter transactionsDbAdapter = TransactionsDbAdapter.getInstance();
+        transactionsDbAdapter.deleteAllNonTemplateTransactions();
+
+        if (preserveOpeningBalances) {
+            transactionsDbAdapter.bulkAddTransactions(openingBalances);
         }
     }
 

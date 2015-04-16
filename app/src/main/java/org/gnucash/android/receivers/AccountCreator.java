@@ -16,17 +16,16 @@
 
 package org.gnucash.android.receivers;
 
-import java.util.Currency;
-
-import org.gnucash.android.app.GnuCashApplication;
-import org.gnucash.android.model.Account;
-import org.gnucash.android.db.AccountsDbAdapter;
-
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+
+import org.gnucash.android.db.AccountsDbAdapter;
+import org.gnucash.android.model.Account;
+
+import java.util.Currency;
 
 /**
  * Broadcast receiver responsible for creating {@link Account}s received through intents.

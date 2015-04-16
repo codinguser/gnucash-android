@@ -38,7 +38,7 @@ import org.gnucash.android.importer.ImportAsyncTask;
 import org.gnucash.android.ui.account.AccountsActivity;
 import org.gnucash.android.ui.chart.ChartReportActivity;
 import org.gnucash.android.ui.settings.SettingsActivity;
-import org.gnucash.android.ui.transaction.ScheduledEventsActivity;
+import org.gnucash.android.ui.transaction.ScheduledActionsActivity;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
@@ -103,14 +103,16 @@ public class BaseDrawerActivity extends SherlockFragmentActivity {
     }
 
     private MergeAdapter createNavDrawerMergeAdapter() {
+        //TODO: Localize nav drawer entries when features are finalized
         ArrayList<String> accountNavOptions = new ArrayList<String>();
         accountNavOptions.add("Favorites");
-        accountNavOptions.add("Open...");
+//        accountNavOptions.add("Open...");
         accountNavOptions.add("Reports");
 
         ArrayAdapter<String> accountsNavAdapter = new ArrayAdapter<String>(this,
                 R.layout.drawer_list_item, accountNavOptions);
 
+        int titleColorGreen = getResources().getColor(R.color.title_green);
 
         ArrayList<String> transactionsNavOptions = new ArrayList<String>();
         transactionsNavOptions.add("Scheduled Transactions");
@@ -122,9 +124,11 @@ public class BaseDrawerActivity extends SherlockFragmentActivity {
         LayoutInflater inflater = getLayoutInflater();
         TextView accountHeader = (TextView) inflater.inflate(R.layout.drawer_section_header, null);
         accountHeader.setText("Accounts");
+        accountHeader.setTextColor(titleColorGreen);
 
         TextView transactionHeader = (TextView) inflater.inflate(R.layout.drawer_section_header, null);
         transactionHeader.setText("Transactions");
+        transactionHeader.setTextColor(titleColorGreen);
         MergeAdapter mergeAdapter = new MergeAdapter();
         mergeAdapter.addView(accountHeader);
         mergeAdapter.addAdapter(accountsNavAdapter);
@@ -134,9 +138,10 @@ public class BaseDrawerActivity extends SherlockFragmentActivity {
         mergeAdapter.addView(inflater.inflate(R.layout.horizontal_line, null));
         TextView settingsHeader = (TextView) inflater.inflate(R.layout.drawer_section_header, null);
         settingsHeader.setText("Settings");
+        settingsHeader.setTextColor(titleColorGreen);
 
         ArrayList<String> aboutNavOptions = new ArrayList<String>();
-        aboutNavOptions.add("Backup & Export");
+//        aboutNavOptions.add("Backup & Export");
         aboutNavOptions.add("Settings");
         //TODO: add help view
         ArrayAdapter<String> aboutNavAdapter = new ArrayAdapter<String>(this,
@@ -169,7 +174,9 @@ public class BaseDrawerActivity extends SherlockFragmentActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    /** Swaps fragments in the main content view */
+    /**
+     * Handler for the navigation drawer items
+     * */
     protected void selectItem(int position) {
         switch (position){
             case 1: { //favorite accounts
@@ -180,41 +187,39 @@ public class BaseDrawerActivity extends SherlockFragmentActivity {
                 startActivity(intent);
             }
                 break;
+/*
 
             case 2: { //Open... files
                 //TODO: open/import GnuCash files
                 Intent pickIntent = new Intent(Intent.ACTION_GET_CONTENT);
-                pickIntent.setType("application/*");
+                pickIntent.setType("application*/
+/*");
                 Intent chooser = Intent.createChooser(pickIntent, "Select GnuCash account file");
 
                 startActivityForResult(chooser, AccountsActivity.REQUEST_PICK_ACCOUNTS_FILE);
             }
                 break;
+*/
 
-            case 3:
+            case 2:
                 startActivity(new Intent(this, ChartReportActivity.class));
                 break;
 
-            case 5: { //show scheduled transactions
-                Intent intent = new Intent(this, ScheduledEventsActivity.class);
+            case 4: { //show scheduled transactions
+                Intent intent = new Intent(this, ScheduledActionsActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_SINGLE_TOP);
-                intent.putExtra(ScheduledEventsActivity.EXTRA_DISPLAY_MODE,
-                        ScheduledEventsActivity.DisplayMode.TRANSACTION_EVENTS);
+                intent.putExtra(ScheduledActionsActivity.EXTRA_DISPLAY_MODE,
+                        ScheduledActionsActivity.DisplayMode.TRANSACTION_ACTIONS);
                 startActivity(intent);
             }
                 break;
 
-            case 6:{
+            case 5:{
                 AccountsActivity.showExportDialog(this);
             }
                 break;
 
-            case 9: { //Backup and Export
-
-            }
-                break;
-
-            case 10: //Settings activity
+            case 8: //Settings activity
                 startActivity(new Intent(this, SettingsActivity.class));
                 break;
 

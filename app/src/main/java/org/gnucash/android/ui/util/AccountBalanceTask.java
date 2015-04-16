@@ -21,6 +21,7 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.TextView;
+
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.AccountsDbAdapter;
@@ -54,7 +55,7 @@ public class AccountBalanceTask extends AsyncTask<String, Void, Money> {
 
         Money balance = Money.getZeroInstance();
         try {
-            balance = accountsDbAdapter.getAccountBalance(params[0]);
+            balance = accountsDbAdapter.getAccountBalance(params[0], -1, System.currentTimeMillis());
         } catch (IllegalArgumentException ex){
             //sometimes a load computation has been started and the data set changes.
             //the account ID may no longer exist. So we catch that exception here and do nothing

@@ -18,6 +18,7 @@ package org.gnucash.android.ui.transaction;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Rect;
 import android.os.Bundle;
@@ -29,30 +30,38 @@ import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.text.format.DateFormat;
+import android.text.format.DateUtils;
 import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.TouchDelegate;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.*;
+import android.widget.AdapterView;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.ListView;
+import android.widget.TextView;
+
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockListFragment;
 import com.actionbarsherlock.view.ActionMode;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
+
 import org.gnucash.android.R;
-import org.gnucash.android.app.GnuCashApplication;
-import org.gnucash.android.db.*;
+import org.gnucash.android.db.DatabaseCursorLoader;
+import org.gnucash.android.db.DatabaseSchema;
+import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.model.Money;
+import org.gnucash.android.ui.UxArgument;
 import org.gnucash.android.ui.transaction.dialog.BulkMoveDialogFragment;
 import org.gnucash.android.ui.util.AccountBalanceTask;
-import org.gnucash.android.ui.util.Refreshable;
-import org.gnucash.android.ui.UxArgument;
-import org.gnucash.android.ui.widget.WidgetConfigurationActivity;
 import org.gnucash.android.ui.util.OnTransactionClickedListener;
+import org.gnucash.android.ui.util.Refreshable;
+import org.gnucash.android.ui.widget.WidgetConfigurationActivity;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -202,7 +211,7 @@ public class TransactionsListFragment extends SherlockListFragment implements
 	public void onResume() {
 		super.onResume();
 		((TransactionsActivity)getSherlockActivity()).updateNavigationSelection();		
-		refresh(((TransactionsActivity) getActivity()).getCurrentAccountUID());
+		refresh();
 	}
 	
 	@Override
@@ -364,6 +373,9 @@ public class TransactionsListFragment extends SherlockListFragment implements
 			CheckBox checkbox = (CheckBox) view.findViewById(R.id.checkbox_parent_account);
             final TextView secondaryText = (TextView) view.findViewById(R.id.secondary_text);
 
+            //TODO: Revisit this if we ever change the application theme
+            int id = Resources.getSystem().getIdentifier("btn_check_holo_light", "drawable", "android");
+            checkbox.setButtonDrawable(id);
             checkbox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 				
 				@Override
@@ -458,8 +470,8 @@ public class TransactionsListFragment extends SherlockListFragment implements
             TextView dateHeader = (TextView) view.findViewById(R.id.date_section_header);
 
             if (hasSectionHeader){
-                java.text.DateFormat format = DateFormat.getLongDateFormat(getActivity());
-                String dateString = format.format(new Date(transactionTime));
+                String dateString = DateUtils.formatDateTime(getActivity(), transactionTime,
+                        DateUtils.FORMAT_SHOW_WEEKDAY | DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_YEAR);
                 dateHeader.setText(dateString);
                 dateHeader.setVisibility(View.VISIBLE);
             } else {

@@ -18,11 +18,12 @@ package org.gnucash.android.model;
 
 
 import org.gnucash.android.export.ofx.OfxHelper;
-import org.gnucash.android.export.xml.GncXmlHelper;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Currency;
+import java.util.List;
 import java.util.regex.Pattern;
 
 /**
@@ -516,72 +517,4 @@ public class Account extends BaseModel{
 		parent.appendChild(statementTransactions);
 				
 	}
-
-    /**
-     * Method which generates the GnuCash XML DOM for this account
-     * @param doc {@link org.w3c.dom.Document} for creating nodes
-     * @param rootNode {@link org.w3c.dom.Element} node to which to attach the XML
-     * @deprecated Use the {@link org.gnucash.android.export.xml.GncXmlExporter} to generate XML
-     */
-    public void toGncXml(Document doc, Element rootNode) {
-        Element nameNode = doc.createElement(GncXmlHelper.TAG_NAME);
-        nameNode.appendChild(doc.createTextNode(mName));
-
-        Element idNode = doc.createElement(GncXmlHelper.TAG_ACCT_ID);
-        idNode.setAttribute(GncXmlHelper.ATTR_KEY_TYPE, GncXmlHelper.ATTR_VALUE_GUID);
-        idNode.appendChild(doc.createTextNode(mUID));
-
-        Element typeNode = doc.createElement(GncXmlHelper.TAG_TYPE);
-        typeNode.appendChild(doc.createTextNode(mAccountType.name()));
-
-        Element commodityNode = doc.createElement(GncXmlHelper.TAG_COMMODITY);
-        Element cmdtySpacenode = doc.createElement(GncXmlHelper.TAG_COMMODITY_SPACE);
-        cmdtySpacenode.appendChild(doc.createTextNode("ISO4217"));
-        commodityNode.appendChild(cmdtySpacenode);
-        Element cmdtyIdNode = doc.createElement(GncXmlHelper.TAG_COMMODITY_ID);
-        cmdtyIdNode.appendChild(doc.createTextNode(mCurrency.getCurrencyCode()));
-        commodityNode.appendChild(cmdtyIdNode);
-
-        Element commodityScuNode = doc.createElement(GncXmlHelper.TAG_COMMODITY_SCU);
-        int fractionDigits = mCurrency.getDefaultFractionDigits();
-        commodityScuNode.appendChild(doc.createTextNode(Integer.toString((int) Math.pow(10, fractionDigits))));
-
-        Element descriptionNode = doc.createElement(GncXmlHelper.TAG_ACCT_DESCRIPTION);
-        descriptionNode.appendChild(doc.createTextNode(mName));
-
-        Element acctSlotsNode = doc.createElement(GncXmlHelper.TAG_ACT_SLOTS);
-        acctSlotsNode.appendChild(GncXmlHelper.createSlot(doc, GncXmlHelper.KEY_PLACEHOLDER,
-                Boolean.toString(mIsPlaceholderAccount), GncXmlHelper.ATTR_VALUE_STRING));
-
-        if (mColorCode != null && mColorCode.trim().length() > 0){
-            acctSlotsNode.appendChild(GncXmlHelper.createSlot(doc, GncXmlHelper.KEY_COLOR, mColorCode, GncXmlHelper.ATTR_VALUE_STRING));
-        }
-
-        if (mDefaultTransferAccountUID != null && mDefaultTransferAccountUID.trim().length() > 0){
-            acctSlotsNode.appendChild(GncXmlHelper.createSlot(doc, GncXmlHelper.KEY_DEFAULT_TRANSFER_ACCOUNT, mDefaultTransferAccountUID, "guid"));
-        }
-
-        acctSlotsNode.appendChild(GncXmlHelper.createSlot(doc,
-                GncXmlHelper.KEY_FAVORITE, Boolean.toString(mIsFavorite), GncXmlHelper.ATTR_VALUE_STRING));
-
-        Element accountNode = doc.createElement(GncXmlHelper.TAG_ACCOUNT);
-        accountNode.setAttribute(GncXmlHelper.ATTR_KEY_VERSION, GncXmlHelper.BOOK_VERSION);
-        accountNode.appendChild(nameNode);
-        accountNode.appendChild(idNode);
-        accountNode.appendChild(typeNode);
-        accountNode.appendChild(commodityNode);
-        accountNode.appendChild(commodityScuNode);
-        accountNode.appendChild(descriptionNode);
-        accountNode.appendChild(acctSlotsNode);
-
-
-        if (mParentAccountUID != null && mParentAccountUID.trim().length() > 0){
-            Element parentAccountNode = doc.createElement(GncXmlHelper.TAG_PARENT_UID);
-            parentAccountNode.setAttribute(GncXmlHelper.ATTR_KEY_TYPE, GncXmlHelper.ATTR_VALUE_GUID);
-            parentAccountNode.appendChild(doc.createTextNode(mParentAccountUID));
-            accountNode.appendChild(parentAccountNode);
-        }
-
-        rootNode.appendChild(accountNode);
-    }
 }

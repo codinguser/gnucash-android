@@ -1,17 +1,32 @@
+import java.text.SimpleDateFormat
+
 apply plugin: 'com.android.application'
 
-android {
-    compileSdkVersion 18
-    buildToolsVersion "21.1.2"
+def versionMajor = 1
+def versionMinor = 6
+def versionPatch = 0
+def versionBuild = 0
 
+def buildTime() {
+    def df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm'Z'")
+    df.setTimeZone(TimeZone.getTimeZone("UTC"))
+    return df.format(new Date())
+}
+
+def gitSha() {
+    return 'git rev-parse --short HEAD'.execute().text.trim()
+}
+
+android {
+    compileSdkVersion 19
+    buildToolsVersion "21.1.2"
     defaultConfig {
         applicationId "org.gnucash.android"
         minSdkVersion 9
-        targetSdkVersion 18
-        versionCode 48
-        versionName "1.6.x"
+        targetSdkVersion 19
+        versionCode versionMajor * 10000 + versionMinor * 1000 + versionPatch * 100 + versionBuild
+        versionName "${versionMajor}.${versionMinor}.${versionPatch}"
     }
-
     buildTypes {
         release {
             minifyEnabled false
@@ -21,24 +36,44 @@ android {
             debuggable true
         }
     }
-
     lintOptions {
         abortOnError false
+    }
+
+    productFlavors {
+        development {
+            applicationId 'org.gnucash.android.devel'
+            testApplicationId 'org.gnucash.android.test.devel'
+            resValue "string", "app_name", "GnuCash (devel)"
+            versionName "${versionMajor}.${versionMinor}.${versionPatch}-dev${versionBuild} @rev ${gitSha()} - BuildTime ${buildTime()} "
+        }
+
+        beta {
+            resValue "string", "app_name", "GnuCash (beta)"
+            versionName "${versionMajor}.${versionMinor}.${versionPatch}-beta${versionBuild} @rev ${gitSha()} - BuildTime ${buildTime()}"
+        }
+
+        production {
+            resValue "string", "app_name", "GnuCash"
+        }
+
+    }
+    compileOptions { //we want switch with strings during xml parsing
+        sourceCompatibility JavaVersion.VERSION_1_7
+        targetCompatibility JavaVersion.VERSION_1_7
     }
 }
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile ('com.android.support:support-v4:21.0.+',
-            'com.actionbarsherlock:actionbarsherlock:4.4.0@aar',			
+    compile('com.android.support:support-v4:21.0.+',
+            'com.actionbarsherlock:actionbarsherlock:4.4.0@aar',
             'com.viewpagerindicator:library:2.4.1@aar',
             'com.doomonafireball.betterpickers:library:1.5.2',
             'com.commonsware.cwac:merge:1.1.+',
             'com.github.PhilJay:MPAndroidChart:v2.0.8',
             'joda-time:joda-time:2.7'
     )
-			
-	androidTestCompile ('com.jayway.android.robotium:robotium-solo:5.2.1',
-			'com.squareup:fest-android:1.0.6')
-
+    androidTestCompile('com.jayway.android.robotium:robotium-solo:5.2.1',
+            'com.squareup:fest-android:1.0.6')
 }

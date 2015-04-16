@@ -24,6 +24,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.widget.Toast;
+
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.AccountsDbAdapter;
@@ -67,7 +68,7 @@ public class DeleteAllTransacationsConfirmationDialog extends DialogFragment {
                                     openingBalances = accountsDbAdapter.getAllOpeningBalanceTransactions();
                                 }
                                 TransactionsDbAdapter transactionsDbAdapter = TransactionsDbAdapter.getInstance();
-                                transactionsDbAdapter.deleteAllRecords();
+                                transactionsDbAdapter.deleteAllNonTemplateTransactions();
 
                                 if (preserveOpeningBalances) {
                                     transactionsDbAdapter.bulkAddTransactions(openingBalances);

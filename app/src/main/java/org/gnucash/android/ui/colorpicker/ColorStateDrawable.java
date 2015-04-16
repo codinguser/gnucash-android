@@ -16,10 +16,10 @@
 
 package org.gnucash.android.ui.colorpicker;
 
-        import android.graphics.Color;
-        import android.graphics.PorterDuff;
-        import android.graphics.drawable.Drawable;
-        import android.graphics.drawable.LayerDrawable;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.LayerDrawable;
 
 /**
  * A drawable which sets its color filter to a color specified by the user, and changes to a

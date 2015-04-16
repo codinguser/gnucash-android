@@ -19,6 +19,8 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 
+import com.actionbarsherlock.view.MenuItem;
+
 import org.gnucash.android.R;
 import org.gnucash.android.ui.passcode.PassLockActivity;
 
@@ -28,13 +30,13 @@ import java.util.MissingFormatArgumentException;
  * Activity for displaying scheduled actions
  * @author Ngewi Fet <ngewif@gmail.com>
  */
-public class ScheduledEventsActivity extends PassLockActivity {
+public class ScheduledActionsActivity extends PassLockActivity {
 
-    public enum DisplayMode {ALL_EVENTS, TRANSACTION_EVENTS, EXPORT_EVENTS}
+    public enum DisplayMode {ALL_ACTIONS, TRANSACTION_ACTIONS, EXPORT_ACTIONS}
 
     public static final String EXTRA_DISPLAY_MODE = "org.gnucash.android.extra.DISPLAY_MODE";
 
-    private DisplayMode mDisplayMode = DisplayMode.ALL_EVENTS;
+    private DisplayMode mDisplayMode = DisplayMode.ALL_ACTIONS;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,15 +48,15 @@ public class ScheduledEventsActivity extends PassLockActivity {
             throw new MissingFormatArgumentException("Missing argument for which kind of scheduled events to display");
 
         switch (mDisplayMode){
-            case ALL_EVENTS:
+            case ALL_ACTIONS:
                 showAllScheduledEventsFragment();
                 break;
 
-            case TRANSACTION_EVENTS:
+            case TRANSACTION_ACTIONS:
                 showScheduledTransactionsFragment();
                 break;
 
-            case EXPORT_EVENTS:
+            case EXPORT_ACTIONS:
 
                 break;
         }

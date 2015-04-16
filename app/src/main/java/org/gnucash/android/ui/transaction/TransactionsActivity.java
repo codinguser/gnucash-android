@@ -33,7 +33,6 @@ import android.util.Log;
 import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 
@@ -97,11 +96,6 @@ public class TransactionsActivity extends PassLockActivity implements
     private static final int DEFAULT_NUM_PAGES = 2;
 
     /**
-     * Menu item for marking an account as a favorite
-     */
-    MenuItem mFavoriteAccountMenu;
-
-    /**
      * GUID of {@link Account} whose transactions are displayed
      */
     private String mAccountUID = null;
@@ -147,11 +141,12 @@ public class TransactionsActivity extends PassLockActivity implements
 		    	//if we do not return, the transactions list fragment could also be found (although it's not visible)
 		    	return true;
 		    }
-
+            //refresh any fragments in the tab with the new account UID
             refresh();
             return true;
 		  }
 	};
+    private PagerAdapter mPagerAdapter;
 
 
     /**
@@ -265,6 +260,7 @@ public class TransactionsActivity extends PassLockActivity implements
     public void refresh(){
         refresh(mAccountUID);
         setTitleIndicatorColor();
+        mPagerAdapter.notifyDataSetChanged();
     }
 
 	@Override
@@ -291,8 +287,8 @@ public class TransactionsActivity extends PassLockActivity implements
         } else {	//load the transactions list
             mSectionHeaderTransactions.setVisibility(View.GONE);
 
-            PagerAdapter pagerAdapter = new AccountViewPagerAdapter(getSupportFragmentManager());
-            mPager.setAdapter(pagerAdapter);
+            mPagerAdapter = new AccountViewPagerAdapter(getSupportFragmentManager());
+            mPager.setAdapter(mPagerAdapter);
             mTitlePageIndicator.setViewPager(mPager);
 
             mPager.setCurrentItem(INDEX_TRANSACTIONS_FRAGMENT);
@@ -307,11 +303,13 @@ public class TransactionsActivity extends PassLockActivity implements
      */
     private void initializeCreateOrEditTransaction() {
         String transactionUID = getIntent().getStringExtra(UxArgument.SELECTED_TRANSACTION_UID);
+        String scheduledActionUID = getIntent().getStringExtra(UxArgument.SCHEDULED_ACTION_UID);
         Bundle args = new Bundle();
         if (transactionUID != null) {
             mSectionHeaderTransactions.setText(R.string.title_edit_transaction);
             args.putString(UxArgument.SELECTED_TRANSACTION_UID, transactionUID);
             args.putString(UxArgument.SELECTED_ACCOUNT_UID, mAccountUID);
+            args.putString(UxArgument.SCHEDULED_ACTION_UID, scheduledActionUID);
         } else {
             mSectionHeaderTransactions.setText(R.string.title_add_transaction);
             args.putString(UxArgument.SELECTED_ACCOUNT_UID, mAccountUID);
@@ -401,7 +399,6 @@ public class TransactionsActivity extends PassLockActivity implements
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        mFavoriteAccountMenu = menu.findItem(R.id.menu_favorite_account);
         MenuItem favoriteAccountMenuItem = menu.findItem(R.id.menu_favorite_account);
 
         if (favoriteAccountMenuItem == null) //when the activity is used to edit a transaction
@@ -473,7 +470,7 @@ public class TransactionsActivity extends PassLockActivity implements
 	public String getCurrentAccountUID(){
 		return mAccountUID;
 	}
-	
+
 	/**
 	 * Opens a fragment to create a new transaction. 
 	 * Is called from the XML views

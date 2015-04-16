@@ -1,5 +1,6 @@
 <!--
   Copyright 2013 The Android Open Source Project
+  Copyright 2015 Ngewi Fet <ngewif@gmail.com>
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -15,13 +16,12 @@
   -->
 
 <TextView xmlns:android="http://schemas.android.com/apk/res/android"
-          android:id="@android:id/text1"
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:textAppearance="?android:attr/textAppearanceListItemSmall"
-          android:gravity="center_vertical"
-          android:paddingLeft="16dp"
-          android:paddingRight="16dp"
-          android:textColor="#fff"
-          android:background="?android:attr/activatedBackgroundIndicator"
-          android:minHeight="?android:attr/listPreferredItemHeightSmall"/>
+    android:id="@android:id/text1"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:textAppearance="?android:attr/textAppearanceSmall"
+    android:gravity="center_vertical"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp"
+    android:textColor="#fff"
+    android:minHeight="40dp"/>

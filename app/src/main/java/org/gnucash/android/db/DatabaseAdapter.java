@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012 - 2014 Ngewi Fet <ngewif@gmail.com>
+ * Copyright (c) 2012 - 2015 Ngewi Fet <ngewif@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,10 +19,13 @@ package org.gnucash.android.db;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-
 import android.support.annotation.NonNull;
 import android.util.Log;
-import org.gnucash.android.db.DatabaseSchema.*;
+
+import org.gnucash.android.db.DatabaseSchema.AccountEntry;
+import org.gnucash.android.db.DatabaseSchema.CommonColumns;
+import org.gnucash.android.db.DatabaseSchema.SplitEntry;
+import org.gnucash.android.db.DatabaseSchema.TransactionEntry;
 import org.gnucash.android.model.AccountType;
 import org.gnucash.android.model.BaseModel;
 
@@ -52,7 +55,7 @@ public abstract class DatabaseAdapter {
      * Opens the database adapter with an existing database
      * @param db SQLiteDatabase object
      */
-    public DatabaseAdapter(SQLiteDatabase db, String tableName) {
+    public DatabaseAdapter(SQLiteDatabase db, @NonNull String tableName) {
         this.mTableName = tableName;
         this.mDb = db;
         if (!db.isOpen() || db.isReadOnly())
@@ -84,8 +87,8 @@ public abstract class DatabaseAdapter {
                         + TransactionEntry.TABLE_NAME + "_" + TransactionEntry.COLUMN_TIMESTAMP + " , "
                         + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_EXPORTED + " AS "
                         + TransactionEntry.TABLE_NAME + "_" + TransactionEntry.COLUMN_EXPORTED + " , "
-                        + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_RECURRENCE_PERIOD + " AS "
-                        + TransactionEntry.TABLE_NAME + "_" + TransactionEntry.COLUMN_RECURRENCE_PERIOD + " , "
+                        + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_TEMPLATE + " AS "
+                        + TransactionEntry.TABLE_NAME + "_" + TransactionEntry.COLUMN_TEMPLATE + " , "
                         + SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_UID + " AS "
                         + SplitEntry.TABLE_NAME + "_" + SplitEntry.COLUMN_UID + " , "
                         + SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_TYPE + " AS "
@@ -205,7 +208,17 @@ public abstract class DatabaseAdapter {
 		return mDb.query(mTableName, null, DatabaseSchema.CommonColumns._ID + "=" + rowId,
 				null, null, null, null);
 	}
-	
+
+    /**
+     * Retrieves record with GUID {@code uid} from database table
+     * @param uid GUID of record to be retrieved
+     * @return {@link Cursor} to record retrieved
+     */
+    public Cursor fetchRecord(@NonNull String uid){
+        return mDb.query(mTableName, null, CommonColumns.COLUMN_UID + "=?" ,
+                new String[]{uid}, null, null, null);
+    }
+
 	/**
 	 * Retrieves all records from database table
 	 * @return {@link Cursor} to all records in table <code>tableName</code>
@@ -237,10 +250,7 @@ public abstract class DatabaseAdapter {
      * @param uid GUID of the record
      * @return Long record ID
      */
-    public long getID(String uid){
-        if (uid == null)
-            return 0;
-
+    public long getID(@NonNull String uid){
         Cursor cursor = mDb.query(mTableName,
                 new String[] {DatabaseSchema.CommonColumns._ID},
                 DatabaseSchema.CommonColumns.COLUMN_UID + " = ?",
@@ -291,7 +301,7 @@ public abstract class DatabaseAdapter {
      * @return Currency code of the account. "" if accountUID
      *      does not exist in DB
      */
-    public String getAccountCurrencyCode(String accountUID) {
+    public String getAccountCurrencyCode(@NonNull String accountUID) {
         Cursor cursor = mDb.query(DatabaseSchema.AccountEntry.TABLE_NAME,
                 new String[] {DatabaseSchema.AccountEntry.COLUMN_CURRENCY},
                 DatabaseSchema.AccountEntry.COLUMN_UID + "= ?",
@@ -313,7 +323,7 @@ public abstract class DatabaseAdapter {
      * @return {@link org.gnucash.android.model.AccountType} of the account.
      * @throws java.lang.IllegalArgumentException if accountUID does not exist in DB,
      */
-    public AccountType getAccountType(String accountUID){
+    public AccountType getAccountType(@NonNull String accountUID){
         String type = "";
         Cursor c = mDb.query(DatabaseSchema.AccountEntry.TABLE_NAME,
                 new String[]{DatabaseSchema.AccountEntry.COLUMN_TYPE},
@@ -338,7 +348,7 @@ public abstract class DatabaseAdapter {
      * @param newValue  New value to be assigned to the columnKey
      * @return Number of records affected
      */
-    public int updateRecord(String tableName, long recordId, String columnKey, String newValue) {
+    protected int updateRecord(String tableName, long recordId, String columnKey, String newValue) {
         ContentValues contentValues = new ContentValues();
         if (newValue == null) {
             contentValues.putNull(columnKey);
@@ -356,15 +366,26 @@ public abstract class DatabaseAdapter {
      * @param newValue  New value to be assigned to the columnKey
      * @return Number of records affected
      */
-    public int updateRecord(@NonNull String tableName, @NonNull String uid, String columnKey, String newValue) {
+    public int updateRecord(@NonNull String uid, @NonNull String columnKey, String newValue) {
+        return updateRecords(CommonColumns.COLUMN_UID + "= ?", new String[]{uid}, columnKey, newValue);
+    }
+
+    /**
+     * Updates all records which match the {@code where} clause with the {@code newValue} for the column
+     * @param where SQL where clause
+     * @param whereArgs String arguments for where clause
+     * @param columnKey Name of column to be updated
+     * @param newValue New value to be assigned to the columnKey
+     * @return Number of records affected
+     */
+    public int updateRecords(String where, String[] whereArgs, @NonNull String columnKey, String newValue){
         ContentValues contentValues = new ContentValues();
         if (newValue == null) {
             contentValues.putNull(columnKey);
         } else {
             contentValues.put(columnKey, newValue);
         }
-        return mDb.update(tableName, contentValues,
-                CommonColumns.COLUMN_UID + "= ?", new String[]{uid});
+        return mDb.update(mTableName, contentValues, where, whereArgs);
     }
 
     /**
@@ -374,7 +395,53 @@ public abstract class DatabaseAdapter {
      * @return <code>true</code> if deletion was successful, <code>false</code> otherwise
      * @see #deleteRecord(long)
      */
-    public boolean deleteRecord(String uid){
+    public boolean deleteRecord(@NonNull String uid){
         return deleteRecord(getID(uid));
+    }
+
+    /**
+     * Returns an attribute from a specific column in the database for a specific record.
+     * <p>The attribute is returned as a string which can then be converted to another type if
+     * the caller was expecting something other type </p>
+     * @param recordUID GUID of the record
+     * @param columnName Name of the column to be retrieved
+     * @return String value of the column entry
+     * @throws IllegalArgumentException if either the {@code recordUID} or {@code columnName} do not exist in the database
+     */
+    protected String getAttribute(@NonNull String recordUID, @NonNull String columnName){
+        Cursor cursor = mDb.query(mTableName,
+                new String[]{columnName},
+                AccountEntry.COLUMN_UID + " = ?",
+                new String[]{recordUID}, null, null, null);
+
+        try {
+            if (cursor.moveToFirst())
+                return cursor.getString(cursor.getColumnIndexOrThrow(columnName));
+            else
+                throw new IllegalArgumentException("Column or GUID does not exist in the db");
+        } finally {
+            cursor.close();
+        }
+    }
+
+    /**
+     * Expose mDb.beginTransaction()
+     */
+    public void beginTransaction() {
+        mDb.beginTransaction();
+    }
+
+    /**
+     * Expose mDb.setTransactionSuccessful()
+     */
+    public void setTransactionSuccessful() {
+        mDb.setTransactionSuccessful();
+    }
+
+    /**
+     * Expose mDb.endTransaction()
+     */
+    public void endTransaction() {
+        mDb.endTransaction();
     }
 }

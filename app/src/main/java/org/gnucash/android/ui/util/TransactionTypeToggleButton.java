@@ -22,6 +22,7 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.ToggleButton;
+
 import org.gnucash.android.R;
 import org.gnucash.android.model.AccountType;
 import org.gnucash.android.model.Transaction;

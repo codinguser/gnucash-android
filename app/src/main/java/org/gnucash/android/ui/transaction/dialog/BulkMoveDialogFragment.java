@@ -16,16 +16,6 @@
 
 package org.gnucash.android.ui.transaction.dialog;
 
-import org.gnucash.android.R;
-import org.gnucash.android.app.GnuCashApplication;
-import org.gnucash.android.db.AccountsDbAdapter;
-import org.gnucash.android.db.DatabaseSchema;
-import org.gnucash.android.db.TransactionsDbAdapter;
-import org.gnucash.android.ui.UxArgument;
-import org.gnucash.android.ui.transaction.TransactionsActivity;
-import org.gnucash.android.ui.util.Refreshable;
-import org.gnucash.android.ui.widget.WidgetConfigurationActivity;
-
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
@@ -37,6 +27,15 @@ import android.view.WindowManager.LayoutParams;
 import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.Toast;
+
+import org.gnucash.android.R;
+import org.gnucash.android.db.AccountsDbAdapter;
+import org.gnucash.android.db.DatabaseSchema;
+import org.gnucash.android.db.TransactionsDbAdapter;
+import org.gnucash.android.ui.UxArgument;
+import org.gnucash.android.ui.transaction.TransactionsActivity;
+import org.gnucash.android.ui.util.Refreshable;
+import org.gnucash.android.ui.widget.WidgetConfigurationActivity;
 import org.gnucash.android.util.QualifiedAccountNameCursorAdapter;
 
 /**
@@ -111,7 +110,7 @@ public class BulkMoveDialogFragment extends DialogFragment {
 		Cursor cursor = accountsDbAdapter.fetchAccountsOrderedByFullName(conditions,
                 new String[]{mOriginAccountUID,
                         accountsDbAdapter.getCurrencyCode(mOriginAccountUID),
-                        "" + accountsDbAdapter.getGnuCashRootAccountUID()
+                        "" + accountsDbAdapter.getOrCreateGnuCashRootAccountUID()
                 });
 
 		SimpleCursorAdapter mCursorAdapter = new QualifiedAccountNameCursorAdapter(getActivity(),

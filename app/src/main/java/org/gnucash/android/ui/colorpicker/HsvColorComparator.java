@@ -15,7 +15,9 @@
  */
 
 package org.gnucash.android.ui.colorpicker;
+
 import android.graphics.Color;
+
 import java.util.Comparator;
 
 /**

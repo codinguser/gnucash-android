@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+ Copyright (c) 2015 Ngewi Fet <ngewif@gmail.com>
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+<RadioGroup xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:padding="@dimen/dialog_padding"
+    android:layout_height="wrap_content"
+    android:layout_width="match_parent">
+
+    <TextView android:id="@+id/title_content"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textStyle="bold"
+        tools:text="Transactions" />
+
+    <TextView android:id="@+id/description"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="12sp"
+        tools:text="This account contains transactions. \nWhat would you like to do with these transactions"/>
+
+    <RadioButton
+        android:id="@+id/radio_delete"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="@string/label_delete_sub_accounts" />
+
+    <RadioButton
+        android:id="@+id/radio_move"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:checked="true"
+        android:text="Move to:" />
+
+    <Spinner android:id="@+id/target_accounts_spinner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+</RadioGroup>
