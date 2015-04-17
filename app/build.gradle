@@ -58,6 +58,13 @@ android {
         }
 
     }
+
+    signingConfigs {
+        debug {
+            storeFile file("../debug.keystore")
+        }
+    }
+    
     compileOptions { //we want switch with strings during xml parsing
         sourceCompatibility JavaVersion.VERSION_1_7
         targetCompatibility JavaVersion.VERSION_1_7
