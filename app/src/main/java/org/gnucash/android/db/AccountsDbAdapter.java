@@ -1246,12 +1246,13 @@ public class AccountsDbAdapter extends DatabaseAdapter {
     }
 
     /**
-	 * Deletes all accounts and their transactions (and their splits) from the database.
+	 * Deletes all accounts, transactions (and their splits) from the database.
      * Basically empties all 3 tables, so use with care ;)
 	 */
     @Override
 	public int deleteAllRecords(){
 		mDb.delete(TransactionEntry.TABLE_NAME, null, null); //this will take the splits along with it
+        mDb.delete(DatabaseSchema.ScheduledActionEntry.TABLE_NAME, null, null);
         return mDb.delete(AccountEntry.TABLE_NAME, null, null);
 	}
 

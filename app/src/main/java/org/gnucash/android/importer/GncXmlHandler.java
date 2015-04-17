@@ -182,6 +182,8 @@ public class GncXmlHandler extends DefaultHandler {
         }
         mContent = new StringBuilder();
 
+        mAccountsDbAdapter.deleteAllRecords();
+
         mAccountList = new ArrayList<>();
         mTransactionList = new ArrayList<>();
         mScheduledActionsList = new ArrayList<>();
@@ -565,7 +567,6 @@ public class GncXmlHandler extends DefaultHandler {
         long startTime = System.nanoTime();
         mAccountsDbAdapter.beginTransaction();
         try {
-            mAccountsDbAdapter.deleteAllRecords();
             long nAccounts = mAccountsDbAdapter.bulkAddAccounts(mAccountList);
             Log.d("Handler:", String.format("%d accounts inserted", nAccounts));
             long nTransactions = mTransactionsDbAdapter.bulkAddTransactions(mTransactionList);

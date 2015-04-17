@@ -137,7 +137,7 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
      * @return Number of transactions inserted
      */
     public long bulkAddTransactions(List<Transaction> transactionList){
-        List<Split> splitList = new ArrayList<Split>(transactionList.size()*3);
+        List<Split> splitList = new ArrayList<>(transactionList.size()*3);
         long rowInserted = 0;
         try {
             mDb.beginTransaction();

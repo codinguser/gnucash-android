@@ -174,8 +174,9 @@ public class Transaction extends BaseModel{
             Currency currentCurrency = split.getAmount().getCurrency();
             if (lastCurrency == null)
                 lastCurrency = currentCurrency;
-            else if (lastCurrency != currentCurrency){
-                return;
+
+            if (lastCurrency != currentCurrency){
+                return; //for now we will not autobalance multi-currency transactions
             }
         }
 
