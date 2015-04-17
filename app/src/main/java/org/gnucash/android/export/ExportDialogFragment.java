@@ -28,22 +28,25 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.RadioButton;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.doomonafireball.betterpickers.recurrencepicker.EventRecurrence;
 import com.doomonafireball.betterpickers.recurrencepicker.EventRecurrenceFormatter;
 import com.doomonafireball.betterpickers.recurrencepicker.RecurrencePickerDialog;
+import com.dropbox.sync.android.DbxAccountManager;
 
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.ScheduledActionDbAdapter;
-import org.gnucash.android.model.BaseModel;
 import org.gnucash.android.model.ScheduledAction;
+import org.gnucash.android.ui.settings.SettingsActivity;
 import org.gnucash.android.ui.util.RecurrenceParser;
 
 import java.io.File;
@@ -119,6 +122,10 @@ public class ExportDialogFragment extends DialogFragment implements RecurrencePi
 	 */
     private ExportFormat mExportFormat = ExportFormat.QIF;
 
+	private ExportParams.ExportTarget mExportTarget = ExportParams.ExportTarget.SD_CARD;
+
+	private DbxAccountManager mDbxAcctMgr;
+
 	/**
 	 * Click listener for positive button in the dialog.
 	 * @author Ngewi Fet <ngewif@gmail.com>
@@ -130,10 +137,8 @@ public class ExportDialogFragment extends DialogFragment implements RecurrencePi
             ExportParams exportParameters = new ExportParams(mExportFormat);
             exportParameters.setExportAllTransactions(mExportAllCheckBox.isChecked());
             exportParameters.setTargetFilepath(mFilePath);
-            int position = mDestinationSpinner.getSelectedItemPosition();
-			//TODO: accomodate all the different export targets
-            exportParameters.setExportTarget(position == 0 ? ExportParams.ExportTarget.SHARING : ExportParams.ExportTarget.SD_CARD);
-            exportParameters.setDeleteTransactionsAfterExport(mDeleteAllCheckBox.isChecked());
+			exportParameters.setExportTarget(mExportTarget);
+			exportParameters.setDeleteTransactionsAfterExport(mDeleteAllCheckBox.isChecked());
 
 			//TODO: Block from creating scheduled action with SHARE target
 			ScheduledActionDbAdapter scheduledActionDbAdapter = ScheduledActionDbAdapter.getInstance();
@@ -180,8 +185,8 @@ public class ExportDialogFragment extends DialogFragment implements RecurrencePi
 				break;
 
 			case R.id.radio_xml_format:
-				mExportFormat = ExportFormat.GNC_XML;
-				mExportWarningTextView.setVisibility(View.GONE);
+				mExportFormat = ExportFormat.XML;
+				mExportWarningTextView.setText(R.string.export_warning_xml);
 				break;
         }
 		refreshRecurrenceTextView(mExportFormat);
@@ -209,7 +214,12 @@ public class ExportDialogFragment extends DialogFragment implements RecurrencePi
 			Bundle savedInstanceState) {
 		return inflater.inflate(R.layout.dialog_export, container, false);
 	}
-	
+
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+	}
+
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {		
 		super.onActivityCreated(savedInstanceState);
@@ -218,10 +228,7 @@ public class ExportDialogFragment extends DialogFragment implements RecurrencePi
 		getDialog().setTitle(R.string.title_export_dialog);
 	}
 
-	/**
-	 * Collects references to the UI elements and binds click listeners
-	 */
-	private void bindViews(){		
+	private void bindViews(){
 		View v = getView();
         assert v != null;
         mDestinationSpinner = (Spinner) v.findViewById(R.id.spinner_export_destination);
@@ -229,7 +236,39 @@ public class ExportDialogFragment extends DialogFragment implements RecurrencePi
 		        R.array.export_destinations, android.R.layout.simple_spinner_item);
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);		
 		mDestinationSpinner.setAdapter(adapter);
-		
+		mDestinationSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+			@Override
+			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+				View recurrenceOptionsView = getView().findViewById(R.id.recurrence_options);
+				switch (position){
+					case 0:
+						mExportTarget = ExportParams.ExportTarget.SD_CARD;
+						recurrenceOptionsView.setVisibility(View.VISIBLE);
+						break;
+					case 1:
+						recurrenceOptionsView.setVisibility(View.VISIBLE);
+						mExportTarget = ExportParams.ExportTarget.DROPBOX;
+						mDbxAcctMgr = DbxAccountManager.getInstance(getActivity().getApplicationContext(),
+								SettingsActivity.DROPBOX_APP_KEY, SettingsActivity.DROPBOX_APP_SECRET);
+						if (!mDbxAcctMgr.hasLinkedAccount()){
+							Toast.makeText(getActivity(), "You need to first link to your DropBox account in Settings", Toast.LENGTH_SHORT).show();
+							startActivity(new Intent(getActivity(), SettingsActivity.class));							//TODO: Try to open directly to the export preferences
+						}
+						break;
+					case 2:
+						recurrenceOptionsView.setVisibility(View.VISIBLE);
+						break;
+					case 3:
+						recurrenceOptionsView.setVisibility(View.GONE);
+						break;
+				}
+			}
+
+			@Override
+			public void onNothingSelected(AdapterView<?> parent) {
+
+			}
+		});
 		SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
 		mExportAllCheckBox = (CheckBox) v.findViewById(R.id.checkbox_export_all);
 		mExportAllCheckBox.setChecked(sharedPrefs.getBoolean(getString(R.string.key_export_all_transactions), false));
@@ -303,7 +342,7 @@ public class ExportDialogFragment extends DialogFragment implements RecurrencePi
 
 		RadioButton xmlRadioButton = (RadioButton) v.findViewById(R.id.radio_xml_format);
 		xmlRadioButton.setOnClickListener(clickListener);
-		if (defaultExportFormat.equalsIgnoreCase(ExportFormat.GNC_XML.name())){
+		if (defaultExportFormat.equalsIgnoreCase(ExportFormat.XML.name())){
 			xmlRadioButton.performClick();
 		}
 	}

@@ -16,13 +16,21 @@
 -->
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
-    <PreferenceCategory android:title="Backup">
+    <PreferenceCategory android:title="@string/title_backup_preference_category">
+        <Preference android:title="@string/title_create_backup_pref"
+            android:key="@string/key_create_backup"
+            android:summary="@string/summary_create_backup_pref" />
         <Preference android:summary="@string/summary_restore_last_backup"
             android:key="@string/key_restore_last_backup"
             android:title="@string/title_restore_last_backup" />
         <Preference android:title="@string/title_restore_backup"
             android:key="@string/key_restore_backup"
-            android:summary="Select a specific backup to restore from. \nBackups are located on SDCARD/org.gnucash.android/backups" />
+            android:summary="@string/summary_restore_backup_pref" />
+        <CheckBoxPreference android:title="@string/title_dropbox_sync_preference"
+            android:summary="@string/summary_dropbox_sync"
+            android:checked="false"
+            android:key="@string/key_dropbox_sync"
+            android:icon="@drawable/ic_dropbox_android" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/title_export_preference_category">
 

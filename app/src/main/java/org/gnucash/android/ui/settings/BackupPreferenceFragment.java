@@ -37,17 +37,17 @@ import org.gnucash.android.model.Money;
  *
  */
 @TargetApi(11)
-public class GeneralPreferenceFragment extends PreferenceFragment implements OnPreferenceChangeListener{
+public class BackupPreferenceFragment extends PreferenceFragment implements OnPreferenceChangeListener{
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
-		addPreferencesFromResource(R.xml.fragment_general_preferences);
+		addPreferencesFromResource(R.xml.fragment_backup_preferences);
 		ActionBar actionBar = ((SherlockPreferenceActivity) getActivity()).getSupportActionBar();
 		actionBar.setHomeButtonEnabled(true);
 		actionBar.setDisplayHomeAsUpEnabled(true);
-		actionBar.setTitle(R.string.title_general_prefs);
+		actionBar.setTitle(R.string.title_backup_prefs);
 		
 	}	
 	
@@ -77,6 +77,13 @@ public class GeneralPreferenceFragment extends PreferenceFragment implements OnP
 
 		pref = findPreference(getString(R.string.key_restore_backup));
 		pref.setOnPreferenceClickListener((SettingsActivity)getActivity());
+
+		pref = findPreference(getString(R.string.key_create_backup));
+		pref.setOnPreferenceClickListener((SettingsActivity)getActivity());
+
+		pref = findPreference(getString(R.string.key_dropbox_sync));
+		pref.setOnPreferenceClickListener((SettingsActivity)getActivity());
+		((SettingsActivity)getActivity()).toggleDropboxPreference(pref);
 	}
 
     /**

@@ -29,6 +29,12 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.dropbox.sync.android.DbxAccountManager;
+import com.dropbox.sync.android.DbxException;
+import com.dropbox.sync.android.DbxFile;
+import com.dropbox.sync.android.DbxFileSystem;
+import com.dropbox.sync.android.DbxPath;
+
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.AccountsDbAdapter;
@@ -39,6 +45,7 @@ import org.gnucash.android.export.qif.QifHelper;
 import org.gnucash.android.export.xml.GncXmlExporter;
 import org.gnucash.android.model.Transaction;
 import org.gnucash.android.ui.account.AccountsActivity;
+import org.gnucash.android.ui.settings.SettingsActivity;
 import org.gnucash.android.ui.transaction.TransactionsActivity;
 
 import java.io.BufferedReader;
@@ -62,6 +69,7 @@ import java.util.List;
  * @author Ngewi Fet <ngewif@gmail.com>
  */
 public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
+
     /**
      * App context
      */
@@ -119,7 +127,7 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
                     mExporter = new OfxExporter(mExportParams);
                     break;
 
-                case GNC_XML:
+                case XML:
                 default:
                     mExporter = new GncXmlExporter(mExportParams);
                     break;
@@ -205,6 +213,31 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
 
 
             case DROPBOX:
+                DbxAccountManager mDbxAcctMgr = DbxAccountManager.getInstance(mContext.getApplicationContext(),
+                        SettingsActivity.DROPBOX_APP_KEY, SettingsActivity.DROPBOX_APP_SECRET);
+                DbxFile dbExportFile = null;
+                try {
+                    DbxFileSystem dbxFileSystem = DbxFileSystem.forAccount(mDbxAcctMgr.getLinkedAccount());
+                    File exportedFile = new File(mExportParams.getTargetFilepath());
+                    dbExportFile = dbxFileSystem.create(new DbxPath(exportedFile.getName()));
+                    dbExportFile.writeFromExistingFile(exportedFile, false);
+                } catch (DbxException.Unauthorized unauthorized) {
+                    unauthorized.printStackTrace();
+                    Log.e(TAG, unauthorized.getMessage());
+                    if (mContext instanceof Activity){
+                        Toast.makeText(mContext, "DropBox access not authorized. Check your Settings", Toast.LENGTH_LONG).show();
+                    }
+                } catch (DbxException e) {
+                    e.printStackTrace();
+                    Log.e(TAG, e.getMessage());
+                } catch (IOException e) {
+                    Log.e(TAG, e.getMessage());
+                    e.printStackTrace();
+                } finally {
+                    if (dbExportFile != null) {
+                        dbExportFile.close();
+                    }
+                }
                 break;
 
             case GOOGLE_DRIVE:

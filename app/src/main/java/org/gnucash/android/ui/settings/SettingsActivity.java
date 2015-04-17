@@ -35,6 +35,7 @@ import android.widget.Toast;
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockPreferenceActivity;
 import com.actionbarsherlock.view.MenuItem;
+import com.dropbox.sync.android.DbxAccountManager;
 
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
@@ -73,6 +74,12 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
      * Used on Android v2.3.3 or lower devices where dialogs cannot be instantiated easily in settings
      */
     public static final int DOUBLE_TAP_DELAY = 2000;
+    final static public String DROPBOX_APP_KEY      = "dhjh8ke9wf05948";
+    final static public String DROPBOX_APP_SECRET   = "h2t9fphj3nr4wkw";
+    /**
+     * Collects references to the UI elements and binds click listeners
+     */
+    public static final int REQUEST_LINK_TO_DBX = 0x11;
 
     /**
      * Counts the number of times the preference for deleting all accounts has been clicked.
@@ -87,8 +94,9 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
      * Only useful on devices with API level < 11
      */
     private int mDeleteTransactionsClickCount;
+    private DbxAccountManager mDbxAccountManager;
 
-	/**
+    /**
 	 * Constructs the headers to display in the header list when the Settings activity is first opened
 	 * Only available on Honeycomb and above
 	 */
@@ -97,12 +105,15 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
 	public void onBuildHeaders(List<Header> target) {
 		loadHeadersFromResource(R.xml.preference_headers, target);
 	}
-	
+
 	@SuppressWarnings("deprecation")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {		
 		super.onCreate(savedInstanceState);
-		
+
+        mDbxAccountManager = DbxAccountManager.getInstance(getApplicationContext(),
+                DROPBOX_APP_KEY, DROPBOX_APP_SECRET);
+
 		//retrieve version from Manifest and set it
 		String version = null;
 		try {
@@ -122,9 +133,9 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
 		actionBar.setDisplayHomeAsUpEnabled(true);
 		
 		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB){
-			addPreferencesFromResource(R.xml.fragment_general_preferences);
             addPreferencesFromResource(R.xml.fragment_account_preferences);
 			addPreferencesFromResource(R.xml.fragment_transaction_preferences);
+            addPreferencesFromResource(R.xml.fragment_backup_preferences);
             addPreferencesFromResource(R.xml.fragment_passcode_preferences);
 			addPreferencesFromResource(R.xml.fragment_about_preferences);
 			setDefaultCurrencyListener();
@@ -157,12 +168,24 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
             pref = findPreference(getString(R.string.key_change_passcode));
             pref.setOnPreferenceClickListener(this);
 
+            pref = findPreference(getString(R.string.key_dropbox_sync));
+            toggleDropboxPreference(pref);
+            pref.setOnPreferenceClickListener(this);
+
+            pref = findPreference(getString(R.string.key_create_backup));
+            pref.setOnPreferenceClickListener(this);
+
             pref = findPreference(getString(R.string.key_enable_passcode));
             pref.setOnPreferenceChangeListener(this);
             pref.setTitle(((CheckBoxPreference) pref).isChecked() ?
                     getString(R.string.title_passcode_enabled) : getString(R.string.title_passcode_disabled));
         }
 	}
+
+    public void toggleDropboxPreference(Preference pref) {
+        ((CheckBoxPreference)pref).setChecked(mDbxAccountManager.hasLinkedAccount());
+    }
+
 
     @Override
     protected void onResume() {
@@ -224,7 +247,7 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
 
     @Override
     protected boolean isValidFragment(String fragmentName) {
-        return GeneralPreferenceFragment.class.getName().equals(fragmentName)
+        return BackupPreferenceFragment.class.getName().equals(fragmentName)
                 || AccountPreferencesFragment.class.getName().equals(fragmentName)
                 || PasscodePreferenceFragment.class.getName().equals(fragmentName)
                 || TransactionsPreferenceFragment.class.getName().equals(fragmentName)
@@ -255,6 +278,7 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
     @Override
     public boolean onPreferenceClick(Preference preference) {
         String key = preference.getKey();
+
         if (key.equals(getString(R.string.key_import_accounts)) || key.equals(getString(R.string.key_restore_backup))){
             importAccounts();
             return true;
@@ -267,6 +291,17 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
 
         if (key.equals(getString(R.string.key_restore_last_backup))){
             importMostRecentBackup();
+        }
+
+        if (key.equals(getString(R.string.key_dropbox_sync))){
+            toggleDropboxSync();
+            toggleDropboxPreference(preference);
+        }
+
+        if (key.equals(getString(R.string.key_create_backup))){
+            boolean result = GncXmlExporter.createBackup();
+            int msg = result ? R.string.toast_backup_successful : R.string.toast_backup_failed;
+            Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
         }
 
         //since we cannot get a support FragmentManager in the SettingsActivity pre H0NEYCOMB,
@@ -320,6 +355,14 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
         return false;
     }
 
+    private void toggleDropboxSync() {
+        if (mDbxAccountManager.hasLinkedAccount()){
+            mDbxAccountManager.unlink();
+        } else {
+            mDbxAccountManager.startLink(this, REQUEST_LINK_TO_DBX);
+        }
+    }
+
     /**
      * Resets the tap counter for preferences which need to be double-tapped
      */
@@ -337,8 +380,8 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
      */
     public void importAccounts() {
         Intent pickIntent = new Intent(Intent.ACTION_GET_CONTENT);
-        pickIntent.setType("application/*");
-        Intent chooser = Intent.createChooser(pickIntent, "Select GnuCash account file");
+        pickIntent.setType("file/*");
+        Intent chooser = Intent.createChooser(pickIntent, getString(R.string.title_select_gnucash_xml_file));
 
         startActivityForResult(chooser, AccountsActivity.REQUEST_PICK_ACCOUNTS_FILE);
 
@@ -394,6 +437,13 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
                     Toast.makeText(getApplicationContext(), R.string.toast_passcode_set, Toast.LENGTH_SHORT).show();
                     findPreference(getString(R.string.key_enable_passcode)).setTitle(getString(R.string.title_passcode_enabled));
                 }
+                break;
+
+            case REQUEST_LINK_TO_DBX:
+                Preference preference = findPreference(getString(R.string.key_dropbox_sync));
+                if (preference == null) //if we are in a preference header fragment, this may return null
+                    return;
+                toggleDropboxPreference(preference);
                 break;
         }
     }

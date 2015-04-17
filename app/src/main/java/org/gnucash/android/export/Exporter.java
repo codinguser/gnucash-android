@@ -54,7 +54,7 @@ public abstract class Exporter {
     public static final String EXPORT_FOLDER_PATH =  BASE_FOLDER_PATH + "/exports/";
 
     /**
-     * Folder where GNC_XML backups will be saved
+     * Folder where XML backups will be saved
      */
     public static final String BACKUP_FOLDER_PATH = BASE_FOLDER_PATH + "/backups/";
 
@@ -113,13 +113,13 @@ public abstract class Exporter {
     }
 
     /**
-     * Builds a file for backups of the database (in GNC_XML) format
+     * Builds a file for backups of the database (in XML) format
      * @return File for saving backups
      * @see #BACKUP_FOLDER_PATH
      */
-    public static File createBackupFile(){
+    public static File buildBackupFile(){
         new File(BACKUP_FOLDER_PATH).mkdirs();
-        return new File(BACKUP_FOLDER_PATH + buildExportFilename(ExportFormat.GNC_XML));
+        return new File(BACKUP_FOLDER_PATH + buildExportFilename(ExportFormat.XML) + ".zip");
     }
 
     /**

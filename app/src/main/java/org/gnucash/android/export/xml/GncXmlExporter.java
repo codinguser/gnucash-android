@@ -561,6 +561,7 @@ public class GncXmlExporter extends Exporter{
             exportTransactions(xmlSerializer, false);
 
             //transaction templates
+            //TODO: do not include this tag at all if there are not template transactions
             xmlSerializer.startTag(null, GncXmlHelper.TAG_TEMPLATE_TRANSACTIONS);
             exportTransactions(xmlSerializer, true);
             xmlSerializer.endTag(null, GncXmlHelper.TAG_TEMPLATE_TRANSACTIONS);
@@ -578,19 +579,22 @@ public class GncXmlExporter extends Exporter{
     }
     /**
      * Creates a backup of current database contents to the default backup location
+     * @return {@code true} if backup was successful, {@code false} otherwise
      */
-    public static void createBackup(){
-        ExportParams params = new ExportParams(ExportFormat.GNC_XML);
+    public static boolean createBackup(){
+        ExportParams params = new ExportParams(ExportFormat.XML);
         try {
-            FileOutputStream fileOutputStream = new FileOutputStream(Exporter.createBackupFile());
+            FileOutputStream fileOutputStream = new FileOutputStream(Exporter.buildBackupFile());
             BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(fileOutputStream);
             GZIPOutputStream gzipOutputStream = new GZIPOutputStream(bufferedOutputStream);
             OutputStreamWriter outputStreamWriter = new OutputStreamWriter(gzipOutputStream);
             new GncXmlExporter(params).generateExport(outputStreamWriter);
             outputStreamWriter.close();
+            return true;
         } catch (IOException e) {
             e.printStackTrace();
             Log.e("GncXmlExporter", "Error creating backup", e);
+            return false;
         }
     }
 }

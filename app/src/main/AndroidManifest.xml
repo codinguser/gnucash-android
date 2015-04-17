@@ -49,6 +49,7 @@
         android:label="Schedule repeating transactions when device is rebooted"/>
     <uses-permission android:name="android.permission.INTERNET"
         android:label="Export and backup to 3rd party hosting services" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application android:name="org.gnucash.android.app.GnuCashApplication"
         android:icon="@drawable/ic_launcher"
@@ -85,18 +86,24 @@
         <activity android:name=".ui.chart.PieChartActivity" />
         <activity android:name=".ui.chart.LineChartActivity" />
         <activity android:name=".ui.chart.BarChartActivity" />
+        <activity android:name="com.dropbox.sync.android.DbxAuthActivity" />
         <activity
             android:name="com.dropbox.client2.android.AuthActivity"
             android:launchMode="singleTask"
             android:configChanges="orientation|keyboard">
             <intent-filter>
                 <!-- Change this to be db- followed by your app key -->
-                <data android:scheme="db-86miy05q183gy7r" />
+                <data android:scheme="db-dhjh8ke9wf05948" />
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.BROWSABLE"/>
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+        <service
+            android:name="com.dropbox.sync.android.DbxSyncService"
+            android:enabled="true"
+            android:exported="false"
+            android:label="Dropbox Sync" />
         <service android:name=".service.SchedulerService"
             android:exported="false"
             android:label="GnuCash Android Scheduler Execution Service"/>

@@ -24,6 +24,8 @@
     <string name="key_restore_last_backup">restore_last_backup</string>
     <string name="key_save_opening_balances">save_opening_balances</string>
     <string name="key_restore_backup">restore_backup</string>
+    <string name="key_dropbox_sync">dropbox_sync</string>
+    <string name="key_create_backup">create_backup</string>
 
     <string-array name="key_transaction_type_values">
         <item>CREDIT</item>
