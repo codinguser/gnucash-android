@@ -84,6 +84,10 @@ public class BackupPreferenceFragment extends PreferenceFragment implements OnPr
 		pref = findPreference(getString(R.string.key_dropbox_sync));
 		pref.setOnPreferenceClickListener((SettingsActivity)getActivity());
 		((SettingsActivity)getActivity()).toggleDropboxPreference(pref);
+
+		pref = findPreference(getString(R.string.key_google_drive_sync));
+		pref.setOnPreferenceClickListener((SettingsActivity) getActivity());
+		((SettingsActivity)getActivity()).toggleGoogleDrivePreference(pref);
 	}
 
     /**

@@ -28,8 +28,6 @@ import org.gnucash.android.app.GnuCashApplication;
  * @author Ngewi Fet <ngewif@gmail.com>
  */
 public class ExportParams {
-    final static private String DROPBOX_APP_KEY = "INSERT_APP_KEY";
-    final static private String DROPBOX_APP_SECRET = "INSERT_APP_SECRET";
     /**
      * Options for the destination of the exported transctions file.
      * It could be stored on the {@link #SD_CARD} or exported through another program via {@link #SHARING}

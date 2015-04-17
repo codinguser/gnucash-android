@@ -31,6 +31,12 @@
             android:checked="false"
             android:key="@string/key_dropbox_sync"
             android:icon="@drawable/ic_dropbox_android" />
+
+        <CheckBoxPreference android:title="@string/title_google_drive_sync_pref"
+            android:summary="@string/summary_google_drive_sync"
+            android:checked="false"
+            android:key="@string/key_google_drive_sync"
+            android:icon="@drawable/ic_google_drive" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/title_export_preference_category">
 

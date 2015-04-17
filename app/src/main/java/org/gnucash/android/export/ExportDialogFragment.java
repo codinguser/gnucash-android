@@ -17,6 +17,7 @@
 package org.gnucash.android.export;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -35,12 +36,16 @@ import android.widget.CheckBox;
 import android.widget.RadioButton;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.doomonafireball.betterpickers.recurrencepicker.EventRecurrence;
 import com.doomonafireball.betterpickers.recurrencepicker.EventRecurrenceFormatter;
 import com.doomonafireball.betterpickers.recurrencepicker.RecurrencePickerDialog;
 import com.dropbox.sync.android.DbxAccountManager;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.drive.Drive;
+import com.google.android.gms.drive.DriveFolder;
+import com.google.android.gms.drive.MetadataChangeSet;
 
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
@@ -93,11 +98,6 @@ public class ExportDialogFragment extends DialogFragment implements RecurrencePi
     TextView mExportWarningTextView;
 
 	/**
-	 * File path for saving the OFX files
-	 */
-	String mFilePath;
-
-	/**
 	 * Recurrence text view
 	 */
 	TextView mRecurrenceTextView;
@@ -124,7 +124,8 @@ public class ExportDialogFragment extends DialogFragment implements RecurrencePi
 
 	private ExportParams.ExportTarget mExportTarget = ExportParams.ExportTarget.SD_CARD;
 
-	private DbxAccountManager mDbxAcctMgr;
+	private GoogleApiClient mGoogleApiClient;
+
 
 	/**
 	 * Click listener for positive button in the dialog.
@@ -136,11 +137,9 @@ public class ExportDialogFragment extends DialogFragment implements RecurrencePi
 		public void onClick(View v) {
             ExportParams exportParameters = new ExportParams(mExportFormat);
             exportParameters.setExportAllTransactions(mExportAllCheckBox.isChecked());
-            exportParameters.setTargetFilepath(mFilePath);
 			exportParameters.setExportTarget(mExportTarget);
 			exportParameters.setDeleteTransactionsAfterExport(mDeleteAllCheckBox.isChecked());
 
-			//TODO: Block from creating scheduled action with SHARE target
 			ScheduledActionDbAdapter scheduledActionDbAdapter = ScheduledActionDbAdapter.getInstance();
 			scheduledActionDbAdapter.deleteScheduledBackupAction(mExportFormat);
 			List<ScheduledAction> events = RecurrenceParser.parse(mEventRecurrence,
@@ -190,7 +189,6 @@ public class ExportDialogFragment extends DialogFragment implements RecurrencePi
 				break;
         }
 		refreshRecurrenceTextView(mExportFormat);
-        mFilePath = getActivity().getExternalFilesDir(null) + "/" + Exporter.buildExportFilename(mExportFormat);
     }
 
 	/**
@@ -224,7 +222,6 @@ public class ExportDialogFragment extends DialogFragment implements RecurrencePi
 	public void onActivityCreated(Bundle savedInstanceState) {		
 		super.onActivityCreated(savedInstanceState);
         bindViews();
-		mFilePath = getActivity().getExternalFilesDir(null) + "/" + Exporter.buildExportFilename(mExportFormat);
 		getDialog().setTitle(R.string.title_export_dialog);
 	}
 
@@ -248,18 +245,25 @@ public class ExportDialogFragment extends DialogFragment implements RecurrencePi
 					case 1:
 						recurrenceOptionsView.setVisibility(View.VISIBLE);
 						mExportTarget = ExportParams.ExportTarget.DROPBOX;
-						mDbxAcctMgr = DbxAccountManager.getInstance(getActivity().getApplicationContext(),
+						DbxAccountManager mDbxAccountManager = DbxAccountManager.getInstance(getActivity().getApplicationContext(),
 								SettingsActivity.DROPBOX_APP_KEY, SettingsActivity.DROPBOX_APP_SECRET);
-						if (!mDbxAcctMgr.hasLinkedAccount()){
-							Toast.makeText(getActivity(), "You need to first link to your DropBox account in Settings", Toast.LENGTH_SHORT).show();
-							startActivity(new Intent(getActivity(), SettingsActivity.class));							//TODO: Try to open directly to the export preferences
+						if (!mDbxAccountManager.hasLinkedAccount()){
+							mDbxAccountManager.startLink(getActivity(), 0);
 						}
 						break;
 					case 2:
 						recurrenceOptionsView.setVisibility(View.VISIBLE);
+						mExportTarget = ExportParams.ExportTarget.GOOGLE_DRIVE;
+						mGoogleApiClient = SettingsActivity.getGoogleApiClient(getActivity());
+						mGoogleApiClient.connect();
 						break;
 					case 3:
+						mExportTarget = ExportParams.ExportTarget.SHARING;
 						recurrenceOptionsView.setVisibility(View.GONE);
+						break;
+
+					default:
+						mExportTarget = ExportParams.ExportTarget.SD_CARD;
 						break;
 				}
 			}
@@ -365,11 +369,8 @@ public class ExportDialogFragment extends DialogFragment implements RecurrencePi
 	 */
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
-		//TODO: fix the exception which is thrown on return
-		if (resultCode == Activity.RESULT_OK){
-			//uploading or emailing has finished. clean up now.
-			File file = new File(mFilePath);
-			file.delete();
+		if (requestCode == SettingsActivity.REQUEST_RESOLVE_CONNECTION && resultCode == Activity.RESULT_OK) {
+			mGoogleApiClient.connect();
 		}
 	}
 

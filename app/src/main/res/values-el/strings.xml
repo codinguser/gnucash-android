@@ -481,7 +481,7 @@
 	<string name="header_backup_and_export_settings">Backup &amp; export</string>
 	<string name="title_dropbox_sync_preference">DropBox Sync</string>
 	<string name="title_backup_preference_category">Backup</string>
-	<string name="summary_dropbox_sync">Enable to link to your DropBox</string>
+	<string name="summary_dropbox_sync">Enable to sync to DropBox</string>
 	<string name="title_select_gnucash_xml_file">Select GnuCash XML file</string>
 	<string name="title_backup_prefs">Backup Preferences</string>
 	<string name="title_create_backup_pref">Create Backup</string>
@@ -490,6 +490,8 @@
 	<string name="toast_backup_successful">Backup successful</string>
 	<string name="toast_backup_failed">Backup failed</string>
 	<string name="export_warning_xml">Exports all accounts and transactions</string>
+	<string name="title_google_drive_sync_pref">Google Drive Sync</string>
+	<string name="summary_google_drive_sync">Enable to sync to Google Drive</string>
 	<plurals name="label_every_x_days">
         <item quantity="one">Daily</item>
         <item quantity="other">Every %d days</item>

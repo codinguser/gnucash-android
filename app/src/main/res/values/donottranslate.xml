@@ -26,6 +26,8 @@
     <string name="key_restore_backup">restore_backup</string>
     <string name="key_dropbox_sync">dropbox_sync</string>
     <string name="key_create_backup">create_backup</string>
+    <string name="key_google_drive_sync">google_drive_sync</string>
+    <string name="key_google_drive_app_folder_id">google_drive_app_folder</string>
 
     <string-array name="key_transaction_type_values">
         <item>CREDIT</item>
