@@ -90,6 +90,11 @@ public class GncXmlHandler extends DefaultHandler {
     List<Account> mAccountList;
 
     /**
+     * Account map for quick referencing from UID
+     */
+    HashMap<String, Account> mAccountMap;
+
+    /**
      * Transaction instance which will be built for each transaction found
      */
     Transaction mTransaction;
@@ -183,6 +188,7 @@ public class GncXmlHandler extends DefaultHandler {
         mContent = new StringBuilder();
 
         mAccountList = new ArrayList<>();
+        mAccountMap = new HashMap<>();
         mTransactionList = new ArrayList<>();
         mScheduledActionsList = new ArrayList<>();
     }
@@ -190,7 +196,7 @@ public class GncXmlHandler extends DefaultHandler {
     @Override
     public void startElement(String uri, String localName,
                              String qualifiedName, Attributes attributes) throws SAXException {
-        switch (qualifiedName.toLowerCase()){
+        switch (qualifiedName){
             case GncXmlHelper.TAG_ACCOUNT:
                 mAccount = new Account(""); // dummy name, will be replaced when we find name tag
                 mISO4217Currency = false;
@@ -234,266 +240,259 @@ public class GncXmlHandler extends DefaultHandler {
 
         if (mIgnoreElement != null) {
             // Ignore everything inside
-            if (qualifiedName.equalsIgnoreCase(mIgnoreElement)) {
+            if (qualifiedName.equals(mIgnoreElement)) {
                 mIgnoreElement = null;
             }
             mContent.setLength(0);
             return;
         }
 
-        if (qualifiedName.equalsIgnoreCase(GncXmlHelper.TAG_NAME)) {
-            mAccount.setName(characterString);
-            mAccount.setFullName(characterString);
-        }
-        else if (qualifiedName.equalsIgnoreCase(GncXmlHelper.TAG_ACCT_ID)){
-            mAccount.setUID(characterString);
-        }
-        else if (qualifiedName.equalsIgnoreCase(GncXmlHelper.TAG_TYPE)){
-            AccountType accountType = AccountType.valueOf(characterString);
-            mAccount.setAccountType(accountType);
-            mAccount.setHidden(accountType == AccountType.ROOT); //flag root account as hidden
-        }
-        else if (qualifiedName.equalsIgnoreCase(GncXmlHelper.TAG_COMMODITY_SPACE)){
-            if (characterString.equalsIgnoreCase("ISO4217")){
-                mISO4217Currency = true;
-            }
-        }
-        else if (qualifiedName.equalsIgnoreCase(GncXmlHelper.TAG_COMMODITY_ID)){
-            String currencyCode = mISO4217Currency ? characterString : NO_CURRENCY_CODE;
-            if (mAccount != null){
-                mAccount.setCurrency(Currency.getInstance(currencyCode));
-            }
-            if (mTransaction != null){
-                mTransaction.setCurrencyCode(currencyCode);
-            }
-        }
-        else if (qualifiedName.equalsIgnoreCase(GncXmlHelper.TAG_PARENT_UID)){
-            mAccount.setParentUID(characterString);
-        }
-        else if (qualifiedName.equalsIgnoreCase(GncXmlHelper.TAG_ACCOUNT)){
-            if (!mInTemplates) { //we ignore template accounts, we have no use for them
-                mAccountList.add(mAccount);
-                mAccount = null;
-                //reset ISO 4217 flag for next account
-                mISO4217Currency = false;
-            }
-        }
-        else if (qualifiedName.equalsIgnoreCase(GncXmlHelper.TAG_SLOT_KEY)){
-            switch (characterString) {
-                case GncXmlHelper.KEY_PLACEHOLDER:
-                    mInPlaceHolderSlot = true;
-                    break;
-                case GncXmlHelper.KEY_COLOR:
-                    mInColorSlot = true;
-                    break;
-                case GncXmlHelper.KEY_FAVORITE:
-                    mInFavoriteSlot = true;
-                    break;
-                case GncXmlHelper.KEY_NOTES:
-                    mIsNote = true;
-                    break;
-                case GncXmlHelper.KEY_DEFAULT_TRANSFER_ACCOUNT:
-                    mInDefaultTransferAccount = true;
-                    break;
-                case GncXmlHelper.KEY_EXPORTED:
-                    mInExported = true;
-                    break;
-                case GncXmlHelper.KEY_SPLIT_ACCOUNT:
-                    mInSplitAccountSlot = true;
-                    break;
-                case GncXmlHelper.KEY_CREDIT_FORMULA:
-                    mInCreditFormulaSlot = true;
-                    break;
-                case GncXmlHelper.KEY_DEBIT_FORMULA:
-                    mInDebitFormulaSlot = true;
-                    break;
-            }
-        }
-        else if (qualifiedName.equalsIgnoreCase(GncXmlHelper.TAG_SLOT_VALUE)){
-            if (mInPlaceHolderSlot){
-                Log.v(LOG_TAG, "Setting account placeholder flag");
-                mAccount.setPlaceHolderFlag(Boolean.parseBoolean(characterString));
-                mInPlaceHolderSlot = false;
-            }
-            else if (mInColorSlot){
-                String color = characterString.trim();
-                //Gnucash exports the account color in format #rrrgggbbb, but we need only #rrggbb.
-                //so we trim the last digit in each block, doesn't affect the color much
-                if (!color.equals("Not Set")) {
-                    // avoid known exception, printStackTrace is very time consuming
-                    if (!Pattern.matches(Account.COLOR_HEX_REGEX, color))
-                        color = "#" + color.replaceAll(".(.)?", "$1").replace("null", "");
+        switch (qualifiedName) {
+            case GncXmlHelper.TAG_NAME:
+                mAccount.setName(characterString);
+                mAccount.setFullName(characterString);
+                break;
+            case GncXmlHelper.TAG_ACCT_ID:
+                mAccount.setUID(characterString);
+                break;
+            case GncXmlHelper.TAG_TYPE:
+                AccountType accountType = AccountType.valueOf(characterString);
+                mAccount.setAccountType(accountType);
+                mAccount.setHidden(accountType == AccountType.ROOT); //flag root account as hidden
+                break;
+            case GncXmlHelper.TAG_COMMODITY_SPACE:
+                if (characterString.equals("ISO4217")) {
+                    mISO4217Currency = true;
+                }
+                break;
+            case GncXmlHelper.TAG_COMMODITY_ID:
+                String currencyCode = mISO4217Currency ? characterString : NO_CURRENCY_CODE;
+                if (mAccount != null) {
+                    mAccount.setCurrency(Currency.getInstance(currencyCode));
+                }
+                if (mTransaction != null) {
+                    mTransaction.setCurrencyCode(currencyCode);
+                }
+                break;
+            case GncXmlHelper.TAG_PARENT_UID:
+                mAccount.setParentUID(characterString);
+                break;
+            case GncXmlHelper.TAG_ACCOUNT:
+                if (!mInTemplates) { //we ignore template accounts, we have no use for them
+                    mAccountList.add(mAccount);
+                    mAccountMap.put(mAccount.getUID(), mAccount);
+                    mAccount = null;
+                    //reset ISO 4217 flag for next account
+                    mISO4217Currency = false;
+                }
+                break;
+            case GncXmlHelper.TAG_SLOT_KEY:
+                switch (characterString) {
+                    case GncXmlHelper.KEY_PLACEHOLDER:
+                        mInPlaceHolderSlot = true;
+                        break;
+                    case GncXmlHelper.KEY_COLOR:
+                        mInColorSlot = true;
+                        break;
+                    case GncXmlHelper.KEY_FAVORITE:
+                        mInFavoriteSlot = true;
+                        break;
+                    case GncXmlHelper.KEY_NOTES:
+                        mIsNote = true;
+                        break;
+                    case GncXmlHelper.KEY_DEFAULT_TRANSFER_ACCOUNT:
+                        mInDefaultTransferAccount = true;
+                        break;
+                    case GncXmlHelper.KEY_EXPORTED:
+                        mInExported = true;
+                        break;
+                    case GncXmlHelper.KEY_SPLIT_ACCOUNT:
+                        mInSplitAccountSlot = true;
+                        break;
+                    case GncXmlHelper.KEY_CREDIT_FORMULA:
+                        mInCreditFormulaSlot = true;
+                        break;
+                    case GncXmlHelper.KEY_DEBIT_FORMULA:
+                        mInDebitFormulaSlot = true;
+                        break;
+                }
+                break;
+            case GncXmlHelper.TAG_SLOT_VALUE:
+                if (mInPlaceHolderSlot) {
+                    Log.v(LOG_TAG, "Setting account placeholder flag");
+                    mAccount.setPlaceHolderFlag(Boolean.parseBoolean(characterString));
+                    mInPlaceHolderSlot = false;
+                } else if (mInColorSlot) {
+                    String color = characterString.trim();
+                    //Gnucash exports the account color in format #rrrgggbbb, but we need only #rrggbb.
+                    //so we trim the last digit in each block, doesn't affect the color much
+                    if (!color.equals("Not Set")) {
+                        // avoid known exception, printStackTrace is very time consuming
+                        if (!Pattern.matches(Account.COLOR_HEX_REGEX, color))
+                            color = "#" + color.replaceAll(".(.)?", "$1").replace("null", "");
+                        try {
+                            if (mAccount != null)
+                                mAccount.setColorCode(color);
+                        } catch (IllegalArgumentException ex) {
+                            //sometimes the color entry in the account file is "Not set" instead of just blank. So catch!
+                            Log.i(LOG_TAG, "Invalid color code '" + color + "' for account " + mAccount.getName());
+                            ex.printStackTrace();
+                        }
+                    }
+                    mInColorSlot = false;
+                } else if (mInFavoriteSlot) {
+                    mAccount.setFavorite(Boolean.parseBoolean(characterString));
+                    mInFavoriteSlot = false;
+                } else if (mIsNote) {
+                    if (mTransaction != null) {
+                        mTransaction.setNote(characterString);
+                        mIsNote = false;
+                    }
+                } else if (mInDefaultTransferAccount) {
+                    mAccount.setDefaultTransferAccountUID(characterString);
+                    mInDefaultTransferAccount = false;
+                } else if (mInExported) {
+                    if (mTransaction != null) {
+                        mTransaction.setExported(Boolean.parseBoolean(characterString));
+                        mInExported = false;
+                    }
+                } else if (mInTemplates && mInSplitAccountSlot) {
+                    mSplit.setAccountUID(characterString);
+                } else if (mInTemplates && mInCreditFormulaSlot) {
+                    NumberFormat numberFormat = NumberFormat.getNumberInstance(Locale.GERMANY);
                     try {
-                        if (mAccount != null)
-                            mAccount.setColorCode(color);
-                    } catch (IllegalArgumentException ex) {
-                        //sometimes the color entry in the account file is "Not set" instead of just blank. So catch!
-                        Log.i(LOG_TAG, "Invalid color code '" + color + "' for account " + mAccount.getName());
-                        ex.printStackTrace();
+                        Number number = numberFormat.parse(characterString);
+                        Money amount = new Money(new BigDecimal(number.doubleValue()), mTransaction.getCurrency());
+                        mSplit.setAmount(amount.absolute());
+                        mSplit.setType(TransactionType.CREDIT);
+                    } catch (ParseException e) {
+                        Log.e(LOG_TAG, "Error parsing template split amount. " + e.getMessage());
+                        e.printStackTrace();
+                    } finally {
+                        mInCreditFormulaSlot = false;
+                    }
+                } else if (mInTemplates && mInDebitFormulaSlot) {
+                    NumberFormat numberFormat = GncXmlHelper.getNumberFormatForTemplateSplits();
+                    try {
+                        Number number = numberFormat.parse(characterString);
+                        Money amount = new Money(new BigDecimal(number.doubleValue()), mTransaction.getCurrency());
+                        mSplit.setAmount(amount.absolute());
+                        mSplit.setType(TransactionType.DEBIT);
+                    } catch (ParseException e) {
+                        Log.e(LOG_TAG, "Error parsing template split amount. " + e.getMessage());
+                        e.printStackTrace();
+                    } finally {
+                        mInDebitFormulaSlot = false;
                     }
                 }
-                mInColorSlot = false;
-            }
-            else if (mInFavoriteSlot){
-                mAccount.setFavorite(Boolean.parseBoolean(characterString));
-                mInFavoriteSlot = false;
-            }
-            else if (mIsNote){
-                if (mTransaction != null){
-                    mTransaction.setNote(characterString);
-                    mIsNote = false;
+                break;
+            //================  PROCESSING OF TRANSACTION TAGS =====================================
+            case GncXmlHelper.TAG_TRX_ID:
+                mTransaction.setUID(characterString);
+                break;
+            case GncXmlHelper.TAG_TRN_DESCRIPTION:
+                mTransaction.setDescription(characterString);
+                break;
+            case GncXmlHelper.TAG_DATE:
+                try {
+                    if (mIsDatePosted && mTransaction != null) {
+                        mTransaction.setTime(GncXmlHelper.parseDate(characterString));
+                        mIsDatePosted = false;
+                    }
+                    if (mIsDateEntered && mTransaction != null) {
+                        Timestamp timestamp = new Timestamp(GncXmlHelper.parseDate(characterString));
+                        mTransaction.setCreatedTimestamp(timestamp);
+                        mIsDateEntered = false;
+                    }
+                    if (mIsScheduledStart && mScheduledAction != null) {
+                        mScheduledAction.setStartTime(GncXmlHelper.DATE_FORMATTER.parse(characterString).getTime());
+                        mIsScheduledStart = false;
+                    }
+
+                    if (mIsScheduledEnd && mScheduledAction != null) {
+                        mScheduledAction.setEndTime(GncXmlHelper.DATE_FORMATTER.parse(characterString).getTime());
+                        mIsScheduledEnd = false;
+                    }
+
+                    if (mIsLastRun && mScheduledAction != null) {
+                        mScheduledAction.setLastRun(GncXmlHelper.DATE_FORMATTER.parse(characterString).getTime());
+                        mIsLastRun = false;
+                    }
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                    throw new SAXException("Unable to parse transaction time", e);
                 }
-            }
-            else if (mInDefaultTransferAccount){
-                mAccount.setDefaultTransferAccountUID(characterString);
-                mInDefaultTransferAccount = false;
-            }
-            else if (mInExported){
-                if (mTransaction != null) {
-                    mTransaction.setExported(Boolean.parseBoolean(characterString));
-                    mInExported = false;
-                }
-            }
-            else if (mInTemplates && mInSplitAccountSlot){
+                break;
+            case GncXmlHelper.TAG_RECURRENCE_PERIOD:
+                mRecurrencePeriod = Long.parseLong(characterString);
+                mTransaction.setTemplate(mRecurrencePeriod > 0);
+                break;
+            case GncXmlHelper.TAG_SPLIT_ID:
+                mSplit.setUID(characterString);
+                break;
+            case GncXmlHelper.TAG_SPLIT_MEMO:
+                mSplit.setMemo(characterString);
+                break;
+            case GncXmlHelper.TAG_SPLIT_VALUE:
+                //the split amount uses the transaction currency, but in the db it will correctly use the account currency
+                Money amount = new Money(GncXmlHelper.parseMoney(characterString), mTransaction.getCurrency());
+
+                //this is intentional: GnuCash XML formats split amounts, credits are negative, debits are positive.
+                mSplit.setType(amount.isNegative() ? TransactionType.CREDIT : TransactionType.DEBIT);
+                mSplit.setAmount(amount.absolute());
+                break;
+            case GncXmlHelper.TAG_SPLIT_ACCOUNT:
                 mSplit.setAccountUID(characterString);
-            }
-            else if (mInTemplates && mInCreditFormulaSlot){
-                NumberFormat numberFormat = NumberFormat.getNumberInstance(Locale.GERMANY);
-                try {
-                    Number number = numberFormat.parse(characterString);
-                    Money amount = new Money(new BigDecimal(number.doubleValue()), mTransaction.getCurrency());
-                    mSplit.setAmount(amount.absolute());
-                    mSplit.setType(TransactionType.CREDIT);
-                } catch (ParseException e) {
-                    Log.e(LOG_TAG, "Error parsing template split amount. " + e.getMessage());
-                    e.printStackTrace();
-                } finally {
-                    mInCreditFormulaSlot = false;
-                }
-            }
-            else if (mInTemplates && mInDebitFormulaSlot){
-                NumberFormat numberFormat = GncXmlHelper.getNumberFormatForTemplateSplits();
-                try {
-                    Number number = numberFormat.parse(characterString);
-                    Money amount = new Money(new BigDecimal(number.doubleValue()), mTransaction.getCurrency());
-                    mSplit.setAmount(amount.absolute());
-                    mSplit.setType(TransactionType.DEBIT);
-                } catch (ParseException e) {
-                    Log.e(LOG_TAG, "Error parsing template split amount. " + e.getMessage());
-                    e.printStackTrace();
-                } finally {
-                    mInDebitFormulaSlot = false;
-                }
-            }
-        }
+                mSplit.setAmount(mSplit.getAmount().withCurrency(getCurrencyForAccount(characterString)));
+                break;
+            case GncXmlHelper.TAG_TRN_SPLIT:
+                mTransaction.addSplit(mSplit);
+                break;
+            case GncXmlHelper.TAG_TRANSACTION:
+                mTransaction.setTemplate(mInTemplates);
+                mTransaction.autoBalance();
+                mTransactionList.add(mTransaction);
 
-
-        //================  PROCESSING OF TRANSACTION TAGS =====================================
-        else if (qualifiedName.equalsIgnoreCase(GncXmlHelper.TAG_TRX_ID)){
-            mTransaction.setUID(characterString);
-        }
-        else if (qualifiedName.equalsIgnoreCase(GncXmlHelper.TAG_TRN_DESCRIPTION)){
-            mTransaction.setDescription(characterString);
-        }
-        else if (qualifiedName.equalsIgnoreCase(GncXmlHelper.TAG_DATE)){
-            try {
-                if (mIsDatePosted && mTransaction != null) {
-                    mTransaction.setTime(GncXmlHelper.parseDate(characterString));
-                    mIsDatePosted = false;
+                if (mRecurrencePeriod > 0) { //if we find an old format recurrence period, parse it
+                    mTransaction.setTemplate(true);
+                    ScheduledAction scheduledAction = ScheduledAction.parseScheduledAction(mTransaction, mRecurrencePeriod);
+                    mScheduledActionsList.add(scheduledAction);
                 }
-                if (mIsDateEntered && mTransaction != null){
-                    Timestamp timestamp = new Timestamp(GncXmlHelper.parseDate(characterString));
-                    mTransaction.setCreatedTimestamp(timestamp);
-                    mIsDateEntered = false;
-                }
-                if (mIsScheduledStart && mScheduledAction != null){
-                    mScheduledAction.setStartTime(GncXmlHelper.DATE_FORMATTER.parse(characterString).getTime());
-                    mIsScheduledStart = false;
-                }
-
-                if (mIsScheduledEnd && mScheduledAction != null){
-                    mScheduledAction.setEndTime(GncXmlHelper.DATE_FORMATTER.parse(characterString).getTime());
-                    mIsScheduledEnd = false;
-                }
-
-                if (mIsLastRun && mScheduledAction != null){
-                    mScheduledAction.setLastRun(GncXmlHelper.DATE_FORMATTER.parse(characterString).getTime());
-                    mIsLastRun = false;
-                }
-            } catch (ParseException e) {
-                e.printStackTrace();
-                throw new SAXException("Unable to parse transaction time", e);
-            }
-        }
-        else if (qualifiedName.equalsIgnoreCase(GncXmlHelper.TAG_RECURRENCE_PERIOD)){
-            mRecurrencePeriod = Long.parseLong(characterString);
-            mTransaction.setTemplate(mRecurrencePeriod > 0);
-        }
-        else if (qualifiedName.equalsIgnoreCase(GncXmlHelper.TAG_SPLIT_ID)){
-            mSplit.setUID(characterString);
-        }
-        else if (qualifiedName.equalsIgnoreCase(GncXmlHelper.TAG_SPLIT_MEMO)){
-            mSplit.setMemo(characterString);
-        }
-        else if (qualifiedName.equalsIgnoreCase(GncXmlHelper.TAG_SPLIT_VALUE)){
-            //the split amount uses the transaction currency, but in the db it will correctly use the account currency
-            Money amount = new Money(GncXmlHelper.parseMoney(characterString), mTransaction.getCurrency());
-
-            //this is intentional: GnuCash XML formats split amounts, credits are negative, debits are positive.
-            mSplit.setType(amount.isNegative() ? TransactionType.CREDIT : TransactionType.DEBIT);
-            mSplit.setAmount(amount.absolute());
-        }
-        else if (qualifiedName.equalsIgnoreCase(GncXmlHelper.TAG_SPLIT_ACCOUNT)){
-            mSplit.setAccountUID(characterString);
-            mSplit.setAmount(mSplit.getAmount().withCurrency(getCurrencyForAccount(characterString)));
-        }
-        else if (qualifiedName.equals(GncXmlHelper.TAG_TRN_SPLIT)){
-            mTransaction.addSplit(mSplit);
-        }
-        else if (qualifiedName.equalsIgnoreCase(GncXmlHelper.TAG_TRANSACTION)){
-            mTransaction.setTemplate(mInTemplates);
-            mTransaction.autoBalance();
-            mTransactionList.add(mTransaction);
-
-            if (mRecurrencePeriod > 0) { //if we find an old format recurrence period, parse it
-                mTransaction.setTemplate(true);
-                ScheduledAction scheduledAction = ScheduledAction.parseScheduledAction(mTransaction, mRecurrencePeriod);
-                mScheduledActionsList.add(scheduledAction);
-            }
-            mRecurrencePeriod = 0;
-            mTransaction = null;
-        } else if (qualifiedName.equals(GncXmlHelper.TAG_TEMPLATE_TRANSACTIONS)){
-            mInTemplates = false;
-        }
-
-        // ========================= PROCESSING SCHEDULED ACTIONS ==================================
-        else if (qualifiedName.equals(GncXmlHelper.TAG_SX_ID)){
-            mScheduledAction.setUID(characterString);
-        }
-        else if (qualifiedName.equals(GncXmlHelper.TAG_SX_NAME)){
-            //FIXME: Do not rely on the type, rather lookup the SX_ID from previous tag to find action type
-            ScheduledAction.ActionType type = ScheduledAction.ActionType.valueOf(characterString);
-            mScheduledAction.setActionType(type);
-        }
-        else if (qualifiedName.equals(GncXmlHelper.TAG_SX_ENABLED)){
-            mScheduledAction.setEnabled(characterString.equalsIgnoreCase("y"));
-        }
-        else if (qualifiedName.equals(GncXmlHelper.TAG_SX_NUM_OCCUR)){
-            mScheduledAction.setTotalFrequency(Integer.parseInt(characterString));
-        }
-        else if (qualifiedName.equals(GncXmlHelper.TAG_RX_MULT)){
-            mRecurrenceMultiplier = Integer.parseInt(characterString);
-        }
-        else if (qualifiedName.equals(GncXmlHelper.TAG_RX_PERIOD_TYPE)){
-            PeriodType periodType = PeriodType.valueOf(characterString.toUpperCase());
-            periodType.setMultiplier(mRecurrenceMultiplier);
-            mScheduledAction.setPeriod(periodType);
-        }
-        else if (qualifiedName.equals(GncXmlHelper.TAG_SX_TEMPL_ACTION)){
-            mScheduledAction.setActionUID(characterString);
-        }
-        else if (qualifiedName.equals(GncXmlHelper.TAG_SCHEDULED_ACTION)){
-            mScheduledActionsList.add(mScheduledAction);
+                mRecurrencePeriod = 0;
+                mTransaction = null;
+                break;
+            case GncXmlHelper.TAG_TEMPLATE_TRANSACTIONS:
+                mInTemplates = false;
+                break;
+            // ========================= PROCESSING SCHEDULED ACTIONS ==================================
+            case GncXmlHelper.TAG_SX_ID:
+                mScheduledAction.setUID(characterString);
+                break;
+            case GncXmlHelper.TAG_SX_NAME:
+                //FIXME: Do not rely on the type, rather lookup the SX_ID from previous tag to find action type
+                ScheduledAction.ActionType type = ScheduledAction.ActionType.valueOf(characterString);
+                mScheduledAction.setActionType(type);
+                break;
+            case GncXmlHelper.TAG_SX_ENABLED:
+                mScheduledAction.setEnabled(characterString.equals("y"));
+                break;
+            case GncXmlHelper.TAG_SX_NUM_OCCUR:
+                mScheduledAction.setTotalFrequency(Integer.parseInt(characterString));
+                break;
+            case GncXmlHelper.TAG_RX_MULT:
+                mRecurrenceMultiplier = Integer.parseInt(characterString);
+                break;
+            case GncXmlHelper.TAG_RX_PERIOD_TYPE:
+                PeriodType periodType = PeriodType.valueOf(characterString.toUpperCase());
+                periodType.setMultiplier(mRecurrenceMultiplier);
+                mScheduledAction.setPeriod(periodType);
+                break;
+            case GncXmlHelper.TAG_SX_TEMPL_ACTION:
+                mScheduledAction.setActionUID(characterString);
+                break;
+            case GncXmlHelper.TAG_SCHEDULED_ACTION:
+                mScheduledActionsList.add(mScheduledAction);
+                break;
         }
 
         //reset the accumulated characters
@@ -587,10 +586,10 @@ public class GncXmlHandler extends DefaultHandler {
      * @return Currency of the account
      */
     private Currency getCurrencyForAccount(String accountUID){
-        for (Account account : mAccountList) {
-            if (account.getUID().equals(accountUID))
-                return account.getCurrency();
+        try {
+            return mAccountMap.get(accountUID).getCurrency();
+        } catch (Exception e) {
+            return Currency.getInstance(Money.DEFAULT_CURRENCY_CODE);
         }
-        return Currency.getInstance(Money.DEFAULT_CURRENCY_CODE);
     }
 }
