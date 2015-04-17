@@ -28,7 +28,7 @@ public class DatabaseSchema {
      * Database version.
      * With any change to the database schema, this number must increase
      */
-    static final int DATABASE_VERSION = 7; //TODO: Upgrade database version when migration code is complete
+    static final int DATABASE_VERSION = 8;
 
     /**
      * Database version where Splits were introduced

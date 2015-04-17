@@ -16,6 +16,8 @@
 
 package org.gnucash.android.db;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -25,6 +27,12 @@ import android.util.Log;
 
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.model.AccountType;
+import org.gnucash.android.model.Money;
+import org.gnucash.android.model.ScheduledAction;
+import org.gnucash.android.model.Split;
+import org.gnucash.android.model.Transaction;
+
+import java.sql.Timestamp;
 
 import static org.gnucash.android.db.DatabaseSchema.AccountEntry;
 import static org.gnucash.android.db.DatabaseSchema.ScheduledActionEntry;
@@ -251,11 +259,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * <p>This migration accomplishes the following:
      *      <ul>
      *          <li>Added created_at and modified_at columns to all tables (including triggers for updating the columns).</li>
-     *          <li>New table for scheduled actions</li>
+     *          <li>New table for scheduled actions and migrate all existing recurring transactions</li>
      *          <li>Auto-balancing of all existing splits</li>
      *          <li>Added "hidden" flag to accounts table</li>
      *          <li>Add flag for transaction templates</li>
-     *          <li>Migrate all export/backup files to new locations on SD card</li>
      *      </ul>
      * </p>
      * @param db SQLite Database to be upgraded
@@ -269,15 +276,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         db.beginTransaction();
         try {
-            //TODO: Use raw sql to do all migrations (avoid using code constructs)
-
             Log.i(LOG_TAG, "Adding hidden flag to accounts table");
-            String addHiddenFlagSql = "ALTER TABLE " + AccountEntry.TABLE_NAME +
+            String addHiddenFlagSqlToAccounts = "ALTER TABLE " + AccountEntry.TABLE_NAME +
                     " ADD COLUMN " + AccountEntry.COLUMN_HIDDEN + " tinyint default 0";
-            db.execSQL(addHiddenFlagSql);
+            db.execSQL(addHiddenFlagSqlToAccounts);
 
-            //TODO: Add flag for transaction templates
-            //TODO: ADD uid of originating scheduled event to transactions
+            String addTemplatesToTransactions = "ALTER TABLE " + TransactionEntry.TABLE_NAME +
+                    " ADD COLUMN " + TransactionEntry.COLUMN_TEMPLATE + " tinyint default 0";
+            String addSchedxActionToTrns = "ALTER TABLE " + TransactionEntry.TABLE_NAME +
+                    " ADD COLUMN " + TransactionEntry.COLUMN_SCHEDX_ACTION_UID + " varchar(255)";
+            db.execSQL(addTemplatesToTransactions);
+            db.execSQL(addSchedxActionToTrns);
 
             Log.i(LOG_TAG, "Adding created_at and modified_at columns to database tables");
             MigrationHelper.createUpdatedAndModifiedColumns(db, AccountEntry.TABLE_NAME);
@@ -285,13 +294,71 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             MigrationHelper.createUpdatedAndModifiedColumns(db, SplitEntry.TABLE_NAME);
 
             Log.i(LOG_TAG, "Creating scheduled events table");
-            db.execSQL(SCHEDULED_ACTIONS_TABLE_CREATE); //TODO: Use the actual SQL statements, in case this string changes in the future
+            String createScheduledActions = "CREATE TABLE " + ScheduledActionEntry.TABLE_NAME + " ("
+                    + ScheduledActionEntry._ID                   + " integer primary key autoincrement, "
+                    + ScheduledActionEntry.COLUMN_UID            + " varchar(255) not null UNIQUE, "
+                    + ScheduledActionEntry.COLUMN_ACTION_UID    + " varchar(255) not null, "
+                    + ScheduledActionEntry.COLUMN_TYPE           + " varchar(255) not null, "
+                    + ScheduledActionEntry.COLUMN_PERIOD         + " integer not null, "
+                    + ScheduledActionEntry.COLUMN_LAST_RUN       + " integer default 0, "
+                    + ScheduledActionEntry.COLUMN_START_TIME     + " integer not null, "
+                    + ScheduledActionEntry.COLUMN_END_TIME       + " integer default 0, "
+                    + ScheduledActionEntry.COLUMN_TAG            + " text, "
+                    + ScheduledActionEntry.COLUMN_ENABLED        + " tinyint default 1, " //enabled by default
+                    + ScheduledActionEntry.COLUMN_TOTAL_FREQUENCY + " integer default 0, "
+                    + ScheduledActionEntry.COLUMN_EXECUTION_COUNT+ " integer default 0, "
+                    + ScheduledActionEntry.COLUMN_CREATED_AT     + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
+                    + ScheduledActionEntry.COLUMN_MODIFIED_AT    + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP "
+                    + ");" + createUpdatedAtTrigger(ScheduledActionEntry.TABLE_NAME);
+            db.execSQL(createScheduledActions);
 
-            //TODO: Migrate existing scheduled transactions (cancel pending intents)
-            //TODO: Migrate old scheduled events using only SQL, code had changed
-            //TODO: Take care to properly migrate the created_at dates for transactions (use the date already in the transaction)
-            //TODO: auto-balance existing splits during migration
-            //TODO: add schedx_action_uid column to transactions table
+            Log.i(LOG_TAG, "Migrating existing recurring transactions");
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(TransactionEntry.COLUMN_TEMPLATE, true);
+            db.update(TransactionEntry.TABLE_NAME, contentValues, "recurrence_period > 0", null);
+
+            Cursor c = db.query(TransactionEntry.TABLE_NAME, null, "recurrence_period > 0", null, null, null, null);
+            ScheduledActionDbAdapter scheduledActionDbAdapter = new ScheduledActionDbAdapter(db);
+            SplitsDbAdapter splitsDbAdapter = new SplitsDbAdapter(db);
+            TransactionsDbAdapter transactionsDbAdapter = new TransactionsDbAdapter(db, splitsDbAdapter);
+            while (c.moveToNext()){
+                long transactionId = c.getLong(c.getColumnIndexOrThrow(TransactionEntry._ID));
+                contentValues.clear();
+                Timestamp timestamp = new Timestamp(c.getLong(c.getColumnIndexOrThrow(TransactionEntry.COLUMN_TIMESTAMP)));
+                contentValues.put(TransactionEntry.COLUMN_CREATED_AT, timestamp.toString());
+                db.update(TransactionEntry.TABLE_NAME, contentValues, TransactionEntry._ID+"="+transactionId, null);
+
+                ScheduledAction scheduledAction = new ScheduledAction(ScheduledAction.ActionType.TRANSACTION);
+                scheduledAction.setActionUID(c.getString(c.getColumnIndexOrThrow(TransactionEntry.COLUMN_UID)));
+                scheduledActionDbAdapter.addScheduledAction(scheduledAction);
+
+                //cancel existing pending intent
+                Context context = GnuCashApplication.getAppContext();
+                PendingIntent recurringPendingIntent = PendingIntent.getBroadcast(context,
+                        (int)transactionId, Transaction.createIntent(transactionsDbAdapter.buildTransactionInstance(c)),
+                        PendingIntent.FLAG_UPDATE_CURRENT);
+                AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+                alarmManager.cancel(recurringPendingIntent);
+                recurringPendingIntent.cancel();
+            }
+            c.close();
+
+            //auto-balance existing splits
+            Log.i(LOG_TAG, "Auto-balancing existing transaction splits");
+            c = transactionsDbAdapter.fetchAllRecords();
+            AccountsDbAdapter accountsDbAdapter = new AccountsDbAdapter(db, transactionsDbAdapter);
+
+            while (c.moveToNext()){
+                Transaction transaction = transactionsDbAdapter.buildTransactionInstance(c);
+                Money imbalance = transaction.getImbalance();
+                if (imbalance.isAmountZero()){
+                    Split split = new Split(imbalance.negate(),
+                            accountsDbAdapter.getOrCreateImbalanceAccountUID(imbalance.getCurrency()));
+                    splitsDbAdapter.addSplit(split);
+                }
+            }
+            c.close();
+
             db.setTransactionSuccessful();
             oldVersion = 8;
         } finally {
