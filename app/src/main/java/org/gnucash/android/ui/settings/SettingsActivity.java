@@ -497,7 +497,7 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
      */
     public void importAccounts() {
         Intent pickIntent = new Intent(Intent.ACTION_GET_CONTENT);
-        pickIntent.setType("file/*");
+        pickIntent.setType("application/*");
         Intent chooser = Intent.createChooser(pickIntent, getString(R.string.title_select_gnucash_xml_file));
 
         startActivityForResult(chooser, AccountsActivity.REQUEST_PICK_ACCOUNTS_FILE);
