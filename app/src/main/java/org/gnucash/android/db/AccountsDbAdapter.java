@@ -60,6 +60,13 @@ public class AccountsDbAdapter extends DatabaseAdapter {
      */
     public static final String ACCOUNT_NAME_SEPARATOR = ":";
 
+    /**
+     * ROOT account full name.
+     * should ensure the ROOT account's full name will always sort before any other
+     * account's full name.
+     */
+    public static final String ROOT_ACCOUNT_FULL_NAME = " ";
+
 	/**
 	 * Transactions database adapter for manipulating transactions associated with accounts
 	 */

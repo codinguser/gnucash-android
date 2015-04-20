@@ -463,7 +463,7 @@ public final class Money implements Comparable<Money>{
 	 */
     public boolean isAmountZero() {
 		try {
-			return mAmount.intValueExact() == 0;
+			return mAmount.compareTo(BigDecimal.ZERO) == 0;
 		} catch (ArithmeticException e){
 			e.printStackTrace();
 			return false;

@@ -95,6 +95,11 @@ public class GncXmlHandler extends DefaultHandler {
     HashMap<String, Account> mAccountMap;
 
     /**
+     * ROOT account of the imported book
+     */
+    Account mRootAccount;
+
+    /**
      * Transaction instance which will be built for each transaction found
      */
     Transaction mTransaction;
@@ -185,6 +190,7 @@ public class GncXmlHandler extends DefaultHandler {
             mAccountsDbAdapter = new AccountsDbAdapter(db, mTransactionsDbAdapter);
             mScheduledActionsDbAdapter = new ScheduledActionDbAdapter(db);
         }
+
         mContent = new StringBuilder();
 
         mAccountList = new ArrayList<>();
@@ -281,6 +287,15 @@ public class GncXmlHandler extends DefaultHandler {
                 if (!mInTemplates) { //we ignore template accounts, we have no use for them
                     mAccountList.add(mAccount);
                     mAccountMap.put(mAccount.getUID(), mAccount);
+                    // check ROOT account
+                    if (mAccount.getAccountType() == AccountType.ROOT) {
+                        if (mRootAccount == null) {
+                            mRootAccount = mAccount;
+                        } else {
+                            throw new SAXException("multiple ROOT accounts exist in book");
+                        }
+                    }
+                    // prepare for next input
                     mAccount = null;
                     //reset ISO 4217 flag for next account
                     mISO4217Currency = false;
@@ -507,18 +522,20 @@ public class GncXmlHandler extends DefaultHandler {
     @Override
     public void endDocument() throws SAXException {
         super.endDocument();
-        HashMap<String, Account> map = new HashMap<>(mAccountList.size());
         HashMap<String, String> mapFullName = new HashMap<>(mAccountList.size());
-        Account rootAccount = null;
+
+        // The XML has no ROOT, create one
+        if (mRootAccount == null) {
+            mRootAccount = new Account("ROOT");
+            mRootAccount.setAccountType(AccountType.ROOT);
+            mAccountList.add(mRootAccount);
+            mAccountMap.put(mRootAccount.getUID(), mRootAccount);
+        }
+
         for(Account account:mAccountList) {
-            map.put(account.getUID(), account);
             mapFullName.put(account.getUID(), null);
-            if (account.getAccountType() == AccountType.ROOT) {
-                if (rootAccount == null) {
-                    rootAccount = account;
-                } else {
-                    throw new SAXException("Multiple ROOT accounts exists in the import file");
-                }
+            if (account.getParentUID() == null && account.getAccountType() != AccountType.ROOT) {
+                account.setParentUID(mRootAccount.getUID());
             }
         }
         java.util.Stack<Account> stack = new Stack<>();
@@ -532,12 +549,12 @@ public class GncXmlHandler extends DefaultHandler {
                 Account acc = stack.peek();
                 if (acc.getAccountType() == AccountType.ROOT) {
                     // append blank to Root Account, ensure it always sorts first
-                    mapFullName.put(acc.getUID(), " " + acc.getName());
+                    mapFullName.put(acc.getUID(), AccountsDbAdapter.ROOT_ACCOUNT_FULL_NAME);
                     stack.pop();
                     continue;
                 }
                 String parentUID = acc.getParentUID();
-                Account parentAccount = map.get(parentUID);
+                Account parentAccount = mAccountMap.get(parentUID);
                 // In accounts tree that are not imported, top level ROOT account
                 // does not exist, which will make all top level accounts have a
                 // null parent
