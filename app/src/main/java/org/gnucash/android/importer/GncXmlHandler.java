@@ -433,7 +433,7 @@ public class GncXmlHandler extends DefaultHandler {
             case GncXmlHelper.TAG_SPLIT_MEMO:
                 mSplit.setMemo(characterString);
                 break;
-            case GncXmlHelper.TAG_SPLIT_VALUE:
+            case GncXmlHelper.TAG_SPLIT_QUANTITY:
                 //the split amount uses the transaction currency, but in the db it will correctly use the account currency
                 Money amount = new Money(GncXmlHelper.parseMoney(characterString), mTransaction.getCurrency());
 
@@ -589,6 +589,7 @@ public class GncXmlHandler extends DefaultHandler {
         try {
             return mAccountMap.get(accountUID).getCurrency();
         } catch (Exception e) {
+            e.printStackTrace();
             return Currency.getInstance(Money.DEFAULT_CURRENCY_CODE);
         }
     }

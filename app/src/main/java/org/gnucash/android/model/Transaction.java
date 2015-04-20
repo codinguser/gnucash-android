@@ -230,7 +230,7 @@ public class Transaction extends BaseModel{
      */
     public void addSplit(Split split){
         //sets the currency of the split to the currency of the transaction
-        split.setAmount(split.getAmount().withCurrency(Currency.getInstance(mCurrencyCode)));
+        //split.setAmount(split.getAmount().withCurrency(Currency.getInstance(mCurrencyCode)));
         split.setTransactionUID(mUID);
         mSplitList.add(split);
     }
