@@ -115,6 +115,11 @@ public class GncXmlHandler extends DefaultHandler {
     Split mSplit;
 
     /**
+     * Quantity of the split
+     */
+    BigDecimal mQuantity;
+
+    /**
      * The list for all added split for autobalancing
      */
     List<Split> mAutoBalanceSplits;
@@ -456,16 +461,17 @@ public class GncXmlHandler extends DefaultHandler {
                 mSplit.setMemo(characterString);
                 break;
             case GncXmlHelper.TAG_SPLIT_QUANTITY:
-                //the split amount uses the transaction currency, but in the db it will correctly use the account currency
-                Money amount = new Money(GncXmlHelper.parseMoney(characterString), mTransaction.getCurrency());
+                // delay the assignment of currency when the split account is seen
+                mQuantity = GncXmlHelper.parseMoney(characterString);
+                break;
+            case GncXmlHelper.TAG_SPLIT_ACCOUNT:
+                //the split amount uses the account currency
+                Money amount = new Money(mQuantity, getCurrencyForAccount(characterString));
 
                 //this is intentional: GnuCash XML formats split amounts, credits are negative, debits are positive.
                 mSplit.setType(amount.isNegative() ? TransactionType.CREDIT : TransactionType.DEBIT);
                 mSplit.setAmount(amount.absolute());
-                break;
-            case GncXmlHelper.TAG_SPLIT_ACCOUNT:
                 mSplit.setAccountUID(characterString);
-                mSplit.setAmount(mSplit.getAmount().withCurrency(getCurrencyForAccount(characterString)));
                 break;
             case GncXmlHelper.TAG_TRN_SPLIT:
                 mTransaction.addSplit(mSplit);
