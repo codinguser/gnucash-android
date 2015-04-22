@@ -60,10 +60,19 @@ public class AccountsDbAdapter extends DatabaseAdapter {
      */
     public static final String ACCOUNT_NAME_SEPARATOR = ":";
 
+    /**
+     * ROOT account full name.
+     * should ensure the ROOT account's full name will always sort before any other
+     * account's full name.
+     */
+    public static final String ROOT_ACCOUNT_FULL_NAME = " ";
+
 	/**
 	 * Transactions database adapter for manipulating transactions associated with accounts
 	 */
     private final TransactionsDbAdapter mTransactionsAdapter;
+
+    private static String mImbalanceAccountPrefix = GnuCashApplication.getAppContext().getString(R.string.imbalance_account_name) + "-";
 
     /**
      * Overloaded constructor. Creates an adapter for an already open database
@@ -599,6 +608,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
         if (uid == null){
             Account account = new Account(imbalanceAccountName, currency);
             account.setAccountType(AccountType.BANK);
+            account.setParentUID(getOrCreateGnuCashRootAccountUID());
             account.setHidden(!GnuCashApplication.isDoubleEntryEnabled());
             addAccount(account);
             uid = account.getUID();
@@ -1200,6 +1210,9 @@ public class AccountsDbAdapter extends DatabaseAdapter {
         return openingTransactions;
     }
 
+    public static String getImbalanceAccountPrefix() {
+         return mImbalanceAccountPrefix;
+    }
 
     /**
      * Returns the imbalance account where to store transactions which are not double entry
@@ -1207,7 +1220,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
      * @return Imbalance account name
      */
     public static String getImbalanceAccountName(Currency currency){
-        return GnuCashApplication.getAppContext().getString(R.string.imbalance_account_name) + "-" + currency.getCurrencyCode();
+        return getImbalanceAccountPrefix() + currency.getCurrencyCode();
     }
 
     /**

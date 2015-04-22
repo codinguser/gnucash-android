@@ -32,7 +32,6 @@ public abstract class BaseModel {
      * Initializes the model attributes and generates a GUID
      */
     public BaseModel(){
-        mUID = generateUID();
         mCreatedTimestamp = new Timestamp(System.currentTimeMillis());
         mModifiedTimestamp = new Timestamp(System.currentTimeMillis());
     }
@@ -51,6 +50,10 @@ public abstract class BaseModel {
      * @return String unique identifier for this model
      */
     public String getUID() {
+        if (mUID == null)
+        {
+            mUID = generateUID();
+        }
         return mUID;
     }
 

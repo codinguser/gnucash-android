@@ -17,6 +17,8 @@
 package org.gnucash.android.model;
 
 
+import android.support.annotation.NonNull;
+
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
@@ -370,7 +372,7 @@ public final class Money implements Comparable<Money>{
 	 * @return <code>true</code> if the amount is negative, <code>false</code> otherwise.
 	 */
 	public boolean isNegative(){
-		return mAmount.compareTo(new BigDecimal(0)) == -1;
+		return mAmount.compareTo(BigDecimal.ZERO) == -1;
 	}
 	
 	/**
@@ -422,7 +424,7 @@ public final class Money implements Comparable<Money>{
 	}
 
 	@Override
-	public int compareTo(Money another) {
+	public int compareTo(@NonNull Money another) {
 		if (!mCurrency.equals(another.mCurrency))
 			throw new IllegalArgumentException("Cannot compare different currencies yet");
 		return mAmount.compareTo(another.mAmount);
@@ -463,7 +465,7 @@ public final class Money implements Comparable<Money>{
 	 */
     public boolean isAmountZero() {
 		try {
-			return mAmount.intValueExact() == 0;
+			return mAmount.compareTo(BigDecimal.ZERO) == 0;
 		} catch (ArithmeticException e){
 			e.printStackTrace();
 			return false;

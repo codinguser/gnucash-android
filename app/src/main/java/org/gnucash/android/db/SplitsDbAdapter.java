@@ -95,7 +95,8 @@ public class SplitsDbAdapter extends DatabaseAdapter {
      * If the split already exists, then it is simply updated.
      * This function will NOT update the exported status of corresponding transactions.
      * All or none of the splits will be inserted/updated into the database.
-     * @param splitList {@link org.gnucash.android.model.Split} to be recorded in DB
+     * @param splitList {@link org.gnucash.android.model.Split} to be recorded in DB. The amount
+     *                                                         of all splits should be non-negative
      * @return Number of records of the newly saved split
      */
     public long bulkAddSplits(List<Split> splitList) {
@@ -117,7 +118,7 @@ public class SplitsDbAdapter extends DatabaseAdapter {
                     replaceStatement.bindString(2, split.getMemo());
                 }
                 replaceStatement.bindString(3, split.getType().name());
-                replaceStatement.bindString(4, split.getAmount().absolute().toPlainString());
+                replaceStatement.bindString(4, split.getAmount().toPlainString());
                 replaceStatement.bindString(5, split.getCreatedTimestamp().toString());
                 replaceStatement.bindString(6, split.getAccountUID());
                 replaceStatement.bindString(7, split.getTransactionUID());

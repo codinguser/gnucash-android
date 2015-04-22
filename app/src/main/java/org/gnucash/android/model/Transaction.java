@@ -166,17 +166,19 @@ public class Transaction extends BaseModel{
     /**
      * Auto-balance the transaction by creating an imbalance split where necessary
      * <p><b>Note:</b>If a transaction has splits with different currencies, not auto-balancing will be performed.</p>
+     *
+     * The added split will not use any account in db, but will use currency code as account UID.
+     * The added split will be returned, to be filled with proper account UID later.
      */
-    public void autoBalance(){
+    public Split autoBalanceImportAccount(){
         //FIXME: when multiple currencies per transaction are supported
         Currency lastCurrency = null;
         for (Split split : mSplitList) {
             Currency currentCurrency = split.getAmount().getCurrency();
             if (lastCurrency == null)
                 lastCurrency = currentCurrency;
-
-            if (lastCurrency != currentCurrency){
-                return; //for now we will not autobalance multi-currency transactions
+            else if (lastCurrency != currentCurrency){
+                return null; //for now we will not autobalance multi-currency transactions
             }
         }
 
@@ -184,9 +186,11 @@ public class Transaction extends BaseModel{
         if (!imbalance.isAmountZero()){
             Currency currency = Currency.getInstance(mCurrencyCode);
             Split split = new Split(imbalance.negate(),
-                    AccountsDbAdapter.getInstance().getOrCreateImbalanceAccountUID(currency));
-            mSplitList.add(split);
+                    currency.getCurrencyCode());
+            addSplit(split);
+            return split;
         }
+        return null;
     }
 
     /**
@@ -231,7 +235,6 @@ public class Transaction extends BaseModel{
      */
     public void addSplit(Split split){
         //sets the currency of the split to the currency of the transaction
-        split.setAmount(split.getAmount().withCurrency(Currency.getInstance(mCurrencyCode)));
         split.setTransactionUID(mUID);
         mSplitList.add(split);
     }
