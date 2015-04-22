@@ -80,11 +80,6 @@ import java.util.Locale;
  */
 public class AccountsActivity extends PassLockActivity implements OnAccountClickedListener {
 
-	/**
-	 * Tag used for identifying the account list fragment when it is added to this activity
-	 */
-	public static final String FRAGMENT_ACCOUNTS_LIST 	= "accounts_list_fragment";
-
     /**
      * Request code for GnuCash account structure file to import
      */
@@ -143,7 +138,7 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
     /**
      * Map containing fragments for the different tabs
      */
-    private SparseArray<Refreshable> mFragmentPageReferenceMap = new SparseArray<Refreshable>();
+    private SparseArray<Refreshable> mFragmentPageReferenceMap = new SparseArray<>();
 
     /**
      * ViewPager which manages the different tabs
@@ -467,18 +462,18 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
         builder.setMessage(R.string.msg_confirm_create_default_accounts_first_run);
 
 		builder.setPositiveButton(R.string.btn_create_accounts, new DialogInterface.OnClickListener() {
-			
-			@Override
-			public void onClick(DialogInterface dialog, int which) {
+
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
                 AlertDialog.Builder adb = new AlertDialog.Builder(AccountsActivity.this);
                 adb.setTitle(R.string.title_choose_currency);
-                ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(
+                ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(
                         AccountsActivity.this,
                         android.R.layout.select_dialog_singlechoice,
                         getResources().getStringArray(R.array.currency_names));
 
                 final List<String> currencyCodes = Arrays.asList(
-                                        getResources().getStringArray(R.array.key_currency_codes));
+                        getResources().getStringArray(R.array.key_currency_codes));
                 String userCurrencyCode = Currency.getInstance(Locale.getDefault()).getCurrencyCode();
                 int currencyIndex = currencyCodes.indexOf(userCurrencyCode.toUpperCase());
 
@@ -496,17 +491,17 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
                     }
                 });
                 adb.create().show();
-			}
-		});
+            }
+        });
 		
 		builder.setNegativeButton(R.string.btn_cancel, new DialogInterface.OnClickListener() {
-			
-			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				mDefaultAccountsDialog.dismiss();
-				removeFirstRunFlag();
-			}
-		});
+
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                mDefaultAccountsDialog.dismiss();
+                removeFirstRunFlag();
+            }
+        });
 
         builder.setNeutralButton(R.string.btn_import_accounts, new DialogInterface.OnClickListener() {
             @Override
@@ -517,6 +512,12 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
         });
 
 		mDefaultAccountsDialog = builder.create();
+        mDefaultAccountsDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+                mDrawerLayout.openDrawer(mDrawerList);
+            }
+        });
 		mDefaultAccountsDialog.show();
 	}
 

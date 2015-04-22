@@ -476,6 +476,8 @@
 	<string name="export_warning_xml">Exports all accounts and transactions</string>
 	<string name="title_google_drive_sync_pref">Google Drive Sync</string>
 	<string name="summary_google_drive_sync">Enable to sync to Google Drive</string>
+	<string name="toast_install_file_manager">Install a file manager to select files</string>
+	<string name="title_select_backup_to_restore">Select backup to restore</string>
 	<plurals name="label_every_x_days">
         <item quantity="one">Daily</item>
         <item quantity="other">Every %d days</item>

@@ -19,8 +19,10 @@ package org.gnucash.android.ui.settings;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
-import android.app.ProgressDialog;
+import android.app.AlertDialog;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
@@ -33,6 +35,7 @@ import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.ActionBar;
@@ -65,8 +68,13 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Currency;
+import java.util.Date;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -293,9 +301,13 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
     public boolean onPreferenceClick(Preference preference) {
         String key = preference.getKey();
 
-        if (key.equals(getString(R.string.key_import_accounts)) || key.equals(getString(R.string.key_restore_backup))){
+        if (key.equals(getString(R.string.key_import_accounts))){
             importAccounts();
             return true;
+        }
+
+        if (key.equals(getString(R.string.key_restore_backup))){
+            restoreBackup();
         }
 
         if (key.equals(getString(R.string.key_build_version))){
@@ -493,30 +505,57 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
         pickIntent.setType("application/*");
         Intent chooser = Intent.createChooser(pickIntent, getString(R.string.title_select_gnucash_xml_file));
 
-        startActivityForResult(chooser, AccountsActivity.REQUEST_PICK_ACCOUNTS_FILE);
-
+        try {
+            startActivityForResult(chooser, AccountsActivity.REQUEST_PICK_ACCOUNTS_FILE);
+        } catch (ActivityNotFoundException ex){
+            Toast.makeText(this, R.string.toast_install_file_manager, Toast.LENGTH_LONG).show();
+        }
     }
 
     /**
-     * Imports the most recent backup file (by timestamp)
-     * TODO: Remove this method
+     * Opens a dialog for a user to select a backup to restore and then restores the backup
      */
-    public void importMostRecentBackup() {
-        Log.i("Settings", "Importing GnuCash XML");
-        File backupFile = Exporter.getMostRecentBackupFile();
+    public void restoreBackup() {
+        Log.i("Settings", "Opening GnuCash XML backups for restore");
+        File[] backupFiles = new File(Exporter.BACKUP_FOLDER_PATH).listFiles();
+        Arrays.sort(backupFiles);
+        List<File> backupFilesList = Arrays.asList(backupFiles);
+        Collections.reverse(backupFilesList);
+        final File[] sortedBackupFiles = (File[]) backupFilesList.toArray();
 
-        if (backupFile == null) {
-            Toast.makeText(this, R.string.toast_no_recent_backup, Toast.LENGTH_SHORT).show();
-            return;
+        final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(this, android.R.layout.select_dialog_singlechoice);
+        final DateFormat dateFormatter = SimpleDateFormat.getDateTimeInstance();
+        for (File backupFile : sortedBackupFiles) {
+            long time = Exporter.getExportTime(backupFile.getName());
+            arrayAdapter.add(dateFormatter.format(new Date(time)));
         }
 
-        try {
-            FileInputStream inputStream = new FileInputStream(backupFile);
-            new ImportAsyncTask(this).execute(inputStream);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-            throw new RuntimeException(e);
-        }
+        AlertDialog.Builder restoreDialogBuilder =  new AlertDialog.Builder(this);
+        restoreDialogBuilder.setTitle(R.string.title_select_backup_to_restore);
+        restoreDialogBuilder.setNegativeButton(R.string.alert_dialog_cancel,
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+        restoreDialogBuilder.setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                File backupFile = sortedBackupFiles[which];
+
+                try {
+                    FileInputStream inputStream = new FileInputStream(backupFile);
+                    new ImportAsyncTask(SettingsActivity.this).execute(inputStream);
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                    Log.e(LOG_TAG, "Error restoring backup: " + backupFile.getName());
+                    Toast.makeText(SettingsActivity.this, R.string.toast_error_importing_accounts, Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+
+        restoreDialogBuilder.create().show();
     }
 
     @Override

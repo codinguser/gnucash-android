@@ -164,13 +164,14 @@ public class Transaction extends BaseModel{
 	}
 
     /**
-     * Auto-balance the transaction by creating an imbalance split where necessary
+     * Creates a split which will balance the transaction
      * <p><b>Note:</b>If a transaction has splits with different currencies, not auto-balancing will be performed.</p>
      *
-     * The added split will not use any account in db, but will use currency code as account UID.
-     * The added split will be returned, to be filled with proper account UID later.
+     * <p>The added split will not use any account in db, but will use currency code as account UID.
+     * The added split will be returned, to be filled with proper account UID later.</p>
+     * @return Split whose amount is the imbalance of this transaction
      */
-    public Split autoBalanceImportAccount(){
+    public Split getAutoBalanceSplit(){
         //FIXME: when multiple currencies per transaction are supported
         Currency lastCurrency = null;
         for (Split split : mSplitList) {

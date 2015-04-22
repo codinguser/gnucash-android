@@ -208,8 +208,6 @@ public class GncXmlHandler extends DefaultHandler {
 
         mContent = new StringBuilder();
 
-        mAccountsDbAdapter.deleteAllRecords();
-
         mAccountList = new ArrayList<>();
         mAccountMap = new HashMap<>();
         mTransactionList = new ArrayList<>();
@@ -500,7 +498,7 @@ public class GncXmlHandler extends DefaultHandler {
                 break;
             case GncXmlHelper.TAG_TRANSACTION:
                 mTransaction.setTemplate(mInTemplates);
-                Split imbSplit = mTransaction.autoBalanceImportAccount();
+                Split imbSplit = mTransaction.getAutoBalanceSplit();
                 if (imbSplit != null) {
                     mAutoBalanceSplits.add(imbSplit);
                 }
@@ -644,6 +642,7 @@ public class GncXmlHandler extends DefaultHandler {
         long startTime = System.nanoTime();
         mAccountsDbAdapter.beginTransaction();
         try {
+            mAccountsDbAdapter.deleteAllRecords();
             long nAccounts = mAccountsDbAdapter.bulkAddAccounts(mAccountList);
             Log.d("Handler:", String.format("%d accounts inserted", nAccounts));
             long nTransactions = mTransactionsDbAdapter.bulkAddTransactions(mTransactionList);
