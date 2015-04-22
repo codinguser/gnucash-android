@@ -940,12 +940,13 @@ public class AccountsDbAdapter extends DatabaseAdapter {
      * @return Cursor to the top level accounts
      */
     public Cursor fetchTopLevelAccounts() {
-        //condition which selects accounts with no parent, whose UID is not ROOT and whose name is not ROOT
+        //condition which selects accounts with no parent, whose UID is not ROOT and whose type is not ROOT
         return fetchAccounts("(" + AccountEntry.COLUMN_PARENT_ACCOUNT_UID + " IS NULL OR "
                         + AccountEntry.COLUMN_PARENT_ACCOUNT_UID + " = ?) AND "
                         + AccountEntry.COLUMN_HIDDEN + " = 0 AND "
                         + AccountEntry.COLUMN_TYPE + " != ?",
-                new String[]{"" + getOrCreateGnuCashRootAccountUID(), AccountType.ROOT.name()}, null);
+                new String[]{getOrCreateGnuCashRootAccountUID(), AccountType.ROOT.name()},
+                AccountEntry.COLUMN_NAME + " ASC");
     }
 
     /**
@@ -1000,7 +1001,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
         // No ROOT exits, create a new one
         Account rootAccount = new Account("ROOT Account");
         rootAccount.setAccountType(AccountType.ROOT);
-        rootAccount.setFullName(" ");
+        rootAccount.setFullName(ROOT_ACCOUNT_FULL_NAME);
         addAccount(rootAccount);
         return rootAccount.getUID();
     }

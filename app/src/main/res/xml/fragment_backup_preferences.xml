@@ -20,9 +20,6 @@
         <Preference android:title="@string/title_create_backup_pref"
             android:key="@string/key_create_backup"
             android:summary="@string/summary_create_backup_pref" />
-        <Preference android:summary="@string/summary_restore_last_backup"
-            android:key="@string/key_restore_last_backup"
-            android:title="@string/title_restore_last_backup" />
         <Preference android:title="@string/title_restore_backup"
             android:key="@string/key_restore_backup"
             android:summary="@string/summary_restore_backup_pref" />

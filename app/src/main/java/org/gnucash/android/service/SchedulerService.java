@@ -17,6 +17,7 @@
 package org.gnucash.android.service;
 
 import android.app.IntentService;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.os.PowerManager;
 import android.os.SystemClock;
@@ -55,6 +56,7 @@ public class SchedulerService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
+        Log.i(LOG_TAG, "Starting scheduled action service");
         PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
         PowerManager.WakeLock wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
                 LOG_TAG);
@@ -69,9 +71,12 @@ public class SchedulerService extends IntentService {
             long endTime    = scheduledAction.getEndTime();
 
             long now = System.currentTimeMillis();
-            //if we did not exceed the endtime (if there is one), and one execution period has passed since last run
-            if (((endTime > 0 && now < endTime) || (scheduledAction.getExecutionCount() < scheduledAction.getTotalFrequency()) || endTime == 0)
-                    && (lastRun + period) <= now ){
+
+            if (((endTime > 0 && now < endTime) //if and endTime is set and we did not reach it yet
+                    || (scheduledAction.getExecutionCount() < scheduledAction.getTotalFrequency()) //or the number of scheduled runs
+                    || (endTime == 0 && scheduledAction.getTotalFrequency() == 0)) //or the action is to run forever
+                    && ((lastRun + period) <= now)  //one period has passed since last execution
+                    && scheduledAction.getStartTime() <= now ){ //the start time has arrived
                 executeScheduledEvent(scheduledAction);
             }
         }
@@ -114,16 +119,10 @@ public class SchedulerService extends IntentService {
                 break;
         }
 
-        //update last run time
-        ScheduledActionDbAdapter.getInstance().updateRecord(
-                scheduledAction.getUID(),
-                DatabaseSchema.ScheduledActionEntry.COLUMN_LAST_RUN,
-                Long.toString(System.currentTimeMillis()));
-
-        //update the execution count
-        ScheduledActionDbAdapter.getInstance().updateRecord(
-                scheduledAction.getUID(),
-                DatabaseSchema.ScheduledActionEntry.COLUMN_EXECUTION_COUNT,
-                Integer.toString(scheduledAction.getExecutionCount()+1));
+        //update the last run time and execution count
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(DatabaseSchema.ScheduledActionEntry.COLUMN_LAST_RUN, System.currentTimeMillis());
+        contentValues.put(DatabaseSchema.ScheduledActionEntry.COLUMN_EXECUTION_COUNT, scheduledAction.getExecutionCount()+1);
+        ScheduledActionDbAdapter.getInstance().updateRecord(scheduledAction.getUID(), contentValues);
     }
 }

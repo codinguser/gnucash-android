@@ -75,8 +75,8 @@
     <string name="label_permission_create_accounts">Ενεργοποίηση δημιουργίας λογαριασμών στο GnuCash για Android</string>
     <string name="label_permission_group">Τα δεδομένα σας στο GnuCash</string>
     <string name="description_permission_group">Ανάγνωση και επεξεργασία δεδομένων GnuCash</string>
-    <string name="label_permission_record_transaction">εγγραφή συναλλαγών</string>
-    <string name="label_permission_create_account">δημιουργία λογαριασμών</string>
+    <string name="label_permission_record_transaction">Record transactions in GnuCash</string>
+    <string name="label_permission_create_account">Create accounts in GnuCash</string>
     <string name="label_display_account">Εμφάνιση λογαριασμού</string>
     <string name="btn_create_accounts">Δημιουργία Λογαριασμών</string>
     <string name="title_default_accounts">Επιλογή λογαριασμών για δημιουργία</string>
@@ -257,13 +257,6 @@
 		<item>Zimbabwe Dollar</item>
 		<item>Zloty</item>
     </string-array>
-	<string-array name="default_accounts">
-	    <item>Έξοδα</item>
-	    <item>Έσοδα</item>
-	    <item>Πάγια</item>	    
-	    <item>Καθαρή Αξία</item>
-	    <item>Παθητικό</item>
-	</string-array>
 	<string name="error_no_accounts">Δεν υπάρχουν λογαριασμοί στο
 	GnuCash.\nΔημιουργήστε ενα λογαριασμό πριν προσθέσετε ένα γραφικό στοιχείο</string>
 	<string name="title_build_version">Έκδοση</string>
@@ -385,6 +378,7 @@
     <string-array name="export_formats">
         <item>QIF</item>
         <item>OFX</item>
+		<item>XML</item>
     </string-array>
     <!-- Default title for color picker dialog [CHAR LIMIT=30] -->
     <string name="color_picker_default_title">Επιλογή χρώματος</string>
@@ -394,20 +388,12 @@
     <string name="title_all_accounts">Όλοι</string>
     <string name="summary_create_default_accounts">Δημιουργία προεπιλεγμένης συχνά χρησιμοποιούμενης δομής λογαριασμών GnuCash</string>
     <string name="title_create_default_accounts">Δημιουργία προεπιλεγμένων λογαριασμών</string>
-    <string name="msg_confirm_create_default_accounts_setting">Νέοι λογαριασμοί θα δημιουργηθούν επιπλέον της υπάρχουσας
-        δομής λογαριασμών.\n\nΕάν επιθυμείτε να αντικαταστήσετε υπάρχοντες λογαριασμούς, διαγράψτε τους πριν προχωρήσετε!
-    </string>
+    <string name="msg_confirm_create_default_accounts_setting">All existing accounts and transactions on the device will be deleted.\n\nAre you sure you want to proceed?</string>
     <string name="menu_scheduled_transactions">Προγραμματισμένες Κινήσεις</string>
     <string name="msg_confirm_create_default_accounts_first_run">GnuCash Android. Καλώς ήρθατε! \nΜπορείτε είτε να δημιουργήσετε
         μια ιεραρχία συνηθισμένων λογαριασμών, ή να εισάγετε τη δική σας δομή λογαριασμών GnuCash. \n\nΚαι οι δύο επιλογές είναι επίσης
         διαθέσιμες στις Επιλογές της εφαρμογής γι\' αυτό μπορείτε να αποφασίσετε αργότερα.
     </string>
-    <string-array name="recurrence_period_strings">
-        <item>ΚΑΜΙΑ</item>
-        <item>ΗΜΕΡΗΣΙΑ</item>
-        <item>ΕΒΔΟΜΑΔΙΑΙΑ</item>
-        <item>ΜΗΝΙΑΙΑ</item>
-    </string-array>
     <string name="title_scheduled_transactions">Προγραμματισμένες Κινήσεις</string>
     <string name="title_select_export_destination">Select destination for export</string>
     <string name="hint_split_memo">Memo</string>
@@ -475,8 +461,6 @@
     <string name="label_delete_transactions">Delete transactions</string>
     <string name="toast_disable_double_entry_to_save_transaction">Create and specify a transfer account OR disable double-entry in settings to save the transaction</string>
     <string name="label_tap_to_create_schedule">Tap to create schedule</string>
-    <string name="title_restore_last_backup">Restore last backup</string>
-    <string name="summary_restore_last_backup">Restore the most recent backup</string>
     <string name="title_restore_backup">Restore Backup…</string>
 	<string name="header_backup_and_export_settings">Backup &amp; export</string>
 	<string name="title_dropbox_sync_preference">DropBox Sync</string>

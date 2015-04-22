@@ -30,14 +30,10 @@ the `ANDROID_HOME` environment variable to the location of your SDK. For example
 
 After satisfying those requirements, the build is pretty simple:
 
-* Run `gradlew build installDebug` from the within the project folder.
+* Run `gradlew build installDevelopmentDebug` from the within the project folder.
 It will build the project for you and install it to the connected Android device or running emulator.
 
-You might find that your device doesn't let you install your build if you
-already have the version from the Android Market installed.  This is standard
-Android security as it it won't let you directly replace an app that's been
-signed with a different key.  Manually uninstall GnuCash from your device and
-you will then be able to install your own built version.
+The app is configured to allow you to install a development and production version in parallel on your device.
 
 ### With Android Studio
 The easiest way to build is to install [Android Studio](https://developer.android.com/sdk/index.html) v1.+

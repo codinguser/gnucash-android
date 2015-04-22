@@ -169,10 +169,6 @@ public class ExportParams {
                 + Boolean.toString(mExportAllTransactions) + separator
                 + Boolean.toString(mDeleteTransactionsAfterExport);
 
-        if (mTargetFilepath != null && mTargetFilepath.length() > 0){
-            csv +=  separator + mTargetFilepath;
-        }
-
         return csv;
     }
 
@@ -187,9 +183,6 @@ public class ExportParams {
         params.setExportTarget(ExportTarget.valueOf(tokens[1]));
         params.setExportAllTransactions(Boolean.parseBoolean(tokens[2]));
         params.setDeleteTransactionsAfterExport(Boolean.parseBoolean(tokens[3]));
-
-        if (tokens.length == 5)
-            params.setTargetFilepath(tokens[4]);
 
         return params;
     }

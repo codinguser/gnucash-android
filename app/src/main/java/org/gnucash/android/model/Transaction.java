@@ -180,7 +180,12 @@ public class Transaction extends BaseModel{
             else if (lastCurrency != currentCurrency){
                 return null; //for now we will not autobalance multi-currency transactions
             }
+            lastCurrency = currentCurrency;
         }
+
+        //if all the splits are the same currency but the transaction is another
+        if (!lastCurrency.getCurrencyCode().equals(mCurrencyCode))
+            return null;
 
         Money imbalance = getImbalance();
         if (!imbalance.isAmountZero()){
@@ -224,7 +229,7 @@ public class Transaction extends BaseModel{
     public void setSplits(List<Split> splitList){
         mSplitList = splitList;
         for (Split split : splitList) {
-            split.setTransactionUID(mUID);
+            split.setTransactionUID(getUID());
         }
     }
 
@@ -235,7 +240,7 @@ public class Transaction extends BaseModel{
      */
     public void addSplit(Split split){
         //sets the currency of the split to the currency of the transaction
-        split.setTransactionUID(mUID);
+        split.setTransactionUID(getUID());
         mSplitList.add(split);
     }
 
@@ -480,7 +485,7 @@ public class Transaction extends BaseModel{
         transactionNode.appendChild(amount);
 
         Element transID = doc.createElement(OfxHelper.TAG_TRANSACTION_FITID);
-        transID.appendChild(doc.createTextNode(mUID));
+        transID.appendChild(doc.createTextNode(getUID()));
         transactionNode.appendChild(transID);
 
         Element name = doc.createElement(OfxHelper.TAG_NAME);

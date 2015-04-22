@@ -275,7 +275,7 @@ public class Account extends BaseModel{
 	public Money getBalance(){
 		Money balance = Money.createZeroInstance(mCurrency.getCurrencyCode());
         for (Transaction transaction : mTransactionsList) {
-            balance.add(transaction.getBalance(mUID));
+            balance.add(transaction.getBalance(getUID()));
 		}
 		return balance;
 	}
@@ -455,7 +455,7 @@ public class Account extends BaseModel{
 		bankId.appendChild(doc.createTextNode(OfxHelper.APP_ID));
 		
 		Element acctId = doc.createElement(OfxHelper.TAG_ACCOUNT_ID);
-		acctId.appendChild(doc.createTextNode(mUID));
+		acctId.appendChild(doc.createTextNode(getUID()));
 		
 		Element accttype = doc.createElement(OfxHelper.TAG_ACCOUNT_TYPE);
 		String ofxAccountType = convertToOfxAccountType(mAccountType).toString();
@@ -504,7 +504,7 @@ public class Account extends BaseModel{
 		for (Transaction transaction : mTransactionsList) {
 			if (!exportAllTransactions && transaction.isExported())
 				continue;
-            bankTransactionsList.appendChild(transaction.toOFX(doc, mUID));
+            bankTransactionsList.appendChild(transaction.toOFX(doc, getUID()));
 		}		
 		//================= END TRANSACTIONS LIST =================================
 					

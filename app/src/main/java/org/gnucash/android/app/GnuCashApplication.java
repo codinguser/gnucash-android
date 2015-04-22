@@ -160,18 +160,25 @@ public class GnuCashApplication extends Application{
     }
 
     /**
-     * Starts the service for scheduled events and makes the service run daily.
+     * Starts the service for scheduled events and schedules an alarm to call the service twice daily.
+     * <p>If the alarm already exists, this method does nothing. If not, the alarm will be created
+     * Hence, there is no harm in calling the method repeatedly</p>
      * @param context Application context
      */
-    public static void startScheduledEventExecutionService(Context context){
+    public static void startScheduledActionExecutionService(Context context){
         Intent alarmIntent = new Intent(context, SchedulerService.class);
-        PendingIntent pendingIntent = PendingIntent.getService(context, 0, alarmIntent, 0);
+        PendingIntent pendingIntent = PendingIntent.getService(context, 0, alarmIntent, PendingIntent.FLAG_NO_CREATE);
+        if (pendingIntent != null)
+            return;
+        else
+            pendingIntent = PendingIntent.getService(context, 0, alarmIntent, 0);
 
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        alarmManager.cancel(pendingIntent); //if it already exists
         alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP,
                 System.currentTimeMillis() + AlarmManager.INTERVAL_DAY,
-                AlarmManager.INTERVAL_DAY, pendingIntent);
+                AlarmManager.INTERVAL_HALF_DAY,
+                pendingIntent);
 
+        context.startService(alarmIntent); //run the service the first time
     }
 }

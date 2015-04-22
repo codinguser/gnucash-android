@@ -54,6 +54,7 @@ import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.export.ExportDialogFragment;
 import org.gnucash.android.importer.ImportAsyncTask;
 import org.gnucash.android.model.Money;
+import org.gnucash.android.service.SchedulerService;
 import org.gnucash.android.ui.UxArgument;
 import org.gnucash.android.ui.chart.ChartReportActivity;
 import org.gnucash.android.ui.passcode.PassLockActivity;
@@ -64,7 +65,6 @@ import org.gnucash.android.ui.util.OnAccountClickedListener;
 import org.gnucash.android.ui.util.Refreshable;
 import org.gnucash.android.ui.util.TaskDelegate;
 
-import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Currency;
@@ -293,8 +293,8 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
 
         if (hasNewFeatures()){
             showWhatsNewDialog(this);
-            GnuCashApplication.startScheduledEventExecutionService(this);
         }
+        GnuCashApplication.startScheduledActionExecutionService(this);
     }
 
     @Override

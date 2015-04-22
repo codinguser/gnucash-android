@@ -76,8 +76,8 @@
     <string name="label_permission_create_accounts">Aktiverer oppretting av konti i Gnucash for Android</string>
     <string name="label_permission_group">Dine GnuCash-data</string>
     <string name="description_permission_group">Lese og endre Gnucash-data</string>
-    <string name="label_permission_record_transaction">spill inn transaksjoner</string>
-    <string name="label_permission_create_account">opprett konto</string>
+    <string name="label_permission_record_transaction">Record transactions in GnuCash</string>
+    <string name="label_permission_create_account">Create accounts in GnuCash</string>
     <string name="label_display_account">Vis konto</string>
     <string name="btn_create_accounts">Opprette kontoer</string>
     <string name="title_default_accounts">Velg kontoer som skal opprettes</string>
@@ -258,13 +258,6 @@
 		<item>Zimbabwe Dollar</item>
 		<item>Zloty</item>
     </string-array>
-	<string-array name="default_accounts">
-	    <item>Utgifter</item>
-	    <item>Inntekter</item>
-	    <item>Eiendeler</item>	    
-	    <item>Egenkapital</item>
-	    <item>Gjeld</item>
-	</string-array>
 	<string name="error_no_accounts">Ingen kontoer funnet.\nOpprett en konto før du legger til en modul</string>
 	<string name="title_build_version">Byggversion</string>
 	<string name="title_license">Lisens</string>
@@ -371,6 +364,7 @@
     <string-array name="export_formats">
         <item>QIF</item>
         <item>OFX</item>
+		<item>XML</item>
     </string-array>
     <!-- Default title for color picker dialog [CHAR LIMIT=30] -->
     <string name="color_picker_default_title">Velg en farge</string>
@@ -380,16 +374,9 @@
     <string name="title_all_accounts">Alle</string>
     <string name="summary_create_default_accounts">Oppretter standard GnuCash kontostruktur</string>
     <string name="title_create_default_accounts">Opprette standard kontoer</string>
-    <string name="msg_confirm_create_default_accounts_setting">Nye kontoer vil bli opprettet i tillegg til eksisterende kontostruktur.\n\nHvis du vil erstatte de, slett de før du forsetter!
-    </string>
+    <string name="msg_confirm_create_default_accounts_setting">All existing accounts and transactions on the device will be deleted.\n\nAre you sure you want to proceed?</string>
     <string name="msg_confirm_create_default_accounts_first_run">Velkommen til GnuCash Android! \nDu kan enten opprette et hieraki av de mest brukte kontoene, eller importere din egen GnuCash kontostruktur. \n\nBegge valgene er også tilgjengelige under Instillinger, så du kan velge senere.
     </string>
-    <string-array name="recurrence_period_strings">
-        <item>INGEN</item>
-        <item>DAGLIG</item>
-        <item>UKENTLIG</item>
-        <item>MÅNEDLIG</item>
-    </string-array>
     <string name="menu_scheduled_transactions">Planlagte Transaksjoner</string>
     <string name="title_scheduled_transactions">Planlagte Transaksjoner</string>
     <string name="title_select_export_destination">Select destination for export</string>
@@ -457,8 +444,6 @@
     <string name="label_delete_transactions">Delete transactions</string>
     <string name="toast_disable_double_entry_to_save_transaction">Create and specify a transfer account OR disable double-entry in settings to save the transaction</string>
     <string name="label_tap_to_create_schedule">Tap to create schedule</string>
-    <string name="title_restore_last_backup">Restore last backup</string>
-    <string name="summary_restore_last_backup">Restore the most recent backup</string>
     <string name="title_restore_backup">Restore Backup…</string>
 	<string name="header_backup_and_export_settings">Backup &amp; export</string>
 	<string name="title_dropbox_sync_preference">DropBox Sync</string>

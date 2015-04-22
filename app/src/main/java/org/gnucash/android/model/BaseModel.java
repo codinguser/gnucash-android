@@ -24,12 +24,20 @@ import java.util.UUID;
  * All other models should extend this base model.
  */
 public abstract class BaseModel {
-    protected String mUID;
+    /**
+     * Unique identifier of this model instance.
+     * <p>It is declared private because it is generated only on-demand. Sub-classes should use the accessor methods to read and write this value</p>
+     * @see #getUID()
+     * @see #setUID(String)
+     */
+    private String mUID;
     protected Timestamp mCreatedTimestamp;
     protected Timestamp mModifiedTimestamp;
 
     /**
-     * Initializes the model attributes and generates a GUID
+     * Initializes the model attributes.
+     * <p>A GUID for this model is not generated in the constructor.
+     * A unique ID will be generated on demand with a call to {@link #getUID()}</p>
      */
     public BaseModel(){
         mCreatedTimestamp = new Timestamp(System.currentTimeMillis());
@@ -37,17 +45,17 @@ public abstract class BaseModel {
     }
 
     /**
-     * Method for generating the Global Unique ID for the object.
+     * Method for generating the Global Unique ID for the object and sets the internal variable which can be retrieved with {@link #getUID()}.
      * Subclasses can override this method to provide a different implementation
      * @return Random GUID for the model object
      */
     protected String generateUID(){
-        return UUID.randomUUID().toString().replaceAll("-", "");
+        return mUID = UUID.randomUUID().toString().replaceAll("-", "");
     }
 
     /**
-     * Returns the GUID of the model
-     * @return String unique identifier for this model
+     * Returns a unique string identifier for this model instance
+     * @return GUID for this model
      */
     public String getUID() {
         if (mUID == null)
@@ -58,7 +66,8 @@ public abstract class BaseModel {
     }
 
     /**
-     * Sets the GUID of the model
+     * Sets the GUID of the model.
+     * <p>A new GUID can be generated with a call to {@link #generateUID()}</p>
      * @param uid String unique ID
      */
     public void setUID(String uid) {

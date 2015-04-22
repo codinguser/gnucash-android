@@ -737,7 +737,6 @@ public class TransactionFormFragment extends SherlockFragment implements
 
             // set as not exported because we have just edited it
             mTransaction.setExported(false);
-            mTransaction.setTemplate(mSaveTemplateCheckbox.isChecked());
             mTransactionsDbAdapter.addTransaction(mTransaction);
 
             if (mSaveTemplateCheckbox.isChecked()) {//template is automatically checked when a transaction is scheduled

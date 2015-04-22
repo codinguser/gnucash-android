@@ -80,8 +80,8 @@
     <string name="label_permission_create_accounts">允许创建科目</string>
     <string name="label_permission_group">GnuCash的数据</string>
     <string name="description_permission_group">读取并修改GnuCash数据</string>
-    <string name="label_permission_record_transaction">记录交易</string>
-    <string name="label_permission_create_account">创建科目</string>
+    <string name="label_permission_record_transaction">Record transactions in GnuCash</string>
+    <string name="label_permission_create_account">Create accounts in GnuCash</string>
     <string name="label_display_account">显示科目</string>
     <string name="btn_create_accounts">创建科目</string>
     <string name="title_default_accounts">选择要创建的科目</string>
@@ -262,13 +262,6 @@
         <item>津巴布韦元</item>
         <item>Zloty</item>
     </string-array>
-    <string-array name="default_accounts">
-        <item>支出</item>
-        <item>收入</item>
-        <item>资产</item>
-        <item>所有者权益</item>
-        <item>负债</item>
-    </string-array>
     <string name="error_no_accounts">GnuCash里还没有科目信息。\n使用小部件前需要添加科目</string>
     <string name="title_build_version">版本号</string>
     <string name="title_license">授权许可</string>
@@ -379,6 +372,7 @@
     <string-array name="export_formats">
         <item>QIF</item>
         <item>OFX</item>
+        <item>XML</item>
     </string-array>
     <!-- Default title for color picker dialog [CHAR LIMIT=30] -->
     <string name="color_picker_default_title">选择一种颜色</string>
@@ -391,17 +385,10 @@
     <string name="title_all_accounts">所有</string>
     <string name="summary_create_default_accounts">创建通用的科目结构</string>
     <string name="title_create_default_accounts">创建默认科目</string>
-    <string name="msg_confirm_create_default_accounts_setting">准备创建新的科目结构，这不会覆盖现有的科目，如果你想创建全新的科目结构请先删除旧的科目。
-    </string>
+    <string name="msg_confirm_create_default_accounts_setting">All existing accounts and transactions on the device will be deleted.\n\nAre you sure you want to proceed?</string>
     <string name="menu_scheduled_transactions">计划的交易</string>
     <string name="msg_confirm_create_default_accounts_first_run">欢迎使用GnuCash Android！ \n你可以选择：1）创建常用的科目结构，2）导入自定义的科目结构。\或者稍后再决定，两种选择也能在设置中找到。
     </string>
-    <string-array name="recurrence_period_strings">
-        <item>无</item>
-        <item>每天</item>
-        <item>每周</item>
-        <item>每月</item>
-    </string-array>
     <string name="title_scheduled_transactions">计划的交易</string>
     <string name="title_select_export_destination">选择存储的位置</string>
     <string name="hint_split_memo">描述</string>
@@ -456,8 +443,6 @@
     <string name="label_delete_transactions">删除交易</string>
     <string name="toast_disable_double_entry_to_save_transaction">Create and specify a transfer account OR disable double-entry in settings to save the transaction</string>
     <string name="label_tap_to_create_schedule">点击然后创建计划交易</string>
-    <string name="title_restore_last_backup">Restore last backup</string>
-    <string name="summary_restore_last_backup">Restore the most recent backup</string>
     <string name="title_restore_backup">Restore Backup…</string>
     <string name="header_backup_and_export_settings">Backup &amp; export</string>
     <string name="title_dropbox_sync_preference">DropBox Sync</string>

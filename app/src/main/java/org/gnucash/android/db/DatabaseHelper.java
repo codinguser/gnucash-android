@@ -322,24 +322,25 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             SplitsDbAdapter splitsDbAdapter = new SplitsDbAdapter(db);
             TransactionsDbAdapter transactionsDbAdapter = new TransactionsDbAdapter(db, splitsDbAdapter);
             while (c.moveToNext()){
-                long transactionId = c.getLong(c.getColumnIndexOrThrow(TransactionEntry._ID));
                 contentValues.clear();
                 Timestamp timestamp = new Timestamp(c.getLong(c.getColumnIndexOrThrow(TransactionEntry.COLUMN_TIMESTAMP)));
                 contentValues.put(TransactionEntry.COLUMN_CREATED_AT, timestamp.toString());
-                db.update(TransactionEntry.TABLE_NAME, contentValues, TransactionEntry._ID+"="+transactionId, null);
+                long transactionId = c.getLong(c.getColumnIndexOrThrow(TransactionEntry._ID));
+                db.update(TransactionEntry.TABLE_NAME, contentValues, TransactionEntry._ID + "=" + transactionId, null);
 
                 ScheduledAction scheduledAction = new ScheduledAction(ScheduledAction.ActionType.TRANSACTION);
                 scheduledAction.setActionUID(c.getString(c.getColumnIndexOrThrow(TransactionEntry.COLUMN_UID)));
+                long period = c.getLong(c.getColumnIndexOrThrow("recurrence_period"));
+                scheduledAction.setPeriod(period);
                 scheduledActionDbAdapter.addScheduledAction(scheduledAction);
 
                 //cancel existing pending intent
                 Context context = GnuCashApplication.getAppContext();
                 PendingIntent recurringPendingIntent = PendingIntent.getBroadcast(context,
                         (int)transactionId, Transaction.createIntent(transactionsDbAdapter.buildTransactionInstance(c)),
-                        PendingIntent.FLAG_UPDATE_CURRENT);
+                        PendingIntent.FLAG_CANCEL_CURRENT);
                 AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
                 alarmManager.cancel(recurringPendingIntent);
-                recurringPendingIntent.cancel();
             }
             c.close();
 
@@ -365,7 +366,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             db.endTransaction();
         }
 
-        GnuCashApplication.startScheduledEventExecutionService(GnuCashApplication.getAppContext());
+        GnuCashApplication.startScheduledActionExecutionService(GnuCashApplication.getAppContext());
 
         return oldVersion;
     }

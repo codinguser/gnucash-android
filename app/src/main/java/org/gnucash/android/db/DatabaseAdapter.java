@@ -371,6 +371,16 @@ public abstract class DatabaseAdapter {
     }
 
     /**
+     * Overloaded method. Updates the record with GUID {@code uid} with the content values
+     * @param uid GUID of the record
+     * @param contentValues Content values to update
+     * @return Number of records updated
+     */
+    public int updateRecord(@NonNull String uid, @NonNull ContentValues contentValues){
+        return mDb.update(mTableName, contentValues, CommonColumns.COLUMN_UID + "=?", new String[]{uid});
+    }
+
+    /**
      * Updates all records which match the {@code where} clause with the {@code newValue} for the column
      * @param where SQL where clause
      * @param whereArgs String arguments for where clause
@@ -418,7 +428,7 @@ public abstract class DatabaseAdapter {
             if (cursor.moveToFirst())
                 return cursor.getString(cursor.getColumnIndexOrThrow(columnName));
             else
-                throw new IllegalArgumentException("Column or GUID does not exist in the db");
+                throw new IllegalArgumentException(String.format("Column (%s) or GUID (%s) does not exist in the db", columnName, recordUID));
         } finally {
             cursor.close();
         }

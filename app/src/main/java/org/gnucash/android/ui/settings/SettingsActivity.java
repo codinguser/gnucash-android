@@ -180,9 +180,6 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
             pref = findPreference(getString(R.string.key_build_version));
             pref.setOnPreferenceClickListener(this);
 
-            pref = findPreference(getString(R.string.key_restore_last_backup));
-            pref.setOnPreferenceClickListener(this);
-
             pref = findPreference(getString(R.string.key_change_passcode));
             pref.setOnPreferenceClickListener(this);
 
@@ -304,10 +301,6 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
         if (key.equals(getString(R.string.key_build_version))){
             AccountsActivity.showWhatsNewDialog(this);
             return true;
-        }
-
-        if (key.equals(getString(R.string.key_restore_last_backup))){
-            importMostRecentBackup();
         }
 
         if (key.equals(getString(R.string.key_dropbox_sync))){
@@ -504,6 +497,10 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
 
     }
 
+    /**
+     * Imports the most recent backup file (by timestamp)
+     * TODO: Remove this method
+     */
     public void importMostRecentBackup() {
         Log.i("Settings", "Importing GnuCash XML");
         File backupFile = Exporter.getMostRecentBackupFile();

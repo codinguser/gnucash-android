@@ -76,8 +76,8 @@
     <string name="label_permission_create_accounts">Abilita la creazione dei conti in GnuCash per Android</string>
     <string name="label_permission_group">I propri dati di GnuCash</string>
     <string name="description_permission_group">Legge e modifica i dati di GnuCash</string>
-    <string name="label_permission_record_transaction">registra transazione</string>
-    <string name="label_permission_create_account">crea conti</string>
+    <string name="label_permission_record_transaction">Record transactions in GnuCash</string>
+    <string name="label_permission_create_account">Create accounts in GnuCash</string>
     <string name="label_display_account">Visualizza conto</string>
     <string name="btn_create_accounts">Crea conti</string>
     <string name="title_default_accounts">Selezione dei conti da creare</string>
@@ -258,13 +258,6 @@
 		<item>Zimbabwe Dollar</item>
 		<item>Zloty</item>
     </string-array>
-	<string-array name="default_accounts">
-	    <item>Uscite</item>
-	    <item>Entrate</item>
-	    <item>Attività</item>	    
-	    <item>Capitali</item>
-	    <item>Passività</item>
-	</string-array>
 	<string name="error_no_accounts">Non esiste alcun conto in GnuCash.\nCreare un conto prima di aggiungere il widget</string>
 	<string name="title_build_version">Versione build</string>
 	<string name="title_license">Licenza</string>
@@ -372,6 +365,7 @@
     <string-array name="export_formats">
         <item>QIF</item>
         <item>OFX</item>
+        <item>XML</item>
     </string-array>
     <!-- Default title for color picker dialog [CHAR LIMIT=30] -->
     <string name="color_picker_default_title">Selezione del colore</string>
@@ -381,19 +375,11 @@
     <string name="title_all_accounts">Tutti</string>
     <string name="summary_create_default_accounts">Crea la struttura predefinita dei conti comuni di GnuCash</string>
     <string name="title_create_default_accounts">Crea conti predefiniti</string>
-    <string name="msg_confirm_create_default_accounts_setting">I nuovi conti saranno aggiunti alla struttura esistente.\n\n
-        Per sostituire i conti esistenti, occorre eliminarli prima di proseguire!
-    </string>
+    <string name="msg_confirm_create_default_accounts_setting">All existing accounts and transactions on the device will be deleted.\n\nAre you sure you want to proceed?</string>
     <string name="msg_confirm_create_default_accounts_first_run">Benvenuti in GnuCash per Android! \nÈ possibile
         creare una struttura dei conti più comunemente utilizzati o importare la propria struttura da GnuCash. \n\nEntrambe le
         Opzioni sono disponibili nelle impostazioni dell\'applicazione ed è quindi possibile decidere in seguito.
     </string>
-    <string-array name="recurrence_period_strings">
-        <item>NESSUNA</item>
-        <item>QUOTIDIANO</item>
-        <item>SETTIMANALE</item>
-        <item>MENSILE</item>
-    </string-array>
     <string name="menu_scheduled_transactions">Scheduled Transactions</string>
     <string name="title_scheduled_transactions">Scheduled Transactions</string>
     <string name="title_select_export_destination">Select destination for export</string>
@@ -461,8 +447,6 @@
     <string name="label_delete_transactions">Delete transactions</string>
     <string name="toast_disable_double_entry_to_save_transaction">Create and specify a transfer account OR disable double-entry in settings to save the transaction</string>
     <string name="label_tap_to_create_schedule">Tap to create schedule</string>
-    <string name="title_restore_last_backup">Restore last backup</string>
-    <string name="summary_restore_last_backup">Restore the most recent backup</string>
     <string name="title_restore_backup">Restore Backup…</string>
     <string name="header_backup_and_export_settings">Backup &amp; export</string>
     <string name="title_dropbox_sync_preference">DropBox Sync</string>

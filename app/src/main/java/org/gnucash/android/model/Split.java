@@ -64,9 +64,9 @@ public class Split extends BaseModel{
         this.mAmount        = sourceSplit.mAmount.absolute();
 
         if (generateUID){
-            mUID = generateUID();
+            generateUID();
         } else {
-            this.mUID           = sourceSplit.mUID;
+            setUID(sourceSplit.getUID());
         }
     }
 
@@ -171,9 +171,10 @@ public class Split extends BaseModel{
      * Clones this split and returns an exact copy.
      * @return New instance of a split which is a copy of the current one
      */
-    protected Split clone() {
+    protected Split clone() throws CloneNotSupportedException {
+        super.clone();
         Split split = new Split(mAmount, mAccountUID);
-        split.mUID = mUID;
+        split.setUID(getUID());
         split.setType(mSplitType);
         split.setMemo(mMemo);
         split.setTransactionUID(mTransactionUID);

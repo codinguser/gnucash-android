@@ -198,11 +198,13 @@ public class ExportDialogFragment extends DialogFragment implements RecurrencePi
 	 */
 	private void refreshRecurrenceTextView(ExportFormat exportFormat){
 		String repeatString	= getString(R.string.label_tap_to_create_schedule);
+		mEventRecurrence = new EventRecurrence();
 		ScheduledActionDbAdapter scheduledActionDbAdapter = ScheduledActionDbAdapter.getInstance();
 		ScheduledAction scheduledBackup = scheduledActionDbAdapter.getScheduledBackupAction(exportFormat);
 		if (scheduledBackup != null){
 			repeatString = scheduledBackup.getRepeatString();
 			mRecurrenceRule = scheduledBackup.getRuleString();
+			mEventRecurrence.parse(mRecurrenceRule);
 		}
 		mRecurrenceTextView.setText(repeatString);
 	}

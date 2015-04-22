@@ -75,8 +75,8 @@
     <string name="label_permission_create_accounts">Staat het aanmaken van rekeningen in GnuCash for Android toe</string>
     <string name="label_permission_group">Uw GnuCash data</string>
     <string name="description_permission_group">GnuCash data lezen en bewerken</string>
-    <string name="label_permission_record_transaction">Transacties bewaren</string>
-    <string name="label_permission_create_account">Rekeningen aanmaken</string>
+    <string name="label_permission_record_transaction">Record transactions in GnuCash</string>
+    <string name="label_permission_create_account">Create accounts in GnuCash</string>
     <string name="label_display_account">Rekening tonen</string>
     <string name="btn_create_accounts">Rekeningen aanmaken</string>
     <string name="title_default_accounts">Aan te maken rekeningen selecteren</string>
@@ -257,13 +257,6 @@
 		<item>Zimbabwe Dollar</item>
 		<item>Zloty</item>
     </string-array>
-	<string-array name="default_accounts">
-	    <item>Uitgaven</item>
-	    <item>Inkomsten</item>
-	    <item>Activa</item>	    
-	    <item>Eigen Vermogen</item>
-	    <item>Passiva</item>
-	</string-array>
 	<string name="error_no_accounts">Geen rekeningen beschikbaar.\nU moet een rekening aanmaken alvorens een widget toe te voegen</string>
 	<string name="title_build_version">Versie</string>
 	<string name="title_license">License</string>
@@ -372,6 +365,7 @@
     <string-array name="export_formats">
         <item>QIF</item>
         <item>OFX</item>
+        <item>XML</item>
     </string-array>
     <!-- Default title for color picker dialog [CHAR LIMIT=30] -->
     <string name="color_picker_default_title">Kies een kleur</string>
@@ -381,9 +375,7 @@
     <string name="title_all_accounts">Alle</string>
     <string name="summary_create_default_accounts">Creëert standaard GnuCash veelgebruikte rekeningstructuur</string>
     <string name="title_create_default_accounts">Standaard rekeningen creëren</string>
-    <string name="msg_confirm_create_default_accounts_setting">Nieuwe rekeningen zullen toegevoegd worden aan de bestaande
-        rekeningstructuur.\n\nAls je de bestaande rekeningen wil vervangen, verwijder ze dan eerst voor verder te gaan!
-    </string>
+    <string name="msg_confirm_create_default_accounts_setting">All existing accounts and transactions on the device will be deleted.\n\nAre you sure you want to proceed?</string>
     <string name="msg_confirm_create_default_accounts_first_run">Welkom in GnuCash Android! \nJe kan een nieuwe structuur van
         veel gebruikte rekeningen creëren, of je eigen GnuCash rekeningstructuur importeren. \n\nBeide opties zijn ook
         beschikbaar in app Instellingen zodat je later kan beslissen.
@@ -462,8 +454,6 @@
     <string name="label_delete_transactions">Delete transactions</string>
     <string name="toast_disable_double_entry_to_save_transaction">Create and specify a transfer account OR disable double-entry in settings to save the transaction</string>
     <string name="label_tap_to_create_schedule">Tap to create schedule</string>
-    <string name="title_restore_last_backup">Restore last backup</string>
-    <string name="summary_restore_last_backup">Restore the most recent backup</string>
     <string name="title_restore_backup">Restore Backup…</string>
     <string name="header_backup_and_export_settings">Backup &amp; export</string>
     <string name="title_dropbox_sync_preference">DropBox Sync</string>
