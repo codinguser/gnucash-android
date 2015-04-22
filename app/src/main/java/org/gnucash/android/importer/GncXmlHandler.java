@@ -462,7 +462,12 @@ public class GncXmlHandler extends DefaultHandler {
                 break;
             case GncXmlHelper.TAG_SPLIT_QUANTITY:
                 // delay the assignment of currency when the split account is seen
-                mQuantity = GncXmlHelper.parseMoney(characterString);
+                try {
+                    mQuantity = GncXmlHelper.parseMoney(characterString);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                    throw new SAXException("Unable to parse money", e);
+                }
                 break;
             case GncXmlHelper.TAG_SPLIT_ACCOUNT:
                 //the split amount uses the account currency

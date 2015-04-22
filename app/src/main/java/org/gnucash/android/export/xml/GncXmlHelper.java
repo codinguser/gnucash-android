@@ -24,10 +24,12 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.IllegalFormatException;
 import java.util.Locale;
 
 /**
@@ -171,12 +173,15 @@ public abstract class GncXmlHelper {
      * @param amountString String containing the amount
      * @return BigDecimal with numerical value
      */
-    public static BigDecimal parseMoney(String amountString){
-        String[] tokens = amountString.split("/");
-        BigDecimal numerator = new BigDecimal(tokens[0]);
-        BigDecimal denominator = new BigDecimal(tokens[1]);
-
-        return numerator.divide(denominator);
+    public static BigDecimal parseMoney(String amountString) throws ParseException {
+        int pos = amountString.indexOf("/");
+        if (pos < 0)
+        {
+            throw new ParseException("Cannot parse money string : " + amountString, 0);
+        }
+        BigInteger numerator = new BigInteger(amountString.substring(0, pos));
+        int scale = amountString.length() - pos - 2;
+        return new BigDecimal(numerator, scale);
     }
 
     /**
