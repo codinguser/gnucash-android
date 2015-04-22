@@ -115,9 +115,14 @@ public class GncXmlHandler extends DefaultHandler {
     Split mSplit;
 
     /**
-     * Quantity of the split
+     * (Absolute) quantity of the split
      */
     BigDecimal mQuantity;
+
+    /**
+     * Whether the quantity is negative
+     */
+    boolean mNegativeQuantity;
 
     /**
      * The list for all added split for autobalancing
@@ -399,13 +404,17 @@ public class GncXmlHandler extends DefaultHandler {
                         mInCreditFormulaSlot = false;
                     }
                 } else if (mInTemplates && mInDebitFormulaSlot) {
-                    NumberFormat numberFormat = GncXmlHelper.getNumberFormatForTemplateSplits();
                     try {
-                        Number number = numberFormat.parse(characterString);
-                        Money amount = new Money(new BigDecimal(number.doubleValue()), mTransaction.getCurrency());
+                        // TODO: test this. I do not have template transactions to test
+                        // Going through double to decimal will lose accuracy.
+                        // NEVER use double for money.
+                        // from Android SDK Ddoc:
+                        //    new BigDecimal(0.1) is equal to 0.1000000000000000055511151231257827021181583404541015625. This happens as 0.1 cannot be represented exactly in binary.
+                        //    To generate a big decimal instance which is equivalent to 0.1 use the BigDecimal(String) constructor.
+                        Money amount = new Money(new BigDecimal(characterString), mTransaction.getCurrency());
                         mSplit.setAmount(amount.absolute());
                         mSplit.setType(TransactionType.DEBIT);
-                    } catch (ParseException e) {
+                    } catch (NumberFormatException e) {
                         Log.e(LOG_TAG, "Error parsing template split amount. " + e.getMessage());
                         e.printStackTrace();
                     } finally {
@@ -463,7 +472,14 @@ public class GncXmlHandler extends DefaultHandler {
             case GncXmlHelper.TAG_SPLIT_QUANTITY:
                 // delay the assignment of currency when the split account is seen
                 try {
-                    mQuantity = GncXmlHelper.parseMoney(characterString);
+                    String q = characterString;
+                    if (q.charAt(0) == '-') {
+                        mNegativeQuantity = true;
+                        q = q.substring(1);
+                    } else {
+                        mNegativeQuantity = false;
+                    }
+                    mQuantity = GncXmlHelper.parseMoney(q);
                 } catch (ParseException e) {
                     e.printStackTrace();
                     throw new SAXException("Unable to parse money", e);
@@ -472,10 +488,9 @@ public class GncXmlHandler extends DefaultHandler {
             case GncXmlHelper.TAG_SPLIT_ACCOUNT:
                 //the split amount uses the account currency
                 Money amount = new Money(mQuantity, getCurrencyForAccount(characterString));
-
                 //this is intentional: GnuCash XML formats split amounts, credits are negative, debits are positive.
-                mSplit.setType(amount.isNegative() ? TransactionType.CREDIT : TransactionType.DEBIT);
-                mSplit.setAmount(amount.absolute());
+                mSplit.setType(mNegativeQuantity ? TransactionType.CREDIT : TransactionType.DEBIT);
+                mSplit.setAmount(amount);
                 mSplit.setAccountUID(characterString);
                 break;
             case GncXmlHelper.TAG_TRN_SPLIT:
@@ -556,6 +571,7 @@ public class GncXmlHandler extends DefaultHandler {
 
         String imbalancePrefix = AccountsDbAdapter.getImbalanceAccountPrefix();
 
+        // Add all account without a parent to ROOT, and collect top level imbalance accounts
         for(Account account:mAccountList) {
             mapFullName.put(account.getUID(), null);
             boolean topLevel = false;
@@ -570,6 +586,7 @@ public class GncXmlHandler extends DefaultHandler {
             }
         }
 
+        // Set the account for created balancing splits to correct imbalance accounts
         for (Split split: mAutoBalanceSplits) {
             String currencyCode = split.getAccountUID();
             Account imbAccount = mapImbalanceAccount.get(currencyCode);
@@ -593,17 +610,16 @@ public class GncXmlHandler extends DefaultHandler {
             while (!stack.isEmpty()) {
                 Account acc = stack.peek();
                 if (acc.getAccountType() == AccountType.ROOT) {
-                    // append blank to Root Account, ensure it always sorts first
+                    // ROOT_ACCOUNT_FULL_NAME should ensure ROOT always sorts first
                     mapFullName.put(acc.getUID(), AccountsDbAdapter.ROOT_ACCOUNT_FULL_NAME);
                     stack.pop();
                     continue;
                 }
                 String parentUID = acc.getParentUID();
                 Account parentAccount = mAccountMap.get(parentUID);
-                // In accounts tree that are not imported, top level ROOT account
-                // does not exist, which will make all top level accounts have a
-                // null parent
-                if (parentAccount == null || parentAccount.getAccountType() == AccountType.ROOT) {
+                // ROOT account will be added if not exist, so now anly ROOT
+                // has an empty parent
+                if (parentAccount.getAccountType() == AccountType.ROOT) {
                     // top level account, full name is the same as its name
                     mapFullName.put(acc.getUID(), acc.getName());
                     stack.pop();
