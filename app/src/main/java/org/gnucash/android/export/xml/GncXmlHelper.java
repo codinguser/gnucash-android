@@ -93,7 +93,6 @@ public abstract class GncXmlHelper {
     public static final String TAG_SPLIT_QUANTITY   = "split:quantity";
     public static final String TAG_SPLIT_SLOTS      = "split:slots";
 
-    //TODO: Remove this in the future when scheduled transactions are improved
     @Deprecated
     public static final String TAG_RECURRENCE_PERIOD = "trn:recurrence_period";
 
@@ -112,7 +111,7 @@ public abstract class GncXmlHelper {
     public static final String TAG_SX_NUM_OCCUR             = "sx:num-occur";
     public static final String TAG_SX_REM_OCCUR             = "sx:rem-occur";
     public static final String TAG_SX_TAG                   = "sx:tag";
-    public static final String TAG_SX_TEMPL_ACTION          = "sx:templ-action"; //FIXME: This tag is unknown to GnuCash desktop. For full compat, we will need to fix it
+    public static final String TAG_SX_TEMPL_ACCOUNT         = "sx:templ-acct";
     public static final String TAG_SX_SCHEDULE              = "sx:schedule";
     public static final String TAG_RECURRENCE               = "gnc:recurrence";
     public static final String TAG_RX_MULT                  = "recurrence:mult";
@@ -125,15 +124,15 @@ public abstract class GncXmlHelper {
     public static final SimpleDateFormat TIME_FORMATTER = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z", Locale.US);
     public static final SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
 
-    public static final String KEY_PLACEHOLDER      = "placeholder";
-    public static final String KEY_COLOR            = "color";
-    public static final String KEY_FAVORITE         = "favorite";
-    public static final String KEY_NOTES            = "notes";
-    public static final String KEY_EXPORTED         = "exported";
-    public static final String KEY_SCHEDX_ACTION    = "sched-xaction";
-    public static final String KEY_SPLIT_ACCOUNT    = "account";
-    public static final String KEY_DEBIT_FORMULA    = "debit-formula";
-    public static final String KEY_CREDIT_FORMULA   = "credit-formula";
+    public static final String KEY_PLACEHOLDER              = "placeholder";
+    public static final String KEY_COLOR                    = "color";
+    public static final String KEY_FAVORITE                 = "favorite";
+    public static final String KEY_NOTES                    = "notes";
+    public static final String KEY_EXPORTED                 = "exported";
+    public static final String KEY_SCHEDX_ACTION            = "sched-xaction";
+    public static final String KEY_SPLIT_ACCOUNT_SLOT       = "account";
+    public static final String KEY_DEBIT_FORMULA            = "debit-formula";
+    public static final String KEY_CREDIT_FORMULA           = "credit-formula";
     public static final String KEY_FROM_SCHED_ACTION        = "from-sched-xaction";
     public static final String KEY_DEFAULT_TRANSFER_ACCOUNT = "default_transfer_account";
 

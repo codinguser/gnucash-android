@@ -47,6 +47,7 @@ import java.util.Currency;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Stack;
 import java.util.regex.Pattern;
 
@@ -88,6 +89,16 @@ public class GncXmlHandler extends DefaultHandler {
      * All the accounts found in a file to be imported, used for bulk import mode
      */
     List<Account> mAccountList;
+
+    /**
+     * List of all the template accounts found
+     */
+    List<Account> mTemplatAccountList;
+
+    /**
+     * Map of the tempate accounts to the template transactions UIDs
+     */
+    Map<String, String> mTemplateAccountToTransactionMap;
 
     /**
      * Account map for quick referencing from UID
@@ -212,6 +223,9 @@ public class GncXmlHandler extends DefaultHandler {
         mAccountMap = new HashMap<>();
         mTransactionList = new ArrayList<>();
         mScheduledActionsList = new ArrayList<>();
+
+        mTemplatAccountList = new ArrayList<>();
+        mTemplateAccountToTransactionMap = new HashMap<>();
 
         mAutoBalanceSplits = new ArrayList<>();
     }
@@ -338,7 +352,7 @@ public class GncXmlHandler extends DefaultHandler {
                     case GncXmlHelper.KEY_EXPORTED:
                         mInExported = true;
                         break;
-                    case GncXmlHelper.KEY_SPLIT_ACCOUNT:
+                    case GncXmlHelper.KEY_SPLIT_ACCOUNT_SLOT:
                         mInSplitAccountSlot = true;
                         break;
                     case GncXmlHelper.KEY_CREDIT_FORMULA:
@@ -390,7 +404,9 @@ public class GncXmlHandler extends DefaultHandler {
                     }
                 } else if (mInTemplates && mInSplitAccountSlot) {
                     mSplit.setAccountUID(characterString);
+                    mInSplitAccountSlot = false;
                 } else if (mInTemplates && mInCreditFormulaSlot) {
+                    //FIXME: Formatting of amounts is broken
                     NumberFormat numberFormat = NumberFormat.getNumberInstance(Locale.GERMANY);
                     try {
                         Number number = numberFormat.parse(characterString);
@@ -404,6 +420,7 @@ public class GncXmlHandler extends DefaultHandler {
                         mInCreditFormulaSlot = false;
                     }
                 } else if (mInTemplates && mInDebitFormulaSlot) {
+                    //FIXME: Format of amount export is broken
                     try {
                         // TODO: test this. I do not have template transactions to test
                         // Going through double to decimal will lose accuracy.
@@ -486,12 +503,16 @@ public class GncXmlHandler extends DefaultHandler {
                 }
                 break;
             case GncXmlHelper.TAG_SPLIT_ACCOUNT:
-                //the split amount uses the account currency
-                Money amount = new Money(mQuantity, getCurrencyForAccount(characterString));
-                //this is intentional: GnuCash XML formats split amounts, credits are negative, debits are positive.
-                mSplit.setType(mNegativeQuantity ? TransactionType.CREDIT : TransactionType.DEBIT);
-                mSplit.setAmount(amount);
-                mSplit.setAccountUID(characterString);
+                if (!mInTemplates) {
+                    //the split amount uses the account currency
+                    Money amount = new Money(mQuantity, getCurrencyForAccount(characterString));
+                    //this is intentional: GnuCash XML formats split amounts, credits are negative, debits are positive.
+                    mSplit.setType(mNegativeQuantity ? TransactionType.CREDIT : TransactionType.DEBIT);
+                    mSplit.setAmount(amount);
+                    mSplit.setAccountUID(characterString);
+                } else {
+                    mTemplateAccountToTransactionMap.put(characterString, mTransaction.getUID());
+                }
                 break;
             case GncXmlHelper.TAG_TRN_SPLIT:
                 mTransaction.addSplit(mSplit);
@@ -520,9 +541,10 @@ public class GncXmlHandler extends DefaultHandler {
                 mScheduledAction.setUID(characterString);
                 break;
             case GncXmlHelper.TAG_SX_NAME:
-                //FIXME: Do not rely on the type, rather lookup the SX_ID from previous tag to find action type
-                ScheduledAction.ActionType type = ScheduledAction.ActionType.valueOf(characterString);
-                mScheduledAction.setActionType(type);
+                if (characterString.equals(ScheduledAction.ActionType.BACKUP.name()))
+                    mScheduledAction.setActionType(ScheduledAction.ActionType.BACKUP);
+                else
+                    mScheduledAction.setActionType(ScheduledAction.ActionType.TRANSACTION);
                 break;
             case GncXmlHelper.TAG_SX_ENABLED:
                 mScheduledAction.setEnabled(characterString.equals("y"));
@@ -538,8 +560,8 @@ public class GncXmlHandler extends DefaultHandler {
                 periodType.setMultiplier(mRecurrenceMultiplier);
                 mScheduledAction.setPeriod(periodType);
                 break;
-            case GncXmlHelper.TAG_SX_TEMPL_ACTION:
-                mScheduledAction.setActionUID(characterString);
+            case GncXmlHelper.TAG_SX_TEMPL_ACCOUNT:
+                mScheduledAction.setActionUID(mTemplateAccountToTransactionMap.get(characterString));
                 break;
             case GncXmlHelper.TAG_SCHEDULED_ACTION:
                 mScheduledActionsList.add(mScheduledAction);

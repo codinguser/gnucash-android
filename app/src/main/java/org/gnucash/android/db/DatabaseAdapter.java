@@ -418,7 +418,7 @@ public abstract class DatabaseAdapter {
      * @return String value of the column entry
      * @throws IllegalArgumentException if either the {@code recordUID} or {@code columnName} do not exist in the database
      */
-    protected String getAttribute(@NonNull String recordUID, @NonNull String columnName){
+    public String getAttribute(@NonNull String recordUID, @NonNull String columnName){
         Cursor cursor = mDb.query(mTableName,
                 new String[]{columnName},
                 AccountEntry.COLUMN_UID + " = ?",
