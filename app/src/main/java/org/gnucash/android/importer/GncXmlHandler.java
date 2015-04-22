@@ -472,7 +472,10 @@ public class GncXmlHandler extends DefaultHandler {
                 break;
             case GncXmlHelper.TAG_TRANSACTION:
                 mTransaction.setTemplate(mInTemplates);
-                mAutoBalanceSplits.add(mTransaction.autoBalanceImportAccount());
+                Split imbSplit = mTransaction.autoBalanceImportAccount();
+                if (imbSplit != null) {
+                    mAutoBalanceSplits.add(imbSplit);
+                }
                 mTransactionList.add(mTransaction);
 
                 if (mRecurrencePeriod > 0) { //if we find an old format recurrence period, parse it
