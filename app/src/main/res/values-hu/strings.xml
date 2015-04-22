@@ -56,8 +56,10 @@
     <string name="hint_delete_after_export">All exported transactions will be deleted when exporting is completed</string>
     <string name="title_settings">Settings</string>
     <string-array name="export_destinations">
-        <item>Share file&#8230;</item>
         <item>SD Card</item>
+        <item>DropBox</item>
+        <item>Google Drive</item>
+        <item>Share file&#8230;</item>
     </string-array>
     <string name="btn_move">Move</string>
     <string name="title_move_transactions">Move %1$d transaction(s)</string>
@@ -419,7 +421,7 @@
     </string>
     <string name="title_save_opening_balances">Save account opening balances</string>
     <string name="export_warning_ofx">OFX does not support double-entry transactions</string>
-    <string name="export_warning_qif">A separate QIF file will be generated for each currency in use</string>
+    <string name="export_warning_qif">Generates separate QIF files per currency</string>
     <string name="title_transaction_splits">Transaction splits</string>
     <string name="label_imbalance">Imbalance:</string>
     <string name="btn_add_split">Add split</string>
@@ -459,6 +461,23 @@
     <string name="label_delete_transactions">Delete transactions</string>
     <string name="toast_disable_double_entry_to_save_transaction">Create and specify a transfer account OR disable double-entry in settings to save the transaction</string>
     <string name="label_tap_to_create_schedule">Tap to create schedule</string>
+    <string name="title_restore_last_backup">Restore last backup</string>
+    <string name="summary_restore_last_backup">Restore the most recent backup</string>
+    <string name="title_restore_backup">Restore Backup…</string>
+    <string name="header_backup_and_export_settings">Backup &amp; export</string>
+    <string name="title_dropbox_sync_preference">DropBox Sync</string>
+    <string name="title_backup_preference_category">Backup</string>
+    <string name="summary_dropbox_sync">Enable to sync to DropBox</string>
+    <string name="title_select_gnucash_xml_file">Select GnuCash XML file</string>
+    <string name="title_backup_prefs">Backup Preferences</string>
+    <string name="title_create_backup_pref">Create Backup</string>
+    <string name="summary_create_backup_pref">By default backups are saved to the SDCARD</string>
+    <string name="summary_restore_backup_pref">Select a specific backup to restore</string>
+    <string name="toast_backup_successful">Backup successful</string>
+    <string name="toast_backup_failed">Backup failed</string>
+    <string name="export_warning_xml">Exports all accounts and transactions</string>
+    <string name="title_google_drive_sync_pref">Google Drive Sync</string>
+    <string name="summary_google_drive_sync">Enable to sync to Google Drive</string>
     <plurals name="label_every_x_days">
         <item quantity="one">Daily</item>
         <item quantity="other">Every %d days</item>

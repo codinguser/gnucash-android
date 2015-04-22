@@ -19,7 +19,10 @@ package org.gnucash.android.ui.settings;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentSender;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.pm.PackageManager.NameNotFoundException;
@@ -35,6 +38,14 @@ import android.widget.Toast;
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockPreferenceActivity;
 import com.actionbarsherlock.view.MenuItem;
+import com.dropbox.sync.android.DbxAccountManager;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.drive.Drive;
+import com.google.android.gms.drive.DriveFolder;
+import com.google.android.gms.drive.MetadataChangeSet;
 
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
@@ -68,11 +79,19 @@ import java.util.TimerTask;
  */
 public class SettingsActivity extends SherlockPreferenceActivity implements OnPreferenceChangeListener, Preference.OnPreferenceClickListener{
 
+    public static final String LOG_TAG = "SettingsActivity";
     /**
      * Allowed delay between two consecutive taps of a setting for it to be considered a double tap
      * Used on Android v2.3.3 or lower devices where dialogs cannot be instantiated easily in settings
      */
     public static final int DOUBLE_TAP_DELAY = 2000;
+    final static public String DROPBOX_APP_KEY      = "dhjh8ke9wf05948";
+    final static public String DROPBOX_APP_SECRET   = "h2t9fphj3nr4wkw";
+    /**
+     * Collects references to the UI elements and binds click listeners
+     */
+    public static final int REQUEST_LINK_TO_DBX = 0x11;
+    public static final int REQUEST_RESOLVE_CONNECTION = 0x12;
 
     /**
      * Counts the number of times the preference for deleting all accounts has been clicked.
@@ -87,8 +106,13 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
      * Only useful on devices with API level < 11
      */
     private int mDeleteTransactionsClickCount;
+    private DbxAccountManager mDbxAccountManager;
+    /**
+     * Client for Google Drive Sync
+     */
+    static GoogleApiClient mGoogleApiClient;
 
-	/**
+    /**
 	 * Constructs the headers to display in the header list when the Settings activity is first opened
 	 * Only available on Honeycomb and above
 	 */
@@ -97,12 +121,17 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
 	public void onBuildHeaders(List<Header> target) {
 		loadHeadersFromResource(R.xml.preference_headers, target);
 	}
-	
+
 	@SuppressWarnings("deprecation")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {		
 		super.onCreate(savedInstanceState);
-		
+
+        mDbxAccountManager = DbxAccountManager.getInstance(getApplicationContext(),
+                DROPBOX_APP_KEY, DROPBOX_APP_SECRET);
+
+        mGoogleApiClient = getGoogleApiClient(this);
+
 		//retrieve version from Manifest and set it
 		String version = null;
 		try {
@@ -122,9 +151,9 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
 		actionBar.setDisplayHomeAsUpEnabled(true);
 		
 		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB){
-			addPreferencesFromResource(R.xml.fragment_general_preferences);
             addPreferencesFromResource(R.xml.fragment_account_preferences);
 			addPreferencesFromResource(R.xml.fragment_transaction_preferences);
+            addPreferencesFromResource(R.xml.fragment_backup_preferences);
             addPreferencesFromResource(R.xml.fragment_passcode_preferences);
 			addPreferencesFromResource(R.xml.fragment_about_preferences);
 			setDefaultCurrencyListener();
@@ -134,6 +163,9 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
 			pref.setSummary(versionName);
 
             pref = findPreference(getString(R.string.key_import_accounts));
+            pref.setOnPreferenceClickListener(this);
+
+            pref = findPreference(getString(R.string.key_restore_backup));
             pref.setOnPreferenceClickListener(this);
 
             pref = findPreference(getString(R.string.key_use_double_entry));
@@ -148,10 +180,21 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
             pref = findPreference(getString(R.string.key_build_version));
             pref.setOnPreferenceClickListener(this);
 
-            pref = findPreference(getString(R.string.key_restore_backup));
+            pref = findPreference(getString(R.string.key_restore_last_backup));
             pref.setOnPreferenceClickListener(this);
 
             pref = findPreference(getString(R.string.key_change_passcode));
+            pref.setOnPreferenceClickListener(this);
+
+            pref = findPreference(getString(R.string.key_dropbox_sync));
+            toggleDropboxPreference(pref);
+            pref.setOnPreferenceClickListener(this);
+
+            pref = findPreference(getString(R.string.key_google_drive_sync));
+            pref.setOnPreferenceClickListener(this);
+            toggleGoogleDrivePreference(pref);
+
+            pref = findPreference(getString(R.string.key_create_backup));
             pref.setOnPreferenceClickListener(this);
 
             pref = findPreference(getString(R.string.key_enable_passcode));
@@ -221,7 +264,7 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
 
     @Override
     protected boolean isValidFragment(String fragmentName) {
-        return GeneralPreferenceFragment.class.getName().equals(fragmentName)
+        return BackupPreferenceFragment.class.getName().equals(fragmentName)
                 || AccountPreferencesFragment.class.getName().equals(fragmentName)
                 || PasscodePreferenceFragment.class.getName().equals(fragmentName)
                 || TransactionsPreferenceFragment.class.getName().equals(fragmentName)
@@ -252,7 +295,8 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
     @Override
     public boolean onPreferenceClick(Preference preference) {
         String key = preference.getKey();
-        if (key.equals(getString(R.string.key_import_accounts))){
+
+        if (key.equals(getString(R.string.key_import_accounts)) || key.equals(getString(R.string.key_restore_backup))){
             importAccounts();
             return true;
         }
@@ -262,8 +306,24 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
             return true;
         }
 
-        if (key.equals(getString(R.string.key_restore_backup))){
+        if (key.equals(getString(R.string.key_restore_last_backup))){
             importMostRecentBackup();
+        }
+
+        if (key.equals(getString(R.string.key_dropbox_sync))){
+            toggleDropboxSync();
+            toggleDropboxPreference(preference);
+        }
+
+        if (key.equals(getString(R.string.key_google_drive_sync))){
+            toggleGoogleDriveSync();
+            toggleGoogleDrivePreference(preference);
+        }
+
+        if (key.equals(getString(R.string.key_create_backup))){
+            boolean result = GncXmlExporter.createBackup();
+            int msg = result ? R.string.toast_backup_successful : R.string.toast_backup_failed;
+            Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
         }
 
         //since we cannot get a support FragmentManager in the SettingsActivity pre H0NEYCOMB,
@@ -318,9 +378,112 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
     }
 
     /**
+     * Toggles the authorization state of a DropBox account.
+     * If a link exists, it is removed else DropBox authorization is started
+     */
+    private void toggleDropboxSync() {
+        if (mDbxAccountManager.hasLinkedAccount()){
+            mDbxAccountManager.unlink();
+        } else {
+            mDbxAccountManager.startLink(this, REQUEST_LINK_TO_DBX);
+        }
+    }
+
+    /**
+     * Toggles synchronization with Google Drive on or off
+     */
+    private void toggleGoogleDriveSync(){
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        final String appFolderId = sharedPreferences.getString(getString(R.string.key_google_drive_app_folder_id), null);
+        if (appFolderId != null){
+            sharedPreferences.edit().remove(getString(R.string.key_google_drive_app_folder_id)).commit(); //commit (not apply) because we need it to be saved *now*
+        } else {
+            mGoogleApiClient.connect();
+        }
+    }
+
+    /**
+     * Toggles the checkbox of the DropBox Sync preference if a DropBox account is linked
+     * @param pref DropBox Sync preference
+     */
+    public void toggleDropboxPreference(Preference pref) {
+        ((CheckBoxPreference)pref).setChecked(mDbxAccountManager.hasLinkedAccount());
+    }
+
+    /**
+     * Toggles the checkbox of the GoogleDrive Sync preference if a Google Drive account is linked
+     * @param pref Google Drive Sync preference
+     */
+    public void toggleGoogleDrivePreference(Preference pref){
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        String appFolderId = sharedPreferences.getString(getString(R.string.key_google_drive_app_folder_id),null);
+        ((CheckBoxPreference)pref).setChecked(appFolderId != null);
+    }
+
+
+    public static GoogleApiClient getGoogleApiClient(final Context context) {
+        return new GoogleApiClient.Builder(context)
+                .addApi(Drive.API)
+                .addScope(Drive.SCOPE_APPFOLDER)
+                .addScope(Drive.SCOPE_FILE)
+                .addConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks() {
+                    @Override
+                    public void onConnected(Bundle bundle) {
+                        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+                        String appFolderId = sharedPreferences.getString(context.getString(R.string.key_google_drive_app_folder_id), null);
+                        if (appFolderId == null) {
+                            MetadataChangeSet changeSet = new MetadataChangeSet.Builder()
+                                    .setTitle(context.getString(R.string.app_name)).build();
+                            Drive.DriveApi.getRootFolder(mGoogleApiClient).createFolder(
+                                    mGoogleApiClient, changeSet).setResultCallback(new ResultCallback<DriveFolder.DriveFolderResult>() {
+                                @Override
+                                public void onResult(DriveFolder.DriveFolderResult result) {
+                                    if (!result.getStatus().isSuccess()) {
+                                        Log.e(LOG_TAG, "Error creating the application folder");
+                                        return;
+                                    }
+
+                                    String folderId = result.getDriveFolder().getDriveId().toString();
+                                    PreferenceManager.getDefaultSharedPreferences(context)
+                                            .edit().putString(context.getString(R.string.key_google_drive_app_folder_id),
+                                            folderId).commit(); //commit because we need it to be saved *now*
+                                }
+                            });
+
+                        }
+                        Toast.makeText(context, "Connected to Google Drive", Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onConnectionSuspended(int i) {
+                        Toast.makeText(context, "Connection to Google Drive suspended!", Toast.LENGTH_LONG).show();
+                    }
+                })
+                .addOnConnectionFailedListener(new GoogleApiClient.OnConnectionFailedListener() {
+                    @Override
+                    public void onConnectionFailed(ConnectionResult connectionResult) {
+                        Log.e(SettingsActivity.class.getName(), "Connection to Google Drive failed");
+                        if (connectionResult.hasResolution() && context instanceof Activity) {
+                            try {
+                                Log.e(SettingsActivity.class.getName(), "Trying resolution of Google API connection failure");
+                                connectionResult.startResolutionForResult((Activity) context, REQUEST_RESOLVE_CONNECTION);
+                            } catch (IntentSender.SendIntentException e) {
+                                Log.e(SettingsActivity.class.getName(), e.getMessage());
+                                Toast.makeText(context, "Unable to link to Google Drive", Toast.LENGTH_LONG).show();
+                            }
+                        } else {
+                            if (context instanceof Activity)
+                                GooglePlayServicesUtil.getErrorDialog(connectionResult.getErrorCode(), (Activity) context, 0).show();
+                        }
+                    }
+                })
+                .build();
+    }
+
+    /**
      * Resets the tap counter for preferences which need to be double-tapped
      */
-    private class ResetCounter extends TimerTask{
+    private class ResetCounter extends TimerTask {
 
         @Override
         public void run() {
@@ -335,17 +498,17 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
     public void importAccounts() {
         Intent pickIntent = new Intent(Intent.ACTION_GET_CONTENT);
         pickIntent.setType("application/*");
-        Intent chooser = Intent.createChooser(pickIntent, "Select GnuCash account file");
+        Intent chooser = Intent.createChooser(pickIntent, getString(R.string.title_select_gnucash_xml_file));
 
         startActivityForResult(chooser, AccountsActivity.REQUEST_PICK_ACCOUNTS_FILE);
 
     }
 
-    public void importMostRecentBackup(){
+    public void importMostRecentBackup() {
         Log.i("Settings", "Importing GnuCash XML");
         File backupFile = Exporter.getMostRecentBackupFile();
 
-        if (backupFile == null){
+        if (backupFile == null) {
             Toast.makeText(this, R.string.toast_no_recent_backup, Toast.LENGTH_SHORT).show();
             return;
         }
@@ -361,7 +524,7 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode == Activity.RESULT_CANCELED){
+        if (resultCode == Activity.RESULT_CANCELED) {
             if (requestCode == PasscodePreferenceFragment.PASSCODE_REQUEST_CODE) {
                 PreferenceManager.getDefaultSharedPreferences(getApplicationContext())
                         .edit()
@@ -372,7 +535,7 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
             return;
         }
 
-        switch (requestCode){
+        switch (requestCode) {
             case AccountsActivity.REQUEST_PICK_ACCOUNTS_FILE:
                 try {
                     InputStream accountInputStream = getContentResolver().openInputStream(data.getData());
@@ -383,13 +546,30 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
                 }
                 break;
             case PasscodePreferenceFragment.PASSCODE_REQUEST_CODE:
-                if (data!= null) {
+                if (data != null) {
                     PreferenceManager.getDefaultSharedPreferences(getApplicationContext())
                             .edit()
                             .putString(UxArgument.PASSCODE, data.getStringExtra(UxArgument.PASSCODE))
                             .commit();
                     Toast.makeText(getApplicationContext(), R.string.toast_passcode_set, Toast.LENGTH_SHORT).show();
                     findPreference(getString(R.string.key_enable_passcode)).setTitle(getString(R.string.title_passcode_enabled));
+                }
+                break;
+
+            case REQUEST_LINK_TO_DBX:
+                Preference preference = findPreference(getString(R.string.key_dropbox_sync));
+                if (preference == null) //if we are in a preference header fragment, this may return null
+                    break;
+                toggleDropboxPreference(preference);
+                break;
+
+            case REQUEST_RESOLVE_CONNECTION:
+                if (resultCode == RESULT_OK) {
+                    mGoogleApiClient.connect();
+                    Preference pref = findPreference(getString(R.string.key_dropbox_sync));
+                    if (pref == null) //if we are in a preference header fragment, this may return null
+                        break;
+                    toggleDropboxPreference(pref);
                 }
                 break;
         }

@@ -22,12 +22,27 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.Toast;
+
+import com.dropbox.sync.android.DbxAccountManager;
+import com.dropbox.sync.android.DbxException;
+import com.dropbox.sync.android.DbxFile;
+import com.dropbox.sync.android.DbxFileSystem;
+import com.dropbox.sync.android.DbxPath;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.drive.Drive;
+import com.google.android.gms.drive.DriveApi;
+import com.google.android.gms.drive.DriveContents;
+import com.google.android.gms.drive.DriveFolder;
+import com.google.android.gms.drive.DriveId;
+import com.google.android.gms.drive.MetadataChangeSet;
 
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
@@ -39,6 +54,7 @@ import org.gnucash.android.export.qif.QifHelper;
 import org.gnucash.android.export.xml.GncXmlExporter;
 import org.gnucash.android.model.Transaction;
 import org.gnucash.android.ui.account.AccountsActivity;
+import org.gnucash.android.ui.settings.SettingsActivity;
 import org.gnucash.android.ui.transaction.TransactionsActivity;
 
 import java.io.BufferedReader;
@@ -49,6 +65,7 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.nio.channels.FileChannel;
 import java.text.SimpleDateFormat;
@@ -62,6 +79,7 @@ import java.util.List;
  * @author Ngewi Fet <ngewif@gmail.com>
  */
 public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
+
     /**
      * App context
      */
@@ -119,7 +137,7 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
                     mExporter = new OfxExporter(mExportParams);
                     break;
 
-                case GNC_XML:
+                case XML:
                 default:
                     mExporter = new GncXmlExporter(mExportParams);
                     break;
@@ -130,10 +148,12 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
             BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), "UTF-8"));
             try {
                 mExporter.generateExport(writer);
+                writer.flush();
             }
             finally {
                 writer.close();
             }
+
         } catch (Exception e) {
             e.printStackTrace();
             Log.e(TAG, "" + e.getMessage());
@@ -152,6 +172,26 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
             }
             return false;
         }
+
+        switch (mExportParams.getExportTarget()) {
+            case SHARING:
+                shareFile(mExportParams.getTargetFilepath());
+                break;
+
+            case DROPBOX:
+                copyExportToDropbox();
+                break;
+
+            case GOOGLE_DRIVE:
+                copyExportToGoogleDrive();
+                break;
+
+            case SD_CARD:
+            default:
+                copyExportToSDCard();
+                break;
+        }
+
         return true;
     }
 
@@ -170,43 +210,6 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
             }
         }
 
-        switch (mExportParams.getExportTarget()) {
-            case SHARING:
-                shareFile(mExportParams.getTargetFilepath());
-                break;
-
-            case SD_CARD:
-                File src = new File(mExportParams.getTargetFilepath());
-                File dst = Exporter.createExportFile(mExportParams.getExportFormat());
-
-                try {
-                    copyFile(src, dst);
-                } catch (IOException e) {
-                    if (mContext instanceof Activity) {
-                        Toast.makeText(mContext,
-                                mContext.getString(R.string.toast_export_error, mExportParams.getExportFormat().name())
-                                        + dst.getAbsolutePath(),
-                                Toast.LENGTH_LONG).show();
-                        Log.e(TAG, e.getMessage());
-                    } else {
-                        Log.e(TAG, e.getMessage());
-                    }
-                    break;
-                }
-
-                if (mContext instanceof Activity) {
-                    //file already exists, just let the user know
-                    Toast.makeText(mContext,
-                            mContext.getString(R.string.toast_format_exported_to, mExportParams.getExportFormat().name())
-                                    + dst.getAbsolutePath(),
-                            Toast.LENGTH_LONG).show();
-                }
-                break;
-
-            default:
-                break;
-        }
-
         if (mExportParams.shouldDeleteTransactionsAfterExport()) {
             backupAndDeleteTransactions();
 
@@ -222,6 +225,133 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
         if (mContext instanceof Activity) {
             if (mProgressDialog != null && mProgressDialog.isShowing())
                 mProgressDialog.dismiss();
+        }
+    }
+
+    private void copyExportToGoogleDrive(){
+        final GoogleApiClient googleApiClient = SettingsActivity.getGoogleApiClient(GnuCashApplication.getAppContext());
+        googleApiClient.blockingConnect();
+        final ResultCallback<DriveFolder.DriveFileResult> fileCallback = new
+                ResultCallback<DriveFolder.DriveFileResult>() {
+                    @Override
+                    public void onResult(DriveFolder.DriveFileResult result) {
+                        if (!result.getStatus().isSuccess()) {
+                            Log.e(TAG, "Error while trying to sync to Google Drive");
+                            return;
+                        }
+                        Log.i(TAG, "Created a file with content: " + result.getDriveFile().getDriveId());
+                    }
+                };
+
+        Drive.DriveApi.newDriveContents(googleApiClient).setResultCallback(new ResultCallback<DriveApi.DriveContentsResult>() {
+            @Override
+            public void onResult(DriveApi.DriveContentsResult result) {
+                if (!result.getStatus().isSuccess()) {
+                    Log.e(TAG, "Error while trying to create new file contents");
+                    return;
+                }
+                final DriveContents driveContents = result.getDriveContents();
+                // write content to DriveContents
+                OutputStream outputStream = driveContents.getOutputStream();
+                File exportedFile = new File(mExportParams.getTargetFilepath());
+
+                try {
+                    FileInputStream fileInputStream = new FileInputStream(exportedFile);
+                    byte[] buffer = new byte[1024];
+                    int count = 0;
+
+                    while ((count = fileInputStream.read(buffer)) >= 0) {
+                        outputStream.write(buffer, 0, count);
+                    }
+                    fileInputStream.close();
+                    outputStream.flush();
+                } catch (IOException e) {
+                    Log.e(TAG, e.getMessage());
+                }
+
+                MetadataChangeSet changeSet = new MetadataChangeSet.Builder()
+                        .setTitle(exportedFile.getName())
+                        .setMimeType(getExportMimeType())
+                        .build();
+
+                SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
+                String folderId = sharedPreferences.getString(mContext.getString(R.string.key_google_drive_app_folder_id), "");
+                DriveFolder folder = Drive.DriveApi.getFolder(googleApiClient, DriveId.decodeFromString(folderId));
+                // create a file on root folder
+                folder.createFile(googleApiClient, changeSet, driveContents)
+                        .setResultCallback(fileCallback);
+            }
+        });
+    }
+
+    /**
+     * Returns the mime type for the configured export format
+     * @return MIME type as string
+     */
+    public String getExportMimeType(){
+        switch (mExportParams.getExportFormat()){
+            case OFX:
+            case XML:
+                return "text/xml";
+            case QIF:
+            default:
+                return "text/plain";
+        }
+    }
+
+    private void copyExportToDropbox() {
+        DbxAccountManager mDbxAcctMgr = DbxAccountManager.getInstance(mContext.getApplicationContext(),
+                SettingsActivity.DROPBOX_APP_KEY, SettingsActivity.DROPBOX_APP_SECRET);
+        DbxFile dbExportFile = null;
+        try {
+            DbxFileSystem dbxFileSystem = DbxFileSystem.forAccount(mDbxAcctMgr.getLinkedAccount());
+            File exportedFile = new File(mExportParams.getTargetFilepath());
+            dbExportFile = dbxFileSystem.create(new DbxPath(exportedFile.getName()));
+            dbExportFile.writeFromExistingFile(exportedFile, false);
+        } catch (DbxException.Unauthorized unauthorized) {
+            unauthorized.printStackTrace();
+            Log.e(TAG, unauthorized.getMessage());
+            if (mContext instanceof Activity){
+                Toast.makeText(mContext, "DropBox access not authorized. Check your Settings", Toast.LENGTH_LONG).show();
+            }
+        } catch (DbxException e) {
+            e.printStackTrace();
+            Log.e(TAG, e.getMessage());
+        } catch (IOException e) {
+            Log.e(TAG, e.getMessage());
+            e.printStackTrace();
+        } finally {
+            if (dbExportFile != null) {
+                dbExportFile.close();
+            }
+        }
+    }
+
+    private void copyExportToSDCard() {
+        File src = new File(mExportParams.getTargetFilepath());
+        File dst = Exporter.createExportFile(mExportParams.getExportFormat());
+
+        try {
+            copyFile(src, dst);
+        } catch (IOException e) {
+            if (mContext instanceof Activity) {
+                Toast.makeText(mContext,
+                        mContext.getString(R.string.toast_export_error, mExportParams.getExportFormat().name())
+                                + dst.getAbsolutePath(),
+                        Toast.LENGTH_LONG).show();
+                Log.e(TAG, e.getMessage());
+            } else {
+                Log.e(TAG, e.getMessage());
+            }
+            return;
+        }
+
+        if (mContext instanceof Activity) {
+            //file already exists, just let the user know
+            Toast.makeText(mContext,
+                    mContext.getString(R.string.toast_format_exported_to, mExportParams.getExportFormat().name())
+                            + dst.getAbsolutePath(),
+                    Toast.LENGTH_LONG).show();
         }
     }
 
@@ -254,8 +384,8 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
         String defaultEmail = PreferenceManager.getDefaultSharedPreferences(mContext)
                 .getString(mContext.getString(R.string.key_default_export_email), null);
         Intent shareIntent = new Intent(Intent.ACTION_SEND_MULTIPLE);
-        shareIntent.setType("application/xml");
-        ArrayList<Uri> exportFiles = new ArrayList<Uri>();
+        shareIntent.setType("text/xml");
+        ArrayList<Uri> exportFiles = new ArrayList<>();
         if (mExportParams.getExportFormat() == ExportFormat.QIF) {
             try {
                 List<String> splitFiles = splitQIF(new File(path), new File(path));
@@ -319,7 +449,7 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
     private static List<String> splitQIF(File src, File dst) throws IOException {
         // split only at the last dot
         String[] pathParts = dst.getPath().split("(?=\\.[^\\.]+$)");
-        ArrayList<String> splitFiles = new ArrayList<String>();
+        ArrayList<String> splitFiles = new ArrayList<>();
         String line;
         BufferedReader in = new BufferedReader(new FileReader(src));
         BufferedWriter out = null;
@@ -348,4 +478,5 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
         }
         return splitFiles;
     }
+
 }

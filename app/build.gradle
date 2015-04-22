@@ -22,7 +22,7 @@ android {
     buildToolsVersion "21.1.2"
     defaultConfig {
         applicationId "org.gnucash.android"
-        minSdkVersion 9
+        minSdkVersion 10
         targetSdkVersion 19
         versionCode versionMajor * 10000 + versionMinor * 1000 + versionPatch * 100 + versionBuild
         versionName "${versionMajor}.${versionMinor}.${versionPatch}"
@@ -44,12 +44,12 @@ android {
         development {
             applicationId 'org.gnucash.android.devel'
             testApplicationId 'org.gnucash.android.test.devel'
-            resValue "string", "app_name", "GnuCash (devel)"
+            resValue "string", "app_name", "GnuCash-devel"
             versionName "${versionMajor}.${versionMinor}.${versionPatch}-dev${versionBuild} @rev ${gitSha()} - BuildTime ${buildTime()} "
         }
 
         beta {
-            resValue "string", "app_name", "GnuCash (beta)"
+            resValue "string", "app_name", "GnuCash - beta"
             versionName "${versionMajor}.${versionMinor}.${versionPatch}-beta${versionBuild} @rev ${gitSha()} - BuildTime ${buildTime()}"
         }
 
@@ -58,6 +58,13 @@ android {
         }
 
     }
+
+    signingConfigs {
+        debug {
+            storeFile file("../debug.keystore")
+        }
+    }
+    
     compileOptions { //we want switch with strings during xml parsing
         sourceCompatibility JavaVersion.VERSION_1_7
         targetCompatibility JavaVersion.VERSION_1_7
@@ -72,7 +79,8 @@ dependencies {
             'com.doomonafireball.betterpickers:library:1.5.2',
             'com.commonsware.cwac:merge:1.1.+',
             'com.github.PhilJay:MPAndroidChart:v2.0.8',
-            'joda-time:joda-time:2.7'
+            'joda-time:joda-time:2.7',
+            'com.google.android.gms:play-services-drive:7.0.0'
     )
     androidTestCompile('com.jayway.android.robotium:robotium-solo:5.2.1',
             'com.squareup:fest-android:1.0.6')

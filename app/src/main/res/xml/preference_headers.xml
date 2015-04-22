@@ -15,12 +15,12 @@
  limitations under the License.
 -->
 <preference-headers xmlns:android="http://schemas.android.com/apk/res/android">
-    <header android:fragment="org.gnucash.android.ui.settings.GeneralPreferenceFragment"        
-        android:title="@string/header_general_settings" />
     <header android:fragment="org.gnucash.android.ui.settings.AccountPreferencesFragment"
             android:title="@string/header_account_settings" />
     <header android:fragment="org.gnucash.android.ui.settings.TransactionsPreferenceFragment" 
         android:title="@string/header_transaction_settings" />
+    <header android:fragment="org.gnucash.android.ui.settings.BackupPreferenceFragment"
+        android:title="@string/header_backup_and_export_settings" />
     <header android:fragment="org.gnucash.android.ui.settings.PasscodePreferenceFragment"
         android:title="@string/header_passcode_settings" />
     <header android:fragment="org.gnucash.android.ui.settings.AboutPreferenceFragment"

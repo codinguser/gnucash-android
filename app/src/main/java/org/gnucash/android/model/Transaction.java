@@ -178,7 +178,7 @@ public class Transaction extends BaseModel{
             if (lastCurrency == null)
                 lastCurrency = currentCurrency;
             else if (lastCurrency != currentCurrency){
-                return null;
+                return null; //for now we will not autobalance multi-currency transactions
             }
         }
 
