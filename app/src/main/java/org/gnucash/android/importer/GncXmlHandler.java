@@ -115,6 +115,11 @@ public class GncXmlHandler extends DefaultHandler {
     Split mSplit;
 
     /**
+     * The list for all added split for autobalancing
+     */
+    List<Split> mAutoBalanceSplits;
+
+    /**
      * Ignore certain elements in GnuCash XML file, such as "<gnc:template-transactions>"
      */
     String mIgnoreElement = null;
@@ -197,6 +202,8 @@ public class GncXmlHandler extends DefaultHandler {
         mAccountMap = new HashMap<>();
         mTransactionList = new ArrayList<>();
         mScheduledActionsList = new ArrayList<>();
+
+        mAutoBalanceSplits = new ArrayList<>();
     }
 
     @Override
@@ -465,7 +472,7 @@ public class GncXmlHandler extends DefaultHandler {
                 break;
             case GncXmlHelper.TAG_TRANSACTION:
                 mTransaction.setTemplate(mInTemplates);
-                mTransaction.autoBalance();
+                mAutoBalanceSplits.add(mTransaction.autoBalanceImportAccount());
                 mTransactionList.add(mTransaction);
 
                 if (mRecurrencePeriod > 0) { //if we find an old format recurrence period, parse it
@@ -523,6 +530,7 @@ public class GncXmlHandler extends DefaultHandler {
     public void endDocument() throws SAXException {
         super.endDocument();
         HashMap<String, String> mapFullName = new HashMap<>(mAccountList.size());
+        HashMap<String, Account> mapImbalanceAccount = new HashMap<>();
 
         // The XML has no ROOT, create one
         if (mRootAccount == null) {
@@ -532,12 +540,35 @@ public class GncXmlHandler extends DefaultHandler {
             mAccountMap.put(mRootAccount.getUID(), mRootAccount);
         }
 
+        String imbalancePrefix = AccountsDbAdapter.getImbalanceAccountPrefix();
+
         for(Account account:mAccountList) {
             mapFullName.put(account.getUID(), null);
+            boolean topLevel = false;
             if (account.getParentUID() == null && account.getAccountType() != AccountType.ROOT) {
                 account.setParentUID(mRootAccount.getUID());
+                topLevel = true;
+            }
+            if (topLevel || (mRootAccount.getUID().equals(account.getParentUID()))) {
+                if (account.getName().startsWith(imbalancePrefix)) {
+                    mapImbalanceAccount.put(account.getName().substring(imbalancePrefix.length()), account);
+                }
             }
         }
+
+        for (Split split: mAutoBalanceSplits) {
+            String currencyCode = split.getAccountUID();
+            Account imbAccount = mapImbalanceAccount.get(currencyCode);
+            if (imbAccount == null) {
+                imbAccount = new Account(imbalancePrefix + currencyCode, Currency.getInstance(currencyCode));
+                imbAccount.setParentUID(mRootAccount.getUID());
+                imbAccount.setAccountType(AccountType.BANK);
+                mapImbalanceAccount.put(currencyCode, imbAccount);
+                mAccountList.add(imbAccount);
+            }
+            split.setAccountUID(imbAccount.getUID());
+        }
+
         java.util.Stack<Account> stack = new Stack<>();
         for (Account account:mAccountList){
             if (mapFullName.get(account.getUID()) != null) {
