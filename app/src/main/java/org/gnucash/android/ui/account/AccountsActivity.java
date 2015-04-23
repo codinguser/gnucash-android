@@ -153,6 +153,7 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
 	 * Dialog which is shown to the user on first start prompting the user to create some accounts
 	 */
 	private AlertDialog mDefaultAccountsDialog;
+    private TitlePageIndicator mTitlePageIndicator;
 
 
     /**
@@ -231,14 +232,13 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
         init();
 
         mPager = (ViewPager) findViewById(R.id.pager);
-        TitlePageIndicator titlePageIndicator = (TitlePageIndicator) findViewById(R.id.titles);
-
+        mTitlePageIndicator = (TitlePageIndicator) findViewById(R.id.titles);
 
         String action = intent.getAction();
         if (action != null && action.equals(Intent.ACTION_INSERT_OR_EDIT)) {
             //enter account creation/edit mode if that was specified
             mPager.setVisibility(View.GONE);
-            titlePageIndicator.setVisibility(View.GONE);
+            mTitlePageIndicator.setVisibility(View.GONE);
 
             String accountUID = intent.getStringExtra(UxArgument.SELECTED_ACCOUNT_UID);
             if (accountUID != null)
@@ -251,7 +251,7 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
             //show the simple accounts list
             PagerAdapter mPagerAdapter = new AccountViewPagerAdapter(getSupportFragmentManager());
             mPager.setAdapter(mPagerAdapter);
-            titlePageIndicator.setViewPager(mPager);
+            mTitlePageIndicator.setViewPager(mPager);
 
             SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
             int lastTabIndex = preferences.getInt(LAST_OPEN_TAB_INDEX, INDEX_TOP_LEVEL_ACCOUNTS_FRAGMENT);
@@ -434,6 +434,7 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
      */
     private Intent createNewAccountIntent(){
         Intent addAccountIntent = new Intent(this, AccountsActivity.class);
+        addAccountIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         addAccountIntent.setAction(Intent.ACTION_INSERT_OR_EDIT);
         return addAccountIntent;
     }
@@ -595,7 +596,7 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
     public static void start(Context context){
         Intent accountsActivityIntent = new Intent(context, AccountsActivity.class);
         accountsActivityIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        accountsActivityIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        accountsActivityIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_SINGLE_TOP);
         context.startActivity(accountsActivityIntent);
     }
 
