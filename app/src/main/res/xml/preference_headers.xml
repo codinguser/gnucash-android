@@ -23,6 +23,8 @@
         android:title="@string/header_backup_and_export_settings" />
     <header android:fragment="org.gnucash.android.ui.settings.PasscodePreferenceFragment"
         android:title="@string/header_passcode_settings" />
+    <header android:fragment="org.gnucash.android.ui.settings.ChartPreferenceFragment"
+            android:title="Chart Prefs Header" />
     <header android:fragment="org.gnucash.android.ui.settings.AboutPreferenceFragment"
         android:title="@string/header_about_gnucash" />
     <header android:title="Rate in Play Store">
