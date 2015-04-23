@@ -245,8 +245,10 @@ public class ExportDialogFragment extends DialogFragment implements RecurrencePi
 					case 1:
 						recurrenceOptionsView.setVisibility(View.VISIBLE);
 						mExportTarget = ExportParams.ExportTarget.DROPBOX;
+                        String dropboxAppKey = getString(R.string.dropbox_app_key, SettingsActivity.DROPBOX_APP_KEY);
+                        String dropboxAppSecret = getString(R.string.dropbox_app_secret, SettingsActivity.DROPBOX_APP_SECRET);
 						DbxAccountManager mDbxAccountManager = DbxAccountManager.getInstance(getActivity().getApplicationContext(),
-								SettingsActivity.DROPBOX_APP_KEY, SettingsActivity.DROPBOX_APP_SECRET);
+								dropboxAppKey, dropboxAppSecret);
 						if (!mDbxAccountManager.hasLinkedAccount()){
 							mDbxAccountManager.startLink(getActivity(), 0);
 						}

@@ -88,13 +88,23 @@ import java.util.TimerTask;
 public class SettingsActivity extends SherlockPreferenceActivity implements OnPreferenceChangeListener, Preference.OnPreferenceClickListener{
 
     public static final String LOG_TAG = "SettingsActivity";
+
     /**
      * Allowed delay between two consecutive taps of a setting for it to be considered a double tap
      * Used on Android v2.3.3 or lower devices where dialogs cannot be instantiated easily in settings
      */
     public static final int DOUBLE_TAP_DELAY = 2000;
+
+    /**
+     * Testing app key for DropBox API
+     */
     final static public String DROPBOX_APP_KEY      = "dhjh8ke9wf05948";
+
+    /**
+     * Testing app secret for DropBox API
+     */
     final static public String DROPBOX_APP_SECRET   = "h2t9fphj3nr4wkw";
+
     /**
      * Collects references to the UI elements and binds click listeners
      */
@@ -135,8 +145,10 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
 	protected void onCreate(Bundle savedInstanceState) {		
 		super.onCreate(savedInstanceState);
 
+        String dropboxAppKey = getString(R.string.dropbox_app_key, DROPBOX_APP_KEY);
+        String dropboxAppSecret = getString(R.string.dropbox_app_secret, DROPBOX_APP_SECRET);
         mDbxAccountManager = DbxAccountManager.getInstance(getApplicationContext(),
-                DROPBOX_APP_KEY, DROPBOX_APP_SECRET);
+                dropboxAppKey, dropboxAppSecret);
 
         mGoogleApiClient = getGoogleApiClient(this);
 

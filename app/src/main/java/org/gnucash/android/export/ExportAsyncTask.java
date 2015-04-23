@@ -300,8 +300,10 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
     }
 
     private void copyExportToDropbox() {
+        String dropboxAppKey = mContext.getString(R.string.dropbox_app_key, SettingsActivity.DROPBOX_APP_KEY);
+        String dropboxAppSecret = mContext.getString(R.string.dropbox_app_secret, SettingsActivity.DROPBOX_APP_SECRET);
         DbxAccountManager mDbxAcctMgr = DbxAccountManager.getInstance(mContext.getApplicationContext(),
-                SettingsActivity.DROPBOX_APP_KEY, SettingsActivity.DROPBOX_APP_SECRET);
+                dropboxAppKey, dropboxAppSecret);
         DbxFile dbExportFile = null;
         try {
             DbxFileSystem dbxFileSystem = DbxFileSystem.forAccount(mDbxAcctMgr.getLinkedAccount());

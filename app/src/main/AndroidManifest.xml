@@ -23,7 +23,7 @@
     <uses-sdk android:minSdkVersion="10" android:targetSdkVersion="19"/>
     
     <permission-group 
-        android:name="org.gnucash.android.permission.group.GNUCASH"
+        android:name="${applicationId}.permission.group.GNUCASH"
         android:label="@string/label_permission_group" 
         android:description="@string/description_permission_group" />
     
@@ -131,7 +131,7 @@
             <intent-filter>
                 <action android:name="android.intent.action.INSERT" />
                 <category android:name="android.intent.category.DEFAULT" />
-                <data android:mimeType="vnd.android.cursor.item/vnd.org.gnucash.android.transaction"/>
+                <data android:mimeType="vnd.android.cursor.item/vnd.${applicationId}.transaction"/>
             </intent-filter>
         </receiver>
         <receiver android:name=".receivers.AccountCreator"
@@ -141,7 +141,7 @@
             <intent-filter>
                 <action android:name="android.intent.action.INSERT" />
                 <category android:name="android.intent.category.DEFAULT" />
-                <data android:mimeType="vnd.android.cursor.item/vnd.org.gnucash.android.account"/>
+                <data android:mimeType="vnd.android.cursor.item/vnd.${applicationId}.account"/>
             </intent-filter>
         </receiver>
         <receiver android:name=".receivers.TransactionAppWidgetProvider" >
