@@ -419,12 +419,6 @@ public class GncXmlHandler extends DefaultHandler {
                     }
                 } else if (mInTemplates && mInDebitFormulaSlot) {
                     try {
-                        // TODO: test this. I do not have template transactions to test
-                        // Going through double to decimal will lose accuracy.
-                        // NEVER use double for money.
-                        // from Android SDK Ddoc:
-                        //    new BigDecimal(0.1) is equal to 0.1000000000000000055511151231257827021181583404541015625. This happens as 0.1 cannot be represented exactly in binary.
-                        //    To generate a big decimal instance which is equivalent to 0.1 use the BigDecimal(String) constructor.
                         Money amount = new Money(GncXmlHelper.parseTemplateSplitAmount(characterString),
                                 mTransaction.getCurrency());
                         mSplit.setAmount(amount.absolute());

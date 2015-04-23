@@ -124,8 +124,6 @@ public class ExportDialogFragment extends DialogFragment implements RecurrencePi
 
 	private ExportParams.ExportTarget mExportTarget = ExportParams.ExportTarget.SD_CARD;
 
-	private GoogleApiClient mGoogleApiClient;
-
 
 	/**
 	 * Click listener for positive button in the dialog.
@@ -256,8 +254,8 @@ public class ExportDialogFragment extends DialogFragment implements RecurrencePi
 					case 2:
 						recurrenceOptionsView.setVisibility(View.VISIBLE);
 						mExportTarget = ExportParams.ExportTarget.GOOGLE_DRIVE;
-						mGoogleApiClient = SettingsActivity.getGoogleApiClient(getActivity());
-						mGoogleApiClient.connect();
+						SettingsActivity.mGoogleApiClient = SettingsActivity.getGoogleApiClient(getActivity());
+						SettingsActivity.mGoogleApiClient.connect();
 						break;
 					case 3:
 						mExportTarget = ExportParams.ExportTarget.SHARING;
@@ -372,7 +370,7 @@ public class ExportDialogFragment extends DialogFragment implements RecurrencePi
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if (requestCode == SettingsActivity.REQUEST_RESOLVE_CONNECTION && resultCode == Activity.RESULT_OK) {
-			mGoogleApiClient.connect();
+			SettingsActivity.mGoogleApiClient.connect();
 		}
 	}
 

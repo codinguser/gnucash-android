@@ -411,7 +411,7 @@ public class TransactionFormFragment extends SherlockFragment implements
 		mDate = mTime = cal;
 
         //TODO: deep copy the split list. We need a copy so we can modify with impunity
-        mSplitsList = new ArrayList<Split>(mTransaction.getSplits());
+        mSplitsList = new ArrayList<>(mTransaction.getSplits());
         mAmountEditText.setEnabled(mSplitsList.size() <= 2);
 
         //if there are more than two splits (which is the default for one entry), then
@@ -798,7 +798,7 @@ public class TransactionFormFragment extends SherlockFragment implements
 
             Log.i("TransactionFormFragment", event.toString());
         }
-        Toast.makeText(getActivity(), "Scheduled transaction", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getActivity(), "Scheduled recurring transaction", Toast.LENGTH_SHORT).show();
 
         //TODO: localize this toast string for all supported locales
 

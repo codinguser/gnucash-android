@@ -118,7 +118,7 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
     /**
      * Client for Google Drive Sync
      */
-    static GoogleApiClient mGoogleApiClient;
+    public static GoogleApiClient mGoogleApiClient;
 
     /**
 	 * Constructs the headers to display in the header list when the Settings activity is first opened
@@ -402,6 +402,7 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
         final String appFolderId = sharedPreferences.getString(getString(R.string.key_google_drive_app_folder_id), null);
         if (appFolderId != null){
             sharedPreferences.edit().remove(getString(R.string.key_google_drive_app_folder_id)).commit(); //commit (not apply) because we need it to be saved *now*
+            mGoogleApiClient.disconnect();
         } else {
             mGoogleApiClient.connect();
         }

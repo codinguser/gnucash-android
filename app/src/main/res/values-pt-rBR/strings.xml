@@ -463,6 +463,12 @@
 	<string name="summary_google_drive_sync">Enable to sync to Google Drive</string>
 	<string name="toast_install_file_manager">Install a file manager to select files</string>
 	<string name="title_select_backup_to_restore">Select backup to restore</string>
+	<string name="nav_menu_favorites">Favorites</string>
+	<string name="nav_menu_open">Open...</string>
+	<string name="nav_menu_reports">Reports</string>
+	<string name="nav_menu_scheduled_transactions">Scheduled Transactions</string>
+	<string name="nav_menu_export">Export...</string>
+	<string name="nav_menu_settings">Settings</string>
 	<plurals name="label_every_x_days">
         <item quantity="one">Daily</item>
         <item quantity="other">Every %d days</item>

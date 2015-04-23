@@ -263,7 +263,7 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
 
     /**
      * Handles the case where another application has selected to open a (.gnucash or .gnca) file with this app
-     * @param intent
+     * @param intent Intent containing the data to be imported
      */
     private void handleOpenFileIntent(Intent intent) {
         //when someone launches the app to view a (.gnucash or .gnca) file
