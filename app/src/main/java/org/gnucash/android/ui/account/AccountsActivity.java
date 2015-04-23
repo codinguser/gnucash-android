@@ -27,6 +27,7 @@ import android.content.SharedPreferences.Editor;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Resources;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.DialogFragment;
@@ -52,6 +53,8 @@ import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.export.ExportDialogFragment;
+import org.gnucash.android.export.xml.GncXmlExporter;
+import org.gnucash.android.importer.GncXmlImporter;
 import org.gnucash.android.importer.ImportAsyncTask;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.service.SchedulerService;
@@ -65,6 +68,7 @@ import org.gnucash.android.ui.util.OnAccountClickedListener;
 import org.gnucash.android.ui.util.Refreshable;
 import org.gnucash.android.ui.util.TaskDelegate;
 
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Currency;
@@ -221,12 +225,15 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
         setContentView(R.layout.activity_accounts);
         super.onCreate(savedInstanceState);
 
+        final Intent intent = getIntent();
+        handleOpenFileIntent(intent);
+
         init();
 
         mPager = (ViewPager) findViewById(R.id.pager);
         TitlePageIndicator titlePageIndicator = (TitlePageIndicator) findViewById(R.id.titles);
 
-        final Intent intent = getIntent();
+
         String action = intent.getAction();
         if (action != null && action.equals(Intent.ACTION_INSERT_OR_EDIT)) {
             //enter account creation/edit mode if that was specified
@@ -254,11 +261,36 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
 
 	}
 
+    /**
+     * Handles the case where another application has selected to open a (.gnucash or .gnca) file with this app
+     * @param intent
+     */
+    private void handleOpenFileIntent(Intent intent) {
+        //when someone launches the app to view a (.gnucash or .gnca) file
+        Uri data = intent.getData();
+        if (data != null){
+            GncXmlExporter.createBackup();
+
+            intent.setData(null);
+            InputStream accountInputStream = null;
+            try {
+                accountInputStream = getContentResolver().openInputStream(data);
+                new ImportAsyncTask(this).execute(accountInputStream);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } finally {
+                removeFirstRunFlag();
+            }
+        }
+    }
+
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         int index = intent.getIntExtra(EXTRA_TAB_INDEX, INDEX_TOP_LEVEL_ACCOUNTS_FRAGMENT);
         setTab(index);
+
+        handleOpenFileIntent(intent);
     }
 
     /**
@@ -583,7 +615,7 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
 	private void removeFirstRunFlag(){
 		Editor editor = PreferenceManager.getDefaultSharedPreferences(this).edit();
 		editor.putBoolean(getString(R.string.key_first_run), false);
-		editor.commit();
+		editor.apply();
 	}
 
 }

@@ -396,7 +396,7 @@ public class GncXmlExporter extends Exporter{
             // value, in the transaction's currency
             String trxType = cursor.getString(cursor.getColumnIndexOrThrow("split_type"));
             BigDecimal splitAmount = new BigDecimal(cursor.getString(cursor.getColumnIndexOrThrow("split_amount")));
-            String strValue = "0";
+            String strValue = "0/" + denomString;
             if (!exportTemplates) { //when doing normal transaction export
                 strValue = (trxType.equals("CREDIT") ? "-" : "") + splitAmount.multiply(denom).stripTrailingZeros().toPlainString() + "/" + denomString;
             }

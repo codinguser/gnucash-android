@@ -40,15 +40,14 @@ import org.xml.sax.helpers.DefaultHandler;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
-import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Currency;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Stack;
+import java.util.UUID;
 import java.util.regex.Pattern;
 
 /**
@@ -575,7 +574,11 @@ public class GncXmlHandler extends DefaultHandler {
                 }
                 break;
             case GncXmlHelper.TAG_SX_TEMPL_ACCOUNT:
-                mScheduledAction.setActionUID(mTemplateAccountToTransactionMap.get(characterString));
+                if (mScheduledAction.getActionType() == ScheduledAction.ActionType.TRANSACTION) {
+                    mScheduledAction.setActionUID(mTemplateAccountToTransactionMap.get(characterString));
+                } else {
+                    mScheduledAction.setActionUID(UUID.randomUUID().toString().replaceAll("-",""));
+                }
                 break;
             case GncXmlHelper.TAG_SCHEDULED_ACTION:
                 mScheduledActionsList.add(mScheduledAction);

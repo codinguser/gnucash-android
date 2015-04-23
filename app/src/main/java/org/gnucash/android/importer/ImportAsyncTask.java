@@ -67,7 +67,7 @@ public class ImportAsyncTask extends AsyncTask<InputStream, Void, Boolean> {
     @Override
     protected Boolean doInBackground(InputStream... inputStreams) {
         try {
-            GncXmlImporter.parse(context, inputStreams[0]);
+            GncXmlImporter.parse(inputStreams[0]);
         } catch (Exception exception){
             exception.printStackTrace();
             final String err_msg = exception.getLocalizedMessage();
