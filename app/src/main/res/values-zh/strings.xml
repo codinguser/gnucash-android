@@ -482,4 +482,5 @@
         <item quantity="one">Yearly</item>
         <item quantity="other">Every %d years</item>
     </plurals>
+    <string name="toast_error_edit_multi_currency_transaction">Multi-currency transactions cannot be modified</string>
 </resources>

@@ -27,6 +27,14 @@ android {
         versionCode versionMajor * 10000 + versionMinor * 1000 + versionPatch * 100 + versionBuild
         versionName "${versionMajor}.${versionMinor}.${versionPatch}"
     }
+
+    applicationVariants.all { variant ->
+        variant.outputs.each { output ->
+            output.outputFile = new File(
+                    output.outputFile.parent, "GnucashAndroid_v${variant.versionName}.apk".replaceAll(":","-"))
+        }
+    }
+
     buildTypes {
         release {
             minifyEnabled false

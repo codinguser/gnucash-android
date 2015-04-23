@@ -380,12 +380,6 @@
         veel gebruikte rekeningen creëren, of je eigen GnuCash rekeningstructuur importeren. \n\nBeide opties zijn ook
         beschikbaar in app Instellingen zodat je later kan beslissen.
     </string>
-    <string-array name="recurrence_period_strings">
-        <item>GEEN</item>
-        <item>DAGELIJKS</item>
-        <item>WEKELIJKSE</item>
-        <item>MAANDELIJKS</item>
-    </string-array>
     <string name="menu_scheduled_transactions">Vaste journaalposten</string>
     <string name="title_scheduled_transactions">Vaste journaalposten</string>
     <string name="title_select_export_destination">Select destination for export</string>

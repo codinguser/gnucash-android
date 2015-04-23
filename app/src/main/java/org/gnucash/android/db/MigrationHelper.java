@@ -121,26 +121,6 @@ public class MigrationHelper {
     }
 
     /**
-     * Add created_at and modified_at columns to a table in the database and create a trigger
-     * for updating the modified_at columns
-     * @param db SQLite database
-     * @param tableName Name of the table
-     */
-    static void createUpdatedAndModifiedColumns(SQLiteDatabase db, String tableName){
-        String addCreatedColumn = "ALTER TABLE " + tableName
-                + " ADD COLUMN " + DatabaseSchema.CommonColumns.COLUMN_CREATED_AT
-                + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP";
-
-        String addModifiedColumn = "ALTER TABLE " + tableName
-                + " ADD COLUMN " + DatabaseSchema.CommonColumns.COLUMN_MODIFIED_AT
-                + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP";
-
-        db.execSQL(addCreatedColumn);
-        db.execSQL(addModifiedColumn);
-        db.execSQL(DatabaseHelper.createUpdatedAtTrigger(tableName));
-    }
-
-    /**
      * Copies the contents of the file in {@code src} to {@code dst} and then deletes the {@code src} if copy was successful.
      * If the file copy was unsuccessful, the src file will not be deleted.
      * @param src Source file
@@ -183,6 +163,9 @@ public class MigrationHelper {
                         e.printStackTrace();
                     }
                 }
+            } else {
+                //if the base folder does not exist, no point going one level deeper
+                return;
             }
 
             File oldBackupFolder = new File(oldExportFolder, "backup");
