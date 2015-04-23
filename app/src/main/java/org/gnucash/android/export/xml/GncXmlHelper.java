@@ -17,6 +17,8 @@
 
 package org.gnucash.android.export.xml;
 
+import android.support.annotation.NonNull;
+
 import org.gnucash.android.model.Money;
 import org.gnucash.android.model.Split;
 import org.gnucash.android.model.TransactionType;
@@ -39,7 +41,7 @@ import java.util.Locale;
  * @author Yongxin Wang <fefe.wyx@gmail.com>
  */
 public abstract class GncXmlHelper {
-    public static final String TAG_PREFIX           = "gnc:";
+    public static final String TAG_GNC_PREFIX       = "gnc:";
 
     public static final String ATTR_KEY_CD_TYPE     = "cd:type";
     public static final String ATTR_KEY_TYPE        = "type";
@@ -77,7 +79,7 @@ public abstract class GncXmlHelper {
     public static final String TAG_TRX_ID           = "trn:id";
     public static final String TAG_TRX_CURRENCY     = "trn:currency";
     public static final String TAG_DATE_POSTED      = "trn:date-posted";
-    public static final String TAG_DATE             = "ts:date";
+    public static final String TAG_TS_DATE          = "ts:date";
     public static final String TAG_DATE_ENTERED     = "trn:date-entered";
     public static final String TAG_TRN_DESCRIPTION  = "trn:description";
     public static final String TAG_TRN_SPLITS       = "trn:splits";
@@ -119,10 +121,10 @@ public abstract class GncXmlHelper {
     public static final String TAG_RX_START                 = "recurrence:start";
 
 
-    public static final String RECURRENCE_VERSION   = "1.0.0";
-    public static final String BOOK_VERSION         = "2.0.0";
-    public static final SimpleDateFormat TIME_FORMATTER = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z", Locale.US);
-    public static final SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+    public static final String RECURRENCE_VERSION           = "1.0.0";
+    public static final String BOOK_VERSION                 = "2.0.0";
+    public static final SimpleDateFormat TIME_FORMATTER     = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z", Locale.US);
+    public static final SimpleDateFormat DATE_FORMATTER     = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
 
     public static final String KEY_PLACEHOLDER              = "placeholder";
     public static final String KEY_COLOR                    = "color";
@@ -168,11 +170,23 @@ public abstract class GncXmlHelper {
     }
 
     /**
+     * Parses the amounts in template transaction splits
+     * <p>This makes the assumption that the amount uses comma (,) as decimal separators</p>
+     * @param amountString String value of the amount.
+     * @return BigDecimal representation of the amount
+     */
+    public static BigDecimal parseTemplateSplitAmount(@NonNull String amountString){
+        amountString = amountString.replaceAll("\\.", ""); //first remove periods (thousandths separator)
+        amountString = amountString.replaceAll(",", "."); //replace decimal separator (,) with periods
+        return new BigDecimal(amountString);
+    }
+
+    /**
      * Parses amount strings from GnuCash XML into {@link java.math.BigDecimal}s
      * @param amountString String containing the amount
      * @return BigDecimal with numerical value
      */
-    public static BigDecimal parseMoney(String amountString) throws ParseException {
+    public static BigDecimal parseSplitAmount(String amountString) throws ParseException {
         int pos = amountString.indexOf("/");
         if (pos < 0)
         {
@@ -184,12 +198,14 @@ public abstract class GncXmlHelper {
     }
 
     /**
-     * Returns a {@link java.text.NumberFormat} for parsing or writing amounts in template splits
-     * @return NumberFormat object
+     * Format the amount in template splits.
+     * This format uses commas for decimal separation
+     * @param amount Amount to be formatted
+     * @return String representation of amount
      */
-    public static NumberFormat getNumberFormatForTemplateSplits(){
+    public static String formatTemplateSplitAmount(BigDecimal amount){
         //TODO: Check if GnuCash desktop always using this formatting or if it is device locale specific
-        return NumberFormat.getNumberInstance(Locale.GERMANY);
+        String value = amount.toPlainString();
+        return value.replaceAll("\\.", ",");
     }
-
 }

@@ -76,7 +76,8 @@ public class SchedulerService extends IntentService {
                     || (scheduledAction.getExecutionCount() < scheduledAction.getTotalFrequency()) //or the number of scheduled runs
                     || (endTime == 0 && scheduledAction.getTotalFrequency() == 0)) //or the action is to run forever
                     && ((lastRun + period) <= now)  //one period has passed since last execution
-                    && scheduledAction.getStartTime() <= now ){ //the start time has arrived
+                    && scheduledAction.getStartTime() <= now
+                    && scheduledAction.isEnabled()){ //the start time has arrived
                 executeScheduledEvent(scheduledAction);
             }
         }

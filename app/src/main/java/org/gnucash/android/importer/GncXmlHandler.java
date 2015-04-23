@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2013 - 2015 Ngewi Fet <ngewif@gmail.com>
- * Copyright (c) 2014 Yongxin Wang <fefe.wyx@gmail.com>
+ * Copyright (c) 2014 - 2015 Yongxin Wang <fefe.wyx@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -172,6 +172,7 @@ public class GncXmlHandler extends DefaultHandler {
     boolean mIsScheduledStart   = false;
     boolean mIsScheduledEnd     = false;
     boolean mIsLastRun          = false;
+    boolean mIsRecurrenceStart  = false;
 
     /**
      * Multiplier for the recurrence period type. e.g. period type of week and multiplier of 2 means bi-weekly
@@ -267,6 +268,9 @@ public class GncXmlHandler extends DefaultHandler {
                 break;
             case GncXmlHelper.TAG_SX_LAST:
                 mIsLastRun = true;
+                break;
+            case GncXmlHelper.TAG_RX_START:
+                mIsRecurrenceStart = true;
                 break;
         }
     }
@@ -406,21 +410,15 @@ public class GncXmlHandler extends DefaultHandler {
                     mSplit.setAccountUID(characterString);
                     mInSplitAccountSlot = false;
                 } else if (mInTemplates && mInCreditFormulaSlot) {
-                    //FIXME: Formatting of amounts is broken
-                    NumberFormat numberFormat = NumberFormat.getNumberInstance(Locale.GERMANY);
                     try {
-                        Number number = numberFormat.parse(characterString);
-                        Money amount = new Money(new BigDecimal(number.doubleValue()), mTransaction.getCurrency());
+                        Money amount = new Money(GncXmlHelper.parseTemplateSplitAmount(characterString),
+                                mTransaction.getCurrency());
                         mSplit.setAmount(amount.absolute());
                         mSplit.setType(TransactionType.CREDIT);
-                    } catch (ParseException e) {
-                        Log.e(LOG_TAG, "Error parsing template split amount. " + e.getMessage());
-                        e.printStackTrace();
                     } finally {
                         mInCreditFormulaSlot = false;
                     }
                 } else if (mInTemplates && mInDebitFormulaSlot) {
-                    //FIXME: Format of amount export is broken
                     try {
                         // TODO: test this. I do not have template transactions to test
                         // Going through double to decimal will lose accuracy.
@@ -428,7 +426,8 @@ public class GncXmlHandler extends DefaultHandler {
                         // from Android SDK Ddoc:
                         //    new BigDecimal(0.1) is equal to 0.1000000000000000055511151231257827021181583404541015625. This happens as 0.1 cannot be represented exactly in binary.
                         //    To generate a big decimal instance which is equivalent to 0.1 use the BigDecimal(String) constructor.
-                        Money amount = new Money(new BigDecimal(characterString), mTransaction.getCurrency());
+                        Money amount = new Money(GncXmlHelper.parseTemplateSplitAmount(characterString),
+                                mTransaction.getCurrency());
                         mSplit.setAmount(amount.absolute());
                         mSplit.setType(TransactionType.DEBIT);
                     } catch (NumberFormatException e) {
@@ -446,7 +445,7 @@ public class GncXmlHandler extends DefaultHandler {
             case GncXmlHelper.TAG_TRN_DESCRIPTION:
                 mTransaction.setDescription(characterString);
                 break;
-            case GncXmlHelper.TAG_DATE:
+            case GncXmlHelper.TAG_TS_DATE:
                 try {
                     if (mIsDatePosted && mTransaction != null) {
                         mTransaction.setTime(GncXmlHelper.parseDate(characterString));
@@ -456,20 +455,6 @@ public class GncXmlHandler extends DefaultHandler {
                         Timestamp timestamp = new Timestamp(GncXmlHelper.parseDate(characterString));
                         mTransaction.setCreatedTimestamp(timestamp);
                         mIsDateEntered = false;
-                    }
-                    if (mIsScheduledStart && mScheduledAction != null) {
-                        mScheduledAction.setStartTime(GncXmlHelper.DATE_FORMATTER.parse(characterString).getTime());
-                        mIsScheduledStart = false;
-                    }
-
-                    if (mIsScheduledEnd && mScheduledAction != null) {
-                        mScheduledAction.setEndTime(GncXmlHelper.DATE_FORMATTER.parse(characterString).getTime());
-                        mIsScheduledEnd = false;
-                    }
-
-                    if (mIsLastRun && mScheduledAction != null) {
-                        mScheduledAction.setLastRun(GncXmlHelper.DATE_FORMATTER.parse(characterString).getTime());
-                        mIsLastRun = false;
                     }
                 } catch (ParseException e) {
                     e.printStackTrace();
@@ -496,7 +481,7 @@ public class GncXmlHandler extends DefaultHandler {
                     } else {
                         mNegativeQuantity = false;
                     }
-                    mQuantity = GncXmlHelper.parseMoney(q);
+                    mQuantity = GncXmlHelper.parseSplitAmount(q);
                 } catch (ParseException e) {
                     e.printStackTrace();
                     throw new SAXException("Unable to parse money", e);
@@ -536,6 +521,7 @@ public class GncXmlHandler extends DefaultHandler {
             case GncXmlHelper.TAG_TEMPLATE_TRANSACTIONS:
                 mInTemplates = false;
                 break;
+
             // ========================= PROCESSING SCHEDULED ACTIONS ==================================
             case GncXmlHelper.TAG_SX_ID:
                 mScheduledAction.setUID(characterString);
@@ -559,6 +545,34 @@ public class GncXmlHandler extends DefaultHandler {
                 PeriodType periodType = PeriodType.valueOf(characterString.toUpperCase());
                 periodType.setMultiplier(mRecurrenceMultiplier);
                 mScheduledAction.setPeriod(periodType);
+                break;
+            case GncXmlHelper.TAG_GDATE:
+                try {
+                    long date = GncXmlHelper.DATE_FORMATTER.parse(characterString).getTime();
+                    if (mIsScheduledStart && mScheduledAction != null) {
+                        mScheduledAction.setCreatedTimestamp(new Timestamp(date));
+                        mIsScheduledStart = false;
+                    }
+
+                    if (mIsScheduledEnd && mScheduledAction != null) {
+                        mScheduledAction.setEndTime(date);
+                        mIsScheduledEnd = false;
+                    }
+
+                    if (mIsLastRun && mScheduledAction != null) {
+                        mScheduledAction.setLastRun(date);
+                        mIsLastRun = false;
+                    }
+
+                    if (mIsRecurrenceStart && mScheduledAction != null){
+                        mScheduledAction.setStartTime(date);
+                        mIsRecurrenceStart = false;
+                    }
+                } catch (ParseException e) {
+                    Log.e(LOG_TAG, e.getMessage());
+                    e.printStackTrace();
+                    throw new SAXException("Unable to parse scheduled action dates", e);
+                }
                 break;
             case GncXmlHelper.TAG_SX_TEMPL_ACCOUNT:
                 mScheduledAction.setActionUID(mTemplateAccountToTransactionMap.get(characterString));

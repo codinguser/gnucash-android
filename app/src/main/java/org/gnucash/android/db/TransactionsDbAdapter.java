@@ -500,6 +500,17 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
     }
 
     /**
+     * Returns the number of template transactions in the database
+     * @return Number of template transactions
+     */
+    public long getTemplateTransactionsCount(){
+        String sql = "SELECT COUNT(*) FROM " + TransactionEntry.TABLE_NAME
+                + " WHERE " + TransactionEntry.COLUMN_TEMPLATE + "=1";
+        SQLiteStatement statement = mDb.compileStatement(sql);
+        return statement.simpleQueryForLong();
+    }
+
+    /**
      * Returns a cursor to transactions whose name (UI: description) start with the <code>prefix</code>
      * <p>This method is used for autocomplete suggestions when creating new transactions. <br/>
      * The suggestions are either transactions which have at least one split with {@code accountUID} or templates.</p>
