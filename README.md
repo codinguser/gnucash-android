@@ -1,9 +1,9 @@
 # Introduction
 
-Gnucash Mobile for Android is companion application for desktop Gnucash designed for Android.
-It allows you to record transactions on-the-go and export them in the QIF or OFX format and later import the data into Gnucash for the desktop. You can create multiple accounts for transactions in Gnucash. Double-entry accounting is also supported.
+Gnucash Android is companion application for desktop Gnucash designed for Android.
+It allows you to record transactions on-the-go and export them in the QIF, OFX or (GnuCash)-XML format and later import the data into Gnucash for the desktop. The app supports multiple nested accounts, scheduled transactions and backup/export to 3rd-party services (like DropBox & Google Drive).
 
-The application supports Android 2.2 Froyo (API level 8) and above. 
+The application supports Android 2.3.4 Froyo (API level 10) and above. 
 
 
 # Installation

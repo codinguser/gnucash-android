@@ -307,13 +307,13 @@
     <string name="summary_xml_ofx_header">当导出数据到GnuCash桌面版以外的程序时需要开启这个选项。</string>
     <string name="title_whats_new">新功能</string>
     <string name="whats_new">
-        - 提高了性能General resource and performance optimization\n
-        - 计算科目合计金额更快\n
-        - 可以设置密码保护（在设置页中）\n
-        - 按货币导入QIF文件\n
-        - 创建科目时可以沿用上一级的货币设置\n
-        - 修补了以前发现的问题\n
-    </string>
+        - Visual reports (Bar/Pie/line charts) \n
+        - Scheduled backups of (QIF, OFX, and XML)\n
+        - Backup/Export to DropBox and Google Drive\n
+        - Better recurrence options for scheduled transactions\n
+        - Navigation drawer for easier access to options\n
+        - Multiple bug fixes and improvements\n
+	</string>
     <string name="label_dismiss">知道了</string>
     <string name="toast_transanction_amount_required">输入金额才能保存交易</string>
     <string name="menu_import_accounts">导入GnuCash科目</string>

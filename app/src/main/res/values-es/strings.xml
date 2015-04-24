@@ -476,11 +476,11 @@
         <item quantity="other">Every %d years</item>
     </plurals>
 	<string name="whats_new">
-        - General resource and performance optimization\n
-        - Faster computation of account balances\n
-        - Set passcode to restrict access to app (in Settings)\n
-        - Export separate QIF files for each currency in use\n
-        - Use currencey settings when creating account hierarchy\n
+        - Visual reports (Bar/Pie/line charts) \n
+        - Scheduled backups of (QIF, OFX, and XML)\n
+        - Backup/Export to DropBox and Google Drive\n
+        - Better recurrence options for scheduled transactions\n
+        - Navigation drawer for easier access to options\n
         - Multiple bug fixes and improvements\n
 	</string>
     <string name="title_enable_crashlytics">Enable Crash Logging</string>
