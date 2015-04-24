@@ -38,6 +38,7 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewGroup;
@@ -46,6 +47,7 @@ import android.widget.ArrayAdapter;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
+import com.crashlytics.android.Crashlytics;
 import com.viewpagerindicator.TitlePageIndicator;
 
 import org.gnucash.android.R;
@@ -277,7 +279,8 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
                 accountInputStream = getContentResolver().openInputStream(data);
                 new ImportAsyncTask(this).execute(accountInputStream);
             } catch (FileNotFoundException e) {
-                e.printStackTrace();
+                Crashlytics.logException(e);
+                Log.e(LOG_TAG, "Error opening file for import - " + e.getMessage());
             } finally {
                 removeFirstRunFlag();
             }
@@ -363,7 +366,8 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
             packageInfo = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
             releaseTitle.append(" - v").append(packageInfo.versionName);
         } catch (NameNotFoundException e) {
-            e.printStackTrace();
+            Crashlytics.logException(e);
+            Log.e(LOG_TAG, "Error displaying 'Whats new' dialog");
         }
 
         new AlertDialog.Builder(context)
@@ -495,10 +499,10 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
         builder.setMessage(R.string.msg_confirm_create_default_accounts_first_run);
 
 		builder.setPositiveButton(R.string.btn_create_accounts, new DialogInterface.OnClickListener() {
-
+            AlertDialog currencyDialog;
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                AlertDialog.Builder adb = new AlertDialog.Builder(AccountsActivity.this);
+                final AlertDialog.Builder adb = new AlertDialog.Builder(AccountsActivity.this);
                 adb.setTitle(R.string.title_choose_currency);
                 ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(
                         AccountsActivity.this,
@@ -520,10 +524,12 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
                                 .commit();
 
                         createDefaultAccounts(currency, AccountsActivity.this);
+                        currencyDialog.dismiss();
                         removeFirstRunFlag();
                     }
                 });
-                adb.create().show();
+                currencyDialog = adb.create();
+                currencyDialog.show();
             }
         });
 		
@@ -532,7 +538,6 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 mDefaultAccountsDialog.dismiss();
-                removeFirstRunFlag();
             }
         });
 
@@ -540,7 +545,6 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 importAccounts();
-                removeFirstRunFlag();
             }
         });
 
@@ -548,10 +552,37 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
         mDefaultAccountsDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
             @Override
             public void onDismiss(DialogInterface dialog) {
+                removeFirstRunFlag();
                 mDrawerLayout.openDrawer(mDrawerList);
             }
         });
 		mDefaultAccountsDialog.show();
+
+/*
+        //TODO: For now logging is disabled only for production. In the future, consider enabling for production
+        //show dialog to get user consent for logging
+        new AlertDialog.Builder(this)
+                .setTitle(getString(R.string.title_enable_crashlytics))
+                .setMessage(getString(R.string.msg_enable_crashlytics))
+                .setPositiveButton(R.string.label_enable, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(AccountsActivity.this);
+                        Editor editor = sharedPreferences.edit();
+                        editor.putBoolean(getString(R.string.key_enable_crashlytics), true);
+                        editor.apply();
+                    }
+                })
+                .setNegativeButton(R.string.btn_cancel, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(AccountsActivity.this);
+                        Editor editor = sharedPreferences.edit();
+                        editor.putBoolean(getString(R.string.key_enable_crashlytics), false);
+                        editor.apply();
+                    }
+                }).create().show();
+*/
 	}
 
     /**
@@ -616,7 +647,7 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
 	private void removeFirstRunFlag(){
 		Editor editor = PreferenceManager.getDefaultSharedPreferences(this).edit();
 		editor.putBoolean(getString(R.string.key_first_run), false);
-		editor.apply();
+		editor.commit();
 	}
 
 }

@@ -22,6 +22,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.crashlytics.android.Crashlytics;
+
 import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.model.Account;
 import org.gnucash.android.model.Money;
@@ -92,7 +94,7 @@ public class TransactionRecorder extends BroadcastReceiver {
                     transaction.addSplit(split);
                 }
             } catch (IOException e) {
-                e.printStackTrace();
+                Crashlytics.logException(e);
             }
         }
 

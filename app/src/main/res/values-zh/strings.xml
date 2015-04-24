@@ -483,4 +483,8 @@
         <item quantity="other">Every %d years</item>
     </plurals>
     <string name="toast_error_edit_multi_currency_transaction">Multi-currency transactions cannot be modified</string>
+    <string name="title_enable_crashlytics">Enable Crash Logging</string>
+    <string name="msg_enable_crashlytics">Enable to send information about malfunctions to the developers for improvement (recommended).
+No user-identifiable information will be collected as part of this process!
+    </string>
 </resources>

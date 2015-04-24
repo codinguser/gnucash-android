@@ -27,6 +27,8 @@ import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.crashlytics.android.Crashlytics;
+
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.model.AccountType;
 import org.gnucash.android.model.Money;
@@ -50,8 +52,6 @@ import static org.gnucash.android.db.DatabaseSchema.TransactionEntry;
  */
 public class TransactionsDbAdapter extends DatabaseAdapter {
 
-    private static final String TAG = "TransactionsDbAdapter";
-
     private final SplitsDbAdapter mSplitsDbAdapter;
 
     /**
@@ -61,6 +61,7 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
     public TransactionsDbAdapter(SQLiteDatabase db, SplitsDbAdapter splitsDbAdapter) {
         super(db, TransactionEntry.TABLE_NAME);
         mSplitsDbAdapter = splitsDbAdapter;
+        LOG_TAG = "TransactionsDbAdapter";
     }
 
     /**
@@ -92,13 +93,13 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
         contentValues.put(TransactionEntry.COLUMN_CURRENCY,     transaction.getCurrencyCode());
         contentValues.put(TransactionEntry.COLUMN_SCHEDX_ACTION_UID, transaction.getScheduledActionUID());
 
-        Log.d(TAG, "Replacing transaction in db");
+        Log.d(LOG_TAG, "Replacing transaction in db");
         long rowId = -1;
         mDb.beginTransaction();
         try {
             rowId = mDb.replaceOrThrow(TransactionEntry.TABLE_NAME, null, contentValues);
 
-            Log.d(TAG, "Adding splits for transaction");
+            Log.d(LOG_TAG, "Adding splits for transaction");
             ArrayList<String> splitUIDs = new ArrayList<String>(transaction.getSplits().size());
             for (Split split : transaction.getSplits()) {
                 contentValues = getContentValues(split);
@@ -109,20 +110,20 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
                 contentValues.put(SplitEntry.COLUMN_TRANSACTION_UID, split.getTransactionUID());
                 splitUIDs.add(split.getUID());
 
-                Log.d(TAG, "Replace transaction split in db");
+                Log.d(LOG_TAG, "Replace transaction split in db");
                 mDb.replaceOrThrow(SplitEntry.TABLE_NAME, null, contentValues);
             }
-            Log.d(TAG, transaction.getSplits().size() + " splits added");
+            Log.d(LOG_TAG, transaction.getSplits().size() + " splits added");
 
             long deleted = mDb.delete(SplitEntry.TABLE_NAME,
                     SplitEntry.COLUMN_TRANSACTION_UID + " = ? AND "
                             + SplitEntry.COLUMN_UID + " NOT IN ('" + TextUtils.join("' , '", splitUIDs) + "')",
                     new String[]{transaction.getUID()});
-            Log.d(TAG, deleted + " splits deleted");
+            Log.d(LOG_TAG, deleted + " splits deleted");
             mDb.setTransactionSuccessful();
         } catch (SQLException sqle) {
-            Log.e(TAG, sqle.getMessage());
-            sqle.printStackTrace();
+            Log.e(LOG_TAG, sqle.getMessage());
+            Crashlytics.logException(sqle);
         } finally {
             mDb.endTransaction();
         }
@@ -180,7 +181,7 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
         if (rowInserted != 0 && !splitList.isEmpty()) {
             try {
                 long nSplits = mSplitsDbAdapter.bulkAddSplits(splitList);
-                Log.d(TAG, String.format("%d splits inserted", nSplits));
+                Log.d(LOG_TAG, String.format("%d splits inserted", nSplits));
             }
             finally {
                 SQLiteStatement deleteEmptyTransaction = mDb.compileStatement("DELETE FROM " +
@@ -200,7 +201,7 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 	 * @return {@link Transaction} object corresponding to database record
 	 */
     public Transaction getTransaction(long rowId) {
-        Log.v(TAG, "Fetching transaction with id " + rowId);
+        Log.v(LOG_TAG, "Fetching transaction with id " + rowId);
         Cursor c = fetchRecord(rowId);
         try {
             if (c.moveToFirst()) {
@@ -448,7 +449,7 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 	 * @return Number of transactions splits affected
 	 */
 	public int moveTransaction(String transactionUID, String srcAccountUID, String dstAccountUID){
-		Log.i(TAG, "Moving transaction ID " + transactionUID
+		Log.i(LOG_TAG, "Moving transaction ID " + transactionUID
                 + " splits from " + srcAccountUID + " to account " + dstAccountUID);
 
 		List<Split> splits = mSplitsDbAdapter.getSplitsForTransactionInAccount(transactionUID, srcAccountUID);

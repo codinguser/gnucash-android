@@ -21,6 +21,8 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
+import com.crashlytics.android.Crashlytics;
+
 import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.export.ExportFormat;
@@ -74,6 +76,7 @@ public class GncXmlExporter extends Exporter{
      */
     public GncXmlExporter(ExportParams params) {
         super(params, null);
+        LOG_TAG = "GncXmlExporter";
     }
 
     /**
@@ -84,6 +87,7 @@ public class GncXmlExporter extends Exporter{
      */
     public GncXmlExporter(ExportParams params, SQLiteDatabase db) {
         super(params, db);
+        LOG_TAG = "GncXmlExporter";
     }
 
     private void exportSlots(XmlSerializer xmlSerializer,
@@ -667,7 +671,7 @@ public class GncXmlExporter extends Exporter{
             xmlSerializer.endTag(null, GncXmlHelper.TAG_ROOT);
             xmlSerializer.endDocument();
         } catch (Exception e) {
-            e.printStackTrace();
+            Crashlytics.logException(e);
             throw new ExporterException(mParameters, e);
         }
     }
@@ -686,7 +690,7 @@ public class GncXmlExporter extends Exporter{
             outputStreamWriter.close();
             return true;
         } catch (IOException e) {
-            e.printStackTrace();
+            Crashlytics.logException(e);
             Log.e("GncXmlExporter", "Error creating backup", e);
             return false;
         }

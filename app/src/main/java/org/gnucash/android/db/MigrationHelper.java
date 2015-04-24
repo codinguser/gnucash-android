@@ -21,6 +21,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Environment;
 import android.util.Log;
 
+import com.crashlytics.android.Crashlytics;
+
 import org.gnucash.android.export.Exporter;
 import org.gnucash.android.importer.GncXmlImporter;
 import org.gnucash.android.model.AccountType;
@@ -160,7 +162,7 @@ public class MigrationHelper {
                         MigrationHelper.moveFile(src, dst);
                     } catch (IOException e) {
                         Log.e(LOG_TAG, "Error migrating " + src.getName());
-                        e.printStackTrace();
+                        Crashlytics.logException(e);
                     }
                 }
             } else {
@@ -176,7 +178,7 @@ public class MigrationHelper {
                         MigrationHelper.moveFile(src, dst);
                     } catch (IOException e) {
                         Log.e(LOG_TAG, "Error migrating backup: " + src.getName());
-                        e.printStackTrace();
+                        Crashlytics.logException(e);
                     }
                 }
             }

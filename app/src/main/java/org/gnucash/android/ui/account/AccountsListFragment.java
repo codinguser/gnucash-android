@@ -586,7 +586,7 @@ public class AccountsListFragment extends SherlockListFragment implements
             // add a summary of transactions to the account view
             TextView accountBalanceTextView = (TextView) v
                     .findViewById(R.id.transactions_summary);
-            new AccountBalanceTask(accountBalanceTextView, getActivity()).execute(accountUID);
+            new AccountBalanceTask(accountBalanceTextView).execute(accountUID);
 
             View colorStripView = v.findViewById(R.id.account_color_strip);
             String accountColor = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.AccountEntry.COLUMN_COLOR_CODE));

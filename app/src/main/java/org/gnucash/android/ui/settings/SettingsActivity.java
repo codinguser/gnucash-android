@@ -41,6 +41,7 @@ import android.widget.Toast;
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockPreferenceActivity;
 import com.actionbarsherlock.view.MenuItem;
+import com.crashlytics.android.Crashlytics;
 import com.dropbox.sync.android.DbxAccountManager;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
@@ -153,18 +154,6 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
         mGoogleApiClient = getGoogleApiClient(this);
 
 		//retrieve version from Manifest and set it
-		String version = null;
-		try {
-			version = getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
-			SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-			Editor editor = sharedPrefs.edit();
-			editor.putString(getString(R.string.key_build_version), version);
-			editor.commit();
-		} catch (NameNotFoundException e) {
-			Log.e("SettingsActivity", "Could not set version preference");
-			e.printStackTrace();
-		}
-				
 		ActionBar actionBar = getSupportActionBar();
 		actionBar.setTitle(R.string.title_settings);
 		actionBar.setHomeButtonEnabled(true);
@@ -177,12 +166,8 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
             addPreferencesFromResource(R.xml.fragment_passcode_preferences);
 			addPreferencesFromResource(R.xml.fragment_about_preferences);
 			setDefaultCurrencyListener();
-			SharedPreferences manager = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-			String versionName = manager.getString(getString(R.string.key_build_version), "");
-			Preference pref = findPreference(getString(R.string.key_build_version));
-			pref.setSummary(versionName);
 
-            pref = findPreference(getString(R.string.key_import_accounts));
+            Preference pref = findPreference(getString(R.string.key_import_accounts));
             pref.setOnPreferenceClickListener(this);
 
             pref = findPreference(getString(R.string.key_restore_backup));
@@ -561,7 +546,7 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
                     FileInputStream inputStream = new FileInputStream(backupFile);
                     new ImportAsyncTask(SettingsActivity.this).execute(inputStream);
                 } catch (FileNotFoundException e) {
-                    e.printStackTrace();
+                    Crashlytics.logException(e);
                     Log.e(LOG_TAG, "Error restoring backup: " + backupFile.getName());
                     Toast.makeText(SettingsActivity.this, R.string.toast_error_importing_accounts, Toast.LENGTH_LONG).show();
                 }
@@ -590,7 +575,7 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
                     InputStream accountInputStream = getContentResolver().openInputStream(data.getData());
                     new ImportAsyncTask(this).execute(accountInputStream);
                 } catch (FileNotFoundException e) {
-                    e.printStackTrace();
+                    Crashlytics.logException(e);
                     Toast.makeText(this, R.string.toast_error_importing_accounts, Toast.LENGTH_SHORT).show();
                 }
                 break;

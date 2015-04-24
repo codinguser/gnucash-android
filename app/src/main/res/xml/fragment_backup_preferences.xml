@@ -50,7 +50,5 @@
         <CheckBoxPreference android:summary="@string/hint_delete_after_export" android:key="@string/key_delete_transactions_after_export" android:title="@string/title_always_delete_exported_transactions"/>
         <CheckBoxPreference android:key="@string/key_xml_ofx_header" android:summary="@string/summary_xml_ofx_header" android:title="@string/title_xml_ofx_header"/>
     </PreferenceCategory>
-    
-    
 
 </PreferenceScreen>

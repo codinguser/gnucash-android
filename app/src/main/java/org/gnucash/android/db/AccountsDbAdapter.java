@@ -26,7 +26,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
-
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.model.Account;
@@ -74,8 +73,6 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 
     private static String mImbalanceAccountPrefix = GnuCashApplication.getAppContext().getString(R.string.imbalance_account_name) + "-";
 
-    private static final String TAG = "AccountsDbAdapter";
-
     /**
      * Overloaded constructor. Creates an adapter for an already open database
      * @param db SQliteDatabase instance
@@ -83,6 +80,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
     public AccountsDbAdapter(SQLiteDatabase db, TransactionsDbAdapter transactionsDbAdapter) {
         super(db, AccountEntry.TABLE_NAME);
         mTransactionsAdapter = transactionsDbAdapter;
+        LOG_TAG = "AccountsDbAdapter";
     }
 
     /**
@@ -126,7 +124,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
             contentValues.putNull(AccountEntry.COLUMN_DEFAULT_TRANSFER_ACCOUNT_UID);
         }
 
-        Log.d(TAG, "Replace account to db");
+        Log.d(LOG_TAG, "Replace account to db");
         long rowId =  mDb.replace(AccountEntry.TABLE_NAME, null, contentValues);
 
 		//now add transactions if there are any
@@ -186,7 +184,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
                 if (account.getDefaultTransferAccountUID() != null) {
                     replaceStatement.bindString(12, account.getDefaultTransferAccountUID());
                 }
-                //Log.d(TAG, "Replacing account in db");
+                //Log.d(LOG_TAG, "Replacing account in db");
                 replaceStatement.execute();
                 nRow ++;
             }
@@ -334,7 +332,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
             return false;
         }
 
-        Log.d(TAG, "Delete account with rowId with its transactions and sub-accounts: " + accountId);
+        Log.d(LOG_TAG, "Delete account with rowId with its transactions and sub-accounts: " + accountId);
 
         List<String> descendantAccountUIDs = getDescendantAccountUIDs(accountUID, null, null);
         mDb.beginTransaction();
@@ -413,7 +411,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
                 null, null, null, null);
         try {
             if (cursor.moveToFirst()) {
-                Log.d(TAG, "Account already exists. Returning existing id");
+                Log.d(LOG_TAG, "Account already exists. Returning existing id");
                 return cursor.getString(cursor.getColumnIndexOrThrow(AccountEntry.COLUMN_PARENT_ACCOUNT_UID));
             } else {
                 return null;
@@ -440,7 +438,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 	 * @return {@link Account} object corresponding to database record
 	 */
     public Account getAccount(long rowId){
-		Log.v(TAG, "Fetching account with id " + rowId);
+		Log.v(LOG_TAG, "Fetching account with id " + rowId);
 		Cursor c =	fetchRecord(rowId);
 		try {
             if (c.moveToFirst()) {
@@ -708,7 +706,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 	 */
     @Override
 	public Cursor fetchAllRecords(){
-		Log.v(TAG, "Fetching all accounts from db");
+		Log.v(LOG_TAG, "Fetching all accounts from db");
         String selection =  AccountEntry.COLUMN_HIDDEN + " = 0 AND " + AccountEntry.COLUMN_TYPE + " != ?" ;
         return mDb.query(AccountEntry.TABLE_NAME,
                 null,
@@ -724,7 +722,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
      * @return {@link Cursor} to all account records
      */
     public Cursor fetchAllRecordsOrderedByFullName(){
-        Log.v(TAG, "Fetching all accounts from db");
+        Log.v(LOG_TAG, "Fetching all accounts from db");
         String selection =  AccountEntry.COLUMN_HIDDEN + " = 0 AND " + AccountEntry.COLUMN_TYPE + " != ?" ;
         return mDb.query(AccountEntry.TABLE_NAME,
                 null,
@@ -746,7 +744,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
         if (orderBy == null){
             orderBy = AccountEntry.COLUMN_NAME + " ASC";
         }
-        Log.v(TAG, "Fetching all accounts from db where " + where + " order by " + orderBy);
+        Log.v(LOG_TAG, "Fetching all accounts from db where " + where + " order by " + orderBy);
 
         return mDb.query(AccountEntry.TABLE_NAME,
                 null, where, whereArgs, null, null,
@@ -760,7 +758,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
      * @return Cursor set of accounts which fulfill <code>where</code>
      */
     public Cursor fetchAccountsOrderedByFullName(String where, String[] whereArgs) {
-        Log.v(TAG, "Fetching all accounts from db where " + where);
+        Log.v(LOG_TAG, "Fetching all accounts from db where " + where);
         return mDb.query(AccountEntry.TABLE_NAME,
                 null, where, whereArgs, null, null,
                 AccountEntry.COLUMN_FULL_NAME + " ASC");
@@ -786,7 +784,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
     }
 
     private Money computeBalance(String accountUID, long startTimestamp, long endTimestamp) {
-        Log.d(TAG, "Computing account balance for account ID " + accountUID);
+        Log.d(LOG_TAG, "Computing account balance for account ID " + accountUID);
         String currencyCode = mTransactionsAdapter.getAccountCurrencyCode(accountUID);
         boolean hasDebitNormalBalance = getAccountType(accountUID).hasDebitNormalBalance();
         Money balance = Money.createZeroInstance(currencyCode);
@@ -797,7 +795,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 
         accountsList.add(0, accountUID);
 
-        Log.d(TAG, "all account list : " + accountsList.size());
+        Log.d(LOG_TAG, "all account list : " + accountsList.size());
 		SplitsDbAdapter splitsDbAdapter = SplitsDbAdapter.getInstance();
         Money splitSum = (startTimestamp == -1 && endTimestamp == -1)
                 ? splitsDbAdapter.computeSplitBalance(accountsList, currencyCode, hasDebitNormalBalance)
@@ -905,7 +903,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
      * @return {@link Cursor} to the sub accounts data set
      */
     public Cursor fetchSubAccounts(String accountUID) {
-        Log.v(TAG, "Fetching sub accounts for account id " + accountUID);
+        Log.v(LOG_TAG, "Fetching sub accounts for account id " + accountUID);
         String selection = AccountEntry.COLUMN_HIDDEN + " = 0 AND "
                 + AccountEntry.COLUMN_PARENT_ACCOUNT_UID + " = ?";
         return mDb.query(AccountEntry.TABLE_NAME,
@@ -954,7 +952,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
      * @return Cursor holding set of favorite accounts
      */
     public Cursor fetchFavoriteAccounts(){
-        Log.v(TAG, "Fetching favorite accounts from db");
+        Log.v(LOG_TAG, "Fetching favorite accounts from db");
         String condition = AccountEntry.COLUMN_FAVORITE + " = 1";
         return mDb.query(AccountEntry.TABLE_NAME,
                 null, condition, null, null, null,
@@ -1250,7 +1248,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
         return mDb.delete(AccountEntry.TABLE_NAME, null, null);
 	}
 
-    public int getTransactionMaxSplitNum(String accountUID) {
+    public int getTransactionMaxSplitNum(@NonNull String accountUID) {
         Cursor cursor = mDb.query("trans_extra_info",
                 new String[]{"MAX(trans_split_count)"},
                 "trans_acct_t_uid IN ( SELECT DISTINCT " + TransactionEntry.TABLE_NAME + "_" + TransactionEntry.COLUMN_UID +

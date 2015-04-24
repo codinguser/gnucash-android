@@ -299,7 +299,7 @@ public class Account extends BaseModel{
             return;
 
         if (!Pattern.matches(COLOR_HEX_REGEX, colorCode))
-            throw new IllegalArgumentException("Invalid color hex code");
+            throw new IllegalArgumentException("Invalid color hex code: " + colorCode);
 
         this.mColorCode = colorCode;
     }

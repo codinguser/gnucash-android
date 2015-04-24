@@ -42,7 +42,7 @@ public abstract class DatabaseAdapter {
 	/**
 	 * Tag for logging
 	 */
-	protected static final String TAG = "DatabaseAdapter";
+	protected static String LOG_TAG = "DatabaseAdapter";
 
 	/**
 	 * SQLite database
@@ -234,7 +234,7 @@ public abstract class DatabaseAdapter {
 	 * @return <code>true</code> if deletion was successful, <code>false</code> otherwise
 	 */
 	public boolean deleteRecord(long rowId){
-        Log.d(TAG, "Deleting record with id " + rowId + " from " + mTableName);
+        Log.d(LOG_TAG, "Deleting record with id " + rowId + " from " + mTableName);
 		return mDb.delete(mTableName, DatabaseSchema.CommonColumns._ID + "=" + rowId, null) > 0;
 	}
 
@@ -260,7 +260,7 @@ public abstract class DatabaseAdapter {
         long result = -1;
         try{
             if (cursor.moveToFirst()) {
-                Log.d(TAG, "Transaction already exists. Returning existing id");
+                Log.d(LOG_TAG, "Transaction already exists. Returning existing id");
                 result = cursor.getLong(cursor.getColumnIndexOrThrow(DatabaseSchema.CommonColumns._ID));
             } else {
                 throw new IllegalArgumentException("Account UID " + uid + " does not exist in the db");

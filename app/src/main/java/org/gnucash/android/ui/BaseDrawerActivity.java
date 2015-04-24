@@ -32,6 +32,7 @@ import android.widget.Toast;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.MenuItem;
 import com.commonsware.cwac.merge.MergeAdapter;
+import com.crashlytics.android.Crashlytics;
 
 import org.gnucash.android.R;
 import org.gnucash.android.export.xml.GncXmlExporter;
@@ -248,7 +249,7 @@ public class BaseDrawerActivity extends SherlockFragmentActivity {
                     InputStream accountInputStream = getContentResolver().openInputStream(data.getData());
                     new ImportAsyncTask(this).execute(accountInputStream);
                 } catch (FileNotFoundException e) {
-                    e.printStackTrace();
+                    Crashlytics.logException(e);
                     Toast.makeText(this, R.string.toast_error_importing_accounts, Toast.LENGTH_SHORT).show();
                 }
                 break;

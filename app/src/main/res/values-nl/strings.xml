@@ -487,4 +487,8 @@
         <item quantity="one">Yearly</item>
         <item quantity="other">Every %d years</item>
     </plurals>
+    <string name="title_enable_crashlytics">Enable Crash Logging</string>
+    <string name="msg_enable_crashlytics">Enable to send information about malfunctions to the developers for improvement (recommended).
+No user-identifiable information will be collected as part of this process!
+    </string>
 </resources>

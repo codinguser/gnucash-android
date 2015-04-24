@@ -23,6 +23,8 @@ import android.os.PowerManager;
 import android.os.SystemClock;
 import android.util.Log;
 
+import com.crashlytics.android.Crashlytics;
+
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.db.ScheduledActionDbAdapter;
@@ -106,14 +108,11 @@ public class SchedulerService extends IntentService {
             case BACKUP:
                 ExportParams params = ExportParams.parseCsv(scheduledAction.getTag());
                 try {
+                    //wait for async task to finish before we proceed (we are holding a wake lock)
                     new ExportAsyncTask(GnuCashApplication.getAppContext()).execute(params).get();
-                } catch (InterruptedException e) {
+                } catch (InterruptedException | ExecutionException e) {
                     //TODO: Create special log for scheduler service
-                    Log.e(LOG_TAG, e.getMessage());
-                    return; //return immediately, do not update last run time of event
-                } catch (ExecutionException e) {
-                    //TODO: Log to crashlytics
-                    e.printStackTrace();
+                    Crashlytics.logException(e);
                     Log.e(LOG_TAG, e.getMessage());
                     return; //return immediately, do not update last run time of event
                 }

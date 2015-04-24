@@ -23,7 +23,10 @@ import android.os.Build;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
+
 import org.gnucash.android.R;
+import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.ui.account.AccountsActivity;
 import org.gnucash.android.ui.util.TaskDelegate;
 
@@ -69,9 +72,10 @@ public class ImportAsyncTask extends AsyncTask<InputStream, Void, Boolean> {
         try {
             GncXmlImporter.parse(inputStreams[0]);
         } catch (Exception exception){
-            exception.printStackTrace();
-            final String err_msg = exception.getLocalizedMessage();
             Log.e(ImportAsyncTask.class.getName(), "" + exception.getMessage());
+            Crashlytics.logException(exception);
+
+            final String err_msg = exception.getLocalizedMessage();
             context.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {

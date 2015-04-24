@@ -48,10 +48,9 @@ import static org.gnucash.android.db.DatabaseSchema.TransactionEntry;
  */
 public class SplitsDbAdapter extends DatabaseAdapter {
 
-    private static final String TAG = "SplitsDbAdapter";
-
     public SplitsDbAdapter(SQLiteDatabase db) {
         super(db, SplitEntry.TABLE_NAME);
+        LOG_TAG = "SplitsDbAdapter";
     }
 
     /**
@@ -76,7 +75,7 @@ public class SplitsDbAdapter extends DatabaseAdapter {
         contentValues.put(SplitEntry.COLUMN_ACCOUNT_UID, split.getAccountUID());
         contentValues.put(SplitEntry.COLUMN_TRANSACTION_UID, split.getTransactionUID());
 
-        Log.d(TAG, "Replace transaction split in db");
+        Log.d(LOG_TAG, "Replace transaction split in db");
         long rowId = mDb.replace(SplitEntry.TABLE_NAME, null, contentValues);
 
         long transactionId = getTransactionID(split.getTransactionUID());
@@ -297,7 +296,7 @@ public class SplitsDbAdapter extends DatabaseAdapter {
             if (cursor.moveToFirst()) {
                 double amount = cursor.getDouble(0);
                 cursor.close();
-                Log.d(TAG, "amount return " + amount);
+                Log.d(LOG_TAG, "amount return " + amount);
                 if (!hasDebitNormalBalance) {
                     amount = -amount;
                 }
@@ -383,7 +382,7 @@ public class SplitsDbAdapter extends DatabaseAdapter {
      * @return Cursor to splits
      */
     public Cursor fetchSplitsForTransaction(String transactionUID){
-        Log.v(TAG, "Fetching all splits for transaction UID " + transactionUID);
+        Log.v(LOG_TAG, "Fetching all splits for transaction UID " + transactionUID);
         return mDb.query(SplitEntry.TABLE_NAME,
                 null, SplitEntry.COLUMN_TRANSACTION_UID + " = ?",
                 new String[]{transactionUID},
@@ -396,7 +395,7 @@ public class SplitsDbAdapter extends DatabaseAdapter {
      * @return Cursor containing splits dataset
      */
     public Cursor fetchSplitsForAccount(String accountUID){
-        Log.d(TAG, "Fetching all splits for account UID " + accountUID);
+        Log.d(LOG_TAG, "Fetching all splits for account UID " + accountUID);
 
         //This is more complicated than a simple "where account_uid=?" query because
         // we need to *not* return any splits which belong to recurring transactions
@@ -426,7 +425,7 @@ public class SplitsDbAdapter extends DatabaseAdapter {
         if (transactionUID == null || accountUID == null)
             return null;
 
-        Log.v(TAG, "Fetching all splits for transaction ID " + transactionUID
+        Log.v(LOG_TAG, "Fetching all splits for transaction ID " + transactionUID
                 + "and account ID " + accountUID);
         return mDb.query(SplitEntry.TABLE_NAME,
                 null, SplitEntry.COLUMN_TRANSACTION_UID + " = ? AND "

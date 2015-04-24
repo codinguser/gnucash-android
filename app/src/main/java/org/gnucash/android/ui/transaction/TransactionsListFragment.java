@@ -193,7 +193,7 @@ public class TransactionsListFragment extends SherlockListFragment implements
 	  Text view displaying the sum of the accounts
 	 */
         TextView mSumTextView = (TextView) getView().findViewById(R.id.transactions_sum);
-        new AccountBalanceTask(mSumTextView, getActivity()).execute(mAccountUID);
+        new AccountBalanceTask(mSumTextView).execute(mAccountUID);
 
 	}
 			

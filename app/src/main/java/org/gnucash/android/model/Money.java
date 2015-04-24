@@ -19,6 +19,8 @@ package org.gnucash.android.model;
 
 import android.support.annotation.NonNull;
 
+import com.crashlytics.android.Crashlytics;
+
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
@@ -446,7 +448,7 @@ public final class Money implements Comparable<Money>{
 		try {
 			result = (BigDecimal) formatter.parse(amountString);
 		} catch (ParseException e) {
-			e.printStackTrace();		
+			Crashlytics.logException(e);
 		}
         return result;
 	}
@@ -464,11 +466,6 @@ public final class Money implements Comparable<Money>{
 	 * @return {@code true} if this money amount is zero, {@code false} otherwise
 	 */
     public boolean isAmountZero() {
-		try {
-			return mAmount.compareTo(BigDecimal.ZERO) == 0;
-		} catch (ArithmeticException e){
-			e.printStackTrace();
-			return false;
-		}
+		return mAmount.compareTo(BigDecimal.ZERO) == 0;
 	}
 }

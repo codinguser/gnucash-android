@@ -21,6 +21,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import com.crashlytics.android.Crashlytics;
+
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.ScheduledActionDbAdapter;
 import org.gnucash.android.db.SplitsDbAdapter;
@@ -384,8 +386,9 @@ public class GncXmlHandler extends DefaultHandler {
                                 mAccount.setColorCode(color);
                         } catch (IllegalArgumentException ex) {
                             //sometimes the color entry in the account file is "Not set" instead of just blank. So catch!
-                            Log.i(LOG_TAG, "Invalid color code '" + color + "' for account " + mAccount.getName());
-                            ex.printStackTrace();
+                            Log.e(LOG_TAG, "Invalid color code '" + color + "' for account " + mAccount.getName());
+                            Crashlytics.logException(ex);
+
                         }
                     }
                     mInColorSlot = false;
@@ -424,8 +427,8 @@ public class GncXmlHandler extends DefaultHandler {
                         mSplit.setAmount(amount.absolute());
                         mSplit.setType(TransactionType.DEBIT);
                     } catch (NumberFormatException e) {
-                        Log.e(LOG_TAG, "Error parsing template split amount. " + e.getMessage());
-                        e.printStackTrace();
+                        Log.e(LOG_TAG, "Error parsing template split amount " + characterString + " - " + e.getMessage());
+                        Crashlytics.logException(e);
                     } finally {
                         mInDebitFormulaSlot = false;
                     }
@@ -450,7 +453,7 @@ public class GncXmlHandler extends DefaultHandler {
                         mIsDateEntered = false;
                     }
                 } catch (ParseException e) {
-                    e.printStackTrace();
+                    Crashlytics.logException(e);
                     throw new SAXException("Unable to parse transaction time", e);
                 }
                 break;
@@ -476,8 +479,10 @@ public class GncXmlHandler extends DefaultHandler {
                     }
                     mQuantity = GncXmlHelper.parseSplitAmount(q);
                 } catch (ParseException e) {
-                    e.printStackTrace();
-                    throw new SAXException("Unable to parse money", e);
+                    String msg = "Error to parsing split quantity";
+                    Crashlytics.log(msg);
+                    Crashlytics.logException(e);
+                    throw new SAXException(msg, e);
                 }
                 break;
             case GncXmlHelper.TAG_SPLIT_ACCOUNT:
@@ -562,9 +567,11 @@ public class GncXmlHandler extends DefaultHandler {
                         mIsRecurrenceStart = false;
                     }
                 } catch (ParseException e) {
-                    Log.e(LOG_TAG, e.getMessage());
-                    e.printStackTrace();
-                    throw new SAXException("Unable to parse scheduled action dates", e);
+                    String msg = "Error parsing scheduled action date " + characterString;
+                    Log.e(LOG_TAG, msg + e.getMessage());
+                    Crashlytics.log(msg);
+                    Crashlytics.logException(e);
+                    throw new SAXException(msg, e);
                 }
                 break;
             case GncXmlHelper.TAG_SX_TEMPL_ACCOUNT:
@@ -700,7 +707,7 @@ public class GncXmlHandler extends DefaultHandler {
         try {
             return mAccountMap.get(accountUID).getCurrency();
         } catch (Exception e) {
-            e.printStackTrace();
+            Crashlytics.logException(e);
             return Currency.getInstance(Money.DEFAULT_CURRENCY_CODE);
         }
     }

@@ -1,11 +1,12 @@
 import java.text.SimpleDateFormat
 
 apply plugin: 'com.android.application'
+apply plugin: 'crashlytics'
 
 def versionMajor = 1
 def versionMinor = 6
 def versionPatch = 0
-def versionBuild = 1
+def versionBuild = 0
 
 def buildTime() {
     def df = new SimpleDateFormat("yyyyMMdd_HHmm'UTC'")
@@ -27,6 +28,7 @@ android {
         targetSdkVersion 19
         versionCode versionMajor * 10000 + versionMinor * 1000 + versionPatch * 100 + versionBuild
         versionName "${versionMajor}.${versionMinor}.${versionPatch}"
+        resValue "string", "app_version_name", "${versionName}"
         if (project.hasProperty("RELEASE_DROPBOX_APP_KEY")){
             resValue "string", "dropbox_app_key", RELEASE_DROPBOX_APP_KEY
             resValue "string", "dropbox_app_secret", RELEASE_DROPBOX_APP_SECRET
@@ -81,15 +83,18 @@ android {
             resValue "string", "dropbox_app_secret", "h2t9fphj3nr4wkw"
             resValue "string", "manifest_dropbox_app_key", "db-dhjh8ke9wf05948"
             versionName "${versionMajor}.${versionMinor}.${versionPatch}-dev${versionBuild}_${buildTime()}"
+            resValue "string", "app_version_name", "${versionName}"
         }
 
         beta {
             resValue "string", "app_name", "GnuCash - beta"
             versionName "${versionMajor}.${versionMinor}.${versionPatch}-beta${versionBuild}_${buildTime()}"
+            resValue "string", "app_version_name", "${versionName}"
         }
 
         production {
             resValue "string", "app_name", "GnuCash"
+            ext.enableCrashlytics = false //TODO: enable for production builds
         }
 
     }
@@ -110,7 +115,8 @@ dependencies {
             'com.commonsware.cwac:merge:1.1.+',
             'com.github.PhilJay:MPAndroidChart:v2.0.8',
             'joda-time:joda-time:2.7',
-            'com.google.android.gms:play-services-drive:7.0.0'
+            'com.google.android.gms:play-services-drive:7.0.0',
+            'com.crashlytics.android:crashlytics:1.+'
     )
     androidTestCompile('com.jayway.android.robotium:robotium-solo:5.2.1',
             'com.squareup:fest-android:1.0.6')

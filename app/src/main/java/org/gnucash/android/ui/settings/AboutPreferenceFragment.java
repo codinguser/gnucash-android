@@ -52,10 +52,7 @@ public class AboutPreferenceFragment extends PreferenceFragment{
 	@Override
 	public void onResume() {
 		super.onResume();
-		SharedPreferences manager = PreferenceManager.getDefaultSharedPreferences(getActivity());
-		String versionName = manager.getString(getString(R.string.key_build_version), "");
 		Preference pref = findPreference(getString(R.string.key_build_version));
-		pref.setSummary(versionName);
         pref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
