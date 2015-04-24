@@ -190,7 +190,8 @@ public abstract class Exporter {
         }
 
         public ExporterException(ExportParams params, Throwable throwable){
-            super("Failed to generate " + params.getExportFormat().toString(), throwable);
+            super("Failed to generate " + params.getExportFormat().toString() +"-"+ throwable.getMessage(),
+                    throwable);
         }
     }
 }

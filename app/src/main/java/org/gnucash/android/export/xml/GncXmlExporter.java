@@ -467,16 +467,20 @@ public class GncXmlExporter extends Exporter{
      * @param xmlSerializer XML serializer
      * @throws IOException
      */
-    private void exportScheduledActions(XmlSerializer xmlSerializer) throws IOException{
-        Cursor cursor = mScheduledActionDbAdapter.fetchAllRecords();
+    private void exportScheduledTransactions(XmlSerializer xmlSerializer) throws IOException{
+        //for now we will export only scheduled transactions to XML
+        Cursor cursor = mScheduledActionDbAdapter.fetchAllRecords(
+                ScheduledActionEntry.COLUMN_TYPE + "=?", new String[]{ScheduledAction.ActionType.TRANSACTION.name()});
 
         while (cursor.moveToNext()) {
             String actionUID = cursor.getString(cursor.getColumnIndexOrThrow(ScheduledActionEntry.COLUMN_ACTION_UID));
+            Account accountUID = mTransactionToTemplateAccountMap.get(actionUID);
 
             xmlSerializer.startTag(null, GncXmlHelper.TAG_SCHEDULED_ACTION);
             xmlSerializer.attribute(null, GncXmlHelper.ATTR_KEY_VERSION, GncXmlHelper.BOOK_VERSION);
             xmlSerializer.startTag(null, GncXmlHelper.TAG_SX_ID);
-            String nameUID = mTransactionToTemplateAccountMap.get(actionUID).getName();
+
+            String nameUID = accountUID.getName();
             xmlSerializer.attribute(null, GncXmlHelper.ATTR_KEY_TYPE, GncXmlHelper.ATTR_VALUE_GUID);
             xmlSerializer.text(nameUID);
             xmlSerializer.endTag(null, GncXmlHelper.TAG_SX_ID);
@@ -548,7 +552,7 @@ public class GncXmlExporter extends Exporter{
 
             xmlSerializer.startTag(null, GncXmlHelper.TAG_SX_TEMPL_ACCOUNT);
             xmlSerializer.attribute(null, GncXmlHelper.ATTR_KEY_TYPE, GncXmlHelper.ATTR_VALUE_GUID);
-            xmlSerializer.text(mTransactionToTemplateAccountMap.get(actionUID).getUID());
+            xmlSerializer.text(accountUID.getUID());
             xmlSerializer.endTag(null, GncXmlHelper.TAG_SX_TEMPL_ACCOUNT);
 
             xmlSerializer.startTag(null, GncXmlHelper.TAG_SX_SCHEDULE);
@@ -665,7 +669,7 @@ public class GncXmlExporter extends Exporter{
                 xmlSerializer.endTag(null, GncXmlHelper.TAG_TEMPLATE_TRANSACTIONS);
             }
             //scheduled actions
-            exportScheduledActions(xmlSerializer);
+            exportScheduledTransactions(xmlSerializer);
 
             xmlSerializer.endTag(null, GncXmlHelper.TAG_BOOK);
             xmlSerializer.endTag(null, GncXmlHelper.TAG_ROOT);

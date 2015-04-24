@@ -224,9 +224,18 @@ public abstract class DatabaseAdapter {
 	 * @return {@link Cursor} to all records in table <code>tableName</code>
 	 */
 	public Cursor fetchAllRecords(){
-		return mDb.query(mTableName,
-        		null, null, null, null, null, null);
+		return fetchAllRecords(null, null);
 	}
+
+    /**
+     * Fetch all records from database matching conditions
+     * @param where SQL where clause
+     * @param whereArgs String arguments for where clause
+     * @return Cursor to records matching conditions
+     */
+    public Cursor fetchAllRecords(String where, String[] whereArgs){
+        return mDb.query(mTableName, null, where, whereArgs, null, null, null);
+    }
 
 	/**
 	 * Deletes record with ID <code>rowID</code> from database table.
@@ -311,7 +320,7 @@ public abstract class DatabaseAdapter {
             if (cursor.moveToFirst()) {
                 return cursor.getString(0);
             } else {
-                throw new IllegalArgumentException("account " + accountUID + " does not exist");
+                throw new IllegalArgumentException("Account " + accountUID + " does not exist");
             }
         } finally {
             cursor.close();

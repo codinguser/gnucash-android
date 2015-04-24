@@ -155,20 +155,18 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
                 writer.close();
             }
 
-        } catch (Exception e) {
+        } catch (final Exception e) {
             Log.e(TAG, "Error exporting: " + e.getMessage());
             Crashlytics.logException(e);
 
-            final String err_msg = e.getLocalizedMessage();
             if (mContext instanceof Activity) {
                 ((Activity)mContext).runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        Toast.makeText(mContext, R.string.toast_export_error,
+                        Toast.makeText(mContext,
+                                mContext.getString(R.string.toast_export_error, mExportParams.getExportFormat().name())
+                                + "\n" + e.getMessage(),
                                 Toast.LENGTH_SHORT).show();
-                        if (err_msg != null) {
-                            Toast.makeText(mContext, err_msg, Toast.LENGTH_LONG).show();
-                        }
                     }
                 });
             }
