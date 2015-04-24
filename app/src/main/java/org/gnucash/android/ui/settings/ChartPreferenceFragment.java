@@ -21,6 +21,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.Preference;
+import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 
@@ -31,6 +32,8 @@ import org.gnucash.android.R;
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.model.Money;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Currency;
 import java.util.List;
 
@@ -39,7 +42,7 @@ import java.util.List;
  * @author Oleksandr Tyshkovets <olexandr.tyshkovets@gmail.com>
  */
 @TargetApi(11)
-public class ChartPreferenceFragment extends PreferenceFragment {
+public class ChartPreferenceFragment extends PreferenceFragment implements OnPreferenceChangeListener {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -60,10 +63,18 @@ public class ChartPreferenceFragment extends PreferenceFragment {
         }
 
         ListPreference pref = (ListPreference) findPreference(getString(R.string.key_chart_currency));
-        pref.setEntries(currencyCodes);
         pref.setEntryValues(currencyCodes);
-//        android:entries="@array/currency_names"
-//        android:entryValues="@array/key_currency_codes"
+        pref.setOnPreferenceChangeListener(this);
+
+
+        List<String> currencyNames = new ArrayList<>();
+        String[] allCurrencyNames = getResources().getStringArray(R.array.currency_names);
+        List<String> allCurrencyCodes = Arrays.asList(getResources().getStringArray(R.array.key_currency_codes));
+        for (String code : currencyCodes) {
+            currencyNames.add(allCurrencyNames[allCurrencyCodes.indexOf(code)]);
+        }
+
+        pref.setEntries(currencyNames.toArray(new String[currencyNames.size()]));
     }
 
     @Override
@@ -80,6 +91,17 @@ public class ChartPreferenceFragment extends PreferenceFragment {
             pref.setSummary(sharedPreferences.getString(getString(R.string.key_default_currency), Money.DEFAULT_CURRENCY_CODE));
         }
 
+    }
+
+    @Override
+    public boolean onPreferenceChange(Preference preference, Object newValue) {
+        preference.setSummary(newValue.toString());
+        PreferenceManager.getDefaultSharedPreferences(getActivity())
+                .edit()
+                .putString(getString(R.string.key_chart_currency), newValue.toString())
+                .commit();
+
+        return true;
     }
 
 }
