@@ -486,4 +486,5 @@
     <string name="msg_enable_crashlytics">Enable to send information about malfunctions to the developers for improvement (recommended).
 No user-identifiable information will be collected as part of this process!
     </string>
+    <string name="label_export_format">Export Format</string>
 </resources>
