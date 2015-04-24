@@ -498,17 +498,16 @@ public class TransactionFormFragment extends SherlockFragment implements
      * Only accounts with the same currency can be transferred to
      */
 	private void updateTransferAccountsList(){
-
-		String conditions = "(" + DatabaseSchema.AccountEntry.COLUMN_UID + " != '" + mAccountUID
-                            + "' AND " + (mMultiCurrency ? "" : (DatabaseSchema.AccountEntry.COLUMN_CURRENCY + " = '" + mAccountsDbAdapter.getCurrencyCode(mAccountUID)
-                            + "' AND ")) + DatabaseSchema.AccountEntry.COLUMN_UID + " != '" + mAccountsDbAdapter.getOrCreateGnuCashRootAccountUID()
-                            + "' AND " + DatabaseSchema.AccountEntry.COLUMN_PLACEHOLDER + " = 0"
+		String conditions = "(" + DatabaseSchema.AccountEntry.COLUMN_UID + " != ?"
+                            + " AND " + (mMultiCurrency ? "" : (DatabaseSchema.AccountEntry.COLUMN_CURRENCY + " = '" + mAccountsDbAdapter.getCurrencyCode(mAccountUID) + "'"
+                            + " AND ")) + DatabaseSchema.AccountEntry.COLUMN_TYPE + " != ?"
+                            + " AND " + DatabaseSchema.AccountEntry.COLUMN_PLACEHOLDER + " = 0"
                             + ")";
 
         if (mCursor != null) {
             mCursor.close();
         }
-		mCursor = mAccountsDbAdapter.fetchAccountsOrderedByFullName(conditions, null);
+		mCursor = mAccountsDbAdapter.fetchAccountsOrderedByFullName(conditions, new String[]{mAccountUID, AccountType.ROOT.name()});
 
         mCursorAdapter = new QualifiedAccountNameCursorAdapter(getActivity(),
                 android.R.layout.simple_spinner_item, mCursor);

@@ -337,6 +337,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                             + AccountEntry.COLUMN_FAVORITE + " , "
                             + AccountEntry.COLUMN_FULL_NAME + " , "
                             + AccountEntry.COLUMN_PLACEHOLDER + " , "
+                            + AccountEntry.COLUMN_HIDDEN + " , "
                             + AccountEntry.COLUMN_PARENT_ACCOUNT_UID + " , "
                             + AccountEntry.COLUMN_DEFAULT_TRANSFER_ACCOUNT_UID
                             + ") SELECT "
@@ -349,6 +350,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                             + AccountEntry.TABLE_NAME + "_bak." + AccountEntry.COLUMN_FAVORITE + " , "
                             + AccountEntry.TABLE_NAME + "_bak." + AccountEntry.COLUMN_FULL_NAME + " , "
                             + AccountEntry.TABLE_NAME + "_bak." + AccountEntry.COLUMN_PLACEHOLDER + " , "
+                            + " CASE WHEN " + AccountEntry.TABLE_NAME + "_bak.type = 'ROOT' THEN 1 ELSE 0 END, "
                             + AccountEntry.TABLE_NAME + "_bak." + AccountEntry.COLUMN_PARENT_ACCOUNT_UID + " , "
                             + AccountEntry.TABLE_NAME + "_bak." + AccountEntry.COLUMN_DEFAULT_TRANSFER_ACCOUNT_UID
                             + " FROM " + AccountEntry.TABLE_NAME + "_bak;"
@@ -433,26 +435,38 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                             + " FROM " + SplitEntry.TABLE_NAME + "_bak;"
             );
 
+
+
             //================================ END TABLE MIGRATIONS ================================
 
-            Log.i(LOG_TAG, "Migrating existing recurring transactions");
-            ContentValues contentValues = new ContentValues();
 
-            Cursor c = db.query(TransactionEntry.TABLE_NAME + "_bak", null, "recurrence_period > 0", null, null, null, null);
+
             ScheduledActionDbAdapter scheduledActionDbAdapter = new ScheduledActionDbAdapter(db);
             SplitsDbAdapter splitsDbAdapter = new SplitsDbAdapter(db);
             TransactionsDbAdapter transactionsDbAdapter = new TransactionsDbAdapter(db, splitsDbAdapter);
-            while (c.moveToNext()){
+            AccountsDbAdapter accountsDbAdapter = new AccountsDbAdapter(db,transactionsDbAdapter);
+
+            Log.i(LOG_TAG, "Creating default root account if none exists");
+            ContentValues contentValues = new ContentValues();
+            //assign a root account to all accounts which had null as parent (top-level accounts)
+            String rootAccountUID = accountsDbAdapter.getOrCreateGnuCashRootAccountUID();
+            contentValues.put(AccountEntry.COLUMN_PARENT_ACCOUNT_UID, rootAccountUID);
+            db.update(AccountEntry.TABLE_NAME, contentValues, AccountEntry.COLUMN_PARENT_ACCOUNT_UID + " IS NULL", null);
+
+            Log.i(LOG_TAG, "Migrating existing recurring transactions");
+            Cursor cursor = db.query(TransactionEntry.TABLE_NAME + "_bak", null, "recurrence_period > 0", null, null, null, null);
+            while (cursor.moveToNext()){
                 contentValues.clear();
-                Timestamp timestamp = new Timestamp(c.getLong(c.getColumnIndexOrThrow(TransactionEntry.COLUMN_TIMESTAMP)));
+                Timestamp timestamp = new Timestamp(cursor.getLong(cursor.getColumnIndexOrThrow(TransactionEntry.COLUMN_TIMESTAMP)));
                 contentValues.put(TransactionEntry.COLUMN_CREATED_AT, timestamp.toString());
-                long transactionId = c.getLong(c.getColumnIndexOrThrow(TransactionEntry._ID));
+                long transactionId = cursor.getLong(cursor.getColumnIndexOrThrow(TransactionEntry._ID));
                 db.update(TransactionEntry.TABLE_NAME, contentValues, TransactionEntry._ID + "=" + transactionId, null);
 
                 ScheduledAction scheduledAction = new ScheduledAction(ScheduledAction.ActionType.TRANSACTION);
-                scheduledAction.setActionUID(c.getString(c.getColumnIndexOrThrow(TransactionEntry.COLUMN_UID)));
-                long period = c.getLong(c.getColumnIndexOrThrow("recurrence_period"));
+                scheduledAction.setActionUID(cursor.getString(cursor.getColumnIndexOrThrow(TransactionEntry.COLUMN_UID)));
+                long period = cursor.getLong(cursor.getColumnIndexOrThrow("recurrence_period"));
                 scheduledAction.setPeriod(period);
+                scheduledAction.setLastRun(System.currentTimeMillis()); //prevent this from being executed at the end of migration
                 scheduledActionDbAdapter.addScheduledAction(scheduledAction);
 
                 //build intent for recurring transactions in the database
@@ -466,15 +480,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
                 alarmManager.cancel(recurringPendingIntent);
             }
-            c.close();
+            cursor.close();
 
             //auto-balance existing splits
             Log.i(LOG_TAG, "Auto-balancing existing transaction splits");
-            c = transactionsDbAdapter.fetchAllRecords();
-            AccountsDbAdapter accountsDbAdapter = new AccountsDbAdapter(db, transactionsDbAdapter);
-
-            while (c.moveToNext()){
-                Transaction transaction = transactionsDbAdapter.buildTransactionInstance(c);
+            cursor = transactionsDbAdapter.fetchAllRecords();
+            while (cursor.moveToNext()){
+                Transaction transaction = transactionsDbAdapter.buildTransactionInstance(cursor);
                 if (transaction.isTemplate())
                     continue;
                 Money imbalance = transaction.getImbalance();
@@ -485,7 +497,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     splitsDbAdapter.addSplit(split);
                 }
             }
-            c.close();
+            cursor.close();
 
             Log.i(LOG_TAG, "Dropping temporary migration tables");
             db.execSQL("DROP TABLE " + SplitEntry.TABLE_NAME + "_bak");

@@ -537,13 +537,13 @@ public class AccountFormFragment extends SherlockFragment {
      * Initializes the default transfer account spinner with eligible accounts
      */
     private void loadDefaultTransferAccountList(){
-        String condition = DatabaseSchema.AccountEntry.COLUMN_UID + " != '" + mAccountUID + "' "
+        String condition = DatabaseSchema.AccountEntry.COLUMN_UID + " != '" + mAccountUID + "' " //when creating a new account mAccountUID is null, so don't use whereArgs
                 + " AND " + DatabaseSchema.AccountEntry.COLUMN_PLACEHOLDER + "=0"
-                + " AND " + DatabaseSchema.AccountEntry.COLUMN_UID + " != '" + mAccountsDbAdapter.getOrCreateGnuCashRootAccountUID() + "'";
+                + " AND " + DatabaseSchema.AccountEntry.COLUMN_HIDDEN + "=0"
+                + " AND " + DatabaseSchema.AccountEntry.COLUMN_TYPE + " != ?";
 
-        //using whereArgs (2nd parameter) would produce safer sql,
-        // however we get an exception because mAccountUID can be null, or the root account may be null as well
-        Cursor defaultTransferAccountCursor = mAccountsDbAdapter.fetchAccountsOrderedByFullName(condition, null);
+        Cursor defaultTransferAccountCursor = mAccountsDbAdapter.fetchAccountsOrderedByFullName(condition,
+                new String[]{AccountType.ROOT.name()});
 
         if (mDefaulTransferAccountSpinner.getCount() <= 0) {
             setDefaultTransferAccountInputsVisible(false);

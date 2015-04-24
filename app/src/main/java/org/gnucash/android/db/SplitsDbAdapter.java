@@ -48,7 +48,7 @@ import static org.gnucash.android.db.DatabaseSchema.TransactionEntry;
  */
 public class SplitsDbAdapter extends DatabaseAdapter {
 
-    protected static final String TAG = "SplitsDbAdapter";
+    private static final String TAG = "SplitsDbAdapter";
 
     public SplitsDbAdapter(SQLiteDatabase db) {
         super(db, SplitEntry.TABLE_NAME);

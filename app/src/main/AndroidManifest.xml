@@ -16,12 +16,8 @@
 -->
 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="org.gnucash.android"
-    android:versionCode="48"
-    android:versionName="@string/app_version_name" >
+    package="org.gnucash.android">
 
-    <uses-sdk android:minSdkVersion="10" android:targetSdkVersion="19"/>
-    
     <permission-group 
         android:name="${applicationId}.permission.group.GNUCASH"
         android:label="@string/label_permission_group" 
@@ -111,7 +107,7 @@
             android:configChanges="orientation|keyboard">
             <intent-filter>
                 <!-- Change this to be db- followed by your app key -->
-                <data android:scheme="db-dhjh8ke9wf05948" />
+                <data android:scheme="@string/manifest_dropbox_app_key" />
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.BROWSABLE"/>
                 <category android:name="android.intent.category.DEFAULT" />

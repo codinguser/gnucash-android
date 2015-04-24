@@ -42,7 +42,7 @@ public abstract class DatabaseAdapter {
 	/**
 	 * Tag for logging
 	 */
-	protected static final String TAG = DatabaseAdapter.class.getName();
+	protected static final String TAG = "DatabaseAdapter";
 
 	/**
 	 * SQLite database
@@ -234,6 +234,7 @@ public abstract class DatabaseAdapter {
 	 * @return <code>true</code> if deletion was successful, <code>false</code> otherwise
 	 */
 	public boolean deleteRecord(long rowId){
+        Log.d(TAG, "Deleting record with id " + rowId + " from " + mTableName);
 		return mDb.delete(mTableName, DatabaseSchema.CommonColumns._ID + "=" + rowId, null) > 0;
 	}
 
@@ -427,8 +428,9 @@ public abstract class DatabaseAdapter {
         try {
             if (cursor.moveToFirst())
                 return cursor.getString(cursor.getColumnIndexOrThrow(columnName));
-            else
-                throw new IllegalArgumentException(String.format("Column (%s) or GUID (%s) does not exist in the db", columnName, recordUID));
+            else {
+                throw new IllegalArgumentException(String.format("Record with GUID %s does not exist in the db", recordUID));
+            }
         } finally {
             cursor.close();
         }

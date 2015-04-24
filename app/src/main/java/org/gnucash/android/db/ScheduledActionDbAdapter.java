@@ -39,6 +39,8 @@ import static org.gnucash.android.db.DatabaseSchema.ScheduledActionEntry;
  */
 public class ScheduledActionDbAdapter extends DatabaseAdapter {
 
+    private static final String TAG = "ScheduledActionDbAdapter";
+
     public ScheduledActionDbAdapter(SQLiteDatabase db){
         super(db, ScheduledActionEntry.TABLE_NAME);
     }

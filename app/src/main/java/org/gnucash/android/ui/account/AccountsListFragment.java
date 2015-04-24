@@ -186,11 +186,13 @@ public class AccountsListFragment extends SherlockListFragment implements
                 case R.id.context_menu_edit_accounts:
                     openCreateOrEditActivity(mSelectedItemId);
                     mode.finish();
+                    mActionMode = null;
                     return true;
 
                 case R.id.context_menu_delete:
                     tryDeleteAccount(mSelectedItemId);
                     mode.finish();
+                    mActionMode = null;
                     return true;
 
                 default:
@@ -318,6 +320,7 @@ public class AccountsListFragment extends SherlockListFragment implements
             showConfirmationDialog(rowId);
         } else {
             mAccountsDbAdapter.deleteRecord(rowId);
+            mAccountsCursorAdapter.swapCursor(null);
             refresh();
         }
     }

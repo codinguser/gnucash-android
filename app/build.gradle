@@ -8,7 +8,7 @@ def versionPatch = 0
 def versionBuild = 1
 
 def buildTime() {
-    def df = new SimpleDateFormat("yyyyMMdd_HHmm'Z'")
+    def df = new SimpleDateFormat("yyyyMMdd_HHmm'UTC'")
     df.setTimeZone(TimeZone.getTimeZone("UTC"))
     return df.format(new Date())
 }
@@ -27,6 +27,11 @@ android {
         targetSdkVersion 19
         versionCode versionMajor * 10000 + versionMinor * 1000 + versionPatch * 100 + versionBuild
         versionName "${versionMajor}.${versionMinor}.${versionPatch}"
+        if (project.hasProperty("RELEASE_DROPBOX_APP_KEY")){
+            resValue "string", "dropbox_app_key", RELEASE_DROPBOX_APP_KEY
+            resValue "string", "dropbox_app_secret", RELEASE_DROPBOX_APP_SECRET
+            resValue "string", "manifest_dropbox_app_key", "db-${RELEASE_DROPBOX_APP_KEY}"
+        }
     }
 
     applicationVariants.all { variant ->
@@ -74,24 +79,17 @@ android {
             resValue "string", "app_name", "GnuCash-devel"
             resValue "string", "dropbox_app_key", "dhjh8ke9wf05948"
             resValue "string", "dropbox_app_secret", "h2t9fphj3nr4wkw"
+            resValue "string", "manifest_dropbox_app_key", "db-dhjh8ke9wf05948"
             versionName "${versionMajor}.${versionMinor}.${versionPatch}-dev${versionBuild}_${buildTime()}"
         }
 
         beta {
             resValue "string", "app_name", "GnuCash - beta"
-            if (project.hasProperty("RELEASE_DROPBOX_APP_KEY")){
-                resValue "string", "dropbox_app_key", RELEASE_DROPBOX_APP_KEY
-                resValue "string", "dropbox_app_secret", RELEASE_DROPBOX_APP_SECRET
-            }
             versionName "${versionMajor}.${versionMinor}.${versionPatch}-beta${versionBuild}_${buildTime()}"
         }
 
         production {
             resValue "string", "app_name", "GnuCash"
-            if (project.hasProperty("RELEASE_DROPBOX_APP_KEY")){
-                resValue "string", "dropbox_app_key", RELEASE_DROPBOX_APP_KEY
-                resValue "string", "dropbox_app_secret", RELEASE_DROPBOX_APP_SECRET
-            }
         }
 
     }

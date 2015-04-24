@@ -50,6 +50,8 @@ import static org.gnucash.android.db.DatabaseSchema.TransactionEntry;
  */
 public class TransactionsDbAdapter extends DatabaseAdapter {
 
+    private static final String TAG = "TransactionsDbAdapter";
+
     private final SplitsDbAdapter mSplitsDbAdapter;
 
     /**

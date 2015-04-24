@@ -74,6 +74,8 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 
     private static String mImbalanceAccountPrefix = GnuCashApplication.getAppContext().getString(R.string.imbalance_account_name) + "-";
 
+    private static final String TAG = "AccountsDbAdapter";
+
     /**
      * Overloaded constructor. Creates an adapter for an already open database
      * @param db SQliteDatabase instance
@@ -763,29 +765,6 @@ public class AccountsDbAdapter extends DatabaseAdapter {
                 null, where, whereArgs, null, null,
                 AccountEntry.COLUMN_FULL_NAME + " ASC");
     }
-    /**
-     * Returns the balance of an account while taking sub-accounts into consideration
-     * @return Account Balance of an account including sub-accounts
-     */
-    public Money getAccountBalance(long accountId){
-        Log.d(TAG, "Computing account balance for account ID " + accountId);
-        String currencyCode = getCurrencyCode(getUID(accountId));
-        Money balance = Money.createZeroInstance(currencyCode);
-
-        List<Long> subAccounts = getSubAccountIds(accountId);
-        for (long id : subAccounts){
-            //recurse because arbitrary nesting depth is allowed
-            Money subBalance = getAccountBalance(id);
-            if (subBalance.getCurrency().equals(balance.getCurrency())){
-                //only add the balances if they are of the same currency
-                //ignore sub accounts of different currency just like GnuCash desktop does
-                balance = balance.add(subBalance);
-            }
-        }
-
-        Money splitSum = mTransactionsAdapter.getSplitDbAdapter().computeSplitBalance(getUID(accountId));
-        return balance.add(splitSum);
-    }
 
     /**
      * Returns the balance of an account while taking sub-accounts into consideration
@@ -1002,6 +981,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
         Account rootAccount = new Account("ROOT Account");
         rootAccount.setAccountType(AccountType.ROOT);
         rootAccount.setFullName(ROOT_ACCOUNT_FULL_NAME);
+        rootAccount.setHidden(true);
         addAccount(rootAccount);
         return rootAccount.getUID();
     }
