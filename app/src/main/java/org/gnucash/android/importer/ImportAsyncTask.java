@@ -26,7 +26,6 @@ import android.widget.Toast;
 import com.crashlytics.android.Crashlytics;
 
 import org.gnucash.android.R;
-import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.ui.account.AccountsActivity;
 import org.gnucash.android.ui.util.TaskDelegate;
 

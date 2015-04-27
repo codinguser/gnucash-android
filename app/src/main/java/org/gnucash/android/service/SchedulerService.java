@@ -34,6 +34,7 @@ import org.gnucash.android.export.ExportParams;
 import org.gnucash.android.model.ScheduledAction;
 import org.gnucash.android.model.Transaction;
 
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -100,8 +101,17 @@ public class SchedulerService extends IntentService {
                 TransactionsDbAdapter transactionsDbAdapter = TransactionsDbAdapter.getInstance();
                 Transaction trxnTemplate = transactionsDbAdapter.getTransaction(eventUID);
                 Transaction recurringTrxn = new Transaction(trxnTemplate, true);
-                recurringTrxn.setTime(System.currentTimeMillis());
 
+                //we may be executing scheduled action significantly after scheduled time (depending on when Android fires the alarm)
+                //so compute the actual transaction time from pre-known values
+                long transactionTime; //default
+                if (scheduledAction.getLastRun() > 0){
+                    transactionTime = scheduledAction.getLastRun() + scheduledAction.getPeriod();
+                } else {
+                    transactionTime = scheduledAction.getStartTime() + scheduledAction.getPeriod();
+                }
+                recurringTrxn.setTime(transactionTime);
+                recurringTrxn.setCreatedTimestamp(new Timestamp(transactionTime));
                 transactionsDbAdapter.addTransaction(recurringTrxn);
                 break;
 

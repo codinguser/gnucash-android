@@ -122,6 +122,11 @@ public class GncXmlHandler extends DefaultHandler {
     List<Transaction> mTransactionList;
 
     /**
+     * All the template transactions found during parsing of the XML
+     */
+    List<Transaction> mTemplateTransactions;
+
+    /**
      * Accumulate attributes of splits found in this object
      */
     Split mSplit;
@@ -227,6 +232,7 @@ public class GncXmlHandler extends DefaultHandler {
         mScheduledActionsList = new ArrayList<>();
 
         mTemplatAccountList = new ArrayList<>();
+        mTemplateTransactions = new ArrayList<>();
         mTemplateAccountToTransactionMap = new HashMap<>();
 
         mAutoBalanceSplits = new ArrayList<>();
@@ -457,7 +463,7 @@ public class GncXmlHandler extends DefaultHandler {
                     throw new SAXException("Unable to parse transaction time", e);
                 }
                 break;
-            case GncXmlHelper.TAG_RECURRENCE_PERIOD:
+            case GncXmlHelper.TAG_RECURRENCE_PERIOD: //for parsing of old backup files
                 mRecurrencePeriod = Long.parseLong(characterString);
                 mTransaction.setTemplate(mRecurrencePeriod > 0);
                 break;
@@ -507,7 +513,9 @@ public class GncXmlHandler extends DefaultHandler {
                     mAutoBalanceSplits.add(imbSplit);
                 }
                 mTransactionList.add(mTransaction);
-
+                if (mInTemplates){
+                    mTemplateTransactions.add(mTransaction);
+                }
                 if (mRecurrencePeriod > 0) { //if we find an old format recurrence period, parse it
                     mTransaction.setTemplate(true);
                     ScheduledAction scheduledAction = ScheduledAction.parseScheduledAction(mTransaction, mRecurrencePeriod);
@@ -583,6 +591,9 @@ public class GncXmlHandler extends DefaultHandler {
                 break;
             case GncXmlHelper.TAG_SCHEDULED_ACTION:
                 mScheduledActionsList.add(mScheduledAction);
+                int count = generateMissedScheduledTransactions(mScheduledAction);
+                Log.i(LOG_TAG, String.format("Generated %d transactions from scheduled actions", count));
+                mRecurrenceMultiplier = 1; //reset it, even though it will be parsed from XML each time
                 break;
         }
 
@@ -710,5 +721,44 @@ public class GncXmlHandler extends DefaultHandler {
             Crashlytics.logException(e);
             return Currency.getInstance(Money.DEFAULT_CURRENCY_CODE);
         }
+    }
+
+    /**
+     * Generates the runs of the scheduled action which have been missed since the file was last opened.
+     * @param scheduledAction Scheduled action for transaction
+     * @return Number of transaction instances generated
+     */
+    private int generateMissedScheduledTransactions(ScheduledAction scheduledAction){
+        //if this scheduled action should not be run for any reason, return immediately
+        if (scheduledAction.getActionType() != ScheduledAction.ActionType.TRANSACTION
+                || !scheduledAction.isEnabled()
+                || (scheduledAction.getEndTime() > 0 && scheduledAction.getEndTime() > System.currentTimeMillis())
+                || (scheduledAction.getTotalFrequency() > 0 && scheduledAction.getExecutionCount() >= scheduledAction.getTotalFrequency())){
+            return 0;
+        }
+
+        long lastRuntime = scheduledAction.getStartTime();
+        if (scheduledAction.getLastRun() > 0){
+            lastRuntime = scheduledAction.getLastRun();
+        }
+
+        int generatedTransactionCount = 0;
+        long period = scheduledAction.getPeriod();
+        final String actionUID = scheduledAction.getActionUID();
+        while ((lastRuntime = lastRuntime + period) <= System.currentTimeMillis()){
+            for (Transaction templateTransaction : mTemplateTransactions) {
+                if (templateTransaction.getUID().equals(actionUID)){
+                    Transaction transaction = new Transaction(templateTransaction, true);
+                    transaction.setTime(lastRuntime);
+                    transaction.setScheduledActionUID(scheduledAction.getUID());
+                    mTransactionList.add(transaction);
+                    scheduledAction.setExecutionCount(scheduledAction.getExecutionCount() + 1);
+                    ++generatedTransactionCount;
+                    break;
+                }
+            }
+        }
+        scheduledAction.setLastRun(lastRuntime);
+        return generatedTransactionCount;
     }
 }

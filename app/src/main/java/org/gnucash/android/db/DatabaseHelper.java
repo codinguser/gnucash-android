@@ -466,6 +466,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 scheduledAction.setActionUID(cursor.getString(cursor.getColumnIndexOrThrow(TransactionEntry.COLUMN_UID)));
                 long period = cursor.getLong(cursor.getColumnIndexOrThrow("recurrence_period"));
                 scheduledAction.setPeriod(period);
+                scheduledAction.setStartTime(timestamp.getTime()); //the start time is when the transaction was created
                 scheduledAction.setLastRun(System.currentTimeMillis()); //prevent this from being executed at the end of migration
                 scheduledActionDbAdapter.addScheduledAction(scheduledAction);
 
