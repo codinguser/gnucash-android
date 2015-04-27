@@ -18,6 +18,7 @@ package org.gnucash.android.ui.chart;
 
 import android.graphics.Color;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -40,6 +41,7 @@ import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.model.Account;
 import org.gnucash.android.model.AccountType;
+import org.gnucash.android.model.Money;
 import org.gnucash.android.ui.passcode.PassLockActivity;
 import org.joda.time.LocalDateTime;
 import org.joda.time.Months;
@@ -47,6 +49,7 @@ import org.joda.time.Months;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Currency;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -78,6 +81,7 @@ public class BarChartActivity extends PassLockActivity implements OnChartValueSe
     private long mLatestTransactionTimestamp;
     private boolean mTotalPercentageMode = true;
     private boolean mChartDataPresent = true;
+    private Currency mCurrency;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,6 +98,9 @@ public class BarChartActivity extends PassLockActivity implements OnChartValueSe
         mChart.setDrawBarShadow(false);
         mChart.getAxisLeft().setValueFormatter(new LargeValueFormatter());
         mChart.getAxisRight().setEnabled(false);
+
+        mCurrency = Currency.getInstance(PreferenceManager.getDefaultSharedPreferences(this)
+                .getString(getString(R.string.key_chart_currency), Money.DEFAULT_CURRENCY_CODE));
 
         // below we can add/remove displayed account's types
         mChart.setData(getData(new ArrayList<AccountType>(Arrays.asList(AccountType.INCOME, AccountType.EXPENSE))));
@@ -120,10 +127,7 @@ public class BarChartActivity extends PassLockActivity implements OnChartValueSe
      * @return a {@code BarData} instance that represents a user data
      */
     private BarData getData(ArrayList<AccountType> accountTypeList) {
-        if (!calculateEarliestAndLatestTimestamps(accountTypeList)) {
-            mChartDataPresent = false;
-            return getEmptyData();
-        }
+        calculateEarliestAndLatestTimestamps(accountTypeList);
 
         LocalDateTime startDate = new LocalDateTime(mEarliestTransactionTimestamp).withDayOfMonth(1).withMillisOfDay(0);
         LocalDateTime endDate = new LocalDateTime(mLatestTransactionTimestamp).withDayOfMonth(1).withMillisOfDay(0);
@@ -141,7 +145,7 @@ public class BarChartActivity extends PassLockActivity implements OnChartValueSe
             long end = startDate.dayOfMonth().withMaximumValue().millisOfDay().withMaximumValue().toDate().getTime();
             float stack[] = new float[accountTypeList.size()];
             int j = 0;
-            for (Map.Entry<AccountType, List<String>> entry : getAccountMap(accountTypeList).entrySet()) {
+            for (Map.Entry<AccountType, List<String>> entry : getAccountTypeToAccountUidMap(accountTypeList).entrySet()) {
                 stack[j++] = (float) mAccountsDbAdapter.getAccountsBalance(entry.getValue(), start, end).absolute().asDouble();
                 Log.d(TAG, entry.getKey() + startDate.toString(" MMMM yyyy") + ", balance = " + stack[j - 1]);
             }
@@ -156,19 +160,23 @@ public class BarChartActivity extends PassLockActivity implements OnChartValueSe
         set.setColors(Arrays.copyOfRange(COLORS, 0, accountTypeList.size()));
         dataSets.add(set);
 
+        if (set.getYValueSum() == 0) {
+            mChartDataPresent = false;
+            return getEmptyData();
+        }
         return new BarData(xValues, dataSets);
     }
 
     /**
      * Calculates the earliest and latest transaction's timestamps of the specified account types
      * @param accountTypeList account's types which will be processed
-     * @return {@code false} if no data available, {@code true} otherwise
      */
-    private boolean calculateEarliestAndLatestTimestamps(List<AccountType> accountTypeList) {
+    private void calculateEarliestAndLatestTimestamps(List<AccountType> accountTypeList) {
+        TransactionsDbAdapter dbAdapter = TransactionsDbAdapter.getInstance();
         for (Iterator<AccountType> iter = accountTypeList.iterator(); iter.hasNext();) {
             AccountType type = iter.next();
-            long earliest = TransactionsDbAdapter.getInstance().getTimestampOfEarliestTransaction(type);
-            long latest = TransactionsDbAdapter.getInstance().getTimestampOfLatestTransaction(type);
+            long earliest = dbAdapter.getTimestampOfEarliestTransaction(type, mCurrency.getCurrencyCode());
+            long latest = dbAdapter.getTimestampOfLatestTransaction(type, mCurrency.getCurrencyCode());
             if (earliest > 0 && latest > 0) {
                 mEarliestTimestampsMap.put(type, earliest);
                 mLatestTimestampsMap.put(type, latest);
@@ -177,29 +185,27 @@ public class BarChartActivity extends PassLockActivity implements OnChartValueSe
             }
         }
 
-        if (mEarliestTimestampsMap.isEmpty() && mLatestTimestampsMap.isEmpty()) {
-            return false;
-        }
-
         List<Long> timestamps = new ArrayList<Long>(mEarliestTimestampsMap.values());
         timestamps.addAll(mLatestTimestampsMap.values());
         Collections.sort(timestamps);
         mEarliestTransactionTimestamp = timestamps.get(0);
         mLatestTransactionTimestamp = timestamps.get(timestamps.size() - 1);
-        return true;
     }
 
     /**
      * Returns a map with an account type as key and correspond accounts UIDs as value
+     * from a specified list of account types
      * @param accountTypeList account's types which will be used as keys
-     * @return
+     * @return a map with an account type as key and correspond accounts UIDs as value
      */
-    private Map<AccountType, List<String>> getAccountMap(List<AccountType> accountTypeList) {
+    private Map<AccountType, List<String>> getAccountTypeToAccountUidMap(List<AccountType> accountTypeList) {
         Map<AccountType, List<String>> accountMap = new HashMap<AccountType, List<String>>();
         for (AccountType accountType : accountTypeList) {
             List<String> accountUIDList = new ArrayList<String>();
             for (Account account : mAccountsDbAdapter.getSimpleAccountList()) {
-                if (account.getAccountType() == accountType && !account.isPlaceholderAccount()) {
+                if (account.getAccountType() == accountType
+                        && !account.isPlaceholderAccount()
+                        && account.getCurrency() == mCurrency) {
                     accountUIDList.add(account.getUID());
                 }
                 accountMap.put(accountType, accountUIDList);

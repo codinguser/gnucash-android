@@ -18,6 +18,7 @@ package org.gnucash.android.ui.chart;
 
 import android.graphics.Color;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -38,6 +39,7 @@ import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.model.Account;
 import org.gnucash.android.model.AccountType;
+import org.gnucash.android.model.Money;
 import org.gnucash.android.ui.passcode.PassLockActivity;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
@@ -46,6 +48,7 @@ import org.joda.time.Months;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Currency;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -80,6 +83,7 @@ public class LineChartActivity extends PassLockActivity implements OnChartValueS
     private long mEarliestTransactionTimestamp;
     private long mLatestTransactionTimestamp;
     private boolean mChartDataPresent = true;
+    private Currency mCurrency;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,6 +97,9 @@ public class LineChartActivity extends PassLockActivity implements OnChartValueS
         mChart.setOnChartValueSelectedListener(this);
         mChart.setDescription("");
         mChart.getAxisRight().setEnabled(false);
+
+        mCurrency = Currency.getInstance(PreferenceManager.getDefaultSharedPreferences(this)
+                .getString(getString(R.string.key_chart_currency), Money.DEFAULT_CURRENCY_CODE));
 
         // below we can add/remove displayed account's types
         mChart.setData(getData(new ArrayList<AccountType>(Arrays.asList(AccountType.INCOME, AccountType.EXPENSE))));
@@ -119,10 +126,7 @@ public class LineChartActivity extends PassLockActivity implements OnChartValueS
      * @return a {@code LineData} instance that represents a user data
      */
     private LineData getData(List<AccountType> accountTypeList) {
-        if (!calculateEarliestAndLatestTimestamps(accountTypeList)) {
-            mChartDataPresent = false;
-            return getEmptyData();
-        }
+        calculateEarliestAndLatestTimestamps(accountTypeList);
 
         LocalDate startDate = new LocalDate(mEarliestTransactionTimestamp).withDayOfMonth(1);
         LocalDate endDate = new LocalDate(mLatestTransactionTimestamp).withDayOfMonth(1);
@@ -144,7 +148,12 @@ public class LineChartActivity extends PassLockActivity implements OnChartValueS
             dataSets.add(set);
         }
 
-        return new LineData(xValues, dataSets);
+        LineData lineData = new LineData(xValues, dataSets);
+        if (lineData.getYValueSum() == 0) {
+            mChartDataPresent = false;
+            return getEmptyData();
+        }
+        return lineData;
     }
 
     /**
@@ -175,7 +184,9 @@ public class LineChartActivity extends PassLockActivity implements OnChartValueS
     private ArrayList<Entry> getEntryList(AccountType accountType) {
         List<String> accountUIDList = new ArrayList<String>();
         for (Account account : mAccountsDbAdapter.getSimpleAccountList()) {
-            if (account.getAccountType() == accountType && !account.isPlaceholderAccount()) {
+            if (account.getAccountType() == accountType
+                    && !account.isPlaceholderAccount()
+                    && account.getCurrency() == mCurrency) {
                 accountUIDList.add(account.getUID());
             }
         }
@@ -204,13 +215,13 @@ public class LineChartActivity extends PassLockActivity implements OnChartValueS
     /**
      * Calculates the earliest and latest transaction's timestamps of the specified account types
      * @param accountTypeList account's types which will be processed
-     * @return {@code false} if no data available, {@code true} otherwise
      */
-    private boolean calculateEarliestAndLatestTimestamps(List<AccountType> accountTypeList) {
+    private void calculateEarliestAndLatestTimestamps(List<AccountType> accountTypeList) {
+        TransactionsDbAdapter dbAdapter = TransactionsDbAdapter.getInstance();
         for (Iterator<AccountType> iter = accountTypeList.iterator(); iter.hasNext();) {
             AccountType type = iter.next();
-            long earliest = TransactionsDbAdapter.getInstance().getTimestampOfEarliestTransaction(type);
-            long latest = TransactionsDbAdapter.getInstance().getTimestampOfLatestTransaction(type);
+            long earliest = dbAdapter.getTimestampOfEarliestTransaction(type, mCurrency.getCurrencyCode());
+            long latest = dbAdapter.getTimestampOfLatestTransaction(type, mCurrency.getCurrencyCode());
             if (earliest > 0 && latest > 0) {
                 mEarliestTimestampsMap.put(type, earliest);
                 mLatestTimestampsMap.put(type, latest);
@@ -219,16 +230,11 @@ public class LineChartActivity extends PassLockActivity implements OnChartValueS
             }
         }
 
-        if (mEarliestTimestampsMap.isEmpty() && mLatestTimestampsMap.isEmpty()) {
-            return false;
-        }
-
         List<Long> timestamps = new ArrayList<Long>(mEarliestTimestampsMap.values());
         timestamps.addAll(mLatestTimestampsMap.values());
         Collections.sort(timestamps);
         mEarliestTransactionTimestamp = timestamps.get(0);
         mLatestTransactionTimestamp = timestamps.get(timestamps.size() - 1);
-        return true;
     }
 
     /**
