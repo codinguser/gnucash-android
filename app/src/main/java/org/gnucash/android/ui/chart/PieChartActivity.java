@@ -81,6 +81,7 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
     };
 
     private static final String DATE_PATTERN = "MMMM\nYYYY";
+    private static final String TOTAL_VALUE_LABEL_PATTERN = "%s\n%.2f %s";
     private static final int ANIMATION_DURATION = 1800;
 
     private PieChart mChart;
@@ -248,7 +249,10 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
         } else {
             mChartDataPresent = true;
             dataSet.setSliceSpace(2);
-            mChart.setCenterText(getResources().getString(R.string.label_chart_total) + dataSet.getYValueSum());
+            mChart.setCenterText(String.format(TOTAL_VALUE_LABEL_PATTERN,
+                            getResources().getString(R.string.label_chart_total),
+                            dataSet.getYValueSum(),
+                            mCurrencyCode));
             mChart.setTouchEnabled(true);
         }
 

@@ -34,7 +34,6 @@ import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.github.mikephil.charting.utils.Highlight;
-import com.github.mikephil.charting.utils.LargeValueFormatter;
 
 import org.gnucash.android.R;
 import org.gnucash.android.db.AccountsDbAdapter;
@@ -53,6 +52,7 @@ import java.util.Currency;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -90,17 +90,17 @@ public class BarChartActivity extends PassLockActivity implements OnChartValueSe
         super.onCreate(savedInstanceState);
         getSupportActionBar().setTitle(R.string.title_bar_chart);
 
+        mCurrency = Currency.getInstance(PreferenceManager.getDefaultSharedPreferences(this)
+                .getString(getString(R.string.key_chart_currency), Money.DEFAULT_CURRENCY_CODE));
+
         mChart = new BarChart(this);
         ((LinearLayout) findViewById(R.id.chart)).addView(mChart);
         mChart.setOnChartValueSelectedListener(this);
         mChart.setDescription("");
         mChart.setDrawValuesForWholeStack(false);
         mChart.setDrawBarShadow(false);
-        mChart.getAxisLeft().setValueFormatter(new LargeValueFormatter());
+        mChart.getAxisLeft().setValueFormatter(new LargeValueFormatter(mCurrency.getSymbol(Locale.getDefault())));
         mChart.getAxisRight().setEnabled(false);
-
-        mCurrency = Currency.getInstance(PreferenceManager.getDefaultSharedPreferences(this)
-                .getString(getString(R.string.key_chart_currency), Money.DEFAULT_CURRENCY_CODE));
 
         // below we can add/remove displayed account's types
         mChart.setData(getData(new ArrayList<AccountType>(Arrays.asList(AccountType.INCOME, AccountType.EXPENSE))));
@@ -183,6 +183,10 @@ public class BarChartActivity extends PassLockActivity implements OnChartValueSe
             } else {
                 iter.remove();
             }
+        }
+
+        if (mEarliestTimestampsMap.isEmpty() || mLatestTimestampsMap.isEmpty()) {
+            return;
         }
 
         List<Long> timestamps = new ArrayList<Long>(mEarliestTimestampsMap.values());

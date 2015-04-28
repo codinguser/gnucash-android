@@ -437,7 +437,7 @@
     <string name="menu_group_smaller_slices">Group Smaller Slices</string>
     <string name="label_chart_no_data">No chart data available</string>
     <string name="label_chart_overall">Overall</string>
-    <string name="label_chart_total">Total\n</string>
+    <string name="label_chart_total">Total</string>
     <string name="label_other_slice">Other</string>
     <string name="toast_chart_percentage_mode_total">The percentage of selected value calculated from the total amount</string>
     <string name="toast_chart_percentage_mode_current_bar">The percentage of selected value calculated from the current stacked bar amount</string>

@@ -433,7 +433,7 @@
     <string name="menu_group_smaller_slices">Group Smaller Slices</string>
     <string name="label_chart_no_data">没有数据可显示</string>
     <string name="label_chart_overall">概要</string>
-    <string name="label_chart_total">总计\n</string>
+    <string name="label_chart_total">总计</string>
     <string name="label_other_slice">Other</string>
     <string name="toast_chart_percentage_mode_total">The percentage of selected value calculated from the total amount</string>
     <string name="toast_chart_percentage_mode_current_bar">The percentage of selected value calculated from the current stacked bar amount</string>

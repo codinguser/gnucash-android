@@ -52,6 +52,7 @@ import java.util.Currency;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -92,14 +93,15 @@ public class LineChartActivity extends PassLockActivity implements OnChartValueS
         super.onCreate(savedInstanceState);
         getSupportActionBar().setTitle(R.string.title_line_chart);
 
+        mCurrency = Currency.getInstance(PreferenceManager.getDefaultSharedPreferences(this)
+                .getString(getString(R.string.key_chart_currency), Money.DEFAULT_CURRENCY_CODE));
+
         mChart = new LineChart(this);
         ((LinearLayout) findViewById(R.id.chart)).addView(mChart);
         mChart.setOnChartValueSelectedListener(this);
         mChart.setDescription("");
+        mChart.getAxisLeft().setValueFormatter(new LargeValueFormatter(mCurrency.getSymbol(Locale.getDefault())));
         mChart.getAxisRight().setEnabled(false);
-
-        mCurrency = Currency.getInstance(PreferenceManager.getDefaultSharedPreferences(this)
-                .getString(getString(R.string.key_chart_currency), Money.DEFAULT_CURRENCY_CODE));
 
         // below we can add/remove displayed account's types
         mChart.setData(getData(new ArrayList<AccountType>(Arrays.asList(AccountType.INCOME, AccountType.EXPENSE))));
@@ -228,6 +230,10 @@ public class LineChartActivity extends PassLockActivity implements OnChartValueS
             } else {
                 iter.remove();
             }
+        }
+
+        if (mEarliestTimestampsMap.isEmpty() || mLatestTimestampsMap.isEmpty()) {
+            return;
         }
 
         List<Long> timestamps = new ArrayList<Long>(mEarliestTimestampsMap.values());
