@@ -22,16 +22,12 @@ import android.support.annotation.NonNull;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.model.Split;
 import org.gnucash.android.model.TransactionType;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.IllegalFormatException;
 import java.util.Locale;
 
 /**

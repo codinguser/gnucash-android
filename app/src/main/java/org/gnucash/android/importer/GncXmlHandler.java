@@ -334,7 +334,7 @@ public class GncXmlHandler extends DefaultHandler {
                         if (mRootAccount == null) {
                             mRootAccount = mAccount;
                         } else {
-                            throw new SAXException("multiple ROOT accounts exist in book");
+                            throw new SAXException("Multiple ROOT accounts exist in book");
                         }
                     }
                     // prepare for next input
@@ -380,6 +380,7 @@ public class GncXmlHandler extends DefaultHandler {
                     mAccount.setPlaceHolderFlag(Boolean.parseBoolean(characterString));
                     mInPlaceHolderSlot = false;
                 } else if (mInColorSlot) {
+                    Log.d(LOG_TAG, "Parsing color code: " + characterString);
                     String color = characterString.trim();
                     //Gnucash exports the account color in format #rrrgggbbb, but we need only #rrggbb.
                     //so we trim the last digit in each block, doesn't affect the color much
@@ -394,7 +395,6 @@ public class GncXmlHandler extends DefaultHandler {
                             //sometimes the color entry in the account file is "Not set" instead of just blank. So catch!
                             Log.e(LOG_TAG, "Invalid color code '" + color + "' for account " + mAccount.getName());
                             Crashlytics.logException(ex);
-
                         }
                     }
                     mInColorSlot = false;
@@ -423,6 +423,12 @@ public class GncXmlHandler extends DefaultHandler {
                                 mTransaction.getCurrency());
                         mSplit.setAmount(amount.absolute());
                         mSplit.setType(TransactionType.CREDIT);
+                    } catch (NumberFormatException e) {
+                        String msg = "Error parsing template credit split amount " + characterString;
+                        Log.e(LOG_TAG, msg + "\n" + e.getMessage());
+                        Crashlytics.log(msg);
+                        Crashlytics.logException(e);
+                        throw new SAXException(msg, e); //if we fail to parse the split amount, terminate import - data integrity compromised
                     } finally {
                         mInCreditFormulaSlot = false;
                     }
@@ -433,8 +439,11 @@ public class GncXmlHandler extends DefaultHandler {
                         mSplit.setAmount(amount.absolute());
                         mSplit.setType(TransactionType.DEBIT);
                     } catch (NumberFormatException e) {
-                        Log.e(LOG_TAG, "Error parsing template split amount " + characterString + " - " + e.getMessage());
+                        String msg = "Error parsing template debit split amount " + characterString;
+                        Log.e(LOG_TAG, msg + "\n" + e.getMessage());
+                        Crashlytics.log(msg);
                         Crashlytics.logException(e);
+                        throw new SAXException(msg, e); //if we fail to parse the split amount, terminate import - data integrity compromised
                     } finally {
                         mInDebitFormulaSlot = false;
                     }
@@ -460,7 +469,10 @@ public class GncXmlHandler extends DefaultHandler {
                     }
                 } catch (ParseException e) {
                     Crashlytics.logException(e);
-                    throw new SAXException("Unable to parse transaction time", e);
+                    String message = "Unable to parse transaction time - " + characterString;
+                    Log.e(LOG_TAG, message + "\n" + e.getMessage());
+                    Crashlytics.log(message);
+                    throw new SAXException(message, e);
                 }
                 break;
             case GncXmlHelper.TAG_RECURRENCE_PERIOD: //for parsing of old backup files
@@ -485,7 +497,7 @@ public class GncXmlHandler extends DefaultHandler {
                     }
                     mQuantity = GncXmlHelper.parseSplitAmount(q);
                 } catch (ParseException e) {
-                    String msg = "Error to parsing split quantity";
+                    String msg = "Error to parsing split quantity - " + characterString;
                     Crashlytics.log(msg);
                     Crashlytics.logException(e);
                     throw new SAXException(msg, e);

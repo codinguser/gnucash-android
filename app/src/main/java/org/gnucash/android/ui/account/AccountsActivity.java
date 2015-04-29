@@ -322,7 +322,14 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
         }
 
         if (hasNewFeatures()){
-            showWhatsNewDialog(this);
+            AlertDialog dialog = showWhatsNewDialog(this);
+            //TODO: remove this when we upgrade to 1.7.0. Users will already know the nav drawer then
+            dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                @Override
+                public void onDismiss(DialogInterface dialog) {
+                    mDrawerLayout.openDrawer(mDrawerList);
+                }
+            });
         }
         GnuCashApplication.startScheduledActionExecutionService(this);
     }
@@ -340,9 +347,8 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
 	 * @return <code>true</code> if the minor version has been increased, <code>false</code> otherwise.
 	 */
 	private boolean hasNewFeatures(){
-        String versionName = getResources().getString(R.string.app_version_name);
-        int end = versionName.indexOf('.');
-        int currentMinor = Integer.parseInt(versionName.substring(0, end));
+        String minorVersion = getResources().getString(R.string.app_minor_version);
+        int currentMinor = Integer.parseInt(minorVersion);
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         int previousMinor = prefs.getInt(getString(R.string.key_previous_minor_version), 0);
@@ -358,7 +364,7 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
 	/**
 	 * Show dialog with new features for this version
 	 */
-	public static void showWhatsNewDialog(Context context){
+	public static AlertDialog showWhatsNewDialog(Context context){
         Resources resources = context.getResources();
         StringBuilder releaseTitle = new StringBuilder(resources.getString(R.string.title_whats_new));
         PackageInfo packageInfo;
@@ -370,7 +376,7 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
             Log.e(LOG_TAG, "Error displaying 'Whats new' dialog");
         }
 
-        new AlertDialog.Builder(context)
+        return new AlertDialog.Builder(context)
 		.setTitle(releaseTitle.toString())
 		.setMessage(R.string.whats_new)
 		.setPositiveButton(R.string.label_dismiss, new DialogInterface.OnClickListener() {
