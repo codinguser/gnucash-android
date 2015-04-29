@@ -25,10 +25,13 @@ import org.gnucash.android.model.TransactionType;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Collection of helper tags and methods for Gnc XML export
@@ -166,15 +169,37 @@ public abstract class GncXmlHelper {
     }
 
     /**
-     * Parses the amounts in template transaction splits
-     * <p>This makes the assumption that the amount uses comma (,) as decimal separators</p>
+     * Parses the amounts in template transaction splits.
+     * <p>GnuCash desktop formats the amounts based on the locale of the computer. That poses a problem here as the input can vary per user.<br/>
+     *     The solution is to parse the string irrespective of comma or thousands separators as follows:
+     *     <ol>
+     *         <li>Find the last non-numeric character and split the string at that point</li>
+     *         <li>If the length of the 2nd part is &gt;= 2, then it is a thousands separator, else it is decimal</li>
+     *         <li>Append the two parts again together accordingly</li>
+     *         <li>If no non-numeric character was found, then just return a new {@link BigDecimal}</li>
+     *     </ol>
+     * </p>
      * @param amountString String value of the amount.
      * @return BigDecimal representation of the amount
+     * @see #formatTemplateSplitAmount(BigDecimal)
      */
     public static BigDecimal parseTemplateSplitAmount(@NonNull String amountString){
-        amountString = amountString.replaceAll("\\.", ""); //first remove periods (thousandths separator)
-        amountString = amountString.replaceAll(",", "."); //replace decimal separator (,) with periods
-        return new BigDecimal(amountString);
+        Pattern pattern = Pattern.compile(".*\\D");
+        Matcher matcher = pattern.matcher(amountString);
+        if (matcher.find()){
+            int index = matcher.end();
+            String wholeNum = amountString.substring(0, index).replaceAll("\\D", "");
+            String decimal = amountString.substring(index);
+            String parsedAmountString;
+            if (decimal.length() > 2){ //then it is just another thousands separator, just add it back
+                parsedAmountString = wholeNum + decimal;
+            } else { //add it as a decimal
+                parsedAmountString = wholeNum + "." + decimal;
+            }
+            return new BigDecimal(parsedAmountString);
+        } else {//an amount string with no commas or periods
+            return new BigDecimal(amountString);
+        }
     }
 
     /**
@@ -194,14 +219,15 @@ public abstract class GncXmlHelper {
     }
 
     /**
-     * Format the amount in template splits.
-     * This format uses commas for decimal separation
+     * Format the amount in template transaction splits.
+     * <p>GnuCash desktop always formats with a locale dependent format, and that varies per user.<br>
+     * So we will use the device locale here and hope that the user has the same locale on the desktop GnuCash</p>
      * @param amount Amount to be formatted
      * @return String representation of amount
+     * @see #parseTemplateSplitAmount(String)
      */
     public static String formatTemplateSplitAmount(BigDecimal amount){
-        //TODO: Check if GnuCash desktop always using this formatting or if it is device locale specific
-        String value = amount.toPlainString();
-        return value.replaceAll("\\.", ",");
+        //TODO: If we ever implement an application-specific locale setting, use it here as well
+        return NumberFormat.getNumberInstance().format(amount);
     }
 }
