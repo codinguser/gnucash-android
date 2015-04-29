@@ -75,6 +75,12 @@ public class ScheduledAction extends BaseModel{
      */
     private int mExecutionCount = 0;
 
+    /**
+     * Flag for whether the scheduled transaction should be auto-created
+     * TODO: Add this flag to the database. At the moment we always treat it as true
+     */
+    private boolean autoCreate = true;
+
     public ScheduledAction(ActionType actionType){
         mActionType = actionType;
         mStartDate = System.currentTimeMillis();
@@ -325,6 +331,22 @@ public class ScheduledAction extends BaseModel{
      */
     public void setExecutionCount(int executionCount){
         mExecutionCount = executionCount;
+    }
+
+    /**
+     * Returns flag if transactions should be automatically created or not
+     * @return {@code true} if the transaction should be auto-created, {@code false} otherwise
+     */
+    public boolean shouldAutoCreate() {
+        return autoCreate;
+    }
+
+    /**
+     * Set flag for automatically creating transaction based on this scheduled action
+     * @param autoCreate Flag for auto creating transactions
+     */
+    public void setAutoCreate(boolean autoCreate) {
+        this.autoCreate = autoCreate;
     }
 
     /**

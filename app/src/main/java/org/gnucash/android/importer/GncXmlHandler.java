@@ -553,6 +553,9 @@ public class GncXmlHandler extends DefaultHandler {
             case GncXmlHelper.TAG_SX_ENABLED:
                 mScheduledAction.setEnabled(characterString.equals("y"));
                 break;
+            case GncXmlHelper.TAG_SX_AUTO_CREATE:
+                mScheduledAction.setAutoCreate(characterString.equals("y"));
+                break;
             case GncXmlHelper.TAG_SX_NUM_OCCUR:
                 mScheduledAction.setTotalFrequency(Integer.parseInt(characterString));
                 break;
@@ -604,7 +607,7 @@ public class GncXmlHandler extends DefaultHandler {
             case GncXmlHelper.TAG_SCHEDULED_ACTION:
                 mScheduledActionsList.add(mScheduledAction);
                 int count = generateMissedScheduledTransactions(mScheduledAction);
-                Log.i(LOG_TAG, String.format("Generated %d transactions from scheduled actions", count));
+                Log.i(LOG_TAG, String.format("Generated %d transactions from scheduled action", count));
                 mRecurrenceMultiplier = 1; //reset it, even though it will be parsed from XML each time
                 break;
         }
@@ -708,10 +711,12 @@ public class GncXmlHandler extends DefaultHandler {
             mAccountsDbAdapter.deleteAllRecords();
             long nAccounts = mAccountsDbAdapter.bulkAddAccounts(mAccountList);
             Log.d("Handler:", String.format("%d accounts inserted", nAccounts));
-            long nTransactions = mTransactionsDbAdapter.bulkAddTransactions(mTransactionList);
-            Log.d("Handler:", String.format("%d transactions inserted", nTransactions));
+            //We need to add scheduled actions first because there is a foreign key constraint on transactions
+            //which are generated from scheduled actions (we do auto-create some transactions during import)
             int nSchedActions = mScheduledActionsDbAdapter.bulkAddScheduledActions(mScheduledActionsList);
             Log.d("Handler:", String.format("%d scheduled actions inserted", nSchedActions));
+            long nTransactions = mTransactionsDbAdapter.bulkAddTransactions(mTransactionList);
+            Log.d("Handler:", String.format("%d transactions inserted", nTransactions));
             long endTime = System.nanoTime();
             Log.d("Handler:", String.format(" bulk insert time: %d", endTime - startTime));
             mAccountsDbAdapter.setTransactionSuccessful();
@@ -743,7 +748,7 @@ public class GncXmlHandler extends DefaultHandler {
     private int generateMissedScheduledTransactions(ScheduledAction scheduledAction){
         //if this scheduled action should not be run for any reason, return immediately
         if (scheduledAction.getActionType() != ScheduledAction.ActionType.TRANSACTION
-                || !scheduledAction.isEnabled()
+                || !scheduledAction.isEnabled() || !scheduledAction.shouldAutoCreate()
                 || (scheduledAction.getEndTime() > 0 && scheduledAction.getEndTime() > System.currentTimeMillis())
                 || (scheduledAction.getTotalFrequency() > 0 && scheduledAction.getExecutionCount() >= scheduledAction.getTotalFrequency())){
             return 0;
