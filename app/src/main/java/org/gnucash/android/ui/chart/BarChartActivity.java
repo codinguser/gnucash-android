@@ -91,7 +91,7 @@ public class BarChartActivity extends PassLockActivity implements OnChartValueSe
         getSupportActionBar().setTitle(R.string.title_bar_chart);
 
         mCurrency = Currency.getInstance(PreferenceManager.getDefaultSharedPreferences(this)
-                .getString(getString(R.string.key_chart_currency), Money.DEFAULT_CURRENCY_CODE));
+                .getString(getString(R.string.key_report_currency), Money.DEFAULT_CURRENCY_CODE));
 
         mChart = new BarChart(this);
         ((LinearLayout) findViewById(R.id.chart)).addView(mChart);

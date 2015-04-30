@@ -16,12 +16,7 @@
 -->
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
-    <PreferenceCategory android:title="Chart Prefs">
-
-        <ListPreference android:key="@string/key_chart_currency"
-                        android:title="Chart Currency"
-                        android:summary="Select chart currency"/>
-
-    </PreferenceCategory>
+        <ListPreference android:key="@string/key_report_currency"
+                        android:title="@string/title_report_currency" />
 
 </PreferenceScreen>

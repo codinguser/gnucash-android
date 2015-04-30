@@ -94,7 +94,7 @@ public class LineChartActivity extends PassLockActivity implements OnChartValueS
         getSupportActionBar().setTitle(R.string.title_line_chart);
 
         mCurrency = Currency.getInstance(PreferenceManager.getDefaultSharedPreferences(this)
-                .getString(getString(R.string.key_chart_currency), Money.DEFAULT_CURRENCY_CODE));
+                .getString(getString(R.string.key_report_currency), Money.DEFAULT_CURRENCY_CODE));
 
         mChart = new LineChart(this);
         ((LinearLayout) findViewById(R.id.chart)).addView(mChart);

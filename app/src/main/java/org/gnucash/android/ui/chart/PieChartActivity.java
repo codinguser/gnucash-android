@@ -58,6 +58,7 @@ import java.util.Arrays;
 import java.util.Currency;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import static org.gnucash.android.db.DatabaseSchema.AccountEntry;
@@ -121,7 +122,7 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
         mTransactionsDbAdapter = TransactionsDbAdapter.getInstance();
 
         mCurrencyCode = PreferenceManager.getDefaultSharedPreferences(this)
-                .getString(getString(R.string.key_chart_currency), Money.DEFAULT_CURRENCY_CODE);
+                .getString(getString(R.string.key_report_currency), Money.DEFAULT_CURRENCY_CODE);
 
         mChart = (PieChart) findViewById(R.id.pie_chart);
         mChart.setCenterTextSize(18);
@@ -252,7 +253,8 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
             mChart.setCenterText(String.format(TOTAL_VALUE_LABEL_PATTERN,
                             getResources().getString(R.string.label_chart_total),
                             dataSet.getYValueSum(),
-                            mCurrencyCode));
+                            Currency.getInstance(mCurrencyCode).getSymbol(Locale.getDefault()))
+            );
             mChart.setTouchEnabled(true);
         }
 

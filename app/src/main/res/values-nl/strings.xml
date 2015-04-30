@@ -471,6 +471,8 @@
     <string name="summary_google_drive_sync">Enable to sync to Google Drive</string>
     <string name="toast_install_file_manager">Install a file manager to select files</string>
     <string name="title_select_backup_to_restore">Select backup to restore</string>
+    <string name="title_report_prefs">Report Preferences</string>
+    <string name="title_report_currency">title_report_currency</string>
     <plurals name="label_every_x_days">
         <item quantity="one">Daily</item>
         <item quantity="other">Every %d days</item>

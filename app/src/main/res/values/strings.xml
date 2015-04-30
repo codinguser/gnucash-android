@@ -434,6 +434,9 @@
 	<string name="title_pie_chart">Pie Chart</string>
     <string name="title_line_chart">Line Chart</string>
     <string name="title_bar_chart">Bar Chart</string>
+    <string name="title_report_prefs">Report Preferences</string>
+    <string name="title_report_currency">Report currency</string>
+    <string name="header_report_settings">Reports</string>
     <string name="menu_order_by_size">Order by size</string>
     <string name="menu_toggle_legend">Toggle legend</string>
     <string name="menu_toggle_labels">Toggle labels</string>

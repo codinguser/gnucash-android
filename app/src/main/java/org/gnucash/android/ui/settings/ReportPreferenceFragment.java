@@ -38,22 +38,21 @@ import java.util.Currency;
 import java.util.List;
 
 /**
- * Fragment for charts configuring
+ * Report settings fragment inside the Settings activity
  * @author Oleksandr Tyshkovets <olexandr.tyshkovets@gmail.com>
  */
 @TargetApi(11)
-public class ChartPreferenceFragment extends PreferenceFragment implements OnPreferenceChangeListener {
+public class ReportPreferenceFragment extends PreferenceFragment implements OnPreferenceChangeListener {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        addPreferencesFromResource(R.xml.fragment_chart_preferences);
-
+        addPreferencesFromResource(R.xml.fragment_report_preferences);
         ActionBar actionBar = ((SherlockPreferenceActivity) getActivity()).getSupportActionBar();
         actionBar.setHomeButtonEnabled(true);
         actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setTitle("Chart Prefs");
+        actionBar.setTitle(R.string.title_report_prefs);
 
         List<Currency> currencyList = AccountsDbAdapter.getInstance().getCurrencies();
         int size = currencyList.size();
@@ -62,7 +61,7 @@ public class ChartPreferenceFragment extends PreferenceFragment implements OnPre
             currencyCodes[--size] = currency.getCurrencyCode();
         }
 
-        ListPreference pref = (ListPreference) findPreference(getString(R.string.key_chart_currency));
+        ListPreference pref = (ListPreference) findPreference(getString(R.string.key_report_currency));
         pref.setEntryValues(currencyCodes);
         pref.setOnPreferenceChangeListener(this);
 
@@ -82,7 +81,7 @@ public class ChartPreferenceFragment extends PreferenceFragment implements OnPre
         super.onResume();
 
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        String keyChartCurrency = getString(R.string.key_chart_currency);
+        String keyChartCurrency = getString(R.string.key_report_currency);
         Preference pref = findPreference(keyChartCurrency);
         String chartCurrency = sharedPreferences.getString(keyChartCurrency, null);
         if (chartCurrency != null && !chartCurrency.trim().isEmpty()) {
@@ -98,7 +97,7 @@ public class ChartPreferenceFragment extends PreferenceFragment implements OnPre
         preference.setSummary(newValue.toString());
         PreferenceManager.getDefaultSharedPreferences(getActivity())
                 .edit()
-                .putString(getString(R.string.key_chart_currency), newValue.toString())
+                .putString(getString(R.string.key_report_currency), newValue.toString())
                 .commit();
 
         return true;
