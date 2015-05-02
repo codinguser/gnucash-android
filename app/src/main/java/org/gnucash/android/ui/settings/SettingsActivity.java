@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2012 - 2015 Ngewi Fet <ngewif@gmail.com>
+ * Copyright (c) 2014 - 2015 Oleksandr Tyshkovets <olexandr.tyshkovets@gmail.com>
  * Copyright (c) 2014 Yongxin Wang <fefe.wyx@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -31,6 +32,7 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
+import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.PreferenceManager;
@@ -163,6 +165,7 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
 			addPreferencesFromResource(R.xml.fragment_transaction_preferences);
             addPreferencesFromResource(R.xml.fragment_backup_preferences);
             addPreferencesFromResource(R.xml.fragment_passcode_preferences);
+            addPreferencesFromResource(R.xml.fragment_report_preferences);
 			addPreferencesFromResource(R.xml.fragment_about_preferences);
 			setDefaultCurrencyListener();
 			SharedPreferences manager = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
@@ -206,6 +209,20 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
             pref.setOnPreferenceChangeListener(this);
             pref.setTitle(((CheckBoxPreference) pref).isChecked() ?
                     getString(R.string.title_passcode_enabled) : getString(R.string.title_passcode_disabled));
+
+            pref = findPreference(getString(R.string.key_report_currency));
+            pref.setOnPreferenceChangeListener(this);
+            pref.setSummary(PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString(
+                    getString(R.string.key_report_currency), Money.DEFAULT_CURRENCY_CODE));
+
+            List<Currency> currencyList = AccountsDbAdapter.getInstance().getCurrencies();
+            int size = currencyList.size();
+            String[] currencyCodes = new String[size];
+            for (Currency currency : currencyList) {
+                currencyCodes[--size] = currency.getCurrencyCode();
+            }
+            ((ListPreference) pref).setEntryValues(currencyCodes);
+            ((ListPreference) pref).setEntries(currencyCodes);
         }
 	}
 
@@ -262,6 +279,12 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
                     .commit();
         } else if (preference.getKey().equals(getString(R.string.key_use_double_entry))){
             setImbalanceAccountsHidden((Boolean) newValue);
+        } else if (preference.getKey().equals(getString(R.string.key_report_currency))) {
+            preference.setSummary(newValue.toString());
+            PreferenceManager.getDefaultSharedPreferences(getApplicationContext())
+                    .edit()
+                    .putString(getString(R.string.key_report_currency), newValue.toString())
+                    .commit();
         }
 
 		return true;
@@ -273,7 +296,8 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
                 || AccountPreferencesFragment.class.getName().equals(fragmentName)
                 || PasscodePreferenceFragment.class.getName().equals(fragmentName)
                 || TransactionsPreferenceFragment.class.getName().equals(fragmentName)
-                || AboutPreferenceFragment.class.getName().equals(fragmentName);
+                || AboutPreferenceFragment.class.getName().equals(fragmentName)
+                || ReportPreferenceFragment.class.getName().equals(fragmentName);
     }
 
     public void setImbalanceAccountsHidden(boolean useDoubleEntry) {
