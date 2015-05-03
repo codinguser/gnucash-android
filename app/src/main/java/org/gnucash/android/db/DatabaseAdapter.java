@@ -42,7 +42,7 @@ public abstract class DatabaseAdapter {
 	/**
 	 * Tag for logging
 	 */
-	protected static final String TAG = DatabaseAdapter.class.getName();
+	protected static String LOG_TAG = "DatabaseAdapter";
 
 	/**
 	 * SQLite database
@@ -224,9 +224,18 @@ public abstract class DatabaseAdapter {
 	 * @return {@link Cursor} to all records in table <code>tableName</code>
 	 */
 	public Cursor fetchAllRecords(){
-		return mDb.query(mTableName,
-        		null, null, null, null, null, null);
+		return fetchAllRecords(null, null);
 	}
+
+    /**
+     * Fetch all records from database matching conditions
+     * @param where SQL where clause
+     * @param whereArgs String arguments for where clause
+     * @return Cursor to records matching conditions
+     */
+    public Cursor fetchAllRecords(String where, String[] whereArgs){
+        return mDb.query(mTableName, null, where, whereArgs, null, null, null);
+    }
 
 	/**
 	 * Deletes record with ID <code>rowID</code> from database table.
@@ -234,6 +243,7 @@ public abstract class DatabaseAdapter {
 	 * @return <code>true</code> if deletion was successful, <code>false</code> otherwise
 	 */
 	public boolean deleteRecord(long rowId){
+        Log.d(LOG_TAG, "Deleting record with id " + rowId + " from " + mTableName);
 		return mDb.delete(mTableName, DatabaseSchema.CommonColumns._ID + "=" + rowId, null) > 0;
 	}
 
@@ -259,7 +269,7 @@ public abstract class DatabaseAdapter {
         long result = -1;
         try{
             if (cursor.moveToFirst()) {
-                Log.d(TAG, "Transaction already exists. Returning existing id");
+                Log.d(LOG_TAG, "Transaction already exists. Returning existing id");
                 result = cursor.getLong(cursor.getColumnIndexOrThrow(DatabaseSchema.CommonColumns._ID));
             } else {
                 throw new IllegalArgumentException("Account UID " + uid + " does not exist in the db");
@@ -310,7 +320,7 @@ public abstract class DatabaseAdapter {
             if (cursor.moveToFirst()) {
                 return cursor.getString(0);
             } else {
-                throw new IllegalArgumentException("account " + accountUID + " does not exist");
+                throw new IllegalArgumentException("Account " + accountUID + " does not exist");
             }
         } finally {
             cursor.close();
@@ -427,8 +437,9 @@ public abstract class DatabaseAdapter {
         try {
             if (cursor.moveToFirst())
                 return cursor.getString(cursor.getColumnIndexOrThrow(columnName));
-            else
-                throw new IllegalArgumentException(String.format("Column (%s) or GUID (%s) does not exist in the db", columnName, recordUID));
+            else {
+                throw new IllegalArgumentException(String.format("Record with GUID %s does not exist in the db", recordUID));
+            }
         } finally {
             cursor.close();
         }

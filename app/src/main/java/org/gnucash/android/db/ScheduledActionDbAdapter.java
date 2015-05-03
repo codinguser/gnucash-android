@@ -41,6 +41,7 @@ public class ScheduledActionDbAdapter extends DatabaseAdapter {
 
     public ScheduledActionDbAdapter(SQLiteDatabase db){
         super(db, ScheduledActionEntry.TABLE_NAME);
+        LOG_TAG = "ScheduledActionDbAdapter";
     }
 
     /**
@@ -53,7 +54,7 @@ public class ScheduledActionDbAdapter extends DatabaseAdapter {
 
     /**
      * Adds a scheduled event to the database or replaces the existing entry if one with the same GUID exists
-     * @param scheduledAction {@link org.gnucash.android.model.ScheduledAction} to be added
+     * @param scheduledAction {@link ScheduledAction} to be added
      * @return Database row ID of the newly created/replaced instance
      */
     public long addScheduledAction(ScheduledAction scheduledAction){
@@ -69,7 +70,7 @@ public class ScheduledActionDbAdapter extends DatabaseAdapter {
         contentValues.put(ScheduledActionEntry.COLUMN_TOTAL_FREQUENCY, scheduledAction.getTotalFrequency());
         contentValues.put(ScheduledActionEntry.COLUMN_EXECUTION_COUNT, scheduledAction.getExecutionCount());
 
-        Log.d(TAG, "Replace scheduled event in the db");
+        Log.d(LOG_TAG, "Replace scheduled event in the db");
         return mDb.replace(ScheduledActionEntry.TABLE_NAME, null, contentValues);
     }
 
@@ -90,7 +91,7 @@ public class ScheduledActionDbAdapter extends DatabaseAdapter {
         contentValues.put(ScheduledActionEntry.COLUMN_TAG,       scheduledAction.getTag());
         contentValues.put(ScheduledActionEntry.COLUMN_TOTAL_FREQUENCY, scheduledAction.getTotalFrequency());
 
-        Log.d(TAG, "Updating scheduled event recurrence attributes");
+        Log.d(LOG_TAG, "Updating scheduled event recurrence attributes");
         String where = ScheduledActionEntry.COLUMN_UID + "=?";
         String[] whereArgs = new String[]{scheduledAction.getUID()};
         return mDb.update(ScheduledActionEntry.TABLE_NAME, contentValues, where, whereArgs);
@@ -102,7 +103,7 @@ public class ScheduledActionDbAdapter extends DatabaseAdapter {
      * @return Returns the number of rows inserted
      */
     public int bulkAddScheduledActions(List<ScheduledAction> scheduledActionList){
-        Log.d(TAG, "Bulk adding scheduled actions to the database");
+        Log.d(LOG_TAG, "Bulk adding scheduled actions to the database");
         int nRow = 0;
         try {
             mDb.beginTransaction();

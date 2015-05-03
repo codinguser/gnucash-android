@@ -25,7 +25,7 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.preference.PreferenceManager;
 import android.util.Log;
-
+import com.crashlytics.android.Crashlytics;
 import org.gnucash.android.R;
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.DatabaseHelper;
@@ -72,6 +72,10 @@ public class GnuCashApplication extends Application{
     public void onCreate(){
         super.onCreate();
         GnuCashApplication.context = getApplicationContext();
+        //only start logging if user gave consent
+
+        Crashlytics.start(this);
+
         mDbHelper = new DatabaseHelper(getApplicationContext());
         try {
             mDb = mDbHelper.getWritableDatabase();
@@ -107,6 +111,15 @@ public class GnuCashApplication extends Application{
      */
     public static Context getAppContext() {
         return GnuCashApplication.context;
+    }
+
+    /**
+     * Checks if crashlytics is enabled
+     * @return {@code true} if crashlytics is enabled, {@code false} otherwise
+     */
+    public static boolean isCrashlyticsEnabled(){
+        final Context context = getAppContext();
+        return PreferenceManager.getDefaultSharedPreferences(context).getBoolean(context.getString(R.string.key_enable_crashlytics), false);
     }
 
     /**

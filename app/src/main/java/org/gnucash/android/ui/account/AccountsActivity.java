@@ -27,6 +27,7 @@ import android.content.SharedPreferences.Editor;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Resources;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.DialogFragment;
@@ -37,6 +38,7 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewGroup;
@@ -45,6 +47,7 @@ import android.widget.ArrayAdapter;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
+import com.crashlytics.android.Crashlytics;
 import com.viewpagerindicator.TitlePageIndicator;
 
 import org.gnucash.android.R;
@@ -52,6 +55,8 @@ import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.export.ExportDialogFragment;
+import org.gnucash.android.export.xml.GncXmlExporter;
+import org.gnucash.android.importer.GncXmlImporter;
 import org.gnucash.android.importer.ImportAsyncTask;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.service.SchedulerService;
@@ -65,6 +70,7 @@ import org.gnucash.android.ui.util.OnAccountClickedListener;
 import org.gnucash.android.ui.util.Refreshable;
 import org.gnucash.android.ui.util.TaskDelegate;
 
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Currency;
@@ -149,6 +155,7 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
 	 * Dialog which is shown to the user on first start prompting the user to create some accounts
 	 */
 	private AlertDialog mDefaultAccountsDialog;
+    private TitlePageIndicator mTitlePageIndicator;
 
 
     /**
@@ -221,17 +228,19 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
         setContentView(R.layout.activity_accounts);
         super.onCreate(savedInstanceState);
 
+        final Intent intent = getIntent();
+        handleOpenFileIntent(intent);
+
         init();
 
         mPager = (ViewPager) findViewById(R.id.pager);
-        TitlePageIndicator titlePageIndicator = (TitlePageIndicator) findViewById(R.id.titles);
+        mTitlePageIndicator = (TitlePageIndicator) findViewById(R.id.titles);
 
-        final Intent intent = getIntent();
         String action = intent.getAction();
         if (action != null && action.equals(Intent.ACTION_INSERT_OR_EDIT)) {
             //enter account creation/edit mode if that was specified
             mPager.setVisibility(View.GONE);
-            titlePageIndicator.setVisibility(View.GONE);
+            mTitlePageIndicator.setVisibility(View.GONE);
 
             String accountUID = intent.getStringExtra(UxArgument.SELECTED_ACCOUNT_UID);
             if (accountUID != null)
@@ -244,7 +253,7 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
             //show the simple accounts list
             PagerAdapter mPagerAdapter = new AccountViewPagerAdapter(getSupportFragmentManager());
             mPager.setAdapter(mPagerAdapter);
-            titlePageIndicator.setViewPager(mPager);
+            mTitlePageIndicator.setViewPager(mPager);
 
             SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
             int lastTabIndex = preferences.getInt(LAST_OPEN_TAB_INDEX, INDEX_TOP_LEVEL_ACCOUNTS_FRAGMENT);
@@ -254,11 +263,37 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
 
 	}
 
+    /**
+     * Handles the case where another application has selected to open a (.gnucash or .gnca) file with this app
+     * @param intent Intent containing the data to be imported
+     */
+    private void handleOpenFileIntent(Intent intent) {
+        //when someone launches the app to view a (.gnucash or .gnca) file
+        Uri data = intent.getData();
+        if (data != null){
+            GncXmlExporter.createBackup();
+
+            intent.setData(null);
+            InputStream accountInputStream = null;
+            try {
+                accountInputStream = getContentResolver().openInputStream(data);
+                new ImportAsyncTask(this).execute(accountInputStream);
+            } catch (FileNotFoundException e) {
+                Crashlytics.logException(e);
+                Log.e(LOG_TAG, "Error opening file for import - " + e.getMessage());
+            } finally {
+                removeFirstRunFlag();
+            }
+        }
+    }
+
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         int index = intent.getIntExtra(EXTRA_TAB_INDEX, INDEX_TOP_LEVEL_ACCOUNTS_FRAGMENT);
         setTab(index);
+
+        handleOpenFileIntent(intent);
     }
 
     /**
@@ -287,7 +322,14 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
         }
 
         if (hasNewFeatures()){
-            showWhatsNewDialog(this);
+            AlertDialog dialog = showWhatsNewDialog(this);
+            //TODO: remove this when we upgrade to 1.7.0. Users will already know the nav drawer then
+            dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                @Override
+                public void onDismiss(DialogInterface dialog) {
+                    mDrawerLayout.openDrawer(mDrawerList);
+                }
+            });
         }
         GnuCashApplication.startScheduledActionExecutionService(this);
     }
@@ -305,9 +347,8 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
 	 * @return <code>true</code> if the minor version has been increased, <code>false</code> otherwise.
 	 */
 	private boolean hasNewFeatures(){
-        String versionName = getResources().getString(R.string.app_version_name);
-        int end = versionName.indexOf('.');
-        int currentMinor = Integer.parseInt(versionName.substring(0, end));
+        String minorVersion = getResources().getString(R.string.app_minor_version);
+        int currentMinor = Integer.parseInt(minorVersion);
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         int previousMinor = prefs.getInt(getString(R.string.key_previous_minor_version), 0);
@@ -323,7 +364,7 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
 	/**
 	 * Show dialog with new features for this version
 	 */
-	public static void showWhatsNewDialog(Context context){
+	public static AlertDialog showWhatsNewDialog(Context context){
         Resources resources = context.getResources();
         StringBuilder releaseTitle = new StringBuilder(resources.getString(R.string.title_whats_new));
         PackageInfo packageInfo;
@@ -331,10 +372,11 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
             packageInfo = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
             releaseTitle.append(" - v").append(packageInfo.versionName);
         } catch (NameNotFoundException e) {
-            e.printStackTrace();
+            Crashlytics.logException(e);
+            Log.e(LOG_TAG, "Error displaying 'Whats new' dialog");
         }
 
-        new AlertDialog.Builder(context)
+        return new AlertDialog.Builder(context)
 		.setTitle(releaseTitle.toString())
 		.setMessage(R.string.whats_new)
 		.setPositiveButton(R.string.label_dismiss, new DialogInterface.OnClickListener() {
@@ -402,6 +444,7 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
      */
     private Intent createNewAccountIntent(){
         Intent addAccountIntent = new Intent(this, AccountsActivity.class);
+        addAccountIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         addAccountIntent.setAction(Intent.ACTION_INSERT_OR_EDIT);
         return addAccountIntent;
     }
@@ -462,10 +505,10 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
         builder.setMessage(R.string.msg_confirm_create_default_accounts_first_run);
 
 		builder.setPositiveButton(R.string.btn_create_accounts, new DialogInterface.OnClickListener() {
-
+            AlertDialog currencyDialog;
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                AlertDialog.Builder adb = new AlertDialog.Builder(AccountsActivity.this);
+                final AlertDialog.Builder adb = new AlertDialog.Builder(AccountsActivity.this);
                 adb.setTitle(R.string.title_choose_currency);
                 ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(
                         AccountsActivity.this,
@@ -487,10 +530,12 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
                                 .commit();
 
                         createDefaultAccounts(currency, AccountsActivity.this);
+                        currencyDialog.dismiss();
                         removeFirstRunFlag();
                     }
                 });
-                adb.create().show();
+                currencyDialog = adb.create();
+                currencyDialog.show();
             }
         });
 		
@@ -499,7 +544,6 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 mDefaultAccountsDialog.dismiss();
-                removeFirstRunFlag();
             }
         });
 
@@ -507,7 +551,6 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 importAccounts();
-                removeFirstRunFlag();
             }
         });
 
@@ -515,10 +558,37 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
         mDefaultAccountsDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
             @Override
             public void onDismiss(DialogInterface dialog) {
+                removeFirstRunFlag();
                 mDrawerLayout.openDrawer(mDrawerList);
             }
         });
 		mDefaultAccountsDialog.show();
+
+/*
+        //TODO: For now logging is disabled only for production. In the future, consider enabling for production
+        //show dialog to get user consent for logging
+        new AlertDialog.Builder(this)
+                .setTitle(getString(R.string.title_enable_crashlytics))
+                .setMessage(getString(R.string.msg_enable_crashlytics))
+                .setPositiveButton(R.string.label_enable, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(AccountsActivity.this);
+                        Editor editor = sharedPreferences.edit();
+                        editor.putBoolean(getString(R.string.key_enable_crashlytics), true);
+                        editor.apply();
+                    }
+                })
+                .setNegativeButton(R.string.btn_cancel, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(AccountsActivity.this);
+                        Editor editor = sharedPreferences.edit();
+                        editor.putBoolean(getString(R.string.key_enable_crashlytics), false);
+                        editor.apply();
+                    }
+                }).create().show();
+*/
 	}
 
     /**
@@ -563,7 +633,7 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
     public static void start(Context context){
         Intent accountsActivityIntent = new Intent(context, AccountsActivity.class);
         accountsActivityIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        accountsActivityIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        accountsActivityIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_SINGLE_TOP);
         context.startActivity(accountsActivityIntent);
     }
 

@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2013 - 2015 Ngewi Fet <ngewif@gmail.com>
- * Copyright (c) 2014 Yongxin Wang <fefe.wyx@gmail.com>
+ * Copyright (c) 2014 - 2015 Yongxin Wang <fefe.wyx@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import com.crashlytics.android.Crashlytics;
+
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.ScheduledActionDbAdapter;
 import org.gnucash.android.db.SplitsDbAdapter;
@@ -40,15 +42,14 @@ import org.xml.sax.helpers.DefaultHandler;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
-import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Currency;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Stack;
+import java.util.UUID;
 import java.util.regex.Pattern;
 
 /**
@@ -121,6 +122,11 @@ public class GncXmlHandler extends DefaultHandler {
     List<Transaction> mTransactionList;
 
     /**
+     * All the template transactions found during parsing of the XML
+     */
+    List<Transaction> mTemplateTransactions;
+
+    /**
      * Accumulate attributes of splits found in this object
      */
     Split mSplit;
@@ -172,6 +178,7 @@ public class GncXmlHandler extends DefaultHandler {
     boolean mIsScheduledStart   = false;
     boolean mIsScheduledEnd     = false;
     boolean mIsLastRun          = false;
+    boolean mIsRecurrenceStart  = false;
 
     /**
      * Multiplier for the recurrence period type. e.g. period type of week and multiplier of 2 means bi-weekly
@@ -225,6 +232,7 @@ public class GncXmlHandler extends DefaultHandler {
         mScheduledActionsList = new ArrayList<>();
 
         mTemplatAccountList = new ArrayList<>();
+        mTemplateTransactions = new ArrayList<>();
         mTemplateAccountToTransactionMap = new HashMap<>();
 
         mAutoBalanceSplits = new ArrayList<>();
@@ -267,6 +275,9 @@ public class GncXmlHandler extends DefaultHandler {
                 break;
             case GncXmlHelper.TAG_SX_LAST:
                 mIsLastRun = true;
+                break;
+            case GncXmlHelper.TAG_RX_START:
+                mIsRecurrenceStart = true;
                 break;
         }
     }
@@ -323,7 +334,7 @@ public class GncXmlHandler extends DefaultHandler {
                         if (mRootAccount == null) {
                             mRootAccount = mAccount;
                         } else {
-                            throw new SAXException("multiple ROOT accounts exist in book");
+                            throw new SAXException("Multiple ROOT accounts exist in book");
                         }
                     }
                     // prepare for next input
@@ -369,6 +380,7 @@ public class GncXmlHandler extends DefaultHandler {
                     mAccount.setPlaceHolderFlag(Boolean.parseBoolean(characterString));
                     mInPlaceHolderSlot = false;
                 } else if (mInColorSlot) {
+                    Log.d(LOG_TAG, "Parsing color code: " + characterString);
                     String color = characterString.trim();
                     //Gnucash exports the account color in format #rrrgggbbb, but we need only #rrggbb.
                     //so we trim the last digit in each block, doesn't affect the color much
@@ -381,8 +393,8 @@ public class GncXmlHandler extends DefaultHandler {
                                 mAccount.setColorCode(color);
                         } catch (IllegalArgumentException ex) {
                             //sometimes the color entry in the account file is "Not set" instead of just blank. So catch!
-                            Log.i(LOG_TAG, "Invalid color code '" + color + "' for account " + mAccount.getName());
-                            ex.printStackTrace();
+                            Log.e(LOG_TAG, "Invalid color code '" + color + "' for account " + mAccount.getName());
+                            Crashlytics.logException(ex);
                         }
                     }
                     mInColorSlot = false;
@@ -406,34 +418,32 @@ public class GncXmlHandler extends DefaultHandler {
                     mSplit.setAccountUID(characterString);
                     mInSplitAccountSlot = false;
                 } else if (mInTemplates && mInCreditFormulaSlot) {
-                    //FIXME: Formatting of amounts is broken
-                    NumberFormat numberFormat = NumberFormat.getNumberInstance(Locale.GERMANY);
                     try {
-                        Number number = numberFormat.parse(characterString);
-                        Money amount = new Money(new BigDecimal(number.doubleValue()), mTransaction.getCurrency());
+                        Money amount = new Money(GncXmlHelper.parseTemplateSplitAmount(characterString),
+                                mTransaction.getCurrency());
                         mSplit.setAmount(amount.absolute());
                         mSplit.setType(TransactionType.CREDIT);
-                    } catch (ParseException e) {
-                        Log.e(LOG_TAG, "Error parsing template split amount. " + e.getMessage());
-                        e.printStackTrace();
+                    } catch (NumberFormatException e) {
+                        String msg = "Error parsing template credit split amount " + characterString;
+                        Log.e(LOG_TAG, msg + "\n" + e.getMessage());
+                        Crashlytics.log(msg);
+                        Crashlytics.logException(e);
+                        throw new SAXException(msg, e); //if we fail to parse the split amount, terminate import - data integrity compromised
                     } finally {
                         mInCreditFormulaSlot = false;
                     }
                 } else if (mInTemplates && mInDebitFormulaSlot) {
-                    //FIXME: Format of amount export is broken
                     try {
-                        // TODO: test this. I do not have template transactions to test
-                        // Going through double to decimal will lose accuracy.
-                        // NEVER use double for money.
-                        // from Android SDK Ddoc:
-                        //    new BigDecimal(0.1) is equal to 0.1000000000000000055511151231257827021181583404541015625. This happens as 0.1 cannot be represented exactly in binary.
-                        //    To generate a big decimal instance which is equivalent to 0.1 use the BigDecimal(String) constructor.
-                        Money amount = new Money(new BigDecimal(characterString), mTransaction.getCurrency());
+                        Money amount = new Money(GncXmlHelper.parseTemplateSplitAmount(characterString),
+                                mTransaction.getCurrency());
                         mSplit.setAmount(amount.absolute());
                         mSplit.setType(TransactionType.DEBIT);
                     } catch (NumberFormatException e) {
-                        Log.e(LOG_TAG, "Error parsing template split amount. " + e.getMessage());
-                        e.printStackTrace();
+                        String msg = "Error parsing template debit split amount " + characterString;
+                        Log.e(LOG_TAG, msg + "\n" + e.getMessage());
+                        Crashlytics.log(msg);
+                        Crashlytics.logException(e);
+                        throw new SAXException(msg, e); //if we fail to parse the split amount, terminate import - data integrity compromised
                     } finally {
                         mInDebitFormulaSlot = false;
                     }
@@ -446,7 +456,7 @@ public class GncXmlHandler extends DefaultHandler {
             case GncXmlHelper.TAG_TRN_DESCRIPTION:
                 mTransaction.setDescription(characterString);
                 break;
-            case GncXmlHelper.TAG_DATE:
+            case GncXmlHelper.TAG_TS_DATE:
                 try {
                     if (mIsDatePosted && mTransaction != null) {
                         mTransaction.setTime(GncXmlHelper.parseDate(characterString));
@@ -457,26 +467,15 @@ public class GncXmlHandler extends DefaultHandler {
                         mTransaction.setCreatedTimestamp(timestamp);
                         mIsDateEntered = false;
                     }
-                    if (mIsScheduledStart && mScheduledAction != null) {
-                        mScheduledAction.setStartTime(GncXmlHelper.DATE_FORMATTER.parse(characterString).getTime());
-                        mIsScheduledStart = false;
-                    }
-
-                    if (mIsScheduledEnd && mScheduledAction != null) {
-                        mScheduledAction.setEndTime(GncXmlHelper.DATE_FORMATTER.parse(characterString).getTime());
-                        mIsScheduledEnd = false;
-                    }
-
-                    if (mIsLastRun && mScheduledAction != null) {
-                        mScheduledAction.setLastRun(GncXmlHelper.DATE_FORMATTER.parse(characterString).getTime());
-                        mIsLastRun = false;
-                    }
                 } catch (ParseException e) {
-                    e.printStackTrace();
-                    throw new SAXException("Unable to parse transaction time", e);
+                    Crashlytics.logException(e);
+                    String message = "Unable to parse transaction time - " + characterString;
+                    Log.e(LOG_TAG, message + "\n" + e.getMessage());
+                    Crashlytics.log(message);
+                    throw new SAXException(message, e);
                 }
                 break;
-            case GncXmlHelper.TAG_RECURRENCE_PERIOD:
+            case GncXmlHelper.TAG_RECURRENCE_PERIOD: //for parsing of old backup files
                 mRecurrencePeriod = Long.parseLong(characterString);
                 mTransaction.setTemplate(mRecurrencePeriod > 0);
                 break;
@@ -496,10 +495,12 @@ public class GncXmlHandler extends DefaultHandler {
                     } else {
                         mNegativeQuantity = false;
                     }
-                    mQuantity = GncXmlHelper.parseMoney(q);
+                    mQuantity = GncXmlHelper.parseSplitAmount(q);
                 } catch (ParseException e) {
-                    e.printStackTrace();
-                    throw new SAXException("Unable to parse money", e);
+                    String msg = "Error to parsing split quantity - " + characterString;
+                    Crashlytics.log(msg);
+                    Crashlytics.logException(e);
+                    throw new SAXException(msg, e);
                 }
                 break;
             case GncXmlHelper.TAG_SPLIT_ACCOUNT:
@@ -524,7 +525,9 @@ public class GncXmlHandler extends DefaultHandler {
                     mAutoBalanceSplits.add(imbSplit);
                 }
                 mTransactionList.add(mTransaction);
-
+                if (mInTemplates){
+                    mTemplateTransactions.add(mTransaction);
+                }
                 if (mRecurrencePeriod > 0) { //if we find an old format recurrence period, parse it
                     mTransaction.setTemplate(true);
                     ScheduledAction scheduledAction = ScheduledAction.parseScheduledAction(mTransaction, mRecurrencePeriod);
@@ -536,6 +539,7 @@ public class GncXmlHandler extends DefaultHandler {
             case GncXmlHelper.TAG_TEMPLATE_TRANSACTIONS:
                 mInTemplates = false;
                 break;
+
             // ========================= PROCESSING SCHEDULED ACTIONS ==================================
             case GncXmlHelper.TAG_SX_ID:
                 mScheduledAction.setUID(characterString);
@@ -549,6 +553,9 @@ public class GncXmlHandler extends DefaultHandler {
             case GncXmlHelper.TAG_SX_ENABLED:
                 mScheduledAction.setEnabled(characterString.equals("y"));
                 break;
+            case GncXmlHelper.TAG_SX_AUTO_CREATE:
+                mScheduledAction.setAutoCreate(characterString.equals("y"));
+                break;
             case GncXmlHelper.TAG_SX_NUM_OCCUR:
                 mScheduledAction.setTotalFrequency(Integer.parseInt(characterString));
                 break;
@@ -560,11 +567,48 @@ public class GncXmlHandler extends DefaultHandler {
                 periodType.setMultiplier(mRecurrenceMultiplier);
                 mScheduledAction.setPeriod(periodType);
                 break;
+            case GncXmlHelper.TAG_GDATE:
+                try {
+                    long date = GncXmlHelper.DATE_FORMATTER.parse(characterString).getTime();
+                    if (mIsScheduledStart && mScheduledAction != null) {
+                        mScheduledAction.setCreatedTimestamp(new Timestamp(date));
+                        mIsScheduledStart = false;
+                    }
+
+                    if (mIsScheduledEnd && mScheduledAction != null) {
+                        mScheduledAction.setEndTime(date);
+                        mIsScheduledEnd = false;
+                    }
+
+                    if (mIsLastRun && mScheduledAction != null) {
+                        mScheduledAction.setLastRun(date);
+                        mIsLastRun = false;
+                    }
+
+                    if (mIsRecurrenceStart && mScheduledAction != null){
+                        mScheduledAction.setStartTime(date);
+                        mIsRecurrenceStart = false;
+                    }
+                } catch (ParseException e) {
+                    String msg = "Error parsing scheduled action date " + characterString;
+                    Log.e(LOG_TAG, msg + e.getMessage());
+                    Crashlytics.log(msg);
+                    Crashlytics.logException(e);
+                    throw new SAXException(msg, e);
+                }
+                break;
             case GncXmlHelper.TAG_SX_TEMPL_ACCOUNT:
-                mScheduledAction.setActionUID(mTemplateAccountToTransactionMap.get(characterString));
+                if (mScheduledAction.getActionType() == ScheduledAction.ActionType.TRANSACTION) {
+                    mScheduledAction.setActionUID(mTemplateAccountToTransactionMap.get(characterString));
+                } else {
+                    mScheduledAction.setActionUID(UUID.randomUUID().toString().replaceAll("-",""));
+                }
                 break;
             case GncXmlHelper.TAG_SCHEDULED_ACTION:
                 mScheduledActionsList.add(mScheduledAction);
+                int count = generateMissedScheduledTransactions(mScheduledAction);
+                Log.i(LOG_TAG, String.format("Generated %d transactions from scheduled action", count));
+                mRecurrenceMultiplier = 1; //reset it, even though it will be parsed from XML each time
                 break;
         }
 
@@ -667,10 +711,12 @@ public class GncXmlHandler extends DefaultHandler {
             mAccountsDbAdapter.deleteAllRecords();
             long nAccounts = mAccountsDbAdapter.bulkAddAccounts(mAccountList);
             Log.d("Handler:", String.format("%d accounts inserted", nAccounts));
-            long nTransactions = mTransactionsDbAdapter.bulkAddTransactions(mTransactionList);
-            Log.d("Handler:", String.format("%d transactions inserted", nTransactions));
+            //We need to add scheduled actions first because there is a foreign key constraint on transactions
+            //which are generated from scheduled actions (we do auto-create some transactions during import)
             int nSchedActions = mScheduledActionsDbAdapter.bulkAddScheduledActions(mScheduledActionsList);
             Log.d("Handler:", String.format("%d scheduled actions inserted", nSchedActions));
+            long nTransactions = mTransactionsDbAdapter.bulkAddTransactions(mTransactionList);
+            Log.d("Handler:", String.format("%d transactions inserted", nTransactions));
             long endTime = System.nanoTime();
             Log.d("Handler:", String.format(" bulk insert time: %d", endTime - startTime));
             mAccountsDbAdapter.setTransactionSuccessful();
@@ -689,8 +735,47 @@ public class GncXmlHandler extends DefaultHandler {
         try {
             return mAccountMap.get(accountUID).getCurrency();
         } catch (Exception e) {
-            e.printStackTrace();
+            Crashlytics.logException(e);
             return Currency.getInstance(Money.DEFAULT_CURRENCY_CODE);
         }
+    }
+
+    /**
+     * Generates the runs of the scheduled action which have been missed since the file was last opened.
+     * @param scheduledAction Scheduled action for transaction
+     * @return Number of transaction instances generated
+     */
+    private int generateMissedScheduledTransactions(ScheduledAction scheduledAction){
+        //if this scheduled action should not be run for any reason, return immediately
+        if (scheduledAction.getActionType() != ScheduledAction.ActionType.TRANSACTION
+                || !scheduledAction.isEnabled() || !scheduledAction.shouldAutoCreate()
+                || (scheduledAction.getEndTime() > 0 && scheduledAction.getEndTime() > System.currentTimeMillis())
+                || (scheduledAction.getTotalFrequency() > 0 && scheduledAction.getExecutionCount() >= scheduledAction.getTotalFrequency())){
+            return 0;
+        }
+
+        long lastRuntime = scheduledAction.getStartTime();
+        if (scheduledAction.getLastRun() > 0){
+            lastRuntime = scheduledAction.getLastRun();
+        }
+
+        int generatedTransactionCount = 0;
+        long period = scheduledAction.getPeriod();
+        final String actionUID = scheduledAction.getActionUID();
+        while ((lastRuntime = lastRuntime + period) <= System.currentTimeMillis()){
+            for (Transaction templateTransaction : mTemplateTransactions) {
+                if (templateTransaction.getUID().equals(actionUID)){
+                    Transaction transaction = new Transaction(templateTransaction, true);
+                    transaction.setTime(lastRuntime);
+                    transaction.setScheduledActionUID(scheduledAction.getUID());
+                    mTransactionList.add(transaction);
+                    scheduledAction.setExecutionCount(scheduledAction.getExecutionCount() + 1);
+                    ++generatedTransactionCount;
+                    break;
+                }
+            }
+        }
+        scheduledAction.setLastRun(lastRuntime);
+        return generatedTransactionCount;
     }
 }

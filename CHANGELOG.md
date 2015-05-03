@@ -1,10 +1,37 @@
 Change Log
 ===============================================================================
+Version 1.6.0 *(2015-xx-xx)*
+----------------------------
+* Feature: More options for recurrence of scheduled transactions
+* Feature: Scheduled backups (QIF, OFX and XML)
+* Feature: Backup/Export to DropBox and Google Drive
+* Feature: Reports of income and expenses over time - bar, pie and line charts
+* Feature: Import scheduled transactions from GnuCash XML
+* Feature: Set app as handler for .gnucash and .gnca files
+* Feature: Auto-balance transactions before saving
+* Feature: Added navigation drawer for easier access to features
+* Feature: Added options for explicitly creating/restoring backups
+* Feature: Added support for hidden accounts
+* Feature: Account delete dialog now has options for moving sub-accounts and transactions
+* Feature: Export to Gnucash desktop-compatible XML
+* Feature: Added support for logging to Crashlytics (for beta releases)
+* Improvement: Imbalance accounts are created on-the-fly (and hidden in single-entry mode)
+* Improvement: Transaction auto-complete suggestions now include amount, date and do not show duplicates
+* Improvement: Only one ROOT account exists in the database (it is created if necessary)
+* Improvement: Show the day in transaction headers
+* Improvement: Added `created_at` and `modified_at` database columns to all records
+* Improvement: Added ability to mark account as favorite from context menu
+* Improvement: Future transactions are not considered when calculating account balances
+* Improvement: Database is always cleared during import (no merging of books supported)
+* Improvement: Increased speed and reliability of import operations
+* Improvement: Upgraded Java version to 1.7
+* Improvement: Use gradle for building source
+
 Version 1.5.5 *(2015-02-20)*
 ----------------------------
-Fixed: QIF not exported when using single-entry transactions
-Fixed: Passcode screen can be by-passed using SwipeBack
-Fixed: Crash when changing the account name
+* Fixed: QIF not exported when using single-entry transactions
+* Fixed: Passcode screen can be by-passed using SwipeBack
+* Fixed: Crash when changing the account name
 
 Version 1.5.4 *(2015-02-16)*
 ----------------------------

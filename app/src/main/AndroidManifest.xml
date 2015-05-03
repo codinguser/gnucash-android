@@ -16,14 +16,10 @@
 -->
 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="org.gnucash.android"
-    android:versionCode="48"
-    android:versionName="@string/app_version_name" >
+    package="org.gnucash.android">
 
-    <uses-sdk android:minSdkVersion="10" android:targetSdkVersion="19"/>
-    
     <permission-group 
-        android:name="org.gnucash.android.permission.group.GNUCASH"
+        android:name="${applicationId}.permission.group.GNUCASH"
         android:label="@string/label_permission_group" 
         android:description="@string/description_permission_group" />
     
@@ -62,6 +58,24 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <action android:name="android.intent.action.EDIT" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:host="*" android:mimeType="*/*" android:pathPattern=".*\\.gnucash" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <action android:name="android.intent.action.EDIT" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:host="*" android:mimeType="*/*" android:pathPattern=".*\\.gnca" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <action android:name="android.intent.action.EDIT" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:host="*" android:mimeType="*/*" android:pathPattern=".*\\.gnca.zip" />
+            </intent-filter>
         </activity>
         <activity
             android:name=".ui.passcode.PasscodeLockScreenActivity"
@@ -93,7 +107,7 @@
             android:configChanges="orientation|keyboard">
             <intent-filter>
                 <!-- Change this to be db- followed by your app key -->
-                <data android:scheme="db-dhjh8ke9wf05948" />
+                <data android:scheme="@string/manifest_dropbox_app_key" />
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.BROWSABLE"/>
                 <category android:name="android.intent.category.DEFAULT" />
@@ -113,7 +127,7 @@
             <intent-filter>
                 <action android:name="android.intent.action.INSERT" />
                 <category android:name="android.intent.category.DEFAULT" />
-                <data android:mimeType="vnd.android.cursor.item/vnd.org.gnucash.android.transaction"/>
+                <data android:mimeType="vnd.android.cursor.item/vnd.${applicationId}.transaction"/>
             </intent-filter>
         </receiver>
         <receiver android:name=".receivers.AccountCreator"
@@ -123,7 +137,7 @@
             <intent-filter>
                 <action android:name="android.intent.action.INSERT" />
                 <category android:name="android.intent.category.DEFAULT" />
-                <data android:mimeType="vnd.android.cursor.item/vnd.org.gnucash.android.account"/>
+                <data android:mimeType="vnd.android.cursor.item/vnd.${applicationId}.account"/>
             </intent-filter>
         </receiver>
         <receiver android:name=".receivers.TransactionAppWidgetProvider" >
@@ -140,6 +154,8 @@
                 <action android:name="android.intent.action.BOOT_COMPLETED"/>
             </intent-filter>
         </receiver>
+        <meta-data android:name="com.crashlytics.ApiKey" android:value="46fe045d00d4ad8a71014c53567be3368e10bd64"/>
+        
     </application>
 
 </manifest>

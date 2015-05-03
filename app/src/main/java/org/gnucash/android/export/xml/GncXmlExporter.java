@@ -21,6 +21,8 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
+import com.crashlytics.android.Crashlytics;
+
 import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.export.ExportFormat;
@@ -44,7 +46,6 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Currency;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -75,6 +76,7 @@ public class GncXmlExporter extends Exporter{
      */
     public GncXmlExporter(ExportParams params) {
         super(params, null);
+        LOG_TAG = "GncXmlExporter";
     }
 
     /**
@@ -85,6 +87,7 @@ public class GncXmlExporter extends Exporter{
      */
     public GncXmlExporter(ExportParams params, SQLiteDatabase db) {
         super(params, db);
+        LOG_TAG = "GncXmlExporter";
     }
 
     private void exportSlots(XmlSerializer xmlSerializer,
@@ -327,18 +330,18 @@ public class GncXmlExporter extends Exporter{
                 // date posted, time which user put on the transaction
                 String strDate = GncXmlHelper.formatDate(cursor.getLong(cursor.getColumnIndexOrThrow("trans_time")));
                 xmlSerializer.startTag(null, GncXmlHelper.TAG_DATE_POSTED);
-                xmlSerializer.startTag(null, GncXmlHelper.TAG_DATE);
+                xmlSerializer.startTag(null, GncXmlHelper.TAG_TS_DATE);
                 xmlSerializer.text(strDate);
-                xmlSerializer.endTag(null, GncXmlHelper.TAG_DATE);
+                xmlSerializer.endTag(null, GncXmlHelper.TAG_TS_DATE);
                 xmlSerializer.endTag(null, GncXmlHelper.TAG_DATE_POSTED);
 
                 // date entered, time when the transaction was actually created
                 Timestamp timeEntered = Timestamp.valueOf(cursor.getString(cursor.getColumnIndexOrThrow("trans_date_posted")));
                 String dateEntered = GncXmlHelper.formatDate(timeEntered.getTime());
                 xmlSerializer.startTag(null, GncXmlHelper.TAG_DATE_ENTERED);
-                xmlSerializer.startTag(null, GncXmlHelper.TAG_DATE);
+                xmlSerializer.startTag(null, GncXmlHelper.TAG_TS_DATE);
                 xmlSerializer.text(dateEntered);
-                xmlSerializer.endTag(null, GncXmlHelper.TAG_DATE);
+                xmlSerializer.endTag(null, GncXmlHelper.TAG_TS_DATE);
                 xmlSerializer.endTag(null, GncXmlHelper.TAG_DATE_ENTERED);
 
                 // description
@@ -396,11 +399,11 @@ public class GncXmlExporter extends Exporter{
             xmlSerializer.endTag(null, GncXmlHelper.TAG_RECONCILED_STATE);
             // value, in the transaction's currency
             String trxType = cursor.getString(cursor.getColumnIndexOrThrow("split_type"));
-            BigDecimal value = new BigDecimal(cursor.getString(cursor.getColumnIndexOrThrow("split_amount")));
-            value = value.multiply(denom);
-            String strValue = "0";
-            if (!exportTemplates) //when doing normal transaction export
-                    strValue = (trxType.equals("CREDIT") ? "-" : "") + value.stripTrailingZeros().toPlainString() + "/" + denomString;
+            BigDecimal splitAmount = new BigDecimal(cursor.getString(cursor.getColumnIndexOrThrow("split_amount")));
+            String strValue = "0/" + denomString;
+            if (!exportTemplates) { //when doing normal transaction export
+                strValue = (trxType.equals("CREDIT") ? "-" : "") + splitAmount.multiply(denom).stripTrailingZeros().toPlainString() + "/" + denomString;
+            }
             xmlSerializer.startTag(null, GncXmlHelper.TAG_SPLIT_VALUE);
             xmlSerializer.text(strValue);
             xmlSerializer.endTag(null, GncXmlHelper.TAG_SPLIT_VALUE);
@@ -441,7 +444,7 @@ public class GncXmlExporter extends Exporter{
                 TransactionType type = TransactionType.valueOf(trxType);
                 slotKeys.add(type == TransactionType.CREDIT ? GncXmlHelper.KEY_CREDIT_FORMULA : GncXmlHelper.KEY_DEBIT_FORMULA);
                 slotTypes.add(GncXmlHelper.ATTR_VALUE_STRING);
-                slotValues.add(GncXmlHelper.getNumberFormatForTemplateSplits().format(value.doubleValue())); //FIXME: Check the proper formatting of the amount string here
+                slotValues.add(GncXmlHelper.formatTemplateSplitAmount(splitAmount));
 
                 exportSlots(xmlSerializer, slotKeys, slotTypes, slotValues);
 
@@ -464,16 +467,20 @@ public class GncXmlExporter extends Exporter{
      * @param xmlSerializer XML serializer
      * @throws IOException
      */
-    private void exportScheduledActions(XmlSerializer xmlSerializer) throws IOException{
-        Cursor cursor = mScheduledActionDbAdapter.fetchAllRecords();
+    private void exportScheduledTransactions(XmlSerializer xmlSerializer) throws IOException{
+        //for now we will export only scheduled transactions to XML
+        Cursor cursor = mScheduledActionDbAdapter.fetchAllRecords(
+                ScheduledActionEntry.COLUMN_TYPE + "=?", new String[]{ScheduledAction.ActionType.TRANSACTION.name()});
 
         while (cursor.moveToNext()) {
             String actionUID = cursor.getString(cursor.getColumnIndexOrThrow(ScheduledActionEntry.COLUMN_ACTION_UID));
+            Account accountUID = mTransactionToTemplateAccountMap.get(actionUID);
 
             xmlSerializer.startTag(null, GncXmlHelper.TAG_SCHEDULED_ACTION);
             xmlSerializer.attribute(null, GncXmlHelper.ATTR_KEY_VERSION, GncXmlHelper.BOOK_VERSION);
             xmlSerializer.startTag(null, GncXmlHelper.TAG_SX_ID);
-            String nameUID = mTransactionToTemplateAccountMap.get(actionUID).getName();
+
+            String nameUID = accountUID.getName();
             xmlSerializer.attribute(null, GncXmlHelper.ATTR_KEY_TYPE, GncXmlHelper.ATTR_VALUE_GUID);
             xmlSerializer.text(nameUID);
             xmlSerializer.endTag(null, GncXmlHelper.TAG_SX_ID);
@@ -492,7 +499,7 @@ public class GncXmlExporter extends Exporter{
             xmlSerializer.text(enabled ? "y" : "n");
             xmlSerializer.endTag(null, GncXmlHelper.TAG_SX_ENABLED);
             xmlSerializer.startTag(null, GncXmlHelper.TAG_SX_AUTO_CREATE);
-            xmlSerializer.text("y");
+            xmlSerializer.text("n"); //we do not want transactions auto-created on the desktop.
             xmlSerializer.endTag(null, GncXmlHelper.TAG_SX_AUTO_CREATE);
             xmlSerializer.startTag(null, GncXmlHelper.TAG_SX_AUTO_CREATE_NOTIFY);
             xmlSerializer.text("n"); //TODO: if we ever support notifying before creating a scheduled transaction, then update this
@@ -510,8 +517,9 @@ public class GncXmlExporter extends Exporter{
             xmlSerializer.endTag(null, GncXmlHelper.TAG_SX_INSTANCE_COUNT);
 
             //start date
-            long startTime = cursor.getLong(cursor.getColumnIndexOrThrow(ScheduledActionEntry.COLUMN_START_TIME));
-            serializeDate(xmlSerializer, GncXmlHelper.TAG_SX_START, startTime);
+            String createdTimestamp = cursor.getString(cursor.getColumnIndexOrThrow(ScheduledActionEntry.COLUMN_CREATED_AT));
+            long scheduleStartTime = Timestamp.valueOf(createdTimestamp).getTime();
+            serializeDate(xmlSerializer, GncXmlHelper.TAG_SX_START, scheduleStartTime);
 
             long lastRunTime = cursor.getLong(cursor.getColumnIndexOrThrow(ScheduledActionEntry.COLUMN_LAST_RUN));
             if (lastRunTime > 0){
@@ -544,7 +552,7 @@ public class GncXmlExporter extends Exporter{
 
             xmlSerializer.startTag(null, GncXmlHelper.TAG_SX_TEMPL_ACCOUNT);
             xmlSerializer.attribute(null, GncXmlHelper.ATTR_KEY_TYPE, GncXmlHelper.ATTR_VALUE_GUID);
-            xmlSerializer.text(mTransactionToTemplateAccountMap.get(actionUID).getUID());
+            xmlSerializer.text(accountUID.getUID());
             xmlSerializer.endTag(null, GncXmlHelper.TAG_SX_TEMPL_ACCOUNT);
 
             xmlSerializer.startTag(null, GncXmlHelper.TAG_SX_SCHEDULE);
@@ -559,7 +567,8 @@ public class GncXmlExporter extends Exporter{
             xmlSerializer.text(periodType.name().toLowerCase());
             xmlSerializer.endTag(null, GncXmlHelper.TAG_RX_PERIOD_TYPE);
 
-            serializeDate(xmlSerializer, GncXmlHelper.TAG_RX_START, startTime);
+            long recurrenceStartTime = cursor.getLong(cursor.getColumnIndexOrThrow(ScheduledActionEntry.COLUMN_START_TIME));
+            serializeDate(xmlSerializer, GncXmlHelper.TAG_RX_START, recurrenceStartTime);
 
             xmlSerializer.endTag(null, GncXmlHelper.TAG_RECURRENCE);
             xmlSerializer.endTag(null, GncXmlHelper.TAG_SX_SCHEDULE);
@@ -613,7 +622,7 @@ public class GncXmlExporter extends Exporter{
             }
             // book count
             xmlSerializer.startTag(null, GncXmlHelper.TAG_COUNT_DATA);
-            xmlSerializer.attribute(null, GncXmlHelper.ATTR_KEY_CD_TYPE, "book");
+            xmlSerializer.attribute(null, GncXmlHelper.ATTR_KEY_CD_TYPE, GncXmlHelper.ATTR_VALUE_BOOK);
             xmlSerializer.text("1");
             xmlSerializer.endTag(null, GncXmlHelper.TAG_COUNT_DATA);
             // book
@@ -654,19 +663,19 @@ public class GncXmlExporter extends Exporter{
             exportTransactions(xmlSerializer, false);
 
             //transaction templates
-            //TODO: do not include this tag at all if there are no template transactions
-            xmlSerializer.startTag(null, GncXmlHelper.TAG_TEMPLATE_TRANSACTIONS);
-            exportTransactions(xmlSerializer, true);
-            xmlSerializer.endTag(null, GncXmlHelper.TAG_TEMPLATE_TRANSACTIONS);
-
+            if (mTransactionsDbAdapter.getTemplateTransactionsCount() > 0) {
+                xmlSerializer.startTag(null, GncXmlHelper.TAG_TEMPLATE_TRANSACTIONS);
+                exportTransactions(xmlSerializer, true);
+                xmlSerializer.endTag(null, GncXmlHelper.TAG_TEMPLATE_TRANSACTIONS);
+            }
             //scheduled actions
-            exportScheduledActions(xmlSerializer);
+            exportScheduledTransactions(xmlSerializer);
 
             xmlSerializer.endTag(null, GncXmlHelper.TAG_BOOK);
             xmlSerializer.endTag(null, GncXmlHelper.TAG_ROOT);
             xmlSerializer.endDocument();
         } catch (Exception e) {
-            e.printStackTrace();
+            Crashlytics.logException(e);
             throw new ExporterException(mParameters, e);
         }
     }
@@ -685,7 +694,7 @@ public class GncXmlExporter extends Exporter{
             outputStreamWriter.close();
             return true;
         } catch (IOException e) {
-            e.printStackTrace();
+            Crashlytics.logException(e);
             Log.e("GncXmlExporter", "Error creating backup", e);
             return false;
         }

@@ -65,10 +65,9 @@ public class GncXmlImporter {
 
     /**
      * Parse GnuCash XML input and populates the database
-     * @param context Application context
      * @param gncXmlInputStream InputStream source of the GnuCash XML file
      */
-    public static void parse(Context context, InputStream gncXmlInputStream) throws ParserConfigurationException, SAXException, IOException {
+    public static void parse(InputStream gncXmlInputStream) throws ParserConfigurationException, SAXException, IOException {
         SAXParserFactory spf = SAXParserFactory.newInstance();
         SAXParser sp = spf.newSAXParser();
         XMLReader xr = sp.getXMLReader();

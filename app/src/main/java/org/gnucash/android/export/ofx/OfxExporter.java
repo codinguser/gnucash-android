@@ -18,6 +18,9 @@
 package org.gnucash.android.export.ofx;
 
 import android.preference.PreferenceManager;
+import android.util.Log;
+
+import com.crashlytics.android.Crashlytics;
 
 import org.gnucash.android.R;
 import org.gnucash.android.db.AccountsDbAdapter;
@@ -63,6 +66,7 @@ public class OfxExporter extends Exporter{
 	 */
 	public OfxExporter(ExportParams params) {
         super(params, null);
+        LOG_TAG = "OfxExporter";
 	}
 
     /**
@@ -170,10 +174,9 @@ public class OfxExporter extends Exporter{
             }
 
             transformer.transform(source, result);
-        } catch (TransformerConfigurationException txconfigException) {
-            txconfigException.printStackTrace();
         } catch (TransformerException tfException) {
-            tfException.printStackTrace();
+            Log.e(LOG_TAG, tfException.getMessage());
+            Crashlytics.logException(tfException);
         }
     }
 }

@@ -17,6 +17,7 @@
 package org.gnucash.android.model;
 
 
+import org.gnucash.android.BuildConfig;
 import org.gnucash.android.export.ofx.OfxHelper;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -43,7 +44,7 @@ public class Account extends BaseModel{
 	 * The MIME type for accounts in GnucashMobile
 	 * This is used when sending intents from third-party applications
 	 */
-	public static final String MIME_TYPE = "vnd.android.cursor.item/vnd.org.gnucash.android.account";
+	public static final String MIME_TYPE = "vnd.android.cursor.item/vnd." + BuildConfig.APPLICATION_ID + ".account";
 
     /*
         ^             anchor for start of string
@@ -298,7 +299,7 @@ public class Account extends BaseModel{
             return;
 
         if (!Pattern.matches(COLOR_HEX_REGEX, colorCode))
-            throw new IllegalArgumentException("Invalid color hex code");
+            throw new IllegalArgumentException("Invalid color hex code: " + colorCode);
 
         this.mColorCode = colorCode;
     }

@@ -18,13 +18,17 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
     <Preference android:key="@string/key_about" android:summary="@string/summary_about_gnucash"
                 android:title="@string/title_about"/>
-    <Preference android:key="@string/key_build_version" android:title="@string/title_build_version"/>
+    <Preference android:key="@string/key_build_version" android:title="@string/title_build_version"
+        android:summary="@string/app_version_name"/>
     <Preference android:summary="@string/summary_licence_details" 
         android:title="@string/title_license" 
         android:key="@string/key_license">
         <intent android:action="android.intent.action.VIEW"
         	android:data="http://www.apache.org/licenses/LICENSE-2.0.html" />
 	</Preference>
-        
-
+<!-- //TODO: Enable this when we enable logging for production releases
+    <CheckBoxPreference android:title="@string/title_enable_crashlytics"
+        android:summary="@string/msg_enable_crashlytics"
+        android:key="@string/key_enable_crashlytics" />
+-->
 </PreferenceScreen>

@@ -23,6 +23,8 @@ import android.os.PowerManager;
 import android.os.SystemClock;
 import android.util.Log;
 
+import com.crashlytics.android.Crashlytics;
+
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.db.ScheduledActionDbAdapter;
@@ -32,6 +34,7 @@ import org.gnucash.android.export.ExportParams;
 import org.gnucash.android.model.ScheduledAction;
 import org.gnucash.android.model.Transaction;
 
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -76,7 +79,8 @@ public class SchedulerService extends IntentService {
                     || (scheduledAction.getExecutionCount() < scheduledAction.getTotalFrequency()) //or the number of scheduled runs
                     || (endTime == 0 && scheduledAction.getTotalFrequency() == 0)) //or the action is to run forever
                     && ((lastRun + period) <= now)  //one period has passed since last execution
-                    && scheduledAction.getStartTime() <= now ){ //the start time has arrived
+                    && scheduledAction.getStartTime() <= now
+                    && scheduledAction.isEnabled()){ //the start time has arrived
                 executeScheduledEvent(scheduledAction);
             }
         }
@@ -97,22 +101,28 @@ public class SchedulerService extends IntentService {
                 TransactionsDbAdapter transactionsDbAdapter = TransactionsDbAdapter.getInstance();
                 Transaction trxnTemplate = transactionsDbAdapter.getTransaction(eventUID);
                 Transaction recurringTrxn = new Transaction(trxnTemplate, true);
-                recurringTrxn.setTime(System.currentTimeMillis());
 
+                //we may be executing scheduled action significantly after scheduled time (depending on when Android fires the alarm)
+                //so compute the actual transaction time from pre-known values
+                long transactionTime; //default
+                if (scheduledAction.getLastRun() > 0){
+                    transactionTime = scheduledAction.getLastRun() + scheduledAction.getPeriod();
+                } else {
+                    transactionTime = scheduledAction.getStartTime() + scheduledAction.getPeriod();
+                }
+                recurringTrxn.setTime(transactionTime);
+                recurringTrxn.setCreatedTimestamp(new Timestamp(transactionTime));
                 transactionsDbAdapter.addTransaction(recurringTrxn);
                 break;
 
             case BACKUP:
                 ExportParams params = ExportParams.parseCsv(scheduledAction.getTag());
                 try {
+                    //wait for async task to finish before we proceed (we are holding a wake lock)
                     new ExportAsyncTask(GnuCashApplication.getAppContext()).execute(params).get();
-                } catch (InterruptedException e) {
+                } catch (InterruptedException | ExecutionException e) {
                     //TODO: Create special log for scheduler service
-                    Log.e(LOG_TAG, e.getMessage());
-                    return; //return immediately, do not update last run time of event
-                } catch (ExecutionException e) {
-                    //TODO: Log to crashlytics
-                    e.printStackTrace();
+                    Crashlytics.logException(e);
                     Log.e(LOG_TAG, e.getMessage());
                     return; //return immediately, do not update last run time of event
                 }

@@ -1,14 +1,15 @@
 import java.text.SimpleDateFormat
 
 apply plugin: 'com.android.application'
+apply plugin: 'crashlytics'
 
 def versionMajor = 1
 def versionMinor = 6
 def versionPatch = 0
-def versionBuild = 0
+def versionBuild = 1
 
 def buildTime() {
-    def df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm'Z'")
+    def df = new SimpleDateFormat("yyyyMMdd_HHmm'UTC'")
     df.setTimeZone(TimeZone.getTimeZone("UTC"))
     return df.format(new Date())
 }
@@ -16,6 +17,7 @@ def buildTime() {
 def gitSha() {
     return 'git rev-parse --short HEAD'.execute().text.trim()
 }
+
 
 android {
     compileSdkVersion 19
@@ -26,11 +28,44 @@ android {
         targetSdkVersion 19
         versionCode versionMajor * 10000 + versionMinor * 1000 + versionPatch * 100 + versionBuild
         versionName "${versionMajor}.${versionMinor}.${versionPatch}"
+        resValue "string", "app_version_name", "${versionName}"
+        resValue "string", "app_minor_version", "${versionMinor}"
+        if (project.hasProperty("RELEASE_DROPBOX_APP_KEY")){
+            resValue "string", "dropbox_app_key", RELEASE_DROPBOX_APP_KEY
+            resValue "string", "dropbox_app_secret", RELEASE_DROPBOX_APP_SECRET
+            resValue "string", "manifest_dropbox_app_key", "db-${RELEASE_DROPBOX_APP_KEY}"
+        }
     }
+
+    applicationVariants.all { variant ->
+        variant.outputs.each { output ->
+            output.outputFile = new File(
+                    output.outputFile.parent, "GnucashAndroid_v${variant.versionName}.apk")
+        }
+    }
+
+    signingConfigs {
+        debug {
+            storeFile file("../debug.keystore")
+        }
+
+        if(project.hasProperty("RELEASE_STORE_FILE")) {
+            release {
+                storeFile       file(RELEASE_STORE_FILE)
+                storePassword   RELEASE_STORE_PASSWORD
+                keyAlias        RELEASE_KEY_ALIAS
+                keyPassword     RELEASE_KEY_PASSWORD
+            }
+        }
+    }
+
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            if (project.hasProperty("RELEASE_STORE_FILE")){
+                signingConfig signingConfigs.release
+            }
         }
         debug {
             debuggable true
@@ -45,25 +80,26 @@ android {
             applicationId 'org.gnucash.android.devel'
             testApplicationId 'org.gnucash.android.test.devel'
             resValue "string", "app_name", "GnuCash-devel"
-            versionName "${versionMajor}.${versionMinor}.${versionPatch}-dev${versionBuild} @rev ${gitSha()} - BuildTime ${buildTime()} "
+            resValue "string", "dropbox_app_key", "dhjh8ke9wf05948"
+            resValue "string", "dropbox_app_secret", "h2t9fphj3nr4wkw"
+            resValue "string", "manifest_dropbox_app_key", "db-dhjh8ke9wf05948"
+            versionName "${versionMajor}.${versionMinor}.${versionPatch}-dev${versionBuild}_${buildTime()}"
+            resValue "string", "app_version_name", "${versionName}"
         }
 
         beta {
             resValue "string", "app_name", "GnuCash - beta"
-            versionName "${versionMajor}.${versionMinor}.${versionPatch}-beta${versionBuild} @rev ${gitSha()} - BuildTime ${buildTime()}"
+            versionName "${versionMajor}.${versionMinor}.${versionPatch}-beta${versionBuild}_${buildTime()}"
+            resValue "string", "app_version_name", "${versionName}"
         }
 
         production {
             resValue "string", "app_name", "GnuCash"
+            ext.enableCrashlytics = false //TODO: enable for production builds
         }
 
     }
 
-    signingConfigs {
-        debug {
-            storeFile file("../debug.keystore")
-        }
-    }
     
     compileOptions { //we want switch with strings during xml parsing
         sourceCompatibility JavaVersion.VERSION_1_7
@@ -80,7 +116,8 @@ dependencies {
             'com.commonsware.cwac:merge:1.1.+',
             'com.github.PhilJay:MPAndroidChart:v2.0.8',
             'joda-time:joda-time:2.7',
-            'com.google.android.gms:play-services-drive:7.0.0'
+            'com.google.android.gms:play-services-drive:7.0.0',
+            'com.crashlytics.android:crashlytics:1.+'
     )
     androidTestCompile('com.jayway.android.robotium:robotium-solo:5.2.1',
             'com.squareup:fest-android:1.0.6')

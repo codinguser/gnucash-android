@@ -487,6 +487,7 @@ public class TransactionsActivity extends PassLockActivity implements
      */
     public void onNewAccountClick(View v) {
         Intent addAccountIntent = new Intent(this, AccountsActivity.class);
+        addAccountIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         addAccountIntent.setAction(Intent.ACTION_INSERT_OR_EDIT);
         addAccountIntent.putExtra(UxArgument.PARENT_ACCOUNT_UID, mAccountUID);
         startActivityForResult(addAccountIntent, AccountsActivity.REQUEST_EDIT_ACCOUNT);

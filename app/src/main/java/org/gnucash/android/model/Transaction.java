@@ -18,6 +18,7 @@ package org.gnucash.android.model;
 
 import android.content.Intent;
 
+import org.gnucash.android.BuildConfig;
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.export.ofx.OfxHelper;
 import org.gnucash.android.model.Account.OfxAccountType;
@@ -41,7 +42,7 @@ public class Transaction extends BaseModel{
 	 * Mime type for transactions in Gnucash.
 	 * Used for recording transactions through intents
 	 */
-	public static final String MIME_TYPE 			= "vnd.android.cursor.item/vnd.org.gnucash.android.transaction";
+	public static final String MIME_TYPE 			= "vnd.android.cursor.item/vnd." + BuildConfig.APPLICATION_ID + ".transaction";
 
 	/**
 	 * Key for passing the account unique Identifier as an argument through an {@link Intent}

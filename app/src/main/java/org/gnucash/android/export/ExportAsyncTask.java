@@ -30,6 +30,7 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
 import com.dropbox.sync.android.DbxAccountManager;
 import com.dropbox.sync.android.DbxException;
 import com.dropbox.sync.android.DbxFile;
@@ -154,19 +155,18 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
                 writer.close();
             }
 
-        } catch (Exception e) {
-            e.printStackTrace();
-            Log.e(TAG, "" + e.getMessage());
-            final String err_msg = e.getLocalizedMessage();
+        } catch (final Exception e) {
+            Log.e(TAG, "Error exporting: " + e.getMessage());
+            Crashlytics.logException(e);
+
             if (mContext instanceof Activity) {
                 ((Activity)mContext).runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        Toast.makeText(mContext, R.string.toast_export_error,
+                        Toast.makeText(mContext,
+                                mContext.getString(R.string.toast_export_error, mExportParams.getExportFormat().name())
+                                + "\n" + e.getMessage(),
                                 Toast.LENGTH_SHORT).show();
-                        if (err_msg != null) {
-                            Toast.makeText(mContext, err_msg, Toast.LENGTH_LONG).show();
-                        }
                     }
                 });
             }
@@ -176,23 +176,22 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
         switch (mExportParams.getExportTarget()) {
             case SHARING:
                 shareFile(mExportParams.getTargetFilepath());
-                break;
+                return true;
 
             case DROPBOX:
                 copyExportToDropbox();
-                break;
+                return true;
 
             case GOOGLE_DRIVE:
                 copyExportToGoogleDrive();
-                break;
+                return true;
 
             case SD_CARD:
-            default:
                 copyExportToSDCard();
-                break;
+                return true;
         }
 
-        return true;
+        return false;
     }
 
     /**
@@ -211,6 +210,7 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
         }
 
         if (mExportParams.shouldDeleteTransactionsAfterExport()) {
+            Log.i(TAG, "Backup and deleting transactions after export");
             backupAndDeleteTransactions();
 
             //now refresh the respective views
@@ -229,6 +229,7 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
     }
 
     private void copyExportToGoogleDrive(){
+        Log.i(TAG, "Moving exported file to Google Drive");
         final GoogleApiClient googleApiClient = SettingsActivity.getGoogleApiClient(GnuCashApplication.getAppContext());
         googleApiClient.blockingConnect();
         final ResultCallback<DriveFolder.DriveFileResult> fileCallback = new
@@ -265,7 +266,9 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
                     }
                     fileInputStream.close();
                     outputStream.flush();
+                    exportedFile.delete();
                 } catch (IOException e) {
+                    Crashlytics.logException(e);
                     Log.e(TAG, e.getMessage());
                 }
 
@@ -300,26 +303,25 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
     }
 
     private void copyExportToDropbox() {
+        Log.i(TAG, "Copying exported file to DropBox");
+        String dropboxAppKey = mContext.getString(R.string.dropbox_app_key, SettingsActivity.DROPBOX_APP_KEY);
+        String dropboxAppSecret = mContext.getString(R.string.dropbox_app_secret, SettingsActivity.DROPBOX_APP_SECRET);
         DbxAccountManager mDbxAcctMgr = DbxAccountManager.getInstance(mContext.getApplicationContext(),
-                SettingsActivity.DROPBOX_APP_KEY, SettingsActivity.DROPBOX_APP_SECRET);
+                dropboxAppKey, dropboxAppSecret);
         DbxFile dbExportFile = null;
         try {
             DbxFileSystem dbxFileSystem = DbxFileSystem.forAccount(mDbxAcctMgr.getLinkedAccount());
             File exportedFile = new File(mExportParams.getTargetFilepath());
             dbExportFile = dbxFileSystem.create(new DbxPath(exportedFile.getName()));
             dbExportFile.writeFromExistingFile(exportedFile, false);
+            exportedFile.delete();
         } catch (DbxException.Unauthorized unauthorized) {
-            unauthorized.printStackTrace();
+            Crashlytics.logException(unauthorized);
             Log.e(TAG, unauthorized.getMessage());
-            if (mContext instanceof Activity){
-                Toast.makeText(mContext, "DropBox access not authorized. Check your Settings", Toast.LENGTH_LONG).show();
-            }
-        } catch (DbxException e) {
-            e.printStackTrace();
-            Log.e(TAG, e.getMessage());
+            throw new Exporter.ExporterException(mExportParams);
         } catch (IOException e) {
+            Crashlytics.logException(e);
             Log.e(TAG, e.getMessage());
-            e.printStackTrace();
         } finally {
             if (dbExportFile != null) {
                 dbExportFile.close();
@@ -328,30 +330,17 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
     }
 
     private void copyExportToSDCard() {
+        Log.i(TAG, "Moving exported file to external storage");
         File src = new File(mExportParams.getTargetFilepath());
         File dst = Exporter.createExportFile(mExportParams.getExportFormat());
 
         try {
             copyFile(src, dst);
+            src.delete();
         } catch (IOException e) {
-            if (mContext instanceof Activity) {
-                Toast.makeText(mContext,
-                        mContext.getString(R.string.toast_export_error, mExportParams.getExportFormat().name())
-                                + dst.getAbsolutePath(),
-                        Toast.LENGTH_LONG).show();
-                Log.e(TAG, e.getMessage());
-            } else {
-                Log.e(TAG, e.getMessage());
-            }
-            return;
-        }
-
-        if (mContext instanceof Activity) {
-            //file already exists, just let the user know
-            Toast.makeText(mContext,
-                    mContext.getString(R.string.toast_format_exported_to, mExportParams.getExportFormat().name())
-                            + dst.getAbsolutePath(),
-                    Toast.LENGTH_LONG).show();
+            Crashlytics.logException(e);
+            Log.e(TAG, e.getMessage());
+            throw new Exporter.ExporterException(mExportParams, e);
         }
     }
 
@@ -361,7 +350,7 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
      */
     private void backupAndDeleteTransactions(){
         GncXmlExporter.createBackup(); //create backup before deleting everything
-        List<Transaction> openingBalances = new ArrayList<Transaction>();
+        List<Transaction> openingBalances = new ArrayList<>();
         boolean preserveOpeningBalances = GnuCashApplication.shouldSaveOpeningBalances(false);
         if (preserveOpeningBalances) {
             openingBalances = AccountsDbAdapter.getInstance().getAllOpeningBalanceTransactions();
@@ -393,8 +382,8 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
                     exportFiles.add(Uri.parse("file://" + file));
                 }
             } catch (IOException e) {
-                Log.e(TAG, "error split up files in shareFile");
-                e.printStackTrace();
+                Log.e(TAG, "Error split up files in shareFile. " + e.getMessage());
+                Crashlytics.logException(e);
                 return;
             }
         } else {

@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_version_name">1.6.x</string>
     <string name="key_default_currency">default_currency</string>
     <string name="key_first_run">key_first_run</string>
     <string name="key_build_version">build_version</string>
@@ -28,6 +27,7 @@
     <string name="key_google_drive_sync">google_drive_sync</string>
     <string name="key_google_drive_app_folder_id">google_drive_app_folder</string>
     <string name="key_report_currency">report_currency</string>
+    <string name="key_enable_crashlytics">enable_crashlytics</string>
 
     <string-array name="key_transaction_type_values">
         <item>CREDIT</item>

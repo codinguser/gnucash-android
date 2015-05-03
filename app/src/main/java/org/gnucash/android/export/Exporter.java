@@ -20,6 +20,9 @@ package org.gnucash.android.export;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Environment;
+import android.util.Log;
+
+import com.crashlytics.android.Crashlytics;
 
 import org.gnucash.android.BuildConfig;
 import org.gnucash.android.app.GnuCashApplication;
@@ -43,6 +46,11 @@ import java.util.Locale;
  * @author Yongxin Wang <fefe.wyx@gmail.com>
  */
 public abstract class Exporter {
+
+    /**
+     * Tag for logging
+     */
+    protected static String LOG_TAG = "Exporter";
 
     /**
      * Application folder on external storage
@@ -114,7 +122,8 @@ public abstract class Exporter {
             Date date = EXPORT_FILENAME_DATE_FORMAT.parse(tokens[0] + "_" + tokens[1]);
             timeMillis = date.getTime();
         } catch (ParseException e) {
-            e.printStackTrace();
+            Log.e("Exporter", "Error parsing time from file name: " + e.getMessage());
+            Crashlytics.logException(e);
         }
         return timeMillis;
     }
@@ -181,7 +190,8 @@ public abstract class Exporter {
         }
 
         public ExporterException(ExportParams params, Throwable throwable){
-            super("Failed to generate " + params.getExportFormat().toString(), throwable);
+            super("Failed to generate " + params.getExportFormat().toString() +"-"+ throwable.getMessage(),
+                    throwable);
         }
     }
 }

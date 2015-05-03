@@ -308,11 +308,11 @@
 	<string name="summary_xml_ofx_header">Enable this option when exporting to third-party application other than GnuCash for desktop</string>
 	<string name="title_whats_new">What\'s New</string>
 	<string name="whats_new">
-        - General resource and performance optimization\n
-        - Faster computation of account balances\n
-        - Set passcode to restrict access to app (in Settings)\n
-        - Export separate QIF files for each currency in use\n
-        - Use currency settings when creating account hierarchy\n
+        - Visual reports (Bar/Pie/line charts) \n
+        - Scheduled backups of (QIF, OFX, and XML)\n
+        - Backup/Export to DropBox and Google Drive\n
+        - Better recurrence options for scheduled transactions\n
+        - Navigation drawer for easier access to options\n
         - Multiple bug fixes and improvements\n
 	</string>
 	<string name="label_dismiss">Dismiss</string>
@@ -472,6 +472,12 @@
     <string name="summary_google_drive_sync">Enable to sync to Google Drive</string>
     <string name="toast_install_file_manager">Install a file manager to select files</string>
     <string name="title_select_backup_to_restore">Select backup to restore</string>
+    <string name="nav_menu_favorites">Favorites</string>
+    <string name="nav_menu_open">Open...</string>
+    <string name="nav_menu_reports">Reports</string>
+    <string name="nav_menu_scheduled_transactions">Scheduled Transactions</string>
+    <string name="nav_menu_export">Export...</string>
+    <string name="nav_menu_settings">Settings</string>
     <plurals name="label_every_x_days">
         <item quantity="one">Daily</item>
         <item quantity="other">Every %d days</item>
@@ -488,4 +494,8 @@
         <item quantity="one">Yearly</item>
         <item quantity="other">Every %d years</item>
     </plurals>
+    <string name="title_enable_crashlytics">Enable Crash Logging</string>
+    <string name="msg_enable_crashlytics">Enable to send information about malfunctions to the developers for improvement (recommended).
+No user-identifiable information will be collected as part of this process!</string>
+    <string name="label_export_format">Export Format</string>
 </resources>

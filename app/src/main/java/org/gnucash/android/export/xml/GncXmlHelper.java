@@ -17,11 +17,11 @@
 
 package org.gnucash.android.export.xml;
 
+import android.support.annotation.NonNull;
+
 import org.gnucash.android.model.Money;
 import org.gnucash.android.model.Split;
 import org.gnucash.android.model.TransactionType;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -29,8 +29,9 @@ import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.IllegalFormatException;
 import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Collection of helper tags and methods for Gnc XML export
@@ -39,7 +40,7 @@ import java.util.Locale;
  * @author Yongxin Wang <fefe.wyx@gmail.com>
  */
 public abstract class GncXmlHelper {
-    public static final String TAG_PREFIX           = "gnc:";
+    public static final String TAG_GNC_PREFIX       = "gnc:";
 
     public static final String ATTR_KEY_CD_TYPE     = "cd:type";
     public static final String ATTR_KEY_TYPE        = "type";
@@ -77,7 +78,7 @@ public abstract class GncXmlHelper {
     public static final String TAG_TRX_ID           = "trn:id";
     public static final String TAG_TRX_CURRENCY     = "trn:currency";
     public static final String TAG_DATE_POSTED      = "trn:date-posted";
-    public static final String TAG_DATE             = "ts:date";
+    public static final String TAG_TS_DATE          = "ts:date";
     public static final String TAG_DATE_ENTERED     = "trn:date-entered";
     public static final String TAG_TRN_DESCRIPTION  = "trn:description";
     public static final String TAG_TRN_SPLITS       = "trn:splits";
@@ -119,10 +120,10 @@ public abstract class GncXmlHelper {
     public static final String TAG_RX_START                 = "recurrence:start";
 
 
-    public static final String RECURRENCE_VERSION   = "1.0.0";
-    public static final String BOOK_VERSION         = "2.0.0";
-    public static final SimpleDateFormat TIME_FORMATTER = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z", Locale.US);
-    public static final SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+    public static final String RECURRENCE_VERSION           = "1.0.0";
+    public static final String BOOK_VERSION                 = "2.0.0";
+    public static final SimpleDateFormat TIME_FORMATTER     = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z", Locale.US);
+    public static final SimpleDateFormat DATE_FORMATTER     = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
 
     public static final String KEY_PLACEHOLDER              = "placeholder";
     public static final String KEY_COLOR                    = "color";
@@ -168,11 +169,45 @@ public abstract class GncXmlHelper {
     }
 
     /**
+     * Parses the amounts in template transaction splits.
+     * <p>GnuCash desktop formats the amounts based on the locale of the computer. That poses a problem here as the input can vary per user.<br/>
+     *     The solution is to parse the string irrespective of comma or thousands separators as follows:
+     *     <ol>
+     *         <li>Find the last non-numeric character and split the string at that point</li>
+     *         <li>If the length of the 2nd part is &gt;= 2, then it is a thousands separator, else it is decimal</li>
+     *         <li>Append the two parts again together accordingly</li>
+     *         <li>If no non-numeric character was found, then just return a new {@link BigDecimal}</li>
+     *     </ol>
+     * </p>
+     * @param amountString String value of the amount.
+     * @return BigDecimal representation of the amount
+     * @see #formatTemplateSplitAmount(BigDecimal)
+     */
+    public static BigDecimal parseTemplateSplitAmount(@NonNull String amountString){
+        Pattern pattern = Pattern.compile(".*\\D");
+        Matcher matcher = pattern.matcher(amountString);
+        if (matcher.find()){
+            int index = matcher.end();
+            String wholeNum = amountString.substring(0, index).replaceAll("\\D", "");
+            String decimal = amountString.substring(index);
+            String parsedAmountString;
+            if (decimal.length() > 2){ //then it is just another thousands separator, just add it back
+                parsedAmountString = wholeNum + decimal;
+            } else { //add it as a decimal
+                parsedAmountString = wholeNum + "." + decimal;
+            }
+            return new BigDecimal(parsedAmountString);
+        } else {//an amount string with no commas or periods
+            return new BigDecimal(amountString);
+        }
+    }
+
+    /**
      * Parses amount strings from GnuCash XML into {@link java.math.BigDecimal}s
      * @param amountString String containing the amount
      * @return BigDecimal with numerical value
      */
-    public static BigDecimal parseMoney(String amountString) throws ParseException {
+    public static BigDecimal parseSplitAmount(String amountString) throws ParseException {
         int pos = amountString.indexOf("/");
         if (pos < 0)
         {
@@ -184,12 +219,15 @@ public abstract class GncXmlHelper {
     }
 
     /**
-     * Returns a {@link java.text.NumberFormat} for parsing or writing amounts in template splits
-     * @return NumberFormat object
+     * Format the amount in template transaction splits.
+     * <p>GnuCash desktop always formats with a locale dependent format, and that varies per user.<br>
+     * So we will use the device locale here and hope that the user has the same locale on the desktop GnuCash</p>
+     * @param amount Amount to be formatted
+     * @return String representation of amount
+     * @see #parseTemplateSplitAmount(String)
      */
-    public static NumberFormat getNumberFormatForTemplateSplits(){
-        //TODO: Check if GnuCash desktop always using this formatting or if it is device locale specific
-        return NumberFormat.getNumberInstance(Locale.GERMANY);
+    public static String formatTemplateSplitAmount(BigDecimal amount){
+        //TODO: If we ever implement an application-specific locale setting, use it here as well
+        return NumberFormat.getNumberInstance().format(amount);
     }
-
 }

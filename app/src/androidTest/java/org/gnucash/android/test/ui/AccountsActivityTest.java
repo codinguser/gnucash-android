@@ -246,7 +246,7 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
 
         clickSherlockActionBarItem(R.id.context_menu_delete);
 
-        mSolo.clickOnView(mSolo.getView(android.R.id.button1));
+        mSolo.clickOnView(mSolo.getView(R.id.btn_save));
 
         mSolo.waitForDialogToClose(1000);
         mSolo.waitForText("Accounts");

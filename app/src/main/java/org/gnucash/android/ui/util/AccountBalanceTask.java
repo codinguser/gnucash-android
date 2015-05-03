@@ -22,6 +22,8 @@ import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.TextView;
 
+import com.crashlytics.android.Crashlytics;
+
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.AccountsDbAdapter;
@@ -40,8 +42,8 @@ public class AccountBalanceTask extends AsyncTask<String, Void, Money> {
     private final WeakReference<TextView> accountBalanceTextViewReference;
     private final AccountsDbAdapter accountsDbAdapter;
 
-    public AccountBalanceTask(TextView balanceTextView, Context context){
-        accountBalanceTextViewReference = new WeakReference<TextView>(balanceTextView);
+    public AccountBalanceTask(TextView balanceTextView){
+        accountBalanceTextViewReference = new WeakReference<>(balanceTextView);
         accountsDbAdapter = AccountsDbAdapter.getInstance();
     }
 
@@ -56,13 +58,9 @@ public class AccountBalanceTask extends AsyncTask<String, Void, Money> {
         Money balance = Money.getZeroInstance();
         try {
             balance = accountsDbAdapter.getAccountBalance(params[0], -1, System.currentTimeMillis());
-        } catch (IllegalArgumentException ex){
-            //sometimes a load computation has been started and the data set changes.
-            //the account ID may no longer exist. So we catch that exception here and do nothing
-            Log.e(LOG_TAG, "Error computing account balance: " + ex);
         } catch (Exception ex) {
             Log.e(LOG_TAG, "Error computing account balance: " + ex);
-            ex.printStackTrace();
+            Crashlytics.logException(ex);
         }
         return balance;
     }
