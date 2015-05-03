@@ -595,54 +595,6 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
     }
 
     /**
-     * Returns a timestamp of the earliest transaction for the specified account type
-     * @param type the account type
-     * @return the earliest transaction's timestamp. Returns 1970-01-01 00:00:00.000 if no transaction found
-     */
-    public long getTimestampOfEarliestTransaction(AccountType type) {
-        return getTimestamp("MIN", type);
-    }
-
-    /**
-     * Returns a timestamp of the latest transaction for the specified account type
-     * @param type the account type
-     * @return the latest transaction's timestamp. Returns 1970-01-01 00:00:00.000 if no transaction found
-     */
-    public long getTimestampOfLatestTransaction(AccountType type) {
-        return getTimestamp("MAX", type);
-    }
-
-    /**
-     * Returns the earliest or latest timestamp of transactions for a specific account type
-     * @param mod Mode (either MAX or MIN)
-     * @param type AccountType
-     * @return earliest or latest timestamp of transactions
-     * @see #getTimestampOfLatestTransaction(AccountType)
-     * @see #getTimestampOfEarliestTransaction(AccountType)
-     */
-    private long getTimestamp(String mod, AccountType type) {
-        String sql = "SELECT " + mod + "(" + TransactionEntry.COLUMN_TIMESTAMP + ")"
-                + " FROM " + TransactionEntry.TABLE_NAME
-                + " INNER JOIN " + SplitEntry.TABLE_NAME + " ON "
-                + SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_TRANSACTION_UID + " = "
-                + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_UID
-                + " INNER JOIN " + AccountEntry.TABLE_NAME + " ON "
-                + AccountEntry.TABLE_NAME + "." + AccountEntry.COLUMN_UID + " = "
-                + SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_ACCOUNT_UID
-                + " WHERE " + AccountEntry.TABLE_NAME + "." + AccountEntry.COLUMN_TYPE + " = ? AND "
-                + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_TEMPLATE + " = 0";
-        Cursor cursor = mDb.rawQuery(sql, new String[]{type.toString()});
-        long timestamp= 0;
-        if (cursor != null) {
-            if (cursor.moveToFirst()) {
-                timestamp = cursor.getLong(0);
-            }
-            cursor.close();
-        }
-        return timestamp;
-    }
-
-    /**
      * Returns a timestamp of the earliest transaction for a specified account type and currency
      * @param type the account type
      * @param currencyCode the currency code
@@ -668,8 +620,8 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
      * @param type AccountType
      * @param currencyCode the currency code
      * @return earliest or latest timestamp of transactions
-     * @see #getTimestampOfLatestTransaction(AccountType)
-     * @see #getTimestampOfEarliestTransaction(AccountType)
+     * @see #getTimestampOfLatestTransaction(AccountType, String)
+     * @see #getTimestampOfEarliestTransaction(AccountType, String)
      */
     private long getTimestamp(String mod, AccountType type, String currencyCode) {
         String sql = "SELECT " + mod + "(" + TransactionEntry.COLUMN_TIMESTAMP + ")"

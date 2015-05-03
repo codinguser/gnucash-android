@@ -308,15 +308,6 @@ public class SplitsDbAdapter extends DatabaseAdapter {
         return new Money("0", currencyCode);
     }
 
-//        SELECT TOTAL ( CASE WHEN splits.type = 'DEBIT' THEN splits.amount ELSE - splits.amount END ) FROM splits , transactions WHERE splits.account_uid in ( '532ee7592d4efae7fe2418891d598e59' ) AND splits.transaction_uid = transactions.uid AND transactions.recurrence_period = 0 AND transactions.timestamp BETWEEN ?x AND ?
-//        String query = "SELECT TOTAL ( CASE WHEN splits.type = 'DEBIT' THEN splits.amount ELSE - splits.amount END )" +
-//                " FROM splits " +
-//                " INNER JOIN transactions ON transactions.uid = splits.transaction_uid" +
-//                " WHERE splits.account_uid in ( '" + TextUtils.join("' , '", accountUIDList)  + "' )" +
-//                " AND transactions.recurrence_period = 0" +
-//                " AND transactions.timestamp > 1413109811000";
-
-
     /**
      * Returns the list of splits for a transaction
      * @param transactionUID String unique ID of transaction
