@@ -487,4 +487,5 @@
     <string name="msg_enable_crashlytics">Activar para enviar informaci&#243;n de errores a los desarolladores (recomendado).
 Este proceso solo recoge informaci&#243;n que no permite identificar al usuario</string>
     <string name="label_export_format">Formato de exportaci&#243;n</string>
+	<string name="toast_backup_folder_not_found">Backup folder cannot be found. Make sure the SD Card is mounted!</string>
 </resources>

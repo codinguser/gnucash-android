@@ -6,7 +6,7 @@ apply plugin: 'crashlytics'
 def versionMajor = 1
 def versionMinor = 6
 def versionPatch = 0
-def versionBuild = 1
+def versionBuild = 2
 
 def buildTime() {
     def df = new SimpleDateFormat("yyyyMMdd_HHmm'UTC'")
@@ -89,7 +89,7 @@ android {
 
         beta {
             resValue "string", "app_name", "GnuCash - beta"
-            versionName "${versionMajor}.${versionMinor}.${versionPatch}-beta${versionBuild}}"
+            versionName "${versionMajor}.${versionMinor}.${versionPatch}-beta${versionBuild}"
             resValue "string", "app_version_name", "${versionName}"
         }
 

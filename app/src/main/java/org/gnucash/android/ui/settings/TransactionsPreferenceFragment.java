@@ -87,8 +87,8 @@ public class TransactionsPreferenceFragment extends PreferenceFragment implement
      * Deletes all transactions in the system
      */
     public void deleteAllTransactions(){
-        DeleteAllTransacationsConfirmationDialog deleteTransactionsConfirmationDialog =
-                DeleteAllTransacationsConfirmationDialog.newInstance();
+        DeleteAllTransactionsConfirmationDialog deleteTransactionsConfirmationDialog =
+                DeleteAllTransactionsConfirmationDialog.newInstance();
         deleteTransactionsConfirmationDialog.show(getFragmentManager(), "transaction_settings");
     }
 

@@ -590,7 +590,7 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
      * @return Number of records deleted
      */
     public int deleteAllNonTemplateTransactions(){
-        String where = TransactionEntry.COLUMN_TEMPLATE + "!=0";
+        String where = TransactionEntry.COLUMN_TEMPLATE + "=0";
         return mDb.delete(mTableName, where, null);
     }
 

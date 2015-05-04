@@ -259,13 +259,16 @@ public class Transaction extends BaseModel{
 
     /**
      * Computes the imbalance amount for the given transaction.
-     * In double entry, all transactions should resolve to zero. However a user may not enter all such values which
-     * means there is an extra amount which is unresolved.
-     * @return Money imbalance of the transaction
+     * In double entry, all transactions should resolve to zero. But imbalance occurs when there are unresolved splits.
+     * <p>If it is a multi-currency transaction, an imbalance of zero will be returned</p>
+     * @return Money imbalance of the transaction or zero if it is a multi-currency transaction
      */
     public Money getImbalance(){
         Money imbalance = Money.createZeroInstance(mCurrencyCode);
         for (Split split : mSplitList) {
+            //TODO: Handle this better when multi-currency support is introduced
+            if (!split.getAmount().getCurrency().getCurrencyCode().equals(mCurrencyCode))
+                return Money.createZeroInstance(mCurrencyCode); //abort
             Money amount = split.getAmount().absolute();
             if (split.getType() == TransactionType.DEBIT)
                 imbalance = imbalance.subtract(amount);

@@ -516,6 +516,12 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
     public void restoreBackup() {
         Log.i("Settings", "Opening GnuCash XML backups for restore");
         File[] backupFiles = new File(Exporter.BACKUP_FOLDER_PATH).listFiles();
+        if (backupFiles == null){
+            Toast.makeText(this, R.string.toast_backup_folder_not_found, Toast.LENGTH_LONG).show();
+            new File(Exporter.BACKUP_FOLDER_PATH).mkdirs();
+            return;
+        }
+
         Arrays.sort(backupFiles);
         List<File> backupFilesList = Arrays.asList(backupFiles);
         Collections.reverse(backupFilesList);

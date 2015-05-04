@@ -23,6 +23,7 @@ import android.app.DialogFragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Toast;
 
 import org.gnucash.android.R;
@@ -43,10 +44,10 @@ import java.util.List;
  * @author Yongxin Wang <fefe.wyx@gmail.com>
  */
 @TargetApi(11)
-public class DeleteAllTransacationsConfirmationDialog extends DialogFragment {
+public class DeleteAllTransactionsConfirmationDialog extends DialogFragment {
 
-    public static DeleteAllTransacationsConfirmationDialog newInstance() {
-        DeleteAllTransacationsConfirmationDialog frag = new DeleteAllTransacationsConfirmationDialog();
+    public static DeleteAllTransactionsConfirmationDialog newInstance() {
+        DeleteAllTransactionsConfirmationDialog frag = new DeleteAllTransactionsConfirmationDialog();
         return frag;
     }
 
@@ -62,13 +63,14 @@ public class DeleteAllTransacationsConfirmationDialog extends DialogFragment {
 
                                 Context context = getActivity();
                                 AccountsDbAdapter accountsDbAdapter = AccountsDbAdapter.getInstance();
-                                List<Transaction> openingBalances = new ArrayList<Transaction>();
+                                List<Transaction> openingBalances = new ArrayList<>();
                                 boolean preserveOpeningBalances = GnuCashApplication.shouldSaveOpeningBalances(false);
                                 if (preserveOpeningBalances) {
                                     openingBalances = accountsDbAdapter.getAllOpeningBalanceTransactions();
                                 }
                                 TransactionsDbAdapter transactionsDbAdapter = TransactionsDbAdapter.getInstance();
-                                transactionsDbAdapter.deleteAllNonTemplateTransactions();
+                                int count = transactionsDbAdapter.deleteAllNonTemplateTransactions();
+                                Log.i("DeleteDialog", String.format("Deleted %d transactions successfully", count));
 
                                 if (preserveOpeningBalances) {
                                     transactionsDbAdapter.bulkAddTransactions(openingBalances);

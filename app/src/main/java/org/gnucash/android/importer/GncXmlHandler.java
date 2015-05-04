@@ -181,6 +181,13 @@ public class GncXmlHandler extends DefaultHandler {
     boolean mIsRecurrenceStart  = false;
 
     /**
+     * Flag to determine if to ignore template transactions.
+     * If this flag is set, both template transactions and scheduled actions will be ignored.
+     * This flag is mostly set when an error occurs in parsing the template transaction amount.
+     */
+    boolean mIgnoreTemplateTransactions = false;
+
+    /**
      * Multiplier for the recurrence period type. e.g. period type of week and multiplier of 2 means bi-weekly
      */
     int mRecurrenceMultiplier   = 1;
@@ -428,7 +435,8 @@ public class GncXmlHandler extends DefaultHandler {
                         Log.e(LOG_TAG, msg + "\n" + e.getMessage());
                         Crashlytics.log(msg);
                         Crashlytics.logException(e);
-                        throw new SAXException(msg, e); //if we fail to parse the split amount, terminate import - data integrity compromised
+                        mIgnoreTemplateTransactions = true;
+                        //throw new SAXException(msg, e); //if we fail to parse the split amount, terminate import - data integrity compromised
                     } finally {
                         mInCreditFormulaSlot = false;
                     }
@@ -443,7 +451,8 @@ public class GncXmlHandler extends DefaultHandler {
                         Log.e(LOG_TAG, msg + "\n" + e.getMessage());
                         Crashlytics.log(msg);
                         Crashlytics.logException(e);
-                        throw new SAXException(msg, e); //if we fail to parse the split amount, terminate import - data integrity compromised
+                        mIgnoreTemplateTransactions = true;
+                        //throw new SAXException(msg, e); //if we fail to parse the split amount, terminate import - data integrity compromised
                     } finally {
                         mInDebitFormulaSlot = false;
                     }
@@ -524,10 +533,12 @@ public class GncXmlHandler extends DefaultHandler {
                 if (imbSplit != null) {
                     mAutoBalanceSplits.add(imbSplit);
                 }
-                mTransactionList.add(mTransaction);
                 if (mInTemplates){
                     mTemplateTransactions.add(mTransaction);
+                } else {
+                    mTransactionList.add(mTransaction);
                 }
+
                 if (mRecurrencePeriod > 0) { //if we find an old format recurrence period, parse it
                     mTransaction.setTemplate(true);
                     ScheduledAction scheduledAction = ScheduledAction.parseScheduledAction(mTransaction, mRecurrencePeriod);
@@ -606,8 +617,10 @@ public class GncXmlHandler extends DefaultHandler {
                 break;
             case GncXmlHelper.TAG_SCHEDULED_ACTION:
                 mScheduledActionsList.add(mScheduledAction);
-                int count = generateMissedScheduledTransactions(mScheduledAction);
-                Log.i(LOG_TAG, String.format("Generated %d transactions from scheduled action", count));
+                if (!mIgnoreTemplateTransactions) {
+                    int count = generateMissedScheduledTransactions(mScheduledAction);
+                    Log.i(LOG_TAG, String.format("Generated %d transactions from scheduled action", count));
+                }
                 mRecurrenceMultiplier = 1; //reset it, even though it will be parsed from XML each time
                 break;
         }
@@ -711,10 +724,15 @@ public class GncXmlHandler extends DefaultHandler {
             mAccountsDbAdapter.deleteAllRecords();
             long nAccounts = mAccountsDbAdapter.bulkAddAccounts(mAccountList);
             Log.d("Handler:", String.format("%d accounts inserted", nAccounts));
-            //We need to add scheduled actions first because there is a foreign key constraint on transactions
-            //which are generated from scheduled actions (we do auto-create some transactions during import)
-            int nSchedActions = mScheduledActionsDbAdapter.bulkAddScheduledActions(mScheduledActionsList);
-            Log.d("Handler:", String.format("%d scheduled actions inserted", nSchedActions));
+            //this flag is set when we have issues with parsing the template transaction amount
+            if (!mIgnoreTemplateTransactions) {
+                //We need to add scheduled actions first because there is a foreign key constraint on transactions
+                //which are generated from scheduled actions (we do auto-create some transactions during import)
+                int nSchedActions = mScheduledActionsDbAdapter.bulkAddScheduledActions(mScheduledActionsList);
+                Log.d("Handler:", String.format("%d scheduled actions inserted", nSchedActions));
+                long nTempTransactions = mTransactionsDbAdapter.bulkAddTransactions(mTemplateTransactions);
+                Log.d("Handler:", String.format("%d template transactions inserted", nTempTransactions));
+            }
             long nTransactions = mTransactionsDbAdapter.bulkAddTransactions(mTransactionList);
             Log.d("Handler:", String.format("%d transactions inserted", nTransactions));
             long endTime = System.nanoTime();
