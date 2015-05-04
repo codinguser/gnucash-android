@@ -62,19 +62,19 @@
                 <action android:name="android.intent.action.VIEW" />
                 <action android:name="android.intent.action.EDIT" />
                 <category android:name="android.intent.category.DEFAULT" />
-                <data android:host="*" android:mimeType="*/*" android:pathPattern=".*\\.gnucash" />
+                <data android:scheme="file" android:host="*" android:mimeType="*/*" android:pathPattern=".*\\.gnucash" />
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <action android:name="android.intent.action.EDIT" />
                 <category android:name="android.intent.category.DEFAULT" />
-                <data android:host="*" android:mimeType="*/*" android:pathPattern=".*\\.gnca" />
+                <data android:scheme="file" android:host="*" android:mimeType="*/*" android:pathPattern=".*\\.gnca" />
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <action android:name="android.intent.action.EDIT" />
                 <category android:name="android.intent.category.DEFAULT" />
-                <data android:host="*" android:mimeType="*/*" android:pathPattern=".*\\.gnca.zip" />
+                <data android:scheme="file" android:host="*" android:mimeType="*/*" android:pathPattern=".*\\.gnca.zip" />
             </intent-filter>
         </activity>
         <activity
