@@ -436,7 +436,7 @@
     <string name="menu_group_smaller_slices">Group Smaller Slices</string>
     <string name="label_chart_no_data">No chart data available</string>
     <string name="label_chart_overall">Overall</string>
-    <string name="label_chart_total">Total\n</string>
+    <string name="label_chart_total">Total</string>
     <string name="label_other_slice">Other</string>
     <string name="toast_chart_percentage_mode_total">The percentage of selected value calculated from the total amount</string>
     <string name="toast_chart_percentage_mode_current_bar">The percentage of selected value calculated from the current stacked bar amount</string>
@@ -463,6 +463,8 @@
     <string name="summary_google_drive_sync">Enable to sync to Google Drive</string>
     <string name="toast_install_file_manager">Install a file manager to select files</string>
     <string name="title_select_backup_to_restore">Select backup to restore</string>
+    <string name="title_report_prefs">Report Preferences</string>
+    <string name="title_report_currency">title_report_currency</string>
     <string name="nav_menu_favorites">Favorites</string>
     <string name="nav_menu_open">Open...</string>
     <string name="nav_menu_reports">Reports</string>

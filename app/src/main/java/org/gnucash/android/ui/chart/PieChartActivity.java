@@ -22,6 +22,7 @@ import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.DialogFragment;
 import android.view.View;
 import android.widget.AdapterView;
@@ -48,12 +49,17 @@ import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.model.Account;
 import org.gnucash.android.model.AccountType;
+import org.gnucash.android.model.Money;
 import org.gnucash.android.ui.passcode.PassLockActivity;
 import org.joda.time.LocalDateTime;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Currency;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 import static org.gnucash.android.db.DatabaseSchema.AccountEntry;
 
@@ -76,6 +82,7 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
     };
 
     private static final String DATE_PATTERN = "MMMM\nYYYY";
+    private static final String TOTAL_VALUE_LABEL_PATTERN = "%s\n%.2f %s";
     private static final int ANIMATION_DURATION = 1800;
 
     private PieChart mChart;
@@ -98,6 +105,8 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
 
     private double mSlicePercentThreshold = 6;
 
+    private String mCurrencyCode;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         //it is necessary to set the view first before calling super because of the nav drawer in BaseDrawerActivity
@@ -111,6 +120,9 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
 
         mAccountsDbAdapter = AccountsDbAdapter.getInstance();
         mTransactionsDbAdapter = TransactionsDbAdapter.getInstance();
+
+        mCurrencyCode = PreferenceManager.getDefaultSharedPreferences(this)
+                .getString(getString(R.string.key_report_currency), Money.DEFAULT_CURRENCY_CODE);
 
         mChart = (PieChart) findViewById(R.id.pie_chart);
         mChart.setCenterTextSize(18);
@@ -198,7 +210,7 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
         PieDataSet dataSet = new PieDataSet(null, "");
         ArrayList<String> names = new ArrayList<String>();
         List<String> skipUUID = new ArrayList<String>();
-        for (Account account : accountList) {
+        for (Account account : getCurrencyCodeToAccountMap(accountList).get(mCurrencyCode)) {
             if (mAccountsDbAdapter.getSubAccountCount(account.getUID()) > 0) {
                 skipUUID.addAll(mAccountsDbAdapter.getDescendantAccountUIDs(account.getUID(), null, null));
             }
@@ -238,12 +250,35 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
         } else {
             mChartDataPresent = true;
             dataSet.setSliceSpace(2);
-            mChart.setCenterText(getResources().getString(R.string.label_chart_total) + dataSet.getYValueSum());
+            mChart.setCenterText(String.format(TOTAL_VALUE_LABEL_PATTERN,
+                            getResources().getString(R.string.label_chart_total),
+                            dataSet.getYValueSum(),
+                            Currency.getInstance(mCurrencyCode).getSymbol(Locale.getDefault()))
+            );
             mChart.setTouchEnabled(true);
         }
 
         return new PieData(names, dataSet);
     }
+
+    /**
+     * Returns a map with a currency code as key and corresponding accounts list
+     * as value from a specified list of accounts
+     * @param accountList a list of accounts
+     * @return a map with a currency code as key and corresponding accounts list as value
+     */
+    private Map<String, List<Account>> getCurrencyCodeToAccountMap(List<Account> accountList) {
+        Map<String, List<Account>> currencyAccountMap = new HashMap<>();
+        for (Currency currency : mAccountsDbAdapter.getCurrencies()) {
+            currencyAccountMap.put(currency.getCurrencyCode(), new ArrayList<Account>());
+        }
+
+        for (Account account : accountList) {
+            currencyAccountMap.get(account.getCurrency().getCurrencyCode()).add(account);
+        }
+        return currencyAccountMap;
+    }
+
 
     /**
      * Sets the image button to the given state and grays-out the icon
@@ -310,8 +345,8 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 mAccountType = (AccountType) ((Spinner) findViewById(R.id.chart_data_spinner)).getSelectedItem();
-                mEarliestTransactionDate = new LocalDateTime(mTransactionsDbAdapter.getTimestampOfEarliestTransaction(mAccountType));
-                mLatestTransactionDate = new LocalDateTime(mTransactionsDbAdapter.getTimestampOfLatestTransaction(mAccountType));
+                mEarliestTransactionDate = new LocalDateTime(mTransactionsDbAdapter.getTimestampOfEarliestTransaction(mAccountType, mCurrencyCode));
+                mLatestTransactionDate = new LocalDateTime(mTransactionsDbAdapter.getTimestampOfLatestTransaction(mAccountType, mCurrencyCode));
                 mChartDate = mLatestTransactionDate;
                 setData(false);
                 mChart.getLegend().setEnabled(false);
