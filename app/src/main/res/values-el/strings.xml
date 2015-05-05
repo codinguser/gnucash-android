@@ -479,7 +479,6 @@
 	<string name="toast_install_file_manager">Install a file manager to select files</string>
 	<string name="title_select_backup_to_restore">Select backup to restore</string>
 	<string name="title_report_prefs">Report Preferences</string>
-	<string name="title_report_currency">title_report_currency</string>
 	<string name="nav_menu_favorites">Favorites</string>
 	<string name="nav_menu_open">Open...</string>
 	<string name="nav_menu_reports">Reports</string>
@@ -508,4 +507,6 @@ No user-identifiable information will be collected as part of this process!
     </string>
     <string name="label_export_format">Export Format</string>
 	<string name="toast_backup_folder_not_found">Backup folder cannot be found. Make sure the SD Card is mounted!</string>
+	<string name="header_report_settings">Reports</string>
+	<string name="label_report_currency">Select currency</string>
 </resources>

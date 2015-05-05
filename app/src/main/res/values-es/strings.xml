@@ -451,7 +451,6 @@
 	<string name="export_warning_xml">Exportar todas las cuentas y transacciones</string>
 	<string name="title_google_drive_sync_pref">Google Drive Sync</string>
 	<string name="title_report_prefs">Report Preferences</string>
-	<string name="title_report_currency">title_report_currency</string>
 	<string name="summary_google_drive_sync">Activar sincronizaci&#243;n con Google Drive</string>
 	<string name="toast_install_file_manager">Instale un gestor de archivos para seleccionar archivos</string>
 	<string name="title_select_backup_to_restore">Seleccione la copia de seguridad a restaurar</string>
@@ -490,4 +489,6 @@
 Este proceso solo recoge informaci&#243;n que no permite identificar al usuario</string>
     <string name="label_export_format">Formato de exportaci&#243;n</string>
 	<string name="toast_backup_folder_not_found">Backup folder cannot be found. Make sure the SD Card is mounted!</string>
+	<string name="header_report_settings">Reports</string>
+	<string name="label_report_currency">Select currency</string>
 </resources>
