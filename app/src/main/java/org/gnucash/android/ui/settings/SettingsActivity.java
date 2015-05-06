@@ -27,12 +27,9 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
-import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
-import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.PreferenceManager;
@@ -206,20 +203,6 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
             pref.setOnPreferenceChangeListener(this);
             pref.setTitle(((CheckBoxPreference) pref).isChecked() ?
                     getString(R.string.title_passcode_enabled) : getString(R.string.title_passcode_disabled));
-
-            pref = findPreference(getString(R.string.key_report_currency));
-            pref.setOnPreferenceChangeListener(this);
-            pref.setSummary(PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString(
-                    getString(R.string.key_report_currency), Money.DEFAULT_CURRENCY_CODE));
-
-            List<Currency> currencyList = AccountsDbAdapter.getInstance().getCurrencies();
-            int size = currencyList.size();
-            String[] currencyCodes = new String[size];
-            for (Currency currency : currencyList) {
-                currencyCodes[--size] = currency.getCurrencyCode();
-            }
-            ((ListPreference) pref).setEntryValues(currencyCodes);
-            ((ListPreference) pref).setEntries(currencyCodes);
         }
 	}
 
@@ -276,12 +259,6 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
                     .commit();
         } else if (preference.getKey().equals(getString(R.string.key_use_double_entry))){
             setImbalanceAccountsHidden((Boolean) newValue);
-        } else if (preference.getKey().equals(getString(R.string.key_report_currency))) {
-            preference.setSummary(newValue.toString());
-            PreferenceManager.getDefaultSharedPreferences(getApplicationContext())
-                    .edit()
-                    .putString(getString(R.string.key_report_currency), newValue.toString())
-                    .commit();
         }
 
 		return true;
