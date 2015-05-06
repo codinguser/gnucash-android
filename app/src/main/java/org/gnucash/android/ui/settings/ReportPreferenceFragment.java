@@ -94,12 +94,18 @@ public class ReportPreferenceFragment extends PreferenceFragment implements OnPr
 
     @Override
     public boolean onPreferenceChange(Preference preference, Object newValue) {
-        preference.setSummary(newValue.toString());
-        PreferenceManager.getDefaultSharedPreferences(getActivity())
-                .edit()
-                .putString(getString(R.string.key_report_currency), newValue.toString())
-                .commit();
-
+        if (preference.getKey().equals(getString(R.string.key_report_currency))) {
+            preference.setSummary(newValue.toString());
+            PreferenceManager.getDefaultSharedPreferences(getActivity())
+                    .edit()
+                    .putString(getString(R.string.key_report_currency), newValue.toString())
+                    .commit();
+        } else if (preference.getKey().equals(getString(R.string.key_use_account_color))) {
+            PreferenceManager.getDefaultSharedPreferences(getActivity())
+                    .edit()
+                    .putString(getString(R.string.key_use_account_color), newValue.toString())
+                    .commit();
+        }
         return true;
     }
 

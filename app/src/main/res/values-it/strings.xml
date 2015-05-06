@@ -495,4 +495,6 @@ No user-identifiable information will be collected as part of this process!
     <string name="toast_backup_folder_not_found">Backup folder cannot be found. Make sure the SD Card is mounted!</string>
     <string name="header_report_settings">Reports</string>
     <string name="label_report_currency">Select currency</string>
+    <string name="title_use_account_color">Account color in reports</string>
+    <string name="summary_use_account_color">Use account color in the pie chart</string>
 </resources>

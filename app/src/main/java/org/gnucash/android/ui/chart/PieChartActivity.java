@@ -82,7 +82,7 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
     };
 
     private static final String DATE_PATTERN = "MMMM\nYYYY";
-    private static final String TOTAL_VALUE_LABEL_PATTERN = "%s\n%.2f %s";
+    private static final String TOTAL_VALUE_LABEL_PATTERN = "%s\n%.2f%s";
     private static final int ANIMATION_DURATION = 1800;
 
     private PieChart mChart;
@@ -103,6 +103,8 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
 
     private boolean mChartDataPresent = true;
 
+    private boolean mUseAccountColor = true;
+
     private double mSlicePercentThreshold = 6;
 
     private String mCurrencyCode;
@@ -113,6 +115,9 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
         setContentView(R.layout.activity_pie_chart);
         super.onCreate(savedInstanceState);
         getSupportActionBar().setTitle(R.string.title_pie_chart);
+
+        mUseAccountColor = PreferenceManager.getDefaultSharedPreferences(getApplicationContext())
+                .getBoolean(getString(R.string.key_use_account_color), false);
 
         mPreviousMonthButton = (ImageButton) findViewById(R.id.previous_month_chart_button);
         mNextMonthButton = (ImageButton) findViewById(R.id.next_month_chart_button);
@@ -226,6 +231,11 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
 
                 if (balance / sum * 100 > mSlicePercentThreshold) {
                     dataSet.addEntry(new Entry((float) balance, dataSet.getEntryCount()));
+                    if (mUseAccountColor) {
+                        dataSet.getColors().set(dataSet.getColors().size() - 1, (account.getColorHexCode() != null)
+                                ? Color.parseColor(account.getColorHexCode())
+                                : COLORS[(dataSet.getEntryCount() - 1) % COLORS.length]);
+                    }
                     dataSet.addColor(COLORS[(dataSet.getEntryCount() - 1) % COLORS.length]);
                     names.add(account.getName());
                 } else {
