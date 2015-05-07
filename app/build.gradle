@@ -69,6 +69,7 @@ android {
         }
         debug {
             debuggable true
+            ext.enableCrashlytics = false
         }
     }
     lintOptions {
@@ -102,6 +103,7 @@ android {
 
     
     compileOptions { //we want switch with strings during xml parsing
+        encoding "UTF-8"
         sourceCompatibility JavaVersion.VERSION_1_7
         targetCompatibility JavaVersion.VERSION_1_7
     }
@@ -118,6 +120,11 @@ dependencies {
             'joda-time:joda-time:2.7',
             'com.google.android.gms:play-services-drive:7.0.0',
             'com.crashlytics.android:crashlytics:1.+'
+    )
+
+    testCompile('org.robolectric:robolectric:3.0-SNAPSHOT',
+            'junit:junit:4.12',
+            'org.assertj:assertj-core:1.7.1'
     )
     androidTestCompile('com.jayway.android.robotium:robotium-solo:5.2.1',
             'com.squareup:fest-android:1.0.6')

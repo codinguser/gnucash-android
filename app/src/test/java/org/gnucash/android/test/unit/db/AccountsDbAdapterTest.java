@@ -1,45 +1,42 @@
-package org.gnucash.android.test.db;
+package org.gnucash.android.test.unit.db;
 
-import java.util.Currency;
-import java.util.List;
-
-import org.gnucash.android.db.DatabaseHelper;
+import org.gnucash.android.BuildConfig;
+import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.SplitsDbAdapter;
 import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.model.Account;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.model.Split;
 import org.gnucash.android.model.Transaction;
-import org.gnucash.android.db.AccountsDbAdapter;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.RobolectricGradleTestRunner;
+import org.robolectric.annotation.Config;
 
-import android.database.SQLException;
-import android.database.sqlite.SQLiteDatabase;
-import android.test.AndroidTestCase;
-import android.util.Log;
+import java.util.Currency;
+import java.util.List;
 
-public class AccountsDbAdapterTest extends AndroidTestCase {
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+@RunWith(RobolectricGradleTestRunner.class)
+@Config(constants = BuildConfig.class)
+public class AccountsDbAdapterTest{
 
 	private static final String BRAVO_ACCOUNT_NAME = "Bravo";
 	private static final String ALPHA_ACCOUNT_NAME = "Alpha";
-    private DatabaseHelper mDbHelper;
-    private SQLiteDatabase mDb;
     private AccountsDbAdapter mAccountsDbAdapter;
     private TransactionsDbAdapter mTransactionsDbAdapter;
     private SplitsDbAdapter mSplitsDbAdapter;
-	
-	@Override
-	protected void setUp() throws Exception {		
-		super.setUp();
-        mDbHelper = new DatabaseHelper(getContext());
-        try {
-            mDb = mDbHelper.getWritableDatabase();
-        } catch (SQLException e) {
-            Log.e(getClass().getName(), "Error getting database: " + e.getMessage());
-            mDb = mDbHelper.getReadableDatabase();
-        }
-        mSplitsDbAdapter = new SplitsDbAdapter(mDb);
-        mTransactionsDbAdapter = new TransactionsDbAdapter(mDb, mSplitsDbAdapter);
-        mAccountsDbAdapter = new AccountsDbAdapter(mDb, mTransactionsDbAdapter);
+
+	@Before
+	public void setUp() throws Exception {
+
+        mSplitsDbAdapter = SplitsDbAdapter.getInstance();//new SplitsDbAdapter(mDb);
+        mTransactionsDbAdapter = TransactionsDbAdapter.getInstance();//new TransactionsDbAdapter(mDb, mSplitsDbAdapter);
+        mAccountsDbAdapter = AccountsDbAdapter.getInstance();//new AccountsDbAdapter(mDb, mTransactionsDbAdapter);
 		mAccountsDbAdapter.deleteAllRecords();
 		Account first = new Account(ALPHA_ACCOUNT_NAME);
         first.setUID(ALPHA_ACCOUNT_NAME);
@@ -49,15 +46,18 @@ public class AccountsDbAdapterTest extends AndroidTestCase {
 		mAccountsDbAdapter.addAccount(second);
 		mAccountsDbAdapter.addAccount(first);
 	}
-	
+
+    @Test
 	public void testAlphabeticalSorting(){
+
 		List<Account> accountsList = mAccountsDbAdapter.getAllAccounts();
 		assertEquals(2, accountsList.size());
 		//bravo was saved first, but alpha should be first alphabetically
 		assertEquals(ALPHA_ACCOUNT_NAME, accountsList.get(0).getName());
 		assertEquals(BRAVO_ACCOUNT_NAME, accountsList.get(1).getName());
 	}
-	
+
+    @Test
 	public void testTransactionsHaveSameCurrencyAsAccount(){
 		Account acc1 = new Account("Japanese", Currency.getInstance("JPY"));
 		acc1.setUID("simile");
@@ -74,6 +74,7 @@ public class AccountsDbAdapterTest extends AndroidTestCase {
 		}
 	}
 
+    @Test
     public void testAddAccountWithTransaction(){
         Account account1 = new Account("AlphaAccount");
         Account account2 = new Account("BetaAccount");
@@ -92,6 +93,7 @@ public class AccountsDbAdapterTest extends AndroidTestCase {
     /**
      * Tests the foreign key constraint "ON DELETE CASCADE" between accounts and splits
      */
+    @Test
     public void testDeletingAccountShouldDeleteSplits(){
         Transaction transaction = new Transaction("TestTrn");
         Split split = new Split(Money.getZeroInstance(), ALPHA_ACCOUNT_NAME);
@@ -108,11 +110,8 @@ public class AccountsDbAdapterTest extends AndroidTestCase {
         assertEquals(BRAVO_ACCOUNT_NAME, trxn.getSplits().get(0).getAccountUID());
     }
 
-	@Override
-	protected void tearDown() throws Exception {
-		super.tearDown();
+	@After
+	public void tearDown() throws Exception {
 		mAccountsDbAdapter.deleteAllRecords();
-        mDbHelper.close();
-        mDb.close();
 	}
 }

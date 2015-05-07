@@ -1,46 +1,41 @@
-package org.gnucash.android.test.db;
+package org.gnucash.android.test.unit.db;
 
-import java.util.List;
-
-import org.gnucash.android.db.DatabaseHelper;
+import org.gnucash.android.BuildConfig;
+import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.SplitsDbAdapter;
+import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.model.Account;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.model.Split;
 import org.gnucash.android.model.Transaction;
-import org.gnucash.android.db.AccountsDbAdapter;
-import org.gnucash.android.db.TransactionsDbAdapter;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.RobolectricGradleTestRunner;
+import org.robolectric.annotation.Config;
 
-import android.database.SQLException;
-import android.database.sqlite.SQLiteDatabase;
-import android.test.AndroidTestCase;
-import android.util.Log;
+import java.util.List;
 
-public class TransactionsDbAdapterTest extends AndroidTestCase {
+import static org.junit.Assert.assertEquals;
+
+@RunWith(RobolectricGradleTestRunner.class)
+@Config(constants = BuildConfig.class)
+public class TransactionsDbAdapterTest {
 	private static final String ALPHA_ACCOUNT_NAME  = "Alpha";
 	private static final String BRAVO_ACCOUNT_NAME  = "Bravo";
 	private static final String ALPHA_ACCOUNT_UID   = "alpha-team";
 	private static final String BRAVO_ACCOUNT_UID   = "bravo-team";
 
-    private DatabaseHelper mDbHelper;
-    private SQLiteDatabase mDb;
     private AccountsDbAdapter mAccountsDbAdapter;
     private TransactionsDbAdapter mTransactionsDbAdapter;
     private SplitsDbAdapter mSplitsDbAdapter;
 	
-	@Override
-	protected void setUp() throws Exception {
-		super.setUp();
-        mDbHelper = new DatabaseHelper(getContext());
-        try {
-            mDb = mDbHelper.getWritableDatabase();
-        } catch (SQLException e) {
-            Log.e(getClass().getName(), "Error getting database: " + e.getMessage());
-            mDb = mDbHelper.getReadableDatabase();
-        }
-        mSplitsDbAdapter = new SplitsDbAdapter(mDb);
-        mTransactionsDbAdapter = new TransactionsDbAdapter(mDb, mSplitsDbAdapter);
-        mAccountsDbAdapter = new AccountsDbAdapter(mDb, mTransactionsDbAdapter);
+	@Before
+	public void setUp() throws Exception {
+        mSplitsDbAdapter = SplitsDbAdapter.getInstance();
+        mTransactionsDbAdapter = TransactionsDbAdapter.getInstance();
+        mAccountsDbAdapter = AccountsDbAdapter.getInstance();
 
         Account first = new Account(ALPHA_ACCOUNT_NAME);
 		first.setUID(ALPHA_ACCOUNT_UID);
@@ -65,18 +60,16 @@ public class TransactionsDbAdapterTest extends AndroidTestCase {
 		mAccountsDbAdapter.addAccount(second);
 		mAccountsDbAdapter.addAccount(first);
 	}
-	
+
+	@Test
 	public void testTransactionsAreTimeSorted(){
 		List<Transaction> transactionsList = mTransactionsDbAdapter.getAllTransactionsForAccount(ALPHA_ACCOUNT_UID);
 		assertEquals("T1000", transactionsList.get(0).getDescription());
 		assertEquals("T800", transactionsList.get(1).getDescription());
 	}
 	
-	@Override
-	protected void tearDown() throws Exception {
-		super.tearDown();
+	@After
+	public void tearDown() throws Exception {
 		mAccountsDbAdapter.deleteAllRecords();
-        mDbHelper.close();
-        mDb.close();
 	}
 }

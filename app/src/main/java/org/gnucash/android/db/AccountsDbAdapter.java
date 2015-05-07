@@ -71,7 +71,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 	 */
     private final TransactionsDbAdapter mTransactionsAdapter;
 
-    private static String mImbalanceAccountPrefix = GnuCashApplication.getAppContext().getString(R.string.imbalance_account_name) + "-";
+//    private static String mImbalanceAccountPrefix = GnuCashApplication.getAppContext().getString(R.string.imbalance_account_name) + "-";
 
     /**
      * Overloaded constructor. Creates an adapter for an already open database
@@ -1159,7 +1159,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
     }
 
     public static String getImbalanceAccountPrefix() {
-         return mImbalanceAccountPrefix;
+         return GnuCashApplication.getAppContext().getString(R.string.imbalance_account_name) + "-";
     }
 
     /**

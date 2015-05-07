@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.gnucash.android.test.model;
+package org.gnucash.android.test.unit.model;
 
 import java.math.BigDecimal;
 import java.util.Currency;
