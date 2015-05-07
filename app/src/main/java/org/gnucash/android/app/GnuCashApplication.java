@@ -80,6 +80,7 @@ public class GnuCashApplication extends Application{
         try {
             mDb = mDbHelper.getWritableDatabase();
         } catch (SQLException e) {
+            Crashlytics.logException(e);
             Log.e(getClass().getName(), "Error getting database: " + e.getMessage());
             mDb = mDbHelper.getReadableDatabase();
         }
@@ -165,6 +166,7 @@ public class GnuCashApplication extends Application{
         try { //there are some strange locales out there
             currencyCode = Currency.getInstance(locale).getCurrencyCode();
         } catch (Throwable e) {
+            Crashlytics.logException(e);
             Log.e(context.getString(R.string.app_name), "" + e.getMessage());
         } finally {
             currencyCode = prefs.getString(context.getString(R.string.key_default_currency), currencyCode);

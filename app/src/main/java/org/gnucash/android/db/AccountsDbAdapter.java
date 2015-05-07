@@ -867,37 +867,6 @@ public class AccountsDbAdapter extends DatabaseAdapter {
     }
 
     /**
-     * Returns a list of IDs for the sub-accounts for account <code>accountId</code>
-     * @param accountId Account ID whose sub-accounts are to be retrieved
-     * @return List of IDs for the sub-accounts for account <code>accountId</code>
-     */
-    public List<Long> getSubAccountIds(long accountId){
-        List<Long> subAccounts = new ArrayList<Long>();
-        String accountUID;
-        try {
-            accountUID = getUID(accountId);
-        } catch (IllegalArgumentException e) {
-            return subAccounts;
-        }
-
-        Cursor cursor = mDb.query(AccountEntry.TABLE_NAME,
-                new String[]{AccountEntry._ID},
-                AccountEntry.COLUMN_PARENT_ACCOUNT_UID + " = ?",
-                new String[]{accountUID},
-                null, null, null);
-
-        try {
-            while (cursor.moveToNext()) {
-                subAccounts.add(cursor.getLong(cursor.getColumnIndexOrThrow(AccountEntry._ID)));
-            }
-        } finally {
-            cursor.close();
-        }
-
-        return subAccounts;
-    }
-
-    /**
      * Returns a cursor to the dataset containing sub-accounts of the account with record ID <code>accoundId</code>
      * @param accountUID GUID of the parent account
      * @return {@link Cursor} to the sub accounts data set
