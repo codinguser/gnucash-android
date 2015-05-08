@@ -202,8 +202,9 @@ public class Split extends BaseModel{
      * @return the converted CSV string of this split
      */
     public String toCsv(){
-        String splitString = mAmount.asString() + ";" + mAmount.getCurrency().getCurrencyCode() + ";"
-                + mAccountUID + ";" + mSplitType.name();
+        String sep = ";";
+        String splitString = mAmount.asString() + sep + mAmount.getCurrency().getCurrencyCode()
+                + sep + mAccountUID + sep + mTransactionUID + sep + mSplitType.name();
         if (mMemo != null){
             splitString = splitString + ";" + mMemo;
         }
@@ -221,9 +222,10 @@ public class Split extends BaseModel{
         String[] tokens = splitString.split(";");
         Money amount = new Money(tokens[0], tokens[1]);
         Split split = new Split(amount, tokens[2]);
-        split.setType(TransactionType.valueOf(tokens[3]));
-        if (tokens.length == 5){
-            split.setMemo(tokens[4]);
+        split.setTransactionUID(tokens[3]);
+        split.setType(TransactionType.valueOf(tokens[4]));
+        if (tokens.length == 6){
+            split.setMemo(tokens[5]);
         }
         return split;
     }

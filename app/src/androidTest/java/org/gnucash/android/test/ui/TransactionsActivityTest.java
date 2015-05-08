@@ -50,7 +50,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-import static org.fest.assertions.api.ANDROID.assertThat;
+import static org.assertj.android.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
+
 
 public class TransactionsActivityTest extends
 		ActivityInstrumentationTestCase2<TransactionsActivity> {
@@ -137,7 +139,7 @@ public class TransactionsActivityTest extends
 		assertNotNull(fragment);
 	}
 	
-	private int getTranscationCount(){
+	private int getTransactionCount(){
         return mTransactionsDbAdapter.getAllTransactionsForAccount(DUMMY_ACCOUNT_UID).size();
 	}
 	
@@ -207,7 +209,7 @@ public class TransactionsActivityTest extends
 
     //TODO: Add test for only one account but with double-entry enabled
 
-	public void testAddTransaction(){
+	public void atestAddTransaction(){
         setDoubleEntryEnabled(true);
         mSolo.waitForText(TRANSACTION_NAME);
 
@@ -233,7 +235,7 @@ public class TransactionsActivityTest extends
         String expectedValue = NumberFormat.getInstance().format(-8.99);
         assertEquals(expectedValue, value);
 
-        int transactionsCount = getTranscationCount();
+        int transactionsCount = getTransactionCount();
 
 //        clickSherlockActionBarItem(R.id.menu_save);
         mSolo.clickOnActionBarItem(R.id.menu_save);
@@ -244,15 +246,15 @@ public class TransactionsActivityTest extends
         mSolo.sleep(1000);
 
         List<Transaction> transactions = mTransactionsDbAdapter.getAllTransactionsForAccount(DUMMY_ACCOUNT_UID);
-        assertEquals(2, transactions.size());
+        assertThat(transactions).hasSize(2);
         Transaction transaction = transactions.get(0);
+		assertThat(transaction.getSplits()).hasSize(2);
 
-        assertEquals(2, transaction.getSplits().size());
         Split split = transaction.getSplits(TRANSFER_ACCOUNT_UID).get(0);
         //the main account is a CASH account which has debit normal type, so a negative value means actually CREDIT
         //so the other side of the split has to be a debit
         assertEquals(TransactionType.DEBIT, split.getType());
-        assertEquals(transactionsCount + 1, getTranscationCount());
+        assertEquals(transactionsCount + 1, getTransactionCount());
 
     }
 
@@ -462,8 +464,6 @@ public class TransactionsActivityTest extends
 		mAccountsDbAdapter.deleteAllRecords();
 
 		mSolo.finishOpenedActivities();
-		mDbHelper.close();
-        mDb.close();
 		super.tearDown();
 	}
 }

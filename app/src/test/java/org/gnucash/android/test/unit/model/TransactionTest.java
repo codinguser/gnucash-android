@@ -1,18 +1,14 @@
 package org.gnucash.android.test.unit.model;
 
-import junit.framework.TestCase;
-
 import org.gnucash.android.model.Money;
 import org.gnucash.android.model.Transaction;
+import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class TransactionTest extends TestCase {
+public class TransactionTest {
 
-	public TransactionTest(String name) {
-		super(name);
-	}
-
+	@Test
 	public void testCloningTransaction(){
 		Transaction transaction = new Transaction("Bobba Fett");
 		assertThat(transaction.getUID()).isNotNull();
@@ -20,7 +16,7 @@ public class TransactionTest extends TestCase {
 
 		Transaction clone1 = new Transaction(transaction, false);
 		assertThat(transaction.getUID()).isEqualTo(clone1.getUID());
-		assertEquals(transaction, clone1);
+		assertThat(transaction).isEqualTo(clone1);
 
 		Transaction clone2 = new Transaction(transaction, true);
 		assertThat(transaction.getUID()).isNotEqualTo(clone2.getUID());
@@ -29,6 +25,5 @@ public class TransactionTest extends TestCase {
 		assertThat(transaction.getNote()).isEqualTo(clone2.getNote());
 		assertThat(transaction.getTimeMillis()).isEqualTo(clone2.getTimeMillis());
 		//TODO: Clone the created_at and modified_at times?
-
 	}
 }

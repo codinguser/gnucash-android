@@ -1,10 +1,12 @@
 package org.gnucash.android.test.unit.db;
 
+import org.assertj.core.data.Index;
 import org.gnucash.android.BuildConfig;
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.SplitsDbAdapter;
 import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.model.Account;
+import org.gnucash.android.model.AccountType;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.model.Split;
 import org.gnucash.android.model.Transaction;
@@ -18,6 +20,7 @@ import org.robolectric.annotation.Config;
 import java.util.Currency;
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -34,44 +37,27 @@ public class AccountsDbAdapterTest{
 	@Before
 	public void setUp() throws Exception {
 
-        mSplitsDbAdapter = SplitsDbAdapter.getInstance();//new SplitsDbAdapter(mDb);
-        mTransactionsDbAdapter = TransactionsDbAdapter.getInstance();//new TransactionsDbAdapter(mDb, mSplitsDbAdapter);
-        mAccountsDbAdapter = AccountsDbAdapter.getInstance();//new AccountsDbAdapter(mDb, mTransactionsDbAdapter);
-		mAccountsDbAdapter.deleteAllRecords();
-		Account first = new Account(ALPHA_ACCOUNT_NAME);
-        first.setUID(ALPHA_ACCOUNT_NAME);
-		Account second = new Account(BRAVO_ACCOUNT_NAME);
-        second.setUID(BRAVO_ACCOUNT_NAME);
-		
-		mAccountsDbAdapter.addAccount(second);
-		mAccountsDbAdapter.addAccount(first);
+        mSplitsDbAdapter = SplitsDbAdapter.getInstance();
+        mTransactionsDbAdapter = TransactionsDbAdapter.getInstance();
+        mAccountsDbAdapter = AccountsDbAdapter.getInstance();
 	}
 
+    /**
+     * Test that the list of accounts is always returned sorted alphabetically
+     */
     @Test
 	public void testAlphabeticalSorting(){
+        Account first = new Account(ALPHA_ACCOUNT_NAME);
+        Account second = new Account(BRAVO_ACCOUNT_NAME);
+        //purposefully added the second after the first
+        mAccountsDbAdapter.addAccount(second);
+        mAccountsDbAdapter.addAccount(first);
 
 		List<Account> accountsList = mAccountsDbAdapter.getAllAccounts();
 		assertEquals(2, accountsList.size());
 		//bravo was saved first, but alpha should be first alphabetically
-		assertEquals(ALPHA_ACCOUNT_NAME, accountsList.get(0).getName());
-		assertEquals(BRAVO_ACCOUNT_NAME, accountsList.get(1).getName());
-	}
-
-    @Test
-	public void testTransactionsHaveSameCurrencyAsAccount(){
-		Account acc1 = new Account("Japanese", Currency.getInstance("JPY"));
-		acc1.setUID("simile");
-		Transaction trx = new Transaction("Underground");
-		Transaction term = new Transaction( "Tube");
-		acc1.addTransaction(trx);
-		acc1.addTransaction(term);
-		
-		mAccountsDbAdapter.addAccount(acc1);
-		
-		Account account = mAccountsDbAdapter.getAccount("simile");
-		for (Transaction t : account.getTransactions()) {
-			assertEquals("JPY", t.getBalance(acc1.getUID()).getCurrency().getCurrencyCode());
-		}
+        assertThat(accountsList).contains(first, Index.atIndex(0));
+        assertThat(accountsList).contains(second, Index.atIndex(1));
 	}
 
     @Test
@@ -95,6 +81,14 @@ public class AccountsDbAdapterTest{
      */
     @Test
     public void testDeletingAccountShouldDeleteSplits(){
+        Account first = new Account(ALPHA_ACCOUNT_NAME);
+        first.setUID(ALPHA_ACCOUNT_NAME);
+        Account second = new Account(BRAVO_ACCOUNT_NAME);
+        second.setUID(BRAVO_ACCOUNT_NAME);
+
+        mAccountsDbAdapter.addAccount(second);
+        mAccountsDbAdapter.addAccount(first);
+
         Transaction transaction = new Transaction("TestTrn");
         Split split = new Split(Money.getZeroInstance(), ALPHA_ACCOUNT_NAME);
         transaction.addSplit(split);
@@ -108,6 +102,40 @@ public class AccountsDbAdapterTest{
         Transaction trxn = mTransactionsDbAdapter.getTransaction(transaction.getUID());
         assertEquals(1, trxn.getSplits().size());
         assertEquals(BRAVO_ACCOUNT_NAME, trxn.getSplits().get(0).getAccountUID());
+    }
+
+    /**
+     * Tests that a ROOT account will always be created in the system
+     */
+    @Test
+    public void shouldCreateDefaultRootAccount(){
+        Account account = new Account("Some account");
+        mAccountsDbAdapter.addAccount(account);
+        assertThat(2).isEqualTo(mAccountsDbAdapter.getTotalAccountCount());
+
+        List<Account> accounts = mAccountsDbAdapter.getSimpleAccountList();
+        assertThat(accounts).extracting("mAccountType").contains(AccountType.ROOT);
+
+    }
+
+    @Test
+    public void shouldUpdateFullNameAfterParentChange(){
+        Account parent = new Account("Test");
+        Account child = new Account("Child");
+
+        mAccountsDbAdapter.addAccount(parent);
+        mAccountsDbAdapter.addAccount(child);
+
+        child.setParentUID(parent.getUID());
+        mAccountsDbAdapter.addAccount(child);
+
+        child = mAccountsDbAdapter.getAccount(child.getUID());
+        parent = mAccountsDbAdapter.getAccount(parent.getUID());
+
+        assertThat(mAccountsDbAdapter.getSubAccountCount(parent.getUID())).isEqualTo(1);
+        assertThat(parent.getUID()).isEqualTo(child.getParentUID());
+
+        assertThat(child.getFullName()).isEqualTo("Test:Child");
     }
 
 	@After

@@ -70,12 +70,6 @@ public class TransactionsActivity extends PassLockActivity implements
 	protected static final String TAG = "AccountsActivity";
 	
 	/**
-	 * Tag for {@link TransactionsListFragment}
-	 * Can be used to check if the fragment is currently loaded
-	 */
-	public static final String FRAGMENT_TRANSACTIONS_LIST 	= "transactions_list";
-	
-	/**
 	 * Tag for {@link TransactionFormFragment}
 	 */
 	public static final String FRAGMENT_NEW_TRANSACTION 	= "new_transaction";
@@ -254,13 +248,13 @@ public class TransactionsActivity extends PassLockActivity implements
             mFragmentPageReferenceMap.valueAt(i).refresh(accountUID);
         }
         mTitlePageIndicator.notifyDataSetChanged();
+        mPagerAdapter.notifyDataSetChanged();
     }
 
     @Override
     public void refresh(){
         refresh(mAccountUID);
         setTitleIndicatorColor();
-        mPagerAdapter.notifyDataSetChanged();
     }
 
 	@Override
