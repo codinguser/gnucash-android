@@ -33,6 +33,7 @@ import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.github.mikephil.charting.utils.Highlight;
+import com.github.mikephil.charting.utils.LargeValueFormatter;
 
 import org.gnucash.android.R;
 import org.gnucash.android.db.AccountsDbAdapter;
@@ -79,8 +80,8 @@ public class LineChartActivity extends PassLockActivity implements OnChartValueS
 
     private LineChart mChart;
     private AccountsDbAdapter mAccountsDbAdapter = AccountsDbAdapter.getInstance();
-    private Map<AccountType, Long> mEarliestTimestampsMap = new HashMap<AccountType, Long>();
-    private Map<AccountType, Long> mLatestTimestampsMap = new HashMap<AccountType, Long>();
+    private Map<AccountType, Long> mEarliestTimestampsMap = new HashMap<>();
+    private Map<AccountType, Long> mLatestTimestampsMap = new HashMap<>();
     private long mEarliestTransactionTimestamp;
     private long mLatestTransactionTimestamp;
     private boolean mChartDataPresent = true;
@@ -100,11 +101,13 @@ public class LineChartActivity extends PassLockActivity implements OnChartValueS
         ((LinearLayout) findViewById(R.id.chart)).addView(mChart);
         mChart.setOnChartValueSelectedListener(this);
         mChart.setDescription("");
-        mChart.getAxisLeft().setValueFormatter(new LargeValueFormatter(mCurrency.getSymbol(Locale.getDefault())));
+        mChart.getXAxis().setDrawGridLines(false);
         mChart.getAxisRight().setEnabled(false);
+        mChart.getAxisLeft().enableGridDashedLine(4.0f, 4.0f, 0);
+        mChart.getAxisLeft().setValueFormatter(new LargeValueFormatter(mCurrency.getSymbol(Locale.getDefault())));
 
         // below we can add/remove displayed account's types
-        mChart.setData(getData(new ArrayList<AccountType>(Arrays.asList(AccountType.INCOME, AccountType.EXPENSE))));
+        mChart.setData(getData(new ArrayList<>(Arrays.asList(AccountType.INCOME, AccountType.EXPENSE))));
 
         Legend legend = mChart.getLegend();
         legend.setPosition(Legend.LegendPosition.RIGHT_OF_CHART_INSIDE);
@@ -132,14 +135,14 @@ public class LineChartActivity extends PassLockActivity implements OnChartValueS
 
         LocalDate startDate = new LocalDate(mEarliestTransactionTimestamp).withDayOfMonth(1);
         LocalDate endDate = new LocalDate(mLatestTransactionTimestamp).withDayOfMonth(1);
-        ArrayList<String> xValues = new ArrayList<String>();
+        List<String> xValues = new ArrayList<>();
         while (!startDate.isAfter(endDate)) {
             xValues.add(startDate.toString(X_AXIS_PATTERN));
             Log.d(TAG, "X axis " + startDate.toString("MM yy"));
             startDate = startDate.plusMonths(1);
         }
 
-        ArrayList<LineDataSet> dataSets = new ArrayList<LineDataSet>();
+        List<LineDataSet> dataSets = new ArrayList<>();
         for (AccountType accountType : accountTypeList) {
             LineDataSet set = new LineDataSet(getEntryList(accountType), accountType.toString());
             set.setDrawFilled(true);
@@ -163,8 +166,8 @@ public class LineChartActivity extends PassLockActivity implements OnChartValueS
      * @return a {@code LineData} instance for situation when no user data available
      */
     private LineData getEmptyData() {
-        ArrayList<String> xValues = new ArrayList<String>();
-        ArrayList<Entry> yValues = new ArrayList<Entry>();
+        List<String> xValues = new ArrayList<>();
+        List<Entry> yValues = new ArrayList<>();
         for (int i = 0; i < NO_DATA_BAR_COUNTS; i++) {
             xValues.add("");
             yValues.add(new Entry(i % 2 == 0 ? 5f : 4.5f, i));
@@ -175,7 +178,7 @@ public class LineChartActivity extends PassLockActivity implements OnChartValueS
         set.setColor(NO_DATA_COLOR);
         set.setFillColor(NO_DATA_COLOR);
 
-        return new LineData(xValues, new ArrayList<LineDataSet>(Arrays.asList(set)));
+        return new LineData(xValues, Collections.singletonList(set));
     }
 
     /**
@@ -183,8 +186,8 @@ public class LineChartActivity extends PassLockActivity implements OnChartValueS
      * @param accountType account's type which user data will be processed
      * @return entries which represent a user data
      */
-    private ArrayList<Entry> getEntryList(AccountType accountType) {
-        List<String> accountUIDList = new ArrayList<String>();
+    private List<Entry> getEntryList(AccountType accountType) {
+        List<String> accountUIDList = new ArrayList<>();
         for (Account account : mAccountsDbAdapter.getSimpleAccountList()) {
             if (account.getAccountType() == accountType
                     && !account.isPlaceholderAccount()
@@ -201,7 +204,7 @@ public class LineChartActivity extends PassLockActivity implements OnChartValueS
                 latest.withDayOfMonth(1).withMillisOfDay(0)).getMonths();
 
         int offset = getXAxisOffset(accountType);
-        ArrayList<Entry> values = new ArrayList<Entry>(months + 1);
+        List<Entry> values = new ArrayList<>(months + 1);
         for (int i = 0; i < months + 1; i++) {
             long start = earliest.dayOfMonth().withMinimumValue().millisOfDay().withMinimumValue().toDate().getTime();
             long end = earliest.dayOfMonth().withMaximumValue().millisOfDay().withMaximumValue().toDate().getTime();
@@ -236,7 +239,7 @@ public class LineChartActivity extends PassLockActivity implements OnChartValueS
             return;
         }
 
-        List<Long> timestamps = new ArrayList<Long>(mEarliestTimestampsMap.values());
+        List<Long> timestamps = new ArrayList<>(mEarliestTimestampsMap.values());
         timestamps.addAll(mLatestTimestampsMap.values());
         Collections.sort(timestamps);
         mEarliestTransactionTimestamp = timestamps.get(0);

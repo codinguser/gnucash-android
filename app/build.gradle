@@ -114,7 +114,7 @@ dependencies {
             'com.viewpagerindicator:library:2.4.1@aar',
             'com.doomonafireball.betterpickers:library:1.5.2',
             'com.commonsware.cwac:merge:1.1.+',
-            'com.github.PhilJay:MPAndroidChart:v2.0.8',
+            'com.github.PhilJay:MPAndroidChart:v2.1.0',
             'joda-time:joda-time:2.7',
             'com.google.android.gms:play-services-drive:7.0.0',
             'com.crashlytics.android:crashlytics:1.+'
