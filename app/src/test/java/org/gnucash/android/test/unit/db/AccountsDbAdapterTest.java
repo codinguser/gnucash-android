@@ -10,22 +10,22 @@ import org.gnucash.android.model.AccountType;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.model.Split;
 import org.gnucash.android.model.Transaction;
+import org.gnucash.android.test.unit.util.GnucashTestRunner;
+import org.gnucash.android.test.unit.util.ShadowCrashlytics;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.annotation.Config;
 
-import java.util.Currency;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-@RunWith(RobolectricGradleTestRunner.class)
-@Config(constants = BuildConfig.class)
+@RunWith(GnucashTestRunner.class)
+@Config(constants = BuildConfig.class, shadows = {ShadowCrashlytics.class})
 public class AccountsDbAdapterTest{
 
 	private static final String BRAVO_ACCOUNT_NAME = "Bravo";

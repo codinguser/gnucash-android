@@ -122,7 +122,7 @@ dependencies {
             'com.crashlytics.android:crashlytics:1.+'
     )
 
-    testCompile('org.robolectric:robolectric:3.0-SNAPSHOT',
+    testCompile('org.robolectric:robolectric:3.0-rc2',
             'junit:junit:4.12',
             'org.assertj:assertj-core:1.7.1'
     )

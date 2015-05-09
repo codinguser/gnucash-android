@@ -15,7 +15,6 @@ allprojects {
         maven { url "https://repo.commonsware.com.s3.amazonaws.com"}
 		maven { url 'http://download.crashlytics.com/maven' }
         maven { url "https://jitpack.io" }
-		maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
         jcenter()		
         mavenCentral()
     }

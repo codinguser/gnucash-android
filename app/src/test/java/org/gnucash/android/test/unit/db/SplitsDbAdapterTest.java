@@ -9,11 +9,12 @@ import org.gnucash.android.model.Account;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.model.Split;
 import org.gnucash.android.model.Transaction;
+import org.gnucash.android.test.unit.util.GnucashTestRunner;
+import org.gnucash.android.test.unit.util.ShadowCrashlytics;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.annotation.Config;
 
 import java.util.List;
@@ -23,8 +24,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * Some tests for the splits database adapter
  */
-@RunWith(RobolectricGradleTestRunner.class)
-@Config(constants = BuildConfig.class)
+@RunWith(GnucashTestRunner.class)
+@Config(constants = BuildConfig.class, shadows = {ShadowCrashlytics.class})
 public class SplitsDbAdapterTest {
 
     private AccountsDbAdapter mAccountsDbAdapter;
