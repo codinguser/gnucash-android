@@ -619,23 +619,23 @@ public class AccountsListFragment extends SherlockListFragment implements
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            convertView = super.getView(position, convertView, parent);
-            TextView secondaryText = (TextView) convertView.findViewById(R.id.secondary_text);
+            View itemView = super.getView(position, convertView, parent);
+            TextView secondaryText = (TextView) itemView.findViewById(R.id.secondary_text);
 
             ListView listView = (ListView) parent;
             if (mInEditMode && listView.isItemChecked(position)){
-                convertView.setBackgroundColor(getResources().getColor(R.color.abs__holo_blue_light));
+                itemView.setBackgroundColor(getResources().getColor(R.color.abs__holo_blue_light));
                 secondaryText.setTextColor(getResources().getColor(android.R.color.white));
             } else {
-                convertView.setBackgroundColor(getResources().getColor(android.R.color.transparent));
+                itemView.setBackgroundColor(getResources().getColor(android.R.color.transparent));
                 secondaryText.setTextColor(getResources().getColor(android.R.color.secondary_text_light_nodisable));
             }
 
 
             //increase the touch target area for the add new transaction button
 
-            final View addTransactionButton = convertView.findViewById(R.id.btn_new_transaction);
-            final View parentView = convertView;
+            final View addTransactionButton = itemView.findViewById(R.id.btn_new_transaction);
+            final View parentView = itemView;
             parentView.post(new Runnable() {
                 @Override
                 public void run() {
@@ -652,7 +652,7 @@ public class AccountsListFragment extends SherlockListFragment implements
                 }
             });
 
-            return convertView;
+            return itemView;
         }
     }
 

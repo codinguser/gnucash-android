@@ -70,12 +70,6 @@ public class TransactionsActivity extends PassLockActivity implements
 	protected static final String TAG = "AccountsActivity";
 	
 	/**
-	 * Tag for {@link TransactionsListFragment}
-	 * Can be used to check if the fragment is currently loaded
-	 */
-	public static final String FRAGMENT_TRANSACTIONS_LIST 	= "transactions_list";
-	
-	/**
 	 * Tag for {@link TransactionFormFragment}
 	 */
 	public static final String FRAGMENT_NEW_TRANSACTION 	= "new_transaction";
@@ -124,7 +118,7 @@ public class TransactionsActivity extends PassLockActivity implements
 
     private ViewPager mPager;
 
-    private SparseArray<Refreshable> mFragmentPageReferenceMap = new SparseArray<Refreshable>();
+    private SparseArray<Refreshable> mFragmentPageReferenceMap = new SparseArray<>();
 
 	private OnNavigationListener mTransactionListNavigationListener = new OnNavigationListener() {
 
@@ -254,13 +248,13 @@ public class TransactionsActivity extends PassLockActivity implements
             mFragmentPageReferenceMap.valueAt(i).refresh(accountUID);
         }
         mTitlePageIndicator.notifyDataSetChanged();
+        mPagerAdapter.notifyDataSetChanged();
     }
 
     @Override
     public void refresh(){
         refresh(mAccountUID);
         setTitleIndicatorColor();
-        mPagerAdapter.notifyDataSetChanged();
     }
 
 	@Override
@@ -329,7 +323,13 @@ public class TransactionsActivity extends PassLockActivity implements
     private void setTitleIndicatorColor() {
         //Basically, if we are in a top level account, use the default title color.
         //but propagate a parent account's title color to children who don't have own color
-        String colorCode = mAccountsDbAdapter.getAccountColorCode(mAccountsDbAdapter.getID(mAccountUID));
+        long accountId = -1;
+        try {
+            accountId = mAccountsDbAdapter.getID(mAccountUID);
+        } catch (IllegalArgumentException e){
+            Log.e(TAG, e.getMessage());
+        }
+        String colorCode = mAccountsDbAdapter.getAccountColorCode(accountId);
         int iColor = -1;
         if (colorCode != null){
             iColor = Color.parseColor(colorCode);

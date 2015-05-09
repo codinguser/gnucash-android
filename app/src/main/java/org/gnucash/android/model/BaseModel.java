@@ -108,4 +108,20 @@ public abstract class BaseModel {
     public void setModifiedTimestamp(Timestamp modifiedTimestamp) {
         this.mModifiedTimestamp = modifiedTimestamp;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof BaseModel)) return false;
+
+        BaseModel baseModel = (BaseModel) o;
+
+        return mUID.equals(baseModel.mUID);
+
+    }
+
+    @Override
+    public int hashCode() {
+        return mUID.hashCode();
+    }
 }

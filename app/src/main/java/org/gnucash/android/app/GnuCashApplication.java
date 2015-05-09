@@ -26,6 +26,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import com.crashlytics.android.Crashlytics;
+
+import org.gnucash.android.BuildConfig;
 import org.gnucash.android.R;
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.DatabaseHelper;
@@ -74,12 +76,14 @@ public class GnuCashApplication extends Application{
         GnuCashApplication.context = getApplicationContext();
         //only start logging if user gave consent
 
-        Crashlytics.start(this);
+        if (!BuildConfig.DEBUG)
+            Crashlytics.start(this);
 
         mDbHelper = new DatabaseHelper(getApplicationContext());
         try {
             mDb = mDbHelper.getWritableDatabase();
         } catch (SQLException e) {
+            Crashlytics.logException(e);
             Log.e(getClass().getName(), "Error getting database: " + e.getMessage());
             mDb = mDbHelper.getReadableDatabase();
         }
@@ -165,6 +169,7 @@ public class GnuCashApplication extends Application{
         try { //there are some strange locales out there
             currencyCode = Currency.getInstance(locale).getCurrencyCode();
         } catch (Throwable e) {
+            Crashlytics.logException(e);
             Log.e(context.getString(R.string.app_name), "" + e.getMessage());
         } finally {
             currencyCode = prefs.getString(context.getString(R.string.key_default_currency), currencyCode);

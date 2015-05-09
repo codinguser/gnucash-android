@@ -507,6 +507,8 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
         try {
             startActivityForResult(chooser, AccountsActivity.REQUEST_PICK_ACCOUNTS_FILE);
         } catch (ActivityNotFoundException ex){
+            Crashlytics.log("No file manager for selecting files available");
+            Crashlytics.logException(ex);
             Toast.makeText(this, R.string.toast_install_file_manager, Toast.LENGTH_LONG).show();
         }
     }

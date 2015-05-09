@@ -44,7 +44,7 @@ import org.gnucash.android.ui.account.AccountsListFragment;
 import java.util.Currency;
 import java.util.List;
 
-import static org.fest.assertions.api.ANDROID.assertThat;
+import static org.assertj.android.api.Assertions.assertThat;
 
 public class AccountsActivityTest extends ActivityInstrumentationTestCase2<AccountsActivity> {
 	private static final String DUMMY_ACCOUNT_CURRENCY_CODE = "USD";

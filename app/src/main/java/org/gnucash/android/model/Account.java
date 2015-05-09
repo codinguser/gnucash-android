@@ -230,15 +230,7 @@ public class Account extends BaseModel{
 	public void setTransactions(List<Transaction> transactionsList){
 		this.mTransactionsList = transactionsList;
 	}
-		
-	/**
-	 * Removes <code>transaction</code> from this account
-	 * @param transaction {@link Transaction} to be removed from account
-	 */
-	public void removeTransaction(Transaction transaction){
-		mTransactionsList.remove(transaction);
-	}
-	
+
 	/**
 	 * Returns a list of transactions for this account
 	 * @return Array list of transactions for the account
@@ -253,19 +245,6 @@ public class Account extends BaseModel{
 	 */
 	public int getTransactionCount(){
 		return mTransactionsList.size();
-	}
-	
-	/**
-	 * Returns true if there is at least one transaction in the account
-	 * which has not yet been exported
-	 * @return <code>true</code> if there are unexported transactions, <code>false</code> otherwise.
-	 */
-	public boolean hasUnexportedTransactions(){
-		for (Transaction transaction : mTransactionsList) {
-			if (!transaction.isExported())
-				return true;			
-		}
-		return false;
 	}
 
 	/**

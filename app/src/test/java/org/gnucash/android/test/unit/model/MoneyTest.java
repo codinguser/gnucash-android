@@ -14,69 +14,63 @@
  * limitations under the License.
  */
 
-package org.gnucash.android.test.model;
+package org.gnucash.android.test.unit.model;
 
 import java.math.BigDecimal;
 import java.util.Currency;
 import java.util.Locale;
 
-import junit.framework.TestCase;
-
+import static org.assertj.core.api.Assertions.assertThat;
 import org.gnucash.android.model.Money;
+import org.junit.Before;
+import org.junit.Test;
 
-public class MoneyTest extends TestCase {
+import static org.junit.Assert.*;
+
+public class MoneyTest{
 
 	private static final String CURRENCY_CODE = "EUR";
 	private Money 	money;
 	private int 	mHashcode;
-	private double 	amount = 15.75;
-	
-	public MoneyTest(String name) {
-		super(name);
-	}
+	private String amountString = "15.75";
 
-	protected void setUp() throws Exception {
-		super.setUp();
-		money = new Money(new BigDecimal(amount), Currency.getInstance(CURRENCY_CODE));
+	@Before
+	public void setUp() throws Exception {
+		money = new Money(new BigDecimal(amountString), Currency.getInstance(CURRENCY_CODE));
 		mHashcode = money.hashCode();
 	}
 
+	@Test
 	public void testCreation(){
 		Locale.setDefault(Locale.US);
 		String amount = "12.25";		
 		
 		Money temp = new Money(amount);
-		assertEquals(12.25, temp.asDouble());
-		
-		temp = new Money("9.95");
-		assertEquals(9.95, temp.asDouble());
-		
-		BigDecimal decimal = new BigDecimal(8);
+		assertThat("12.25").isEqualTo(temp.toPlainString());
+		assertThat(Money.DEFAULT_CURRENCY_CODE).isEqualTo(temp.getCurrency().getCurrencyCode());
+
 		Currency currency = Currency.getInstance(CURRENCY_CODE);
-		temp = new Money(decimal, currency);
+		temp = new Money(BigDecimal.TEN, currency);
 		
-		assertEquals(decimal, temp.asBigDecimal());
+		assertEquals("10", temp.asBigDecimal().toPlainString());
 		assertEquals(currency, temp.getCurrency());
-		
-		amount = "15.50";
-		temp = new Money(amount,"USD");
-		assertEquals(15.50, temp.asDouble());
-		assertEquals(temp.getCurrency().getCurrencyCode(), "USD");
-		
+
 		//test only Locale.US parsing even under different locale
 		Locale.setDefault(Locale.GERMANY);
 		amount = "12,25";
 		temp = new Money(amount);
 		assertEquals("1225.00", temp.toPlainString());
 	}
-	
-	public void testAddition(){		
+
+	@Test
+	public void testAddition(){
 		Money result = money.add(new Money("5", CURRENCY_CODE));
-		assertEquals(amount + 5, result.asDouble());
+		assertEquals("20.75", result.toPlainString());
 		assertNotSame(result, money);
 		validateImmutability();				
 	}
-	
+
+	@Test
 	public void testAdditionWithIncompatibleCurrency(){
 		Money addend = new Money("4", "USD");
 		Exception expectedException = null;
@@ -88,14 +82,16 @@ public class MoneyTest extends TestCase {
 		assertNotNull(expectedException);
 		assertTrue(expectedException instanceof IllegalArgumentException);		
 	}
-	
+
+	@Test
 	public void testSubtraction(){
 		Money result = money.subtract(new Money("2", CURRENCY_CODE));
-		assertEquals(amount-2, result.asDouble());
+		assertEquals(new BigDecimal("13.75"), result.asBigDecimal());
 		assertNotSame(result, money);
 		validateImmutability();		
 	}
-	
+
+	@Test
 	public void testSubtractionWithDifferentCurrency(){
 		Money addend = new Money("4", "USD");
 		Exception expectedException = null;
@@ -107,55 +103,46 @@ public class MoneyTest extends TestCase {
 		assertNotNull(expectedException);
 		assertTrue(expectedException instanceof IllegalArgumentException);		
 	}
-	
+
+	@Test
 	public void testMultiplication(){
-		Money result = money.multiply(new Money("3", CURRENCY_CODE));
-		assertEquals(amount*3, result.asDouble());
-		assertNotSame(result, money);
+		Money result = money.multiply(new Money(BigDecimal.TEN, Currency.getInstance(CURRENCY_CODE)));
+		assertThat("157.50").isEqualTo(result.toPlainString());
+		assertThat(result).isNotEqualTo(money);
 		validateImmutability();
 	}
-	
+
+	@Test(expected = IllegalArgumentException.class)
 	public void testMultiplicationWithDifferentCurrencies(){
 		Money addend = new Money("4", "USD");
-		Exception expectedException = null;
-		try{
-			money.multiply(addend);
-		} catch (Exception e) {
-			expectedException = e;
-		}
-		assertNotNull(expectedException);
-		assertTrue(expectedException instanceof IllegalArgumentException);		
+		money.multiply(addend);
 	}
-	
+
+	@Test
 	public void testDivision(){
 		Money result = money.divide(2);
-		assertEquals(amount/2, result.asDouble());		
-		assertNotSame(result, money);
+		assertThat(result.toPlainString()).isEqualTo("7.88");
+		assertThat(result).isNotEqualTo(money);
 		validateImmutability();
 	}
-			
+
+	@Test(expected = IllegalArgumentException.class)
 	public void testDivisionWithDifferentCurrency(){
 		Money addend = new Money("4", "USD");
-		Exception expectedException = null;
-		try{
-			money.divide(addend);
-		} catch (Exception e) {
-			expectedException = e;
-		}
-		assertNotNull(expectedException);
-		assertTrue(expectedException instanceof IllegalArgumentException);		
+		money.divide(addend);
 	}
-		
+
+	@Test
 	public void testNegation(){
 		Money result = money.negate();
-		assertEquals(amount*-1, result.asDouble());
-		
+		assertThat(result.toPlainString()).startsWith("-");
 		validateImmutability();
 	}
-	
+
+	@Test
 	public void testPrinting(){
 		assertEquals(money.asString(), money.toPlainString());
-		assertEquals("15.75", money.asString());
+		assertEquals(amountString, money.asString());
 		
 		// the unicode for Euro symbol is \u20AC
 		String symbol = Currency.getInstance("EUR").getSymbol(Locale.GERMAN);
@@ -167,10 +154,10 @@ public class MoneyTest extends TestCase {
 		Money some = new Money("9.7469");
 		assertEquals("9.75", some.asString());
 	}
-	
+
 	public void validateImmutability(){
 		assertEquals(mHashcode, money.hashCode());
-		assertEquals(amount, money.asDouble());
+		assertEquals(amountString, money.toPlainString());
 		assertEquals(CURRENCY_CODE, money.getCurrency().getCurrencyCode());
 	}
 	

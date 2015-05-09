@@ -4,7 +4,7 @@ buildscript {
 		jcenter()
 	}
 	dependencies {
-		classpath 'com.android.tools.build:gradle:1.1.0'
+		classpath 'com.android.tools.build:gradle:1.2.2'
 		classpath 'com.crashlytics.tools.gradle:crashlytics-gradle:1.+'
 	}
 }
@@ -15,6 +15,7 @@ allprojects {
         maven { url "https://repo.commonsware.com.s3.amazonaws.com"}
 		maven { url 'http://download.crashlytics.com/maven' }
         maven { url "https://jitpack.io" }
+		maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
         jcenter()		
         mavenCentral()
     }
