@@ -28,6 +28,7 @@
     <string name="key_google_drive_app_folder_id">google_drive_app_folder</string>
     <string name="key_report_currency">report_currency</string>
     <string name="key_enable_crashlytics">enable_crashlytics</string>
+    <string name="key_use_account_color">use_account_color</string>
 
     <string-array name="key_transaction_type_values">
         <item>CREDIT</item>

@@ -17,9 +17,7 @@
 package org.gnucash.android.ui.settings;
 
 import android.annotation.TargetApi;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.PreferenceFragment;
@@ -29,13 +27,6 @@ import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockPreferenceActivity;
 
 import org.gnucash.android.R;
-import org.gnucash.android.db.AccountsDbAdapter;
-import org.gnucash.android.model.Money;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Currency;
-import java.util.List;
 
 /**
  * Report settings fragment inside the Settings activity
@@ -54,52 +45,17 @@ public class ReportPreferenceFragment extends PreferenceFragment implements OnPr
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setTitle(R.string.title_report_prefs);
 
-        List<Currency> currencyList = AccountsDbAdapter.getInstance().getCurrencies();
-        int size = currencyList.size();
-        String[] currencyCodes = new String[size];
-        for (Currency currency : currencyList) {
-            currencyCodes[--size] = currency.getCurrencyCode();
-        }
-
-        ListPreference pref = (ListPreference) findPreference(getString(R.string.key_report_currency));
-        pref.setEntryValues(currencyCodes);
-        pref.setOnPreferenceChangeListener(this);
-
-
-        List<String> currencyNames = new ArrayList<>();
-        String[] allCurrencyNames = getResources().getStringArray(R.array.currency_names);
-        List<String> allCurrencyCodes = Arrays.asList(getResources().getStringArray(R.array.key_currency_codes));
-        for (String code : currencyCodes) {
-            currencyNames.add(allCurrencyNames[allCurrencyCodes.indexOf(code)]);
-        }
-
-        pref.setEntries(currencyNames.toArray(new String[currencyNames.size()]));
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        String keyChartCurrency = getString(R.string.key_report_currency);
-        Preference pref = findPreference(keyChartCurrency);
-        String chartCurrency = sharedPreferences.getString(keyChartCurrency, null);
-        if (chartCurrency != null && !chartCurrency.trim().isEmpty()) {
-            pref.setSummary(chartCurrency);
-        } else {
-            pref.setSummary(sharedPreferences.getString(getString(R.string.key_default_currency), Money.DEFAULT_CURRENCY_CODE));
-        }
-
+        findPreference(getString(R.string.key_use_account_color)).setOnPreferenceChangeListener(this);
     }
 
     @Override
     public boolean onPreferenceChange(Preference preference, Object newValue) {
-        preference.setSummary(newValue.toString());
-        PreferenceManager.getDefaultSharedPreferences(getActivity())
-                .edit()
-                .putString(getString(R.string.key_report_currency), newValue.toString())
-                .commit();
-
+        if (preference.getKey().equals(getString(R.string.key_use_account_color))) {
+            PreferenceManager.getDefaultSharedPreferences(getActivity())
+                    .edit()
+                    .putBoolean(getString(R.string.key_use_account_color), Boolean.valueOf(newValue.toString()))
+                    .commit();
+        }
         return true;
     }
 

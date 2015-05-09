@@ -21,27 +21,57 @@
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+
     <LinearLayout
-        android:orientation="horizontal"
+        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="center_horizontal|center_vertical">
+        android:gravity="center_vertical">
 
-        <ImageButton
-            android:id="@+id/bar_chart_button"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:src="@drawable/chart_bar_button" />
-        <ImageButton
-            android:id="@+id/pie_chart_button"
-            android:layout_width="wrap_content"
+            android:gravity="center_horizontal">
+
+            <ImageButton
+                android:id="@+id/bar_chart_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/chart_bar_button" />
+            <ImageButton
+                android:id="@+id/pie_chart_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/chart_pie_button" />
+            <ImageButton
+                android:id="@+id/line_chart_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/chart_line_button" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:src="@drawable/chart_pie_button" />
-        <ImageButton
-            android:id="@+id/line_chart_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/chart_line_button" />
+            android:gravity="center_horizontal"
+            android:layout_marginTop="30dp">
+
+            <TextView
+                android:id="@+id/textView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance ="?android:attr/textAppearanceMedium"
+                android:text="@string/label_report_currency" />
+
+            <Spinner
+                android:id="@+id/report_currency_spinner"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
 
     </LinearLayout>
 

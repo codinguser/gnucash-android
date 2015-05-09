@@ -17,8 +17,9 @@
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
     <PreferenceCategory android:title="@string/title_report_prefs">
-        <ListPreference android:key="@string/key_report_currency"
-                        android:title="@string/title_report_currency" />
+        <CheckBoxPreference android:key="@string/key_use_account_color"
+                            android:title="@string/title_use_account_color"
+                            android:summary="@string/summary_use_account_color" />
     </PreferenceCategory>
 
 </PreferenceScreen>

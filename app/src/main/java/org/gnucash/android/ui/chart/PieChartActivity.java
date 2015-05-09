@@ -103,6 +103,8 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
 
     private boolean mChartDataPresent = true;
 
+    private boolean mUseAccountColor = true;
+
     private double mSlicePercentThreshold = 6;
 
     private String mCurrencyCode;
@@ -113,6 +115,9 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
         setContentView(R.layout.activity_pie_chart);
         super.onCreate(savedInstanceState);
         getSupportActionBar().setTitle(R.string.title_pie_chart);
+
+        mUseAccountColor = PreferenceManager.getDefaultSharedPreferences(getApplicationContext())
+                .getBoolean(getString(R.string.key_use_account_color), false);
 
         mPreviousMonthButton = (ImageButton) findViewById(R.id.previous_month_chart_button);
         mNextMonthButton = (ImageButton) findViewById(R.id.next_month_chart_button);
@@ -127,6 +132,7 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
         mChart = (PieChart) findViewById(R.id.pie_chart);
         mChart.setCenterTextSize(18);
         mChart.setDescription("");
+        mChart.getLegend().setEnabled(false);
         mChart.setOnChartValueSelectedListener(this);
 
         setUpSpinner();
@@ -193,7 +199,7 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
         List<Account> accountList = mAccountsDbAdapter.getSimpleAccountList(
                 AccountEntry.COLUMN_TYPE + " = ? AND " + AccountEntry.COLUMN_PLACEHOLDER + " = ?",
                 new String[]{ mAccountType.name(), "0" }, null);
-        List<String> uidList = new ArrayList<String>();
+        List<String> uidList = new ArrayList<>();
         for (Account account : accountList) {
             uidList.add(account.getUID());
         }
@@ -208,8 +214,8 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
 
         double otherSlice = 0;
         PieDataSet dataSet = new PieDataSet(null, "");
-        ArrayList<String> names = new ArrayList<String>();
-        List<String> skipUUID = new ArrayList<String>();
+        List<String> names = new ArrayList<>();
+        List<String> skipUUID = new ArrayList<>();
         for (Account account : getCurrencyCodeToAccountMap(accountList).get(mCurrencyCode)) {
             if (mAccountsDbAdapter.getSubAccountCount(account.getUID()) > 0) {
                 skipUUID.addAll(mAccountsDbAdapter.getDescendantAccountUIDs(account.getUID(), null, null));
@@ -226,6 +232,11 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
 
                 if (balance / sum * 100 > mSlicePercentThreshold) {
                     dataSet.addEntry(new Entry((float) balance, dataSet.getEntryCount()));
+                    if (mUseAccountColor) {
+                        dataSet.getColors().set(dataSet.getColors().size() - 1, (account.getColorHexCode() != null)
+                                ? Color.parseColor(account.getColorHexCode())
+                                : COLORS[(dataSet.getEntryCount() - 1) % COLORS.length]);
+                    }
                     dataSet.addColor(COLORS[(dataSet.getEntryCount() - 1) % COLORS.length]);
                     names.add(account.getName());
                 } else {
@@ -301,9 +312,9 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
      * Sorts the pie's slices in ascending order
      */
     private void bubbleSort() {
-        ArrayList<String> labels = mChart.getData().getXVals();
-        ArrayList<Entry> values = mChart.getData().getDataSet().getYVals();
-        ArrayList<Integer> colors = mChart.getData().getDataSet().getColors();
+        List<String> labels = mChart.getData().getXVals();
+        List<Entry> values = mChart.getData().getDataSet().getYVals();
+        List<Integer> colors = mChart.getData().getDataSet().getColors();
         float tmp1;
         String tmp2;
         Integer tmp3;
@@ -336,7 +347,7 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
      */
     private void setUpSpinner() {
         Spinner spinner = (Spinner) findViewById(R.id.chart_data_spinner);
-        ArrayAdapter<AccountType> dataAdapter = new ArrayAdapter<AccountType>(this,
+        ArrayAdapter<AccountType> dataAdapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_spinner_item,
                 Arrays.asList(AccountType.EXPENSE, AccountType.INCOME));
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -349,7 +360,6 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
                 mLatestTransactionDate = new LocalDateTime(mTransactionsDbAdapter.getTimestampOfLatestTransaction(mAccountType, mCurrencyCode));
                 mChartDate = mLatestTransactionDate;
                 setData(false);
-                mChart.getLegend().setEnabled(false);
             }
 
             @Override

@@ -34,6 +34,7 @@ import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.github.mikephil.charting.utils.Highlight;
+import com.github.mikephil.charting.utils.LargeValueFormatter;
 
 import org.gnucash.android.R;
 import org.gnucash.android.db.AccountsDbAdapter;
@@ -75,8 +76,8 @@ public class BarChartActivity extends PassLockActivity implements OnChartValueSe
 
     private BarChart mChart;
     private AccountsDbAdapter mAccountsDbAdapter = AccountsDbAdapter.getInstance();
-    private Map<AccountType, Long> mEarliestTimestampsMap = new HashMap<AccountType, Long>();
-    private Map<AccountType, Long> mLatestTimestampsMap = new HashMap<AccountType, Long>();
+    private Map<AccountType, Long> mEarliestTimestampsMap = new HashMap<>();
+    private Map<AccountType, Long> mLatestTimestampsMap = new HashMap<>();
     private long mEarliestTransactionTimestamp;
     private long mLatestTransactionTimestamp;
     private boolean mTotalPercentageMode = true;
@@ -97,13 +98,15 @@ public class BarChartActivity extends PassLockActivity implements OnChartValueSe
         ((LinearLayout) findViewById(R.id.chart)).addView(mChart);
         mChart.setOnChartValueSelectedListener(this);
         mChart.setDescription("");
+        mChart.getXAxis().setDrawGridLines(false);
+        mChart.getAxisRight().setEnabled(false);
+        mChart.getAxisLeft().enableGridDashedLine(4.0f, 4.0f, 0);
         mChart.setDrawValuesForWholeStack(false);
-        mChart.setDrawBarShadow(false);
         mChart.getAxisLeft().setValueFormatter(new LargeValueFormatter(mCurrency.getSymbol(Locale.getDefault())));
         mChart.getAxisRight().setEnabled(false);
 
         // below we can add/remove displayed account's types
-        mChart.setData(getData(new ArrayList<AccountType>(Arrays.asList(AccountType.INCOME, AccountType.EXPENSE))));
+        mChart.setData(getData(new ArrayList<>(Arrays.asList(AccountType.INCOME, AccountType.EXPENSE))));
 
         Legend legend = mChart.getLegend();
         legend.setForm(Legend.LegendForm.CIRCLE);
@@ -126,7 +129,7 @@ public class BarChartActivity extends PassLockActivity implements OnChartValueSe
      * @param accountTypeList account's types which will be displayed
      * @return a {@code BarData} instance that represents a user data
      */
-    private BarData getData(ArrayList<AccountType> accountTypeList) {
+    private BarData getData(List<AccountType> accountTypeList) {
         calculateEarliestAndLatestTimestamps(accountTypeList);
 
         LocalDateTime startDate = new LocalDateTime(mEarliestTransactionTimestamp).withDayOfMonth(1).withMillisOfDay(0);
@@ -135,9 +138,9 @@ public class BarChartActivity extends PassLockActivity implements OnChartValueSe
         Log.d(TAG, "X-axis end date: " + endDate.toString("dd MM yyyy"));
         int months = Months.monthsBetween(startDate, endDate).getMonths();
 
-        ArrayList<BarDataSet> dataSets = new ArrayList<BarDataSet>();
-        ArrayList<BarEntry> values = new ArrayList<BarEntry>();
-        ArrayList<String> xValues = new ArrayList<String>();
+        List<BarDataSet> dataSets = new ArrayList<>();
+        List<BarEntry> values = new ArrayList<>();
+        List<String> xValues = new ArrayList<>();
         for (int i = 0; i <= months; i++) {
             xValues.add(startDate.toString(X_AXIS_PATTERN));
 
@@ -189,7 +192,7 @@ public class BarChartActivity extends PassLockActivity implements OnChartValueSe
             return;
         }
 
-        List<Long> timestamps = new ArrayList<Long>(mEarliestTimestampsMap.values());
+        List<Long> timestamps = new ArrayList<>(mEarliestTimestampsMap.values());
         timestamps.addAll(mLatestTimestampsMap.values());
         Collections.sort(timestamps);
         mEarliestTransactionTimestamp = timestamps.get(0);
@@ -203,9 +206,9 @@ public class BarChartActivity extends PassLockActivity implements OnChartValueSe
      * @return a map with an account type as key and correspond accounts UIDs as value
      */
     private Map<AccountType, List<String>> getAccountTypeToAccountUidMap(List<AccountType> accountTypeList) {
-        Map<AccountType, List<String>> accountMap = new HashMap<AccountType, List<String>>();
+        Map<AccountType, List<String>> accountMap = new HashMap<>();
         for (AccountType accountType : accountTypeList) {
-            List<String> accountUIDList = new ArrayList<String>();
+            List<String> accountUIDList = new ArrayList<>();
             for (Account account : mAccountsDbAdapter.getSimpleAccountList()) {
                 if (account.getAccountType() == accountType
                         && !account.isPlaceholderAccount()
@@ -223,8 +226,8 @@ public class BarChartActivity extends PassLockActivity implements OnChartValueSe
      * @return a {@code BarData} instance for situation when no user data available
      */
     private BarData getEmptyData() {
-        ArrayList<String> xValues = new ArrayList<String>();
-        ArrayList<BarEntry> yValues = new ArrayList<BarEntry>();
+        List<String> xValues = new ArrayList<>();
+        List<BarEntry> yValues = new ArrayList<>();
         for (int i = 0; i < NO_DATA_BAR_COUNTS; i++) {
             xValues.add("");
             yValues.add(new BarEntry(i % 2 == 0 ? 5f : 4.5f, i));
@@ -233,7 +236,7 @@ public class BarChartActivity extends PassLockActivity implements OnChartValueSe
         set.setDrawValues(false);
         set.setColor(NO_DATA_COLOR);
 
-        return new BarData(xValues, new ArrayList<BarDataSet>(Arrays.asList(set)));
+        return new BarData(xValues, Collections.singletonList(set));
     }
 
     @Override
