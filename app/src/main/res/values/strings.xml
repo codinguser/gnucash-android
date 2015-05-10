@@ -353,6 +353,7 @@
     <string name="toast_recurring_transaction_deleted">Successfully deleted recurring transaction</string>
     <string name="label_placeholder_account">Placeholder account</string>
     <string name="label_default_transfer_account">Default Transfer Account</string>
+    <string name="label_default_transfer_account_for_subaccounts">Set also for all sub-accounts</string>
     <plurals name="label_sub_accounts">
         <item quantity="one">%d sub-account</item>
         <item quantity="other">%d sub-accounts</item>

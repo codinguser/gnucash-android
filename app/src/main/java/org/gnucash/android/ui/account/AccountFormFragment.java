@@ -172,6 +172,11 @@ public class AccountFormFragment extends SherlockFragment {
     private Spinner mDefaulTransferAccountSpinner;
 
     /**
+     * CheckBox for applying the default transfer account to subaccounts
+     */
+    private CheckBox mDefaultTransferAccountToSubCheckbox;
+
+    /**
      * Checkbox indicating if account is a placeholder account
      */
     private CheckBox mPlaceholderCheckBox;
@@ -266,7 +271,7 @@ public class AccountFormFragment extends SherlockFragment {
 
 		mParentCheckBox = (CheckBox) view.findViewById(R.id.checkbox_parent_account);
 		mParentCheckBox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-			
+
 			@Override
 			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 				mParentAccountSpinner.setEnabled(isChecked);
@@ -276,11 +281,15 @@ public class AccountFormFragment extends SherlockFragment {
         mDefaulTransferAccountSpinner = (Spinner) view.findViewById(R.id.input_default_transfer_account);
         mDefaulTransferAccountSpinner.setEnabled(false);
 
+        mDefaultTransferAccountToSubCheckbox = (CheckBox) view.findViewById(R.id.checkbox_default_transfer_account_for_subaccounts);
+        mDefaultTransferAccountToSubCheckbox.setEnabled(false);
+
         mDefaultTransferAccountCheckBox = (CheckBox) view.findViewById(R.id.checkbox_default_transfer_account);
         mDefaultTransferAccountCheckBox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
                 mDefaulTransferAccountSpinner.setEnabled(isChecked);
+                mDefaultTransferAccountToSubCheckbox.setEnabled(isChecked);
             }
         });
 
@@ -748,7 +757,7 @@ public class AccountFormFragment extends SherlockFragment {
 
         long parentAccountId = mParentAccountUID == null ? -1 : mAccountsDbAdapter.getID(mParentAccountUID);
         // update full names
-        if (nameChanged || mDescendantAccountUIDs == null || newParentAccountId != parentAccountId) {
+        if (nameChanged || mDescendantAccountUIDs == null || newParentAccountId != parentAccountId || mDefaultTransferAccountToSubCheckbox.isChecked()) {
             // current account name changed or new Account or parent account changed
             String newAccountFullName;
             if (newParentAccountId == mRootAccountId){
@@ -760,8 +769,8 @@ public class AccountFormFragment extends SherlockFragment {
             }
             mAccount.setFullName(newAccountFullName);
             if (mDescendantAccountUIDs != null) {
-                // modifying existing account, e.t. name changed and/or parent changed
-                if ((nameChanged || parentAccountId != newParentAccountId) && mDescendantAccountUIDs.size() > 0) {
+                // modifying existing account, e.t. name changed and/or parent changed and/or setting default transfer account for subaccounts
+                if ((nameChanged || parentAccountId != newParentAccountId || mDefaultTransferAccountToSubCheckbox.isChecked()) && mDescendantAccountUIDs.size() > 0) {
                     // parent change, update all full names of descent accounts
                     accountsToUpdate.addAll(mAccountsDbAdapter.getSimpleAccountList(
                             DatabaseSchema.AccountEntry.COLUMN_UID + " IN ('" +
@@ -785,6 +794,10 @@ public class AccountFormFragment extends SherlockFragment {
                                         AccountsDbAdapter.ACCOUNT_NAME_SEPARATOR +
                                         acct.getName()
                         );
+                    }
+                    if (mDefaultTransferAccountToSubCheckbox.isChecked()) {
+                        long id = mDefaulTransferAccountSpinner.getSelectedItemId();
+                        acct.setDefaultTransferAccountUID(mAccountsDbAdapter.getAccountUID(id));
                     }
                 }
             }

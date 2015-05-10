@@ -128,5 +128,12 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
         </LinearLayout>
+
+        <CheckBox android:id="@+id/checkbox_default_transfer_account_for_subaccounts"
+                  android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+                  android:layout_marginBottom="@dimen/form_row_bottom_margin"
+                  android:text="@string/label_default_transfer_account_for_subaccounts" />
+
     </LinearLayout>
 </ScrollView>
