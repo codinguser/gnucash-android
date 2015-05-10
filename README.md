@@ -1,3 +1,7 @@
+<a href="https://travis-ci.org/codinguser/gnucash-android"
+<img src="https://travis-ci.org/codinguser/gnucash-android.svg?branch=develop" alt="Travis build status" />
+</a>
+
 # Introduction
 
 GnuCash Android is a companion expense-tracker application for GnuCash (desktop) designed for Android.
