@@ -76,7 +76,8 @@ public class GnuCashApplication extends Application{
         GnuCashApplication.context = getApplicationContext();
         //TODO: in production, only start logging if user gave consent
 
-        Crashlytics.start(this);
+        if (!BuildConfig.DEBUG)
+            Crashlytics.start(this);
 
         mDbHelper = new DatabaseHelper(getApplicationContext());
         try {

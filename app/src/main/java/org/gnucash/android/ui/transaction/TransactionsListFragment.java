@@ -215,11 +215,6 @@ public class TransactionsListFragment extends SherlockListFragment implements
 	}
 	
 	@Override
-	public void onDestroy() {
-		super.onDestroy();
-	}
-	
-	@Override
 	public void onListItemClick(ListView l, View v, int position, long id) {
 		super.onListItemClick(l, v, position, id);
 		if (mInEditMode){

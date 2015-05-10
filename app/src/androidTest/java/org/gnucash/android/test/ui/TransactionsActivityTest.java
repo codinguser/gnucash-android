@@ -460,10 +460,10 @@ public class TransactionsActivityTest extends
 	}
 
 	@Override
-	protected void tearDown() throws Exception {	
-		mAccountsDbAdapter.deleteAllRecords();
-
+	protected void tearDown() throws Exception {
 		mSolo.finishOpenedActivities();
+		mSolo.sleep(1000); //wait for activities to finish before clearing db
+		mAccountsDbAdapter.deleteAllRecords();
 		super.tearDown();
 	}
 }

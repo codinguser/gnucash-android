@@ -45,6 +45,7 @@ import java.util.Currency;
 import java.util.List;
 
 import static org.assertj.android.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class AccountsActivityTest extends ActivityInstrumentationTestCase2<AccountsActivity> {
 	private static final String DUMMY_ACCOUNT_CURRENCY_CODE = "USD";
@@ -181,7 +182,8 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
         mSolo.waitForText(accountName);
 
         mSolo.clickLongOnText(accountName);
-        clickSherlockActionBarItem(R.id.context_menu_edit_accounts);
+        mSolo.clickOnView(getActivity().findViewById(R.id.context_menu_edit_accounts));
+//        clickSherlockActionBarItem(R.id.context_menu_edit_accounts);
         mSolo.waitForView(EditText.class);
 
         mSolo.clickOnCheckBox(1);
@@ -194,8 +196,8 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
         Account editedAccount = mAccountsDbAdapter.getAccount(accountUID);
         String parentUID = editedAccount.getParentUID();
 
-        assertNotNull(parentUID);
-        assertEquals(DUMMY_ACCOUNT_UID, parentUID);
+        assertThat(parentUID).isNotNull();
+        assertThat(DUMMY_ACCOUNT_UID).isEqualTo(parentUID);
     }
 
 	public void testEditAccount(){
@@ -292,9 +294,10 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
 	
 	
 	protected void tearDown() throws Exception {
-		mAccountsDbAdapter.deleteAllRecords();
+        mSolo.finishOpenedActivities();
+        mSolo.sleep(1000);
+        mAccountsDbAdapter.deleteAllRecords();
 
-		mSolo.finishOpenedActivities();		
 		super.tearDown();
 	}
 
