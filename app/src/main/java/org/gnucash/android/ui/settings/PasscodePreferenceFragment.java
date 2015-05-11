@@ -51,6 +51,10 @@ public class PasscodePreferenceFragment extends PreferenceFragment {
      * Request code for disabling passcode
      */
     public static final int REQUEST_DISABLE_PASSCODE = 3;
+    /**
+     * Request code for changing passcode
+     */
+    public static final int REQUEST_CHANGE_PASSCODE = 4;
 
     private SharedPreferences.Editor editor;
     private CheckBoxPreference checkBoxPreference;
@@ -87,8 +91,8 @@ public class PasscodePreferenceFragment extends PreferenceFragment {
                             passIntent.putExtra(UxArgument.DISABLE_PASSCODE, UxArgument.DISABLE_PASSCODE);
                             startActivityForResult(passIntent, REQUEST_DISABLE_PASSCODE);
                         }
-                        editor.putBoolean(UxArgument.ENABLED_PASSCODE, (Boolean) newValue);
-                        editor.commit();
+//                        editor.putBoolean(UxArgument.ENABLED_PASSCODE, (Boolean) newValue);
+//                        editor.commit();
                         return true;
                     }
                 });
@@ -96,7 +100,7 @@ public class PasscodePreferenceFragment extends PreferenceFragment {
                 .setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                     @Override
                     public boolean onPreferenceClick(Preference preference) {
-                        startActivityForResult(intent, PASSCODE_REQUEST_CODE);
+                        startActivityForResult(intent, REQUEST_CHANGE_PASSCODE);
                         return true;
                     }
                 });
@@ -124,6 +128,14 @@ public class PasscodePreferenceFragment extends PreferenceFragment {
                 boolean flag = (resultCode == Activity.RESULT_OK) ? false : true;
                 editor.putBoolean(UxArgument.ENABLED_PASSCODE, flag);
                 checkBoxPreference.setChecked(flag);
+                break;
+            case REQUEST_CHANGE_PASSCODE:
+                if (resultCode == Activity.RESULT_OK && data != null) {
+                    editor.putString(UxArgument.PASSCODE, data.getStringExtra(UxArgument.PASSCODE));
+                    editor.putBoolean(UxArgument.ENABLED_PASSCODE, true);
+                    Toast.makeText(getActivity(), R.string.toast_passcode_set, Toast.LENGTH_SHORT).show();
+                    checkBoxPreference.setTitle(getString(R.string.title_passcode_enabled));
+                }
                 break;
         }
         editor.commit();

@@ -18,6 +18,7 @@ package org.gnucash.android.ui.passcode;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -36,14 +37,40 @@ public class PasscodePreferenceActivity extends SherlockFragmentActivity
     private boolean reenter = false;
     private String passcode;
 
+    private boolean checkOldPassCode;
+
+    private TextView passCodeTextView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.passcode_lockscreen);
+
+        passCodeTextView= (TextView) findViewById(R.id.passcode_label);
+
+        checkOldPassCode = PreferenceManager.getDefaultSharedPreferences(getApplicationContext())
+                .getBoolean(UxArgument.ENABLED_PASSCODE, false);
+
+        if (checkOldPassCode) {
+            passCodeTextView.setText("Enter your old passcode");
+        }
     }
 
     @Override
     public void onPasscodeEntered(String pass) {
+        String passCode = PreferenceManager.getDefaultSharedPreferences(getApplicationContext())
+                .getString(UxArgument.PASSCODE, "");
+
+        if (checkOldPassCode) {
+            if (pass.equals(passCode)) {
+                checkOldPassCode = false;
+                passCodeTextView.setText("Enter your new passcode");
+            } else {
+                Toast.makeText(this, R.string.toast_wrong_passcode, Toast.LENGTH_SHORT).show();
+            }
+            return;
+        }
+
         if (reenter) {
             if (passcode.equals(pass)) {
                 setResult(RESULT_OK, new Intent().putExtra(UxArgument.PASSCODE, pass));
@@ -58,4 +85,5 @@ public class PasscodePreferenceActivity extends SherlockFragmentActivity
             Toast.makeText(this, R.string.toast_confirm_passcode, Toast.LENGTH_SHORT).show();
         }
     }
+
 }
