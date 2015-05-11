@@ -159,8 +159,8 @@ public class ExportTransactionsTest extends
 
 		mSolo.clickOnText(ExportFormat.XML.name());
 		mSolo.clickOnView(mSolo.getView(R.id.input_recurrence));
-
-		mSolo.clickOnToggleButton("OFF");
+		
+		mSolo.clickOnButton(0);
 		mSolo.clickOnText("Done");
 		mSolo.waitForDialogToClose();
 
