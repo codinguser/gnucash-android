@@ -16,6 +16,7 @@
 
 package org.gnucash.android.test.ui;
 
+import android.content.ContentValues;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -34,6 +35,7 @@ import com.robotium.solo.Solo;
 import org.gnucash.android.R;
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.DatabaseHelper;
+import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.db.SplitsDbAdapter;
 import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.model.*;
@@ -103,8 +105,8 @@ public class TransactionsActivityTest extends
 
         long id1 = mAccountsDbAdapter.addAccount(account);
         long id2 = mAccountsDbAdapter.addAccount(account2);
-        assertTrue(id1 > 0);
-        assertTrue(id2 > 0);
+        assertThat(id1).isGreaterThan(0);
+        assertThat(id2).isGreaterThan(0);
 
         mTransaction = new Transaction(TRANSACTION_NAME);
         mTransaction.setNote("What up?");
@@ -209,7 +211,7 @@ public class TransactionsActivityTest extends
 
     //TODO: Add test for only one account but with double-entry enabled
 
-	public void atestAddTransaction(){
+	public void testAddTransaction(){
         setDoubleEntryEnabled(true);
         mSolo.waitForText(TRANSACTION_NAME);
 
@@ -309,6 +311,29 @@ public class TransactionsActivityTest extends
 		assertThat(transactionTypeButton).isNotChecked();
         clickSherlockActionBarItem(R.id.menu_cancel);
         mSolo.goBack();
+	}
+
+	public void testChildAccountsShouldUseParentTransferAccountSetting(){
+		Account transferAccount = new Account("New Transfer Acct");
+		mAccountsDbAdapter.addAccount(transferAccount);
+
+		Account childAccount = new Account("Child Account");
+		childAccount.setParentUID(DUMMY_ACCOUNT_UID);
+		mAccountsDbAdapter.addAccount(childAccount);
+		ContentValues contentValues = new ContentValues();
+		contentValues.put(DatabaseSchema.AccountEntry.COLUMN_DEFAULT_TRANSFER_ACCOUNT_UID, transferAccount.getUID());
+		mAccountsDbAdapter.updateRecord(DUMMY_ACCOUNT_UID, contentValues);
+
+
+		Intent intent = new Intent(mSolo.getCurrentActivity(), TransactionsActivity.class);
+		intent.setAction(Intent.ACTION_INSERT_OR_EDIT);
+		intent.putExtra(UxArgument.SELECTED_ACCOUNT_UID, childAccount.getUID());
+		getActivity().startActivity(intent);
+		mSolo.sleep(1000);
+		Spinner spinner = (Spinner) mSolo.getView(R.id.input_double_entry_accounts_spinner);
+
+		long transferAccountID = mAccountsDbAdapter.getID(transferAccount.getUID());
+		assertThat(transferAccountID).isEqualTo(spinner.getSelectedItemId());
 	}
 
 	public void testToggleTransactionType(){

@@ -273,7 +273,8 @@ public class TransactionsActivity extends PassLockActivity implements
 
         setupActionBarNavigation();
 
-		if (getIntent().getAction().equals(Intent.ACTION_INSERT_OR_EDIT)) {
+        final String action = getIntent().getAction();
+		if (action.equals(Intent.ACTION_INSERT_OR_EDIT) || action.equals(Intent.ACTION_INSERT)) {
             mPager.setVisibility(View.GONE);
             mTitlePageIndicator.setVisibility(View.GONE);
 

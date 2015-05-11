@@ -30,14 +30,14 @@ import static org.junit.Assert.*;
 public class MoneyTest{
 
 	private static final String CURRENCY_CODE = "EUR";
-	private Money 	money;
+	private Money mMoneyInEur;
 	private int 	mHashcode;
 	private String amountString = "15.75";
 
 	@Before
 	public void setUp() throws Exception {
-		money = new Money(new BigDecimal(amountString), Currency.getInstance(CURRENCY_CODE));
-		mHashcode = money.hashCode();
+		mMoneyInEur = new Money(new BigDecimal(amountString), Currency.getInstance(CURRENCY_CODE));
+		mHashcode = mMoneyInEur.hashCode();
 	}
 
 	@Test
@@ -64,91 +64,77 @@ public class MoneyTest{
 
 	@Test
 	public void testAddition(){
-		Money result = money.add(new Money("5", CURRENCY_CODE));
+		Money result = mMoneyInEur.add(new Money("5", CURRENCY_CODE));
 		assertEquals("20.75", result.toPlainString());
-		assertNotSame(result, money);
+		assertNotSame(result, mMoneyInEur);
 		validateImmutability();				
 	}
 
-	@Test
+	@Test(expected = IllegalArgumentException.class)
 	public void testAdditionWithIncompatibleCurrency(){
 		Money addend = new Money("4", "USD");
-		Exception expectedException = null;
-		try{
-			money.add(addend);
-		} catch (Exception e) {
-			expectedException = e;
-		}
-		assertNotNull(expectedException);
-		assertTrue(expectedException instanceof IllegalArgumentException);		
+		mMoneyInEur.add(addend);
 	}
 
 	@Test
 	public void testSubtraction(){
-		Money result = money.subtract(new Money("2", CURRENCY_CODE));
+		Money result = mMoneyInEur.subtract(new Money("2", CURRENCY_CODE));
 		assertEquals(new BigDecimal("13.75"), result.asBigDecimal());
-		assertNotSame(result, money);
+		assertNotSame(result, mMoneyInEur);
 		validateImmutability();		
 	}
 
-	@Test
+	@Test(expected = IllegalArgumentException.class)
 	public void testSubtractionWithDifferentCurrency(){
 		Money addend = new Money("4", "USD");
-		Exception expectedException = null;
-		try{
-			money.subtract(addend);
-		} catch (Exception e) {
-			expectedException = e;
-		}
-		assertNotNull(expectedException);
-		assertTrue(expectedException instanceof IllegalArgumentException);		
+		mMoneyInEur.subtract(addend);
 	}
 
 	@Test
 	public void testMultiplication(){
-		Money result = money.multiply(new Money(BigDecimal.TEN, Currency.getInstance(CURRENCY_CODE)));
+		Money result = mMoneyInEur.multiply(new Money(BigDecimal.TEN, Currency.getInstance(CURRENCY_CODE)));
 		assertThat("157.50").isEqualTo(result.toPlainString());
-		assertThat(result).isNotEqualTo(money);
+		assertThat(result).isNotEqualTo(mMoneyInEur);
 		validateImmutability();
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void testMultiplicationWithDifferentCurrencies(){
 		Money addend = new Money("4", "USD");
-		money.multiply(addend);
+		mMoneyInEur.multiply(addend);
 	}
 
 	@Test
 	public void testDivision(){
-		Money result = money.divide(2);
+		Money result = mMoneyInEur.divide(2);
 		assertThat(result.toPlainString()).isEqualTo("7.88");
-		assertThat(result).isNotEqualTo(money);
+		assertThat(result).isNotEqualTo(mMoneyInEur);
 		validateImmutability();
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void testDivisionWithDifferentCurrency(){
 		Money addend = new Money("4", "USD");
-		money.divide(addend);
+		mMoneyInEur.divide(addend);
 	}
 
 	@Test
 	public void testNegation(){
-		Money result = money.negate();
+		Money result = mMoneyInEur.negate();
 		assertThat(result.toPlainString()).startsWith("-");
 		validateImmutability();
 	}
 
 	@Test
 	public void testPrinting(){
-		assertEquals(money.asString(), money.toPlainString());
-		assertEquals(amountString, money.asString());
+		assertEquals(mMoneyInEur.asString(), mMoneyInEur.toPlainString());
+		assertEquals(amountString, mMoneyInEur.asString());
 		
 		// the unicode for Euro symbol is \u20AC
 		String symbol = Currency.getInstance("EUR").getSymbol(Locale.GERMAN);
 		String symbolUS = Currency.getInstance("EUR").getSymbol(Locale.US);
-		assertEquals("15,75 " + symbol, money.formattedString(Locale.GERMAN));		
-		assertEquals("15.75 " + symbolUS, money.formattedString(Locale.US));
+		assertEquals("15,75 " + symbol, mMoneyInEur.formattedString(Locale.GERMAN));
+		assertEquals("15.75 " + symbolUS, mMoneyInEur.formattedString(Locale.US));
 		
 		//always prints with 2 decimal places only
 		Money some = new Money("9.7469");
@@ -156,9 +142,9 @@ public class MoneyTest{
 	}
 
 	public void validateImmutability(){
-		assertEquals(mHashcode, money.hashCode());
-		assertEquals(amountString, money.toPlainString());
-		assertEquals(CURRENCY_CODE, money.getCurrency().getCurrencyCode());
+		assertEquals(mHashcode, mMoneyInEur.hashCode());
+		assertEquals(amountString, mMoneyInEur.toPlainString());
+		assertEquals(CURRENCY_CODE, mMoneyInEur.getCurrency().getCurrencyCode());
 	}
 	
 }

@@ -1,4 +1,3 @@
-sudo: true
 language: android
 jdk: oraclejdk7
 android:
@@ -23,10 +22,7 @@ android:
 
 before_install:
   #- echo yes | android update sdk --all --filter build-tools-22.0.1 --no-ui --force > /dev/null
-  # required libs for android build tools
-  - if [ `uname -m` = x86_64 ]; then sudo apt-get update; fi
-  - if [ `uname -m` = x86_64 ]; then sudo apt-get install -qq --force-yes libgd2-xpm ia32-libs ia32-libs-multiarch; fi
-      
+
 # Emulator Management: Create, Start and Wait
 before_script:
   - echo no | android create avd --force -n test -t android-19 --abi armeabi-v7a

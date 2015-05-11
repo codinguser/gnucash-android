@@ -90,6 +90,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 /**
  * Fragment for creating or editing transactions
@@ -487,19 +488,15 @@ public class TransactionFormFragment extends SherlockFragment implements
         if (mUseDoubleEntry){
             String currentAccountUID = mAccountUID;
             long defaultTransferAccountID = 0;
-
+            String rootAccountUID = mAccountsDbAdapter.getOrCreateGnuCashRootAccountUID();
             do {
-                long transAccID = mAccountsDbAdapter.getDefaultTransferAccountID(mAccountsDbAdapter.getID(currentAccountUID));
-                if (transAccID > 0) {
-                    defaultTransferAccountID = transAccID;
+                defaultTransferAccountID = mAccountsDbAdapter.getDefaultTransferAccountID(mAccountsDbAdapter.getID(currentAccountUID));
+                if (defaultTransferAccountID > 0) {
+                    setSelectedTransferAccount(defaultTransferAccountID);
+                    break; //we found a parent with default transfer setting
                 }
                 currentAccountUID = mAccountsDbAdapter.getParentAccountUID(currentAccountUID);
-            }
-            while (currentAccountUID != null && defaultTransferAccountID == 0);
-
-            if (defaultTransferAccountID > 0){
-                setSelectedTransferAccount(defaultTransferAccountID);
-            }
+            } while (!currentAccountUID.equals(rootAccountUID));
         }
 	}
 

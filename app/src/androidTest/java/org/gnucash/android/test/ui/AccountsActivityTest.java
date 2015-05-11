@@ -66,6 +66,7 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
 		Context context = getInstrumentation().getTargetContext();
 		Editor editor = PreferenceManager.getDefaultSharedPreferences(context).edit();
 		editor.putBoolean(context.getString(R.string.key_first_run), false);
+        editor.putInt(AccountsActivity.LAST_OPEN_TAB_INDEX, AccountsActivity.INDEX_TOP_LEVEL_ACCOUNTS_FRAGMENT);
 		editor.commit();
 
         mDbHelper = new DatabaseHelper(context);
@@ -85,14 +86,6 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
         account.setUID(DUMMY_ACCOUNT_UID);
 		account.setCurrency(Currency.getInstance(DUMMY_ACCOUNT_CURRENCY_CODE));
 		mAccountsDbAdapter.addAccount(account);
-
-        getInstrumentation().runOnMainSync(new Runnable() {
-            @Override
-            public void run() {
-                getActivity().setTab(AccountsActivity.INDEX_TOP_LEVEL_ACCOUNTS_FRAGMENT);
-            }
-        });
-
 
         //the What's new dialog is usually displayed on first run
         String dismissDialog = getActivity().getString(R.string.label_dismiss);
@@ -158,7 +151,6 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
 
         EditText inputAccountName = (EditText) mSolo.getCurrentActivity().findViewById(R.id.edit_text_account_name);
         String NEW_ACCOUNT_NAME = "A New Account";
-//        mSolo.enterText(0, NEW_ACCOUNT_NAME);
         mSolo.enterText(inputAccountName, NEW_ACCOUNT_NAME);
         mSolo.clickOnActionBarItem(R.id.menu_save);
 
@@ -183,14 +175,12 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
 
         mSolo.clickLongOnText(accountName);
         mSolo.clickOnView(getActivity().findViewById(R.id.context_menu_edit_accounts));
-//        clickSherlockActionBarItem(R.id.context_menu_edit_accounts);
         mSolo.waitForView(EditText.class);
 
         mSolo.clickOnCheckBox(1);
         mSolo.pressSpinnerItem(2, 0);
-//        mSolo.clickOnText(DUMMY_ACCOUNT_NAME);
 
-        clickSherlockActionBarItem(R.id.menu_save);
+        mSolo.clickOnView(getActivity().findViewById(R.id.menu_save));
 
         mSolo.waitForText(getActivity().getString(R.string.title_accounts));
         Account editedAccount = mAccountsDbAdapter.getAccount(accountUID);

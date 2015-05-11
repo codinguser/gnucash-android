@@ -34,6 +34,10 @@ android {
             resValue "string", "dropbox_app_key", RELEASE_DROPBOX_APP_KEY
             resValue "string", "dropbox_app_secret", RELEASE_DROPBOX_APP_SECRET
             resValue "string", "manifest_dropbox_app_key", "db-${RELEASE_DROPBOX_APP_KEY}"
+        } else {
+            resValue "string", "dropbox_app_key", "dhjh8ke9wf05948"
+            resValue "string", "dropbox_app_secret", "h2t9fphj3nr4wkw"
+            resValue "string", "manifest_dropbox_app_key", "db-dhjh8ke9wf05948"
         }
     }
 
@@ -81,9 +85,6 @@ android {
             applicationId 'org.gnucash.android.devel'
             testApplicationId 'org.gnucash.android.test.devel'
             resValue "string", "app_name", "GnuCash-devel"
-            resValue "string", "dropbox_app_key", "dhjh8ke9wf05948"
-            resValue "string", "dropbox_app_secret", "h2t9fphj3nr4wkw"
-            resValue "string", "manifest_dropbox_app_key", "db-dhjh8ke9wf05948"
             versionName "${versionMajor}.${versionMinor}.${versionPatch}-dev${versionBuild}_${buildTime()}"
             resValue "string", "app_version_name", "${versionName}"
         }

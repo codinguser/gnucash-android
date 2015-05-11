@@ -533,8 +533,8 @@ public class AccountsDbAdapter extends DatabaseAdapter {
      * @return List of {@link Account}s in the database
      */
     public List<Account> getSimpleAccountList(){
-        LinkedList<Account> accounts = new LinkedList<Account>();
-        Cursor c = fetchAccounts(null, null, null);
+        LinkedList<Account> accounts = new LinkedList<>();
+        Cursor c = fetchAccounts(null, null, AccountEntry.COLUMN_FULL_NAME + " ASC");
 
         try {
             while (c.moveToNext()) {
@@ -553,7 +553,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
      * @return List of {@link Account}s in the database
      */
     public List<Account> getSimpleAccountList(String where, String[] whereArgs, String orderBy){
-        LinkedList<Account> accounts = new LinkedList<Account>();
+        LinkedList<Account> accounts = new LinkedList<>();
         Cursor c = fetchAccounts(where, whereArgs, orderBy);
         try {
             while (c.moveToNext()) {

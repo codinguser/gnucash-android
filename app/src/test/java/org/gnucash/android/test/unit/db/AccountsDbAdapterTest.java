@@ -116,6 +116,8 @@ public class AccountsDbAdapterTest{
         List<Account> accounts = mAccountsDbAdapter.getSimpleAccountList();
         assertThat(accounts).extracting("mAccountType").contains(AccountType.ROOT);
 
+        String rootAccountUID = mAccountsDbAdapter.getOrCreateGnuCashRootAccountUID();
+        assertThat(rootAccountUID).isEqualTo(accounts.get(1).getParentUID());
     }
 
     @Test
