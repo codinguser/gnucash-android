@@ -17,12 +17,13 @@
 package org.gnucash.android.export;
 
 import org.gnucash.android.app.GnuCashApplication;
+import org.gnucash.android.ui.export.ExportDialogFragment;
 
 /**
  * Encapsulation of the parameters used for exporting transactions.
  * The parameters are determined by the user in the export dialog and are then transmitted to the asynchronous task which
  * actually performs the export.
- * @see org.gnucash.android.export.ExportDialogFragment
+ * @see ExportDialogFragment
  * @see ExportAsyncTask
  *
  * @author Ngewi Fet <ngewif@gmail.com>

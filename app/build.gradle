@@ -6,7 +6,7 @@ apply plugin: 'crashlytics'
 def versionMajor = 1
 def versionMinor = 6
 def versionPatch = 0
-def versionBuild = 3
+def versionBuild = 4
 
 def buildTime() {
     def df = new SimpleDateFormat("yyyyMMdd_HHmm'UTC'")
@@ -24,6 +24,7 @@ android {
     buildToolsVersion "22.0.1"
     defaultConfig {
         applicationId "org.gnucash.android"
+        testApplicationId 'org.gnucash.android.test'
         minSdkVersion 10
         targetSdkVersion 19
         versionCode versionMajor * 10000 + versionMinor * 1000 + versionPatch * 100 + versionBuild
@@ -35,9 +36,7 @@ android {
             resValue "string", "dropbox_app_secret", RELEASE_DROPBOX_APP_SECRET
             resValue "string", "manifest_dropbox_app_key", "db-${RELEASE_DROPBOX_APP_KEY}"
         } else {
-            resValue "string", "dropbox_app_key", "dhjh8ke9wf05948"
-            resValue "string", "dropbox_app_secret", "h2t9fphj3nr4wkw"
-            resValue "string", "manifest_dropbox_app_key", "db-dhjh8ke9wf05948"
+            resValue "string", "manifest_dropbox_app_key", "db-xxx-xxxx"
         }
     }
 
@@ -83,10 +82,13 @@ android {
     productFlavors {
         development {
             applicationId 'org.gnucash.android.devel'
-            testApplicationId 'org.gnucash.android.test.devel'
+            testApplicationId 'org.gnucash.android.devel.test'
             resValue "string", "app_name", "GnuCash-devel"
             versionName "${versionMajor}.${versionMinor}.${versionPatch}-dev${versionBuild}_${buildTime()}"
             resValue "string", "app_version_name", "${versionName}"
+            resValue "string", "dropbox_app_key", "dhjh8ke9wf05948"
+            resValue "string", "dropbox_app_secret", "h2t9fphj3nr4wkw"
+            resValue "string", "manifest_dropbox_app_key", "db-dhjh8ke9wf05948"
         }
 
         beta {

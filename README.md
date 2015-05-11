@@ -1,4 +1,4 @@
-<a href="https://travis-ci.org/codinguser/gnucash-android">
+<a href="https://travis-ci.org/codinguser/gnucash-android" target="_blank">
 <img src="https://travis-ci.org/codinguser/gnucash-android.svg?branch=develop" alt="Travis build status" />
 </a>
 

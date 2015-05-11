@@ -143,7 +143,7 @@ public class BaseDrawerActivity extends SherlockFragmentActivity {
         settingsHeader.setTextColor(titleColorGreen);
 
         ArrayList<String> aboutNavOptions = new ArrayList<>();
-//        aboutNavOptions.add("Backup & Export");
+        aboutNavOptions.add(getString(R.string.nav_menu_scheduled_backups));
         aboutNavOptions.add(getString(R.string.nav_menu_settings));
         //TODO: add help view
         ArrayAdapter<String> aboutNavAdapter = new ArrayAdapter<>(this,
@@ -217,7 +217,15 @@ public class BaseDrawerActivity extends SherlockFragmentActivity {
             }
                 break;
 
-            case 9: //Settings activity
+            case 9: //scheduled backup
+                Intent intent = new Intent(this, ScheduledActionsActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                intent.putExtra(ScheduledActionsActivity.EXTRA_DISPLAY_MODE,
+                        ScheduledActionsActivity.DisplayMode.EXPORT_ACTIONS);
+                startActivity(intent);
+                break;
+
+            case 10: //Settings activity
                 startActivity(new Intent(this, SettingsActivity.class));
                 break;
 

@@ -124,10 +124,11 @@ public class ExportTransactionsTest extends
 		mSolo.clickOnText(mSolo.getString(R.string.nav_menu_export));
 
         mSolo.waitForText(getActivity().getString(R.string.menu_export_transactions));
+		mSolo.waitForDialogToOpen();
 		mSolo.clickOnText(format.name());
 		mSolo.clickOnButton(mSolo.getString(R.string.btn_export));
 
-        mSolo.waitForDialogToClose(10000);
+        mSolo.waitForDialogToClose();
 		mSolo.sleep(2000); //sleep so that emulators can save the file
 
 		assertThat(folder.listFiles().length).isEqualTo(1);
@@ -151,7 +152,7 @@ public class ExportTransactionsTest extends
 	/**
 	 * Test creating a scheduled export
 	 */
-	public void atestCreateExportSchedule(){
+	public void testCreateExportSchedule(){
 		mSolo.setNavigationDrawer(Solo.OPENED);
 		mSolo.clickOnText(mSolo.getString(R.string.nav_menu_export));
 		mSolo.waitForText(getActivity().getString(R.string.menu_export_transactions));
@@ -159,12 +160,14 @@ public class ExportTransactionsTest extends
 		mSolo.clickOnText(ExportFormat.XML.name());
 		mSolo.clickOnView(mSolo.getView(R.id.input_recurrence));
 
-		mSolo.clickOnText("OFF");
-		mSolo.pressSpinnerItem(0, 1);
+		mSolo.clickOnToggleButton("OFF");
 		mSolo.clickOnText("Done");
-		mSolo.clickOnButton(mSolo.getString(R.string.btn_export));
-		mSolo.waitForDialogToClose(5000);
+		mSolo.waitForDialogToClose();
 
+		mSolo.clickOnButton(mSolo.getString(R.string.btn_export));
+		mSolo.waitForDialogToClose();
+
+		mSolo.sleep(2000); //wait for database save
 
 		ScheduledActionDbAdapter scheduledactionDbAdapter = new ScheduledActionDbAdapter(mDb);
 		assertThat(scheduledactionDbAdapter.getAllEnabledScheduledActions())
@@ -172,7 +175,8 @@ public class ExportTransactionsTest extends
 				.extracting("mActionType").contains(ScheduledAction.ActionType.BACKUP);
 
 		ScheduledAction action = scheduledactionDbAdapter.getAllScheduledActions().get(0);
-		assertThat(action.getPeriodType()).isEqualTo(PeriodType.DAY);
+		assertThat(action.getPeriodType()).isEqualTo(PeriodType.WEEK);
+		assertThat(action.getEndTime()).isEqualTo(0);
 	}
 
 	//todo: add testing of export flag to unit test
@@ -180,6 +184,7 @@ public class ExportTransactionsTest extends
 	@Override
 	protected void tearDown() throws Exception {
 		mSolo.finishOpenedActivities();
+		mSolo.waitForEmptyActivityStack(10000);
 		mAccountsDbAdapter.deleteAllRecords();
         mDbHelper.close();
         mDb.close();

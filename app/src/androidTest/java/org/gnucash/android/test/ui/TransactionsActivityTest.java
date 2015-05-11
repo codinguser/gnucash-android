@@ -401,12 +401,6 @@ public class TransactionsActivityTest extends
 					TransactionFormFragment.DATE_FORMATTER.format(trxDate));
 			assertEquals(TransactionFormFragment.TIME_FORMATTER.format(expectedDate),
 					TransactionFormFragment.TIME_FORMATTER.format(trxDate));
-			
-			//FIXME: for some reason, the expected time is higher (in the future) than the actual time
-			//this should not be the case since the transaction was created with the expected time
-			//I guess it has to do with the time precision and the fact that the time is repeatedly 
-			//converted to Date objects and back. But just validating the printable date and time should be ok
-	//		assertEquals(mTransactionTimeMillis, trx.getTimeMillis());
 		}
 
 	public void testDeleteTransaction(){
@@ -414,7 +408,7 @@ public class TransactionsActivityTest extends
 		
 		mSolo.clickOnCheckBox(0);		
 		clickSherlockActionBarItem(R.id.context_menu_delete);
-		
+
 		mSolo.sleep(500);
 
 		long id = mAccountsDbAdapter.getID(DUMMY_ACCOUNT_UID);
@@ -487,7 +481,7 @@ public class TransactionsActivityTest extends
 	@Override
 	protected void tearDown() throws Exception {
 		mSolo.finishOpenedActivities();
-		mSolo.sleep(1000); //wait for activities to finish before clearing db
+		mSolo.waitForEmptyActivityStack(10000);
 		mAccountsDbAdapter.deleteAllRecords();
 		super.tearDown();
 	}

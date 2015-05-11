@@ -89,9 +89,13 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
 
         //the What's new dialog is usually displayed on first run
         String dismissDialog = getActivity().getString(R.string.label_dismiss);
-        if (mSolo.waitForText(dismissDialog,1,1000)){
+        if (mSolo.waitForText(dismissDialog)){
             mSolo.clickOnText(dismissDialog);
+            mSolo.waitForDialogToClose();
         }
+
+        //drawer is opened when the app is installed for the first time
+        mSolo.setNavigationDrawer(Solo.CLOSED);
 	}
 
 /*
@@ -207,7 +211,7 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
 
         clickSherlockActionBarItem(R.id.menu_save);
 
-		mSolo.waitForDialogToClose(2000);
+		mSolo.waitForDialogToClose();
         mSolo.waitForText("Accounts");
 
 		List<Account> accounts = mAccountsDbAdapter.getAllAccounts();
@@ -216,7 +220,8 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
 		assertEquals("Edited Account", latest.getName());
 		assertEquals(DUMMY_ACCOUNT_CURRENCY_CODE, latest.getCurrency().getCurrencyCode());	
 	}
-	
+
+    //TODO: Add test for moving content of accounts before deleting it
 	public void testDeleteAccount(){
         final String accountNameToDelete = "TO BE DELETED";
         final String accountUidToDelete = "to-be-deleted";
@@ -238,9 +243,11 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
 
         clickSherlockActionBarItem(R.id.context_menu_delete);
 
+        mSolo.waitForDialogToOpen();
+        mSolo.clickOnRadioButton(0);
         mSolo.clickOnView(mSolo.getView(R.id.btn_save));
 
-        mSolo.waitForDialogToClose(1000);
+        mSolo.waitForDialogToClose();
         mSolo.waitForText("Accounts");
 
         Exception expectedException = null;
@@ -285,7 +292,7 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
 	
 	protected void tearDown() throws Exception {
         mSolo.finishOpenedActivities();
-        mSolo.sleep(1000);
+        mSolo.waitForEmptyActivityStack(10000);
         mAccountsDbAdapter.deleteAllRecords();
 
 		super.tearDown();
