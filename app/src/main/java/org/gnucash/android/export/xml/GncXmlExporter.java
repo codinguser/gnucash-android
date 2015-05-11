@@ -274,10 +274,8 @@ public class GncXmlExporter extends Exporter{
                         TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_TIMESTAMP + " ASC , " +
                         TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_UID + " ASC ");
         String lastTrxUID = "";
-        Currency trxCurrency;
-        int fractionDigits;
-        BigDecimal denom = new BigDecimal(100);
-        String denomString = "100"; //FIXME: Should this be currency dependent?
+        Currency trxCurrency = null;
+        String denomString = "100";
 
         if (exportTemplates) {
             mRootTemplateAccount = new Account("Template Root");
@@ -314,11 +312,6 @@ public class GncXmlExporter extends Exporter{
                 // currency
                 String currency = cursor.getString(cursor.getColumnIndexOrThrow("trans_currency"));
                 trxCurrency = Currency.getInstance(currency);
-                fractionDigits = trxCurrency.getDefaultFractionDigits();
-                int denomInt;
-                denomInt = (int) Math.pow(10, fractionDigits);
-                denom = new BigDecimal(denomInt);
-                denomString = Integer.toString(denomInt);
                 xmlSerializer.startTag(null, GncXmlHelper.TAG_TRX_CURRENCY);
                 xmlSerializer.startTag(null, GncXmlHelper.TAG_COMMODITY_SPACE);
                 xmlSerializer.text("ISO4217");
@@ -402,7 +395,7 @@ public class GncXmlExporter extends Exporter{
             BigDecimal splitAmount = new BigDecimal(cursor.getString(cursor.getColumnIndexOrThrow("split_amount")));
             String strValue = "0/" + denomString;
             if (!exportTemplates) { //when doing normal transaction export
-                strValue = (trxType.equals("CREDIT") ? "-" : "") + splitAmount.multiply(denom).stripTrailingZeros().toPlainString() + "/" + denomString;
+                strValue = (trxType.equals("CREDIT") ? "-" : "") + GncXmlHelper.formatSplitAmount(splitAmount, trxCurrency);
             }
             xmlSerializer.startTag(null, GncXmlHelper.TAG_SPLIT_VALUE);
             xmlSerializer.text(strValue);
@@ -442,9 +435,21 @@ public class GncXmlExporter extends Exporter{
                 slotTypes.add(GncXmlHelper.ATTR_VALUE_GUID);
                 slotValues.add(cursor.getString(cursor.getColumnIndexOrThrow("split_acct_uid")));
                 TransactionType type = TransactionType.valueOf(trxType);
-                slotKeys.add(type == TransactionType.CREDIT ? GncXmlHelper.KEY_CREDIT_FORMULA : GncXmlHelper.KEY_DEBIT_FORMULA);
-                slotTypes.add(GncXmlHelper.ATTR_VALUE_STRING);
-                slotValues.add(GncXmlHelper.formatTemplateSplitAmount(splitAmount));
+                if (type == TransactionType.CREDIT){
+                    slotKeys.add(GncXmlHelper.KEY_CREDIT_FORMULA);
+                    slotTypes.add(GncXmlHelper.ATTR_VALUE_STRING);
+                    slotValues.add(GncXmlHelper.formatTemplateSplitAmount(splitAmount));
+                    slotKeys.add(GncXmlHelper.KEY_CREDIT_NUMERIC);
+                    slotTypes.add(GncXmlHelper.ATTR_VALUE_NUMERIC);
+                    slotValues.add(GncXmlHelper.formatSplitAmount(splitAmount, trxCurrency));
+                } else {
+                    slotKeys.add(GncXmlHelper.KEY_DEBIT_FORMULA);
+                    slotTypes.add(GncXmlHelper.ATTR_VALUE_STRING);
+                    slotValues.add(GncXmlHelper.formatTemplateSplitAmount(splitAmount));
+                    slotKeys.add(GncXmlHelper.KEY_DEBIT_NUMERIC);
+                    slotTypes.add(GncXmlHelper.ATTR_VALUE_NUMERIC);
+                    slotValues.add(GncXmlHelper.formatSplitAmount(splitAmount, trxCurrency));
+                }
 
                 exportSlots(xmlSerializer, slotKeys, slotTypes, slotValues);
 

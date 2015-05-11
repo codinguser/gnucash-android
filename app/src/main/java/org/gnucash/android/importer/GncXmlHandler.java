@@ -173,24 +173,23 @@ public class GncXmlHandler extends DefaultHandler {
     boolean mInExported         = false;
     boolean mInTemplates        = false;
     boolean mInSplitAccountSlot = false;
-    boolean mInCreditFormulaSlot = false;
-    boolean mInDebitFormulaSlot = false;
+    boolean mInCreditNumericSlot = false;
+    boolean mInDebitNumericSlot = false;
     boolean mIsScheduledStart   = false;
     boolean mIsScheduledEnd     = false;
     boolean mIsLastRun          = false;
     boolean mIsRecurrenceStart  = false;
 
     /**
-     * Flag to determine if to ignore template transactions.
-     * If this flag is set, both template transactions and scheduled actions will be ignored.
-     * This flag is mostly set when an error occurs in parsing the template transaction amount.
-     */
-    boolean mIgnoreTemplateTransactions = false;
-
-    /**
      * Multiplier for the recurrence period type. e.g. period type of week and multiplier of 2 means bi-weekly
      */
     int mRecurrenceMultiplier   = 1;
+
+    /**
+     * Flag which says to ignore template transactions until we successfully parse a split amount
+     * Is updated for each transaction template split parsed
+     */
+    boolean mIgnoreTemplateTransaction = true;
 
     /**
      * Used for parsing old backup files where recurrence was saved inside the transaction.
@@ -373,11 +372,11 @@ public class GncXmlHandler extends DefaultHandler {
                     case GncXmlHelper.KEY_SPLIT_ACCOUNT_SLOT:
                         mInSplitAccountSlot = true;
                         break;
-                    case GncXmlHelper.KEY_CREDIT_FORMULA:
-                        mInCreditFormulaSlot = true;
+                    case GncXmlHelper.KEY_CREDIT_NUMERIC:
+                        mInCreditNumericSlot = true;
                         break;
-                    case GncXmlHelper.KEY_DEBIT_FORMULA:
-                        mInDebitFormulaSlot = true;
+                    case GncXmlHelper.KEY_DEBIT_NUMERIC:
+                        mInDebitNumericSlot = true;
                         break;
                 }
                 break;
@@ -424,38 +423,10 @@ public class GncXmlHandler extends DefaultHandler {
                 } else if (mInTemplates && mInSplitAccountSlot) {
                     mSplit.setAccountUID(characterString);
                     mInSplitAccountSlot = false;
-                } else if (mInTemplates && mInCreditFormulaSlot) {
-                    try {
-                        Money amount = new Money(GncXmlHelper.parseTemplateSplitAmount(characterString),
-                                mTransaction.getCurrency());
-                        mSplit.setAmount(amount.absolute());
-                        mSplit.setType(TransactionType.CREDIT);
-                    } catch (NumberFormatException e) {
-                        String msg = "Error parsing template credit split amount " + characterString;
-                        Log.e(LOG_TAG, msg + "\n" + e.getMessage());
-                        Crashlytics.log(msg);
-                        Crashlytics.logException(e);
-                        mIgnoreTemplateTransactions = true;
-                        //throw new SAXException(msg, e); //if we fail to parse the split amount, terminate import - data integrity compromised
-                    } finally {
-                        mInCreditFormulaSlot = false;
-                    }
-                } else if (mInTemplates && mInDebitFormulaSlot) {
-                    try {
-                        Money amount = new Money(GncXmlHelper.parseTemplateSplitAmount(characterString),
-                                mTransaction.getCurrency());
-                        mSplit.setAmount(amount.absolute());
-                        mSplit.setType(TransactionType.DEBIT);
-                    } catch (NumberFormatException e) {
-                        String msg = "Error parsing template debit split amount " + characterString;
-                        Log.e(LOG_TAG, msg + "\n" + e.getMessage());
-                        Crashlytics.log(msg);
-                        Crashlytics.logException(e);
-                        mIgnoreTemplateTransactions = true;
-                        //throw new SAXException(msg, e); //if we fail to parse the split amount, terminate import - data integrity compromised
-                    } finally {
-                        mInDebitFormulaSlot = false;
-                    }
+                } else if (mInTemplates && mInCreditNumericSlot) {
+                    handleEndOfTemplateNumericSlot(characterString, TransactionType.CREDIT);
+                } else if (mInTemplates && mInDebitNumericSlot) {
+                    handleEndOfTemplateNumericSlot(characterString, TransactionType.DEBIT);
                 }
                 break;
             //================  PROCESSING OF TRANSACTION TAGS =====================================
@@ -506,7 +477,7 @@ public class GncXmlHandler extends DefaultHandler {
                     }
                     mQuantity = GncXmlHelper.parseSplitAmount(q);
                 } catch (ParseException e) {
-                    String msg = "Error to parsing split quantity - " + characterString;
+                    String msg = "Error parsing split quantity - " + characterString;
                     Crashlytics.log(msg);
                     Crashlytics.logException(e);
                     throw new SAXException(msg, e);
@@ -521,7 +492,8 @@ public class GncXmlHandler extends DefaultHandler {
                     mSplit.setAmount(amount);
                     mSplit.setAccountUID(characterString);
                 } else {
-                    mTemplateAccountToTransactionMap.put(characterString, mTransaction.getUID());
+                    if (!mIgnoreTemplateTransaction)
+                        mTemplateAccountToTransactionMap.put(characterString, mTransaction.getUID());
                 }
                 break;
             case GncXmlHelper.TAG_TRN_SPLIT:
@@ -534,17 +506,18 @@ public class GncXmlHandler extends DefaultHandler {
                     mAutoBalanceSplits.add(imbSplit);
                 }
                 if (mInTemplates){
-                    mTemplateTransactions.add(mTransaction);
+                    if (!mIgnoreTemplateTransaction)
+                        mTemplateTransactions.add(mTransaction);
                 } else {
                     mTransactionList.add(mTransaction);
                 }
-
                 if (mRecurrencePeriod > 0) { //if we find an old format recurrence period, parse it
                     mTransaction.setTemplate(true);
                     ScheduledAction scheduledAction = ScheduledAction.parseScheduledAction(mTransaction, mRecurrencePeriod);
                     mScheduledActionsList.add(scheduledAction);
                 }
                 mRecurrencePeriod = 0;
+                mIgnoreTemplateTransaction = true;
                 mTransaction = null;
                 break;
             case GncXmlHelper.TAG_TEMPLATE_TRANSACTIONS:
@@ -616,11 +589,10 @@ public class GncXmlHandler extends DefaultHandler {
                 }
                 break;
             case GncXmlHelper.TAG_SCHEDULED_ACTION:
-                mScheduledActionsList.add(mScheduledAction);
-                if (!mIgnoreTemplateTransactions) {
-                    int count = generateMissedScheduledTransactions(mScheduledAction);
-                    Log.i(LOG_TAG, String.format("Generated %d transactions from scheduled action", count));
-                }
+                if (mScheduledAction.getActionUID() != null)
+                    mScheduledActionsList.add(mScheduledAction);
+                int count = generateMissedScheduledTransactions(mScheduledAction);
+                Log.i(LOG_TAG, String.format("Generated %d transactions from scheduled action", count));
                 mRecurrenceMultiplier = 1; //reset it, even though it will be parsed from XML each time
                 break;
         }
@@ -722,21 +694,23 @@ public class GncXmlHandler extends DefaultHandler {
         mAccountsDbAdapter.beginTransaction();
         try {
             mAccountsDbAdapter.deleteAllRecords();
+
             long nAccounts = mAccountsDbAdapter.bulkAddAccounts(mAccountList);
             Log.d("Handler:", String.format("%d accounts inserted", nAccounts));
-            //this flag is set when we have issues with parsing the template transaction amount
-            if (!mIgnoreTemplateTransactions) {
-                //We need to add scheduled actions first because there is a foreign key constraint on transactions
-                //which are generated from scheduled actions (we do auto-create some transactions during import)
-                int nSchedActions = mScheduledActionsDbAdapter.bulkAddScheduledActions(mScheduledActionsList);
-                Log.d("Handler:", String.format("%d scheduled actions inserted", nSchedActions));
-                long nTempTransactions = mTransactionsDbAdapter.bulkAddTransactions(mTemplateTransactions);
-                Log.d("Handler:", String.format("%d template transactions inserted", nTempTransactions));
-            }
+            //We need to add scheduled actions first because there is a foreign key constraint on transactions
+            //which are generated from scheduled actions (we do auto-create some transactions during import)
+            int nSchedActions = mScheduledActionsDbAdapter.bulkAddScheduledActions(mScheduledActionsList);
+            Log.d("Handler:", String.format("%d scheduled actions inserted", nSchedActions));
+
+            long nTempTransactions = mTransactionsDbAdapter.bulkAddTransactions(mTemplateTransactions);
+            Log.d("Handler:", String.format("%d template transactions inserted", nTempTransactions));
+
             long nTransactions = mTransactionsDbAdapter.bulkAddTransactions(mTransactionList);
             Log.d("Handler:", String.format("%d transactions inserted", nTransactions));
+
             long endTime = System.nanoTime();
             Log.d("Handler:", String.format(" bulk insert time: %d", endTime - startTime));
+
             mAccountsDbAdapter.setTransactionSuccessful();
         } finally {
             mAccountsDbAdapter.endTransaction();
@@ -755,6 +729,31 @@ public class GncXmlHandler extends DefaultHandler {
         } catch (Exception e) {
             Crashlytics.logException(e);
             return Currency.getInstance(Money.DEFAULT_CURRENCY_CODE);
+        }
+    }
+
+
+    /**
+     * Handles the case when we reach the end of the template numeric slot
+     * @param characterString Parsed characters containing split amount
+     */
+    private void handleEndOfTemplateNumericSlot(String characterString, TransactionType splitType) {
+        try {
+            BigDecimal amountBigD = GncXmlHelper.parseSplitAmount(characterString);
+            Money amount = new Money(amountBigD, getCurrencyForAccount(mSplit.getAccountUID()));
+            mSplit.setAmount(amount.absolute());
+            mSplit.setType(splitType);
+            mIgnoreTemplateTransaction = false; //we have successfully parsed an amount
+        } catch (NumberFormatException | ParseException e) {
+            String msg = "Error parsing template credit split amount " + characterString;
+            Log.e(LOG_TAG, msg + "\n" + e.getMessage());
+            Crashlytics.log(msg);
+            Crashlytics.logException(e);
+        } finally {
+            if (splitType == TransactionType.CREDIT)
+                mInCreditNumericSlot = false;
+            else
+                mInDebitNumericSlot = false;
         }
     }
 
