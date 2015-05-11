@@ -485,8 +485,18 @@ public class TransactionFormFragment extends SherlockFragment implements
 		mCurrencyTextView.setText(accountCurrency.getSymbol());
 
         if (mUseDoubleEntry){
-            long accountId = mAccountsDbAdapter.getID(mAccountUID);
-            long defaultTransferAccountID = mAccountsDbAdapter.getDefaultTransferAccountID(accountId);
+            String currentAccountUID = mAccountUID;
+            long defaultTransferAccountID = 0;
+
+            do {
+                long transAccID = mAccountsDbAdapter.getDefaultTransferAccountID(mAccountsDbAdapter.getID(currentAccountUID));
+                if (transAccID > 0) {
+                    defaultTransferAccountID = transAccID;
+                }
+                currentAccountUID = mAccountsDbAdapter.getParentAccountUID(currentAccountUID);
+            }
+            while (currentAccountUID != null && defaultTransferAccountID == 0);
+
             if (defaultTransferAccountID > 0){
                 setSelectedTransferAccount(defaultTransferAccountID);
             }
