@@ -18,6 +18,7 @@ package org.gnucash.android.test.ui;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
@@ -64,10 +65,7 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
 
 	protected void setUp() throws Exception {
 		Context context = getInstrumentation().getTargetContext();
-		Editor editor = PreferenceManager.getDefaultSharedPreferences(context).edit();
-		editor.putBoolean(context.getString(R.string.key_first_run), false);
-        editor.putInt(AccountsActivity.LAST_OPEN_TAB_INDEX, AccountsActivity.INDEX_TOP_LEVEL_ACCOUNTS_FRAGMENT);
-		editor.commit();
+        preventFirstRunDialogs(context);
 
         mDbHelper = new DatabaseHelper(context);
         try {
@@ -88,34 +86,48 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
 		mAccountsDbAdapter.addAccount(account);
 
         //the What's new dialog is usually displayed on first run
-        String dismissDialog = getActivity().getString(R.string.label_dismiss);
-        if (mSolo.waitForText(dismissDialog)){
-            mSolo.clickOnText(dismissDialog);
-            mSolo.waitForDialogToClose();
-        }
-
+//        String dismissDialog = getActivity().getString(R.string.label_dismiss);
+//        if (mSolo.waitForText(dismissDialog)){
+//            mSolo.clickOnText(dismissDialog);
+//            mSolo.waitForDialogToClose();
+//        }
+//        mSolo.sleep(2000);
         //drawer is opened when the app is installed for the first time
-        mSolo.setNavigationDrawer(Solo.CLOSED);
+//        mSolo.setNavigationDrawer(Solo.CLOSED);
 	}
 
-/*
-	public void testDisplayAccountsList(){
-        final int NUMBER_OF_ACCOUNTS = 15;
-        for (int i = 0; i < NUMBER_OF_ACCOUNTS; i++) {
-            Account account = new Account("Acct " + i);
-            mAccountsDbAdapter.addAccount(account);
+    public static void preventFirstRunDialogs(Context context) {
+        Editor editor = PreferenceManager.getDefaultSharedPreferences(context).edit();
+
+        //do not show first run dialog
+        editor.putBoolean(context.getString(R.string.key_first_run), false);
+        editor.putInt(AccountsActivity.LAST_OPEN_TAB_INDEX, AccountsActivity.INDEX_TOP_LEVEL_ACCOUNTS_FRAGMENT);
+
+        //do not show "What's new" dialog
+        String minorVersion = context.getString(R.string.app_minor_version);
+        int currentMinor = Integer.parseInt(minorVersion);
+        editor.putInt(context.getString(R.string.key_previous_minor_version), currentMinor);
+        editor.commit();
+    }
+
+    /*
+        public void testDisplayAccountsList(){
+            final int NUMBER_OF_ACCOUNTS = 15;
+            for (int i = 0; i < NUMBER_OF_ACCOUNTS; i++) {
+                Account account = new Account("Acct " + i);
+                mAccountsDbAdapter.addAccount(account);
+            }
+
+            //there should exist a listview of accounts
+            refreshAccountsList();
+            mSolo.waitForText("Acct");
+            mSolo.scrollToBottom();
+
+            ListView accountsListView = (ListView) mSolo.getView(android.R.id.list);
+            assertNotNull(accountsListView);
+            assertEquals(NUMBER_OF_ACCOUNTS + 1, accountsListView.getCount());
         }
-
-        //there should exist a listview of accounts
-        refreshAccountsList();
-        mSolo.waitForText("Acct");
-        mSolo.scrollToBottom();
-
-        ListView accountsListView = (ListView) mSolo.getView(android.R.id.list);
-		assertNotNull(accountsListView);
-        assertEquals(NUMBER_OF_ACCOUNTS + 1, accountsListView.getCount());
-	}
-*/
+    */
     public void testSearchAccounts(){
         String SEARCH_ACCOUNT_NAME = "Search Account";
 
@@ -178,13 +190,14 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
         mSolo.waitForText(accountName);
 
         mSolo.clickLongOnText(accountName);
-        mSolo.clickOnView(getActivity().findViewById(R.id.context_menu_edit_accounts));
+        mSolo.clickOnView(mSolo.getView(R.id.context_menu_edit_accounts));
         mSolo.waitForView(EditText.class);
 
         mSolo.clickOnCheckBox(1);
         mSolo.pressSpinnerItem(2, 0);
 
-        mSolo.clickOnView(getActivity().findViewById(R.id.menu_save));
+//        mSolo.clickOnView(mSolo.getView(R.id.menu_save));
+        mSolo.clickOnActionBarItem(R.id.menu_save);
 
         mSolo.waitForText(getActivity().getString(R.string.title_accounts));
         Account editedAccount = mAccountsDbAdapter.getAccount(accountUID);
@@ -196,6 +209,7 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
 
 	public void testEditAccount(){
         refreshAccountsList();
+        mSolo.sleep(2000);
 		mSolo.waitForText(DUMMY_ACCOUNT_NAME);
 		
 		String editedAccountName = "Edited Account";
@@ -292,7 +306,8 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
 	
 	protected void tearDown() throws Exception {
         mSolo.finishOpenedActivities();
-        mSolo.waitForEmptyActivityStack(10000);
+        mSolo.waitForEmptyActivityStack(20000);
+        mSolo.sleep(5000);
         mAccountsDbAdapter.deleteAllRecords();
 
 		super.tearDown();

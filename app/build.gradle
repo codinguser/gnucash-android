@@ -31,6 +31,7 @@ android {
         versionName "${versionMajor}.${versionMinor}.${versionPatch}"
         resValue "string", "app_version_name", "${versionName}"
         resValue "string", "app_minor_version", "${versionMinor}"
+        buildConfigField "boolean", "USE_CRASHLYTICS", "false"
         if (project.hasProperty("RELEASE_DROPBOX_APP_KEY")){
             resValue "string", "dropbox_app_key", RELEASE_DROPBOX_APP_KEY
             resValue "string", "dropbox_app_secret", RELEASE_DROPBOX_APP_SECRET
@@ -70,11 +71,13 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             if (project.hasProperty("RELEASE_STORE_FILE")){
                 signingConfig signingConfigs.release
+            } else {
+                signingConfig signingConfigs.debug
             }
         }
         debug {
             debuggable true
-            ext.enableCrashlytics = false
+            signingConfig signingConfigs.debug
         }
     }
     lintOptions {
@@ -94,11 +97,11 @@ android {
             resValue "string", "app_name", "GnuCash - beta"
             versionName "${versionMajor}.${versionMinor}.${versionPatch}-beta${versionBuild}_r${gitSha()}"
             resValue "string", "app_version_name", "${versionName}"
+            buildConfigField "boolean", "USE_CRASHLYTICS", "true"
         }
 
         production {
             resValue "string", "app_name", "GnuCash"
-            ext.enableCrashlytics = false //TODO: enable for production builds
         }
 
     }

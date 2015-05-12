@@ -329,9 +329,9 @@ public class TransactionsActivityTest extends
 		intent.setAction(Intent.ACTION_INSERT_OR_EDIT);
 		intent.putExtra(UxArgument.SELECTED_ACCOUNT_UID, childAccount.getUID());
 		getActivity().startActivity(intent);
-		mSolo.sleep(1000);
+		mSolo.waitForActivity(TransactionsActivity.class);
+		mSolo.sleep(3000);
 		Spinner spinner = (Spinner) mSolo.getView(R.id.input_double_entry_accounts_spinner);
-
 		long transferAccountID = mAccountsDbAdapter.getID(transferAccount.getUID());
 		assertThat(transferAccountID).isEqualTo(spinner.getSelectedItemId());
 	}
@@ -432,7 +432,7 @@ public class TransactionsActivityTest extends
 		//initiate bulk move
 		clickSherlockActionBarItem(R.id.context_menu_move_transactions);
 		
-		mSolo.waitForDialogToClose(2000);
+		mSolo.waitForDialogToClose();
 		
 		Spinner spinner = mSolo.getCurrentViews(Spinner.class).get(0);
 		mSolo.clickOnView(spinner);
@@ -441,7 +441,7 @@ public class TransactionsActivityTest extends
 		mSolo.clickOnButton(1);
 //		mSolo.clickOnText(getActivity().getString(R.string.btn_move));
 		
-		mSolo.waitForDialogToClose(2000);
+		mSolo.waitForDialogToClose();
 		
 		int targetCount = mAccountsDbAdapter.getAccount(account.getUID()).getTransactionCount();
 		assertEquals(1, targetCount);
@@ -449,7 +449,8 @@ public class TransactionsActivityTest extends
 		int afterOriginCount = mAccountsDbAdapter.getAccount(DUMMY_ACCOUNT_UID).getTransactionCount();
 		assertEquals(beforeOriginCount-1, afterOriginCount);
 	}
-	
+
+	//TODO: add normal transaction recording
 	public void testLegacyIntentTransactionRecording(){
 		int beforeCount = mTransactionsDbAdapter.getTransactionsCount(DUMMY_ACCOUNT_UID);
 		Intent transactionIntent = new Intent(Intent.ACTION_INSERT);
@@ -481,7 +482,8 @@ public class TransactionsActivityTest extends
 	@Override
 	protected void tearDown() throws Exception {
 		mSolo.finishOpenedActivities();
-		mSolo.waitForEmptyActivityStack(10000);
+		mSolo.waitForEmptyActivityStack(20000);
+		mSolo.sleep(5000);
 		mAccountsDbAdapter.deleteAllRecords();
 		super.tearDown();
 	}

@@ -61,7 +61,7 @@ public class ExportTransactionsTest extends
 	
 	@Override
 	protected void setUp() throws Exception {
-		super.setUp();
+		AccountsActivityTest.preventFirstRunDialogs(getInstrumentation().getTargetContext());
 		mSolo = new Solo(getInstrumentation(), getActivity());
 
         mDbHelper = new DatabaseHelper(getActivity());
@@ -111,25 +111,27 @@ public class ExportTransactionsTest extends
 
 	/**
 	 * Generates export for the specified format and tests that the file actually is created
-	 * @param format
+	 * @param format Export format to use
 	 */
     public void testExport(ExportFormat format){
 		File folder = new File(Exporter.EXPORT_FOLDER_PATH);
 		folder.mkdirs();
+		assertThat(folder).exists();
+
 		for (File file : folder.listFiles()) {
 			file.delete();
 		}
 
-		mSolo.setNavigationDrawer(Solo.OPENED);
-		mSolo.clickOnText(mSolo.getString(R.string.nav_menu_export));
+		mSolo.clickOnActionBarItem(R.id.menu_export);
+		mSolo.waitForDialogToOpen(5000);
 
-        mSolo.waitForText(getActivity().getString(R.string.menu_export_transactions));
-		mSolo.waitForDialogToOpen();
+        mSolo.waitForText(getActivity().getString(R.string.title_export_dialog));
+
 		mSolo.clickOnText(format.name());
 		mSolo.clickOnButton(mSolo.getString(R.string.btn_export));
 
-        mSolo.waitForDialogToClose();
-		mSolo.sleep(2000); //sleep so that emulators can save the file
+        mSolo.waitForDialogToClose(10000);
+		mSolo.sleep(5000); //sleep so that emulators can save the file
 
 		assertThat(folder.listFiles().length).isEqualTo(1);
 		File exportFile = folder.listFiles()[0];
@@ -153,14 +155,17 @@ public class ExportTransactionsTest extends
 	 * Test creating a scheduled export
 	 */
 	public void testCreateExportSchedule(){
-		mSolo.setNavigationDrawer(Solo.OPENED);
-		mSolo.clickOnText(mSolo.getString(R.string.nav_menu_export));
-		mSolo.waitForText(getActivity().getString(R.string.menu_export_transactions));
+//		mSolo.setNavigationDrawer(Solo.OPENED);
+//		mSolo.clickOnText(mSolo.getString(R.string.nav_menu_export));
+		mSolo.clickOnActionBarItem(R.id.menu_export);
+		mSolo.waitForDialogToOpen(5000);
 
 		mSolo.clickOnText(ExportFormat.XML.name());
 		mSolo.clickOnView(mSolo.getView(R.id.input_recurrence));
-		
-		mSolo.clickOnButton(0);
+		mSolo.waitForDialogToOpen();
+		mSolo.sleep(1000);
+		mSolo.clickOnButton(0); //switch on the recurrence dialog
+		mSolo.sleep(1000);
 		mSolo.clickOnText("Done");
 		mSolo.waitForDialogToClose();
 
@@ -184,7 +189,8 @@ public class ExportTransactionsTest extends
 	@Override
 	protected void tearDown() throws Exception {
 		mSolo.finishOpenedActivities();
-		mSolo.waitForEmptyActivityStack(10000);
+		mSolo.waitForEmptyActivityStack(20000);
+		mSolo.sleep(5000);
 		mAccountsDbAdapter.deleteAllRecords();
         mDbHelper.close();
         mDb.close();

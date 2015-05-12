@@ -206,6 +206,24 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
                         mContext.getString(R.string.toast_export_error, mExportParams.getExportFormat().name()),
                         Toast.LENGTH_LONG).show();
                 return;
+            } else {
+                String targetLocation;
+                switch (mExportParams.getExportTarget()){
+                    case SD_CARD:
+                        targetLocation = "SD card";
+                        break;
+                    case DROPBOX:
+                        targetLocation = "DropBox -> Apps -> GnuCash";
+                        break;
+                    case GOOGLE_DRIVE:
+                        targetLocation = "Google Drive -> " + mContext.getString(R.string.app_name);
+                        break;
+                    default:
+                        targetLocation = "external service";
+                }
+                Toast.makeText(mContext,
+                        String.format(mContext.getString(R.string.toast_exported_to), targetLocation),
+                        Toast.LENGTH_LONG).show();
             }
         }
 

@@ -23,6 +23,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.Build;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import com.crashlytics.android.Crashlytics;
@@ -76,7 +77,7 @@ public class GnuCashApplication extends Application{
         GnuCashApplication.context = getApplicationContext();
         //TODO: in production, only start logging if user gave consent
 
-        if (!BuildConfig.DEBUG)
+        if (BuildConfig.USE_CRASHLYTICS)
             Crashlytics.start(this);
 
         mDbHelper = new DatabaseHelper(getApplicationContext());
