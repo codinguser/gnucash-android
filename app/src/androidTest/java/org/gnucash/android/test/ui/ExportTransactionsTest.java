@@ -116,6 +116,7 @@ public class ExportTransactionsTest extends
     public void testExport(ExportFormat format){
 		File folder = new File(Exporter.EXPORT_FOLDER_PATH);
 		folder.mkdirs();
+		mSolo.sleep(5000);
 		assertThat(folder).exists();
 
 		for (File file : folder.listFiles()) {
@@ -163,9 +164,9 @@ public class ExportTransactionsTest extends
 		mSolo.clickOnText(ExportFormat.XML.name());
 		mSolo.clickOnView(mSolo.getView(R.id.input_recurrence));
 		mSolo.waitForDialogToOpen();
-		mSolo.sleep(1000);
+		mSolo.sleep(5000);
 		mSolo.clickOnButton(0); //switch on the recurrence dialog
-		mSolo.sleep(1000);
+		mSolo.sleep(5000);
 		mSolo.clickOnText("Done");
 		mSolo.waitForDialogToClose();
 

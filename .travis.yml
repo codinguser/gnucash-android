@@ -22,7 +22,9 @@ android:
 
 # Emulator Management: Create, Start and Wait
 before_script:
+  - mkdir sdcard
+  - mksdcard -l gnucash-sdcard 64M sdcard/gnucash-sdcard.img
   - echo no | android create avd --force -n test -t android-19 --abi armeabi-v7a
-  - emulator -avd test -no-skin -no-audio -no-window &
+  - emulator -avd test -no-skin -no-audio -no-window -no-boot-anim -gpu on -sdcard sdcard/gnucash-sdcard.img &
   - android-wait-for-emulator
   - adb shell input keyevent 82 &    

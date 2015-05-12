@@ -350,10 +350,10 @@ public class TransactionsActivityTest extends
 
         String label = toggleButton.getText().toString();
         assertTrue(mSolo.searchToggleButton(label));
-		assertEquals(getActivity().getString(R.string.label_receive), label);
+		assertThat(getActivity().getString(R.string.label_receive)).isEqualTo(label);
 
-//		mSolo.clickOnButton(getActivity().getString(R.string.label_credit));
         mSolo.clickOnView(toggleButton);
+		mSolo.sleep(3000);
 		String amountString = mSolo.getEditText(1).getText().toString();
 		NumberFormat formatter = NumberFormat.getInstance();
 		try {
@@ -362,7 +362,7 @@ public class TransactionsActivityTest extends
 			e.printStackTrace();
 		}
 		Money amount = new Money(amountString, Currency.getInstance(Locale.getDefault()).getCurrencyCode());
-		assertEquals("-9.99", amount.toPlainString());
+		assertThat("-9.99").isEqualTo(amount.toPlainString());
 
 		clickSherlockActionBarItem(R.id.menu_save);
 		mSolo.waitForText(DUMMY_ACCOUNT_NAME);

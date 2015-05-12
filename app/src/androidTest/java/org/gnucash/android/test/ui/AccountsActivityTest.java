@@ -18,7 +18,6 @@ package org.gnucash.android.test.ui;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
@@ -28,7 +27,9 @@ import android.test.ActivityInstrumentationTestCase2;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+
 import com.robotium.solo.Solo;
+
 import org.gnucash.android.R;
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.DatabaseHelper;
@@ -38,7 +39,6 @@ import org.gnucash.android.model.Account;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.model.Split;
 import org.gnucash.android.model.Transaction;
-import org.gnucash.android.test.util.ActionBarUtils;
 import org.gnucash.android.ui.account.AccountsActivity;
 import org.gnucash.android.ui.account.AccountsListFragment;
 
@@ -84,16 +84,6 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
         account.setUID(DUMMY_ACCOUNT_UID);
 		account.setCurrency(Currency.getInstance(DUMMY_ACCOUNT_CURRENCY_CODE));
 		mAccountsDbAdapter.addAccount(account);
-
-        //the What's new dialog is usually displayed on first run
-//        String dismissDialog = getActivity().getString(R.string.label_dismiss);
-//        if (mSolo.waitForText(dismissDialog)){
-//            mSolo.clickOnText(dismissDialog);
-//            mSolo.waitForDialogToClose();
-//        }
-//        mSolo.sleep(2000);
-        //drawer is opened when the app is installed for the first time
-//        mSolo.setNavigationDrawer(Solo.CLOSED);
 	}
 
     public static void preventFirstRunDialogs(Context context) {
@@ -138,15 +128,17 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
         refreshAccountsList();
 
         //enter search query
-        ActionBarUtils.clickSherlockActionBarItem(mSolo, R.id.menu_search);
-        mSolo.sleep(200);
+//        ActionBarUtils.clickSherlockActionBarItem(mSolo, R.id.menu_search);
+        mSolo.clickOnActionBarItem(R.id.menu_search);
+        mSolo.sleep(2000);
         mSolo.enterText(0, "Se");
-
+        mSolo.sleep(3000);
         boolean accountFound = mSolo.waitForText(SEARCH_ACCOUNT_NAME, 1, 2000);
         assertTrue(accountFound);
 
         mSolo.clearEditText(0);
 
+        mSolo.sleep(2000);
         //the child account should be hidden again
         accountFound = mSolo.waitForText(SEARCH_ACCOUNT_NAME, 1, 2000);
         assertFalse(accountFound);
