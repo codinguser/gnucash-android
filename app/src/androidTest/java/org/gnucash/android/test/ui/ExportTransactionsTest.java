@@ -164,10 +164,11 @@ public class ExportTransactionsTest extends
 		mSolo.clickOnText(ExportFormat.XML.name());
 		mSolo.clickOnView(mSolo.getView(R.id.input_recurrence));
 		mSolo.waitForDialogToOpen();
-		mSolo.sleep(5000);
+		mSolo.sleep(2000);
 		mSolo.clickOnButton(0); //switch on the recurrence dialog
-		mSolo.sleep(5000);
-		mSolo.clickOnText("Done");
+		mSolo.sleep(2000);
+		mSolo.pressSpinnerItem(0,-1);
+		mSolo.clickOnButton(1);
 		mSolo.waitForDialogToClose();
 
 		mSolo.clickOnButton(mSolo.getString(R.string.btn_export));
@@ -181,7 +182,7 @@ public class ExportTransactionsTest extends
 				.extracting("mActionType").contains(ScheduledAction.ActionType.BACKUP);
 
 		ScheduledAction action = scheduledactionDbAdapter.getAllScheduledActions().get(0);
-		assertThat(action.getPeriodType()).isEqualTo(PeriodType.WEEK);
+		assertThat(action.getPeriodType()).isEqualTo(PeriodType.DAY);
 		assertThat(action.getEndTime()).isEqualTo(0);
 	}
 

@@ -17,6 +17,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
+import java.math.BigDecimal;
 import java.util.Currency;
 import java.util.List;
 
@@ -36,6 +37,8 @@ public class TransactionsDbAdapterTest {
 	private Account alphaAccount;
 	private Account bravoAccount;
 
+	private Split mTestSplit;
+
 	@Before
 	public void setUp() throws Exception {
         mSplitsDbAdapter = SplitsDbAdapter.getInstance();
@@ -45,9 +48,13 @@ public class TransactionsDbAdapterTest {
 		alphaAccount = new Account(ALPHA_ACCOUNT_NAME);
 		bravoAccount = new Account(BRAVO_ACCOUNT_NAME);
 
-		
-		mAccountsDbAdapter.addAccount(bravoAccount);
-		mAccountsDbAdapter.addAccount(alphaAccount);
+		long id1 = mAccountsDbAdapter.addAccount(bravoAccount);
+		long id2 = mAccountsDbAdapter.addAccount(alphaAccount);
+
+		assertThat(id1).isGreaterThan(0);
+		assertThat(id2).isGreaterThan(0);
+
+		mTestSplit = new Split(new Money(BigDecimal.TEN, DEFAULT_CURRENCY), alphaAccount.getUID());
 	}
 
 	@Test
@@ -100,24 +107,27 @@ public class TransactionsDbAdapterTest {
 		assertThat(split.getTransactionUID()).isEqualTo(transaction.getUID());
 	}
 
-/**
- //TODO: move this test to UI code. Autobalancing is done before the database level
 	@Test
-	public void shouldAutoBalanceTransactions(){
-		Transaction t = new Transaction("Autobalance");
-		Split split = new Split(new Money(BigDecimal.TEN, DEFAULT_CURRENCY), alphaAccount.getUID());
-		t.addSplit(split);
+	public void testComputeBalance(){
+		Transaction transaction = new Transaction("Compute");
+		Money firstSplitAmount = new Money("4.99", DEFAULT_CURRENCY.getCurrencyCode());
+		Split split = new Split(firstSplitAmount, alphaAccount.getUID());
+		transaction.addSplit(split);
+		Money secondSplitAmount = new Money("3.50", DEFAULT_CURRENCY.getCurrencyCode());
+		split = new Split(secondSplitAmount, bravoAccount.getUID());
+		transaction.addSplit(split);
 
-		mTransactionsDbAdapter.addTransaction(t);
+		mTransactionsDbAdapter.addTransaction(transaction);
 
-		Transaction balanced = mTransactionsDbAdapter.getTransaction(t.getUID());
-		assertThat(balanced).isNotNull();
-		assertThat(balanced.getSplits()).hasSize(2);
+		//balance is negated because the CASH account has inverse normal balance
+		transaction = mTransactionsDbAdapter.getTransaction(transaction.getUID());
+		Money savedBalance = transaction.getBalance(alphaAccount.getUID());
+		assertThat(savedBalance).isEqualTo(firstSplitAmount.negate());
 
-		String imbalanceUID = mAccountsDbAdapter.getImbalanceAccountUID(DEFAULT_CURRENCY);
-		assertThat(balanced.getSplits()).extracting("mAccountUID").contains(imbalanceUID);
+		savedBalance = transaction.getBalance(bravoAccount.getUID());
+		assertThat(savedBalance).isEqualTo(secondSplitAmount.negate());
 	}
-**/
+
 	@After
 	public void tearDown() throws Exception {
 		mAccountsDbAdapter.deleteAllRecords();
