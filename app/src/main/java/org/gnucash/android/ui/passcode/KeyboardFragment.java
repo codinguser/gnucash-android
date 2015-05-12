@@ -34,6 +34,8 @@ import org.gnucash.android.R;
  */
 public class KeyboardFragment extends SherlockFragment {
 
+    private static final int DELAY = 500;
+
     private TextView pass1;
     private TextView pass2;
     private TextView pass3;
@@ -42,7 +44,7 @@ public class KeyboardFragment extends SherlockFragment {
     private int length = 0;
 
     public interface OnPasscodeEnteredListener {
-        public void onPasscodeEntered(String pass);
+        void onPasscodeEntered(String pass);
     }
 
     private OnPasscodeEnteredListener listener;
@@ -182,7 +184,7 @@ public class KeyboardFragment extends SherlockFragment {
                         pass4.setText(null);
                         length = 0;
                     }
-                }, 500);
+                }, DELAY);
         }
     }
 

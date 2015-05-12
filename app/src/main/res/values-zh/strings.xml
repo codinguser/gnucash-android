@@ -28,7 +28,6 @@
     <string name="label_passcode">输入密码</string>
     <string name="toast_wrong_passcode">密码错误，请再试一次</string>
     <string name="toast_passcode_set">密码已设置</string>
-    <string name="toast_confirm_passcode">请再输入一次</string>
     <string name="toast_invalid_passcode_confirmation">密码不一致，请重试</string>
     <string name="label_transaction_name">描述</string>
     <string name="label_transaction_amount">金额</string>
@@ -494,4 +493,7 @@ No user-identifiable information will be collected as part of this process!
     <string name="label_report_currency">Select currency</string>
     <string name="title_use_account_color">Account color in reports</string>
     <string name="summary_use_account_color">Use account color in the pie chart</string>
+    <string name="label_confirm_passcode">请再输入一次</string>
+    <string name="label_new_passcode">Enter your new passcode</string>
+    <string name="label_old_passcode">Enter your old passcode</string>
 </resources>

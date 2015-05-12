@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 Oleksandr Tyshkovets <olexandr.tyshkovets@gmail.com>
+ * Copyright (c) 2014 - 2015 Oleksandr Tyshkovets <olexandr.tyshkovets@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,7 +49,7 @@ public class PasscodeLockScreenActivity extends SherlockFragmentActivity
                 .getString(UxArgument.PASSCODE, "");
         Log.d(TAG, "Passcode: " + passcode);
 
-        if (passcode.equals(pass)) {
+        if (pass.equals(passcode)) {
             if (UxArgument.DISABLE_PASSCODE.equals(getIntent().getStringExtra(UxArgument.DISABLE_PASSCODE))) {
                 setResult(RESULT_OK);
                 finish();

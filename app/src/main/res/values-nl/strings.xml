@@ -415,7 +415,6 @@
     <string name="label_passcode">Enter Passcode</string>
     <string name="toast_wrong_passcode">Wrong passcode, please try again</string>
     <string name="toast_passcode_set">Passcode set</string>
-    <string name="toast_confirm_passcode">Please confirm your passcode</string>
     <string name="toast_invalid_passcode_confirmation">Invalid passcode confirmation. Please try again</string>
     <string name="header_passcode_settings">Passcode</string>
     <string name="title_passcode_preferences">Passcode Preferences</string>
@@ -498,4 +497,7 @@ No user-identifiable information will be collected as part of this process!
     <string name="label_report_currency">Select currency</string>
     <string name="title_use_account_color">Account color in reports</string>
     <string name="summary_use_account_color">Use account color in the pie chart</string>
+    <string name="label_confirm_passcode">Please confirm your passcode</string>
+    <string name="label_new_passcode">Enter your new passcode</string>
+    <string name="label_old_passcode">Enter your old passcode</string>
 </resources>

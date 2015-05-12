@@ -403,8 +403,7 @@
     <string name="label_passcode">Introducir contrase&#241;a</string>
     <string name="toast_wrong_passcode">Contrase&#241;a incorrecta, intentar otra vez</string>
     <string name="toast_passcode_set">Contrase&#241;a establecida</string>
-    <string name="toast_confirm_passcode">Confirme su contrase&#241;a</string>
-    <string name="toast_invalid_passcode_confirmation">Confirmaci&#243;n de contrase&#241;a incorrecta. Int&#233;ntelo de nuevo</string>
+	<string name="toast_invalid_passcode_confirmation">Confirmaci&#243;n de contrase&#241;a incorrecta. Int&#233;ntelo de nuevo</string>
     <string name="header_passcode_settings">Contrase&#241;a</string>
     <string name="title_passcode_preferences">Ajustes de contrase&#241;a</string>
     <string name="title_passcode_enabled">Contrase&#241;a activada</string>
@@ -426,7 +425,7 @@
 	<string name="menu_group_smaller_slices">Agrupar porciones peque&#241;as</string>
 	<string name="label_chart_no_data">Datos del gr&#225;fico no disponibles</string>
 	<string name="label_chart_overall">Total</string>
-	<string name="label_chart_total">Total\n</string>
+	<string name="label_chart_total">Total</string>
 	<string name="label_other_slice">Otros</string>
 	<string name="toast_chart_percentage_mode_total">El porcentaje del valor seleccionado calculado sobre la cantidad total</string>
 	<string name="toast_chart_percentage_mode_current_bar">El porcentaje del valor seleccionado calculado sobre la cantidad de la barra apilada actual</string>
@@ -493,4 +492,7 @@ Este proceso solo recoge informaci&#243;n que no permite identificar al usuario<
 	<string name="label_report_currency">Select currency</string>
 	<string name="title_use_account_color">Account color in reports</string>
 	<string name="summary_use_account_color">Use account color in the pie chart</string>
+	<string name="label_confirm_passcode">Confirme su contrase&#241;a</string>
+	<string name="label_new_passcode">Enter your new passcode</string>
+	<string name="label_old_passcode">Enter your old passcode</string>
 </resources>
