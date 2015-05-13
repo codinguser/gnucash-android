@@ -163,12 +163,16 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
         mSolo.clickOnActionBarItem(R.id.menu_save);
 
         mSolo.waitForText(NEW_ACCOUNT_NAME);
+        mSolo.sleep(3000);
 
 		List<Account> accounts = mAccountsDbAdapter.getAllAccounts();
-		Account newestAccount = accounts.get(0);
+        assertThat(accounts).isNotNull();
+        assertThat(accounts).hasSize(2);
+		Account newestAccount = accounts.get(0); //because of alphabetical sorting
 
-		assertEquals(NEW_ACCOUNT_NAME, newestAccount.getName());
-		assertEquals(Money.DEFAULT_CURRENCY_CODE, newestAccount.getCurrency().getCurrencyCode());
+		assertThat(newestAccount.getName()).isEqualTo(NEW_ACCOUNT_NAME);
+		assertThat(newestAccount.getCurrency().getCurrencyCode()).isEqualTo(Money.DEFAULT_CURRENCY_CODE);
+        assertThat(newestAccount.isPlaceholderAccount()).isTrue();
 	}
 
     public void testChangeParentAccount(){

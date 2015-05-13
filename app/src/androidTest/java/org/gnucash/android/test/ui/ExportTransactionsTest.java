@@ -168,10 +168,11 @@ public class ExportTransactionsTest extends
 		mSolo.clickOnButton(0); //switch on the recurrence dialog
 		mSolo.sleep(2000);
 		mSolo.pressSpinnerItem(0, -1);
+		mSolo.sleep(1000);
 		mSolo.clickOnButton(1);
 		mSolo.waitForDialogToClose();
-		mSolo.sleep(2000);
-		mSolo.clickOnView(mSolo.getView(R.id.btn_save));
+		mSolo.sleep(3000);
+		mSolo.clickOnButton(5); //the export button is the second
 		mSolo.waitForDialogToClose();
 
 		mSolo.sleep(2000); //wait for database save
