@@ -129,7 +129,7 @@ public class ExportTransactionsTest extends
         mSolo.waitForText(getActivity().getString(R.string.title_export_dialog));
 
 		mSolo.clickOnText(format.name());
-		mSolo.clickOnButton(mSolo.getString(R.string.btn_export));
+		mSolo.clickOnView(mSolo.getView(R.id.btn_save));
 
         mSolo.waitForDialogToClose(10000);
 		mSolo.sleep(5000); //sleep so that emulators can save the file
@@ -167,11 +167,11 @@ public class ExportTransactionsTest extends
 		mSolo.sleep(2000);
 		mSolo.clickOnButton(0); //switch on the recurrence dialog
 		mSolo.sleep(2000);
-		mSolo.pressSpinnerItem(0,-1);
+		mSolo.pressSpinnerItem(0, -1);
 		mSolo.clickOnButton(1);
 		mSolo.waitForDialogToClose();
-
-		mSolo.clickOnButton(mSolo.getString(R.string.btn_export));
+		mSolo.sleep(2000);
+		mSolo.clickOnView(mSolo.getView(R.id.btn_save));
 		mSolo.waitForDialogToClose();
 
 		mSolo.sleep(2000); //wait for database save

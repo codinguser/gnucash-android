@@ -1,5 +1,6 @@
 language: android
 jdk: oraclejdk7
+env: _JAVA_OPTIONS="-Xmx768m -Xms768m"
 android:
   components:
     - platform-tools
