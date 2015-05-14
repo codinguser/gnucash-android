@@ -1,6 +1,8 @@
 package org.gnucash.android.model;
 
 
+import android.support.annotation.NonNull;
+
 /**
  * A split amount in a transaction.
  * Every transaction is made up of at least two splits (representing a double entry transaction)
@@ -42,7 +44,7 @@ public class Split extends BaseModel{
      * @param amount Money amount of this split
      * @param accountUID String UID of transfer account
      */
-    public Split(Money amount, String accountUID){
+    public Split(@NonNull Money amount, String accountUID){
         setAmount(amount);
         setAccountUID(accountUID);
         //NOTE: This is a rather simplististic approach to the split type.

@@ -6,10 +6,10 @@ apply plugin: 'crashlytics'
 def versionMajor = 1
 def versionMinor = 6
 def versionPatch = 0
-def versionBuild = 3
+def versionBuild = 4
 
 def buildTime() {
-    def df = new SimpleDateFormat("yyyyMMdd_HHmm'UTC'")
+    def df = new SimpleDateFormat("yyyyMMdd")
     df.setTimeZone(TimeZone.getTimeZone("UTC"))
     return df.format(new Date())
 }
@@ -24,12 +24,14 @@ android {
     buildToolsVersion "22.0.1"
     defaultConfig {
         applicationId "org.gnucash.android"
+        testApplicationId 'org.gnucash.android.test'
         minSdkVersion 10
         targetSdkVersion 19
         versionCode versionMajor * 10000 + versionMinor * 1000 + versionPatch * 100 + versionBuild
         versionName "${versionMajor}.${versionMinor}.${versionPatch}"
         resValue "string", "app_version_name", "${versionName}"
         resValue "string", "app_minor_version", "${versionMinor}"
+        buildConfigField "boolean", "USE_CRASHLYTICS", "false"
         if (project.hasProperty("RELEASE_DROPBOX_APP_KEY")){
             resValue "string", "dropbox_app_key", RELEASE_DROPBOX_APP_KEY
             resValue "string", "dropbox_app_secret", RELEASE_DROPBOX_APP_SECRET
@@ -69,11 +71,13 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             if (project.hasProperty("RELEASE_STORE_FILE")){
                 signingConfig signingConfigs.release
+            } else {
+                signingConfig signingConfigs.debug
             }
         }
         debug {
             debuggable true
-            ext.enableCrashlytics = false
+            signingConfig signingConfigs.debug
         }
     }
     lintOptions {
@@ -83,7 +87,7 @@ android {
     productFlavors {
         development {
             applicationId 'org.gnucash.android.devel'
-            testApplicationId 'org.gnucash.android.test.devel'
+            testApplicationId 'org.gnucash.android.devel.test'
             resValue "string", "app_name", "GnuCash-devel"
             versionName "${versionMajor}.${versionMinor}.${versionPatch}-dev${versionBuild}_${buildTime()}"
             resValue "string", "app_version_name", "${versionName}"
@@ -93,11 +97,11 @@ android {
             resValue "string", "app_name", "GnuCash - beta"
             versionName "${versionMajor}.${versionMinor}.${versionPatch}-beta${versionBuild}_r${gitSha()}"
             resValue "string", "app_version_name", "${versionName}"
+            buildConfigField "boolean", "USE_CRASHLYTICS", "true"
         }
 
         production {
             resValue "string", "app_name", "GnuCash"
-            ext.enableCrashlytics = false //TODO: enable for production builds
         }
 
     }

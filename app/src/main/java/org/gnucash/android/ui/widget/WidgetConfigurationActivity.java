@@ -189,7 +189,7 @@ public class WidgetConfigurationActivity extends Activity {
 		
 		Intent newTransactionIntent = new Intent(context, TransactionsActivity.class);
 		newTransactionIntent.setAction(Intent.ACTION_INSERT_OR_EDIT);
-		newTransactionIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
+		newTransactionIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 		newTransactionIntent.putExtra(UxArgument.SELECTED_ACCOUNT_UID, accountUID);
 		PendingIntent pendingIntent = PendingIntent
 				.getActivity(context, appWidgetId, newTransactionIntent, 0);	            

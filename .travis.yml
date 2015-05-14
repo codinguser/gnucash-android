@@ -1,5 +1,6 @@
 language: android
 jdk: oraclejdk7
+env: _JAVA_OPTIONS="-Xmx768m -Xms768m"
 android:
   components:
     - platform-tools
@@ -14,18 +15,17 @@ android:
     - extra-google-google_play_services
     - extra-google-m2repository
     - extra-android-m2repository
-    #- addon-google_apis-google-19
+    - addon-google_apis-google-19
 
     # Specify at least one system image,
     # if you need to run emulator(s) during your tests
     - sys-img-armeabi-v7a-android-19
 
-before_install:
-  #- echo yes | android update sdk --all --filter build-tools-22.0.1 --no-ui --force > /dev/null
-
 # Emulator Management: Create, Start and Wait
 before_script:
+  - mkdir sdcard
+  - mksdcard -l gnucash-sdcard 64M sdcard/gnucash-sdcard.img
   - echo no | android create avd --force -n test -t android-19 --abi armeabi-v7a
-  - emulator -avd test -no-skin -no-audio -no-window &
+  - emulator -avd test -no-skin -no-audio -no-window -no-boot-anim -sdcard sdcard/gnucash-sdcard.img &
   - android-wait-for-emulator
   - adb shell input keyevent 82 &    

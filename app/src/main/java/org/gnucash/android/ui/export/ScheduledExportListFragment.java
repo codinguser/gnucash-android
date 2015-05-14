@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013 - 2015 Ngewi Fet <ngewif@gmail.com>
+ * Copyright (c) 2015 Ngewi Fet <ngewif@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-package org.gnucash.android.ui.transaction;
+package org.gnucash.android.ui.export;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Rect;
@@ -35,7 +34,6 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockListFragment;
@@ -45,22 +43,17 @@ import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 
 import org.gnucash.android.R;
-import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.DatabaseCursorLoader;
 import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.db.ScheduledActionDbAdapter;
-import org.gnucash.android.db.TransactionsDbAdapter;
+import org.gnucash.android.export.ExportParams;
 import org.gnucash.android.model.ScheduledAction;
-import org.gnucash.android.model.Transaction;
-import org.gnucash.android.ui.UxArgument;
-
-import java.util.List;
+import org.gnucash.android.ui.account.AccountsActivity;
 
 /**
- * Fragment which displays the recurring transactions in the system.
- * @author Ngewi Fet <ngewif@gmail.com>
+ * Fragment for displayed scheduled backup entries in the database
  */
-public class ScheduledTransactionsListFragment extends SherlockListFragment implements
+public class ScheduledExportListFragment extends SherlockListFragment implements
         LoaderManager.LoaderCallbacks<Cursor> {
 
     /**
@@ -68,7 +61,7 @@ public class ScheduledTransactionsListFragment extends SherlockListFragment impl
      */
     protected static final String TAG = "ScheduledTrxnFragment";
 
-    private TransactionsDbAdapter mTransactionsDbAdapter;
+    private ScheduledActionDbAdapter mScheduledActionDbAdapter;
     private SimpleCursorAdapter mCursorAdapter;
     private ActionMode mActionMode = null;
 
@@ -107,17 +100,8 @@ public class ScheduledTransactionsListFragment extends SherlockListFragment impl
             switch (item.getItemId()) {
                 case R.id.context_menu_delete:
                     for (long id : getListView().getCheckedItemIds()) {
-                        Log.i(TAG, "Cancelling scheduled transaction(s)");
-                        String trnUID = mTransactionsDbAdapter.getUID(id);
-                        ScheduledActionDbAdapter scheduledActionDbAdapter = GnuCashApplication.getScheduledEventDbAdapter();
-                        List<ScheduledAction> actions = scheduledActionDbAdapter.getScheduledActionsWithUID(trnUID);
-
-                        if (mTransactionsDbAdapter.deleteRecord(id)){
-                            Toast.makeText(getActivity(), R.string.toast_recurring_transaction_deleted, Toast.LENGTH_SHORT).show();
-                            for (ScheduledAction action : actions) {
-                                scheduledActionDbAdapter.deleteRecord(action.getUID());
-                            }
-                        }
+                        Log.i(TAG, "Deleting scheduled export(s)");
+                        mScheduledActionDbAdapter.deleteRecord(id);
                     }
                     mode.finish();
                     getLoaderManager().destroyLoader(0);
@@ -134,12 +118,11 @@ public class ScheduledTransactionsListFragment extends SherlockListFragment impl
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mTransactionsDbAdapter = TransactionsDbAdapter.getInstance();
-        mCursorAdapter = new TransactionsCursorAdapter(
+        mScheduledActionDbAdapter = ScheduledActionDbAdapter.getInstance();
+        mCursorAdapter = new ScheduledExportCursorAdapter(
                 getActivity().getApplicationContext(),
                 R.layout.list_item_scheduled_trxn, null,
-                new String[] {DatabaseSchema.TransactionEntry.COLUMN_DESCRIPTION},
-                new int[] {R.id.primary_text});
+                new String[]{}, new int[]{});
         setListAdapter(mCursorAdapter);
     }
 
@@ -157,10 +140,11 @@ public class ScheduledTransactionsListFragment extends SherlockListFragment impl
         actionBar.setDisplayShowTitleEnabled(true);
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setHomeButtonEnabled(true);
-        actionBar.setTitle(R.string.title_scheduled_transactions);
+        actionBar.setTitle(R.string.title_scheduled_exports);
 
         setHasOptionsMenu(true);
         getListView().setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
+        ((TextView)getListView().getEmptyView()).setText(R.string.label_no_scheduled_exports_to_display);
     }
 
     /**
@@ -183,64 +167,51 @@ public class ScheduledTransactionsListFragment extends SherlockListFragment impl
             CheckBox checkbox = (CheckBox) v.findViewById(R.id.checkbox);
             checkbox.setChecked(!checkbox.isChecked());
             return;
+        } else {
+            startActionMode();
         }
-        Transaction transaction = mTransactionsDbAdapter.getTransaction(id);
-
-        //this should actually never happen, but has happened once. So perform check for the future
-        if (transaction.getSplits().size() == 0){
-            Toast.makeText(getActivity(), "The selected transaction has no splits and cannot be opened", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        String accountUID = transaction.getSplits().get(0).getAccountUID();
-        openTransactionForEdit(accountUID, mTransactionsDbAdapter.getUID(id),
-                v.getTag().toString());
-    }
-
-    /**
-     * Opens the transaction editor to enable editing of the transaction
-     * @param accountUID GUID of account to which transaction belongs
-     * @param transactionUID GUID of transaction to be edited
-     */
-    public void openTransactionForEdit(String accountUID, String transactionUID, String scheduledActionUid){
-        Intent createTransactionIntent = new Intent(getActivity(), TransactionsActivity.class);
-        createTransactionIntent.setAction(Intent.ACTION_INSERT_OR_EDIT);
-        createTransactionIntent.putExtra(UxArgument.SELECTED_ACCOUNT_UID, accountUID);
-        createTransactionIntent.putExtra(UxArgument.SELECTED_TRANSACTION_UID, transactionUID);
-        createTransactionIntent.putExtra(UxArgument.SCHEDULED_ACTION_UID, scheduledActionUid);
-        startActivity(createTransactionIntent);
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-//        inflater.inflate(R.menu.transactions_list_actions, menu);
-        //remove menu items from the AccountsActivity
         menu.removeItem(R.id.menu_search);
-//        menu.removeItem(R.id.menu_settings);
+        menu.removeItem(R.id.menu_settings);
+        inflater.inflate(R.menu.scheduled_export_actions, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.menu_add_scheduled_export:
+                AccountsActivity.showExportDialog(getActivity());
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     @Override
     public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
         Log.d(TAG, "Creating transactions loader");
-        return new ScheduledTransactionsCursorLoader(getActivity());
+        return new ScheduledExportCursorLoader(getActivity());
     }
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-        Log.d(TAG, "Transactions loader finished. Swapping in cursor");
+        Log.d(TAG, "Scheduled backup loader finished. Swapping in cursor");
         mCursorAdapter.swapCursor(cursor);
         mCursorAdapter.notifyDataSetChanged();
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-        Log.d(TAG, "Resetting transactions loader");
+        Log.d(TAG, "Resetting scheduled backup loader");
         mCursorAdapter.swapCursor(null);
     }
 
     /**
-     * Finishes the edit mode in the transactions list.
-     * Edit mode is started when at least one transaction is selected
+     * Finishes the edit mode in the list.
+     * Edit mode is started when at least one list item is selected
      */
     public void finishEditMode(){
         mInEditMode = false;
@@ -301,10 +272,10 @@ public class ScheduledTransactionsListFragment extends SherlockListFragment impl
      * Extends a simple cursor adapter to bind transaction attributes to views
      * @author Ngewi Fet <ngewif@gmail.com>
      */
-    protected class TransactionsCursorAdapter extends SimpleCursorAdapter {
+    protected class ScheduledExportCursorAdapter extends SimpleCursorAdapter {
 
-        public TransactionsCursorAdapter(Context context, int layout, Cursor c,
-                                         String[] from, int[] to) {
+        public ScheduledExportCursorAdapter(Context context, int layout, Cursor c,
+                                            String[] from, int[] to) {
             super(context, layout, c, from, to, 0);
         }
 
@@ -369,22 +340,17 @@ public class ScheduledTransactionsListFragment extends SherlockListFragment impl
         public void bindView(View view, Context context, Cursor cursor) {
             super.bindView(view, context, cursor);
 
-            Transaction transaction = mTransactionsDbAdapter.buildTransactionInstance(cursor);
+            ScheduledAction scheduledAction = mScheduledActionDbAdapter.buildScheduledActionInstance(cursor);
 
-            TextView amountTextView = (TextView) view.findViewById(R.id.right_text);
-            if (transaction.getSplits().size() == 2){
-                if (transaction.getSplits().get(0).isPairOf(transaction.getSplits().get(1))){
-                    amountTextView.setText(transaction.getSplits().get(0).getAmount().formattedString());
-                }
-            } else {
-                amountTextView.setText(transaction.getSplits().size() + " splits");
-            }
+            TextView primaryTextView = (TextView) view.findViewById(R.id.primary_text);
+            ExportParams params = ExportParams.parseCsv(scheduledAction.getTag());
+            primaryTextView.setText(params.getExportFormat().name() + " "
+                    + scheduledAction.getActionType().name().toLowerCase() + " to "
+                    + params.getExportTarget().name().toLowerCase());
+
+            view.findViewById(R.id.right_text).setVisibility(View.GONE);
+
             TextView descriptionTextView = (TextView) view.findViewById(R.id.secondary_text);
-
-            ScheduledActionDbAdapter scheduledActionDbAdapter = ScheduledActionDbAdapter.getInstance();
-            String scheduledActionUID = cursor.getString(cursor.getColumnIndexOrThrow("origin_scheduled_action_uid")); //column created from join when fetching scheduled transactions
-            view.setTag(scheduledActionUID);
-            ScheduledAction scheduledAction = scheduledActionDbAdapter.getScheduledAction(scheduledActionUID);
             descriptionTextView.setText(scheduledAction.getRepeatString());
 
         }
@@ -394,17 +360,19 @@ public class ScheduledTransactionsListFragment extends SherlockListFragment impl
      * {@link DatabaseCursorLoader} for loading recurring transactions asynchronously from the database
      * @author Ngewi Fet <ngewif@gmail.com>
      */
-    protected static class ScheduledTransactionsCursorLoader extends DatabaseCursorLoader {
+    protected static class ScheduledExportCursorLoader extends DatabaseCursorLoader {
 
-        public ScheduledTransactionsCursorLoader(Context context) {
+        public ScheduledExportCursorLoader(Context context) {
             super(context);
         }
 
         @Override
         public Cursor loadInBackground() {
-            mDatabaseAdapter = TransactionsDbAdapter.getInstance();
+            mDatabaseAdapter = ScheduledActionDbAdapter.getInstance();
 
-            Cursor c = ((TransactionsDbAdapter) mDatabaseAdapter).fetchAllScheduledTransactions();
+            Cursor c = mDatabaseAdapter.fetchAllRecords(
+                    DatabaseSchema.ScheduledActionEntry.COLUMN_TYPE + "=?",
+                    new String[]{ScheduledAction.ActionType.BACKUP.name()});
 
             registerContentObserver(c);
             return c;
@@ -412,4 +380,3 @@ public class ScheduledTransactionsListFragment extends SherlockListFragment impl
     }
 
 }
-

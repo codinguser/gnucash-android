@@ -19,9 +19,8 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 
-import com.actionbarsherlock.view.MenuItem;
-
 import org.gnucash.android.R;
+import org.gnucash.android.ui.export.ScheduledExportListFragment;
 import org.gnucash.android.ui.passcode.PassLockActivity;
 
 import java.util.MissingFormatArgumentException;
@@ -49,21 +48,32 @@ public class ScheduledActionsActivity extends PassLockActivity {
 
         switch (mDisplayMode){
             case ALL_ACTIONS:
-                showAllScheduledEventsFragment();
-                break;
+                //TODO: do we even want this option. For now fall through to SX
 
             case TRANSACTION_ACTIONS:
                 showScheduledTransactionsFragment();
                 break;
 
             case EXPORT_ACTIONS:
-
+                showScheduledExportsFragment();
                 break;
         }
     }
 
-    private void showAllScheduledEventsFragment(){
+    /**
+     * Shows the fragment with scheduled exports
+     */
+    private void showScheduledExportsFragment(){
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager
+                .beginTransaction();
 
+        ScheduledExportListFragment exportListFragment = new ScheduledExportListFragment();
+
+        fragmentTransaction.replace(R.id.fragment_container,
+                exportListFragment, "fragment_recurring_transactions");
+
+        fragmentTransaction.commit();
     }
 
     /**

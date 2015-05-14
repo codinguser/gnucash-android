@@ -28,6 +28,7 @@ import android.test.ActivityInstrumentationTestCase2;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.ToggleButton;
@@ -278,6 +279,123 @@ public class TransactionsActivityTest extends
 		mSolo.waitForText("Pasta");
 	}
 
+	/**
+	 * Tests that transactions splits are automatically balanced and an imbalance account will be created
+	 * This test case assumes that single entry is used
+	 */
+	public void testAutoBalanceTransactions(){
+		setDoubleEntryEnabled(false);
+		mTransactionsDbAdapter.deleteAllRecords();
+		mSolo.sleep(1000);
+		assertThat(mTransactionsDbAdapter.getTotalTransactionsCount()).isEqualTo(0);
+		String imbalanceAcctUID = mAccountsDbAdapter.getImbalanceAccountUID(Currency.getInstance(CURRENCY_CODE));
+		assertThat(imbalanceAcctUID).isNull();
+
+		mSolo.waitForText(TRANSACTION_NAME);
+
+		validateTransactionListDisplayed();
+		clickSherlockActionBarItem(R.id.menu_add_transaction);
+
+		mSolo.waitForText("New transaction");
+
+		//validate creation of transaction
+		mSolo.enterText(0, "Autobalance");
+		mSolo.enterText(1, "499");
+
+		View typeToogleButton = mSolo.getView(R.id.btn_open_splits);
+		assertThat(typeToogleButton).isNotVisible(); //no double entry so no split editor
+
+		mSolo.clickOnActionBarItem(R.id.menu_save);
+
+		mSolo.sleep(2000);
+
+		assertThat(mTransactionsDbAdapter.getTotalTransactionsCount()).isEqualTo(1);
+		Transaction transaction = mTransactionsDbAdapter.getAllTransactions().get(0);
+		assertThat(transaction.getSplits()).hasSize(2);
+		imbalanceAcctUID = mAccountsDbAdapter.getImbalanceAccountUID(Currency.getInstance(CURRENCY_CODE));
+		assertThat(imbalanceAcctUID).isNotNull();
+		assertThat(imbalanceAcctUID).isNotEmpty();
+		assertTrue(mAccountsDbAdapter.isHiddenAccount(imbalanceAcctUID)); //imbalance account should be hidden in single entry mode
+
+		assertThat(transaction.getSplits()).extracting("mAccountUID").contains(imbalanceAcctUID);
+
+	}
+
+	/**
+	 * Tests input of transaction splits using the split editor.
+	 * Also validates that the imbalance from the split editor will be automatically added as a split
+	 */
+	public void testSplitEditor(){
+		setDoubleEntryEnabled(true);
+		mTransactionsDbAdapter.deleteAllRecords();
+		mSolo.sleep(1000);
+		//when we start there should be no imbalance account in the system
+		String imbalanceAcctUID = mAccountsDbAdapter.getImbalanceAccountUID(Currency.getInstance(CURRENCY_CODE));
+		assertThat(imbalanceAcctUID).isNull();
+
+		mSolo.waitForText(TRANSACTION_NAME);
+
+		validateTransactionListDisplayed();
+		clickSherlockActionBarItem(R.id.menu_add_transaction);
+
+		mSolo.waitForText("New transaction");
+
+		//validate creation of transaction
+		mSolo.enterText(0, "Autobalance");
+		mSolo.enterText(1, "4499");
+
+		mSolo.clickOnButton(1);
+		mSolo.waitForDialogToOpen();
+
+		LinearLayout splitListView = (LinearLayout) mSolo.getView(R.id.split_list_layout);
+		assertThat(splitListView).hasChildCount(1);
+
+		//TODO: enable this assert when we fix the sign of amounts in split editor
+		//assertThat(mSolo.getEditText(0).getText().toString()).isEqualTo("44.99");
+		View addSplit = mSolo.getView(R.id.btn_add_split);
+		mSolo.clickOnView(addSplit);
+		mSolo.sleep(5000);
+		assertThat(splitListView).hasChildCount(2);
+
+		mSolo.enterText(0, "4000");
+
+		TextView imbalanceTextView = (TextView) mSolo.getView(R.id.imbalance_textview);
+		assertThat(imbalanceTextView).hasText("-4.99 $");
+
+		mSolo.clickOnView(mSolo.getView(R.id.btn_save));
+		mSolo.waitForDialogToClose();
+		mSolo.sleep(3000);
+		//after we use split editor, we should not be able to toggle the transaction type
+		assertThat(mSolo.getView(R.id.input_transaction_type)).isNotVisible();
+
+		mSolo.clickOnActionBarItem(R.id.menu_save);
+
+		mSolo.sleep(3000);
+
+		List<Transaction> transactions = mTransactionsDbAdapter.getAllTransactions();
+		assertThat(transactions).hasSize(1);
+
+		Transaction transaction = transactions.get(0);
+
+		assertThat(transaction.getSplits()).hasSize(3); //auto-balanced
+		imbalanceAcctUID = mAccountsDbAdapter.getImbalanceAccountUID(Currency.getInstance(CURRENCY_CODE));
+		assertThat(imbalanceAcctUID).isNotNull();
+		assertThat(imbalanceAcctUID).isNotEmpty();
+		assertFalse(mAccountsDbAdapter.isHiddenAccount(imbalanceAcctUID));
+
+		//at least one split will belong to the imbalance account
+		assertThat(transaction.getSplits()).extracting("mAccountUID").contains(imbalanceAcctUID);
+
+		List<Split> imbalanceSplits = mSplitsDbAdapter.getSplitsForTransactionInAccount(transaction.getUID(), imbalanceAcctUID);
+		assertThat(imbalanceSplits).hasSize(1);
+
+		Split split = imbalanceSplits.get(0);
+		assertThat(split.getAmount().toPlainString()).isEqualTo("4.99");
+		assertThat(split.getType()).isEqualTo(TransactionType.CREDIT);
+
+	}
+
+
     private void setDoubleEntryEnabled(boolean enabled){
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
         Editor editor = prefs.edit();
@@ -329,9 +447,9 @@ public class TransactionsActivityTest extends
 		intent.setAction(Intent.ACTION_INSERT_OR_EDIT);
 		intent.putExtra(UxArgument.SELECTED_ACCOUNT_UID, childAccount.getUID());
 		getActivity().startActivity(intent);
-		mSolo.sleep(1000);
+		mSolo.waitForActivity(TransactionsActivity.class);
+		mSolo.sleep(3000);
 		Spinner spinner = (Spinner) mSolo.getView(R.id.input_double_entry_accounts_spinner);
-
 		long transferAccountID = mAccountsDbAdapter.getID(transferAccount.getUID());
 		assertThat(transferAccountID).isEqualTo(spinner.getSelectedItemId());
 	}
@@ -346,34 +464,27 @@ public class TransactionsActivityTest extends
 		validateEditTransactionFields(mTransaction);
 
         TransactionTypeToggleButton toggleButton = (TransactionTypeToggleButton) mSolo.getView(R.id.input_transaction_type);
-        assertThat(toggleButton).isVisible();
+        assertThat(toggleButton).isNotNull();
+		assertThat(toggleButton).isVisible();
+		assertThat(toggleButton).hasText(R.string.label_receive);
 
-        String label = toggleButton.getText().toString();
-        assertTrue(mSolo.searchToggleButton(label));
-		assertEquals(getActivity().getString(R.string.label_receive), label);
-
-//		mSolo.clickOnButton(getActivity().getString(R.string.label_credit));
         mSolo.clickOnView(toggleButton);
-		String amountString = mSolo.getEditText(1).getText().toString();
-		NumberFormat formatter = NumberFormat.getInstance();
-		try {
-			amountString = formatter.parse(amountString).toString();
-		} catch (ParseException e) {
-			e.printStackTrace();
-		}
-		Money amount = new Money(amountString, Currency.getInstance(Locale.getDefault()).getCurrencyCode());
-		assertEquals("-9.99", amount.toPlainString());
+		mSolo.sleep(2000);
 
-		clickSherlockActionBarItem(R.id.menu_save);
+		assertThat(toggleButton).hasText(R.string.label_spend);
+		EditText amountView = (EditText) mSolo.getView(R.id.input_transaction_amount);
+		String amountString = amountView.getText().toString();
+		assertThat(amountString).startsWith("-");
+		assertThat("-9.99").isEqualTo(amountString);
+
+		mSolo.clickOnActionBarItem(R.id.menu_save);
 		mSolo.waitForText(DUMMY_ACCOUNT_NAME);
 		
 		List<Transaction> transactions = mTransactionsDbAdapter.getAllTransactionsForAccount(DUMMY_ACCOUNT_UID);
-		
-		assertEquals(1, transactions.size());
+		assertThat(transactions).hasSize(1);
 		Transaction trx = transactions.get(0);
+		assertThat(trx.getSplits()).hasSize(2); //auto-balancing of splits
 		assertTrue(trx.getBalance(DUMMY_ACCOUNT_UID).isNegative());
-
-        mSolo.goBack();
 	}
 	
 	public void testOpenTransactionEditShouldNotModifyTransaction(){
@@ -401,12 +512,6 @@ public class TransactionsActivityTest extends
 					TransactionFormFragment.DATE_FORMATTER.format(trxDate));
 			assertEquals(TransactionFormFragment.TIME_FORMATTER.format(expectedDate),
 					TransactionFormFragment.TIME_FORMATTER.format(trxDate));
-			
-			//FIXME: for some reason, the expected time is higher (in the future) than the actual time
-			//this should not be the case since the transaction was created with the expected time
-			//I guess it has to do with the time precision and the fact that the time is repeatedly 
-			//converted to Date objects and back. But just validating the printable date and time should be ok
-	//		assertEquals(mTransactionTimeMillis, trx.getTimeMillis());
 		}
 
 	public void testDeleteTransaction(){
@@ -414,7 +519,7 @@ public class TransactionsActivityTest extends
 		
 		mSolo.clickOnCheckBox(0);		
 		clickSherlockActionBarItem(R.id.context_menu_delete);
-		
+
 		mSolo.sleep(500);
 
 		long id = mAccountsDbAdapter.getID(DUMMY_ACCOUNT_UID);
@@ -438,7 +543,7 @@ public class TransactionsActivityTest extends
 		//initiate bulk move
 		clickSherlockActionBarItem(R.id.context_menu_move_transactions);
 		
-		mSolo.waitForDialogToClose(2000);
+		mSolo.waitForDialogToClose();
 		
 		Spinner spinner = mSolo.getCurrentViews(Spinner.class).get(0);
 		mSolo.clickOnView(spinner);
@@ -447,7 +552,7 @@ public class TransactionsActivityTest extends
 		mSolo.clickOnButton(1);
 //		mSolo.clickOnText(getActivity().getString(R.string.btn_move));
 		
-		mSolo.waitForDialogToClose(2000);
+		mSolo.waitForDialogToClose();
 		
 		int targetCount = mAccountsDbAdapter.getAccount(account.getUID()).getTransactionCount();
 		assertEquals(1, targetCount);
@@ -455,7 +560,8 @@ public class TransactionsActivityTest extends
 		int afterOriginCount = mAccountsDbAdapter.getAccount(DUMMY_ACCOUNT_UID).getTransactionCount();
 		assertEquals(beforeOriginCount-1, afterOriginCount);
 	}
-	
+
+	//TODO: add normal transaction recording
 	public void testLegacyIntentTransactionRecording(){
 		int beforeCount = mTransactionsDbAdapter.getTransactionsCount(DUMMY_ACCOUNT_UID);
 		Intent transactionIntent = new Intent(Intent.ACTION_INSERT);
@@ -487,7 +593,8 @@ public class TransactionsActivityTest extends
 	@Override
 	protected void tearDown() throws Exception {
 		mSolo.finishOpenedActivities();
-		mSolo.sleep(1000); //wait for activities to finish before clearing db
+		mSolo.waitForEmptyActivityStack(20000);
+		mSolo.sleep(5000);
 		mAccountsDbAdapter.deleteAllRecords();
 		super.tearDown();
 	}

@@ -563,7 +563,7 @@ public class AccountFormFragment extends SherlockFragment {
      */
 	private void loadParentAccountList(AccountType accountType){
         String condition = DatabaseSchema.SplitEntry.COLUMN_TYPE + " IN ("
-                + getAllowedParentAccountTypes(accountType) + ") ";
+                + getAllowedParentAccountTypes(accountType) + ") AND " + DatabaseSchema.AccountEntry.COLUMN_HIDDEN + "!=1 ";
 
         if (mAccount != null){  //if editing an account
             mDescendantAccountUIDs = mAccountsDbAdapter.getDescendantAccountUIDs(mAccount.getUID(), null, null);

@@ -16,7 +16,6 @@
  */
 package org.gnucash.android.importer;
 
-import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
@@ -44,7 +43,7 @@ public class GncXmlImporter {
     /**
      * Parses XML into an already open database.
      * <p>This method is used mainly by the {@link org.gnucash.android.db.DatabaseHelper} for database migrations.<br>
-     *     You should probably use {@link #parse(android.content.Context, java.io.InputStream)} instead</p>
+     *     You should probably use {@link #parse(java.io.InputStream)} instead</p>
      * @param db SQLite Database
      * @param gncXmlInputStream Input stream of GnuCash XML
      */

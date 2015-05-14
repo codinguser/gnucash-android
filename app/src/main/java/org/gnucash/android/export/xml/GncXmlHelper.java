@@ -28,6 +28,7 @@ import java.math.BigInteger;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Currency;
 import java.util.Date;
 import java.util.Locale;
 import java.util.regex.Matcher;
@@ -46,6 +47,7 @@ public abstract class GncXmlHelper {
     public static final String ATTR_KEY_TYPE        = "type";
     public static final String ATTR_KEY_VERSION     = "version";
     public static final String ATTR_VALUE_STRING    = "string";
+    public static final String ATTR_VALUE_NUMERIC   = "numeric";
     public static final String ATTR_VALUE_GUID      = "guid";
     public static final String ATTR_VALUE_BOOK      = "book";
     public static final String TAG_GDATE            = "gdate";
@@ -134,6 +136,8 @@ public abstract class GncXmlHelper {
     public static final String KEY_SPLIT_ACCOUNT_SLOT       = "account";
     public static final String KEY_DEBIT_FORMULA            = "debit-formula";
     public static final String KEY_CREDIT_FORMULA           = "credit-formula";
+    public static final String KEY_DEBIT_NUMERIC            = "debit-numeric";
+    public static final String KEY_CREDIT_NUMERIC           = "credit-numeric";
     public static final String KEY_FROM_SCHED_ACTION        = "from-sched-xaction";
     public static final String KEY_DEFAULT_TRANSFER_ACCOUNT = "default_transfer_account";
 
@@ -155,17 +159,6 @@ public abstract class GncXmlHelper {
     public static long parseDate(String dateString) throws ParseException {
         Date date = TIME_FORMATTER.parse(dateString);
         return date.getTime();
-    }
-
-    /**
-     * Formats the money amounts into the GnuCash XML format. GnuCash stores debits as positive and credits as negative
-     * @param split Split for which the amount is to be formatted
-     * @return GnuCash XML representation of amount
-     */
-    public static String formatMoney(Split split){
-        Money amount = split.getType() == TransactionType.DEBIT ? split.getAmount() : split.getAmount().negate();
-        BigDecimal decimal = amount.asBigDecimal().multiply(new BigDecimal(100));
-        return decimal.stripTrailingZeros().toPlainString() + "/100";
     }
 
     /**
@@ -206,6 +199,7 @@ public abstract class GncXmlHelper {
      * Parses amount strings from GnuCash XML into {@link java.math.BigDecimal}s
      * @param amountString String containing the amount
      * @return BigDecimal with numerical value
+     * @throws ParseException if the amount could not be parsed
      */
     public static BigDecimal parseSplitAmount(String amountString) throws ParseException {
         int pos = amountString.indexOf("/");
@@ -216,6 +210,21 @@ public abstract class GncXmlHelper {
         BigInteger numerator = new BigInteger(amountString.substring(0, pos));
         int scale = amountString.length() - pos - 2;
         return new BigDecimal(numerator, scale);
+    }
+
+    /**
+     * Formats money amounts for splits in the format 2550/100
+     * @param amount Split amount as BigDecimal
+     * @param trxCurrency Currency of the transaction
+     * @return Formatted split amount
+     */
+    public static String formatSplitAmount(BigDecimal amount, Currency trxCurrency){
+        int fractionDigits = trxCurrency.getDefaultFractionDigits();
+        int denomInt = (int) Math.pow(10, fractionDigits);
+        BigDecimal denom = new BigDecimal(denomInt);
+        String denomString = Integer.toString(denomInt);
+
+        return amount.multiply(denom).stripTrailingZeros().toPlainString() + "/" + denomString;
     }
 
     /**

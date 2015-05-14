@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-package org.gnucash.android.export;
+package org.gnucash.android.ui.export;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -41,20 +40,17 @@ import com.doomonafireball.betterpickers.recurrencepicker.EventRecurrence;
 import com.doomonafireball.betterpickers.recurrencepicker.EventRecurrenceFormatter;
 import com.doomonafireball.betterpickers.recurrencepicker.RecurrencePickerDialog;
 import com.dropbox.sync.android.DbxAccountManager;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.ResultCallback;
-import com.google.android.gms.drive.Drive;
-import com.google.android.gms.drive.DriveFolder;
-import com.google.android.gms.drive.MetadataChangeSet;
 
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.ScheduledActionDbAdapter;
+import org.gnucash.android.export.ExportAsyncTask;
+import org.gnucash.android.export.ExportFormat;
+import org.gnucash.android.export.ExportParams;
 import org.gnucash.android.model.ScheduledAction;
 import org.gnucash.android.ui.settings.SettingsActivity;
 import org.gnucash.android.ui.util.RecurrenceParser;
 
-import java.io.File;
 import java.util.List;
 import java.util.UUID;
 
@@ -138,22 +134,18 @@ public class ExportDialogFragment extends DialogFragment implements RecurrencePi
 			exportParameters.setExportTarget(mExportTarget);
 			exportParameters.setDeleteTransactionsAfterExport(mDeleteAllCheckBox.isChecked());
 
-			ScheduledActionDbAdapter scheduledActionDbAdapter = ScheduledActionDbAdapter.getInstance();
-			scheduledActionDbAdapter.deleteScheduledBackupAction(mExportFormat);
-			List<ScheduledAction> events = RecurrenceParser.parse(mEventRecurrence,
+			List<ScheduledAction> scheduledActions = RecurrenceParser.parse(mEventRecurrence,
 					ScheduledAction.ActionType.BACKUP);
-			//this is done on purpose, we will add only one scheduled action per export type
-			//FIXME: Prevent user from setting multiple days in dialog or update scheduled action parser to return only one recurrence
-			if (!events.isEmpty()){
-				ScheduledAction scheduledAction = events.get(0);
+			for (ScheduledAction scheduledAction : scheduledActions) {
 				scheduledAction.setTag(exportParameters.toCsv());
 				scheduledAction.setActionUID(UUID.randomUUID().toString().replaceAll("-", ""));
-				scheduledActionDbAdapter.addScheduledAction(scheduledAction);
+				ScheduledActionDbAdapter.getInstance().addScheduledAction(scheduledAction);
 			}
-            dismiss();
 
             Log.i(TAG, "Commencing async export of transactions");
             new ExportAsyncTask(getActivity()).execute(exportParameters);
+
+			dismiss();
 		}
 		
 	}
@@ -186,26 +178,7 @@ public class ExportDialogFragment extends DialogFragment implements RecurrencePi
 				mExportWarningTextView.setText(R.string.export_warning_xml);
 				break;
         }
-		refreshRecurrenceTextView(mExportFormat);
     }
-
-	/**
-	 * Refreshes the recurrence text view for the specified backup format
-	 * This is meant to be called every time the backup format is changed in the dialog
-	 * @param exportFormat ExportFormat
-	 */
-	private void refreshRecurrenceTextView(ExportFormat exportFormat){
-		String repeatString	= getString(R.string.label_tap_to_create_schedule);
-		mEventRecurrence = new EventRecurrence();
-		ScheduledActionDbAdapter scheduledActionDbAdapter = ScheduledActionDbAdapter.getInstance();
-		ScheduledAction scheduledBackup = scheduledActionDbAdapter.getScheduledBackupAction(exportFormat);
-		if (scheduledBackup != null){
-			repeatString = scheduledBackup.getRepeatString();
-			mRecurrenceRule = scheduledBackup.getRuleString();
-			mEventRecurrence.parse(mRecurrenceRule);
-		}
-		mRecurrenceTextView.setText(repeatString);
-	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,

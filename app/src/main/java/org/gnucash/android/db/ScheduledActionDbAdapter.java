@@ -23,8 +23,6 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 
 import org.gnucash.android.app.GnuCashApplication;
-import org.gnucash.android.export.ExportFormat;
-import org.gnucash.android.export.ExportParams;
 import org.gnucash.android.model.ScheduledAction;
 
 import java.util.ArrayList;
@@ -154,7 +152,7 @@ public class ScheduledActionDbAdapter extends DatabaseAdapter {
      * @param cursor Cursor pointing to data set
      * @return ScheduledEvent object instance
      */
-    private ScheduledAction buildScheduledEventInstance(final Cursor cursor){
+    public ScheduledAction buildScheduledActionInstance(final Cursor cursor){
         String actionUid = cursor.getString(cursor.getColumnIndexOrThrow(ScheduledActionEntry.COLUMN_ACTION_UID));
         long period     = cursor.getLong(cursor.getColumnIndexOrThrow(ScheduledActionEntry.COLUMN_PERIOD));
         long startTime  = cursor.getLong(cursor.getColumnIndexOrThrow(ScheduledActionEntry.COLUMN_START_TIME));
@@ -192,7 +190,7 @@ public class ScheduledActionDbAdapter extends DatabaseAdapter {
         ScheduledAction scheduledAction = null;
         if (cursor != null) {
             if (cursor.moveToFirst()) {
-                scheduledAction = buildScheduledEventInstance(cursor);
+                scheduledAction = buildScheduledActionInstance(cursor);
             }
             cursor.close();
         }
@@ -213,66 +211,12 @@ public class ScheduledActionDbAdapter extends DatabaseAdapter {
         List<ScheduledAction> scheduledActions = new ArrayList<ScheduledAction>();
         try {
             while (cursor.moveToNext()) {
-                scheduledActions.add(buildScheduledEventInstance(cursor));
+                scheduledActions.add(buildScheduledActionInstance(cursor));
             }
         } finally {
             cursor.close();
         }
         return scheduledActions;
-    }
-
-    /**
-     * Returns the first export scheduled action in the database which matches the ExportFormat.
-     * <p>There is an expectation that there will only be one scheduled action per export format in the database.</p>
-     * @param exportFormat ExportFormat of scheduled backup
-     * @return ScheduledAction for the backup or null
-     */
-    public ScheduledAction getScheduledBackupAction(ExportFormat exportFormat){
-        Cursor cursor = mDb.query(ScheduledActionEntry.TABLE_NAME, null,
-                ScheduledActionEntry.COLUMN_TYPE + "= ?",
-                new String[]{ScheduledAction.ActionType.BACKUP.name()}, null, null, null);
-        try{
-            while(cursor.moveToNext()){
-                String paramsCsv = cursor.getString(cursor.getColumnIndexOrThrow(ScheduledActionEntry.COLUMN_TAG));
-                ExportParams params = ExportParams.parseCsv(paramsCsv);
-                if (params.getExportFormat() == exportFormat){
-                    return buildScheduledEventInstance(cursor);
-                }
-            }
-        } finally {
-            cursor.close();
-        }
-        return null;
-    }
-
-    /**
-     * Deletes the scheduled backup actions which correspond to the export format
-     * @param exportFormat Export format
-     * @return Number of records deleted
-     */
-    public int deleteScheduledBackupAction(ExportFormat exportFormat){
-        List<String> uidsToBeDeleted = new ArrayList<>();
-        Cursor cursor = mDb.query(ScheduledActionEntry.TABLE_NAME,
-                new String[]{ScheduledActionEntry.COLUMN_UID, ScheduledActionEntry.COLUMN_TAG},
-                ScheduledActionEntry.COLUMN_TYPE + "= ?",
-                new String[]{ScheduledAction.ActionType.BACKUP.name()}, null, null, null);
-        try{
-            while(cursor.moveToNext()){
-                String paramsCsv = cursor.getString(cursor.getColumnIndexOrThrow(ScheduledActionEntry.COLUMN_TAG));
-                ExportParams params = ExportParams.parseCsv(paramsCsv);
-                if (params.getExportFormat() == exportFormat){
-                    uidsToBeDeleted.add(cursor.getString(cursor.getColumnIndexOrThrow(ScheduledActionEntry.COLUMN_UID)));
-                }
-            }
-        } finally {
-            cursor.close();
-        }
-
-        int count = 0;
-        for (String uid : uidsToBeDeleted) {
-            count += mDb.delete(mTableName, ScheduledActionEntry.COLUMN_UID + "=?", new String[]{uid});
-        }
-        return count;
     }
 
     /**
@@ -283,7 +227,7 @@ public class ScheduledActionDbAdapter extends DatabaseAdapter {
         Cursor cursor = fetchAllRecords();
         List<ScheduledAction> scheduledActions = new ArrayList<ScheduledAction>();
         while (cursor.moveToNext()){
-            scheduledActions.add(buildScheduledEventInstance(cursor));
+            scheduledActions.add(buildScheduledActionInstance(cursor));
         }
         return scheduledActions;
     }
@@ -297,7 +241,7 @@ public class ScheduledActionDbAdapter extends DatabaseAdapter {
                 null, ScheduledActionEntry.COLUMN_ENABLED + "=1", null, null, null, null);
         List<ScheduledAction> scheduledActions = new ArrayList<ScheduledAction>();
         while (cursor.moveToNext()){
-            scheduledActions.add(buildScheduledEventInstance(cursor));
+            scheduledActions.add(buildScheduledActionInstance(cursor));
         }
         return scheduledActions;
     }
