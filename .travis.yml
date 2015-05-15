@@ -1,3 +1,4 @@
+sudo: true
 language: android
 jdk: oraclejdk7
 env: _JAVA_OPTIONS="-Xmx768m -Xms768m"
@@ -22,6 +23,11 @@ android:
     #- sys-img-armeabi-v7a-android-19
     - sys-img-x86-android-19
 
+before_install:
+  - sudo apt-get install qemu-kvm libvirt-bin ubuntu-vm-builder bridge-utils
+  - sudo adduser codinguser kvm
+  - sudo adduser codinguser libvirtd
+  
 # Emulator Management: Create, Start and Wait
 before_script:
   - mkdir sdcard
