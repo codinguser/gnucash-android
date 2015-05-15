@@ -4,8 +4,8 @@ buildscript {
 		jcenter()
 	}
 	dependencies {
-		classpath 'com.android.tools.build:gradle:1.2.2'
-		classpath 'com.crashlytics.tools.gradle:crashlytics-gradle:1.+'
+		classpath 'com.android.tools.build:gradle:1.2.3'
+		classpath 'com.crashlytics.tools.gradle:crashlytics-gradle:1.16.0'
 	}
 }
 

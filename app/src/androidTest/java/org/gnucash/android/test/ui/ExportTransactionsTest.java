@@ -164,18 +164,17 @@ public class ExportTransactionsTest extends
 		mSolo.clickOnText(ExportFormat.XML.name());
 		mSolo.clickOnView(mSolo.getView(R.id.input_recurrence));
 		mSolo.waitForDialogToOpen();
-		mSolo.sleep(2000);
+		mSolo.sleep(3000);
 		mSolo.clickOnButton(0); //switch on the recurrence dialog
 		mSolo.sleep(2000);
 		mSolo.pressSpinnerItem(0, -1);
-		mSolo.sleep(1000);
+		mSolo.sleep(2000);
 		mSolo.clickOnButton(1);
-		mSolo.waitForDialogToClose();
 		mSolo.sleep(3000);
 		mSolo.clickOnButton(5); //the export button is the second
 		mSolo.waitForDialogToClose();
 
-		mSolo.sleep(2000); //wait for database save
+		mSolo.sleep(5000); //wait for database save
 
 		ScheduledActionDbAdapter scheduledactionDbAdapter = new ScheduledActionDbAdapter(mDb);
 		assertThat(scheduledactionDbAdapter.getAllEnabledScheduledActions())
