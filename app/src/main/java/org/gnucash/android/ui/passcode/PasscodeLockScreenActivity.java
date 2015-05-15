@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 Oleksandr Tyshkovets <olexandr.tyshkovets@gmail.com>
+ * Copyright (c) 2014 - 2015 Oleksandr Tyshkovets <olexandr.tyshkovets@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,7 +49,12 @@ public class PasscodeLockScreenActivity extends SherlockFragmentActivity
                 .getString(UxArgument.PASSCODE, "");
         Log.d(TAG, "Passcode: " + passcode);
 
-        if (passcode.equals(pass)) {
+        if (pass.equals(passcode)) {
+            if (UxArgument.DISABLE_PASSCODE.equals(getIntent().getStringExtra(UxArgument.DISABLE_PASSCODE))) {
+                setResult(RESULT_OK);
+                finish();
+                return;
+            }
             GnuCashApplication.PASSCODE_SESSION_INIT_TIME = System.currentTimeMillis();
             startActivity(new Intent()
                     .setClassName(this, getIntent().getStringExtra(UxArgument.PASSCODE_CLASS_CALLER))
@@ -64,10 +69,18 @@ public class PasscodeLockScreenActivity extends SherlockFragmentActivity
 
     @Override
     public void onBackPressed() {
+        setResult(RESULT_CANCELED);
+
+        if (UxArgument.DISABLE_PASSCODE.equals(getIntent().getStringExtra(UxArgument.DISABLE_PASSCODE))) {
+            finish();
+            return;
+        }
+
         GnuCashApplication.PASSCODE_SESSION_INIT_TIME = System.currentTimeMillis() - GnuCashApplication.SESSION_TIMEOUT;
         startActivity(new Intent(Intent.ACTION_MAIN)
                 .addCategory(Intent.CATEGORY_HOME)
-                .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        );
     }
 
 }

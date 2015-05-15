@@ -413,7 +413,6 @@
     <string name="label_passcode">Digitar senha</string>
     <string name="toast_wrong_passcode">Senha incorreta, tente novamente</string>
     <string name="toast_passcode_set">Conunto de senha</string>
-    <string name="toast_confirm_passcode">Por favor confirme sua senha</string>
     <string name="toast_invalid_passcode_confirmation">Confrimação de senha incorreta. Tente novamente</string>
     <string name="header_passcode_settings">Senha</string>
     <string name="title_passcode_preferences">Preferências de Senha</string>
@@ -490,6 +489,9 @@
     <string name="msg_enable_crashlytics">Habilitar enviar informações sobre malfuncionamentos para os desenvolvedores para melhorias (recomendado).
 Nenhuma informação de  identificação do usuário será coletada neste processo!
     </string>
+	<string name="label_confirm_passcode">Please confirm your passcode</string>
+	<string name="label_new_passcode">Enter your new passcode</string>
+	<string name="label_old_passcode">Enter your old passcode</string>
     <string name="label_export_format">Formato de exportação</string>
 	<string name="toast_backup_folder_not_found">Pasta de backup não encontrada. Verifique se o cartão SD está conectado!</string>
 	<string name="header_report_settings">Relatórios</string>
