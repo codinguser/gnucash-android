@@ -177,9 +177,7 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
 
     public void testChangeParentAccount(){
         final String accountName = "Euro Account";
-        final String accountUID = "my-euro_account";
         Account account = new Account(accountName, Currency.getInstance("EUR"));
-        account.setUID(accountUID);
         mAccountsDbAdapter.addAccount(account);
 
         refreshAccountsList();
@@ -190,13 +188,12 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
         mSolo.waitForView(EditText.class);
 
         mSolo.clickOnCheckBox(1);
-        mSolo.pressSpinnerItem(2, 0);
+        mSolo.sleep(2000);
 
-//        mSolo.clickOnView(mSolo.getView(R.id.menu_save));
         mSolo.clickOnActionBarItem(R.id.menu_save);
-
+        mSolo.sleep(1000);
         mSolo.waitForText(getActivity().getString(R.string.title_accounts));
-        Account editedAccount = mAccountsDbAdapter.getAccount(accountUID);
+        Account editedAccount = mAccountsDbAdapter.getAccount(account.getUID());
         String parentUID = editedAccount.getParentUID();
 
         assertThat(parentUID).isNotNull();

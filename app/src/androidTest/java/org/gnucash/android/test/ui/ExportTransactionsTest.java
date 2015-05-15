@@ -156,7 +156,7 @@ public class ExportTransactionsTest extends
 	/**
 	 * Test creating a scheduled export
 	 */
-	public void atestCreateExportSchedule(){
+	public void testCreateExportSchedule(){
 //		mSolo.setNavigationDrawer(Solo.OPENED);
 //		mSolo.clickOnText(mSolo.getString(R.string.nav_menu_export));
 		mSolo.clickOnActionBarItem(R.id.menu_export);
