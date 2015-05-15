@@ -224,23 +224,20 @@ public class TransactionsActivityTest extends
         //validate creation of transaction
         mSolo.enterText(0, "Lunch");
         mSolo.enterText(1, "899");
-
+		mSolo.sleep(2000);
         TransactionTypeToggleButton typeToggleButton = (TransactionTypeToggleButton) mSolo.getView(R.id.input_transaction_type);
-        String text = typeToggleButton.getText().toString();
-
-        assertTrue(mSolo.searchToggleButton(text));
-        if (!mSolo.isToggleButtonChecked(0)){
-            mSolo.clickOnToggleButton(text);
-        }
-
+		assertThat(typeToggleButton).isVisible();
+		if (!typeToggleButton.isChecked()){
+			mSolo.clickOnButton(0);
+		}
+		mSolo.sleep(1000);
         //check that the amount is correctly converted in the input field
         String value = mSolo.getEditText(1).getText().toString();
         String expectedValue = NumberFormat.getInstance().format(-8.99);
-        assertEquals(expectedValue, value);
+        assertThat(value).isEqualTo(expectedValue);
 
         int transactionsCount = getTransactionCount();
 
-//        clickSherlockActionBarItem(R.id.menu_save);
         mSolo.clickOnActionBarItem(R.id.menu_save);
 
         mSolo.waitForText(DUMMY_ACCOUNT_NAME);
