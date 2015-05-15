@@ -19,13 +19,14 @@ android:
 
     # Specify at least one system image,
     # if you need to run emulator(s) during your tests
-    - sys-img-armeabi-v7a-android-19
+    #- sys-img-armeabi-v7a-android-19
+    - sys-img-x86-android-19
 
 # Emulator Management: Create, Start and Wait
 before_script:
   - mkdir sdcard
   - mksdcard -l gnucash-sdcard 64M sdcard/gnucash-sdcard.img
-  - echo no | android create avd --force -n test -t android-19 --abi armeabi-v7a
+  - echo no | android create avd --force -n test -t android-19 --abi x86 
   - emulator -avd test -no-skin -no-audio -no-window -no-boot-anim -sdcard sdcard/gnucash-sdcard.img &
   - android-wait-for-emulator
   - adb shell input keyevent 82 &    
