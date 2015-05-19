@@ -70,8 +70,13 @@ public class BarChartActivity extends PassLockActivity implements OnChartValueSe
     private static final int NO_DATA_COLOR = Color.LTGRAY;
     private static final int NO_DATA_BAR_COUNTS = 3;
     private static final int[] COLORS = {
-            Color.parseColor("#68F1AF"), Color.parseColor("#CC1f09"), Color.parseColor("#EE8600"),
-            Color.parseColor("#1469EB"), Color.parseColor("#B304AD"),
+            Color.parseColor("#17ee4e"), Color.parseColor("#cc1f09"), Color.parseColor("#3940f7"),
+            Color.parseColor("#f9cd04"), Color.parseColor("#5f33a8"), Color.parseColor("#e005b6"),
+            Color.parseColor("#17d6ed"), Color.parseColor("#e4a9a2"), Color.parseColor("#8fe6cd"),
+            Color.parseColor("#8b48fb"), Color.parseColor("#343a36"), Color.parseColor("#6decb1"),
+            Color.parseColor("#a6dcfd"), Color.parseColor("#5c3378"), Color.parseColor("#a6dcfd"),
+            Color.parseColor("#ba037c"), Color.parseColor("#708809"), Color.parseColor("#32072c"),
+            Color.parseColor("#fddef8"), Color.parseColor("#fa0e6e"), Color.parseColor("#d9e7b5")
     };
 
     private BarChart mChart;
@@ -140,27 +145,44 @@ public class BarChartActivity extends PassLockActivity implements OnChartValueSe
 
         List<BarDataSet> dataSets = new ArrayList<>();
         List<BarEntry> values = new ArrayList<>();
+        List<String> labels = new ArrayList<>();
+        List<Integer> colors = new ArrayList<>();
         List<String> xValues = new ArrayList<>();
         for (int i = 0; i <= months; i++) {
             xValues.add(startDate.toString(X_AXIS_PATTERN));
 
             long start = startDate.dayOfMonth().withMinimumValue().millisOfDay().withMinimumValue().toDate().getTime();
             long end = startDate.dayOfMonth().withMaximumValue().millisOfDay().withMaximumValue().toDate().getTime();
-            float stack[] = new float[accountTypeList.size()];
-            int j = 0;
-            for (Map.Entry<AccountType, List<String>> entry : getAccountTypeToAccountUidMap(accountTypeList).entrySet()) {
-                stack[j++] = (float) mAccountsDbAdapter.getAccountsBalance(entry.getValue(), start, end).absolute().asDouble();
-                Log.d(TAG, entry.getKey() + startDate.toString(" MMMM yyyy") + ", balance = " + stack[j - 1]);
+            List<Float> stack = new ArrayList<>();
+            for (Account account : mAccountsDbAdapter.getSimpleAccountList()) {
+                if (account.getAccountType() == AccountType.EXPENSE
+                        && !account.isPlaceholderAccount() && account.getCurrency() == mCurrency) {
+
+                    float balance = (float) mAccountsDbAdapter.getAccountsBalance(
+                            Collections.singletonList(account.getUID()), start, end).asDouble();
+                    if (balance != 0) {
+                        stack.add(balance);
+                        labels.add(account.getName());
+                        colors.add(COLORS[(colors.size()) % COLORS.length]);
+                        Log.i(TAG, "EXPENSE" + startDate.toString(" MMMM yyyy ") + account.getName()
+                                + " = " + stack.get(stack.size() - 1)  + ", color = " + colors.get(colors.size() - 1));
+                    }
+                }
             }
-            values.add(new BarEntry(stack, i));
+
+            float array[] = new float[stack.size()];
+            for (int k = 0;  k < stack.size(); k++) {
+                array[k] = stack.get(k);
+            }
+
+            values.add(new BarEntry(array, i));
 
             startDate = startDate.plusMonths(1);
         }
 
         BarDataSet set = new BarDataSet(values, "");
-        // conversion an enum list to a string array
-        set.setStackLabels(accountTypeList.toString().substring(1, accountTypeList.toString().length() - 1).split(", "));
-        set.setColors(Arrays.copyOfRange(COLORS, 0, accountTypeList.size()));
+        set.setStackLabels(labels.toArray(new String[labels.size()]));
+        set.setColors(colors);
         dataSets.add(set);
 
         if (set.getYValueSum() == 0) {
