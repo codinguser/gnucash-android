@@ -20,7 +20,11 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -94,10 +98,12 @@ public class BarChartActivity extends PassLockActivity implements OnChartValueSe
     private Set<String> mLegendLabels;
     private Set<Integer> mLegendColors;
 
+    private AccountType mAccountType = AccountType.EXPENSE;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         //it is necessary to set the view first before calling super because of the nav drawer in BaseDrawerActivity
-        setContentView(R.layout.activity_line_chart);
+        setContentView(R.layout.activity_bar_chart);
         super.onCreate(savedInstanceState);
         getSupportActionBar().setTitle(R.string.title_bar_chart);
 
@@ -105,7 +111,7 @@ public class BarChartActivity extends PassLockActivity implements OnChartValueSe
                 .getString(getString(R.string.key_report_currency), Money.DEFAULT_CURRENCY_CODE));
 
         mChart = new BarChart(this);
-        ((LinearLayout) findViewById(R.id.chart)).addView(mChart);
+        ((LinearLayout) findViewById(R.id.bar_chart)).addView(mChart);
         mChart.setOnChartValueSelectedListener(this);
         mChart.setDescription("");
         mChart.getXAxis().setDrawGridLines(false);
@@ -118,19 +124,7 @@ public class BarChartActivity extends PassLockActivity implements OnChartValueSe
         mChart.getLegend().setForm(Legend.LegendForm.CIRCLE);
         mChart.getLegend().setPosition(Legend.LegendPosition.RIGHT_OF_CHART_INSIDE);
 
-        // below we can add/remove displayed account's types
-        mChart.setData(getData(new ArrayList<>(Arrays.asList(AccountType.INCOME, AccountType.EXPENSE))));
-
-        if (!mChartDataPresent) {
-            mChart.getAxisLeft().setAxisMaxValue(10);
-            mChart.getAxisLeft().setDrawLabels(false);
-            mChart.getXAxis().setDrawLabels(false);
-            mChart.setTouchEnabled(false);
-            ((TextView) findViewById(R.id.selected_chart_slice)).setText(getResources().getString(R.string.label_chart_no_data));
-        } else {
-            mChart.animateY(ANIMATION_DURATION);
-        }
-        mChart.invalidate();
+        setUpSpinner();
     }
 
     /**
@@ -159,8 +153,9 @@ public class BarChartActivity extends PassLockActivity implements OnChartValueSe
             long end = startDate.dayOfMonth().withMaximumValue().millisOfDay().withMaximumValue().toDate().getTime();
             List<Float> stack = new ArrayList<>();
             for (Account account : mAccountsDbAdapter.getSimpleAccountList()) {
-                if (account.getAccountType() == AccountType.EXPENSE
-                        && !account.isPlaceholderAccount() && account.getCurrency() == mCurrency) {
+                if (account.getAccountType() == mAccountType
+                        && !account.isPlaceholderAccount()
+                        && account.getCurrency() == mCurrency) {
 
                     float balance = (float) mAccountsDbAdapter.getAccountsBalance(
                             Collections.singletonList(account.getUID()), start, end).asDouble();
@@ -168,7 +163,7 @@ public class BarChartActivity extends PassLockActivity implements OnChartValueSe
                         stack.add(balance);
                         labels.add(account.getName());
                         colors.add(COLORS[(colors.size()) % COLORS.length]);
-                        Log.i(TAG, "EXPENSE" + startDate.toString(" MMMM yyyy ") + account.getName()
+                        Log.i(TAG, mAccountType + startDate.toString(" MMMM yyyy ") + account.getName()
                                 + " = " + stack.get(stack.size() - 1)  + ", color = " + colors.get(colors.size() - 1));
                     }
                 }
@@ -266,6 +261,43 @@ public class BarChartActivity extends PassLockActivity implements OnChartValueSe
         set.setColor(NO_DATA_COLOR);
 
         return new BarData(xValues, Collections.singletonList(set));
+    }
+
+    /**
+     * Sets up settings and data for the account type spinner. Currently used only {@code EXPENSE} and {@code INCOME}
+     * account types.
+     */
+    private void setUpSpinner() {
+        Spinner spinner = (Spinner) findViewById(R.id.chart_data_spinner);
+        ArrayAdapter<AccountType> dataAdapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_spinner_item,
+                Arrays.asList(AccountType.EXPENSE, AccountType.INCOME));
+        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(dataAdapter);
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                mAccountType = (AccountType) ((Spinner) findViewById(R.id.chart_data_spinner)).getSelectedItem();
+
+                // below we can add/remove displayed account's types
+                mChart.setData(getData(new ArrayList<>(Arrays.asList(AccountType.INCOME, AccountType.EXPENSE))));
+
+                if (!mChartDataPresent) {
+                    mChart.getAxisLeft().setAxisMaxValue(10);
+                    mChart.getAxisLeft().setDrawLabels(false);
+                    mChart.getXAxis().setDrawLabels(false);
+                    mChart.setTouchEnabled(false);
+                    ((TextView) findViewById(R.id.selected_chart_slice)).setText(getResources().getString(R.string.label_chart_no_data));
+                } else {
+                    mChart.animateY(ANIMATION_DURATION);
+                }
+                mChart.invalidate();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+            }
+        });
     }
 
     @Override
