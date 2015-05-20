@@ -125,14 +125,26 @@ android {
     }
 }
 
+def adb = android.getAdbExe().toString()
 
-task grantAnimationPermission(type: Exec, dependsOn: ['installDevelopmentDebug', 'installBetaDebug', 'installProductionDebug']) { // or install{productFlavour}{buildType}
-    // commandLine "adb shell pm grant $android.defaultConfig.packageName android.permission.SET_ANIMATION_SCALE".split(' ')
-    commandLine "adb shell pm grant $android.defaultConfig.applicationId android.permission.SET_ANIMATION_SCALE".split(' ')
-}
-tasks.whenTaskAdded { task ->
-    if (task.name.startsWith('connectedAndroidTest')) {
-        task.dependsOn grantAnimationPermission
+afterEvaluate {
+    task grantAnimationPermissionDevel(type: Exec, dependsOn: 'installDevelopmentDebug') { // or install{productFlavour}{buildType}
+        commandLine "$adb shell pm grant $android.productFlavors.development.applicationId android.permission.SET_ANIMATION_SCALE".split(' ')
+    }
+
+    task grantAnimationPermissionProduction(type: Exec, dependsOn: ['installBetaDebug', 'installProductionDebug']){
+        commandLine "$adb shell pm grant $android.productFlavors.production.applicationId android.permission.SET_ANIMATION_SCALE".split(' ')
+    }
+    // When launching individual tests from Android Studio, it seems that only the assemble tasks
+    // get called directly, not the install* versions
+    tasks.each { task ->
+        if (task.name.startsWith('assembleDevelopmentDebugAndroidTest')){
+            task.dependsOn grantAnimationPermissionDevel
+        } else if (task.name.startsWith('assembleBetaDebugAndroidTest')){
+            task.dependsOn grantAnimationPermissionProduction
+        } else if (task.name.startsWith('assembleProductionDebugAndroidTest')){
+            task.dependsOn grantAnimationPermissionProduction
+        }
     }
 }
 
@@ -154,7 +166,6 @@ dependencies {
             'junit:junit:4.12',
             'org.assertj:assertj-core:1.7.1'
     )
-    androidTestCompile('com.jayway.android.robotium:robotium-solo:5.3.1')
     androidTestCompile 'com.android.support.test:runner:0.2'
     androidTestCompile 'com.android.support.test:rules:0.2'
     androidTestCompile('com.squareup.assertj:assertj-android:1.0.0'){

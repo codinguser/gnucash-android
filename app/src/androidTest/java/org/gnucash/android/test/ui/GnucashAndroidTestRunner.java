@@ -29,7 +29,7 @@ import java.lang.reflect.Method;
  * Custom test runner
  */
 public class GnucashAndroidTestRunner extends AndroidJUnitRunner{
-    private static final String TAG = "Primer";
+    private static final String TAG = "GncAndroidTestRunner";
     private static final String ANIMATION_PERMISSION = "android.permission.SET_ANIMATION_SCALE";
     private static final float DISABLED = 0.0f;
     private static final float DEFAULT = 1.0f;
@@ -65,9 +65,9 @@ public class GnucashAndroidTestRunner extends AndroidJUnitRunner{
         int permStatus = getContext().checkCallingOrSelfPermission(ANIMATION_PERMISSION);
         if (permStatus == PackageManager.PERMISSION_GRANTED) {
             if (reflectivelyDisableAnimation(DEFAULT)) {
-                Log.i(TAG, "All animations disabled.");
+                Log.i(TAG, "All animations enabled.");
             } else {
-                Log.i(TAG, "Could not disable animations.");
+                Log.i(TAG, "Could not enable animations.");
             }
         } else {
             Log.i(TAG, "Cannot disable animations due to lack of permission.");

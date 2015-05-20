@@ -80,8 +80,8 @@ public class ExportTransactionsTest extends
 	public void setUp() throws Exception {
 		super.setUp();
 		injectInstrumentation(InstrumentationRegistry.getInstrumentation());
-		mAcccountsActivity = getActivity();
 		AccountsActivityTest.preventFirstRunDialogs(getInstrumentation().getTargetContext());
+		mAcccountsActivity = getActivity();
 
         mDbHelper = new DatabaseHelper(getActivity());
         try {

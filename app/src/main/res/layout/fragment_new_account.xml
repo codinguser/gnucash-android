@@ -18,14 +18,14 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
-    <LinearLayout
+    <LinearLayout android:id="@+id/fragment_account_form"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:padding="@dimen/dialog_padding"
             android:orientation="vertical" >
 
         <EditText
-                android:id="@+id/edit_text_account_name"
+                android:id="@+id/input_account_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/form_row_bottom_margin"
@@ -97,7 +97,7 @@
                       android:layout_marginBottom="@dimen/form_row_bottom_margin"
                       android:orientation="horizontal" >
 
-            <CheckBox android:id="@+id/checkbox_parent_account"
+            <CheckBox android:id="@+id/checkbox_transaction"
                       android:layout_width="wrap_content"
                       android:layout_height="wrap_content"
                       android:focusable="false"        />

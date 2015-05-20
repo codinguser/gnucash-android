@@ -241,7 +241,7 @@ public class AccountFormFragment extends SherlockFragment {
 		View view = inflater.inflate(R.layout.fragment_new_account, container, false);
 		getSherlockActivity().getSupportActionBar().setTitle(R.string.title_add_account);
 		mCurrencySpinner = (Spinner) view.findViewById(R.id.input_currency_spinner);
-		mNameEditText = (EditText) view.findViewById(R.id.edit_text_account_name);
+		mNameEditText = (EditText) view.findViewById(R.id.input_account_name);
 		//mNameEditText.requestFocus();
 
         mAccountTypeSpinner = (Spinner) view.findViewById(R.id.input_account_type_spinner);
@@ -264,7 +264,7 @@ public class AccountFormFragment extends SherlockFragment {
 		mParentAccountSpinner = (Spinner) view.findViewById(R.id.input_parent_account);
 		mParentAccountSpinner.setEnabled(false);
 
-		mParentCheckBox = (CheckBox) view.findViewById(R.id.checkbox_parent_account);
+		mParentCheckBox = (CheckBox) view.findViewById(R.id.checkbox_transaction);
 		mParentCheckBox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 			
 			@Override
