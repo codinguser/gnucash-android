@@ -132,12 +132,8 @@ afterEvaluate {
         commandLine "$adb shell pm grant $android.productFlavors.development.applicationId android.permission.SET_ANIMATION_SCALE".split(' ')
     }
 
-    task grantAnimationPermissionBeta(type: Exec, dependsOn: 'installBetaDebug'){
-        commandLine "$adb shell pm grant $android.productFlavors.beta.applicationId android.permission.SET_ANIMATION_SCALE".split(' ')
-    }
-
     task grantAnimationPermissionProduction(type: Exec, dependsOn: 'installProductionDebug'){
-        commandLine "$adb shell pm grant $android.productFlavors.production.applicationId android.permission.SET_ANIMATION_SCALE".split(' ')
+        commandLine "$adb shell pm grant $android.defaultConfig.applicationId android.permission.SET_ANIMATION_SCALE".split(' ')
     }
     // When launching individual tests from Android Studio, it seems that only the assemble tasks
     // get called directly, not the install* versions
@@ -145,7 +141,7 @@ afterEvaluate {
         if (task.name.startsWith('assembleDevelopmentDebugAndroidTest')){
             task.dependsOn grantAnimationPermissionDevel
         } else if (task.name.startsWith('assembleBetaDebugAndroidTest')){
-            task.dependsOn grantAnimationPermissionBeta
+            task.dependsOn grantAnimationPermissionProduction
         } else if (task.name.startsWith('assembleProductionDebugAndroidTest')){
             task.dependsOn grantAnimationPermissionProduction
         }
