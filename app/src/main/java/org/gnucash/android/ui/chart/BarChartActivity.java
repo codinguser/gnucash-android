@@ -52,9 +52,11 @@ import java.util.Collections;
 import java.util.Currency;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Activity used for drawing a bar chart
@@ -89,6 +91,9 @@ public class BarChartActivity extends PassLockActivity implements OnChartValueSe
     private boolean mChartDataPresent = true;
     private Currency mCurrency;
 
+    private Set<String> mLegendLabels;
+    private Set<Integer> mLegendColors;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         //it is necessary to set the view first before calling super because of the nav drawer in BaseDrawerActivity
@@ -109,13 +114,12 @@ public class BarChartActivity extends PassLockActivity implements OnChartValueSe
         mChart.setDrawValuesForWholeStack(false);
         mChart.getAxisLeft().setValueFormatter(new LargeValueFormatter(mCurrency.getSymbol(Locale.getDefault())));
         mChart.getAxisRight().setEnabled(false);
+        mChart.getLegend().setEnabled(false);
+        mChart.getLegend().setForm(Legend.LegendForm.CIRCLE);
+        mChart.getLegend().setPosition(Legend.LegendPosition.RIGHT_OF_CHART_INSIDE);
 
         // below we can add/remove displayed account's types
         mChart.setData(getData(new ArrayList<>(Arrays.asList(AccountType.INCOME, AccountType.EXPENSE))));
-
-        Legend legend = mChart.getLegend();
-        legend.setForm(Legend.LegendForm.CIRCLE);
-        legend.setPosition(Legend.LegendPosition.RIGHT_OF_CHART_INSIDE);
 
         if (!mChartDataPresent) {
             mChart.getAxisLeft().setAxisMaxValue(10);
@@ -179,6 +183,9 @@ public class BarChartActivity extends PassLockActivity implements OnChartValueSe
 
             startDate = startDate.plusMonths(1);
         }
+
+        mLegendColors = new LinkedHashSet<>(colors);
+        mLegendLabels = new LinkedHashSet<>(labels);
 
         BarDataSet set = new BarDataSet(values, "");
         set.setStackLabels(labels.toArray(new String[labels.size()]));
@@ -282,7 +289,11 @@ public class BarChartActivity extends PassLockActivity implements OnChartValueSe
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_toggle_legend:
-                mChart.getLegend().setEnabled(!mChart.getLegend().isEnabled());
+                // workaround for buggy legend
+                Legend legend = mChart.getLegend();
+                legend.setEnabled(!mChart.getLegend().isEnabled());
+                legend.setLabels(mLegendLabels.toArray(new String[mLegendLabels.size()]));
+                legend.setColors(Arrays.asList(mLegendColors.toArray(new Integer[mLegendLabels.size()])));
                 mChart.invalidate();
                 break;
 
