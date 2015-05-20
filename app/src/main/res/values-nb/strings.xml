@@ -298,12 +298,12 @@
 	<string name="summary_xml_ofx_header">Velg denne hvis du skal eksportere til annen programvare enn GnuCash for PC.</string>
 	<string name="title_whats_new">Hva er nytt</string>
 	<string name="whats_new">
-        - Visual reports (Bar/Pie/line charts) \n
-        - Scheduled backups of (QIF, OFX, and XML)\n
-        - Backup/Export to DropBox and Google Drive\n
-        - Better recurrence options for scheduled transactions\n
-        - Navigation drawer for easier access to options\n
-        - Multiple bug fixes and improvements\n
+        - Visuelle Rapporter (Bar/Kake/linjediagrammer) \n
+        - Planlegge sikkerhetskopiering (QIF, OFX, and XML)\n
+        - Sikkerhetskopiering til DropBox og Google Disk\n
+        - Bedret innstillinger for gjentagende planlagte transaksjoner\n
+        - Navigasjonssskuff for enklere tilgang til innstillinger\n
+        - Mange feilrettinger og forbedringer\n
 	</string>
 	<string name="label_dismiss">Ferdig</string>
     <string name="toast_transanction_amount_required">Oppgi et beløp for å lagre transaksjonen</string>
@@ -403,100 +403,102 @@
     <string name="account_name_equity">Egenkapital</string>
     <string name="summary_save_opening_balances">Merk for å lagre gjeldende konto balanse (før sletting) som ny inngående balanse (etter sletting av transaksjoner).</string>
     <string name="title_save_opening_balances">Lagre inngående balanser</string>
-    <string name="export_warning_ofx">OFX does not support double-entry transactions</string>
-    <string name="export_warning_qif">Generates separate QIF files per currency</string>
-    <string name="title_transaction_splits">Transaction splits</string>
-    <string name="label_imbalance">Imbalance:</string>
-    <string name="btn_add_split">Add split</string>
-    <string name="label_passcode">Enter Passcode</string>
-    <string name="toast_wrong_passcode">Wrong passcode, please try again</string>
-    <string name="toast_passcode_set">Passcode set</string>
-    <string name="toast_confirm_passcode">Please confirm your passcode</string>
-    <string name="toast_invalid_passcode_confirmation">Invalid passcode confirmation. Please try again</string>
-    <string name="header_passcode_settings">Passcode</string>
-    <string name="title_passcode_preferences">Passcode Preferences</string>
-    <string name="title_passcode_enabled">Passcode Turned On</string>
-    <string name="title_passcode_disabled">Passcode Turned Off</string>
-    <string name="title_change_passcode">Change Passcode</string>
-    <string name="toast_error_edit_multi_currency_transaction">Multi-currency transactions cannot be modified</string>
-    <string name="menu_title_favorite">Favorite</string>
-    <string name="drawer_open">Navigation drawer opened</string>
-    <string name="drawer_close">Navigation drawer closed</string>
-	<string name="title_reports">Reports</string>
-	<string name="title_pie_chart">Pie Chart</string>
-	<string name="title_line_chart">Line Chart</string>
-	<string name="title_bar_chart">Bar Chart</string>
-	<string name="menu_order_by_size">Order by size</string>
-	<string name="menu_toggle_legend">Toggle legend</string>
-	<string name="menu_toggle_labels">Toggle labels</string>
-	<string name="menu_toggle_percentage_mode">Toggle percentage</string>
-	<string name="menu_toggle_average_lines">Toggle average lines</string>
-	<string name="menu_group_smaller_slices">Group Smaller Slices</string>
-	<string name="label_chart_no_data">No chart data available</string>
-	<string name="label_chart_overall">Overall</string>
+    <string name="export_warning_ofx">OFX støtter ikke dobbel bokføring</string>
+    <string name="export_warning_qif">Oppretter separate QIF filer for hver valuta</string>
+    <string name="title_transaction_splits">Transaksjonssplitt</string>
+    <string name="label_imbalance">Ubalance:</string>
+    <string name="btn_add_split">Legg til splitt</string>
+    <string name="label_passcode">Skriv passkode</string>
+    <string name="toast_wrong_passcode">Feil passkode, prøv igjen</string>
+    <string name="toast_passcode_set">Passkode satt</string>
+    <string name="toast_invalid_passcode_confirmation">Ugyldig passkode ved verifisering. Prøv igjen.</string>
+    <string name="header_passcode_settings">Passkode</string>
+    <string name="title_passcode_preferences">Passkode preferanser</string>
+    <string name="title_passcode_enabled">Passkode på</string>
+    <string name="title_passcode_disabled">Passkode av</string>
+    <string name="title_change_passcode">Bytt Passkode</string>
+    <string name="toast_error_edit_multi_currency_transaction">Flervaluta transaksjoner kan ikke endres</string>
+    <string name="menu_title_favorite">Favoritt</string>
+    <string name="drawer_open">Navigasjonsskuff åpnet</string>
+    <string name="drawer_close">Navigasjonsskuff lukket</string>
+	<string name="title_reports">Rapporter</string>
+	<string name="title_pie_chart">Kakediagram</string>
+	<string name="title_line_chart">Linjediagram</string>
+	<string name="title_bar_chart">Søylediagram</string>
+	<string name="menu_order_by_size">Sorter etter størrelse</string>
+	<string name="menu_toggle_legend">Vis/skjul legend</string>
+	<string name="menu_toggle_labels">Vis/skjul etiketter</string>
+	<string name="menu_toggle_percentage_mode">Vis/skjul prosent</string>
+	<string name="menu_toggle_average_lines">Vis/skjul gjennomsnittslinjer</string>
+	<string name="menu_group_smaller_slices">Grupper små stykker</string>
+	<string name="label_chart_no_data">Ingen diagramdata er tilgjengelige</string>
+	<string name="label_chart_overall">Generell</string>
 	<string name="label_chart_total">Total</string>
-	<string name="label_other_slice">Other</string>
-	<string name="toast_chart_percentage_mode_total">The percentage of selected value calculated from the total amount</string>
-	<string name="toast_chart_percentage_mode_current_bar">The percentage of selected value calculated from the current stacked bar amount</string>
-    <string name="label_save_template">Save as template</string>
-    <string name="label_delete_account_transactions_description">This account contains transactions. \nWhat would you like to do with these transactions</string>
-    <string name="label_delete_account_subaccounts_description">This account contains sub-accounts. \nWhat would you like to do with these sub-accounts</string>
-    <string name="label_delete_transactions">Delete transactions</string>
-    <string name="toast_disable_double_entry_to_save_transaction">Create and specify a transfer account OR disable double-entry in settings to save the transaction</string>
-    <string name="label_tap_to_create_schedule">Tap to create schedule</string>
-    <string name="title_restore_backup">Restore Backup…</string>
-	<string name="header_backup_and_export_settings">Backup &amp; export</string>
-	<string name="title_dropbox_sync_preference">DropBox Sync</string>
-	<string name="title_backup_preference_category">Backup</string>
-	<string name="summary_dropbox_sync">Enable to sync to DropBox</string>
-	<string name="title_select_gnucash_xml_file">Select GnuCash XML file</string>
-	<string name="title_backup_prefs">Backup Preferences</string>
-	<string name="title_create_backup_pref">Create Backup</string>
-	<string name="summary_create_backup_pref">By default backups are saved to the SDCARD</string>
-	<string name="summary_restore_backup_pref">Select a specific backup to restore</string>
-	<string name="toast_backup_successful">Backup successful</string>
-	<string name="toast_backup_failed">Backup failed</string>
-	<string name="export_warning_xml">Exports all accounts and transactions</string>
+	<string name="label_other_slice">Andre</string>
+	<string name="toast_chart_percentage_mode_total">Prosent av valgt verdi kalkulert ut ifra totalen</string>
+	<string name="toast_chart_percentage_mode_current_bar">Prosent av valgt verdi kalkulert ut ifra gjeldene søyle</string>
+    <string name="label_save_template">Lagre som mal</string>
+    <string name="label_delete_account_transactions_description">Denne kontoen inneholder transaksjoner. \nHva vil du gjøre med disse</string>
+    <string name="label_delete_account_subaccounts_description">Denne kontoen inneholder underkontoer. \nHva vil du gjøre med disse</string>
+    <string name="label_delete_transactions">Slett tranaksjoner</string>
+    <string name="toast_disable_double_entry_to_save_transaction">Opprett og spesifiser en overføringskonto ELLER skru av dobbel bokføring under innstillinger for å lagre transaksjonene</string>
+    <string name="label_tap_to_create_schedule">Trykk for å opprette tidsplan</string>
+    <string name="title_restore_backup">Tilbakefør sikkerhetskopi</string>
+	<string name="header_backup_and_export_settings">Sikkerhetskopier &amp; eksport</string>
+	<string name="title_dropbox_sync_preference">DropBox Synk</string>
+	<string name="title_backup_preference_category">Sikkerhetskopi</string>
+	<string name="summary_dropbox_sync">Skru på synkronisering til DropBox</string>
+	<string name="title_select_gnucash_xml_file">Velg GnuCash XML fil</string>
+	<string name="title_backup_prefs">Innstillinger for sikkerhetskopi</string>
+	<string name="title_create_backup_pref">Lag sikkerhetskopi</string>
+	<string name="summary_create_backup_pref">Standard blir sikkerhetskopier lagret til SD minnekort</string>
+	<string name="summary_restore_backup_pref">Velg en sikkerhetskopi for tilbakeføring</string>
+	<string name="toast_backup_successful">Sikkerhetskopiering ferdig</string>
+	<string name="toast_backup_failed">Feil ved sikkerhetskopiering</string>
+	<string name="export_warning_xml">Eksporteret alle kontoer og transaksjoner</string>
 	<string name="title_google_drive_sync_pref">Google Drive Sync</string>
-	<string name="summary_google_drive_sync">Enable to sync to Google Drive</string>
-	<string name="toast_install_file_manager">Install a file manager to select files</string>
-	<string name="title_select_backup_to_restore">Select backup to restore</string>
-	<string name="title_report_prefs">Report Preferences</string>
-	<string name="nav_menu_favorites">Favorites</string>
-	<string name="nav_menu_open">Open...</string>
-	<string name="nav_menu_reports">Reports</string>
-	<string name="nav_menu_scheduled_transactions">Scheduled Transactions</string>
-	<string name="nav_menu_export">Export...</string>
-	<string name="nav_menu_settings">Settings</string>
+	<string name="summary_google_drive_sync">Skru på synk til Google Disk</string>
+	<string name="toast_install_file_manager">Installer en filbehandler for å velge filer</string>
+	<string name="title_select_backup_to_restore">Velg sikkerhetskopi som skal tilbakeføres</string>
+	<string name="title_report_prefs">Innstillinger for rapporter</string>
+	<string name="nav_menu_favorites">Favoritter</string>
+	<string name="nav_menu_open">Åpne...</string>
+	<string name="nav_menu_reports">Rapporter</string>
+	<string name="nav_menu_scheduled_transactions">Planlagte transaksjoner</string>
+	<string name="nav_menu_export">Eksporter...</string>
+	<string name="nav_menu_settings">Instillinger</string>
 	<plurals name="label_every_x_days">
-        <item quantity="one">Daily</item>
-        <item quantity="other">Every %d days</item>
+        <item quantity="one">Daglig</item>
+        <item quantity="other">Hver %d dag</item>
     </plurals>
     <plurals name="label_every_x_weeks">
-        <item quantity="one">Weekly</item>
-        <item quantity="other">Every %d weeks</item>
+        <item quantity="one">Ukentlig</item>
+        <item quantity="other">Hver %d uke</item>
     </plurals>
     <plurals name="label_every_x_months">
-        <item quantity="one">Monthly</item>
-        <item quantity="other">Every %d months</item>
+        <item quantity="one">Månedlig</item>
+        <item quantity="other">Hver %d måned</item>
     </plurals>
     <plurals name="label_every_x_years">
-        <item quantity="one">Yearly</item>
-        <item quantity="other">Every %d years</item>
+        <item quantity="one">Årlig</item>
+        <item quantity="other">Hvert %d år</item>
     </plurals>
-    <string name="title_enable_crashlytics">Enable Crash Logging</string>
-    <string name="msg_enable_crashlytics">Enable to send information about malfunctions to the developers for improvement (recommended).
-No user-identifiable information will be collected as part of this process!
+    <string name="title_enable_crashlytics">Skru på feillogging</string>
+    <string name="msg_enable_crashlytics">Skru på feilrapportering til utviklerene for utbedring (anbefalt).
+Ingen brukerinformasjon vil bli delt i denne prosessen!
     </string>
-    <string name="label_export_format">Export Format</string>
-	<string name="toast_backup_folder_not_found">Backup folder cannot be found. Make sure the SD Card is mounted!</string>
-	<string name="header_report_settings">Reports</string>
-	<string name="label_report_currency">Select currency</string>
-	<string name="title_use_account_color">Account color in reports</string>
-	<string name="summary_use_account_color">Use account color in the pie chart</string>
-	<string name="nav_menu_scheduled_backups">Scheduled Exports</string>
-	<string name="title_scheduled_exports">Scheduled Exports</string>
-	<string name="label_no_scheduled_exports_to_display">No scheduled exports to display</string>
-	<string name="title_create_export_schedule">Create export schedule</string>
-	<string name="toast_exported_to">Exported to: %1$s</string>
+    <string name="label_export_format">Eksporteringsformat</string>
+	<string name="toast_backup_folder_not_found">Mappe for sikkerhetskopier ikke funnet. Sjekk at SD kortet er montert!</string>
+	<string name="header_report_settings">Rapporter</string>
+	<string name="label_report_currency">Velg valuta</string>
+	<string name="title_use_account_color">Kontofarge i rapportene</string>
+	<string name="summary_use_account_color">Bruk kontofarge i kakediagrammet</string>
+	<string name="label_confirm_passcode">Please confirm your passcode</string>
+	<string name="label_new_passcode">Enter your new passcode</string>
+	<string name="label_old_passcode">Enter your old passcode</string>
+	<string name="nav_menu_scheduled_backups">Planlagte sikkerhetskopier</string>
+	<string name="title_scheduled_exports">Planlagte eksporteringer</string>
+	<string name="label_no_scheduled_exports_to_display">Ingen å vise</string>
+	<string name="title_create_export_schedule">Opprett exporteringsplan</string>
+	<string name="toast_exported_to">Eksportert til: %1$s</string>
 </resources>

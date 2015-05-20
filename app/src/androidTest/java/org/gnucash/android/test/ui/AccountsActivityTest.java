@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012 Ngewi Fet <ngewif@gmail.com>
+ * Copyright (c) 2012 - 2015 Ngewi Fet <ngewif@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,13 +22,11 @@ import android.content.SharedPreferences.Editor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.preference.PreferenceManager;
+import android.support.test.InstrumentationRegistry;
+import android.support.test.runner.AndroidJUnit4;
 import android.support.v4.app.Fragment;
 import android.test.ActivityInstrumentationTestCase2;
 import android.util.Log;
-import android.view.View;
-import android.widget.EditText;
-
-import com.robotium.solo.Solo;
 
 import org.gnucash.android.R;
 import org.gnucash.android.db.AccountsDbAdapter;
@@ -39,35 +37,56 @@ import org.gnucash.android.model.Account;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.model.Split;
 import org.gnucash.android.model.Transaction;
+import org.gnucash.android.receivers.AccountCreator;
 import org.gnucash.android.ui.account.AccountsActivity;
 import org.gnucash.android.ui.account.AccountsListFragment;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import java.util.Currency;
 import java.util.List;
 
+import static android.support.test.espresso.Espresso.onView;
+import static android.support.test.espresso.action.ViewActions.clearText;
+import static android.support.test.espresso.action.ViewActions.click;
+import static android.support.test.espresso.action.ViewActions.longClick;
+import static android.support.test.espresso.action.ViewActions.typeText;
+import static android.support.test.espresso.assertion.ViewAssertions.matches;
+import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static android.support.test.espresso.matcher.ViewMatchers.isNotChecked;
+import static android.support.test.espresso.matcher.ViewMatchers.withId;
+import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static org.assertj.android.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.not;
 
+@RunWith(AndroidJUnit4.class)
 public class AccountsActivityTest extends ActivityInstrumentationTestCase2<AccountsActivity> {
 	private static final String DUMMY_ACCOUNT_CURRENCY_CODE = "USD";
 	private static final String DUMMY_ACCOUNT_NAME = "Dummy account";
     public static final String  DUMMY_ACCOUNT_UID   = "dummy-account";
-	private Solo mSolo;
     private DatabaseHelper mDbHelper;
     private SQLiteDatabase mDb;
     private AccountsDbAdapter mAccountsDbAdapter;
     private TransactionsDbAdapter mTransactionsDbAdapter;
     private SplitsDbAdapter mSplitsDbAdapter;
+    private AccountsActivity mAcccountsActivity;
 
     public AccountsActivityTest() {
 		super(AccountsActivity.class);
 	}
 
-	protected void setUp() throws Exception {
-		Context context = getInstrumentation().getTargetContext();
-        preventFirstRunDialogs(context);
+    @Before
+	public void setUp() throws Exception {
+        super.setUp();
+        injectInstrumentation(InstrumentationRegistry.getInstrumentation());
+        preventFirstRunDialogs(getInstrumentation().getTargetContext());
+        mAcccountsActivity = getActivity();
 
-        mDbHelper = new DatabaseHelper(context);
+        mDbHelper = new DatabaseHelper(mAcccountsActivity);
         try {
             mDb = mDbHelper.getWritableDatabase();
         } catch (SQLException e) {
@@ -77,15 +96,18 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
         mSplitsDbAdapter = new SplitsDbAdapter(mDb);
         mTransactionsDbAdapter = new TransactionsDbAdapter(mDb, mSplitsDbAdapter);
         mAccountsDbAdapter = new AccountsDbAdapter(mDb, mTransactionsDbAdapter);
-
-		mSolo = new Solo(getInstrumentation(), getActivity());
 		
 		Account account = new Account(DUMMY_ACCOUNT_NAME);
         account.setUID(DUMMY_ACCOUNT_UID);
 		account.setCurrency(Currency.getInstance(DUMMY_ACCOUNT_CURRENCY_CODE));
 		mAccountsDbAdapter.addAccount(account);
+        refreshAccountsList();
 	}
 
+    /**
+     * Prevents the first-run dialogs (Whats new, Create accounts etc) from being displayed when testing
+     * @param context Application context
+     */
     public static void preventFirstRunDialogs(Context context) {
         Editor editor = PreferenceManager.getDefaultSharedPreferences(context).edit();
 
@@ -118,6 +140,7 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
             assertEquals(NUMBER_OF_ACCOUNTS + 1, accountsListView.getCount());
         }
     */
+    @Test
     public void testSearchAccounts(){
         String SEARCH_ACCOUNT_NAME = "Search Account";
 
@@ -125,44 +148,36 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
         account.setParentUID(DUMMY_ACCOUNT_UID);
         mAccountsDbAdapter.addAccount(account);
 
-        refreshAccountsList();
-
         //enter search query
 //        ActionBarUtils.clickSherlockActionBarItem(mSolo, R.id.menu_search);
-        mSolo.clickOnActionBarItem(R.id.menu_search);
-        mSolo.sleep(2000);
-        mSolo.enterText(0, "Se");
-        mSolo.sleep(3000);
-        boolean accountFound = mSolo.waitForText(SEARCH_ACCOUNT_NAME, 1, 2000);
-        assertTrue(accountFound);
+        onView(withId(R.id.menu_search)).perform(click());
+        onView(withId(R.id.abs__search_src_text)).perform(typeText("Se"));
+        onView(withText(SEARCH_ACCOUNT_NAME)).check(matches(isDisplayed()));
 
-        mSolo.clearEditText(0);
-
-        mSolo.sleep(2000);
-        //the child account should be hidden again
-        accountFound = mSolo.waitForText(SEARCH_ACCOUNT_NAME, 1, 2000);
-        assertFalse(accountFound);
+        onView(withId(R.id.abs__search_src_text)).perform(clearText());
+        onView(withId(R.id.primary_text)).check(matches(not(withText(SEARCH_ACCOUNT_NAME))));
     }
 
     /**
      * Tests that an account can be created successfully and that the account list is sorted alphabetically.
      */
+    @Test
 	public void testCreateAccount(){
-        mSolo.clickOnActionBarItem(R.id.menu_add_account);
-		mSolo.waitForText(getActivity().getString(R.string.title_add_account));
+        onView(withId(R.id.menu_add_account)).check(matches(isDisplayed())).perform(click());
 
-        View checkbox = mSolo.getCurrentActivity().findViewById(R.id.checkbox_parent_account);
-        //there already exists one eligible parent account in the system
-        assertThat(checkbox).isVisible();
+        onView(withId(R.id.checkbox_transaction))
+//                .check(matches(allOf(isDisplayed(), isNotChecked())))
+                .perform(click());
 
-        mSolo.clickOnCheckBox(0);
-
-        EditText inputAccountName = (EditText) mSolo.getCurrentActivity().findViewById(R.id.edit_text_account_name);
         String NEW_ACCOUNT_NAME = "A New Account";
-        mSolo.enterText(inputAccountName, NEW_ACCOUNT_NAME);
-        mSolo.clickOnActionBarItem(R.id.menu_save);
+        onView(withId(R.id.input_account_name)).perform(typeText(NEW_ACCOUNT_NAME));
+        onView(withId(R.id.checkbox_placeholder_account))
+                .check(matches(isNotChecked()))
+                .perform(click());
+        onView(withId(R.id.menu_save)).perform(click());
 
-        mSolo.waitForText(NEW_ACCOUNT_NAME);
+        //check displayed
+//        onView(withId(android.R.id.list)).check(matches(hasDescendant(withText(NEW_ACCOUNT_NAME))));
         mSolo.sleep(3000);
 
 		List<Account> accounts = mAccountsDbAdapter.getAllAccounts();
@@ -175,21 +190,26 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
         assertThat(newestAccount.isPlaceholderAccount()).isTrue();
 	}
 
-    public void testChangeParentAccount(){
+    @Test
+    public void testChangeParentAccount() {
         final String accountName = "Euro Account";
         Account account = new Account(accountName, Currency.getInstance("EUR"));
         mAccountsDbAdapter.addAccount(account);
 
         refreshAccountsList();
-        mSolo.waitForText(accountName);
+//        onView(withId(android.R.id.list))
+//                .check(matches(allOf(isDisplayed(), hasDescendant(withText(accountName)))));
 
-        mSolo.clickLongOnText(accountName);
-        mSolo.clickOnView(mSolo.getView(R.id.context_menu_edit_accounts));
-        mSolo.waitForView(EditText.class);
+        onView(withText(accountName)).perform(longClick());
+        onView(withId(R.id.context_menu_edit_accounts)).perform(click());
+        onView(withId(R.id.fragment_account_form)).check(matches(isDisplayed()));
+        onView(withId(R.id.checkbox_transaction))
+                .check(matches(isNotChecked()))
+                .perform(click());
 
-        mSolo.clickOnCheckBox(1);
-        mSolo.sleep(2000);
+        onView(withId(R.id.menu_save)).perform(click());
 
+        Account editedAccount = mAccountsDbAdapter.getAccount(account.getUID());
         mSolo.clickOnActionBarItem(R.id.menu_save);
         mSolo.sleep(1000);
         mSolo.waitForText(getActivity().getString(R.string.title_accounts));
@@ -200,95 +220,62 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
         assertThat(DUMMY_ACCOUNT_UID).isEqualTo(parentUID);
     }
 
+    @Test
 	public void testEditAccount(){
-        refreshAccountsList();
-        mSolo.sleep(2000);
-		mSolo.waitForText(DUMMY_ACCOUNT_NAME);
-		
 		String editedAccountName = "Edited Account";
-				
-		mSolo.clickLongOnText(DUMMY_ACCOUNT_NAME);
+//		onView(withText(DUMMY_ACCOUNT_NAME)).perform(longClick());
+		onView(withId(R.id.primary_text)).perform(longClick());
+        onView(withId(R.id.context_menu_edit_accounts)).perform(click());
 
-        clickSherlockActionBarItem(R.id.context_menu_edit_accounts);
+        onView(withId(R.id.fragment_account_form)).check(matches(isDisplayed()));
 
-        mSolo.waitForView(EditText.class);
+        onView(withId(R.id.input_account_name)).perform(clearText()).perform(typeText(editedAccountName));
 
-		mSolo.clearEditText(0);
-		mSolo.enterText(0, editedAccountName);
+        onView(withId(R.id.menu_save)).perform(click());
 
-        clickSherlockActionBarItem(R.id.menu_save);
-
-		mSolo.waitForDialogToClose();
-        mSolo.waitForText("Accounts");
+        //test refresh
+//        onView(withId(android.R.id.empty))
+//                .check(matches(not(isDisplayed())));
 
 		List<Account> accounts = mAccountsDbAdapter.getAllAccounts();
 		Account latest = accounts.get(0);  //will be the first due to alphabetical sorting
-		
-		assertEquals("Edited Account", latest.getName());
-		assertEquals(DUMMY_ACCOUNT_CURRENCY_CODE, latest.getCurrency().getCurrencyCode());	
+
+        assertThat(latest.getName()).isEqualTo(editedAccountName);
+        assertThat(latest.getCurrency().getCurrencyCode()).isEqualTo(DUMMY_ACCOUNT_CURRENCY_CODE);
 	}
 
     //TODO: Add test for moving content of accounts before deleting it
-	public void testDeleteAccount(){
-        final String accountNameToDelete = "TO BE DELETED";
-        final String accountUidToDelete = "to-be-deleted";
-
-        Account acc = new Account(accountNameToDelete);
-        acc.setUID(accountUidToDelete);
-
+    @Test(expected = IllegalArgumentException.class)
+	public void testDeleteAccount() {
         Transaction transaction = new Transaction("hats");
-        transaction.addSplit(new Split(Money.getZeroInstance(), accountUidToDelete));
-        acc.addTransaction(transaction);
-        mAccountsDbAdapter.addAccount(acc);
+        transaction.addSplit(new Split(Money.getZeroInstance(), DUMMY_ACCOUNT_UID));
+        mTransactionsDbAdapter.addTransaction(transaction);
 
-        Fragment fragment = getActivity().getCurrentAccountListFragment();
-        assertNotNull(fragment);
+        onView(withId(R.id.primary_text)).perform(longClick());
+        onView(withId(R.id.context_menu_delete)).perform(click());
+        onView(withText(R.string.label_delete_sub_accounts)).perform(click());
+        onView(withId(R.id.btn_save)).perform(click());
 
-        ((AccountsListFragment) fragment).refresh();
+        //should throw expected exception
+        mAccountsDbAdapter.getID(DUMMY_ACCOUNT_UID);
 
-        mSolo.clickLongOnText(accountNameToDelete);
-
-        clickSherlockActionBarItem(R.id.context_menu_delete);
-
-        mSolo.waitForDialogToOpen();
-        mSolo.clickOnRadioButton(0);
-        mSolo.clickOnView(mSolo.getView(R.id.btn_save));
-
-        mSolo.waitForDialogToClose();
-        mSolo.waitForText("Accounts");
-
-        Exception expectedException = null;
-        try {
-            mAccountsDbAdapter.getID(accountUidToDelete);
-        } catch (IllegalArgumentException e){
-            expectedException = e;
-        }
-        assertNotNull(expectedException);
-
-        List<Transaction> transactions = mTransactionsDbAdapter.getAllTransactionsForAccount(accountUidToDelete);
-        assertEquals(0, transactions.size());
+        List<Transaction> transactions = mTransactionsDbAdapter.getAllTransactionsForAccount(DUMMY_ACCOUNT_UID);
+        assertThat(transactions).hasSize(0);
     }
 
 	//TODO: Test import of account file
     //TODO: test settings activity
-
+    @Test
 	public void testIntentAccountCreation(){
 		Intent intent = new Intent(Intent.ACTION_INSERT);
 		intent.putExtra(Intent.EXTRA_TITLE, "Intent Account");
 		intent.putExtra(Intent.EXTRA_UID, "intent-account");
-		intent.putExtra(Account.EXTRA_CURRENCY_CODE, "EUR");
-		intent.setType(Account.MIME_TYPE);
-		getActivity().sendBroadcast(intent);
-		
-		//give time for the account to be created
-		synchronized (mSolo) {
-			try {
-				mSolo.wait(2000);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		}
-				
+        intent.putExtra(Account.EXTRA_CURRENCY_CODE, "EUR");
+        intent.setType(Account.MIME_TYPE);
+
+        AccountCreator accountCreator = new AccountCreator();
+        accountCreator.onReceive(mAcccountsActivity, intent);
+
 		Account account = mAccountsDbAdapter.getAccount("intent-account");
 		assertNotNull(account);
 		assertEquals("Intent Account", account.getName());
@@ -296,30 +283,29 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
 		assertEquals("EUR", account.getCurrency().getCurrencyCode());
 	}
 	
-	
-	protected void tearDown() throws Exception {
-        mSolo.finishOpenedActivities();
-        mSolo.waitForEmptyActivityStack(20000);
-        mSolo.sleep(5000);
+	@After
+	public void tearDown() throws Exception {
+        mAcccountsActivity.finish();
+        Thread.sleep(1000);
         mAccountsDbAdapter.deleteAllRecords();
-
 		super.tearDown();
 	}
-
-    /**
-     * Finds a view in the action bar and clicks it, since the native methods are not supported by ActionBarSherlock
-     * @param id
-     */
-    private void clickSherlockActionBarItem(int id){
-        View view = mSolo.getView(id);
-        mSolo.clickOnView(view);
-    }
 
     /**
      * Refresh the account list fragment
      */
     private void refreshAccountsList(){
-        Fragment fragment = getActivity().getCurrentAccountListFragment();
-        ((AccountsListFragment)fragment).refresh();
+        try {
+            runTestOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Fragment fragment = mAcccountsActivity.getCurrentAccountListFragment();
+                    ((AccountsListFragment) fragment).refresh();
+                }
+            });
+        } catch (Throwable throwable) {
+            System.err.println("Failed to refresh fragment");
+        }
+
     }
 }

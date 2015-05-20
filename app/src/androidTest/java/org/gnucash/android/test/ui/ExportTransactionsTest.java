@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012 Ngewi Fet <ngewif@gmail.com>
+ * Copyright (c) 2012 - 2015 Ngewi Fet <ngewif@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,10 +19,11 @@ package org.gnucash.android.test.ui;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.preference.PreferenceManager;
+import android.support.test.InstrumentationRegistry;
+import android.support.test.runner.AndroidJUnit4;
 import android.test.ActivityInstrumentationTestCase2;
 import android.util.Log;
-
-import com.robotium.solo.Solo;
+import android.widget.CompoundButton;
 
 import org.gnucash.android.R;
 import org.gnucash.android.db.AccountsDbAdapter;
@@ -39,31 +40,48 @@ import org.gnucash.android.model.ScheduledAction;
 import org.gnucash.android.model.Split;
 import org.gnucash.android.model.Transaction;
 import org.gnucash.android.ui.account.AccountsActivity;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import java.io.File;
 import java.util.Currency;
 import java.util.List;
 
+import static android.support.test.espresso.Espresso.onView;
+import static android.support.test.espresso.action.ViewActions.click;
+import static android.support.test.espresso.matcher.ViewMatchers.isAssignableFrom;
+import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static android.support.test.espresso.matcher.ViewMatchers.isEnabled;
+import static android.support.test.espresso.matcher.ViewMatchers.withId;
+import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.allOf;
 
+@RunWith(AndroidJUnit4.class)
 public class ExportTransactionsTest extends
 		ActivityInstrumentationTestCase2<AccountsActivity> {
 
-	private Solo mSolo;
     private DatabaseHelper mDbHelper;
     private SQLiteDatabase mDb;
     private AccountsDbAdapter mAccountsDbAdapter;
     private TransactionsDbAdapter mTransactionsDbAdapter;
     private SplitsDbAdapter mSplitsDbAdapter;
 
+	private AccountsActivity mAcccountsActivity;
+
     public ExportTransactionsTest() {
 		super(AccountsActivity.class);
 	}
 	
 	@Override
-	protected void setUp() throws Exception {
+	@Before
+	public void setUp() throws Exception {
+		super.setUp();
+		injectInstrumentation(InstrumentationRegistry.getInstrumentation());
 		AccountsActivityTest.preventFirstRunDialogs(getInstrumentation().getTargetContext());
-		mSolo = new Solo(getInstrumentation(), getActivity());
+		mAcccountsActivity = getActivity();
 
         mDbHelper = new DatabaseHelper(getActivity());
         try {
@@ -75,6 +93,7 @@ public class ExportTransactionsTest extends
         mSplitsDbAdapter = new SplitsDbAdapter(mDb);
         mTransactionsDbAdapter = new TransactionsDbAdapter(mDb, mSplitsDbAdapter);
         mAccountsDbAdapter = new AccountsDbAdapter(mDb, mTransactionsDbAdapter);
+		mAccountsDbAdapter.deleteAllRecords();
 
 		Account account = new Account("Exportable");		
 		Transaction transaction = new Transaction("Pizza");
@@ -82,11 +101,12 @@ public class ExportTransactionsTest extends
 		transaction.setTime(System.currentTimeMillis());
         Split split = new Split(new Money("8.99", "USD"), account.getUID());
 		split.setMemo("Hawaii is the best!");
-        transaction.addSplit(split);
+		transaction.addSplit(split);
 		transaction.addSplit(split.createPair(mAccountsDbAdapter.getOrCreateImbalanceAccountUID(Currency.getInstance("USD"))));
 		account.addTransaction(transaction);
-		
+
 		mAccountsDbAdapter.addAccount(account);
+
 	}
 	
 	/**
@@ -95,6 +115,7 @@ public class ExportTransactionsTest extends
 	 * If this test fails, it may be due to the file being created and tested in different minutes of the clock
 	 * Just try rerunning it again.
 	 */
+	@Test
 	public void testOfxExport(){
         testExport(ExportFormat.OFX);
 	}
@@ -102,10 +123,12 @@ public class ExportTransactionsTest extends
 	/**
 	 * Test the export of transactions in the QIF format
 	 */
+	@Test
 	public void testQifExport(){
 		testExport(ExportFormat.QIF);
 	}
 
+	@Test
 	public void testXmlExport(){
 		testExport(ExportFormat.XML);
 	}
@@ -117,67 +140,55 @@ public class ExportTransactionsTest extends
     public void testExport(ExportFormat format){
 		File folder = new File(Exporter.EXPORT_FOLDER_PATH);
 		folder.mkdirs();
-		mSolo.sleep(5000);
 		assertThat(folder).exists();
 
 		for (File file : folder.listFiles()) {
 			file.delete();
 		}
+		//legacy menu will be removed in the future
+		//onView(withId(R.id.menu_export)).perform(click());
+		onView(withId(android.R.id.home)).perform(click());
+		onView(withText(R.string.nav_menu_export)).perform(click());
+		onView(withText(format.name())).perform(click());
 
-		mSolo.clickOnActionBarItem(R.id.menu_export);
-		mSolo.waitForDialogToOpen(5000);
-
-        mSolo.waitForText(getActivity().getString(R.string.title_export_dialog));
-
-		mSolo.clickOnText(format.name());
-		mSolo.clickOnView(mSolo.getView(R.id.btn_save));
-
-        mSolo.waitForDialogToClose(10000);
-		mSolo.sleep(5000); //sleep so that emulators can save the file
+		onView(withId(R.id.btn_save)).perform(click());
 
 		assertThat(folder.listFiles().length).isEqualTo(1);
 		File exportFile = folder.listFiles()[0];
 		assertThat(exportFile.getName()).endsWith(format.getExtension());
     }
 
+	@Test
 	public void testDeleteTransactionsAfterExport(){
 		assertThat(mTransactionsDbAdapter.getAllTransactionsCount()).isGreaterThan(0);
 
 		PreferenceManager.getDefaultSharedPreferences(getActivity()).edit()
-				.putBoolean(mSolo.getString(R.string.key_delete_transactions_after_export), true).commit();
+				.putBoolean(mAcccountsActivity.getString(R.string.key_delete_transactions_after_export), true).commit();
 
 		testExport(ExportFormat.QIF);
 
 		assertThat(mTransactionsDbAdapter.getAllTransactionsCount()).isEqualTo(0);
 		PreferenceManager.getDefaultSharedPreferences(getActivity()).edit()
-				.putBoolean(mSolo.getString(R.string.key_delete_transactions_after_export), false).commit();
+				.putBoolean(mAcccountsActivity.getString(R.string.key_delete_transactions_after_export), false).commit();
 	}
 
 	/**
 	 * Test creating a scheduled export
 	 * Does not work on Travis yet
 	 */
-	public void atestCreateExportSchedule(){
-//		mSolo.setNavigationDrawer(Solo.OPENED);
-//		mSolo.clickOnText(mSolo.getString(R.string.nav_menu_export));
-		mSolo.clickOnActionBarItem(R.id.menu_export);
-		mSolo.waitForDialogToOpen(5000);
+	@Test
+	public void shouldCreateExportSchedule(){
+		onView(withId(android.R.id.home)).perform(click());
+		onView(withText(R.string.nav_menu_export)).perform(click());
 
-		mSolo.clickOnText(ExportFormat.XML.name());
-		mSolo.clickOnView(mSolo.getView(R.id.input_recurrence));
-		mSolo.waitForDialogToOpen();
-		mSolo.sleep(3000);
-		mSolo.clickOnButton(0); //switch on the recurrence dialog
-		mSolo.sleep(2000);
-		mSolo.pressSpinnerItem(0, -1);
-		mSolo.sleep(2000);
-		mSolo.clickOnButton(1);
-		mSolo.sleep(3000);
-		mSolo.clickOnButton(5); //the export button is the second
-		mSolo.waitForDialogToClose();
+		onView(withText(ExportFormat.XML.name())).perform(click());
+		onView(withId(R.id.input_recurrence)).perform(click());
 
-		mSolo.sleep(5000); //wait for database save
+		//switch on recurrence dialog
+		onView(allOf(isAssignableFrom(CompoundButton.class), isDisplayed(), isEnabled())).perform(click());
+		onView(withText("Done")).perform(click());
 
+		onView(withId(R.id.btn_save)).perform(click());
 		ScheduledActionDbAdapter scheduledactionDbAdapter = new ScheduledActionDbAdapter(mDb);
 		List<ScheduledAction> scheduledActions = scheduledactionDbAdapter.getAllEnabledScheduledActions();
 		assertThat(scheduledActions)
@@ -185,18 +196,14 @@ public class ExportTransactionsTest extends
 				.extracting("mActionType").contains(ScheduledAction.ActionType.BACKUP);
 
 		ScheduledAction action = scheduledActions.get(0);
-		assertThat(action.getPeriodType()).isEqualTo(PeriodType.DAY);
+		assertThat(action.getPeriodType()).isEqualTo(PeriodType.WEEK);
 		assertThat(action.getEndTime()).isEqualTo(0);
 	}
 
 	//todo: add testing of export flag to unit test
 	//todo: add test of ignore exported transactions to unit tests
 	@Override
-	protected void tearDown() throws Exception {
-		mSolo.finishOpenedActivities();
-		mSolo.waitForEmptyActivityStack(20000);
-		mSolo.sleep(5000);
-		mAccountsDbAdapter.deleteAllRecords();
+	@After public void tearDown() throws Exception {
         mDbHelper.close();
         mDb.close();
 		super.tearDown();

@@ -40,7 +40,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:text="Enter passcode"
+            android:text="@string/label_passcode"
             android:textSize="25sp"
             android:layout_weight="0.1" />
 

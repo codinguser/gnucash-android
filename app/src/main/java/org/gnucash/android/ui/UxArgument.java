@@ -38,12 +38,17 @@ public final class UxArgument {
 	public static final String ORIGIN_ACCOUNT_UID = "origin_acccount_uid";
 
     /**
-     * Key for checking whether the passcode is enabled or not.
+     * Key for checking whether the passcode is enabled or not
      */
     public static final String ENABLED_PASSCODE         = "enabled_passcode";
 
     /**
-     * Key for storing the passcode.
+     * Key for disabling the passcode
+     */
+    public static final String DISABLE_PASSCODE         = "disable_passcode";
+
+    /**
+     * Key for storing the passcode
      */
     public static final String PASSCODE                 = "passcode";
 
