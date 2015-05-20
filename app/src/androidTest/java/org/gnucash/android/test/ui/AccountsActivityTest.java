@@ -178,7 +178,6 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
 
         //check displayed
 //        onView(withId(android.R.id.list)).check(matches(hasDescendant(withText(NEW_ACCOUNT_NAME))));
-        mSolo.sleep(3000);
 
 		List<Account> accounts = mAccountsDbAdapter.getAllAccounts();
         assertThat(accounts).isNotNull();
@@ -209,10 +208,6 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
 
         onView(withId(R.id.menu_save)).perform(click());
 
-        Account editedAccount = mAccountsDbAdapter.getAccount(account.getUID());
-        mSolo.clickOnActionBarItem(R.id.menu_save);
-        mSolo.sleep(1000);
-        mSolo.waitForText(getActivity().getString(R.string.title_accounts));
         Account editedAccount = mAccountsDbAdapter.getAccount(account.getUID());
         String parentUID = editedAccount.getParentUID();
 
