@@ -125,6 +125,7 @@ public class TransactionsActivityTest extends
         mSplitsDbAdapter = new SplitsDbAdapter(mDb);
         mTransactionsDbAdapter = new TransactionsDbAdapter(mDb, mSplitsDbAdapter);
         mAccountsDbAdapter = new AccountsDbAdapter(mDb, mTransactionsDbAdapter);
+		mAccountsDbAdapter.deleteAllRecords();
 
 		mTransactionTimeMillis = System.currentTimeMillis();
         Account account = new Account(DUMMY_ACCOUNT_NAME);
@@ -540,8 +541,6 @@ public class TransactionsActivityTest extends
 	@After
 	public void tearDown() throws Exception {
 		mTransactionsActivity.finish();
-		Thread.sleep(1000);
-		mAccountsDbAdapter.deleteAllRecords();
 		super.tearDown();
 	}
 }
