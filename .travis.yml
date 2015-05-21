@@ -31,4 +31,6 @@ before_script:
 
 script:
   - ./gradlew build
-  - ./gradlew connectedCheck  
+  - ./gradlew cATDD  
+  - ./gradlew cATBD
+  - ./gradlew cATPD
