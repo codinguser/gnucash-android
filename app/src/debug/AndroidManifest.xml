@@ -15,7 +15,8 @@
  limitations under the License.
 -->
 
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="org.gnucash.android">
    <!-- Disable animations on debug builds so that the animations do not interfere with Espresso
          tests.  Adding this permission to the manifest is not sufficient - you must also grant the
          permission over adb! -->
