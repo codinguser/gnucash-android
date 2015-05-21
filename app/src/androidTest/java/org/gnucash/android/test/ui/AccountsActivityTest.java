@@ -23,6 +23,7 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.preference.PreferenceManager;
 import android.support.test.InstrumentationRegistry;
+import android.support.test.espresso.Espresso;
 import android.support.test.runner.AndroidJUnit4;
 import android.support.v4.app.Fragment;
 import android.test.ActivityInstrumentationTestCase2;
@@ -52,6 +53,7 @@ import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.clearText;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.longClick;
+import static android.support.test.espresso.action.ViewActions.scrollTo;
 import static android.support.test.espresso.action.ViewActions.typeText;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
@@ -165,19 +167,18 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
 	public void testCreateAccount(){
         onView(withId(R.id.menu_add_account)).check(matches(isDisplayed())).perform(click());
 
-        onView(withId(R.id.checkbox_transaction))
-//                .check(matches(allOf(isDisplayed(), isNotChecked())))
-                .perform(click());
-
         String NEW_ACCOUNT_NAME = "A New Account";
         onView(withId(R.id.input_account_name)).perform(typeText(NEW_ACCOUNT_NAME));
+        Espresso.closeSoftKeyboard();
         onView(withId(R.id.checkbox_placeholder_account))
                 .check(matches(isNotChecked()))
                 .perform(click());
-        onView(withId(R.id.menu_save)).perform(click());
 
-        //check displayed
-//        onView(withId(android.R.id.list)).check(matches(hasDescendant(withText(NEW_ACCOUNT_NAME))));
+        onView(withId(R.id.checkbox_parent_account)).perform(scrollTo())
+                .check(matches(allOf(isDisplayed(), isNotChecked())))
+                .perform(click());
+
+        onView(withId(R.id.menu_save)).perform(click());
 
 		List<Account> accounts = mAccountsDbAdapter.getAllAccounts();
         assertThat(accounts).isNotNull();
@@ -196,13 +197,12 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
         mAccountsDbAdapter.addAccount(account);
 
         refreshAccountsList();
-//        onView(withId(android.R.id.list))
-//                .check(matches(allOf(isDisplayed(), hasDescendant(withText(accountName)))));
 
         onView(withText(accountName)).perform(longClick());
         onView(withId(R.id.context_menu_edit_accounts)).perform(click());
         onView(withId(R.id.fragment_account_form)).check(matches(isDisplayed()));
-        onView(withId(R.id.checkbox_transaction))
+        Espresso.closeSoftKeyboard();
+        onView(withId(R.id.checkbox_parent_account)).perform(scrollTo())
                 .check(matches(isNotChecked()))
                 .perform(click());
 
@@ -227,10 +227,6 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
         onView(withId(R.id.input_account_name)).perform(clearText()).perform(typeText(editedAccountName));
 
         onView(withId(R.id.menu_save)).perform(click());
-
-        //test refresh
-//        onView(withId(android.R.id.empty))
-//                .check(matches(not(isDisplayed())));
 
 		List<Account> accounts = mAccountsDbAdapter.getAllAccounts();
 		Account latest = accounts.get(0);  //will be the first due to alphabetical sorting
@@ -285,7 +281,7 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
 	@After
 	public void tearDown() throws Exception {
         mAcccountsActivity.finish();
-        Thread.sleep(2000);
+        Thread.sleep(1000);
         mAccountsDbAdapter.deleteAllRecords(); //clear the data
 		super.tearDown();
 	}

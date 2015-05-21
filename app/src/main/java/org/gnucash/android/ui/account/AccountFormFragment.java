@@ -264,7 +264,7 @@ public class AccountFormFragment extends SherlockFragment {
 		mParentAccountSpinner = (Spinner) view.findViewById(R.id.input_parent_account);
 		mParentAccountSpinner.setEnabled(false);
 
-		mParentCheckBox = (CheckBox) view.findViewById(R.id.checkbox_transaction);
+		mParentCheckBox = (CheckBox) view.findViewById(R.id.checkbox_parent_account);
 		mParentCheckBox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 			
 			@Override

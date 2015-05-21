@@ -540,7 +540,7 @@ public class TransactionsActivityTest extends
 	@After
 	public void tearDown() throws Exception {
 		mTransactionsActivity.finish();
-		Thread.sleep(2000);
+		Thread.sleep(1000);
 		mAccountsDbAdapter.deleteAllRecords();
 		super.tearDown();
 	}
