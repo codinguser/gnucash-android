@@ -47,9 +47,6 @@
         android:label="Export and backup to 3rd party hosting services" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
-    <!-- Permission only used for testing -->
-    <uses-permission android:name="android.permission.SET_ANIMATION_SCALE" />
-
     <application android:name="org.gnucash.android.app.GnuCashApplication"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name" 

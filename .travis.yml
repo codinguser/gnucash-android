@@ -25,6 +25,10 @@ before_script:
   - mkdir sdcard
   - mksdcard -l gnucash-sdcard 64M sdcard/gnucash-sdcard.img
   - echo no | android create avd --force -n test -t android-19 --abi armeabi-v7a 
-  - emulator -avd test -no-skin -no-audio -no-boot-anim -sdcard sdcard/gnucash-sdcard.img &
+  - emulator -avd test -no-skin -no-audio -no-boot-anim -no-window -sdcard sdcard/gnucash-sdcard.img &
   - android-wait-for-emulator
-  - adb shell input keyevent 82 &    
+  - adb shell input keyevent 82 &
+
+script:
+  - ./gradlew build
+  - ./gradlew connectedCheck  
