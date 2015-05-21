@@ -301,7 +301,7 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
 	 */
     public List<Transaction> getAllTransactionsForAccount(String accountUID){
 		Cursor c = fetchAllTransactionsForAccount(accountUID);
-		ArrayList<Transaction> transactionsList = new ArrayList<Transaction>();
+		ArrayList<Transaction> transactionsList = new ArrayList<>();
         try {
             while (c.moveToNext()) {
                 transactionsList.add(buildTransactionInstance(c));

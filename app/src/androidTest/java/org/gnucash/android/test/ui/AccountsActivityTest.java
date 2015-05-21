@@ -96,7 +96,7 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
         mSplitsDbAdapter = new SplitsDbAdapter(mDb);
         mTransactionsDbAdapter = new TransactionsDbAdapter(mDb, mSplitsDbAdapter);
         mAccountsDbAdapter = new AccountsDbAdapter(mDb, mTransactionsDbAdapter);
-		
+
 		Account account = new Account(DUMMY_ACCOUNT_NAME);
         account.setUID(DUMMY_ACCOUNT_UID);
 		account.setCurrency(Currency.getInstance(DUMMY_ACCOUNT_CURRENCY_CODE));
@@ -246,16 +246,21 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
         transaction.addSplit(new Split(Money.getZeroInstance(), DUMMY_ACCOUNT_UID));
         mTransactionsDbAdapter.addTransaction(transaction);
 
-        onView(withId(R.id.primary_text)).perform(longClick());
+        onView(withText(DUMMY_ACCOUNT_NAME)).perform(longClick());
         onView(withId(R.id.context_menu_delete)).perform(click());
-        onView(withText(R.string.label_delete_sub_accounts)).perform(click());
+
+        //the account has no sub-accounts
+        onView(withId(R.id.accounts_options)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.transactions_options)).check(matches(isDisplayed()));
+
+        onView(withText(R.string.label_delete_transactions)).perform(click());
         onView(withId(R.id.btn_save)).perform(click());
 
         //should throw expected exception
         mAccountsDbAdapter.getID(DUMMY_ACCOUNT_UID);
 
         List<Transaction> transactions = mTransactionsDbAdapter.getAllTransactionsForAccount(DUMMY_ACCOUNT_UID);
-        assertThat(transactions).hasSize(0);
+        assertThat(transactions).isEmpty();
     }
 
 	//TODO: Test import of account file
@@ -263,26 +268,25 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
     @Test
 	public void testIntentAccountCreation(){
 		Intent intent = new Intent(Intent.ACTION_INSERT);
-		intent.putExtra(Intent.EXTRA_TITLE, "Intent Account");
-		intent.putExtra(Intent.EXTRA_UID, "intent-account");
+        intent.putExtra(Intent.EXTRA_TITLE, "Intent Account");
+        intent.putExtra(Intent.EXTRA_UID, "intent-account");
         intent.putExtra(Account.EXTRA_CURRENCY_CODE, "EUR");
         intent.setType(Account.MIME_TYPE);
 
-        AccountCreator accountCreator = new AccountCreator();
-        accountCreator.onReceive(mAcccountsActivity, intent);
+        new AccountCreator().onReceive(mAcccountsActivity, intent);
 
 		Account account = mAccountsDbAdapter.getAccount("intent-account");
-		assertNotNull(account);
-		assertEquals("Intent Account", account.getName());
-		assertEquals("intent-account", account.getUID());
-		assertEquals("EUR", account.getCurrency().getCurrencyCode());
+		assertThat(account).isNotNull();
+        assertThat(account.getName()).isEqualTo("Intent Account");
+        assertThat(account.getUID()).isEqualTo("intent-account");
+        assertThat(account.getCurrency().getCurrencyCode()).isEqualTo("EUR");
 	}
 	
 	@After
 	public void tearDown() throws Exception {
         mAcccountsActivity.finish();
-        Thread.sleep(1000);
-        mAccountsDbAdapter.deleteAllRecords();
+        Thread.sleep(2000);
+        mAccountsDbAdapter.deleteAllRecords(); //clear the data
 		super.tearDown();
 	}
 
