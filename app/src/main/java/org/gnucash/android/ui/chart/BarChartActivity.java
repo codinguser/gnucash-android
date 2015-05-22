@@ -87,10 +87,6 @@ public class BarChartActivity extends PassLockActivity implements OnChartValueSe
 
     private BarChart mChart;
     private AccountsDbAdapter mAccountsDbAdapter = AccountsDbAdapter.getInstance();
-    private Map<AccountType, Long> mEarliestTimestampsMap = new HashMap<>();
-    private Map<AccountType, Long> mLatestTimestampsMap = new HashMap<>();
-    private long mEarliestTransactionTimestamp;
-    private long mLatestTransactionTimestamp;
     private boolean mTotalPercentageMode = true;
     private boolean mChartDataPresent = true;
     private Currency mCurrency;
@@ -99,6 +95,9 @@ public class BarChartActivity extends PassLockActivity implements OnChartValueSe
     private Set<Integer> mLegendColors;
 
     private AccountType mAccountType = AccountType.EXPENSE;
+
+    private LocalDateTime mEarliestTransactionDate;
+    private LocalDateTime mLatestTransactionDate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -132,13 +131,21 @@ public class BarChartActivity extends PassLockActivity implements OnChartValueSe
      * @param accountTypeList account's types which will be displayed
      * @return a {@code BarData} instance that represents a user data
      */
-    private BarData getData(List<AccountType> accountTypeList) {
-        calculateEarliestAndLatestTimestamps(accountTypeList);
+    private BarData getData(AccountType accountType) {
+//        setEarliestAndLatestDates(accountType);
 
-        LocalDateTime startDate = new LocalDateTime(mEarliestTransactionTimestamp).withDayOfMonth(1).withMillisOfDay(0);
-        LocalDateTime endDate = new LocalDateTime(mLatestTransactionTimestamp).withDayOfMonth(1).withMillisOfDay(0);
-        Log.d(TAG, "X-axis star date: " + startDate.toString("dd MM yyyy"));
-        Log.d(TAG, "X-axis end date: " + endDate.toString("dd MM yyyy"));
+        TransactionsDbAdapter adapter = TransactionsDbAdapter.getInstance();
+        String code = mCurrency.getCurrencyCode();
+        LocalDateTime startDate = new LocalDateTime(adapter.getTimestampOfEarliestTransaction(accountType, code))
+                .withDayOfMonth(1)
+                .withMillisOfDay(0);
+        LocalDateTime endDate = new LocalDateTime(adapter.getTimestampOfLatestTransaction(accountType, code))
+                .withDayOfMonth(1)
+                .withMillisOfDay(0);
+        Log.d(TAG, accountType + " X-axis star date: " + mEarliestTransactionDate.toString("dd MM yyyy"));
+        Log.d(TAG, accountType + " X-axis end date: " + mLatestTransactionDate.toString("dd MM yyyy"));
+//        int months = Months.monthsBetween(mEarliestTransactionDate, mLatestTransactionDate).getMonths();
+
         int months = Months.monthsBetween(startDate, endDate).getMonths();
 
         List<BarDataSet> dataSets = new ArrayList<>();
@@ -195,32 +202,23 @@ public class BarChartActivity extends PassLockActivity implements OnChartValueSe
     }
 
     /**
-     * Calculates the earliest and latest transaction's timestamps of the specified account types
+     * Sets the earliest and latest transaction's dates of the specified account type
      * @param accountTypeList account's types which will be processed
      */
-    private void calculateEarliestAndLatestTimestamps(List<AccountType> accountTypeList) {
-        TransactionsDbAdapter dbAdapter = TransactionsDbAdapter.getInstance();
-        for (Iterator<AccountType> iter = accountTypeList.iterator(); iter.hasNext();) {
-            AccountType type = iter.next();
-            long earliest = dbAdapter.getTimestampOfEarliestTransaction(type, mCurrency.getCurrencyCode());
-            long latest = dbAdapter.getTimestampOfLatestTransaction(type, mCurrency.getCurrencyCode());
-            if (earliest > 0 && latest > 0) {
-                mEarliestTimestampsMap.put(type, earliest);
-                mLatestTimestampsMap.put(type, latest);
-            } else {
-                iter.remove();
-            }
-        }
-
-        if (mEarliestTimestampsMap.isEmpty() || mLatestTimestampsMap.isEmpty()) {
-            return;
-        }
-
-        List<Long> timestamps = new ArrayList<>(mEarliestTimestampsMap.values());
-        timestamps.addAll(mLatestTimestampsMap.values());
-        Collections.sort(timestamps);
-        mEarliestTransactionTimestamp = timestamps.get(0);
-        mLatestTransactionTimestamp = timestamps.get(timestamps.size() - 1);
+    private int setEarliestAndLatestDates(AccountType accountType) {
+        TransactionsDbAdapter adapter = TransactionsDbAdapter.getInstance();
+        String code = mCurrency.getCurrencyCode();
+        mEarliestTransactionDate = new LocalDateTime(adapter.getTimestampOfEarliestTransaction(accountType, code))
+                .withDayOfMonth(1)
+                .withMillisOfDay(0);
+        mLatestTransactionDate = new LocalDateTime(adapter.getTimestampOfLatestTransaction(accountType, code))
+                .withDayOfMonth(1)
+                .withMillisOfDay(0);
+        Log.d(TAG, accountType + " X-axis star date: " + mEarliestTransactionDate.toString("dd MM yyyy"));
+        Log.d(TAG, accountType + " X-axis end date: " + mLatestTransactionDate.toString("dd MM yyyy"));
+        int months = Months.monthsBetween(mEarliestTransactionDate, mLatestTransactionDate).getMonths();
+        Log.w(TAG, "DIFF: " + months);
+        return months;
     }
 
     /**
@@ -279,8 +277,7 @@ public class BarChartActivity extends PassLockActivity implements OnChartValueSe
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 mAccountType = (AccountType) ((Spinner) findViewById(R.id.chart_data_spinner)).getSelectedItem();
 
-                // below we can add/remove displayed account's types
-                mChart.setData(getData(new ArrayList<>(Arrays.asList(AccountType.INCOME, AccountType.EXPENSE))));
+                mChart.setData(getData(mAccountType));
 
                 if (!mChartDataPresent) {
                     mChart.getAxisLeft().setAxisMaxValue(10);
