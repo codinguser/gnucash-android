@@ -55,7 +55,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Currency;
 import java.util.HashMap;
-import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
@@ -98,6 +98,8 @@ public class BarChartActivity extends PassLockActivity implements OnChartValueSe
 
     private LocalDateTime mEarliestTransactionDate;
     private LocalDateTime mLatestTransactionDate;
+
+    private Map<String, Integer> accountToColorMap = new LinkedHashMap<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -142,8 +144,8 @@ public class BarChartActivity extends PassLockActivity implements OnChartValueSe
         LocalDateTime endDate = new LocalDateTime(adapter.getTimestampOfLatestTransaction(accountType, code))
                 .withDayOfMonth(1)
                 .withMillisOfDay(0);
-        Log.d(TAG, accountType + " X-axis star date: " + mEarliestTransactionDate.toString("dd MM yyyy"));
-        Log.d(TAG, accountType + " X-axis end date: " + mLatestTransactionDate.toString("dd MM yyyy"));
+        Log.d(TAG, accountType + " X-axis star date: " + startDate.toString("dd MM yyyy"));
+        Log.d(TAG, accountType + " X-axis end date: " + endDate.toString("dd MM yyyy"));
 //        int months = Months.monthsBetween(mEarliestTransactionDate, mLatestTransactionDate).getMonths();
 
         int months = Months.monthsBetween(startDate, endDate).getMonths();
@@ -167,9 +169,17 @@ public class BarChartActivity extends PassLockActivity implements OnChartValueSe
                     float balance = (float) mAccountsDbAdapter.getAccountsBalance(
                             Collections.singletonList(account.getUID()), start, end).asDouble();
                     if (balance != 0) {
+
+                        if (!accountToColorMap.containsKey(account.getUID())) {
+                            Integer color = (account.getColorHexCode() != null)
+                                    ? Color.parseColor(account.getColorHexCode())
+                                    : COLORS[accountToColorMap.size()];
+                            accountToColorMap.put(account.getUID(), color);
+                        }
+
                         stack.add(balance);
                         labels.add(account.getName());
-                        colors.add(COLORS[(colors.size()) % COLORS.length]);
+                        colors.add(accountToColorMap.get(account.getUID()));
                         Log.i(TAG, mAccountType + startDate.toString(" MMMM yyyy ") + account.getName()
                                 + " = " + stack.get(stack.size() - 1)  + ", color = " + colors.get(colors.size() - 1));
                     }
