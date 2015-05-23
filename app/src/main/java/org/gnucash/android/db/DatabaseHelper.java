@@ -451,7 +451,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             //assign a root account to all accounts which had null as parent (top-level accounts)
             String rootAccountUID = accountsDbAdapter.getOrCreateGnuCashRootAccountUID();
             contentValues.put(AccountEntry.COLUMN_PARENT_ACCOUNT_UID, rootAccountUID);
-            db.update(AccountEntry.TABLE_NAME, contentValues, AccountEntry.COLUMN_PARENT_ACCOUNT_UID + " IS NULL", null);
+            db.update(AccountEntry.TABLE_NAME, contentValues, AccountEntry.COLUMN_PARENT_ACCOUNT_UID + " IS NULL AND " + AccountEntry.COLUMN_TYPE + " != ?", new String[]{"ROOT"});
 
             Log.i(LOG_TAG, "Migrating existing recurring transactions");
             Cursor cursor = db.query(TransactionEntry.TABLE_NAME + "_bak", null, "recurrence_period > 0", null, null, null, null);
