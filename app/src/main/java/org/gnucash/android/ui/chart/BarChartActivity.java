@@ -191,7 +191,8 @@ public class BarChartActivity extends PassLockActivity implements OnChartValueSe
                 array[k] = stack.get(k);
             }
 
-            values.add(new BarEntry(array, i));
+            String stackLabels = labels.subList(labels.size() - stack.size(), labels.size()).toString();
+            values.add(new BarEntry(array, i, stackLabels));
 
             startDate = startDate.plusMonths(1);
         }
@@ -287,6 +288,9 @@ public class BarChartActivity extends PassLockActivity implements OnChartValueSe
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 mAccountType = (AccountType) ((Spinner) findViewById(R.id.chart_data_spinner)).getSelectedItem();
 
+                ((TextView) findViewById(R.id.selected_chart_slice)).setText("");
+                mChart.highlightValues(null);
+
                 mChart.setData(getData(mAccountType));
 
                 if (!mChartDataPresent) {
@@ -354,7 +358,9 @@ public class BarChartActivity extends PassLockActivity implements OnChartValueSe
     public void onValueSelected(Entry e, int dataSetIndex, Highlight h) {
         if (e == null) return;
         BarEntry entry = (BarEntry) e;
-        String label = mChart.getData().getXVals().get(entry.getXIndex());
+        String stackLabels = entry.getData().toString();
+        String label = mChart.getData().getXVals().get(entry.getXIndex()) + ", "
+                + stackLabels.substring(1, stackLabels.length() - 1).split(",")[h.getStackIndex()];
         double value = entry.getVals()[ h.getStackIndex() == -1 ? 0 : h.getStackIndex() ];
         double sum = mTotalPercentageMode ? mChart.getData().getDataSetByIndex(dataSetIndex).getYValueSum() : entry.getVal();
         ((TextView) findViewById(R.id.selected_chart_slice))
