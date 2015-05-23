@@ -28,15 +28,15 @@ import android.util.Log;
 
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.export.Exporter;
-import org.gnucash.android.model.Account;
 import org.gnucash.android.model.AccountType;
-import org.gnucash.android.model.Money;
 import org.gnucash.android.model.ScheduledAction;
-import org.gnucash.android.model.Split;
 import org.gnucash.android.model.Transaction;
 
 import java.io.File;
+import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.util.Currency;
+import java.util.UUID;
 
 import static org.gnucash.android.db.DatabaseSchema.AccountEntry;
 import static org.gnucash.android.db.DatabaseSchema.ScheduledActionEntry;
@@ -485,20 +485,57 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
             //auto-balance existing splits
             Log.i(LOG_TAG, "Auto-balancing existing transaction splits");
-            cursor = transactionsDbAdapter.fetchAllRecords();
-            while (cursor.moveToNext()){
-                Transaction transaction = transactionsDbAdapter.buildTransactionInstance(cursor);
-                if (transaction.isTemplate())
-                    continue;
-                Money imbalance = transaction.getImbalance();
-                if (!imbalance.isAmountZero()){
-                    Split split = new Split(imbalance.negate(),
-                            accountsDbAdapter.getOrCreateImbalanceAccountUID(imbalance.getCurrency()));
-                    split.setTransactionUID(transaction.getUID());
-                    splitsDbAdapter.addSplit(split);
+//            cursor = transactionsDbAdapter.fetchAllRecords();
+//            while (cursor.moveToNext()){
+//                Transaction transaction = transactionsDbAdapter.buildTransactionInstance(cursor);
+//                if (transaction.isTemplate())
+//                    continue;
+//                Money imbalance = transaction.getImbalance();
+//                if (!imbalance.isAmountZero()){
+//                    Split split = new Split(imbalance.negate(),
+//                            accountsDbAdapter.getOrCreateImbalanceAccountUID(imbalance.getCurrency()));
+//                    split.setTransactionUID(transaction.getUID());
+//                    splitsDbAdapter.addSplit(split);
+//                }
+//            }
+//            cursor.close();
+            cursor = db.query(
+                    "trans_extra_info , " + TransactionEntry.TABLE_NAME + " ON "
+                            + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_UID +
+                            " = trans_extra_info.trans_acct_t_uid",
+                    new String[]{
+                            TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_UID + " AS trans_uid",
+                            TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_CURRENCY + " AS trans_currency",
+                            "trans_extra_info.trans_acct_balance AS trans_acct_balance",
+                            "trans_extra_info.trans_currency_count AS trans_currency_count",
+                    }, "trans_acct_balance != 0 AND trans_currency_count = 1 AND " +
+                    TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_TEMPLATE + " == 0", null, null, null, null);
+            try {
+                String timestamp = (new Timestamp(System.currentTimeMillis())).toString();
+                while (cursor.moveToNext()){
+                    double imbalance = cursor.getDouble(cursor.getColumnIndexOrThrow("trans_acct_balance"));
+                    BigDecimal decimalImbalance = BigDecimal.valueOf(imbalance).setScale(2, BigDecimal.ROUND_HALF_UP);
+                    if (decimalImbalance.compareTo(BigDecimal.ZERO) != 0) {
+                        String currencyCode = cursor.getString(cursor.getColumnIndexOrThrow("trans_currency"));
+                        String TransactionUID = cursor.getString(cursor.getColumnIndexOrThrow("trans_uid"));
+                        contentValues.clear();
+                        contentValues.put(DatabaseSchema.CommonColumns.COLUMN_UID, UUID.randomUUID().toString().replaceAll("-", ""));
+                        contentValues.put(DatabaseSchema.CommonColumns.COLUMN_CREATED_AT, timestamp);
+                        contentValues.put(SplitEntry.COLUMN_AMOUNT,     decimalImbalance.abs().toPlainString());
+                        contentValues.put(SplitEntry.COLUMN_TYPE,       decimalImbalance.compareTo(BigDecimal.ZERO) > 0 ? "DEBIT" : "CREDIT");
+                        contentValues.put(SplitEntry.COLUMN_MEMO,       "");
+                        contentValues.put(SplitEntry.COLUMN_ACCOUNT_UID, accountsDbAdapter.getOrCreateImbalanceAccountUID(Currency.getInstance(currencyCode)));
+                        contentValues.put(SplitEntry.COLUMN_TRANSACTION_UID, TransactionUID);
+                        db.insert(SplitEntry.TABLE_NAME, null, contentValues);
+                        contentValues.clear();
+                        contentValues.put(TransactionEntry.COLUMN_MODIFIED_AT, timestamp);
+                        db.update(TransactionEntry.TABLE_NAME, contentValues, TransactionEntry.COLUMN_UID + " == ?",
+                                new String[]{TransactionUID});
+                    }
                 }
+            } finally {
+                cursor.close();
             }
-            cursor.close();
 
             Log.i(LOG_TAG, "Dropping temporary migration tables");
             db.execSQL("DROP TABLE " + SplitEntry.TABLE_NAME + "_bak");
