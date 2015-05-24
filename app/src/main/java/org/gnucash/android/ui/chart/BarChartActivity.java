@@ -279,6 +279,7 @@ public class BarChartActivity extends PassLockActivity implements OnChartValueSe
             mChart.getAxisLeft().resetAxisMaxValue();
             mChart.animateY(ANIMATION_DURATION);
         } else {
+            mChart.clearAnimation();
             selectedValueTextView.setText(getResources().getString(R.string.label_chart_no_data));
         }
 
