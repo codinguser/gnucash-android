@@ -437,7 +437,7 @@
     <string name="title_report_prefs">Report Preferences</string>
     <string name="label_report_currency">Select currency</string>
     <string name="title_use_account_color">Account color in reports</string>
-    <string name="summary_use_account_color">Use account color in the pie chart</string>
+    <string name="summary_use_account_color">Use account color in the bar/pie chart</string>
     <string name="header_report_settings">Reports</string>
     <string name="menu_order_by_size">Order by size</string>
     <string name="menu_toggle_legend">Toggle legend</string>

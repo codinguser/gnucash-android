@@ -92,6 +92,7 @@ public class BarChartActivity extends PassLockActivity implements OnChartValueSe
 
     private Currency mCurrency;
 
+    private boolean mUseAccountColor = true;
     private boolean mTotalPercentageMode = true;
     private boolean mChartDataPresent = true;
 
@@ -103,6 +104,9 @@ public class BarChartActivity extends PassLockActivity implements OnChartValueSe
         getSupportActionBar().setTitle(R.string.title_bar_chart);
 
         selectedValueTextView = (TextView) findViewById(R.id.selected_chart_slice);
+
+        mUseAccountColor = PreferenceManager.getDefaultSharedPreferences(getApplicationContext())
+                .getBoolean(getString(R.string.key_use_account_color), false);
 
         mCurrency = Currency.getInstance(PreferenceManager.getDefaultSharedPreferences(this)
                 .getString(getString(R.string.key_report_currency), Money.DEFAULT_CURRENCY_CODE));
@@ -147,9 +151,14 @@ public class BarChartActivity extends PassLockActivity implements OnChartValueSe
                             Collections.singletonList(account.getUID()), start, end).asDouble();
                     if (balance != 0) {
                         if (!accountToColorMap.containsKey(account.getUID())) {
-                            Integer color = (account.getColorHexCode() != null)
-                                    ? Color.parseColor(account.getColorHexCode())
-                                    : COLORS[accountToColorMap.size() % COLORS.length];
+                            Integer color;
+                            if (mUseAccountColor) {
+                                color = (account.getColorHexCode() != null)
+                                        ? Color.parseColor(account.getColorHexCode())
+                                        : COLORS[accountToColorMap.size() % COLORS.length];
+                            } else {
+                                color = COLORS[accountToColorMap.size() % COLORS.length];
+                            }
                             accountToColorMap.put(account.getUID(), color);
                         }
 
@@ -162,7 +171,7 @@ public class BarChartActivity extends PassLockActivity implements OnChartValueSe
             }
 
             String stackLabels = labels.subList(labels.size() - stack.size(), labels.size()).toString();
-            values.add(new BarEntry(floatListToArray(stack), i,  stackLabels));
+            values.add(new BarEntry(floatListToArray(stack), i, stackLabels));
 
             xValues.add(tmpDate.toString(X_AXIS_PATTERN));
 
@@ -276,7 +285,6 @@ public class BarChartActivity extends PassLockActivity implements OnChartValueSe
         selectedValueTextView.setText("");
 
         if (mChartDataPresent) {
-            mChart.getAxisLeft().resetAxisMaxValue();
             mChart.animateY(ANIMATION_DURATION);
         } else {
             mChart.clearAnimation();
