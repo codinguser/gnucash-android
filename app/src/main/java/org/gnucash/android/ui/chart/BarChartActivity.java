@@ -342,12 +342,13 @@ public class BarChartActivity extends PassLockActivity implements OnChartValueSe
 
     @Override
     public void onValueSelected(Entry e, int dataSetIndex, Highlight h) {
-        if (e == null) return;
+        if (e == null || ((BarEntry) e).getVals().length == 0) return;
         BarEntry entry = (BarEntry) e;
+        int index = h.getStackIndex() == -1 ? 0 : h.getStackIndex();
         String stackLabels = entry.getData().toString();
         String label = mChart.getData().getXVals().get(entry.getXIndex()) + ", "
-                + stackLabels.substring(1, stackLabels.length() - 1).split(",")[h.getStackIndex()];
-        double value = entry.getVals()[ h.getStackIndex() == -1 ? 0 : h.getStackIndex() ];
+                + stackLabels.substring(1, stackLabels.length() - 1).split(",")[index];
+        double value = entry.getVals()[index];
         double sum = mTotalPercentageMode ? mChart.getData().getDataSetByIndex(dataSetIndex).getYValueSum() : entry.getVal();
         selectedValueTextView.setText(String.format(SELECTED_VALUE_PATTERN, label, value, value / sum * 100));
     }
