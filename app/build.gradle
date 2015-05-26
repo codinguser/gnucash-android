@@ -6,7 +6,7 @@ apply plugin: 'crashlytics'
 def versionMajor = 1
 def versionMinor = 6
 def versionPatch = 0
-def versionBuild = 4
+def versionBuild = 5
 
 def buildTime() {
     def df = new SimpleDateFormat("yyyyMMdd")
@@ -41,6 +41,17 @@ android {
             resValue "string", "dropbox_app_secret", "h2t9fphj3nr4wkw"
             resValue "string", "manifest_dropbox_app_key", "db-dhjh8ke9wf05948"
         }
+        testInstrumentationRunner "org.gnucash.android.test.ui.GnucashAndroidTestRunner"
+
+    }
+
+    packagingOptions {
+        exclude 'META-INF/DEPENDENCIES'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'LICENSE.txt'
+        exclude 'META-INF/NOTICE.txt'
     }
 
     applicationVariants.all { variant ->
@@ -114,6 +125,30 @@ android {
     }
 }
 
+def adb = android.getAdbExe().toString()
+
+afterEvaluate {
+    task grantAnimationPermissionDevel(type: Exec, dependsOn: 'installDevelopmentDebug') { // or install{productFlavour}{buildType}
+        commandLine "$adb shell pm grant $android.productFlavors.development.applicationId android.permission.SET_ANIMATION_SCALE".split(' ')
+    }
+
+    task grantAnimationPermissionProduction(type: Exec, dependsOn: 'installProductionDebug'){
+        commandLine "$adb shell pm grant $android.defaultConfig.applicationId android.permission.SET_ANIMATION_SCALE".split(' ')
+    }
+    // When launching individual tests from Android Studio, it seems that only the assemble tasks
+    // get called directly, not the install* versions
+    tasks.each { task ->
+        if (task.name.startsWith('assembleDevelopmentDebugAndroidTest')){
+            task.dependsOn grantAnimationPermissionDevel
+        } else if (task.name.startsWith('assembleBetaDebugAndroidTest')){
+            task.dependsOn grantAnimationPermissionProduction
+        } else if (task.name.startsWith('assembleProductionDebugAndroidTest')){
+            task.dependsOn grantAnimationPermissionProduction
+        }
+    }
+}
+
+
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile('com.android.support:support-v4:22.1.1',
@@ -131,9 +166,11 @@ dependencies {
             'junit:junit:4.12',
             'org.assertj:assertj-core:1.7.1'
     )
-    androidTestCompile('com.jayway.android.robotium:robotium-solo:5.3.1')
-
+    androidTestCompile 'com.android.support.test:runner:0.2'
+    androidTestCompile 'com.android.support.test:rules:0.2'
     androidTestCompile('com.squareup.assertj:assertj-android:1.0.0'){
         exclude group: 'com.android.support', module:'support-annotations'
     }
+    androidTestCompile ('com.android.support.test.espresso:espresso-core:2.1')
+    androidTestCompile 'com.android.support:support-annotations:22.1.1'
 }

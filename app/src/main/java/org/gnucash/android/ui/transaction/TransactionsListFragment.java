@@ -29,7 +29,6 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.SimpleCursorAdapter;
-import android.text.format.DateFormat;
 import android.text.format.DateUtils;
 import android.util.Log;
 import android.util.SparseBooleanArray;
@@ -218,7 +217,7 @@ public class TransactionsListFragment extends SherlockListFragment implements
 	public void onListItemClick(ListView l, View v, int position, long id) {
 		super.onListItemClick(l, v, position, id);
 		if (mInEditMode){
-			CheckBox checkbox = (CheckBox) v.findViewById(R.id.checkbox_parent_account);
+			CheckBox checkbox = (CheckBox) v.findViewById(R.id.checkbox_transaction);
 			checkbox.setChecked(!checkbox.isChecked());
 			return;
 		}
@@ -228,7 +227,7 @@ public class TransactionsListFragment extends SherlockListFragment implements
 	@Override
 	public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long id) {
 		getListView().setItemChecked(position, true);
-		CheckBox checkbox = (CheckBox) view.findViewById(R.id.checkbox_parent_account);
+		CheckBox checkbox = (CheckBox) view.findViewById(R.id.checkbox_transaction);
 		checkbox.setChecked(true);
 		startActionMode();
 		return true;
@@ -365,7 +364,7 @@ public class TransactionsListFragment extends SherlockListFragment implements
 		public View getView(int position, View convertView, ViewGroup parent) {
 			final View view = super.getView(position, convertView, parent);
 			final int itemPosition = position;
-			CheckBox checkbox = (CheckBox) view.findViewById(R.id.checkbox_parent_account);
+			CheckBox checkbox = (CheckBox) view.findViewById(R.id.checkbox_transaction);
             final TextView secondaryText = (TextView) view.findViewById(R.id.secondary_text);
 
             //TODO: Revisit this if we ever change the application theme
