@@ -20,7 +20,11 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -43,6 +47,7 @@ import org.gnucash.android.model.Account;
 import org.gnucash.android.model.AccountType;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.ui.passcode.PassLockActivity;
+import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 import org.joda.time.Months;
 
@@ -50,8 +55,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Currency;
-import java.util.HashMap;
-import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -70,155 +75,119 @@ public class BarChartActivity extends PassLockActivity implements OnChartValueSe
     private static final int NO_DATA_COLOR = Color.LTGRAY;
     private static final int NO_DATA_BAR_COUNTS = 3;
     private static final int[] COLORS = {
-            Color.parseColor("#68F1AF"), Color.parseColor("#CC1f09"), Color.parseColor("#EE8600"),
-            Color.parseColor("#1469EB"), Color.parseColor("#B304AD"),
+            Color.parseColor("#17ee4e"), Color.parseColor("#cc1f09"), Color.parseColor("#3940f7"),
+            Color.parseColor("#f9cd04"), Color.parseColor("#5f33a8"), Color.parseColor("#e005b6"),
+            Color.parseColor("#17d6ed"), Color.parseColor("#e4a9a2"), Color.parseColor("#8fe6cd"),
+            Color.parseColor("#8b48fb"), Color.parseColor("#343a36"), Color.parseColor("#6decb1"),
+            Color.parseColor("#a6dcfd"), Color.parseColor("#5c3378"), Color.parseColor("#a6dcfd"),
+            Color.parseColor("#ba037c"), Color.parseColor("#708809"), Color.parseColor("#32072c"),
+            Color.parseColor("#fddef8"), Color.parseColor("#fa0e6e"), Color.parseColor("#d9e7b5")
     };
 
-    private BarChart mChart;
     private AccountsDbAdapter mAccountsDbAdapter = AccountsDbAdapter.getInstance();
-    private Map<AccountType, Long> mEarliestTimestampsMap = new HashMap<>();
-    private Map<AccountType, Long> mLatestTimestampsMap = new HashMap<>();
-    private long mEarliestTransactionTimestamp;
-    private long mLatestTransactionTimestamp;
+
+    private TextView selectedValueTextView;
+
+    private BarChart mChart;
+
+    private Currency mCurrency;
+
+    private boolean mUseAccountColor = true;
     private boolean mTotalPercentageMode = true;
     private boolean mChartDataPresent = true;
-    private Currency mCurrency;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         //it is necessary to set the view first before calling super because of the nav drawer in BaseDrawerActivity
-        setContentView(R.layout.activity_line_chart);
+        setContentView(R.layout.activity_bar_chart);
         super.onCreate(savedInstanceState);
         getSupportActionBar().setTitle(R.string.title_bar_chart);
+
+        selectedValueTextView = (TextView) findViewById(R.id.selected_chart_slice);
+
+        mUseAccountColor = PreferenceManager.getDefaultSharedPreferences(getApplicationContext())
+                .getBoolean(getString(R.string.key_use_account_color), false);
 
         mCurrency = Currency.getInstance(PreferenceManager.getDefaultSharedPreferences(this)
                 .getString(getString(R.string.key_report_currency), Money.DEFAULT_CURRENCY_CODE));
 
         mChart = new BarChart(this);
-        ((LinearLayout) findViewById(R.id.chart)).addView(mChart);
+        ((LinearLayout) findViewById(R.id.bar_chart)).addView(mChart);
         mChart.setOnChartValueSelectedListener(this);
         mChart.setDescription("");
+        mChart.setDrawValuesForWholeStack(false);
         mChart.getXAxis().setDrawGridLines(false);
         mChart.getAxisRight().setEnabled(false);
         mChart.getAxisLeft().enableGridDashedLine(4.0f, 4.0f, 0);
-        mChart.setDrawValuesForWholeStack(false);
         mChart.getAxisLeft().setValueFormatter(new LargeValueFormatter(mCurrency.getSymbol(Locale.getDefault())));
-        mChart.getAxisRight().setEnabled(false);
+        mChart.getLegend().setForm(Legend.LegendForm.CIRCLE);
+        mChart.getLegend().setPosition(Legend.LegendPosition.RIGHT_OF_CHART_INSIDE);
 
-        // below we can add/remove displayed account's types
-        mChart.setData(getData(new ArrayList<>(Arrays.asList(AccountType.INCOME, AccountType.EXPENSE))));
-
-        Legend legend = mChart.getLegend();
-        legend.setForm(Legend.LegendForm.CIRCLE);
-        legend.setPosition(Legend.LegendPosition.RIGHT_OF_CHART_INSIDE);
-
-        if (!mChartDataPresent) {
-            mChart.getAxisLeft().setAxisMaxValue(10);
-            mChart.getAxisLeft().setDrawLabels(false);
-            mChart.getXAxis().setDrawLabels(false);
-            mChart.setTouchEnabled(false);
-            ((TextView) findViewById(R.id.selected_chart_slice)).setText(getResources().getString(R.string.label_chart_no_data));
-        } else {
-            mChart.animateY(ANIMATION_DURATION);
-        }
-        mChart.invalidate();
+        setUpSpinner();
     }
 
     /**
      * Returns a data object that represents a user data of the specified account types
-     * @param accountTypeList account's types which will be displayed
+     * @param accountType account's type which will be displayed
      * @return a {@code BarData} instance that represents a user data
      */
-    private BarData getData(List<AccountType> accountTypeList) {
-        calculateEarliestAndLatestTimestamps(accountTypeList);
-
-        LocalDateTime startDate = new LocalDateTime(mEarliestTransactionTimestamp).withDayOfMonth(1).withMillisOfDay(0);
-        LocalDateTime endDate = new LocalDateTime(mLatestTransactionTimestamp).withDayOfMonth(1).withMillisOfDay(0);
-        Log.d(TAG, "X-axis star date: " + startDate.toString("dd MM yyyy"));
-        Log.d(TAG, "X-axis end date: " + endDate.toString("dd MM yyyy"));
-        int months = Months.monthsBetween(startDate, endDate).getMonths();
-
-        List<BarDataSet> dataSets = new ArrayList<>();
+    private BarData getData(AccountType accountType) {
         List<BarEntry> values = new ArrayList<>();
+        List<String> labels = new ArrayList<>();
+        List<Integer> colors = new ArrayList<>();
+        Map<String, Integer> accountToColorMap = new LinkedHashMap<>();
         List<String> xValues = new ArrayList<>();
-        for (int i = 0; i <= months; i++) {
-            xValues.add(startDate.toString(X_AXIS_PATTERN));
+        LocalDateTime tmpDate = new LocalDateTime(getStartDate(accountType).toDate().getTime());
+        for (int i = 0; i <= Months.monthsBetween(getStartDate(accountType), getEndDate(accountType)).getMonths(); i++) {
+            long start = tmpDate.dayOfMonth().withMinimumValue().millisOfDay().withMinimumValue().toDate().getTime();
+            long end = tmpDate.dayOfMonth().withMaximumValue().millisOfDay().withMaximumValue().toDate().getTime();
+            List<Float> stack = new ArrayList<>();
+            for (Account account : mAccountsDbAdapter.getSimpleAccountList()) {
+                if (account.getAccountType() == accountType
+                        && !account.isPlaceholderAccount()
+                        && account.getCurrency() == mCurrency) {
 
-            long start = startDate.dayOfMonth().withMinimumValue().millisOfDay().withMinimumValue().toDate().getTime();
-            long end = startDate.dayOfMonth().withMaximumValue().millisOfDay().withMaximumValue().toDate().getTime();
-            float stack[] = new float[accountTypeList.size()];
-            int j = 0;
-            for (Map.Entry<AccountType, List<String>> entry : getAccountTypeToAccountUidMap(accountTypeList).entrySet()) {
-                stack[j++] = (float) mAccountsDbAdapter.getAccountsBalance(entry.getValue(), start, end).absolute().asDouble();
-                Log.d(TAG, entry.getKey() + startDate.toString(" MMMM yyyy") + ", balance = " + stack[j - 1]);
+                    double balance = mAccountsDbAdapter.getAccountsBalance(
+                            Collections.singletonList(account.getUID()), start, end).asDouble();
+                    if (balance != 0) {
+                        if (!accountToColorMap.containsKey(account.getUID())) {
+                            Integer color;
+                            if (mUseAccountColor) {
+                                color = (account.getColorHexCode() != null)
+                                        ? Color.parseColor(account.getColorHexCode())
+                                        : COLORS[accountToColorMap.size() % COLORS.length];
+                            } else {
+                                color = COLORS[accountToColorMap.size() % COLORS.length];
+                            }
+                            accountToColorMap.put(account.getUID(), color);
+                        }
+
+                        stack.add((float) balance);
+                        labels.add(account.getName());
+                        colors.add(accountToColorMap.get(account.getUID()));
+                        Log.d(TAG, accountType + tmpDate.toString(" MMMM yyyy ") + account.getName() + " = " + stack.get(stack.size() - 1));
+                    }
+                }
             }
-            values.add(new BarEntry(stack, i));
 
-            startDate = startDate.plusMonths(1);
+            String stackLabels = labels.subList(labels.size() - stack.size(), labels.size()).toString();
+            values.add(new BarEntry(floatListToArray(stack), i, stackLabels));
+
+            xValues.add(tmpDate.toString(X_AXIS_PATTERN));
+
+            tmpDate = tmpDate.plusMonths(1);
         }
 
         BarDataSet set = new BarDataSet(values, "");
-        // conversion an enum list to a string array
-        set.setStackLabels(accountTypeList.toString().substring(1, accountTypeList.toString().length() - 1).split(", "));
-        set.setColors(Arrays.copyOfRange(COLORS, 0, accountTypeList.size()));
-        dataSets.add(set);
+        set.setStackLabels(labels.toArray(new String[labels.size()]));
+        set.setColors(colors);
 
         if (set.getYValueSum() == 0) {
             mChartDataPresent = false;
             return getEmptyData();
         }
-        return new BarData(xValues, dataSets);
-    }
-
-    /**
-     * Calculates the earliest and latest transaction's timestamps of the specified account types
-     * @param accountTypeList account's types which will be processed
-     */
-    private void calculateEarliestAndLatestTimestamps(List<AccountType> accountTypeList) {
-        TransactionsDbAdapter dbAdapter = TransactionsDbAdapter.getInstance();
-        for (Iterator<AccountType> iter = accountTypeList.iterator(); iter.hasNext();) {
-            AccountType type = iter.next();
-            long earliest = dbAdapter.getTimestampOfEarliestTransaction(type, mCurrency.getCurrencyCode());
-            long latest = dbAdapter.getTimestampOfLatestTransaction(type, mCurrency.getCurrencyCode());
-            if (earliest > 0 && latest > 0) {
-                mEarliestTimestampsMap.put(type, earliest);
-                mLatestTimestampsMap.put(type, latest);
-            } else {
-                iter.remove();
-            }
-        }
-
-        if (mEarliestTimestampsMap.isEmpty() || mLatestTimestampsMap.isEmpty()) {
-            return;
-        }
-
-        List<Long> timestamps = new ArrayList<>(mEarliestTimestampsMap.values());
-        timestamps.addAll(mLatestTimestampsMap.values());
-        Collections.sort(timestamps);
-        mEarliestTransactionTimestamp = timestamps.get(0);
-        mLatestTransactionTimestamp = timestamps.get(timestamps.size() - 1);
-    }
-
-    /**
-     * Returns a map with an account type as key and correspond accounts UIDs as value
-     * from a specified list of account types
-     * @param accountTypeList account's types which will be used as keys
-     * @return a map with an account type as key and correspond accounts UIDs as value
-     */
-    private Map<AccountType, List<String>> getAccountTypeToAccountUidMap(List<AccountType> accountTypeList) {
-        Map<AccountType, List<String>> accountMap = new HashMap<>();
-        for (AccountType accountType : accountTypeList) {
-            List<String> accountUIDList = new ArrayList<>();
-            for (Account account : mAccountsDbAdapter.getSimpleAccountList()) {
-                if (account.getAccountType() == accountType
-                        && !account.isPlaceholderAccount()
-                        && account.getCurrency() == mCurrency) {
-                    accountUIDList.add(account.getUID());
-                }
-                accountMap.put(accountType, accountUIDList);
-            }
-        }
-        return accountMap;
+        mChartDataPresent = true;
+        return new BarData(xValues, set);
     }
 
     /**
@@ -230,13 +199,99 @@ public class BarChartActivity extends PassLockActivity implements OnChartValueSe
         List<BarEntry> yValues = new ArrayList<>();
         for (int i = 0; i < NO_DATA_BAR_COUNTS; i++) {
             xValues.add("");
-            yValues.add(new BarEntry(i % 2 == 0 ? 5f : 4.5f, i));
+            yValues.add(new BarEntry(i + 1, i));
         }
         BarDataSet set = new BarDataSet(yValues, getResources().getString(R.string.label_chart_no_data));
         set.setDrawValues(false);
         set.setColor(NO_DATA_COLOR);
 
-        return new BarData(xValues, Collections.singletonList(set));
+        return new BarData(xValues, set);
+    }
+
+    /**
+     * Returns the start data of x-axis for the specified account type
+     * @param accountType account type
+     * @return the start data
+     */
+    private LocalDate getStartDate(AccountType accountType) {
+        TransactionsDbAdapter adapter = TransactionsDbAdapter.getInstance();
+        String code = mCurrency.getCurrencyCode();
+        LocalDate startDate = new LocalDate(adapter.getTimestampOfEarliestTransaction(accountType, code)).withDayOfMonth(1);
+        Log.d(TAG, accountType + " X-axis star date: " + startDate.toString("dd MM yyyy"));
+        return startDate;
+    }
+
+    /**
+     * Returns the end data of x-axis for the specified account type
+     * @param accountType account type
+     * @return the end data
+     */
+    private LocalDate getEndDate(AccountType accountType) {
+        TransactionsDbAdapter adapter = TransactionsDbAdapter.getInstance();
+        String code = mCurrency.getCurrencyCode();
+        LocalDate endDate = new LocalDate(adapter.getTimestampOfLatestTransaction(accountType, code)).withDayOfMonth(1);
+        Log.d(TAG, accountType + " X-axis end date: " + endDate.toString("dd MM yyyy"));
+        return endDate;
+    }
+
+    /**
+     * Converts the specified list of floats to an array
+     * @param list a list of floats
+     * @return a float array
+     */
+    private float[] floatListToArray(List<Float> list) {
+        float array[] = new float[list.size()];
+        for (int i = 0;  i < list.size(); i++) {
+            array[i] = list.get(i);
+        }
+        return array;
+    }
+
+    /**
+     * Sets up settings and data for the account type spinner. Currently used only {@code EXPENSE} and {@code INCOME}
+     * account types.
+     */
+    private void setUpSpinner() {
+        final Spinner spinner = (Spinner) findViewById(R.id.chart_data_spinner);
+        ArrayAdapter<AccountType> dataAdapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_spinner_item,
+                Arrays.asList(AccountType.EXPENSE, AccountType.INCOME));
+        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(dataAdapter);
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                mChart.setData(getData((AccountType) spinner.getSelectedItem()));
+                displayChart();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+            }
+        });
+    }
+
+    /**
+     * Displays the stacked bar chart
+     */
+    private void displayChart() {
+        mChart.highlightValues(null);
+        mChart.getLegend().setEnabled(false);
+
+        mChart.getAxisLeft().setDrawLabels(mChartDataPresent);
+        mChart.getXAxis().setDrawLabels(mChartDataPresent);
+        mChart.setTouchEnabled(mChartDataPresent);
+
+        selectedValueTextView.setText("");
+
+        if (mChartDataPresent) {
+            mChart.animateY(ANIMATION_DURATION);
+        } else {
+            mChart.clearAnimation();
+            selectedValueTextView.setText(getResources().getString(R.string.label_chart_no_data));
+        }
+
+        mChart.invalidate();
     }
 
     @Override
@@ -260,7 +315,14 @@ public class BarChartActivity extends PassLockActivity implements OnChartValueSe
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_toggle_legend:
-                mChart.getLegend().setEnabled(!mChart.getLegend().isEnabled());
+                // workaround for buggy legend
+                Legend legend = mChart.getLegend();
+                legend.setEnabled(!mChart.getLegend().isEnabled());
+                BarDataSet dataSet = mChart.getData().getDataSetByIndex(0);
+                LinkedHashSet<String> labels = new LinkedHashSet<>(Arrays.asList(dataSet.getStackLabels()));
+                legend.setLabels(labels.toArray(new String[labels.size()]));
+                LinkedHashSet<Integer> colors = new LinkedHashSet<>(dataSet.getColors());
+                legend.setColors(Arrays.asList(colors.toArray(new Integer[colors.size()])));
                 mChart.invalidate();
                 break;
 
@@ -280,17 +342,19 @@ public class BarChartActivity extends PassLockActivity implements OnChartValueSe
 
     @Override
     public void onValueSelected(Entry e, int dataSetIndex, Highlight h) {
-        if (e == null) return;
+        if (e == null || ((BarEntry) e).getVals().length == 0) return;
         BarEntry entry = (BarEntry) e;
-        String label = mChart.getData().getXVals().get(entry.getXIndex());
-        double value = entry.getVals()[ h.getStackIndex() == -1 ? 0 : h.getStackIndex() ];
+        int index = h.getStackIndex() == -1 ? 0 : h.getStackIndex();
+        String stackLabels = entry.getData().toString();
+        String label = mChart.getData().getXVals().get(entry.getXIndex()) + ", "
+                + stackLabels.substring(1, stackLabels.length() - 1).split(",")[index];
+        double value = entry.getVals()[index];
         double sum = mTotalPercentageMode ? mChart.getData().getDataSetByIndex(dataSetIndex).getYValueSum() : entry.getVal();
-        ((TextView) findViewById(R.id.selected_chart_slice))
-                .setText(String.format(SELECTED_VALUE_PATTERN, label, value, value / sum * 100));
+        selectedValueTextView.setText(String.format(SELECTED_VALUE_PATTERN, label, value, value / sum * 100));
     }
 
     @Override
     public void onNothingSelected() {
-        ((TextView) findViewById(R.id.selected_chart_slice)).setText("");
+        selectedValueTextView.setText("");
     }
 }

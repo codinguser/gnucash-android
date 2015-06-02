@@ -497,7 +497,7 @@ Nenhuma informação de  identificação do usuário será coletada neste proces
 	<string name="header_report_settings">Relatórios</string>
 	<string name="label_report_currency">Selecionar moeda</string>
 	<string name="title_use_account_color">Cor de contas nos relatórios</string>
-	<string name="summary_use_account_color">Utilizar cor de contas no gráfico de pizza</string>
+	<string name="summary_use_account_color">Utilizar cor de contas no gráfico de barras/pizza</string>
 	<string name="nav_menu_scheduled_backups">Backups agendados</string>
 	<string name="title_scheduled_exports">Exportações agendadas</string>
 	<string name="label_no_scheduled_exports_to_display">Sem exportações agendadas para  mostrar</string>
