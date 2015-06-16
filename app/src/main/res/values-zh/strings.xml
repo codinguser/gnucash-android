@@ -491,7 +491,8 @@
     </plurals>
     <string name="title_enable_crashlytics">启用崩溃日志</string>
     <string name="msg_enable_crashlytics">Enable to send information about malfunctions to the developers for improvement (recommended).
-No user-identifiable information will be collected as part of this process!</string>
+No user-identifiable information will be collected as part of this process!
+    </string>
     <string name="label_export_format">导出格式</string>
     <string name="toast_backup_folder_not_found">找不到备份目录，请确认SD卡正常。</string>
     <string name="label_old_passcode">先输入现在的密码</string>

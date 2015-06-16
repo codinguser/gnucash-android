@@ -33,6 +33,7 @@ import java.io.FileOutputStream;
 import java.io.IOError;
 import java.io.IOException;
 import java.nio.channels.FileChannel;
+import java.util.UUID;
 
 import static org.gnucash.android.db.DatabaseSchema.AccountEntry;
 
@@ -187,4 +188,9 @@ public class MigrationHelper {
                 oldExportFolder.delete();
         }
     };
+
+    public static String generateUUID()
+    {
+        return UUID.randomUUID().toString().replaceAll("-", "");
+    }
 }

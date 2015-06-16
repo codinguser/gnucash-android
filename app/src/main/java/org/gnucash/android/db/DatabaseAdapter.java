@@ -42,7 +42,7 @@ public abstract class DatabaseAdapter {
 	/**
 	 * Tag for logging
 	 */
-	protected static String LOG_TAG = "DatabaseAdapter";
+	protected String LOG_TAG = "DatabaseAdapter";
 
 	/**
 	 * SQLite database
