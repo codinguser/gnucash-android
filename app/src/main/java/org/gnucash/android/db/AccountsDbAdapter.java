@@ -515,7 +515,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 	 * @return List of {@link Account}s in the database
 	 */
     public List<Account> getAllAccounts(){
-		LinkedList<Account> accounts = new LinkedList<Account>();
+		LinkedList<Account> accounts = new LinkedList<>();
 		Cursor c = fetchAllRecords();
         try {
             while (c.moveToNext()) {
@@ -968,21 +968,6 @@ public class AccountsDbAdapter extends DatabaseAdapter {
         int count = cursor.getInt(0);
         cursor.close();
         return count;
-    }
-
-    /**
-     * Returns the number of accounts in the database
-     * @return Number of accounts in the database
-     */
-    public int getTotalAccountCount() {
-        String queryCount = "SELECT COUNT(*) FROM " + AccountEntry.TABLE_NAME;
-        Cursor cursor = mDb.rawQuery(queryCount, null);
-        try {
-            cursor.moveToFirst();
-            return cursor.getInt(0);
-        } finally {
-            cursor.close();
-        }
     }
 
     /**

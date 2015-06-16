@@ -19,6 +19,7 @@ package org.gnucash.android.db;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteStatement;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
@@ -444,6 +445,16 @@ public abstract class DatabaseAdapter {
         } finally {
             cursor.close();
         }
+    }
+
+    /**
+     * Returns the number of records in the database table backed by this adapter
+     * @return Total number of records in the database
+     */
+    public long getRecordsCount(){
+        String sql = "SELECT COUNT(*) FROM " + mTableName;
+        SQLiteStatement statement = mDb.compileStatement(sql);
+        return statement.simpleQueryForLong();
     }
 
     /**

@@ -492,17 +492,6 @@ public class TransactionsDbAdapter extends DatabaseAdapter {
     }
 
     /**
-	 * Returns the total number of transactions in the database
-	 * regardless of what account they belong to
-	 * @return Number of transaction in the database
-	 */
-	public long getAllTransactionsCount() {
-        String sql = "SELECT COUNT(*) FROM " + TransactionEntry.TABLE_NAME;
-        SQLiteStatement statement = mDb.compileStatement(sql);
-        return statement.simpleQueryForLong();
-    }
-
-    /**
      * Returns the number of template transactions in the database
      * @return Number of template transactions
      */

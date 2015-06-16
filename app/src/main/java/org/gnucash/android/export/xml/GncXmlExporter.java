@@ -652,7 +652,7 @@ public class GncXmlExporter extends Exporter{
             //account count
             xmlSerializer.startTag(null, GncXmlHelper.TAG_COUNT_DATA);
             xmlSerializer.attribute(null, GncXmlHelper.ATTR_KEY_CD_TYPE, "account");
-            xmlSerializer.text(mAccountsDbAdapter.getTotalAccountCount() + "");
+            xmlSerializer.text(mAccountsDbAdapter.getRecordsCount() + "");
             xmlSerializer.endTag(null, GncXmlHelper.TAG_COUNT_DATA);
             //transaction count
             xmlSerializer.startTag(null, GncXmlHelper.TAG_COUNT_DATA);
