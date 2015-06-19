@@ -6,7 +6,7 @@ apply plugin: 'crashlytics'
 def versionMajor = 1
 def versionMinor = 6
 def versionPatch = 0
-def versionBuild = 5
+def versionBuild = 6
 
 def buildTime() {
     def df = new SimpleDateFormat("yyyyMMdd")

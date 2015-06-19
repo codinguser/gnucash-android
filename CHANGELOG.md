@@ -1,20 +1,22 @@
 Change Log
 ===============================================================================
-Version 1.6.0 *(2015-xx-xx)*
+Version 1.6.0 *(2015-06-20)*
 ----------------------------
-* Feature: More options for recurrence of scheduled transactions
 * Feature: Scheduled backups (QIF, OFX and XML)
+* Feature: More recurrence options for scheduled transactions
 * Feature: Backup/Export to DropBox and Google Drive
 * Feature: Reports of income and expenses over time - bar, pie and line charts
-* Feature: Import scheduled transactions from GnuCash XML
+* Feature: Import scheduled transactions from GnuCash XML (experimental)
 * Feature: Set app as handler for .gnucash and .gnca files
 * Feature: Auto-balance transactions before saving
-* Feature: Added navigation drawer for easier access to features
-* Feature: Added options for explicitly creating/restoring backups
-* Feature: Added support for hidden accounts
+* Feature: Navigation drawer for easier access to features
+* Feature: Options for explicitly creating/restoring backups
+* Feature: Support for hidden accounts
 * Feature: Account delete dialog now has options for moving sub-accounts and transactions
 * Feature: Export to Gnucash desktop-compatible XML
-* Feature: Added support for logging to Crashlytics (for beta releases)
+* Feature: Support for logging to Crashlytics (for beta releases)
+* Fixed: Checkboxes in transaction list are hard to see
+* Fixed: Crash when restoring last backup
 * Improvement: Imbalance accounts are created on-the-fly (and hidden in single-entry mode)
 * Improvement: Transaction auto-complete suggestions now include amount, date and do not show duplicates
 * Improvement: Only one ROOT account exists in the database (it is created if necessary)
@@ -24,8 +26,9 @@ Version 1.6.0 *(2015-xx-xx)*
 * Improvement: Future transactions are not considered when calculating account balances
 * Improvement: Database is always cleared during import (no merging of books supported)
 * Improvement: Increased speed and reliability of import operations
+* Improvement: Use Google Espresso for writing UX tests, added new test cases
 * Improvement: Upgraded Java version to 1.7
-* Improvement: Use gradle for building source
+* Improvement: Use gradle for building project
 
 Version 1.5.5 *(2015-02-20)*
 ----------------------------
