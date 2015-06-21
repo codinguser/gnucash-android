@@ -6,7 +6,7 @@ apply plugin: 'crashlytics'
 def versionMajor = 1
 def versionMinor = 6
 def versionPatch = 0
-def versionBuild = 6
+def versionBuild = 7
 
 def buildTime() {
     def df = new SimpleDateFormat("yyyyMMdd")
@@ -21,7 +21,7 @@ def gitSha() {
 
 android {
     compileSdkVersion 19
-    buildToolsVersion "22.0.1"
+    buildToolsVersion "21.1.2" //maintain this version until we migrate to ActionBarCompat
     defaultConfig {
         applicationId "org.gnucash.android"
         testApplicationId 'org.gnucash.android.test'
