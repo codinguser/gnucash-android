@@ -155,6 +155,7 @@ dependencies {
             'com.android.support:appcompat-v7:22.1.0',
             'com.viewpagerindicator:library:2.4.1@aar',
             'com.doomonafireball.betterpickers:library:1.6.0',
+            'org.jraf:android-switch-backport:1.4.0@aar',
             'com.commonsware.cwac:merge:1.1.+',
             'com.github.PhilJay:MPAndroidChart:v2.1.0',
             'joda-time:joda-time:2.7',
