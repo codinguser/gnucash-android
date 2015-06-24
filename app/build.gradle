@@ -152,7 +152,7 @@ afterEvaluate {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile('com.android.support:support-v4:22.1.1',
-            'com.actionbarsherlock:actionbarsherlock:4.4.0@aar',
+            'com.android.support:appcompat-v7:22.1.0',
             'com.viewpagerindicator:library:2.4.1@aar',
             'com.doomonafireball.betterpickers:library:1.6.0',
             'com.commonsware.cwac:merge:1.1.+',
