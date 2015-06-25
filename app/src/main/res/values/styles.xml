@@ -37,7 +37,7 @@
         <item name="android:textSize">@dimen/text_size_small</item>
     </style>
     
-    <style name="Dropdown.TextView" parent="@style/Widget.Sherlock.Spinner.DropDown.ActionBar">
+    <style name="Dropdown.TextView" parent="@style/Widget.AppCompat.Spinner.DropDown.ActionBar">
         <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
     </style>
     
@@ -49,12 +49,12 @@
     
     <style name="TextAppearance" parent="android:TextAppearance">
     </style>
-    
+
     <style name="TextAppearance.EditTransaction_Small">
         <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
+        <item name="textAllCaps">true</item>
         <item name="android:textSize">14sp</item>
         <item name="android:textColor">#FFAAAAAA</item>
-        <item name="android:textAllCaps">true</item>
     </style>
     
     <style name="TextAppearance.EditTransaction_LabelSmall" parent="TextAppearance.EditTransaction_Small">

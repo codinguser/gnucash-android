@@ -27,13 +27,13 @@
     <View android:layout_width="match_parent"
         android:layout_height="0dp" />
 
-    <LinearLayout style="?android:attr/buttonBarStyle"
+    <LinearLayout style="buttonBarStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"        
         android:orientation="horizontal">
 
         <Button android:id="@+id/btn_cancel"
-            style="?android:attr/buttonBarButtonStyle"
+            style="buttonBarButtonStyle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -41,7 +41,7 @@
             android:text="@string/btn_cancel" />
 
         <Button android:id="@+id/btn_save"
-            style="?android:attr/buttonBarButtonStyle"
+            style="buttonBarButtonStyle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
