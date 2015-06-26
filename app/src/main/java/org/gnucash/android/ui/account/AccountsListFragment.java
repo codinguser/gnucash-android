@@ -24,6 +24,7 @@ import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.SimpleCursorAdapter;
@@ -65,7 +66,7 @@ import org.gnucash.android.ui.util.Refreshable;
  *
  * @author Ngewi Fet <ngewif@gmail.com>
  */
-public class AccountsListFragment extends SherlockListFragment implements
+public class AccountsListFragment extends ListFragment implements
         Refreshable,
         LoaderCallbacks<Cursor>, OnItemLongClickListener,
         com.actionbarsherlock.widget.SearchView.OnQueryTextListener,
