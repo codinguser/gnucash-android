@@ -32,6 +32,9 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
@@ -509,7 +512,7 @@ public class AccountFormFragment extends Fragment {
     }
 
     @Override
-	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {		
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 		super.onCreateOptionsMenu(menu, inflater);
 		inflater.inflate(R.menu.default_save_actions, menu);
 	}

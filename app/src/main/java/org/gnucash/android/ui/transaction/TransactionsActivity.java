@@ -29,17 +29,16 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.ResourceCursorAdapter;
+import android.support.v7.app.ActionBar;
 import android.util.Log;
 import android.util.SparseArray;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 
-import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.ActionBar.OnNavigationListener;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuItem;
 import com.viewpagerindicator.TitlePageIndicator;
 
 import org.gnucash.android.R;
@@ -120,7 +119,7 @@ public class TransactionsActivity extends PassLockActivity implements
 
     private SparseArray<Refreshable> mFragmentPageReferenceMap = new SparseArray<>();
 
-	private OnNavigationListener mTransactionListNavigationListener = new OnNavigationListener() {
+	private ActionBar.OnNavigationListener mTransactionListNavigationListener = new ActionBar.OnNavigationListener() {
 
 		  @Override
 		  public boolean onNavigationItemSelected(int position, long itemId) {
