@@ -14,19 +14,20 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto">
     <item android:id="@+id/menu_favorite_account"
           android:icon="@android:drawable/btn_star_big_off"
           android:title="@string/menu_title_favorite"
-          android:showAsAction="always" />
+          app:showAsAction="always" />
 
     <item android:id="@+id/menu_add_account"
           android:icon="@drawable/content_new_holo_dark"
           android:title="@string/label_create_account"
-          android:showAsAction="always"/>
+          app:showAsAction="always"/>
 
     <item android:id="@+id/menu_edit_account"
           android:icon="@drawable/content_edit_holo_dark"
           android:title="@string/title_edit_account"
-          android:showAsAction="never|withText" />
+          app:showAsAction="never|withText" />
 </menu>
