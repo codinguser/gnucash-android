@@ -69,8 +69,8 @@ import org.gnucash.android.ui.util.Refreshable;
 public class AccountsListFragment extends ListFragment implements
         Refreshable,
         LoaderCallbacks<Cursor>, OnItemLongClickListener,
-        com.actionbarsherlock.widget.SearchView.OnQueryTextListener,
-        com.actionbarsherlock.widget.SearchView.OnCloseListener {
+        android.support.v7.widget.SearchView.OnQueryTextListener,
+        android.support.v7.widget.SearchView.OnCloseListener {
 
     /**
      * Describes the kinds of accounts that should be loaded in the accounts list.
@@ -143,7 +143,7 @@ public class AccountsListFragment extends ListFragment implements
     /**
      * Search view for searching accounts
      */
-    private com.actionbarsherlock.widget.SearchView mSearchView;
+    private android.support.v7.widget.SearchView mSearchView;
 
     /**
      * Callbacks for the CAB menu
@@ -359,7 +359,7 @@ public class AccountsListFragment extends ListFragment implements
             SearchManager searchManager =
                     (SearchManager) getActivity().getSystemService(Context.SEARCH_SERVICE);
             mSearchView =
-                    (com.actionbarsherlock.widget.SearchView) menu.findItem(R.id.menu_search).getActionView();
+                    (android.support.v7.widget.SearchView) menu.findItem(R.id.menu_search).getActionView();
             if (mSearchView == null)
                 return;
 
