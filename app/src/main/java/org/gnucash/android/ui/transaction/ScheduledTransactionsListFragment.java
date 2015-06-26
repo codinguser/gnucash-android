@@ -148,7 +148,7 @@ public class ScheduledTransactionsListFragment extends ListFragment implements
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        ActionBar actionBar = getSherlockActivity().getSupportActionBar();
+        ActionBar actionBar = getActivity().getSupportActionBar();
         actionBar.setDisplayShowTitleEnabled(true);
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setHomeButtonEnabled(true);
@@ -277,7 +277,7 @@ public class ScheduledTransactionsListFragment extends ListFragment implements
         }
         mInEditMode = true;
         // Start the CAB using the ActionMode.Callback defined above
-        mActionMode = getSherlockActivity().startActionMode(mActionModeCallbacks);
+        mActionMode = getActivity().startActionMode(mActionModeCallbacks);
     }
 
     /**

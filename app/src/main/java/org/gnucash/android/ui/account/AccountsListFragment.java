@@ -245,7 +245,7 @@ public class AccountsListFragment extends ListFragment implements
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        ActionBar actionbar = getSherlockActivity().getSupportActionBar();
+        ActionBar actionbar = getActivity().getSupportActionBar();
         actionbar.setTitle(R.string.title_accounts);
         actionbar.setDisplayHomeAsUpEnabled(true);
 
@@ -293,7 +293,7 @@ public class AccountsListFragment extends ListFragment implements
         mInEditMode = true;
         mSelectedItemId = id;
         // Start the CAB using the ActionMode.Callback defined above
-        mActionMode = getSherlockActivity().startActionMode(
+        mActionMode = getActivity().startActionMode(
                 mActionModeCallbacks);
 
         getListView().setItemChecked(position, true);
@@ -335,7 +335,7 @@ public class AccountsListFragment extends ListFragment implements
         DeleteAccountDialogFragment alertFragment =
                 DeleteAccountDialogFragment.newInstance(mAccountsDbAdapter.getUID(id));
         alertFragment.setTargetFragment(this, 0);
-        alertFragment.show(getSherlockActivity().getSupportFragmentManager(), "delete_confirmation_dialog");
+        alertFragment.show(getActivity().getSupportFragmentManager(), "delete_confirmation_dialog");
     }
 
     /**

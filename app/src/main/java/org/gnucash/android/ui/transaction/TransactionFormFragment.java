@@ -242,7 +242,7 @@ public class TransactionFormFragment extends SherlockFragment implements
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 		setHasOptionsMenu(true);
-		ActionBar actionBar = getSherlockActivity().getSupportActionBar();
+		ActionBar actionBar = getActivity().getSupportActionBar();
 		actionBar.setHomeButtonEnabled(true);
 		actionBar.setDisplayHomeAsUpEnabled(true);
 		actionBar.setDisplayShowTitleEnabled(false);
@@ -608,7 +608,7 @@ public class TransactionFormFragment extends SherlockFragment implements
         mRecurrenceTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                FragmentManager fm = getSherlockActivity().getSupportFragmentManager();
+                FragmentManager fm = getActivity().getSupportFragmentManager();
                 Bundle b = new Bundle();
                 Time t = new Time();
                 t.setToNow();
@@ -894,7 +894,7 @@ public class TransactionFormFragment extends SherlockFragment implements
 			getActivity().finish();
 		} else {
 			//go back to transactions list
-			getSherlockActivity().getSupportFragmentManager().popBackStack();
+			getActivity().getSupportFragmentManager().popBackStack();
 		}
 	}
 

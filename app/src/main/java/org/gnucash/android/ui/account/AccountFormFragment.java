@@ -239,7 +239,7 @@ public class AccountFormFragment extends SherlockFragment {
 	@Override	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.fragment_new_account, container, false);
-		getSherlockActivity().getSupportActionBar().setTitle(R.string.label_create_account);
+		getActivity().getSupportActionBar().setTitle(R.string.label_create_account);
 		mCurrencySpinner = (Spinner) view.findViewById(R.id.input_currency_spinner);
 		mNameEditText = (EditText) view.findViewById(R.id.input_account_name);
 		//mNameEditText.requestFocus();
@@ -314,7 +314,7 @@ public class AccountFormFragment extends SherlockFragment {
 
         if (mAccountUID != null) {
             mAccount = mAccountsDbAdapter.getAccount(mAccountUID);
-            getSherlockActivity().getSupportActionBar().setTitle(R.string.title_edit_account);
+            getActivity().getSupportActionBar().setTitle(R.string.title_edit_account);
         }
 
         mRootAccountUID = mAccountsDbAdapter.getOrCreateGnuCashRootAccountUID();
@@ -674,7 +674,7 @@ public class AccountFormFragment extends SherlockFragment {
 	 * Depends on how the fragment was loaded, it might have a backstack or not
 	 */
 	private void finishFragment() {
-		InputMethodManager imm = (InputMethodManager) getSherlockActivity().getSystemService(
+		InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(
 			      Context.INPUT_METHOD_SERVICE);
 			imm.hideSoftInputFromWindow(mNameEditText.getWindowToken(), 0);
 
@@ -683,7 +683,7 @@ public class AccountFormFragment extends SherlockFragment {
             getActivity().setResult(Activity.RESULT_OK);
             getActivity().finish();
         } else {
-		    getSherlockActivity().getSupportFragmentManager().popBackStack();
+		    getActivity().getSupportFragmentManager().popBackStack();
         }
 	}
 	
@@ -707,7 +707,7 @@ public class AccountFormFragment extends SherlockFragment {
 		if (mAccount == null){
 			String name = getEnteredName();
 			if (name == null || name.length() == 0){
-				Toast.makeText(getSherlockActivity(), 
+				Toast.makeText(getActivity(),
 						R.string.toast_no_account_name_entered, 
 						Toast.LENGTH_LONG).show();
 				return;				

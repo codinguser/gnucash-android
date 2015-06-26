@@ -157,7 +157,7 @@ public class TransactionsListFragment extends ListFragment implements
 	public void onActivityCreated(Bundle savedInstanceState) {		
 		super.onActivityCreated(savedInstanceState);
 		
-		ActionBar aBar = getSherlockActivity().getSupportActionBar();
+		ActionBar aBar = getActivity().getSupportActionBar();
 		aBar.setDisplayShowTitleEnabled(false);
 		aBar.setDisplayHomeAsUpEnabled(true);
 
@@ -204,7 +204,7 @@ public class TransactionsListFragment extends ListFragment implements
 	@Override
 	public void onResume() {
 		super.onResume();
-		((TransactionsActivity)getSherlockActivity()).updateNavigationSelection();		
+		((TransactionsActivity)getActivity()).updateNavigationSelection();
 		refresh();
 	}
 	
@@ -308,7 +308,7 @@ public class TransactionsListFragment extends ListFragment implements
         }		
 		mInEditMode = true;
         // Start the CAB using the ActionMode.Callback defined above
-        mActionMode = getSherlockActivity().startActionMode(mActionModeCallbacks);
+        mActionMode = getActivity().startActionMode(mActionModeCallbacks);
 	}
 	
 	/**
