@@ -27,6 +27,7 @@ import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.Loader;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.text.TextUtils;
 import android.util.Log;
@@ -358,8 +359,8 @@ public class AccountsListFragment extends ListFragment implements
             // Associate searchable configuration with the SearchView
             SearchManager searchManager =
                     (SearchManager) getActivity().getSystemService(Context.SEARCH_SERVICE);
-            mSearchView =
-                    (android.support.v7.widget.SearchView) menu.findItem(R.id.menu_search).getActionView();
+            mSearchView = (android.support.v7.widget.SearchView)
+                MenuItemCompat.getActionView(menu.findItem(R.id.menu_search));
             if (mSearchView == null)
                 return;
 
