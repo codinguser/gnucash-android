@@ -369,7 +369,7 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getSupportMenuInflater().inflate(R.menu.chart_actions, menu);
+        getMenuInflater().inflate(R.menu.chart_actions, menu);
         return true;
     }
 

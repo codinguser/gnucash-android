@@ -405,7 +405,7 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
 
     @Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		MenuInflater inflater = getSupportMenuInflater();
+		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.global_actions, menu);
 		return true;
 	}
