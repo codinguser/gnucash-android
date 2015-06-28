@@ -366,9 +366,9 @@ public class TransactionsActivity extends PassLockActivity implements
 
         SpinnerAdapter mSpinnerAdapter = new QualifiedAccountNameCursorAdapter(
                 getSupportActionBar().getThemedContext(),
-                R.layout.sherlock_spinner_item, mAccountsCursor);
-		((ResourceCursorAdapter) mSpinnerAdapter)
-				.setDropDownViewResource(R.layout.sherlock_spinner_dropdown_item);
+                android.R.layout.simple_spinner_item, mAccountsCursor);
+		((ResourceCursorAdapter) mSpinnerAdapter).setDropDownViewResource(
+                                android.R.layout.simple_spinner_dropdown_item);
 		ActionBar actionBar = getSupportActionBar();
 		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
 		actionBar.setListNavigationCallbacks(mSpinnerAdapter,
