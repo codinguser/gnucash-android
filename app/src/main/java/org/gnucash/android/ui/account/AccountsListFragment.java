@@ -147,7 +147,7 @@ public class AccountsListFragment extends ListFragment implements
     /**
      * Callbacks for the CAB menu
      */
-    private ActionMode.Callback mActionModeCallbacks = new Callback() {
+    private ActionMode.Callback mActionModeCallbacks = new ActionMode.Callback() {
 
         String mSelectedAccountUID;
 
@@ -292,8 +292,8 @@ public class AccountsListFragment extends ListFragment implements
         mInEditMode = true;
         mSelectedItemId = id;
         // Start the CAB using the ActionMode.Callback defined above
-        mActionMode = getActivity().startActionMode(
-                mActionModeCallbacks);
+        mActionMode = ((ActionBarActivity) getActivity())
+                                .startSupportActionMode(mActionModeCallbacks);
 
         getListView().setItemChecked(position, true);
         return true;

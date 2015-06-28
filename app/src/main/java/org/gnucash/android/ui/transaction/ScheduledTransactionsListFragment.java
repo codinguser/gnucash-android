@@ -282,7 +282,8 @@ public class ScheduledTransactionsListFragment extends ListFragment implements
         }
         mInEditMode = true;
         // Start the CAB using the ActionMode.Callback defined above
-        mActionMode = getActivity().startActionMode(mActionModeCallbacks);
+        mActionMode = ((ActionBarActivity) getActivity())
+                .startSupportActionMode(mActionModeCallbacks);
     }
 
     /**
