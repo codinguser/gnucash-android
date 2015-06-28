@@ -30,6 +30,7 @@ import android.support.v4.content.Loader;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarActivity;
 import android.support.v7.view.ActionMode;
 import android.text.TextUtils;
 import android.util.Log;
@@ -243,7 +244,7 @@ public class AccountsListFragment extends ListFragment implements
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        ActionBar actionbar = getActivity().getSupportActionBar();
+        ActionBar actionbar = ((ActionBarActivity) getActivity()).getSupportActionBar();
         actionbar.setTitle(R.string.title_accounts);
         actionbar.setDisplayHomeAsUpEnabled(true);
 

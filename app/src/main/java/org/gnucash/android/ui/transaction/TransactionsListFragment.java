@@ -31,6 +31,7 @@ import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarActivity;
 import android.support.v7.view.ActionMode;
 import android.text.format.DateUtils;
 import android.util.Log;
@@ -161,7 +162,7 @@ public class TransactionsListFragment extends ListFragment implements
 	public void onActivityCreated(Bundle savedInstanceState) {		
 		super.onActivityCreated(savedInstanceState);
 		
-		ActionBar aBar = getActivity().getSupportActionBar();
+		ActionBar aBar = ((ActionBarActivity) getActivity()).getSupportActionBar();
 		aBar.setDisplayShowTitleEnabled(false);
 		aBar.setDisplayHomeAsUpEnabled(true);
 
