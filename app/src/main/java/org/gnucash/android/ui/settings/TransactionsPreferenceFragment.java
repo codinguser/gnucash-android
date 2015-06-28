@@ -24,6 +24,7 @@ import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 
 import org.gnucash.android.R;
 
@@ -40,7 +41,7 @@ public class TransactionsPreferenceFragment extends PreferenceFragment implement
 		super.onCreate(savedInstanceState);
 		
 		addPreferencesFromResource(R.xml.fragment_transaction_preferences);
-		ActionBar actionBar = ((SherlockPreferenceActivity) getActivity()).getSupportActionBar();
+		ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
 		actionBar.setHomeButtonEnabled(true);
 		actionBar.setDisplayHomeAsUpEnabled(true);
 		actionBar.setTitle(R.string.title_transaction_preferences);		

@@ -23,6 +23,8 @@ import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 
 import org.gnucash.android.R;
 import org.gnucash.android.model.Money;
@@ -41,7 +43,7 @@ public class BackupPreferenceFragment extends PreferenceFragment implements OnPr
 		super.onCreate(savedInstanceState);
 		
 		addPreferencesFromResource(R.xml.fragment_backup_preferences);
-		ActionBar actionBar = ((SherlockPreferenceActivity) getActivity()).getSupportActionBar();
+		ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
 		actionBar.setHomeButtonEnabled(true);
 		actionBar.setDisplayHomeAsUpEnabled(true);
 		actionBar.setTitle(R.string.title_backup_prefs);

@@ -26,6 +26,7 @@ import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 
 import org.gnucash.android.R;
 import org.gnucash.android.model.Money;
@@ -47,7 +48,7 @@ public class AccountPreferencesFragment extends PreferenceFragment {
         super.onCreate(savedInstanceState);
 
         addPreferencesFromResource(R.xml.fragment_account_preferences);
-        ActionBar actionBar = ((SherlockPreferenceActivity) getActivity()).getSupportActionBar();
+        ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
         actionBar.setHomeButtonEnabled(true);
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setTitle(R.string.title_account_preferences);
