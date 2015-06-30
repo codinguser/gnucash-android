@@ -30,7 +30,7 @@ import android.support.v4.content.Loader;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ActionMode;
 import android.text.TextUtils;
 import android.util.Log;
@@ -244,7 +244,7 @@ public class AccountsListFragment extends ListFragment implements
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        ActionBar actionbar = ((ActionBarActivity) getActivity()).getSupportActionBar();
+        ActionBar actionbar = ((AppCompatActivity) getActivity()).getSupportActionBar();
         actionbar.setTitle(R.string.title_accounts);
         actionbar.setDisplayHomeAsUpEnabled(true);
 
@@ -292,7 +292,7 @@ public class AccountsListFragment extends ListFragment implements
         mInEditMode = true;
         mSelectedItemId = id;
         // Start the CAB using the ActionMode.Callback defined above
-        mActionMode = ((ActionBarActivity) getActivity())
+        mActionMode = ((AppCompatActivity) getActivity())
                                 .startSupportActionMode(mActionModeCallbacks);
 
         getListView().setItemChecked(position, true);

@@ -30,7 +30,7 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.SimpleCursorAdapter;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -239,7 +239,7 @@ public class AccountFormFragment extends Fragment {
 	@Override	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.fragment_new_account, container, false);
-		((ActionBarActivity) getActivity()).getSupportActionBar()
+		((AppCompatActivity) getActivity()).getSupportActionBar()
                 .setTitle(R.string.label_create_account);
 		mCurrencySpinner = (Spinner) view.findViewById(R.id.input_currency_spinner);
 		mNameEditText = (EditText) view.findViewById(R.id.input_account_name);
@@ -315,7 +315,7 @@ public class AccountFormFragment extends Fragment {
 
         if (mAccountUID != null) {
             mAccount = mAccountsDbAdapter.getAccount(mAccountUID);
-            ((ActionBarActivity) getActivity()).getSupportActionBar()
+            ((AppCompatActivity) getActivity()).getSupportActionBar()
                                         .setTitle(R.string.title_edit_account);
         }
 

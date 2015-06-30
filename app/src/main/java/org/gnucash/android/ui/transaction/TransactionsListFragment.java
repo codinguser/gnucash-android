@@ -31,7 +31,7 @@ import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ActionMode;
 import android.text.format.DateUtils;
 import android.util.Log;
@@ -162,7 +162,7 @@ public class TransactionsListFragment extends ListFragment implements
 	public void onActivityCreated(Bundle savedInstanceState) {		
 		super.onActivityCreated(savedInstanceState);
 		
-		ActionBar aBar = ((ActionBarActivity) getActivity()).getSupportActionBar();
+		ActionBar aBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
 		aBar.setDisplayShowTitleEnabled(false);
 		aBar.setDisplayHomeAsUpEnabled(true);
 
@@ -313,7 +313,7 @@ public class TransactionsListFragment extends ListFragment implements
         }		
 		mInEditMode = true;
         // Start the CAB using the ActionMode.Callback defined above
-		mActionMode = ((ActionBarActivity) getActivity())
+		mActionMode = ((AppCompatActivity) getActivity())
 								.startSupportActionMode(mActionModeCallbacks);
 	}
 	

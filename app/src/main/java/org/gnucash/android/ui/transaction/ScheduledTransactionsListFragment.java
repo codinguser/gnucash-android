@@ -27,7 +27,7 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ActionMode;
 import android.util.Log;
 import android.util.SparseBooleanArray;
@@ -153,7 +153,7 @@ public class ScheduledTransactionsListFragment extends ListFragment implements
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        ActionBar actionBar = ((ActionBarActivity) getActivity()).getSupportActionBar();
+        ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
         actionBar.setDisplayShowTitleEnabled(true);
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setHomeButtonEnabled(true);
@@ -282,7 +282,7 @@ public class ScheduledTransactionsListFragment extends ListFragment implements
         }
         mInEditMode = true;
         // Start the CAB using the ActionMode.Callback defined above
-        mActionMode = ((ActionBarActivity) getActivity())
+        mActionMode = ((AppCompatActivity) getActivity())
                 .startSupportActionMode(mActionModeCallbacks);
     }
 
