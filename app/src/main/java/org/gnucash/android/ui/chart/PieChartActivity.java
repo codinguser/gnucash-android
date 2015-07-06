@@ -55,6 +55,7 @@ import org.joda.time.LocalDateTime;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Currency;
 import java.util.HashMap;
 import java.util.List;
@@ -215,33 +216,29 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
         double otherSlice = 0;
         PieDataSet dataSet = new PieDataSet(null, "");
         List<String> names = new ArrayList<>();
-        List<String> skipUUID = new ArrayList<>();
         for (Account account : getCurrencyCodeToAccountMap(accountList).get(mCurrencyCode)) {
-            if (mAccountsDbAdapter.getSubAccountCount(account.getUID()) > 0) {
-                skipUUID.addAll(mAccountsDbAdapter.getDescendantAccountUIDs(account.getUID(), null, null));
+            double balance;
+            if (forCurrentMonth) {
+                long start = mChartDate.dayOfMonth().withMinimumValue().millisOfDay().withMinimumValue().toDate().getTime();
+                long end = mChartDate.dayOfMonth().withMaximumValue().millisOfDay().withMaximumValue().toDate().getTime();
+                balance = mAccountsDbAdapter.getAccountsBalance(
+                        Collections.singletonList(account.getUID()), start, end).absolute().asDouble();
+            } else {
+                balance = mAccountsDbAdapter.getAccountsBalance(
+                        Collections.singletonList(account.getUID()), -1, -1).absolute().asDouble();
             }
-            if (!skipUUID.contains(account.getUID())) {
-                double balance;
-                if (forCurrentMonth) {
-                    long start = mChartDate.dayOfMonth().withMinimumValue().millisOfDay().withMinimumValue().toDate().getTime();
-                    long end = mChartDate.dayOfMonth().withMaximumValue().millisOfDay().withMaximumValue().toDate().getTime();
-                    balance = mAccountsDbAdapter.getAccountBalance(account.getUID(), start, end).absolute().asDouble();
-                } else {
-                    balance = mAccountsDbAdapter.getAccountBalance(account.getUID()).absolute().asDouble();
-                }
 
-                if (balance / sum * 100 > mSlicePercentThreshold) {
-                    dataSet.addEntry(new Entry((float) balance, dataSet.getEntryCount()));
-                    if (mUseAccountColor) {
-                        dataSet.getColors().set(dataSet.getColors().size() - 1, (account.getColorHexCode() != null)
-                                ? Color.parseColor(account.getColorHexCode())
-                                : COLORS[(dataSet.getEntryCount() - 1) % COLORS.length]);
-                    }
-                    dataSet.addColor(COLORS[(dataSet.getEntryCount() - 1) % COLORS.length]);
-                    names.add(account.getName());
-                } else {
-                    otherSlice += balance;
+            if (balance / sum * 100 > mSlicePercentThreshold) {
+                dataSet.addEntry(new Entry((float) balance, dataSet.getEntryCount()));
+                if (mUseAccountColor) {
+                    dataSet.getColors().set(dataSet.getColors().size() - 1, (account.getColorHexCode() != null)
+                            ? Color.parseColor(account.getColorHexCode())
+                            : COLORS[(dataSet.getEntryCount() - 1) % COLORS.length]);
                 }
+                dataSet.addColor(COLORS[(dataSet.getEntryCount() - 1) % COLORS.length]);
+                names.add(account.getName());
+            } else {
+                otherSlice += balance;
             }
         }
         if (otherSlice > 0) {

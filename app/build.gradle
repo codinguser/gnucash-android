@@ -54,12 +54,12 @@ android {
         exclude 'META-INF/NOTICE.txt'
     }
 
-    applicationVariants.all { variant ->
-        variant.outputs.each { output ->
-            output.outputFile = new File(
-                    output.outputFile.parent, "GnucashAndroid_v${variant.versionName}.apk")
-        }
-    }
+//    applicationVariants.all { variant ->
+//        variant.outputs.each { output ->
+//            output.outputFile = new File(
+//                    output.outputFile.parent, "GnucashAndroid_v${variant.versionName}.apk")
+//        }
+//    }
 
     signingConfigs {
         debug {
