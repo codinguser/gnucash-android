@@ -222,7 +222,8 @@ public class TransactionsActivityTest extends
 		formatter.setMinimumFractionDigits(2);
 		formatter.setMaximumFractionDigits(2);
 		onView(withId(R.id.input_transaction_amount)).check(matches(withText(formatter.format(balance.asDouble()))));
-
+		onView(withId(R.id.input_date)).check(matches(withText(TransactionFormFragment.DATE_FORMATTER.format(transaction.getTimeMillis()))));
+		onView(withId(R.id.input_time)).check(matches(withText(TransactionFormFragment.TIME_FORMATTER.format(transaction.getTimeMillis()))));
 		onView(withId(R.id.input_description)).check(matches(withText(transaction.getNote())));
 
 		validateTimeInput(transaction.getTimeMillis());
