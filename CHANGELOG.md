@@ -1,5 +1,16 @@
 Change Log
 ===============================================================================
+Version 1.6.1 *(2015-07-08)*
+----------------------------
+* Fixed: Crash when importing some scheduled transations with custom period strings
+* Fixed: Crash when closing export progress dialog if an export error occurred
+* Fixed: Crash when creating a sub-account and changing the account type 
+* Fixed: Crash when loading backup files with no timestamp in their name
+* Fixed: Crash when app is run on devices with locale es_LG
+* Improved: Updated betterpickers library
+* Improved: New dialogs for time and date when creating transactions
+* Improved: Added translation to Ukrainian
+
 Version 1.6.0 *(2015-06-20)*
 ----------------------------
 * Feature: Scheduled backups (QIF, OFX and XML)

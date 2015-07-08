@@ -538,7 +538,10 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
         final DateFormat dateFormatter = SimpleDateFormat.getDateTimeInstance();
         for (File backupFile : sortedBackupFiles) {
             long time = Exporter.getExportTime(backupFile.getName());
-            arrayAdapter.add(dateFormatter.format(new Date(time)));
+            if (time > 0)
+                arrayAdapter.add(dateFormatter.format(new Date(time)));
+            else //if no timestamp was found in the filename, just use the name
+                arrayAdapter.add(backupFile.getName());
         }
 
         AlertDialog.Builder restoreDialogBuilder =  new AlertDialog.Builder(this);

@@ -35,6 +35,7 @@ import org.gnucash.android.db.DatabaseHelper;
 import org.gnucash.android.db.SplitsDbAdapter;
 import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.model.Account;
+import org.gnucash.android.model.AccountType;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.receivers.AccountCreator;
 import org.gnucash.android.ui.account.AccountsActivity;
@@ -47,19 +48,24 @@ import org.junit.runner.RunWith;
 import java.util.Currency;
 import java.util.List;
 
+import static android.support.test.espresso.Espresso.onData;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.clearText;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.longClick;
 import static android.support.test.espresso.action.ViewActions.scrollTo;
+import static android.support.test.espresso.action.ViewActions.swipeRight;
 import static android.support.test.espresso.action.ViewActions.typeText;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
+import static android.support.test.espresso.matcher.ViewMatchers.isChecked;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.isNotChecked;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 
 @RunWith(AndroidJUnit4.class)
@@ -211,6 +217,31 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
 
         assertThat(parentUID).isNotNull();
         assertThat(DUMMY_ACCOUNT_UID).isEqualTo(parentUID);
+    }
+
+    /**
+     * When creating a sub-account (starting from within another account), if we change the account
+     * type to another type with no accounts of that type, then the parent account list should be hidden.
+     * The account which is then created is not a sub-account, but rather a top-level account
+     */
+    @Test
+    public void shouldHideParentAccountViewWhenNoParentsExist(){
+        onView(withText(DUMMY_ACCOUNT_NAME)).perform(click());
+        onView(withId(R.id.fragment_transaction_list)).perform(swipeRight());
+        onView(withText(R.string.label_create_account)).check(matches(isDisplayed())).perform(click());
+        sleep(1000);
+        onView(withId(R.id.checkbox_parent_account)).check(matches(allOf(isChecked())));
+        onView(withId(R.id.input_account_name)).perform(typeText("Trading account"));
+        onView(withId(R.id.input_account_type_spinner)).perform(click());
+        onData(allOf(is(instanceOf(String.class)), is(AccountType.TRADING.name()))).perform(click());
+
+        onView(withId(R.id.layout_parent_account)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.menu_save)).perform(click());
+
+        //no sub-accounts
+        assertThat(mAccountsDbAdapter.getSubAccountCount(DUMMY_ACCOUNT_UID)).isEqualTo(0);
+        assertThat(mAccountsDbAdapter.getSubAccountCount(mAccountsDbAdapter.getOrCreateGnuCashRootAccountUID())).isEqualTo(2);
+        assertThat(mAccountsDbAdapter.getSimpleAccountList()).extracting("mAccountType").contains(AccountType.TRADING);
     }
 
     @Test

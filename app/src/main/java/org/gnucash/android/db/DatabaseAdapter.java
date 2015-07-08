@@ -286,6 +286,7 @@ public abstract class DatabaseAdapter {
      * Returns the string unique ID (GUID) of a record in the database
      * @param id long database record ID
      * @return GUID of the record
+     * @throws IllegalArgumentException if the record ID does not exist in the database
      */
     public String getUID(long id){
         Cursor cursor = mDb.query(mTableName,

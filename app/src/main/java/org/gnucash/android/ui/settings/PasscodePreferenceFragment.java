@@ -32,6 +32,7 @@ import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockPreferenceActivity;
 
 import org.gnucash.android.R;
+import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.ui.UxArgument;
 import org.gnucash.android.ui.passcode.PasscodeLockScreenActivity;
 import org.gnucash.android.ui.passcode.PasscodePreferenceActivity;
@@ -107,6 +108,10 @@ public class PasscodePreferenceFragment extends PreferenceFragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
+        if (mEditor == null){
+            mEditor = PreferenceManager.getDefaultSharedPreferences(GnuCashApplication.getAppContext()).edit();
+        }
 
         switch (requestCode) {
             case PASSCODE_REQUEST_CODE:

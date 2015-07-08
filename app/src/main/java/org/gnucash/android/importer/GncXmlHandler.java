@@ -192,6 +192,11 @@ public class GncXmlHandler extends DefaultHandler {
     boolean mIgnoreTemplateTransaction = true;
 
     /**
+     * Flag which notifies the handler to ignore a scheduled action because some error occurred during parsing
+     */
+    boolean mIgnoreScheduledAction = false;
+
+    /**
      * Used for parsing old backup files where recurrence was saved inside the transaction.
      * Newer backup files will not require this
      * @deprecated Use the new scheduled action elements instead
@@ -547,9 +552,16 @@ public class GncXmlHandler extends DefaultHandler {
                 mRecurrenceMultiplier = Integer.parseInt(characterString);
                 break;
             case GncXmlHelper.TAG_RX_PERIOD_TYPE:
-                PeriodType periodType = PeriodType.valueOf(characterString.toUpperCase());
-                periodType.setMultiplier(mRecurrenceMultiplier);
-                mScheduledAction.setPeriod(periodType);
+                try {
+                    PeriodType periodType = PeriodType.valueOf(characterString.toUpperCase());
+                    periodType.setMultiplier(mRecurrenceMultiplier);
+                    mScheduledAction.setPeriod(periodType);
+                } catch (IllegalArgumentException ex){ //the period type constant is not supported
+                    String msg = "Unsupported period constant: " + characterString;
+                    Log.e(LOG_TAG, msg);
+                    Crashlytics.logException(ex);
+                    mIgnoreScheduledAction = true;
+                }
                 break;
             case GncXmlHelper.TAG_GDATE:
                 try {
@@ -589,11 +601,13 @@ public class GncXmlHandler extends DefaultHandler {
                 }
                 break;
             case GncXmlHelper.TAG_SCHEDULED_ACTION:
-                if (mScheduledAction.getActionUID() != null)
+                if (mScheduledAction.getActionUID() != null && !mIgnoreScheduledAction) {
                     mScheduledActionsList.add(mScheduledAction);
-                int count = generateMissedScheduledTransactions(mScheduledAction);
-                Log.i(LOG_TAG, String.format("Generated %d transactions from scheduled action", count));
+                    int count = generateMissedScheduledTransactions(mScheduledAction);
+                    Log.i(LOG_TAG, String.format("Generated %d transactions from scheduled action", count));
+                }
                 mRecurrenceMultiplier = 1; //reset it, even though it will be parsed from XML each time
+                mIgnoreScheduledAction = false;
                 break;
         }
 
