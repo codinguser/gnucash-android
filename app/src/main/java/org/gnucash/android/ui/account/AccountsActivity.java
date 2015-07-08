@@ -309,7 +309,7 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
     private void init() {
         PreferenceManager.setDefaultValues(this, R.xml.fragment_transaction_preferences, false);
 
-        Money.DEFAULT_CURRENCY_CODE = GnuCashApplication.getDefaultCurrency();
+        Money.DEFAULT_CURRENCY_CODE = GnuCashApplication.getDefaultCurrencyCode();
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         boolean firstRun = prefs.getBoolean(getString(R.string.key_first_run), true);

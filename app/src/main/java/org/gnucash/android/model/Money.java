@@ -21,6 +21,8 @@ import android.support.annotation.NonNull;
 
 import com.crashlytics.android.Crashlytics;
 
+import org.gnucash.android.app.GnuCashApplication;
+
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
@@ -90,7 +92,7 @@ public final class Money implements Comparable<Money>{
      * A zero instance with the currency of the default locale.
      * This can be used anywhere where a starting amount is required without having to create a new object
      */
-    private static final Money sDefaultZero = Money.createZeroInstance(Currency.getInstance(Locale.getDefault()).getCurrencyCode());
+    private static final Money sDefaultZero = Money.createZeroInstance(GnuCashApplication.getDefaultCurrencyCode());
 
     /**
      * Returns a Money instance initialized to the local currency and value 0

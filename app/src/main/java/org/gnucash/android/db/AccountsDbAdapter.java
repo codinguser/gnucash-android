@@ -813,7 +813,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
      * @return the absolute balance of account list
      */
     public Money getAccountsBalance(List<String> accountUIDList, long startTimestamp, long endTimestamp) {
-        String currencyCode = GnuCashApplication.getDefaultCurrency();
+        String currencyCode = GnuCashApplication.getDefaultCurrencyCode();
         Money balance = Money.createZeroInstance(currencyCode);
 
         SplitsDbAdapter splitsDbAdapter = SplitsDbAdapter.getInstance();
