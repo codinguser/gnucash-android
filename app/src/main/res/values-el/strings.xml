@@ -17,7 +17,7 @@
 -->
 
 <resources>
-    <string name="title_add_account">Δημιουργία Λογαριασμού</string>
+    <string name="label_create_account">Δημιουργία Λογαριασμού</string>
     <string name="title_edit_account">Επεξεργασία Λογαριασμού</string>
     <string name="info_details">Πληροφορίες</string>
     <string name="menu_export">Εξαγωγή OFX</string>

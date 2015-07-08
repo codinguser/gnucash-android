@@ -16,7 +16,7 @@
 -->
 
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <string name="title_add_account">Create Account</string>
+    <string name="label_create_account">Create Account</string>
     <string name="title_edit_account">Edit Account</string>
     <string name="info_details">Info</string>
     <string name="menu_export">Export…</string>

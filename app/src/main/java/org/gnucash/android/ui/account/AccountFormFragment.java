@@ -239,7 +239,7 @@ public class AccountFormFragment extends SherlockFragment {
 	@Override	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.fragment_new_account, container, false);
-		getSherlockActivity().getSupportActionBar().setTitle(R.string.title_add_account);
+		getSherlockActivity().getSupportActionBar().setTitle(R.string.label_create_account);
 		mCurrencySpinner = (Spinner) view.findViewById(R.id.input_currency_spinner);
 		mNameEditText = (EditText) view.findViewById(R.id.input_account_name);
 		//mNameEditText.requestFocus();
@@ -443,14 +443,14 @@ public class AccountFormFragment extends SherlockFragment {
      * @param parentAccountId Record ID of parent account to be selected
      */
     private void setParentAccountSelection(long parentAccountId){
-        if (parentAccountId > 0 && parentAccountId != mRootAccountId){
-            mParentCheckBox.setChecked(true);
-            mParentAccountSpinner.setEnabled(true);
-        } else
+        if (parentAccountId <= 0 || parentAccountId == mRootAccountId) {
             return;
+        }
 
         for (int pos = 0; pos < mParentAccountCursorAdapter.getCount(); pos++) {
             if (mParentAccountCursorAdapter.getItemId(pos) == parentAccountId){
+                mParentCheckBox.setChecked(true);
+                mParentAccountSpinner.setEnabled(true);
                 mParentAccountSpinner.setSelection(pos, true);
                 break;
             }
@@ -581,11 +581,15 @@ public class AccountFormFragment extends SherlockFragment {
             mParentAccountCursor.close();
 
 		mParentAccountCursor = mAccountsDbAdapter.fetchAccountsOrderedByFullName(condition, null);
-		if (mParentAccountCursor.getCount() <= 0){
-            final View view = getView();
-            assert view != null;
+        final View view = getView();
+        assert view != null;
+        if (mParentAccountCursor.getCount() <= 0){
+            mParentCheckBox.setChecked(false); //disable before hiding, else we can still read it when saving
             view.findViewById(R.id.layout_parent_account).setVisibility(View.GONE);
             view.findViewById(R.id.label_parent_account).setVisibility(View.GONE);
+        } else {
+            view.findViewById(R.id.layout_parent_account).setVisibility(View.VISIBLE);
+            view.findViewById(R.id.label_parent_account).setVisibility(View.VISIBLE);
         }
 
 		mParentAccountCursorAdapter = new QualifiedAccountNameCursorAdapter(

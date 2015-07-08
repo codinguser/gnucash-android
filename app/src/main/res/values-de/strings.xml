@@ -16,7 +16,7 @@
  limitations under the License.
 -->
 <resources>
-    <string name="title_add_account">Neues Konto</string>
+    <string name="label_create_account">Neues Konto</string>
     <string name="title_edit_account">Konto bearbeiten</string>
     <string name="info_details">Info</string>
     <string name="menu_export">OFX-Datei exportieren</string>

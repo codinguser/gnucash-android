@@ -18,7 +18,7 @@
 -->
 
 <resources>
-    <string name="title_add_account">Opprett konto</string>
+    <string name="label_create_account">Opprett konto</string>
     <string name="title_edit_account">Rediger konto</string>
     <string name="info_details">Informasjon</string>
     <string name="menu_export">Eksport OFX</string>
