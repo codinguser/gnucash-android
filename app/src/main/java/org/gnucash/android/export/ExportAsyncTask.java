@@ -55,6 +55,7 @@ import org.gnucash.android.export.qif.QifHelper;
 import org.gnucash.android.export.xml.GncXmlExporter;
 import org.gnucash.android.model.Transaction;
 import org.gnucash.android.ui.account.AccountsActivity;
+import org.gnucash.android.ui.account.AccountsListFragment;
 import org.gnucash.android.ui.settings.SettingsActivity;
 import org.gnucash.android.ui.transaction.TransactionsActivity;
 
@@ -233,7 +234,9 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
 
             //now refresh the respective views
             if (mContext instanceof AccountsActivity){
-                ((AccountsActivity) mContext).getCurrentAccountListFragment().refresh();
+                AccountsListFragment fragment = ((AccountsActivity) mContext).getCurrentAccountListFragment();
+                if (fragment != null)
+                    fragment.refresh();
             }
             if (mContext instanceof TransactionsActivity){
                 ((TransactionsActivity) mContext).refresh();
