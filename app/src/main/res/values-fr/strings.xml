@@ -17,7 +17,7 @@
 -->
 
 <resources xmlns:tools="http://schemas.android.com/tools" tools:locale="fr">
-    <string name="title_add_account">Cr&#233;er un compte</string>
+    <string name="label_create_account">Cr&#233;er un compte</string>
     <string name="title_edit_account">Éditer le compte</string>
     <string name="info_details">Informations</string>
     <string name="menu_export">Exporter en OFX</string>

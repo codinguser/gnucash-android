@@ -94,8 +94,15 @@ public class ImportAsyncTask extends AsyncTask<InputStream, Void, Boolean> {
         if (mDelegate != null)
             mDelegate.onTaskComplete();
 
-        if (progressDialog != null && progressDialog.isShowing())
-            progressDialog.dismiss();
+        try {
+            if (progressDialog != null && progressDialog.isShowing())
+                progressDialog.dismiss();
+        } catch (IllegalArgumentException ex){
+            //TODO: This is a hack to catch "View not attached to window" exceptions
+            //FIXME by moving the creation and display of the progress dialog to the Fragment
+        } finally {
+            progressDialog = null;
+        }
 
         int message = importSuccess ? R.string.toast_success_importing_accounts : R.string.toast_error_importing_accounts;
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show();

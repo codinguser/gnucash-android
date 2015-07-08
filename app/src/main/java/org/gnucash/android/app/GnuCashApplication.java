@@ -158,11 +158,16 @@ public class GnuCashApplication extends Application{
      *
      * @return Default currency code string for the application
      */
-    public static String getDefaultCurrency(){
+    public static String getDefaultCurrencyCode(){
         Locale locale = Locale.getDefault();
         //sometimes the locale en_UK is returned which causes a crash with Currency
         if (locale.getCountry().equals("UK")) {
             locale = new Locale(locale.getLanguage(), "GB");
+        }
+
+        //for unsupported locale es_LG
+        if (locale.getCountry().equals("LG")){
+            locale = new Locale(locale.getLanguage(), "ES");
         }
 
         String currencyCode = "USD"; //start with USD as the default
