@@ -89,9 +89,9 @@ public class LineChartActivity extends PassLockActivity implements OnChartValueS
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        //it is necessary to set the view first before calling super because of the nav drawer in BaseDrawerActivity
-        setContentView(R.layout.activity_line_chart);
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_line_chart);
+        setUpDrawer();
         getSupportActionBar().setTitle(R.string.title_line_chart);
 
         mCurrency = Currency.getInstance(PreferenceManager.getDefaultSharedPreferences(this)

@@ -43,9 +43,9 @@ public class ChartReportActivity extends PassLockActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        //it is necessary to set the view first before calling super because of the nav drawer in BaseDrawerActivity
-        setContentView(R.layout.activity_chart_report);
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_chart_report);
+        setUpDrawer();
         getSupportActionBar().setTitle(R.string.title_reports);
 
         final List<String> allCurrencyCodes = Arrays.asList(getResources().getStringArray(R.array.key_currency_codes));

@@ -222,9 +222,9 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-        //it is necessary to set the view first before calling super because of the nav drawer in BaseDrawerActivity
-        setContentView(R.layout.activity_accounts);
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_accounts);
+        setUpDrawer();
 
         final Intent intent = getIntent();
         handleOpenFileIntent(intent);

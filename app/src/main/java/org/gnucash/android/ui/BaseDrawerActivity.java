@@ -69,7 +69,17 @@ public class BaseDrawerActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+    }
 
+    /**
+     * Sets up the navigation drawer for this activity.
+     *
+     * This should be called from the activity's
+     * {@link Activity#onCreate(Bundle)} method after calling
+     * {@link Activity#setContentView(int)}.
+     *
+     */
+    protected void setUpDrawer() {
         mDrawerLayout   = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerList     = (ListView) findViewById(R.id.left_drawer);
 

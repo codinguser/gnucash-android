@@ -258,9 +258,9 @@ public class TransactionsActivity extends PassLockActivity implements
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-        //it is necessary to set the view first before calling super because of the nav drawer in BaseDrawerActivity
-		setContentView(R.layout.activity_transactions);
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_transactions);
+        setUpDrawer();
 
         mPager = (ViewPager) findViewById(R.id.pager);
         mTitlePageIndicator = (TitlePageIndicator) findViewById(R.id.titles);

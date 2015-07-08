@@ -111,9 +111,9 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        //it is necessary to set the view first before calling super because of the nav drawer in BaseDrawerActivity
-        setContentView(R.layout.activity_pie_chart);
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_pie_chart);
+        setUpDrawer();
         getSupportActionBar().setTitle(R.string.title_pie_chart);
 
         mUseAccountColor = PreferenceManager.getDefaultSharedPreferences(getApplicationContext())
