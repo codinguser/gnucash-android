@@ -159,16 +159,7 @@ public class GnuCashApplication extends Application{
      * @return Default currency code string for the application
      */
     public static String getDefaultCurrencyCode(){
-        Locale locale = Locale.getDefault();
-        //sometimes the locale en_UK is returned which causes a crash with Currency
-        if (locale.getCountry().equals("UK")) {
-            locale = new Locale(locale.getLanguage(), "GB");
-        }
-
-        //for unsupported locale es_LG
-        if (locale.getCountry().equals("LG")){
-            locale = new Locale(locale.getLanguage(), "ES");
-        }
+        Locale locale = getDefaultLocale();
 
         String currencyCode = "USD"; //start with USD as the default
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
@@ -181,6 +172,29 @@ public class GnuCashApplication extends Application{
             currencyCode = prefs.getString(context.getString(R.string.key_default_currency), currencyCode);
         }
         return currencyCode;
+    }
+
+    /**
+     * Returns the default locale which is used for currencies, while handling special cases for
+     * locales which are not supported for currency such as en_GB
+     * @return The default locale for this device
+     */
+    public static Locale getDefaultLocale() {
+        Locale locale = Locale.getDefault();
+        //sometimes the locale en_UK is returned which causes a crash with Currency
+        if (locale.getCountry().equals("UK")) {
+            locale = new Locale(locale.getLanguage(), "GB");
+        }
+
+        //for unsupported locale es_LG
+        if (locale.getCountry().equals("LG")){
+            locale = new Locale(locale.getLanguage(), "ES");
+        }
+
+        if (locale.getCountry().equals("en")){
+            locale = Locale.US;
+        }
+        return locale;
     }
 
     /**
