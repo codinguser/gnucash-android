@@ -106,8 +106,13 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
 
     private boolean mUseAccountColor = true;
 
-    private double mSlicePercentThreshold = 6;
-    private boolean mGroupSmallerSlices = false;
+    private double mSlicePercentThreshold = 5;
+    private boolean mGroupSmallerSlices = true;
+
+    /**
+     * The pie char data without grouping smaller slices
+     */
+    private PieData mPieDataWithoutGrouping;
 
     private String mCurrencyCode;
 
@@ -181,6 +186,7 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
 
         mChart.setData(getData(forCurrentMonth));
         if (mChartDataPresent) {
+            checkGroupingSmallerSlices();
             mChart.animateXY(ANIMATION_DURATION, ANIMATION_DURATION);
         }
         mChart.invalidate();
@@ -384,41 +390,10 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
             }
             case R.id.menu_group_other_slice: {
                 mGroupSmallerSlices = !mGroupSmallerSlices;
-                if (mGroupSmallerSlices) {
-                    float otherSlice = 0f;
-                    List<String> newLabels = new ArrayList<>();
-                    List<Entry> newEntries = new ArrayList<>();
-                    List<Integer> newColors = new ArrayList<>();
-                    List<Entry> entries = mChart.getData().getDataSet().getYVals();
-                    for (int i = 0; i < entries.size(); i++) {
-                        float val = entries.get(i).getVal();
-                        if (val / mChart.getYValueSum() * 100 > mSlicePercentThreshold) {
-                            newEntries.add(new Entry(val, newEntries.size()));
-                            newLabels.add(mChart.getData().getXVals().get(i));
-                            newColors.add(mChart.getData().getDataSet().getColors().get(i));
-                        } else {
-                            otherSlice += val;
-                        }
-                    }
-
-                    if (otherSlice > 0) {
-                        newEntries.add(new Entry(otherSlice, newEntries.size()));
-                        newLabels.add(getResources().getString(R.string.label_other_slice));
-                        newColors.add(Color.LTGRAY);
-                    }
-
-                    mChart.getData().getDataSet().setColors(newColors);
-                    mChart.getData().getDataSet().getYVals().clear();
-                    mChart.getData().getDataSet().getYVals().addAll(newEntries);
-                    mChart.getData().getXVals().clear();
-                    mChart.getData().getXVals().addAll(newLabels);
-
-                    mChart.notifyDataSetChanged();
-                    mChart.invalidate();
-                } else {
-                    setData(false);
-                }
-
+                checkGroupingSmallerSlices();
+                mChart.highlightValues(null);
+                mChart.notifyDataSetChanged();
+                mChart.invalidate();
                 break;
             }
             case android.R.id.home: {
@@ -427,6 +402,44 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
             }
         }
         return true;
+    }
+
+    private void checkGroupingSmallerSlices() {
+        if (mGroupSmallerSlices) {
+            mPieDataWithoutGrouping = mChart.getData();
+            mChart.setData(groupSmallerSlices());
+        } else {
+            mChart.setData(mPieDataWithoutGrouping);
+        }
+    }
+
+    private PieData groupSmallerSlices() {
+        float otherSlice = 0f;
+        List<Entry> newEntries = new ArrayList<>();
+        List<String> newLabels = new ArrayList<>();
+        List<Integer> newColors = new ArrayList<>();
+        List<Entry> entries = mChart.getData().getDataSet().getYVals();
+        for (int i = 0; i < entries.size(); i++) {
+            float val = entries.get(i).getVal();
+            if (val / mChart.getYValueSum() * 100 > mSlicePercentThreshold) {
+                newEntries.add(new Entry(val, newEntries.size()));
+                newLabels.add(mChart.getData().getXVals().get(i));
+                newColors.add(mChart.getData().getDataSet().getColors().get(i));
+            } else {
+                otherSlice += val;
+            }
+        }
+
+        if (otherSlice > 0) {
+            newEntries.add(new Entry(otherSlice, newEntries.size()));
+            newLabels.add(getResources().getString(R.string.label_other_slice));
+            newColors.add(Color.LTGRAY);
+        }
+
+        PieDataSet dataSet = new PieDataSet(newEntries, "");
+        dataSet.setSliceSpace(2);
+        dataSet.setColors(newColors);
+        return new PieData(newLabels, dataSet);
     }
 
     /**
