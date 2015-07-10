@@ -157,10 +157,10 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
         //enter search query
 //        ActionBarUtils.clickSherlockActionBarItem(mSolo, R.id.menu_search);
         onView(withId(R.id.menu_search)).perform(click());
-        onView(withId(R.id.abs__search_src_text)).perform(typeText("Se"));
+        onView(withId(R.id.search_src_text)).perform(typeText("Se"));
         onView(withText(SEARCH_ACCOUNT_NAME)).check(matches(isDisplayed()));
 
-        onView(withId(R.id.abs__search_src_text)).perform(clearText());
+        onView(withId(R.id.search_src_text)).perform(clearText());
         onView(withId(R.id.primary_text)).check(matches(not(withText(SEARCH_ACCOUNT_NAME))));
     }
 
