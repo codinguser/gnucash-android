@@ -21,7 +21,9 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -29,8 +31,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.actionbarsherlock.app.SherlockFragmentActivity;
-import com.actionbarsherlock.view.MenuItem;
 import com.commonsware.cwac.merge.MergeAdapter;
 import com.crashlytics.android.Crashlytics;
 
@@ -52,7 +52,7 @@ import java.util.ArrayList;
  *
  * @author Ngewi Fet <ngewif@gmail.com>
  */
-public class BaseDrawerActivity extends SherlockFragmentActivity {
+public class BaseDrawerActivity extends AppCompatActivity {
     protected DrawerLayout  mDrawerLayout;
     protected ListView      mDrawerList;
 
@@ -69,7 +69,17 @@ public class BaseDrawerActivity extends SherlockFragmentActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+    }
 
+    /**
+     * Sets up the navigation drawer for this activity.
+     *
+     * This should be called from the activity's
+     * {@link Activity#onCreate(Bundle)} method after calling
+     * {@link Activity#setContentView(int)}.
+     *
+     */
+    protected void setUpDrawer() {
         mDrawerLayout   = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerList     = (ListView) findViewById(R.id.left_drawer);
 

@@ -24,12 +24,20 @@ import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.Loader;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.SimpleCursorAdapter;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.view.ActionMode;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.TouchDelegate;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,14 +47,6 @@ import android.widget.ImageButton;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-
-import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.SherlockListFragment;
-import com.actionbarsherlock.view.ActionMode;
-import com.actionbarsherlock.view.ActionMode.Callback;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuInflater;
-import com.actionbarsherlock.view.MenuItem;
 
 import org.gnucash.android.R;
 import org.gnucash.android.db.AccountsDbAdapter;
@@ -65,11 +65,11 @@ import org.gnucash.android.ui.util.Refreshable;
  *
  * @author Ngewi Fet <ngewif@gmail.com>
  */
-public class AccountsListFragment extends SherlockListFragment implements
+public class AccountsListFragment extends ListFragment implements
         Refreshable,
         LoaderCallbacks<Cursor>, OnItemLongClickListener,
-        com.actionbarsherlock.widget.SearchView.OnQueryTextListener,
-        com.actionbarsherlock.widget.SearchView.OnCloseListener {
+        android.support.v7.widget.SearchView.OnQueryTextListener,
+        android.support.v7.widget.SearchView.OnCloseListener {
 
     /**
      * Describes the kinds of accounts that should be loaded in the accounts list.
@@ -142,12 +142,12 @@ public class AccountsListFragment extends SherlockListFragment implements
     /**
      * Search view for searching accounts
      */
-    private com.actionbarsherlock.widget.SearchView mSearchView;
+    private android.support.v7.widget.SearchView mSearchView;
 
     /**
      * Callbacks for the CAB menu
      */
-    private ActionMode.Callback mActionModeCallbacks = new Callback() {
+    private ActionMode.Callback mActionModeCallbacks = new ActionMode.Callback() {
 
         String mSelectedAccountUID;
 
@@ -244,7 +244,7 @@ public class AccountsListFragment extends SherlockListFragment implements
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        ActionBar actionbar = getSherlockActivity().getSupportActionBar();
+        ActionBar actionbar = ((AppCompatActivity) getActivity()).getSupportActionBar();
         actionbar.setTitle(R.string.title_accounts);
         actionbar.setDisplayHomeAsUpEnabled(true);
 
@@ -292,8 +292,8 @@ public class AccountsListFragment extends SherlockListFragment implements
         mInEditMode = true;
         mSelectedItemId = id;
         // Start the CAB using the ActionMode.Callback defined above
-        mActionMode = getSherlockActivity().startActionMode(
-                mActionModeCallbacks);
+        mActionMode = ((AppCompatActivity) getActivity())
+                                .startSupportActionMode(mActionModeCallbacks);
 
         getListView().setItemChecked(position, true);
         return true;
@@ -334,7 +334,7 @@ public class AccountsListFragment extends SherlockListFragment implements
         DeleteAccountDialogFragment alertFragment =
                 DeleteAccountDialogFragment.newInstance(mAccountsDbAdapter.getUID(id));
         alertFragment.setTargetFragment(this, 0);
-        alertFragment.show(getSherlockActivity().getSupportFragmentManager(), "delete_confirmation_dialog");
+        alertFragment.show(getActivity().getSupportFragmentManager(), "delete_confirmation_dialog");
     }
 
     /**
@@ -357,8 +357,8 @@ public class AccountsListFragment extends SherlockListFragment implements
             // Associate searchable configuration with the SearchView
             SearchManager searchManager =
                     (SearchManager) getActivity().getSystemService(Context.SEARCH_SERVICE);
-            mSearchView =
-                    (com.actionbarsherlock.widget.SearchView) menu.findItem(R.id.menu_search).getActionView();
+            mSearchView = (android.support.v7.widget.SearchView)
+                MenuItemCompat.getActionView(menu.findItem(R.id.menu_search));
             if (mSearchView == null)
                 return;
 

@@ -15,30 +15,31 @@
  limitations under the License.
 -->
 
-<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item android:id="@+id/menu_order_by_size"
           android:title="@string/menu_order_by_size"
-          android:showAsAction="never" />
+          app:showAsAction="never" />
 
     <item android:id="@+id/menu_toggle_legend"
           android:title="@string/menu_toggle_legend"
-          android:showAsAction="never" />
+          app:showAsAction="never" />
 
     <item android:id="@+id/menu_toggle_labels"
           android:title="@string/menu_toggle_labels"
-          android:showAsAction="never" />
+          app:showAsAction="never" />
 
     <item android:id="@+id/menu_percentage_mode"
           android:title="@string/menu_toggle_percentage_mode"
-          android:showAsAction="never" />
+          app:showAsAction="never" />
 
     <item android:id="@+id/menu_toggle_average_lines"
           android:title="@string/menu_toggle_average_lines"
-          android:showAsAction="never" />
+          app:showAsAction="never" />
 
     <item android:id="@+id/menu_group_other_slice"
           android:title="@string/menu_group_smaller_slices"
-          android:showAsAction="never" />
+          app:showAsAction="never" />
 
 </menu>

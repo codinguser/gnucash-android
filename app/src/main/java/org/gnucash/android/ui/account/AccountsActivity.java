@@ -40,13 +40,13 @@ import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.util.SparseArray;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuInflater;
-import com.actionbarsherlock.view.MenuItem;
 import com.crashlytics.android.Crashlytics;
 import com.viewpagerindicator.TitlePageIndicator;
 
@@ -54,12 +54,12 @@ import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.DatabaseSchema;
-import org.gnucash.android.ui.export.ExportDialogFragment;
 import org.gnucash.android.export.xml.GncXmlExporter;
 import org.gnucash.android.importer.ImportAsyncTask;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.ui.UxArgument;
 import org.gnucash.android.ui.chart.ChartReportActivity;
+import org.gnucash.android.ui.export.ExportDialogFragment;
 import org.gnucash.android.ui.passcode.PassLockActivity;
 import org.gnucash.android.ui.settings.SettingsActivity;
 import org.gnucash.android.ui.transaction.ScheduledActionsActivity;
@@ -222,9 +222,9 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-        //it is necessary to set the view first before calling super because of the nav drawer in BaseDrawerActivity
-        setContentView(R.layout.activity_accounts);
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_accounts);
+        setUpDrawer();
 
         final Intent intent = getIntent();
         handleOpenFileIntent(intent);
@@ -405,7 +405,7 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
 
     @Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		MenuInflater inflater = getSupportMenuInflater();
+		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.global_actions, menu);
 		return true;
 	}

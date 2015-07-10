@@ -15,23 +15,24 @@
  limitations under the License.
 -->
 
-<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item android:id="@+id/menu_search"
           android:title="@string/menu_search_accounts"
-          android:icon="@drawable/abs__ic_search"
-          android:showAsAction="collapseActionView|ifRoom"
-          android:actionViewClass="com.actionbarsherlock.widget.SearchView" />
+          android:icon="@drawable/abc_ic_search_api_mtrl_alpha"
+          app:showAsAction="collapseActionView|ifRoom"
+          app:actionViewClass="android.support.v7.widget.SearchView" />
 
     <item android:id="@+id/menu_settings"
           android:icon="@drawable/action_settings"
           android:title="@string/title_settings"
-          android:showAsAction="never"
+          app:showAsAction="never"
           android:orderInCategory="10"/>
 
     <item android:id="@+id/menu_reports"
           android:title="@string/title_reports"
           android:icon="@drawable/chart_icon"
-          android:showAsAction="collapseActionView|ifRoom" />
+          app:showAsAction="collapseActionView|ifRoom" />
 
 </menu>

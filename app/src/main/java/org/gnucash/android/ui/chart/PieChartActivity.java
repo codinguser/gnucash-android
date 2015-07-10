@@ -24,6 +24,8 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.DialogFragment;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
@@ -33,8 +35,6 @@ import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuItem;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.components.Legend.LegendForm;
 import com.github.mikephil.charting.components.Legend.LegendPosition;
@@ -111,9 +111,9 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        //it is necessary to set the view first before calling super because of the nav drawer in BaseDrawerActivity
-        setContentView(R.layout.activity_pie_chart);
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_pie_chart);
+        setUpDrawer();
         getSupportActionBar().setTitle(R.string.title_pie_chart);
 
         mUseAccountColor = PreferenceManager.getDefaultSharedPreferences(getApplicationContext())
@@ -369,7 +369,7 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getSupportMenuInflater().inflate(R.menu.chart_actions, menu);
+        getMenuInflater().inflate(R.menu.chart_actions, menu);
         return true;
     }
 

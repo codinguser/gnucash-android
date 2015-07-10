@@ -21,14 +21,21 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.SimpleCursorAdapter;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.format.DateUtils;
 import android.text.format.Time;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
@@ -42,11 +49,6 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.SherlockFragment;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuInflater;
-import com.actionbarsherlock.view.MenuItem;
 import com.doomonafireball.betterpickers.calendardatepicker.CalendarDatePickerDialog;
 import com.doomonafireball.betterpickers.radialtimepicker.RadialTimePickerDialog;
 import com.doomonafireball.betterpickers.recurrencepicker.EventRecurrence;
@@ -88,7 +90,7 @@ import java.util.Locale;
  * Fragment for creating or editing transactions
  * @author Ngewi Fet <ngewif@gmail.com>
  */
-public class TransactionFormFragment extends SherlockFragment implements
+public class TransactionFormFragment extends Fragment implements
         CalendarDatePickerDialog.OnDateSetListener, RadialTimePickerDialog.OnTimeSetListener,
         RecurrencePickerDialog.OnRecurrenceSetListener {
 
@@ -242,7 +244,7 @@ public class TransactionFormFragment extends SherlockFragment implements
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 		setHasOptionsMenu(true);
-		ActionBar actionBar = getSherlockActivity().getSupportActionBar();
+		ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
 		actionBar.setHomeButtonEnabled(true);
 		actionBar.setDisplayHomeAsUpEnabled(true);
 		actionBar.setDisplayShowTitleEnabled(false);
@@ -608,7 +610,7 @@ public class TransactionFormFragment extends SherlockFragment implements
         mRecurrenceTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                FragmentManager fm = getSherlockActivity().getSupportFragmentManager();
+                FragmentManager fm = getActivity().getSupportFragmentManager();
                 Bundle b = new Bundle();
                 Time t = new Time();
                 t.setToNow();
@@ -894,7 +896,7 @@ public class TransactionFormFragment extends SherlockFragment implements
 			getActivity().finish();
 		} else {
 			//go back to transactions list
-			getSherlockActivity().getSupportFragmentManager().popBackStack();
+			getActivity().getSupportFragmentManager().popBackStack();
 		}
 	}
 

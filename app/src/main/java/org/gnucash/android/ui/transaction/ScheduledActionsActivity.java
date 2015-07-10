@@ -39,8 +39,9 @@ public class ScheduledActionsActivity extends PassLockActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        setContentView(R.layout.activity_scheduled_events);
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_scheduled_events);
+        setUpDrawer();
 
         mDisplayMode = (DisplayMode) getIntent().getSerializableExtra(EXTRA_DISPLAY_MODE);
         if (mDisplayMode == null)

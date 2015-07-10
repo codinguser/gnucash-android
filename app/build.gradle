@@ -20,13 +20,13 @@ def gitSha() {
 
 
 android {
-    compileSdkVersion 19
-    buildToolsVersion "21.1.2" //maintain this version until we migrate to ActionBarCompat
+    compileSdkVersion 22
+    buildToolsVersion "22.0.1"
     defaultConfig {
         applicationId "org.gnucash.android"
         testApplicationId 'org.gnucash.android.test'
         minSdkVersion 10
-        targetSdkVersion 19
+        targetSdkVersion 22
         versionCode versionMajor * 10000 + versionMinor * 1000 + versionPatch * 100 + versionBuild
         versionName "${versionMajor}.${versionMinor}.${versionPatch}"
         resValue "string", "app_version_name", "${versionName}"
@@ -151,10 +151,11 @@ afterEvaluate {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile('com.android.support:support-v4:22.1.1',
-            'com.actionbarsherlock:actionbarsherlock:4.4.0@aar',
+    compile('com.android.support:support-v4:22.2.0',
+            'com.android.support:appcompat-v7:22.2.0',
             'com.viewpagerindicator:library:2.4.1@aar',
             'com.doomonafireball.betterpickers:library:1.6.0',
+            'org.jraf:android-switch-backport:1.4.0@aar',
             'com.commonsware.cwac:merge:1.1.+',
             'com.github.PhilJay:MPAndroidChart:v2.1.0',
             'joda-time:joda-time:2.7',
@@ -172,5 +173,5 @@ dependencies {
         exclude group: 'com.android.support', module:'support-annotations'
     }
     androidTestCompile ('com.android.support.test.espresso:espresso-core:2.1')
-    androidTestCompile 'com.android.support:support-annotations:22.1.1'
+    androidTestCompile 'com.android.support:support-annotations:22.2.0'
 }

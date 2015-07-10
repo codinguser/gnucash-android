@@ -27,10 +27,15 @@ import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.SimpleCursorAdapter;
+import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
@@ -42,11 +47,6 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
-
-import com.actionbarsherlock.app.SherlockFragment;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuInflater;
-import com.actionbarsherlock.view.MenuItem;
 
 import org.gnucash.android.R;
 import org.gnucash.android.db.AccountsDbAdapter;
@@ -71,7 +71,7 @@ import java.util.List;
  * @author Ngewi Fet <ngewif@gmail.com>
  * @author Yongxin Wang <fefe.wyx@gmail.com>
  */
-public class AccountFormFragment extends SherlockFragment {
+public class AccountFormFragment extends Fragment {
 
     /**
      * Tag for the color picker dialog fragment
@@ -239,7 +239,8 @@ public class AccountFormFragment extends SherlockFragment {
 	@Override	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.fragment_new_account, container, false);
-		getSherlockActivity().getSupportActionBar().setTitle(R.string.label_create_account);
+		((AppCompatActivity) getActivity()).getSupportActionBar()
+                .setTitle(R.string.label_create_account);
 		mCurrencySpinner = (Spinner) view.findViewById(R.id.input_currency_spinner);
 		mNameEditText = (EditText) view.findViewById(R.id.input_account_name);
 		//mNameEditText.requestFocus();
@@ -314,7 +315,8 @@ public class AccountFormFragment extends SherlockFragment {
 
         if (mAccountUID != null) {
             mAccount = mAccountsDbAdapter.getAccount(mAccountUID);
-            getSherlockActivity().getSupportActionBar().setTitle(R.string.title_edit_account);
+            ((AppCompatActivity) getActivity()).getSupportActionBar()
+                                        .setTitle(R.string.title_edit_account);
         }
 
         mRootAccountUID = mAccountsDbAdapter.getOrCreateGnuCashRootAccountUID();
@@ -513,7 +515,7 @@ public class AccountFormFragment extends SherlockFragment {
     }
 
     @Override
-	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {		
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 		super.onCreateOptionsMenu(menu, inflater);
 		inflater.inflate(R.menu.default_save_actions, menu);
 	}
@@ -674,7 +676,7 @@ public class AccountFormFragment extends SherlockFragment {
 	 * Depends on how the fragment was loaded, it might have a backstack or not
 	 */
 	private void finishFragment() {
-		InputMethodManager imm = (InputMethodManager) getSherlockActivity().getSystemService(
+		InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(
 			      Context.INPUT_METHOD_SERVICE);
 			imm.hideSoftInputFromWindow(mNameEditText.getWindowToken(), 0);
 
@@ -683,7 +685,7 @@ public class AccountFormFragment extends SherlockFragment {
             getActivity().setResult(Activity.RESULT_OK);
             getActivity().finish();
         } else {
-		    getSherlockActivity().getSupportFragmentManager().popBackStack();
+		    getActivity().getSupportFragmentManager().popBackStack();
         }
 	}
 	
@@ -707,7 +709,7 @@ public class AccountFormFragment extends SherlockFragment {
 		if (mAccount == null){
 			String name = getEnteredName();
 			if (name == null || name.length() == 0){
-				Toast.makeText(getSherlockActivity(), 
+				Toast.makeText(getActivity(),
 						R.string.toast_no_account_name_entered, 
 						Toast.LENGTH_LONG).show();
 				return;				

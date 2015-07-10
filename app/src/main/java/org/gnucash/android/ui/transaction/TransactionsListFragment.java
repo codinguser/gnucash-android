@@ -26,13 +26,20 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.SimpleCursorAdapter;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.view.ActionMode;
 import android.text.format.DateUtils;
 import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.TouchDelegate;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,13 +49,6 @@ import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ListView;
 import android.widget.TextView;
-
-import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.SherlockListFragment;
-import com.actionbarsherlock.view.ActionMode;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuInflater;
-import com.actionbarsherlock.view.MenuItem;
 
 import org.gnucash.android.R;
 import org.gnucash.android.db.DatabaseCursorLoader;
@@ -70,7 +70,7 @@ import java.util.Date;
  * @author Ngewi Fet <ngewif@gmail.com>
  *
  */
-public class TransactionsListFragment extends SherlockListFragment implements
+public class TransactionsListFragment extends ListFragment implements
         Refreshable, LoaderCallbacks<Cursor>, AdapterView.OnItemLongClickListener{
 
 	/**
@@ -162,7 +162,7 @@ public class TransactionsListFragment extends SherlockListFragment implements
 	public void onActivityCreated(Bundle savedInstanceState) {		
 		super.onActivityCreated(savedInstanceState);
 		
-		ActionBar aBar = getSherlockActivity().getSupportActionBar();
+		ActionBar aBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
 		aBar.setDisplayShowTitleEnabled(false);
 		aBar.setDisplayHomeAsUpEnabled(true);
 
@@ -209,7 +209,7 @@ public class TransactionsListFragment extends SherlockListFragment implements
 	@Override
 	public void onResume() {
 		super.onResume();
-		((TransactionsActivity)getSherlockActivity()).updateNavigationSelection();		
+		((TransactionsActivity)getActivity()).updateNavigationSelection();
 		refresh();
 	}
 	
@@ -234,7 +234,7 @@ public class TransactionsListFragment extends SherlockListFragment implements
 	}
 
 	@Override
-	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {		
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 		inflater.inflate(R.menu.transactions_list_actions, menu);	
 	}
 
@@ -313,7 +313,8 @@ public class TransactionsListFragment extends SherlockListFragment implements
         }		
 		mInEditMode = true;
         // Start the CAB using the ActionMode.Callback defined above
-        mActionMode = getSherlockActivity().startActionMode(mActionModeCallbacks);
+		mActionMode = ((AppCompatActivity) getActivity())
+								.startSupportActionMode(mActionModeCallbacks);
 	}
 	
 	/**

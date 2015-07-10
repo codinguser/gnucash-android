@@ -10,7 +10,7 @@
               android:layout_width="match_parent"
               android:layout_height="match_parent"
               android:layout_above="@id/transactions_sum_bar"
-              android:listSelector="@drawable/abs__list_selector_holo_light"
+              android:listSelector="@drawable/abc_list_selector_holo_light"
               android:drawSelectorOnTop="false"/>
 
     <TextView android:id="@id/android:empty"

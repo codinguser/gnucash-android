@@ -29,17 +29,16 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.ResourceCursorAdapter;
+import android.support.v7.app.ActionBar;
 import android.util.Log;
 import android.util.SparseArray;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 
-import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.ActionBar.OnNavigationListener;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuItem;
 import com.viewpagerindicator.TitlePageIndicator;
 
 import org.gnucash.android.R;
@@ -120,7 +119,7 @@ public class TransactionsActivity extends PassLockActivity implements
 
     private SparseArray<Refreshable> mFragmentPageReferenceMap = new SparseArray<>();
 
-	private OnNavigationListener mTransactionListNavigationListener = new OnNavigationListener() {
+	private ActionBar.OnNavigationListener mTransactionListNavigationListener = new ActionBar.OnNavigationListener() {
 
 		  @Override
 		  public boolean onNavigationItemSelected(int position, long itemId) {
@@ -259,9 +258,9 @@ public class TransactionsActivity extends PassLockActivity implements
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-        //it is necessary to set the view first before calling super because of the nav drawer in BaseDrawerActivity
-		setContentView(R.layout.activity_transactions);
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_transactions);
+        setUpDrawer();
 
         mPager = (ViewPager) findViewById(R.id.pager);
         mTitlePageIndicator = (TitlePageIndicator) findViewById(R.id.titles);
@@ -367,9 +366,9 @@ public class TransactionsActivity extends PassLockActivity implements
 
         SpinnerAdapter mSpinnerAdapter = new QualifiedAccountNameCursorAdapter(
                 getSupportActionBar().getThemedContext(),
-                R.layout.sherlock_spinner_item, mAccountsCursor);
-		((ResourceCursorAdapter) mSpinnerAdapter)
-				.setDropDownViewResource(R.layout.sherlock_spinner_dropdown_item);
+                android.R.layout.simple_spinner_item, mAccountsCursor);
+		((ResourceCursorAdapter) mSpinnerAdapter).setDropDownViewResource(
+                                android.R.layout.simple_spinner_dropdown_item);
 		ActionBar actionBar = getSupportActionBar();
 		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
 		actionBar.setListNavigationCallbacks(mSpinnerAdapter,

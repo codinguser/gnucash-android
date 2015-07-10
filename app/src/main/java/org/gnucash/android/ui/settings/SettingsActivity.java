@@ -33,13 +33,12 @@ import android.preference.CheckBoxPreference;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.PreferenceManager;
+import android.support.v7.app.ActionBar;
 import android.util.Log;
+import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
-import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.SherlockPreferenceActivity;
-import com.actionbarsherlock.view.MenuItem;
 import com.crashlytics.android.Crashlytics;
 import com.dropbox.sync.android.DbxAccountManager;
 import com.google.android.gms.common.ConnectionResult;
@@ -86,7 +85,8 @@ import java.util.TimerTask;
  * @author Oleksandr Tyshkovets <olexandr.tyshkovets@gmail.com>
  * @author Yongxin Wang <fefe.wyx@gmail.com>
  */
-public class SettingsActivity extends SherlockPreferenceActivity implements OnPreferenceChangeListener, Preference.OnPreferenceClickListener{
+public class SettingsActivity extends AppCompatPreferenceActivity
+        implements OnPreferenceChangeListener, Preference.OnPreferenceClickListener{
 
     public static final String LOG_TAG = "SettingsActivity";
 
@@ -131,6 +131,7 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
      */
     public static GoogleApiClient mGoogleApiClient;
 
+
     /**
 	 * Constructs the headers to display in the header list when the Settings activity is first opened
 	 * Only available on Honeycomb and above
@@ -143,7 +144,7 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
 
 	@SuppressWarnings("deprecation")
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {		
+	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
         String dropboxAppKey = getString(R.string.dropbox_app_key, DROPBOX_APP_KEY);
