@@ -109,10 +109,7 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
     private double mSlicePercentThreshold = 5;
     private boolean mGroupSmallerSlices = true;
 
-    /**
-     * The pie char data without grouping smaller slices
-     */
-    private PieData mPieDataWithoutGrouping;
+    private boolean mDataForCurrentMonth = false;
 
     private String mCurrencyCode;
 
@@ -149,7 +146,8 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
             @Override
             public void onClick(View view) {
                 mChartDate = mChartDate.minusMonths(1);
-                setData(true);
+                mDataForCurrentMonth = true;
+                setData();
             }
         });
         mNextMonthButton.setOnClickListener(new View.OnClickListener() {
@@ -157,7 +155,8 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
             @Override
             public void onClick(View view) {
                 mChartDate = mChartDate.plusMonths(1);
-                setData(true);
+                mDataForCurrentMonth = true;
+                setData();
             }
         });
 
@@ -176,17 +175,18 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
 
     /**
      * Sets the chart data
-     * @param forCurrentMonth sets data only for current month if {@code true}, otherwise for all time
      */
-    private void setData(boolean forCurrentMonth) {
-        mChartDateTextView.setText(forCurrentMonth ? mChartDate.toString(DATE_PATTERN) : getResources().getString(R.string.label_chart_overall));
+    private void setData() {
+        mChartDateTextView.setText(mDataForCurrentMonth ? mChartDate.toString(DATE_PATTERN) : getResources().getString(R.string.label_chart_overall));
         ((TextView) findViewById(R.id.selected_chart_slice)).setText("");
         mChart.highlightValues(null);
         mChart.clear();
 
-        mChart.setData(getData(forCurrentMonth));
+        mChart.setData(getData(mDataForCurrentMonth));
         if (mChartDataPresent) {
-            checkGroupingSmallerSlices();
+            if (mGroupSmallerSlices) {
+                mChart.setData(groupSmallerSlices());
+            }
             mChart.animateXY(ANIMATION_DURATION, ANIMATION_DURATION);
         }
         mChart.invalidate();
@@ -342,7 +342,9 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
                 mEarliestTransactionDate = new LocalDateTime(mTransactionsDbAdapter.getTimestampOfEarliestTransaction(mAccountType, mCurrencyCode));
                 mLatestTransactionDate = new LocalDateTime(mTransactionsDbAdapter.getTimestampOfLatestTransaction(mAccountType, mCurrencyCode));
                 mChartDate = mLatestTransactionDate;
-                setData(false);
+
+                mDataForCurrentMonth = false;
+                setData();
             }
 
             @Override
@@ -390,10 +392,7 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
             }
             case R.id.menu_group_other_slice: {
                 mGroupSmallerSlices = !mGroupSmallerSlices;
-                checkGroupingSmallerSlices();
-                mChart.highlightValues(null);
-                mChart.notifyDataSetChanged();
-                mChart.invalidate();
+                setData();
                 break;
             }
             case android.R.id.home: {
@@ -402,15 +401,6 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
             }
         }
         return true;
-    }
-
-    private void checkGroupingSmallerSlices() {
-        if (mGroupSmallerSlices) {
-            mPieDataWithoutGrouping = mChart.getData();
-            mChart.setData(groupSmallerSlices());
-        } else {
-            mChart.setData(mPieDataWithoutGrouping);
-        }
     }
 
     private PieData groupSmallerSlices() {
@@ -450,7 +440,8 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
     public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
         if (view.isShown()) {
             mChartDate = new LocalDateTime(year, monthOfYear + 1, dayOfMonth, 0, 0);
-            setData(true);
+            mDataForCurrentMonth = false;
+            setData();
         }
     }
 
