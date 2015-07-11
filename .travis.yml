@@ -7,25 +7,25 @@ android:
     - build-tools-22.0.1
     
     # The SDK version used to compile your project
-    - android-19
+    - android-21
 
     # Additional components
     - extra-android-support
     - extra-google-google_play_services
     - extra-google-m2repository
     - extra-android-m2repository
-    - addon-google_apis-google-19
+    - addon-google_apis-google-21
 
     # Specify at least one system image,
     # if you need to run emulator(s) during your tests
-    - sys-img-armeabi-v7a-android-19
+    - sys-img-armeabi-v7a-android-21
 
 # Emulator Management: Create, Start and Wait
 # Re-enable this when we figure out how to reliably build on Travis
 #before_script:
 #  - mkdir sdcard
 #  - mksdcard -l gnucash-sdcard 64M sdcard/gnucash-sdcard.img
-#  - echo no | android create avd --force -n test -t android-19 --abi armeabi-v7a
+#  - echo no | android create avd --force -n test -t android-21 --abi armeabi-v7a
 #  - emulator -avd test -no-skin -no-audio -no-window -no-boot-anim -sdcard sdcard/gnucash-sdcard.img &
 #  - android-wait-for-emulator
 #  - adb shell input keyevent 82 &
