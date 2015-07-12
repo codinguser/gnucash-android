@@ -132,11 +132,11 @@ public class BaseDrawerActivity extends AppCompatActivity {
                 R.layout.drawer_list_item, transactionsNavOptions);
 
         LayoutInflater inflater = getLayoutInflater();
-        TextView accountHeader = (TextView) inflater.inflate(R.layout.drawer_section_header, null);
+        TextView accountHeader = (TextView) inflater.inflate(R.layout.drawer_section_header, mDrawerList, false);
         accountHeader.setText(R.string.title_accounts);
         accountHeader.setTextColor(titleColorGreen);
 
-        TextView transactionHeader = (TextView) inflater.inflate(R.layout.drawer_section_header, null);
+        TextView transactionHeader = (TextView) inflater.inflate(R.layout.drawer_section_header, mDrawerList, false);
         transactionHeader.setText(R.string.title_transactions);
         transactionHeader.setTextColor(titleColorGreen);
         MergeAdapter mergeAdapter = new MergeAdapter();
@@ -145,8 +145,8 @@ public class BaseDrawerActivity extends AppCompatActivity {
         mergeAdapter.addView(transactionHeader);
         mergeAdapter.addAdapter(transactionsNavAdapter);
 
-        mergeAdapter.addView(inflater.inflate(R.layout.horizontal_line, null));
-        TextView settingsHeader = (TextView) inflater.inflate(R.layout.drawer_section_header, null);
+        mergeAdapter.addView(inflater.inflate(R.layout.horizontal_line, mDrawerList, false));
+        TextView settingsHeader = (TextView) inflater.inflate(R.layout.drawer_section_header, mDrawerList, false);
         settingsHeader.setText(R.string.title_settings);
         settingsHeader.setTextColor(titleColorGreen);
 
