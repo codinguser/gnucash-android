@@ -19,7 +19,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.support.v4.app.ActionBarDrawerToggle;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
@@ -88,11 +88,9 @@ public class BaseDrawerActivity extends AppCompatActivity {
         mDrawerList.setAdapter(mergeAdapter);
         mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
 
-        //FIXME: Migrate to the non-deprecated version when we remove ActionBarSherlock and support only API level 15 and above
         mDrawerToggle = new ActionBarDrawerToggle(
                 this,                  /* host Activity */
                 mDrawerLayout,         /* DrawerLayout object */
-                R.drawable.ic_drawer,  /* nav drawer icon to replace 'Up' caret */
                 R.string.drawer_open,  /* "open drawer" description */
                 R.string.drawer_close  /* "close drawer" description */
         ) {
