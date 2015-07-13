@@ -19,7 +19,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.support.v4.app.ActionBarDrawerToggle;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
@@ -88,11 +88,9 @@ public class BaseDrawerActivity extends AppCompatActivity {
         mDrawerList.setAdapter(mergeAdapter);
         mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
 
-        //FIXME: Migrate to the non-deprecated version when we remove ActionBarSherlock and support only API level 15 and above
         mDrawerToggle = new ActionBarDrawerToggle(
                 this,                  /* host Activity */
                 mDrawerLayout,         /* DrawerLayout object */
-                R.drawable.ic_drawer,  /* nav drawer icon to replace 'Up' caret */
                 R.string.drawer_open,  /* "open drawer" description */
                 R.string.drawer_close  /* "close drawer" description */
         ) {
@@ -134,11 +132,11 @@ public class BaseDrawerActivity extends AppCompatActivity {
                 R.layout.drawer_list_item, transactionsNavOptions);
 
         LayoutInflater inflater = getLayoutInflater();
-        TextView accountHeader = (TextView) inflater.inflate(R.layout.drawer_section_header, null);
+        TextView accountHeader = (TextView) inflater.inflate(R.layout.drawer_section_header, mDrawerList, false);
         accountHeader.setText(R.string.title_accounts);
         accountHeader.setTextColor(titleColorGreen);
 
-        TextView transactionHeader = (TextView) inflater.inflate(R.layout.drawer_section_header, null);
+        TextView transactionHeader = (TextView) inflater.inflate(R.layout.drawer_section_header, mDrawerList, false);
         transactionHeader.setText(R.string.title_transactions);
         transactionHeader.setTextColor(titleColorGreen);
         MergeAdapter mergeAdapter = new MergeAdapter();
@@ -147,8 +145,8 @@ public class BaseDrawerActivity extends AppCompatActivity {
         mergeAdapter.addView(transactionHeader);
         mergeAdapter.addAdapter(transactionsNavAdapter);
 
-        mergeAdapter.addView(inflater.inflate(R.layout.horizontal_line, null));
-        TextView settingsHeader = (TextView) inflater.inflate(R.layout.drawer_section_header, null);
+        mergeAdapter.addView(inflater.inflate(R.layout.horizontal_line, mDrawerList, false));
+        TextView settingsHeader = (TextView) inflater.inflate(R.layout.drawer_section_header, mDrawerList, false);
         settingsHeader.setText(R.string.title_settings);
         settingsHeader.setTextColor(titleColorGreen);
 
