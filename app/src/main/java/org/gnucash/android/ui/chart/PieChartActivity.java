@@ -62,8 +62,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import static org.gnucash.android.db.DatabaseSchema.AccountEntry;
-
 /**
  * Activity used for drawing a pie chart
  *
@@ -85,6 +83,11 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
     private static final String DATE_PATTERN = "MMMM\nYYYY";
     private static final String TOTAL_VALUE_LABEL_PATTERN = "%s\n%.2f %s";
     private static final int ANIMATION_DURATION = 1800;
+    private static final int NO_DATA_COLOR = Color.LTGRAY;
+    /**
+     * All pie slices less than this threshold will be group in "other" slice. Using percents not absolute values.
+     */
+    private static final double GROUPING_SMALLER_SLICE_THRESHOLD = 5;
 
     private PieChart mChart;
 
@@ -106,7 +109,6 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
 
     private boolean mUseAccountColor = true;
 
-    private double mSlicePercentThreshold = 5;
     private boolean mGroupSmallerSlices = true;
 
     private boolean mDataForCurrentMonth = false;
@@ -204,55 +206,66 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
      * @return {@code PieData} instance
      */
     private PieData getData(boolean forCurrentMonth) {
-        List<Account> accountList = mAccountsDbAdapter.getSimpleAccountList(
-                AccountEntry.COLUMN_TYPE + " = ? AND " + AccountEntry.COLUMN_PLACEHOLDER + " = ?",
-                new String[]{ mAccountType.name(), "0" }, null);
         PieDataSet dataSet = new PieDataSet(null, "");
-        List<String> names = new ArrayList<>();
-        for (Account account : getCurrencyCodeToAccountMap(accountList).get(mCurrencyCode)) {
-            double balance;
-            if (forCurrentMonth) {
-                long start = mChartDate.dayOfMonth().withMinimumValue().millisOfDay().withMinimumValue().toDate().getTime();
-                long end = mChartDate.dayOfMonth().withMaximumValue().millisOfDay().withMaximumValue().toDate().getTime();
-                balance = mAccountsDbAdapter.getAccountsBalance(
-                        Collections.singletonList(account.getUID()), start, end).absolute().asDouble();
-            } else {
-                balance = mAccountsDbAdapter.getAccountsBalance(
-                        Collections.singletonList(account.getUID()), -1, -1).absolute().asDouble();
-            }
+        List<String> labels = new ArrayList<>();
+        for (Account account : mAccountsDbAdapter.getSimpleAccountList()) {
+            if (account.getAccountType() == mAccountType
+                    && !account.isPlaceholderAccount()
+                    && account.getCurrency() == Currency.getInstance(mCurrencyCode)) {
 
-            if (balance != 0) {
-                dataSet.addEntry(new Entry((float) balance, dataSet.getEntryCount()));
-                if (mUseAccountColor) {
-                    dataSet.getColors().set(dataSet.getColors().size() - 1, (account.getColorHexCode() != null)
-                            ? Color.parseColor(account.getColorHexCode())
-                            : COLORS[(dataSet.getEntryCount() - 1) % COLORS.length]);
+                double balance;
+                if (forCurrentMonth) {
+                    long start = mChartDate.dayOfMonth().withMinimumValue().millisOfDay().withMinimumValue().toDate().getTime();
+                    long end = mChartDate.dayOfMonth().withMaximumValue().millisOfDay().withMaximumValue().toDate().getTime();
+                    balance = mAccountsDbAdapter.getAccountsBalance(
+                            Collections.singletonList(account.getUID()), start, end).absolute().asDouble();
+                } else {
+                    balance = mAccountsDbAdapter.getAccountsBalance(
+                            Collections.singletonList(account.getUID()), -1, -1).absolute().asDouble();
                 }
-                dataSet.addColor(COLORS[(dataSet.getEntryCount() - 1) % COLORS.length]);
-                names.add(account.getName());
+
+                if (balance != 0) {
+                    dataSet.addEntry(new Entry((float) balance, dataSet.getEntryCount()));
+                    if (mUseAccountColor) {
+                        dataSet.getColors().set(dataSet.getColors().size() - 1, (account.getColorHexCode() != null)
+                                ? Color.parseColor(account.getColorHexCode())
+                                : COLORS[(dataSet.getEntryCount() - 1) % COLORS.length]);
+                    }
+                    dataSet.addColor(COLORS[(dataSet.getEntryCount() - 1) % COLORS.length]);
+                    labels.add(account.getName());
+                }
             }
         }
 
         if (dataSet.getEntryCount() == 0) {
             mChartDataPresent = false;
-            dataSet.addEntry(new Entry(1, 0));
-            dataSet.setColor(Color.LTGRAY);
-            dataSet.setDrawValues(false);
-            names.add("");
             mChart.setCenterText(getResources().getString(R.string.label_chart_no_data));
             mChart.setTouchEnabled(false);
-        } else {
-            mChartDataPresent = true;
-            dataSet.setSliceSpace(2);
-            mChart.setCenterText(String.format(TOTAL_VALUE_LABEL_PATTERN,
-                            getResources().getString(R.string.label_chart_total),
-                            dataSet.getYValueSum(),
-                            Currency.getInstance(mCurrencyCode).getSymbol(Locale.getDefault()))
-            );
-            mChart.setTouchEnabled(true);
+            return getEmptyData();
         }
 
-        return new PieData(names, dataSet);
+        dataSet.setSliceSpace(2);
+        mChart.setCenterText(String.format(TOTAL_VALUE_LABEL_PATTERN,
+                        getResources().getString(R.string.label_chart_total),
+                        dataSet.getYValueSum(),
+                        Currency.getInstance(mCurrencyCode).getSymbol(Locale.getDefault()))
+        );
+        mChart.setTouchEnabled(true);
+        mChartDataPresent = true;
+
+        return new PieData(labels, dataSet);
+    }
+
+    /**
+     * Returns a data object that represents situation when no user data available
+     * @return a {@code PieData} instance for situation when no user data available
+     */
+    private PieData getEmptyData() {
+        PieDataSet dataSet = new PieDataSet(null, getResources().getString(R.string.label_chart_no_data));
+        dataSet.addEntry(new Entry(1, 0));
+        dataSet.setColor(NO_DATA_COLOR);
+        dataSet.setDrawValues(false);
+        return new PieData(Collections.singletonList(""), dataSet);
     }
 
     /**
@@ -411,7 +424,7 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
         List<Entry> entries = mChart.getData().getDataSet().getYVals();
         for (int i = 0; i < entries.size(); i++) {
             float val = entries.get(i).getVal();
-            if (val / mChart.getYValueSum() * 100 > mSlicePercentThreshold) {
+            if (val / mChart.getYValueSum() * 100 > GROUPING_SMALLER_SLICE_THRESHOLD) {
                 newEntries.add(new Entry(val, newEntries.size()));
                 newLabels.add(mChart.getData().getXVals().get(i));
                 newColors.add(mChart.getData().getDataSet().getColors().get(i));
