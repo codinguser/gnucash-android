@@ -22,6 +22,7 @@ import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Currency;
 import java.util.List;
 
@@ -63,6 +64,30 @@ public class AccountsDbAdapterTest{
         assertThat(accountsList).contains(first, Index.atIndex(0));
         assertThat(accountsList).contains(second, Index.atIndex(1));
 	}
+
+    @Test
+    public void bulkAddAccountsShouldNotModifyTransactions(){
+        Account account1 = new Account("AlphaAccount");
+        Account account2 = new Account("BetaAccount");
+        Transaction transaction = new Transaction("MyTransaction");
+        Split split = new Split(Money.getZeroInstance(), account1.getUID());
+        transaction.addSplit(split);
+        transaction.addSplit(split.createPair(account2.getUID()));
+        account1.addTransaction(transaction);
+        account2.addTransaction(transaction);
+
+        List<Account> accounts = new ArrayList<>();
+        accounts.add(account1);
+        accounts.add(account2);
+
+        mAccountsDbAdapter.bulkAddAccounts(accounts);
+
+        SplitsDbAdapter splitsDbAdapter = SplitsDbAdapter.getInstance();
+        assertThat(splitsDbAdapter.getSplitsForTransactionInAccount(transaction.getUID(), account1.getUID())).hasSize(1);
+        assertThat(splitsDbAdapter.getSplitsForTransactionInAccount(transaction.getUID(), account2.getUID())).hasSize(1);
+
+        assertThat(mAccountsDbAdapter.getAccount(account1.getUID()).getTransactions()).hasSize(1);
+    }
 
     @Test
     public void shouldAddAccountsToDatabase(){
