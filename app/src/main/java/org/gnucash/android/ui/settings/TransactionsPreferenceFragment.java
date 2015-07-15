@@ -41,7 +41,7 @@ public class TransactionsPreferenceFragment extends PreferenceFragment implement
 		super.onCreate(savedInstanceState);
 		
 		addPreferencesFromResource(R.xml.fragment_transaction_preferences);
-		ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+		ActionBar actionBar = ((AppCompatPreferenceActivity) getActivity()).getSupportActionBar();
 		actionBar.setHomeButtonEnabled(true);
 		actionBar.setDisplayHomeAsUpEnabled(true);
 		actionBar.setTitle(R.string.title_transaction_preferences);		

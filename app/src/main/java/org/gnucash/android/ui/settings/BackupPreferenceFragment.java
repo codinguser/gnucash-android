@@ -43,7 +43,7 @@ public class BackupPreferenceFragment extends PreferenceFragment implements OnPr
 		super.onCreate(savedInstanceState);
 		
 		addPreferencesFromResource(R.xml.fragment_backup_preferences);
-		ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+		ActionBar actionBar = ((AppCompatPreferenceActivity) getActivity()).getSupportActionBar();
 		actionBar.setHomeButtonEnabled(true);
 		actionBar.setDisplayHomeAsUpEnabled(true);
 		actionBar.setTitle(R.string.title_backup_prefs);

@@ -39,7 +39,7 @@ public class AboutPreferenceFragment extends PreferenceFragment{
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		addPreferencesFromResource(R.xml.fragment_about_preferences);
-		ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+		ActionBar actionBar = ((AppCompatPreferenceActivity) getActivity()).getSupportActionBar();
 		actionBar.setHomeButtonEnabled(true);
 		actionBar.setDisplayHomeAsUpEnabled(true);
 		actionBar.setTitle(R.string.title_about_gnucash);
