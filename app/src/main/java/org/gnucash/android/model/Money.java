@@ -92,14 +92,18 @@ public final class Money implements Comparable<Money>{
      * A zero instance with the currency of the default locale.
      * This can be used anywhere where a starting amount is required without having to create a new object
      */
-    private static final Money sDefaultZero = Money.createZeroInstance(GnuCashApplication.getDefaultCurrencyCode());
+    private static Money sDefaultZero;
 
     /**
      * Returns a Money instance initialized to the local currency and value 0
      * @return Money instance of value 0 in locale currency
      */
     public static Money getZeroInstance(){
-        return sDefaultZero;
+		if (sDefaultZero == null) {
+			String currencyCode = Currency.getInstance(GnuCashApplication.getDefaultLocale()).getCurrencyCode();
+			sDefaultZero = new Money(BigDecimal.ZERO, Currency.getInstance(currencyCode));
+		}
+		return sDefaultZero;
     }
 
 	/**
@@ -180,7 +184,7 @@ public final class Money implements Comparable<Money>{
 	 */
 	private void init() {
 		mCurrency = Currency.getInstance(Money.DEFAULT_CURRENCY_CODE);
-		mAmount = new BigDecimal(0).setScale(DEFAULT_DECIMAL_PLACES, DEFAULT_ROUNDING_MODE);
+		mAmount = BigDecimal.ZERO.setScale(DEFAULT_DECIMAL_PLACES, DEFAULT_ROUNDING_MODE);
 	}
 
 	/**

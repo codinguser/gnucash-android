@@ -30,6 +30,7 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -701,8 +702,9 @@ public class AccountFormFragment extends SherlockFragment {
      * Reads the fields from the account form and saves as a new account
      */
 	private void saveAccount() {
+        Log.i("AccountFormFragment", "Saving account");
         // accounts to update, in case we're updating full names of a sub account tree
-        ArrayList<Account> accountsToUpdate = new ArrayList<Account>();
+        ArrayList<Account> accountsToUpdate = new ArrayList<>();
         boolean nameChanged = false;
 		if (mAccount == null){
 			String name = getEnteredName();

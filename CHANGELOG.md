@@ -1,5 +1,9 @@
 Change Log
 ===============================================================================
+Version 1.6.2 *(2015-07-16)*
+----------------------------
+* Fixed: Editing accounts causing the account's transactions to be deleted
+
 Version 1.6.1 *(2015-07-08)*
 ----------------------------
 * Fixed: Crash when importing some scheduled transations with custom period strings
