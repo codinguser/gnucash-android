@@ -453,7 +453,7 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
     public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
         if (view.isShown()) {
             mChartDate = new LocalDateTime(year, monthOfYear + 1, dayOfMonth, 0, 0);
-            mDataForCurrentMonth = false;
+            mDataForCurrentMonth = true;
             setData();
         }
     }
