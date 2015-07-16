@@ -267,26 +267,7 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
         dataSet.setDrawValues(false);
         return new PieData(Collections.singletonList(""), dataSet);
     }
-
-    /**
-     * Returns a map with a currency code as key and corresponding accounts list
-     * as value from a specified list of accounts
-     * @param accountList a list of accounts
-     * @return a map with a currency code as key and corresponding accounts list as value
-     */
-    private Map<String, List<Account>> getCurrencyCodeToAccountMap(List<Account> accountList) {
-        Map<String, List<Account>> currencyAccountMap = new HashMap<>();
-        for (Currency currency : mAccountsDbAdapter.getCurrencies()) {
-            currencyAccountMap.put(currency.getCurrencyCode(), new ArrayList<Account>());
-        }
-
-        for (Account account : accountList) {
-            currencyAccountMap.get(account.getCurrency().getCurrencyCode()).add(account);
-        }
-        return currencyAccountMap;
-    }
-
-
+    
     /**
      * Sets the image button to the given state and grays-out the icon
      *
@@ -416,6 +397,10 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
         return true;
     }
 
+    /**
+     * Groups smaller slices. All smaller slices will be combined and displayed as a single "Other".
+     * @return a {@code PieData} instance with combined smaller slices
+     */
     private PieData groupSmallerSlices() {
         float otherSlice = 0f;
         List<Entry> newEntries = new ArrayList<>();
