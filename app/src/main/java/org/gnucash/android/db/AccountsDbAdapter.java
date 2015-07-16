@@ -148,6 +148,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
      * @return number of rows inserted
      */
     public long bulkAddAccounts(List<Account> accountList){
+        List<Transaction> transactionList = new ArrayList<>(accountList.size()*2);
         long nRow = 0;
         try {
             mDb.beginTransaction();
@@ -187,11 +188,16 @@ public class AccountsDbAdapter extends DatabaseAdapter {
                 //Log.d(LOG_TAG, "Replacing account in db");
                 replaceStatement.execute();
                 nRow ++;
+                transactionList.addAll(account.getTransactions());
             }
             mDb.setTransactionSuccessful();
         }
         finally {
             mDb.endTransaction();
+        }
+
+        if (nRow > 0 && !transactionList.isEmpty()){
+            mTransactionsAdapter.bulkAddTransactions(transactionList);
         }
         return nRow;
     }

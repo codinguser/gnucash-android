@@ -37,6 +37,8 @@ import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.model.Account;
 import org.gnucash.android.model.AccountType;
 import org.gnucash.android.model.Money;
+import org.gnucash.android.model.Split;
+import org.gnucash.android.model.Transaction;
 import org.gnucash.android.receivers.AccountCreator;
 import org.gnucash.android.ui.account.AccountsActivity;
 import org.gnucash.android.ui.account.AccountsListFragment;
@@ -45,6 +47,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.math.BigDecimal;
 import java.util.Currency;
 import java.util.List;
 
@@ -71,6 +74,7 @@ import static org.hamcrest.Matchers.not;
 @RunWith(AndroidJUnit4.class)
 public class AccountsActivityTest extends ActivityInstrumentationTestCase2<AccountsActivity> {
 	private static final String DUMMY_ACCOUNT_CURRENCY_CODE = "USD";
+    private static final Currency DUMMY_ACCOUNT_CURRENCY = Currency.getInstance(DUMMY_ACCOUNT_CURRENCY_CODE);
 	private static final String DUMMY_ACCOUNT_NAME = "Dummy account";
     public static final String  DUMMY_ACCOUNT_UID   = "dummy-account";
     private DatabaseHelper mDbHelper;
@@ -226,7 +230,7 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
      */
     @Test
     public void shouldHideParentAccountViewWhenNoParentsExist(){
-        onView(withText(DUMMY_ACCOUNT_NAME)).perform(click());
+        onView(allOf(withText(DUMMY_ACCOUNT_NAME), isDisplayed())).perform(click());
         onView(withId(R.id.fragment_transaction_list)).perform(swipeRight());
         onView(withText(R.string.label_create_account)).check(matches(isDisplayed())).perform(click());
         sleep(1000);
@@ -263,6 +267,31 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
         assertThat(latest.getName()).isEqualTo(editedAccountName);
         assertThat(latest.getCurrency().getCurrencyCode()).isEqualTo(DUMMY_ACCOUNT_CURRENCY_CODE);
 	}
+
+    @Test
+    public void editingAccountShouldNotDeleteTransactions(){
+        onView(allOf(withText(DUMMY_ACCOUNT_NAME), isDisplayed()))
+                .perform(longClick());
+        Account account = new Account("Transfer Account");
+
+        Transaction transaction = new Transaction("Simple trxn");
+        Split split = new Split(new Money(BigDecimal.TEN, DUMMY_ACCOUNT_CURRENCY), account.getUID());
+        transaction.addSplit(split);
+        transaction.addSplit(split.createPair(DUMMY_ACCOUNT_UID));
+        account.addTransaction(transaction);
+        mAccountsDbAdapter.addAccount(account);
+
+        assertThat(mAccountsDbAdapter.getAccount(DUMMY_ACCOUNT_UID).getTransactionCount()).isEqualTo(1);
+        assertThat(mSplitsDbAdapter.getSplitsForTransaction(transaction.getUID())).hasSize(2);
+
+        onView(withId(R.id.context_menu_edit_accounts)).perform(click());
+
+        onView(withId(R.id.menu_save)).perform(click());
+        assertThat(mAccountsDbAdapter.getAccount(DUMMY_ACCOUNT_UID).getTransactionCount()).isEqualTo(1);
+        assertThat(mSplitsDbAdapter.fetchSplitsForAccount(DUMMY_ACCOUNT_UID).getCount()).isEqualTo(1);
+        assertThat(mSplitsDbAdapter.getSplitsForTransaction(transaction.getUID())).hasSize(2);
+
+    }
 
     /**
      * Sleep the thread for a specified period
