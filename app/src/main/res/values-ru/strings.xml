@@ -17,7 +17,7 @@
 -->
 
 <resources>
-    <string name="title_add_account">Создать счёт</string>
+    <string name="label_create_account">Создать счёт</string>
     <string name="title_edit_account">Редактировать счёт</string>
     <string name="info_details">Информация</string>
     <string name="menu_export">Экспортировать OFX</string>

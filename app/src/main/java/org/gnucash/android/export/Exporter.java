@@ -118,6 +118,9 @@ public abstract class Exporter {
     public static long getExportTime(String filename){
         String[] tokens = filename.split("_");
         long timeMillis = 0;
+        if (tokens.length < 2){
+            return timeMillis;
+        }
         try {
             Date date = EXPORT_FILENAME_DATE_FORMAT.parse(tokens[0] + "_" + tokens[1]);
             timeMillis = date.getTime();

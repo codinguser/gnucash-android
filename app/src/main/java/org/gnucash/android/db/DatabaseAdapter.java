@@ -19,6 +19,7 @@ package org.gnucash.android.db;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteStatement;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
@@ -42,7 +43,7 @@ public abstract class DatabaseAdapter {
 	/**
 	 * Tag for logging
 	 */
-	protected static String LOG_TAG = "DatabaseAdapter";
+	protected String LOG_TAG = "DatabaseAdapter";
 
 	/**
 	 * SQLite database
@@ -285,6 +286,7 @@ public abstract class DatabaseAdapter {
      * Returns the string unique ID (GUID) of a record in the database
      * @param id long database record ID
      * @return GUID of the record
+     * @throws IllegalArgumentException if the record ID does not exist in the database
      */
     public String getUID(long id){
         Cursor cursor = mDb.query(mTableName,
@@ -444,6 +446,16 @@ public abstract class DatabaseAdapter {
         } finally {
             cursor.close();
         }
+    }
+
+    /**
+     * Returns the number of records in the database table backed by this adapter
+     * @return Total number of records in the database
+     */
+    public long getRecordsCount(){
+        String sql = "SELECT COUNT(*) FROM " + mTableName;
+        SQLiteStatement statement = mDb.compileStatement(sql);
+        return statement.simpleQueryForLong();
     }
 
     /**

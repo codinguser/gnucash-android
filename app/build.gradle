@@ -5,8 +5,8 @@ apply plugin: 'crashlytics'
 
 def versionMajor = 1
 def versionMinor = 6
-def versionPatch = 0
-def versionBuild = 4
+def versionPatch = 2
+def versionBuild = 0
 
 def buildTime() {
     def df = new SimpleDateFormat("yyyyMMdd")
@@ -21,7 +21,7 @@ def gitSha() {
 
 android {
     compileSdkVersion 19
-    buildToolsVersion "22.0.1"
+    buildToolsVersion "21.1.2" //maintain this version until we migrate to ActionBarCompat
     defaultConfig {
         applicationId "org.gnucash.android"
         testApplicationId 'org.gnucash.android.test'
@@ -100,13 +100,13 @@ android {
             applicationId 'org.gnucash.android.devel'
             testApplicationId 'org.gnucash.android.devel.test'
             resValue "string", "app_name", "GnuCash-devel"
-            versionName "${versionMajor}.${versionMinor}.${versionPatch}-dev${versionBuild}_${buildTime()}"
+            versionName "${versionMajor}.${versionMinor}.${versionPatch}-dev${versionBuild}_r${gitSha()}"
             resValue "string", "app_version_name", "${versionName}"
         }
 
         beta {
             resValue "string", "app_name", "GnuCash - beta"
-            versionName "${versionMajor}.${versionMinor}.${versionPatch}-beta${versionBuild}_r${gitSha()}"
+            versionName "${versionMajor}.${versionMinor}.${versionPatch}-beta${versionBuild}"
             resValue "string", "app_version_name", "${versionName}"
             buildConfigField "boolean", "USE_CRASHLYTICS", "true"
         }
@@ -154,7 +154,7 @@ dependencies {
     compile('com.android.support:support-v4:22.1.1',
             'com.actionbarsherlock:actionbarsherlock:4.4.0@aar',
             'com.viewpagerindicator:library:2.4.1@aar',
-            'com.doomonafireball.betterpickers:library:1.5.2',
+            'com.doomonafireball.betterpickers:library:1.6.0',
             'com.commonsware.cwac:merge:1.1.+',
             'com.github.PhilJay:MPAndroidChart:v2.1.0',
             'joda-time:joda-time:2.7',

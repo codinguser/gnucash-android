@@ -17,7 +17,7 @@
 -->
 
 <resources xmlns:tools="http://schemas.android.com/tools" tools:locale="fr">
-    <string name="title_add_account">Cr&#233;er un compte</string>
+    <string name="label_create_account">Cr&#233;er un compte</string>
     <string name="title_edit_account">Éditer le compte</string>
     <string name="info_details">Informations</string>
     <string name="menu_export">Exporter en OFX</string>
@@ -491,7 +491,7 @@ Aucune information permettant d\'identifier l\'utilisateur ne sera recueillis da
     <string name="header_report_settings">Rapports</string>
     <string name="label_report_currency">Sélectionnez la monnaie</string>
     <string name="title_use_account_color">Couleur du compte dans les rapports</string>
-    <string name="summary_use_account_color">utiliser la couleur du compte dans le diagramme circulaire</string>
+    <string name="summary_use_account_color">utiliser la couleur du compte dans le diagramme bandes/circulaire</string>
     <string name="label_confirm_passcode">Veuillez confirmer vorte code</string>
     <string name="label_new_passcode">Entrez votre nouveau code</string>
     <string name="label_old_passcode">Entrez votre ancien mot de passe</string>

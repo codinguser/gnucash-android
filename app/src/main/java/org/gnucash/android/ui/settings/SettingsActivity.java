@@ -538,7 +538,10 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
         final DateFormat dateFormatter = SimpleDateFormat.getDateTimeInstance();
         for (File backupFile : sortedBackupFiles) {
             long time = Exporter.getExportTime(backupFile.getName());
-            arrayAdapter.add(dateFormatter.format(new Date(time)));
+            if (time > 0)
+                arrayAdapter.add(dateFormatter.format(new Date(time)));
+            else //if no timestamp was found in the filename, just use the name
+                arrayAdapter.add(backupFile.getName());
         }
 
         AlertDialog.Builder restoreDialogBuilder =  new AlertDialog.Builder(this);
@@ -573,12 +576,14 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
             case AccountsActivity.REQUEST_PICK_ACCOUNTS_FILE:
-                try {
-                    InputStream accountInputStream = getContentResolver().openInputStream(data.getData());
-                    new ImportAsyncTask(this).execute(accountInputStream);
-                } catch (FileNotFoundException e) {
-                    Crashlytics.logException(e);
-                    Toast.makeText(this, R.string.toast_error_importing_accounts, Toast.LENGTH_SHORT).show();
+                if (resultCode == Activity.RESULT_OK && data != null) {
+                    try {
+                        InputStream accountInputStream = getContentResolver().openInputStream(data.getData());
+                        new ImportAsyncTask(this).execute(accountInputStream);
+                    } catch (FileNotFoundException e) {
+                        Crashlytics.logException(e);
+                        Toast.makeText(this, R.string.toast_error_importing_accounts, Toast.LENGTH_SHORT).show();
+                    }
                 }
                 break;
             case PasscodePreferenceFragment.PASSCODE_REQUEST_CODE:

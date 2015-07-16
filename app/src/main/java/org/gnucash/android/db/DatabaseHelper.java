@@ -26,16 +26,15 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.export.Exporter;
-import org.gnucash.android.model.Account;
 import org.gnucash.android.model.AccountType;
 import org.gnucash.android.model.Money;
-import org.gnucash.android.model.ScheduledAction;
-import org.gnucash.android.model.Split;
 import org.gnucash.android.model.Transaction;
 
 import java.io.File;
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 
 import static org.gnucash.android.db.DatabaseSchema.AccountEntry;
@@ -439,36 +438,84 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
             //================================ END TABLE MIGRATIONS ================================
 
+            // String timestamp to be used for all new created entities in migration
+            String timestamp = (new Timestamp(System.currentTimeMillis())).toString();
 
-
-            ScheduledActionDbAdapter scheduledActionDbAdapter = new ScheduledActionDbAdapter(db);
-            SplitsDbAdapter splitsDbAdapter = new SplitsDbAdapter(db);
-            TransactionsDbAdapter transactionsDbAdapter = new TransactionsDbAdapter(db, splitsDbAdapter);
-            AccountsDbAdapter accountsDbAdapter = new AccountsDbAdapter(db,transactionsDbAdapter);
+            //ScheduledActionDbAdapter scheduledActionDbAdapter = new ScheduledActionDbAdapter(db);
+            //SplitsDbAdapter splitsDbAdapter = new SplitsDbAdapter(db);
+            //TransactionsDbAdapter transactionsDbAdapter = new TransactionsDbAdapter(db, splitsDbAdapter);
+            //AccountsDbAdapter accountsDbAdapter = new AccountsDbAdapter(db,transactionsDbAdapter);
 
             Log.i(LOG_TAG, "Creating default root account if none exists");
             ContentValues contentValues = new ContentValues();
-            //assign a root account to all accounts which had null as parent (top-level accounts)
-            String rootAccountUID = accountsDbAdapter.getOrCreateGnuCashRootAccountUID();
+            //assign a root account to all accounts which had null as parent except ROOT (top-level accounts)
+            String rootAccountUID;
+            Cursor cursor = db.query(AccountEntry.TABLE_NAME,
+                    new String[]{AccountEntry.COLUMN_UID},
+                    AccountEntry.COLUMN_TYPE + "= ?",
+                    new String[]{AccountType.ROOT.name()}, null, null, null);
+            try {
+                if (cursor.moveToFirst()) {
+                    rootAccountUID = cursor.getString(cursor.getColumnIndexOrThrow(AccountEntry.COLUMN_UID));
+                }
+                else
+                {
+                    rootAccountUID = MigrationHelper.generateUUID();
+                    contentValues.clear();
+                    contentValues.put(DatabaseSchema.CommonColumns.COLUMN_UID, rootAccountUID);
+                    contentValues.put(DatabaseSchema.CommonColumns.COLUMN_CREATED_AT, timestamp);
+                    contentValues.put(AccountEntry.COLUMN_NAME,         "ROOT");
+                    contentValues.put(AccountEntry.COLUMN_TYPE,         "ROOT");
+                    contentValues.put(AccountEntry.COLUMN_CURRENCY,     Money.DEFAULT_CURRENCY_CODE);
+                    contentValues.put(AccountEntry.COLUMN_PLACEHOLDER,  0);
+                    contentValues.put(AccountEntry.COLUMN_HIDDEN,       1);
+                    contentValues.putNull(AccountEntry.COLUMN_COLOR_CODE);
+                    contentValues.put(AccountEntry.COLUMN_FAVORITE, 0);
+                    contentValues.put(AccountEntry.COLUMN_FULL_NAME,    " ");
+                    contentValues.putNull(AccountEntry.COLUMN_PARENT_ACCOUNT_UID);
+                    contentValues.putNull(AccountEntry.COLUMN_DEFAULT_TRANSFER_ACCOUNT_UID);
+                    db.insert(AccountEntry.TABLE_NAME, null, contentValues);
+                }
+            } finally {
+                cursor.close();
+            }
+            //String rootAccountUID = accountsDbAdapter.getOrCreateGnuCashRootAccountUID();
+            contentValues.clear();
             contentValues.put(AccountEntry.COLUMN_PARENT_ACCOUNT_UID, rootAccountUID);
-            db.update(AccountEntry.TABLE_NAME, contentValues, AccountEntry.COLUMN_PARENT_ACCOUNT_UID + " IS NULL", null);
+            db.update(AccountEntry.TABLE_NAME, contentValues, AccountEntry.COLUMN_PARENT_ACCOUNT_UID + " IS NULL AND " + AccountEntry.COLUMN_TYPE + " != ?", new String[]{"ROOT"});
 
             Log.i(LOG_TAG, "Migrating existing recurring transactions");
-            Cursor cursor = db.query(TransactionEntry.TABLE_NAME + "_bak", null, "recurrence_period > 0", null, null, null, null);
+            cursor = db.query(TransactionEntry.TABLE_NAME + "_bak", null, "recurrence_period > 0", null, null, null, null);
+            long lastRun = System.currentTimeMillis();
             while (cursor.moveToNext()){
                 contentValues.clear();
-                Timestamp timestamp = new Timestamp(cursor.getLong(cursor.getColumnIndexOrThrow(TransactionEntry.COLUMN_TIMESTAMP)));
-                contentValues.put(TransactionEntry.COLUMN_CREATED_AT, timestamp.toString());
+                Timestamp timestampT = new Timestamp(cursor.getLong(cursor.getColumnIndexOrThrow(TransactionEntry.COLUMN_TIMESTAMP)));
+                contentValues.put(TransactionEntry.COLUMN_CREATED_AT, timestampT.toString());
                 long transactionId = cursor.getLong(cursor.getColumnIndexOrThrow(TransactionEntry._ID));
                 db.update(TransactionEntry.TABLE_NAME, contentValues, TransactionEntry._ID + "=" + transactionId, null);
 
-                ScheduledAction scheduledAction = new ScheduledAction(ScheduledAction.ActionType.TRANSACTION);
-                scheduledAction.setActionUID(cursor.getString(cursor.getColumnIndexOrThrow(TransactionEntry.COLUMN_UID)));
-                long period = cursor.getLong(cursor.getColumnIndexOrThrow("recurrence_period"));
-                scheduledAction.setPeriod(period);
-                scheduledAction.setStartTime(timestamp.getTime()); //the start time is when the transaction was created
-                scheduledAction.setLastRun(System.currentTimeMillis()); //prevent this from being executed at the end of migration
-                scheduledActionDbAdapter.addScheduledAction(scheduledAction);
+                //ScheduledAction scheduledAction = new ScheduledAction(ScheduledAction.ActionType.TRANSACTION);
+                //scheduledAction.setActionUID(cursor.getString(cursor.getColumnIndexOrThrow(TransactionEntry.COLUMN_UID)));
+                //long period = cursor.getLong(cursor.getColumnIndexOrThrow("recurrence_period"));
+                //scheduledAction.setPeriod(period);
+                //scheduledAction.setStartTime(timestampT.getTime()); //the start time is when the transaction was created
+                //scheduledAction.setLastRun(System.currentTimeMillis()); //prevent this from being executed at the end of migration
+
+                contentValues.clear();
+                contentValues.put(DatabaseSchema.CommonColumns.COLUMN_UID, MigrationHelper.generateUUID());
+                contentValues.put(DatabaseSchema.CommonColumns.COLUMN_CREATED_AT, timestamp);
+                contentValues.put(ScheduledActionEntry.COLUMN_ACTION_UID, cursor.getString(cursor.getColumnIndexOrThrow(TransactionEntry.COLUMN_UID)));
+                contentValues.put(ScheduledActionEntry.COLUMN_PERIOD,    cursor.getLong(cursor.getColumnIndexOrThrow("recurrence_period")));
+                contentValues.put(ScheduledActionEntry.COLUMN_START_TIME, timestampT.getTime());
+                contentValues.put(ScheduledActionEntry.COLUMN_END_TIME, 0);
+                contentValues.put(ScheduledActionEntry.COLUMN_LAST_RUN, lastRun);
+                contentValues.put(ScheduledActionEntry.COLUMN_TYPE, "TRANSACTION");
+                contentValues.put(ScheduledActionEntry.COLUMN_TAG, "");
+                contentValues.put(ScheduledActionEntry.COLUMN_ENABLED, 1);
+                contentValues.put(ScheduledActionEntry.COLUMN_TOTAL_FREQUENCY, 0);
+                contentValues.put(ScheduledActionEntry.COLUMN_EXECUTION_COUNT, 0);
+                //scheduledActionDbAdapter.addScheduledAction(scheduledAction);
+                db.insert(ScheduledActionEntry.TABLE_NAME, null, contentValues);
 
                 //build intent for recurring transactions in the database
                 Intent intent = new Intent(Intent.ACTION_INSERT);
@@ -485,20 +532,95 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
             //auto-balance existing splits
             Log.i(LOG_TAG, "Auto-balancing existing transaction splits");
-            cursor = transactionsDbAdapter.fetchAllRecords();
-            while (cursor.moveToNext()){
-                Transaction transaction = transactionsDbAdapter.buildTransactionInstance(cursor);
-                if (transaction.isTemplate())
-                    continue;
-                Money imbalance = transaction.getImbalance();
-                if (!imbalance.isAmountZero()){
-                    Split split = new Split(imbalance.negate(),
-                            accountsDbAdapter.getOrCreateImbalanceAccountUID(imbalance.getCurrency()));
-                    split.setTransactionUID(transaction.getUID());
-                    splitsDbAdapter.addSplit(split);
+//            cursor = transactionsDbAdapter.fetchAllRecords();
+//            while (cursor.moveToNext()){
+//                Transaction transaction = transactionsDbAdapter.buildTransactionInstance(cursor);
+//                if (transaction.isTemplate())
+//                    continue;
+//                Money imbalance = transaction.getImbalance();
+//                if (!imbalance.isAmountZero()){
+//                    Split split = new Split(imbalance.negate(),
+//                            accountsDbAdapter.getOrCreateImbalanceAccountUID(imbalance.getCurrency()));
+//                    split.setTransactionUID(transaction.getUID());
+//                    splitsDbAdapter.addSplit(split);
+//                }
+//            }
+//            cursor.close();
+            cursor = db.query(
+                    TransactionEntry.TABLE_NAME + " , " + SplitEntry.TABLE_NAME + " ON "
+                            + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_UID + "=" + SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_TRANSACTION_UID
+                            + " , " + AccountEntry.TABLE_NAME + " ON "
+                            + SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_ACCOUNT_UID + "=" + AccountEntry.TABLE_NAME + "." + AccountEntry.COLUMN_UID,
+                    new String[]{
+                            TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_UID + " AS trans_uid",
+                            TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_CURRENCY + " AS trans_currency",
+                            "TOTAL ( CASE WHEN " +
+                                    SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_TYPE + " = 'DEBIT' THEN " +
+                                    SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_AMOUNT + " ELSE - " +
+                                    SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_AMOUNT + " END ) AS trans_acct_balance",
+                            "COUNT ( DISTINCT " +
+                                    AccountEntry.TABLE_NAME + "." + AccountEntry.COLUMN_CURRENCY +
+                                    " ) AS trans_currency_count"
+                    },
+                    TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_TEMPLATE + " == 0",
+                    null,
+                    TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_UID,
+                    "trans_acct_balance != 0 AND trans_currency_count = 1",
+                    null);
+            try {
+                while (cursor.moveToNext()){
+                    double imbalance = cursor.getDouble(cursor.getColumnIndexOrThrow("trans_acct_balance"));
+                    BigDecimal decimalImbalance = BigDecimal.valueOf(imbalance).setScale(2, BigDecimal.ROUND_HALF_UP);
+                    if (decimalImbalance.compareTo(BigDecimal.ZERO) != 0) {
+                        String currencyCode = cursor.getString(cursor.getColumnIndexOrThrow("trans_currency"));
+                        String imbalanceAccountName = GnuCashApplication.getAppContext().getString(R.string.imbalance_account_name) + "-" + currencyCode;
+                        String imbalanceAccountUID;
+                        Cursor c = db.query(AccountEntry.TABLE_NAME, new String[]{AccountEntry.COLUMN_UID},
+                                AccountEntry.COLUMN_FULL_NAME + "= ?", new String[]{imbalanceAccountName},
+                                null, null, null);
+                        try {
+                            if (c.moveToFirst()) {
+                                imbalanceAccountUID = c.getString(c.getColumnIndexOrThrow(AccountEntry.COLUMN_UID));
+                            }
+                            else {
+                                imbalanceAccountUID = MigrationHelper.generateUUID();
+                                contentValues.clear();
+                                contentValues.put(DatabaseSchema.CommonColumns.COLUMN_UID, imbalanceAccountUID);
+                                contentValues.put(DatabaseSchema.CommonColumns.COLUMN_CREATED_AT, timestamp);
+                                contentValues.put(AccountEntry.COLUMN_NAME,         imbalanceAccountName);
+                                contentValues.put(AccountEntry.COLUMN_TYPE,         "BANK");
+                                contentValues.put(AccountEntry.COLUMN_CURRENCY,     currencyCode);
+                                contentValues.put(AccountEntry.COLUMN_PLACEHOLDER,  0);
+                                contentValues.put(AccountEntry.COLUMN_HIDDEN,       GnuCashApplication.isDoubleEntryEnabled() ? 0 : 1);
+                                contentValues.putNull(AccountEntry.COLUMN_COLOR_CODE);
+                                contentValues.put(AccountEntry.COLUMN_FAVORITE, 0);
+                                contentValues.put(AccountEntry.COLUMN_FULL_NAME,    imbalanceAccountName);
+                                contentValues.put(AccountEntry.COLUMN_PARENT_ACCOUNT_UID, rootAccountUID);
+                                contentValues.putNull(AccountEntry.COLUMN_DEFAULT_TRANSFER_ACCOUNT_UID);
+                                db.insert(AccountEntry.TABLE_NAME, null, contentValues);
+                            }
+                        } finally {
+                            c.close();
+                        }
+                        String TransactionUID = cursor.getString(cursor.getColumnIndexOrThrow("trans_uid"));
+                        contentValues.clear();
+                        contentValues.put(DatabaseSchema.CommonColumns.COLUMN_UID, MigrationHelper.generateUUID());
+                        contentValues.put(DatabaseSchema.CommonColumns.COLUMN_CREATED_AT, timestamp);
+                        contentValues.put(SplitEntry.COLUMN_AMOUNT,     decimalImbalance.abs().toPlainString());
+                        contentValues.put(SplitEntry.COLUMN_TYPE,       decimalImbalance.compareTo(BigDecimal.ZERO) < 0 ? "DEBIT" : "CREDIT");
+                        contentValues.put(SplitEntry.COLUMN_MEMO,       "");
+                        contentValues.put(SplitEntry.COLUMN_ACCOUNT_UID, imbalanceAccountUID);
+                        contentValues.put(SplitEntry.COLUMN_TRANSACTION_UID, TransactionUID);
+                        db.insert(SplitEntry.TABLE_NAME, null, contentValues);
+                        contentValues.clear();
+                        contentValues.put(TransactionEntry.COLUMN_MODIFIED_AT, timestamp);
+                        db.update(TransactionEntry.TABLE_NAME, contentValues, TransactionEntry.COLUMN_UID + " == ?",
+                                new String[]{TransactionUID});
+                    }
                 }
+            } finally {
+                cursor.close();
             }
-            cursor.close();
 
             Log.i(LOG_TAG, "Dropping temporary migration tables");
             db.execSQL("DROP TABLE " + SplitEntry.TABLE_NAME + "_bak");

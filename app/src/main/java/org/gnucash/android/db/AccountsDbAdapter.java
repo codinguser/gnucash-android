@@ -148,6 +148,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
      * @return number of rows inserted
      */
     public long bulkAddAccounts(List<Account> accountList){
+        List<Transaction> transactionList = new ArrayList<>(accountList.size()*2);
         long nRow = 0;
         try {
             mDb.beginTransaction();
@@ -187,11 +188,16 @@ public class AccountsDbAdapter extends DatabaseAdapter {
                 //Log.d(LOG_TAG, "Replacing account in db");
                 replaceStatement.execute();
                 nRow ++;
+                transactionList.addAll(account.getTransactions());
             }
             mDb.setTransactionSuccessful();
         }
         finally {
             mDb.endTransaction();
+        }
+
+        if (nRow > 0 && !transactionList.isEmpty()){
+            mTransactionsAdapter.bulkAddTransactions(transactionList);
         }
         return nRow;
     }
@@ -515,7 +521,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 	 * @return List of {@link Account}s in the database
 	 */
     public List<Account> getAllAccounts(){
-		LinkedList<Account> accounts = new LinkedList<Account>();
+		LinkedList<Account> accounts = new LinkedList<>();
 		Cursor c = fetchAllRecords();
         try {
             while (c.moveToNext()) {
@@ -813,7 +819,7 @@ public class AccountsDbAdapter extends DatabaseAdapter {
      * @return the absolute balance of account list
      */
     public Money getAccountsBalance(List<String> accountUIDList, long startTimestamp, long endTimestamp) {
-        String currencyCode = GnuCashApplication.getDefaultCurrency();
+        String currencyCode = GnuCashApplication.getDefaultCurrencyCode();
         Money balance = Money.createZeroInstance(currencyCode);
 
         SplitsDbAdapter splitsDbAdapter = SplitsDbAdapter.getInstance();
@@ -968,21 +974,6 @@ public class AccountsDbAdapter extends DatabaseAdapter {
         int count = cursor.getInt(0);
         cursor.close();
         return count;
-    }
-
-    /**
-     * Returns the number of accounts in the database
-     * @return Number of accounts in the database
-     */
-    public int getTotalAccountCount() {
-        String queryCount = "SELECT COUNT(*) FROM " + AccountEntry.TABLE_NAME;
-        Cursor cursor = mDb.rawQuery(queryCount, null);
-        try {
-            cursor.moveToFirst();
-            return cursor.getInt(0);
-        } finally {
-            cursor.close();
-        }
     }
 
     /**

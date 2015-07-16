@@ -18,7 +18,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
     <item android:id="@+id/menu_add_account"
           android:icon="@drawable/content_new_holo_dark"
-          android:title="@string/title_add_account"
+          android:title="@string/label_create_account"
           android:showAsAction="always"/>
 
     <item android:id="@+id/menu_recurring_transactions"

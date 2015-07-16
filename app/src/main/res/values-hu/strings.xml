@@ -16,7 +16,7 @@
 -->
 
 <resources>
-    <string name="title_add_account">Create Account</string>
+    <string name="label_create_account">Create Account</string>
     <string name="title_edit_account">Edit Account</string>
     <string name="info_details">Info</string>
     <string name="menu_export">Export OFX</string>
@@ -495,7 +495,7 @@ No user-identifiable information will be collected as part of this process!
     <string name="header_report_settings">Reports</string>
     <string name="label_report_currency">Select currency</string>
     <string name="title_use_account_color">Account color in reports</string>
-    <string name="summary_use_account_color">Use account color in the pie chart</string>
+    <string name="summary_use_account_color">Use account color in the bar/pie chart</string>
     <string name="label_confirm_passcode">Please confirm your passcode</string>
     <string name="label_new_passcode">Enter your new passcode</string>
     <string name="label_old_passcode">Enter your old passcode</string>

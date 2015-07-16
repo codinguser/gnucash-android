@@ -181,12 +181,24 @@ public class TransactionsActivityTest extends
 				.perform(typeText("Lunch"));
 
 		onView(withId(R.id.menu_save)).perform(click());
-
+		sleep(500);
 		assertToastDisplayed(R.string.toast_transanction_amount_required);
 
 		int afterCount = mTransactionsDbAdapter.getTransactionsCount(DUMMY_ACCOUNT_UID);
 		assertThat(afterCount).isEqualTo(beforeCount);
 
+	}
+
+	/**
+	 * Sleep the thread for a specified period
+	 * @param millis Duration to sleep in milliseconds
+	 */
+	private void sleep(long millis) {
+		try {
+			Thread.sleep(millis);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -209,7 +221,8 @@ public class TransactionsActivityTest extends
 		formatter.setMinimumFractionDigits(2);
 		formatter.setMaximumFractionDigits(2);
 		onView(withId(R.id.input_transaction_amount)).check(matches(withText(formatter.format(balance.asDouble()))));
-
+		onView(withId(R.id.input_date)).check(matches(withText(TransactionFormFragment.DATE_FORMATTER.format(transaction.getTimeMillis()))));
+		onView(withId(R.id.input_time)).check(matches(withText(TransactionFormFragment.TIME_FORMATTER.format(transaction.getTimeMillis()))));
 		onView(withId(R.id.input_description)).check(matches(withText(transaction.getNote())));
 
 		validateTimeInput(transaction.getTimeMillis());
@@ -531,8 +544,6 @@ public class TransactionsActivityTest extends
 	@After
 	public void tearDown() throws Exception {
 		mTransactionsActivity.finish();
-		Thread.sleep(2000);
-		mAccountsDbAdapter.deleteAllRecords();
 		super.tearDown();
 	}
 }

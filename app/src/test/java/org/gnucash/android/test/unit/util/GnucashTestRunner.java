@@ -2,9 +2,11 @@ package org.gnucash.android.test.unit.util;
 
 import org.junit.runners.model.InitializationError;
 import org.robolectric.RobolectricGradleTestRunner;
+import org.robolectric.annotation.Config;
 import org.robolectric.internal.bytecode.ClassInfo;
 import org.robolectric.internal.bytecode.InstrumentingClassLoaderConfig;
 import org.robolectric.internal.bytecode.ShadowMap;
+import org.robolectric.manifest.AndroidManifest;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -27,6 +29,11 @@ public class GnucashTestRunner extends RobolectricGradleTestRunner {
     protected ShadowMap createShadowMap() {
         return super.createShadowMap()
                 .newBuilder().addShadowClass(ShadowCrashlytics.class).build();
+    }
+
+    @Override
+    protected AndroidManifest getAppManifest(Config config) {
+        return super.getAppManifest(config);
     }
 
     @Override
