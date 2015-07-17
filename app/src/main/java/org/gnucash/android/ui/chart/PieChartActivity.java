@@ -57,10 +57,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Currency;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 /**
  * Activity used for drawing a pie chart
@@ -82,17 +80,21 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
 
     private static final String DATE_PATTERN = "MMMM\nYYYY";
     private static final String TOTAL_VALUE_LABEL_PATTERN = "%s\n%.2f %s";
+    private static final String SELECTED_VALUE_PATTERN = "%s - %.2f (%.2f %%)";
     private static final int ANIMATION_DURATION = 1800;
     private static final int NO_DATA_COLOR = Color.LTGRAY;
+    public static final int CENTER_TEXT_SIZE = 18;
     /**
      * All pie slices less than this threshold will be group in "other" slice. Using percents not absolute values.
      */
-    private static final double GROUPING_SMALLER_SLICE_THRESHOLD = 5;
+    private static final double GROUPING_SMALLER_SLICES_THRESHOLD = 5;
 
     private PieChart mChart;
 
     private LocalDateTime mChartDate = new LocalDateTime();
     private TextView mChartDateTextView;
+
+    private TextView mSelectedValueTextView;
 
     private ImageButton mPreviousMonthButton;
     private ImageButton mNextMonthButton;
@@ -128,6 +130,7 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
         mPreviousMonthButton = (ImageButton) findViewById(R.id.previous_month_chart_button);
         mNextMonthButton = (ImageButton) findViewById(R.id.next_month_chart_button);
         mChartDateTextView = (TextView) findViewById(R.id.chart_date);
+        mSelectedValueTextView = (TextView) findViewById(R.id.selected_chart_slice);
 
         mAccountsDbAdapter = AccountsDbAdapter.getInstance();
         mTransactionsDbAdapter = TransactionsDbAdapter.getInstance();
@@ -136,7 +139,7 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
                 .getString(getString(R.string.key_report_currency), Money.DEFAULT_CURRENCY_CODE);
 
         mChart = (PieChart) findViewById(R.id.pie_chart);
-        mChart.setCenterTextSize(18);
+        mChart.setCenterTextSize(CENTER_TEXT_SIZE);
         mChart.setDescription("");
         mChart.getLegend().setEnabled(false);
         mChart.setOnChartValueSelectedListener(this);
@@ -180,7 +183,7 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
      */
     private void setData() {
         mChartDateTextView.setText(mDataForCurrentMonth ? mChartDate.toString(DATE_PATTERN) : getResources().getString(R.string.label_chart_overall));
-        ((TextView) findViewById(R.id.selected_chart_slice)).setText("");
+        mSelectedValueTextView.setText("");
         mChart.highlightValues(null);
         mChart.clear();
 
@@ -409,7 +412,7 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
         List<Entry> entries = mChart.getData().getDataSet().getYVals();
         for (int i = 0; i < entries.size(); i++) {
             float val = entries.get(i).getVal();
-            if (val / mChart.getYValueSum() * 100 > GROUPING_SMALLER_SLICE_THRESHOLD) {
+            if (val / mChart.getYValueSum() * 100 > GROUPING_SMALLER_SLICES_THRESHOLD) {
                 newEntries.add(new Entry(val, newEntries.size()));
                 newLabels.add(mChart.getData().getXVals().get(i));
                 newColors.add(mChart.getData().getDataSet().getColors().get(i));
@@ -446,13 +449,14 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
     @Override
     public void onValueSelected(Entry e, int dataSetIndex, Highlight h) {
         if (e == null) return;
-        ((TextView) findViewById(R.id.selected_chart_slice))
-                .setText(mChart.getData().getXVals().get(e.getXIndex()) + " - " + e.getVal()
-                        + " (" + String.format("%.2f", (e.getVal() / mChart.getYValueSum()) * 100) + " %)");
+        String label = mChart.getData().getXVals().get(e.getXIndex());
+        float value = e.getVal();
+        float percent = value / mChart.getYValueSum() * 100;
+        mSelectedValueTextView.setText(String.format(SELECTED_VALUE_PATTERN, label, value, percent));
     }
 
     @Override
     public void onNothingSelected() {
-        ((TextView) findViewById(R.id.selected_chart_slice)).setText("");
+        mSelectedValueTextView.setText("");
     }
 }
