@@ -19,19 +19,15 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.commonsware.cwac.merge.MergeAdapter;
 import com.crashlytics.android.Crashlytics;
 
 import org.gnucash.android.R;
@@ -44,7 +40,6 @@ import org.gnucash.android.ui.transaction.ScheduledActionsActivity;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
-import java.util.ArrayList;
 
 
 /**
@@ -54,16 +49,19 @@ import java.util.ArrayList;
  */
 public class BaseDrawerActivity extends AppCompatActivity {
     protected DrawerLayout  mDrawerLayout;
-    protected ListView      mDrawerList;
+    protected NavigationView mNavigationView;
 
     protected CharSequence  mTitle;
     private ActionBarDrawerToggle mDrawerToggle;
 
-    private class DrawerItemClickListener implements ListView.OnItemClickListener {
+    private class DrawerItemClickListener implements NavigationView.OnNavigationItemSelectedListener {
+
         @Override
-        public void onItemClick(AdapterView parent, View view, int position, long id) {
-            selectItem(position);
+        public boolean onNavigationItemSelected(MenuItem menuItem) {
+            selectItem(menuItem.getItemId());
+            return true;
         }
+
     }
 
     @Override
@@ -80,13 +78,16 @@ public class BaseDrawerActivity extends AppCompatActivity {
      *
      */
     protected void setUpDrawer() {
+        final ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null){
+            actionBar.setHomeButtonEnabled(true);
+            actionBar.setDisplayHomeAsUpEnabled(true);
+
+        }
         mDrawerLayout   = (DrawerLayout) findViewById(R.id.drawer_layout);
-        mDrawerList     = (ListView) findViewById(R.id.left_drawer);
+        mNavigationView = (NavigationView) findViewById(R.id.nav_view);
 
-        MergeAdapter mergeAdapter = createNavDrawerMergeAdapter();
-
-        mDrawerList.setAdapter(mergeAdapter);
-        mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
+        mNavigationView.setNavigationItemSelectedListener(new DrawerItemClickListener());
 
         mDrawerToggle = new ActionBarDrawerToggle(
                 this,                  /* host Activity */
@@ -108,60 +109,7 @@ public class BaseDrawerActivity extends AppCompatActivity {
         };
 
         mDrawerLayout.setDrawerListener(mDrawerToggle);
-        getSupportActionBar().setHomeButtonEnabled(true);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
-
-    private MergeAdapter createNavDrawerMergeAdapter() {
-        //TODO: Localize nav drawer entries when features are finalized
-        ArrayList<String> accountNavOptions = new ArrayList<>();
-        accountNavOptions.add(getString(R.string.nav_menu_open));
-        accountNavOptions.add(getString(R.string.nav_menu_favorites));
-        accountNavOptions.add(getString(R.string.nav_menu_reports));
-
-        ArrayAdapter<String> accountsNavAdapter = new ArrayAdapter<>(this,
-                R.layout.drawer_list_item, accountNavOptions);
-
-        int titleColorGreen = getResources().getColor(R.color.title_green);
-
-        ArrayList<String> transactionsNavOptions = new ArrayList<>();
-        transactionsNavOptions.add(getString(R.string.nav_menu_scheduled_transactions));
-        transactionsNavOptions.add(getString(R.string.nav_menu_export));
-
-        ArrayAdapter<String> transactionsNavAdapter = new ArrayAdapter<>(this,
-                R.layout.drawer_list_item, transactionsNavOptions);
-
-        LayoutInflater inflater = getLayoutInflater();
-        TextView accountHeader = (TextView) inflater.inflate(R.layout.drawer_section_header, mDrawerList, false);
-        accountHeader.setText(R.string.title_accounts);
-        accountHeader.setTextColor(titleColorGreen);
-
-        TextView transactionHeader = (TextView) inflater.inflate(R.layout.drawer_section_header, mDrawerList, false);
-        transactionHeader.setText(R.string.title_transactions);
-        transactionHeader.setTextColor(titleColorGreen);
-        MergeAdapter mergeAdapter = new MergeAdapter();
-        mergeAdapter.addView(accountHeader);
-        mergeAdapter.addAdapter(accountsNavAdapter);
-        mergeAdapter.addView(transactionHeader);
-        mergeAdapter.addAdapter(transactionsNavAdapter);
-
-        mergeAdapter.addView(inflater.inflate(R.layout.horizontal_line, mDrawerList, false));
-        TextView settingsHeader = (TextView) inflater.inflate(R.layout.drawer_section_header, mDrawerList, false);
-        settingsHeader.setText(R.string.title_settings);
-        settingsHeader.setTextColor(titleColorGreen);
-
-        ArrayList<String> aboutNavOptions = new ArrayList<>();
-        aboutNavOptions.add(getString(R.string.nav_menu_scheduled_backups));
-        aboutNavOptions.add(getString(R.string.nav_menu_settings));
-        //TODO: add help view
-        ArrayAdapter<String> aboutNavAdapter = new ArrayAdapter<>(this,
-                R.layout.drawer_list_item, aboutNavOptions);
-
-        mergeAdapter.addView(settingsHeader);
-        mergeAdapter.addAdapter(aboutNavAdapter);
-        return mergeAdapter;
-    }
-
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
@@ -176,10 +124,10 @@ public class BaseDrawerActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (!mDrawerLayout.isDrawerOpen(mDrawerList))
-            mDrawerLayout.openDrawer(mDrawerList);
+        if (!mDrawerLayout.isDrawerOpen(mNavigationView))
+            mDrawerLayout.openDrawer(mNavigationView);
         else
-            mDrawerLayout.closeDrawer(mDrawerList);
+            mDrawerLayout.closeDrawer(mNavigationView);
 
         return super.onOptionsItemSelected(item);
     }
@@ -187,9 +135,9 @@ public class BaseDrawerActivity extends AppCompatActivity {
     /**
      * Handler for the navigation drawer items
      * */
-    protected void selectItem(int position) {
-        switch (position){
-            case 1: { //Open... files
+    protected void selectItem(int itemId) {
+        switch (itemId){
+            case R.id.nav_item_open: { //Open... files
                 Intent pickIntent = new Intent(Intent.ACTION_GET_CONTENT);
                 pickIntent.setType("application/*");
                 Intent chooser = Intent.createChooser(pickIntent, getString(R.string.title_select_gnucash_xml_file));
@@ -198,7 +146,7 @@ public class BaseDrawerActivity extends AppCompatActivity {
             }
             break;
 
-            case 2: { //favorite accounts
+            case R.id.nav_item_favorites: { //favorite accounts
                 Intent intent = new Intent(this, AccountsActivity.class);
                 intent.putExtra(AccountsActivity.EXTRA_TAB_INDEX,
                         AccountsActivity.INDEX_FAVORITE_ACCOUNTS_FRAGMENT);
@@ -207,11 +155,11 @@ public class BaseDrawerActivity extends AppCompatActivity {
             }
                 break;
 
-            case 3:
+            case R.id.nav_item_reports:
                 startActivity(new Intent(this, ChartReportActivity.class));
                 break;
 
-            case 5: { //show scheduled transactions
+            case R.id.nav_item_scheduled_trn: { //show scheduled transactions
                 Intent intent = new Intent(this, ScheduledActionsActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_SINGLE_TOP);
                 intent.putExtra(ScheduledActionsActivity.EXTRA_DISPLAY_MODE,
@@ -220,12 +168,12 @@ public class BaseDrawerActivity extends AppCompatActivity {
             }
                 break;
 
-            case 6:{
+            case R.id.nav_item_export:{
                 AccountsActivity.showExportDialog(this);
             }
                 break;
 
-            case 9: //scheduled backup
+            case R.id.nav_item_scheduled_export: //scheduled backup
                 Intent intent = new Intent(this, ScheduledActionsActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_SINGLE_TOP);
                 intent.putExtra(ScheduledActionsActivity.EXTRA_DISPLAY_MODE,
@@ -233,17 +181,13 @@ public class BaseDrawerActivity extends AppCompatActivity {
                 startActivity(intent);
                 break;
 
-            case 10: //Settings activity
+            case R.id.nav_item_settings: //Settings activity
                 startActivity(new Intent(this, SettingsActivity.class));
                 break;
 
             //TODO: add help option
         }
-
-        // Highlight the selected item, update the title, and close the drawer
-        mDrawerList.setItemChecked(position, true);
-//        setTitle(mNavDrawerEntries[position]);
-        mDrawerLayout.closeDrawer(mDrawerList);
+        mDrawerLayout.closeDrawer(mNavigationView);
     }
 
     @Override

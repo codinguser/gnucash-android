@@ -348,7 +348,7 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
             dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
                 @Override
                 public void onDismiss(DialogInterface dialog) {
-                    mDrawerLayout.openDrawer(mDrawerList);
+                    mDrawerLayout.openDrawer(mNavigationView);
                 }
             });
         }
@@ -569,7 +569,7 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
             @Override
             public void onDismiss(DialogInterface dialog) {
                 removeFirstRunFlag();
-                mDrawerLayout.openDrawer(mDrawerList);
+                mDrawerLayout.openDrawer(mNavigationView);
             }
         });
 		mDefaultAccountsDialog.show();
