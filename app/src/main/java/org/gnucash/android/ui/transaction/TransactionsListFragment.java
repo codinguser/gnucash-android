@@ -22,6 +22,7 @@ import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -155,7 +156,15 @@ public class TransactionsListFragment extends ListFragment implements
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		return inflater.inflate(R.layout.fragment_transactions_list, container, false);		
+		View view = inflater.inflate(R.layout.fragment_transactions_list, container, false);
+		FloatingActionButton floatingActionButton = (FloatingActionButton) view.findViewById(R.id.fab_create_transaction);
+		floatingActionButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				mTransactionEditListener.createNewTransaction(mAccountUID);
+			}
+		});
+		return view;
 	}
 
 	@Override
