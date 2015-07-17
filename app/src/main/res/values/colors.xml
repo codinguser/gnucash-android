@@ -25,4 +25,5 @@
     <color name="account_gold">#EE8600</color>
     <color name="account_blue">#1469EB</color>
     <color name="account_purple">#B304AD</color>
+    <color name="action_mode_background">#616161</color>
 </resources>

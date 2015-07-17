@@ -32,12 +32,15 @@ import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.ResourceCursorAdapter;
 import android.support.v7.app.ActionBar;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 
@@ -121,27 +124,32 @@ public class TransactionsActivity extends PassLockActivity implements
 
     private SparseArray<Refreshable> mFragmentPageReferenceMap = new SparseArray<>();
 
-	private ActionBar.OnNavigationListener mTransactionListNavigationListener = new ActionBar.OnNavigationListener() {
 
-		  @Override
-		  public boolean onNavigationItemSelected(int position, long itemId) {
-            mAccountUID = mAccountsDbAdapter.getUID(itemId);
+	private AdapterView.OnItemSelectedListener mTransactionListNavigationListener = new AdapterView.OnItemSelectedListener() {
+
+        @Override
+        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+            mAccountUID = mAccountsDbAdapter.getUID(id);
             FragmentManager fragmentManager = getSupportFragmentManager();
 
-		    //inform new accounts fragment that account was changed
-		    TransactionFormFragment newTransactionsFragment = (TransactionFormFragment) fragmentManager
-					.findFragmentByTag(FRAGMENT_NEW_TRANSACTION);
-		    if (newTransactionsFragment != null){
-		    	newTransactionsFragment.onAccountChanged(mAccountUID);
-		    	//if we do not return, the transactions list fragment could also be found (although it's not visible)
-		    	return true;
-		    }
+            //inform new accounts fragment that account was changed
+            TransactionFormFragment newTransactionsFragment = (TransactionFormFragment) fragmentManager
+                    .findFragmentByTag(FRAGMENT_NEW_TRANSACTION);
+            if (newTransactionsFragment != null){
+                newTransactionsFragment.onAccountChanged(mAccountUID);
+
+            }
             //refresh any fragments in the tab with the new account UID
             refresh();
-            return true;
-		  }
+        }
+
+        @Override
+        public void onNothingSelected(AdapterView<?> parent) {
+            //nothing to see here, move along
+        }
 	};
     private PagerAdapter mPagerAdapter;
+    private Spinner mToolbarSpinner;
 
 
     /**
@@ -264,6 +272,10 @@ public class TransactionsActivity extends PassLockActivity implements
         setContentView(R.layout.activity_transactions);
         setUpDrawer();
 
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_actionbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+
         mPager = (ViewPager) findViewById(R.id.pager);
         mTitlePageIndicator = (TitlePageIndicator) findViewById(R.id.titles);
         mSectionHeaderTransactions = (TextView) findViewById(R.id.section_header_transactions);
@@ -359,22 +371,17 @@ public class TransactionsActivity extends PassLockActivity implements
             getSupportActionBar().setBackgroundDrawable(new ColorDrawable(iColor));
 
         if (Build.VERSION.SDK_INT > 20)
-            getWindow().setStatusBarColor(iColor); //TODO: change the whole app theme
+            getWindow().setStatusBarColor(darken(iColor)); //TODO: change the whole app theme
     }
 
     /**
      * Returns darker version of specified <code>color</code>.
      */
-    public static int darker (int color, float factor) {
-        int a = Color.alpha( color );
-        int r = Color.red( color );
-        int g = Color.green( color );
-        int b = Color.blue( color );
-
-        return Color.argb( a,
-                Math.max( (int)(r * factor), 0 ),
-                Math.max( (int)(g * factor), 0 ),
-                Math.max( (int)(b * factor), 0 ) );
+    public static int darken(int color) {
+        float[] hsv = new float[3];
+        Color.colorToHSV(color, hsv);
+        hsv[2] *= 0.8f; // value component
+        return Color.HSVToColor(hsv);
     }
     /**
 	 * Set up action bar navigation list and listener callbacks
@@ -390,12 +397,12 @@ public class TransactionsActivity extends PassLockActivity implements
                 getSupportActionBar().getThemedContext(),
                 android.R.layout.simple_spinner_item, mAccountsCursor);
 		((ResourceCursorAdapter) mSpinnerAdapter).setDropDownViewResource(
-                                android.R.layout.simple_spinner_dropdown_item);
-		ActionBar actionBar = getSupportActionBar();
-		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
-		actionBar.setListNavigationCallbacks(mSpinnerAdapter,
-				mTransactionListNavigationListener);
-        actionBar.setDisplayHomeAsUpEnabled(true);
+                android.R.layout.simple_spinner_dropdown_item);
+
+        mToolbarSpinner = (Spinner) findViewById(R.id.spinner_toolbar);
+        mToolbarSpinner.setAdapter(mSpinnerAdapter);
+        mToolbarSpinner.setOnItemSelectedListener(mTransactionListNavigationListener);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
 		updateNavigationSelection();
 	}
@@ -411,7 +418,7 @@ public class TransactionsActivity extends PassLockActivity implements
         while (accountsCursor.moveToNext()) {
             String uid = accountsCursor.getString(accountsCursor.getColumnIndexOrThrow(DatabaseSchema.AccountEntry.COLUMN_UID));
             if (mAccountUID.equals(uid)) {
-                getSupportActionBar().setSelectedNavigationItem(i);
+                mToolbarSpinner.setSelection(i);
                 break;
             }
             ++i;
@@ -428,7 +435,7 @@ public class TransactionsActivity extends PassLockActivity implements
 
         boolean isFavoriteAccount = AccountsDbAdapter.getInstance().isFavoriteAccount(mAccountUID);
 
-        int favoriteIcon = isFavoriteAccount ? R.drawable.ic_star_white_48dp : R.drawable.ic_star_border_white_48dp;
+        int favoriteIcon = isFavoriteAccount ? R.drawable.ic_star_white_24dp : R.drawable.ic_star_border_white_24dp;
         favoriteAccountMenuItem.setIcon(favoriteIcon);
         return super.onPrepareOptionsMenu(menu);
 

@@ -19,7 +19,7 @@
       xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item android:id="@+id/menu_favorite_account"
-          android:icon="@drawable/ic_star_border_white_48dp"
+          android:icon="@drawable/ic_star_border_white_24dp"
           android:title="@string/menu_title_favorite"
           app:showAsAction="ifRoom" />
     <item android:id="@+id/menu_edit_account"

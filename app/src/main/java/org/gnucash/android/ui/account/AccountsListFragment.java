@@ -167,7 +167,7 @@ public class AccountsListFragment extends ListFragment implements
             MenuItem favoriteAccountMenuItem = menu.findItem(R.id.menu_favorite_account);
             boolean isFavoriteAccount = AccountsDbAdapter.getInstance().isFavoriteAccount(mSelectedAccountUID);
 
-            int favoriteIcon = isFavoriteAccount ? R.drawable.ic_star_white_48dp : R.drawable.ic_star_border_white_48dp;
+            int favoriteIcon = isFavoriteAccount ? R.drawable.ic_star_white_24dp : R.drawable.ic_star_border_white_24dp;
             favoriteAccountMenuItem.setIcon(favoriteIcon);
 
             return true;

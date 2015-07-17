@@ -43,8 +43,8 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
-        android:layout_margin="8dp"
-        app:elevation="6dp"
+        android:layout_margin="12dp"
+        app:elevation="10dp"
         android:src="@drawable/ic_add_white_48dp"/>
 
 	<LinearLayout

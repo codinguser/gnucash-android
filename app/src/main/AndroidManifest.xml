@@ -86,6 +86,7 @@
         <activity android:name=".ui.transaction.ScheduledActionsActivity" />
         <activity android:name=".ui.passcode.PasscodePreferenceActivity" />
         <activity android:name=".ui.transaction.TransactionsActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"
             android:configChanges="orientation|screenSize">
         </activity>
         <activity android:name=".ui.widget.WidgetConfigurationActivity"
