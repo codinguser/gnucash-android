@@ -257,7 +257,8 @@ public class TransactionsActivity extends PassLockActivity implements
             mFragmentPageReferenceMap.valueAt(i).refresh(accountUID);
         }
         mTitlePageIndicator.notifyDataSetChanged();
-        mPagerAdapter.notifyDataSetChanged();
+        if (mPagerAdapter != null)
+            mPagerAdapter.notifyDataSetChanged();
     }
 
     @Override

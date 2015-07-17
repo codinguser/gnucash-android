@@ -29,6 +29,8 @@
     <!-- The rest of your attributes -->
 
         <item name="actionModeBackground">@color/action_mode_background</item>
+        <item name="colorButtonNormal">#FFAB00</item>
+
     </style>
 
 </resources>

@@ -17,11 +17,11 @@
 package org.gnucash.android.ui.util;
 
 import android.content.Context;
+import android.support.v7.widget.SwitchCompat;
 import android.util.AttributeSet;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.ToggleButton;
 
 import org.gnucash.android.R;
 import org.gnucash.android.model.AccountType;
@@ -34,7 +34,7 @@ import org.gnucash.android.ui.transaction.TransactionFormFragment;
  * different account types.
  * @author Ngewi Fet <ngewif@gmail.com>
  */
-public class TransactionTypeToggleButton extends ToggleButton {
+public class TransactionTypeToggleButton extends SwitchCompat {
     private AccountType mAccountType = AccountType.EXPENSE;
 
     public TransactionTypeToggleButton(Context context, AttributeSet attrs, int defStyle) {
