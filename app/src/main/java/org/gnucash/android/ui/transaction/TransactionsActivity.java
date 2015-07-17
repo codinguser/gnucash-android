@@ -21,6 +21,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -352,8 +354,28 @@ public class TransactionsActivity extends PassLockActivity implements
         mTitlePageIndicator.setTextColor(iColor);
         mTitlePageIndicator.setFooterColor(iColor);
         mSectionHeaderTransactions.setBackgroundColor(iColor);
+
+        if (getSupportActionBar() != null)
+            getSupportActionBar().setBackgroundDrawable(new ColorDrawable(iColor));
+
+        if (Build.VERSION.SDK_INT > 20)
+            getWindow().setStatusBarColor(iColor); //TODO: change the whole app theme
     }
 
+    /**
+     * Returns darker version of specified <code>color</code>.
+     */
+    public static int darker (int color, float factor) {
+        int a = Color.alpha( color );
+        int r = Color.red( color );
+        int g = Color.green( color );
+        int b = Color.blue( color );
+
+        return Color.argb( a,
+                Math.max( (int)(r * factor), 0 ),
+                Math.max( (int)(g * factor), 0 ),
+                Math.max( (int)(b * factor), 0 ) );
+    }
     /**
 	 * Set up action bar navigation list and listener callbacks
 	 */
@@ -406,7 +428,7 @@ public class TransactionsActivity extends PassLockActivity implements
 
         boolean isFavoriteAccount = AccountsDbAdapter.getInstance().isFavoriteAccount(mAccountUID);
 
-        int favoriteIcon = isFavoriteAccount ? android.R.drawable.btn_star_big_on : android.R.drawable.btn_star_big_off;
+        int favoriteIcon = isFavoriteAccount ? R.drawable.ic_star_white_48dp : R.drawable.ic_star_border_white_48dp;
         favoriteAccountMenuItem.setIcon(favoriteIcon);
         return super.onPrepareOptionsMenu(menu);
 

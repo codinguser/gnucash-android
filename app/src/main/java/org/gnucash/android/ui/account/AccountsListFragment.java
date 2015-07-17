@@ -24,6 +24,7 @@ import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.Loader;
@@ -166,7 +167,7 @@ public class AccountsListFragment extends ListFragment implements
             MenuItem favoriteAccountMenuItem = menu.findItem(R.id.menu_favorite_account);
             boolean isFavoriteAccount = AccountsDbAdapter.getInstance().isFavoriteAccount(mSelectedAccountUID);
 
-            int favoriteIcon = isFavoriteAccount ? android.R.drawable.btn_star_big_on : android.R.drawable.btn_star_big_off;
+            int favoriteIcon = isFavoriteAccount ? R.drawable.ic_star_white_48dp : R.drawable.ic_star_border_white_48dp;
             favoriteAccountMenuItem.setIcon(favoriteIcon);
 
             return true;
@@ -219,6 +220,14 @@ public class AccountsListFragment extends ListFragment implements
                 false);
         TextView sumlabelTextView = (TextView) v.findViewById(R.id.label_sum);
         sumlabelTextView.setText(R.string.account_balance);
+
+        FloatingActionButton floatingActionButton = (FloatingActionButton) v.findViewById(R.id.fab_create_account);
+        floatingActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActionCreateAccount();
+            }
+        });
         return v;
     }
 
@@ -259,6 +268,8 @@ public class AccountsListFragment extends ListFragment implements
     @Override
     public void onResume() {
         super.onResume();
+        ActionBar actionbar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+        actionbar.setTitle(R.string.title_accounts);
         refresh();
     }
 
@@ -373,20 +384,16 @@ public class AccountsListFragment extends ListFragment implements
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
 
-            case R.id.menu_add_account:
-                Intent addAccountIntent = new Intent(getActivity(), AccountsActivity.class);
-                addAccountIntent.setAction(Intent.ACTION_INSERT_OR_EDIT);
-                addAccountIntent.putExtra(UxArgument.PARENT_ACCOUNT_UID, mParentAccountUID);
-                startActivityForResult(addAccountIntent, AccountsActivity.REQUEST_EDIT_ACCOUNT);
-                return true;
-
-            case R.id.menu_export:
-                AccountsActivity.showExportDialog(getActivity());
-                return true;
-
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void startActionCreateAccount() {
+        Intent addAccountIntent = new Intent(getActivity(), AccountsActivity.class);
+        addAccountIntent.setAction(Intent.ACTION_INSERT_OR_EDIT);
+        addAccountIntent.putExtra(UxArgument.PARENT_ACCOUNT_UID, mParentAccountUID);
+        startActivityForResult(addAccountIntent, AccountsActivity.REQUEST_EDIT_ACCOUNT);
     }
 
     @Override

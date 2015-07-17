@@ -17,22 +17,12 @@
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
       xmlns:app="http://schemas.android.com/apk/res-auto">
-    <item android:id="@+id/menu_add_account"
-          android:icon="@drawable/content_new_holo_dark"
-          android:title="@string/label_create_account"
-          app:showAsAction="always"/>
-
-    <item android:id="@+id/menu_recurring_transactions"
-          android:title="@string/menu_scheduled_transactions"
-          android:icon="@drawable/content_event_holo_dark"
-          app:showAsAction="never|withText"
-          android:orderInCategory="4" />
-
+<!--
     <item android:id="@+id/menu_export"
           android:icon="@drawable/content_import_export_holo_dark"
           android:title="@string/menu_export_transactions"
           app:showAsAction="never"
           android:orderInCategory="5"/>
-
+-->
 
 </menu>

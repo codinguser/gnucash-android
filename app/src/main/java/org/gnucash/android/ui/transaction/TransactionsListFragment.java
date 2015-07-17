@@ -250,10 +250,6 @@ public class TransactionsListFragment extends ListFragment implements
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
-            case R.id.menu_add_transaction:
-                mTransactionEditListener.createNewTransaction(mAccountUID);
-                return true;
-
             default:
                 return super.onOptionsItemSelected(item);
         }

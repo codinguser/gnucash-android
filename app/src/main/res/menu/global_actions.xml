@@ -30,9 +30,4 @@
           app:showAsAction="never"
           android:orderInCategory="10"/>
 
-    <item android:id="@+id/menu_reports"
-          android:title="@string/title_reports"
-          android:icon="@drawable/chart_icon"
-          app:showAsAction="collapseActionView|ifRoom" />
-
 </menu>
