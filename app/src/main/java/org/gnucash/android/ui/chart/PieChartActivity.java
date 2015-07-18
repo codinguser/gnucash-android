@@ -152,7 +152,7 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
             public void onClick(View view) {
                 mChartDate = mChartDate.minusMonths(1);
                 mDataForCurrentMonth = true;
-                setData();
+                displayChart();
             }
         });
         mNextMonthButton.setOnClickListener(new View.OnClickListener() {
@@ -161,7 +161,7 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
             public void onClick(View view) {
                 mChartDate = mChartDate.plusMonths(1);
                 mDataForCurrentMonth = true;
-                setData();
+                displayChart();
             }
         });
 
@@ -179,10 +179,14 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
     }
 
     /**
-     * Sets the chart data
+     * Manages all actions about displaying the pie chart
      */
-    private void setData() {
-        mChartDateTextView.setText(mDataForCurrentMonth ? mChartDate.toString(DATE_PATTERN) : getResources().getString(R.string.label_chart_overall));
+    private void displayChart() {
+        setImageButtonEnabled(mNextMonthButton,
+                mChartDate.plusMonths(1).dayOfMonth().withMinimumValue().withMillisOfDay(0).isBefore(mLatestTransactionDate));
+        setImageButtonEnabled(mPreviousMonthButton, (mEarliestTransactionDate.getYear() != 1970
+                && mChartDate.minusMonths(1).dayOfMonth().withMaximumValue().withMillisOfDay(86399999).isAfter(mEarliestTransactionDate)));
+
         mSelectedValueTextView.setText("");
         mChart.highlightValues(null);
         mChart.clear();
@@ -192,15 +196,20 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
             if (mGroupSmallerSlices) {
                 mChart.setData(groupSmallerSlices());
             }
+            float sum = mChart.getData().getYValueSum();
+            String total = getResources().getString(R.string.label_chart_total);
+            String currencySymbol = Currency.getInstance(mCurrencyCode).getSymbol(Locale.getDefault());
+            mChart.setCenterText(String.format(TOTAL_VALUE_LABEL_PATTERN, total, sum, currencySymbol));
             mChart.animateXY(ANIMATION_DURATION, ANIMATION_DURATION);
+        } else {
+            mChart.setCenterText(getResources().getString(R.string.label_chart_no_data));
         }
+
+        mChart.setTouchEnabled(mChartDataPresent);
         mChart.invalidate();
 
         mChartDateTextView.setEnabled(mChartDataPresent);
-        setImageButtonEnabled(mNextMonthButton,
-                mChartDate.plusMonths(1).dayOfMonth().withMinimumValue().withMillisOfDay(0).isBefore(mLatestTransactionDate));
-        setImageButtonEnabled(mPreviousMonthButton, (mEarliestTransactionDate.getYear() != 1970
-                && mChartDate.minusMonths(1).dayOfMonth().withMaximumValue().withMillisOfDay(86399999).isAfter(mEarliestTransactionDate)));
+        mChartDateTextView.setText(mDataForCurrentMonth ? mChartDate.toString(DATE_PATTERN) : getResources().getString(R.string.label_chart_overall));
     }
 
     /**
@@ -242,20 +251,11 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
 
         if (dataSet.getEntryCount() == 0) {
             mChartDataPresent = false;
-            mChart.setCenterText(getResources().getString(R.string.label_chart_no_data));
-            mChart.setTouchEnabled(false);
             return getEmptyData();
         }
 
-        dataSet.setSliceSpace(2);
-        mChart.setCenterText(String.format(TOTAL_VALUE_LABEL_PATTERN,
-                        getResources().getString(R.string.label_chart_total),
-                        dataSet.getYValueSum(),
-                        Currency.getInstance(mCurrencyCode).getSymbol(Locale.getDefault()))
-        );
-        mChart.setTouchEnabled(true);
         mChartDataPresent = true;
-
+        dataSet.setSliceSpace(2);
         return new PieData(labels, dataSet);
     }
 
@@ -341,7 +341,7 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
                 mChartDate = mLatestTransactionDate;
 
                 mDataForCurrentMonth = false;
-                setData();
+                displayChart();
             }
 
             @Override
@@ -389,7 +389,7 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
             }
             case R.id.menu_group_other_slice: {
                 mGroupSmallerSlices = !mGroupSmallerSlices;
-                setData();
+                displayChart();
                 break;
             }
             case android.R.id.home: {
@@ -442,7 +442,7 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
         if (view.isShown()) {
             mChartDate = new LocalDateTime(year, monthOfYear + 1, dayOfMonth, 0, 0);
             mDataForCurrentMonth = true;
-            setData();
+            displayChart();
         }
     }
 
