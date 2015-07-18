@@ -220,6 +220,7 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
     private PieData getData(boolean forCurrentMonth) {
         PieDataSet dataSet = new PieDataSet(null, "");
         List<String> labels = new ArrayList<>();
+        List<Integer> colors = new ArrayList<>();
         for (Account account : mAccountsDbAdapter.getSimpleAccountList()) {
             if (account.getAccountType() == mAccountType
                     && !account.isPlaceholderAccount()
@@ -238,12 +239,9 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
 
                 if (balance != 0) {
                     dataSet.addEntry(new Entry((float) balance, dataSet.getEntryCount()));
-                    if (mUseAccountColor) {
-                        dataSet.getColors().set(dataSet.getColors().size() - 1, (account.getColorHexCode() != null)
-                                ? Color.parseColor(account.getColorHexCode())
-                                : COLORS[(dataSet.getEntryCount() - 1) % COLORS.length]);
-                    }
-                    dataSet.addColor(COLORS[(dataSet.getEntryCount() - 1) % COLORS.length]);
+                    colors.add(mUseAccountColor && account.getColorHexCode() != null
+                            ? Color.parseColor(account.getColorHexCode())
+                            : COLORS[(dataSet.getEntryCount() - 1) % COLORS.length]);
                     labels.add(account.getName());
                 }
             }
@@ -255,6 +253,7 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
         }
 
         mChartDataPresent = true;
+        dataSet.setColors(colors);
         dataSet.setSliceSpace(2);
         return new PieData(labels, dataSet);
     }
