@@ -59,11 +59,9 @@ import org.gnucash.android.export.xml.GncXmlExporter;
 import org.gnucash.android.importer.ImportAsyncTask;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.ui.UxArgument;
-import org.gnucash.android.ui.chart.ChartReportActivity;
 import org.gnucash.android.ui.export.ExportDialogFragment;
 import org.gnucash.android.ui.passcode.PassLockActivity;
 import org.gnucash.android.ui.settings.SettingsActivity;
-import org.gnucash.android.ui.transaction.ScheduledActionsActivity;
 import org.gnucash.android.ui.transaction.TransactionsActivity;
 import org.gnucash.android.ui.util.OnAccountClickedListener;
 import org.gnucash.android.ui.util.Refreshable;
@@ -238,7 +236,6 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
         tabLayout.addTab(tabLayout.newTab().setText(R.string.title_all_accounts));
         tabLayout.addTab(tabLayout.newTab().setText(R.string.title_favorite_accounts));
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
-        tabLayout.setElevation(10);
 
         mViewPager = (ViewPager) findViewById(R.id.pager);
 
