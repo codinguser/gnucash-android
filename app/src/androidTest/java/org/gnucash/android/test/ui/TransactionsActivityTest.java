@@ -175,7 +175,7 @@ public class TransactionsActivityTest extends
 		validateTransactionListDisplayed();
 		
 		int beforeCount = mTransactionsDbAdapter.getTransactionsCount(DUMMY_ACCOUNT_UID);
-        onView(withId(R.id.menu_add_transaction)).perform(click());
+        onView(withId(R.id.fab_create_transaction)).perform(click());
 
 		onView(withId(R.id.input_transaction_name))
 				.check(matches(isDisplayed()))
@@ -236,7 +236,7 @@ public class TransactionsActivityTest extends
 		setDefaultTransactionType(TransactionType.DEBIT);
         validateTransactionListDisplayed();
 
-		onView(withId(R.id.menu_add_transaction)).perform(click());
+		onView(withId(R.id.fab_create_transaction)).perform(click());
 
 		onView(withId(R.id.input_transaction_name)).perform(typeText("Lunch"));
 		onView(withId(R.id.input_transaction_amount)).perform(typeText("899"));
@@ -287,7 +287,7 @@ public class TransactionsActivityTest extends
 		assertThat(imbalanceAcctUID).isNull();
 
 		validateTransactionListDisplayed();
-		onView(withId(R.id.menu_add_transaction)).perform(click());
+		onView(withId(R.id.fab_create_transaction)).perform(click());
 		onView(withId(R.id.fragment_transaction_form)).check(matches(isDisplayed()));
 
 		onView(withId(R.id.input_transaction_name)).perform(typeText("Autobalance"));
@@ -324,7 +324,7 @@ public class TransactionsActivityTest extends
 		assertThat(imbalanceAcctUID).isNull();
 
 		validateTransactionListDisplayed();
-		onView(withId(R.id.menu_add_transaction)).perform(click());
+		onView(withId(R.id.fab_create_transaction)).perform(click());
 
 		onView(withId(R.id.input_transaction_name)).perform(typeText("Autobalance"));
 		onView(withId(R.id.input_transaction_amount)).perform(typeText("499"));
@@ -380,7 +380,7 @@ public class TransactionsActivityTest extends
 	public void testDefaultTransactionType(){
 		setDefaultTransactionType(TransactionType.CREDIT);
 
-		onView(withId(R.id.menu_add_transaction)).perform(click());
+		onView(withId(R.id.fab_create_transaction)).perform(click());
 		onView(withId(R.id.input_transaction_type)).check(matches(allOf(isChecked(), withText(R.string.label_spend))));
 		onView(withId(R.id.menu_cancel)).perform(click());
 
@@ -388,7 +388,7 @@ public class TransactionsActivityTest extends
 
 		setDefaultTransactionType(TransactionType.DEBIT);
 
-		onView(withId(R.id.menu_add_transaction)).perform(click());
+		onView(withId(R.id.fab_create_transaction)).perform(click());
 		onView(withId(R.id.input_transaction_type)).check(matches(allOf(not(isChecked()), withText(R.string.label_receive))));
 		onView(withId(R.id.menu_cancel)).perform(click());
 	}
