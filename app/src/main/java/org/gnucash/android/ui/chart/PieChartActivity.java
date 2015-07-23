@@ -226,17 +226,12 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
                     && !account.isPlaceholderAccount()
                     && account.getCurrency() == Currency.getInstance(mCurrencyCode)) {
 
-                double balance;
+                long start = -1; long end = -1;
                 if (forCurrentMonth) {
-                    long start = mChartDate.dayOfMonth().withMinimumValue().millisOfDay().withMinimumValue().toDate().getTime();
-                    long end = mChartDate.dayOfMonth().withMaximumValue().millisOfDay().withMaximumValue().toDate().getTime();
-                    balance = mAccountsDbAdapter.getAccountsBalance(
-                            Collections.singletonList(account.getUID()), start, end).absolute().asDouble();
-                } else {
-                    balance = mAccountsDbAdapter.getAccountsBalance(
-                            Collections.singletonList(account.getUID()), -1, -1).absolute().asDouble();
+                    start = mChartDate.dayOfMonth().withMinimumValue().millisOfDay().withMinimumValue().toDate().getTime();
+                    end = mChartDate.dayOfMonth().withMaximumValue().millisOfDay().withMaximumValue().toDate().getTime();
                 }
-
+                double balance = mAccountsDbAdapter.getAccountsBalance(Collections.singletonList(account.getUID()), start, end).absolute().asDouble();
                 if (balance != 0) {
                     dataSet.addEntry(new Entry((float) balance, dataSet.getEntryCount()));
                     colors.add(mUseAccountColor && account.getColorHexCode() != null
