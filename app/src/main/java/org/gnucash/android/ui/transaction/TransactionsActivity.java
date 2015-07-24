@@ -24,6 +24,7 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
@@ -31,7 +32,6 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.ResourceCursorAdapter;
-import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.util.SparseArray;
@@ -43,8 +43,6 @@ import android.widget.AdapterView;
 import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
 import android.widget.TextView;
-
-import com.viewpagerindicator.TitlePageIndicator;
 
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
@@ -118,9 +116,8 @@ public class TransactionsActivity extends PassLockActivity implements
     private Cursor mAccountsCursor = null;
 
     private TextView mSectionHeaderTransactions;
-    private TitlePageIndicator mTitlePageIndicator;
 
-    private ViewPager mPager;
+    private ViewPager mViewPager;
 
     private SparseArray<Refreshable> mFragmentPageReferenceMap = new SparseArray<>();
 
@@ -137,7 +134,14 @@ public class TransactionsActivity extends PassLockActivity implements
                     .findFragmentByTag(FRAGMENT_NEW_TRANSACTION);
             if (newTransactionsFragment != null){
                 newTransactionsFragment.onAccountChanged(mAccountUID);
+            }
 
+            if (isPlaceHolderAccount()){
+                if (mTabLayout.getTabCount() > 1)
+                    mTabLayout.removeTabAt(1);
+            } else {
+                if (mTabLayout.getTabCount() < 2)
+                    mTabLayout.addTab(mTabLayout.newTab().setText(R.string.section_header_transactions));
             }
             //refresh any fragments in the tab with the new account UID
             refresh();
@@ -150,6 +154,7 @@ public class TransactionsActivity extends PassLockActivity implements
 	};
     private PagerAdapter mPagerAdapter;
     private Spinner mToolbarSpinner;
+    private TabLayout mTabLayout;
 
 
     /**
@@ -256,7 +261,7 @@ public class TransactionsActivity extends PassLockActivity implements
         for (int i = 0; i < mFragmentPageReferenceMap.size(); i++) {
             mFragmentPageReferenceMap.valueAt(i).refresh(accountUID);
         }
-        mTitlePageIndicator.notifyDataSetChanged();
+
         if (mPagerAdapter != null)
             mPagerAdapter.notifyDataSetChanged();
     }
@@ -277,31 +282,52 @@ public class TransactionsActivity extends PassLockActivity implements
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
-        mPager = (ViewPager) findViewById(R.id.pager);
-        mTitlePageIndicator = (TitlePageIndicator) findViewById(R.id.titles);
+        mViewPager = (ViewPager) findViewById(R.id.pager);
         mSectionHeaderTransactions = (TextView) findViewById(R.id.section_header_transactions);
 
 		mAccountUID = getIntent().getStringExtra(UxArgument.SELECTED_ACCOUNT_UID);
-
         mAccountsDbAdapter = AccountsDbAdapter.getInstance();
+
+        mTabLayout = (TabLayout) findViewById(R.id.tab_layout);
+        mTabLayout.addTab(mTabLayout.newTab().setText(R.string.section_header_subaccounts));
+        if (!isPlaceHolderAccount()) {
+            mTabLayout.addTab(mTabLayout.newTab().setText(R.string.section_header_transactions));
+        }
 
         setupActionBarNavigation();
 
         final String action = getIntent().getAction();
 		if (action.equals(Intent.ACTION_INSERT_OR_EDIT) || action.equals(Intent.ACTION_INSERT)) {
-            mPager.setVisibility(View.GONE);
-            mTitlePageIndicator.setVisibility(View.GONE);
+            mViewPager.setVisibility(View.GONE);
+            mTabLayout.setVisibility(View.GONE);
 
             initializeCreateOrEditTransaction();
         } else {	//load the transactions list
             mSectionHeaderTransactions.setVisibility(View.GONE);
 
             mPagerAdapter = new AccountViewPagerAdapter(getSupportFragmentManager());
-            mPager.setAdapter(mPagerAdapter);
-            mTitlePageIndicator.setViewPager(mPager);
+            mViewPager.setAdapter(mPagerAdapter);
 
-            mPager.setCurrentItem(INDEX_TRANSACTIONS_FRAGMENT);
+            mViewPager.setCurrentItem(INDEX_TRANSACTIONS_FRAGMENT);
 		}
+
+        mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(mTabLayout));
+        mTabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                mViewPager.setCurrentItem(tab.getPosition());
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+        });
 
 		// done creating, activity now running
 		mActivityRunning = true;
@@ -363,9 +389,7 @@ public class TransactionsActivity extends PassLockActivity implements
             }
         }
 
-        mTitlePageIndicator.setSelectedColor(iColor);
-        mTitlePageIndicator.setTextColor(iColor);
-        mTitlePageIndicator.setFooterColor(iColor);
+        mTabLayout.setBackgroundColor(iColor);
         mSectionHeaderTransactions.setBackgroundColor(iColor);
 
         if (getSupportActionBar() != null)
@@ -489,7 +513,7 @@ public class TransactionsActivity extends PassLockActivity implements
      * @return Current fragment displayed by the view pager
      */
     public Fragment getCurrentPagerFragment(){
-        int index = mPager.getCurrentItem();
+        int index = mViewPager.getCurrentItem();
         return (Fragment) mFragmentPageReferenceMap.get(index);
     }
 
