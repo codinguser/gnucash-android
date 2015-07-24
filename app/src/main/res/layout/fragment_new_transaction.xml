@@ -35,10 +35,7 @@
 			android:nextFocusDown="@+id/input_transaction_amount"
 			android:textSize="22sp" />
 
-		<TableRow
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			style="@style/FormRow">
+		<TableRow style="@style/FormRow">
 
 			<TextView
 				android:id="@+id/currency_symbol"
@@ -60,6 +57,8 @@
 				android:hint="@string/label_transaction_amount"
 				android:inputType="number"
 				android:nextFocusDown="@+id/input_description"
+				android:drawableRight="@drawable/content_split_holo_light"
+				android:drawableEnd="@drawable/content_split_holo_light"
 				android:textColor="@color/debit_red"
 				android:textSize="22sp" />
 
@@ -76,31 +75,8 @@
 				android:checked="true"/>
 
 		</TableRow>
-		<TableRow
-			android:id="@+id/layout_open_splits"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			style="@style/FormRow" >
 
-			<ImageView android:layout_width="0dp"
-				android:layout_weight="0.5"
-				android:layout_height="wrap_content"
-				android:layout_marginRight="5dp"
-				android:layout_marginEnd="5dp"
-				android:src="@drawable/content_split_holo_light"/>
-			<Button android:id="@+id/btn_open_splits"
-				android:layout_width="0dp"
-				android:layout_weight="5"
-				android:layout_height="wrap_content"
-				style="@style/ButtonStyle"
-				android:text="Open Split editor"
-				/>
-		</TableRow>
-
-		<TableRow
-			android:id="@+id/layout_double_entry"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
+		<TableRow android:id="@+id/layout_double_entry"
 			style="@style/FormRow" >
 
 			<ImageView android:layout_width="0dp"
@@ -115,9 +91,7 @@
 				android:layout_weight="5"
 				android:layout_height="wrap_content"  />
 		</TableRow>
-		<TableRow android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			style="@style/FormRow" >
+		<TableRow style="@style/FormRow" >
 
 			<ImageView android:layout_width="0dp"
 				android:layout_weight="0.5"
@@ -139,10 +113,7 @@
 				android:layout_height="wrap_content"
 				android:gravity="center"        />
 		</TableRow>
-		<TableRow
-			android:layout_height="wrap_content"
-			android:layout_width="match_parent"
-			style="@style/FormRow">
+		<TableRow style="@style/FormRow">
 
 			<ImageView android:layout_width="0dp"
 				android:layout_weight="0.5"
@@ -160,10 +131,7 @@
 					android:inputType="textMultiLine|textCapSentences" />
 		</TableRow>
 
-		<TableRow
-			android:layout_height="wrap_content"
-			android:layout_width="match_parent"
-			style="@style/FormRow">
+		<TableRow style="@style/FormRow">
 
 			<ImageView android:layout_width="0dp"
 				android:layout_weight="0.5"

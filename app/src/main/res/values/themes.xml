@@ -23,24 +23,25 @@
         -->
 
         <!-- Set AppCompat’s color theming attrs -->
-        <item name="colorPrimary">#2E7D32</item> <!-- 800 -->
-        <item name="colorPrimaryDark">#1B5E20</item> <!-- 900 -->
-        <item name="colorAccent">#FFAB00</item> <!-- A700 -->
+        <item name="colorPrimary">@color/theme_primary</item>
+        <item name="colorPrimaryDark">@color/theme_primary_dark</item>
+        <item name="colorAccent">@color/theme_accent</item>
     <!-- The rest of your attributes -->
 
         <item name="actionModeBackground">@color/action_mode_background</item>
+        <item name="windowActionModeOverlay">true</item>
         <item name="colorButtonNormal">#FFAB00</item>
-
     </style>
 
     <style name="Theme.GnucashTheme.NoActionBar" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Set AppCompat’s color theming attrs -->
-        <item name="colorPrimary">#2E7D32</item> <!-- 800 -->
-        <item name="colorPrimaryDark">#1B5E20</item> <!-- 900 -->
-        <item name="colorAccent">#FFAB00</item> <!-- A700 -->
+        <item name="colorPrimary">@color/theme_primary</item>
+        <item name="colorPrimaryDark">@color/theme_primary_dark</item>
+        <item name="colorAccent">@color/theme_accent</item>
         <!-- The rest of your attributes -->
 
         <item name="actionModeBackground">@color/action_mode_background</item>
+        <item name="windowActionModeOverlay">true</item>
         <item name="colorButtonNormal">#FFAB00</item>
 
     </style>

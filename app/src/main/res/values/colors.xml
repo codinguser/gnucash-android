@@ -26,4 +26,8 @@
     <color name="account_blue">#1469EB</color>
     <color name="account_purple">#B304AD</color>
     <color name="action_mode_background">#616161</color>
+
+    <color name="theme_primary">#2E7D32</color> <!-- 800 -->
+    <color name="theme_primary_dark">#1B5E20</color> <!-- 900 -->
+    <color name="theme_accent">#FFAB00</color> <!-- A700 -->
 </resources>

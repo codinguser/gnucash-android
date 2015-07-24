@@ -359,7 +359,7 @@ public class TransactionsActivity extends PassLockActivity implements
             }
             if (colorCode == null)
             {
-                iColor = getResources().getColor(R.color.title_green);
+                iColor = getResources().getColor(R.color.theme_primary);
             }
         }
 

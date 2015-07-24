@@ -35,6 +35,7 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
@@ -210,7 +211,6 @@ public class TransactionFormFragment extends Fragment implements
 
     private AmountInputFormatter mAmountInputFormatter;
 
-    private Button mOpenSplitsButton;
     private String mAccountUID;
 
     private List<Split> mSplitsList = new ArrayList<Split>();
@@ -233,7 +233,6 @@ public class TransactionFormFragment extends Fragment implements
 		mCurrencyTextView       = (TextView) v.findViewById(R.id.currency_symbol);
 		mTransactionTypeButton  = (TransactionTypeSwitch) v.findViewById(R.id.input_transaction_type);
 		mDoubleAccountSpinner   = (Spinner) v.findViewById(R.id.input_double_entry_accounts_spinner);
-        mOpenSplitsButton       = (Button) v.findViewById(R.id.btn_open_splits);
         mRecurrenceTextView     = (TextView) v.findViewById(R.id.input_recurrence);
         mSaveTemplateCheckbox = (CheckBox) v.findViewById(R.id.checkbox_save_template);
         return v;
@@ -252,7 +251,7 @@ public class TransactionFormFragment extends Fragment implements
 		mUseDoubleEntry = sharedPrefs.getBoolean(getString(R.string.key_use_double_entry), false);
 		if (!mUseDoubleEntry){
 			getView().findViewById(R.id.layout_double_entry).setVisibility(View.GONE);
-            mOpenSplitsButton.setVisibility(View.GONE);
+            mAmountEditText.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
 		}
 
         mAccountUID = getArguments().getString(UxArgument.SELECTED_ACCOUNT_UID);
@@ -550,11 +549,21 @@ public class TransactionFormFragment extends Fragment implements
 	private void setListeners() {
         mAmountInputFormatter = new AmountTextWatcher(mAmountEditText); //new AmountInputFormatter(mAmountEditText);
         mAmountEditText.addTextChangedListener(mAmountInputFormatter);
-
-        mOpenSplitsButton.setOnClickListener(new View.OnClickListener() {
+        mAmountEditText.setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public void onClick(View view) {
-                openSplitEditor();
+            public boolean onTouch(View v, MotionEvent event) {
+                final int DRAWABLE_LEFT = 0;
+                final int DRAWABLE_TOP = 1;
+                final int DRAWABLE_RIGHT = 2;
+                final int DRAWABLE_BOTTOM = 3;
+
+                if(event.getAction() == MotionEvent.ACTION_UP) {
+                    if(event.getRawX() >= (mAmountEditText.getRight() - mAmountEditText.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
+                        openSplitEditor();
+                        return true;
+                    }
+                }
+                return false;
             }
         });
 

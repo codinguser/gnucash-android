@@ -24,9 +24,16 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.preference.PreferenceManager;
 import android.support.test.InstrumentationRegistry;
+import android.support.test.espresso.ViewAction;
+import android.support.test.espresso.action.CoordinatesProvider;
+import android.support.test.espresso.action.GeneralClickAction;
+import android.support.test.espresso.action.Press;
+import android.support.test.espresso.action.Tap;
 import android.support.test.runner.AndroidJUnit4;
 import android.test.ActivityInstrumentationTestCase2;
 import android.util.Log;
+import android.view.View;
+import android.widget.EditText;
 
 import org.gnucash.android.R;
 import org.gnucash.android.db.AccountsDbAdapter;
@@ -294,7 +301,7 @@ public class TransactionsActivityTest extends
 		onView(withId(R.id.input_transaction_amount)).perform(typeText("499"));
 
 		//no double entry so no split editor
-		onView(withId(R.id.btn_open_splits)).check(matches(not(isDisplayed())));
+		//TODO: check that the split drawable is not displayed
 		onView(withId(R.id.menu_save)).perform(click());
 
 		assertThat(mTransactionsDbAdapter.getTotalTransactionsCount()).isEqualTo(1);
@@ -329,7 +336,7 @@ public class TransactionsActivityTest extends
 		onView(withId(R.id.input_transaction_name)).perform(typeText("Autobalance"));
 		onView(withId(R.id.input_transaction_amount)).perform(typeText("499"));
 
-		onView(withId(R.id.btn_open_splits)).perform(click());
+		onView(withId(R.id.input_transaction_amount)).perform(clickSplitIcon());
 
 		onView(withId(R.id.split_list_layout)).check(matches(allOf(isDisplayed(), hasDescendant(withId(R.id.input_split_amount)))));
 
@@ -502,7 +509,7 @@ public class TransactionsActivityTest extends
 		assertThat(targetCount).isEqualTo(1);
 		
 		int afterOriginCount = mAccountsDbAdapter.getAccount(DUMMY_ACCOUNT_UID).getTransactionCount();
-		assertThat(afterOriginCount).isEqualTo(beforeOriginCount-1);
+		assertThat(afterOriginCount).isEqualTo(beforeOriginCount - 1);
 	}
 
 	//TODO: add normal transaction recording
@@ -539,6 +546,20 @@ public class TransactionsActivityTest extends
 	 */
 	private void clickOnView(int viewId){
 		onView(withId(viewId)).perform(click());
+	}
+
+	public static ViewAction clickSplitIcon(){
+		return new GeneralClickAction(Tap.SINGLE,
+				new CoordinatesProvider() {
+					@Override
+					public float[] calculateCoordinates(View view) {
+						final int DRAWABLE_RIGHT = 2;
+						int x = view.getRight() - ((EditText)view).getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width();
+						int y = view.getTop() + view.getHeight()/2;
+
+						return new float[]{x, y};
+					}
+				}, Press.FINGER);
 	}
 
 	@Override
