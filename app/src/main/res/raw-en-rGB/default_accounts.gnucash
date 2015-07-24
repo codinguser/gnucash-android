@@ -192,7 +192,7 @@
     </slot>
     <slot>
       <slot:key>color</slot:key>
-      <slot:value type="string">#319D67</slot:value>
+      <slot:value type="string">#1B4F15</slot:value>
     </slot>
   </act:slots>
   <act:parent type="guid">c4f2baf88f0c99d5d98e63cd10f7da76</act:parent>
