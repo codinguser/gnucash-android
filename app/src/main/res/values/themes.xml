@@ -31,6 +31,7 @@
         <item name="actionModeBackground">@color/action_mode_background</item>
         <item name="windowActionModeOverlay">true</item>
         <item name="colorButtonNormal">#FFAB00</item>
+        <item name="actionMenuTextAppearance">@style/ActionMenuText</item>
     </style>
 
     <style name="Theme.GnucashTheme.NoActionBar" parent="Theme.AppCompat.Light.NoActionBar">
@@ -43,6 +44,6 @@
         <item name="actionModeBackground">@color/action_mode_background</item>
         <item name="windowActionModeOverlay">true</item>
         <item name="colorButtonNormal">#FFAB00</item>
-
+        <item name="actionMenuTextAppearance">@style/ActionMenuText</item>
     </style>
 </resources>

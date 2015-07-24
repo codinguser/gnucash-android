@@ -251,6 +251,7 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
                 String parentAccountUID = intent.getStringExtra(UxArgument.PARENT_ACCOUNT_UID);
                 showAddAccountFragment(parentAccountUID);
             }
+            mDrawerToggle.setDrawerIndicatorEnabled(false);
         } else {
             //show the simple accounts list
             PagerAdapter mPagerAdapter = new AccountViewPagerAdapter(getSupportFragmentManager());

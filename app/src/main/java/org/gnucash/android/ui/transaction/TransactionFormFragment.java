@@ -41,7 +41,6 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
-import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.FilterQueryProvider;
@@ -246,6 +245,7 @@ public class TransactionFormFragment extends Fragment implements
 		actionBar.setHomeButtonEnabled(true);
 		actionBar.setDisplayHomeAsUpEnabled(true);
 		actionBar.setDisplayShowTitleEnabled(false);
+        actionBar.setHomeAsUpIndicator(R.drawable.ic_close_white_24dp);
 
 		SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
 		mUseDoubleEntry = sharedPrefs.getBoolean(getString(R.string.key_use_double_entry), false);
@@ -844,9 +844,9 @@ public class TransactionFormFragment extends Fragment implements
 		imm.hideSoftInputFromWindow(mDescriptionEditText.getApplicationWindowToken(), 0);
 
 		switch (item.getItemId()) {
-		case R.id.menu_cancel:
-			finish();
-			return true;
+            case android.R.id.home:
+                finish();
+                return true;
 
 		case R.id.menu_save:
             if (mMultiCurrency) {

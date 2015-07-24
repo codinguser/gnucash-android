@@ -25,6 +25,7 @@
 		android:padding="@dimen/dialog_padding"
 		android:orientation="vertical" >
 
+		<TableRow style="@style/FormRow">
 		<AutoCompleteTextView
 			android:id="@+id/input_transaction_name"
 			android:layout_width="match_parent"
@@ -33,18 +34,16 @@
 			android:inputType="textCapSentences"
 			android:imeOptions="actionNext"
 			android:nextFocusDown="@+id/input_transaction_amount"
+			android:background="@android:color/transparent"
 			android:textSize="22sp" />
+		</TableRow>
+		<View style="@style/Divider" android:layout_marginLeft="0dp" />
 
 		<TableRow style="@style/FormRow">
-
 			<TextView
 				android:id="@+id/currency_symbol"
-				android:layout_width="0dp"
-				android:layout_height="match_parent"
-				android:layout_weight="0.5"
-				android:layout_marginRight="5dp"
-				android:layout_marginEnd="5dp"
-				android:gravity="center|left"
+				style="@style/FormIcon"
+				android:gravity="center"
 				android:textColor="@color/debit_red"
 				android:textSize="22dp"
 				android:text="$" />
@@ -59,8 +58,9 @@
 				android:nextFocusDown="@+id/input_description"
 				android:drawableRight="@drawable/content_split_holo_light"
 				android:drawableEnd="@drawable/content_split_holo_light"
+				android:background="@android:color/transparent"
 				android:textColor="@color/debit_red"
-				android:textSize="22sp" />
+				android:textSize="20sp" />
 
 			<org.gnucash.android.ui.util.TransactionTypeSwitch
 				android:id="@+id/input_transaction_type"
@@ -75,15 +75,11 @@
 				android:checked="true"/>
 
 		</TableRow>
-
+		<View style="@style/Divider" />
 		<TableRow android:id="@+id/layout_double_entry"
 			style="@style/FormRow" >
 
-			<ImageView android:layout_width="0dp"
-				android:layout_weight="0.5"
-				android:layout_height="wrap_content"
-				android:layout_marginRight="5dp"
-				android:layout_marginEnd="5dp"
+			<ImageView style="@style/FormIcon"
 				android:src="@drawable/ic_action_forward"/>
 			<Spinner
 				android:id="@+id/input_double_entry_accounts_spinner"
@@ -91,15 +87,11 @@
 				android:layout_weight="5"
 				android:layout_height="wrap_content"  />
 		</TableRow>
+		<View style="@style/Divider" />
 		<TableRow style="@style/FormRow" >
 
-			<ImageView android:layout_width="0dp"
-				android:layout_weight="0.5"
-				android:layout_height="wrap_content"
-				android:layout_marginRight="5dp"
-				android:layout_marginEnd="5dp"
+			<ImageView style="@style/FormIcon"
 				android:src="@drawable/ic_action_time"/>
-
 
 			<TextView android:id="@+id/input_date"
 				android:layout_width="0dp"
@@ -113,31 +105,25 @@
 				android:layout_height="wrap_content"
 				android:gravity="center"        />
 		</TableRow>
-		<TableRow style="@style/FormRow">
+		<View style="@style/Divider" />
 
-			<ImageView android:layout_width="0dp"
-				android:layout_weight="0.5"
-				android:layout_height="wrap_content"
-				android:layout_marginRight="5dp"
-				android:layout_marginEnd="5dp"
+		<TableRow style="@style/FormRow">
+			<ImageView style="@style/FormIcon"
 				android:src="@drawable/ic_action_sort_by_size"/>
 
-				<EditText android:id="@+id/input_description"
-					android:layout_width="0dp"
-					android:layout_weight="5"
-					android:layout_height="wrap_content"
-					android:singleLine="false"
-					android:hint="@string/label_transaction_description"
-					android:inputType="textMultiLine|textCapSentences" />
+			<EditText android:id="@+id/input_description"
+				android:layout_width="0dp"
+				android:layout_weight="5"
+				android:layout_height="wrap_content"
+				android:singleLine="false"
+				android:background="@android:color/transparent"
+				android:hint="@string/label_transaction_description"
+				android:inputType="textMultiLine|textCapSentences" />
 		</TableRow>
-
+		<View style="@style/Divider" />
 		<TableRow style="@style/FormRow">
 
-			<ImageView android:layout_width="0dp"
-				android:layout_weight="0.5"
-				android:layout_height="wrap_content"
-				android:layout_marginRight="5dp"
-				android:layout_marginEnd="5dp"
+			<ImageView style="@style/FormIcon"
 				android:src="@drawable/ic_action_rotate_right"/>
 
 			<TextView android:id="@+id/input_recurrence"

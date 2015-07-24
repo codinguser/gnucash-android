@@ -47,7 +47,7 @@
     <string name="title_confirm_delete">Confirm delete</string>
     <string name="delete_account_confirmation_message">All transactions in this account will also be deleted</string>
     <string name="title_edit_transaction">Edit Transaction</string>
-    <string name="label_transaction_description">Note</string>
+    <string name="label_transaction_description">Add note</string>
     <string name="menu_move">MOVE</string>
     <string name="title_selected">%1$d selected</string>
     <string name="label_account_balance">Balance:</string>

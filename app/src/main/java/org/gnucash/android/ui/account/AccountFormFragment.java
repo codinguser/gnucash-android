@@ -320,6 +320,7 @@ public class AccountFormFragment extends Fragment {
                                         .setTitle(R.string.title_edit_account);
         }
 
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_close_white_24dp);
         mRootAccountUID = mAccountsDbAdapter.getOrCreateGnuCashRootAccountUID();
         if (mRootAccountUID != null)
             mRootAccountId = mAccountsDbAdapter.getID(mRootAccountUID);
@@ -519,6 +520,8 @@ public class AccountFormFragment extends Fragment {
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 		super.onCreateOptionsMenu(menu, inflater);
 		inflater.inflate(R.menu.default_save_actions, menu);
+        menu.removeItem(R.id.menu_search);
+        menu.removeItem(R.id.menu_settings);
 	}
 	
 	@Override
@@ -528,7 +531,7 @@ public class AccountFormFragment extends Fragment {
 			saveAccount();
 			return true;
 
-		case R.id.menu_cancel:
+		case android.R.id.home:
 			finishFragment();
 			return true;
 		}

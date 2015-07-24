@@ -52,7 +52,7 @@ public class BaseDrawerActivity extends AppCompatActivity {
     protected NavigationView mNavigationView;
 
     protected CharSequence  mTitle;
-    private ActionBarDrawerToggle mDrawerToggle;
+    protected ActionBarDrawerToggle mDrawerToggle;
 
     private class DrawerItemClickListener implements NavigationView.OnNavigationItemSelectedListener {
 

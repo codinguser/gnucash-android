@@ -89,10 +89,11 @@
 
     <style name="FormRow">
         <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_height">?android:attr/listPreferredItemHeight</item>
         <item name="android:orientation">vertical</item>
         <item name="android:gravity">center_vertical</item>
         <item name="android:layout_marginBottom">@dimen/form_row_bottom_margin</item>
+        <item name="android:layout_marginTop">@dimen/form_row_bottom_margin</item>
     </style>
 
     <style name="NumericButton" parent="@android:style/Widget.Button">
@@ -114,5 +115,25 @@
         <item name="android:maxLength">1</item>
         <item name="android:hint">*</item>
         <item name="android:textSize">33sp</item>
+    </style>
+
+    <style name="Divider">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">1dp</item>
+        <item name="android:background">?android:attr/listDivider</item>
+        <item name="android:layout_marginLeft">40dp</item>
+    </style>
+
+    <style name="FormIcon">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_weight">0.5</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginRight">10dp</item>
+        <item name="android:layout_marginEnd">10dp</item>
+    </style>
+
+    <style name="ActionMenuText" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="android:textSize">16sp</item>
+        <item name="android:textAllCaps">true</item>
     </style>
 </resources>

@@ -300,7 +300,7 @@ public class TransactionsActivity extends PassLockActivity implements
 		if (action.equals(Intent.ACTION_INSERT_OR_EDIT) || action.equals(Intent.ACTION_INSERT)) {
             mViewPager.setVisibility(View.GONE);
             mTabLayout.setVisibility(View.GONE);
-
+            mDrawerToggle.setDrawerIndicatorEnabled(false);
             initializeCreateOrEditTransaction();
         } else {	//load the transactions list
             mSectionHeaderTransactions.setVisibility(View.GONE);
