@@ -20,6 +20,7 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.preference.PreferenceManager;
 import android.support.test.InstrumentationRegistry;
+import android.support.test.espresso.contrib.DrawerActions;
 import android.support.test.runner.AndroidJUnit4;
 import android.test.ActivityInstrumentationTestCase2;
 import android.util.Log;
@@ -145,9 +146,8 @@ public class ExportTransactionsTest extends
 		for (File file : folder.listFiles()) {
 			file.delete();
 		}
-		//legacy menu will be removed in the future
-		//onView(withId(R.id.menu_export)).perform(click());
-		onView(withId(android.R.id.home)).perform(click());
+
+		DrawerActions.openDrawer(R.id.drawer_layout);
 		onView(withText(R.string.nav_menu_export)).perform(click());
 		onView(withText(format.name())).perform(click());
 
@@ -178,7 +178,7 @@ public class ExportTransactionsTest extends
 	 */
 	@Test
 	public void shouldCreateExportSchedule(){
-		onView(withId(android.R.id.home)).perform(click());
+		DrawerActions.openDrawer(R.id.drawer_layout);
 		onView(withText(R.string.nav_menu_export)).perform(click());
 
 		onView(withText(ExportFormat.XML.name())).perform(click());

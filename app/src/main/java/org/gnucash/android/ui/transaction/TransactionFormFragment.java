@@ -21,7 +21,6 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -70,7 +69,7 @@ import org.gnucash.android.ui.UxArgument;
 import org.gnucash.android.ui.transaction.dialog.SplitEditorDialogFragment;
 import org.gnucash.android.ui.util.AmountInputFormatter;
 import org.gnucash.android.ui.util.RecurrenceParser;
-import org.gnucash.android.ui.util.TransactionTypeToggleButton;
+import org.gnucash.android.ui.util.TransactionTypeSwitch;
 import org.gnucash.android.ui.widget.WidgetConfigurationActivity;
 import org.gnucash.android.util.QualifiedAccountNameCursorAdapter;
 
@@ -135,7 +134,7 @@ public class TransactionFormFragment extends Fragment implements
 	/**
 	 * Button for setting the transaction type, either credit or debit
 	 */
-	private TransactionTypeToggleButton mTransactionTypeButton;
+	private TransactionTypeSwitch mTransactionTypeButton;
 
 	/**
 	 * Input field for the transaction name (description)
@@ -232,7 +231,7 @@ public class TransactionFormFragment extends Fragment implements
 		mTimeTextView           = (TextView) v.findViewById(R.id.input_time);
 		mAmountEditText         = (EditText) v.findViewById(R.id.input_transaction_amount);
 		mCurrencyTextView       = (TextView) v.findViewById(R.id.currency_symbol);
-		mTransactionTypeButton  = (TransactionTypeToggleButton) v.findViewById(R.id.input_transaction_type);
+		mTransactionTypeButton  = (TransactionTypeSwitch) v.findViewById(R.id.input_transaction_type);
 		mDoubleAccountSpinner   = (Spinner) v.findViewById(R.id.input_double_entry_accounts_spinner);
         mOpenSplitsButton       = (Button) v.findViewById(R.id.btn_open_splits);
         mRecurrenceTextView     = (TextView) v.findViewById(R.id.input_recurrence);

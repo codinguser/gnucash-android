@@ -34,18 +34,18 @@ import org.gnucash.android.ui.transaction.TransactionFormFragment;
  * different account types.
  * @author Ngewi Fet <ngewif@gmail.com>
  */
-public class TransactionTypeToggleButton extends SwitchCompat {
+public class TransactionTypeSwitch extends SwitchCompat {
     private AccountType mAccountType = AccountType.EXPENSE;
 
-    public TransactionTypeToggleButton(Context context, AttributeSet attrs, int defStyle) {
+    public TransactionTypeSwitch(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
     }
 
-    public TransactionTypeToggleButton(Context context, AttributeSet attrs) {
+    public TransactionTypeSwitch(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public TransactionTypeToggleButton(Context context) {
+    public TransactionTypeSwitch(Context context) {
         super(context);
     }
 
@@ -151,15 +151,16 @@ public class TransactionTypeToggleButton extends SwitchCompat {
 
         @Override
         public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+            setText(isChecked ? getTextOn() : getTextOff());
             if (isChecked){
                 int red = getResources().getColor(R.color.debit_red);
-                TransactionTypeToggleButton.this.setTextColor(red);
+                TransactionTypeSwitch.this.setTextColor(red);
                 mAmountEditText.setTextColor(red);
                 mCurrencyTextView.setTextColor(red);
             }
             else {
                 int green = getResources().getColor(R.color.credit_green);
-                TransactionTypeToggleButton.this.setTextColor(green);
+                TransactionTypeSwitch.this.setTextColor(green);
                 mAmountEditText.setTextColor(green);
                 mCurrencyTextView.setTextColor(green);
             }

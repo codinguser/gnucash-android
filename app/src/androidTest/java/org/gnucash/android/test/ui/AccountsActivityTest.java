@@ -173,7 +173,7 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
      */
     @Test
 	public void testCreateAccount(){
-        onView(withId(R.id.fab_create_account)).check(matches(isDisplayed())).perform(click());
+        onView(allOf(isDisplayed(), withId(R.id.fab_create_account))).perform(click());
 
         String NEW_ACCOUNT_NAME = "A New Account";
         onView(withId(R.id.input_account_name)).perform(typeText(NEW_ACCOUNT_NAME));
