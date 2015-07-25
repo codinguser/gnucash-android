@@ -113,9 +113,12 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
 
     private boolean mGroupSmallerSlices = true;
 
-    private boolean mDataForCurrentMonth = false;
-
     private String mCurrencyCode;
+
+    private TimePeriod mTimePeriod = TimePeriod.ALL_TIME;
+    private enum TimePeriod {
+        PREVIOUS_MONTH, NEXT_MONTH, ALL_TIME
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -150,8 +153,8 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
 
             @Override
             public void onClick(View view) {
+                mTimePeriod = TimePeriod.PREVIOUS_MONTH;
                 mChartDate = mChartDate.minusMonths(1);
-                mDataForCurrentMonth = true;
                 displayChart();
             }
         });
@@ -159,8 +162,8 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
 
             @Override
             public void onClick(View view) {
+                mTimePeriod = TimePeriod.NEXT_MONTH;
                 mChartDate = mChartDate.plusMonths(1);
-                mDataForCurrentMonth = true;
                 displayChart();
             }
         });
@@ -191,33 +194,46 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
         mChart.highlightValues(null);
         mChart.clear();
 
-        mChart.setData(getData(mDataForCurrentMonth));
-        if (mChartDataPresent) {
-            if (mGroupSmallerSlices) {
-                mChart.setData(groupSmallerSlices());
-            }
+        PieData pieData = getData();
+        if (pieData != null && pieData.getYValCount() != 0) {
+            mChartDataPresent = true;
+            mChart.setData(mGroupSmallerSlices ? groupSmallerSlices() : pieData);
             float sum = mChart.getData().getYValueSum();
             String total = getResources().getString(R.string.label_chart_total);
             String currencySymbol = Currency.getInstance(mCurrencyCode).getSymbol(Locale.getDefault());
             mChart.setCenterText(String.format(TOTAL_VALUE_LABEL_PATTERN, total, sum, currencySymbol));
             mChart.animateXY(ANIMATION_DURATION, ANIMATION_DURATION);
         } else {
+            mChartDataPresent = false;
             mChart.setCenterText(getResources().getString(R.string.label_chart_no_data));
+            if (mTimePeriod != TimePeriod.ALL_TIME) {
+                switch (mTimePeriod) {
+                    case NEXT_MONTH:
+                        mChartDate = mChartDate.plusMonths(1);
+                        displayChart();
+                        return;
+                    case PREVIOUS_MONTH:
+                        mChartDate = mChartDate.minusMonths(1);
+                        displayChart();
+                        return;
+                }
+            } else {
+                mChart.setData(getEmptyData());
+            }
         }
 
         mChart.setTouchEnabled(mChartDataPresent);
         mChart.invalidate();
 
         mChartDateTextView.setEnabled(mChartDataPresent);
-        mChartDateTextView.setText(mDataForCurrentMonth ? mChartDate.toString(DATE_PATTERN) : getResources().getString(R.string.label_chart_overall));
+        mChartDateTextView.setText(mTimePeriod != TimePeriod.ALL_TIME ? mChartDate.toString(DATE_PATTERN) : getResources().getString(R.string.label_chart_overall));
     }
 
     /**
      * Returns {@code PieData} instance with data entries and labels
-     * @param forCurrentMonth sets data only for current month if {@code true}, otherwise for all time
      * @return {@code PieData} instance
      */
-    private PieData getData(boolean forCurrentMonth) {
+    private PieData getData() {
         PieDataSet dataSet = new PieDataSet(null, "");
         List<String> labels = new ArrayList<>();
         List<Integer> colors = new ArrayList<>();
@@ -227,7 +243,7 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
                     && account.getCurrency() == Currency.getInstance(mCurrencyCode)) {
 
                 long start = -1; long end = -1;
-                if (forCurrentMonth) {
+                if (mTimePeriod != TimePeriod.ALL_TIME) {
                     start = mChartDate.dayOfMonth().withMinimumValue().millisOfDay().withMinimumValue().toDate().getTime();
                     end = mChartDate.dayOfMonth().withMaximumValue().millisOfDay().withMaximumValue().toDate().getTime();
                 }
@@ -241,13 +257,6 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
                 }
             }
         }
-
-        if (dataSet.getEntryCount() == 0) {
-            mChartDataPresent = false;
-            return getEmptyData();
-        }
-
-        mChartDataPresent = true;
         dataSet.setColors(colors);
         dataSet.setSliceSpace(2);
         return new PieData(labels, dataSet);
@@ -334,7 +343,7 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
                 mLatestTransactionDate = new LocalDateTime(mTransactionsDbAdapter.getTimestampOfLatestTransaction(mAccountType, mCurrencyCode));
                 mChartDate = mLatestTransactionDate;
 
-                mDataForCurrentMonth = false;
+                mTimePeriod = TimePeriod.ALL_TIME;
                 displayChart();
             }
 
@@ -435,7 +444,8 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
     public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
         if (view.isShown()) {
             mChartDate = new LocalDateTime(year, monthOfYear + 1, dayOfMonth, 0, 0);
-            mDataForCurrentMonth = true;
+            // no matter next or previous
+            mTimePeriod = TimePeriod.NEXT_MONTH;
             displayChart();
         }
     }
