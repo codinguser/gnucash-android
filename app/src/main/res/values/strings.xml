@@ -40,7 +40,7 @@
     <string name="label_credit">CREDIT</string>
     <string name="title_accounts">Accounts</string>
     <string name="title_transactions">Transactions</string>
-    <string name="menu_delete">DELETE</string>
+    <string name="menu_delete">Delete</string>
     <string name="alert_dialog_ok_delete">Delete</string>
     <string name="alert_dialog_cancel">Cancel</string>
     <string name="toast_account_deleted">Account deleted</string>
