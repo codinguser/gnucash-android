@@ -197,7 +197,7 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
         PieData pieData = getData();
         if (pieData != null && pieData.getYValCount() != 0) {
             mChartDataPresent = true;
-            mChart.setData(mGroupSmallerSlices ? groupSmallerSlices() : pieData);
+            mChart.setData(mGroupSmallerSlices ? groupSmallerSlices(pieData) : pieData);
             float sum = mChart.getData().getYValueSum();
             String total = getResources().getString(R.string.label_chart_total);
             String currencySymbol = Currency.getInstance(mCurrencyCode).getSymbol(Locale.getDefault());
@@ -407,18 +407,18 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
      * Groups smaller slices. All smaller slices will be combined and displayed as a single "Other".
      * @return a {@code PieData} instance with combined smaller slices
      */
-    private PieData groupSmallerSlices() {
+    private PieData groupSmallerSlices(PieData data) {
         float otherSlice = 0f;
         List<Entry> newEntries = new ArrayList<>();
         List<String> newLabels = new ArrayList<>();
         List<Integer> newColors = new ArrayList<>();
-        List<Entry> entries = mChart.getData().getDataSet().getYVals();
+        List<Entry> entries = data.getDataSet().getYVals();
         for (int i = 0; i < entries.size(); i++) {
             float val = entries.get(i).getVal();
-            if (val / mChart.getYValueSum() * 100 > GROUPING_SMALLER_SLICES_THRESHOLD) {
+            if (val / data.getYValueSum() * 100 > GROUPING_SMALLER_SLICES_THRESHOLD) {
                 newEntries.add(new Entry(val, newEntries.size()));
-                newLabels.add(mChart.getData().getXVals().get(i));
-                newColors.add(mChart.getData().getDataSet().getColors().get(i));
+                newLabels.add(data.getXVals().get(i));
+                newColors.add(data.getDataSet().getColors().get(i));
             } else {
                 otherSlice += val;
             }
