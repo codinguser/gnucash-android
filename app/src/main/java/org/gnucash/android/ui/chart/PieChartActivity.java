@@ -85,6 +85,10 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
     private static final int NO_DATA_COLOR = Color.LTGRAY;
     public static final int CENTER_TEXT_SIZE = 18;
     /**
+     * The space in degrees between the chart slices
+     */
+    private static final float SPACE_BETWEEN_SLICES = 2f;
+    /**
      * All pie slices less than this threshold will be group in "other" slice. Using percents not absolute values.
      */
     private static final double GROUPING_SMALLER_SLICES_THRESHOLD = 5;
@@ -116,6 +120,9 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
     private String mCurrencyCode;
 
     private TimePeriod mTimePeriod = TimePeriod.ALL_TIME;
+    /**
+     * Used to specify the time period for which data will be displayed
+     */
     private enum TimePeriod {
         PREVIOUS_MONTH, NEXT_MONTH, ALL_TIME
     }
@@ -230,7 +237,7 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
     }
 
     /**
-     * Returns {@code PieData} instance with data entries and labels
+     * Returns {@code PieData} instance with data entries, colors and labels
      * @return {@code PieData} instance
      */
     private PieData getData() {
@@ -258,7 +265,7 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
             }
         }
         dataSet.setColors(colors);
-        dataSet.setSliceSpace(2);
+        dataSet.setSliceSpace(SPACE_BETWEEN_SLICES);
         return new PieData(labels, dataSet);
     }
 
@@ -405,6 +412,7 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
 
     /**
      * Groups smaller slices. All smaller slices will be combined and displayed as a single "Other".
+     * @param data the pie data which smaller slices will be grouped
      * @return a {@code PieData} instance with combined smaller slices
      */
     private PieData groupSmallerSlices(PieData data) {
@@ -431,7 +439,7 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
         }
 
         PieDataSet dataSet = new PieDataSet(newEntries, "");
-        dataSet.setSliceSpace(2);
+        dataSet.setSliceSpace(SPACE_BETWEEN_SLICES);
         dataSet.setColors(newColors);
         return new PieData(newLabels, dataSet);
     }
