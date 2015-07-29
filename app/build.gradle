@@ -20,13 +20,13 @@ def gitSha() {
 
 
 android {
-    compileSdkVersion 19
-    buildToolsVersion "21.1.2" //maintain this version until we migrate to ActionBarCompat
+    compileSdkVersion 21
+    buildToolsVersion "22.0.1"
     defaultConfig {
         applicationId "org.gnucash.android"
         testApplicationId 'org.gnucash.android.test'
         minSdkVersion 10
-        targetSdkVersion 19
+        targetSdkVersion 21 //robolectric tests only support up to API level 21 at the moment
         versionCode versionMajor * 10000 + versionMinor * 1000 + versionPatch * 100 + versionBuild
         versionName "${versionMajor}.${versionMinor}.${versionPatch}"
         resValue "string", "app_version_name", "${versionName}"
@@ -151,26 +151,31 @@ afterEvaluate {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile('com.android.support:support-v4:22.1.1',
-            'com.actionbarsherlock:actionbarsherlock:4.4.0@aar',
+    compile('com.android.support:support-v4:22.2.0',
+            'com.android.support:appcompat-v7:22.2.0',
+            'com.android.support:design:22.2.0',
             'com.viewpagerindicator:library:2.4.1@aar',
             'com.doomonafireball.betterpickers:library:1.6.0',
-            'com.commonsware.cwac:merge:1.1.+',
+            'org.jraf:android-switch-backport:1.4.0@aar',
             'com.github.PhilJay:MPAndroidChart:v2.1.0',
             'joda-time:joda-time:2.7',
             'com.google.android.gms:play-services-drive:7.0.0',
-            'com.crashlytics.android:crashlytics:1.+'
+            'com.crashlytics.android:crashlytics:1.+',
+            'com.android.support:cardview-v7:22.2.0',
+            'com.android.support:recyclerview-v7:22.2.0'
     )
 
-    testCompile('org.robolectric:robolectric:3.0-rc2',
+    testCompile('org.robolectric:robolectric:3.0',
             'junit:junit:4.12',
             'org.assertj:assertj-core:1.7.1'
     )
-    androidTestCompile 'com.android.support.test:runner:0.2'
-    androidTestCompile 'com.android.support.test:rules:0.2'
+    androidTestCompile ('com.android.support.test:runner:0.2',
+                        'com.android.support.test:rules:0.2',
+                        'com.android.support.test.espresso:espresso-core:2.1',
+                        'com.android.support:support-annotations:22.2.0',
+                        'com.android.support.test.espresso:espresso-contrib:2.2')
+
     androidTestCompile('com.squareup.assertj:assertj-android:1.0.0'){
         exclude group: 'com.android.support', module:'support-annotations'
     }
-    androidTestCompile ('com.android.support.test.espresso:espresso-core:2.1')
-    androidTestCompile 'com.android.support:support-annotations:22.1.1'
 }

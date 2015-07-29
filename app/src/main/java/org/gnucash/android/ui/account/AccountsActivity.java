@@ -30,6 +30,7 @@ import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -38,31 +39,29 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBar;
 import android.util.Log;
 import android.util.SparseArray;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuInflater;
-import com.actionbarsherlock.view.MenuItem;
 import com.crashlytics.android.Crashlytics;
-import com.viewpagerindicator.TitlePageIndicator;
 
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.DatabaseSchema;
-import org.gnucash.android.ui.export.ExportDialogFragment;
 import org.gnucash.android.export.xml.GncXmlExporter;
 import org.gnucash.android.importer.ImportAsyncTask;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.ui.UxArgument;
-import org.gnucash.android.ui.chart.ChartReportActivity;
+import org.gnucash.android.ui.export.ExportDialogFragment;
 import org.gnucash.android.ui.passcode.PassLockActivity;
 import org.gnucash.android.ui.settings.SettingsActivity;
-import org.gnucash.android.ui.transaction.ScheduledActionsActivity;
 import org.gnucash.android.ui.transaction.TransactionsActivity;
 import org.gnucash.android.ui.util.OnAccountClickedListener;
 import org.gnucash.android.ui.util.Refreshable;
@@ -147,13 +146,12 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
     /**
      * ViewPager which manages the different tabs
      */
-    private ViewPager mPager;
+    private ViewPager mViewPager;
 
 	/**
 	 * Dialog which is shown to the user on first start prompting the user to create some accounts
 	 */
 	private AlertDialog mDefaultAccountsDialog;
-    private TitlePageIndicator mTitlePageIndicator;
 
 
     /**
@@ -215,31 +213,37 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
     }
 
     public AccountsListFragment getCurrentAccountListFragment(){
-        int index = mPager.getCurrentItem();
+        int index = mViewPager.getCurrentItem();
         return (AccountsListFragment)(mFragmentPageReferenceMap.get(index));
     }
 
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-        //it is necessary to set the view first before calling super because of the nav drawer in BaseDrawerActivity
-        setContentView(R.layout.activity_accounts);
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_accounts);
+        setUpDrawer();
 
         final Intent intent = getIntent();
         handleOpenFileIntent(intent);
 
         init();
 
-        mPager = (ViewPager) findViewById(R.id.pager);
-        mTitlePageIndicator = (TitlePageIndicator) findViewById(R.id.titles);
+        final ActionBar actionBar = getSupportActionBar();
+        actionBar.setElevation(0);
+        TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
+        tabLayout.addTab(tabLayout.newTab().setText(R.string.title_recent_accounts));
+        tabLayout.addTab(tabLayout.newTab().setText(R.string.title_all_accounts));
+        tabLayout.addTab(tabLayout.newTab().setText(R.string.title_favorite_accounts));
+        tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
+
+        mViewPager = (ViewPager) findViewById(R.id.pager);
 
         String action = intent.getAction();
         if (action != null && action.equals(Intent.ACTION_INSERT_OR_EDIT)) {
             //enter account creation/edit mode if that was specified
-            mPager.setVisibility(View.GONE);
-            mTitlePageIndicator.setVisibility(View.GONE);
-
+            mViewPager.setVisibility(View.GONE);
+            tabLayout.setVisibility(View.GONE);
             String accountUID = intent.getStringExtra(UxArgument.SELECTED_ACCOUNT_UID);
             if (accountUID != null)
                 showEditAccountFragment(accountUID);
@@ -247,18 +251,35 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
                 String parentAccountUID = intent.getStringExtra(UxArgument.PARENT_ACCOUNT_UID);
                 showAddAccountFragment(parentAccountUID);
             }
+            mDrawerToggle.setDrawerIndicatorEnabled(false);
         } else {
             //show the simple accounts list
             PagerAdapter mPagerAdapter = new AccountViewPagerAdapter(getSupportFragmentManager());
-            mPager.setAdapter(mPagerAdapter);
-            mTitlePageIndicator.setViewPager(mPager);
+            mViewPager.setAdapter(mPagerAdapter);
 
             SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
             int lastTabIndex = preferences.getInt(LAST_OPEN_TAB_INDEX, INDEX_TOP_LEVEL_ACCOUNTS_FRAGMENT);
             int index = intent.getIntExtra(EXTRA_TAB_INDEX, lastTabIndex);
-            mPager.setCurrentItem(index);
+            mViewPager.setCurrentItem(index);
         }
 
+        mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+        tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                mViewPager.setCurrentItem(tab.getPosition());
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+        });
 	}
 
     /**
@@ -299,7 +320,7 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
      * @param index Index of fragment to be loaded
      */
     public void setTab(int index){
-        mPager.setCurrentItem(index);
+        mViewPager.setCurrentItem(index);
     }
 
     /**
@@ -325,7 +346,7 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
             dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
                 @Override
                 public void onDismiss(DialogInterface dialog) {
-                    mDrawerLayout.openDrawer(mDrawerList);
+                    mDrawerLayout.openDrawer(mNavigationView);
                 }
             });
         }
@@ -336,7 +357,7 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
     protected void onDestroy() {
         super.onDestroy();
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-        preferences.edit().putInt(LAST_OPEN_TAB_INDEX, mPager.getCurrentItem()).apply();
+        preferences.edit().putInt(LAST_OPEN_TAB_INDEX, mViewPager.getCurrentItem()).apply();
     }
 
     /**
@@ -405,7 +426,7 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
 
     @Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		MenuInflater inflater = getSupportMenuInflater();
+		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.global_actions, menu);
 		return true;
 	}
@@ -416,19 +437,8 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
             case android.R.id.home:
                 return super.onOptionsItemSelected(item);
 
-            case R.id.menu_recurring_transactions:
-                Intent intent = new Intent(this, ScheduledActionsActivity.class);
-                intent.putExtra(ScheduledActionsActivity.EXTRA_DISPLAY_MODE,
-                        ScheduledActionsActivity.DisplayMode.TRANSACTION_ACTIONS);
-                startActivity(intent);
-                return true;
-
             case R.id.menu_settings:
                 startActivity(new Intent(this, SettingsActivity.class));
-                return true;
-
-            case R.id.menu_reports:
-                startActivity(new Intent(this, ChartReportActivity.class));
                 return true;
 
 		default:
@@ -557,7 +567,7 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
             @Override
             public void onDismiss(DialogInterface dialog) {
                 removeFirstRunFlag();
-                mDrawerLayout.openDrawer(mDrawerList);
+                mDrawerLayout.openDrawer(mNavigationView);
             }
         });
 		mDefaultAccountsDialog.show();

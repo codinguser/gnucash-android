@@ -110,8 +110,6 @@
 	        style="@style/TextAppearance.Hint" />
 
         <LinearLayout android:id="@+id/recurrence_options"
-            android:layout_height="wrap_content"
-            android:layout_width="match_parent"
             style="@style/FormRow">
             <TextView
                 android:id="@+id/label_recurring_transaction"

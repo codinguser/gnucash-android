@@ -17,14 +17,11 @@
 package org.gnucash.android.ui.settings;
 
 import android.annotation.TargetApi;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
-import android.preference.PreferenceManager;
-
-import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.SherlockPreferenceActivity;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 
 import org.gnucash.android.R;
 import org.gnucash.android.ui.account.AccountsActivity;
@@ -42,7 +39,7 @@ public class AboutPreferenceFragment extends PreferenceFragment{
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		addPreferencesFromResource(R.xml.fragment_about_preferences);
-		ActionBar actionBar = ((SherlockPreferenceActivity) getActivity()).getSupportActionBar();
+		ActionBar actionBar = ((AppCompatPreferenceActivity) getActivity()).getSupportActionBar();
 		actionBar.setHomeButtonEnabled(true);
 		actionBar.setDisplayHomeAsUpEnabled(true);
 		actionBar.setTitle(R.string.title_about_gnucash);

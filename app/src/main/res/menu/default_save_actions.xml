@@ -15,13 +15,11 @@
  limitations under the License.
 -->
 
-<menu xmlns:android="http://schemas.android.com/apk/res/android" >
-    <item android:id="@+id/menu_cancel"
-          android:icon="@drawable/navigation_cancel_holo_dark"
-          android:title="@string/btn_cancel"
-          android:showAsAction="always|withText"/>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto">
+
     <item android:id="@+id/menu_save"
-          android:icon="@drawable/navigation_accept_holo_dark"
-          android:title="@string/btn_save"
-          android:showAsAction="always|withText"/>
+        android:title="@string/btn_save"
+        app:showAsAction="always|withText"/>
+
 </menu>

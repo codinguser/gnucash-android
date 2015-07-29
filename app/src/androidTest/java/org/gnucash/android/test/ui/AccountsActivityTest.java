@@ -24,6 +24,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.preference.PreferenceManager;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.Espresso;
+import android.support.test.espresso.contrib.RecyclerViewActions;
 import android.support.test.runner.AndroidJUnit4;
 import android.support.v4.app.Fragment;
 import android.test.ActivityInstrumentationTestCase2;
@@ -53,6 +54,7 @@ import java.util.List;
 
 import static android.support.test.espresso.Espresso.onData;
 import static android.support.test.espresso.Espresso.onView;
+import static android.support.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu;
 import static android.support.test.espresso.action.ViewActions.clearText;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.longClick;
@@ -64,6 +66,7 @@ import static android.support.test.espresso.matcher.ViewMatchers.isChecked;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.isNotChecked;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
+import static android.support.test.espresso.matcher.ViewMatchers.withParent;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.allOf;
@@ -161,10 +164,10 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
         //enter search query
 //        ActionBarUtils.clickSherlockActionBarItem(mSolo, R.id.menu_search);
         onView(withId(R.id.menu_search)).perform(click());
-        onView(withId(R.id.abs__search_src_text)).perform(typeText("Se"));
+        onView(withId(R.id.search_src_text)).perform(typeText("Se"));
         onView(withText(SEARCH_ACCOUNT_NAME)).check(matches(isDisplayed()));
 
-        onView(withId(R.id.abs__search_src_text)).perform(clearText());
+        onView(withId(R.id.search_src_text)).perform(clearText());
         onView(withId(R.id.primary_text)).check(matches(not(withText(SEARCH_ACCOUNT_NAME))));
     }
 
@@ -173,7 +176,7 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
      */
     @Test
 	public void testCreateAccount(){
-        onView(withId(R.id.menu_add_account)).check(matches(isDisplayed())).perform(click());
+        onView(allOf(isDisplayed(), withId(R.id.fab_create_account))).perform(click());
 
         String NEW_ACCOUNT_NAME = "A New Account";
         onView(withId(R.id.input_account_name)).perform(typeText(NEW_ACCOUNT_NAME));
@@ -206,8 +209,9 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
 
         refreshAccountsList();
 
-        onView(withText(accountName)).perform(longClick());
-        onView(withId(R.id.context_menu_edit_accounts)).perform(click());
+        onView(withText(accountName)).perform(click());
+        openActionBarOverflowOrOptionsMenu(mAcccountsActivity);
+        onView(withText(R.string.title_edit_account)).perform(click());
         onView(withId(R.id.fragment_account_form)).check(matches(isDisplayed()));
         Espresso.closeSoftKeyboard();
         onView(withId(R.id.checkbox_parent_account)).perform(scrollTo())
@@ -232,7 +236,7 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
     public void shouldHideParentAccountViewWhenNoParentsExist(){
         onView(allOf(withText(DUMMY_ACCOUNT_NAME), isDisplayed())).perform(click());
         onView(withId(R.id.fragment_transaction_list)).perform(swipeRight());
-        onView(withText(R.string.label_create_account)).check(matches(isDisplayed())).perform(click());
+        onView(withId(R.id.fab_create_account)).check(matches(isDisplayed())).perform(click());
         sleep(1000);
         onView(withId(R.id.checkbox_parent_account)).check(matches(allOf(isChecked())));
         onView(withId(R.id.input_account_name)).perform(typeText("Trading account"));
@@ -252,8 +256,8 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
 	public void testEditAccount(){
 		String editedAccountName = "Edited Account";
         sleep(2000);
-        onView(withId(R.id.primary_text)).perform(longClick());
-        onView(withId(R.id.context_menu_edit_accounts)).perform(click());
+        onView(withId(R.id.options_menu)).perform(longClick());
+        onView(withText(R.string.title_edit_account)).perform(click());
 
         onView(withId(R.id.fragment_account_form)).check(matches(isDisplayed()));
 
@@ -270,8 +274,9 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
 
     @Test
     public void editingAccountShouldNotDeleteTransactions(){
-        onView(allOf(withText(DUMMY_ACCOUNT_NAME), isDisplayed()))
-                .perform(longClick());
+        onView(allOf(withId(R.id.options_menu), isDisplayed()))
+                .perform(click());
+
         Account account = new Account("Transfer Account");
 
         Transaction transaction = new Transaction("Simple trxn");
@@ -284,7 +289,7 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
         assertThat(mAccountsDbAdapter.getAccount(DUMMY_ACCOUNT_UID).getTransactionCount()).isEqualTo(1);
         assertThat(mSplitsDbAdapter.getSplitsForTransaction(transaction.getUID())).hasSize(2);
 
-        onView(withId(R.id.context_menu_edit_accounts)).perform(click());
+        onView(withText(R.string.title_edit_account)).perform(click());
 
         onView(withId(R.id.menu_save)).perform(click());
         assertThat(mAccountsDbAdapter.getAccount(DUMMY_ACCOUNT_UID).getTransactionCount()).isEqualTo(1);
@@ -309,8 +314,8 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
     @Test(expected = IllegalArgumentException.class)
 	public void testDeleteSimpleAccount() {
         sleep(2000);
-        onView(withText(DUMMY_ACCOUNT_NAME)).perform(longClick());
-        onView(withId(R.id.context_menu_delete)).perform(click());
+        onView(withId(R.id.options_menu)).perform(click());
+        onView(withText(R.string.menu_delete)).perform(click());
 
         //the account has no sub-accounts
 //        onView(withId(R.id.accounts_options)).check(matches(not(isDisplayed())));

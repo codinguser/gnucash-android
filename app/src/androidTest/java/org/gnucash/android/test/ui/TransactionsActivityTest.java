@@ -24,9 +24,17 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.preference.PreferenceManager;
 import android.support.test.InstrumentationRegistry;
+import android.support.test.espresso.Espresso;
+import android.support.test.espresso.ViewAction;
+import android.support.test.espresso.action.CoordinatesProvider;
+import android.support.test.espresso.action.GeneralClickAction;
+import android.support.test.espresso.action.Press;
+import android.support.test.espresso.action.Tap;
 import android.support.test.runner.AndroidJUnit4;
 import android.test.ActivityInstrumentationTestCase2;
 import android.util.Log;
+import android.view.View;
+import android.widget.EditText;
 
 import org.gnucash.android.R;
 import org.gnucash.android.db.AccountsDbAdapter;
@@ -174,14 +182,16 @@ public class TransactionsActivityTest extends
 		validateTransactionListDisplayed();
 		
 		int beforeCount = mTransactionsDbAdapter.getTransactionsCount(DUMMY_ACCOUNT_UID);
-        onView(withId(R.id.menu_add_transaction)).perform(click());
+        onView(withId(R.id.fab_create_transaction)).perform(click());
 
 		onView(withId(R.id.input_transaction_name))
 				.check(matches(isDisplayed()))
 				.perform(typeText("Lunch"));
 
 		onView(withId(R.id.menu_save)).perform(click());
-		sleep(500);
+		sleep(1000);
+		//form does not close
+		onView(withId(R.id.fragment_transaction_list)).check(matches(isDisplayed()));
 		assertToastDisplayed(R.string.toast_transanction_amount_required);
 
 		int afterCount = mTransactionsDbAdapter.getTransactionsCount(DUMMY_ACCOUNT_UID);
@@ -235,7 +245,7 @@ public class TransactionsActivityTest extends
 		setDefaultTransactionType(TransactionType.DEBIT);
         validateTransactionListDisplayed();
 
-		onView(withId(R.id.menu_add_transaction)).perform(click());
+		onView(withId(R.id.fab_create_transaction)).perform(click());
 
 		onView(withId(R.id.input_transaction_name)).perform(typeText("Lunch"));
 		onView(withId(R.id.input_transaction_amount)).perform(typeText("899"));
@@ -286,14 +296,14 @@ public class TransactionsActivityTest extends
 		assertThat(imbalanceAcctUID).isNull();
 
 		validateTransactionListDisplayed();
-		onView(withId(R.id.menu_add_transaction)).perform(click());
+		onView(withId(R.id.fab_create_transaction)).perform(click());
 		onView(withId(R.id.fragment_transaction_form)).check(matches(isDisplayed()));
 
 		onView(withId(R.id.input_transaction_name)).perform(typeText("Autobalance"));
 		onView(withId(R.id.input_transaction_amount)).perform(typeText("499"));
 
 		//no double entry so no split editor
-		onView(withId(R.id.btn_open_splits)).check(matches(not(isDisplayed())));
+		//TODO: check that the split drawable is not displayed
 		onView(withId(R.id.menu_save)).perform(click());
 
 		assertThat(mTransactionsDbAdapter.getTotalTransactionsCount()).isEqualTo(1);
@@ -323,12 +333,12 @@ public class TransactionsActivityTest extends
 		assertThat(imbalanceAcctUID).isNull();
 
 		validateTransactionListDisplayed();
-		onView(withId(R.id.menu_add_transaction)).perform(click());
+		onView(withId(R.id.fab_create_transaction)).perform(click());
 
 		onView(withId(R.id.input_transaction_name)).perform(typeText("Autobalance"));
 		onView(withId(R.id.input_transaction_amount)).perform(typeText("499"));
 
-		onView(withId(R.id.btn_open_splits)).perform(click());
+		onView(withId(R.id.input_transaction_amount)).perform(clickSplitIcon());
 
 		onView(withId(R.id.split_list_layout)).check(matches(allOf(isDisplayed(), hasDescendant(withId(R.id.input_split_amount)))));
 
@@ -379,17 +389,16 @@ public class TransactionsActivityTest extends
 	public void testDefaultTransactionType(){
 		setDefaultTransactionType(TransactionType.CREDIT);
 
-		onView(withId(R.id.menu_add_transaction)).perform(click());
+		onView(withId(R.id.fab_create_transaction)).perform(click());
 		onView(withId(R.id.input_transaction_type)).check(matches(allOf(isChecked(), withText(R.string.label_spend))));
-		onView(withId(R.id.menu_cancel)).perform(click());
-
+		Espresso.pressBack();
 		//now validate the other case
 
 		setDefaultTransactionType(TransactionType.DEBIT);
 
-		onView(withId(R.id.menu_add_transaction)).perform(click());
+		onView(withId(R.id.fab_create_transaction)).perform(click());
 		onView(withId(R.id.input_transaction_type)).check(matches(allOf(not(isChecked()), withText(R.string.label_receive))));
-		onView(withId(R.id.menu_cancel)).perform(click());
+		Espresso.pressBack();
 	}
 
 	private void setDefaultTransactionType(TransactionType type) {
@@ -501,7 +510,7 @@ public class TransactionsActivityTest extends
 		assertThat(targetCount).isEqualTo(1);
 		
 		int afterOriginCount = mAccountsDbAdapter.getAccount(DUMMY_ACCOUNT_UID).getTransactionCount();
-		assertThat(afterOriginCount).isEqualTo(beforeOriginCount-1);
+		assertThat(afterOriginCount).isEqualTo(beforeOriginCount - 1);
 	}
 
 	//TODO: add normal transaction recording
@@ -538,6 +547,20 @@ public class TransactionsActivityTest extends
 	 */
 	private void clickOnView(int viewId){
 		onView(withId(viewId)).perform(click());
+	}
+
+	public static ViewAction clickSplitIcon(){
+		return new GeneralClickAction(Tap.SINGLE,
+				new CoordinatesProvider() {
+					@Override
+					public float[] calculateCoordinates(View view) {
+						final int DRAWABLE_RIGHT = 2;
+						int x = view.getRight() - ((EditText)view).getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width();
+						int y = view.getTop() + view.getHeight()/2;
+
+						return new float[]{x, y};
+					}
+				}, Press.FINGER);
 	}
 
 	@Override

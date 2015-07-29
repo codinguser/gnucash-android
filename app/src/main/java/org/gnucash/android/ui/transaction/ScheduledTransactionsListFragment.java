@@ -22,12 +22,19 @@ import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.SimpleCursorAdapter;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.view.ActionMode;
 import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.TouchDelegate;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,13 +43,6 @@ import android.widget.CompoundButton;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.SherlockListFragment;
-import com.actionbarsherlock.view.ActionMode;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuInflater;
-import com.actionbarsherlock.view.MenuItem;
 
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
@@ -60,7 +60,7 @@ import java.util.List;
  * Fragment which displays the recurring transactions in the system.
  * @author Ngewi Fet <ngewif@gmail.com>
  */
-public class ScheduledTransactionsListFragment extends SherlockListFragment implements
+public class ScheduledTransactionsListFragment extends ListFragment implements
         LoaderManager.LoaderCallbacks<Cursor> {
 
     /**
@@ -153,7 +153,7 @@ public class ScheduledTransactionsListFragment extends SherlockListFragment impl
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        ActionBar actionBar = getSherlockActivity().getSupportActionBar();
+        ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
         actionBar.setDisplayShowTitleEnabled(true);
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setHomeButtonEnabled(true);
@@ -282,7 +282,8 @@ public class ScheduledTransactionsListFragment extends SherlockListFragment impl
         }
         mInEditMode = true;
         // Start the CAB using the ActionMode.Callback defined above
-        mActionMode = getSherlockActivity().startActionMode(mActionModeCallbacks);
+        mActionMode = ((AppCompatActivity) getActivity())
+                .startSupportActionMode(mActionModeCallbacks);
     }
 
     /**

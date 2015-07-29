@@ -47,7 +47,7 @@ import org.gnucash.android.ui.UxArgument;
 import org.gnucash.android.ui.transaction.TransactionFormFragment;
 import org.gnucash.android.ui.transaction.TransactionsActivity;
 import org.gnucash.android.ui.util.AmountInputFormatter;
-import org.gnucash.android.ui.util.TransactionTypeToggleButton;
+import org.gnucash.android.ui.util.TransactionTypeSwitch;
 import org.gnucash.android.util.QualifiedAccountNameCursorAdapter;
 
 import java.math.BigDecimal;
@@ -169,7 +169,7 @@ public class SplitEditorDialogFragment extends DialogFragment {
             Spinner accountsSpinner = (Spinner) splitView.findViewById(R.id.input_accounts_spinner);
             final TextView splitCurrencyTextView = (TextView) splitView.findViewById(R.id.split_currency_symbol);
             final TextView splitUidTextView = (TextView) splitView.findViewById(R.id.split_uid);
-            final TransactionTypeToggleButton splitTypeButton = (TransactionTypeToggleButton) splitView.findViewById(R.id.btn_split_type);
+            final TransactionTypeSwitch splitTypeButton = (TransactionTypeSwitch) splitView.findViewById(R.id.btn_split_type);
             splitMemoEditText.setEnabled(b);
             splitAmountEditText.setEnabled(b);
             removeSplitButton.setEnabled(b);
@@ -227,7 +227,7 @@ public class SplitEditorDialogFragment extends DialogFragment {
         Spinner accountsSpinner                 = (Spinner)     splitView.findViewById(R.id.input_accounts_spinner);
         final TextView splitCurrencyTextView    = (TextView)    splitView.findViewById(R.id.split_currency_symbol);
         final TextView splitUidTextView         = (TextView)    splitView.findViewById(R.id.split_uid);
-        final TransactionTypeToggleButton splitTypeButton = (TransactionTypeToggleButton) splitView.findViewById(R.id.btn_split_type);
+        final TransactionTypeSwitch splitTypeButton = (TransactionTypeSwitch) splitView.findViewById(R.id.btn_split_type);
 
         splitAmountEditText.addTextChangedListener(new AmountInputFormatter(splitAmountEditText));
 
@@ -344,7 +344,7 @@ public class SplitEditorDialogFragment extends DialogFragment {
             EditText splitAmountEditText            = (EditText)    splitView.findViewById(R.id.input_split_amount);
             Spinner accountsSpinner                 = (Spinner)     splitView.findViewById(R.id.input_accounts_spinner);
             TextView splitUidTextView               = (TextView)    splitView.findViewById(R.id.split_uid);
-            TransactionTypeToggleButton splitTypeButton = (TransactionTypeToggleButton) splitView.findViewById(R.id.btn_split_type);
+            TransactionTypeSwitch splitTypeButton = (TransactionTypeSwitch) splitView.findViewById(R.id.btn_split_type);
 
             BigDecimal amountBigDecimal = TransactionFormFragment.parseInputToDecimal(splitAmountEditText.getText().toString());
             String accountUID = mAccountsDbAdapter.getUID(accountsSpinner.getSelectedItemId());
@@ -409,9 +409,9 @@ public class SplitEditorDialogFragment extends DialogFragment {
      * Updates the account type for the TransactionTypeButton when the selected account is changed in the spinner
      */
     private class TypeButtonLabelUpdater implements AdapterView.OnItemSelectedListener {
-        TransactionTypeToggleButton mTypeToggleButton;
+        TransactionTypeSwitch mTypeToggleButton;
 
-        public TypeButtonLabelUpdater(TransactionTypeToggleButton typeToggleButton){
+        public TypeButtonLabelUpdater(TransactionTypeSwitch typeToggleButton){
             this.mTypeToggleButton = typeToggleButton;
         }
 

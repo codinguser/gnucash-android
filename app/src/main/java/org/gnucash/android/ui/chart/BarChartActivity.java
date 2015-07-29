@@ -20,6 +20,8 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -28,8 +30,6 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuItem;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.data.BarData;
@@ -98,9 +98,9 @@ public class BarChartActivity extends PassLockActivity implements OnChartValueSe
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        //it is necessary to set the view first before calling super because of the nav drawer in BaseDrawerActivity
-        setContentView(R.layout.activity_bar_chart);
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_bar_chart);
+        setUpDrawer();
         getSupportActionBar().setTitle(R.string.title_bar_chart);
 
         selectedValueTextView = (TextView) findViewById(R.id.selected_chart_slice);
@@ -296,7 +296,7 @@ public class BarChartActivity extends PassLockActivity implements OnChartValueSe
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getSupportMenuInflater().inflate(R.menu.chart_actions, menu);
+        getMenuInflater().inflate(R.menu.chart_actions, menu);
         return true;
     }
 

@@ -21,20 +21,26 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.SimpleCursorAdapter;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.format.DateUtils;
 import android.text.format.Time;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
-import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.FilterQueryProvider;
@@ -42,11 +48,6 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.SherlockFragment;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuInflater;
-import com.actionbarsherlock.view.MenuItem;
 import com.doomonafireball.betterpickers.calendardatepicker.CalendarDatePickerDialog;
 import com.doomonafireball.betterpickers.radialtimepicker.RadialTimePickerDialog;
 import com.doomonafireball.betterpickers.recurrencepicker.EventRecurrence;
@@ -68,7 +69,7 @@ import org.gnucash.android.ui.UxArgument;
 import org.gnucash.android.ui.transaction.dialog.SplitEditorDialogFragment;
 import org.gnucash.android.ui.util.AmountInputFormatter;
 import org.gnucash.android.ui.util.RecurrenceParser;
-import org.gnucash.android.ui.util.TransactionTypeToggleButton;
+import org.gnucash.android.ui.util.TransactionTypeSwitch;
 import org.gnucash.android.ui.widget.WidgetConfigurationActivity;
 import org.gnucash.android.util.QualifiedAccountNameCursorAdapter;
 
@@ -88,7 +89,7 @@ import java.util.Locale;
  * Fragment for creating or editing transactions
  * @author Ngewi Fet <ngewif@gmail.com>
  */
-public class TransactionFormFragment extends SherlockFragment implements
+public class TransactionFormFragment extends Fragment implements
         CalendarDatePickerDialog.OnDateSetListener, RadialTimePickerDialog.OnTimeSetListener,
         RecurrencePickerDialog.OnRecurrenceSetListener {
 
@@ -133,7 +134,7 @@ public class TransactionFormFragment extends SherlockFragment implements
 	/**
 	 * Button for setting the transaction type, either credit or debit
 	 */
-	private TransactionTypeToggleButton mTransactionTypeButton;
+	private TransactionTypeSwitch mTransactionTypeButton;
 
 	/**
 	 * Input field for the transaction name (description)
@@ -209,7 +210,6 @@ public class TransactionFormFragment extends SherlockFragment implements
 
     private AmountInputFormatter mAmountInputFormatter;
 
-    private Button mOpenSplitsButton;
     private String mAccountUID;
 
     private List<Split> mSplitsList = new ArrayList<Split>();
@@ -230,9 +230,8 @@ public class TransactionFormFragment extends SherlockFragment implements
 		mTimeTextView           = (TextView) v.findViewById(R.id.input_time);
 		mAmountEditText         = (EditText) v.findViewById(R.id.input_transaction_amount);
 		mCurrencyTextView       = (TextView) v.findViewById(R.id.currency_symbol);
-		mTransactionTypeButton  = (TransactionTypeToggleButton) v.findViewById(R.id.input_transaction_type);
+		mTransactionTypeButton  = (TransactionTypeSwitch) v.findViewById(R.id.input_transaction_type);
 		mDoubleAccountSpinner   = (Spinner) v.findViewById(R.id.input_double_entry_accounts_spinner);
-        mOpenSplitsButton       = (Button) v.findViewById(R.id.btn_open_splits);
         mRecurrenceTextView     = (TextView) v.findViewById(R.id.input_recurrence);
         mSaveTemplateCheckbox = (CheckBox) v.findViewById(R.id.checkbox_save_template);
         return v;
@@ -242,16 +241,17 @@ public class TransactionFormFragment extends SherlockFragment implements
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 		setHasOptionsMenu(true);
-		ActionBar actionBar = getSherlockActivity().getSupportActionBar();
+		ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
 		actionBar.setHomeButtonEnabled(true);
 		actionBar.setDisplayHomeAsUpEnabled(true);
 		actionBar.setDisplayShowTitleEnabled(false);
+        actionBar.setHomeAsUpIndicator(R.drawable.ic_close_white_24dp);
 
 		SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
 		mUseDoubleEntry = sharedPrefs.getBoolean(getString(R.string.key_use_double_entry), false);
 		if (!mUseDoubleEntry){
 			getView().findViewById(R.id.layout_double_entry).setVisibility(View.GONE);
-            mOpenSplitsButton.setVisibility(View.GONE);
+            mAmountEditText.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
 		}
 
         mAccountUID = getArguments().getString(UxArgument.SELECTED_ACCOUNT_UID);
@@ -549,11 +549,21 @@ public class TransactionFormFragment extends SherlockFragment implements
 	private void setListeners() {
         mAmountInputFormatter = new AmountTextWatcher(mAmountEditText); //new AmountInputFormatter(mAmountEditText);
         mAmountEditText.addTextChangedListener(mAmountInputFormatter);
-
-        mOpenSplitsButton.setOnClickListener(new View.OnClickListener() {
+        mAmountEditText.setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public void onClick(View view) {
-                openSplitEditor();
+            public boolean onTouch(View v, MotionEvent event) {
+                final int DRAWABLE_LEFT = 0;
+                final int DRAWABLE_TOP = 1;
+                final int DRAWABLE_RIGHT = 2;
+                final int DRAWABLE_BOTTOM = 3;
+
+                if(event.getAction() == MotionEvent.ACTION_UP) {
+                    if(event.getRawX() >= (mAmountEditText.getRight() - mAmountEditText.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
+                        openSplitEditor();
+                        return true;
+                    }
+                }
+                return false;
             }
         });
 
@@ -608,7 +618,7 @@ public class TransactionFormFragment extends SherlockFragment implements
         mRecurrenceTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                FragmentManager fm = getSherlockActivity().getSupportFragmentManager();
+                FragmentManager fm = getActivity().getSupportFragmentManager();
                 Bundle b = new Bundle();
                 Time t = new Time();
                 t.setToNow();
@@ -834,9 +844,9 @@ public class TransactionFormFragment extends SherlockFragment implements
 		imm.hideSoftInputFromWindow(mDescriptionEditText.getApplicationWindowToken(), 0);
 
 		switch (item.getItemId()) {
-		case R.id.menu_cancel:
-			finish();
-			return true;
+            case android.R.id.home:
+                finish();
+                return true;
 
 		case R.id.menu_save:
             if (mMultiCurrency) {
@@ -894,7 +904,7 @@ public class TransactionFormFragment extends SherlockFragment implements
 			getActivity().finish();
 		} else {
 			//go back to transactions list
-			getSherlockActivity().getSupportFragmentManager().popBackStack();
+			getActivity().getSupportFragmentManager().popBackStack();
 		}
 	}
 

@@ -40,14 +40,14 @@
     <string name="label_credit">CREDIT</string>
     <string name="title_accounts">Accounts</string>
     <string name="title_transactions">Transactions</string>
-    <string name="menu_delete">DELETE</string>
+    <string name="menu_delete">Delete</string>
     <string name="alert_dialog_ok_delete">Delete</string>
     <string name="alert_dialog_cancel">Cancel</string>
     <string name="toast_account_deleted">Account deleted</string>
     <string name="title_confirm_delete">Confirm delete</string>
     <string name="delete_account_confirmation_message">All transactions in this account will also be deleted</string>
     <string name="title_edit_transaction">Edit Transaction</string>
-    <string name="label_transaction_description">Note</string>
+    <string name="label_transaction_description">Add note</string>
     <string name="menu_move">MOVE</string>
     <string name="title_selected">%1$d selected</string>
     <string name="label_account_balance">Balance:</string>

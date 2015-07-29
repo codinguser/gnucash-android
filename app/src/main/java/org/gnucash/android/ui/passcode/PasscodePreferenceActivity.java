@@ -19,10 +19,9 @@ package org.gnucash.android.ui.passcode;
 import android.content.Intent;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v7.app.AppCompatActivity;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.actionbarsherlock.app.SherlockFragmentActivity;
 
 import org.gnucash.android.R;
 import org.gnucash.android.ui.UxArgument;
@@ -31,7 +30,7 @@ import org.gnucash.android.ui.UxArgument;
  * Activity for entering and confirming passcode
  * @author Oleksandr Tyshkovets <olexandr.tyshkovets@gmail.com>
  */
-public class PasscodePreferenceActivity extends SherlockFragmentActivity
+public class PasscodePreferenceActivity extends AppCompatActivity
         implements KeyboardFragment.OnPasscodeEnteredListener {
 
     private boolean mIsPassEnabled;

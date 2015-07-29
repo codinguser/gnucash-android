@@ -12,10 +12,10 @@ buildscript {
 allprojects {
     repositories {
 		maven { url "http://dl.bintray.com/populov/maven" }
-        maven { url "https://repo.commonsware.com.s3.amazonaws.com"}
 		maven { url 'http://download.crashlytics.com/maven' }
         maven { url "https://jitpack.io" }
-        jcenter()		
+		maven { url "http://JRAF.org/static/maven/2" }
+        jcenter()
         mavenCentral()
     }
 }

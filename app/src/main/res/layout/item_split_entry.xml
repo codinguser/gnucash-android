@@ -45,7 +45,8 @@ limitations under the License.
                 android:textColor="@color/debit_red"
                 style="@style/ListItemText"/>
 
-        <org.gnucash.android.ui.util.TransactionTypeToggleButton android:id="@+id/btn_split_type"
+        <org.gnucash.android.ui.util.TransactionTypeSwitch
+            android:id="@+id/btn_split_type"
                       android:layout_width="0dp"
                       android:layout_weight="3"
                       android:layout_height="wrap_content"

@@ -20,11 +20,11 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuItem;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.LimitLine;
@@ -89,9 +89,9 @@ public class LineChartActivity extends PassLockActivity implements OnChartValueS
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        //it is necessary to set the view first before calling super because of the nav drawer in BaseDrawerActivity
-        setContentView(R.layout.activity_line_chart);
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_line_chart);
+        setUpDrawer();
         getSupportActionBar().setTitle(R.string.title_line_chart);
 
         mCurrency = Currency.getInstance(PreferenceManager.getDefaultSharedPreferences(this)
@@ -261,7 +261,7 @@ public class LineChartActivity extends PassLockActivity implements OnChartValueS
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getSupportMenuInflater().inflate(R.menu.chart_actions, menu);
+        getMenuInflater().inflate(R.menu.chart_actions, menu);
         return true;
     }
 
