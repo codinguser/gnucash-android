@@ -169,9 +169,9 @@ dependencies {
             'junit:junit:4.12',
             'org.assertj:assertj-core:1.7.1'
     )
-    androidTestCompile ('com.android.support.test:runner:0.2',
-                        'com.android.support.test:rules:0.2',
-                        'com.android.support.test.espresso:espresso-core:2.1',
+    androidTestCompile ('com.android.support.test:runner:0.3',
+                        'com.android.support.test:rules:0.3',
+                        'com.android.support.test.espresso:espresso-core:2.2',
                         'com.android.support:support-annotations:22.2.0',
                         'com.android.support.test.espresso:espresso-contrib:2.2')
 
