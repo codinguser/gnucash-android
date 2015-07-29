@@ -24,6 +24,7 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.preference.PreferenceManager;
 import android.support.test.InstrumentationRegistry;
+import android.support.test.espresso.Espresso;
 import android.support.test.espresso.ViewAction;
 import android.support.test.espresso.action.CoordinatesProvider;
 import android.support.test.espresso.action.GeneralClickAction;
@@ -190,6 +191,8 @@ public class TransactionsActivityTest extends
 
 		onView(withId(R.id.menu_save)).perform(click());
 		sleep(1000);
+		//form does not close
+		onView(withId(R.id.fragment_transaction_list)).check(matches(isDisplayed()));
 		assertToastDisplayed(R.string.toast_transanction_amount_required);
 
 		int afterCount = mTransactionsDbAdapter.getTransactionsCount(DUMMY_ACCOUNT_UID);
@@ -389,15 +392,14 @@ public class TransactionsActivityTest extends
 
 		onView(withId(R.id.fab_create_transaction)).perform(click());
 		onView(withId(R.id.input_transaction_type)).check(matches(allOf(isChecked(), withText(R.string.label_spend))));
-		onView(withId(R.id.menu_cancel)).perform(click());
-
+		Espresso.pressBack();
 		//now validate the other case
 
 		setDefaultTransactionType(TransactionType.DEBIT);
 
 		onView(withId(R.id.fab_create_transaction)).perform(click());
 		onView(withId(R.id.input_transaction_type)).check(matches(allOf(not(isChecked()), withText(R.string.label_receive))));
-		onView(withId(R.id.menu_cancel)).perform(click());
+		Espresso.pressBack();
 	}
 
 	private void setDefaultTransactionType(TransactionType type) {

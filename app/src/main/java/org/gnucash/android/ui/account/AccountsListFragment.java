@@ -460,12 +460,8 @@ public class AccountsListFragment extends Fragment implements
             new AccountBalanceTask(holder.accountBalance).execute(accountUID);
 
             String accountColor = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.AccountEntry.COLUMN_COLOR_CODE));
-            if (accountColor != null){
-                int color = Color.parseColor(accountColor);
-                holder.colorStripView.setBackgroundColor(color);
-            } else {
-                holder.colorStripView.setBackgroundColor(Color.TRANSPARENT);
-            }
+            int colorCode = accountColor == null ? Color.TRANSPARENT : Color.parseColor(accountColor);
+            holder.colorStripView.setBackgroundColor(colorCode);
 
             boolean isPlaceholderAccount = mAccountsDbAdapter.isPlaceholderAccount(accountUID);
             if (isPlaceholderAccount){
