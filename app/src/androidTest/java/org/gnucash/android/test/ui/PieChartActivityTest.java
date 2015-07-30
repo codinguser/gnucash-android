@@ -17,11 +17,19 @@ import org.gnucash.android.db.DatabaseHelper;
 import org.gnucash.android.db.SplitsDbAdapter;
 import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.importer.GncXmlImporter;
+import org.gnucash.android.model.Account;
+import org.gnucash.android.model.Money;
+import org.gnucash.android.model.Split;
+import org.gnucash.android.model.Transaction;
+import org.gnucash.android.model.TransactionType;
 import org.gnucash.android.ui.chart.PieChartActivity;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import java.math.BigDecimal;
+import java.util.Currency;
 
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
@@ -35,6 +43,14 @@ import static org.hamcrest.Matchers.not;
 public class PieChartActivityTest extends ActivityInstrumentationTestCase2<PieChartActivity> {
 
     public static final String TAG = PieChartActivityTest.class.getName();
+
+    private static final String TRANSACTION_NAME = "Pizza";
+    private static final double TRANSACTION_AMOUNT = 9.99;
+
+    private static final String CASH_IN_WALLET_INCOME_ACCOUNT_UID = "b687a487849470c25e0ff5aaad6a522b";
+    private static final String DINING_EXPENSE_ACCOUNT_UID = "62922c5ccb31d6198259739d27d858fe";
+
+    public static final Currency CURRENCY = Currency.getInstance("USD");
 
     private AccountsDbAdapter mAccountsDbAdapter;
     private TransactionsDbAdapter mTransactionsDbAdapter;
@@ -67,11 +83,33 @@ public class PieChartActivityTest extends ActivityInstrumentationTestCase2<PieCh
 
         // creates default accounts
         GncXmlImporter.parse(GnuCashApplication.getAppContext().getResources().openRawResource(R.raw.default_accounts));
-
-
-        setActivityIntent(new Intent(Intent.ACTION_VIEW));
-		mPieChartActivity = getActivity();
 	}
+
+    /**
+     * Call this method in every tests after adding data
+     */
+    private void getTestActivity() {
+        setActivityIntent(new Intent(Intent.ACTION_VIEW));
+        mPieChartActivity = getActivity();
+    }
+
+    private void addTransactionForCurrentMonth() throws Exception {
+        Transaction transaction = new Transaction(TRANSACTION_NAME);
+        transaction.setNote("What up?");
+        transaction.setTime(System.currentTimeMillis());
+
+        Split split = new Split(new Money(BigDecimal.valueOf(TRANSACTION_AMOUNT), CURRENCY), DINING_EXPENSE_ACCOUNT_UID);
+        split.setType(TransactionType.DEBIT);
+
+        transaction.addSplit(split);
+        transaction.addSplit(split.createPair(CASH_IN_WALLET_INCOME_ACCOUNT_UID));
+
+        Account account = mAccountsDbAdapter.getAccount(DINING_EXPENSE_ACCOUNT_UID);
+        account.addTransaction(transaction);
+        mTransactionsDbAdapter.addTransaction(transaction);
+    }
+
+
 
     @Test
     public void testNoData() {
@@ -86,6 +124,8 @@ public class PieChartActivityTest extends ActivityInstrumentationTestCase2<PieCh
         onView(withId(R.id.pie_chart)).perform(click());
         onView(withId(R.id.selected_chart_slice)).check(matches(withText("")));
     }
+
+
 
 
     @Override
