@@ -49,6 +49,7 @@ public class PieChartActivityTest extends ActivityInstrumentationTestCase2<PieCh
 
     private static final String CASH_IN_WALLET_INCOME_ACCOUNT_UID = "b687a487849470c25e0ff5aaad6a522b";
     private static final String DINING_EXPENSE_ACCOUNT_UID = "62922c5ccb31d6198259739d27d858fe";
+    private static final String DINING_EXPENSE_ACCOUNT_NAME = "Dining";
 
     public static final Currency CURRENCY = Currency.getInstance("USD");
 
@@ -113,7 +114,8 @@ public class PieChartActivityTest extends ActivityInstrumentationTestCase2<PieCh
 
     @Test
     public void testNoData() {
-        Log.w(TAG, "testWhenNoData");
+        Log.w(TAG, "testWhenNoData()");
+        getTestActivity();
 
         onView(withId(R.id.chart_date)).check(matches(withText("Overall")));
         onView(withId(R.id.chart_date)).check(matches(not(isEnabled())));
@@ -125,8 +127,21 @@ public class PieChartActivityTest extends ActivityInstrumentationTestCase2<PieCh
         onView(withId(R.id.selected_chart_slice)).check(matches(withText("")));
     }
 
+    @Test
+    public void testDataForCurrentMonth() throws Exception {
+        Log.w(TAG, "testDataForCurrentMonth()");
+        addTransactionForCurrentMonth();
+        getTestActivity();
 
+        onView(withId(R.id.chart_date)).check(matches(withText("Overall")));
+        onView(withId(R.id.previous_month_chart_button)).check(matches(not(isEnabled())));
+        onView(withId(R.id.next_month_chart_button)).check(matches(not(isEnabled())));
 
+        onView(withId(R.id.pie_chart)).perform(click());
+        String selectedText = String.format(PieChartActivity.SELECTED_VALUE_PATTERN, DINING_EXPENSE_ACCOUNT_NAME, TRANSACTION_AMOUNT, 100f);
+        onView(withId(R.id.selected_chart_slice)).check(matches(withText(selectedText)));
+
+    }
 
     @Override
 	@After

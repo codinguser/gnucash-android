@@ -78,9 +78,9 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
             Color.parseColor("#fddef8"), Color.parseColor("#fa0e6e"), Color.parseColor("#d9e7b5")
     };
 
+    public static final String SELECTED_VALUE_PATTERN = "%s - %.2f (%.2f %%)";
     private static final String DATE_PATTERN = "MMMM\nYYYY";
     private static final String TOTAL_VALUE_LABEL_PATTERN = "%s\n%.2f %s";
-    private static final String SELECTED_VALUE_PATTERN = "%s - %.2f (%.2f %%)";
     private static final int ANIMATION_DURATION = 1800;
     private static final int NO_DATA_COLOR = Color.LTGRAY;
     public static final int CENTER_TEXT_SIZE = 18;
