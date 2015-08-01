@@ -23,6 +23,7 @@ import org.gnucash.android.model.Split;
 import org.gnucash.android.model.Transaction;
 import org.gnucash.android.model.TransactionType;
 import org.gnucash.android.ui.chart.PieChartActivity;
+import org.joda.time.LocalDateTime;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -96,7 +97,6 @@ public class PieChartActivityTest extends ActivityInstrumentationTestCase2<PieCh
 
     private void addTransactionForCurrentMonth() throws Exception {
         Transaction transaction = new Transaction(TRANSACTION_NAME);
-        transaction.setNote("What up?");
         transaction.setTime(System.currentTimeMillis());
 
         Split split = new Split(new Money(BigDecimal.valueOf(TRANSACTION_AMOUNT), CURRENCY), DINING_EXPENSE_ACCOUNT_UID);
@@ -109,6 +109,22 @@ public class PieChartActivityTest extends ActivityInstrumentationTestCase2<PieCh
         account.addTransaction(transaction);
         mTransactionsDbAdapter.addTransaction(transaction);
     }
+
+    private void addTransactionForPreviousMonth() {
+        Transaction transaction = new Transaction(TRANSACTION_NAME);
+        transaction.setTime(new LocalDateTime().minusMonths(1).toDate().getTime());
+
+        Split split = new Split(new Money(BigDecimal.valueOf(TRANSACTION_AMOUNT), CURRENCY), DINING_EXPENSE_ACCOUNT_UID);
+        split.setType(TransactionType.DEBIT);
+
+        transaction.addSplit(split);
+        transaction.addSplit(split.createPair(CASH_IN_WALLET_INCOME_ACCOUNT_UID));
+
+        Account account = mAccountsDbAdapter.getAccount(DINING_EXPENSE_ACCOUNT_UID);
+        account.addTransaction(transaction);
+        mTransactionsDbAdapter.addTransaction(transaction);
+    }
+
 
 
 
@@ -142,6 +158,23 @@ public class PieChartActivityTest extends ActivityInstrumentationTestCase2<PieCh
         onView(withId(R.id.selected_chart_slice)).check(matches(withText(selectedText)));
 
     }
+
+    @Test
+    public void testWhenDataForPreviousAndCurrentMonth() throws Exception {
+        Log.w("Test", "testWhenDataForPreviousAndCurrentMonth");
+        addTransactionForCurrentMonth();
+        addTransactionForPreviousMonth();
+        getTestActivity();
+
+        onView(withId(R.id.chart_date)).check(matches(withText("Overall")));
+        onView(withId(R.id.previous_month_chart_button)).check(matches(isEnabled()));
+        onView(withId(R.id.next_month_chart_button)).check(matches(not(isEnabled())));
+
+        onView(withId(R.id.pie_chart)).perform(click());
+        String selectedText = String.format(PieChartActivity.SELECTED_VALUE_PATTERN, DINING_EXPENSE_ACCOUNT_NAME, TRANSACTION_AMOUNT * 2, 100f);
+        onView(withId(R.id.selected_chart_slice)).check(matches(withText(selectedText)));
+    }
+
 
     @Override
 	@After
