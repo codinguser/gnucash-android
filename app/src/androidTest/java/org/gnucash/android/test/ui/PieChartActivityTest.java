@@ -48,9 +48,16 @@ public class PieChartActivityTest extends ActivityInstrumentationTestCase2<PieCh
     private static final String TRANSACTION_NAME = "Pizza";
     private static final double TRANSACTION_AMOUNT = 9.99;
 
-    private static final String CASH_IN_WALLET_INCOME_ACCOUNT_UID = "b687a487849470c25e0ff5aaad6a522b";
+    private static final String TRANSACTION2_NAME = "1984";
+    private static final double TRANSACTION2_AMOUNT = 34.49;
+
+    private static final String CASH_IN_WALLET_ASSET_ACCOUNT_UID = "b687a487849470c25e0ff5aaad6a522b";
+
     private static final String DINING_EXPENSE_ACCOUNT_UID = "62922c5ccb31d6198259739d27d858fe";
     private static final String DINING_EXPENSE_ACCOUNT_NAME = "Dining";
+
+    private static final String BOOKS_EXPENSE_ACCOUNT_UID = "a8b342435aceac7c3cac214f9385dd72";
+    private static final String BOOKS_EXPENSE_ACCOUNT_NAME = "Books";
 
     public static final Currency CURRENCY = Currency.getInstance("USD");
 
@@ -103,7 +110,7 @@ public class PieChartActivityTest extends ActivityInstrumentationTestCase2<PieCh
         split.setType(TransactionType.DEBIT);
 
         transaction.addSplit(split);
-        transaction.addSplit(split.createPair(CASH_IN_WALLET_INCOME_ACCOUNT_UID));
+        transaction.addSplit(split.createPair(CASH_IN_WALLET_ASSET_ACCOUNT_UID));
 
         Account account = mAccountsDbAdapter.getAccount(DINING_EXPENSE_ACCOUNT_UID);
         account.addTransaction(transaction);
@@ -111,16 +118,16 @@ public class PieChartActivityTest extends ActivityInstrumentationTestCase2<PieCh
     }
 
     private void addTransactionForPreviousMonth(int minusMonths) {
-        Transaction transaction = new Transaction(TRANSACTION_NAME);
+        Transaction transaction = new Transaction(TRANSACTION2_NAME);
         transaction.setTime(new LocalDateTime().minusMonths(minusMonths).toDate().getTime());
 
-        Split split = new Split(new Money(BigDecimal.valueOf(TRANSACTION_AMOUNT), CURRENCY), DINING_EXPENSE_ACCOUNT_UID);
+        Split split = new Split(new Money(BigDecimal.valueOf(TRANSACTION2_AMOUNT), CURRENCY), BOOKS_EXPENSE_ACCOUNT_UID);
         split.setType(TransactionType.DEBIT);
 
         transaction.addSplit(split);
-        transaction.addSplit(split.createPair(CASH_IN_WALLET_INCOME_ACCOUNT_UID));
+        transaction.addSplit(split.createPair(CASH_IN_WALLET_ASSET_ACCOUNT_UID));
 
-        Account account = mAccountsDbAdapter.getAccount(DINING_EXPENSE_ACCOUNT_UID);
+        Account account = mAccountsDbAdapter.getAccount(BOOKS_EXPENSE_ACCOUNT_UID);
         account.addTransaction(transaction);
         mTransactionsDbAdapter.addTransaction(transaction);
     }
@@ -169,7 +176,9 @@ public class PieChartActivityTest extends ActivityInstrumentationTestCase2<PieCh
         onView(withId(R.id.next_month_chart_button)).check(matches(not(isEnabled())));
 
         onView(withId(R.id.pie_chart)).perform(click());
-        String selectedText = String.format(PieChartActivity.SELECTED_VALUE_PATTERN, DINING_EXPENSE_ACCOUNT_NAME, TRANSACTION_AMOUNT * 2, 100f);
+
+        float percent = (float) (TRANSACTION_AMOUNT / (TRANSACTION_AMOUNT + TRANSACTION2_AMOUNT) * 100);
+        String selectedText = String.format(PieChartActivity.SELECTED_VALUE_PATTERN, DINING_EXPENSE_ACCOUNT_NAME, TRANSACTION_AMOUNT, percent);
         onView(withId(R.id.selected_chart_slice)).check(matches(withText(selectedText)));
     }
 
@@ -186,7 +195,8 @@ public class PieChartActivityTest extends ActivityInstrumentationTestCase2<PieCh
         onView(withId(R.id.next_month_chart_button)).check(matches(not(isEnabled())));
 
         onView(withId(R.id.pie_chart)).perform(click());
-        String selectedText = String.format(PieChartActivity.SELECTED_VALUE_PATTERN, DINING_EXPENSE_ACCOUNT_NAME, TRANSACTION_AMOUNT * 3, 100f);
+        float percent = (float) (TRANSACTION_AMOUNT / (TRANSACTION_AMOUNT + TRANSACTION2_AMOUNT * 2) * 100);
+        String selectedText = String.format(PieChartActivity.SELECTED_VALUE_PATTERN, DINING_EXPENSE_ACCOUNT_NAME, TRANSACTION_AMOUNT, percent);
         onView(withId(R.id.selected_chart_slice)).check(matches(withText(selectedText)));
 
         onView(withId(R.id.previous_month_chart_button)).perform(click());
