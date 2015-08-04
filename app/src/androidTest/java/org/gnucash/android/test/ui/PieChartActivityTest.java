@@ -149,6 +149,19 @@ public class PieChartActivityTest extends ActivityInstrumentationTestCase2<PieCh
     }
 
     @Test
+    public void testSelectingValue() throws Exception {
+        Log.w(TAG, "testSelectingValue()");
+        addTransactionForCurrentMonth();
+        addTransactionForPreviousMonth(1);
+        getTestActivity();
+
+        onView(withId(R.id.pie_chart)).perform(click());
+        float percent = (float) (TRANSACTION_AMOUNT / (TRANSACTION_AMOUNT + TRANSACTION2_AMOUNT) * 100);
+        String selectedText = String.format(PieChartActivity.SELECTED_VALUE_PATTERN, DINING_EXPENSE_ACCOUNT_NAME, TRANSACTION_AMOUNT, percent);
+        onView(withId(R.id.selected_chart_slice)).check(matches(withText(selectedText)));
+    }
+
+    @Test
     public void testDataForCurrentMonth() throws Exception {
         Log.w(TAG, "testDataForCurrentMonth()");
         addTransactionForCurrentMonth();
