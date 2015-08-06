@@ -6,9 +6,15 @@ import android.content.Intent;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.test.InstrumentationRegistry;
+import android.support.test.espresso.ViewAction;
+import android.support.test.espresso.action.CoordinatesProvider;
+import android.support.test.espresso.action.GeneralClickAction;
+import android.support.test.espresso.action.Press;
+import android.support.test.espresso.action.Tap;
 import android.support.test.runner.AndroidJUnit4;
 import android.test.ActivityInstrumentationTestCase2;
 import android.util.Log;
+import android.view.View;
 
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
@@ -30,6 +36,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.Currency;
 
 import static android.support.test.espresso.Espresso.onView;
@@ -188,11 +195,29 @@ public class PieChartActivityTest extends ActivityInstrumentationTestCase2<PieCh
         onView(withId(R.id.previous_month_chart_button)).check(matches(isEnabled()));
         onView(withId(R.id.next_month_chart_button)).check(matches(not(isEnabled())));
 
-        onView(withId(R.id.pie_chart)).perform(click());
+        onView(withId(R.id.pie_chart)).perform(clickXY());
 
-        float percent = (float) (TRANSACTION_AMOUNT / (TRANSACTION_AMOUNT + TRANSACTION2_AMOUNT) * 100);
-        String selectedText = String.format(PieChartActivity.SELECTED_VALUE_PATTERN, DINING_EXPENSE_ACCOUNT_NAME, TRANSACTION_AMOUNT, percent);
+        float percent = (float) (TRANSACTION2_AMOUNT / (TRANSACTION_AMOUNT + TRANSACTION2_AMOUNT) * 100);
+        String selectedText = String.format(PieChartActivity.SELECTED_VALUE_PATTERN, BOOKS_EXPENSE_ACCOUNT_NAME, TRANSACTION2_AMOUNT, percent);
         onView(withId(R.id.selected_chart_slice)).check(matches(withText(selectedText)));
+    }
+
+    public static ViewAction clickXY(){
+        return new GeneralClickAction(
+                Tap.SINGLE,
+                new CoordinatesProvider() {
+                    @Override
+                    public float[] calculateCoordinates(View view) {
+                        final int[] xy = new int[2];
+                        view.getLocationOnScreen(xy);
+                        Log.w("Test", Arrays.toString(xy));
+                        Log.w("Test", view.getHeight() + ", " + view.getWidth());
+                        final float x = xy[0] + (view.getWidth() * 0.8f);
+                        final float y = xy[1] + (view.getHeight() * 0.5f);
+                        return new float[]{x, y};
+                    }
+                },
+                Press.FINGER);
     }
 
     @Test
