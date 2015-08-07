@@ -195,14 +195,15 @@ public class PieChartActivityTest extends ActivityInstrumentationTestCase2<PieCh
         onView(withId(R.id.previous_month_chart_button)).check(matches(isEnabled()));
         onView(withId(R.id.next_month_chart_button)).check(matches(not(isEnabled())));
 
-        onView(withId(R.id.pie_chart)).perform(clickXY());
+        onView(withId(R.id.pie_chart)).perform(click());
+//        clickXY(Position.END, Position.MIDDLE)
 
         float percent = (float) (TRANSACTION2_AMOUNT / (TRANSACTION_AMOUNT + TRANSACTION2_AMOUNT) * 100);
         String selectedText = String.format(PieChartActivity.SELECTED_VALUE_PATTERN, BOOKS_EXPENSE_ACCOUNT_NAME, TRANSACTION2_AMOUNT, percent);
         onView(withId(R.id.selected_chart_slice)).check(matches(withText(selectedText)));
     }
 
-    public static ViewAction clickXY(){
+    public static ViewAction clickXY(final Position horizontal, final Position vertical){
         return new GeneralClickAction(
                 Tap.SINGLE,
                 new CoordinatesProvider() {
@@ -212,12 +213,37 @@ public class PieChartActivityTest extends ActivityInstrumentationTestCase2<PieCh
                         view.getLocationOnScreen(xy);
                         Log.w("Test", Arrays.toString(xy));
                         Log.w("Test", view.getHeight() + ", " + view.getWidth());
-                        final float x = xy[0] + (view.getWidth() * 0.8f);
-                        final float y = xy[1] + (view.getHeight() * 0.5f);
+
+                        final float x = horizontal.getPosition(xy[0], view.getWidth());
+                        final float y = vertical.getPosition(xy[1], view.getHeight());
+
                         return new float[]{x, y};
                     }
                 },
                 Press.FINGER);
+    }
+
+    private enum Position {
+        BEGIN {
+            @Override
+            public float getPosition(int viewPos, int viewLength) {
+                return viewPos + (viewLength * 0.15f);
+            }
+        },
+        MIDDLE {
+            @Override
+            public float getPosition(int viewPos, int viewLength) {
+                return viewPos + (viewLength * 0.5f);
+            }
+        },
+        END {
+            @Override
+            public float getPosition(int viewPos, int viewLength) {
+                return viewPos + (viewLength * 0.85f);
+            }
+        };
+
+        abstract float getPosition(int widgetPos, int widgetLength);
     }
 
     @Test
