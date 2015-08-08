@@ -56,7 +56,7 @@ public class PieChartActivityTest extends ActivityInstrumentationTestCase2<PieCh
     private static final double TRANSACTION_AMOUNT = 9.99;
 
     private static final String TRANSACTION2_NAME = "1984";
-    private static final double TRANSACTION2_AMOUNT = 34.49;
+    private static final double TRANSACTION2_AMOUNT = 12.49;
 
     private static final String CASH_IN_WALLET_ASSET_ACCOUNT_UID = "b687a487849470c25e0ff5aaad6a522b";
 
@@ -162,7 +162,7 @@ public class PieChartActivityTest extends ActivityInstrumentationTestCase2<PieCh
         addTransactionForPreviousMonth(1);
         getTestActivity();
 
-        onView(withId(R.id.pie_chart)).perform(click());
+        onView(withId(R.id.pie_chart)).perform(clickXY(Position.BEGIN, Position.MIDDLE));
         float percent = (float) (TRANSACTION_AMOUNT / (TRANSACTION_AMOUNT + TRANSACTION2_AMOUNT) * 100);
         String selectedText = String.format(PieChartActivity.SELECTED_VALUE_PATTERN, DINING_EXPENSE_ACCOUNT_NAME, TRANSACTION_AMOUNT, percent);
         onView(withId(R.id.selected_chart_slice)).check(matches(withText(selectedText)));
@@ -195,8 +195,7 @@ public class PieChartActivityTest extends ActivityInstrumentationTestCase2<PieCh
         onView(withId(R.id.previous_month_chart_button)).check(matches(isEnabled()));
         onView(withId(R.id.next_month_chart_button)).check(matches(not(isEnabled())));
 
-        onView(withId(R.id.pie_chart)).perform(click());
-//        clickXY(Position.END, Position.MIDDLE)
+        onView(withId(R.id.pie_chart)).perform(clickXY(Position.END, Position.MIDDLE));
 
         float percent = (float) (TRANSACTION2_AMOUNT / (TRANSACTION_AMOUNT + TRANSACTION2_AMOUNT) * 100);
         String selectedText = String.format(PieChartActivity.SELECTED_VALUE_PATTERN, BOOKS_EXPENSE_ACCOUNT_NAME, TRANSACTION2_AMOUNT, percent);
@@ -258,7 +257,8 @@ public class PieChartActivityTest extends ActivityInstrumentationTestCase2<PieCh
         onView(withId(R.id.previous_month_chart_button)).check(matches(isEnabled()));
         onView(withId(R.id.next_month_chart_button)).check(matches(not(isEnabled())));
 
-        onView(withId(R.id.pie_chart)).perform(click());
+        onView(withId(R.id.pie_chart)).perform(clickXY(Position.BEGIN, Position.MIDDLE));
+
         float percent = (float) (TRANSACTION_AMOUNT / (TRANSACTION_AMOUNT + TRANSACTION2_AMOUNT * 2) * 100);
         String selectedText = String.format(PieChartActivity.SELECTED_VALUE_PATTERN, DINING_EXPENSE_ACCOUNT_NAME, TRANSACTION_AMOUNT, percent);
         onView(withId(R.id.selected_chart_slice)).check(matches(withText(selectedText)));
