@@ -11,10 +11,12 @@ import android.support.test.espresso.action.CoordinatesProvider;
 import android.support.test.espresso.action.GeneralClickAction;
 import android.support.test.espresso.action.Press;
 import android.support.test.espresso.action.Tap;
+import android.support.test.espresso.contrib.PickerActions;
 import android.support.test.runner.AndroidJUnit4;
 import android.test.ActivityInstrumentationTestCase2;
 import android.util.Log;
 import android.view.View;
+import android.widget.DatePicker;
 
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
@@ -43,8 +45,12 @@ import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.isEnabled;
+import static android.support.test.espresso.matcher.ViewMatchers.withClassName;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
+import static org.hamcrest.Matchers.anyOf;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
 
 @RunWith(AndroidJUnit4.class)
@@ -166,6 +172,23 @@ public class PieChartActivityTest extends ActivityInstrumentationTestCase2<PieCh
         float percent = (float) (TRANSACTION_AMOUNT / (TRANSACTION_AMOUNT + TRANSACTION2_AMOUNT) * 100);
         String selectedText = String.format(PieChartActivity.SELECTED_VALUE_PATTERN, DINING_EXPENSE_ACCOUNT_NAME, TRANSACTION_AMOUNT, percent);
         onView(withId(R.id.selected_chart_slice)).check(matches(withText(selectedText)));
+    }
+
+    @Test
+    public void testDatePicker() throws Exception {
+        addTransactionForCurrentMonth();
+        addTransactionForPreviousMonth(1);
+        addTransactionForPreviousMonth(2);
+        getTestActivity();
+
+        onView(withId(R.id.chart_date)).check(matches(isEnabled()));
+        onView(withId(R.id.chart_date)).check(matches(withText("Overall")));
+        onView(withId(R.id.chart_date)).perform(click());
+
+        onView(withClassName(equalTo(DatePicker.class.getName()))).perform(PickerActions.setDate(2015, 7, 23));
+        onView(anyOf(withText(containsString("Done")), withText(containsString("Set")), withText(containsString("OK")))).perform(click());
+
+        onView(withId(R.id.chart_date)).check(matches(withText("July\n2015")));
     }
 
     @Test
