@@ -88,11 +88,9 @@
 	        android:layout_marginLeft="10dp"
 	        android:textAppearance="?android:attr/textAppearanceMedium"
 	        android:text="@string/option_export_all_transactions"
-            android:visibility="gone"
 	        />
 	    <TextView android:layout_marginLeft="@dimen/dialog_padding"
 	        android:text="@string/hint_export_choice"
-            android:visibility="gone"
 	        style="@style/TextAppearance.Hint" />
 	    
 	    <CheckBox android:id="@+id/checkbox_post_export_delete"
