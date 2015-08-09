@@ -166,8 +166,8 @@ dependencies {
             'junit:junit:4.12',
             'org.assertj:assertj-core:1.7.1'
     )
-    androidTestCompile 'com.android.support.test:runner:0.2'
-    androidTestCompile 'com.android.support.test:rules:0.2'
+    androidTestCompile 'com.android.support.test:runner:0.3'
+    androidTestCompile 'com.android.support.test:rules:0.3'
     androidTestCompile('com.squareup.assertj:assertj-android:1.0.0'){
         exclude group: 'com.android.support', module:'support-annotations'
     }
