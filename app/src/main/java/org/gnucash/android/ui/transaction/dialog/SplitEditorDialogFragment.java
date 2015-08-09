@@ -116,7 +116,7 @@ public class SplitEditorDialogFragment extends DialogFragment {
 
         getDialog().setTitle(R.string.title_transaction_splits);
 
-        mSplitItemViewList = new ArrayList<View>();
+        mSplitItemViewList = new ArrayList<>();
         mSplitsDbAdapter = SplitsDbAdapter.getInstance();
 
         //we are editing splits for a new transaction.
