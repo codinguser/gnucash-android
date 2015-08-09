@@ -27,12 +27,15 @@ import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -84,7 +87,9 @@ public class AccountFormFragment extends Fragment {
 	 * EditText for the name of the account to be created/edited
 	 */
 	private EditText mNameEditText;
-	
+
+    private TextInputLayout mTextInputLayout;
+
 	/**
 	 * Spinner for selecting the currency of the account
 	 * Currencies listed are those specified by ISO 4217
@@ -241,10 +246,28 @@ public class AccountFormFragment extends Fragment {
 	@Override	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.fragment_new_account, container, false);
+        mTextInputLayout = (TextInputLayout) view.findViewById(R.id.textinputlayout);
 		mCurrencySpinner = (Spinner) view.findViewById(R.id.input_currency_spinner);
 		mNameEditText = (EditText) view.findViewById(R.id.input_account_name);
-		//mNameEditText.requestFocus();
 
+        mNameEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                //nothing to see here, move along
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                //nothing to see here, move along
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (s.toString().length() > 0){
+                    mTextInputLayout.setErrorEnabled(false);
+                }
+            }
+        });
         mAccountTypeSpinner = (Spinner) view.findViewById(R.id.input_account_type_spinner);
         mAccountTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -714,9 +737,8 @@ public class AccountFormFragment extends Fragment {
 		if (mAccount == null){
 			String name = getEnteredName();
 			if (name == null || name.length() == 0){
-				Toast.makeText(getActivity(),
-						R.string.toast_no_account_name_entered, 
-						Toast.LENGTH_LONG).show();
+                mTextInputLayout.setErrorEnabled(true);
+                mTextInputLayout.setError(getString(R.string.toast_no_account_name_entered));
 				return;				
 			}
 			mAccount = new Account(getEnteredName());
