@@ -1,0 +1,508 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+ Copyright (c) 2012 - 2014 Ngewi Fet <ngewif@gmail.com>
+ 
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+ 
+    http://www.apache.org/licenses/LICENSE-2.0
+ 
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <string name="label_create_account">Utwórz konto</string>
+    <string name="title_edit_account">Edytuj konto</string>
+    <string name="info_details">Info</string>
+    <string name="menu_export">Eksportuj…</string>
+    <string name="description_add_transaction_icon">Dodaj nową transakcję do konta</string>
+    <string name="label_no_accounts">Brak kont do wyświetlenia</string>
+    <string name="label_account_name">Nazwa konta</string>
+    <string name="btn_cancel">Anuluj</string>
+    <string name="btn_save">Zapisz</string>
+    <string name="label_passcode">Wprowadź hasło</string>
+    <string name="toast_wrong_passcode">Złe hasło, spróbuj ponownie</string>
+    <string name="toast_passcode_set">Hasło ustawione</string>
+    <string name="label_confirm_passcode">Potwierdź, proszę, swoje hasło</string>
+    <string name="toast_invalid_passcode_confirmation">Niepoprawne potwierdzenia hasła. Spróbuj ponownie</string>
+    <string name="label_transaction_name">Opis</string>
+    <string name="label_transaction_amount">Kwota</string>
+    <string name="title_add_transaction">Nowa transakcja</string>
+    <string name="label_no_transactions">Brak transakcji do wyświetlenia</string>
+    <string name="label_timeanddate">DATA I CZAS</string>
+    <string name="label_account">Konto</string>
+    <string name="label_debit">DEBET</string>
+    <string name="label_credit">KREDYT</string>
+    <string name="title_accounts">Konta</string>
+    <string name="title_transactions">Transakcje</string>
+    <string name="menu_delete">USUŃ</string>
+    <string name="alert_dialog_ok_delete">Usuń</string>
+    <string name="alert_dialog_cancel">Anuluj</string>
+    <string name="toast_account_deleted">Konto usunięte</string>
+    <string name="title_confirm_delete">Potwierdź usunięcie</string>
+    <string name="delete_account_confirmation_message">Wszystkie transakcje w tym koncie także będą usunięte</string>
+    <string name="title_edit_transaction">Edytuj transakcję</string>
+    <string name="label_transaction_description">Notka</string>
+    <string name="menu_move">PRZENIEŚ</string>
+    <string name="title_selected">%1$d wybranych</string>
+    <string name="label_account_balance">Saldo:</string>
+    <string name="label_export_destination">Cel eksportu</string>
+    <string name="title_export_dialog">Eksport transakcji</string>
+    <string name="option_export_all_transactions">Eksportuj wszystkie transakcje</string>
+    <string name="hint_export_choice">By default, only new transactions since last export will be exported. Check this option to export all transactions</string>
+    <string name="toast_export_error">Błąd eksportowania pliku %1$s</string>
+    <string name="btn_export">Eksportuj</string>
+    <string name="option_delete_after_export">Usuń po eksporcie</string>
+    <string name="hint_delete_after_export">Wszystkie eksportowane transakcje będą usunięte po zakończeniu eksportu</string>
+    <string name="title_settings">Ustawienia</string>
+    <string-array name="export_destinations">
+        <item>Karta SD</item>
+        <item>DropBox</item>
+        <item>Google Drive</item>
+        <item>Udostępnij plik&#8230;</item>
+    </string-array>
+    <string name="btn_move">Przenieś</string>
+    <string name="title_move_transactions">Przenieś %1$d transakcji</string>
+    <string name="label_move_destination">Konto docelowe</string>
+    <string name="permission_access_sdcard">Dostęp do Karty SD</string>
+    <string name="toast_incompatible_currency">Cannot move transactions.\nThe destination account uses a different currency from origin account</string>
+    <string name="header_general_settings">Ogólne</string>
+    <string name="header_about_gnucash">O…</string>
+    <string name="title_choose_currency">Wybierz domyślna walutę</string>
+    <string name="title_default_currency">Domyślna waluta</string>
+    <string name="summary_default_currency">Domyślna waluta przypisna do nowych kont</string>
+    <string name="label_permission_record_transactions">Pozwala zapisywać transakcje w GnuCash dla Androida</string>
+    <string name="label_permission_create_accounts">Pozwala tworzyć konta w GnuCash dla Androida</string>
+    <string name="label_permission_group">Twoje dane GnuCash</string>
+    <string name="description_permission_group">Czytać i modyfikować dane GnuCash</string>
+    <string name="label_permission_record_transaction">Rejestrować transakcje w GnuCash</string>
+    <string name="label_permission_create_account">Tworzyć konta w GnuCash</string>
+    <string name="label_display_account">Wyświetl konto</string>
+    <string name="btn_create_accounts">Utwórz konta</string>
+    <string name="title_default_accounts">Wybierz konta do utworzenia</string>
+    <string-array name="currency_names">
+        <item>Afghani</item>
+		<item>Algerian Dinar</item>
+		<item>Argentine Peso</item>
+		<item>Armenian Dram</item>
+		<item>Aruban Florin</item>
+		<item>Australian Dollar</item>
+		<item>Azerbaijanian Manat</item>
+		<item>Bahamian Dollar</item>
+		<item>Bahraini Dinar</item>
+		<item>Baht</item>
+		<item>Balboa</item>
+		<item>Barbados Dollar</item>
+		<item>Belarussian Ruble</item>
+		<item>Belize Dollar</item>
+		<item>Bermudian Dollar</item>
+		<item>Bolivar Fuerte</item>
+		<item>Boliviano</item>
+		<item>Brazilian Real</item>
+		<item>Brunei Dollar</item>
+		<item>Bulgarian Lev</item>
+		<item>Burundi Franc</item>
+		<item>Canadian Dollar</item>
+		<item>Cape Verde Escudo</item>
+		<item>Cayman Islands Dollar</item>
+		<item>CFA Franc BCEAO</item>
+		<item>CFA Franc BEAC</item>
+		<item>CFP Franc</item>
+		<item>Chilean Peso</item>
+		<item>Testing currency</item>
+		<item>Colombian Peso</item>
+		<item>Comoro Franc</item>
+		<item>Congolese Franc</item>
+		<item>Convertible Mark</item>
+		<item>Cordoba Oro</item>
+		<item>Costa Rican Colon</item>
+		<item>Croatian Kuna</item>
+        <item>Cuban Convertible Peso</item>
+		<item>Cuban Peso</item>
+		<item>Czech Koruna</item>
+		<item>Dalasi</item>
+		<item>Danish Krone</item>
+		<item>Denar</item>
+		<item>Djibouti Franc</item>
+		<item>Dobra</item>
+		<item>Dominican Peso</item>
+		<item>Dong</item>
+		<item>East Caribbean Dollar</item>
+		<item>Egyptian Pound</item>
+		<item>El Salvador Colon</item>
+		<item>Ethiopian Birr</item>
+		<item>Euro</item>
+		<item>Falkland Islands Pound</item>
+		<item>Fiji Dollar</item>
+		<item>Forint</item>
+		<item>Ghana Cedi</item>
+		<item>Gibraltar Pound</item>
+		<item>Gold</item>
+		<item>Gourde</item>
+		<item>Guarani</item>
+		<item>Guinea Franc</item>
+		<item>Guyana Dollar</item>
+		<item>Hong Kong Dollar</item>
+		<item>Hryvnia</item>
+		<item>Iceland Krona</item>
+		<item>Indian Rupee</item>
+		<item>Iranian Rial</item>
+		<item>Iraqi Dinar</item>
+		<item>Jamaican Dollar</item>
+		<item>Jordanian Dinar</item>
+		<item>Kenyan Shilling</item>
+		<item>Kina</item>
+		<item>Kip</item>
+		<item>Kuwaiti Dinar</item>
+		<item>Kwacha</item>
+		<item>Kwanza</item>
+		<item>Kyat</item>
+		<item>Lari</item>
+		<item>Latvian Lats</item>
+		<item>Lebanese Pound</item>
+		<item>Lek</item>
+		<item>Lempira</item>
+		<item>Leone</item>
+		<item>Liberian Dollar</item>
+		<item>Libyan Dinar</item>
+		<item>Lilangeni</item>
+		<item>Lithuanian Litas</item>
+		<item>Loti</item>
+		<item>Malagasy Ariary</item>
+		<item>Malaysian Ringgit</item>
+		<item>Mauritius Rupee</item>
+		<item>Mexican Peso</item>
+		<item>Mexican Unidad de Inversion (UDI)</item>
+		<item>Moldovan Leu</item>
+		<item>Moroccan Dirham</item>
+		<item>Mozambique Metical</item>
+		<item>Mvdol</item>
+		<item>Naira</item>
+		<item>Nakfa</item>
+		<item>Namibia Dollar</item>
+		<item>Nepalese Rupee</item>
+		<item>Netherlands Antillean Guilder</item>
+		<item>New Israeli Sheqel</item>
+		<item>New Romanian Leu</item>
+		<item>New Taiwan Dollar</item>
+		<item>New Zealand Dollar</item>
+		<item>Ngultrum</item>
+		<item>North Korean Won</item>
+		<item>Norwegian Krone</item>
+		<item>Nuevo Sol</item>
+		<item>Ouguiya</item>
+		<item>Pa’anga</item>
+		<item>Pakistan Rupee</item>
+		<item>Palladium</item>
+		<item>Pataca</item>
+		<item>Philippine Peso</item>
+		<item>Platinum</item>
+		<item>Pound Sterling</item>
+		<item>Pula</item>
+		<item>Qatari Rial</item>
+		<item>Quetzal</item>
+		<item>Rand</item>
+		<item>Rial Omani</item>
+		<item>Riel</item>
+		<item>Rufiyaa</item>
+		<item>Rupiah</item>
+		<item>Russian Ruble</item>
+		<item>Rwanda Franc</item>
+		<item>Saint Helena Pound</item>
+		<item>Saudi Riyal</item>
+		<item>SDR (Special Drawing Right)</item>
+		<item>Serbian Dinar</item>
+		<item>Seychelles Rupee</item>
+		<item>Silver</item>
+		<item>Singapore Dollar</item>
+		<item>Solomon Islands Dollar</item>
+		<item>Som</item>
+		<item>Somali Shilling</item>
+		<item>Somoni</item>
+		<item>South Sudanese Pound</item>
+		<item>Sri Lanka Rupee</item>
+		<item>Sucre</item>
+		<item>Sudanese Pound</item>
+		<item>Surinam Dollar</item>
+		<item>Swedish Krona</item>
+		<item>Swiss Franc</item>
+		<item>Syrian Pound</item>
+		<item>Taka</item>
+		<item>Tala</item>
+		<item>Tanzanian Shilling</item>
+		<item>Tenge</item>
+		<item>No currency</item>
+		<item>Trinidad and Tobago Dollar</item>
+		<item>Tugrik</item>
+		<item>Tunisian Dinar</item>
+		<item>Turkish Lira</item>
+		<item>Turkmenistan New Manat</item>
+		<item>UAE Dirham</item>
+		<item>Uganda Shilling</item>
+		<item>UIC-Franc</item>
+		<item>Unidad de Valor Real</item>
+		<item>Unidades de fomento</item>
+		<item>Uruguay Peso en Unidades Indexadas (URUIURUI)</item>
+        <item>Uruguayan peso</item>
+        <item>US Dollar</item>
+		<item>Uzbekistan Sum</item>
+		<item>Vatu</item>
+		<item>WIR Euro</item>
+		<item>WIR Franc</item>
+		<item>Won</item>
+		<item>Yemeni Rial</item>
+		<item>Yen</item>
+		<item>Yuan Renminbi</item>
+		<item>Zambian Kwacha</item>
+		<item>Zimbabwe Dollar</item>
+		<item>Zloty</item>
+    </string-array>
+	<string name="error_no_accounts">Brak kont w GnuCash.\nUtwórz konto zanim dodasz widżet</string>
+	<string name="title_build_version">Wersja builda</string>
+	<string name="title_license">Licencja</string>
+	<string name="summary_licence_details">Licencja Apache v2.0. Kliknij po szczegóły</string>
+	<string name="title_general_prefs">Ogólne ustawienia</string>
+	<string name="label_widget_configuration">Wybierz konto</string>
+	<string name="toast_no_transactions_to_export">Brak transakcji dostępnych do eksportu</string>
+    <string name="header_passcode_settings">Hasło</string>
+    <string name="title_passcode_preferences">Ustawienia hasła</string>
+    <string name="title_passcode_enabled">Hasło włączone</string>
+    <string name="title_passcode_disabled">Hasło wyłączone</string>
+    <string name="title_change_passcode">Zmień hasło</string>
+	<string name="title_about_gnucash">O GnuCash</string>
+	<string name="summary_about_gnucash">Gnucash jest mobilną aplikacją służącą śledzeniu wydatków dla systemu Android.\n
+        Umożliwia ona rejestrowanie wydatków w trakcie w elastyczny sposób, a także pozwala wyeksportować je do wielu formatów (OFX, QIF) by zaimportować do GnuCash dla desktopa.</string>
+	<string name="title_about">O…</string>
+	<string name="toast_format_exported_to">%1$s plik wyeksportowany do:\n</string>
+	<string name="title_export_email">GnuCash Android %1$s eksport</string>
+	<string name="description_export_email">GnuCash Android Export from </string>
+	<string name="header_transaction_settings">Transakcje</string>
+	<string name="title_transaction_preferences">Ustawienia transakcji</string>
+	<string name="title_account_preferences">Ustawienia konta</string>
+	<string name="title_default_transaction_type">Domyślny typ transakcji</string>
+	<string name="summary_default_transaction_type">Typ transakcji używany domyślnie, KREDYT lub DEBET</string>
+	<string-array name="transaction_types">
+		<item>KREDYT</item>
+		<item>DEBET</item>
+	</string-array>
+	<string name="msg_delete_all_transactions_confirmation">Czy na pewno chcesz usunąć WSZYSTKIE transakcje?</string>
+	<string name="msg_delete_transaction_confirmation">Czy na pewno chcesz usunąć tę transakcję?</string>
+	<string name="title_export_preference_category">Eksport</string>
+	<string name="title_export_all_transactions">Eksport wszystkich transakcji</string>
+	<string name="title_always_delete_exported_transactions">Usuń wyeksportowane transakcje</string>
+	<string name="title_default_export_email">Domyślny email do eksportu</string>
+	<string name="summary_default_export_email">Domyślny adres email na który będzie wysyłany eksport. Możesz nadal zmienić go w trakcie eksportu.</string>
+	<string name="label_double_entry_account">Transfer konta</string>
+	<string name="summary_use_double_entry">Wszystkie transakcje będą przeniesione z jednego konta na drugie</string>
+	<string name="title_use_double_entry">Aktywuj podwójne wpisy</string>
+	<string name="account_balance">Saldo</string>
+	<string name="toast_no_account_name_entered">Wprowadź nazwę konta do utworzenia</string>
+	<string name="label_account_currency">Waluta</string>
+	<string name="label_parent_account">Konto nadrzędne</string>
+	<string name="title_xml_ofx_header">Używaj nagłówka XML OFX</string>
+	<string name="summary_xml_ofx_header">Włącz tę opcję gdy eksportujesz do aplikacji innej ni GnuCash dla desktopa</string>
+	<string name="title_whats_new">Co nowego</string>
+	<string name="whats_new">
+        - Visual reports (Bar/Pie/line charts) \n
+        - Scheduled backups of (QIF, OFX, and XML)\n
+        - Backup/Export to DropBox and Google Drive\n
+        - Better recurrence options for scheduled transactions\n
+        - Navigation drawer for easier access to options\n
+        - Multiple bug fixes and improvements\n
+	</string>
+	<string name="label_dismiss">Spocznij</string>
+    <string name="toast_transanction_amount_required">Wprowadź kwotę by zapisać transakcję</string>
+    <string name="toast_error_edit_multi_currency_transaction">Wielowalutowe transakcje nie mogą być modyfikowane</string>
+    <string name="menu_import_accounts">Importuj konta GnuCash</string>
+    <string name="btn_import_accounts">Import konta</string>
+    <string name="toast_error_importing_accounts">Wystąpił błąd podczas importowania kont GnuCash</string>
+    <string name="toast_success_importing_accounts">Import kont GnuCash zakończony pomyślnie</string>
+    <string name="summary_import_accounts">Importuj strukturę kont wyeksportowaną z GnuCash dla desktop</string>
+    <string name="title_import_accounts">Importuj GnuCash XML</string>
+    <string name="summary_delete_all_accounts">Usuń wszystkie konta z bazy. Zostaną także usunięte wszystkie transakcje.</string>
+    <string name="title_delete_all_accounts">Usuń wszystkie konta</string>
+    <string name="header_account_settings">Konta</string>
+    <string name="toast_all_accounts_deleted">Wszystkie konta zostały usunięte pomyślnie</string>
+    <string name="confirm_delete_all_accounts">Czy jesteś pewień, że chcesz usunąć wszystkie konta i transakcje?\n\nTej operacji nie można cofnąć!</string>
+    <string name="label_account_type">Typ konta</string>
+    <string name="summary_delete_all_transactions">Wszystkie transakcje na tym koncie zostaną usunięte!</string>
+    <string name="title_delete_all_transactions">Usuń wszyskie transakcje</string>
+    <string name="toast_all_transactions_deleted">Wszystkie transakcje usunięte pomyślnie!</string>
+    <string name="title_progress_importing_accounts">Importowanie kont</string>
+    <string name="toast_tap_again_to_confirm_delete">Aby potwierdzić dotknij ponownie. WSZYSTKIE wpisy zostaną usunięte!!</string>
+    <string name="section_header_transactions">Transakcje</string>
+    <string name="section_header_subaccounts">Sub-konto</string>
+    <string name="menu_search_accounts">Szukaj</string>
+    <string name="title_default_export_format">Domyślny format eksportu</string>
+    <string name="summary_default_export_format">Format pliku użyty w trakcie eksportowania transakcji</string>
+    <string name="menu_export_transactions">Eksport transakcji…</string>
+    <string name="label_recurring_transaction">Powtarzająca się</string>
+    <!-- This should be the same name used by GnuCash desktop for imbalance accounts -->
+    <string name="imbalance_account_name">Niezbilansowane</string>
+    <string name="title_progress_exporting_transactions">Eksport transakcji</string>
+    <string name="label_no_recurring_transactions">Brak powtarzających się transakcji do wyświetlenia.</string>
+    <string name="toast_recurring_transaction_deleted">Pomyślnie usunięto powtarzającą się transakcję</string>
+    <string name="label_placeholder_account">Konto zastępcze</string>
+    <string name="label_default_transfer_account">Domyślne konto transferowe</string>
+    <plurals name="label_sub_accounts">
+        <item quantity="one">%d sub-konto</item>
+        <item quantity="few">%d sub-konta</item>
+        <item quantity="other">%d sub-kont</item>
+    </plurals>
+    <string-array name="account_type_entry_values">
+        <item>GOTÓWKA</item>
+        <item>BANK</item>
+        <item>KARTA KREDYTOWA</item>
+        <item>AKTYWA</item>
+        <item>WIERZYTELNOŚĆ</item>
+        <item>DOCHÓD</item>
+        <item>WYDATEK</item>
+        <item>ZOBOWIĄZANIE</item>
+        <item>NALEŻNOŚĆ</item>
+        <item>KAPITAŁ</item>
+        <item>WALUTA</item>
+        <item>AKCJE</item>
+        <item>FUNDUSZ WZAJEMNY</item>
+		<item>TRADING</item>
+    </string-array>
+    <string-array name="export_formats">
+        <item>QIF</item>
+        <item>OFX</item>
+        <item>XML</item>
+    </string-array>
+    <!-- Default title for color picker dialog [CHAR LIMIT=30] -->
+    <string name="color_picker_default_title">Wybierz kolor</string>
+    <!-- Content description for a color square. -->
+    <string name="color_swatch_description" translatable="false">Kolor <xliff:g id="color_index" example="14">%1$d</xliff:g></string>
+    <!-- Content description for a selected color square. -->
+    <string name="color_swatch_description_selected" translatable="false">Kolor <xliff:g id="color_index" example="14">%1$d</xliff:g> wybrany</string>
+    <string name="label_account_color_and_type">Kolor i typ konta</string>
+    <string name="label_delete_sub_accounts">Usuń sub-konta</string>
+    <string name="title_recent_accounts">Ostatnie</string>
+    <string name="title_favorite_accounts">Ulubione</string>
+    <string name="title_all_accounts">Wszystkie</string>
+    <string name="summary_create_default_accounts">Tworzy typową dla GnuCash strukturę kont</string>
+    <string name="title_create_default_accounts">Utwórz domyślne konta</string>
+    <string name="msg_confirm_create_default_accounts_setting">Wszystkie istniejące konta i transakcje na urządzeniu będą usunięte.\n\nCzy na pewno chcesz kontynuować?</string>
+    <string name="menu_scheduled_transactions">Zaplanowane transakcje</string>
+    <string name="msg_confirm_create_default_accounts_first_run">Witamy w GnuCash dla Android!\nMożesz utworzyć typową hierarchię kont lub zaimportować własną strukturę.\n\nObie opcje dostępne są w ustawieniach aplikacji, także możesz zdecydować później</string>
+    <string name="title_scheduled_transactions">Zaplanowane transakcje</string>
+    <string name="title_select_export_destination">Wybierz miejsce docelowe dla eksportu</string>
+    <string name="hint_split_memo">Notka</string>
+    <string name="label_spend">Wydaj</string>
+    <string name="label_receive">Przyjmij</string>
+    <string name="label_withdrawal">Wypłata</string>
+    <string name="label_deposit">Depozyt</string>
+    <string name="label_payment">Płatność</string>
+    <string name="label_charge">Obciążenie</string>
+    <string name="label_decrease">Zmniejsz</string>
+    <string name="label_increase">Zwiększ</string>
+    <string name="label_income">Dochód</string>
+    <string name="label_rebate">Zwrot</string>
+    <string name="label_expense">Wydatek</string>
+    <string name="label_bill">Rachunek</string>
+    <string name="label_invoice">Faktura</string>
+    <string name="label_buy">Kup</string>
+    <string name="label_sell">Sprzedaj</string>
+    <string name="label_repeats">Powtarzaj</string>
+    <string name="toast_no_recent_backup">Nie znaleziono ostatnich kopii zapasowych</string>
+    <string name="account_name_opening_balances">Saldo otwarcia</string>
+    <string name="account_name_equity">Kapitał</string>
+    <string name="summary_save_opening_balances">Wybierz aby zachować obecne saldo konta (przed usunięciem transakcji) jak nowe saldo otwarcia po usunięciu transakcji</string>
+    <string name="title_save_opening_balances">Zachowaj saldo otwarcia konta</string>
+    <string name="export_warning_ofx">OFX nie wspiera transakcji double-entry</string>
+    <string name="export_warning_qif">Generuje osobne pliki QIF dla każdej waluty</string>
+    <string name="title_transaction_splits">Podział transakcji</string>
+    <string name="label_imbalance">Imbalance:</string>
+    <string name="btn_add_split">Dodaj podział</string>
+    <string name="menu_title_favorite">Ulubione</string>
+    <string name="drawer_open">Szuflada nawigacyjna otwarta</string>
+    <string name="drawer_close">Szuflada nawigacyjna zamknięta</string>
+    <string name="title_reports">Raporty</string>
+	<string name="title_pie_chart">Wykres kołowy</string>
+    <string name="title_line_chart">Wykres liniowy</string>
+    <string name="title_bar_chart">Wykres słupkowy</string>
+    <string name="title_report_prefs">Ustawienia raportu</string>
+    <string name="label_report_currency">Wybierz walutę</string>
+    <string name="title_use_account_color">Kolor konra w raporctach</string>
+    <string name="summary_use_account_color">Użyj koloru konta w wykresie kołowym/słupkowym</string>
+    <string name="header_report_settings">Raporty</string>
+    <string name="menu_order_by_size">Sortuj po rozmarze</string>
+    <string name="menu_toggle_legend">Przełącz opisy</string>
+    <string name="menu_toggle_labels">Przełącz etykiety</string>
+    <string name="menu_toggle_percentage_mode">Przełącz procenty</string>
+    <string name="menu_toggle_average_lines">Przełącz linie średniej</string>
+    <string name="menu_group_smaller_slices">Grupuj mniejsze wycinki</string>
+    <string name="label_chart_no_data">Brak danych dla wykresu</string>
+    <string name="label_chart_overall">Ogólny</string>
+    <string name="label_chart_total">Całkowity</string>
+    <string name="label_other_slice">Inne</string>
+    <string name="toast_chart_percentage_mode_total">Procentarz wybranej wartości wyliczony z całkowitej kwoty</string>
+    <string name="toast_chart_percentage_mode_current_bar">Procentarz wybranej wartości wyliczony z aktualnej skumulowanej wartości słupka</string>
+    <string name="label_save_template">Zapisz jako szablon</string>
+    <string name="label_delete_account_transactions_description">To konto zawiera transakcje.\nCo chciałbyś zrobić z tymi transakcjami</string>
+    <string name="label_delete_account_subaccounts_description">To konto zawiera sub-konta.\nCo chciałbyś zrobić z tymi sub-kontami</string>
+    <string name="label_delete_transactions">Usuń transakcje</string>
+    <string name="toast_disable_double_entry_to_save_transaction">Utwórz i okreść konto transferowe LUB wyłącz pdwójne wpisy w ustawieniach aby zachować transakcję</string>
+    <string name="label_tap_to_create_schedule">Stuknij aby zaplanować</string>
+    <string name="title_restore_backup">Przywróc kopię zapasową…</string>
+    <string name="header_backup_and_export_settings">Kopia zapasowa i eksport</string>
+    <string name="title_dropbox_sync_preference">DropBox Sync</string>
+    <string name="title_backup_preference_category">Kopia zapasowa</string>
+    <string name="summary_dropbox_sync">Zaznaczy by synchronizowac z DropBox</string>
+    <string name="title_select_gnucash_xml_file">Wybierz plik GnuCash XML</string>
+    <string name="title_backup_prefs">Ustawienia kopii zapasowej</string>
+    <string name="title_create_backup_pref">Utwórz kopię zapasową</string>
+    <string name="summary_create_backup_pref">Domyślnie kopie zapasowe są zachowywane na KARCIE SD</string>
+    <string name="summary_restore_backup_pref">Wybierz konkretną kopię zapasową by ją przywrócić</string>
+    <string name="toast_backup_successful">Kopia zapasowa utworzona pomyślnie</string>
+    <string name="toast_backup_failed">Błąd tworzenia kopii zapasowej</string>
+    <string name="export_warning_xml">Wyeksportowano wszystkie konta i transakcje</string>
+    <string name="title_google_drive_sync_pref">Google Drive Sync</string>
+    <string name="summary_google_drive_sync">Wybierz aby synchronizować z Google Drive</string>
+    <string name="toast_install_file_manager">Zainstaluj managera plików aby wybrać pliki</string>
+    <string name="title_select_backup_to_restore">Wybierz kopię zapaswą aby ją przywrócić</string>
+    <string name="nav_menu_favorites">Ulubione</string>
+    <string name="nav_menu_open">Otwórz...</string>
+    <string name="nav_menu_reports">Raporty</string>
+    <string name="nav_menu_scheduled_transactions">Transakcje zaplanowane</string>
+    <string name="nav_menu_export">Eksport...</string>
+    <string name="nav_menu_settings">Ustawienia</string>
+    <plurals name="label_every_x_days">
+        <item quantity="one">Codziennie</item>
+        <item quantity="few">Co %d dni</item>
+        <item quantity="other">Co %d dni</item>
+    </plurals>
+    <plurals name="label_every_x_weeks">
+        <item quantity="one">Co tydzień</item>
+        <item quantity="few">Co %d tygodnie</item>
+        <item quantity="other">Co %d tygodni</item>
+    </plurals>
+    <plurals name="label_every_x_months">
+        <item quantity="one">Co miesiąc</item>
+        <item quantity="few">Co %d miesiące</item>
+        <item quantity="other">Co %d miesięcy</item>
+    </plurals>
+    <plurals name="label_every_x_years">
+        <item quantity="one">Co rok</item>
+        <item quantity="few">Co %d lata</item>
+        <item quantity="other">Co %d lat</item>
+    </plurals>
+    <string name="title_enable_crashlytics">Włącz logowanie błędów</string>
+    <string name="msg_enable_crashlytics">Włącz by wysyłać inforamcje o błędach do twórców w celu poleszania aplikacji (zalecane).
+Żadne informacje umożliwiające identyfikację użytkownika nie będą zbierane w ramach tego procesu!</string>
+    <string name="label_export_format">Format eksportu</string>
+    <string name="toast_backup_folder_not_found">Folder kopii zapasowej nie może być odnaleziony. Upewnij się, że KARTA SD jest zamontowana!</string>
+    <string name="label_old_passcode">Wpisz stare hasło</string>
+    <string name="label_new_passcode">Wpisz nowe hasło</string>
+    <string name="nav_menu_scheduled_backups">Zaplanowane eksporty</string>
+    <string name="title_scheduled_exports">Zaplanowane eksporty</string>
+    <string name="label_no_scheduled_exports_to_display">Brak zaplanowanych eksportów do pokazania</string>
+    <string name="title_create_export_schedule">Zaplanuj eksport</string>
+    <string name="toast_exported_to">Wyeksportowane do: %1$s</string>
+</resources>

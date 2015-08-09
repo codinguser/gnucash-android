@@ -1,5 +1,11 @@
 Change Log
 ===============================================================================
+Version 1.6.3 *(2015-08-09)*
+----------------------------
+* Fixed: Transfer account ignored when saving transaction with one split (after opening split editor)
+* Fixed: Crash when exporting scheduled transactions when there are scheduled backups present
+* Added: Polish translation
+
 Version 1.6.2 *(2015-07-16)*
 ----------------------------
 * Fixed: Editing accounts causing the account's transactions to be deleted
