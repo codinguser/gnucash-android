@@ -481,6 +481,9 @@ public class GncXmlExporter extends Exporter{
             String actionUID = cursor.getString(cursor.getColumnIndexOrThrow(ScheduledActionEntry.COLUMN_ACTION_UID));
             Account accountUID = mTransactionToTemplateAccountMap.get(actionUID);
 
+            if (accountUID == null) //if the action UID does not belong to a transaction we've seen before, skip it
+                continue;
+
             xmlSerializer.startTag(null, GncXmlHelper.TAG_SCHEDULED_ACTION);
             xmlSerializer.attribute(null, GncXmlHelper.ATTR_KEY_VERSION, GncXmlHelper.BOOK_VERSION);
             xmlSerializer.startTag(null, GncXmlHelper.TAG_SX_ID);
