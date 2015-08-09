@@ -28,6 +28,15 @@
                   android:layout_width="match_parent"
                   android:layout_height="match_parent">
 
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar_actionbar"
+            android:background="?attr/colorPrimary"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            app:elevation="0dp"
+            app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+
         <android.support.design.widget.TabLayout
             android:id="@+id/tab_layout"
             android:layout_width="match_parent"

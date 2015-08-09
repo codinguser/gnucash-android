@@ -148,31 +148,32 @@ afterEvaluate {
     }
 }
 
+def androidSupportVersion = "22.2.1"
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile('com.android.support:support-v4:22.2.0',
-            'com.android.support:appcompat-v7:22.2.0',
-            'com.android.support:design:22.2.0',
+    compile('com.android.support:support-v4:'   + androidSupportVersion,
+            'com.android.support:appcompat-v7:' + androidSupportVersion,
+            'com.android.support:design:'       + androidSupportVersion,
+            'com.android.support:cardview-v7:'  + androidSupportVersion,
+            'com.android.support:recyclerview-v7:' + androidSupportVersion,
             'com.viewpagerindicator:library:2.4.1@aar',
             'com.doomonafireball.betterpickers:library:1.6.0',
             'org.jraf:android-switch-backport:1.4.0@aar',
             'com.github.PhilJay:MPAndroidChart:v2.1.0',
             'joda-time:joda-time:2.7',
             'com.google.android.gms:play-services-drive:7.0.0',
-            'com.crashlytics.android:crashlytics:1.+',
-            'com.android.support:cardview-v7:22.2.0',
-            'com.android.support:recyclerview-v7:22.2.0'
+            'com.crashlytics.android:crashlytics:1.+'
     )
 
     testCompile('org.robolectric:robolectric:3.0',
             'junit:junit:4.12',
             'org.assertj:assertj-core:1.7.1'
     )
-    androidTestCompile ('com.android.support.test:runner:0.2',
-                        'com.android.support.test:rules:0.2',
+    androidTestCompile ('com.android.support.test:runner:0.3',
+                        'com.android.support.test:rules:0.3',
                         'com.android.support.test.espresso:espresso-core:2.1',
-                        'com.android.support:support-annotations:22.2.0',
+                        'com.android.support:support-annotations:' + androidSupportVersion,
                         'com.android.support.test.espresso:espresso-contrib:2.2')
 
     androidTestCompile('com.squareup.assertj:assertj-android:1.0.0'){

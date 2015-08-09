@@ -53,6 +53,7 @@
         android:theme="@style/Theme.GnucashTheme">
         <activity
             android:name=".ui.account.AccountsActivity"
+            android:theme="@style/Theme.GnucashTheme.NoActionBar"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -97,6 +98,9 @@
 		        <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE"/>
 		    </intent-filter>
 		</activity>
+        <activity android:name=".ui.FormActivity"
+            android:theme="@style/Theme.GnucashTheme.NoActionBar"
+            android:configChanges="orientation|screenSize"/>
         <activity android:name=".ui.chart.ChartReportActivity" />
         <activity android:name=".ui.chart.PieChartActivity" />
         <activity android:name=".ui.chart.LineChartActivity" />

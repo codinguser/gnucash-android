@@ -77,6 +77,11 @@ public final class UxArgument {
      */
     public static final String SCHEDULED_ACTION_UID = "scheduled_action_uid";
 
+    /**
+     * Type of form displayed in the {@link FormActivity}
+     */
+    public static final String FORM_TYPE = "form_type";
+
     //prevent initialization of instances of this class
     private UxArgument(){
         //prevent even the native class from calling the ctor

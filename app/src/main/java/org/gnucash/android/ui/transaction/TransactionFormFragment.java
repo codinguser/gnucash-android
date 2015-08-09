@@ -241,11 +241,6 @@ public class TransactionFormFragment extends Fragment implements
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 		setHasOptionsMenu(true);
-		ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
-		actionBar.setHomeButtonEnabled(true);
-		actionBar.setDisplayHomeAsUpEnabled(true);
-		actionBar.setDisplayShowTitleEnabled(false);
-        actionBar.setHomeAsUpIndicator(R.drawable.ic_close_white_24dp);
 
 		SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
 		mUseDoubleEntry = sharedPrefs.getBoolean(getString(R.string.key_use_double_entry), false);
@@ -255,6 +250,7 @@ public class TransactionFormFragment extends Fragment implements
 		}
 
         mAccountUID = getArguments().getString(UxArgument.SELECTED_ACCOUNT_UID);
+        assert(mAccountUID != null);
 		mAccountsDbAdapter = AccountsDbAdapter.getInstance();
         mAccountType = mAccountsDbAdapter.getAccountType(mAccountUID);
 
@@ -290,10 +286,15 @@ public class TransactionFormFragment extends Fragment implements
         });
 
         setListeners();
-		if (mTransaction == null) {
+        ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+        actionBar.setSubtitle(mAccountsDbAdapter.getFullyQualifiedAccountName(mAccountUID));
+
+        if (mTransaction == null) {
+            actionBar.setTitle(R.string.title_add_transaction);
             initalizeViews();
             initTransactionNameAutocomplete();
         } else {
+            actionBar.setTitle(R.string.title_edit_transaction);
 			initializeViewsWithTransaction();
             mEditMode = true;
 		}

@@ -50,6 +50,7 @@ import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.model.Account;
 import org.gnucash.android.model.Money;
+import org.gnucash.android.ui.FormActivity;
 import org.gnucash.android.ui.UxArgument;
 import org.gnucash.android.ui.account.AccountsActivity;
 import org.gnucash.android.ui.account.AccountsListFragment;
@@ -69,12 +70,7 @@ public class TransactionsActivity extends PassLockActivity implements
 	/**
 	 * Logging tag
 	 */
-	protected static final String TAG = "AccountsActivity";
-	
-	/**
-	 * Tag for {@link TransactionFormFragment}
-	 */
-	public static final String FRAGMENT_NEW_TRANSACTION 	= "new_transaction";
+	protected static final String TAG = "TransactionsActivity";
 
     /**
      * ViewPager index for sub-accounts fragment
@@ -96,15 +92,6 @@ public class TransactionsActivity extends PassLockActivity implements
      */
     private String mAccountUID = null;
 
-	/**
-	 * Flag which is used to determine if the activity is running or not. 
-	 * Basically if onCreate has already been called or not. It is used
-	 * to determine if to call addToBackStack() for fragments. When adding 
-	 * the very first fragment, it should not be added to the backstack.
-	 * @see #showTransactionFormFragment(Bundle)
-	 */
-	private boolean mActivityRunning = false;
-
     /**
      * Account database adapter for manipulating the accounts list in navigation
      */
@@ -114,8 +101,6 @@ public class TransactionsActivity extends PassLockActivity implements
      * Hold the accounts cursor that will be used in the Navigation
      */
     private Cursor mAccountsCursor = null;
-
-    private TextView mSectionHeaderTransactions;
 
     private ViewPager mViewPager;
 
@@ -127,14 +112,6 @@ public class TransactionsActivity extends PassLockActivity implements
         @Override
         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
             mAccountUID = mAccountsDbAdapter.getUID(id);
-            FragmentManager fragmentManager = getSupportFragmentManager();
-
-            //inform new accounts fragment that account was changed
-            TransactionFormFragment newTransactionsFragment = (TransactionFormFragment) fragmentManager
-                    .findFragmentByTag(FRAGMENT_NEW_TRANSACTION);
-            if (newTransactionsFragment != null){
-                newTransactionsFragment.onAccountChanged(mAccountUID);
-            }
 
             if (isPlaceHolderAccount()){
                 if (mTabLayout.getTabCount() > 1)
@@ -283,7 +260,6 @@ public class TransactionsActivity extends PassLockActivity implements
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         mViewPager = (ViewPager) findViewById(R.id.pager);
-        mSectionHeaderTransactions = (TextView) findViewById(R.id.section_header_transactions);
 
 		mAccountUID = getIntent().getStringExtra(UxArgument.SELECTED_ACCOUNT_UID);
         mAccountsDbAdapter = AccountsDbAdapter.getInstance();
@@ -296,20 +272,10 @@ public class TransactionsActivity extends PassLockActivity implements
 
         setupActionBarNavigation();
 
-        final String action = getIntent().getAction();
-		if (action.equals(Intent.ACTION_INSERT_OR_EDIT) || action.equals(Intent.ACTION_INSERT)) {
-            mViewPager.setVisibility(View.GONE);
-            mTabLayout.setVisibility(View.GONE);
-            mDrawerToggle.setDrawerIndicatorEnabled(false);
-            initializeCreateOrEditTransaction();
-        } else {	//load the transactions list
-            mSectionHeaderTransactions.setVisibility(View.GONE);
+        mPagerAdapter = new AccountViewPagerAdapter(getSupportFragmentManager());
+        mViewPager.setAdapter(mPagerAdapter);
 
-            mPagerAdapter = new AccountViewPagerAdapter(getSupportFragmentManager());
-            mViewPager.setAdapter(mPagerAdapter);
-
-            mViewPager.setCurrentItem(INDEX_TRANSACTIONS_FRAGMENT);
-		}
+        mViewPager.setCurrentItem(INDEX_TRANSACTIONS_FRAGMENT);
 
         mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(mTabLayout));
         mTabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
@@ -328,29 +294,7 @@ public class TransactionsActivity extends PassLockActivity implements
 
             }
         });
-
-		// done creating, activity now running
-		mActivityRunning = true;
 	}
-
-    /**
-     * Loads the fragment for creating/editing transactions and initializes it to be displayed
-     */
-    private void initializeCreateOrEditTransaction() {
-        String transactionUID = getIntent().getStringExtra(UxArgument.SELECTED_TRANSACTION_UID);
-        String scheduledActionUID = getIntent().getStringExtra(UxArgument.SCHEDULED_ACTION_UID);
-        Bundle args = new Bundle();
-        if (transactionUID != null) {
-            mSectionHeaderTransactions.setText(R.string.title_edit_transaction);
-            args.putString(UxArgument.SELECTED_TRANSACTION_UID, transactionUID);
-            args.putString(UxArgument.SELECTED_ACCOUNT_UID, mAccountUID);
-            args.putString(UxArgument.SCHEDULED_ACTION_UID, scheduledActionUID);
-        } else {
-            mSectionHeaderTransactions.setText(R.string.title_add_transaction);
-            args.putString(UxArgument.SELECTED_ACCOUNT_UID, mAccountUID);
-        }
-        showTransactionFormFragment(args);
-    }
 
     @Override
     protected void onResume() {
@@ -362,41 +306,15 @@ public class TransactionsActivity extends PassLockActivity implements
      * Sets the color for the ViewPager title indicator to match the account color
      */
     private void setTitleIndicatorColor() {
-        //Basically, if we are in a top level account, use the default title color.
-        //but propagate a parent account's title color to children who don't have own color
-        long accountId = -1;
-        try {
-            accountId = mAccountsDbAdapter.getID(mAccountUID);
-        } catch (IllegalArgumentException e){
-            Log.e(TAG, e.getMessage());
-        }
-        String colorCode = mAccountsDbAdapter.getAccountColorCode(accountId);
-        int iColor = -1;
-        if (colorCode != null){
-            iColor = Color.parseColor(colorCode);
-        } else {
-            String accountUID = mAccountUID;
-            while ((accountUID = mAccountsDbAdapter.getParentAccountUID(accountUID)) != null) {
-                colorCode = mAccountsDbAdapter.getAccountColorCode(mAccountsDbAdapter.getID(accountUID));
-                if (colorCode != null) {
-                    iColor = Color.parseColor(colorCode);
-                    break;
-                }
-            }
-            if (colorCode == null)
-            {
-                iColor = getResources().getColor(R.color.theme_primary);
-            }
-        }
+        int iColor = AccountsDbAdapter.getActiveAccountColorResource(mAccountUID);
 
         mTabLayout.setBackgroundColor(iColor);
-        mSectionHeaderTransactions.setBackgroundColor(iColor);
 
         if (getSupportActionBar() != null)
             getSupportActionBar().setBackgroundDrawable(new ColorDrawable(iColor));
 
         if (Build.VERSION.SDK_INT > 20)
-            getWindow().setStatusBarColor(darken(iColor)); //TODO: change the whole app theme
+            getWindow().setStatusBarColor(darken(iColor));
     }
 
     /**
@@ -547,26 +465,6 @@ public class TransactionsActivity extends PassLockActivity implements
         startActivityForResult(addAccountIntent, AccountsActivity.REQUEST_EDIT_ACCOUNT);
     }
 
-	/**
-	 * Loads the transaction insert/edit fragment and passes the arguments
-	 * @param args Bundle arguments to be passed to the fragment
-	 */
-	private void showTransactionFormFragment(Bundle args){
-		FragmentManager fragmentManager = getSupportFragmentManager();
-		FragmentTransaction fragmentTransaction = fragmentManager
-				.beginTransaction();
-				
-		TransactionFormFragment transactionFormFragment = new TransactionFormFragment();
-		transactionFormFragment.setArguments(args);
-
-		fragmentTransaction.add(R.id.fragment_container,
-                transactionFormFragment, TransactionsActivity.FRAGMENT_NEW_TRANSACTION);
-		
-		if (mActivityRunning)
-			fragmentTransaction.addToBackStack(null);
-		fragmentTransaction.commit();
-	}
-
     /**
      * Display the balance of a transaction in a text view and format the text color to match the sign of the amount
      * @param balanceTextView {@link android.widget.TextView} where balance is to be displayed
@@ -583,18 +481,20 @@ public class TransactionsActivity extends PassLockActivity implements
 
 	@Override
 	public void createNewTransaction(String accountUID) {
-        Intent createTransactionIntent = new Intent(this.getApplicationContext(), TransactionsActivity.class);
+        Intent createTransactionIntent = new Intent(this.getApplicationContext(), FormActivity.class);
         createTransactionIntent.setAction(Intent.ACTION_INSERT_OR_EDIT);
         createTransactionIntent.putExtra(UxArgument.SELECTED_ACCOUNT_UID, accountUID);
+        createTransactionIntent.putExtra(UxArgument.FORM_TYPE, FormActivity.FormType.TRANSACTION_FORM.name());
         startActivity(createTransactionIntent);
 	}
 
 	@Override
 	public void editTransaction(String transactionUID){
-        Intent createTransactionIntent = new Intent(this.getApplicationContext(), TransactionsActivity.class);
+        Intent createTransactionIntent = new Intent(this.getApplicationContext(), FormActivity.class);
         createTransactionIntent.setAction(Intent.ACTION_INSERT_OR_EDIT);
         createTransactionIntent.putExtra(UxArgument.SELECTED_ACCOUNT_UID, mAccountUID);
         createTransactionIntent.putExtra(UxArgument.SELECTED_TRANSACTION_UID, transactionUID);
+        createTransactionIntent.putExtra(UxArgument.FORM_TYPE, FormActivity.FormType.TRANSACTION_FORM.name());
         startActivity(createTransactionIntent);
 	}
 

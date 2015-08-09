@@ -1,5 +1,5 @@
 <resources>
-    <string name="label_create_account">Створити рахунок</string>
+    <string name="title_create_account">Створити рахунок</string>
     <string name="title_edit_account">Редагувати рахунок</string>
     <string name="info_details">Інформація</string>
     <string name="menu_export">Експортувати OFX</string>

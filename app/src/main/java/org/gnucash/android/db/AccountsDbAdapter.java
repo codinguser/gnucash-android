@@ -22,6 +22,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteStatement;
+import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
@@ -409,15 +410,15 @@ public class AccountsDbAdapter extends DatabaseAdapter {
 	 * @param uid Unique Identifier of account whose parent is to be returned. Should not be null
 	 * @return DB record UID of the parent account, null if the account has no parent
 	 */
-    public String getParentAccountUID(String uid){
+    public String getParentAccountUID(@NonNull String uid){
 		Cursor cursor = mDb.query(AccountEntry.TABLE_NAME,
-				new String[] {AccountEntry._ID, AccountEntry.COLUMN_PARENT_ACCOUNT_UID},
+				new String[] {AccountEntry.COLUMN_PARENT_ACCOUNT_UID},
                 AccountEntry.COLUMN_UID + " = ?",
                 new String[]{uid},
                 null, null, null, null);
         try {
             if (cursor.moveToFirst()) {
-                Log.d(LOG_TAG, "Account already exists. Returning existing id");
+                Log.d(LOG_TAG, "Found parent account UID, returning value");
                 return cursor.getString(cursor.getColumnIndexOrThrow(AccountEntry.COLUMN_PARENT_ACCOUNT_UID));
             } else {
                 return null;
@@ -1176,6 +1177,37 @@ public class AccountsDbAdapter extends DatabaseAdapter {
                     + context.getString(R.string.account_name_opening_balances);
         } else
             return context.getString(R.string.account_name_opening_balances);
+    }
+
+    /**
+     * Returns the account color for the active account as an Android resource ID.
+     * <p>
+     * Basically, if we are in a top level account, use the default title color.
+     * but propagate a parent account's title color to children who don't have own color
+     * </p>
+     * @param accountUID GUID of the account
+     * @return Android resource ID representing the color which can be directly set to a view
+     */
+    public static int getActiveAccountColorResource(@NonNull String accountUID) {
+        AccountsDbAdapter accountsDbAdapter = getInstance();
+
+        String colorCode = null;
+        int iColor = -1;
+        String parentAccountUID = accountUID;
+        while (parentAccountUID != null ) {
+            colorCode = accountsDbAdapter.getAccountColorCode(accountsDbAdapter.getID(parentAccountUID));
+            if (colorCode != null) {
+                iColor = Color.parseColor(colorCode);
+                break;
+            }
+            parentAccountUID = accountsDbAdapter.getParentAccountUID(parentAccountUID);
+        }
+
+        if (colorCode == null) {
+            iColor = GnuCashApplication.getAppContext().getResources().getColor(R.color.theme_primary);
+        }
+
+        return iColor;
     }
 
     /**

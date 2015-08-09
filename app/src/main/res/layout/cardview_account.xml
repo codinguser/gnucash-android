@@ -20,6 +20,8 @@
     cardview:cardCornerRadius="4dp"
     cardview:cardUseCompatPadding="true"
     cardview:cardPreventCornerOverlap="false"
+    android:layout_marginLeft="4dp"
+    android:layout_marginRight="4dp"
     android:foreground="?selectableItemBackground"
     android:focusable="true"
     android:clickable="true"

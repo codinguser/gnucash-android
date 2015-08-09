@@ -31,7 +31,6 @@ import android.support.v4.content.Loader;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.internal.widget.AdapterViewCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
@@ -51,8 +50,8 @@ import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.DatabaseCursorLoader;
 import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.model.Account;
+import org.gnucash.android.ui.FormActivity;
 import org.gnucash.android.ui.UxArgument;
-import org.gnucash.android.ui.transaction.TransactionsActivity;
 import org.gnucash.android.ui.util.AccountBalanceTask;
 import org.gnucash.android.ui.util.OnAccountClickedListener;
 import org.gnucash.android.ui.util.Refreshable;
@@ -257,8 +256,9 @@ public class AccountsListFragment extends Fragment implements
 
 
     private void startActionCreateAccount() {
-        Intent addAccountIntent = new Intent(getActivity(), AccountsActivity.class);
+        Intent addAccountIntent = new Intent(getActivity(), FormActivity.class);
         addAccountIntent.setAction(Intent.ACTION_INSERT_OR_EDIT);
+        addAccountIntent.putExtra(UxArgument.FORM_TYPE, FormActivity.FormType.ACCOUNT_FORM.name());
         addAccountIntent.putExtra(UxArgument.PARENT_ACCOUNT_UID, mParentAccountUID);
         startActivityForResult(addAccountIntent, AccountsActivity.REQUEST_EDIT_ACCOUNT);
     }
@@ -292,7 +292,7 @@ public class AccountsListFragment extends Fragment implements
      * @param accountId Long record ID of account to be edited. Pass 0 to create a new account.
      */
     public void openCreateOrEditActivity(long accountId){
-        Intent editAccountIntent = new Intent(AccountsListFragment.this.getActivity(), AccountsActivity.class);
+        Intent editAccountIntent = new Intent(AccountsListFragment.this.getActivity(), FormActivity.class);
         editAccountIntent.setAction(Intent.ACTION_INSERT_OR_EDIT);
         editAccountIntent.putExtra(UxArgument.SELECTED_ACCOUNT_UID, mAccountsDbAdapter.getUID(accountId));
         startActivityForResult(editAccountIntent, AccountsActivity.REQUEST_EDIT_ACCOUNT);
@@ -471,9 +471,10 @@ public class AccountsListFragment extends Fragment implements
 
                     @Override
                     public void onClick(View v) {
-                        Intent intent = new Intent(getActivity(), TransactionsActivity.class);
+                        Intent intent = new Intent(getActivity(), FormActivity.class);
                         intent.setAction(Intent.ACTION_INSERT_OR_EDIT);
                         intent.putExtra(UxArgument.SELECTED_ACCOUNT_UID, accountUID);
+                        intent.putExtra(UxArgument.FORM_TYPE, FormActivity.FormType.TRANSACTION_FORM.name());
                         getActivity().startActivity(intent);
                     }
                 });

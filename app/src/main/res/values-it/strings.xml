@@ -17,7 +17,7 @@
 -->
 
 <resources>
-    <string name="label_create_account">Crea conto</string>
+    <string name="title_create_account">Crea conto</string>
     <string name="title_edit_account">Modifica conto</string>
     <string name="info_details">Informazioni</string>
     <string name="menu_export">Esporta OFX</string>

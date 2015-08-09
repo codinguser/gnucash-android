@@ -30,6 +30,7 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.SimpleCursorAdapter;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
@@ -240,8 +241,6 @@ public class AccountFormFragment extends Fragment {
 	@Override	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.fragment_new_account, container, false);
-		((AppCompatActivity) getActivity()).getSupportActionBar()
-                .setTitle(R.string.label_create_account);
 		mCurrencySpinner = (Spinner) view.findViewById(R.id.input_currency_spinner);
 		mNameEditText = (EditText) view.findViewById(R.id.input_account_name);
 		//mNameEditText.requestFocus();
@@ -314,13 +313,14 @@ public class AccountFormFragment extends Fragment {
 
         mAccountUID = getArguments().getString(UxArgument.SELECTED_ACCOUNT_UID);
 
+        ActionBar supportActionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
         if (mAccountUID != null) {
             mAccount = mAccountsDbAdapter.getAccount(mAccountUID);
-            ((AppCompatActivity) getActivity()).getSupportActionBar()
-                                        .setTitle(R.string.title_edit_account);
+            supportActionBar.setTitle(R.string.title_edit_account);
+        } else {
+            supportActionBar.setTitle(R.string.title_create_account);
         }
 
-        ((AppCompatActivity) getActivity()).getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_close_white_24dp);
         mRootAccountUID = mAccountsDbAdapter.getOrCreateGnuCashRootAccountUID();
         if (mRootAccountUID != null)
             mRootAccountId = mAccountsDbAdapter.getID(mRootAccountUID);
