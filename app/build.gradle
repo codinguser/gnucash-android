@@ -171,7 +171,7 @@ dependencies {
     androidTestCompile('com.squareup.assertj:assertj-android:1.0.0'){
         exclude group: 'com.android.support', module:'support-annotations'
     }
-    androidTestCompile ('com.android.support.test.espresso:espresso-core:2.1')
-    androidTestCompile ('com.android.support.test.espresso:espresso-contrib:2.1')
+    androidTestCompile ('com.android.support.test.espresso:espresso-core:2.2')
+    androidTestCompile ('com.android.support.test.espresso:espresso-contrib:2.2')
     androidTestCompile 'com.android.support:support-annotations:22.1.1'
 }
