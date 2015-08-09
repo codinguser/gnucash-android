@@ -699,6 +699,17 @@ public class TransactionFormFragment extends Fragment implements
 		Currency currency = Currency.getInstance(mTransactionsDbAdapter.getAccountCurrencyCode(mAccountUID));
 		Money amount 	= new Money(amountBigd, currency).absolute();
 
+        if (mSplitsList.size() == 1){ //means split editor was opened but no split was added
+            String transferAcctUID;
+            if (mUseDoubleEntry) {
+                long transferAcctId = mDoubleAccountSpinner.getSelectedItemId();
+                transferAcctUID = mAccountsDbAdapter.getUID(transferAcctId);
+            } else {
+                transferAcctUID = mAccountsDbAdapter.getOrCreateImbalanceAccountUID(currency);
+            }
+            mSplitsList.add(mSplitsList.get(0).createPair(transferAcctUID));
+        }
+
         //capture any edits which were done directly (not using split editor)
         if (mSplitsList.size() == 2 && mSplitsList.get(0).isPairOf(mSplitsList.get(1))) {
             //if it is a simple transfer where the editor was not used, then respect the button
