@@ -18,6 +18,7 @@ package org.gnucash.android.ui.transaction;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Rect;
@@ -230,7 +231,11 @@ public class TransactionsListFragment extends ListFragment implements
 			checkbox.setChecked(!checkbox.isChecked());
 			return;
 		}
-		mTransactionEditListener.editTransaction(mTransactionsDbAdapter.getUID(id));
+		Intent intent = new Intent(getActivity(), TransactionInfoActivity.class);
+		intent.putExtra(UxArgument.SELECTED_TRANSACTION_UID, mTransactionsDbAdapter.getUID(id));
+		intent.putExtra(UxArgument.SELECTED_ACCOUNT_UID, mAccountUID);
+		startActivity(intent);
+//		mTransactionEditListener.editTransaction(mTransactionsDbAdapter.getUID(id));
 	}
 
 	@Override

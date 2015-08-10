@@ -27,16 +27,18 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
 import org.gnucash.android.R;
+import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.ui.account.AccountFormFragment;
 import org.gnucash.android.ui.transaction.TransactionFormFragment;
-import org.gnucash.android.ui.transaction.TransactionsActivity;
 
 /**
  * Activity for displaying forms
  * @author Ngewi Fet <ngewif@gmail.com>
  */
 public class FormActivity extends AppCompatActivity {
+
+    private String mAccountUID;
 
     public enum FormType {ACCOUNT_FORM, TRANSACTION_FORM, EXPORT_FORM}
 
@@ -45,7 +47,7 @@ public class FormActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_form);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_actionbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_transaction_info);
         setSupportActionBar(toolbar);
 
         android.support.v7.app.ActionBar actionBar = getSupportActionBar();
@@ -58,15 +60,15 @@ public class FormActivity extends AppCompatActivity {
         String formtypeString = intent.getStringExtra(UxArgument.FORM_TYPE);
         FormType formType = FormType.valueOf(formtypeString);
 
-        String accountUID = intent.getStringExtra(UxArgument.SELECTED_ACCOUNT_UID);
-        if (accountUID == null){
-            accountUID = intent.getStringExtra(UxArgument.PARENT_ACCOUNT_UID);
+        mAccountUID = intent.getStringExtra(UxArgument.SELECTED_ACCOUNT_UID);
+        if (mAccountUID == null){
+            mAccountUID = intent.getStringExtra(UxArgument.PARENT_ACCOUNT_UID);
         }
-        if (accountUID != null) {
-            int colorCode = AccountsDbAdapter.getActiveAccountColorResource(accountUID);
+        if (mAccountUID != null) {
+            int colorCode = AccountsDbAdapter.getActiveAccountColorResource(mAccountUID);
             actionBar.setBackgroundDrawable(new ColorDrawable(colorCode));
             if (Build.VERSION.SDK_INT > 20)
-                getWindow().setStatusBarColor(TransactionsActivity.darken(colorCode));
+                getWindow().setStatusBarColor(GnuCashApplication.darken(colorCode));
         }
         switch (formType){
             case ACCOUNT_FORM:
@@ -92,6 +94,7 @@ public class FormActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
             case android.R.id.home:
+                setResult(RESULT_CANCELED);
                 finish();
                 return true;
         }
@@ -99,6 +102,15 @@ public class FormActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * Return the GUID of the account for which the form is displayed.
+     * If the form is a transaction form, the transaction is created within that account. If it is
+     * an account form, then the GUID is the parent account
+     * @return GUID of account
+     */
+    public String getCurrentAccountUID() {
+        return mAccountUID;
+    }
 
     /**
      * Shows the form for creating/editing accounts

@@ -20,7 +20,6 @@ package org.gnucash.android.ui.transaction;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
-import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
@@ -28,7 +27,6 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.ResourceCursorAdapter;
@@ -255,7 +253,7 @@ public class TransactionsActivity extends PassLockActivity implements
         setContentView(R.layout.activity_transactions);
         setUpDrawer();
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_actionbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_transaction_info);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
@@ -314,18 +312,9 @@ public class TransactionsActivity extends PassLockActivity implements
             getSupportActionBar().setBackgroundDrawable(new ColorDrawable(iColor));
 
         if (Build.VERSION.SDK_INT > 20)
-            getWindow().setStatusBarColor(darken(iColor));
+            getWindow().setStatusBarColor(GnuCashApplication.darken(iColor));
     }
 
-    /**
-     * Returns darker version of specified <code>color</code>.
-     */
-    public static int darken(int color) {
-        float[] hsv = new float[3];
-        Color.colorToHSV(color, hsv);
-        hsv[2] *= 0.8f; // value component
-        return Color.HSVToColor(hsv);
-    }
     /**
 	 * Set up action bar navigation list and listener callbacks
 	 */
@@ -400,9 +389,10 @@ public class TransactionsActivity extends PassLockActivity implements
                 return true;
 
             case R.id.menu_edit_account:
-                Intent editAccountIntent = new Intent(this, AccountsActivity.class);
+                Intent editAccountIntent = new Intent(this, FormActivity.class);
                 editAccountIntent.setAction(Intent.ACTION_INSERT_OR_EDIT);
                 editAccountIntent.putExtra(UxArgument.SELECTED_ACCOUNT_UID, mAccountUID);
+                editAccountIntent.putExtra(UxArgument.FORM_TYPE, FormActivity.FormType.ACCOUNT_FORM.name());
                 startActivityForResult(editAccountIntent, AccountsActivity.REQUEST_EDIT_ACCOUNT);
                 return true;
 

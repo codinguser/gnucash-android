@@ -16,6 +16,7 @@
 
 package org.gnucash.android.ui.transaction;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -287,7 +288,7 @@ public class TransactionFormFragment extends Fragment implements
 
         setListeners();
         ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
-        actionBar.setSubtitle(mAccountsDbAdapter.getFullyQualifiedAccountName(mAccountUID));
+//        actionBar.setSubtitle(mAccountsDbAdapter.getFullyQualifiedAccountName(mAccountUID));
 
         if (mTransaction == null) {
             actionBar.setTitle(R.string.title_add_transaction);
@@ -795,7 +796,7 @@ public class TransactionFormFragment extends Fragment implements
         //update widgets, if any
 		WidgetConfigurationActivity.updateAllWidgets(getActivity().getApplicationContext());
 
-		finish();
+		finish(Activity.RESULT_OK);
 	}
 
     /**
@@ -857,13 +858,13 @@ public class TransactionFormFragment extends Fragment implements
 
 		switch (item.getItemId()) {
             case android.R.id.home:
-                finish();
+                finish(Activity.RESULT_CANCELED);
                 return true;
 
 		case R.id.menu_save:
             if (mMultiCurrency) {
                 Toast.makeText(getActivity(), R.string.toast_error_edit_multi_currency_transaction, Toast.LENGTH_LONG).show();
-                finish();
+                finish(Activity.RESULT_CANCELED);
             }
             else if (mAmountEditText.getText().length() == 0) {
                 Toast.makeText(getActivity(), R.string.toast_transanction_amount_required, Toast.LENGTH_SHORT).show();
@@ -910,8 +911,9 @@ public class TransactionFormFragment extends Fragment implements
 	 * Finishes the fragment appropriately.
 	 * Depends on how the fragment was loaded, it might have a backstack or not
 	 */
-	private void finish() {
+	private void finish(int resultCode) {
 		if (getActivity().getSupportFragmentManager().getBackStackEntryCount() == 0){
+            getActivity().setResult(resultCode);
 			//means we got here directly from the accounts list activity, need to finish
 			getActivity().finish();
 		} else {

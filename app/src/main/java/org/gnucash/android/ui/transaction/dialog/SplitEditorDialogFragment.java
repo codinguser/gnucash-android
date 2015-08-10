@@ -43,6 +43,7 @@ import org.gnucash.android.model.Money;
 import org.gnucash.android.model.Split;
 import org.gnucash.android.model.Transaction;
 import org.gnucash.android.model.TransactionType;
+import org.gnucash.android.ui.FormActivity;
 import org.gnucash.android.ui.UxArgument;
 import org.gnucash.android.ui.transaction.TransactionFormFragment;
 import org.gnucash.android.ui.transaction.TransactionsActivity;
@@ -201,7 +202,7 @@ public class SplitEditorDialogFragment extends DialogFragment {
         mAccountsDbAdapter = AccountsDbAdapter.getInstance();
 
         Bundle args = getArguments();
-        mAccountUID = ((TransactionsActivity) getActivity()).getCurrentAccountUID();
+        mAccountUID = ((FormActivity) getActivity()).getCurrentAccountUID();
         mBaseAmount = new BigDecimal(args.getString(UxArgument.AMOUNT_STRING));
 
         String conditions = "(" //+ AccountEntry._ID + " != " + mAccountId + " AND "

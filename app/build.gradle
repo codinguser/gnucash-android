@@ -163,7 +163,8 @@ dependencies {
             'com.github.PhilJay:MPAndroidChart:v2.1.0',
             'joda-time:joda-time:2.7',
             'com.google.android.gms:play-services-drive:7.0.0',
-            'com.crashlytics.android:crashlytics:1.+'
+            'com.crashlytics.android:crashlytics:1.+',
+            'com.jakewharton:butterknife:7.0.1'
     )
 
     testCompile('org.robolectric:robolectric:3.0',

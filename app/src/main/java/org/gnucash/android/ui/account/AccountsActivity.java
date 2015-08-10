@@ -219,7 +219,7 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
         setContentView(R.layout.activity_accounts);
         setUpDrawer();
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_actionbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_transaction_info);
         setSupportActionBar(toolbar);
 
         final Intent intent = getIntent();

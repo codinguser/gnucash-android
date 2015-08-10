@@ -23,6 +23,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
 import android.os.Build;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -70,6 +71,17 @@ public class GnuCashApplication extends Application{
     private static SplitsDbAdapter mSplitsDbAdapter;
 
     private static ScheduledActionDbAdapter mScheduledActionDbAdapter;
+
+    /**
+     * Returns darker version of specified <code>color</code>.
+     * Use for theming the status bar color when setting the color of the actionBar
+     */
+    public static int darken(int color) {
+        float[] hsv = new float[3];
+        Color.colorToHSV(color, hsv);
+        hsv[2] *= 0.8f; // value component
+        return Color.HSVToColor(hsv);
+    }
 
     @Override
     public void onCreate(){
