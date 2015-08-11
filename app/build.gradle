@@ -151,6 +151,9 @@ afterEvaluate {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
+    // With support library 22.2.1, the test dependencies are broken again. Please don't upgrade to 22.2.1
+    // until a new runner is released.
+    // http://stackoverflow.com/questions/29857695/android-tests-build-error-multiple-dex-files-define-landroid-support-test-build
     compile('com.android.support:support-v4:22.2.0',
             'com.actionbarsherlock:actionbarsherlock:4.4.0@aar',
             'com.viewpagerindicator:library:2.4.1@aar',
@@ -172,6 +175,10 @@ dependencies {
         exclude group: 'com.android.support', module:'support-annotations'
     }
     androidTestCompile ('com.android.support.test.espresso:espresso-core:2.2')
-    androidTestCompile ('com.android.support.test.espresso:espresso-contrib:2.2')
+    androidTestCompile ('com.android.support.test.espresso:espresso-contrib:2.2') {
+        exclude group: 'com.android.support', module: 'appcompat'
+        exclude group: 'com.android.support', module: 'support-v4'
+        exclude module: 'recyclerview-v7'
+    }
     androidTestCompile 'com.android.support:support-annotations:22.1.1'
 }
