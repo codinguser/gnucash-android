@@ -24,10 +24,11 @@ import android.content.SharedPreferences;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
-import android.os.Build;
 import android.preference.PreferenceManager;
 import android.util.Log;
+
 import com.crashlytics.android.Crashlytics;
+import com.crashlytics.android.core.CrashlyticsCore;
 
 import org.gnucash.android.BuildConfig;
 import org.gnucash.android.R;
@@ -40,6 +41,8 @@ import org.gnucash.android.service.SchedulerService;
 
 import java.util.Currency;
 import java.util.Locale;
+
+import io.fabric.sdk.android.Fabric;
 
 /**
  * An {@link Application} subclass for retrieving static context
@@ -87,10 +90,10 @@ public class GnuCashApplication extends Application{
     public void onCreate(){
         super.onCreate();
         GnuCashApplication.context = getApplicationContext();
-        //TODO: in production, only start logging if user gave consent
 
-        if (BuildConfig.USE_CRASHLYTICS)
-            Crashlytics.start(this);
+        //TODO: in production, only start logging if user gave consent
+        Fabric.with(this, new Crashlytics.Builder().core(
+                new CrashlyticsCore.Builder().disabled(!BuildConfig.USE_CRASHLYTICS).build()).build());
 
         mDbHelper = new DatabaseHelper(getApplicationContext());
         try {
