@@ -39,7 +39,6 @@
                 android:ellipsize="start"
                 android:hint="@string/label_account_name"
                 style="@style/ListItemText">
-                <!--   <requestFocus /> -->
             </EditText>
         </android.support.design.widget.TextInputLayout>
 
