@@ -555,7 +555,8 @@ public class GncXmlHandler extends DefaultHandler {
                 try {
                     PeriodType periodType = PeriodType.valueOf(characterString.toUpperCase());
                     periodType.setMultiplier(mRecurrenceMultiplier);
-                    mScheduledAction.setPeriod(periodType);
+                    if (mScheduledAction != null) //there might be recurrence tags for bugdets and other stuff
+                        mScheduledAction.setPeriod(periodType);
                 } catch (IllegalArgumentException ex){ //the period type constant is not supported
                     String msg = "Unsupported period constant: " + characterString;
                     Log.e(LOG_TAG, msg);
