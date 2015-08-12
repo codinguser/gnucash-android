@@ -27,17 +27,19 @@
 		android:orientation="vertical" >
 
 		<TableRow style="@style/FormRow">
-		<AutoCompleteTextView
-			android:id="@+id/input_transaction_name"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:hint="@string/label_transaction_name"
-			android:inputType="textCapSentences"
-			android:imeOptions="actionNext"
-			android:nextFocusDown="@+id/input_transaction_amount"
-			android:background="@android:color/transparent"
-			android:textSize="22sp" />
+			<AutoCompleteTextView
+				android:id="@+id/input_transaction_name"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_span="2"
+				android:hint="@string/label_transaction_name"
+				android:inputType="textCapSentences"
+				android:imeOptions="actionNext"
+				android:nextFocusDown="@+id/input_transaction_amount"
+				android:background="@android:color/transparent"
+				android:textSize="22sp" />
 		</TableRow>
+
 		<View style="@style/Divider" android:layout_marginLeft="0dp" />
 
 		<TableRow style="@style/FormRow">

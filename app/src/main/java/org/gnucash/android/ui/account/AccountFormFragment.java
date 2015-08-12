@@ -52,7 +52,6 @@ import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
 import android.widget.Spinner;
-import android.widget.Toast;
 
 import org.gnucash.android.R;
 import org.gnucash.android.db.AccountsDbAdapter;
@@ -246,7 +245,7 @@ public class AccountFormFragment extends Fragment {
 	 */
 	@Override	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		View view = inflater.inflate(R.layout.fragment_new_account, container, false);
+		View view = inflater.inflate(R.layout.fragment_account_form, container, false);
         mTextInputLayout = (TextInputLayout) view.findViewById(R.id.textinputlayout);
 		mCurrencySpinner = (Spinner) view.findViewById(R.id.input_currency_spinner);
 		mNameEditText = (EditText) view.findViewById(R.id.input_account_name);
@@ -545,8 +544,6 @@ public class AccountFormFragment extends Fragment {
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 		super.onCreateOptionsMenu(menu, inflater);
 		inflater.inflate(R.menu.default_save_actions, menu);
-        menu.removeItem(R.id.menu_search);
-        menu.removeItem(R.id.menu_settings);
 	}
 	
 	@Override

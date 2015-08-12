@@ -41,11 +41,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.gnucash.android.R;
+import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.CursorRecyclerAdapter;
 import org.gnucash.android.db.DatabaseCursorLoader;
 import org.gnucash.android.db.DatabaseSchema;
+import org.gnucash.android.db.SplitsDbAdapter;
 import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.model.Money;
+import org.gnucash.android.model.Split;
 import org.gnucash.android.ui.FormActivity;
 import org.gnucash.android.ui.UxArgument;
 import org.gnucash.android.ui.util.AccountBalanceTask;
@@ -57,6 +60,7 @@ import org.ocpsoft.prettytime.PrettyTime;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 import butterknife.Bind;
@@ -294,10 +298,22 @@ public class TransactionsListFragment extends Fragment implements
 			Money amount = mTransactionsDbAdapter.getBalance(transactionUID, mAccountUID);
 			TransactionsActivity.displayBalance(holder.transactionAmount, amount);
 
-			String notes = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.TransactionEntry.COLUMN_NOTES));
-			if (notes != null && notes.length() != 0) {
-				holder.transactionNote.setText(notes);
+			List<Split> splits = SplitsDbAdapter.getInstance().getSplitsForTransaction(transactionUID);
+			String text = "";
+
+			if (splits.size() == 2 && splits.get(0).isPairOf(splits.get(1))){
+				for (Split split : splits) {
+					if (!split.getAccountUID().equals(mAccountUID)){
+						text = AccountsDbAdapter.getInstance().getFullyQualifiedAccountName(split.getAccountUID());
+						break;
+					}
+				}
 			}
+
+			if (splits.size() > 2){
+				text = splits.size() + " splits";
+			}
+			holder.transactionNote.setText(text);
 
 			long dateMillis = cursor.getLong(cursor.getColumnIndexOrThrow(DatabaseSchema.TransactionEntry.COLUMN_TIMESTAMP));
 			holder.transactionDate.setText(prettyTime.format(new Date(dateMillis)));

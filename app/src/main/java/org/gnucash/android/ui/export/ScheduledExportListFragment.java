@@ -174,7 +174,6 @@ public class ScheduledExportListFragment extends ListFragment implements
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         menu.removeItem(R.id.menu_search);
-        menu.removeItem(R.id.menu_settings);
         inflater.inflate(R.menu.scheduled_export_actions, menu);
     }
 
@@ -182,7 +181,7 @@ public class ScheduledExportListFragment extends ListFragment implements
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
             case R.id.menu_add_scheduled_export:
-                AccountsActivity.showExportDialog(getActivity());
+                AccountsActivity.openExportFragment(getActivity());
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

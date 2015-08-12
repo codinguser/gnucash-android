@@ -20,6 +20,7 @@ import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
@@ -30,6 +31,7 @@ import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.ui.account.AccountFormFragment;
+import org.gnucash.android.ui.export.ExportFormFragment;
 import org.gnucash.android.ui.transaction.TransactionFormFragment;
 
 /**
@@ -80,7 +82,7 @@ public class FormActivity extends AppCompatActivity {
                 break;
 
             case EXPORT_FORM:
-                //nothing to see here yet, move along
+                showExportFormFragment(null);
                 break;
 
             default:
@@ -118,15 +120,9 @@ public class FormActivity extends AppCompatActivity {
      *             This could be an account to edit or a preset for the parent account
      */
     private void showAccountFormFragment(Bundle args){
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-
         AccountFormFragment accountFormFragment = AccountFormFragment.newInstance();
         accountFormFragment.setArguments(args);
-
-        fragmentTransaction.replace(R.id.fragment_container, accountFormFragment);
-
-        fragmentTransaction.commit();
+        showFormFragment(accountFormFragment);
     }
 
     /**
@@ -134,14 +130,30 @@ public class FormActivity extends AppCompatActivity {
      * @param args Bundle arguments to be passed to the fragment
      */
     private void showTransactionFormFragment(Bundle args){
+        TransactionFormFragment transactionFormFragment = new TransactionFormFragment();
+        transactionFormFragment.setArguments(args);
+        showFormFragment(transactionFormFragment);
+    }
+
+    /**
+     * Loads the export form fragment and passes the arguments
+     * @param args Bundle arguments
+     */
+    private void showExportFormFragment(Bundle args){
+        ExportFormFragment exportFragment = new ExportFormFragment();
+        showFormFragment(exportFragment);
+    }
+
+    /**
+     * Loads the fragment into the fragment container, replacing whatever was there before
+     * @param fragment Fragment to be displayed
+     */
+    private void showFormFragment(Fragment fragment){
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager
                 .beginTransaction();
 
-        TransactionFormFragment transactionFormFragment = new TransactionFormFragment();
-        transactionFormFragment.setArguments(args);
-
-        fragmentTransaction.add(R.id.fragment_container, transactionFormFragment);
+        fragmentTransaction.add(R.id.fragment_container, fragment);
         fragmentTransaction.commit();
     }
 }

@@ -21,16 +21,20 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 import android.text.format.Time;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.RadioButton;
 import android.widget.Spinner;
@@ -54,49 +58,42 @@ import org.gnucash.android.ui.util.RecurrenceParser;
 import java.util.List;
 import java.util.UUID;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+
 /**
  * Dialog fragment for exporting account information as OFX files.
  * @author Ngewi Fet <ngewif@gmail.com>
  */
-public class ExportDialogFragment extends DialogFragment implements RecurrencePickerDialog.OnRecurrenceSetListener {
+public class ExportFormFragment extends Fragment implements RecurrencePickerDialog.OnRecurrenceSetListener {
 		
 	/**
 	 * Spinner for selecting destination for the exported file.
 	 * The destination could either be SD card, or another application which
 	 * accepts files, like Google Drive.
 	 */
-	Spinner mDestinationSpinner;
+	@Bind(R.id.spinner_export_destination) Spinner mDestinationSpinner;
 	
 	/**
 	 * Checkbox indicating that all transactions should be exported,
 	 * regardless of whether they have been exported previously or not
 	 */
-	CheckBox mExportAllCheckBox;
+	@Bind(R.id.checkbox_export_all) CheckBox mExportAllCheckBox;
 	
 	/**
 	 * Checkbox for deleting all transactions after exporting them
 	 */
-	CheckBox mDeleteAllCheckBox;
-	
-	/**
-	 * Save button for saving the exported files
-	 */
-	Button mSaveButton;
-	
-	/**
-	 * Cancels the export dialog
-	 */
-	Button mCancelButton;
+	@Bind(R.id.checkbox_post_export_delete) CheckBox mDeleteAllCheckBox;
 
     /**
      * Text view for showing warnings based on chosen export format
      */
-    TextView mExportWarningTextView;
+    @Bind(R.id.export_warning) TextView mExportWarningTextView;
 
 	/**
 	 * Recurrence text view
 	 */
-	TextView mRecurrenceTextView;
+	@Bind(R.id.input_recurrence) TextView mRecurrenceTextView;
 
 	/**
 	 * Event recurrence options
@@ -111,7 +108,7 @@ public class ExportDialogFragment extends DialogFragment implements RecurrencePi
 	/**
 	 * Tag for logging
 	 */
-	private static final String TAG = "ExportDialogFragment";
+	private static final String TAG = "ExportFormFragment";
 
 	/**
 	 * Export format
@@ -120,35 +117,6 @@ public class ExportDialogFragment extends DialogFragment implements RecurrencePi
 
 	private ExportParams.ExportTarget mExportTarget = ExportParams.ExportTarget.SD_CARD;
 
-
-	/**
-	 * Click listener for positive button in the dialog.
-	 * @author Ngewi Fet <ngewif@gmail.com>
-	 */
-	protected class ExportClickListener implements View.OnClickListener {
-
-		@Override
-		public void onClick(View v) {
-            ExportParams exportParameters = new ExportParams(mExportFormat);
-            exportParameters.setExportAllTransactions(mExportAllCheckBox.isChecked());
-			exportParameters.setExportTarget(mExportTarget);
-			exportParameters.setDeleteTransactionsAfterExport(mDeleteAllCheckBox.isChecked());
-
-			List<ScheduledAction> scheduledActions = RecurrenceParser.parse(mEventRecurrence,
-					ScheduledAction.ActionType.BACKUP);
-			for (ScheduledAction scheduledAction : scheduledActions) {
-				scheduledAction.setTag(exportParameters.toCsv());
-				scheduledAction.setActionUID(UUID.randomUUID().toString().replaceAll("-", ""));
-				ScheduledActionDbAdapter.getInstance().addScheduledAction(scheduledAction);
-			}
-
-            Log.i(TAG, "Commencing async export of transactions");
-            new ExportAsyncTask(getActivity()).execute(exportParameters);
-
-			dismiss();
-		}
-		
-	}
 
     public void onRadioButtonClicked(View view){
         switch (view.getId()){
@@ -183,7 +151,9 @@ public class ExportDialogFragment extends DialogFragment implements RecurrencePi
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		return inflater.inflate(R.layout.dialog_export, container, false);
+		View view = inflater.inflate(R.layout.fragment_export_form, container, false);
+		ButterKnife.bind(this, view);
+		return view;
 	}
 
 	@Override
@@ -192,16 +162,62 @@ public class ExportDialogFragment extends DialogFragment implements RecurrencePi
 	}
 
 	@Override
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+		inflater.inflate(R.menu.default_save_actions, menu);
+		MenuItem menuItem = menu.findItem(R.id.menu_save);
+		menuItem.setTitle(R.string.btn_export);
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()){
+			case R.id.menu_save:
+				startExport();
+				return true;
+
+			case android.R.id.home:
+				getActivity().finish();
+				return true;
+
+			default:
+				return super.onOptionsItemSelected(item);
+		}
+	}
+
+	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {		
 		super.onActivityCreated(savedInstanceState);
         bindViews();
-		getDialog().setTitle(R.string.title_export_dialog);
+		ActionBar supportActionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+		assert supportActionBar != null;
+		supportActionBar.setTitle(R.string.title_export_dialog);
+		setHasOptionsMenu(true);
+	}
+
+	/**
+	 * Starts the export of transactions with the specified parameters
+	 */
+	private void startExport(){
+		ExportParams exportParameters = new ExportParams(mExportFormat);
+		exportParameters.setExportAllTransactions(mExportAllCheckBox.isChecked());
+		exportParameters.setExportTarget(mExportTarget);
+		exportParameters.setDeleteTransactionsAfterExport(mDeleteAllCheckBox.isChecked());
+
+		List<ScheduledAction> scheduledActions = RecurrenceParser.parse(mEventRecurrence,
+				ScheduledAction.ActionType.BACKUP);
+		for (ScheduledAction scheduledAction : scheduledActions) {
+			scheduledAction.setTag(exportParameters.toCsv());
+			scheduledAction.setActionUID(UUID.randomUUID().toString().replaceAll("-", ""));
+			ScheduledActionDbAdapter.getInstance().addScheduledAction(scheduledAction);
+		}
+
+		Log.i(TAG, "Commencing async export of transactions");
+		new ExportAsyncTask(getActivity()).execute(exportParameters);
+
+		getActivity().finish();
 	}
 
 	private void bindViews(){
-		View v = getView();
-        assert v != null;
-        mDestinationSpinner = (Spinner) v.findViewById(R.id.spinner_export_destination);
 		ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getActivity(),
 		        R.array.export_destinations, android.R.layout.simple_spinner_item);
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);		
@@ -210,7 +226,7 @@ public class ExportDialogFragment extends DialogFragment implements RecurrencePi
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 				View recurrenceOptionsView = getView().findViewById(R.id.recurrence_options);
-				switch (position){
+				switch (position) {
 					case 0:
 						mExportTarget = ExportParams.ExportTarget.SD_CARD;
 						recurrenceOptionsView.setVisibility(View.VISIBLE);
@@ -218,11 +234,11 @@ public class ExportDialogFragment extends DialogFragment implements RecurrencePi
 					case 1:
 						recurrenceOptionsView.setVisibility(View.VISIBLE);
 						mExportTarget = ExportParams.ExportTarget.DROPBOX;
-                        String dropboxAppKey = getString(R.string.dropbox_app_key, SettingsActivity.DROPBOX_APP_KEY);
-                        String dropboxAppSecret = getString(R.string.dropbox_app_secret, SettingsActivity.DROPBOX_APP_SECRET);
+						String dropboxAppKey = getString(R.string.dropbox_app_key, SettingsActivity.DROPBOX_APP_KEY);
+						String dropboxAppSecret = getString(R.string.dropbox_app_secret, SettingsActivity.DROPBOX_APP_SECRET);
 						DbxAccountManager mDbxAccountManager = DbxAccountManager.getInstance(getActivity().getApplicationContext(),
 								dropboxAppKey, dropboxAppSecret);
-						if (!mDbxAccountManager.hasLinkedAccount()){
+						if (!mDbxAccountManager.hasLinkedAccount()) {
 							mDbxAccountManager.startLink(getActivity(), 0);
 						}
 						break;
@@ -249,27 +265,10 @@ public class ExportDialogFragment extends DialogFragment implements RecurrencePi
 			}
 		});
 		SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
-		mExportAllCheckBox = (CheckBox) v.findViewById(R.id.checkbox_export_all);
 		mExportAllCheckBox.setChecked(sharedPrefs.getBoolean(getString(R.string.key_export_all_transactions), false));
 		
-		mDeleteAllCheckBox = (CheckBox) v.findViewById(R.id.checkbox_post_export_delete);
 		mDeleteAllCheckBox.setChecked(sharedPrefs.getBoolean(getString(R.string.key_delete_transactions_after_export), false));
-		
-		mSaveButton = (Button) v.findViewById(R.id.btn_save);
-		mSaveButton.setText(R.string.btn_export);
-		mCancelButton = (Button) v.findViewById(R.id.btn_cancel);
-		
-		mCancelButton.setOnClickListener(new View.OnClickListener() {
 
-			@Override
-			public void onClick(View v) {
-				dismiss();
-			}
-		});
-		
-		mSaveButton.setOnClickListener(new ExportClickListener());
-
-		mRecurrenceTextView     = (TextView) v.findViewById(R.id.input_recurrence);
 		mRecurrenceTextView.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
@@ -290,12 +289,10 @@ public class ExportDialogFragment extends DialogFragment implements RecurrencePi
 				}
 				rpd = new RecurrencePickerDialog();
 				rpd.setArguments(b);
-				rpd.setOnRecurrenceSetListener(ExportDialogFragment.this);
+				rpd.setOnRecurrenceSetListener(ExportFormFragment.this);
 				rpd.show(fm, "recurrence_picker");
 			}
 		});
-
-        mExportWarningTextView = (TextView) v.findViewById(R.id.export_warning);
 
 		//this part (setting the export format) must come after the recurrence view bindings above
         String defaultExportFormat = sharedPrefs.getString(getString(R.string.key_default_export_format), ExportFormat.QIF.name());
@@ -306,6 +303,9 @@ public class ExportDialogFragment extends DialogFragment implements RecurrencePi
                 onRadioButtonClicked(view);
             }
         };
+
+		View v = getView();
+		assert v != null;
 
         RadioButton ofxRadioButton = (RadioButton) v.findViewById(R.id.radio_ofx_format);
         ofxRadioButton.setOnClickListener(clickListener);

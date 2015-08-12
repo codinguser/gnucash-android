@@ -223,7 +223,7 @@ public class TransactionFormFragment extends Fragment implements
 	@Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		View v = inflater.inflate(R.layout.fragment_new_transaction, container, false);
+		View v = inflater.inflate(R.layout.fragment_transaction_form, container, false);
 
 		mDescriptionEditText = (AutoCompleteTextView) v.findViewById(R.id.input_transaction_name);
 		mNotesEditText = (EditText) v.findViewById(R.id.input_description);

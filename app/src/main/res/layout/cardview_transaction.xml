@@ -41,7 +41,7 @@
             android:layout_marginTop="6dp"
             android:layout_marginBottom="@dimen/dialog_padding"
             android:layout_marginLeft="@dimen/dialog_padding"
-            android:layout_marginRight="50dp"/>
+            android:layout_marginRight="52dp"/>
 
         <ImageView
             android:id="@+id/options_menu"

@@ -31,12 +31,10 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.TabLayout;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
@@ -58,10 +56,9 @@ import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.export.xml.GncXmlExporter;
 import org.gnucash.android.importer.ImportAsyncTask;
 import org.gnucash.android.model.Money;
+import org.gnucash.android.ui.FormActivity;
 import org.gnucash.android.ui.UxArgument;
-import org.gnucash.android.ui.export.ExportDialogFragment;
 import org.gnucash.android.ui.passcode.PassLockActivity;
-import org.gnucash.android.ui.settings.SettingsActivity;
 import org.gnucash.android.ui.transaction.TransactionsActivity;
 import org.gnucash.android.ui.util.OnAccountClickedListener;
 import org.gnucash.android.ui.util.Refreshable;
@@ -391,7 +388,11 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
     /**
      * Displays the dialog for exporting transactions
      */
-    public static void showExportDialog(FragmentActivity activity) {
+    public static void openExportFragment(FragmentActivity activity) {
+        Intent intent = new Intent(activity, FormActivity.class);
+        intent.putExtra(UxArgument.FORM_TYPE, FormActivity.FormType.EXPORT_FORM.name());
+        activity.startActivity(intent);
+        /*
         FragmentManager manager = activity.getSupportFragmentManager();
         FragmentTransaction ft = manager.beginTransaction();
         Fragment prev = manager.findFragmentByTag(FRAGMENT_EXPORT_DIALOG);
@@ -401,8 +402,8 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
         ft.addToBackStack(null);
 
         // Create and show the dialog.
-        DialogFragment exportFragment = new ExportDialogFragment();
-        exportFragment.show(ft, FRAGMENT_EXPORT_DIALOG);
+        DialogFragment exportFragment = new ExportFormFragment();
+        exportFragment.show(ft, FRAGMENT_EXPORT_DIALOG);*/
     }
 
     @Override
@@ -417,10 +418,6 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
 		switch (item.getItemId()) {
             case android.R.id.home:
                 return super.onOptionsItemSelected(item);
-
-            case R.id.menu_settings:
-                startActivity(new Intent(this, SettingsActivity.class));
-                return true;
 
 		default:
 			return false;
