@@ -1,5 +1,9 @@
 Change Log
 ===============================================================================
+Version 1.6.4 *(2015-08-xx)*
+----------------------------
+* Fixed: Isolated crash during backup restoration
+
 Version 1.6.3 *(2015-08-09)*
 ----------------------------
 * Fixed: Transfer account ignored when saving transaction with one split (after opening split editor)
