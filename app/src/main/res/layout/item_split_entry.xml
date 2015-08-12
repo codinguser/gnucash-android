@@ -15,6 +15,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
         android:layout_height="match_parent"
         android:layout_width="match_parent"
         android:orientation="vertical">
@@ -37,13 +38,16 @@ limitations under the License.
                 android:id="@+id/input_split_amount"
                 android:layout_width="0dp"
                 android:layout_weight="3"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_marginBottom="@dimen/dialog_padding"
                 android:hint="@string/label_transaction_amount"
                 android:inputType="number"
                 android:nextFocusDown="@+id/input_split_memo"
                 android:textColor="@color/debit_red"
-                style="@style/ListItemText"/>
+            android:gravity="center_vertical"
+            android:textSize="18sp"
+            android:background="@android:color/transparent"
+                />
 
         <org.gnucash.android.ui.util.TransactionTypeSwitch
             android:id="@+id/btn_split_type"
@@ -54,12 +58,21 @@ limitations under the License.
                       android:textOff="@string/label_credit"
                       android:textAppearance="?android:attr/textAppearanceMedium"
                       android:textColor="@color/debit_red"
+                      android:gravity="right"
+                      android:textSize="14sp"
                       android:checked="true"/>
-        <ImageButton android:id="@+id/btn_remove_split"
-                     android:layout_width="0dp"
-                     android:layout_height="wrap_content"
-                     android:layout_weight="1"
-                     android:src="@drawable/navigation_cancel_holo_light"/>
+
+        <ImageView
+            android:id="@+id/btn_remove_split"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:paddingTop="6dp"
+            android:paddingRight="6dp"
+            android:paddingLeft="22dp"
+            android:paddingBottom="22dp"
+            android:src="@drawable/ic_close_black_24dp"
+            tools:ignore="ContentDescription" />
     </LinearLayout>
 
     <EditText android:id="@+id/input_split_memo"
@@ -67,7 +80,10 @@ limitations under the License.
               android:layout_height="wrap_content"
               android:singleLine="false"
               android:hint="@string/hint_split_memo"
+              android:textSize="15sp"
               android:inputType="textMultiLine|textCapSentences"
+              android:background="@android:color/transparent"
+              android:layout_marginLeft="7dp"
               android:gravity="top" />
 
     <Spinner
@@ -86,6 +102,6 @@ limitations under the License.
           android:layout_height="2dp"
           android:layout_marginTop="@dimen/dialog_padding"
           android:layout_marginBottom="@dimen/dialog_padding"
-          android:background="@color/abs__holo_blue_light"/>
+          android:background="@color/theme_accent"/>
 
 </LinearLayout>

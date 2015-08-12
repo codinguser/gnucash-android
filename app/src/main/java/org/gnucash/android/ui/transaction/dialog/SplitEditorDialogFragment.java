@@ -29,6 +29,7 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -224,7 +225,7 @@ public class SplitEditorDialogFragment extends DialogFragment {
     private void bindSplitView(final View splitView, Split split){
         EditText splitMemoEditText              = (EditText)    splitView.findViewById(R.id.input_split_memo);
         final EditText splitAmountEditText      = (EditText)    splitView.findViewById(R.id.input_split_amount);
-        ImageButton removeSplitButton           = (ImageButton) splitView.findViewById(R.id.btn_remove_split);
+        ImageView removeSplitButton             = (ImageView) splitView.findViewById(R.id.btn_remove_split);
         Spinner accountsSpinner                 = (Spinner)     splitView.findViewById(R.id.input_accounts_spinner);
         final TextView splitCurrencyTextView    = (TextView)    splitView.findViewById(R.id.split_currency_symbol);
         final TextView splitUidTextView         = (TextView)    splitView.findViewById(R.id.split_uid);
@@ -291,7 +292,7 @@ public class SplitEditorDialogFragment extends DialogFragment {
     private void updateTransferAccountsList(Spinner transferAccountSpinner){
 
         mCursorAdapter = new QualifiedAccountNameCursorAdapter(getActivity(),
-                android.R.layout.simple_spinner_item, mCursor);
+                R.layout.split_account_spinner_item, mCursor);
         mCursorAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         transferAccountSpinner.setAdapter(mCursorAdapter);
     }

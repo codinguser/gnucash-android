@@ -270,9 +270,9 @@ public class TransactionFormFragment extends Fragment implements
         mDoubleAccountSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
-                if (mSplitsList.size() == 2){ //when handling simple transfer to one account
+                if (mSplitsList.size() == 2) { //when handling simple transfer to one account
                     for (Split split : mSplitsList) {
-                        if (!split.getAccountUID().equals(mAccountUID)){
+                        if (!split.getAccountUID().equals(mAccountUID)) {
                             split.setAccountUID(mAccountsDbAdapter.getUID(id));
                         }
                         // else case is handled when saving the transactions
@@ -408,7 +408,7 @@ public class TransactionFormFragment extends Fragment implements
 
         //TODO: deep copy the split list. We need a copy so we can modify with impunity
         mSplitsList = new ArrayList<>(mTransaction.getSplits());
-        mAmountEditText.setEnabled(mSplitsList.size() <= 2);
+        toggleAmountInputEntryMode(mSplitsList.size() <= 2);
 
         //if there are more than two splits (which is the default for one entry), then
         //disable editing of the transfer account. User should open editor
@@ -458,6 +458,21 @@ public class TransactionFormFragment extends Fragment implements
     private void setAmountEditViewVisible(int visibility) {
         getView().findViewById(R.id.layout_double_entry).setVisibility(visibility);
         mTransactionTypeButton.setVisibility(visibility);
+    }
+
+    private void toggleAmountInputEntryMode(boolean enabled){
+        if (enabled){
+            mAmountEditText.setFocusable(true);
+            mAmountEditText.setOnClickListener(null);
+        } else {
+            mAmountEditText.setFocusable(false);
+            mAmountEditText.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    openSplitEditor();
+                }
+            });
+        }
     }
 
     /**
@@ -559,8 +574,8 @@ public class TransactionFormFragment extends Fragment implements
                 final int DRAWABLE_RIGHT = 2;
                 final int DRAWABLE_BOTTOM = 3;
 
-                if(event.getAction() == MotionEvent.ACTION_UP) {
-                    if(event.getRawX() >= (mAmountEditText.getRight() - mAmountEditText.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
+                if (event.getAction() == MotionEvent.ACTION_UP) {
+                    if (event.getRawX() >= (mAmountEditText.getRight() - mAmountEditText.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
                         openSplitEditor();
                         return true;
                     }
@@ -894,7 +909,7 @@ public class TransactionFormFragment extends Fragment implements
         mTransactionTypeButton.setChecked(balance.isNegative());
         //once we set the split list, do not allow direct editing of the total
         if (mSplitsList.size() > 1){
-            mAmountEditText.setEnabled(false);
+            toggleAmountInputEntryMode(false);
             setAmountEditViewVisible(View.GONE);
         }
     }
