@@ -1,5 +1,9 @@
 Change Log
 ===============================================================================
+Version 1.6.4 *(2015-08-12)*
+----------------------------
+* Fixed: Crashes during backup restoration
+
 Version 1.6.3 *(2015-08-09)*
 ----------------------------
 * Fixed: Transfer account ignored when saving transaction with one split (after opening split editor)
@@ -14,7 +18,7 @@ Version 1.6.1 *(2015-07-08)*
 ----------------------------
 * Fixed: Crash when importing some scheduled transations with custom period strings
 * Fixed: Crash when closing export progress dialog if an export error occurred
-* Fixed: Crash when creating a sub-account and changing the account type 
+* Fixed: Crash when creating a sub-account and changing the account type
 * Fixed: Crash when loading backup files with no timestamp in their name
 * Fixed: Crash when app is run on devices with locale es_LG
 * Improved: Updated betterpickers library
@@ -273,7 +277,7 @@ Version 1.1.0 *(2013-01-31)*
 
 * Feature: Double entry accounting - every transaction is a transfer
 * Feature: Nested accounts
-* Feature: SGML support for OFX exports. Exports are now SGML by default 
+* Feature: SGML support for OFX exports. Exports are now SGML by default
 * Feature: Display what's new to user after minor/major updates
 * Improved: Reworked UX for creating accounts
 * Improved: Default accounts now match GnuCash desktop accounts
@@ -303,7 +307,7 @@ Version 1.0.1 *(2012-11-05)*
 * Feature: Select default transaction type from settings
 * Feature: Navigate account transactions using action bar navigation lists
 * Feature: Brazilian Portuguese translation now available
-* Fixed:   Inconsistencies in some translation strings 
+* Fixed:   Inconsistencies in some translation strings
 
 
 Version 1.0.0 *(2012-11-01)*
