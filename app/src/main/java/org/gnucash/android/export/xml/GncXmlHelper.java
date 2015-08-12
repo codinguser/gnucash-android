@@ -19,9 +19,7 @@ package org.gnucash.android.export.xml;
 
 import android.support.annotation.NonNull;
 
-import org.gnucash.android.model.Money;
-import org.gnucash.android.model.Split;
-import org.gnucash.android.model.TransactionType;
+import org.gnucash.android.ui.transaction.TransactionFormFragment;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -162,41 +160,8 @@ public abstract class GncXmlHelper {
     }
 
     /**
-     * Parses the amounts in template transaction splits.
-     * <p>GnuCash desktop formats the amounts based on the locale of the computer. That poses a problem here as the input can vary per user.<br/>
-     *     The solution is to parse the string irrespective of comma or thousands separators as follows:
-     *     <ol>
-     *         <li>Find the last non-numeric character and split the string at that point</li>
-     *         <li>If the length of the 2nd part is &gt;= 2, then it is a thousands separator, else it is decimal</li>
-     *         <li>Append the two parts again together accordingly</li>
-     *         <li>If no non-numeric character was found, then just return a new {@link BigDecimal}</li>
-     *     </ol>
-     * </p>
-     * @param amountString String value of the amount.
-     * @return BigDecimal representation of the amount
-     * @see #formatTemplateSplitAmount(BigDecimal)
-     */
-    public static BigDecimal parseTemplateSplitAmount(@NonNull String amountString){
-        Pattern pattern = Pattern.compile(".*\\D");
-        Matcher matcher = pattern.matcher(amountString);
-        if (matcher.find()){
-            int index = matcher.end();
-            String wholeNum = amountString.substring(0, index).replaceAll("\\D", "");
-            String decimal = amountString.substring(index);
-            String parsedAmountString;
-            if (decimal.length() > 2){ //then it is just another thousands separator, just add it back
-                parsedAmountString = wholeNum + decimal;
-            } else { //add it as a decimal
-                parsedAmountString = wholeNum + "." + decimal;
-            }
-            return new BigDecimal(parsedAmountString);
-        } else {//an amount string with no commas or periods
-            return new BigDecimal(amountString);
-        }
-    }
-
-    /**
-     * Parses amount strings from GnuCash XML into {@link java.math.BigDecimal}s
+     * Parses amount strings from GnuCash XML into {@link java.math.BigDecimal}s.
+     * The amounts are formatted as 12345/4100
      * @param amountString String containing the amount
      * @return BigDecimal with numerical value
      * @throws ParseException if the amount could not be parsed
@@ -207,9 +172,11 @@ public abstract class GncXmlHelper {
         {
             throw new ParseException("Cannot parse money string : " + amountString, 0);
         }
-        BigInteger numerator = new BigInteger(amountString.substring(0, pos));
-        int scale = amountString.length() - pos - 2;
-        return new BigDecimal(numerator, scale);
+
+        int scale = amountString.length() - pos - 2; //do this before, because we could modify the string
+        String numerator = TransactionFormFragment.stripCurrencyFormatting(amountString.substring(0, pos));
+        BigInteger numeratorInt = new BigInteger(numerator);
+        return new BigDecimal(numeratorInt, scale);
     }
 
     /**
@@ -224,7 +191,8 @@ public abstract class GncXmlHelper {
         BigDecimal denom = new BigDecimal(denomInt);
         String denomString = Integer.toString(denomInt);
 
-        return amount.multiply(denom).stripTrailingZeros().toPlainString() + "/" + denomString;
+        String numerator = TransactionFormFragment.stripCurrencyFormatting(amount.multiply(denom).stripTrailingZeros().toPlainString());
+        return numerator + "/" + denomString;
     }
 
     /**
