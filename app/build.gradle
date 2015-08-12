@@ -102,6 +102,7 @@ android {
             resValue "string", "app_name", "GnuCash-devel"
             versionName "${versionMajor}.${versionMinor}.${versionPatch}-dev${versionBuild}_r${gitSha()}"
             resValue "string", "app_version_name", "${versionName}"
+            buildConfigField "boolean", "USE_CRASHLYTICS", "false"
         }
 
         beta {
