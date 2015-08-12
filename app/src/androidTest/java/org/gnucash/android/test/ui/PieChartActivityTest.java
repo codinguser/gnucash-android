@@ -192,6 +192,37 @@ public class PieChartActivityTest extends ActivityInstrumentationTestCase2<PieCh
     }
 
     @Test
+    public void testPreviousAndNextMonthButtonsWhenDataForFewMonths() throws Exception {
+        addTransactionForCurrentMonth();
+        addTransactionForPreviousMonth(1);
+        addTransactionForPreviousMonth(2);
+        getTestActivity();
+
+        onView(withId(R.id.previous_month_chart_button)).check(matches(isEnabled()));
+        onView(withId(R.id.next_month_chart_button)).check(matches(not(isEnabled())));
+
+        onView(withId(R.id.previous_month_chart_button)).perform(click());
+
+        onView(withId(R.id.previous_month_chart_button)).check(matches(isEnabled()));
+        onView(withId(R.id.next_month_chart_button)).check(matches(isEnabled()));
+
+        onView(withId(R.id.previous_month_chart_button)).perform(click());
+
+        onView(withId(R.id.previous_month_chart_button)).check(matches(not(isEnabled())));
+        onView(withId(R.id.next_month_chart_button)).check(matches(isEnabled()));
+
+        onView(withId(R.id.next_month_chart_button)).perform(click());
+
+        onView(withId(R.id.previous_month_chart_button)).check(matches(isEnabled()));
+        onView(withId(R.id.next_month_chart_button)).check(matches(isEnabled()));
+
+        onView(withId(R.id.next_month_chart_button)).perform(click());
+
+        onView(withId(R.id.previous_month_chart_button)).check(matches(isEnabled()));
+        onView(withId(R.id.next_month_chart_button)).check(matches(not(isEnabled())));
+    }
+
+    @Test
     public void testDataForCurrentMonth() throws Exception {
         Log.w(TAG, "testDataForCurrentMonth()");
         addTransactionForCurrentMonth();
