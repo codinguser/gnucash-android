@@ -23,6 +23,7 @@ import android.database.Cursor;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -53,6 +54,7 @@ import org.gnucash.android.ui.UxArgument;
 import org.gnucash.android.ui.account.AccountsActivity;
 import org.gnucash.android.ui.account.AccountsListFragment;
 import org.gnucash.android.ui.passcode.PassLockActivity;
+import org.gnucash.android.ui.util.AccountBalanceTask;
 import org.gnucash.android.ui.util.OnAccountClickedListener;
 import org.gnucash.android.ui.util.OnTransactionClickedListener;
 import org.gnucash.android.ui.util.Refreshable;
@@ -130,6 +132,7 @@ public class TransactionsActivity extends PassLockActivity implements
     private PagerAdapter mPagerAdapter;
     private Spinner mToolbarSpinner;
     private TabLayout mTabLayout;
+    private TextView mSumTextView;
 
 
     /**
@@ -239,6 +242,8 @@ public class TransactionsActivity extends PassLockActivity implements
 
         if (mPagerAdapter != null)
             mPagerAdapter.notifyDataSetChanged();
+
+        new AccountBalanceTask(mSumTextView).execute(mAccountUID);
     }
 
     @Override
@@ -256,6 +261,8 @@ public class TransactionsActivity extends PassLockActivity implements
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_transaction_info);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
+
+        mSumTextView = (TextView) findViewById(R.id.transactions_sum);
 
         mViewPager = (ViewPager) findViewById(R.id.pager);
 
@@ -290,6 +297,27 @@ public class TransactionsActivity extends PassLockActivity implements
             @Override
             public void onTabReselected(TabLayout.Tab tab) {
 
+            }
+        });
+
+        FloatingActionButton createTransactionFAB = (FloatingActionButton) findViewById(R.id.fab_create_transaction);
+        createTransactionFAB.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                switch (mViewPager.getCurrentItem()){
+                    case INDEX_SUB_ACCOUNTS_FRAGMENT:
+                        Intent addAccountIntent = new Intent(TransactionsActivity.this, FormActivity.class);
+                        addAccountIntent.setAction(Intent.ACTION_INSERT_OR_EDIT);
+                        addAccountIntent.putExtra(UxArgument.FORM_TYPE, FormActivity.FormType.ACCOUNT_FORM.name());
+                        addAccountIntent.putExtra(UxArgument.PARENT_ACCOUNT_UID, mAccountUID);
+                        startActivityForResult(addAccountIntent, AccountsActivity.REQUEST_EDIT_ACCOUNT);;
+                        break;
+
+                    case INDEX_TRANSACTIONS_FRAGMENT:
+                        createNewTransaction(mAccountUID);
+                        break;
+
+                }
             }
         });
 	}

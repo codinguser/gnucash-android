@@ -30,6 +30,7 @@ import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -256,6 +257,17 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
             @Override
             public void onTabReselected(TabLayout.Tab tab) {
 
+            }
+        });
+
+        FloatingActionButton floatingActionButton = (FloatingActionButton) findViewById(R.id.fab_create_account);
+        floatingActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent addAccountIntent = new Intent(AccountsActivity.this, FormActivity.class);
+                addAccountIntent.setAction(Intent.ACTION_INSERT_OR_EDIT);
+                addAccountIntent.putExtra(UxArgument.FORM_TYPE, FormActivity.FormType.ACCOUNT_FORM.name());
+                startActivityForResult(addAccountIntent, AccountsActivity.REQUEST_EDIT_ACCOUNT);
             }
         });
 	}

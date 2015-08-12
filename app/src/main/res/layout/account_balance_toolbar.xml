@@ -16,15 +16,15 @@
 -->
 <!-- FIXME: background was: @drawable/abs__ab_bottom_solid_light_holo -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    	android:id="@+id/transactions_sum_bar"
-		android:layout_width="match_parent" 
+    	android:id="@+id/account_balance_toolbar"
+		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:layout_alignParentBottom="true"
 		android:background="@drawable/abc_ab_share_pack_mtrl_alpha"
 		android:orientation="horizontal"
 		android:minHeight="50dp"
 		style="@style/ListItem">
-        	    
+
 		<TextView android:id="@+id/label_sum" 
 			android:layout_width="0dp"
 			android:layout_height="wrap_content"

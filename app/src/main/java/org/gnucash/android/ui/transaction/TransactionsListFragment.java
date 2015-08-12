@@ -16,12 +16,10 @@
 
 package org.gnucash.android.ui.transaction;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.Loader;
@@ -51,13 +49,10 @@ import org.gnucash.android.model.Money;
 import org.gnucash.android.model.Split;
 import org.gnucash.android.ui.FormActivity;
 import org.gnucash.android.ui.UxArgument;
-import org.gnucash.android.ui.util.AccountBalanceTask;
-import org.gnucash.android.ui.util.OnTransactionClickedListener;
 import org.gnucash.android.ui.util.Refreshable;
 import org.gnucash.android.ui.widget.WidgetConfigurationActivity;
 import org.ocpsoft.prettytime.PrettyTime;
 
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -85,11 +80,7 @@ public class TransactionsListFragment extends Fragment implements
 
 	private TransactionRecyclerAdapter mTransactionRecyclerAdapter;
 	@Bind(R.id.transaction_recycler_view) RecyclerView mRecyclerView;
-	@Bind(R.id.fab_create_transaction) FloatingActionButton createTransactionFAB;
-	/**
-	 * Callback listener for editing transactions
-	 */
-	private OnTransactionClickedListener mTransactionEditListener;
+
 
 	@Override
  	public void onCreate(Bundle savedInstanceState) {		
@@ -111,13 +102,6 @@ public class TransactionsListFragment extends Fragment implements
 		LinearLayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
 		mRecyclerView.setLayoutManager(mLayoutManager);
 
-		createTransactionFAB = (FloatingActionButton) view.findViewById(R.id.fab_create_transaction);
-		createTransactionFAB.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				mTransactionEditListener.createNewTransaction(mAccountUID);
-			}
-		});
 		return view;
 	}
 
@@ -152,22 +136,6 @@ public class TransactionsListFragment extends Fragment implements
 	public void refresh(){
 		getLoaderManager().restartLoader(0, null, this);
 
-        /*
-	  Text view displaying the sum of the accounts
-	 */
-        TextView mSumTextView = (TextView) getView().findViewById(R.id.transactions_sum);
-        new AccountBalanceTask(mSumTextView).execute(mAccountUID);
-
-	}
-			
-	@Override
-	public void onAttach(Activity activity) {
-		super.onAttach(activity);
-		try {
-			 mTransactionEditListener = (OnTransactionClickedListener) activity;
-		} catch (ClassCastException e) {
-			throw new ClassCastException(activity.toString() + " must implement OnAccountSelectedListener");
-		}	
 	}
 	
 	@Override
@@ -242,10 +210,7 @@ public class TransactionsListFragment extends Fragment implements
 	}
 
 	public class TransactionRecyclerAdapter extends CursorRecyclerAdapter<TransactionRecyclerAdapter.ViewHolder>{
-		private int VIEW_TYPE_HEADER = 0x10;
-		private int VIEW_TYPE_CONTENT = 0x11;
 
-		private final SimpleDateFormat simpleDateFormatter = new SimpleDateFormat("MMMM yyyy", Locale.US);
 		private final PrettyTime prettyTime = new PrettyTime();
 		public TransactionRecyclerAdapter(Cursor cursor) {
 			super(cursor);
@@ -272,20 +237,6 @@ public class TransactionsListFragment extends Fragment implements
 			return new ViewHolder(v);
 		}
 
-		@Override
-		public int getItemViewType(int position) {
-			if (position == 0){
-				return VIEW_TYPE_HEADER;
-			} else {
-				Cursor cursor = getCursor();
-				long transactionTime = cursor.getLong(cursor.getColumnIndexOrThrow(DatabaseSchema.TransactionEntry.COLUMN_TIMESTAMP));
-				cursor.moveToPosition(position - 1);
-				long previousTimestamp = cursor.getLong(cursor.getColumnIndexOrThrow(DatabaseSchema.TransactionEntry.COLUMN_TIMESTAMP));
-				cursor.moveToPosition(position);
-				//has header if two consecutive transactions were not in same month
-				return isSameMonth(previousTimestamp, transactionTime) ? VIEW_TYPE_CONTENT : VIEW_TYPE_HEADER;
-			}
-		}
 
 		@Override
 		public void onBindViewHolderCursor(ViewHolder holder, Cursor cursor) {

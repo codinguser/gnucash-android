@@ -134,14 +134,7 @@ public class AccountsListFragment extends Fragment implements
         // use a linear layout manager
         LinearLayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
         mRecyclerView.setLayoutManager(mLayoutManager);
-
-        FloatingActionButton floatingActionButton = (FloatingActionButton) v.findViewById(R.id.fab_create_account);
-        floatingActionButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActionCreateAccount();
-            }
-        });
+        
         return v;
     }
 
@@ -253,14 +246,6 @@ public class AccountsListFragment extends Fragment implements
         }
     }
 
-
-    private void startActionCreateAccount() {
-        Intent addAccountIntent = new Intent(getActivity(), FormActivity.class);
-        addAccountIntent.setAction(Intent.ACTION_INSERT_OR_EDIT);
-        addAccountIntent.putExtra(UxArgument.FORM_TYPE, FormActivity.FormType.ACCOUNT_FORM.name());
-        addAccountIntent.putExtra(UxArgument.PARENT_ACCOUNT_UID, mParentAccountUID);
-        startActivityForResult(addAccountIntent, AccountsActivity.REQUEST_EDIT_ACCOUNT);
-    }
 
     @Override
     public void refresh(String parentAccountUID) {
