@@ -15,7 +15,9 @@
  limitations under the License.
 -->
 
-<org.gnucash.android.ui.util.CheckableLinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<org.gnucash.android.ui.util.CheckableLinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
               android:orientation="vertical">
@@ -51,16 +53,34 @@
                 android:layout_marginLeft="5dp"
                 />
 
+        <RelativeLayout
+            android:layout_height="match_parent"
+            android:layout_width="wrap_content"
+            android:layout_marginRight="12dp"
+            android:orientation="vertical">
         <TextView
                 android:id="@+id/transaction_amount"
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:singleLine="true"
                 android:ellipsize="end"
                 android:text="@string/label_transaction_amount"
                 android:minWidth="100dp"
                 android:gravity="right|center_vertical"
-                android:layout_marginRight="12dp"
                 style="@style/ListItemText"/>
+
+            <TextView
+                android:id="@+id/transaction_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:singleLine="true"
+                android:layout_below="@id/transaction_amount"
+                android:gravity="right|bottom|end"
+                android:layout_alignRight="@id/transaction_amount"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="@android:color/darker_gray"
+                tools:text="Sat, 04 July"/>
+        </RelativeLayout>
+
     </LinearLayout>
 </org.gnucash.android.ui.util.CheckableLinearLayout>

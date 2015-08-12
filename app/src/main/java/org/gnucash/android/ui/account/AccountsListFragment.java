@@ -216,7 +216,6 @@ public class AccountsListFragment extends Fragment implements
             showConfirmationDialog(rowId);
         } else {
             mAccountsDbAdapter.deleteRecord(rowId);
-            mAccountRecyclerAdapter.swapCursor(null);
             refresh();
         }
     }

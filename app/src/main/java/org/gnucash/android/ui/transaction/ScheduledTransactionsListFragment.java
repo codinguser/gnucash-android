@@ -87,7 +87,6 @@ public class ScheduledTransactionsListFragment extends ListFragment implements
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
             MenuInflater inflater = mode.getMenuInflater();
             inflater.inflate(R.menu.transactions_context_menu, menu);
-            menu.removeItem(R.id.context_menu_move_transactions);
             return true;
         }
 
