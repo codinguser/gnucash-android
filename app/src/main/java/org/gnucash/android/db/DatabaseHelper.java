@@ -29,18 +29,28 @@ import android.util.Log;
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.export.Exporter;
+import org.gnucash.android.importer.CommoditiesXmlHandler;
+import org.gnucash.android.importer.GncXmlHandler;
 import org.gnucash.android.model.AccountType;
+import org.gnucash.android.model.Commodity;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.model.Transaction;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.XMLReader;
 
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 
-import static org.gnucash.android.db.DatabaseSchema.AccountEntry;
-import static org.gnucash.android.db.DatabaseSchema.ScheduledActionEntry;
-import static org.gnucash.android.db.DatabaseSchema.SplitEntry;
-import static org.gnucash.android.db.DatabaseSchema.TransactionEntry;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
+
+import static org.gnucash.android.db.DatabaseSchema.*;
 /**
  * Helper class for managing the SQLite database.
  * Creates the database and handles upgrades
@@ -120,7 +130,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String SCHEDULED_ACTIONS_TABLE_CREATE = "CREATE TABLE " + ScheduledActionEntry.TABLE_NAME + " ("
             + ScheduledActionEntry._ID                   + " integer primary key autoincrement, "
             + ScheduledActionEntry.COLUMN_UID            + " varchar(255) not null UNIQUE, "
-            + ScheduledActionEntry.COLUMN_ACTION_UID    + " varchar(255) not null, "
+            + ScheduledActionEntry.COLUMN_ACTION_UID     + " varchar(255) not null, "
             + ScheduledActionEntry.COLUMN_TYPE           + " varchar(255) not null, "
             + ScheduledActionEntry.COLUMN_PERIOD         + " integer not null, "
             + ScheduledActionEntry.COLUMN_LAST_RUN       + " integer default 0, "
@@ -134,6 +144,37 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + ScheduledActionEntry.COLUMN_MODIFIED_AT    + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP "
             + ");" + createUpdatedAtTrigger(ScheduledActionEntry.TABLE_NAME);
 
+    public static final String COMMODITIES_TABLE_CREATE = "CREATE TABLE " + DatabaseSchema.CommodityEntry.TABLE_NAME + " ("
+            + CommodityEntry._ID                + " integer primary key autoincrement, "
+            + CommodityEntry.COLUMN_UID         + " varchar(255) not null UNIQUE, "
+            + CommodityEntry.COLUMN_NAMESPACE   + " varchar(255) not null default " + Commodity.Namespace.ISO4217.name() + ", "
+            + CommodityEntry.COLUMN_FULLNAME    + " varchar(255) not null, "
+            + CommodityEntry.COLUMN_MNEMONIC    + " varchar(255) not null, "
+            + CommodityEntry.COLUMN_CUSIP       + " varchar(255), "
+            + CommodityEntry.COLUMN_FRACTION    + " integer not null, "
+            + CommodityEntry.COLUMN_QUOTE_FLAG  + " integer not null, "
+            + CommodityEntry.COLUMN_CREATED_AT  + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
+            + CommodityEntry.COLUMN_MODIFIED_AT + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP "
+            + ");" + createUpdatedAtTrigger(CommodityEntry.TABLE_NAME);
+
+    /**
+     * SQL statement to create the commodity prices table
+     */
+    private static final String PRICES_TABLE_CREATE = "CREATE TABLE " + PriceEntry.TABLE_NAME + " ("
+            + PriceEntry._ID                    + " integer primary key autoincrement, "
+            + PriceEntry.COLUMN_UID             + " varchar(255) not null UNIQUE, "
+            + PriceEntry.COLUMN_COMMODITY_UID 	+ " varchar(255) not null, "
+            + PriceEntry.COLUMN_CURRENCY_UID    + " varchar(255) not null, "
+            + PriceEntry.COLUMN_TYPE            + " varchar(255), "
+            + PriceEntry.COLUMN_DATE 	        + " TIMESTAMP not null, "
+            + PriceEntry.COLUMN_SOURCE          + " text, "
+            + PriceEntry.COLUMN_VALUE_NUM       + " integer not null, "
+            + PriceEntry.COLUMN_VALUE_DENOM     + " integer not null, "
+            + PriceEntry.COLUMN_CREATED_AT      + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
+            + PriceEntry.COLUMN_MODIFIED_AT     + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
+            + "FOREIGN KEY (" 	+ PriceEntry.COLUMN_COMMODITY_UID + ") REFERENCES " + CommodityEntry.TABLE_NAME + " (" + CommodityEntry.COLUMN_UID + "), "
+            + "FOREIGN KEY (" 	+ PriceEntry.COLUMN_CURRENCY_UID + ") REFERENCES " + CommodityEntry.TABLE_NAME + " (" + CommodityEntry.COLUMN_UID + ") "
+            + ");" + createUpdatedAtTrigger(PriceEntry.TABLE_NAME);
 
     /**
 	 * Constructor
@@ -257,6 +298,72 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             Log.w(LOG_TAG, "Upgrade for the database failed. The Database is currently at version " + oldVersion);
         }
 	}
+
+
+    /**
+     * Upgrades the database from version 8 to version 9.
+     * <p>This migration accomplishes the following:
+     *  <ul>
+     *      <li>Adds a commodities table to the database</li>
+     *  </ul>
+     * </p>
+     * @param db SQLite Database to be upgraded
+     * @return New database version (9) if upgrade successful, old version (8) if unsuccessful
+     */
+    private int upgradeDbToVersion9(SQLiteDatabase db){
+        Log.i(LOG_TAG, "Upgrading database to version 8");
+        int oldVersion = 8;
+
+        db.beginTransaction();
+        try {
+            String createCommoditiesSql = "CREATE TABLE " + DatabaseSchema.CommodityEntry.TABLE_NAME + " ("
+                    + CommodityEntry._ID                + " integer primary key autoincrement, "
+                    + CommodityEntry.COLUMN_UID         + " varchar(255) not null UNIQUE, "
+                    + CommodityEntry.COLUMN_NAMESPACE   + " varchar(255) not null default " + Commodity.Namespace.ISO4217.name() + ", "
+                    + CommodityEntry.COLUMN_FULLNAME    + " varchar(255) not null, "
+                    + CommodityEntry.COLUMN_MNEMONIC    + " varchar(255) not null, "
+                    + CommodityEntry.COLUMN_CUSIP       + " varchar(255), "
+                    + CommodityEntry.COLUMN_FRACTION    + " integer not null, "
+                    + CommodityEntry.COLUMN_QUOTE_FLAG  + " integer not null, "
+                    + CommodityEntry.COLUMN_CREATED_AT  + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
+                    + CommodityEntry.COLUMN_MODIFIED_AT + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP "
+                    + ");" + createUpdatedAtTrigger(CommodityEntry.TABLE_NAME);
+            db.execSQL(createCommoditiesSql);
+            try {
+                importCommodities(db);
+            } catch (SAXException | ParserConfigurationException | IOException e) {
+                Log.e(LOG_TAG, "Error loading currencies into the database");
+                e.printStackTrace();
+                throw new RuntimeException(e);
+            }
+
+            String createPricesSql = "CREATE TABLE " + PriceEntry.TABLE_NAME + " ("
+                    + PriceEntry._ID                    + " integer primary key autoincrement, "
+                    + PriceEntry.COLUMN_UID             + " varchar(255) not null UNIQUE, "
+                    + PriceEntry.COLUMN_COMMODITY_UID 	+ " varchar(255) not null, "
+                    + PriceEntry.COLUMN_CURRENCY_UID    + " varchar(255) not null, "
+                    + PriceEntry.COLUMN_TYPE            + " varchar(255), "
+                    + PriceEntry.COLUMN_DATE 	        + " TIMESTAMP not null, "
+                    + PriceEntry.COLUMN_SOURCE          + " text, "
+                    + PriceEntry.COLUMN_VALUE_NUM       + " integer not null, "
+                    + PriceEntry.COLUMN_VALUE_DENOM     + " integer not null, "
+                    + PriceEntry.COLUMN_CREATED_AT      + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
+                    + PriceEntry.COLUMN_MODIFIED_AT     + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
+                    + "FOREIGN KEY (" 	+ PriceEntry.COLUMN_COMMODITY_UID + ") REFERENCES " + CommodityEntry.TABLE_NAME + " (" + CommodityEntry.COLUMN_UID + "), "
+                    + "FOREIGN KEY (" 	+ PriceEntry.COLUMN_CURRENCY_UID + ") REFERENCES " + CommodityEntry.TABLE_NAME + " (" + CommodityEntry.COLUMN_UID + ") "
+                    + ");" + createUpdatedAtTrigger(PriceEntry.TABLE_NAME);
+            db.execSQL(createPricesSql);
+            //TODO: add migrations here
+
+
+
+            db.setTransactionSuccessful();
+            oldVersion = 9;
+        } finally {
+            db.endTransaction();
+        }
+        return oldVersion;
+    }
 
     /**
      * Upgrades the database from version 7 to version 8.
@@ -790,6 +897,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(TRANSACTIONS_TABLE_CREATE);
         db.execSQL(SPLITS_TABLE_CREATE);
         db.execSQL(SCHEDULED_ACTIONS_TABLE_CREATE);
+        db.execSQL(COMMODITIES_TABLE_CREATE);
+        db.execSQL(PRICES_TABLE_CREATE);
 
         String createAccountUidIndex = "CREATE UNIQUE INDEX '" + AccountEntry.INDEX_UID + "' ON "
                 + AccountEntry.TABLE_NAME + "(" + AccountEntry.COLUMN_UID + ")";
@@ -803,11 +912,46 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         String createScheduledEventUidIndex = "CREATE UNIQUE INDEX '" + ScheduledActionEntry.INDEX_UID
                 +"' ON " + ScheduledActionEntry.TABLE_NAME + "(" + ScheduledActionEntry.COLUMN_UID + ")";
 
+        String createCommodityUidIndex = "CREATE UNIQUE INDEX '" + CommodityEntry.INDEX_UID
+                +"' ON " + CommodityEntry.TABLE_NAME + "(" + CommodityEntry.COLUMN_UID + ")";
+
+        String createPriceUidIndex = "CREATE UNIQUE INDEX '" + PriceEntry.INDEX_UID
+                +"' ON " + PriceEntry.TABLE_NAME + "(" + PriceEntry.COLUMN_UID + ")";
+
         db.execSQL(createAccountUidIndex);
         db.execSQL(createTransactionUidIndex);
         db.execSQL(createSplitUidIndex);
         db.execSQL(createScheduledEventUidIndex);
+        db.execSQL(createCommodityUidIndex);
+        db.execSQL(createPriceUidIndex);
+
+        try {
+            importCommodities(db);
+        } catch (SAXException | ParserConfigurationException | IOException e) {
+            Log.e(LOG_TAG, "Error loading currencies into the database");
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
     }
 
+    /**
+     * Imports commodities into the database from XML resource file
+     */
+    private void importCommodities(SQLiteDatabase db) throws SAXException, ParserConfigurationException, IOException {
+        SAXParserFactory spf = SAXParserFactory.newInstance();
+        SAXParser sp = spf.newSAXParser();
+        XMLReader xr = sp.getXMLReader();
+
+        InputStream commoditiesInputStream = GnuCashApplication.getAppContext().getResources()
+                .openRawResource(R.raw.iso_4217_currencies);
+        BufferedInputStream bos = new BufferedInputStream(commoditiesInputStream);
+
+        /** Create handler to handle XML Tags ( extends DefaultHandler ) */
+
+        CommoditiesXmlHandler handler = new CommoditiesXmlHandler(db);
+
+        xr.setContentHandler(handler);
+        xr.parse(new InputSource(bos));
+    }
 
 }

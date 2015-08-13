@@ -117,4 +117,59 @@ public class DatabaseSchema {
 
         public static final String INDEX_UID            = "scheduled_action_uid_index";
     }
+
+    public static abstract class CommodityEntry implements CommonColumns {
+        public static final String TABLE_NAME           = "commodities";
+
+        /**
+         * The namespace field denotes the namespace for this commodity,
+         * either a currency or symbol from a quote source
+         */
+        public static final String COLUMN_NAMESPACE     = "namespace";
+
+        /**
+         * The fullname is the official full name of the currency
+         */
+        public static final String COLUMN_FULLNAME      = "fullname";
+
+        /**
+         * The mnemonic is the official abbreviated designation for the currency
+         */
+        public static final String COLUMN_MNEMONIC      = "mnemonic";
+
+
+        /**
+         * The fraction is the number of sub-units that the basic commodity can be divided into
+         */
+        public static final String COLUMN_FRACTION      = "fraction";
+
+        /**
+         * A CUSIP is a nine-character alphanumeric code that identifies a North American financial security
+         * for the purposes of facilitating clearing and settlement of trades
+         */
+        public static final String COLUMN_CUSIP         = "cusip";
+
+        /**
+         * TRUE if prices are to be downloaded for this commodity from a quote source
+         */
+        public static final String COLUMN_QUOTE_FLAG    = "quote_flag";
+
+        public static final String INDEX_UID = "commodities_uid_index";
+    }
+
+
+    public static abstract class PriceEntry implements CommonColumns {
+        public static final String TABLE_NAME = "prices";
+
+        public static final String COLUMN_COMMODITY_UID = "commodity_guid";
+        public static final String COLUMN_CURRENCY_UID  = "currency_guid";
+        public static final String COLUMN_DATE          = "date";
+        public static final String COLUMN_SOURCE        = "source";
+        public static final String COLUMN_TYPE          = "type";
+        public static final String COLUMN_VALUE_NUM     = "value_num";
+        public static final String COLUMN_VALUE_DENOM   = "value_denom";
+
+        public static final String INDEX_UID = "prices_uid_index";
+
+    }
 }
