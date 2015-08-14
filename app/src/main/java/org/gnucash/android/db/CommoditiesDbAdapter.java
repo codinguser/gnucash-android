@@ -29,32 +29,17 @@ public class CommoditiesDbAdapter extends DatabaseAdapter<Commodity> {
     }
 
     @Override
-    protected ContentValues buildContentValues(@NonNull Commodity commodity) {
-        ContentValues contentValues = new ContentValues();
-        populateBaseModelAttributes(contentValues, commodity);
-        contentValues.put(CommodityEntry.COLUMN_NAMESPACE, commodity.getNamespace().name());
-        contentValues.put(CommodityEntry.COLUMN_MNEMONIC,   commodity.getMnemonic());
-        contentValues.put(CommodityEntry.COLUMN_FULLNAME,   commodity.getFullname());
-        contentValues.put(CommodityEntry.COLUMN_LOCAL_SYMBOL, commodity.getLocalSymbol());
-        contentValues.put(CommodityEntry.COLUMN_CUSIP,      commodity.getCusip());
-        contentValues.put(CommodityEntry.COLUMN_FRACTION,   commodity.getFraction());
-        contentValues.put(CommodityEntry.COLUMN_QUOTE_FLAG, commodity.getQuoteFlag());
-
-        return contentValues;
-    }
-
-    @Override
     protected SQLiteStatement compileReplaceStatement(Commodity commodity) {
         if (mReplaceStatement == null) {
             mReplaceStatement = mDb.compileStatement("REPLACE INTO " + CommodityEntry.TABLE_NAME + " ( "
-                    + CommodityEntry.COLUMN_UID + " , "
-                    + CommodityEntry.COLUMN_FULLNAME + " , "
-                    + CommodityEntry.COLUMN_NAMESPACE + " , "
-                    + CommodityEntry.COLUMN_MNEMONIC + " , "
-                    + CommodityEntry.COLUMN_LOCAL_SYMBOL + " , "
-                    + CommodityEntry.COLUMN_CUSIP + " , "
-                    + CommodityEntry.COLUMN_FRACTION + " , "
-                    + CommodityEntry.COLUMN_QUOTE_FLAG + " ) VALUES ( ? , ? , ? , ? , ? , ? , ? , ? ) ");
+                    + CommodityEntry.COLUMN_UID             + " , "
+                    + CommodityEntry.COLUMN_FULLNAME        + " , "
+                    + CommodityEntry.COLUMN_NAMESPACE       + " , "
+                    + CommodityEntry.COLUMN_MNEMONIC        + " , "
+                    + CommodityEntry.COLUMN_LOCAL_SYMBOL    + " , "
+                    + CommodityEntry.COLUMN_CUSIP           + " , "
+                    + CommodityEntry.COLUMN_FRACTION        + " , "
+                    + CommodityEntry.COLUMN_QUOTE_FLAG      + " ) VALUES ( ? , ? , ? , ? , ? , ? , ? , ? ) ");
         }
 
         mReplaceStatement.clearBindings();

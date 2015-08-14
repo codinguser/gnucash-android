@@ -50,25 +50,6 @@ public class ScheduledActionDbAdapter extends DatabaseAdapter<ScheduledAction> {
         return GnuCashApplication.getScheduledEventDbAdapter();
     }
 
-
-    @Override
-    protected ContentValues buildContentValues(@NonNull ScheduledAction scheduledAction) {
-        ContentValues contentValues = new ContentValues();
-        populateBaseModelAttributes(contentValues, scheduledAction);
-        contentValues.put(ScheduledActionEntry.COLUMN_ACTION_UID, scheduledAction.getActionUID());
-        contentValues.put(ScheduledActionEntry.COLUMN_PERIOD,    scheduledAction.getPeriod());
-        contentValues.put(ScheduledActionEntry.COLUMN_START_TIME, scheduledAction.getStartTime());
-        contentValues.put(ScheduledActionEntry.COLUMN_END_TIME,  scheduledAction.getEndTime());
-        contentValues.put(ScheduledActionEntry.COLUMN_LAST_RUN,  scheduledAction.getLastRun());
-        contentValues.put(ScheduledActionEntry.COLUMN_TYPE, scheduledAction.getActionType().name());
-        contentValues.put(ScheduledActionEntry.COLUMN_TAG,       scheduledAction.getTag());
-        contentValues.put(ScheduledActionEntry.COLUMN_ENABLED,   scheduledAction.isEnabled() ? "1":"0");
-        contentValues.put(ScheduledActionEntry.COLUMN_TOTAL_FREQUENCY, scheduledAction.getTotalFrequency());
-        contentValues.put(ScheduledActionEntry.COLUMN_EXECUTION_COUNT, scheduledAction.getExecutionCount());
-
-        return contentValues;
-    }
-
     /**
      * Updates only the recurrence attributes of the scheduled action.
      * The recurrence attributes are the period, start time, end time and/or total frequency.

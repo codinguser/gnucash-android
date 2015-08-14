@@ -52,6 +52,7 @@ import org.gnucash.android.model.Account;
 import org.gnucash.android.ui.FormActivity;
 import org.gnucash.android.ui.UxArgument;
 import org.gnucash.android.ui.util.AccountBalanceTask;
+import org.gnucash.android.ui.util.CursorRecyclerAdapter;
 import org.gnucash.android.ui.util.OnAccountClickedListener;
 import org.gnucash.android.ui.util.Refreshable;
 
@@ -411,7 +412,7 @@ public class AccountsListFragment extends Fragment implements
     }
 
 
-    private class AccountRecyclerAdapter extends org.gnucash.android.db.CursorRecyclerAdapter<AccountRecyclerAdapter.ViewHolder>{
+    private class AccountRecyclerAdapter extends CursorRecyclerAdapter<AccountRecyclerAdapter.ViewHolder> {
 
         public AccountRecyclerAdapter(Cursor cursor){
            super(cursor);

@@ -85,20 +85,18 @@ public class TransactionsDbAdapter extends DatabaseAdapter<Transaction> {
 	 * @return Database row ID of the inserted transaction
 	 */
     @Override
-	public long addRecord(@NonNull Transaction transaction){
+	public void addRecord(@NonNull Transaction transaction){
 
         Log.d(LOG_TAG, "Replacing transaction in db");
-        long rowId = -1;
         mDb.beginTransaction();
         try {
-            rowId = super.addRecord(transaction);
+            super.addRecord(transaction);
 
             Log.d(LOG_TAG, "Adding splits for transaction");
-            SplitsDbAdapter splitsDbAdapter = SplitsDbAdapter.getInstance();
             ArrayList<String> splitUIDs = new ArrayList<>(transaction.getSplits().size());
             for (Split split : transaction.getSplits()) {
                 Log.d(LOG_TAG, "Replace transaction split in db");
-                splitsDbAdapter.addRecord(split);
+                mSplitsDbAdapter.addRecord(split);
                 splitUIDs.add(split.getUID());
             }
             Log.d(LOG_TAG, transaction.getSplits().size() + " splits added");
@@ -108,6 +106,7 @@ public class TransactionsDbAdapter extends DatabaseAdapter<Transaction> {
                             + SplitEntry.COLUMN_UID + " NOT IN ('" + TextUtils.join("' , '", splitUIDs) + "')",
                     new String[]{transaction.getUID()});
             Log.d(LOG_TAG, deleted + " splits deleted");
+
             mDb.setTransactionSuccessful();
         } catch (SQLException sqlEx) {
             Log.e(LOG_TAG, sqlEx.getMessage());
@@ -115,7 +114,6 @@ public class TransactionsDbAdapter extends DatabaseAdapter<Transaction> {
         } finally {
             mDb.endTransaction();
         }
-        return rowId;
 	}
 
     /**
@@ -182,21 +180,6 @@ public class TransactionsDbAdapter extends DatabaseAdapter<Transaction> {
         mReplaceStatement.bindLong(9, transaction.isTemplate() ? 1 : 0);
 
         return mReplaceStatement;
-    }
-
-    @Override
-    protected ContentValues buildContentValues(@NonNull Transaction transaction) {
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(TransactionEntry.COLUMN_DESCRIPTION, transaction.getDescription());
-        contentValues.put(TransactionEntry.COLUMN_TIMESTAMP, transaction.getTimeMillis());
-        contentValues.put(TransactionEntry.COLUMN_NOTES,        transaction.getNote());
-        contentValues.put(TransactionEntry.COLUMN_EXPORTED,     transaction.isExported() ? 1 : 0);
-        contentValues.put(TransactionEntry.COLUMN_TEMPLATE,     transaction.isTemplate() ? 1 : 0);
-        contentValues.put(TransactionEntry.COLUMN_CURRENCY,     transaction.getCurrencyCode());
-        contentValues.put(TransactionEntry.COLUMN_SCHEDX_ACTION_UID, transaction.getScheduledActionUID());
-        populateBaseModelAttributes(contentValues, transaction);
-
-        return contentValues;
     }
 
     /**

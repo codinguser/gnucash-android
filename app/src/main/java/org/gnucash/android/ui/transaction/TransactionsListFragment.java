@@ -40,7 +40,7 @@ import android.widget.TextView;
 
 import org.gnucash.android.R;
 import org.gnucash.android.db.AccountsDbAdapter;
-import org.gnucash.android.db.CursorRecyclerAdapter;
+import org.gnucash.android.ui.util.CursorRecyclerAdapter;
 import org.gnucash.android.db.DatabaseCursorLoader;
 import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.db.SplitsDbAdapter;

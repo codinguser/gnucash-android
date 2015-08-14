@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package org.gnucash.android.db;
+package org.gnucash.android.ui.util;
 
 import android.database.ContentObserver;
 import android.database.Cursor;
@@ -49,7 +49,7 @@ import android.widget.Filterable;
  * @see android.support.v7.widget.RecyclerView.Adapter
  * @see android.widget.CursorAdapter
  * @see android.widget.Filterable
- * @see org.gnucash.android.db.CursorFilter.CursorFilterClient
+ * @see CursorFilter.CursorFilterClient
  */
 public abstract class CursorRecyclerAdapter<VH
         extends android.support.v7.widget.RecyclerView.ViewHolder> extends RecyclerView.Adapter<VH>

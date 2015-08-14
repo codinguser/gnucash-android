@@ -48,11 +48,8 @@ public class TransactionsDbAdapterTest {
 		alphaAccount = new Account(ALPHA_ACCOUNT_NAME);
 		bravoAccount = new Account(BRAVO_ACCOUNT_NAME);
 
-		long id1 = mAccountsDbAdapter.addRecord(bravoAccount);
-		long id2 = mAccountsDbAdapter.addRecord(alphaAccount);
-
-		assertThat(id1).isGreaterThan(0);
-		assertThat(id2).isGreaterThan(0);
+		mAccountsDbAdapter.addRecord(bravoAccount);
+		mAccountsDbAdapter.addRecord(alphaAccount);
 
 		mTestSplit = new Split(new Money(BigDecimal.TEN, DEFAULT_CURRENCY), alphaAccount.getUID());
 	}

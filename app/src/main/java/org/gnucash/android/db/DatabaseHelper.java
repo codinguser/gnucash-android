@@ -651,7 +651,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 //                    Split split = new Split(imbalance.negate(),
 //                            accountsDbAdapter.getOrCreateImbalanceAccountUID(imbalance.getCurrency()));
 //                    split.setTransactionUID(transaction.getUID());
-//                    splitsDbAdapter.addSplit(split);
+//                    splitsDbAdapter.addRecord(split);
 //                }
 //            }
 //            cursor.close();

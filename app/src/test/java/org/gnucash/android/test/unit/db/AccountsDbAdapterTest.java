@@ -100,11 +100,8 @@ public class AccountsDbAdapterTest{
         account1.addTransaction(transaction);
         account2.addTransaction(transaction);
 
-        long id1 = mAccountsDbAdapter.addRecord(account1);
-        long id2 = mAccountsDbAdapter.addRecord(account2);
-
-        assertThat(id1).isGreaterThan(0);
-        assertThat(id2).isGreaterThan(0);
+        mAccountsDbAdapter.addRecord(account1);
+        mAccountsDbAdapter.addRecord(account2);
 
         assertThat(mTransactionsDbAdapter.getRecordsCount()).isEqualTo(1);
     }
@@ -127,8 +124,7 @@ public class AccountsDbAdapterTest{
         transaction.addSplit(split);
         transaction.addSplit(split.createPair(BRAVO_ACCOUNT_NAME));
 
-        long id = mTransactionsDbAdapter.addRecord(transaction);
-        assertThat(id).isGreaterThan(0);
+        mTransactionsDbAdapter.addRecord(transaction);
 
         mAccountsDbAdapter.deleteRecord(ALPHA_ACCOUNT_NAME);
 
@@ -251,26 +247,26 @@ public class AccountsDbAdapterTest{
         Split split = new Split(new Money(BigDecimal.TEN, Currency.getInstance("USD")), account.getUID());
         split.setTransactionUID(transaction.getUID());
         split.setType(TransactionType.DEBIT);
-        mSplitsDbAdapter.addSplit(split);
+        mSplitsDbAdapter.addRecord(split);
 
         split = new Split(new Money("4.99", "USD"), account.getUID());
         split.setTransactionUID(transaction.getUID());
         split.setType(TransactionType.DEBIT);
-        mSplitsDbAdapter.addSplit(split);
+        mSplitsDbAdapter.addRecord(split);
 
         split = new Split(new Money("1.19", "USD"), account.getUID());
         split.setTransactionUID(transaction.getUID());
         split.setType(TransactionType.CREDIT);
-        mSplitsDbAdapter.addSplit(split);
+        mSplitsDbAdapter.addRecord(split);
 
         split = new Split(new Money("3.49", "EUR"), account.getUID());
         split.setTransactionUID(transaction.getUID());
         split.setType(TransactionType.DEBIT);
-        mSplitsDbAdapter.addSplit(split);
+        mSplitsDbAdapter.addRecord(split);
 
         split = new Split(new Money("8.39", "USD"), transferAcct.getUID());
         split.setTransactionUID(transaction.getUID());
-        mSplitsDbAdapter.addSplit(split);
+        mSplitsDbAdapter.addRecord(split);
 
         //balance computation ignores the currency of the split
         Money balance = mAccountsDbAdapter.getAccountBalance(account.getUID());

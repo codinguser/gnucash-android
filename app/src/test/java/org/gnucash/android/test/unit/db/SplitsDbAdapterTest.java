@@ -50,7 +50,7 @@ public class SplitsDbAdapterTest {
 
         Split split = new Split(Money.getZeroInstance(), "non-existent");
         split.setTransactionUID(transaction.getUID());
-        mSplitsDbAdapter.addSplit(split);
+        mSplitsDbAdapter.addRecord(split);
 
         List<Split> splits = mSplitsDbAdapter.getSplitsForTransaction(transaction.getUID());
         assertThat(splits).isEmpty();
@@ -69,7 +69,7 @@ public class SplitsDbAdapterTest {
 
         Split split = new Split(Money.getZeroInstance(), mAccount.getUID());
         split.setTransactionUID(transaction.getUID());
-        mSplitsDbAdapter.addSplit(split);
+        mSplitsDbAdapter.addRecord(split);
 
         String isExported = mTransactionsDbAdapter.getAttribute(transaction.getUID(),
                 DatabaseSchema.TransactionEntry.COLUMN_EXPORTED);

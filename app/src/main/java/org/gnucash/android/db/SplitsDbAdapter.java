@@ -64,37 +64,21 @@ public class SplitsDbAdapter extends DatabaseAdapter<Split> {
 
     /**
      * Adds a split to the database.
-     * If the split (with same unique ID) already exists, then it is simply updated
+     * The transactions belonging to the split are marked as exported
      * @param split {@link org.gnucash.android.model.Split} to be recorded in DB
-     * @return Record ID of the newly saved split
      */
-    public long addSplit(Split split){
-
+    public void addRecord(@NonNull final Split split){
         Log.d(LOG_TAG, "Replace transaction split in db");
-        long rowId = super.addRecord(split);
+        super.addRecord(split);
 
         long transactionId = getTransactionID(split.getTransactionUID());
         //when a split is updated, we want mark the transaction as not exported
         updateRecord(TransactionEntry.TABLE_NAME, transactionId,
-                TransactionEntry.COLUMN_EXPORTED, String.valueOf(rowId > 0 ? 0 : 1));
+                TransactionEntry.COLUMN_EXPORTED, String.valueOf(0));
 
         //modifying a split means modifying the accompanying transaction as well
         updateRecord(TransactionEntry.TABLE_NAME, transactionId,
                 TransactionEntry.COLUMN_MODIFIED_AT, Long.toString(System.currentTimeMillis()));
-        return rowId;
-    }
-
-    @Override
-    protected ContentValues buildContentValues(@NonNull Split split) {
-        ContentValues contentValues = new ContentValues();
-        populateBaseModelAttributes(contentValues, split);
-        contentValues.put(SplitEntry.COLUMN_AMOUNT,     split.getAmount().absolute().toPlainString());
-        contentValues.put(SplitEntry.COLUMN_TYPE,       split.getType().name());
-        contentValues.put(SplitEntry.COLUMN_MEMO,       split.getMemo());
-        contentValues.put(SplitEntry.COLUMN_ACCOUNT_UID, split.getAccountUID());
-        contentValues.put(SplitEntry.COLUMN_TRANSACTION_UID, split.getTransactionUID());
-
-        return contentValues;
     }
 
     @Override

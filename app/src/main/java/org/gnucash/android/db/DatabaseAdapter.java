@@ -176,12 +176,11 @@ public abstract class DatabaseAdapter<Model extends BaseModel> {
      * Adds a record to the database with the data contained in the model.
      * <p>This method uses the SQL REPLACE instructions to replace any record with a matching GUID.
      * So beware of any foreign keys with cascade dependencies which might need to be re-added</p>
-     * @param model
-     * @return
+     * @param model Model to be saved to the database
      */
-    public long addRecord(@NonNull final Model model){
+    public void addRecord(@NonNull final Model model){
         Log.d(LOG_TAG, String.format("Adding %s record to database: ", model.getClass().getName()));
-        return mDb.replace(mTableName, null, buildContentValues(model));
+        compileReplaceStatement(model).execute();
     }
 
     /**
@@ -196,12 +195,10 @@ public abstract class DatabaseAdapter<Model extends BaseModel> {
         long nRow = 0;
         try {
             mDb.beginTransaction();
-
             for (Model split : modelList) {
                 compileReplaceStatement(split).execute();
                 nRow++;
             }
-
             mDb.setTransactionSuccessful();
         }
         finally {
@@ -210,15 +207,6 @@ public abstract class DatabaseAdapter<Model extends BaseModel> {
 
         return nRow;
     }
-
-    /**
-     * Builds the ContentValues object used for modifying the records in the database.
-     * <p>Classes implementing this method should call {@link #populateBaseModelAttributes(ContentValues, BaseModel)} (BaseModel)} in
-     * order to populate the base model fields</p>
-     * @return {@link ContentValues} filled with the model values
-     * @see #populateBaseModelAttributes(ContentValues, BaseModel)
-     */
-    protected abstract ContentValues buildContentValues(@NonNull final Model model);
 
     /**
      * Builds an instance of the model from the database record entry

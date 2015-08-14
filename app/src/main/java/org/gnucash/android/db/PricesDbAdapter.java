@@ -30,22 +30,6 @@ public class PricesDbAdapter extends DatabaseAdapter<Price> {
     }
 
     @Override
-    protected ContentValues buildContentValues(@NonNull Price price) {
-        ContentValues contentValues = new ContentValues();
-        populateBaseModelAttributes(contentValues, price);
-
-        contentValues.put(PriceEntry.COLUMN_COMMODITY_UID,  price.getCommodityUID());
-        contentValues.put(PriceEntry.COLUMN_CURRENCY_UID,   price.getCurrencyUID());
-        contentValues.put(PriceEntry.COLUMN_DATE,           price.getDate().toString());
-        contentValues.put(PriceEntry.COLUMN_SOURCE,         price.getSource());
-        contentValues.put(PriceEntry.COLUMN_TYPE,           price.getType());
-        contentValues.put(PriceEntry.COLUMN_VALUE_NUM,      price.getValueNum());
-        contentValues.put(PriceEntry.COLUMN_VALUE_DENOM,    price.getValueDenom());
-
-        return contentValues;
-    }
-
-    @Override
     protected SQLiteStatement compileReplaceStatement(Price price) {
         if (mReplaceStatement == null) {
             mReplaceStatement = mDb.compileStatement("REPLACE INTO " + PriceEntry.TABLE_NAME + " ( "
@@ -64,15 +48,12 @@ public class PricesDbAdapter extends DatabaseAdapter<Price> {
         mReplaceStatement.bindString(2, price.getCommodityUID());
         mReplaceStatement.bindString(3, price.getCurrencyUID());
         mReplaceStatement.bindString(4, price.getDate().toString());
-        if (price.getSource() == null)
-            mReplaceStatement.bindNull(5);
-        else
+        if (price.getSource() != null) {
             mReplaceStatement.bindString(5, price.getSource());
-
-        if (price.getType() == null)
-            mReplaceStatement.bindNull(6);
-        else
+        }
+        if (price.getType() != null) {
             mReplaceStatement.bindString(6, price.getType());
+        }
         mReplaceStatement.bindLong(7,   price.getValueNum());
         mReplaceStatement.bindLong(8,   price.getValueDenom());
 

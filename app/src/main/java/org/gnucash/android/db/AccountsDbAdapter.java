@@ -98,19 +98,18 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
 	 * @return Database row ID of the inserted account
 	 */
     @Override
-	public long addRecord(@NonNull Account account){
+	public void addRecord(@NonNull Account account){
         Log.d(LOG_TAG, "Replace account to db");
-        long rowId =  super.addRecord(account);
-
+        super.addRecord(account);
+        String accountUID = account.getUID();
 		//now add transactions if there are any
-		if (rowId > 0 && account.getAccountType() != AccountType.ROOT){
+		if (account.getAccountType() != AccountType.ROOT){
             //update the fully qualified account name
-            updateAccount(rowId, AccountEntry.COLUMN_FULL_NAME, getFullyQualifiedAccountName(rowId));
+            updateRecord(accountUID, AccountEntry.COLUMN_FULL_NAME, getFullyQualifiedAccountName(accountUID));
 			for (Transaction t : account.getTransactions()) {
 		        mTransactionsAdapter.addRecord(t);
 			}
 		}
-		return rowId;
 	}
 
     /**
@@ -143,6 +142,7 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
             mReplaceStatement = mDb.compileStatement("REPLACE INTO " + AccountEntry.TABLE_NAME + " ( "
                     + AccountEntry.COLUMN_UID + " , "
                     + AccountEntry.COLUMN_NAME + " , "
+                    + AccountEntry.COLUMN_DESCRIPTION + " , "
                     + AccountEntry.COLUMN_TYPE + " , "
                     + AccountEntry.COLUMN_CURRENCY + " , "
                     + AccountEntry.COLUMN_COLOR_CODE + " , "
@@ -158,55 +158,25 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
         mReplaceStatement.clearBindings();
         mReplaceStatement.bindString(1, account.getUID());
         mReplaceStatement.bindString(2, account.getName());
-        mReplaceStatement.bindString(3, account.getAccountType().name());
-        mReplaceStatement.bindString(4, account.getCurrency().getCurrencyCode());
+        mReplaceStatement.bindString(3, account.getDescription());
+        mReplaceStatement.bindString(4, account.getAccountType().name());
+        mReplaceStatement.bindString(5, account.getCurrency().getCurrencyCode());
         if (account.getColorHexCode() != null) {
-            mReplaceStatement.bindString(5, account.getColorHexCode());
+            mReplaceStatement.bindString(6, account.getColorHexCode());
         }
-        mReplaceStatement.bindLong(6, account.isFavorite() ? 1 : 0);
-        mReplaceStatement.bindString(7, account.getFullName());
-        mReplaceStatement.bindLong(8, account.isPlaceholderAccount() ? 1 : 0);
-        mReplaceStatement.bindString(9, account.getCreatedTimestamp().toString());
-        mReplaceStatement.bindLong(10, account.isHidden() ? 1 : 0);
+        mReplaceStatement.bindLong(7, account.isFavorite() ? 1 : 0);
+        mReplaceStatement.bindString(8, account.getFullName());
+        mReplaceStatement.bindLong(9, account.isPlaceholderAccount() ? 1 : 0);
+        mReplaceStatement.bindString(10, account.getCreatedTimestamp().toString());
+        mReplaceStatement.bindLong(11, account.isHidden() ? 1 : 0);
         if (account.getParentUID() != null) {
-            mReplaceStatement.bindString(11, account.getParentUID());
+            mReplaceStatement.bindString(12, account.getParentUID());
         }
         if (account.getDefaultTransferAccountUID() != null) {
-            mReplaceStatement.bindString(12, account.getDefaultTransferAccountUID());
+            mReplaceStatement.bindString(13, account.getDefaultTransferAccountUID());
         }
 
         return mReplaceStatement;
-    }
-
-    @Override
-    protected ContentValues buildContentValues(@NonNull Account account) {
-        ContentValues contentValues = new ContentValues();
-        populateBaseModelAttributes(contentValues, account);
-        contentValues.put(AccountEntry.COLUMN_NAME,         account.getName());
-        contentValues.put(AccountEntry.COLUMN_TYPE,         account.getAccountType().name());
-        contentValues.put(AccountEntry.COLUMN_CURRENCY,     account.getCurrency().getCurrencyCode());
-        contentValues.put(AccountEntry.COLUMN_PLACEHOLDER,  account.isPlaceholderAccount() ? 1 : 0);
-        contentValues.put(AccountEntry.COLUMN_HIDDEN,       account.isHidden() ? 1 : 0);
-        if (account.getColorHexCode() != null) {
-            contentValues.put(AccountEntry.COLUMN_COLOR_CODE, account.getColorHexCode());
-        } else {
-            contentValues.putNull(AccountEntry.COLUMN_COLOR_CODE);
-        }
-        contentValues.put(AccountEntry.COLUMN_FAVORITE,     account.isFavorite() ? 1 : 0);
-        contentValues.put(AccountEntry.COLUMN_FULL_NAME,    account.getFullName());
-        String parentAccountUID = account.getParentUID();
-        if (parentAccountUID == null && account.getAccountType() != AccountType.ROOT) {
-            parentAccountUID = getOrCreateGnuCashRootAccountUID();
-        }
-        contentValues.put(AccountEntry.COLUMN_PARENT_ACCOUNT_UID, parentAccountUID);
-
-        if (account.getDefaultTransferAccountUID() != null) {
-            contentValues.put(AccountEntry.COLUMN_DEFAULT_TRANSFER_ACCOUNT_UID, account.getDefaultTransferAccountUID());
-        } else {
-            contentValues.putNull(AccountEntry.COLUMN_DEFAULT_TRANSFER_ACCOUNT_UID);
-        }
-
-        return contentValues;
     }
 
     /**
