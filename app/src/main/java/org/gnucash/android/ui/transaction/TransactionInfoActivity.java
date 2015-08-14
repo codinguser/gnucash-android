@@ -90,7 +90,7 @@ public class TransactionInfoActivity extends AppCompatActivity{
      */
     private void bindViews(){
         TransactionsDbAdapter transactionsDbAdapter = TransactionsDbAdapter.getInstance();
-        Transaction transaction = transactionsDbAdapter.getTransaction(mTransactionUID);
+        Transaction transaction = transactionsDbAdapter.getRecord(mTransactionUID);
 
         mTransactionDescription.setText(transaction.getDescription());
         Money balance = transaction.getBalance(mAccountUID);
@@ -123,7 +123,7 @@ public class TransactionInfoActivity extends AppCompatActivity{
         mTimeAndDate.setText(timeAndDate);
 
         if (transaction.getScheduledActionUID() != null){
-            ScheduledAction scheduledAction = ScheduledActionDbAdapter.getInstance().getScheduledAction(transaction.getScheduledActionUID());
+            ScheduledAction scheduledAction = ScheduledActionDbAdapter.getInstance().getRecord(transaction.getScheduledActionUID());
             mRecurrence.setText(scheduledAction.getRepeatString());
             findViewById(R.id.row_trn_recurrence).setVisibility(View.VISIBLE);
 

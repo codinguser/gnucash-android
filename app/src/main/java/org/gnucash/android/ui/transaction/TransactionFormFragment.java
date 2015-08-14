@@ -258,7 +258,7 @@ public class TransactionFormFragment extends Fragment implements
         String transactionUID = getArguments().getString(UxArgument.SELECTED_TRANSACTION_UID);
 		mTransactionsDbAdapter = TransactionsDbAdapter.getInstance();
 		if (transactionUID != null)
-            mTransaction = mTransactionsDbAdapter.getTransaction(transactionUID);
+            mTransaction = mTransactionsDbAdapter.getRecord(transactionUID);
         if (mTransaction != null) {
             mMultiCurrency = mTransactionsDbAdapter.getNumCurrencies(mTransaction.getUID()) > 1;
         }
@@ -356,7 +356,7 @@ public class TransactionFormFragment extends Fragment implements
         mDescriptionEditText.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-                mTransaction = new Transaction(mTransactionsDbAdapter.getTransaction(id), true);
+                mTransaction = new Transaction(mTransactionsDbAdapter.getRecord(id), true);
                 mTransaction.setTime(System.currentTimeMillis());
                 //we check here because next method will modify it and we want to catch user-modification
                 boolean amountEntered = mAmountInputFormatter.isInputModified();
@@ -435,7 +435,7 @@ public class TransactionFormFragment extends Fragment implements
         mSaveTemplateCheckbox.setChecked(mTransaction.isTemplate());
         String scheduledActionUID = getArguments().getString(UxArgument.SCHEDULED_ACTION_UID);
         if (scheduledActionUID != null && !scheduledActionUID.isEmpty()) {
-            ScheduledAction scheduledAction = ScheduledActionDbAdapter.getInstance().getScheduledAction(scheduledActionUID);
+            ScheduledAction scheduledAction = ScheduledActionDbAdapter.getInstance().getRecord(scheduledActionUID);
             mRecurrenceRule = scheduledAction.getRuleString();
             mEventRecurrence.parse(mRecurrenceRule);
             mRecurrenceTextView.setText(scheduledAction.getRepeatString());
@@ -785,13 +785,13 @@ public class TransactionFormFragment extends Fragment implements
 
             // set as not exported because we have just edited it
             mTransaction.setExported(false);
-            mTransactionsDbAdapter.addTransaction(mTransaction);
+            mTransactionsDbAdapter.addRecord(mTransaction);
 
             if (mSaveTemplateCheckbox.isChecked()) {//template is automatically checked when a transaction is scheduled
                 if (!mEditMode) { //means it was new transaction, so a new template
                     Transaction templateTransaction = new Transaction(mTransaction, true);
                     templateTransaction.setTemplate(true);
-                    mTransactionsDbAdapter.addTransaction(templateTransaction);
+                    mTransactionsDbAdapter.addRecord(templateTransaction);
                     scheduleRecurringTransaction(templateTransaction.getUID());
                 } else
                     scheduleRecurringTransaction(mTransaction.getUID());
@@ -842,7 +842,7 @@ public class TransactionFormFragment extends Fragment implements
 
         for (ScheduledAction event : events) {
             event.setActionUID(transactionUID);
-            scheduledActionDbAdapter.addScheduledAction(event);
+            scheduledActionDbAdapter.addRecord(event);
 
             Log.i("TransactionFormFragment", event.toString());
         }

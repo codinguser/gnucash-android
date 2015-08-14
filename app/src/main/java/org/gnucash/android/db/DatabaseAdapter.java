@@ -31,6 +31,8 @@ import org.gnucash.android.model.AccountType;
 import org.gnucash.android.model.BaseModel;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Adapter to be used for creating and opening the database for read/write operations.
@@ -39,7 +41,7 @@ import java.sql.Timestamp;
  * @author Ngewi Fet <ngewif@gmail.com>
  *
  */
-public abstract class DatabaseAdapter {
+public abstract class DatabaseAdapter<Model extends BaseModel> {
 	/**
 	 * Tag for logging
 	 */
@@ -51,6 +53,8 @@ public abstract class DatabaseAdapter {
     protected final SQLiteDatabase mDb;
 
     protected final String mTableName;
+
+    protected SQLiteStatement mReplaceStatement;
 
     /**
      * Opens the database adapter with an existing database
@@ -169,12 +173,128 @@ public abstract class DatabaseAdapter {
     }
 
     /**
-     * Returns a ContentValues object which has the data of the base model
+     * Adds a record to the database with the data contained in the model.
+     * <p>This method uses the SQL REPLACE instructions to replace any record with a matching GUID.
+     * So beware of any foreign keys with cascade dependencies which might need to be re-added</p>
+     * @param model
+     * @return
+     */
+    public long addRecord(@NonNull final Model model){
+        Log.d(LOG_TAG, String.format("Adding %s record to database: ", model.getClass().getName()));
+        return mDb.replace(mTableName, null, buildContentValues(model));
+    }
+
+    /**
+     * Add multiple records to the database at once
+     * <p>Either all or none of the records will be inserted/updated into the database.</p>
+     * @param modelList List of model records
+     * @return Number of rows inserted
+     */
+    public long bulkAddRecords(@NonNull List<Model> modelList) {
+        Log.i(LOG_TAG, String.format("Bulk adding %d %s records to the database", modelList.size(),
+                modelList.get(0).getClass().getName()));
+        long nRow = 0;
+        try {
+            mDb.beginTransaction();
+
+            for (Model split : modelList) {
+                compileReplaceStatement(split).execute();
+                nRow++;
+            }
+
+            mDb.setTransactionSuccessful();
+        }
+        finally {
+            mDb.endTransaction();
+        }
+
+        return nRow;
+    }
+
+    /**
+     * Builds the ContentValues object used for modifying the records in the database.
+     * <p>Classes implementing this method should call {@link #populateBaseModelAttributes(ContentValues, BaseModel)} (BaseModel)} in
+     * order to populate the base model fields</p>
+     * @return {@link ContentValues} filled with the model values
+     * @see #populateBaseModelAttributes(ContentValues, BaseModel)
+     */
+    protected abstract ContentValues buildContentValues(@NonNull final Model model);
+
+    /**
+     * Builds an instance of the model from the database record entry
+     * <p>This method should not modify the cursor in any way</p>
+     * @param cursor Cursor pointing to the record
+     * @return
+     */
+    protected abstract Model buildModelInstance(@NonNull final Cursor cursor);
+
+    /**
+     * Generates an {@link SQLiteStatement} with values from the {@code model}.
+     * This statement can be executed to replace a record in the database.
+     * <p>If the {@link #mReplaceStatement} is null, subclasses should create a new statement and return.<br/>
+     * If it is not null, the previous bindings will be cleared and replaced with those from the model</p>
+     * @param model Model whose attributes will be used as bindings
+     * @return SQLiteStatement for replacing a record in the database
+     */
+    protected abstract SQLiteStatement compileReplaceStatement(Model model);
+
+    /**
+     * Returns a model instance populated with data from the record with GUID {@code uid}
+     * <p>Sub-classes which require special handling should override this method</p>
+     * @param uid GUID of the record
+     * @return BaseModel instance of the record
+     * @throws IllegalArgumentException if the record UID does not exist in thd database
+     */
+    public Model getRecord(@NonNull String uid){
+        Log.v(LOG_TAG, "Fetching record with GUID " + uid);
+
+        Cursor cursor = fetchRecord(uid);
+        try {
+            if (cursor.moveToFirst()) {
+                return buildModelInstance(cursor);
+            }
+            else {
+                throw new IllegalArgumentException("split " + uid + " does not exist");
+            }
+        } finally {
+            cursor.close();
+        }
+    }
+
+    /**
+     * Overload of {@link #getRecord(String)}
+     * Simply converts the record ID to a GUID and calls {@link #getRecord(String)}
+     * @param id Database record ID
+     * @return Subclass of {@link BaseModel} containing record info
+     */
+    public Model getRecord(long id){
+        return getRecord(getUID(id));
+    }
+
+    /**
+     * Returns all the records in the database
+     * @return List of records in the database
+     */
+    public List<Model> getAllRecords(){
+        List<Model> modelRecords = new ArrayList<>();
+        Cursor c = fetchAllRecords();
+        try {
+            while (c.moveToNext()) {
+                modelRecords.add(buildModelInstance(c));
+            }
+        } finally {
+            c.close();
+        }
+        return modelRecords;
+    }
+
+    /**
+     * Adds the attributes of the base model to the ContentValues object provided
+     * @param contentValues Content values to which to add attributes
      * @param model {@link org.gnucash.android.model.BaseModel} from which to extract values
      * @return {@link android.content.ContentValues} with the data to be inserted into the db
      */
-    protected ContentValues getContentValues(BaseModel model){
-        ContentValues contentValues = new ContentValues();
+    protected ContentValues populateBaseModelAttributes(@NonNull ContentValues contentValues, @NonNull Model model){
         contentValues.put(CommonColumns.COLUMN_UID, model.getUID());
         contentValues.put(CommonColumns.COLUMN_CREATED_AT, model.getCreatedTimestamp().toString());
         //there is a trigger in the database for updated the modified_at column
@@ -190,7 +310,7 @@ public abstract class DatabaseAdapter {
      * @param cursor Cursor pointing to database record
      * @param model Model instance to be initialized
      */
-    protected static void populateModel(Cursor cursor, BaseModel model){
+    protected void populateBaseModelAttributes(Cursor cursor, BaseModel model){ //// FIXME: use template type
         String uid = cursor.getString(cursor.getColumnIndexOrThrow(CommonColumns.COLUMN_UID));
         String created = cursor.getString(cursor.getColumnIndexOrThrow(CommonColumns.COLUMN_CREATED_AT));
         String modified= cursor.getString(cursor.getColumnIndexOrThrow(CommonColumns.COLUMN_MODIFIED_AT));
@@ -271,10 +391,9 @@ public abstract class DatabaseAdapter {
         long result = -1;
         try{
             if (cursor.moveToFirst()) {
-                Log.d(LOG_TAG, "Transaction already exists. Returning existing id");
                 result = cursor.getLong(cursor.getColumnIndexOrThrow(DatabaseSchema.CommonColumns._ID));
             } else {
-                throw new IllegalArgumentException("Account UID " + uid + " does not exist in the db");
+                throw new IllegalArgumentException("GUID " + uid + " does not exist in the db");
             }
         } finally {
             cursor.close();

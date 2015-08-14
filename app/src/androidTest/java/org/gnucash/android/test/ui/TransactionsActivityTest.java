@@ -135,8 +135,8 @@ public class TransactionsActivityTest extends
         account2.setUID(TRANSFER_ACCOUNT_UID);
         account2.setCurrency(Currency.getInstance(CURRENCY_CODE));
 
-        long id1 = mAccountsDbAdapter.addAccount(account);
-        long id2 = mAccountsDbAdapter.addAccount(account2);
+        long id1 = mAccountsDbAdapter.addRecord(account);
+        long id2 = mAccountsDbAdapter.addRecord(account2);
         assertThat(id1).isGreaterThan(0);
         assertThat(id2).isGreaterThan(0);
 
@@ -150,7 +150,7 @@ public class TransactionsActivityTest extends
         mTransaction.addSplit(split.createPair(TRANSFER_ACCOUNT_UID));
         account.addTransaction(mTransaction);
 
-        mTransactionsDbAdapter.addTransaction(mTransaction);
+        mTransactionsDbAdapter.addRecord(mTransaction);
 
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.putExtra(UxArgument.SELECTED_ACCOUNT_UID, DUMMY_ACCOUNT_UID);
@@ -292,7 +292,7 @@ public class TransactionsActivityTest extends
 		setDoubleEntryEnabled(false);
 		mTransactionsDbAdapter.deleteAllRecords();
 
-		assertThat(mTransactionsDbAdapter.getTotalTransactionsCount()).isEqualTo(0);
+		assertThat(mTransactionsDbAdapter.getRecordsCount()).isEqualTo(0);
 		String imbalanceAcctUID = mAccountsDbAdapter.getImbalanceAccountUID(Currency.getInstance(CURRENCY_CODE));
 		assertThat(imbalanceAcctUID).isNull();
 
@@ -307,7 +307,7 @@ public class TransactionsActivityTest extends
 		//TODO: check that the split drawable is not displayed
 		onView(withId(R.id.menu_save)).perform(click());
 
-		assertThat(mTransactionsDbAdapter.getTotalTransactionsCount()).isEqualTo(1);
+		assertThat(mTransactionsDbAdapter.getRecordsCount()).isEqualTo(1);
 		Transaction transaction = mTransactionsDbAdapter.getAllTransactions().get(0);
 		assertThat(transaction.getSplits()).hasSize(2);
 		imbalanceAcctUID = mAccountsDbAdapter.getImbalanceAccountUID(Currency.getInstance(CURRENCY_CODE));
@@ -412,12 +412,12 @@ public class TransactionsActivityTest extends
 	//FIXME: Improve on this test
 	public void childAccountsShouldUseParentTransferAccountSetting(){
 		Account transferAccount = new Account("New Transfer Acct");
-		mAccountsDbAdapter.addAccount(transferAccount);
-		mAccountsDbAdapter.addAccount(new Account("Higher account"));
+		mAccountsDbAdapter.addRecord(transferAccount);
+		mAccountsDbAdapter.addRecord(new Account("Higher account"));
 
 		Account childAccount = new Account("Child Account");
 		childAccount.setParentUID(DUMMY_ACCOUNT_UID);
-		mAccountsDbAdapter.addAccount(childAccount);
+		mAccountsDbAdapter.addRecord(childAccount);
 		ContentValues contentValues = new ContentValues();
 		contentValues.put(DatabaseSchema.AccountEntry.COLUMN_DEFAULT_TRANSFER_ACCOUNT_UID, transferAccount.getUID());
 		mAccountsDbAdapter.updateRecord(DUMMY_ACCOUNT_UID, contentValues);
@@ -496,9 +496,9 @@ public class TransactionsActivityTest extends
         String targetAccountName = "Target";
         Account account = new Account(targetAccountName);
 		account.setCurrency(Currency.getInstance(Locale.getDefault()));
-		mAccountsDbAdapter.addAccount(account);
+		mAccountsDbAdapter.addRecord(account);
 		
-		int beforeOriginCount = mAccountsDbAdapter.getAccount(DUMMY_ACCOUNT_UID).getTransactionCount();
+		int beforeOriginCount = mAccountsDbAdapter.getRecord(DUMMY_ACCOUNT_UID).getTransactionCount();
 		
 		validateTransactionListDisplayed();
 
@@ -507,10 +507,10 @@ public class TransactionsActivityTest extends
 
 		clickOnView(R.id.btn_save);
 
-		int targetCount = mAccountsDbAdapter.getAccount(account.getUID()).getTransactionCount();
+		int targetCount = mAccountsDbAdapter.getRecord(account.getUID()).getTransactionCount();
 		assertThat(targetCount).isEqualTo(1);
 		
-		int afterOriginCount = mAccountsDbAdapter.getAccount(DUMMY_ACCOUNT_UID).getTransactionCount();
+		int afterOriginCount = mAccountsDbAdapter.getRecord(DUMMY_ACCOUNT_UID).getTransactionCount();
 		assertThat(afterOriginCount).isEqualTo(beforeOriginCount - 1);
 	}
 

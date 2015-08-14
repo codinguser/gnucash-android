@@ -24,7 +24,6 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.Loader;
@@ -204,7 +203,7 @@ public class AccountsListFragment extends Fragment implements
      * @param rowId The record ID of the account
      */
     public void tryDeleteAccount(long rowId) {
-        Account acc = mAccountsDbAdapter.getAccount(rowId);
+        Account acc = mAccountsDbAdapter.getRecord(rowId);
         if (acc.getTransactionCount() > 0 || mAccountsDbAdapter.getSubAccountCount(acc.getUID()) > 0) {
             showConfirmationDialog(rowId);
         } else {

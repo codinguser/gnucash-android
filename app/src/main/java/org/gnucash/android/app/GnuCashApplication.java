@@ -33,7 +33,9 @@ import com.crashlytics.android.core.CrashlyticsCore;
 import org.gnucash.android.BuildConfig;
 import org.gnucash.android.R;
 import org.gnucash.android.db.AccountsDbAdapter;
+import org.gnucash.android.db.CommoditiesDbAdapter;
 import org.gnucash.android.db.DatabaseHelper;
+import org.gnucash.android.db.PricesDbAdapter;
 import org.gnucash.android.db.ScheduledActionDbAdapter;
 import org.gnucash.android.db.SplitsDbAdapter;
 import org.gnucash.android.db.TransactionsDbAdapter;
@@ -75,6 +77,10 @@ public class GnuCashApplication extends Application{
 
     private static ScheduledActionDbAdapter mScheduledActionDbAdapter;
 
+    private static CommoditiesDbAdapter mCommoditiesDbAdapter;
+
+    private static PricesDbAdapter mPricesDbAdapter;
+
     /**
      * Returns darker version of specified <code>color</code>.
      * Use for theming the status bar color when setting the color of the actionBar
@@ -103,10 +109,12 @@ public class GnuCashApplication extends Application{
             Log.e(getClass().getName(), "Error getting database: " + e.getMessage());
             mDb = mDbHelper.getReadableDatabase();
         }
-        mSplitsDbAdapter = new SplitsDbAdapter(mDb);
-        mTransactionsDbAdapter = new TransactionsDbAdapter(mDb, mSplitsDbAdapter);
-        mAccountsDbAdapter = new AccountsDbAdapter(mDb, mTransactionsDbAdapter);
-        mScheduledActionDbAdapter = new ScheduledActionDbAdapter(mDb);
+        mSplitsDbAdapter            = new SplitsDbAdapter(mDb);
+        mTransactionsDbAdapter      = new TransactionsDbAdapter(mDb, mSplitsDbAdapter);
+        mAccountsDbAdapter          = new AccountsDbAdapter(mDb, mTransactionsDbAdapter);
+        mScheduledActionDbAdapter   = new ScheduledActionDbAdapter(mDb);
+        mCommoditiesDbAdapter       = new CommoditiesDbAdapter(mDb);
+        mPricesDbAdapter            = new PricesDbAdapter(mDb);
     }
 
     public static AccountsDbAdapter getAccountsDbAdapter() {
@@ -123,6 +131,14 @@ public class GnuCashApplication extends Application{
 
     public static ScheduledActionDbAdapter getScheduledEventDbAdapter(){
         return mScheduledActionDbAdapter;
+    }
+
+    public static CommoditiesDbAdapter getCommoditiesDbAdapter(){
+        return mCommoditiesDbAdapter;
+    }
+
+    public static PricesDbAdapter getPricesDbAdapter(){
+        return mPricesDbAdapter;
     }
 
     /**

@@ -409,7 +409,7 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
         transactionsDbAdapter.deleteAllNonTemplateTransactions();
 
         if (preserveOpeningBalances) {
-            transactionsDbAdapter.bulkAddTransactions(openingBalances);
+            transactionsDbAdapter.bulkAddRecords(openingBalances);
         }
     }
 

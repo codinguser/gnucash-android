@@ -15,6 +15,15 @@ public class Price extends BaseModel {
     private int mValueNum;
     private int mValueDenom;
 
+    public Price(){
+        //nothing to see here, just call base
+    }
+
+    public Price(String commodityUID, String currencyUID){
+        this.mCommodityUID = commodityUID;
+        this.mCurrencyUID = currencyUID;
+    }
+
     public String getCommodityUID() {
         return mCommodityUID;
     }

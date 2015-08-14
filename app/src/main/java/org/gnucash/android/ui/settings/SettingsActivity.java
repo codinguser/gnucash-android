@@ -367,7 +367,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity
                 transactionsDbAdapter.deleteAllRecords();
 
                 if (preserveOpeningBalances) {
-                    transactionsDbAdapter.bulkAddTransactions(openingBalances);
+                    transactionsDbAdapter.bulkAddRecords(openingBalances);
                 }
                 Toast.makeText(this, R.string.toast_all_transactions_deleted, Toast.LENGTH_LONG).show();
             }

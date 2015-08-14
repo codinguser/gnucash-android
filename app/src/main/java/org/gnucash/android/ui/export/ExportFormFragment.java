@@ -208,7 +208,7 @@ public class ExportFormFragment extends Fragment implements RecurrencePickerDial
 		for (ScheduledAction scheduledAction : scheduledActions) {
 			scheduledAction.setTag(exportParameters.toCsv());
 			scheduledAction.setActionUID(UUID.randomUUID().toString().replaceAll("-", ""));
-			ScheduledActionDbAdapter.getInstance().addScheduledAction(scheduledAction);
+			ScheduledActionDbAdapter.getInstance().addRecord(scheduledAction);
 		}
 
 		Log.i(TAG, "Commencing async export of transactions");

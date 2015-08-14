@@ -24,8 +24,8 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 
-@RunWith(GnucashTestRunner.class)
-@Config(constants = BuildConfig.class, shadows = {ShadowCrashlytics.class})
+@RunWith(GnucashTestRunner.class) //package is required so that resources can be found in dev mode
+@Config(constants = BuildConfig.class, packageName = "org.gnucash.android", shadows = {ShadowCrashlytics.class})
 public class TransactionsDbAdapterTest {
 	private static final String ALPHA_ACCOUNT_NAME  = "Alpha";
 	private static final String BRAVO_ACCOUNT_NAME  = "Bravo";
@@ -48,8 +48,8 @@ public class TransactionsDbAdapterTest {
 		alphaAccount = new Account(ALPHA_ACCOUNT_NAME);
 		bravoAccount = new Account(BRAVO_ACCOUNT_NAME);
 
-		long id1 = mAccountsDbAdapter.addAccount(bravoAccount);
-		long id2 = mAccountsDbAdapter.addAccount(alphaAccount);
+		long id1 = mAccountsDbAdapter.addRecord(bravoAccount);
+		long id2 = mAccountsDbAdapter.addRecord(alphaAccount);
 
 		assertThat(id1).isGreaterThan(0);
 		assertThat(id2).isGreaterThan(0);
@@ -71,8 +71,8 @@ public class TransactionsDbAdapterTest {
 		t2.addSplit(split2);
 		t2.addSplit(split2.createPair(alphaAccount.getUID()));
 
-		mTransactionsDbAdapter.addTransaction(t1);
-		mTransactionsDbAdapter.addTransaction(t2);
+		mTransactionsDbAdapter.addRecord(t1);
+		mTransactionsDbAdapter.addRecord(t2);
 
 		List<Transaction> transactionsList = mTransactionsDbAdapter.getAllTransactionsForAccount(alphaAccount.getUID());
 		assertThat(transactionsList).contains(t2, Index.atIndex(0));
@@ -84,7 +84,7 @@ public class TransactionsDbAdapterTest {
 		Transaction transaction = new Transaction("");
 		Split split = new Split(Money.getZeroInstance(), alphaAccount.getUID());
 		transaction.addSplit(split);
-		mTransactionsDbAdapter.addTransaction(transaction);
+		mTransactionsDbAdapter.addRecord(transaction);
 
 		assertThat(mSplitsDbAdapter.getSplitsForTransaction(transaction.getUID())).hasSize(1);
 
@@ -117,10 +117,10 @@ public class TransactionsDbAdapterTest {
 		split = new Split(secondSplitAmount, bravoAccount.getUID());
 		transaction.addSplit(split);
 
-		mTransactionsDbAdapter.addTransaction(transaction);
+		mTransactionsDbAdapter.addRecord(transaction);
 
 		//balance is negated because the CASH account has inverse normal balance
-		transaction = mTransactionsDbAdapter.getTransaction(transaction.getUID());
+		transaction = mTransactionsDbAdapter.getRecord(transaction.getUID());
 		Money savedBalance = transaction.getBalance(alphaAccount.getUID());
 		assertThat(savedBalance).isEqualTo(firstSplitAmount.negate());
 

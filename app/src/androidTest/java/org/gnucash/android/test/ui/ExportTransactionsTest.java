@@ -106,7 +106,7 @@ public class ExportTransactionsTest extends
 		transaction.addSplit(split.createPair(mAccountsDbAdapter.getOrCreateImbalanceAccountUID(Currency.getInstance("USD"))));
 		account.addTransaction(transaction);
 
-		mAccountsDbAdapter.addAccount(account);
+		mAccountsDbAdapter.addRecord(account);
 
 	}
 	

@@ -183,7 +183,7 @@ public class ScheduledTransactionsListFragment extends ListFragment implements
             checkbox.setChecked(!checkbox.isChecked());
             return;
         }
-        Transaction transaction = mTransactionsDbAdapter.getTransaction(id);
+        Transaction transaction = mTransactionsDbAdapter.getRecord(id);
 
         //this should actually never happen, but has happened once. So perform check for the future
         if (transaction.getSplits().size() == 0){
@@ -369,7 +369,7 @@ public class ScheduledTransactionsListFragment extends ListFragment implements
         public void bindView(View view, Context context, Cursor cursor) {
             super.bindView(view, context, cursor);
 
-            Transaction transaction = mTransactionsDbAdapter.buildTransactionInstance(cursor);
+            Transaction transaction = mTransactionsDbAdapter.buildModelInstance(cursor);
 
             TextView amountTextView = (TextView) view.findViewById(R.id.right_text);
             if (transaction.getSplits().size() == 2){
@@ -384,7 +384,7 @@ public class ScheduledTransactionsListFragment extends ListFragment implements
             ScheduledActionDbAdapter scheduledActionDbAdapter = ScheduledActionDbAdapter.getInstance();
             String scheduledActionUID = cursor.getString(cursor.getColumnIndexOrThrow("origin_scheduled_action_uid")); //column created from join when fetching scheduled transactions
             view.setTag(scheduledActionUID);
-            ScheduledAction scheduledAction = scheduledActionDbAdapter.getScheduledAction(scheduledActionUID);
+            ScheduledAction scheduledAction = scheduledActionDbAdapter.getRecord(scheduledActionUID);
             descriptionTextView.setText(scheduledAction.getRepeatString());
 
         }

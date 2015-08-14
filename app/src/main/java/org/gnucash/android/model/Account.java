@@ -81,6 +81,11 @@ public class Account extends BaseModel{
     private String mFullName;
 
 	/**
+	 * Account description
+	 */
+	private String mDescription;
+
+	/**
 	 * Currency used by transactions in this account
 	 */
 	private Currency mCurrency; 
@@ -193,6 +198,22 @@ public class Account extends BaseModel{
     public void setFullName(String fullName) {
         this.mFullName = fullName;
     }
+
+	/**
+	 * Returns the account mDescription
+	 * @return String with mDescription
+	 */
+	public String getDescription() {
+		return mDescription;
+	}
+
+	/**
+	 * Sets the account mDescription
+	 * @param description String mDescription
+	 */
+	public void setDescription(String description) {
+		this.mDescription = description;
+	}
 
 	/**
 	 * Get the type of account

@@ -150,6 +150,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + CommodityEntry.COLUMN_NAMESPACE   + " varchar(255) not null default " + Commodity.Namespace.ISO4217.name() + ", "
             + CommodityEntry.COLUMN_FULLNAME    + " varchar(255) not null, "
             + CommodityEntry.COLUMN_MNEMONIC    + " varchar(255) not null, "
+            + CommodityEntry.COLUMN_LOCAL_SYMBOL+ " varchar(255) not null default '', "
             + CommodityEntry.COLUMN_CUSIP       + " varchar(255), "
             + CommodityEntry.COLUMN_FRACTION    + " integer not null, "
             + CommodityEntry.COLUMN_QUOTE_FLAG  + " integer not null, "
@@ -172,8 +173,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + PriceEntry.COLUMN_VALUE_DENOM     + " integer not null, "
             + PriceEntry.COLUMN_CREATED_AT      + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
             + PriceEntry.COLUMN_MODIFIED_AT     + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
-            + "FOREIGN KEY (" 	+ PriceEntry.COLUMN_COMMODITY_UID + ") REFERENCES " + CommodityEntry.TABLE_NAME + " (" + CommodityEntry.COLUMN_UID + "), "
-            + "FOREIGN KEY (" 	+ PriceEntry.COLUMN_CURRENCY_UID + ") REFERENCES " + CommodityEntry.TABLE_NAME + " (" + CommodityEntry.COLUMN_UID + ") "
+            + "FOREIGN KEY (" 	+ PriceEntry.COLUMN_COMMODITY_UID + ") REFERENCES " + CommodityEntry.TABLE_NAME + " (" + CommodityEntry.COLUMN_UID + ") ON DELETE CASCADE, "
+            + "FOREIGN KEY (" 	+ PriceEntry.COLUMN_CURRENCY_UID + ") REFERENCES " + CommodityEntry.TABLE_NAME + " (" + CommodityEntry.COLUMN_UID + ") ON DELETE CASCADE "
             + ");" + createUpdatedAtTrigger(PriceEntry.TABLE_NAME);
 
     /**
@@ -322,6 +323,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     + CommodityEntry.COLUMN_NAMESPACE   + " varchar(255) not null default " + Commodity.Namespace.ISO4217.name() + ", "
                     + CommodityEntry.COLUMN_FULLNAME    + " varchar(255) not null, "
                     + CommodityEntry.COLUMN_MNEMONIC    + " varchar(255) not null, "
+                    + CommodityEntry.COLUMN_LOCAL_SYMBOL+ " varchar(255) not null default '', "
                     + CommodityEntry.COLUMN_CUSIP       + " varchar(255), "
                     + CommodityEntry.COLUMN_FRACTION    + " integer not null, "
                     + CommodityEntry.COLUMN_QUOTE_FLAG  + " integer not null, "
@@ -349,8 +351,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     + PriceEntry.COLUMN_VALUE_DENOM     + " integer not null, "
                     + PriceEntry.COLUMN_CREATED_AT      + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
                     + PriceEntry.COLUMN_MODIFIED_AT     + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
-                    + "FOREIGN KEY (" 	+ PriceEntry.COLUMN_COMMODITY_UID + ") REFERENCES " + CommodityEntry.TABLE_NAME + " (" + CommodityEntry.COLUMN_UID + "), "
-                    + "FOREIGN KEY (" 	+ PriceEntry.COLUMN_CURRENCY_UID + ") REFERENCES " + CommodityEntry.TABLE_NAME + " (" + CommodityEntry.COLUMN_UID + ") "
+                    + "FOREIGN KEY (" 	+ PriceEntry.COLUMN_COMMODITY_UID + ") REFERENCES " + CommodityEntry.TABLE_NAME + " (" + CommodityEntry.COLUMN_UID + ") ON DELETE CASCADE, "
+                    + "FOREIGN KEY (" 	+ PriceEntry.COLUMN_CURRENCY_UID + ") REFERENCES " + CommodityEntry.TABLE_NAME + " (" + CommodityEntry.COLUMN_UID + ") ON DELETE CASCADE "
                     + ");" + createUpdatedAtTrigger(PriceEntry.TABLE_NAME);
             db.execSQL(createPricesSql);
             //TODO: add migrations here
@@ -621,7 +623,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 contentValues.put(ScheduledActionEntry.COLUMN_ENABLED, 1);
                 contentValues.put(ScheduledActionEntry.COLUMN_TOTAL_FREQUENCY, 0);
                 contentValues.put(ScheduledActionEntry.COLUMN_EXECUTION_COUNT, 0);
-                //scheduledActionDbAdapter.addScheduledAction(scheduledAction);
+                //scheduledActionDbAdapter.addRecord(scheduledAction);
                 db.insert(ScheduledActionEntry.TABLE_NAME, null, contentValues);
 
                 //build intent for recurring transactions in the database
@@ -641,7 +643,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             Log.i(LOG_TAG, "Auto-balancing existing transaction splits");
 //            cursor = transactionsDbAdapter.fetchAllRecords();
 //            while (cursor.moveToNext()){
-//                Transaction transaction = transactionsDbAdapter.buildTransactionInstance(cursor);
+//                Transaction transaction = transactionsDbAdapter.buildModelInstance(cursor);
 //                if (transaction.isTemplate())
 //                    continue;
 //                Money imbalance = transaction.getImbalance();

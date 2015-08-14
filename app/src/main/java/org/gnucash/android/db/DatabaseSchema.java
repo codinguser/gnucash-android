@@ -137,6 +137,7 @@ public class DatabaseSchema {
          */
         public static final String COLUMN_MNEMONIC      = "mnemonic";
 
+        public static final String COLUMN_LOCAL_SYMBOL  = "local_symbol";
 
         /**
          * The fraction is the number of sub-units that the basic commodity can be divided into

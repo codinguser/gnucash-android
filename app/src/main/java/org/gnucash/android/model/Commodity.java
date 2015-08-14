@@ -8,9 +8,14 @@ public class Commodity extends BaseModel {
     public enum Namespace { ISO4217 } //Namespace for commodities
 
     private Namespace mNamespace = Namespace.ISO4217;
+
+    /**
+     * This is the currency code for ISO4217 currencies
+     */
     private String mMnemonic;
     private String mFullname;
     private String mCusip;
+    private String mLocalSymbol = "";
     private int mFraction;
     private int mQuoteFlag;
 
@@ -34,6 +39,10 @@ public class Commodity extends BaseModel {
         this.mNamespace = namespace;
     }
 
+    /**
+     * Returns the mnemonic, or currency code for ISO4217 currencies
+     * @return Mnemonic of the commodity
+     */
     public String getMnemonic() {
         return mMnemonic;
     }
@@ -56,6 +65,27 @@ public class Commodity extends BaseModel {
 
     public void setCusip(String mCusip) {
         this.mCusip = mCusip;
+    }
+
+    public String getLocalSymbol() {
+        return mLocalSymbol;
+    }
+
+    /**
+     * Returns the symbol for this commodity.
+     * <p>Normally this would be the local symbol, but in it's absence, the mnemonic (currency code)
+     * is returned.</p>
+     * @return
+     */
+    public String getSymbol(){
+        if (mLocalSymbol == null || mLocalSymbol.isEmpty()){
+            return mMnemonic;
+        }
+        return mLocalSymbol;
+    }
+
+    public void setLocalSymbol(String localSymbol) {
+        this.mLocalSymbol = localSymbol;
     }
 
     public int getFraction() {

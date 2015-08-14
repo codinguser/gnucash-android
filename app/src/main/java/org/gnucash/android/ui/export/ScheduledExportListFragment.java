@@ -339,7 +339,7 @@ public class ScheduledExportListFragment extends ListFragment implements
         public void bindView(View view, Context context, Cursor cursor) {
             super.bindView(view, context, cursor);
 
-            ScheduledAction scheduledAction = mScheduledActionDbAdapter.buildScheduledActionInstance(cursor);
+            ScheduledAction scheduledAction = mScheduledActionDbAdapter.buildModelInstance(cursor);
 
             TextView primaryTextView = (TextView) view.findViewById(R.id.primary_text);
             ExportParams params = ExportParams.parseCsv(scheduledAction.getTag());

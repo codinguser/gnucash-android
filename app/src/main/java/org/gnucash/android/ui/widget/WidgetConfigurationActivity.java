@@ -147,7 +147,7 @@ public class WidgetConfigurationActivity extends Activity {
 		AccountsDbAdapter accountsDbAdapter = AccountsDbAdapter.getInstance();
 		Account account;
         try {
-            account = accountsDbAdapter.getAccount(accountUID);
+            account = accountsDbAdapter.getRecord(accountUID);
         } catch (IllegalArgumentException e) {
 			Log.i("WidgetConfiguration", "Account not found, resetting widget " + appWidgetId);
 			//if account has been deleted, let the user know

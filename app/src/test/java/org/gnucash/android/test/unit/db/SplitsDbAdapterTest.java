@@ -24,8 +24,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * Some tests for the splits database adapter
  */
-@RunWith(GnucashTestRunner.class)
-@Config(constants = BuildConfig.class, shadows = {ShadowCrashlytics.class})
+@RunWith(GnucashTestRunner.class) //package is required so that resources can be found in dev mode
+@Config(constants = BuildConfig.class, packageName = "org.gnucash.android", shadows = {ShadowCrashlytics.class})
 public class SplitsDbAdapterTest {
 
     private AccountsDbAdapter mAccountsDbAdapter;
@@ -40,13 +40,13 @@ public class SplitsDbAdapterTest {
         mTransactionsDbAdapter = TransactionsDbAdapter.getInstance();
         mAccountsDbAdapter = AccountsDbAdapter.getInstance();
         mAccount = new Account("Test account");
-        mAccountsDbAdapter.addAccount(mAccount);
+        mAccountsDbAdapter.addRecord(mAccount);
     }
 
     @Test
     public void shouldHaveAccountInDatabase(){
         Transaction transaction = new Transaction("");
-        mTransactionsDbAdapter.addTransaction(transaction);
+        mTransactionsDbAdapter.addRecord(transaction);
 
         Split split = new Split(Money.getZeroInstance(), "non-existent");
         split.setTransactionUID(transaction.getUID());
@@ -63,7 +63,7 @@ public class SplitsDbAdapterTest {
     public void addingSplitShouldUnsetExportedFlagOfTransaction(){
         Transaction transaction = new Transaction("");
         transaction.setExported(true);
-        mTransactionsDbAdapter.addTransaction(transaction);
+        mTransactionsDbAdapter.addRecord(transaction);
 
         assertThat(transaction.isExported()).isTrue();
 

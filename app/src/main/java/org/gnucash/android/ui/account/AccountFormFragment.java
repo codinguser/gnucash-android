@@ -338,7 +338,7 @@ public class AccountFormFragment extends Fragment {
 
         ActionBar supportActionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
         if (mAccountUID != null) {
-            mAccount = mAccountsDbAdapter.getAccount(mAccountUID);
+            mAccount = mAccountsDbAdapter.getRecord(mAccountUID);
             supportActionBar.setTitle(R.string.title_edit_account);
         } else {
             supportActionBar.setTitle(R.string.title_create_account);
@@ -825,7 +825,7 @@ public class AccountFormFragment extends Fragment {
 		if (mAccountsDbAdapter == null)
 			mAccountsDbAdapter = AccountsDbAdapter.getInstance();
         // bulk update, will not update transactions
-		mAccountsDbAdapter.bulkAddAccounts(accountsToUpdate);
+		mAccountsDbAdapter.bulkAddRecords(accountsToUpdate);
 
 		finishFragment();
 	}

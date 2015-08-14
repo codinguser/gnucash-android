@@ -660,7 +660,7 @@ public class GncXmlExporter extends Exporter{
             //transaction count
             xmlSerializer.startTag(null, GncXmlHelper.TAG_COUNT_DATA);
             xmlSerializer.attribute(null, GncXmlHelper.ATTR_KEY_CD_TYPE, "transaction");
-            xmlSerializer.text(mTransactionsDbAdapter.getTotalTransactionsCount() + "");
+            xmlSerializer.text(mTransactionsDbAdapter.getRecordsCount() + "");
             xmlSerializer.endTag(null, GncXmlHelper.TAG_COUNT_DATA);
             // export the commodities used in the DB
             exportCommodity(xmlSerializer, currencies);

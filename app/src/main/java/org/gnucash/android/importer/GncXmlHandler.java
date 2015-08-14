@@ -710,17 +710,17 @@ public class GncXmlHandler extends DefaultHandler {
         try {
             mAccountsDbAdapter.deleteAllRecords();
 
-            long nAccounts = mAccountsDbAdapter.bulkAddAccounts(mAccountList);
+            long nAccounts = mAccountsDbAdapter.bulkAddRecords(mAccountList);
             Log.d("Handler:", String.format("%d accounts inserted", nAccounts));
             //We need to add scheduled actions first because there is a foreign key constraint on transactions
             //which are generated from scheduled actions (we do auto-create some transactions during import)
-            int nSchedActions = mScheduledActionsDbAdapter.bulkAddScheduledActions(mScheduledActionsList);
+            long nSchedActions = mScheduledActionsDbAdapter.bulkAddRecords(mScheduledActionsList);
             Log.d("Handler:", String.format("%d scheduled actions inserted", nSchedActions));
 
-            long nTempTransactions = mTransactionsDbAdapter.bulkAddTransactions(mTemplateTransactions);
+            long nTempTransactions = mTransactionsDbAdapter.bulkAddRecords(mTemplateTransactions);
             Log.d("Handler:", String.format("%d template transactions inserted", nTempTransactions));
 
-            long nTransactions = mTransactionsDbAdapter.bulkAddTransactions(mTransactionList);
+            long nTransactions = mTransactionsDbAdapter.bulkAddRecords(mTransactionList);
             Log.d("Handler:", String.format("%d transactions inserted", nTransactions));
 
             long endTime = System.nanoTime();
