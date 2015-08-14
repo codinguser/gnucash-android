@@ -55,7 +55,7 @@ public class SplitTest {
         Split pair = split.createPair("test");
 
         assertThat(pair.getType()).isEqualTo(TransactionType.DEBIT);
-        assertThat(pair.getAmount()).isEqualTo(split.getAmount());
+        assertThat(pair.getValue()).isEqualTo(split.getValue());
         assertThat(pair.getMemo()).isEqualTo(split.getMemo());
         assertThat(pair.getTransactionUID()).isEqualTo(split.getTransactionUID());
     }
@@ -73,7 +73,7 @@ public class SplitTest {
     public void shouldParseCsv(){
         String csv = "4.90;USD;test-account;trx-action;DEBIT;Didn't you get the memo?";
         Split split = Split.parseSplit(csv);
-        assertThat(split.getAmount()).isEqualTo(new Money("4.90", "USD"));
+        assertThat(split.getValue()).isEqualTo(new Money("4.90", "USD"));
         assertThat(split.getTransactionUID()).isEqualTo("trx-action");
         assertThat(split.getAccountUID()).isEqualTo("test-account");
         assertThat(split.getType()).isEqualTo(TransactionType.DEBIT);

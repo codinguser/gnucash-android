@@ -494,7 +494,7 @@ public class GncXmlHandler extends DefaultHandler {
                     Money amount = new Money(mQuantity, getCurrencyForAccount(characterString));
                     //this is intentional: GnuCash XML formats split amounts, credits are negative, debits are positive.
                     mSplit.setType(mNegativeQuantity ? TransactionType.CREDIT : TransactionType.DEBIT);
-                    mSplit.setAmount(amount);
+                    mSplit.setValue(amount);
                     mSplit.setAccountUID(characterString);
                 } else {
                     if (!mIgnoreTemplateTransaction)
@@ -756,7 +756,7 @@ public class GncXmlHandler extends DefaultHandler {
         try {
             BigDecimal amountBigD = GncXmlHelper.parseSplitAmount(characterString);
             Money amount = new Money(amountBigD, getCurrencyForAccount(mSplit.getAccountUID()));
-            mSplit.setAmount(amount.absolute());
+            mSplit.setValue(amount.absolute());
             mSplit.setType(splitType);
             mIgnoreTemplateTransaction = false; //we have successfully parsed an amount
         } catch (NumberFormatException | ParseException e) {

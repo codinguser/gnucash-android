@@ -148,7 +148,19 @@ public final class Money implements Comparable<Money>{
 		ROUNDING_MODE = context.getRoundingMode();
 		DECIMAL_PLACES = context.getPrecision();
 	}
-	
+
+	/**
+	 * Constructs a new money amount given the numerator and denominator of the amount.
+	 * The rounding mode used for the division is {@link BigDecimal#ROUND_HALF_EVEN}
+	 * @param numerator Numerator as integer
+	 * @param denominator Denominator as integer
+	 * @param currencyCode 3-character currency code string
+	 */
+	public Money(long numerator, long denominator, String currencyCode){
+		mAmount = new BigDecimal(numerator).divide(new BigDecimal(denominator), BigDecimal.ROUND_HALF_EVEN);
+		setCurrency(Currency.getInstance(currencyCode));
+	}
+
 	/**
 	 * Overloaded constructor. 
 	 * Initializes the currency to that specified by {@link Money#DEFAULT_CURRENCY_CODE}
@@ -232,7 +244,17 @@ public final class Money implements Comparable<Money>{
 	public double asDouble(){
 		return mAmount.doubleValue();
 	}
-	
+
+	/**
+	 * Returns integer value of this Money amount.
+	 * The fractional part is discarded
+	 * @return Integer representation of this amount
+	 * @see BigDecimal#intValue()
+	 */
+	public int intValue(){
+		return mAmount.intValue();
+	}
+
 	/**
 	 * An alias for {@link #toPlainString()}
 	 * @return Money formatted as a string (excludes the currency)
@@ -436,6 +458,16 @@ public final class Money implements Comparable<Money>{
 		if (!mCurrency.equals(another.mCurrency))
 			throw new IllegalArgumentException("Cannot compare different currencies yet");
 		return mAmount.compareTo(another.mAmount);
+	}
+
+	/** TODO: add tests for this
+	 * Returns the number of decimal places in this amount
+	 * @return Number of decimal places
+	 */
+	public int getNumberOfDecimalPlaces() {
+		String string = mAmount.stripTrailingZeros().toPlainString();
+		int index = string.indexOf(".");
+		return index < 0 ? 0 : string.length() - index - 1;
 	}
 
 	/**

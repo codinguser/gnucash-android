@@ -17,7 +17,6 @@
 
 package org.gnucash.android.db;
 
-import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
@@ -88,10 +87,13 @@ public class SplitsDbAdapter extends DatabaseAdapter<Split> {
                     + SplitEntry.COLUMN_UID + " , "
                     + SplitEntry.COLUMN_MEMO + " , "
                     + SplitEntry.COLUMN_TYPE + " , "
-                    + SplitEntry.COLUMN_AMOUNT + " , "
+                    + SplitEntry.COLUMN_VALUE_NUM + " , "
+                    + SplitEntry.COLUMN_VALUE_DENOM + " , "
+                    + SplitEntry.COLUMN_QUANTITY_NUM + " , "
+                    + SplitEntry.COLUMN_QUANTITY_DENOM + " , "
                     + SplitEntry.COLUMN_CREATED_AT + " , "
                     + SplitEntry.COLUMN_ACCOUNT_UID + " , "
-                    + SplitEntry.COLUMN_TRANSACTION_UID + " ) VALUES ( ? , ? , ? , ? , ? , ? , ? ) ");
+                    + SplitEntry.COLUMN_TRANSACTION_UID + " ) VALUES ( ? , ? , ? , ? , ? , ? , ? , ? , ? , ? ) ");
         }
 
         mReplaceStatement.clearBindings();
@@ -100,10 +102,13 @@ public class SplitsDbAdapter extends DatabaseAdapter<Split> {
             mReplaceStatement.bindString(2, split.getMemo());
         }
         mReplaceStatement.bindString(3, split.getType().name());
-        mReplaceStatement.bindString(4, split.getAmount().toPlainString());
-        mReplaceStatement.bindString(5, split.getCreatedTimestamp().toString());
-        mReplaceStatement.bindString(6, split.getAccountUID());
-        mReplaceStatement.bindString(7, split.getTransactionUID());
+        mReplaceStatement.bindLong(4, split.getValue().multiply(split.getValue().getNumberOfDecimalPlaces()).intValue());
+        mReplaceStatement.bindLong(5, (long)Math.pow(10, split.getValue().getNumberOfDecimalPlaces()));
+        mReplaceStatement.bindLong(6, split.getQuantity().multiply(split.getQuantity().getNumberOfDecimalPlaces()).intValue());
+        mReplaceStatement.bindLong(7, (long)Math.pow(10, split.getQuantity().getNumberOfDecimalPlaces()));
+        mReplaceStatement.bindString(8, split.getCreatedTimestamp().toString());
+        mReplaceStatement.bindString(9, split.getAccountUID());
+        mReplaceStatement.bindString(10, split.getTransactionUID());
 
         return mReplaceStatement;
     }
@@ -115,68 +120,27 @@ public class SplitsDbAdapter extends DatabaseAdapter<Split> {
      * @return {@link org.gnucash.android.model.Split} instance
      */
     public Split buildModelInstance(@NonNull final Cursor cursor){
-        String amountString = cursor.getString(cursor.getColumnIndexOrThrow(SplitEntry.COLUMN_AMOUNT));
+        long valueNum       = cursor.getLong(cursor.getColumnIndexOrThrow(SplitEntry.COLUMN_VALUE_NUM));
+        long valueDenom     = cursor.getLong(cursor.getColumnIndexOrThrow(SplitEntry.COLUMN_VALUE_DENOM));
+        long quantityNum    = cursor.getLong(cursor.getColumnIndexOrThrow(SplitEntry.COLUMN_QUANTITY_NUM));
+        long quantityDenom  = cursor.getLong(cursor.getColumnIndexOrThrow(SplitEntry.COLUMN_QUANTITY_DENOM));
         String typeName     = cursor.getString(cursor.getColumnIndexOrThrow(SplitEntry.COLUMN_TYPE));
         String accountUID   = cursor.getString(cursor.getColumnIndexOrThrow(SplitEntry.COLUMN_ACCOUNT_UID));
         String transxUID    = cursor.getString(cursor.getColumnIndexOrThrow(SplitEntry.COLUMN_TRANSACTION_UID));
         String memo         = cursor.getString(cursor.getColumnIndexOrThrow(SplitEntry.COLUMN_MEMO));
 
         String currencyCode = getAccountCurrencyCode(accountUID);
-        Money amount = new Money(amountString, currencyCode);
+        Money value = new Money(valueNum, valueDenom, currencyCode);
+        Money quantity = new Money(quantityNum, quantityDenom, currencyCode);
 
-        Split split = new Split(amount, accountUID);
+        Split split = new Split(value, accountUID);
+        split.setQuantity(quantity);
         populateBaseModelAttributes(cursor, split);
         split.setTransactionUID(transxUID);
         split.setType(TransactionType.valueOf(typeName));
         split.setMemo(memo);
 
         return split;
-    }
-
-    /**
-     * Returns the sum of the splits for a given account.
-     * This takes into account the kind of movement caused by the split in the account (which also depends on account type)
-     * @param accountUID String unique ID of account
-     * @return Balance of the splits for this account
-     */
-    public Money computeSplitBalance(String accountUID) {
-        Cursor cursor = fetchSplitsForAccount(accountUID);
-        String currencyCode = getAccountCurrencyCode(accountUID);
-        Money splitSum = new Money("0", currencyCode);
-        AccountType accountType = getAccountType(accountUID);
-
-        try {
-            while (cursor.moveToNext()) {
-                String amountString = cursor.getString(cursor.getColumnIndexOrThrow(SplitEntry.COLUMN_AMOUNT));
-                String typeString = cursor.getString(cursor.getColumnIndexOrThrow(SplitEntry.COLUMN_TYPE));
-
-                TransactionType transactionType = TransactionType.valueOf(typeString);
-                Money amount = new Money(amountString, currencyCode);
-
-                if (accountType.hasDebitNormalBalance()) {
-                    switch (transactionType) {
-                        case DEBIT:
-                            splitSum = splitSum.add(amount);
-                            break;
-                        case CREDIT:
-                            splitSum = splitSum.subtract(amount);
-                            break;
-                    }
-                } else {
-                    switch (transactionType) {
-                        case DEBIT:
-                            splitSum = splitSum.subtract(amount);
-                            break;
-                        case CREDIT:
-                            splitSum = splitSum.add(amount);
-                            break;
-                    }
-                }
-            }
-        } finally {
-            cursor.close();
-        }
-        return splitSum;
     }
 
     /**
@@ -231,9 +195,10 @@ public class SplitsDbAdapter extends DatabaseAdapter<Split> {
             selectionArgs = new String[]{String.valueOf(startTimestamp)};
         }
 
+        String splitValueSql = SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_VALUE_NUM + " / " + SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_VALUE_DENOM;
         cursor = mDb.query(SplitEntry.TABLE_NAME + " , " + TransactionEntry.TABLE_NAME,
                 new String[]{"TOTAL ( CASE WHEN " + SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_TYPE + " = 'DEBIT' THEN " +
-                        SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_AMOUNT + " ELSE - " + SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_AMOUNT + " END )"},
+                        splitValueSql + " ELSE - " + splitValueSql + " END )"},
                 selection, selectionArgs, null, null, null);
 
         try {
@@ -366,7 +331,7 @@ public class SplitsDbAdapter extends DatabaseAdapter<Split> {
                 null, SplitEntry.COLUMN_TRANSACTION_UID + " = ? AND "
                         + SplitEntry.COLUMN_ACCOUNT_UID + " = ?",
                 new String[]{transactionUID, accountUID},
-                null, null, SplitEntry.COLUMN_AMOUNT + " ASC");
+                null, null, SplitEntry.COLUMN_VALUE_NUM + " ASC");
     }
 
     /**

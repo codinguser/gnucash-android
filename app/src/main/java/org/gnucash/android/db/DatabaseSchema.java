@@ -28,7 +28,7 @@ public class DatabaseSchema {
      * Database version.
      * With any change to the database schema, this number must increase
      */
-    static final int DATABASE_VERSION = 8;
+    public static final int DATABASE_VERSION = 9;
 
     /**
      * Database version where Splits were introduced
@@ -53,7 +53,8 @@ public class DatabaseSchema {
 
         public static final String COLUMN_NAME                  = "name";
         public static final String COLUMN_CURRENCY              = "currency_code";
-        public static final String COLUMN_DESCRIPTION           = "description"; //TODO: Use me. Just added it because we are migrating the whole table anyway
+        public static final String COLUMN_COMMODITY_UID         = "commodity_uid";
+        public static final String COLUMN_DESCRIPTION           = "description";
         public static final String COLUMN_PARENT_ACCOUNT_UID    = "parent_account_uid";
         public static final String COLUMN_PLACEHOLDER           = "is_placeholder";
         public static final String COLUMN_COLOR_CODE            = "color_code";
@@ -77,6 +78,7 @@ public class DatabaseSchema {
         public static final String COLUMN_DESCRIPTION           = "name";
         public static final String COLUMN_NOTES                 = "description";
         public static final String COLUMN_CURRENCY              = "currency_code";
+        public static final String COLUMN_COMMODITY_UID         = "commodity_uid";
         public static final String COLUMN_TIMESTAMP             = "timestamp";
         public static final String COLUMN_EXPORTED              = "is_exported";
         public static final String COLUMN_TEMPLATE              = "is_template";
@@ -93,7 +95,18 @@ public class DatabaseSchema {
         public static final String TABLE_NAME                   = "splits";
 
         public static final String COLUMN_TYPE                  = "type";
+        @Deprecated
         public static final String COLUMN_AMOUNT                = "amount";
+        /**
+         * The value columns are in the currency of the transaction containing the split
+         */
+        public static final String COLUMN_VALUE_NUM             = "value_num";
+        public static final String COLUMN_VALUE_DENOM           = "value_denom";
+        /**
+         * The quantity columns are in the currency of the account to which the split belongs
+         */
+        public static final String COLUMN_QUANTITY_NUM          = "quantity_num";
+        public static final String COLUMN_QUANTITY_DENOM        = "quantity_denom";
         public static final String COLUMN_MEMO                  = "memo";
         public static final String COLUMN_ACCOUNT_UID           = "account_uid";
         public static final String COLUMN_TRANSACTION_UID       = "transaction_uid";

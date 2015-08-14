@@ -374,7 +374,7 @@ public class TransactionsActivityTest extends
 		assertThat(imbalanceSplits).hasSize(1);
 
 		Split split = imbalanceSplits.get(0);
-		assertThat(split.getAmount().toPlainString()).isEqualTo("0.99");
+		assertThat(split.getValue().toPlainString()).isEqualTo("0.99");
 		assertThat(split.getType()).isEqualTo(TransactionType.CREDIT);
 	}
 

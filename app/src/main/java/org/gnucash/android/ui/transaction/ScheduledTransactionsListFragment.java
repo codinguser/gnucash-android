@@ -374,7 +374,7 @@ public class ScheduledTransactionsListFragment extends ListFragment implements
             TextView amountTextView = (TextView) view.findViewById(R.id.right_text);
             if (transaction.getSplits().size() == 2){
                 if (transaction.getSplits().get(0).isPairOf(transaction.getSplits().get(1))){
-                    amountTextView.setText(transaction.getSplits().get(0).getAmount().formattedString());
+                    amountTextView.setText(transaction.getSplits().get(0).getValue().formattedString());
                 }
             } else {
                 amountTextView.setText(transaction.getSplits().size() + " splits");

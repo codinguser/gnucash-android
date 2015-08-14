@@ -1,6 +1,5 @@
 package org.gnucash.android.db;
 
-import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteStatement;
@@ -73,6 +72,21 @@ public class CommoditiesDbAdapter extends DatabaseAdapter<Commodity> {
         commodity.setLocalSymbol(localSymbol);
         populateBaseModelAttributes(cursor, commodity);
 
+        return commodity;
+    }
+
+    /**
+     * Returns the commodity associated with the ISO4217 currency code
+     * @param currencyCode 3-letter currency code
+     * @return Commodity associated with code or null if none is found
+     */
+    public Commodity getCommodity(String currencyCode){
+        Cursor cursor = fetchAllRecords(CommodityEntry.COLUMN_MNEMONIC + "=?", new String[]{currencyCode});
+        Commodity commodity = null;
+        if (cursor.moveToNext()){
+            commodity = buildModelInstance(cursor);
+        }
+        cursor.close();
         return commodity;
     }
 }

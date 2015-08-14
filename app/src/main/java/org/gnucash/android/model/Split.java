@@ -15,9 +15,14 @@ import android.support.annotation.NonNull;
  */
 public class Split extends BaseModel{
     /**
-     * Amount value of this split
+     * Amount value of this split which is in the currency of the transaction
      */
-    private Money mAmount;
+    private Money mValue;
+
+    /**
+     * Amount of the split in the currency of the account to which the split belongs
+     */
+    private Money mQuantity;
 
     /**
      * Transaction UID which this split belongs to
@@ -40,17 +45,17 @@ public class Split extends BaseModel{
     private String mMemo;
 
     /**
-     * Initialize split with an amount and account
-     * @param amount Money amount of this split
+     * Initialize split with a value amount and account
+     * @param value Money value amount of this split
      * @param accountUID String UID of transfer account
      */
-    public Split(@NonNull Money amount, String accountUID){
-        setAmount(amount);
+    public Split(@NonNull Money value, String accountUID){
+        setValue(value);
         setAccountUID(accountUID);
         //NOTE: This is a rather simplististic approach to the split type.
         //It typically also depends on the account type of the account. But we do not want to access
         //the database everytime a split is created. So we keep it simple here. Set the type you want explicity.
-        mSplitType = amount.isNegative() ? TransactionType.DEBIT : TransactionType.CREDIT;
+        mSplitType = value.isNegative() ? TransactionType.DEBIT : TransactionType.CREDIT;
     }
 
     /**
@@ -63,7 +68,7 @@ public class Split extends BaseModel{
         this.mAccountUID    = sourceSplit.mAccountUID;
         this.mSplitType     = sourceSplit.mSplitType;
         this.mTransactionUID = sourceSplit.mTransactionUID;
-        this.mAmount        = sourceSplit.mAmount.absolute();
+        this.mValue = sourceSplit.mValue.absolute();
 
         if (generateUID){
             generateUID();
@@ -73,19 +78,41 @@ public class Split extends BaseModel{
     }
 
     /**
-     * Returns the amount of the split
-     * @return Money amount of the split
+     * Returns the value amount of the split
+     * @return Money amount of the split with the currency of the transaction
+     * @see #getQuantity()
      */
-    public Money getAmount() {
-        return mAmount;
+    public Money getValue() {
+        return mValue;
     }
 
     /**
-     * Sets the amount of the split
-     * @param amount Money amount of this split
+     * Sets the value amount of the split.
+     * The value is in the currency of the containing transaction
+     * @param amount Money value of this split
+     * @see #setQuantity(Money)
      */
-    public void setAmount(Money amount) {
-        this.mAmount = amount;
+    public void setValue(Money amount) {
+        this.mValue = amount;
+    }
+
+    /**
+     * Returns the quantity amount of the split.
+     * <p>The quantity is in the currency of the account to which the split is associated</p>
+     * @return Money quantity amount
+     * @see #getValue()
+     */
+    public Money getQuantity() {
+        return mQuantity;
+    }
+
+    /**
+     * Sets the quantity value of the split
+     * @param quantity Money quantity amount
+     * @see #setValue(Money)
+     */
+    public void setQuantity(Money quantity) {
+        this.mQuantity = quantity;
     }
 
     /**
@@ -161,7 +188,7 @@ public class Split extends BaseModel{
      * @see TransactionType#invert()
      */
     public Split createPair(String accountUID){
-        Split pair = new Split(mAmount.absolute(), accountUID);
+        Split pair = new Split(mValue.absolute(), accountUID);
         pair.setType(mSplitType.invert());
         pair.setMemo(mMemo);
         pair.setTransactionUID(mTransactionUID);
@@ -175,7 +202,7 @@ public class Split extends BaseModel{
      */
     protected Split clone() throws CloneNotSupportedException {
         super.clone();
-        Split split = new Split(mAmount, mAccountUID);
+        Split split = new Split(mValue, mAccountUID);
         split.setUID(getUID());
         split.setType(mSplitType);
         split.setMemo(mMemo);
@@ -190,45 +217,76 @@ public class Split extends BaseModel{
      * @return whether the two splits are a pair
      */
     public boolean isPairOf(Split other) {
-        return mAmount.absolute().equals(other.mAmount.absolute())
+        return mValue.absolute().equals(other.mValue.absolute())
                 && mSplitType.invert().equals(other.mSplitType);
     }
 
     @Override
     public String toString() {
-        return mSplitType.name() + " of " + mAmount.toString() + " in account: " + mAccountUID;
+        return mSplitType.name() + " of " + mValue.toString() + " in account: " + mAccountUID;
     }
 
     /**
      * Returns a string representation of the split which can be parsed again using {@link org.gnucash.android.model.Split#parseSplit(String)}
+     * <p>The string is formatted as:<br/>
+     * "<valueNum>;<valueDenom>;<valueCurrencyCode>;<quantityNum>;<quantityDenom>;<quantityCurrencyCode>;<transaction_uid>;<account_uid>;<type>;<memo>"</p>
      * @return the converted CSV string of this split
      */
     public String toCsv(){
         String sep = ";";
-        String splitString = mAmount.asString() + sep + mAmount.getCurrency().getCurrencyCode()
-                + sep + mAccountUID + sep + mTransactionUID + sep + mSplitType.name();
+        String valueNum = String.valueOf(mValue.multiply(mValue.getNumberOfDecimalPlaces()).intValue());
+        String valueDenom = String.valueOf(mValue.getNumberOfDecimalPlaces());
+        String qtyNum   = String.valueOf(mQuantity.multiply(mQuantity.getNumberOfDecimalPlaces()).intValue());
+        String qtyDenom = String.valueOf(mQuantity.getNumberOfDecimalPlaces());
+
+        String splitString = valueNum + sep + valueDenom + sep + mValue.getCurrency().getCurrencyCode()
+                + qtyNum + sep + qtyDenom + sep + mQuantity.getCurrency().getCurrencyCode()
+                + sep + mTransactionUID + sep + mAccountUID + sep + mSplitType.name();
         if (mMemo != null){
-            splitString = splitString + ";" + mMemo;
+            splitString = splitString + sep + mMemo;
         }
         return splitString;
     }
 
     /**
-     * Parses a split which is in the format "<amount>;<currency_code>;<account_uid>;<type>;<memo>".
+     * Parses a split which is in the format:<br/>
+     * "<valueNum>;<valueDenom>;<currency_code>;<quantityNum>;<quantityDenom>;<currency_code>;<transaction_uid>;<account_uid>;<type>;<memo>".
+     * <p>Also supports parsing of the deprecated format "<amount>;<currency_code>;<transaction_uid>;<account_uid>;<type>;<memo>".
      * The split input string is the same produced by the {@link Split#toCsv()} method
-     *
+     *</p>
      * @param splitString String containing formatted split
      * @return Split instance parsed from the string
      */
     public static Split parseSplit(String splitString) {
         String[] tokens = splitString.split(";");
-        Money amount = new Money(tokens[0], tokens[1]);
-        Split split = new Split(amount, tokens[2]);
-        split.setTransactionUID(tokens[3]);
-        split.setType(TransactionType.valueOf(tokens[4]));
-        if (tokens.length == 6){
-            split.setMemo(tokens[5]);
+        if (tokens.length < 8) {
+            Money amount = new Money(tokens[0], tokens[1]);
+            Split split = new Split(amount, tokens[2]);
+            split.setTransactionUID(tokens[3]);
+            split.setType(TransactionType.valueOf(tokens[4]));
+            if (tokens.length == 6) {
+                split.setMemo(tokens[5]);
+            }
+            return split;
+        } else {
+            int valueNum = Integer.parseInt(tokens[0]);
+            int valueDenom = Integer.parseInt(tokens[1]);
+            String valueCurrencyCode = tokens[2];
+            int quantityNum = Integer.parseInt(tokens[3]);
+            int quantityDenom = Integer.parseInt(tokens[4]);
+            String qtyCurrencyCode = tokens[5];
+
+            Money value = new Money(valueNum, valueDenom, valueCurrencyCode);
+            Money quantity = new Money(quantityNum, quantityDenom, qtyCurrencyCode);
+
+            Split split = new Split(value, tokens[7]);
+            split.setQuantity(quantity);
+            split.setTransactionUID(tokens[6]);
+            split.setType(TransactionType.valueOf(tokens[8]));
+            if (tokens.length == 9) {
+                split.setMemo(tokens[9]);
+            }
+            return split;
         }
-        return split;
     }
 }

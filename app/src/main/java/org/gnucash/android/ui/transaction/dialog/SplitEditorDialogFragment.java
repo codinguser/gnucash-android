@@ -128,8 +128,8 @@ public class SplitEditorDialogFragment extends DialogFragment {
             Currency currency = null;
             for (Split split : splitList) {
                 if (currency == null) {
-                    currency = split.getAmount().getCurrency();
-                } else if (currency != split.getAmount().getCurrency()) {
+                    currency = split.getValue().getCurrency();
+                } else if (currency != split.getValue().getCurrency()) {
                     mMultiCurrency = true;
                 }
             }
@@ -254,7 +254,7 @@ public class SplitEditorDialogFragment extends DialogFragment {
         splitUidTextView.setText(UUID.randomUUID().toString());
 
         if (split != null) {
-            splitAmountEditText.setText(split.getAmount().toPlainString());
+            splitAmountEditText.setText(split.getValue().toPlainString());
             splitMemoEditText.setText(split.getMemo());
             splitUidTextView.setText(split.getUID());
             String splitAccountUID = split.getAccountUID();
@@ -371,7 +371,7 @@ public class SplitEditorDialogFragment extends DialogFragment {
         Money splitSum          = Money.createZeroInstance(currencyCode);
         if (!mMultiCurrency) {
             for (Split split : splitList) {
-                Money amount = split.getAmount().absolute();
+                Money amount = split.getValue().absolute();
                 if (split.getType() == TransactionType.DEBIT)
                     splitSum = splitSum.subtract(amount);
                 else

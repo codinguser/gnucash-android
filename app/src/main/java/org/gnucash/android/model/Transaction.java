@@ -20,6 +20,7 @@ import android.content.Intent;
 
 import org.gnucash.android.BuildConfig;
 import org.gnucash.android.db.AccountsDbAdapter;
+import org.gnucash.android.db.CommoditiesDbAdapter;
 import org.gnucash.android.export.ofx.OfxHelper;
 import org.gnucash.android.model.Account.OfxAccountType;
 import org.w3c.dom.Document;
@@ -86,9 +87,14 @@ public class Transaction extends BaseModel{
     private String mCurrencyCode = Money.DEFAULT_CURRENCY_CODE;
 
     /**
+     * GUID of commodity associated with this transaction
+     */
+    private String mCommodityUID;
+
+    /**
      * The splits making up this transaction
      */
-    private List<Split> mSplitList = new ArrayList<Split>();
+    private List<Split> mSplitList = new ArrayList<>();
 
 	/**
 	 * Name describing the transaction
@@ -176,7 +182,7 @@ public class Transaction extends BaseModel{
         //FIXME: when multiple currencies per transaction are supported
         Currency lastCurrency = null;
         for (Split split : mSplitList) {
-            Currency currentCurrency = split.getAmount().getCurrency();
+            Currency currentCurrency = split.getValue().getCurrency();
             if (lastCurrency == null)
                 lastCurrency = currentCurrency;
             else if (lastCurrency != currentCurrency){
@@ -267,9 +273,9 @@ public class Transaction extends BaseModel{
         Money imbalance = Money.createZeroInstance(mCurrencyCode);
         for (Split split : mSplitList) {
             //TODO: Handle this better when multi-currency support is introduced
-            if (!split.getAmount().getCurrency().getCurrencyCode().equals(mCurrencyCode))
+            if (!split.getValue().getCurrency().getCurrencyCode().equals(mCurrencyCode))
                 return Money.createZeroInstance(mCurrencyCode); //abort
-            Money amount = split.getAmount().absolute();
+            Money amount = split.getValue().absolute();
             if (split.getType() == TransactionType.DEBIT)
                 imbalance = imbalance.subtract(amount);
             else
@@ -297,7 +303,7 @@ public class Transaction extends BaseModel{
         for (Split split : splitList) {
             if (!split.getAccountUID().equals(accountUID))
                 continue;
-            Money absAmount = split.getAmount().absolute().withCurrency(Currency.getInstance(currencyCode));
+            Money absAmount = split.getValue().absolute().withCurrency(Currency.getInstance(currencyCode));
             boolean isDebitSplit = split.getType() == TransactionType.DEBIT;
             if (isDebitAccount) {
                 if (isDebitSplit) {
@@ -343,7 +349,23 @@ public class Transaction extends BaseModel{
         return Currency.getInstance(this.mCurrencyCode);
     }
 
-	/**
+    /**
+     * Returns the GUID of the commodity for this transaction
+     * @return GUID of commodity
+     */
+    public String getCommodityUID() {
+        return mCommodityUID;
+    }
+
+    /**
+     * Sets the commodity for this transaction
+     * @param commodityUID GUID of commodity
+     */
+    public void setCommodityUID(String commodityUID) {
+        this.mCommodityUID = commodityUID;
+    }
+
+    /**
 	 * Returns the description of the transaction
 	 * @return Transaction description
 	 */

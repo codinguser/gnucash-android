@@ -18,6 +18,7 @@ package org.gnucash.android.model;
 
 
 import org.gnucash.android.BuildConfig;
+import org.gnucash.android.db.CommoditiesDbAdapter;
 import org.gnucash.android.export.ofx.OfxHelper;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -89,7 +90,9 @@ public class Account extends BaseModel{
 	 * Currency used by transactions in this account
 	 */
 	private Currency mCurrency; 
-	
+
+	private String mCommodityUID;
+
 	/**
 	 * Type of account
 	 * Defaults to {@link AccountType#CASH}
@@ -329,12 +332,28 @@ public class Account extends BaseModel{
 
 	/**
 	 * Sets the currency to be used by this account
-	 * @param mCurrency the mCurrency to set
+	 * @param currency the mCurrency to set
 	 */
-	public void setCurrency(Currency mCurrency) {
-		this.mCurrency = mCurrency;
+	public void setCurrency(Currency currency) {
+		this.mCurrency = currency;
 		//TODO: Maybe at some time t, this method should convert all 
 		//transaction values to the corresponding value in the new currency
+	}
+
+	/**
+	 * Returns the commodity GUID for this account
+	 * @return String GUID of commodity
+	 */
+	public String getCommodityUID() {
+		return mCommodityUID;
+	}
+
+	/**
+	 * Sets the commodity GUID for this account
+	 * @param commodityUID String commodity GUID
+	 */
+	public void setCommodityUID(String commodityUID) {
+		this.mCommodityUID = commodityUID;
 	}
 
 	/**

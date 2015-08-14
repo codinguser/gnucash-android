@@ -366,7 +366,7 @@ public class TransactionFormFragment extends Fragment implements
                 if (isSplitPair){
                     mSplitsList.clear();
                     if (!amountEntered) //if user already entered an amount
-                        mAmountEditText.setText(splitList.get(0).getAmount().toPlainString());
+                        mAmountEditText.setText(splitList.get(0).getValue().toPlainString());
                 } else {
                     if (amountEntered){ //if user entered own amount, clear loaded splits and use the user value
                         mSplitsList.clear();
@@ -549,8 +549,8 @@ public class TransactionFormFragment extends Fragment implements
         } else {
             Money biggestAmount = Money.createZeroInstance(mTransaction.getCurrencyCode());
             for (Split split : mTransaction.getSplits()) {
-                if (split.getAmount().asBigDecimal().compareTo(biggestAmount.asBigDecimal()) > 0)
-                    biggestAmount = split.getAmount();
+                if (split.getValue().asBigDecimal().compareTo(biggestAmount.asBigDecimal()) > 0)
+                    biggestAmount = split.getValue();
             }
             baseAmountString = biggestAmount.toPlainString();
         }
@@ -733,17 +733,17 @@ public class TransactionFormFragment extends Fragment implements
             for (Split split : mSplitsList) {
                 if (split.getAccountUID().equals(mAccountUID)){
                     split.setType(mTransactionTypeButton.getTransactionType());
-                    split.setAmount(amount);
+                    split.setValue(amount);
                 } else {
                     split.setType(mTransactionTypeButton.getTransactionType().invert());
-                    split.setAmount(amount);
+                    split.setValue(amount);
                 }
             }
         }
 
         Money splitSum = Money.createZeroInstance(currency.getCurrencyCode());
         for (Split split : mSplitsList) {
-            Money amt = split.getAmount().absolute();
+            Money amt = split.getValue().absolute();
             if (split.getType() == TransactionType.DEBIT)
                 splitSum = splitSum.subtract(amt);
             else

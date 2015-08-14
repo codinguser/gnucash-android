@@ -268,7 +268,7 @@ public class GncXmlExporter extends Exporter{
                         SplitEntry.TABLE_NAME+"."+ SplitEntry.COLUMN_UID + " AS split_uid",
                         SplitEntry.TABLE_NAME+"."+ SplitEntry.COLUMN_MEMO + " AS split_memo",
                         SplitEntry.TABLE_NAME+"."+ SplitEntry.COLUMN_TYPE + " AS split_type",
-                        SplitEntry.TABLE_NAME+"."+ SplitEntry.COLUMN_AMOUNT + " AS split_amount",
+                        SplitEntry.TABLE_NAME+"."+ SplitEntry.COLUMN_VALUE_NUM + " / " + SplitEntry.TABLE_NAME+"."+ SplitEntry.COLUMN_VALUE_DENOM + " AS split_amount",
                         SplitEntry.TABLE_NAME+"."+ SplitEntry.COLUMN_ACCOUNT_UID + " AS split_acct_uid"},
                         where, null,
                         TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_TIMESTAMP + " ASC , " +
