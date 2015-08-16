@@ -152,7 +152,7 @@ public class PieChartActivityTest extends ActivityInstrumentationTestCase2<PieCh
     }
 
 
-//    @Test
+    @Test
     public void testNoData() {
         Log.w(TAG, "testWhenNoData()");
         getTestActivity();
@@ -167,7 +167,7 @@ public class PieChartActivityTest extends ActivityInstrumentationTestCase2<PieCh
         onView(withId(R.id.selected_chart_slice)).check(matches(withText("")));
     }
 
-//    @Test
+    @Test
     public void testSelectingValue() throws Exception {
         Log.w(TAG, "testSelectingValue()");
         addTransactionForCurrentMonth();
@@ -180,7 +180,7 @@ public class PieChartActivityTest extends ActivityInstrumentationTestCase2<PieCh
         onView(withId(R.id.selected_chart_slice)).check(matches(withText(selectedText)));
     }
 
-//    @Test
+    @Test
     public void testDatePicker() throws Exception {
         addTransactionForCurrentMonth();
         addTransactionForPreviousMonth(1);
@@ -197,7 +197,7 @@ public class PieChartActivityTest extends ActivityInstrumentationTestCase2<PieCh
         onView(withId(R.id.chart_date)).check(matches(withText("July\n2015")));
     }
 
-//    @Test
+    @Test
     public void testPreviousAndNextMonthButtonsWhenDataForFewMonths() throws Exception {
         addTransactionForCurrentMonth();
         addTransactionForPreviousMonth(1);
@@ -230,17 +230,12 @@ public class PieChartActivityTest extends ActivityInstrumentationTestCase2<PieCh
 
     @Test
     public void testSpinner() throws Exception {
-        Transaction transaction = new Transaction(TRANSACTION3_NAME);
-        transaction.setTime(System.currentTimeMillis());
-
         Split split = new Split(new Money(BigDecimal.valueOf(TRANSACTION3_AMOUNT), CURRENCY), GIFTS_RECEIVED_INCOME_ACCOUNT_UID);
-        split.setType(TransactionType.CREDIT);
-
+        Transaction transaction = new Transaction(TRANSACTION3_NAME);
         transaction.addSplit(split);
         transaction.addSplit(split.createPair(CASH_IN_WALLET_ASSET_ACCOUNT_UID));
 
-        Account account = mAccountsDbAdapter.getAccount(GIFTS_RECEIVED_INCOME_ACCOUNT_UID);
-        account.addTransaction(transaction);
+        mAccountsDbAdapter.getAccount(GIFTS_RECEIVED_INCOME_ACCOUNT_UID).addTransaction(transaction);
         mTransactionsDbAdapter.addTransaction(transaction);
 
         getTestActivity();
@@ -251,9 +246,15 @@ public class PieChartActivityTest extends ActivityInstrumentationTestCase2<PieCh
         onView(withId(R.id.pie_chart)).perform(click());
         String selectedText = String.format(PieChartActivity.SELECTED_VALUE_PATTERN, GIFTS_RECEIVED_INCOME_ACCOUNT_NAME, TRANSACTION3_AMOUNT, 100f);
         onView(withId(R.id.selected_chart_slice)).check(matches(withText(selectedText)));
+
+        onView(withId(R.id.chart_data_spinner)).perform(click());
+        onView(withText(containsString("EXPENSE"))).perform(click());
+
+        onView(withId(R.id.pie_chart)).perform(click());
+        onView(withId(R.id.selected_chart_slice)).check(matches(withText("")));
     }
 
-//    @Test
+    @Test
     public void testDataForCurrentMonth() throws Exception {
         Log.w(TAG, "testDataForCurrentMonth()");
         addTransactionForCurrentMonth();
@@ -269,7 +270,7 @@ public class PieChartActivityTest extends ActivityInstrumentationTestCase2<PieCh
 
     }
 
-//    @Test
+    @Test
     public void testWhenDataForPreviousAndCurrentMonth() throws Exception {
         Log.w(TAG, "testWhenDataForPreviousAndCurrentMonth");
         addTransactionForCurrentMonth();
@@ -330,7 +331,7 @@ public class PieChartActivityTest extends ActivityInstrumentationTestCase2<PieCh
         abstract float getPosition(int widgetPos, int widgetLength);
     }
 
-//    @Test
+    @Test
     public void testWhenDataForTwoPreviousAndCurrentMonth() throws Exception {
         Log.w(TAG, "testWhenDataForTwoPreviousAndCurrentMonth");
         addTransactionForCurrentMonth();
