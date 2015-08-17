@@ -254,40 +254,6 @@ public class PieChartActivityTest extends ActivityInstrumentationTestCase2<PieCh
         onView(withId(R.id.selected_chart_slice)).check(matches(withText("")));
     }
 
-    @Test
-    public void testDataForCurrentMonth() throws Exception {
-        Log.w(TAG, "testDataForCurrentMonth()");
-        addTransactionForCurrentMonth();
-        getTestActivity();
-
-        onView(withId(R.id.chart_date)).check(matches(withText("Overall")));
-        onView(withId(R.id.previous_month_chart_button)).check(matches(not(isEnabled())));
-        onView(withId(R.id.next_month_chart_button)).check(matches(not(isEnabled())));
-
-        onView(withId(R.id.pie_chart)).perform(click());
-        String selectedText = String.format(PieChartActivity.SELECTED_VALUE_PATTERN, DINING_EXPENSE_ACCOUNT_NAME, TRANSACTION_AMOUNT, 100f);
-        onView(withId(R.id.selected_chart_slice)).check(matches(withText(selectedText)));
-
-    }
-
-    @Test
-    public void testWhenDataForPreviousAndCurrentMonth() throws Exception {
-        Log.w(TAG, "testWhenDataForPreviousAndCurrentMonth");
-        addTransactionForCurrentMonth();
-        addTransactionForPreviousMonth(1);
-        getTestActivity();
-
-        onView(withId(R.id.chart_date)).check(matches(withText("Overall")));
-        onView(withId(R.id.previous_month_chart_button)).check(matches(isEnabled()));
-        onView(withId(R.id.next_month_chart_button)).check(matches(not(isEnabled())));
-
-        onView(withId(R.id.pie_chart)).perform(clickXY(Position.END, Position.MIDDLE));
-
-        float percent = (float) (TRANSACTION2_AMOUNT / (TRANSACTION_AMOUNT + TRANSACTION2_AMOUNT) * 100);
-        String selectedText = String.format(PieChartActivity.SELECTED_VALUE_PATTERN, BOOKS_EXPENSE_ACCOUNT_NAME, TRANSACTION2_AMOUNT, percent);
-        onView(withId(R.id.selected_chart_slice)).check(matches(withText(selectedText)));
-    }
-
     public static ViewAction clickXY(final Position horizontal, final Position vertical){
         return new GeneralClickAction(
                 Tap.SINGLE,
@@ -330,30 +296,6 @@ public class PieChartActivityTest extends ActivityInstrumentationTestCase2<PieCh
 
         abstract float getPosition(int widgetPos, int widgetLength);
     }
-
-    @Test
-    public void testWhenDataForTwoPreviousAndCurrentMonth() throws Exception {
-        Log.w(TAG, "testWhenDataForTwoPreviousAndCurrentMonth");
-        addTransactionForCurrentMonth();
-        addTransactionForPreviousMonth(1);
-        addTransactionForPreviousMonth(2);
-        getTestActivity();
-
-        onView(withId(R.id.chart_date)).check(matches(withText("Overall")));
-        onView(withId(R.id.previous_month_chart_button)).check(matches(isEnabled()));
-        onView(withId(R.id.next_month_chart_button)).check(matches(not(isEnabled())));
-
-        onView(withId(R.id.pie_chart)).perform(clickXY(Position.BEGIN, Position.MIDDLE));
-
-        float percent = (float) (TRANSACTION_AMOUNT / (TRANSACTION_AMOUNT + TRANSACTION2_AMOUNT * 2) * 100);
-        String selectedText = String.format(PieChartActivity.SELECTED_VALUE_PATTERN, DINING_EXPENSE_ACCOUNT_NAME, TRANSACTION_AMOUNT, percent);
-        onView(withId(R.id.selected_chart_slice)).check(matches(withText(selectedText)));
-
-        onView(withId(R.id.previous_month_chart_button)).perform(click());
-        onView(withId(R.id.previous_month_chart_button)).check(matches(isEnabled()));
-        onView(withId(R.id.next_month_chart_button)).check(matches(isEnabled()));
-    }
-
 
     @Override
 	@After
