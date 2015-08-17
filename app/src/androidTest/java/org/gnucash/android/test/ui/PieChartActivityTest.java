@@ -1,4 +1,18 @@
-
+/*
+ * Copyright (c) 2015 Oleksandr Tyshkovets <olexandr.tyshkovets@gmail.com>
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 package org.gnucash.android.test.ui;
 
@@ -26,6 +40,7 @@ import org.gnucash.android.db.SplitsDbAdapter;
 import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.importer.GncXmlImporter;
 import org.gnucash.android.model.Account;
+import org.gnucash.android.model.AccountType;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.model.Split;
 import org.gnucash.android.model.Transaction;
@@ -38,7 +53,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.math.BigDecimal;
-import java.util.Arrays;
 import java.util.Currency;
 
 import static android.support.test.espresso.Espresso.onView;
@@ -82,7 +96,6 @@ public class PieChartActivityTest extends ActivityInstrumentationTestCase2<PieCh
 
     private AccountsDbAdapter mAccountsDbAdapter;
     private TransactionsDbAdapter mTransactionsDbAdapter;
-    private SplitsDbAdapter mSplitsDbAdapter;
 
     private PieChartActivity mPieChartActivity;
 
@@ -104,8 +117,7 @@ public class PieChartActivityTest extends ActivityInstrumentationTestCase2<PieCh
             Log.e(TAG, "Error getting database: " + e.getMessage());
             db = dbHelper.getReadableDatabase();
         }
-        mSplitsDbAdapter = new SplitsDbAdapter(db);
-        mTransactionsDbAdapter = new TransactionsDbAdapter(db, mSplitsDbAdapter);
+        mTransactionsDbAdapter = new TransactionsDbAdapter(db, new SplitsDbAdapter(db));
         mAccountsDbAdapter = new AccountsDbAdapter(db, mTransactionsDbAdapter);
         mAccountsDbAdapter.deleteAllRecords();
 
@@ -154,7 +166,6 @@ public class PieChartActivityTest extends ActivityInstrumentationTestCase2<PieCh
 
     @Test
     public void testNoData() {
-        Log.w(TAG, "testWhenNoData()");
         getTestActivity();
 
         onView(withId(R.id.chart_date)).check(matches(withText("Overall")));
@@ -169,7 +180,6 @@ public class PieChartActivityTest extends ActivityInstrumentationTestCase2<PieCh
 
     @Test
     public void testSelectingValue() throws Exception {
-        Log.w(TAG, "testSelectingValue()");
         addTransactionForCurrentMonth();
         addTransactionForPreviousMonth(1);
         getTestActivity();
@@ -198,7 +208,7 @@ public class PieChartActivityTest extends ActivityInstrumentationTestCase2<PieCh
     }
 
     @Test
-    public void testPreviousAndNextMonthButtonsWhenDataForFewMonths() throws Exception {
+    public void testPreviousAndNextMonthButtons() throws Exception {
         addTransactionForCurrentMonth();
         addTransactionForPreviousMonth(1);
         addTransactionForPreviousMonth(2);
@@ -241,14 +251,14 @@ public class PieChartActivityTest extends ActivityInstrumentationTestCase2<PieCh
         getTestActivity();
 
         onView(withId(R.id.chart_data_spinner)).perform(click());
-        onView(withText(containsString("INCOME"))).perform(click());
+        onView(withText(containsString(AccountType.INCOME.name()))).perform(click());
 
         onView(withId(R.id.pie_chart)).perform(click());
         String selectedText = String.format(PieChartActivity.SELECTED_VALUE_PATTERN, GIFTS_RECEIVED_INCOME_ACCOUNT_NAME, TRANSACTION3_AMOUNT, 100f);
         onView(withId(R.id.selected_chart_slice)).check(matches(withText(selectedText)));
 
         onView(withId(R.id.chart_data_spinner)).perform(click());
-        onView(withText(containsString("EXPENSE"))).perform(click());
+        onView(withText(containsString(AccountType.EXPENSE.name()))).perform(click());
 
         onView(withId(R.id.pie_chart)).perform(click());
         onView(withId(R.id.selected_chart_slice)).check(matches(withText("")));
@@ -260,14 +270,11 @@ public class PieChartActivityTest extends ActivityInstrumentationTestCase2<PieCh
                 new CoordinatesProvider() {
                     @Override
                     public float[] calculateCoordinates(View view) {
-                        final int[] xy = new int[2];
+                        int[] xy = new int[2];
                         view.getLocationOnScreen(xy);
-                        Log.w("Test", Arrays.toString(xy));
-                        Log.w("Test", view.getHeight() + ", " + view.getWidth());
 
-                        final float x = horizontal.getPosition(xy[0], view.getWidth());
-                        final float y = vertical.getPosition(xy[1], view.getHeight());
-
+                        float x = horizontal.getPosition(xy[0], view.getWidth());
+                        float y = vertical.getPosition(xy[1], view.getHeight());
                         return new float[]{x, y};
                     }
                 },
