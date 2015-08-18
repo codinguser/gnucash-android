@@ -59,7 +59,7 @@ public class AccountBalanceTask extends AsyncTask<String, Void, Money> {
         try {
             balance = accountsDbAdapter.getAccountBalance(params[0], -1, System.currentTimeMillis());
         } catch (Exception ex) {
-            Log.e(LOG_TAG, "Error computing account balance: " + ex);
+            Log.e(LOG_TAG, "Error computing account balance ", ex);
             Crashlytics.logException(ex);
         }
         return balance;

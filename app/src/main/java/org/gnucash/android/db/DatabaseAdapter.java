@@ -72,6 +72,11 @@ public abstract class DatabaseAdapter<Model extends BaseModel> {
     }
 
     private void createTempView() {
+        //the multiplication by 1.0 is to cause sqlite to handle the value as REAL and not to round off
+        String splitValueSql = SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_VALUE_NUM + "*1.0 / " + SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_VALUE_DENOM;
+
+        final String SPLIT_VALUE_AMOUNT = "amount";
+
         // Create some temporary views. Temporary views only exists in one DB session, and will not
         // be saved in the DB
         //
@@ -98,8 +103,8 @@ public abstract class DatabaseAdapter<Model extends BaseModel> {
                         + SplitEntry.TABLE_NAME + "_" + SplitEntry.COLUMN_UID + " , "
                         + SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_TYPE + " AS "
                         + SplitEntry.TABLE_NAME + "_" + SplitEntry.COLUMN_TYPE + " , "
-                        + SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_AMOUNT + " AS "
-                        + SplitEntry.TABLE_NAME + "_" + SplitEntry.COLUMN_AMOUNT + " , "
+                        + splitValueSql + " AS " //FIXME: Check if the split value is properly extracted. Also consider adding split quantity to the view
+                        + SplitEntry.TABLE_NAME + "_" + SPLIT_VALUE_AMOUNT + " , "
                         + SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_MEMO + " AS "
                         + SplitEntry.TABLE_NAME + "_" + SplitEntry.COLUMN_MEMO + " , "
                         + AccountEntry.TABLE_NAME + "." + AccountEntry.COLUMN_UID + " AS "
@@ -150,14 +155,16 @@ public abstract class DatabaseAdapter<Model extends BaseModel> {
         //   if not, attach a 'b' to the split account uid
         //   pick the minimal value of the modified account uid (one of the ones begins with 'a', if exists)
         //   use substr to get account uid
+        
+        //FIXME: Check if the split value is properly extracted. Also consider adding split quantity to the view
         mDb.execSQL("CREATE TEMP VIEW IF NOT EXISTS trans_extra_info AS SELECT " + TransactionEntry.TABLE_NAME + "_" + TransactionEntry.COLUMN_UID +
                 " AS trans_acct_t_uid , SUBSTR ( MIN ( ( CASE WHEN IFNULL ( " + SplitEntry.TABLE_NAME + "_" +
                 SplitEntry.COLUMN_MEMO + " , '' ) == '' THEN 'a' ELSE 'b' END ) || " +
                 AccountEntry.TABLE_NAME + "_" + AccountEntry.COLUMN_UID +
                 " ) , 2 ) AS trans_acct_a_uid , TOTAL ( CASE WHEN " + SplitEntry.TABLE_NAME + "_" +
                 SplitEntry.COLUMN_TYPE + " = 'DEBIT' THEN "+ SplitEntry.TABLE_NAME + "_" +
-                SplitEntry.COLUMN_AMOUNT + " ELSE - " + SplitEntry.TABLE_NAME + "_" +
-                SplitEntry.COLUMN_AMOUNT + " END ) AS trans_acct_balance , COUNT ( DISTINCT " +
+                SPLIT_VALUE_AMOUNT + " ELSE - " + SplitEntry.TABLE_NAME + "_" +
+                SPLIT_VALUE_AMOUNT + " END ) AS trans_acct_balance , COUNT ( DISTINCT " +
                 AccountEntry.TABLE_NAME + "_" + AccountEntry.COLUMN_CURRENCY +
                 " ) AS trans_currency_count , COUNT (*) AS trans_split_count FROM trans_split_acct " +
                 " GROUP BY " + TransactionEntry.TABLE_NAME + "_" + TransactionEntry.COLUMN_UID
@@ -224,7 +231,7 @@ public abstract class DatabaseAdapter<Model extends BaseModel> {
      * @param model Model whose attributes will be used as bindings
      * @return SQLiteStatement for replacing a record in the database
      */
-    protected abstract SQLiteStatement compileReplaceStatement(Model model);
+    protected abstract SQLiteStatement compileReplaceStatement(@NonNull final Model model);
 
     /**
      * Returns a model instance populated with data from the record with GUID {@code uid}
@@ -298,7 +305,7 @@ public abstract class DatabaseAdapter<Model extends BaseModel> {
      * @param cursor Cursor pointing to database record
      * @param model Model instance to be initialized
      */
-    protected void populateBaseModelAttributes(Cursor cursor, BaseModel model){ //// FIXME: use template type
+    protected void populateBaseModelAttributes(Cursor cursor, BaseModel model){
         String uid = cursor.getString(cursor.getColumnIndexOrThrow(CommonColumns.COLUMN_UID));
         String created = cursor.getString(cursor.getColumnIndexOrThrow(CommonColumns.COLUMN_CREATED_AT));
         String modified= cursor.getString(cursor.getColumnIndexOrThrow(CommonColumns.COLUMN_MODIFIED_AT));

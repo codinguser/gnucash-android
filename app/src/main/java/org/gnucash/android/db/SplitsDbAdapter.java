@@ -32,6 +32,7 @@ import org.gnucash.android.model.Split;
 import org.gnucash.android.model.TransactionType;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Currency;
 import java.util.List;
@@ -77,11 +78,11 @@ public class SplitsDbAdapter extends DatabaseAdapter<Split> {
 
         //modifying a split means modifying the accompanying transaction as well
         updateRecord(TransactionEntry.TABLE_NAME, transactionId,
-                TransactionEntry.COLUMN_MODIFIED_AT, Long.toString(System.currentTimeMillis()));
+                TransactionEntry.COLUMN_MODIFIED_AT, new Timestamp(System.currentTimeMillis()).toString());
     }
 
     @Override
-    protected SQLiteStatement compileReplaceStatement(Split split) {
+    protected SQLiteStatement compileReplaceStatement(@NonNull final Split split) {
         if (mReplaceStatement == null) {
             mReplaceStatement = mDb.compileStatement("REPLACE INTO " + SplitEntry.TABLE_NAME + " ( "
                     + SplitEntry.COLUMN_UID + " , "
@@ -102,10 +103,10 @@ public class SplitsDbAdapter extends DatabaseAdapter<Split> {
             mReplaceStatement.bindString(2, split.getMemo());
         }
         mReplaceStatement.bindString(3, split.getType().name());
-        mReplaceStatement.bindLong(4, split.getValue().multiply(split.getValue().getNumberOfDecimalPlaces()).intValue());
-        mReplaceStatement.bindLong(5, (long)Math.pow(10, split.getValue().getNumberOfDecimalPlaces()));
-        mReplaceStatement.bindLong(6, split.getQuantity().multiply(split.getQuantity().getNumberOfDecimalPlaces()).intValue());
-        mReplaceStatement.bindLong(7, (long)Math.pow(10, split.getQuantity().getNumberOfDecimalPlaces()));
+        mReplaceStatement.bindLong(4,   split.getValue().getNumerator());
+        mReplaceStatement.bindLong(5,   split.getValue().getDenominator());
+        mReplaceStatement.bindLong(6,   split.getQuantity().getNumerator());
+        mReplaceStatement.bindLong(7,   split.getQuantity().getDenominator());
         mReplaceStatement.bindString(8, split.getCreatedTimestamp().toString());
         mReplaceStatement.bindString(9, split.getAccountUID());
         mReplaceStatement.bindString(10, split.getTransactionUID());
@@ -172,6 +173,7 @@ public class SplitsDbAdapter extends DatabaseAdapter<Split> {
         return calculateSplitBalance(accountUIDList, currencyCode, hasDebitNormalBalance, startTimestamp, endTimestamp);
     }
 
+
     private Money calculateSplitBalance(List<String> accountUIDList, String currencyCode, boolean hasDebitNormalBalance,
                           long startTimestamp, long endTimestamp){
         if (accountUIDList.size() == 0){
@@ -195,7 +197,8 @@ public class SplitsDbAdapter extends DatabaseAdapter<Split> {
             selectionArgs = new String[]{String.valueOf(startTimestamp)};
         }
 
-        String splitValueSql = SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_VALUE_NUM + " / " + SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_VALUE_DENOM;
+        //the multiplication by 1.0 is to cause sqlite to handle the value as REAL and not to round off
+        String splitValueSql = SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_VALUE_NUM + "*1.0 / " + SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_VALUE_DENOM;
         cursor = mDb.query(SplitEntry.TABLE_NAME + " , " + TransactionEntry.TABLE_NAME,
                 new String[]{"TOTAL ( CASE WHEN " + SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_TYPE + " = 'DEBIT' THEN " +
                         splitValueSql + " ELSE - " + splitValueSql + " END )"},

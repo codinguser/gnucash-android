@@ -30,7 +30,7 @@ public class PricesDbAdapter extends DatabaseAdapter<Price> {
     }
 
     @Override
-    protected SQLiteStatement compileReplaceStatement(Price price) {
+    protected SQLiteStatement compileReplaceStatement(@NonNull final Price price) {
         if (mReplaceStatement == null) {
             mReplaceStatement = mDb.compileStatement("REPLACE INTO " + PriceEntry.TABLE_NAME + " ( "
                     + PriceEntry.COLUMN_UID + " , "

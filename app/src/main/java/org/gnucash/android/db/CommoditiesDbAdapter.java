@@ -28,7 +28,7 @@ public class CommoditiesDbAdapter extends DatabaseAdapter<Commodity> {
     }
 
     @Override
-    protected SQLiteStatement compileReplaceStatement(Commodity commodity) {
+    protected SQLiteStatement compileReplaceStatement(@NonNull final Commodity commodity) {
         if (mReplaceStatement == null) {
             mReplaceStatement = mDb.compileStatement("REPLACE INTO " + CommodityEntry.TABLE_NAME + " ( "
                     + CommodityEntry.COLUMN_UID             + " , "

@@ -151,7 +151,7 @@ public class TransactionsDbAdapter extends DatabaseAdapter<Transaction> {
     }
 
     @Override
-    protected SQLiteStatement compileReplaceStatement(Transaction transaction) {
+    protected SQLiteStatement compileReplaceStatement(@NonNull final Transaction transaction) {
         if (mReplaceStatement == null) {
             mReplaceStatement = mDb.compileStatement("REPLACE INTO " + TransactionEntry.TABLE_NAME + " ( "
                     + TransactionEntry.COLUMN_UID + " , "
@@ -169,8 +169,8 @@ public class TransactionsDbAdapter extends DatabaseAdapter<Transaction> {
         mReplaceStatement.bindString(1, transaction.getUID());
         mReplaceStatement.bindString(2, transaction.getDescription());
         mReplaceStatement.bindString(3, transaction.getNote());
-        mReplaceStatement.bindLong(4, transaction.getTimeMillis());
-        mReplaceStatement.bindLong(5, transaction.isExported() ? 1 : 0);
+        mReplaceStatement.bindLong(4,   transaction.getTimeMillis());
+        mReplaceStatement.bindLong(5,   transaction.isExported() ? 1 : 0);
         mReplaceStatement.bindString(6, transaction.getCurrencyCode());
         mReplaceStatement.bindString(7, transaction.getCreatedTimestamp().toString());
         if (transaction.getScheduledActionUID() == null)

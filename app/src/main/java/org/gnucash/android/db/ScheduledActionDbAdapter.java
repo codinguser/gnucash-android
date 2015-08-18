@@ -76,7 +76,7 @@ public class ScheduledActionDbAdapter extends DatabaseAdapter<ScheduledAction> {
 
 
     @Override
-    protected SQLiteStatement compileReplaceStatement(ScheduledAction schedxAction) {
+    protected SQLiteStatement compileReplaceStatement(@NonNull final ScheduledAction schedxAction) {
         if (mReplaceStatement == null) {
             mReplaceStatement = mDb.compileStatement("REPLACE INTO " + ScheduledActionEntry.TABLE_NAME + " ( "
                     + ScheduledActionEntry.COLUMN_UID 	            + " , "

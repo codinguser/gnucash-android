@@ -87,13 +87,17 @@ public class Split extends BaseModel{
     }
 
     /**
-     * Sets the value amount of the split.
+     * Sets the value amount of the split.<br>
      * The value is in the currency of the containing transaction
+     * <p>If the quantity of the split is null, it will be set to the {@code amount}</p>
      * @param amount Money value of this split
      * @see #setQuantity(Money)
      */
     public void setValue(Money amount) {
         this.mValue = amount;
+        if (mQuantity == null){
+            mQuantity = amount;
+        }
     }
 
     /**
@@ -234,10 +238,12 @@ public class Split extends BaseModel{
      */
     public String toCsv(){
         String sep = ";";
-        String valueNum = String.valueOf(mValue.multiply(mValue.getNumberOfDecimalPlaces()).intValue());
-        String valueDenom = String.valueOf(mValue.getNumberOfDecimalPlaces());
-        String qtyNum   = String.valueOf(mQuantity.multiply(mQuantity.getNumberOfDecimalPlaces()).intValue());
-        String qtyDenom = String.valueOf(mQuantity.getNumberOfDecimalPlaces());
+        int valueFractionDigits = mValue.getCurrency().getDefaultFractionDigits();
+        int qtyFractionDigits = mQuantity.getCurrency().getDefaultFractionDigits();
+        String valueDenom = String.valueOf((int) Math.pow(10, valueFractionDigits));
+        String valueNum = String.valueOf(mValue.multiply(Integer.parseInt(valueDenom)).intValue());
+        String qtyDenom = String.valueOf((int)Math.pow(10, qtyFractionDigits));
+        String qtyNum   = String.valueOf(mQuantity.multiply(Integer.parseInt(qtyDenom)).intValue());
 
         String splitString = valueNum + sep + valueDenom + sep + mValue.getCurrency().getCurrencyCode()
                 + qtyNum + sep + qtyDenom + sep + mQuantity.getCurrency().getCurrencyCode()

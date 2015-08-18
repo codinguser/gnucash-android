@@ -31,7 +31,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:minHeight="80dp">
+        android:minHeight="@dimen/card_min_height">
 
         <View android:id="@+id/account_color_strip"
             android:layout_width="@dimen/strip_width"

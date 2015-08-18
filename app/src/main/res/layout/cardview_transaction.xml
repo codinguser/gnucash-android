@@ -30,7 +30,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:minHeight="80dp">
+        android:minHeight="@dimen/card_min_height">
 
         <include android:id="@+id/list_item_2_lines"
             layout="@layout/list_item_2_lines"

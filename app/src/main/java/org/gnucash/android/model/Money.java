@@ -157,7 +157,7 @@ public final class Money implements Comparable<Money>{
 	 * @param currencyCode 3-character currency code string
 	 */
 	public Money(long numerator, long denominator, String currencyCode){
-		mAmount = new BigDecimal(numerator).divide(new BigDecimal(denominator), BigDecimal.ROUND_HALF_EVEN);
+		mAmount = new BigDecimal(numerator).divide(new BigDecimal(denominator), MathContext.UNLIMITED);
 		setCurrency(Currency.getInstance(currencyCode));
 	}
 
@@ -227,6 +227,24 @@ public final class Money implements Comparable<Money>{
 	private void setCurrency(Currency currency) {
 		//TODO: Consider doing a conversion of the value as well in the future
 		this.mCurrency = currency;
+	}
+
+	/**
+	 * Returns the GnuCash format numerator for this amount.
+	 * <p>Example: Given an amount 32.50$, the numerator will be 3250</p>
+	 * @return GnuCash numerator for this amount
+	 */
+	public int getNumerator(){
+		return mAmount.multiply(new BigDecimal(getDenominator())).intValue();
+	}
+
+	/**
+	 * Returns the GnuCash amount format denominator for this amount
+	 * <p>The denominator is 10 raised to the power of number of fractional digits in the currency</p>
+	 * @return GnuCash format denominator
+	 */
+	public int getDenominator(){
+		return (int) Math.pow(10, mCurrency.getDefaultFractionDigits());
 	}
 
 	/**
@@ -458,16 +476,6 @@ public final class Money implements Comparable<Money>{
 		if (!mCurrency.equals(another.mCurrency))
 			throw new IllegalArgumentException("Cannot compare different currencies yet");
 		return mAmount.compareTo(another.mAmount);
-	}
-
-	/** TODO: add tests for this
-	 * Returns the number of decimal places in this amount
-	 * @return Number of decimal places
-	 */
-	public int getNumberOfDecimalPlaces() {
-		String string = mAmount.stripTrailingZeros().toPlainString();
-		int index = string.indexOf(".");
-		return index < 0 ? 0 : string.length() - index - 1;
 	}
 
 	/**

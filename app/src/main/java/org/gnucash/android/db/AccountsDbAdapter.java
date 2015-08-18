@@ -137,7 +137,7 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
     }
 
     @Override
-    protected SQLiteStatement compileReplaceStatement(Account account) {
+    protected SQLiteStatement compileReplaceStatement(@NonNull final Account account) {
         if (mReplaceStatement == null){
             mReplaceStatement = mDb.compileStatement("REPLACE INTO " + AccountEntry.TABLE_NAME + " ( "
                     + AccountEntry.COLUMN_UID           + " , "
