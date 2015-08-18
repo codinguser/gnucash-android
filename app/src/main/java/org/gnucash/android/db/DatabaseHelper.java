@@ -22,11 +22,14 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
+
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.model.Commodity;
 import org.xml.sax.SAXException;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -199,7 +202,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     @Override
-	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion){
 		Log.i(LOG_TAG, "Upgrading database from version "
                 + oldVersion + " to " + newVersion);
 
@@ -220,17 +223,22 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 Object result = method.invoke(null, db);
                 oldVersion = Integer.parseInt(result.toString());
 
-
             } catch (NoSuchMethodException e) {
-                Log.e(LOG_TAG, "Database upgrade method definition not found " + newVersion);
-                e.printStackTrace();
-            } catch (Exception e) {
-                e.printStackTrace();
+                String msg = String.format("Database upgrade method upgradeToVersion%d(SQLiteDatabase) definition not found ", newVersion);
+                Log.e(LOG_TAG, msg, e);
+                Crashlytics.log(msg);
+                Crashlytics.logException(e);
+                throw new RuntimeException(e);
+            }  catch (IllegalAccessException e) {
+                String msg = String.format("Database upgrade to version %d failed. The upgrade method is inaccessible ", newVersion);
+                Log.e(LOG_TAG, msg, e);
+                Crashlytics.log(msg);
+                Crashlytics.logException(e);
+                throw new RuntimeException(e);
+            } catch (InvocationTargetException e){
+                Crashlytics.logException(e);
+                throw new RuntimeException(e);
             }
-        }
-
-        if (oldVersion != newVersion) {
-            Log.w(LOG_TAG, "Upgrade for the database failed. The Database is currently at version " + oldVersion);
         }
 	}
 

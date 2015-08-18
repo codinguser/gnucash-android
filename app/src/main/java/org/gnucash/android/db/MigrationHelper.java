@@ -867,28 +867,30 @@ public class MigrationHelper {
             try {
                 importCommodities(db);
             } catch (SAXException | ParserConfigurationException | IOException e) {
-                Log.e(DatabaseHelper.LOG_TAG, "Error loading currencies into the database");
-                e.printStackTrace();
+                Log.e(DatabaseHelper.LOG_TAG, "Error loading currencies into the database", e);
+                Crashlytics.logException(e);
                 throw new RuntimeException(e);
             }
 
             db.execSQL(" ALTER TABLE " + AccountEntry.TABLE_NAME
-                    + " ADD COLUMN " + AccountEntry.COLUMN_COMMODITY_UID + " varchar(255)");
+                    + " ADD COLUMN " + AccountEntry.COLUMN_COMMODITY_UID + " varchar(255) "
+                    + " REFERENCES " + CommodityEntry.TABLE_NAME + " (" + CommodityEntry.COLUMN_UID + ") ");
 
             db.execSQL(" ALTER TABLE " + TransactionEntry.TABLE_NAME
-                    + " ADD COLUMN " + TransactionEntry.COLUMN_COMMODITY_UID + " varchar(255)");
+                    + " ADD COLUMN " + TransactionEntry.COLUMN_COMMODITY_UID + " varchar(255) "
+                    + " REFERENCES " + CommodityEntry.TABLE_NAME + " (" + CommodityEntry.COLUMN_UID + ") ");
 
-            db.execSQL("INSERT INTO " + AccountEntry.TABLE_NAME + " ( "
-                            + AccountEntry.COLUMN_COMMODITY_UID + ") "
-                            + "SELECT " + CommodityEntry.COLUMN_UID + " FROM " + CommodityEntry.TABLE_NAME
-                            + " WHERE " + CommodityEntry.COLUMN_MNEMONIC + " = " + AccountEntry.COLUMN_CURRENCY + ";"
-            );
+            db.execSQL("UPDATE " + AccountEntry.TABLE_NAME + " SET " + AccountEntry.COLUMN_COMMODITY_UID + " = "
+                    + " (SELECT " + CommodityEntry.COLUMN_UID
+                    + " FROM " + CommodityEntry.TABLE_NAME
+                    + " WHERE " + AccountEntry.TABLE_NAME + "." + AccountEntry.COLUMN_COMMODITY_UID + " = " + CommodityEntry.TABLE_NAME + "." + CommodityEntry.COLUMN_UID
+                    + ")");
 
-            db.execSQL("INSERT INTO " + TransactionEntry.TABLE_NAME + " ( "
-                            + TransactionEntry.COLUMN_COMMODITY_UID + ") "
-                            + "SELECT " + CommodityEntry.COLUMN_UID + " FROM " + CommodityEntry.TABLE_NAME
-                            + " WHERE " + CommodityEntry.COLUMN_MNEMONIC + " = " + TransactionEntry.COLUMN_CURRENCY + ";"
-            );
+            db.execSQL("UPDATE " + TransactionEntry.TABLE_NAME + " SET " + TransactionEntry.COLUMN_COMMODITY_UID + " = "
+                    + " (SELECT " + CommodityEntry.COLUMN_UID
+                    + " FROM " + CommodityEntry.TABLE_NAME
+                    + " WHERE " + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_COMMODITY_UID + " = " + CommodityEntry.TABLE_NAME + "." + CommodityEntry.COLUMN_UID
+                    + ")");
 
             String createPricesSql = "CREATE TABLE " + PriceEntry.TABLE_NAME + " ("
                     + PriceEntry._ID                    + " integer primary key autoincrement, "

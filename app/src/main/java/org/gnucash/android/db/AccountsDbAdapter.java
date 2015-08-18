@@ -140,25 +140,26 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
     protected SQLiteStatement compileReplaceStatement(Account account) {
         if (mReplaceStatement == null){
             mReplaceStatement = mDb.compileStatement("REPLACE INTO " + AccountEntry.TABLE_NAME + " ( "
-                    + AccountEntry.COLUMN_UID + " , "
-                    + AccountEntry.COLUMN_NAME + " , "
-                    + AccountEntry.COLUMN_DESCRIPTION + " , "
-                    + AccountEntry.COLUMN_TYPE + " , "
-                    + AccountEntry.COLUMN_CURRENCY + " , "
-                    + AccountEntry.COLUMN_COLOR_CODE + " , "
-                    + AccountEntry.COLUMN_FAVORITE + " , "
-                    + AccountEntry.COLUMN_FULL_NAME + " , "
-                    + AccountEntry.COLUMN_PLACEHOLDER + " , "
-                    + AccountEntry.COLUMN_CREATED_AT + " , "
-                    + AccountEntry.COLUMN_HIDDEN + " , "
+                    + AccountEntry.COLUMN_UID           + " , "
+                    + AccountEntry.COLUMN_NAME          + " , "
+                    + AccountEntry.COLUMN_DESCRIPTION   + " , "
+                    + AccountEntry.COLUMN_TYPE          + " , "
+                    + AccountEntry.COLUMN_CURRENCY      + " , "
+                    + AccountEntry.COLUMN_COLOR_CODE    + " , "
+                    + AccountEntry.COLUMN_FAVORITE      + " , "
+                    + AccountEntry.COLUMN_FULL_NAME     + " , "
+                    + AccountEntry.COLUMN_PLACEHOLDER   + " , "
+                    + AccountEntry.COLUMN_CREATED_AT    + " , "
+                    + AccountEntry.COLUMN_HIDDEN        + " , "
                     + AccountEntry.COLUMN_PARENT_ACCOUNT_UID + " , "
-                    + AccountEntry.COLUMN_DEFAULT_TRANSFER_ACCOUNT_UID + " ) VALUES ( ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? )");
+                    + AccountEntry.COLUMN_DEFAULT_TRANSFER_ACCOUNT_UID + " ) VALUES ( ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ?)");
         }
 
         mReplaceStatement.clearBindings();
         mReplaceStatement.bindString(1, account.getUID());
         mReplaceStatement.bindString(2, account.getName());
-        mReplaceStatement.bindString(3, account.getDescription());
+        if (account.getDescription() != null)
+            mReplaceStatement.bindString(3, account.getDescription());
         mReplaceStatement.bindString(4, account.getAccountType().name());
         mReplaceStatement.bindString(5, account.getCurrency().getCurrencyCode());
         if (account.getColorHexCode() != null) {

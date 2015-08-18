@@ -35,7 +35,7 @@
 
         <View android:id="@+id/account_color_strip"
             android:layout_width="@dimen/strip_width"
-            android:layout_height="match_parent"
+            android:layout_height="80dp"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"/>
 
