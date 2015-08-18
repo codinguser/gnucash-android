@@ -201,10 +201,11 @@ public class PieChartActivityTest extends ActivityInstrumentationTestCase2<PieCh
         onView(withId(R.id.chart_date)).check(matches(withText("Overall")));
         onView(withId(R.id.chart_date)).perform(click());
 
-        onView(withClassName(equalTo(DatePicker.class.getName()))).perform(PickerActions.setDate(2015, 7, 23));
+        LocalDateTime date = new LocalDateTime().minusMonths(2);
+        onView(withClassName(equalTo(DatePicker.class.getName()))).perform(PickerActions.setDate(date.getYear(), date.getMonthOfYear(), 1));
         onView(anyOf(withText(containsString("Done")), withText(containsString("Set")), withText(containsString("OK")))).perform(click());
-
-        onView(withId(R.id.chart_date)).check(matches(withText("July\n2015")));
+        
+        onView(withId(R.id.chart_date)).check(matches(withText(date.toString(PieChartActivity.DATE_PATTERN))));
     }
 
     @Test
