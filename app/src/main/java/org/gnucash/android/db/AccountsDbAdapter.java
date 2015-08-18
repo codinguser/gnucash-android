@@ -170,8 +170,12 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
         mReplaceStatement.bindLong(9, account.isPlaceholderAccount() ? 1 : 0);
         mReplaceStatement.bindString(10, account.getCreatedTimestamp().toString());
         mReplaceStatement.bindLong(11, account.isHidden() ? 1 : 0);
-        if (account.getParentUID() != null) {
-            mReplaceStatement.bindString(12, account.getParentUID());
+        String parentAccountUID = account.getParentUID();
+        if (parentAccountUID == null && account.getAccountType() != AccountType.ROOT) {
+            parentAccountUID = getOrCreateGnuCashRootAccountUID();
+        }
+        if (parentAccountUID != null) {
+            mReplaceStatement.bindString(12, parentAccountUID);
         }
         if (account.getDefaultTransferAccountUID() != null) {
             mReplaceStatement.bindString(13, account.getDefaultTransferAccountUID());

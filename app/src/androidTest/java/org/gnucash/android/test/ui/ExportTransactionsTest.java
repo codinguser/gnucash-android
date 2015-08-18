@@ -151,7 +151,7 @@ public class ExportTransactionsTest extends
 		onView(withText(R.string.nav_menu_export)).perform(click());
 		onView(withText(format.name())).perform(click());
 
-		onView(withId(R.id.btn_save)).perform(click());
+		onView(withId(R.id.menu_save)).perform(click());
 
 		assertThat(folder.listFiles().length).isEqualTo(1);
 		File exportFile = folder.listFiles()[0];
@@ -188,7 +188,7 @@ public class ExportTransactionsTest extends
 		onView(allOf(isAssignableFrom(CompoundButton.class), isDisplayed(), isEnabled())).perform(click());
 		onView(withText("Done")).perform(click());
 
-		onView(withId(R.id.btn_save)).perform(click());
+		onView(withId(R.id.menu_save)).perform(click());
 		ScheduledActionDbAdapter scheduledactionDbAdapter = new ScheduledActionDbAdapter(mDb);
 		List<ScheduledAction> scheduledActions = scheduledactionDbAdapter.getAllEnabledScheduledActions();
 		assertThat(scheduledActions)

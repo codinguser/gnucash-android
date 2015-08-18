@@ -236,7 +236,7 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
     public void shouldHideParentAccountViewWhenNoParentsExist(){
         onView(allOf(withText(DUMMY_ACCOUNT_NAME), isDisplayed())).perform(click());
         onView(withId(R.id.fragment_transaction_list)).perform(swipeRight());
-        onView(withId(R.id.fab_create_account)).check(matches(isDisplayed())).perform(click());
+        onView(withId(R.id.fab_create_transaction)).check(matches(isDisplayed())).perform(click());
         sleep(1000);
         onView(withId(R.id.checkbox_parent_account)).check(matches(allOf(isChecked())));
         onView(withId(R.id.input_account_name)).perform(typeText("Trading account"));
@@ -245,7 +245,7 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
 
         onView(withId(R.id.layout_parent_account)).check(matches(not(isDisplayed())));
         onView(withId(R.id.menu_save)).perform(click());
-
+        sleep(1000);
         //no sub-accounts
         assertThat(mAccountsDbAdapter.getSubAccountCount(DUMMY_ACCOUNT_UID)).isEqualTo(0);
         assertThat(mAccountsDbAdapter.getSubAccountCount(mAccountsDbAdapter.getOrCreateGnuCashRootAccountUID())).isEqualTo(2);

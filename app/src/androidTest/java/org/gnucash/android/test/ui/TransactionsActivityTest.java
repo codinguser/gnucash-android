@@ -135,10 +135,8 @@ public class TransactionsActivityTest extends
         account2.setUID(TRANSFER_ACCOUNT_UID);
         account2.setCurrency(Currency.getInstance(CURRENCY_CODE));
 
-        long id1 = mAccountsDbAdapter.addRecord(account);
-        long id2 = mAccountsDbAdapter.addRecord(account2);
-        assertThat(id1).isGreaterThan(0);
-        assertThat(id2).isGreaterThan(0);
+        mAccountsDbAdapter.addRecord(account);
+        mAccountsDbAdapter.addRecord(account2);
 
         mTransaction = new Transaction(TRANSACTION_NAME);
         mTransaction.setNote("What up?");
@@ -275,7 +273,7 @@ public class TransactionsActivityTest extends
 	public void testEditTransaction(){
 		validateTransactionListDisplayed();
 
-		onView(withText(TRANSACTION_NAME)).perform(click());
+		onView(withId(R.id.options_menu)).perform(click());
 		
 		validateEditTransactionFields(mTransaction);
 
@@ -484,34 +482,11 @@ public class TransactionsActivityTest extends
 
 	@Test
 	public void testDeleteTransaction(){
-		onView(withId(R.id.primary_text)).perform(longClick());
+		onView(withId(R.id.options_menu)).perform(click());
 		clickOnView(R.id.context_menu_delete);
 
 		long id = mAccountsDbAdapter.getID(DUMMY_ACCOUNT_UID);
 		assertEquals(0, mTransactionsDbAdapter.getTransactionsCount(id));
-	}
-
-	@Test
-	public void testBulkMoveTransactions(){
-        String targetAccountName = "Target";
-        Account account = new Account(targetAccountName);
-		account.setCurrency(Currency.getInstance(Locale.getDefault()));
-		mAccountsDbAdapter.addRecord(account);
-		
-		int beforeOriginCount = mAccountsDbAdapter.getRecord(DUMMY_ACCOUNT_UID).getTransactionCount();
-		
-		validateTransactionListDisplayed();
-
-		clickOnView(R.id.checkbox_transaction);
-		clickOnView(R.id.context_menu_move_transactions);
-
-		clickOnView(R.id.btn_save);
-
-		int targetCount = mAccountsDbAdapter.getRecord(account.getUID()).getTransactionCount();
-		assertThat(targetCount).isEqualTo(1);
-		
-		int afterOriginCount = mAccountsDbAdapter.getRecord(DUMMY_ACCOUNT_UID).getTransactionCount();
-		assertThat(afterOriginCount).isEqualTo(beforeOriginCount - 1);
 	}
 
 	//TODO: add normal transaction recording
