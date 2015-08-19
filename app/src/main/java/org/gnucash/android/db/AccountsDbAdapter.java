@@ -153,6 +153,7 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
                     + AccountEntry.COLUMN_HIDDEN        + " , "
                     + AccountEntry.COLUMN_PARENT_ACCOUNT_UID + " , "
                     + AccountEntry.COLUMN_DEFAULT_TRANSFER_ACCOUNT_UID + " ) VALUES ( ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ?)");
+            //commodity_uid is not forgotten. It will be inserted by a database trigger
         }
 
         mReplaceStatement.clearBindings();
@@ -893,7 +894,15 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
         rootAccount.setAccountType(AccountType.ROOT);
         rootAccount.setFullName(ROOT_ACCOUNT_FULL_NAME);
         rootAccount.setHidden(true);
-        addRecord(rootAccount);
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(AccountEntry.COLUMN_UID, rootAccount.getUID());
+        contentValues.put(AccountEntry.COLUMN_NAME, rootAccount.getName());
+        contentValues.put(AccountEntry.COLUMN_FULL_NAME, rootAccount.getFullName());
+        contentValues.put(AccountEntry.COLUMN_TYPE, rootAccount.getAccountType().name());
+        contentValues.put(AccountEntry.COLUMN_HIDDEN, rootAccount.isHidden() ? 1 : 0);
+        contentValues.put(AccountEntry.COLUMN_CURRENCY, GnuCashApplication.getDefaultCurrencyCode());
+        Log.i(LOG_TAG, "Creating ROOT account");
+        mDb.insert(AccountEntry.TABLE_NAME, null, contentValues);
         return rootAccount.getUID();
     }
 
@@ -932,14 +941,14 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
      */
     public String getAccountName(String accountUID){
         Cursor cursor = mDb.query(AccountEntry.TABLE_NAME,
-                new String[]{AccountEntry._ID, AccountEntry.COLUMN_NAME},
+                new String[]{AccountEntry.COLUMN_NAME},
                 AccountEntry.COLUMN_UID + " = ?",
                 new String[]{accountUID}, null, null, null);
         try {
             if (cursor.moveToNext()) {
                 return cursor.getString(cursor.getColumnIndexOrThrow(AccountEntry.COLUMN_NAME));
             } else {
-                throw new IllegalArgumentException("account " + accountUID + " does not exist");
+                throw new IllegalArgumentException("Failed to retrieve account name for account: " + accountUID);
             }
         } finally {
             cursor.close();

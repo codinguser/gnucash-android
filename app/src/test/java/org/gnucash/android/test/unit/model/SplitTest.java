@@ -66,7 +66,7 @@ public class SplitTest {
         split.setTransactionUID("terminator-trx");
         split.setType(TransactionType.CREDIT);
 
-        assertThat(split.toCsv()).isEqualTo("10.00;EUR;random-account;terminator-trx;CREDIT");
+        assertThat(split.toCsv()).isEqualTo("1000;100;EUR;1000;100;EUR;terminator-trx;random-account;CREDIT");
     }
 
     @Test

@@ -68,7 +68,8 @@ public class Split extends BaseModel{
         this.mAccountUID    = sourceSplit.mAccountUID;
         this.mSplitType     = sourceSplit.mSplitType;
         this.mTransactionUID = sourceSplit.mTransactionUID;
-        this.mValue = sourceSplit.mValue.absolute();
+        this.mValue         = new Money(sourceSplit.mValue);
+        this.mQuantity      = new Money(sourceSplit.mQuantity);
 
         if (generateUID){
             generateUID();
@@ -238,15 +239,9 @@ public class Split extends BaseModel{
      */
     public String toCsv(){
         String sep = ";";
-        int valueFractionDigits = mValue.getCurrency().getDefaultFractionDigits();
-        int qtyFractionDigits = mQuantity.getCurrency().getDefaultFractionDigits();
-        String valueDenom = String.valueOf((int) Math.pow(10, valueFractionDigits));
-        String valueNum = String.valueOf(mValue.multiply(Integer.parseInt(valueDenom)).intValue());
-        String qtyDenom = String.valueOf((int)Math.pow(10, qtyFractionDigits));
-        String qtyNum   = String.valueOf(mQuantity.multiply(Integer.parseInt(qtyDenom)).intValue());
 
-        String splitString = valueNum + sep + valueDenom + sep + mValue.getCurrency().getCurrencyCode()
-                + qtyNum + sep + qtyDenom + sep + mQuantity.getCurrency().getCurrencyCode()
+        String splitString = mValue.getNumerator() + sep + mValue.getDenominator() + sep + mValue.getCurrency().getCurrencyCode() + sep
+                + mQuantity.getNumerator() + sep + mQuantity.getDenominator() + sep + mQuantity.getCurrency().getCurrencyCode()
                 + sep + mTransactionUID + sep + mAccountUID + sep + mSplitType.name();
         if (mMemo != null){
             splitString = splitString + sep + mMemo;
