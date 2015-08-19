@@ -198,7 +198,7 @@ public abstract class DatabaseAdapter<Model extends BaseModel> {
      */
     public long bulkAddRecords(@NonNull List<Model> modelList) {
         Log.i(LOG_TAG, String.format("Bulk adding %d %s records to the database", modelList.size(),
-                modelList.get(0).getClass().getName()));
+                modelList.size() == 0 ? "null": modelList.get(0).getClass().getName()));
         long nRow = 0;
         try {
             mDb.beginTransaction();
