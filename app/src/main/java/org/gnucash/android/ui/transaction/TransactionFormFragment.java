@@ -548,7 +548,7 @@ public class TransactionFormFragment extends Fragment implements
 	 */
 	private void setListeners() {
         mAmountInputFormatter = new AmountTextWatcher(mAmountEditText); //new AmountInputFormatter(mAmountEditText);
-        mAmountEditText.addTextChangedListener(mAmountInputFormatter);
+        //mAmountEditText.addTextChangedListener(mAmountInputFormatter);
         mAmountEditText.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
