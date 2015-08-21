@@ -1,21 +1,23 @@
 buildscript {
-	repositories{
-		maven { url 'http://download.crashlytics.com/maven' }
-		jcenter()
-	}
-	dependencies {
-		classpath 'com.android.tools.build:gradle:1.2.3'
-		classpath 'com.crashlytics.tools.gradle:crashlytics-gradle:1.16.0'
-	}
+    repositories {
+        maven { url 'http://download.crashlytics.com/maven' }
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:1.2.3'
+        classpath 'com.crashlytics.tools.gradle:crashlytics-gradle:1.16.0'
+    }
 }
-
 allprojects {
     repositories {
-		maven { url "http://dl.bintray.com/populov/maven" }
-        maven { url "https://repo.commonsware.com.s3.amazonaws.com"}
-		maven { url 'http://download.crashlytics.com/maven' }
+        maven { url "http://dl.bintray.com/populov/maven" }
+        maven { url "https://repo.commonsware.com.s3.amazonaws.com" }
+        maven { url 'http://download.crashlytics.com/maven' }
         maven { url "https://jitpack.io" }
-        jcenter()		
+        jcenter()
         mavenCentral()
     }
+}
+
+dependencies {
 }
