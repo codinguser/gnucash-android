@@ -42,16 +42,21 @@ limitations under the License.
              android:layout_height="1dp"
              android:layout_above="@id/footer"/>
 
-    <include layout="@layout/default_buttons"
-             android:id="@+id/default_buttons"
-             android:layout_width="220dp"
-             android:layout_height="wrap_content"
-             android:layout_alignParentBottom="true"/>
+    <Button android:id="@+id/btn_add_split"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minWidth="100dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_gravity="center"
+        android:textColor="@android:color/white"
+        android:text="@string/btn_add_split"/>
 
     <LinearLayout android:id="@+id/footer"
                  android:layout_width="match_parent"
                  android:layout_height="wrap_content"
-                 android:layout_above="@id/default_buttons">
+                 android:layout_above="@id/btn_add_split">
 
             <TextView
                     android:layout_width="wrap_content"
@@ -66,15 +71,7 @@ limitations under the License.
                       android:layout_weight="1"
                       android:textAppearance="?android:attr/textAppearanceSmall"
                       android:gravity="right|center_vertical"
-                      android:text="$200"/>
+                      tools:text="$200"/>
     </LinearLayout>
-    <Button android:id="@+id/btn_add_split"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:minWidth="100dp"
-        android:layout_alignParentBottom="true"
-        android:layout_toRightOf="@id/default_buttons"
-        android:layout_alignParentRight="true"
-        android:textColor="@android:color/white"
-        android:text="@string/btn_add_split"/>
+
 </RelativeLayout>

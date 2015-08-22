@@ -450,7 +450,7 @@ public final class Money implements Comparable<Money>{
 		return result;
 	}
 
-	/**
+	/** //FIXME: equality failing for money objects
 	 * Two Money objects are only equal if their amount (value) and currencies are equal
 	 * @param obj Object to compare with
 	 * @return <code>true</code> if the objects are equal, <code>false</code> otherwise

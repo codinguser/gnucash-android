@@ -33,16 +33,19 @@ import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.ui.account.AccountFormFragment;
 import org.gnucash.android.ui.export.ExportFormFragment;
 import org.gnucash.android.ui.transaction.TransactionFormFragment;
+import org.gnucash.android.ui.transaction.dialog.SplitEditorFragment;
 
 /**
- * Activity for displaying forms
+ * Activity for displaying forms in the application.
+ * The activity provides the standard close button, but it is up to the form fragments to display
+ * menu options (e.g. for saving etc)
  * @author Ngewi Fet <ngewif@gmail.com>
  */
 public class FormActivity extends AppCompatActivity {
 
     private String mAccountUID;
 
-    public enum FormType {ACCOUNT_FORM, TRANSACTION_FORM, EXPORT_FORM}
+    public enum FormType {ACCOUNT_FORM, TRANSACTION_FORM, EXPORT_FORM, SPLIT_EDITOR}
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,6 +86,10 @@ public class FormActivity extends AppCompatActivity {
 
             case EXPORT_FORM:
                 showExportFormFragment(null);
+                break;
+
+            case SPLIT_EDITOR:
+                showSplitEditorFragment(intent.getExtras());
                 break;
 
             default:
@@ -141,7 +148,17 @@ public class FormActivity extends AppCompatActivity {
      */
     private void showExportFormFragment(Bundle args){
         ExportFormFragment exportFragment = new ExportFormFragment();
+        exportFragment.setArguments(args);
         showFormFragment(exportFragment);
+    }
+
+    /**
+     * Load the split editor fragment
+     * @param args View arguments
+     */
+    private void showSplitEditorFragment(Bundle args){
+        SplitEditorFragment splitEditor = SplitEditorFragment.newInstance(args);
+        showFormFragment(splitEditor);
     }
 
     /**

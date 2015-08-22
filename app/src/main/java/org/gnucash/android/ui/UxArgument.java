@@ -82,6 +82,17 @@ public final class UxArgument {
      */
     public static final String FORM_TYPE = "form_type";
 
+    /**
+     * List of splits which have been created using the split editor
+     */
+    public static final String SPLIT_LIST = "split_list";
+
+    /**
+     * GUID of splits which have been removed from the split editor
+     */
+    public static String REMOVED_SPLITS = "removed_split_guids";
+
+
     //prevent initialization of instances of this class
     private UxArgument(){
         //prevent even the native class from calling the ctor
