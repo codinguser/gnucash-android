@@ -116,13 +116,7 @@ public final class Money implements Comparable<Money>{
 		init();
 	}
 
-	/**
-	 * Overloaded constructor
-	 * @param numerator numerator of the money instance
-	 * @param denominator denominator of the money instance
-	 * @param currency {@link Currency} associated with the <code>amount</code>
-	 */
-	public Money(long numerator, int denominator, Currency currency){
+	public static BigDecimal getBigDecimal(long numerator, int denominator) {
 		int scale;
 		if (numerator == 0 && denominator == 0) {
 			denominator = 1;
@@ -135,7 +129,17 @@ public final class Money implements Comparable<Money>{
 			default:
 				throw new InvalidParameterException("invalid denominator " + denominator);
 		}
-		this.mAmount = new BigDecimal(BigInteger.valueOf(numerator), scale);
+		return new BigDecimal(BigInteger.valueOf(numerator), scale);
+	}
+
+	/**
+	 * Overloaded constructor
+	 * @param numerator numerator of the money instance
+	 * @param denominator denominator of the money instance
+	 * @param currency {@link Currency} associated with the <code>amount</code>
+	 */
+	public Money(long numerator, int denominator, Currency currency){
+		this.mAmount = getBigDecimal(numerator, denominator);
 		this.mCurrency = currency;
 	}
 	
