@@ -186,7 +186,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return "CREATE TRIGGER update_time_trigger "
                 + "  AFTER UPDATE ON " + tableName + " FOR EACH ROW"
                 + "  BEGIN " + "UPDATE " + tableName
-                + "  SET " + DatabaseSchema.CommonColumns.COLUMN_MODIFIED_AT + " = CURRENT_TIMESTAMP;"
+                + "  SET " + CommonColumns.COLUMN_MODIFIED_AT + " = CURRENT_TIMESTAMP"
+                + "  WHERE OLD." + CommonColumns.COLUMN_UID + " = NEW." + CommonColumns.COLUMN_UID + ";"
                 + "  END;";
     }
 
@@ -288,6 +289,24 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             e.printStackTrace();
             throw new RuntimeException(e);
         }
+
+        db.execSQL("CREATE TRIGGER insert_account_commodity "
+                + " AFTER INSERT ON " + AccountEntry.TABLE_NAME
+                + " BEGIN " + "UPDATE " + AccountEntry.TABLE_NAME
+                        + " SET " + AccountEntry.COLUMN_COMMODITY_UID + " = "
+                            + " (SELECT " + CommodityEntry.COLUMN_UID + " FROM " + CommodityEntry.TABLE_NAME
+                            + " WHERE " + AccountEntry.TABLE_NAME + "." + AccountEntry.COLUMN_CURRENCY + " = " + CommodityEntry.TABLE_NAME + "." + CommodityEntry.COLUMN_MNEMONIC + ")"
+                        + " WHERE " + AccountEntry.COLUMN_UID + " = NEW." + AccountEntry.COLUMN_UID + ";"
+                + "  END;");
+
+        db.execSQL("CREATE TRIGGER insert_transaction_commodity "
+                + " AFTER INSERT ON " + TransactionEntry.TABLE_NAME
+                + " BEGIN " + "UPDATE " + TransactionEntry.TABLE_NAME
+                    + " SET " + TransactionEntry.COLUMN_COMMODITY_UID + " = "
+                        + " (SELECT " + CommodityEntry.COLUMN_UID + " FROM " + CommodityEntry.TABLE_NAME
+                        + " WHERE " + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_CURRENCY + " = " + CommodityEntry.TABLE_NAME + "." + CommodityEntry.COLUMN_MNEMONIC + ") "
+                    + " WHERE " + TransactionEntry.COLUMN_UID + " = NEW." + TransactionEntry.COLUMN_UID + ";"
+                + "  END;");
     }
 
 }

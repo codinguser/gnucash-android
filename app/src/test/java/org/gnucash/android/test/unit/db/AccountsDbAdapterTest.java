@@ -103,6 +103,15 @@ public class AccountsDbAdapterTest{
         mAccountsDbAdapter.addRecord(account1);
         mAccountsDbAdapter.addRecord(account2);
 
+        Account firstAccount = mAccountsDbAdapter.getRecord(account1.getUID());
+        assertThat(firstAccount).isNotNull();
+        assertThat(firstAccount.getUID()).isEqualTo(account1.getUID());
+        assertThat(firstAccount.getFullName()).isEqualTo(account1.getFullName());
+
+        Account secondAccount = mAccountsDbAdapter.getRecord(account2.getUID());
+        assertThat(secondAccount).isNotNull();
+        assertThat(secondAccount.getUID()).isEqualTo(account2.getUID());
+
         assertThat(mTransactionsDbAdapter.getRecordsCount()).isEqualTo(1);
     }
 

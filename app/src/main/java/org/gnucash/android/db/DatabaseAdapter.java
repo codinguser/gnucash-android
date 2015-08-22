@@ -197,13 +197,18 @@ public abstract class DatabaseAdapter<Model extends BaseModel> {
      * @return Number of rows inserted
      */
     public long bulkAddRecords(@NonNull List<Model> modelList) {
+        if (modelList.isEmpty()) {
+            Log.d(LOG_TAG, "Empty model list. Cannot bulk add records, returning 0");
+            return 0;
+        }
+
         Log.i(LOG_TAG, String.format("Bulk adding %d %s records to the database", modelList.size(),
                 modelList.size() == 0 ? "null": modelList.get(0).getClass().getName()));
         long nRow = 0;
         try {
             mDb.beginTransaction();
-            for (Model split : modelList) {
-                compileReplaceStatement(split).execute();
+            for (Model model : modelList) {
+                compileReplaceStatement(model).execute();
                 nRow++;
             }
             mDb.setTransactionSuccessful();

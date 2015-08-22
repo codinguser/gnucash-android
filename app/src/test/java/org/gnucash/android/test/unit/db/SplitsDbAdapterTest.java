@@ -1,5 +1,7 @@
 package org.gnucash.android.test.unit.db;
 
+import android.database.sqlite.SQLiteException;
+
 import org.gnucash.android.BuildConfig;
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.DatabaseSchema;
@@ -43,7 +45,10 @@ public class SplitsDbAdapterTest {
         mAccountsDbAdapter.addRecord(mAccount);
     }
 
-    @Test
+    /**
+     * Adding a split where the account does not exist in the database should generate an exception
+     */
+    @Test(expected = SQLiteException.class)
     public void shouldHaveAccountInDatabase(){
         Transaction transaction = new Transaction("");
         mTransactionsDbAdapter.addRecord(transaction);
@@ -51,9 +56,32 @@ public class SplitsDbAdapterTest {
         Split split = new Split(Money.getZeroInstance(), "non-existent");
         split.setTransactionUID(transaction.getUID());
         mSplitsDbAdapter.addRecord(split);
+    }
+
+    /**
+     * Adding a split where the account does not exist in the database should generate an exception
+     */
+    @Test(expected = SQLiteException.class)
+    public void shouldHaveTransactionInDatabase(){
+        Transaction transaction = new Transaction(""); //not added to the db
+
+        Split split = new Split(Money.getZeroInstance(), mAccount.getUID());
+        split.setTransactionUID(transaction.getUID());
+        mSplitsDbAdapter.addRecord(split);
+    }
+
+    @Test
+    public void testAddSplit(){
+        Transaction transaction = new Transaction("");
+        mTransactionsDbAdapter.addRecord(transaction);
+
+        Split split = new Split(Money.getZeroInstance(), mAccount.getUID());
+        split.setTransactionUID(transaction.getUID());
+        mSplitsDbAdapter.addRecord(split);
 
         List<Split> splits = mSplitsDbAdapter.getSplitsForTransaction(transaction.getUID());
-        assertThat(splits).isEmpty();
+        assertThat(splits).isNotEmpty();
+        assertThat(splits.get(0).getUID()).isEqualTo(split.getUID());
     }
 
     /**

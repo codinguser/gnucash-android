@@ -86,7 +86,7 @@ public class TransactionsDbAdapter extends DatabaseAdapter<Transaction> {
 	 */
     @Override
 	public void addRecord(@NonNull Transaction transaction){
-
+        //TODO: Override this method to balance transaction splits before saving to database
         Log.d(LOG_TAG, "Replacing transaction in db");
         mDb.beginTransaction();
         try {

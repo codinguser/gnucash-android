@@ -89,4 +89,26 @@ public class CommoditiesDbAdapter extends DatabaseAdapter<Commodity> {
         cursor.close();
         return commodity;
     }
+
+    /**
+     * Returns the commodity GUID for the given ISO 4217 currency code
+     * @param currencyCode ISO 4217 currency code
+     * @return GUID of commodity
+     */
+    public String getCommodityUID(String currencyCode){
+        String where = CommodityEntry.COLUMN_MNEMONIC + "= ?";
+        String[] whereArgs = new String[]{currencyCode};
+
+        Cursor cursor = mDb.query(mTableName, new String[]{CommodityEntry.COLUMN_UID},
+                where, whereArgs, null, null, null);
+        try {
+            if (cursor.moveToNext()) {
+                return cursor.getString(cursor.getColumnIndexOrThrow(CommodityEntry.COLUMN_UID));
+            } else {
+                throw new IllegalArgumentException("Currency code not found in commodities");
+            }
+        } finally {
+            cursor.close();
+        }
+    }
 }

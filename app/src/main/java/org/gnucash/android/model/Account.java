@@ -102,7 +102,7 @@ public class Account extends BaseModel{
 	/**
 	 * List of transactions in this account
 	 */
-	private List<Transaction> mTransactionsList = new ArrayList<Transaction>();
+	private List<Transaction> mTransactionsList = new ArrayList<>();
 
 	/**
 	 * Account UID of the parent account. Can be null
