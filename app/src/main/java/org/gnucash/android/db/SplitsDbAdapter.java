@@ -212,7 +212,7 @@ public class SplitsDbAdapter extends DatabaseAdapter<Split> {
                 if (!hasDebitNormalBalance) {
                     amount_num = -amount_num;
                 }
-                return new Money(amount_num, amount_denom, Currency.getInstance(currencyCode));
+                return new Money(amount_num, amount_denom, currencyCode);
             }
         } finally {
             cursor.close();

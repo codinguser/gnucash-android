@@ -477,6 +477,15 @@ public class GncXmlHandler extends DefaultHandler {
                 break;
             case GncXmlHelper.TAG_SPLIT_VALUE:
                 try {
+                    // The value and quantity can have different sign for custom currency(stock).
+                    // Use the sign of value for split, as it would not be custom currency
+                    String q = characterString;
+                    if (q.charAt(0) == '-') {
+                        mNegativeQuantity = true;
+                        q = q.substring(1);
+                    } else {
+                        mNegativeQuantity = false;
+                    }
                     mValue = GncXmlHelper.parseSplitAmount(characterString).abs(); // use sign from quantity
                 } catch (ParseException e) {
                     String msg = "Error parsing split quantity - " + characterString;
@@ -488,14 +497,7 @@ public class GncXmlHandler extends DefaultHandler {
             case GncXmlHelper.TAG_SPLIT_QUANTITY:
                 // delay the assignment of currency when the split account is seen
                 try {
-                    String q = characterString;
-                    if (q.charAt(0) == '-') {
-                        mNegativeQuantity = true;
-                        q = q.substring(1);
-                    } else {
-                        mNegativeQuantity = false;
-                    }
-                    mQuantity = GncXmlHelper.parseSplitAmount(q);
+                    mQuantity = GncXmlHelper.parseSplitAmount(characterString).abs();
                 } catch (ParseException e) {
                     String msg = "Error parsing split quantity - " + characterString;
                     Crashlytics.log(msg);
@@ -510,7 +512,7 @@ public class GncXmlHandler extends DefaultHandler {
                     //the split amount uses the account currency
                     mSplit.setQuantity(new Money(mQuantity, getCurrencyForAccount(characterString)));
                     //the split value uses the transaction currency
-                    mSplit.setValue(new Money(mQuantity, mTransaction.getCurrency()));
+                    mSplit.setValue(new Money(mValue, mTransaction.getCurrency()));
                     mSplit.setAccountUID(characterString);
                 } else {
                     if (!mIgnoreTemplateTransaction)

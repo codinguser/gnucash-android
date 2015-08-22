@@ -116,12 +116,12 @@ public final class Money implements Comparable<Money>{
 		init();
 	}
 
-	public static BigDecimal getBigDecimal(long numerator, int denominator) {
+	public static BigDecimal getBigDecimal(long numerator, long denominator) {
 		int scale;
 		if (numerator == 0 && denominator == 0) {
 			denominator = 1;
 		}
-		switch (denominator) {
+		switch ((int)denominator) {
 			case 1: scale = 0; break;
 			case 10: scale = 1; break;
 			case 100: scale = 2; break;
@@ -132,17 +132,6 @@ public final class Money implements Comparable<Money>{
 		return new BigDecimal(BigInteger.valueOf(numerator), scale);
 	}
 
-	/**
-	 * Overloaded constructor
-	 * @param numerator numerator of the money instance
-	 * @param denominator denominator of the money instance
-	 * @param currency {@link Currency} associated with the <code>amount</code>
-	 */
-	public Money(long numerator, int denominator, Currency currency){
-		this.mAmount = getBigDecimal(numerator, denominator);
-		this.mCurrency = currency;
-	}
-	
 	/**
 	 * Overloaded constructor
 	 * @param amount {@link BigDecimal} value of the money instance
@@ -186,7 +175,7 @@ public final class Money implements Comparable<Money>{
 	 * @param currencyCode 3-character currency code string
 	 */
 	public Money(long numerator, long denominator, String currencyCode){
-		mAmount = new BigDecimal(numerator).divide(new BigDecimal(denominator), MathContext.UNLIMITED);
+		mAmount = getBigDecimal(numerator, denominator);
 		setCurrency(Currency.getInstance(currencyCode));
 	}
 
