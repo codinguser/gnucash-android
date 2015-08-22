@@ -161,7 +161,7 @@ public abstract class GncXmlHelper {
 
     /**
      * Parses amount strings from GnuCash XML into {@link java.math.BigDecimal}s.
-     * The amounts are formatted as 12345/4100
+     * The amounts are formatted as 12345/100
      * @param amountString String containing the amount
      * @return BigDecimal with numerical value
      * @throws ParseException if the amount could not be parsed
@@ -174,7 +174,8 @@ public abstract class GncXmlHelper {
         }
 
         int scale = amountString.length() - pos - 2; //do this before, because we could modify the string
-        String numerator = TransactionFormFragment.stripCurrencyFormatting(amountString.substring(0, pos));
+        //String numerator = TransactionFormFragment.stripCurrencyFormatting(amountString.substring(0, pos));
+        String numerator = amountString.substring(0,pos);
         BigInteger numeratorInt = new BigInteger(numerator);
         return new BigDecimal(numeratorInt, scale);
     }

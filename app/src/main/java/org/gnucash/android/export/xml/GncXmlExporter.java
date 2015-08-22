@@ -271,7 +271,8 @@ public class GncXmlExporter extends Exporter{
                         SplitEntry.TABLE_NAME+"."+ SplitEntry.COLUMN_TYPE + " AS split_type",
                         SplitEntry.TABLE_NAME+"."+ SplitEntry.COLUMN_VALUE_NUM + " AS split_value_num",
                         SplitEntry.TABLE_NAME+"."+ SplitEntry.COLUMN_VALUE_DENOM + " AS split_value_denom",
-                        SplitEntry.TABLE_NAME+"."+ SplitEntry.COLUMN_ACCOUNT_UID + " AS split_acct_uid"},
+                        SplitEntry.TABLE_NAME+"."+ SplitEntry.COLUMN_QUANTITY_NUM + " AS split_quantity_num",
+                        SplitEntry.TABLE_NAME+"."+ SplitEntry.COLUMN_QUANTITY_DENOM + " AS split_quantity_denom",                        SplitEntry.TABLE_NAME+"."+ SplitEntry.COLUMN_ACCOUNT_UID + " AS split_acct_uid"},
                         where, null,
                         TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_TIMESTAMP + " ASC , " +
                         TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_UID + " ASC ");
@@ -405,7 +406,11 @@ public class GncXmlExporter extends Exporter{
             xmlSerializer.text(strValue);
             xmlSerializer.endTag(null, GncXmlHelper.TAG_SPLIT_VALUE);
             // quantity, in the split account's currency
-            // TODO: multi currency support.
+            String splitQuantityNum = cursor.getString(cursor.getColumnIndexOrThrow("split_quantity_num"));
+            String splitQuantityDenom = cursor.getString(cursor.getColumnIndexOrThrow("split_quantity_denom"));
+            if (!exportTemplates) {
+                strValue = (trxType.equals("CREDIT") ? "-" : "") + splitValueNum + "/" + splitQuantityDenom;
+            }
             xmlSerializer.startTag(null, GncXmlHelper.TAG_SPLIT_QUANTITY);
             xmlSerializer.text(strValue);
             xmlSerializer.endTag(null, GncXmlHelper.TAG_SPLIT_QUANTITY);
