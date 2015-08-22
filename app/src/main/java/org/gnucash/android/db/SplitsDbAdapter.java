@@ -197,22 +197,22 @@ public class SplitsDbAdapter extends DatabaseAdapter<Split> {
             selectionArgs = new String[]{String.valueOf(startTimestamp)};
         }
 
-        //the multiplication by 1.0 is to cause sqlite to handle the value as REAL and not to round off
-        String splitValueSql = SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_VALUE_NUM + "*1.0 / " + SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_VALUE_DENOM;
         cursor = mDb.query(SplitEntry.TABLE_NAME + " , " + TransactionEntry.TABLE_NAME,
                 new String[]{"TOTAL ( CASE WHEN " + SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_TYPE + " = 'DEBIT' THEN " +
-                        splitValueSql + " ELSE - " + splitValueSql + " END )"},
+                        SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_VALUE_NUM + " ELSE - " +
+                        SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_VALUE_NUM + " END )",
+                        SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_VALUE_DENOM},
                 selection, selectionArgs, null, null, null);
 
         try {
             if (cursor.moveToFirst()) {
-                double amount = cursor.getDouble(0);
-                cursor.close();
-                Log.d(LOG_TAG, "amount return " + amount);
+                int amount_num = cursor.getInt(0);
+                int amount_denom = cursor.getInt(1);
+                Log.d(LOG_TAG, "amount return " + amount_num + "/" + amount_denom);
                 if (!hasDebitNormalBalance) {
-                    amount = -amount;
+                    amount_num = -amount_num;
                 }
-                return new Money(BigDecimal.valueOf(amount).setScale(2, BigDecimal.ROUND_HALF_UP), Currency.getInstance(currencyCode));
+                return new Money(amount_num, amount_denom, Currency.getInstance(currencyCode));
             }
         } finally {
             cursor.close();

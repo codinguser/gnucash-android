@@ -73,9 +73,6 @@ public abstract class DatabaseAdapter<Model extends BaseModel> {
 
     private void createTempView() {
         //the multiplication by 1.0 is to cause sqlite to handle the value as REAL and not to round off
-        String splitValueSql = SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_VALUE_NUM + "*1.0 / " + SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_VALUE_DENOM;
-
-        final String SPLIT_VALUE_AMOUNT = "amount";
 
         // Create some temporary views. Temporary views only exists in one DB session, and will not
         // be saved in the DB
@@ -103,8 +100,10 @@ public abstract class DatabaseAdapter<Model extends BaseModel> {
                         + SplitEntry.TABLE_NAME + "_" + SplitEntry.COLUMN_UID + " , "
                         + SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_TYPE + " AS "
                         + SplitEntry.TABLE_NAME + "_" + SplitEntry.COLUMN_TYPE + " , "
-                        + splitValueSql + " AS " //FIXME: Check if the split value is properly extracted. Also consider adding split quantity to the view
-                        + SplitEntry.TABLE_NAME + "_" + SPLIT_VALUE_AMOUNT + " , "
+                        + SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_VALUE_NUM + " AS "
+                        + SplitEntry.TABLE_NAME + "_" + SplitEntry.COLUMN_VALUE_NUM + " , "
+                        + SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_VALUE_DENOM + " AS "
+                        + SplitEntry.TABLE_NAME + "_" + SplitEntry.COLUMN_VALUE_DENOM + " , "
                         + SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_MEMO + " AS "
                         + SplitEntry.TABLE_NAME + "_" + SplitEntry.COLUMN_MEMO + " , "
                         + AccountEntry.TABLE_NAME + "." + AccountEntry.COLUMN_UID + " AS "
@@ -163,8 +162,9 @@ public abstract class DatabaseAdapter<Model extends BaseModel> {
                 AccountEntry.TABLE_NAME + "_" + AccountEntry.COLUMN_UID +
                 " ) , 2 ) AS trans_acct_a_uid , TOTAL ( CASE WHEN " + SplitEntry.TABLE_NAME + "_" +
                 SplitEntry.COLUMN_TYPE + " = 'DEBIT' THEN "+ SplitEntry.TABLE_NAME + "_" +
-                SPLIT_VALUE_AMOUNT + " ELSE - " + SplitEntry.TABLE_NAME + "_" +
-                SPLIT_VALUE_AMOUNT + " END ) AS trans_acct_balance , COUNT ( DISTINCT " +
+                SplitEntry.COLUMN_VALUE_NUM + " ELSE - " + SplitEntry.TABLE_NAME + "_" +
+                SplitEntry.COLUMN_VALUE_NUM + " END ) * 1.0 / " + SplitEntry.TABLE_NAME + "_" +
+                SplitEntry.COLUMN_VALUE_DENOM + " AS trans_acct_balance , COUNT ( DISTINCT " +
                 AccountEntry.TABLE_NAME + "_" + AccountEntry.COLUMN_CURRENCY +
                 " ) AS trans_currency_count , COUNT (*) AS trans_split_count FROM trans_split_acct " +
                 " GROUP BY " + TransactionEntry.TABLE_NAME + "_" + TransactionEntry.COLUMN_UID
@@ -203,7 +203,7 @@ public abstract class DatabaseAdapter<Model extends BaseModel> {
         }
 
         Log.i(LOG_TAG, String.format("Bulk adding %d %s records to the database", modelList.size(),
-                modelList.get(0).getClass().getName()));
+                modelList.size() == 0 ? "null": modelList.get(0).getClass().getName()));
         long nRow = 0;
         try {
             mDb.beginTransaction();
