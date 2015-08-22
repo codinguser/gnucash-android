@@ -72,9 +72,9 @@
 				android:layout_height="wrap_content"
 				android:textOn="@string/label_debit"
 				android:textOff="@string/label_credit"
-				android:textAllCaps="true"
 				android:gravity="end|center_vertical"
 				android:textColor="@color/debit_red"
+				android:textSize="14sp"
 				android:checked="true"/>
 
 		</TableRow>

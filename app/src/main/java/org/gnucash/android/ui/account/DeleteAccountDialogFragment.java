@@ -124,7 +124,6 @@ public class DeleteAccountDialogFragment extends DialogFragment {
         mCancelButton = (Button) view.findViewById(R.id.btn_cancel);
         mOkButton = (Button) view.findViewById(R.id.btn_save);
         mOkButton.setText(R.string.alert_dialog_ok_delete);
-        mOkButton.setCompoundDrawablesWithIntrinsicBounds(R.drawable.content_discard_holo_light,0,0,0);
         return view;
     }
 
