@@ -24,8 +24,10 @@ import com.crashlytics.android.Crashlytics;
 import org.gnucash.android.app.GnuCashApplication;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.math.MathContext;
 import java.math.RoundingMode;
+import java.security.InvalidParameterException;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
@@ -112,6 +114,29 @@ public final class Money implements Comparable<Money>{
 	 */
 	public Money() {
 		init();
+	}
+
+	/**
+	 * Overloaded constructor
+	 * @param numerator numerator of the money instance
+	 * @param denominator denominator of the money instance
+	 * @param currency {@link Currency} associated with the <code>amount</code>
+	 */
+	public Money(long numerator, int denominator, Currency currency){
+		int scale;
+		if (numerator == 0 && denominator == 0) {
+			denominator = 1;
+		}
+		switch (denominator) {
+			case 1: scale = 0; break;
+			case 10: scale = 1; break;
+			case 100: scale = 2; break;
+			case 1000: scale = 3; break;
+			default:
+				throw new InvalidParameterException("invalid denominator " + denominator);
+		}
+		this.mAmount = new BigDecimal(BigInteger.valueOf(numerator), scale);
+		this.mCurrency = currency;
 	}
 	
 	/**
