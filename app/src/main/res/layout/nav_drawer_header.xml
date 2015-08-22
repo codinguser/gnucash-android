@@ -15,20 +15,34 @@
  limitations under the License.
 -->
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="150dp"
+    android:layout_height="100dp"
+    android:background="@color/theme_primary"
     android:orientation="vertical">
-    <ImageView
+
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@drawable/ic_launcher"
-        android:scaleType="centerCrop" />
-    <TextView
-        style="@style/TextAppearance.AppCompat.Subhead"
+        android:layout_height="match_parent">
+    <TextView android:id="@+id/drawer_title"
+        style="@style/TextAppearance.AppCompat.Headline"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         android:layout_margin="16dp"
-        android:text="GnuCash"
+        android:drawableLeft="@drawable/ic_launcher"
+        android:drawablePadding="10dp"
+        android:gravity="center_vertical"
+        android:text="@string/app_name"
         android:textColor="@android:color/white" />
+    <TextView
+        android:id="@+id/book_name"
+        style="@style/TextAppearance.AppCompat.Subhead"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/drawer_title"
+        android:textColor="@android:color/white"
+        android:layout_marginLeft="75dp"
+        tools:text="Current Book Name"/>
+    </RelativeLayout>
 </FrameLayout>

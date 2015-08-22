@@ -18,41 +18,35 @@
     <!-- TODO: add icons -->
     <item
         android:id="@+id/nav_section_accounts"
-        android:title="Accounts">
+        android:title="@string/title_accounts">
         <menu>
             <item
                 android:id="@+id/nav_item_open"
-                android:title="Open..."/>
+                android:title="@string/nav_menu_open"/>
             <item
                 android:id="@+id/nav_item_favorites"
-                android:title="Favorites"/>
+                android:title="@string/nav_menu_favorites"/>
             <item android:id="@+id/nav_item_reports"
-                android:title="Reports" />
+                android:title="@string/nav_menu_reports" />
         </menu>
     </item>
     <item
         android:id="@+id/nav_section_transactions"
-        android:title="Transactions">
+        android:title="@string/title_transactions">
         <menu>
             <item
                 android:id="@+id/nav_item_scheduled_trn"
-                android:title="Scheduled"/>
+                android:title="@string/nav_menu_scheduled_transactions"/>
+            <item
+                android:id="@+id/nav_item_scheduled_export"
+                android:title="@string/nav_menu_scheduled_backups"/>
             <item
                 android:id="@+id/nav_item_export"
-                android:title="Export..."/>
+                android:title="@string/nav_menu_export"/>
         </menu>
     </item>
     <item
-        android:id="@+id/nav_section_settings"
-        android:title="Settings">
-        <menu>
-            <item
-                android:id="@+id/nav_item_scheduled_export"
-                android:title="Scheduled Exports"/>
-            <item
-                android:id="@+id/nav_item_settings"
-                android:title="Settings"/>
-        </menu>
-    </item>
+        android:id="@+id/nav_item_settings"
+        android:title="@string/nav_menu_settings"/>
 
 </menu>
