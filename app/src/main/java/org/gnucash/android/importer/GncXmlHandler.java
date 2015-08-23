@@ -392,11 +392,11 @@ public class GncXmlHandler extends DefaultHandler {
                 break;
             case GncXmlHelper.TAG_SLOT_VALUE:
                 if (mInPlaceHolderSlot) {
-                    Log.v(LOG_TAG, "Setting account placeholder flag");
+                    //Log.v(LOG_TAG, "Setting account placeholder flag");
                     mAccount.setPlaceHolderFlag(Boolean.parseBoolean(characterString));
                     mInPlaceHolderSlot = false;
                 } else if (mInColorSlot) {
-                    Log.d(LOG_TAG, "Parsing color code: " + characterString);
+                    //Log.d(LOG_TAG, "Parsing color code: " + characterString);
                     String color = characterString.trim();
                     //Gnucash exports the account color in format #rrrgggbbb, but we need only #rrggbb.
                     //so we trim the last digit in each block, doesn't affect the color much
@@ -725,9 +725,11 @@ public class GncXmlHandler extends DefaultHandler {
         }
         long startTime = System.nanoTime();
         mAccountsDbAdapter.beginTransaction();
+        Log.d(getClass().getSimpleName(), "bulk insert starts");
         try {
+            Log.d(getClass().getSimpleName(), "before clean up db");
             mAccountsDbAdapter.deleteAllRecords();
-
+            Log.d(getClass().getSimpleName(), String.format("deb clean up done %d ns", System.nanoTime()-startTime));
             long nAccounts = mAccountsDbAdapter.bulkAddRecords(mAccountList);
             Log.d("Handler:", String.format("%d accounts inserted", nAccounts));
             //We need to add scheduled actions first because there is a foreign key constraint on transactions

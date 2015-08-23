@@ -82,7 +82,6 @@ public class TransactionsDbAdapter extends DatabaseAdapter<Transaction> {
 	 * If a transaction already exists in the database with the same unique ID, 
 	 * then the record will just be updated instead
 	 * @param transaction {@link Transaction} to be inserted to database
-	 * @return Database row ID of the inserted transaction
 	 */
     @Override
 	public void addRecord(@NonNull Transaction transaction){
@@ -127,16 +126,19 @@ public class TransactionsDbAdapter extends DatabaseAdapter<Transaction> {
      */
     @Override
     public long bulkAddRecords(@NonNull List<Transaction> transactionList){
+        long start = System.nanoTime();
         long rowInserted = super.bulkAddRecords(transactionList);
-
+        long end = System.nanoTime();
+        Log.d(getClass().getSimpleName(), String.format("bulk add transaction time %d ", end - start));
         List<Split> splitList = new ArrayList<>(transactionList.size()*3);
         for (Transaction transaction : transactionList) {
             splitList.addAll(transaction.getSplits());
         }
         if (rowInserted != 0 && !splitList.isEmpty()) {
             try {
+                start = System.nanoTime();
                 long nSplits = mSplitsDbAdapter.bulkAddRecords(splitList);
-                Log.d(LOG_TAG, String.format("%d splits inserted", nSplits));
+                Log.d(LOG_TAG, String.format("%d splits inserted in %d ns", splitList.size(), System.nanoTime()-start));
             }
             finally {
                 SQLiteStatement deleteEmptyTransaction = mDb.compileStatement("DELETE FROM " +
