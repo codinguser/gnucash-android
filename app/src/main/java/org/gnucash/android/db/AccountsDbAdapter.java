@@ -1180,11 +1180,16 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
      * Basically empties all 3 tables, so use with care ;)
 	 */
     @Override
-	public int deleteAllRecords(){
-		mDb.delete(TransactionEntry.TABLE_NAME, null, null); //this will take the splits along with it
+	public int deleteAllRecords() {
+        // Relies "ON DELETE CASCADE" takes too much time
+        // It take more than 300s to complete the deletion on my dataset without
+        // clearing the split table first, but only needs a little more that 1s
+        // if the split table is cleared first.
+        mDb.delete(SplitEntry.TABLE_NAME, null, null);
+        mDb.delete(TransactionEntry.TABLE_NAME, null, null);
         mDb.delete(DatabaseSchema.ScheduledActionEntry.TABLE_NAME, null, null);
         return mDb.delete(AccountEntry.TABLE_NAME, null, null);
-	}
+    }
 
     public int getTransactionMaxSplitNum(@NonNull String accountUID) {
         Cursor cursor = mDb.query("trans_extra_info",
