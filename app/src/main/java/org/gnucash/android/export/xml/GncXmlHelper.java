@@ -176,6 +176,7 @@ public abstract class GncXmlHelper {
         int scale = amountString.length() - pos - 2; //do this before, because we could modify the string
         //String numerator = TransactionFormFragment.stripCurrencyFormatting(amountString.substring(0, pos));
         String numerator = amountString.substring(0,pos);
+        numerator = TransactionFormFragment.stripCurrencyFormatting(numerator);
         BigInteger numeratorInt = new BigInteger(numerator);
         return new BigDecimal(numeratorInt, scale);
     }
@@ -202,7 +203,6 @@ public abstract class GncXmlHelper {
      * So we will use the device locale here and hope that the user has the same locale on the desktop GnuCash</p>
      * @param amount Amount to be formatted
      * @return String representation of amount
-     * @see #parseTemplateSplitAmount(String)
      */
     public static String formatTemplateSplitAmount(BigDecimal amount){
         //TODO: If we ever implement an application-specific locale setting, use it here as well
