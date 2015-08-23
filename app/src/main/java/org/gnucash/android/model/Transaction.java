@@ -179,21 +179,20 @@ public class Transaction extends BaseModel{
      * @return Split whose amount is the imbalance of this transaction
      */
     public Split getAutoBalanceSplit(){
-        //FIXME: when multiple currencies per transaction are supported
-        Currency lastCurrency = null;
-        for (Split split : mSplitList) {
-            Currency currentCurrency = split.getValue().getCurrency();
-            if (lastCurrency == null)
-                lastCurrency = currentCurrency;
-            else if (lastCurrency != currentCurrency){
-                return null; //for now we will not autobalance multi-currency transactions
-            }
-            lastCurrency = currentCurrency;
-        }
+        //The values should be balanced even for multi-currency transactions
+        //Currency lastCurrency = null;
+        //for (Split split : mSplitList) {
+        //    Currency currentCurrency = split.getQuantity().getCurrency();
+        //    if (lastCurrency == null)
+        //        lastCurrency = currentCurrency;
+        //    else if (lastCurrency != currentCurrency){
+        //        return null; //for now we will not autobalance multi-currency transactions
+        //    }
+        //}
 
         //if all the splits are the same currency but the transaction is another
-        if (!lastCurrency.getCurrencyCode().equals(mCurrencyCode))
-            return null;
+        //if (!lastCurrency.getCurrencyCode().equals(mCurrencyCode))
+        //    return null;
 
         Money imbalance = getImbalance();
         if (!imbalance.isAmountZero()){
@@ -272,9 +271,10 @@ public class Transaction extends BaseModel{
     public Money getImbalance(){
         Money imbalance = Money.createZeroInstance(mCurrencyCode);
         for (Split split : mSplitList) {
-            //TODO: Handle this better when multi-currency support is introduced
-            if (!split.getValue().getCurrency().getCurrencyCode().equals(mCurrencyCode))
-                return Money.createZeroInstance(mCurrencyCode); //abort
+            if (!split.getValue().getCurrency().getCurrencyCode().equals(mCurrencyCode)) {
+                // values in transactions are always in the same currency
+                throw new RuntimeException("Splits values in transaction are not in the same currency");
+            }
             Money amount = split.getValue().absolute();
             if (split.getType() == TransactionType.DEBIT)
                 imbalance = imbalance.subtract(amount);

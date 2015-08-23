@@ -132,9 +132,14 @@ public class GncXmlHandler extends DefaultHandler {
     Split mSplit;
 
     /**
-     * (Absolute) quantity of the split
+     * (Absolute) quantity of the split, which uses split account currency
      */
     BigDecimal mQuantity;
+
+    /**
+     * (Absolute) value of the split, which uses transaction currency
+     */
+    BigDecimal mValue;
 
     /**
      * Whether the quantity is negative
@@ -263,7 +268,7 @@ public class GncXmlHandler extends DefaultHandler {
                 mISO4217Currency = false;
                 break;
             case GncXmlHelper.TAG_TRN_SPLIT:
-                mSplit = new Split(Money.getZeroInstance(),"");
+                mSplit = new Split(Money.getZeroInstance(), "");
                 break;
             case GncXmlHelper.TAG_DATE_POSTED:
                 mIsDatePosted = true;
@@ -470,9 +475,10 @@ public class GncXmlHandler extends DefaultHandler {
             case GncXmlHelper.TAG_SPLIT_MEMO:
                 mSplit.setMemo(characterString);
                 break;
-            case GncXmlHelper.TAG_SPLIT_QUANTITY:
-                // delay the assignment of currency when the split account is seen
+            case GncXmlHelper.TAG_SPLIT_VALUE:
                 try {
+                    // The value and quantity can have different sign for custom currency(stock).
+                    // Use the sign of value for split, as it would not be custom currency
                     String q = characterString;
                     if (q.charAt(0) == '-') {
                         mNegativeQuantity = true;
@@ -480,7 +486,18 @@ public class GncXmlHandler extends DefaultHandler {
                     } else {
                         mNegativeQuantity = false;
                     }
-                    mQuantity = GncXmlHelper.parseSplitAmount(q);
+                    mValue = GncXmlHelper.parseSplitAmount(characterString).abs(); // use sign from quantity
+                } catch (ParseException e) {
+                    String msg = "Error parsing split quantity - " + characterString;
+                    Crashlytics.log(msg);
+                    Crashlytics.logException(e);
+                    throw new SAXException(msg, e);
+                }
+                break;
+            case GncXmlHelper.TAG_SPLIT_QUANTITY:
+                // delay the assignment of currency when the split account is seen
+                try {
+                    mQuantity = GncXmlHelper.parseSplitAmount(characterString).abs();
                 } catch (ParseException e) {
                     String msg = "Error parsing split quantity - " + characterString;
                     Crashlytics.log(msg);
@@ -490,11 +507,12 @@ public class GncXmlHandler extends DefaultHandler {
                 break;
             case GncXmlHelper.TAG_SPLIT_ACCOUNT:
                 if (!mInTemplates) {
-                    //the split amount uses the account currency
-                    Money amount = new Money(mQuantity, getCurrencyForAccount(characterString));
                     //this is intentional: GnuCash XML formats split amounts, credits are negative, debits are positive.
                     mSplit.setType(mNegativeQuantity ? TransactionType.CREDIT : TransactionType.DEBIT);
-                    mSplit.setValue(amount);
+                    //the split amount uses the account currency
+                    mSplit.setQuantity(new Money(mQuantity, getCurrencyForAccount(characterString)));
+                    //the split value uses the transaction currency
+                    mSplit.setValue(new Money(mValue, mTransaction.getCurrency()));
                     mSplit.setAccountUID(characterString);
                 } else {
                     if (!mIgnoreTemplateTransaction)

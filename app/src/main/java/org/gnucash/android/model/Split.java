@@ -2,6 +2,7 @@ package org.gnucash.android.model;
 
 
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 /**
  * A split amount in a transaction.
@@ -49,7 +50,8 @@ public class Split extends BaseModel{
      * @param value Money value amount of this split
      * @param accountUID String UID of transfer account
      */
-    public Split(@NonNull Money value, String accountUID){
+    public Split(@NonNull Money value, @NonNull Money quantity, String accountUID){
+        setQuantity(quantity);
         setValue(value);
         setAccountUID(accountUID);
         //NOTE: This is a rather simplististic approach to the split type.
@@ -57,6 +59,22 @@ public class Split extends BaseModel{
         //the database everytime a split is created. So we keep it simple here. Set the type you want explicity.
         mSplitType = value.isNegative() ? TransactionType.DEBIT : TransactionType.CREDIT;
     }
+
+    /**
+     * Initialize split with a value amount and account
+     * @param value Money value amount of this split
+     * @param accountUID String UID of transfer account
+     */
+    public Split(@NonNull Money amount, String accountUID){
+        setQuantity(amount);
+        setValue(amount);
+        setAccountUID(accountUID);
+        //NOTE: This is a rather simplististic approach to the split type.
+        //It typically also depends on the account type of the account. But we do not want to access
+        //the database everytime a split is created. So we keep it simple here. Set the type you want explicity.
+        mSplitType = amount.isNegative() ? TransactionType.DEBIT : TransactionType.CREDIT;
+    }
+
 
     /**
      * Clones the <code>sourceSplit</code> to create a new instance with same fields
@@ -94,10 +112,16 @@ public class Split extends BaseModel{
      * @param amount Money value of this split
      * @see #setQuantity(Money)
      */
-    public void setValue(Money amount) {
-        this.mValue = amount;
-        if (mQuantity == null){
-            mQuantity = amount;
+    public void setValue(Money value) {
+        mValue = value;
+        // remove the following when porting to value/quantity is done
+        if (mQuantity == null) {
+            Log.e(getClass().getSimpleName(), "Are you sure you want set the value instead of the quantity?");
+            try {
+                throw new Exception("");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 

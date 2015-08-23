@@ -199,9 +199,9 @@ public class SplitsDbAdapter extends DatabaseAdapter<Split> {
 
         cursor = mDb.query(SplitEntry.TABLE_NAME + " , " + TransactionEntry.TABLE_NAME,
                 new String[]{"TOTAL ( CASE WHEN " + SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_TYPE + " = 'DEBIT' THEN " +
-                        SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_VALUE_NUM + " ELSE - " +
-                        SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_VALUE_NUM + " END )",
-                        SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_VALUE_DENOM},
+                        SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_QUANTITY_NUM + " ELSE - " +
+                        SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_QUANTITY_NUM + " END )",
+                        SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_QUANTITY_DENOM},
                 selection, selectionArgs, null, null, null);
 
         try {
@@ -212,7 +212,7 @@ public class SplitsDbAdapter extends DatabaseAdapter<Split> {
                 if (!hasDebitNormalBalance) {
                     amount_num = -amount_num;
                 }
-                return new Money(amount_num, amount_denom, Currency.getInstance(currencyCode));
+                return new Money(amount_num, amount_denom, currencyCode);
             }
         } finally {
             cursor.close();
