@@ -18,6 +18,7 @@ package org.gnucash.android.ui.transaction;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -66,8 +67,8 @@ import org.gnucash.android.model.ScheduledAction;
 import org.gnucash.android.model.Split;
 import org.gnucash.android.model.Transaction;
 import org.gnucash.android.model.TransactionType;
+import org.gnucash.android.ui.FormActivity;
 import org.gnucash.android.ui.UxArgument;
-import org.gnucash.android.ui.transaction.dialog.SplitEditorDialogFragment;
 import org.gnucash.android.ui.util.AmountInputFormatter;
 import org.gnucash.android.ui.util.RecurrenceParser;
 import org.gnucash.android.ui.util.TransactionTypeSwitch;
@@ -94,8 +95,8 @@ public class TransactionFormFragment extends Fragment implements
         CalendarDatePickerDialog.OnDateSetListener, RadialTimePickerDialog.OnTimeSetListener,
         RecurrencePickerDialog.OnRecurrenceSetListener {
 
-    public static final String FRAGMENT_TAG_SPLITS_EDITOR       = "splits_editor";
     private static final String FRAGMENT_TAG_RECURRENCE_PICKER  = "recurrence_picker";
+    private static final int REQUEST_SPLIT_EDITOR = 0x11;
 
     /**
 	 * Transactions database adapter
@@ -288,6 +289,7 @@ public class TransactionFormFragment extends Fragment implements
 
         setListeners();
         ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+        assert actionBar != null;
 //        actionBar.setSubtitle(mAccountsDbAdapter.getFullyQualifiedAccountName(mAccountUID));
 
         if (mTransaction == null) {
@@ -540,7 +542,7 @@ public class TransactionFormFragment extends Fragment implements
             Toast.makeText(getActivity(), "Please enter an amount to split", Toast.LENGTH_SHORT).show();
             return;
         }
-        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+
         String baseAmountString;
 
         if (mTransaction == null){ //if we are creating a new transaction (not editing an existing one)
@@ -555,11 +557,20 @@ public class TransactionFormFragment extends Fragment implements
             baseAmountString = biggestAmount.toPlainString();
         }
 
-        SplitEditorDialogFragment splitEditorDialogFragment =
-                SplitEditorDialogFragment.newInstance(baseAmountString);
-        splitEditorDialogFragment.setTargetFragment(TransactionFormFragment.this, 0);
-        splitEditorDialogFragment.show(fragmentManager, FRAGMENT_TAG_SPLITS_EDITOR);
+        Intent intent = new Intent(getActivity(), FormActivity.class);
+        intent.putExtra(UxArgument.FORM_TYPE, FormActivity.FormType.SPLIT_EDITOR.name());
+        intent.putExtra(UxArgument.SELECTED_ACCOUNT_UID, mAccountUID);
+        intent.putExtra(UxArgument.AMOUNT_STRING, baseAmountString);
+        if (mSplitsList != null) {
+            ArrayList<String> splitStrings = new ArrayList<>();
+            for (Split split : mSplitsList) {
+                splitStrings.add(split.toCsv());
+            }
+            intent.putStringArrayListExtra(UxArgument.SPLIT_LIST, splitStrings);
+        }
+        startActivityForResult(intent, REQUEST_SPLIT_EDITOR);
     }
+
 	/**
 	 * Sets click listeners for the dialog buttons
 	 */
@@ -914,13 +925,6 @@ public class TransactionFormFragment extends Fragment implements
         }
     }
 
-    /**
-     * Returns the list of splits currently in editing
-     * @return List of splits
-     */
-    public List<Split> getSplitList(){
-        return mSplitsList;
-    }
 
 	/**
 	 * Finishes the fragment appropriately.
@@ -1010,6 +1014,23 @@ public class TransactionFormFragment extends Fragment implements
 
         mRecurrenceTextView.setText(repeatString);
     }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == Activity.RESULT_OK){
+            List<String> splits = data.getStringArrayListExtra(UxArgument.SPLIT_LIST);
+            List<Split> splitList = new ArrayList<>();
+            for (String splitCsv : splits) {
+                splitList.add(Split.parseSplit(splitCsv));
+            }
+            List<String> removedSplits = data.getStringArrayListExtra(UxArgument.REMOVED_SPLITS);
+            setSplitList(splitList, removedSplits);
+        }
+    }
+
+    /**
+     * Formats the amount and adds a negative sign if the amount will decrease the account balance
+     */
     private class AmountTextWatcher extends AmountInputFormatter {
 
         public AmountTextWatcher(EditText amountInput) {

@@ -436,6 +436,7 @@ public class TransactionsActivity extends PassLockActivity implements
 
         refresh();
         setupActionBarNavigation();
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override

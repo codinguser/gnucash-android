@@ -258,13 +258,15 @@ public class Split extends BaseModel{
     /**
      * Returns a string representation of the split which can be parsed again using {@link org.gnucash.android.model.Split#parseSplit(String)}
      * <p>The string is formatted as:<br/>
-     * "<valueNum>;<valueDenom>;<valueCurrencyCode>;<quantityNum>;<quantityDenom>;<quantityCurrencyCode>;<transaction_uid>;<account_uid>;<type>;<memo>"</p>
+     * "&lt;uid&gt;;&lt;valueNum&gt;;&lt;valueDenom&gt;;&lt;valueCurrencyCode&gt;;&lt;quantityNum&gt;;&lt;quantityDenom&gt;;&lt;quantityCurrencyCode&gt;;&lt;transaction_uid&gt;;&lt;account_uid&gt;;&lt;type&gt;;&lt;memo&gt;"
+     * </p>
+     * <p><b>Only the memo field is allowed to be null</b></p>
      * @return the converted CSV string of this split
      */
     public String toCsv(){
         String sep = ";";
 
-        String splitString = mValue.getNumerator() + sep + mValue.getDenominator() + sep + mValue.getCurrency().getCurrencyCode() + sep
+        String splitString = getUID() + sep + mValue.getNumerator() + sep + mValue.getDenominator() + sep + mValue.getCurrency().getCurrencyCode() + sep
                 + mQuantity.getNumerator() + sep + mQuantity.getDenominator() + sep + mQuantity.getCurrency().getCurrencyCode()
                 + sep + mTransactionUID + sep + mAccountUID + sep + mSplitType.name();
         if (mMemo != null){
@@ -275,16 +277,16 @@ public class Split extends BaseModel{
 
     /**
      * Parses a split which is in the format:<br/>
-     * "<valueNum>;<valueDenom>;<currency_code>;<quantityNum>;<quantityDenom>;<currency_code>;<transaction_uid>;<account_uid>;<type>;<memo>".
+     * "<uid>;<valueNum>;<valueDenom>;<currency_code>;<quantityNum>;<quantityDenom>;<currency_code>;<transaction_uid>;<account_uid>;<type>;<memo>".
      * <p>Also supports parsing of the deprecated format "<amount>;<currency_code>;<transaction_uid>;<account_uid>;<type>;<memo>".
      * The split input string is the same produced by the {@link Split#toCsv()} method
      *</p>
-     * @param splitString String containing formatted split
+     * @param splitCsvString String containing formatted split
      * @return Split instance parsed from the string
      */
-    public static Split parseSplit(String splitString) {
-        String[] tokens = splitString.split(";");
-        if (tokens.length < 8) {
+    public static Split parseSplit(String splitCsvString) {
+        String[] tokens = splitCsvString.split(";");
+        if (tokens.length < 8) { //old format splits
             Money amount = new Money(tokens[0], tokens[1]);
             Split split = new Split(amount, tokens[2]);
             split.setTransactionUID(tokens[3]);
@@ -294,22 +296,23 @@ public class Split extends BaseModel{
             }
             return split;
         } else {
-            int valueNum = Integer.parseInt(tokens[0]);
-            int valueDenom = Integer.parseInt(tokens[1]);
-            String valueCurrencyCode = tokens[2];
-            int quantityNum = Integer.parseInt(tokens[3]);
-            int quantityDenom = Integer.parseInt(tokens[4]);
-            String qtyCurrencyCode = tokens[5];
+            int valueNum = Integer.parseInt(tokens[1]);
+            int valueDenom = Integer.parseInt(tokens[2]);
+            String valueCurrencyCode = tokens[3];
+            int quantityNum = Integer.parseInt(tokens[4]);
+            int quantityDenom = Integer.parseInt(tokens[5]);
+            String qtyCurrencyCode = tokens[6];
 
             Money value = new Money(valueNum, valueDenom, valueCurrencyCode);
             Money quantity = new Money(quantityNum, quantityDenom, qtyCurrencyCode);
 
-            Split split = new Split(value, tokens[7]);
+            Split split = new Split(value, tokens[8]);
+            split.setUID(tokens[0]);
             split.setQuantity(quantity);
-            split.setTransactionUID(tokens[6]);
-            split.setType(TransactionType.valueOf(tokens[8]));
-            if (tokens.length == 9) {
-                split.setMemo(tokens[9]);
+            split.setTransactionUID(tokens[7]);
+            split.setType(TransactionType.valueOf(tokens[9]));
+            if (tokens.length == 11) {
+                split.setMemo(tokens[10]);
             }
             return split;
         }
