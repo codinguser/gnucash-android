@@ -162,7 +162,8 @@ dependencies {
             'com.google.android.gms:play-services-drive:7.0.0',
             'com.crashlytics.android:crashlytics:1.+',
             'com.android.support:cardview-v7:22.2.0',
-            'com.android.support:recyclerview-v7:22.2.0'
+            'com.android.support:recyclerview-v7:22.2.0',
+            'net.objecthunter:exp4j:0.4.5'
     )
 
     testCompile('org.robolectric:robolectric:3.0',

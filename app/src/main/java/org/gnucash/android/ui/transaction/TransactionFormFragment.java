@@ -54,6 +54,9 @@ import com.doomonafireball.betterpickers.recurrencepicker.EventRecurrence;
 import com.doomonafireball.betterpickers.recurrencepicker.EventRecurrenceFormatter;
 import com.doomonafireball.betterpickers.recurrencepicker.RecurrencePickerDialog;
 
+import net.objecthunter.exp4j.Expression;
+import net.objecthunter.exp4j.ExpressionBuilder;
+
 import org.gnucash.android.R;
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.DatabaseSchema;
@@ -564,6 +567,42 @@ public class TransactionFormFragment extends Fragment implements
                     }
                 }
                 return false;
+            }
+        });
+
+        mAmountEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    String amountText = mAmountEditText.getText().toString();
+
+                    if (amountText.trim().isEmpty())
+                        return;
+
+                    // FIXME: replace the decimal separator of the current locale with '.'
+                    ExpressionBuilder expressionBuilder = new ExpressionBuilder(amountText);
+                    Expression expression;
+
+                    try {
+                        expression = expressionBuilder.build();
+                    } catch (RuntimeException e) {
+                        setEditTextError();
+                        return;
+                    }
+
+                    if (expression != null && expression.validate().isValid())
+                        // FIXME: limit the decimal places
+                        // FIXME: use the locale decimal separator
+                        mAmountEditText.setText(Double.toString(expression.evaluate()));
+                    else
+                        setEditTextError();
+                }
+            }
+
+            private void setEditTextError() {
+                // FIXME: i18n
+                mAmountEditText.setError("Invalid expression.");
+                // TODO: log error
             }
         });
 
