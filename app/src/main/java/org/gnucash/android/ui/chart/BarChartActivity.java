@@ -37,7 +37,7 @@ import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
-import com.github.mikephil.charting.utils.Highlight;
+import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.utils.LargeValueFormatter;
 
 import org.gnucash.android.R;
@@ -115,7 +115,7 @@ public class BarChartActivity extends PassLockActivity implements OnChartValueSe
         ((LinearLayout) findViewById(R.id.bar_chart)).addView(mChart);
         mChart.setOnChartValueSelectedListener(this);
         mChart.setDescription("");
-        mChart.setDrawValuesForWholeStack(false);
+//        mChart.setDrawValuesForWholeStack(false);
         mChart.getXAxis().setDrawGridLines(false);
         mChart.getAxisRight().setEnabled(false);
         mChart.getAxisLeft().enableGridDashedLine(4.0f, 4.0f, 0);
@@ -320,9 +320,9 @@ public class BarChartActivity extends PassLockActivity implements OnChartValueSe
                 legend.setEnabled(!mChart.getLegend().isEnabled());
                 BarDataSet dataSet = mChart.getData().getDataSetByIndex(0);
                 LinkedHashSet<String> labels = new LinkedHashSet<>(Arrays.asList(dataSet.getStackLabels()));
-                legend.setLabels(labels.toArray(new String[labels.size()]));
+//                legend.setLabels(labels.toArray(new String[labels.size()]));
                 LinkedHashSet<Integer> colors = new LinkedHashSet<>(dataSet.getColors());
-                legend.setColors(Arrays.asList(colors.toArray(new Integer[colors.size()])));
+//                legend.setColors(Arrays.asList(colors.toArray(new Integer[colors.size()])));
                 mChart.invalidate();
                 break;
 
