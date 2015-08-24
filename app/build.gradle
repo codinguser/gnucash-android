@@ -182,8 +182,11 @@ dependencies {
     androidTestCompile ('com.android.support:support-annotations:'  + androidSupportVersion,
                         'com.android.support.test:runner:'          + androidSupportTestVersion,
                         'com.android.support.test:rules:'           + androidSupportTestVersion,
-                        'com.android.support.test.espresso:espresso-core:'      + androidEspressoVersion,
-                        'com.android.support.test.espresso:espresso-contrib:'   + androidEspressoVersion)
+                        'com.android.support.test.espresso:espresso-core:'      + androidEspressoVersion)
+    androidTestCompile ('com.android.support.test.espresso:espresso-contrib:'   + androidEspressoVersion) {
+        exclude group: 'com.android.support', module: 'support-v4'
+        exclude module: 'recyclerview-v7'
+    }
 
     androidTestCompile('com.squareup.assertj:assertj-android:1.0.0'){
         exclude group: 'com.android.support', module:'support-annotations'
