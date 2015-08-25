@@ -23,10 +23,25 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <LinearLayout android:id="@+id/fragment_container"
+    <android.support.design.widget.CoordinatorLayout
+        android:id="@+id/coordinatorLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/fragment_container"
                   android:orientation="vertical"
                   android:layout_width="match_parent"
-                  android:layout_height="match_parent">
+                  android:layout_height="wrap_content">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar_transaction_info"
+            android:background="?attr/colorPrimary"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            app:elevation="0dp"
+            app:layout_scrollFlags="scroll|enterAlways"
+            app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
         <android.support.design.widget.TabLayout
             android:id="@+id/tab_layout"
@@ -38,12 +53,28 @@
             app:tabIndicatorColor="@android:color/white"
             android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"/>
 
-        <android.support.v4.view.ViewPager
-                android:id="@+id/pager"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
+    </android.support.design.widget.AppBarLayout>
 
-    </LinearLayout>
+        <android.support.v4.view.ViewPager
+            android:id="@+id/pager"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fab_create_account"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|bottom|right"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_margin="12dp"
+            app:elevation="10dp"
+            app:layout_behavior="org.gnucash.android.ui.util.ScrollingFABBehavior"
+            android:src="@drawable/ic_add_white_48dp"/>
+
+    </android.support.design.widget.CoordinatorLayout>
 
     <android.support.design.widget.NavigationView
         android:id="@+id/nav_view"

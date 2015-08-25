@@ -1,11 +1,11 @@
 import java.text.SimpleDateFormat
 
 apply plugin: 'com.android.application'
-apply plugin: 'crashlytics'
+apply plugin: 'io.fabric'
 
-def versionMajor = 1
-def versionMinor = 6
-def versionPatch = 2
+def versionMajor = 2
+def versionMinor = 0
+def versionPatch = 0
 def versionBuild = 0
 
 def buildTime() {
@@ -31,7 +31,7 @@ android {
         versionName "${versionMajor}.${versionMinor}.${versionPatch}"
         resValue "string", "app_version_name", "${versionName}"
         resValue "string", "app_minor_version", "${versionMinor}"
-        buildConfigField "boolean", "USE_CRASHLYTICS", "false"
+        buildConfigField "boolean", "USE_CRASHLYTICS", "true"
         if (project.hasProperty("RELEASE_DROPBOX_APP_KEY")){
             resValue "string", "dropbox_app_key", RELEASE_DROPBOX_APP_KEY
             resValue "string", "dropbox_app_secret", RELEASE_DROPBOX_APP_SECRET
@@ -102,17 +102,19 @@ android {
             resValue "string", "app_name", "GnuCash-devel"
             versionName "${versionMajor}.${versionMinor}.${versionPatch}-dev${versionBuild}_r${gitSha()}"
             resValue "string", "app_version_name", "${versionName}"
+            buildConfigField "boolean", "USE_CRASHLYTICS", "false"
         }
 
         beta {
             resValue "string", "app_name", "GnuCash - beta"
             versionName "${versionMajor}.${versionMinor}.${versionPatch}-beta${versionBuild}"
             resValue "string", "app_version_name", "${versionName}"
-            buildConfigField "boolean", "USE_CRASHLYTICS", "true"
         }
 
         production {
             resValue "string", "app_name", "GnuCash"
+            buildConfigField "boolean", "USE_CRASHLYTICS", "false"
+            ext.enableCrashlytics = false
         }
 
     }
@@ -148,32 +150,43 @@ afterEvaluate {
     }
 }
 
+def androidSupportVersion       = "22.2.1"
+def androidEspressoVersion      = "2.2"
+def androidSupportTestVersion   = "0.3"
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile('com.android.support:support-v4:22.2.0',
-            'com.android.support:appcompat-v7:22.2.0',
-            'com.android.support:design:22.2.0',
+    compile('com.android.support:support-v4:'       + androidSupportVersion,
+            'com.android.support:appcompat-v7:'     + androidSupportVersion,
+            'com.android.support:design:'           + androidSupportVersion,
+            'com.android.support:cardview-v7:'      + androidSupportVersion,
+            'com.android.support:recyclerview-v7:'  + androidSupportVersion,
             'com.viewpagerindicator:library:2.4.1@aar',
             'com.doomonafireball.betterpickers:library:1.6.0',
             'org.jraf:android-switch-backport:1.4.0@aar',
             'com.github.PhilJay:MPAndroidChart:v2.1.0',
             'joda-time:joda-time:2.7',
+            'org.ocpsoft.prettytime:prettytime:3.2.7.Final',
             'com.google.android.gms:play-services-drive:7.0.0',
-            'com.crashlytics.android:crashlytics:1.+',
-            'com.android.support:cardview-v7:22.2.0',
-            'com.android.support:recyclerview-v7:22.2.0'
+            'com.jakewharton:butterknife:7.0.1'
     )
+
+    compile('com.crashlytics.sdk.android:crashlytics:2.5.0@aar') {
+        transitive = true;
+    }
 
     testCompile('org.robolectric:robolectric:3.0',
             'junit:junit:4.12',
             'org.assertj:assertj-core:1.7.1'
     )
-    androidTestCompile ('com.android.support.test:runner:0.3',
-                        'com.android.support.test:rules:0.3',
-                        'com.android.support.test.espresso:espresso-core:2.2',
-                        'com.android.support:support-annotations:22.2.0',
-                        'com.android.support.test.espresso:espresso-contrib:2.2')
+    androidTestCompile ('com.android.support:support-annotations:'  + androidSupportVersion,
+                        'com.android.support.test:runner:'          + androidSupportTestVersion,
+                        'com.android.support.test:rules:'           + androidSupportTestVersion,
+                        'com.android.support.test.espresso:espresso-core:'      + androidEspressoVersion)
+    androidTestCompile ('com.android.support.test.espresso:espresso-contrib:'   + androidEspressoVersion) {
+        exclude group: 'com.android.support', module: 'support-v4'
+        exclude module: 'recyclerview-v7'
+    }
 
     androidTestCompile('com.squareup.assertj:assertj-android:1.0.0'){
         exclude group: 'com.android.support', module:'support-annotations'

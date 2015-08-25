@@ -74,7 +74,7 @@ public class TransactionsDeleteConfirmationDialogFragment extends DialogFragment
                                     transactionsDbAdapter.deleteAllRecords();
 
                                     if (preserveOpeningBalances) {
-                                        transactionsDbAdapter.bulkAddTransactions(openingBalances);
+                                        transactionsDbAdapter.bulkAddRecords(openingBalances);
                                     }
                                 } else {
                                     transactionsDbAdapter.deleteRecord(rowId);

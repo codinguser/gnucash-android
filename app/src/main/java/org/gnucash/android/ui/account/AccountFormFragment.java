@@ -27,11 +27,15 @@ import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.SimpleCursorAdapter;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -39,6 +43,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -47,7 +52,6 @@ import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
 import android.widget.Spinner;
-import android.widget.Toast;
 
 import org.gnucash.android.R;
 import org.gnucash.android.db.AccountsDbAdapter;
@@ -83,7 +87,9 @@ public class AccountFormFragment extends Fragment {
 	 * EditText for the name of the account to be created/edited
 	 */
 	private EditText mNameEditText;
-	
+
+    private TextInputLayout mTextInputLayout;
+
 	/**
 	 * Spinner for selecting the currency of the account
 	 * Currencies listed are those specified by ISO 4217
@@ -239,13 +245,29 @@ public class AccountFormFragment extends Fragment {
 	 */
 	@Override	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		View view = inflater.inflate(R.layout.fragment_new_account, container, false);
-		((AppCompatActivity) getActivity()).getSupportActionBar()
-                .setTitle(R.string.label_create_account);
+		View view = inflater.inflate(R.layout.fragment_account_form, container, false);
+        mTextInputLayout = (TextInputLayout) view.findViewById(R.id.textinputlayout);
 		mCurrencySpinner = (Spinner) view.findViewById(R.id.input_currency_spinner);
 		mNameEditText = (EditText) view.findViewById(R.id.input_account_name);
-		//mNameEditText.requestFocus();
 
+        mNameEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                //nothing to see here, move along
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                //nothing to see here, move along
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (s.toString().length() > 0){
+                    mTextInputLayout.setErrorEnabled(false);
+                }
+            }
+        });
         mAccountTypeSpinner = (Spinner) view.findViewById(R.id.input_account_type_spinner);
         mAccountTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -314,13 +336,14 @@ public class AccountFormFragment extends Fragment {
 
         mAccountUID = getArguments().getString(UxArgument.SELECTED_ACCOUNT_UID);
 
+        ActionBar supportActionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
         if (mAccountUID != null) {
-            mAccount = mAccountsDbAdapter.getAccount(mAccountUID);
-            ((AppCompatActivity) getActivity()).getSupportActionBar()
-                                        .setTitle(R.string.title_edit_account);
+            mAccount = mAccountsDbAdapter.getRecord(mAccountUID);
+            supportActionBar.setTitle(R.string.title_edit_account);
+        } else {
+            supportActionBar.setTitle(R.string.title_create_account);
         }
 
-        ((AppCompatActivity) getActivity()).getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_close_white_24dp);
         mRootAccountUID = mAccountsDbAdapter.getOrCreateGnuCashRootAccountUID();
         if (mRootAccountUID != null)
             mRootAccountId = mAccountsDbAdapter.getID(mRootAccountUID);
@@ -332,10 +355,11 @@ public class AccountFormFragment extends Fragment {
 
         if (mAccount != null){
             initializeViewsWithAccount(mAccount);
+            //do not immediately open the keyboard when editing an account
+            getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         } else {
             initializeViews();
         }
-
 
 	}
 
@@ -520,8 +544,6 @@ public class AccountFormFragment extends Fragment {
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 		super.onCreateOptionsMenu(menu, inflater);
 		inflater.inflate(R.menu.default_save_actions, menu);
-        menu.removeItem(R.id.menu_search);
-        menu.removeItem(R.id.menu_settings);
 	}
 	
 	@Override
@@ -714,9 +736,8 @@ public class AccountFormFragment extends Fragment {
 		if (mAccount == null){
 			String name = getEnteredName();
 			if (name == null || name.length() == 0){
-				Toast.makeText(getActivity(),
-						R.string.toast_no_account_name_entered, 
-						Toast.LENGTH_LONG).show();
+                mTextInputLayout.setErrorEnabled(true);
+                mTextInputLayout.setError(getString(R.string.toast_no_account_name_entered));
 				return;				
 			}
 			mAccount = new Account(getEnteredName());
@@ -804,7 +825,7 @@ public class AccountFormFragment extends Fragment {
 		if (mAccountsDbAdapter == null)
 			mAccountsDbAdapter = AccountsDbAdapter.getInstance();
         // bulk update, will not update transactions
-		mAccountsDbAdapter.bulkAddAccounts(accountsToUpdate);
+		mAccountsDbAdapter.bulkAddRecords(accountsToUpdate);
 
 		finishFragment();
 	}

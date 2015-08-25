@@ -30,16 +30,15 @@ import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.ActionBar;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.Menu;
@@ -58,10 +57,9 @@ import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.export.xml.GncXmlExporter;
 import org.gnucash.android.importer.ImportAsyncTask;
 import org.gnucash.android.model.Money;
+import org.gnucash.android.ui.FormActivity;
 import org.gnucash.android.ui.UxArgument;
-import org.gnucash.android.ui.export.ExportDialogFragment;
 import org.gnucash.android.ui.passcode.PassLockActivity;
-import org.gnucash.android.ui.settings.SettingsActivity;
 import org.gnucash.android.ui.transaction.TransactionsActivity;
 import org.gnucash.android.ui.util.OnAccountClickedListener;
 import org.gnucash.android.ui.util.Refreshable;
@@ -97,11 +95,6 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
 	 * Tag used for identifying the account export fragment
 	 */
 	public static final String FRAGMENT_EXPORT_DIALOG = "export_fragment";
-
-	/**
-	 * Tag for identifying the "New account" fragment
-	 */
-	protected static final String FRAGMENT_NEW_ACCOUNT = "new_account_dialog";
 
 	/**
 	 * Logging tag
@@ -224,13 +217,14 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
         setContentView(R.layout.activity_accounts);
         setUpDrawer();
 
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_transaction_info);
+        setSupportActionBar(toolbar);
+
         final Intent intent = getIntent();
         handleOpenFileIntent(intent);
 
         init();
 
-        final ActionBar actionBar = getSupportActionBar();
-        actionBar.setElevation(0);
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
         tabLayout.addTab(tabLayout.newTab().setText(R.string.title_recent_accounts));
         tabLayout.addTab(tabLayout.newTab().setText(R.string.title_all_accounts));
@@ -239,29 +233,14 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
 
         mViewPager = (ViewPager) findViewById(R.id.pager);
 
-        String action = intent.getAction();
-        if (action != null && action.equals(Intent.ACTION_INSERT_OR_EDIT)) {
-            //enter account creation/edit mode if that was specified
-            mViewPager.setVisibility(View.GONE);
-            tabLayout.setVisibility(View.GONE);
-            String accountUID = intent.getStringExtra(UxArgument.SELECTED_ACCOUNT_UID);
-            if (accountUID != null)
-                showEditAccountFragment(accountUID);
-            else {
-                String parentAccountUID = intent.getStringExtra(UxArgument.PARENT_ACCOUNT_UID);
-                showAddAccountFragment(parentAccountUID);
-            }
-            mDrawerToggle.setDrawerIndicatorEnabled(false);
-        } else {
-            //show the simple accounts list
-            PagerAdapter mPagerAdapter = new AccountViewPagerAdapter(getSupportFragmentManager());
-            mViewPager.setAdapter(mPagerAdapter);
+        //show the simple accounts list
+        PagerAdapter mPagerAdapter = new AccountViewPagerAdapter(getSupportFragmentManager());
+        mViewPager.setAdapter(mPagerAdapter);
 
-            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-            int lastTabIndex = preferences.getInt(LAST_OPEN_TAB_INDEX, INDEX_TOP_LEVEL_ACCOUNTS_FRAGMENT);
-            int index = intent.getIntExtra(EXTRA_TAB_INDEX, lastTabIndex);
-            mViewPager.setCurrentItem(index);
-        }
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        int lastTabIndex = preferences.getInt(LAST_OPEN_TAB_INDEX, INDEX_TOP_LEVEL_ACCOUNTS_FRAGMENT);
+        int index = intent.getIntExtra(EXTRA_TAB_INDEX, lastTabIndex);
+        mViewPager.setCurrentItem(index);
 
         mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
         tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
@@ -278,6 +257,17 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
             @Override
             public void onTabReselected(TabLayout.Tab tab) {
 
+            }
+        });
+
+        FloatingActionButton floatingActionButton = (FloatingActionButton) findViewById(R.id.fab_create_account);
+        floatingActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent addAccountIntent = new Intent(AccountsActivity.this, FormActivity.class);
+                addAccountIntent.setAction(Intent.ACTION_INSERT_OR_EDIT);
+                addAccountIntent.putExtra(UxArgument.FORM_TYPE, FormActivity.FormType.ACCOUNT_FORM.name());
+                startActivityForResult(addAccountIntent, AccountsActivity.REQUEST_EDIT_ACCOUNT);
             }
         });
 	}
@@ -410,7 +400,11 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
     /**
      * Displays the dialog for exporting transactions
      */
-    public static void showExportDialog(FragmentActivity activity) {
+    public static void openExportFragment(FragmentActivity activity) {
+        Intent intent = new Intent(activity, FormActivity.class);
+        intent.putExtra(UxArgument.FORM_TYPE, FormActivity.FormType.EXPORT_FORM.name());
+        activity.startActivity(intent);
+        /*
         FragmentManager manager = activity.getSupportFragmentManager();
         FragmentTransaction ft = manager.beginTransaction();
         Fragment prev = manager.findFragmentByTag(FRAGMENT_EXPORT_DIALOG);
@@ -420,8 +414,8 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
         ft.addToBackStack(null);
 
         // Create and show the dialog.
-        DialogFragment exportFragment = new ExportDialogFragment();
-        exportFragment.show(ft, FRAGMENT_EXPORT_DIALOG);
+        DialogFragment exportFragment = new ExportFormFragment();
+        exportFragment.show(ft, FRAGMENT_EXPORT_DIALOG);*/
     }
 
     @Override
@@ -436,10 +430,6 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
 		switch (item.getItemId()) {
             case android.R.id.home:
                 return super.onOptionsItemSelected(item);
-
-            case R.id.menu_settings:
-                startActivity(new Intent(this, SettingsActivity.class));
-                return true;
 
 		default:
 			return false;
@@ -457,44 +447,6 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
         return addAccountIntent;
     }
 
-    /**
-     * Shows form fragment for creating a new account
-     * @param parentAccountUID GUID of the parent account present. Can be 0 for top-level account
-     */
-    private void showAddAccountFragment(String parentAccountUID){
-        Bundle args = new Bundle();
-        args.putString(UxArgument.PARENT_ACCOUNT_UID, parentAccountUID);
-        showAccountFormFragment(args);
-    }
-
-    /**
-     * Shows the form fragment for editing the account with record ID <code>accountId</code>
-     * @param accountUID GUID of the account to be edited
-     */
-    private void showEditAccountFragment(String accountUID) {
-        Bundle args = new Bundle();
-        args.putString(UxArgument.SELECTED_ACCOUNT_UID, accountUID);
-        showAccountFormFragment(args);
-    }
-
-    /**
-     * Shows the form for creating/editing accounts
-     * @param args Arguments to use for initializing the form.
-     *             This could be an account to edit or a preset for the parent account
-     */
-    private void showAccountFormFragment(Bundle args){
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager
-                .beginTransaction();
-
-        AccountFormFragment accountFormFragment = AccountFormFragment.newInstance();
-        accountFormFragment.setArguments(args);
-
-        fragmentTransaction.replace(R.id.fragment_container,
-                accountFormFragment, AccountsActivity.FRAGMENT_NEW_ACCOUNT);
-
-        fragmentTransaction.commit();
-    }
 
 	/**
 	 * Opens a dialog fragment to create a new account

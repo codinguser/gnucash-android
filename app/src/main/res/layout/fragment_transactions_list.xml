@@ -21,46 +21,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical" >
-    
-	<include layout="@layout/transactions_sum_bar" android:id="@+id/transactions_sum_bar" />
-		
-    <ListView android:id="@id/android:list"        
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"	
-        android:layout_above="@id/transactions_sum_bar"
-        android:listSelector="@drawable/abc_list_selector_holo_light"
-        android:drawSelectorOnTop="false"/>
 
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab_create_transaction"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="end|bottom"
-        android:layout_above="@id/transactions_sum_bar"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_margin="8dp"
-        app:elevation="6dp"
-        android:src="@drawable/ic_add_white_48dp"/>
-
-	<LinearLayout
-        android:id="@id/android:empty"
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/transaction_recycler_view"
+        android:scrollbars="vertical"
+        android:paddingBottom="@dimen/card_min_height"
+        android:clipToPadding="false"
+        android:layout_above="@id/account_balance_toolbar"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_above="@id/transactions_sum_bar"
-        android:gravity="center"
-        android:orientation="vertical">
-		<TextView 
-		    android:layout_width="match_parent"
-		    android:layout_height="wrap_content"
-		    android:gravity="center" 		    
-		    android:text="@string/label_no_transactions"		    
-		    style="@style/ListItem"/>
-        <Button
-            android:id="@+id/add_transaction_button"
-            style="@style/ButtonStyle"
-            android:onClick="onNewTransactionClick"
-            android:text="@string/title_add_transaction" />
-    </LinearLayout>
-    
+        android:layout_height="match_parent"/>
+
 </RelativeLayout>

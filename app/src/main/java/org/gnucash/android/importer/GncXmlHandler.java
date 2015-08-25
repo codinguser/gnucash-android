@@ -132,9 +132,14 @@ public class GncXmlHandler extends DefaultHandler {
     Split mSplit;
 
     /**
-     * (Absolute) quantity of the split
+     * (Absolute) quantity of the split, which uses split account currency
      */
     BigDecimal mQuantity;
+
+    /**
+     * (Absolute) value of the split, which uses transaction currency
+     */
+    BigDecimal mValue;
 
     /**
      * Whether the quantity is negative
@@ -263,7 +268,7 @@ public class GncXmlHandler extends DefaultHandler {
                 mISO4217Currency = false;
                 break;
             case GncXmlHelper.TAG_TRN_SPLIT:
-                mSplit = new Split(Money.getZeroInstance(),"");
+                mSplit = new Split(Money.getZeroInstance(), "");
                 break;
             case GncXmlHelper.TAG_DATE_POSTED:
                 mIsDatePosted = true;
@@ -387,11 +392,11 @@ public class GncXmlHandler extends DefaultHandler {
                 break;
             case GncXmlHelper.TAG_SLOT_VALUE:
                 if (mInPlaceHolderSlot) {
-                    Log.v(LOG_TAG, "Setting account placeholder flag");
+                    //Log.v(LOG_TAG, "Setting account placeholder flag");
                     mAccount.setPlaceHolderFlag(Boolean.parseBoolean(characterString));
                     mInPlaceHolderSlot = false;
                 } else if (mInColorSlot) {
-                    Log.d(LOG_TAG, "Parsing color code: " + characterString);
+                    //Log.d(LOG_TAG, "Parsing color code: " + characterString);
                     String color = characterString.trim();
                     //Gnucash exports the account color in format #rrrgggbbb, but we need only #rrggbb.
                     //so we trim the last digit in each block, doesn't affect the color much
@@ -470,9 +475,10 @@ public class GncXmlHandler extends DefaultHandler {
             case GncXmlHelper.TAG_SPLIT_MEMO:
                 mSplit.setMemo(characterString);
                 break;
-            case GncXmlHelper.TAG_SPLIT_QUANTITY:
-                // delay the assignment of currency when the split account is seen
+            case GncXmlHelper.TAG_SPLIT_VALUE:
                 try {
+                    // The value and quantity can have different sign for custom currency(stock).
+                    // Use the sign of value for split, as it would not be custom currency
                     String q = characterString;
                     if (q.charAt(0) == '-') {
                         mNegativeQuantity = true;
@@ -480,7 +486,18 @@ public class GncXmlHandler extends DefaultHandler {
                     } else {
                         mNegativeQuantity = false;
                     }
-                    mQuantity = GncXmlHelper.parseSplitAmount(q);
+                    mValue = GncXmlHelper.parseSplitAmount(characterString).abs(); // use sign from quantity
+                } catch (ParseException e) {
+                    String msg = "Error parsing split quantity - " + characterString;
+                    Crashlytics.log(msg);
+                    Crashlytics.logException(e);
+                    throw new SAXException(msg, e);
+                }
+                break;
+            case GncXmlHelper.TAG_SPLIT_QUANTITY:
+                // delay the assignment of currency when the split account is seen
+                try {
+                    mQuantity = GncXmlHelper.parseSplitAmount(characterString).abs();
                 } catch (ParseException e) {
                     String msg = "Error parsing split quantity - " + characterString;
                     Crashlytics.log(msg);
@@ -490,11 +507,12 @@ public class GncXmlHandler extends DefaultHandler {
                 break;
             case GncXmlHelper.TAG_SPLIT_ACCOUNT:
                 if (!mInTemplates) {
-                    //the split amount uses the account currency
-                    Money amount = new Money(mQuantity, getCurrencyForAccount(characterString));
                     //this is intentional: GnuCash XML formats split amounts, credits are negative, debits are positive.
                     mSplit.setType(mNegativeQuantity ? TransactionType.CREDIT : TransactionType.DEBIT);
-                    mSplit.setAmount(amount);
+                    //the split amount uses the account currency
+                    mSplit.setQuantity(new Money(mQuantity, getCurrencyForAccount(characterString)));
+                    //the split value uses the transaction currency
+                    mSplit.setValue(new Money(mValue, mTransaction.getCurrency()));
                     mSplit.setAccountUID(characterString);
                 } else {
                     if (!mIgnoreTemplateTransaction)
@@ -555,7 +573,8 @@ public class GncXmlHandler extends DefaultHandler {
                 try {
                     PeriodType periodType = PeriodType.valueOf(characterString.toUpperCase());
                     periodType.setMultiplier(mRecurrenceMultiplier);
-                    mScheduledAction.setPeriod(periodType);
+                    if (mScheduledAction != null) //there might be recurrence tags for bugdets and other stuff
+                        mScheduledAction.setPeriod(periodType);
                 } catch (IllegalArgumentException ex){ //the period type constant is not supported
                     String msg = "Unsupported period constant: " + characterString;
                     Log.e(LOG_TAG, msg);
@@ -706,20 +725,22 @@ public class GncXmlHandler extends DefaultHandler {
         }
         long startTime = System.nanoTime();
         mAccountsDbAdapter.beginTransaction();
+        Log.d(getClass().getSimpleName(), "bulk insert starts");
         try {
+            Log.d(getClass().getSimpleName(), "before clean up db");
             mAccountsDbAdapter.deleteAllRecords();
-
-            long nAccounts = mAccountsDbAdapter.bulkAddAccounts(mAccountList);
+            Log.d(getClass().getSimpleName(), String.format("deb clean up done %d ns", System.nanoTime()-startTime));
+            long nAccounts = mAccountsDbAdapter.bulkAddRecords(mAccountList);
             Log.d("Handler:", String.format("%d accounts inserted", nAccounts));
             //We need to add scheduled actions first because there is a foreign key constraint on transactions
             //which are generated from scheduled actions (we do auto-create some transactions during import)
-            int nSchedActions = mScheduledActionsDbAdapter.bulkAddScheduledActions(mScheduledActionsList);
+            long nSchedActions = mScheduledActionsDbAdapter.bulkAddRecords(mScheduledActionsList);
             Log.d("Handler:", String.format("%d scheduled actions inserted", nSchedActions));
 
-            long nTempTransactions = mTransactionsDbAdapter.bulkAddTransactions(mTemplateTransactions);
+            long nTempTransactions = mTransactionsDbAdapter.bulkAddRecords(mTemplateTransactions);
             Log.d("Handler:", String.format("%d template transactions inserted", nTempTransactions));
 
-            long nTransactions = mTransactionsDbAdapter.bulkAddTransactions(mTransactionList);
+            long nTransactions = mTransactionsDbAdapter.bulkAddRecords(mTransactionList);
             Log.d("Handler:", String.format("%d transactions inserted", nTransactions));
 
             long endTime = System.nanoTime();
@@ -755,7 +776,7 @@ public class GncXmlHandler extends DefaultHandler {
         try {
             BigDecimal amountBigD = GncXmlHelper.parseSplitAmount(characterString);
             Money amount = new Money(amountBigD, getCurrencyForAccount(mSplit.getAccountUID()));
-            mSplit.setAmount(amount.absolute());
+            mSplit.setValue(amount.absolute());
             mSplit.setType(splitType);
             mIgnoreTemplateTransaction = false; //we have successfully parsed an amount
         } catch (NumberFormatException | ParseException e) {

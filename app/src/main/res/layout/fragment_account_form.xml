@@ -24,7 +24,11 @@
             android:padding="@dimen/dialog_padding"
             android:orientation="vertical" >
 
-        <EditText
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/textinputlayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <EditText
                 android:id="@+id/input_account_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -35,8 +39,8 @@
                 android:ellipsize="start"
                 android:hint="@string/label_account_name"
                 style="@style/ListItemText">
-         <!--   <requestFocus /> -->
-        </EditText>
+            </EditText>
+        </android.support.design.widget.TextInputLayout>
 
         <TextView
                 android:text="@string/label_account_currency"

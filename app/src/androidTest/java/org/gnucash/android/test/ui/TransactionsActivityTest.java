@@ -134,10 +134,8 @@ public class TransactionsActivityTest extends
         account2.setUID(TRANSFER_ACCOUNT_UID);
         account2.setCurrency(Currency.getInstance(CURRENCY_CODE));
 
-        long id1 = mAccountsDbAdapter.addAccount(account);
-        long id2 = mAccountsDbAdapter.addAccount(account2);
-        assertThat(id1).isGreaterThan(0);
-        assertThat(id2).isGreaterThan(0);
+        mAccountsDbAdapter.addRecord(account);
+        mAccountsDbAdapter.addRecord(account2);
 
         mTransaction = new Transaction(TRANSACTION_NAME);
         mTransaction.setNote("What up?");
@@ -149,7 +147,7 @@ public class TransactionsActivityTest extends
         mTransaction.addSplit(split.createPair(TRANSFER_ACCOUNT_UID));
         account.addTransaction(mTransaction);
 
-        mTransactionsDbAdapter.addTransaction(mTransaction);
+        mTransactionsDbAdapter.addRecord(mTransaction);
 
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.putExtra(UxArgument.SELECTED_ACCOUNT_UID, DUMMY_ACCOUNT_UID);
@@ -274,7 +272,7 @@ public class TransactionsActivityTest extends
 	public void testEditTransaction(){
 		validateTransactionListDisplayed();
 
-		onView(withText(TRANSACTION_NAME)).perform(click());
+		onView(withId(R.id.options_menu)).perform(click());
 		
 		validateEditTransactionFields(mTransaction);
 
@@ -291,7 +289,7 @@ public class TransactionsActivityTest extends
 		setDoubleEntryEnabled(false);
 		mTransactionsDbAdapter.deleteAllRecords();
 
-		assertThat(mTransactionsDbAdapter.getTotalTransactionsCount()).isEqualTo(0);
+		assertThat(mTransactionsDbAdapter.getRecordsCount()).isEqualTo(0);
 		String imbalanceAcctUID = mAccountsDbAdapter.getImbalanceAccountUID(Currency.getInstance(CURRENCY_CODE));
 		assertThat(imbalanceAcctUID).isNull();
 
@@ -306,7 +304,7 @@ public class TransactionsActivityTest extends
 		//TODO: check that the split drawable is not displayed
 		onView(withId(R.id.menu_save)).perform(click());
 
-		assertThat(mTransactionsDbAdapter.getTotalTransactionsCount()).isEqualTo(1);
+		assertThat(mTransactionsDbAdapter.getRecordsCount()).isEqualTo(1);
 		Transaction transaction = mTransactionsDbAdapter.getAllTransactions().get(0);
 		assertThat(transaction.getSplits()).hasSize(2);
 		imbalanceAcctUID = mAccountsDbAdapter.getImbalanceAccountUID(Currency.getInstance(CURRENCY_CODE));
@@ -373,7 +371,7 @@ public class TransactionsActivityTest extends
 		assertThat(imbalanceSplits).hasSize(1);
 
 		Split split = imbalanceSplits.get(0);
-		assertThat(split.getAmount().toPlainString()).isEqualTo("0.99");
+		assertThat(split.getValue().toPlainString()).isEqualTo("0.99");
 		assertThat(split.getType()).isEqualTo(TransactionType.CREDIT);
 	}
 
@@ -411,12 +409,12 @@ public class TransactionsActivityTest extends
 	//FIXME: Improve on this test
 	public void childAccountsShouldUseParentTransferAccountSetting(){
 		Account transferAccount = new Account("New Transfer Acct");
-		mAccountsDbAdapter.addAccount(transferAccount);
-		mAccountsDbAdapter.addAccount(new Account("Higher account"));
+		mAccountsDbAdapter.addRecord(transferAccount);
+		mAccountsDbAdapter.addRecord(new Account("Higher account"));
 
 		Account childAccount = new Account("Child Account");
 		childAccount.setParentUID(DUMMY_ACCOUNT_UID);
-		mAccountsDbAdapter.addAccount(childAccount);
+		mAccountsDbAdapter.addRecord(childAccount);
 		ContentValues contentValues = new ContentValues();
 		contentValues.put(DatabaseSchema.AccountEntry.COLUMN_DEFAULT_TRANSFER_ACCOUNT_UID, transferAccount.getUID());
 		mAccountsDbAdapter.updateRecord(DUMMY_ACCOUNT_UID, contentValues);
@@ -483,34 +481,11 @@ public class TransactionsActivityTest extends
 
 	@Test
 	public void testDeleteTransaction(){
-		onView(withId(R.id.primary_text)).perform(longClick());
+		onView(withId(R.id.options_menu)).perform(click());
 		clickOnView(R.id.context_menu_delete);
 
 		long id = mAccountsDbAdapter.getID(DUMMY_ACCOUNT_UID);
 		assertEquals(0, mTransactionsDbAdapter.getTransactionsCount(id));
-	}
-
-	@Test
-	public void testBulkMoveTransactions(){
-        String targetAccountName = "Target";
-        Account account = new Account(targetAccountName);
-		account.setCurrency(Currency.getInstance(Locale.getDefault()));
-		mAccountsDbAdapter.addAccount(account);
-		
-		int beforeOriginCount = mAccountsDbAdapter.getAccount(DUMMY_ACCOUNT_UID).getTransactionCount();
-		
-		validateTransactionListDisplayed();
-
-		clickOnView(R.id.checkbox_transaction);
-		clickOnView(R.id.context_menu_move_transactions);
-
-		clickOnView(R.id.btn_save);
-
-		int targetCount = mAccountsDbAdapter.getAccount(account.getUID()).getTransactionCount();
-		assertThat(targetCount).isEqualTo(1);
-		
-		int afterOriginCount = mAccountsDbAdapter.getAccount(DUMMY_ACCOUNT_UID).getTransactionCount();
-		assertThat(afterOriginCount).isEqualTo(beforeOriginCount - 1);
 	}
 
 	//TODO: add normal transaction recording

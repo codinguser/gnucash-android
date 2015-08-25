@@ -23,15 +23,19 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
-import android.os.Build;
+import android.graphics.Color;
 import android.preference.PreferenceManager;
 import android.util.Log;
+
 import com.crashlytics.android.Crashlytics;
+import com.crashlytics.android.core.CrashlyticsCore;
 
 import org.gnucash.android.BuildConfig;
 import org.gnucash.android.R;
 import org.gnucash.android.db.AccountsDbAdapter;
+import org.gnucash.android.db.CommoditiesDbAdapter;
 import org.gnucash.android.db.DatabaseHelper;
+import org.gnucash.android.db.PricesDbAdapter;
 import org.gnucash.android.db.ScheduledActionDbAdapter;
 import org.gnucash.android.db.SplitsDbAdapter;
 import org.gnucash.android.db.TransactionsDbAdapter;
@@ -39,6 +43,8 @@ import org.gnucash.android.service.SchedulerService;
 
 import java.util.Currency;
 import java.util.Locale;
+
+import io.fabric.sdk.android.Fabric;
 
 /**
  * An {@link Application} subclass for retrieving static context
@@ -71,14 +77,29 @@ public class GnuCashApplication extends Application{
 
     private static ScheduledActionDbAdapter mScheduledActionDbAdapter;
 
+    private static CommoditiesDbAdapter mCommoditiesDbAdapter;
+
+    private static PricesDbAdapter mPricesDbAdapter;
+
+    /**
+     * Returns darker version of specified <code>color</code>.
+     * Use for theming the status bar color when setting the color of the actionBar
+     */
+    public static int darken(int color) {
+        float[] hsv = new float[3];
+        Color.colorToHSV(color, hsv);
+        hsv[2] *= 0.8f; // value component
+        return Color.HSVToColor(hsv);
+    }
+
     @Override
     public void onCreate(){
         super.onCreate();
         GnuCashApplication.context = getApplicationContext();
-        //TODO: in production, only start logging if user gave consent
 
-        if (BuildConfig.USE_CRASHLYTICS)
-            Crashlytics.start(this);
+        //TODO: in production, only start logging if user gave consent
+        Fabric.with(this, new Crashlytics.Builder().core(
+                new CrashlyticsCore.Builder().disabled(!BuildConfig.USE_CRASHLYTICS).build()).build());
 
         mDbHelper = new DatabaseHelper(getApplicationContext());
         try {
@@ -88,10 +109,12 @@ public class GnuCashApplication extends Application{
             Log.e(getClass().getName(), "Error getting database: " + e.getMessage());
             mDb = mDbHelper.getReadableDatabase();
         }
-        mSplitsDbAdapter = new SplitsDbAdapter(mDb);
-        mTransactionsDbAdapter = new TransactionsDbAdapter(mDb, mSplitsDbAdapter);
-        mAccountsDbAdapter = new AccountsDbAdapter(mDb, mTransactionsDbAdapter);
-        mScheduledActionDbAdapter = new ScheduledActionDbAdapter(mDb);
+        mSplitsDbAdapter            = new SplitsDbAdapter(mDb);
+        mTransactionsDbAdapter      = new TransactionsDbAdapter(mDb, mSplitsDbAdapter);
+        mAccountsDbAdapter          = new AccountsDbAdapter(mDb, mTransactionsDbAdapter);
+        mScheduledActionDbAdapter   = new ScheduledActionDbAdapter(mDb);
+        mCommoditiesDbAdapter       = new CommoditiesDbAdapter(mDb);
+        mPricesDbAdapter            = new PricesDbAdapter(mDb);
     }
 
     public static AccountsDbAdapter getAccountsDbAdapter() {
@@ -108,6 +131,14 @@ public class GnuCashApplication extends Application{
 
     public static ScheduledActionDbAdapter getScheduledEventDbAdapter(){
         return mScheduledActionDbAdapter;
+    }
+
+    public static CommoditiesDbAdapter getCommoditiesDbAdapter(){
+        return mCommoditiesDbAdapter;
+    }
+
+    public static PricesDbAdapter getPricesDbAdapter(){
+        return mPricesDbAdapter;
     }
 
     /**

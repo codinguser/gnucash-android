@@ -24,8 +24,10 @@ import com.crashlytics.android.Crashlytics;
 import org.gnucash.android.app.GnuCashApplication;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.math.MathContext;
 import java.math.RoundingMode;
+import java.security.InvalidParameterException;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
@@ -113,7 +115,23 @@ public final class Money implements Comparable<Money>{
 	public Money() {
 		init();
 	}
-	
+
+	public static BigDecimal getBigDecimal(long numerator, long denominator) {
+		int scale;
+		if (numerator == 0 && denominator == 0) {
+			denominator = 1;
+		}
+		switch ((int)denominator) {
+			case 1: scale = 0; break;
+			case 10: scale = 1; break;
+			case 100: scale = 2; break;
+			case 1000: scale = 3; break;
+			default:
+				throw new InvalidParameterException("invalid denominator " + denominator);
+		}
+		return new BigDecimal(BigInteger.valueOf(numerator), scale);
+	}
+
 	/**
 	 * Overloaded constructor
 	 * @param amount {@link BigDecimal} value of the money instance
@@ -148,7 +166,19 @@ public final class Money implements Comparable<Money>{
 		ROUNDING_MODE = context.getRoundingMode();
 		DECIMAL_PLACES = context.getPrecision();
 	}
-	
+
+	/**
+	 * Constructs a new money amount given the numerator and denominator of the amount.
+	 * The rounding mode used for the division is {@link BigDecimal#ROUND_HALF_EVEN}
+	 * @param numerator Numerator as integer
+	 * @param denominator Denominator as integer
+	 * @param currencyCode 3-character currency code string
+	 */
+	public Money(long numerator, long denominator, String currencyCode){
+		mAmount = getBigDecimal(numerator, denominator);
+		setCurrency(Currency.getInstance(currencyCode));
+	}
+
 	/**
 	 * Overloaded constructor. 
 	 * Initializes the currency to that specified by {@link Money#DEFAULT_CURRENCY_CODE}
@@ -218,6 +248,24 @@ public final class Money implements Comparable<Money>{
 	}
 
 	/**
+	 * Returns the GnuCash format numerator for this amount.
+	 * <p>Example: Given an amount 32.50$, the numerator will be 3250</p>
+	 * @return GnuCash numerator for this amount
+	 */
+	public int getNumerator(){
+		return mAmount.multiply(new BigDecimal(getDenominator())).intValue();
+	}
+
+	/**
+	 * Returns the GnuCash amount format denominator for this amount
+	 * <p>The denominator is 10 raised to the power of number of fractional digits in the currency</p>
+	 * @return GnuCash format denominator
+	 */
+	public int getDenominator(){
+		return (int) Math.pow(10, mCurrency.getDefaultFractionDigits());
+	}
+
+	/**
 	 * Returns the amount represented by this Money object
 	 * @return {@link BigDecimal} valure of amount in object
 	 */
@@ -232,7 +280,17 @@ public final class Money implements Comparable<Money>{
 	public double asDouble(){
 		return mAmount.doubleValue();
 	}
-	
+
+	/**
+	 * Returns integer value of this Money amount.
+	 * The fractional part is discarded
+	 * @return Integer representation of this amount
+	 * @see BigDecimal#intValue()
+	 */
+	public int intValue(){
+		return mAmount.intValue();
+	}
+
 	/**
 	 * An alias for {@link #toPlainString()}
 	 * @return Money formatted as a string (excludes the currency)
@@ -410,7 +468,7 @@ public final class Money implements Comparable<Money>{
 		return result;
 	}
 
-	/**
+	/** //FIXME: equality failing for money objects
 	 * Two Money objects are only equal if their amount (value) and currencies are equal
 	 * @param obj Object to compare with
 	 * @return <code>true</code> if the objects are equal, <code>false</code> otherwise

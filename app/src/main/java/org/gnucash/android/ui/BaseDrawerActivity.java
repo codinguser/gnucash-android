@@ -169,7 +169,7 @@ public class BaseDrawerActivity extends AppCompatActivity {
                 break;
 
             case R.id.nav_item_export:{
-                AccountsActivity.showExportDialog(this);
+                AccountsActivity.openExportFragment(this);
             }
                 break;
 

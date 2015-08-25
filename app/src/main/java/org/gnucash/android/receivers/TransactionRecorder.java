@@ -98,7 +98,7 @@ public class TransactionRecorder extends BroadcastReceiver {
             }
         }
 
-		TransactionsDbAdapter.getInstance().addTransaction(transaction);
+		TransactionsDbAdapter.getInstance().addRecord(transaction);
 		
 		WidgetConfigurationActivity.updateAllWidgets(context);
 	}

@@ -80,7 +80,6 @@ public class ScheduledExportListFragment extends ListFragment implements
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
             MenuInflater inflater = mode.getMenuInflater();
             inflater.inflate(R.menu.transactions_context_menu, menu);
-            menu.removeItem(R.id.context_menu_move_transactions);
             return true;
         }
 
@@ -175,7 +174,6 @@ public class ScheduledExportListFragment extends ListFragment implements
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         menu.removeItem(R.id.menu_search);
-        menu.removeItem(R.id.menu_settings);
         inflater.inflate(R.menu.scheduled_export_actions, menu);
     }
 
@@ -183,7 +181,7 @@ public class ScheduledExportListFragment extends ListFragment implements
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
             case R.id.menu_add_scheduled_export:
-                AccountsActivity.showExportDialog(getActivity());
+                AccountsActivity.openExportFragment(getActivity());
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -341,7 +339,7 @@ public class ScheduledExportListFragment extends ListFragment implements
         public void bindView(View view, Context context, Cursor cursor) {
             super.bindView(view, context, cursor);
 
-            ScheduledAction scheduledAction = mScheduledActionDbAdapter.buildScheduledActionInstance(cursor);
+            ScheduledAction scheduledAction = mScheduledActionDbAdapter.buildModelInstance(cursor);
 
             TextView primaryTextView = (TextView) view.findViewById(R.id.primary_text);
             ExportParams params = ExportParams.parseCsv(scheduledAction.getTag());

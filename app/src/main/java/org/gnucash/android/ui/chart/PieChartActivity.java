@@ -55,13 +55,10 @@ import org.joda.time.LocalDateTime;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Currency;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
-
-import static org.gnucash.android.db.DatabaseSchema.AccountEntry;
 
 /**
  * Activity used for drawing a pie chart
@@ -81,14 +78,27 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
             Color.parseColor("#fddef8"), Color.parseColor("#fa0e6e"), Color.parseColor("#d9e7b5")
     };
 
-    private static final String DATE_PATTERN = "MMMM\nYYYY";
+    public static final String SELECTED_VALUE_PATTERN = "%s - %.2f (%.2f %%)";
+    public static final String DATE_PATTERN = "MMMM\nYYYY";
     private static final String TOTAL_VALUE_LABEL_PATTERN = "%s\n%.2f %s";
     private static final int ANIMATION_DURATION = 1800;
+    private static final int NO_DATA_COLOR = Color.LTGRAY;
+    public static final int CENTER_TEXT_SIZE = 18;
+    /**
+     * The space in degrees between the chart slices
+     */
+    private static final float SPACE_BETWEEN_SLICES = 2f;
+    /**
+     * All pie slices less than this threshold will be group in "other" slice. Using percents not absolute values.
+     */
+    private static final double GROUPING_SMALLER_SLICES_THRESHOLD = 5;
 
     private PieChart mChart;
 
     private LocalDateTime mChartDate = new LocalDateTime();
     private TextView mChartDateTextView;
+
+    private TextView mSelectedValueTextView;
 
     private ImageButton mPreviousMonthButton;
     private ImageButton mNextMonthButton;
@@ -105,9 +115,17 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
 
     private boolean mUseAccountColor = true;
 
-    private double mSlicePercentThreshold = 6;
+    private boolean mGroupSmallerSlices = true;
 
     private String mCurrencyCode;
+
+    private TimePeriod mTimePeriod = TimePeriod.ALL_TIME;
+    /**
+     * Used to specify the time period for which data will be displayed
+     */
+    private enum TimePeriod {
+        PREVIOUS_MONTH, NEXT_MONTH, ALL_TIME
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -122,6 +140,7 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
         mPreviousMonthButton = (ImageButton) findViewById(R.id.previous_month_chart_button);
         mNextMonthButton = (ImageButton) findViewById(R.id.next_month_chart_button);
         mChartDateTextView = (TextView) findViewById(R.id.chart_date);
+        mSelectedValueTextView = (TextView) findViewById(R.id.selected_chart_slice);
 
         mAccountsDbAdapter = AccountsDbAdapter.getInstance();
         mTransactionsDbAdapter = TransactionsDbAdapter.getInstance();
@@ -130,7 +149,7 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
                 .getString(getString(R.string.key_report_currency), Money.DEFAULT_CURRENCY_CODE);
 
         mChart = (PieChart) findViewById(R.id.pie_chart);
-        mChart.setCenterTextSize(18);
+        mChart.setCenterTextSize(CENTER_TEXT_SIZE);
         mChart.setDescription("");
         mChart.getLegend().setEnabled(false);
         mChart.setOnChartValueSelectedListener(this);
@@ -141,16 +160,18 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
 
             @Override
             public void onClick(View view) {
+                mTimePeriod = TimePeriod.PREVIOUS_MONTH;
                 mChartDate = mChartDate.minusMonths(1);
-                setData(true);
+                displayChart();
             }
         });
         mNextMonthButton.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View view) {
+                mTimePeriod = TimePeriod.NEXT_MONTH;
                 mChartDate = mChartDate.plusMonths(1);
-                setData(true);
+                displayChart();
             }
         });
 
@@ -168,129 +189,98 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
     }
 
     /**
-     * Sets the chart data
-     * @param forCurrentMonth sets data only for current month if {@code true}, otherwise for all time
+     * Manages all actions about displaying the pie chart
      */
-    private void setData(boolean forCurrentMonth) {
-        mChartDateTextView.setText(forCurrentMonth ? mChartDate.toString(DATE_PATTERN) : getResources().getString(R.string.label_chart_overall));
-        ((TextView) findViewById(R.id.selected_chart_slice)).setText("");
-        mChart.highlightValues(null);
-        mChart.clear();
-
-        mChart.setData(getData(forCurrentMonth));
-        if (mChartDataPresent) {
-            mChart.animateXY(ANIMATION_DURATION, ANIMATION_DURATION);
-        }
-        mChart.invalidate();
-
-        mChartDateTextView.setEnabled(mChartDataPresent);
+    private void displayChart() {
         setImageButtonEnabled(mNextMonthButton,
                 mChartDate.plusMonths(1).dayOfMonth().withMinimumValue().withMillisOfDay(0).isBefore(mLatestTransactionDate));
         setImageButtonEnabled(mPreviousMonthButton, (mEarliestTransactionDate.getYear() != 1970
                 && mChartDate.minusMonths(1).dayOfMonth().withMaximumValue().withMillisOfDay(86399999).isAfter(mEarliestTransactionDate)));
+
+        mSelectedValueTextView.setText("");
+        mChart.highlightValues(null);
+        mChart.clear();
+
+        PieData pieData = getData();
+        if (pieData != null && pieData.getYValCount() != 0) {
+            mChartDataPresent = true;
+            mChart.setData(mGroupSmallerSlices ? groupSmallerSlices(pieData) : pieData);
+            float sum = mChart.getData().getYValueSum();
+            String total = getResources().getString(R.string.label_chart_total);
+            String currencySymbol = Currency.getInstance(mCurrencyCode).getSymbol(Locale.getDefault());
+            mChart.setCenterText(String.format(TOTAL_VALUE_LABEL_PATTERN, total, sum, currencySymbol));
+            mChart.animateXY(ANIMATION_DURATION, ANIMATION_DURATION);
+        } else {
+            mChartDataPresent = false;
+            mChart.setCenterText(getResources().getString(R.string.label_chart_no_data));
+            if (mTimePeriod != TimePeriod.ALL_TIME) {
+                switch (mTimePeriod) {
+                    case NEXT_MONTH:
+                        mChartDate = mChartDate.plusMonths(1);
+                        displayChart();
+                        return;
+                    case PREVIOUS_MONTH:
+                        mChartDate = mChartDate.minusMonths(1);
+                        displayChart();
+                        return;
+                }
+            } else {
+                mChart.setData(getEmptyData());
+            }
+        }
+
+        mChart.setTouchEnabled(mChartDataPresent);
+        mChart.invalidate();
+
+        mChartDateTextView.setEnabled(mChartDataPresent);
+        mChartDateTextView.setText(mTimePeriod != TimePeriod.ALL_TIME ? mChartDate.toString(DATE_PATTERN) : getResources().getString(R.string.label_chart_overall));
     }
 
     /**
-     * Returns {@code PieData} instance with data entries and labels
-     * @param forCurrentMonth sets data only for current month if {@code true}, otherwise for all time
+     * Returns {@code PieData} instance with data entries, colors and labels
      * @return {@code PieData} instance
      */
-    private PieData getData(boolean forCurrentMonth) {
-        List<Account> accountList = mAccountsDbAdapter.getSimpleAccountList(
-                AccountEntry.COLUMN_TYPE + " = ? AND " + AccountEntry.COLUMN_PLACEHOLDER + " = ?",
-                new String[]{ mAccountType.name(), "0" }, null);
-        List<String> uidList = new ArrayList<>();
-        for (Account account : accountList) {
-            uidList.add(account.getUID());
-        }
-        double sum;
-        if (forCurrentMonth) {
-            long start = mChartDate.dayOfMonth().withMinimumValue().millisOfDay().withMinimumValue().toDate().getTime();
-            long end = mChartDate.dayOfMonth().withMaximumValue().millisOfDay().withMaximumValue().toDate().getTime();
-            sum = mAccountsDbAdapter.getAccountsBalance(uidList, start, end).absolute().asDouble();
-        } else {
-            sum = mAccountsDbAdapter.getAccountsBalance(uidList, -1, -1).absolute().asDouble();
-        }
-
-        double otherSlice = 0;
+    private PieData getData() {
         PieDataSet dataSet = new PieDataSet(null, "");
-        List<String> names = new ArrayList<>();
-        List<String> skipUUID = new ArrayList<>();
-        for (Account account : getCurrencyCodeToAccountMap(accountList).get(mCurrencyCode)) {
-            if (mAccountsDbAdapter.getSubAccountCount(account.getUID()) > 0) {
-                skipUUID.addAll(mAccountsDbAdapter.getDescendantAccountUIDs(account.getUID(), null, null));
-            }
-            if (!skipUUID.contains(account.getUID())) {
-                double balance;
-                if (forCurrentMonth) {
-                    long start = mChartDate.dayOfMonth().withMinimumValue().millisOfDay().withMinimumValue().toDate().getTime();
-                    long end = mChartDate.dayOfMonth().withMaximumValue().millisOfDay().withMaximumValue().toDate().getTime();
-                    balance = mAccountsDbAdapter.getAccountBalance(account.getUID(), start, end).absolute().asDouble();
-                } else {
-                    balance = mAccountsDbAdapter.getAccountBalance(account.getUID()).absolute().asDouble();
-                }
+        List<String> labels = new ArrayList<>();
+        List<Integer> colors = new ArrayList<>();
+        for (Account account : mAccountsDbAdapter.getSimpleAccountList()) {
+            if (account.getAccountType() == mAccountType
+                    && !account.isPlaceholderAccount()
+                    && account.getCurrency() == Currency.getInstance(mCurrencyCode)) {
 
-                if (balance / sum * 100 > mSlicePercentThreshold) {
+                long start = -1; long end = -1;
+                if (mTimePeriod != TimePeriod.ALL_TIME) {
+                    start = mChartDate.dayOfMonth().withMinimumValue().millisOfDay().withMinimumValue().toDate().getTime();
+                    end = mChartDate.dayOfMonth().withMaximumValue().millisOfDay().withMaximumValue().toDate().getTime();
+                }
+                double balance = mAccountsDbAdapter.getAccountsBalance(Collections.singletonList(account.getUID()), start, end).absolute().asDouble();
+                if (balance != 0) {
                     dataSet.addEntry(new Entry((float) balance, dataSet.getEntryCount()));
-                    if (mUseAccountColor) {
-                        dataSet.getColors().set(dataSet.getColors().size() - 1, (account.getColorHexCode() != null)
-                                ? Color.parseColor(account.getColorHexCode())
-                                : COLORS[(dataSet.getEntryCount() - 1) % COLORS.length]);
-                    }
-                    dataSet.addColor(COLORS[(dataSet.getEntryCount() - 1) % COLORS.length]);
-                    names.add(account.getName());
-                } else {
-                    otherSlice += balance;
+                    colors.add(mUseAccountColor && account.getColorHexCode() != null
+                            ? Color.parseColor(account.getColorHexCode())
+                            : COLORS[(dataSet.getEntryCount() - 1) % COLORS.length]);
+                    labels.add(account.getName());
                 }
             }
         }
-        if (otherSlice > 0) {
-            dataSet.addEntry(new Entry((float) otherSlice, dataSet.getEntryCount()));
-            dataSet.getColors().set(dataSet.getColors().size() - 1, Color.LTGRAY);
-            names.add(getResources().getString(R.string.label_other_slice));
-        }
-
-        if (dataSet.getEntryCount() == 0) {
-            mChartDataPresent = false;
-            dataSet.addEntry(new Entry(1, 0));
-            dataSet.setColor(Color.LTGRAY);
-            dataSet.setDrawValues(false);
-            names.add("");
-            mChart.setCenterText(getResources().getString(R.string.label_chart_no_data));
-            mChart.setTouchEnabled(false);
-        } else {
-            mChartDataPresent = true;
-            dataSet.setSliceSpace(2);
-            mChart.setCenterText(String.format(TOTAL_VALUE_LABEL_PATTERN,
-                            getResources().getString(R.string.label_chart_total),
-                            dataSet.getYValueSum(),
-                            Currency.getInstance(mCurrencyCode).getSymbol(Locale.getDefault()))
-            );
-            mChart.setTouchEnabled(true);
-        }
-
-        return new PieData(names, dataSet);
+        dataSet.setColors(colors);
+        dataSet.setSliceSpace(SPACE_BETWEEN_SLICES);
+        return new PieData(labels, dataSet);
     }
 
     /**
-     * Returns a map with a currency code as key and corresponding accounts list
-     * as value from a specified list of accounts
-     * @param accountList a list of accounts
-     * @return a map with a currency code as key and corresponding accounts list as value
+     * Returns a data object that represents situation when no user data available
+     * @return a {@code PieData} instance for situation when no user data available
      */
-    private Map<String, List<Account>> getCurrencyCodeToAccountMap(List<Account> accountList) {
-        Map<String, List<Account>> currencyAccountMap = new HashMap<>();
-        for (Currency currency : mAccountsDbAdapter.getCurrencies()) {
-            currencyAccountMap.put(currency.getCurrencyCode(), new ArrayList<Account>());
-        }
-
-        for (Account account : accountList) {
-            currencyAccountMap.get(account.getCurrency().getCurrencyCode()).add(account);
-        }
-        return currencyAccountMap;
+    private PieData getEmptyData() {
+        PieDataSet dataSet = new PieDataSet(null, getResources().getString(R.string.label_chart_no_data));
+        dataSet.addEntry(new Entry(1, 0));
+        dataSet.setColor(NO_DATA_COLOR);
+        dataSet.setDrawValues(false);
+        return new PieData(Collections.singletonList(""), dataSet);
     }
-
-
+    
     /**
      * Sets the image button to the given state and grays-out the icon
      *
@@ -359,7 +349,9 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
                 mEarliestTransactionDate = new LocalDateTime(mTransactionsDbAdapter.getTimestampOfEarliestTransaction(mAccountType, mCurrencyCode));
                 mLatestTransactionDate = new LocalDateTime(mTransactionsDbAdapter.getTimestampOfLatestTransaction(mAccountType, mCurrencyCode));
                 mChartDate = mLatestTransactionDate;
-                setData(false);
+
+                mTimePeriod = TimePeriod.ALL_TIME;
+                displayChart();
             }
 
             @Override
@@ -406,8 +398,8 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
                 break;
             }
             case R.id.menu_group_other_slice: {
-                mSlicePercentThreshold = Math.abs(mSlicePercentThreshold - 6);
-                setData(false);
+                mGroupSmallerSlices = !mGroupSmallerSlices;
+                displayChart();
                 break;
             }
             case android.R.id.home: {
@@ -419,6 +411,40 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
     }
 
     /**
+     * Groups smaller slices. All smaller slices will be combined and displayed as a single "Other".
+     * @param data the pie data which smaller slices will be grouped
+     * @return a {@code PieData} instance with combined smaller slices
+     */
+    private PieData groupSmallerSlices(PieData data) {
+        float otherSlice = 0f;
+        List<Entry> newEntries = new ArrayList<>();
+        List<String> newLabels = new ArrayList<>();
+        List<Integer> newColors = new ArrayList<>();
+        List<Entry> entries = data.getDataSet().getYVals();
+        for (int i = 0; i < entries.size(); i++) {
+            float val = entries.get(i).getVal();
+            if (val / data.getYValueSum() * 100 > GROUPING_SMALLER_SLICES_THRESHOLD) {
+                newEntries.add(new Entry(val, newEntries.size()));
+                newLabels.add(data.getXVals().get(i));
+                newColors.add(data.getDataSet().getColors().get(i));
+            } else {
+                otherSlice += val;
+            }
+        }
+
+        if (otherSlice > 0) {
+            newEntries.add(new Entry(otherSlice, newEntries.size()));
+            newLabels.add(getResources().getString(R.string.label_other_slice));
+            newColors.add(Color.LTGRAY);
+        }
+
+        PieDataSet dataSet = new PieDataSet(newEntries, "");
+        dataSet.setSliceSpace(SPACE_BETWEEN_SLICES);
+        dataSet.setColors(newColors);
+        return new PieData(newLabels, dataSet);
+    }
+
+    /**
      * Since JellyBean, the onDateSet() method of the DatePicker class is called twice i.e. once when
      * OK button is pressed and then when the DatePickerDialog is dismissed. It is a known bug.
      */
@@ -426,20 +452,23 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
     public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
         if (view.isShown()) {
             mChartDate = new LocalDateTime(year, monthOfYear + 1, dayOfMonth, 0, 0);
-            setData(true);
+            // no matter next or previous
+            mTimePeriod = TimePeriod.NEXT_MONTH;
+            displayChart();
         }
     }
 
     @Override
     public void onValueSelected(Entry e, int dataSetIndex, Highlight h) {
         if (e == null) return;
-        ((TextView) findViewById(R.id.selected_chart_slice))
-                .setText(mChart.getData().getXVals().get(e.getXIndex()) + " - " + e.getVal()
-                        + " (" + String.format("%.2f", (e.getVal() / mChart.getYValueSum()) * 100) + " %)");
+        String label = mChart.getData().getXVals().get(e.getXIndex());
+        float value = e.getVal();
+        float percent = value / mChart.getYValueSum() * 100;
+        mSelectedValueTextView.setText(String.format(SELECTED_VALUE_PATTERN, label, value, percent));
     }
 
     @Override
     public void onNothingSelected() {
-        ((TextView) findViewById(R.id.selected_chart_slice)).setText("");
+        mSelectedValueTextView.setText("");
     }
 }

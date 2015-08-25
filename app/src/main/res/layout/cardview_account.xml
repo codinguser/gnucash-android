@@ -20,6 +20,8 @@
     cardview:cardCornerRadius="4dp"
     cardview:cardUseCompatPadding="true"
     cardview:cardPreventCornerOverlap="false"
+    android:layout_marginLeft="5dp"
+    android:layout_marginRight="5dp"
     android:foreground="?selectableItemBackground"
     android:focusable="true"
     android:clickable="true"
@@ -29,11 +31,12 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:minHeight="80dp">
+        android:minHeight="@dimen/card_min_height">
 
         <View android:id="@+id/account_color_strip"
             android:layout_width="@dimen/strip_width"
             android:layout_height="match_parent"
+            android:minHeight="@dimen/card_min_height"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"/>
 

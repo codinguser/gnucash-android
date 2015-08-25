@@ -57,7 +57,7 @@ public class AccountCreator extends BroadcastReceiver {
 		if (uid != null)
 			account.setUID(uid);
 		
-		AccountsDbAdapter.getInstance().addAccount(account);
+		AccountsDbAdapter.getInstance().addRecord(account);
 	}
 
 }

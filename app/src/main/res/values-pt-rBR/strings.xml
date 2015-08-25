@@ -16,7 +16,7 @@
  limitations under the License.
 -->
 <resources>
-	  <string name="label_create_account">Criar Conta</string>
+	  <string name="title_create_account">Criar Conta</string>
 	  <string name="title_edit_account">Editar Conta</string>
 	  <string name="info_details">Info</string>
 	  <string name="menu_export">Exportar OFX</string>

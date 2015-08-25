@@ -43,7 +43,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
@@ -103,7 +102,7 @@ public class OfxExporter extends Exporter{
 
     public String generateExport() throws ExporterException {
         mAccountsList = mParameters.shouldExportAllTransactions() ?
-                mAccountsDbAdapter.getAllAccounts() : mAccountsDbAdapter.getExportableAccounts();
+                mAccountsDbAdapter.getAllRecords() : mAccountsDbAdapter.getExportableAccounts();
 
         DocumentBuilderFactory docFactory = DocumentBuilderFactory
                 .newInstance();

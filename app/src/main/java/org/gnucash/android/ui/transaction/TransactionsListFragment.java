@@ -16,63 +16,58 @@
 
 package org.gnucash.android.ui.transaction;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.res.Resources;
+import android.content.Intent;
 import android.database.Cursor;
-import android.graphics.Rect;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.Loader;
-import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.view.ActionMode;
-import android.text.format.DateUtils;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.PopupMenu;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.TouchDelegate;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
-import android.widget.CompoundButton.OnCheckedChangeListener;
-import android.widget.ListView;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.gnucash.android.R;
+import org.gnucash.android.db.AccountsDbAdapter;
+import org.gnucash.android.ui.util.CursorRecyclerAdapter;
 import org.gnucash.android.db.DatabaseCursorLoader;
 import org.gnucash.android.db.DatabaseSchema;
+import org.gnucash.android.db.SplitsDbAdapter;
 import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.model.Money;
+import org.gnucash.android.model.Split;
+import org.gnucash.android.ui.FormActivity;
 import org.gnucash.android.ui.UxArgument;
-import org.gnucash.android.ui.transaction.dialog.BulkMoveDialogFragment;
-import org.gnucash.android.ui.util.AccountBalanceTask;
-import org.gnucash.android.ui.util.OnTransactionClickedListener;
 import org.gnucash.android.ui.util.Refreshable;
 import org.gnucash.android.ui.widget.WidgetConfigurationActivity;
+import org.ocpsoft.prettytime.PrettyTime;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+
+import butterknife.Bind;
+import butterknife.ButterKnife;
 
 /**
  * List Fragment for displaying list of transactions for an account
  * @author Ngewi Fet <ngewif@gmail.com>
  *
  */
-public class TransactionsListFragment extends ListFragment implements
-        Refreshable, LoaderCallbacks<Cursor>, AdapterView.OnItemLongClickListener{
+public class TransactionsListFragment extends Fragment implements
+        Refreshable, LoaderCallbacks<Cursor>{
 
 	/**
 	 * Logging tag
@@ -80,64 +75,14 @@ public class TransactionsListFragment extends ListFragment implements
 	protected static final String LOG_TAG = "TransactionListFragment";
 
     private TransactionsDbAdapter mTransactionsDbAdapter;
-	private SimpleCursorAdapter mCursorAdapter;
-	private ActionMode mActionMode = null;
-	private boolean mInEditMode = false;
     private String mAccountUID;
 
-	/**
-	 * Callback listener for editing transactions
-	 */
-	private OnTransactionClickedListener mTransactionEditListener;
-	
-	/**
-	 * Callbacks for the menu items in the Context ActionBar (CAB) in action mode
-	 */
-	private ActionMode.Callback mActionModeCallbacks = new ActionMode.Callback() {
-		
-		@Override
-		public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-			MenuInflater inflater = mode.getMenuInflater();
-	        inflater.inflate(R.menu.transactions_context_menu, menu);
-	        return true;
-		}
-		
-		@Override
-		public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-			//nothing to see here, move along
-			return false;
-		}
-		
-		@Override
-		public void onDestroyActionMode(ActionMode mode) {
-			finishEditMode();
-		}
-				
-		@Override
-		public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-			switch (item.getItemId()) {
-			case R.id.context_menu_move_transactions:
-				showBulkMoveDialog();
-				mode.finish();
-				WidgetConfigurationActivity.updateAllWidgets(getActivity());
-				return true;
 
-			case R.id.context_menu_delete:
-				for (long id : getListView().getCheckedItemIds()) {
-					mTransactionsDbAdapter.deleteRecord(id);
-				}
-				refresh();
-				mode.finish();
-				WidgetConfigurationActivity.updateAllWidgets(getActivity());
-				return true;
-				
-			default:
-				return false;
-			}
-		}
-	};
+	private TransactionRecyclerAdapter mTransactionRecyclerAdapter;
+	@Bind(R.id.transaction_recycler_view) RecyclerView mRecyclerView;
 
-    @Override
+
+	@Override
  	public void onCreate(Bundle savedInstanceState) {		
 		super.onCreate(savedInstanceState);
 		setHasOptionsMenu(true);
@@ -145,25 +90,18 @@ public class TransactionsListFragment extends ListFragment implements
 		mAccountUID = args.getString(UxArgument.SELECTED_ACCOUNT_UID);
 
 		mTransactionsDbAdapter = TransactionsDbAdapter.getInstance();
-		mCursorAdapter = new TransactionsCursorAdapter(
-				getActivity().getApplicationContext(), 
-				R.layout.list_item_transaction, null, 
-				new String[] {DatabaseSchema.TransactionEntry.COLUMN_DESCRIPTION},
-				new int[] {R.id.primary_text});
-		setListAdapter(mCursorAdapter);
 	}
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.fragment_transactions_list, container, false);
-		FloatingActionButton floatingActionButton = (FloatingActionButton) view.findViewById(R.id.fab_create_transaction);
-		floatingActionButton.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				mTransactionEditListener.createNewTransaction(mAccountUID);
-			}
-		});
+		ButterKnife.bind(this, view);
+
+		mRecyclerView.setHasFixedSize(true);
+		LinearLayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
+		mRecyclerView.setLayoutManager(mLayoutManager);
+
 		return view;
 	}
 
@@ -175,8 +113,9 @@ public class TransactionsListFragment extends ListFragment implements
 		aBar.setDisplayShowTitleEnabled(false);
 		aBar.setDisplayHomeAsUpEnabled(true);
 
-        getListView().setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
-		getListView().setOnItemLongClickListener(this);
+		mTransactionRecyclerAdapter = new TransactionRecyclerAdapter(null);
+		mRecyclerView.setAdapter(mTransactionRecyclerAdapter);
+
 		setHasOptionsMenu(true);		
 	}
 
@@ -197,22 +136,6 @@ public class TransactionsListFragment extends ListFragment implements
 	public void refresh(){
 		getLoaderManager().restartLoader(0, null, this);
 
-        /*
-	  Text view displaying the sum of the accounts
-	 */
-        TextView mSumTextView = (TextView) getView().findViewById(R.id.transactions_sum);
-        new AccountBalanceTask(mSumTextView).execute(mAccountUID);
-
-	}
-			
-	@Override
-	public void onAttach(Activity activity) {
-		super.onAttach(activity);
-		try {
-			 mTransactionEditListener = (OnTransactionClickedListener) activity;
-		} catch (ClassCastException e) {
-			throw new ClassCastException(activity.toString() + " must implement OnAccountSelectedListener");
-		}	
 	}
 	
 	@Override
@@ -221,26 +144,15 @@ public class TransactionsListFragment extends ListFragment implements
 		((TransactionsActivity)getActivity()).updateNavigationSelection();
 		refresh();
 	}
-	
-	@Override
-	public void onListItemClick(ListView l, View v, int position, long id) {
-		super.onListItemClick(l, v, position, id);
-		if (mInEditMode){
-			CheckBox checkbox = (CheckBox) v.findViewById(R.id.checkbox_transaction);
-			checkbox.setChecked(!checkbox.isChecked());
-			return;
-		}
-		mTransactionEditListener.editTransaction(mTransactionsDbAdapter.getUID(id));
+
+	public void onListItemClick(long id) {
+		Intent intent = new Intent(getActivity(), TransactionInfoActivity.class);
+		intent.putExtra(UxArgument.SELECTED_TRANSACTION_UID, mTransactionsDbAdapter.getUID(id));
+		intent.putExtra(UxArgument.SELECTED_ACCOUNT_UID, mAccountUID);
+		startActivity(intent);
+//		mTransactionEditListener.editTransaction(mTransactionsDbAdapter.getUID(id));
 	}
 
-	@Override
-	public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long id) {
-		getListView().setItemChecked(position, true);
-		CheckBox checkbox = (CheckBox) view.findViewById(R.id.checkbox_transaction);
-		checkbox.setChecked(true);
-		startActionMode();
-		return true;
-	}
 
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -264,235 +176,16 @@ public class TransactionsListFragment extends ListFragment implements
 	@Override
 	public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
 		Log.d(LOG_TAG, "Transactions loader finished. Swapping in cursor");
-		mCursorAdapter.swapCursor(cursor);
-		mCursorAdapter.notifyDataSetChanged();		
+		mTransactionRecyclerAdapter.swapCursor(cursor);
+		mTransactionRecyclerAdapter.notifyDataSetChanged();
 	}
 
 	@Override
 	public void onLoaderReset(Loader<Cursor> loader) {
 		Log.d(LOG_TAG, "Resetting transactions loader");
-		mCursorAdapter.swapCursor(null);		
+		mTransactionRecyclerAdapter.swapCursor(null);
 	}
 
-	/**
-	 * Finishes the edit mode in the transactions list. 
-	 * Edit mode is started when at least one transaction is selected
-	 */
-	public void finishEditMode(){
-		mInEditMode = false;
-		uncheckAllItems();
-		mActionMode = null;
-	}
-	
-	/**
-	 * Sets the title of the Context ActionBar when in action mode. 
-	 * It sets the number highlighted items
-	 */
-	public void setActionModeTitle(){
-		int count = getListView().getCheckedItemIds().length; //mSelectedIds.size();
-		if (count > 0 && mActionMode != null){
-			mActionMode.setTitle(getResources().getString(R.string.title_selected, count));
-		}
-	}
-	
-	/**
-	 * Unchecks all the checked items in the list
-	 */
-	private void uncheckAllItems() {
-        SparseBooleanArray checkedPositions = getListView().getCheckedItemPositions();
-        ListView listView = getListView();
-        for (int i = 0; i < checkedPositions.size(); i++) {
-            int position = checkedPositions.keyAt(i);
-            listView.setItemChecked(position, false);
-        }
-	}
-
-	
-	/**
-	 * Starts action mode and activates the Context ActionBar (CAB)
-	 * Action mode is initiated as soon as at least one transaction is selected (highlighted)
-	 */
-	private void startActionMode(){
-		if (mActionMode != null) {
-            return;
-        }		
-		mInEditMode = true;
-        // Start the CAB using the ActionMode.Callback defined above
-		mActionMode = ((AppCompatActivity) getActivity())
-								.startSupportActionMode(mActionModeCallbacks);
-	}
-	
-	/**
-	 * Stops action mode and deselects all selected transactions.
-     * This method only has effect if the number of checked items is greater than 0 and {@link #mActionMode} is not null
-	 */
-	private void stopActionMode(){
-        int checkedCount = getListView().getCheckedItemIds().length;
-        if (checkedCount <= 0 && mActionMode != null) {
-            mActionMode.finish();
-        }
-    }
-		
-	/**
-	 * Prepares and displays the dialog for bulk moving transactions to another account
-	 */
-	protected void showBulkMoveDialog(){
-		FragmentManager manager = getActivity().getSupportFragmentManager();
-		FragmentTransaction ft = manager.beginTransaction();
-	    Fragment prev = manager.findFragmentByTag("bulk_move_dialog");
-	    if (prev != null) {
-	        ft.remove(prev);
-	    }
-	    ft.addToBackStack(null);
-
-	    // Create and show the dialog.
-	    DialogFragment bulkMoveFragment = new BulkMoveDialogFragment();
-	    Bundle args = new Bundle();
-	    args.putString(UxArgument.ORIGIN_ACCOUNT_UID, mAccountUID);
-	    args.putLongArray(UxArgument.SELECTED_TRANSACTION_IDS, getListView().getCheckedItemIds());
-	    bulkMoveFragment.setArguments(args);
-        bulkMoveFragment.setTargetFragment(this, 0);
-	    bulkMoveFragment.show(ft, "bulk_move_dialog");
-	}	
-	
-	/**
-	 * Extends a simple cursor adapter to bind transaction attributes to views 
-	 * @author Ngewi Fet <ngewif@gmail.com>
-	 */
-	protected class TransactionsCursorAdapter extends SimpleCursorAdapter {
-				
-		public TransactionsCursorAdapter(Context context, int layout, Cursor c,
-				String[] from, int[] to) {
-			super(context, layout, c, from, to, 0);
-		}
-		
-		@Override
-		public View getView(int position, View convertView, ViewGroup parent) {
-			final View view = super.getView(position, convertView, parent);
-			final int itemPosition = position;
-			CheckBox checkbox = (CheckBox) view.findViewById(R.id.checkbox_transaction);
-            final TextView secondaryText = (TextView) view.findViewById(R.id.secondary_text);
-
-            //TODO: Revisit this if we ever change the application theme
-            int id = Resources.getSystem().getIdentifier("btn_check_holo_light", "drawable", "android");
-            checkbox.setButtonDrawable(id);
-            checkbox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-				
-				@Override
-				public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    getListView().setItemChecked(itemPosition, isChecked);
-                    if (isChecked) {
-                        startActionMode();
-                    } else {
-                        stopActionMode();
-                    }
-                    setActionModeTitle();
-				}
-			});
-
-
-            ListView listView = (ListView) parent;
-            if (mInEditMode && listView.isItemChecked(position)){
-                view.setBackgroundColor(getResources().getColor(R.color.abs__holo_blue_light));
-                secondaryText.setTextColor(getResources().getColor(android.R.color.white));
-            } else {
-                view.setBackgroundColor(getResources().getColor(android.R.color.transparent));
-                secondaryText.setTextColor(getResources().getColor(android.R.color.secondary_text_light_nodisable));
-                checkbox.setChecked(false);
-            }
-
-            //increase the touch target area for the add new transaction button
-
-            final View checkBoxView = checkbox;
-            final View parentView = view;
-            parentView.post(new Runnable() {
-                @Override
-                public void run() {
-                    if (isAdded()){ //may be run when fragment has been unbound from activity
-                        float extraPadding = getResources().getDimension(R.dimen.edge_padding);
-                        final android.graphics.Rect hitRect = new Rect();
-                        checkBoxView.getHitRect(hitRect);
-                        hitRect.right   += extraPadding;
-                        hitRect.bottom  += 3*extraPadding;
-                        hitRect.top     -= extraPadding;
-                        hitRect.left    -= 2*extraPadding;
-                        parentView.setTouchDelegate(new TouchDelegate(hitRect, checkBoxView));
-                    }
-                }
-            });
-
-            return view;
-		}
-		
-		@Override
-		public void bindView(View view, Context context, Cursor cursor) {
-			super.bindView(view, context, cursor);
-
-            String transactionUID = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.TransactionEntry.COLUMN_UID));
-			Money amount = mTransactionsDbAdapter.getBalance(transactionUID, mAccountUID);
-			TextView amountTextView = (TextView) view.findViewById(R.id.transaction_amount);
-            TransactionsActivity.displayBalance(amountTextView, amount);
-
-			TextView trNote = (TextView) view.findViewById(R.id.secondary_text);
-			String notes = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.TransactionEntry.COLUMN_NOTES));
-			if (notes == null || notes.length() == 0)
-				trNote.setVisibility(View.GONE);
-			else {
-				trNote.setVisibility(View.VISIBLE);
-				trNote.setText(notes);
-			}
-
-            setSectionHeaderVisibility(view, cursor);
-		}
-
-        /**
-         * Toggles the visibilty of the section header based on whether the previous transaction and current were
-         * booked on the same day or not. Transactions a generally grouped by day
-         * @param view Parent view within which to find the section header
-         * @param cursor Cursor containing transaction data set
-         * @see #isSameDay(long, long)
-         */
-        private void setSectionHeaderVisibility(View view, Cursor cursor) {
-            long transactionTime = cursor.getLong(cursor.getColumnIndexOrThrow(DatabaseSchema.TransactionEntry.COLUMN_TIMESTAMP));
-            int position = cursor.getPosition();
-
-            boolean hasSectionHeader;
-            if (position == 0){
-                hasSectionHeader = true;
-            } else {
-                cursor.moveToPosition(position - 1);
-                long previousTimestamp = cursor.getLong(cursor.getColumnIndexOrThrow(DatabaseSchema.TransactionEntry.COLUMN_TIMESTAMP));
-                cursor.moveToPosition(position);
-                //has header if two consecutive transactions were not on same day
-                hasSectionHeader = !isSameDay(previousTimestamp, transactionTime);
-            }
-
-            TextView dateHeader = (TextView) view.findViewById(R.id.date_section_header);
-
-            if (hasSectionHeader){
-                String dateString = DateUtils.formatDateTime(getActivity(), transactionTime,
-                        DateUtils.FORMAT_SHOW_WEEKDAY | DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_YEAR);
-                dateHeader.setText(dateString);
-                dateHeader.setVisibility(View.VISIBLE);
-            } else {
-                dateHeader.setVisibility(View.GONE);
-            }
-        }
-
-        /**
-         * Checks if two timestamps have the same calendar day
-         * @param timeMillis1 Timestamp in milliseconds
-         * @param timeMillis2 Timestamp in milliseconds
-         * @return <code>true</code> if both timestamps are on same day, <code>false</code> otherwise
-         */
-        private boolean isSameDay(long timeMillis1, long timeMillis2){
-			Date date1 = new Date(timeMillis1);
-			Date date2 = new Date(timeMillis2);
-			
-			SimpleDateFormat fmt = new SimpleDateFormat("yyyyMMdd");
-			return fmt.format(date1).equals(fmt.format(date2));
-		}
-	}
 	
 	/**
 	 * {@link DatabaseCursorLoader} for loading transactions asynchronously from the database
@@ -516,4 +209,128 @@ public class TransactionsListFragment extends ListFragment implements
 		}		
 	}
 
+	public class TransactionRecyclerAdapter extends CursorRecyclerAdapter<TransactionRecyclerAdapter.ViewHolder>{
+
+		private final PrettyTime prettyTime = new PrettyTime();
+		public TransactionRecyclerAdapter(Cursor cursor) {
+			super(cursor);
+		}
+
+		/**
+		 * Checks if two timestamps have the same calendar month
+		 * @param timeMillis1 Timestamp in milliseconds
+		 * @param timeMillis2 Timestamp in milliseconds
+		 * @return <code>true</code> if both timestamps are on same day, <code>false</code> otherwise
+		 */
+		private boolean isSameMonth(long timeMillis1, long timeMillis2){
+			Date date1 = new Date(timeMillis1);
+			Date date2 = new Date(timeMillis2);
+
+			SimpleDateFormat fmt = new SimpleDateFormat("yyyyMM", Locale.US);
+			return fmt.format(date1).equals(fmt.format(date2));
+		}
+
+		@Override
+		public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+			View v = LayoutInflater.from(parent.getContext())
+					.inflate(R.layout.cardview_transaction, parent, false);
+			return new ViewHolder(v);
+		}
+
+
+		@Override
+		public void onBindViewHolderCursor(ViewHolder holder, Cursor cursor) {
+			holder.transactionId = cursor.getLong(cursor.getColumnIndexOrThrow(DatabaseSchema.TransactionEntry._ID));
+
+			String description = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.TransactionEntry.COLUMN_DESCRIPTION));
+			holder.transactionDescription.setText(description);
+
+			final String transactionUID = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.TransactionEntry.COLUMN_UID));
+			Money amount = mTransactionsDbAdapter.getBalance(transactionUID, mAccountUID);
+			TransactionsActivity.displayBalance(holder.transactionAmount, amount);
+
+			List<Split> splits = SplitsDbAdapter.getInstance().getSplitsForTransaction(transactionUID);
+			String text = "";
+
+			if (splits.size() == 2 && splits.get(0).isPairOf(splits.get(1))){
+				for (Split split : splits) {
+					if (!split.getAccountUID().equals(mAccountUID)){
+						text = AccountsDbAdapter.getInstance().getFullyQualifiedAccountName(split.getAccountUID());
+						break;
+					}
+				}
+			}
+
+			if (splits.size() > 2){
+				text = splits.size() + " splits";
+			}
+			holder.transactionNote.setText(text);
+
+			long dateMillis = cursor.getLong(cursor.getColumnIndexOrThrow(DatabaseSchema.TransactionEntry.COLUMN_TIMESTAMP));
+			holder.transactionDate.setText(prettyTime.format(new Date(dateMillis)));
+
+			final long id = holder.transactionId;
+			holder.itemView.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					onListItemClick(id);
+				}
+			});
+
+			holder.editTransaction.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					Intent intent = new Intent(getActivity(), FormActivity.class);
+					intent.putExtra(UxArgument.FORM_TYPE, FormActivity.FormType.TRANSACTION_FORM.name());
+					intent.putExtra(UxArgument.SELECTED_TRANSACTION_UID, transactionUID);
+					intent.putExtra(UxArgument.SELECTED_ACCOUNT_UID, mAccountUID);
+					startActivity(intent);
+				}
+			});
+
+		}
+
+
+		public class ViewHolder extends RecyclerView.ViewHolder implements PopupMenu.OnMenuItemClickListener{
+			@Bind(R.id.primary_text) 		public TextView transactionDescription;
+			@Bind(R.id.secondary_text) 		public TextView transactionNote;
+			@Bind(R.id.transaction_amount)	public TextView transactionAmount;
+			@Bind(R.id.transaction_date)	public TextView transactionDate;
+			@Bind(R.id.edit_transaction)	public ImageView editTransaction;
+			@Bind(R.id.options_menu)		public ImageView optionsMenu;
+
+			long transactionId;
+
+			public ViewHolder(View itemView) {
+				super(itemView);
+				ButterKnife.bind(this, itemView);
+
+				optionsMenu.setOnClickListener(new View.OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						PopupMenu popup = new PopupMenu(getActivity(), v);
+						popup.setOnMenuItemClickListener(ViewHolder.this);
+						MenuInflater inflater = popup.getMenuInflater();
+						inflater.inflate(R.menu.transactions_context_menu, popup.getMenu());
+						popup.show();
+					}
+				});
+			}
+
+			@Override
+			public boolean onMenuItemClick(MenuItem item) {
+				switch (item.getItemId()) {
+					case R.id.context_menu_delete:
+						mTransactionsDbAdapter.deleteRecord(transactionId);
+						WidgetConfigurationActivity.updateAllWidgets(getActivity());
+						refresh();
+						return true;
+
+					default:
+						return false;
+
+				}
+			}
+		}
+	}
 }

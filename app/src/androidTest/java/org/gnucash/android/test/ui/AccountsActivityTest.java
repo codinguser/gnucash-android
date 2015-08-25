@@ -113,7 +113,7 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
 		Account account = new Account(DUMMY_ACCOUNT_NAME);
         account.setUID(DUMMY_ACCOUNT_UID);
 		account.setCurrency(Currency.getInstance(DUMMY_ACCOUNT_CURRENCY_CODE));
-		mAccountsDbAdapter.addAccount(account);
+		mAccountsDbAdapter.addRecord(account);
         refreshAccountsList();
 	}
 
@@ -140,7 +140,7 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
             final int NUMBER_OF_ACCOUNTS = 15;
             for (int i = 0; i < NUMBER_OF_ACCOUNTS; i++) {
                 Account account = new Account("Acct " + i);
-                mAccountsDbAdapter.addAccount(account);
+                mAccountsDbAdapter.addRecord(account);
             }
 
             //there should exist a listview of accounts
@@ -159,7 +159,7 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
 
         Account account = new Account(SEARCH_ACCOUNT_NAME);
         account.setParentUID(DUMMY_ACCOUNT_UID);
-        mAccountsDbAdapter.addAccount(account);
+        mAccountsDbAdapter.addRecord(account);
 
         //enter search query
 //        ActionBarUtils.clickSherlockActionBarItem(mSolo, R.id.menu_search);
@@ -191,7 +191,7 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
 
         onView(withId(R.id.menu_save)).perform(click());
 
-		List<Account> accounts = mAccountsDbAdapter.getAllAccounts();
+		List<Account> accounts = mAccountsDbAdapter.getAllRecords();
         assertThat(accounts).isNotNull();
         assertThat(accounts).hasSize(2);
 		Account newestAccount = accounts.get(0); //because of alphabetical sorting
@@ -205,7 +205,7 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
     public void testChangeParentAccount() {
         final String accountName = "Euro Account";
         Account account = new Account(accountName, Currency.getInstance("EUR"));
-        mAccountsDbAdapter.addAccount(account);
+        mAccountsDbAdapter.addRecord(account);
 
         refreshAccountsList();
 
@@ -220,7 +220,7 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
 
         onView(withId(R.id.menu_save)).perform(click());
 
-        Account editedAccount = mAccountsDbAdapter.getAccount(account.getUID());
+        Account editedAccount = mAccountsDbAdapter.getRecord(account.getUID());
         String parentUID = editedAccount.getParentUID();
 
         assertThat(parentUID).isNotNull();
@@ -236,7 +236,7 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
     public void shouldHideParentAccountViewWhenNoParentsExist(){
         onView(allOf(withText(DUMMY_ACCOUNT_NAME), isDisplayed())).perform(click());
         onView(withId(R.id.fragment_transaction_list)).perform(swipeRight());
-        onView(withId(R.id.fab_create_account)).check(matches(isDisplayed())).perform(click());
+        onView(withId(R.id.fab_create_transaction)).check(matches(isDisplayed())).perform(click());
         sleep(1000);
         onView(withId(R.id.checkbox_parent_account)).check(matches(allOf(isChecked())));
         onView(withId(R.id.input_account_name)).perform(typeText("Trading account"));
@@ -245,7 +245,7 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
 
         onView(withId(R.id.layout_parent_account)).check(matches(not(isDisplayed())));
         onView(withId(R.id.menu_save)).perform(click());
-
+        sleep(1000);
         //no sub-accounts
         assertThat(mAccountsDbAdapter.getSubAccountCount(DUMMY_ACCOUNT_UID)).isEqualTo(0);
         assertThat(mAccountsDbAdapter.getSubAccountCount(mAccountsDbAdapter.getOrCreateGnuCashRootAccountUID())).isEqualTo(2);
@@ -265,7 +265,7 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
 
         onView(withId(R.id.menu_save)).perform(click());
 
-		List<Account> accounts = mAccountsDbAdapter.getAllAccounts();
+		List<Account> accounts = mAccountsDbAdapter.getAllRecords();
 		Account latest = accounts.get(0);  //will be the first due to alphabetical sorting
 
         assertThat(latest.getName()).isEqualTo(editedAccountName);
@@ -284,15 +284,15 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
         transaction.addSplit(split);
         transaction.addSplit(split.createPair(DUMMY_ACCOUNT_UID));
         account.addTransaction(transaction);
-        mAccountsDbAdapter.addAccount(account);
+        mAccountsDbAdapter.addRecord(account);
 
-        assertThat(mAccountsDbAdapter.getAccount(DUMMY_ACCOUNT_UID).getTransactionCount()).isEqualTo(1);
+        assertThat(mAccountsDbAdapter.getRecord(DUMMY_ACCOUNT_UID).getTransactionCount()).isEqualTo(1);
         assertThat(mSplitsDbAdapter.getSplitsForTransaction(transaction.getUID())).hasSize(2);
 
         onView(withText(R.string.title_edit_account)).perform(click());
 
         onView(withId(R.id.menu_save)).perform(click());
-        assertThat(mAccountsDbAdapter.getAccount(DUMMY_ACCOUNT_UID).getTransactionCount()).isEqualTo(1);
+        assertThat(mAccountsDbAdapter.getRecord(DUMMY_ACCOUNT_UID).getTransactionCount()).isEqualTo(1);
         assertThat(mSplitsDbAdapter.fetchSplitsForAccount(DUMMY_ACCOUNT_UID).getCount()).isEqualTo(1);
         assertThat(mSplitsDbAdapter.getSplitsForTransaction(transaction.getUID())).hasSize(2);
 
@@ -340,7 +340,7 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
 
         new AccountCreator().onReceive(mAcccountsActivity, intent);
 
-		Account account = mAccountsDbAdapter.getAccount("intent-account");
+		Account account = mAccountsDbAdapter.getRecord("intent-account");
 		assertThat(account).isNotNull();
         assertThat(account.getName()).isEqualTo("Intent Account");
         assertThat(account.getUID()).isEqualTo("intent-account");
