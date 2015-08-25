@@ -22,7 +22,6 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.LineChart;
@@ -31,8 +30,8 @@ import com.github.mikephil.charting.components.LimitLine;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
-import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.github.mikephil.charting.highlight.Highlight;
+import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.github.mikephil.charting.utils.LargeValueFormatter;
 
 import org.gnucash.android.R;
@@ -97,8 +96,7 @@ public class LineChartActivity extends PassLockActivity implements OnChartValueS
         mCurrency = Currency.getInstance(PreferenceManager.getDefaultSharedPreferences(this)
                 .getString(getString(R.string.key_report_currency), Money.DEFAULT_CURRENCY_CODE));
 
-        mChart = new LineChart(this);
-        ((LinearLayout) findViewById(R.id.chart)).addView(mChart);
+        mChart = (LineChart) findViewById(R.id.line_chart);
         mChart.setOnChartValueSelectedListener(this);
         mChart.setDescription("");
         mChart.getXAxis().setDrawGridLines(false);

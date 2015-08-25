@@ -25,7 +25,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -36,8 +35,8 @@ import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.data.Entry;
-import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.github.mikephil.charting.highlight.Highlight;
+import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.github.mikephil.charting.utils.LargeValueFormatter;
 
 import org.gnucash.android.R;
@@ -111,8 +110,7 @@ public class BarChartActivity extends PassLockActivity implements OnChartValueSe
         mCurrency = Currency.getInstance(PreferenceManager.getDefaultSharedPreferences(this)
                 .getString(getString(R.string.key_report_currency), Money.DEFAULT_CURRENCY_CODE));
 
-        mChart = new BarChart(this);
-        ((LinearLayout) findViewById(R.id.bar_chart)).addView(mChart);
+        mChart = (BarChart) findViewById(R.id.bar_chart);
         mChart.setOnChartValueSelectedListener(this);
         mChart.setDescription("");
 //        mChart.setDrawValuesForWholeStack(false);
