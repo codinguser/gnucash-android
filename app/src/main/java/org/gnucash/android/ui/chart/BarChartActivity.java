@@ -177,6 +177,7 @@ public class BarChartActivity extends PassLockActivity implements OnChartValueSe
         }
 
         BarDataSet set = new BarDataSet(values, "");
+        set.setDrawValues(false);
         set.setStackLabels(labels.toArray(new String[labels.size()]));
         set.setColors(colors);
 
@@ -299,9 +300,11 @@ public class BarChartActivity extends PassLockActivity implements OnChartValueSe
         LinkedHashSet<String> labels = new LinkedHashSet<>(Arrays.asList(dataSet.getStackLabels()));
         LinkedHashSet<Integer> colors = new LinkedHashSet<>(dataSet.getColors());
 
-        Log.w(TAG, "labels " + labels.size());
-        Log.w(TAG, "colors " + colors.size());
-        legend.setCustom(new ArrayList<>(colors), new ArrayList<>(labels));
+        if (COLORS.length >= labels.size()) {
+            legend.setCustom(new ArrayList<>(colors), new ArrayList<>(labels));
+            return;
+        }
+        legend.setEnabled(false);
     }
 
     @Override
@@ -326,6 +329,10 @@ public class BarChartActivity extends PassLockActivity implements OnChartValueSe
         switch (item.getItemId()) {
             case R.id.menu_toggle_legend:
                 Legend legend = mChart.getLegend();
+                if (!legend.isLegendCustom()) {
+                    Toast.makeText(this, "The legend is too long", Toast.LENGTH_LONG).show();
+                    break;
+                }
                 legend.setEnabled(!mChart.getLegend().isEnabled());
                 mChart.invalidate();
                 break;
