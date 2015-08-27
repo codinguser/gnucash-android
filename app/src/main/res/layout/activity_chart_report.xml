@@ -29,36 +29,17 @@
         android:layout_height="match_parent"
         android:gravity="center_vertical">
 
+        <FrameLayout android:id="@+id/fragment_container"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center_horizontal">
-
-            <ImageButton
-                android:id="@+id/bar_chart_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/chart_bar_button" />
-            <ImageButton
-                android:id="@+id/pie_chart_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/chart_pie_button" />
-            <ImageButton
-                android:id="@+id/line_chart_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/chart_line_button" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_horizontal"
-            android:layout_marginTop="30dp">
+            android:gravity="center_vertical"
+            android:layout_marginTop="20dp">
 
             <TextView
                 android:id="@+id/textView"

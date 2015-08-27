@@ -68,7 +68,7 @@ import java.util.Locale;
  */
 public class PieChartActivity extends PassLockActivity implements OnChartValueSelectedListener, DatePickerDialog.OnDateSetListener {
 
-    private static final int[] COLORS = {
+    public static final int[] COLORS = {
             Color.parseColor("#17ee4e"), Color.parseColor("#cc1f09"), Color.parseColor("#3940f7"),
             Color.parseColor("#f9cd04"), Color.parseColor("#5f33a8"), Color.parseColor("#e005b6"),
             Color.parseColor("#17d6ed"), Color.parseColor("#e4a9a2"), Color.parseColor("#8fe6cd"),
@@ -80,14 +80,14 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
 
     public static final String SELECTED_VALUE_PATTERN = "%s - %.2f (%.2f %%)";
     public static final String DATE_PATTERN = "MMMM\nYYYY";
-    private static final String TOTAL_VALUE_LABEL_PATTERN = "%s\n%.2f %s";
+    public static final String TOTAL_VALUE_LABEL_PATTERN = "%s\n%.2f %s";
     private static final int ANIMATION_DURATION = 1800;
-    private static final int NO_DATA_COLOR = Color.LTGRAY;
+    public static final int NO_DATA_COLOR = Color.LTGRAY;
     public static final int CENTER_TEXT_SIZE = 18;
     /**
      * The space in degrees between the chart slices
      */
-    private static final float SPACE_BETWEEN_SLICES = 2f;
+    public static final float SPACE_BETWEEN_SLICES = 2f;
     /**
      * All pie slices less than this threshold will be group in "other" slice. Using percents not absolute values.
      */
@@ -123,7 +123,7 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
     /**
      * Used to specify the time period for which data will be displayed
      */
-    private enum TimePeriod {
+    public enum TimePeriod {
         PREVIOUS_MONTH, NEXT_MONTH, ALL_TIME
     }
 

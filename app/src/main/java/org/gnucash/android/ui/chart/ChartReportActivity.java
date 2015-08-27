@@ -19,6 +19,8 @@ package org.gnucash.android.ui.chart;
 import android.content.Intent;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -82,24 +84,12 @@ public class ChartReportActivity extends PassLockActivity {
             }
         });
 
-        findViewById(R.id.pie_chart_button).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(view.getContext(), PieChartActivity.class));
-            }
-        });
-        findViewById(R.id.line_chart_button).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(view.getContext(), LineChartActivity.class));
-            }
-        });
-        findViewById(R.id.bar_chart_button).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(view.getContext(), BarChartActivity.class));
-            }
-        });
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager
+                .beginTransaction();
+
+        fragmentTransaction.add(R.id.fragment_container, new ReportSummaryFragment());
+        fragmentTransaction.commit();
 
     }
 

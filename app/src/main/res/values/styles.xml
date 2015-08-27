@@ -41,10 +41,7 @@
         <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
     </style>
     
-    <style name="ButtonStyle">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:padding">18dp</item>
+    <style name="ButtonBaseStyle">
         <item name="android:textColor">@android:color/white</item>
     </style>
     
@@ -143,4 +140,5 @@
         <item name="android:textSize">16sp</item>
         <item name="android:textColor">@android:color/black</item>
     </style>
+
 </resources>
