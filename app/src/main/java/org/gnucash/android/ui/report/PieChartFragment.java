@@ -18,13 +18,11 @@
 package org.gnucash.android.ui.report;
 
 import android.app.DatePickerDialog;
+import android.content.Context;
 import android.graphics.Color;
-import android.graphics.PorterDuff;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
@@ -37,7 +35,6 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
-import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -74,7 +71,8 @@ import butterknife.ButterKnife;
  * @author Oleksandr Tyshkovets <olexandr.tyshkovets@gmail.com>
  * @author Ngewi Fet <ngewif@gmail.com>
  */
-public class PieChartFragment extends Fragment implements OnChartValueSelectedListener, DatePickerDialog.OnDateSetListener {
+public class PieChartFragment extends Fragment implements OnChartValueSelectedListener,
+        DatePickerDialog.OnDateSetListener, ReportOptionsListener {
 
     public static final String SELECTED_VALUE_PATTERN = "%s - %.2f (%.2f %%)";
     public static final String DATE_PATTERN = "MMMM\nYYYY";
@@ -94,10 +92,7 @@ public class PieChartFragment extends Fragment implements OnChartValueSelectedLi
     private LocalDateTime mChartDate = new LocalDateTime();
 
     @Bind(R.id.pie_chart) PieChart mChart;
-    @Bind(R.id.chart_date) TextView mChartDateTextView;
     @Bind(R.id.selected_chart_slice) TextView mSelectedValueTextView;
-    @Bind(R.id.previous_month_chart_button) ImageButton mPreviousMonthButton;
-    @Bind(R.id.next_month_chart_button) ImageButton mNextMonthButton;
     @Bind(R.id.chart_data_spinner) Spinner mChartDataTypeSpinner;
 
     private AccountsDbAdapter mAccountsDbAdapter;
@@ -116,15 +111,9 @@ public class PieChartFragment extends Fragment implements OnChartValueSelectedLi
 
     private String mCurrencyCode;
 
-    private TimePeriod mTimePeriod = TimePeriod.ALL_TIME;
+    private long mStartRangeMillis = -1;
+    private long mEndRangeMillis = -1;
 
-
-    /**
-     * Used to specify the time period for which data will be displayed
-     */
-    public enum TimePeriod {
-        PREVIOUS_MONTH, NEXT_MONTH, ALL_TIME
-    }
 
     @Nullable
     @Override
@@ -157,36 +146,18 @@ public class PieChartFragment extends Fragment implements OnChartValueSelectedLi
 
         setUpSpinner();
 
-        mPreviousMonthButton.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View view) {
-                mTimePeriod = TimePeriod.PREVIOUS_MONTH;
-                mChartDate = mChartDate.minusMonths(1);
-                displayChart();
-            }
-        });
-        mNextMonthButton.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View view) {
-                mTimePeriod = TimePeriod.NEXT_MONTH;
-                mChartDate = mChartDate.plusMonths(1);
-                displayChart();
-            }
-        });
-
-        mChartDateTextView.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View view) {
-                DialogFragment newFragment = ChartDatePickerFragment.newInstance(PieChartFragment.this,
-                        mChartDate.toDate().getTime(),
-                        mEarliestTransactionDate.toDate().getTime(),
-                        mLatestTransactionDate.toDate().getTime());
-                newFragment.show(getActivity().getSupportFragmentManager(), "date_dialog");
-            }
-        });
+        //TODO: We can re-use this in ReportsActivity if we add a "GoTo Date" option
+//        mChartDateTextView.setOnClickListener(new View.OnClickListener() {
+//
+//            @Override
+//            public void onClick(View view) {
+//                DialogFragment newFragment = ChartDatePickerFragment.newInstance(PieChartFragment.this,
+//                        mChartDate.toDate().getTime(),
+//                        mEarliestTransactionDate.toDate().getTime(),
+//                        mLatestTransactionDate.toDate().getTime());
+//                newFragment.show(getActivity().getSupportFragmentManager(), "date_dialog");
+//            }
+//        });
     }
 
     /**
@@ -202,19 +173,14 @@ public class PieChartFragment extends Fragment implements OnChartValueSelectedLi
      * Manages all actions about displaying the pie chart
      */
     private void displayChart() {
-        setImageButtonEnabled(mNextMonthButton,
-                mChartDate.plusMonths(1).dayOfMonth().withMinimumValue().withMillisOfDay(0).isBefore(mLatestTransactionDate));
-        setImageButtonEnabled(mPreviousMonthButton, (mEarliestTransactionDate.getYear() != 1970
-                && mChartDate.minusMonths(1).dayOfMonth().withMaximumValue().withMillisOfDay(86399999).isAfter(mEarliestTransactionDate)));
-
-        mSelectedValueTextView.setText("");
+        mSelectedValueTextView.setText("Select a slice to see details");
         mChart.highlightValues(null);
         mChart.clear();
 
         PieData pieData = getData();
         if (pieData != null && pieData.getYValCount() != 0) {
             mChartDataPresent = true;
-            mChart.setData(mGroupSmallerSlices ? groupSmallerSlices(pieData) : pieData);
+            mChart.setData(mGroupSmallerSlices ? groupSmallerSlices(pieData, getActivity()) : pieData);
             float sum = mChart.getData().getYValueSum();
             String total = getResources().getString(R.string.label_chart_total);
             String currencySymbol = Currency.getInstance(mCurrencyCode).getSymbol(Locale.getDefault());
@@ -223,27 +189,11 @@ public class PieChartFragment extends Fragment implements OnChartValueSelectedLi
         } else {
             mChartDataPresent = false;
             mChart.setCenterText(getResources().getString(R.string.label_chart_no_data));
-            if (mTimePeriod != TimePeriod.ALL_TIME) {
-                switch (mTimePeriod) {
-                    case NEXT_MONTH:
-                        mChartDate = mChartDate.plusMonths(1);
-                        displayChart();
-                        return;
-                    case PREVIOUS_MONTH:
-                        mChartDate = mChartDate.minusMonths(1);
-                        displayChart();
-                        return;
-                }
-            } else {
-                mChart.setData(getEmptyData());
-            }
+            mChart.setData(getEmptyData());
         }
 
         mChart.setTouchEnabled(mChartDataPresent);
         mChart.invalidate();
-
-        mChartDateTextView.setEnabled(mChartDataPresent);
-        mChartDateTextView.setText(mTimePeriod != TimePeriod.ALL_TIME ? mChartDate.toString(DATE_PATTERN) : getResources().getString(R.string.label_chart_overall));
     }
 
     /**
@@ -259,12 +209,7 @@ public class PieChartFragment extends Fragment implements OnChartValueSelectedLi
                     && !account.isPlaceholderAccount()
                     && account.getCurrency() == Currency.getInstance(mCurrencyCode)) {
 
-                long start = -1; long end = -1;
-                if (mTimePeriod != TimePeriod.ALL_TIME) {
-                    start = mChartDate.dayOfMonth().withMinimumValue().millisOfDay().withMinimumValue().toDate().getTime();
-                    end = mChartDate.dayOfMonth().withMaximumValue().millisOfDay().withMaximumValue().toDate().getTime();
-                }
-                double balance = mAccountsDbAdapter.getAccountsBalance(Collections.singletonList(account.getUID()), start, end).absolute().asDouble();
+                double balance = mAccountsDbAdapter.getAccountsBalance(Collections.singletonList(account.getUID()), mStartRangeMillis, mEndRangeMillis).absolute().asDouble();
                 if (balance != 0) {
                     dataSet.addEntry(new Entry((float) balance, dataSet.getEntryCount()));
                     colors.add(mUseAccountColor && account.getColorHexCode() != null
@@ -279,6 +224,13 @@ public class PieChartFragment extends Fragment implements OnChartValueSelectedLi
         return new PieData(labels, dataSet);
     }
 
+    @Override
+    public void updateDateRange(long start, long end) {
+        mStartRangeMillis = start;
+        mEndRangeMillis = end;
+        displayChart();
+    }
+
     /**
      * Returns a data object that represents situation when no user data available
      * @return a {@code PieData} instance for situation when no user data available
@@ -289,23 +241,6 @@ public class PieChartFragment extends Fragment implements OnChartValueSelectedLi
         dataSet.setColor(NO_DATA_COLOR);
         dataSet.setDrawValues(false);
         return new PieData(Collections.singletonList(""), dataSet);
-    }
-    
-    /**
-     * Sets the image button to the given state and grays-out the icon
-     *
-     * @param enabled the button's state
-     * @param button the button item to modify
-     */
-    private void setImageButtonEnabled(ImageButton button, boolean enabled) {
-        button.setEnabled(enabled);
-        Drawable originalIcon = button.getDrawable();
-        if (enabled) {
-            originalIcon.clearColorFilter();
-        } else {
-            originalIcon.setColorFilter(Color.GRAY, PorterDuff.Mode.SRC_IN);
-        }
-        button.setImageDrawable(originalIcon);
     }
 
     /**
@@ -359,7 +294,6 @@ public class PieChartFragment extends Fragment implements OnChartValueSelectedLi
                 mLatestTransactionDate = new LocalDateTime(mTransactionsDbAdapter.getTimestampOfLatestTransaction(mAccountType, mCurrencyCode));
                 mChartDate = mLatestTransactionDate;
 
-                mTimePeriod = TimePeriod.ALL_TIME;
                 displayChart();
             }
 
@@ -386,6 +320,8 @@ public class PieChartFragment extends Fragment implements OnChartValueSelectedLi
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.isCheckable())
+            item.setChecked(!item.isChecked());
         switch (item.getItemId()) {
             case R.id.menu_order_by_size: {
                 bubbleSort();
@@ -410,16 +346,19 @@ public class PieChartFragment extends Fragment implements OnChartValueSelectedLi
                 displayChart();
                 return true;
             }
+
+            default:
+                return super.onOptionsItemSelected(item);
         }
-        return super.onOptionsItemSelected(item);
     }
 
     /**
      * Groups smaller slices. All smaller slices will be combined and displayed as a single "Other".
      * @param data the pie data which smaller slices will be grouped
+     * @param context Context for retrieving resources
      * @return a {@code PieData} instance with combined smaller slices
      */
-    private PieData groupSmallerSlices(PieData data) {
+    public static PieData groupSmallerSlices(PieData data, Context context) {
         float otherSlice = 0f;
         List<Entry> newEntries = new ArrayList<>();
         List<String> newLabels = new ArrayList<>();
@@ -438,7 +377,7 @@ public class PieChartFragment extends Fragment implements OnChartValueSelectedLi
 
         if (otherSlice > 0) {
             newEntries.add(new Entry(otherSlice, newEntries.size()));
-            newLabels.add(getResources().getString(R.string.label_other_slice));
+            newLabels.add(context.getResources().getString(R.string.label_other_slice));
             newColors.add(Color.LTGRAY);
         }
 
@@ -457,7 +396,6 @@ public class PieChartFragment extends Fragment implements OnChartValueSelectedLi
         if (view.isShown()) {
             mChartDate = new LocalDateTime(year, monthOfYear + 1, dayOfMonth, 0, 0);
             // no matter next or previous
-            mTimePeriod = TimePeriod.NEXT_MONTH;
             displayChart();
         }
     }

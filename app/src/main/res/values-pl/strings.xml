@@ -429,10 +429,10 @@
     <string name="summary_use_account_color">Użyj koloru konta w wykresie kołowym/słupkowym</string>
     <string name="header_report_settings">Raporty</string>
     <string name="menu_order_by_size">Sortuj po rozmarze</string>
-    <string name="menu_toggle_legend">Przełącz opisy</string>
-    <string name="menu_toggle_labels">Przełącz etykiety</string>
-    <string name="menu_toggle_percentage_mode">Przełącz procenty</string>
-    <string name="menu_toggle_average_lines">Przełącz linie średniej</string>
+    <string name="menu_toggle_legend">Show legend</string>
+    <string name="menu_toggle_labels">Show labels</string>
+    <string name="menu_toggle_percentage_mode">Show percentage</string>
+    <string name="menu_toggle_average_lines">Show average lines</string>
     <string name="menu_group_smaller_slices">Grupuj mniejsze wycinki</string>
     <string name="label_chart_no_data">Brak danych dla wykresu</string>
     <string name="label_chart_overall">Ogólny</string>

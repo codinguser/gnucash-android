@@ -425,10 +425,10 @@
     <string name="title_line_chart">Graphique linéaire</string>
     <string name="title_bar_chart">Histogramme</string>
     <string name="menu_order_by_size">Tri par taille</string>
-    <string name="menu_toggle_legend">Afficher/masquer legend</string>
-    <string name="menu_toggle_labels">Afficher/masquer labels</string>
-    <string name="menu_toggle_percentage_mode">Afficher/masquer percentage</string>
-    <string name="menu_toggle_average_lines">Afficher/masquer average lines</string>
+    <string name="menu_toggle_legend">Show legend</string>
+    <string name="menu_toggle_labels">Show labels</string>
+    <string name="menu_toggle_percentage_mode">Show percentage</string>
+    <string name="menu_toggle_average_lines">Show average lines</string>
     <string name="menu_group_smaller_slices">Groupe par petites tranches</string>
     <string name="label_chart_no_data">Aucune données de graphe disponible</string>
     <string name="label_chart_overall">Global</string>

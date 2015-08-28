@@ -426,10 +426,10 @@
 	<string name="title_line_chart">Linjediagram</string>
 	<string name="title_bar_chart">Søylediagram</string>
 	<string name="menu_order_by_size">Sorter etter størrelse</string>
-	<string name="menu_toggle_legend">Vis/skjul legend</string>
-	<string name="menu_toggle_labels">Vis/skjul etiketter</string>
-	<string name="menu_toggle_percentage_mode">Vis/skjul prosent</string>
-	<string name="menu_toggle_average_lines">Vis/skjul gjennomsnittslinjer</string>
+	<string name="menu_toggle_legend">Show legend</string>
+	<string name="menu_toggle_labels">Show labels</string>
+	<string name="menu_toggle_percentage_mode">Show percentage</string>
+	<string name="menu_toggle_average_lines">Show average lines</string>
 	<string name="menu_group_smaller_slices">Grupper små stykker</string>
 	<string name="label_chart_no_data">Ingen diagramdata er tilgjengelige</string>
 	<string name="label_chart_overall">Generell</string>

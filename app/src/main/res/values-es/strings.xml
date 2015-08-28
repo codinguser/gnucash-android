@@ -418,10 +418,10 @@
 	<string name="title_line_chart">Gr&#225;fico de l&#237;nea</string>
 	<string name="title_bar_chart">Gr&#225;fico de barras</string>
 	<string name="menu_order_by_size">Ordenar por tama&#241;o</string>
-	<string name="menu_toggle_legend">Activar o desactivar leyenda</string>
-	<string name="menu_toggle_labels">Activar o desactivar etiquetas</string>
-	<string name="menu_toggle_percentage_mode">Activar o desactivar porcentajes</string>
-	<string name="menu_toggle_average_lines">Activar o desactivar l&#237;neas de medias</string>
+	<string name="menu_toggle_legend">Show legend</string>
+	<string name="menu_toggle_labels">Show labels</string>
+	<string name="menu_toggle_percentage_mode">Show percentage</string>
+	<string name="menu_toggle_average_lines">Show average lines</string>
 	<string name="menu_group_smaller_slices">Agrupar porciones peque&#241;as</string>
 	<string name="label_chart_no_data">Datos del gr&#225;fico no disponibles</string>
 	<string name="label_chart_overall">Total</string>

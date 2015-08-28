@@ -39,6 +39,7 @@
                 android:background="?attr/colorPrimary"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
+                app:layout_scrollFlags="enterAlways"
                 app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
                 app:popupTheme="@style/ThemeOverlay.AppCompat.Light" >
 
@@ -48,6 +49,18 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
                 </android.support.v7.widget.Toolbar>
+
+            <android.support.v7.widget.RecyclerView android:id="@+id/date_range_recyclerview"
+                android:layout_width="match_parent"
+                android:minHeight="50dp"
+                android:layout_height="0dp"
+                android:layout_weight="1"/>
+
+            <View android:id="@+id/date_range_divider"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="5dp"
+                android:background="@android:color/darker_gray" />
 
             <FrameLayout android:id="@+id/fragment_container"
                 android:orientation="vertical"

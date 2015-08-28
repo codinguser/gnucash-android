@@ -54,7 +54,7 @@ limitations under the License.
                 android:layout_weight="1"
                 android:drawableLeft="@drawable/ic_subject_white_24dp"
                 android:drawableStart="@drawable/ic_subject_white_24dp"
-                android:text="Text Report"/>
+                android:text="Summary"/>
     </LinearLayout>
 
 

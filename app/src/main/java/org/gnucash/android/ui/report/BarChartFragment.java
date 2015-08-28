@@ -324,6 +324,8 @@ public class BarChartFragment extends Fragment implements OnChartValueSelectedLi
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.isCheckable())
+            item.setChecked(!item.isChecked());
         switch (item.getItemId()) {
             case R.id.menu_toggle_legend:
                 // workaround for buggy legend
@@ -343,8 +345,10 @@ public class BarChartFragment extends Fragment implements OnChartValueSelectedLi
                         : R.string.toast_chart_percentage_mode_current_bar;
                 Toast.makeText(getActivity(), msgId, Toast.LENGTH_LONG).show();
                 return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
         }
-        return super.onOptionsItemSelected(item);
     }
 
     @Override

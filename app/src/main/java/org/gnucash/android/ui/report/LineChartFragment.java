@@ -302,11 +302,13 @@ public class LineChartFragment extends Fragment implements OnChartValueSelectedL
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.isCheckable())
+            item.setChecked(!item.isChecked());
         switch (item.getItemId()) {
             case R.id.menu_toggle_legend:
                 mChart.getLegend().setEnabled(!mChart.getLegend().isEnabled());
                 mChart.invalidate();
-                break;
+                return true;
 
             case R.id.menu_toggle_average_lines:
                 if (mChart.getAxisLeft().getLimitLines().isEmpty()) {
@@ -320,9 +322,11 @@ public class LineChartFragment extends Fragment implements OnChartValueSelectedL
                     mChart.getAxisLeft().removeAllLimitLines();
                 }
                 mChart.invalidate();
-                break;
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
         }
-        return super.onOptionsItemSelected(item);
     }
 
     @Override

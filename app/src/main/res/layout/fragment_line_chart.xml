@@ -42,7 +42,7 @@
 
         <com.github.mikephil.charting.charts.LineChart
             android:id="@+id/line_chart"
-            android:minHeight="400dp"
+            android:minHeight="300dp"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 

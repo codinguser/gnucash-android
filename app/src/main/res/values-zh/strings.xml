@@ -433,10 +433,10 @@
     <string name="summary_use_account_color">在饼图中使用科目的颜色</string>
     <string name="header_report_settings">报表</string>
     <string name="menu_order_by_size">按数量排序</string>
-    <string name="menu_toggle_legend">显示图例</string>
-    <string name="menu_toggle_labels">显示标签</string>
-    <string name="menu_toggle_percentage_mode">显示为百分比</string>
-    <string name="menu_toggle_average_lines">显示平均值</string>
+    <string name="menu_toggle_legend">Show legend</string>
+    <string name="menu_toggle_labels">Show labels</string>
+    <string name="menu_toggle_percentage_mode">Show percentage</string>
+    <string name="menu_toggle_average_lines">Show average lines</string>
     <string name="menu_group_smaller_slices">合并太小的数据</string>
     <string name="label_chart_no_data">没有数据可显示</string>
     <string name="label_chart_overall">全部</string>

@@ -432,10 +432,10 @@
     <string name="summary_use_account_color">在圓形圖中使用會計科目的顏色</string>
     <string name="header_report_settings">報表</string>
     <string name="menu_order_by_size">按數量排序</string>
-    <string name="menu_toggle_legend">顯示圖例</string>
-    <string name="menu_toggle_labels">顯示標籤</string>
-    <string name="menu_toggle_percentage_mode">顯示百分比</string>
-    <string name="menu_toggle_average_lines">顯示平均值</string>
+    <string name="menu_toggle_legend">Show legend</string>
+    <string name="menu_toggle_labels">Show labels</string>
+    <string name="menu_toggle_percentage_mode">Show percentage</string>
+    <string name="menu_toggle_average_lines">Show average lines</string>
     <string name="menu_group_smaller_slices">合併數目較小的數據</string>
     <string name="label_chart_no_data">没有數據可顯示</string>
     <string name="label_chart_overall">全部</string>

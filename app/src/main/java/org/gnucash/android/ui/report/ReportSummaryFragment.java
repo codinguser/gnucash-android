@@ -27,6 +27,7 @@ import android.support.v4.view.ViewCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatButton;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -105,6 +106,7 @@ public class ReportSummaryFragment extends Fragment {
                 loadFragment(new BalanceSheetFragment());
             }
         });
+
         return view;
     }
 
@@ -113,6 +115,15 @@ public class ReportSummaryFragment extends Fragment {
         super.onResume();
         ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(R.string.title_reports);
         ((ReportsActivity)getActivity()).setAppBarColor(R.color.theme_primary);
+        getActivity().findViewById(R.id.date_range_recyclerview).setVisibility(View.GONE);
+        getActivity().findViewById(R.id.date_range_divider).setVisibility(View.GONE);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        getActivity().findViewById(R.id.date_range_recyclerview).setVisibility(View.VISIBLE);
+        getActivity().findViewById(R.id.date_range_divider).setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -136,6 +147,11 @@ public class ReportSummaryFragment extends Fragment {
         setButtonTint(mBalanceSheetButton, csl);
 
         displayChart();
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        menu.findItem(R.id.menu_group_reports_by).setVisible(false);
     }
 
     /**
@@ -179,7 +195,7 @@ public class ReportSummaryFragment extends Fragment {
         mChart.highlightValues(null);
         mChart.clear();
 
-        PieData pieData = getData();
+        PieData pieData = PieChartFragment.groupSmallerSlices(getData(), getActivity());
         if (pieData != null && pieData.getYValCount() != 0) {
             mChart.setData(pieData);
             float sum = mChart.getData().getYValueSum();

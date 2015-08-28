@@ -410,10 +410,10 @@
     <string name="title_line_chart">Лінійний графік</string>
     <string name="title_bar_chart">Гістограма</string>
     <string name="menu_order_by_size">Відсортувати за розміром</string>
-    <string name="menu_toggle_legend">Вкл/викл легенду</string>
-    <string name="menu_toggle_labels">Вкл/викл підписи</string>
-    <string name="menu_toggle_percentage_mode">Вкл/викл відсотки</string>
-    <string name="menu_toggle_average_lines">Вкл/викл середні значення</string>
+    <string name="menu_toggle_legend">Show legend</string>
+    <string name="menu_toggle_labels">Show labels</string>
+    <string name="menu_toggle_percentage_mode">Show percentage</string>
+    <string name="menu_toggle_average_lines">Show average lines</string>
     <string name="menu_group_smaller_slices">Групувати дрібні частинки</string>
     <string name="label_chart_no_data">Немає даних для діаграми</string>
     <string name="label_chart_overall">За весь час</string>
