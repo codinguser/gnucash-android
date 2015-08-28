@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2015 Oleksandr Tyshkovets <olexandr.tyshkovets@gmail.com>
+ * Copyright (c) 2015 Ngewi Fet <ngewif@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,19 +15,24 @@
  * limitations under the License.
  */
 
-package org.gnucash.android.ui.chart;
+package org.gnucash.android.ui.report;
 
-import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.ActionBar;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 
 import org.gnucash.android.R;
+import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.ui.passcode.PassLockActivity;
@@ -37,18 +43,36 @@ import java.util.Currency;
 import java.util.List;
 
 /**
- * Allows to select chart by type
+ * base activity for reporting
  *
  * @author Oleksandr Tyshkovets <olexandr.tyshkovets@gmail.com>
+ * @author Ngewi Fet <ngewif@gmail.com>
  */
-public class ChartReportActivity extends PassLockActivity {
+public class ReportsActivity extends PassLockActivity {
+
+    static final int[] COLORS = {
+            Color.parseColor("#17ee4e"), Color.parseColor("#cc1f09"), Color.parseColor("#3940f7"),
+            Color.parseColor("#f9cd04"), Color.parseColor("#5f33a8"), Color.parseColor("#e005b6"),
+            Color.parseColor("#17d6ed"), Color.parseColor("#e4a9a2"), Color.parseColor("#8fe6cd"),
+            Color.parseColor("#8b48fb"), Color.parseColor("#343a36"), Color.parseColor("#6decb1"),
+            Color.parseColor("#a6dcfd"), Color.parseColor("#5c3378"), Color.parseColor("#a6dcfd"),
+            Color.parseColor("#ba037c"), Color.parseColor("#708809"), Color.parseColor("#32072c"),
+            Color.parseColor("#fddef8"), Color.parseColor("#fa0e6e"), Color.parseColor("#d9e7b5")
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_chart_report);
+        setContentView(R.layout.activity_reports);
         setUpDrawer();
-        getSupportActionBar().setTitle(R.string.title_reports);
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        ActionBar actionBar = getSupportActionBar();
+        assert actionBar != null;
+        actionBar.setTitle(R.string.title_reports);
+        actionBar.setDisplayHomeAsUpEnabled(true);
 
         final List<String> allCurrencyCodes = Arrays.asList(getResources().getStringArray(R.array.key_currency_codes));
         final List<String> allCurrencyNames = Arrays.asList(getResources().getStringArray(R.array.currency_names));
@@ -66,7 +90,7 @@ public class ChartReportActivity extends PassLockActivity {
         }
 
         Spinner spinner = (Spinner) findViewById(R.id.report_currency_spinner);
-        ArrayAdapter<String> dataAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, currencyNames);
+        ArrayAdapter<String> dataAdapter = new ArrayAdapter<>(actionBar.getThemedContext(), android.R.layout.simple_spinner_item, currencyNames);
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(dataAdapter);
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -84,13 +108,25 @@ public class ChartReportActivity extends PassLockActivity {
             }
         });
 
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager
-                .beginTransaction();
+        if (savedInstanceState == null) {
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            FragmentTransaction fragmentTransaction = fragmentManager
+                    .beginTransaction();
 
-        fragmentTransaction.add(R.id.fragment_container, new ReportSummaryFragment());
-        fragmentTransaction.commit();
-
+            fragmentTransaction.replace(R.id.fragment_container, new ReportSummaryFragment());
+            fragmentTransaction.commit();
+        }
     }
 
+    /**
+     * Sets the color Action Bar and Status bar (where applicable)
+     */
+    public void setAppBarColor(int color) {
+        int resolvedColor = getResources().getColor(color);
+        if (getSupportActionBar() != null)
+            getSupportActionBar().setBackgroundDrawable(new ColorDrawable(resolvedColor));
+
+        if (Build.VERSION.SDK_INT > 20)
+            getWindow().setStatusBarColor(GnuCashApplication.darken(resolvedColor));
+    }
 }

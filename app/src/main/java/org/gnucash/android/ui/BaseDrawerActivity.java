@@ -34,7 +34,7 @@ import org.gnucash.android.R;
 import org.gnucash.android.export.xml.GncXmlExporter;
 import org.gnucash.android.importer.ImportAsyncTask;
 import org.gnucash.android.ui.account.AccountsActivity;
-import org.gnucash.android.ui.chart.ChartReportActivity;
+import org.gnucash.android.ui.report.ReportsActivity;
 import org.gnucash.android.ui.settings.SettingsActivity;
 import org.gnucash.android.ui.transaction.ScheduledActionsActivity;
 
@@ -51,7 +51,6 @@ public class BaseDrawerActivity extends AppCompatActivity {
     protected DrawerLayout  mDrawerLayout;
     protected NavigationView mNavigationView;
 
-    protected CharSequence  mTitle;
     protected ActionBarDrawerToggle mDrawerToggle;
 
     private class DrawerItemClickListener implements NavigationView.OnNavigationItemSelectedListener {
@@ -156,7 +155,7 @@ public class BaseDrawerActivity extends AppCompatActivity {
                 break;
 
             case R.id.nav_item_reports:
-                startActivity(new Intent(this, ChartReportActivity.class));
+                startActivity(new Intent(this, ReportsActivity.class));
                 break;
 
             case R.id.nav_item_scheduled_trn: { //show scheduled transactions
@@ -188,12 +187,6 @@ public class BaseDrawerActivity extends AppCompatActivity {
             //TODO: add help option
         }
         mDrawerLayout.closeDrawer(mNavigationView);
-    }
-
-    @Override
-    public void setTitle(CharSequence title) {
-        mTitle = title;
-        getSupportActionBar().setTitle(mTitle);
     }
 
     @Override

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.gnucash.android.ui.chart;
+package org.gnucash.android.ui.report;
 
 import android.app.DatePickerDialog;
 import android.graphics.Color;
@@ -23,10 +23,16 @@ import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
+import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
@@ -50,7 +56,6 @@ import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.model.Account;
 import org.gnucash.android.model.AccountType;
 import org.gnucash.android.model.Money;
-import org.gnucash.android.ui.passcode.PassLockActivity;
 import org.joda.time.LocalDateTime;
 
 import java.util.ArrayList;
@@ -60,23 +65,16 @@ import java.util.Currency;
 import java.util.List;
 import java.util.Locale;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+
 /**
  * Activity used for drawing a pie chart
  *
  * @author Oleksandr Tyshkovets <olexandr.tyshkovets@gmail.com>
  * @author Ngewi Fet <ngewif@gmail.com>
  */
-public class PieChartActivity extends PassLockActivity implements OnChartValueSelectedListener, DatePickerDialog.OnDateSetListener {
-
-    public static final int[] COLORS = {
-            Color.parseColor("#17ee4e"), Color.parseColor("#cc1f09"), Color.parseColor("#3940f7"),
-            Color.parseColor("#f9cd04"), Color.parseColor("#5f33a8"), Color.parseColor("#e005b6"),
-            Color.parseColor("#17d6ed"), Color.parseColor("#e4a9a2"), Color.parseColor("#8fe6cd"),
-            Color.parseColor("#8b48fb"), Color.parseColor("#343a36"), Color.parseColor("#6decb1"),
-            Color.parseColor("#a6dcfd"), Color.parseColor("#5c3378"), Color.parseColor("#a6dcfd"),
-            Color.parseColor("#ba037c"), Color.parseColor("#708809"), Color.parseColor("#32072c"),
-            Color.parseColor("#fddef8"), Color.parseColor("#fa0e6e"), Color.parseColor("#d9e7b5")
-    };
+public class PieChartFragment extends Fragment implements OnChartValueSelectedListener, DatePickerDialog.OnDateSetListener {
 
     public static final String SELECTED_VALUE_PATTERN = "%s - %.2f (%.2f %%)";
     public static final String DATE_PATTERN = "MMMM\nYYYY";
@@ -93,15 +91,14 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
      */
     private static final double GROUPING_SMALLER_SLICES_THRESHOLD = 5;
 
-    private PieChart mChart;
-
     private LocalDateTime mChartDate = new LocalDateTime();
-    private TextView mChartDateTextView;
 
-    private TextView mSelectedValueTextView;
-
-    private ImageButton mPreviousMonthButton;
-    private ImageButton mNextMonthButton;
+    @Bind(R.id.pie_chart) PieChart mChart;
+    @Bind(R.id.chart_date) TextView mChartDateTextView;
+    @Bind(R.id.selected_chart_slice) TextView mSelectedValueTextView;
+    @Bind(R.id.previous_month_chart_button) ImageButton mPreviousMonthButton;
+    @Bind(R.id.next_month_chart_button) ImageButton mNextMonthButton;
+    @Bind(R.id.chart_data_spinner) Spinner mChartDataTypeSpinner;
 
     private AccountsDbAdapter mAccountsDbAdapter;
     private TransactionsDbAdapter mTransactionsDbAdapter;
@@ -120,6 +117,8 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
     private String mCurrencyCode;
 
     private TimePeriod mTimePeriod = TimePeriod.ALL_TIME;
+
+
     /**
      * Used to specify the time period for which data will be displayed
      */
@@ -127,28 +126,30 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
         PREVIOUS_MONTH, NEXT_MONTH, ALL_TIME
     }
 
+    @Nullable
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_pie_chart);
-        setUpDrawer();
-        getSupportActionBar().setTitle(R.string.title_pie_chart);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_pie_chart, container, false);
+        ButterKnife.bind(this, view);
+        return view;
+    }
 
-        mUseAccountColor = PreferenceManager.getDefaultSharedPreferences(getApplicationContext())
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(R.string.title_pie_chart);
+
+        setHasOptionsMenu(true);
+
+        mUseAccountColor = PreferenceManager.getDefaultSharedPreferences(getActivity())
                 .getBoolean(getString(R.string.key_use_account_color), false);
-
-        mPreviousMonthButton = (ImageButton) findViewById(R.id.previous_month_chart_button);
-        mNextMonthButton = (ImageButton) findViewById(R.id.next_month_chart_button);
-        mChartDateTextView = (TextView) findViewById(R.id.chart_date);
-        mSelectedValueTextView = (TextView) findViewById(R.id.selected_chart_slice);
 
         mAccountsDbAdapter = AccountsDbAdapter.getInstance();
         mTransactionsDbAdapter = TransactionsDbAdapter.getInstance();
 
-        mCurrencyCode = PreferenceManager.getDefaultSharedPreferences(this)
+        mCurrencyCode = PreferenceManager.getDefaultSharedPreferences(getActivity())
                 .getString(getString(R.string.key_report_currency), Money.DEFAULT_CURRENCY_CODE);
 
-        mChart = (PieChart) findViewById(R.id.pie_chart);
         mChart.setCenterTextSize(CENTER_TEXT_SIZE);
         mChart.setDescription("");
         mChart.getLegend().setEnabled(false);
@@ -179,13 +180,22 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
 
             @Override
             public void onClick(View view) {
-                DialogFragment newFragment = ChartDatePickerFragment.newInstance(PieChartActivity.this,
+                DialogFragment newFragment = ChartDatePickerFragment.newInstance(PieChartFragment.this,
                         mChartDate.toDate().getTime(),
                         mEarliestTransactionDate.toDate().getTime(),
                         mLatestTransactionDate.toDate().getTime());
-                newFragment.show(getSupportFragmentManager(), "date_dialog");
+                newFragment.show(getActivity().getSupportFragmentManager(), "date_dialog");
             }
         });
+    }
+
+    /**
+     * Sets the app bar color
+     */
+    @Override
+    public void onResume() {
+        super.onResume();
+        ((ReportsActivity)getActivity()).setAppBarColor(R.color.account_green);
     }
 
     /**
@@ -259,7 +269,7 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
                     dataSet.addEntry(new Entry((float) balance, dataSet.getEntryCount()));
                     colors.add(mUseAccountColor && account.getColorHexCode() != null
                             ? Color.parseColor(account.getColorHexCode())
-                            : COLORS[(dataSet.getEntryCount() - 1) % COLORS.length]);
+                            : ReportsActivity.COLORS[(dataSet.getEntryCount() - 1) % ReportsActivity.COLORS.length]);
                     labels.add(account.getName());
                 }
             }
@@ -336,16 +346,15 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
      * account types.
      */
     private void setUpSpinner() {
-        Spinner spinner = (Spinner) findViewById(R.id.chart_data_spinner);
-        ArrayAdapter<AccountType> dataAdapter = new ArrayAdapter<>(this,
+        ArrayAdapter<AccountType> dataAdapter = new ArrayAdapter<>(getActivity(),
                 android.R.layout.simple_spinner_item,
                 Arrays.asList(AccountType.EXPENSE, AccountType.INCOME));
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(dataAdapter);
-        spinner.setOnItemSelectedListener(new OnItemSelectedListener() {
+        mChartDataTypeSpinner.setAdapter(dataAdapter);
+        mChartDataTypeSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                mAccountType = (AccountType) ((Spinner) findViewById(R.id.chart_data_spinner)).getSelectedItem();
+                mAccountType = (AccountType) mChartDataTypeSpinner.getSelectedItem();
                 mEarliestTransactionDate = new LocalDateTime(mTransactionsDbAdapter.getTimestampOfEarliestTransaction(mAccountType, mCurrencyCode));
                 mLatestTransactionDate = new LocalDateTime(mTransactionsDbAdapter.getTimestampOfLatestTransaction(mAccountType, mCurrencyCode));
                 mChartDate = mLatestTransactionDate;
@@ -355,25 +364,24 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
             }
 
             @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {}
+            public void onNothingSelected(AdapterView<?> adapterView) {
+            }
         });
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.chart_actions, menu);
-        return true;
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.chart_actions, menu);
     }
 
     @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
+    public void onPrepareOptionsMenu(Menu menu) {
         menu.findItem(R.id.menu_order_by_size).setVisible(mChartDataPresent);
         menu.findItem(R.id.menu_toggle_labels).setVisible(mChartDataPresent);
         menu.findItem(R.id.menu_group_other_slice).setVisible(mChartDataPresent);
         // hide line/bar chart specific menu items
         menu.findItem(R.id.menu_percentage_mode).setVisible(false);
         menu.findItem(R.id.menu_toggle_average_lines).setVisible(false);
-        return true;
     }
 
     @Override
@@ -381,7 +389,7 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
         switch (item.getItemId()) {
             case R.id.menu_order_by_size: {
                 bubbleSort();
-                break;
+                return true;
             }
             case R.id.menu_toggle_legend: {
                 mChart.getLegend().setEnabled(!mChart.getLegend().isEnabled());
@@ -389,25 +397,21 @@ public class PieChartActivity extends PassLockActivity implements OnChartValueSe
                 mChart.getLegend().setPosition(LegendPosition.RIGHT_OF_CHART_CENTER);
                 mChart.notifyDataSetChanged();
                 mChart.invalidate();
-                break;
+                return true;
             }
             case R.id.menu_toggle_labels: {
                 mChart.getData().setDrawValues(!mChart.isDrawSliceTextEnabled());
                 mChart.setDrawSliceText(!mChart.isDrawSliceTextEnabled());
                 mChart.invalidate();
-                break;
+                return true;
             }
             case R.id.menu_group_other_slice: {
                 mGroupSmallerSlices = !mGroupSmallerSlices;
                 displayChart();
-                break;
-            }
-            case android.R.id.home: {
-                finish();
-                break;
+                return true;
             }
         }
-        return true;
+        return super.onOptionsItemSelected(item);
     }
 
     /**

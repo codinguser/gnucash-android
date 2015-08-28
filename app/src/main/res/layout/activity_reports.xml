@@ -2,6 +2,7 @@
 
 <!--
  Copyright (c) 2015 Oleksandr Tyshkovets <olexandr.tyshkovets@gmail.com>
+ Copyright (c) 2015 Ngewi Fet <ngewif@gmail.com>
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -20,35 +21,41 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/drawer_layout"
+    android:fitsSystemWindows="true"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <LinearLayout
-        android:orientation="vertical"
+
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-
-        <LinearLayout android:id="@+id/bar_chart"
-                      android:orientation="horizontal"
-                      android:layout_width="fill_parent"
-                      android:layout_height="0dip"
-                      android:layout_weight="1" />
-
-        <Spinner android:id="@+id/chart_data_spinner"
+        <LinearLayout
+            android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
-        <LinearLayout android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:gravity="center">
+            android:gravity="center_vertical">
 
-            <TextView android:id="@+id/selected_chart_slice"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center" />
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:background="?attr/colorPrimary"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+                app:popupTheme="@style/ThemeOverlay.AppCompat.Light" >
 
+                <Spinner
+                    android:id="@+id/report_currency_spinner"
+                    android:layout_gravity="right"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+                </android.support.v7.widget.Toolbar>
+
+            <FrameLayout android:id="@+id/fragment_container"
+                android:orientation="vertical"
+                android:layout_weight="3"
+                android:layout_width="match_parent"
+                android:layout_height="0dp" />
         </LinearLayout>
-
-    </LinearLayout>
+    </ScrollView>
     <android.support.design.widget.NavigationView
         android:id="@+id/nav_view"
         android:layout_width="wrap_content"

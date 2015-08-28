@@ -22,11 +22,10 @@ limitations under the License.
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <TableLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/edge_padding">
-        <TableRow>
             <Button android:id="@+id/btn_pie_chart"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -40,9 +39,7 @@ limitations under the License.
                 android:layout_weight="1"
                 android:drawableLeft="@drawable/ic_equalizer_white_24dp"
                 android:text="@string/title_bar_chart"/>
-        </TableRow>
 
-        <TableRow>
             <Button android:id="@+id/btn_line_chart"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -57,10 +54,8 @@ limitations under the License.
                 android:layout_weight="1"
                 android:drawableLeft="@drawable/ic_subject_white_24dp"
                 android:drawableStart="@drawable/ic_subject_white_24dp"
-                android:text="Balance Sheet"/>
-
-        </TableRow>
-    </TableLayout>
+                android:text="Text Report"/>
+    </LinearLayout>
 
 
     <TextView

@@ -91,11 +91,6 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
      */
     public static final int REQUEST_EDIT_ACCOUNT = 0x10;
 
-    /**
-	 * Tag used for identifying the account export fragment
-	 */
-	public static final String FRAGMENT_EXPORT_DIALOG = "export_fragment";
-
 	/**
 	 * Logging tag
 	 */

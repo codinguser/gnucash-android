@@ -45,7 +45,7 @@ import org.gnucash.android.model.Money;
 import org.gnucash.android.model.Split;
 import org.gnucash.android.model.Transaction;
 import org.gnucash.android.model.TransactionType;
-import org.gnucash.android.ui.chart.PieChartActivity;
+import org.gnucash.android.ui.report.PieChartFragment;
 import org.joda.time.LocalDateTime;
 import org.junit.After;
 import org.junit.Before;
@@ -68,7 +68,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
 
 @RunWith(AndroidJUnit4.class)
-public class PieChartActivityTest extends ActivityInstrumentationTestCase2<PieChartActivity> {
+public class PieChartActivityTest extends ActivityInstrumentationTestCase2<PieChartFragment> {
 
     public static final String TAG = PieChartActivityTest.class.getName();
 
@@ -97,10 +97,10 @@ public class PieChartActivityTest extends ActivityInstrumentationTestCase2<PieCh
     private AccountsDbAdapter mAccountsDbAdapter;
     private TransactionsDbAdapter mTransactionsDbAdapter;
 
-    private PieChartActivity mPieChartActivity;
+    private PieChartFragment mPieChartActivity;
 
 	public PieChartActivityTest() {
-		super(PieChartActivity.class);
+		super(PieChartFragment.class);
 	}
 	
 	@Override
@@ -186,7 +186,7 @@ public class PieChartActivityTest extends ActivityInstrumentationTestCase2<PieCh
 
         onView(withId(R.id.pie_chart)).perform(clickXY(Position.BEGIN, Position.MIDDLE));
         float percent = (float) (TRANSACTION_AMOUNT / (TRANSACTION_AMOUNT + TRANSACTION2_AMOUNT) * 100);
-        String selectedText = String.format(PieChartActivity.SELECTED_VALUE_PATTERN, DINING_EXPENSE_ACCOUNT_NAME, TRANSACTION_AMOUNT, percent);
+        String selectedText = String.format(PieChartFragment.SELECTED_VALUE_PATTERN, DINING_EXPENSE_ACCOUNT_NAME, TRANSACTION_AMOUNT, percent);
         onView(withId(R.id.selected_chart_slice)).check(matches(withText(selectedText)));
     }
 
@@ -205,7 +205,7 @@ public class PieChartActivityTest extends ActivityInstrumentationTestCase2<PieCh
         onView(withClassName(equalTo(DatePicker.class.getName()))).perform(PickerActions.setDate(date.getYear(), date.getMonthOfYear(), 1));
         onView(anyOf(withText(containsString("Done")), withText(containsString("Set")), withText(containsString("OK")))).perform(click());
         
-        onView(withId(R.id.chart_date)).check(matches(withText(date.toString(PieChartActivity.DATE_PATTERN))));
+        onView(withId(R.id.chart_date)).check(matches(withText(date.toString(PieChartFragment.DATE_PATTERN))));
     }
 
     @Test
@@ -255,7 +255,7 @@ public class PieChartActivityTest extends ActivityInstrumentationTestCase2<PieCh
         onView(withText(containsString(AccountType.INCOME.name()))).perform(click());
 
         onView(withId(R.id.pie_chart)).perform(click());
-        String selectedText = String.format(PieChartActivity.SELECTED_VALUE_PATTERN, GIFTS_RECEIVED_INCOME_ACCOUNT_NAME, TRANSACTION3_AMOUNT, 100f);
+        String selectedText = String.format(PieChartFragment.SELECTED_VALUE_PATTERN, GIFTS_RECEIVED_INCOME_ACCOUNT_NAME, TRANSACTION3_AMOUNT, 100f);
         onView(withId(R.id.selected_chart_slice)).check(matches(withText(selectedText)));
 
         onView(withId(R.id.chart_data_spinner)).perform(click());

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.gnucash.android.ui.chart;
+package org.gnucash.android.ui.report;
 
 import android.app.DatePickerDialog;
 import android.app.DatePickerDialog.OnDateSetListener;

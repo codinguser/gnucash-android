@@ -13,16 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.gnucash.android.ui.chart;
+package org.gnucash.android.ui.report;
 
-import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatButton;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -53,12 +55,13 @@ import butterknife.ButterKnife;
 
 /**
  * Shows a summary of reports
+ * @author Ngewi Fet <ngewif@gmail.com>
  */
 public class ReportSummaryFragment extends Fragment {
     @Bind(R.id.btn_pie_chart) Button mPieChartButton;
     @Bind(R.id.btn_bar_chart) Button mBarChartButton;
     @Bind(R.id.btn_line_chart) Button mLineChartButton;
-    @Bind(R.id.btn_text_report) Button mTextReportButton;
+    @Bind(R.id.btn_balance_sheet) Button mBalanceSheetButton;
 
     @Bind(R.id.pie_chart) PieChart mChart;
     AccountsDbAdapter mAccountsDbAdapter;
@@ -78,30 +81,45 @@ public class ReportSummaryFragment extends Fragment {
         mPieChartButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(view.getContext(), PieChartActivity.class));
+                loadFragment(new PieChartFragment());
             }
         });
 
         mLineChartButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(view.getContext(), LineChartActivity.class));
+                loadFragment(new LineChartFragment());
             }
         });
 
         mBarChartButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(view.getContext(), BarChartActivity.class));
+                loadFragment(new BarChartFragment());
+            }
+        });
+
+        mBalanceSheetButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                loadFragment(new BalanceSheetFragment());
             }
         });
         return view;
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(R.string.title_reports);
+        ((ReportsActivity)getActivity()).setAppBarColor(R.color.theme_primary);
+    }
+
+    @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mChart.setCenterTextSize(PieChartActivity.CENTER_TEXT_SIZE);
+
+        mChart.setCenterTextSize(PieChartFragment.CENTER_TEXT_SIZE);
         mChart.setDescription("");
         mChart.getLegend().setEnabled(true);
         mChart.getLegend().setPosition(Legend.LegendPosition.RIGHT_OF_CHART_CENTER);
@@ -115,7 +133,7 @@ public class ReportSummaryFragment extends Fragment {
         csl = new ColorStateList(new int[][]{new int[0]}, new int[]{getResources().getColor(R.color.account_blue)});
         setButtonTint(mLineChartButton, csl);
         csl = new ColorStateList(new int[][]{new int[0]}, new int[]{getResources().getColor(R.color.account_purple)});
-        setButtonTint(mTextReportButton, csl);
+        setButtonTint(mBalanceSheetButton, csl);
 
         displayChart();
     }
@@ -144,13 +162,13 @@ public class ReportSummaryFragment extends Fragment {
                     dataSet.addEntry(new Entry((float) balance, dataSet.getEntryCount()));
                     colors.add(account.getColorHexCode() != null
                             ? Color.parseColor(account.getColorHexCode())
-                            : PieChartActivity.COLORS[(dataSet.getEntryCount() - 1) % PieChartActivity.COLORS.length]);
+                            : ReportsActivity.COLORS[(dataSet.getEntryCount() - 1) % ReportsActivity.COLORS.length]);
                     labels.add(account.getName());
                 }
             }
         }
         dataSet.setColors(colors);
-        dataSet.setSliceSpace(PieChartActivity.SPACE_BETWEEN_SLICES);
+        dataSet.setSliceSpace(PieChartFragment.SPACE_BETWEEN_SLICES);
         return new PieData(labels, dataSet);
     }
 
@@ -167,7 +185,7 @@ public class ReportSummaryFragment extends Fragment {
             float sum = mChart.getData().getYValueSum();
             String total = getResources().getString(R.string.label_chart_total);
             String currencySymbol = Currency.getInstance(GnuCashApplication.getDefaultCurrencyCode()).getSymbol(Locale.getDefault());
-            mChart.setCenterText(String.format(PieChartActivity.TOTAL_VALUE_LABEL_PATTERN, total, sum, currencySymbol));
+            mChart.setCenterText(String.format(PieChartFragment.TOTAL_VALUE_LABEL_PATTERN, total, sum, currencySymbol));
             mChart.animateXY(1800, 1800);
             mChart.setTouchEnabled(true);
         } else {
@@ -184,7 +202,7 @@ public class ReportSummaryFragment extends Fragment {
     private PieData getEmptyData() {
         PieDataSet dataSet = new PieDataSet(null, getResources().getString(R.string.label_chart_no_data));
         dataSet.addEntry(new Entry(1, 0));
-        dataSet.setColor(PieChartActivity.NO_DATA_COLOR);
+        dataSet.setColor(PieChartFragment.NO_DATA_COLOR);
         dataSet.setDrawValues(false);
         return new PieData(Collections.singletonList(""), dataSet);
     }
@@ -197,5 +215,15 @@ public class ReportSummaryFragment extends Fragment {
             ViewCompat.setBackgroundTintList(button, tint);
         }
         button.setTextColor(getResources().getColor(android.R.color.white));
+    }
+
+    private void loadFragment(Fragment fragment){
+        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager
+                .beginTransaction();
+
+        fragmentTransaction.replace(R.id.fragment_container, fragment);
+        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.commit();
     }
 }

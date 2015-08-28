@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2015 Oleksandr Tyshkovets <olexandr.tyshkovets@gmail.com>
+ * Copyright (c) 2015 Ngewi Fet <ngewif@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,18 +15,23 @@
  * limitations under the License.
  */
 
-package org.gnucash.android.ui.chart;
+package org.gnucash.android.ui.report;
 
 import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -46,7 +52,6 @@ import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.model.Account;
 import org.gnucash.android.model.AccountType;
 import org.gnucash.android.model.Money;
-import org.gnucash.android.ui.passcode.PassLockActivity;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 import org.joda.time.Months;
@@ -61,34 +66,29 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+
 /**
  * Activity used for drawing a bar chart
  *
  * @author Oleksandr Tyshkovets <olexandr.tyshkovets@gmail.com>
+ * @author Ngewi Fet <ngewif@gmail.com>
  */
-public class BarChartActivity extends PassLockActivity implements OnChartValueSelectedListener {
+public class BarChartFragment extends Fragment implements OnChartValueSelectedListener {
 
-    private static final String TAG = "BarChartActivity";
+    private static final String TAG = "BarChartFragment";
     private static final String X_AXIS_PATTERN = "MMM YY";
     private static final String SELECTED_VALUE_PATTERN = "%s - %.2f (%.2f %%)";
-    private static final int ANIMATION_DURATION = 3000;
+    private static final int ANIMATION_DURATION = 2000;
     private static final int NO_DATA_COLOR = Color.LTGRAY;
     private static final int NO_DATA_BAR_COUNTS = 3;
-    private static final int[] COLORS = {
-            Color.parseColor("#17ee4e"), Color.parseColor("#cc1f09"), Color.parseColor("#3940f7"),
-            Color.parseColor("#f9cd04"), Color.parseColor("#5f33a8"), Color.parseColor("#e005b6"),
-            Color.parseColor("#17d6ed"), Color.parseColor("#e4a9a2"), Color.parseColor("#8fe6cd"),
-            Color.parseColor("#8b48fb"), Color.parseColor("#343a36"), Color.parseColor("#6decb1"),
-            Color.parseColor("#a6dcfd"), Color.parseColor("#5c3378"), Color.parseColor("#a6dcfd"),
-            Color.parseColor("#ba037c"), Color.parseColor("#708809"), Color.parseColor("#32072c"),
-            Color.parseColor("#fddef8"), Color.parseColor("#fa0e6e"), Color.parseColor("#d9e7b5")
-    };
 
     private AccountsDbAdapter mAccountsDbAdapter = AccountsDbAdapter.getInstance();
 
-    private TextView selectedValueTextView;
-
-    private BarChart mChart;
+    @Bind(R.id.selected_chart_slice) TextView selectedValueTextView;
+    @Bind(R.id.chart_data_spinner) Spinner mAccountTypeSpinner;
+    @Bind(R.id.bar_chart) BarChart mChart;
 
     private Currency mCurrency;
 
@@ -96,23 +96,34 @@ public class BarChartActivity extends PassLockActivity implements OnChartValueSe
     private boolean mTotalPercentageMode = true;
     private boolean mChartDataPresent = true;
 
+
+    @Nullable
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_bar_chart);
-        setUpDrawer();
-        getSupportActionBar().setTitle(R.string.title_bar_chart);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_bar_chart, container, false);
+        ButterKnife.bind(this, view);
+        return view;
+    }
 
-        selectedValueTextView = (TextView) findViewById(R.id.selected_chart_slice);
+    @Override
+    public void onResume() {
+        super.onResume();
+        ((ReportsActivity)getActivity()).setAppBarColor(R.color.account_red);
+    }
 
-        mUseAccountColor = PreferenceManager.getDefaultSharedPreferences(getApplicationContext())
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(R.string.title_bar_chart);
+        setHasOptionsMenu(true);
+
+        mUseAccountColor = PreferenceManager.getDefaultSharedPreferences(getActivity())
                 .getBoolean(getString(R.string.key_use_account_color), false);
 
-        mCurrency = Currency.getInstance(PreferenceManager.getDefaultSharedPreferences(this)
+        mCurrency = Currency.getInstance(PreferenceManager.getDefaultSharedPreferences(getActivity())
                 .getString(getString(R.string.key_report_currency), Money.DEFAULT_CURRENCY_CODE));
 
-        mChart = new BarChart(this);
-        ((LinearLayout) findViewById(R.id.bar_chart)).addView(mChart);
         mChart.setOnChartValueSelectedListener(this);
         mChart.setDescription("");
         mChart.setDrawValuesForWholeStack(false);
@@ -120,11 +131,14 @@ public class BarChartActivity extends PassLockActivity implements OnChartValueSe
         mChart.getAxisRight().setEnabled(false);
         mChart.getAxisLeft().enableGridDashedLine(4.0f, 4.0f, 0);
         mChart.getAxisLeft().setValueFormatter(new LargeValueFormatter(mCurrency.getSymbol(Locale.getDefault())));
-        mChart.getLegend().setForm(Legend.LegendForm.CIRCLE);
-        mChart.getLegend().setPosition(Legend.LegendPosition.RIGHT_OF_CHART_INSIDE);
+        Legend chartLegend = mChart.getLegend();
+        chartLegend.setForm(Legend.LegendForm.CIRCLE);
+        chartLegend.setPosition(Legend.LegendPosition.BELOW_CHART_CENTER);
+        chartLegend.setTextSize(16);
 
         setUpSpinner();
     }
+
 
     /**
      * Returns a data object that represents a user data of the specified account types
@@ -155,9 +169,9 @@ public class BarChartActivity extends PassLockActivity implements OnChartValueSe
                             if (mUseAccountColor) {
                                 color = (account.getColorHexCode() != null)
                                         ? Color.parseColor(account.getColorHexCode())
-                                        : COLORS[accountToColorMap.size() % COLORS.length];
+                                        : ReportsActivity.COLORS[accountToColorMap.size() % ReportsActivity.COLORS.length];
                             } else {
-                                color = COLORS[accountToColorMap.size() % COLORS.length];
+                                color = ReportsActivity.COLORS[accountToColorMap.size() % ReportsActivity.COLORS.length];
                             }
                             accountToColorMap.put(account.getUID(), color);
                         }
@@ -252,16 +266,15 @@ public class BarChartActivity extends PassLockActivity implements OnChartValueSe
      * account types.
      */
     private void setUpSpinner() {
-        final Spinner spinner = (Spinner) findViewById(R.id.chart_data_spinner);
-        ArrayAdapter<AccountType> dataAdapter = new ArrayAdapter<>(this,
+        ArrayAdapter<AccountType> dataAdapter = new ArrayAdapter<>(getActivity(),
                 android.R.layout.simple_spinner_item,
                 Arrays.asList(AccountType.EXPENSE, AccountType.INCOME));
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(dataAdapter);
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        mAccountTypeSpinner.setAdapter(dataAdapter);
+        mAccountTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                mChart.setData(getData((AccountType) spinner.getSelectedItem()));
+                mChart.setData(getData((AccountType) mAccountTypeSpinner.getSelectedItem()));
                 displayChart();
             }
 
@@ -295,20 +308,18 @@ public class BarChartActivity extends PassLockActivity implements OnChartValueSe
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.chart_actions, menu);
-        return true;
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.chart_actions, menu);
     }
 
     @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
+    public void onPrepareOptionsMenu(Menu menu) {
         menu.findItem(R.id.menu_percentage_mode).setVisible(mChartDataPresent);
         // hide pie/line chart specific menu items
         menu.findItem(R.id.menu_order_by_size).setVisible(false);
         menu.findItem(R.id.menu_toggle_labels).setVisible(false);
         menu.findItem(R.id.menu_toggle_average_lines).setVisible(false);
         menu.findItem(R.id.menu_group_other_slice).setVisible(false);
-        return true;
     }
 
     @Override
@@ -324,20 +335,16 @@ public class BarChartActivity extends PassLockActivity implements OnChartValueSe
                 LinkedHashSet<Integer> colors = new LinkedHashSet<>(dataSet.getColors());
                 legend.setColors(Arrays.asList(colors.toArray(new Integer[colors.size()])));
                 mChart.invalidate();
-                break;
+                return true;
 
             case R.id.menu_percentage_mode:
                 mTotalPercentageMode = !mTotalPercentageMode;
                 int msgId = mTotalPercentageMode ? R.string.toast_chart_percentage_mode_total
                         : R.string.toast_chart_percentage_mode_current_bar;
-                Toast.makeText(this, msgId, Toast.LENGTH_LONG).show();
-                break;
-
-            case android.R.id.home:
-                finish();
-                break;
+                Toast.makeText(getActivity(), msgId, Toast.LENGTH_LONG).show();
+                return true;
         }
-        return true;
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -355,6 +362,6 @@ public class BarChartActivity extends PassLockActivity implements OnChartValueSe
 
     @Override
     public void onNothingSelected() {
-        selectedValueTextView.setText("");
+        selectedValueTextView.setText("Select an bar to view details");
     }
 }

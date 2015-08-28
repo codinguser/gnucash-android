@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2015 Oleksandr Tyshkovets <olexandr.tyshkovets@gmail.com>
+ * Copyright (c) 2015 Ngewi Fet <ngewif@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,15 +15,21 @@
  * limitations under the License.
  */
 
-package org.gnucash.android.ui.chart;
+package org.gnucash.android.ui.report;
 
 import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.widget.LinearLayout;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.LineChart;
@@ -41,7 +48,6 @@ import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.model.Account;
 import org.gnucash.android.model.AccountType;
 import org.gnucash.android.model.Money;
-import org.gnucash.android.ui.passcode.PassLockActivity;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 import org.joda.time.Months;
@@ -56,14 +62,18 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+
 /**
- * Activity used for drawing a line chart
+ * Fragment for line chart reports
  *
  * @author Oleksandr Tyshkovets <olexandr.tyshkovets@gmail.com>
+ * @author Ngewi Fet <ngewif@gmail.com>
  */
-public class LineChartActivity extends PassLockActivity implements OnChartValueSelectedListener {
+public class LineChartFragment extends Fragment implements OnChartValueSelectedListener {
 
-    private static final String TAG = "LineChartActivity";
+    private static final String TAG = "LineChartFragment";
     private static final String X_AXIS_PATTERN = "MMM YY";
     private static final String SELECTED_VALUE_PATTERN = "%s - %.2f (%.2f %%)";
     private static final int ANIMATION_DURATION = 3000;
@@ -78,7 +88,6 @@ public class LineChartActivity extends PassLockActivity implements OnChartValueS
             Color.parseColor("#0065FF"), Color.parseColor("#8F038A"),
     };
 
-    private LineChart mChart;
     private AccountsDbAdapter mAccountsDbAdapter = AccountsDbAdapter.getInstance();
     private Map<AccountType, Long> mEarliestTimestampsMap = new HashMap<>();
     private Map<AccountType, Long> mLatestTimestampsMap = new HashMap<>();
@@ -87,18 +96,27 @@ public class LineChartActivity extends PassLockActivity implements OnChartValueS
     private boolean mChartDataPresent = true;
     private Currency mCurrency;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_line_chart);
-        setUpDrawer();
-        getSupportActionBar().setTitle(R.string.title_line_chart);
+    @Bind(R.id.line_chart) LineChart mChart;
+    @Bind(R.id.selected_chart_slice) TextView mChartSliceInfo;
 
-        mCurrency = Currency.getInstance(PreferenceManager.getDefaultSharedPreferences(this)
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_line_chart, container, false);
+        ButterKnife.bind(this, view);
+        return view;
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(R.string.title_line_chart);
+        setHasOptionsMenu(true);
+
+        mCurrency = Currency.getInstance(PreferenceManager.getDefaultSharedPreferences(getActivity())
                 .getString(getString(R.string.key_report_currency), Money.DEFAULT_CURRENCY_CODE));
 
-        mChart = new LineChart(this);
-        ((LinearLayout) findViewById(R.id.chart)).addView(mChart);
         mChart.setOnChartValueSelectedListener(this);
         mChart.setDescription("");
         mChart.getXAxis().setDrawGridLines(false);
@@ -110,7 +128,8 @@ public class LineChartActivity extends PassLockActivity implements OnChartValueS
         mChart.setData(getData(new ArrayList<>(Arrays.asList(AccountType.INCOME, AccountType.EXPENSE))));
 
         Legend legend = mChart.getLegend();
-        legend.setPosition(Legend.LegendPosition.RIGHT_OF_CHART_INSIDE);
+        legend.setPosition(Legend.LegendPosition.BELOW_CHART_CENTER);
+        legend.setTextSize(16);
         legend.setForm(Legend.LegendForm.CIRCLE);
 
         if (!mChartDataPresent) {
@@ -118,11 +137,17 @@ public class LineChartActivity extends PassLockActivity implements OnChartValueS
             mChart.getAxisLeft().setDrawLabels(false);
             mChart.getXAxis().setDrawLabels(false);
             mChart.setTouchEnabled(false);
-            ((TextView) findViewById(R.id.selected_chart_slice)).setText(getResources().getString(R.string.label_chart_no_data));
+            mChartSliceInfo.setText(getResources().getString(R.string.label_chart_no_data));
         } else {
             mChart.animateX(ANIMATION_DURATION);
         }
         mChart.invalidate();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        ((ReportsActivity)getActivity()).setAppBarColor(R.color.account_blue);
     }
 
     /**
@@ -259,21 +284,20 @@ public class LineChartActivity extends PassLockActivity implements OnChartValueS
         ).getMonths();
     }
 
+
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.chart_actions, menu);
-        return true;
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.chart_actions, menu);
     }
 
     @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
+    public void onPrepareOptionsMenu(Menu menu) {
         menu.findItem(R.id.menu_toggle_average_lines).setVisible(mChartDataPresent);
         // hide pie/bar chart specific menu items
         menu.findItem(R.id.menu_order_by_size).setVisible(false);
         menu.findItem(R.id.menu_toggle_labels).setVisible(false);
         menu.findItem(R.id.menu_percentage_mode).setVisible(false);
         menu.findItem(R.id.menu_group_other_slice).setVisible(false);
-        return true;
     }
 
     @Override
@@ -297,12 +321,8 @@ public class LineChartActivity extends PassLockActivity implements OnChartValueS
                 }
                 mChart.invalidate();
                 break;
-
-            case android.R.id.home:
-                finish();
-                break;
         }
-        return true;
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -311,12 +331,11 @@ public class LineChartActivity extends PassLockActivity implements OnChartValueS
         String label = mChart.getData().getXVals().get(e.getXIndex());
         double value = e.getVal();
         double sum = mChart.getData().getDataSetByIndex(dataSetIndex).getYValueSum();
-        ((TextView) findViewById(R.id.selected_chart_slice))
-                .setText(String.format(SELECTED_VALUE_PATTERN, label, value, value / sum * 100));
+        mChartSliceInfo.setText(String.format(SELECTED_VALUE_PATTERN, label, value, value / sum * 100));
     }
 
     @Override
     public void onNothingSelected() {
-        ((TextView) findViewById(R.id.selected_chart_slice)).setText("");
+        mChartSliceInfo.setText("");
     }
 }
