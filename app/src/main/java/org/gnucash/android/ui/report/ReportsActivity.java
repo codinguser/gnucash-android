@@ -84,9 +84,9 @@ public class ReportsActivity extends PassLockActivity {
     LocalDate mSelectedBeginDate;
     private DateRangeAdapter mDateRangeAdapter;
 
-    enum RangeDenomination {WEEK, MONTH, QUARTER, YEAR, ALL}
+    public enum RangeInterval {WEEK, MONTH, QUARTER, YEAR, ALL}
 
-    RangeDenomination mDateRangeDenomination = RangeDenomination.MONTH;
+    RangeInterval mDateRangeInterval = RangeInterval.MONTH;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -177,7 +177,7 @@ public class ReportsActivity extends PassLockActivity {
             if (fragment instanceof ReportOptionsListener){
                 start = mSelectedBeginDate.toDateTimeAtStartOfDay().getMillis();
                 LocalDate endDate = new LocalDate();
-                switch (mDateRangeDenomination) {
+                switch (mDateRangeInterval) {
                     case WEEK:
                         endDate = mSelectedBeginDate.plusWeeks(1);
                         end = endDate.toDateTimeAtCurrentTime().getMillis();
@@ -200,14 +200,14 @@ public class ReportsActivity extends PassLockActivity {
                         break;
                 }
 
-                ((ReportOptionsListener) fragment).updateDateRange(start, end);
+                ((ReportOptionsListener) fragment).updateDateRange(start, end, mDateRangeInterval);
             }
         }
     }
     /**
      * Loads the data set which is shown in the recycler list view.
      * The data is the different date ranges for which reports should be loaded
-     * @see org.gnucash.android.ui.report.ReportsActivity.RangeDenomination
+     * @see RangeInterval
      */
     private void setUpDateRangeGroups(){
         String mCurrencyCode = PreferenceManager.getDefaultSharedPreferences(this).getString(getString(R.string.key_report_currency), Money.DEFAULT_CURRENCY_CODE);
@@ -216,13 +216,13 @@ public class ReportsActivity extends PassLockActivity {
         LocalDate mLatestTransactionDate = new LocalDate(mTransactionsDbAdapter.getTimestampOfLatestTransaction(mAccountType, mCurrencyCode));
 
         mDateRange.clear();
-        if (mDateRangeDenomination == RangeDenomination.ALL){
+        if (mDateRangeInterval == RangeInterval.ALL){
             mDateRange.add(new LocalDate());
         } else {
             LocalDate iteratorDate = mEarliestTransactionDate;
             while (iteratorDate.isBefore(mLatestTransactionDate)) {
                 mDateRange.add(iteratorDate);
-                switch (mDateRangeDenomination) {
+                switch (mDateRangeInterval) {
                     case WEEK:
                         iteratorDate = iteratorDate.plusWeeks(1);
                         break;
@@ -256,31 +256,31 @@ public class ReportsActivity extends PassLockActivity {
             case R.id.group_by_week:
                 item.setChecked(true);
                 item.setChecked(!item.isChecked());
-                mDateRangeDenomination = RangeDenomination.WEEK;
+                mDateRangeInterval = RangeInterval.WEEK;
                 setUpDateRangeGroups();
                 return true;
 
             case R.id.group_by_month:
                 item.setChecked(true);
-                mDateRangeDenomination = RangeDenomination.MONTH;
+                mDateRangeInterval = RangeInterval.MONTH;
                 setUpDateRangeGroups();
                 return true;
 
             case R.id.group_by_quarter:
                 item.setChecked(true);
-                mDateRangeDenomination = RangeDenomination.QUARTER;
+                mDateRangeInterval = RangeInterval.QUARTER;
                 setUpDateRangeGroups();
                 return true;
 
             case R.id.group_by_year:
                 item.setChecked(true);
-                mDateRangeDenomination = RangeDenomination.YEAR;
+                mDateRangeInterval = RangeInterval.YEAR;
                 setUpDateRangeGroups();
                 return true;
 
             case R.id.group_all_time:
                 item.setChecked(true);
-                mDateRangeDenomination = RangeDenomination.ALL;
+                mDateRangeInterval = RangeInterval.ALL;
                 setUpDateRangeGroups();
                 return true;
 
@@ -294,7 +294,7 @@ public class ReportsActivity extends PassLockActivity {
 
     /**
      * RecyclerView adapter which displays the different time ranges for reports
-     * The time range is determined by {@link #mDateRangeDenomination}
+     * The time range is determined by {@link #mDateRangeInterval}
      * @see #setUpDateRangeGroups()
      */
     private class DateRangeAdapter extends RecyclerView.Adapter<DateRangeAdapter.DateViewHolder> {
@@ -312,7 +312,7 @@ public class ReportsActivity extends PassLockActivity {
             LocalDate date = mDateRange.get(position);
             String dateString = "";
 
-            switch (mDateRangeDenomination){
+            switch (mDateRangeInterval){
 
                 case WEEK:
                     dateString = String.format("Week %s of %s", date.toString("w"), date.toString("yyyy"));

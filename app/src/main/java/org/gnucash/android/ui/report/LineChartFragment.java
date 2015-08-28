@@ -71,7 +71,8 @@ import butterknife.ButterKnife;
  * @author Oleksandr Tyshkovets <olexandr.tyshkovets@gmail.com>
  * @author Ngewi Fet <ngewif@gmail.com>
  */
-public class LineChartFragment extends Fragment implements OnChartValueSelectedListener {
+public class LineChartFragment extends Fragment implements OnChartValueSelectedListener,
+    ReportOptionsListener{
 
     private static final String TAG = "LineChartFragment";
     private static final String X_AXIS_PATTERN = "MMM YY";
@@ -284,6 +285,11 @@ public class LineChartFragment extends Fragment implements OnChartValueSelectedL
         ).getMonths();
     }
 
+
+    @Override
+    public void updateDateRange(long start, long end, ReportsActivity.RangeInterval rangeInterval) {
+        //TODO: Use the rangeInterval to show line chart e.g. if MONTH interval, then plot months as points
+    }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {

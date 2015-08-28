@@ -28,6 +28,7 @@
         android:layout_height="wrap_content"
         android:textSize="18sp"
         android:textStyle="bold"
+        android:textColor="@color/theme_accent"
         android:text="Assets"/>
     <android.support.v7.widget.CardView
         android:id="@+id/assets_card"
@@ -36,54 +37,10 @@
         android:layout_height="wrap_content"
         android:layout_width="match_parent">
 
-        <TableLayout
+        <TableLayout android:id="@+id/table_assets"
             android:padding="@dimen/dialog_padding"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <TableRow>
-                <TextView android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:layout_height="wrap_content"
-                    android:textSize="14sp"
-                    android:text="Checking Account"/>
-                <TextView
-                    android:layout_weight="1"
-                    android:gravity="right"
-                    android:textSize="14sp"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    tools:text="$ 2,500"/>
-            </TableRow>
-            <TableRow>
-                <TextView android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:layout_height="wrap_content"
-                    android:textSize="14sp"
-                    android:text="Savings Account"/>
-                <TextView
-                    android:layout_weight="1"
-                    android:textSize="14sp"
-                    tools:text="$ 2,700"
-                    android:gravity="right"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"/>
-            </TableRow>
-            <TableRow android:layout_marginTop="@dimen/dialog_padding">
-                <TextView android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:layout_height="wrap_content"
-                    android:textSize="16sp"
-                    android:text="Total Assets"/>
-                <TextView
-                    android:layout_weight="1"
-                    tools:text="$ 2000"
-                    android:textSize="16sp"
-                    android:gravity="right"
-                    android:layout_width="0dp"
-                    android:textStyle="bold"
-                    android:layout_height="wrap_content"/>
-            </TableRow>
-        </TableLayout>
+            android:layout_height="wrap_content" />
     </android.support.v7.widget.CardView>
 
     <TextView
@@ -91,9 +48,46 @@
         android:layout_height="wrap_content"
         android:textSize="18sp"
         android:textStyle="bold"
+        android:textColor="@color/theme_accent"
         android:text="Liabilities"/>
     <android.support.v7.widget.CardView
         android:id="@+id/liabilities_card"
+        app:elevation="10dp"
+        android:layout_marginBottom="@dimen/edge_padding"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent">
+
+        <TableLayout android:id="@+id/table_liabilities"
+            android:padding="@dimen/dialog_padding"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+    </android.support.v7.widget.CardView>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:textColor="@color/theme_accent"
+        android:text="Equity"/>
+    <android.support.v7.widget.CardView
+        android:id="@+id/equity_card"
+        app:elevation="10dp"
+        android:layout_marginBottom="@dimen/edge_padding"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent">
+
+        <TableLayout android:id="@+id/table_equity"
+            android:padding="@dimen/dialog_padding"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+    </android.support.v7.widget.CardView>
+
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/card_total"
         app:elevation="10dp"
         android:layout_height="wrap_content"
         android:layout_width="match_parent">
@@ -104,47 +98,20 @@
             android:layout_height="wrap_content">
             <TableRow>
                 <TextView android:layout_width="0dp"
-                    android:layout_weight="1"
+                    android:layout_weight="1.5"
                     android:layout_height="wrap_content"
-                    android:textSize="14sp"
-                    android:text="Credit Card"/>
-                <TextView
+                    android:textSize="18sp"
+                    android:text="Total Liabilites &amp; Equity"/>
+                <TextView android:id="@+id/total_liability_and_equity"
                     android:layout_weight="1"
                     android:gravity="right"
-                    android:textSize="14sp"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     tools:text="$ 2,500"/>
             </TableRow>
-            <TableRow>
-                <TextView android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:layout_height="wrap_content"
-                    android:textSize="14sp"
-                    android:text="American Express"/>
-                <TextView
-                    android:layout_weight="1"
-                    android:textSize="14sp"
-                    tools:text="$ 2,700"
-                    android:gravity="right"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"/>
-            </TableRow>
-            <TableRow android:layout_marginTop="@dimen/dialog_padding">
-                <TextView android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:layout_height="wrap_content"
-                    android:textSize="14sp"
-                    android:text="Total Liabilities"/>
-                <TextView
-                    android:layout_weight="1"
-                    tools:text="$ -200"
-                    android:textSize="16sp"
-                    android:gravity="right"
-                    android:layout_width="0dp"
-                    android:textStyle="bold"
-                    android:layout_height="wrap_content"/>
-            </TableRow>
         </TableLayout>
     </android.support.v7.widget.CardView>
+
 </LinearLayout>

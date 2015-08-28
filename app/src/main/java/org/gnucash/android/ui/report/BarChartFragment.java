@@ -75,7 +75,8 @@ import butterknife.ButterKnife;
  * @author Oleksandr Tyshkovets <olexandr.tyshkovets@gmail.com>
  * @author Ngewi Fet <ngewif@gmail.com>
  */
-public class BarChartFragment extends Fragment implements OnChartValueSelectedListener {
+public class BarChartFragment extends Fragment implements OnChartValueSelectedListener,
+    ReportOptionsListener {
 
     private static final String TAG = "BarChartFragment";
     private static final String X_AXIS_PATTERN = "MMM YY";
@@ -323,6 +324,11 @@ public class BarChartFragment extends Fragment implements OnChartValueSelectedLi
             return;
         }
         legend.setEnabled(false);
+    }
+
+    @Override
+    public void updateDateRange(long start, long end, ReportsActivity.RangeInterval rangeInterval) {
+        //TODO: update the bar chart to use the rangeInterval
     }
 
     @Override

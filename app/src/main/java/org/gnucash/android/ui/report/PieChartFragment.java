@@ -225,7 +225,7 @@ public class PieChartFragment extends Fragment implements OnChartValueSelectedLi
     }
 
     @Override
-    public void updateDateRange(long start, long end) {
+    public void updateDateRange(long start, long end, ReportsActivity.RangeInterval interval) {
         mStartRangeMillis = start;
         mEndRangeMillis = end;
         displayChart();

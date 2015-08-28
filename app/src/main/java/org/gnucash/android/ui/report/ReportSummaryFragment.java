@@ -31,6 +31,7 @@ import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.components.Legend;
@@ -43,6 +44,9 @@ import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.model.Account;
 import org.gnucash.android.model.AccountType;
+import org.gnucash.android.model.Money;
+import org.gnucash.android.model.Transaction;
+import org.gnucash.android.ui.transaction.TransactionsActivity;
 import org.joda.time.LocalDateTime;
 
 import java.util.ArrayList;
@@ -65,6 +69,10 @@ public class ReportSummaryFragment extends Fragment {
     @Bind(R.id.btn_balance_sheet) Button mBalanceSheetButton;
 
     @Bind(R.id.pie_chart) PieChart mChart;
+    @Bind(R.id.total_assets) TextView mTotalAssets;
+    @Bind(R.id.total_liabilities) TextView mTotalLiabilities;
+    @Bind(R.id.net_worth) TextView mNetWorth;
+
     AccountsDbAdapter mAccountsDbAdapter;
 
     @Override
@@ -145,6 +153,21 @@ public class ReportSummaryFragment extends Fragment {
         setButtonTint(mLineChartButton, csl);
         csl = new ColorStateList(new int[][]{new int[0]}, new int[]{getResources().getColor(R.color.account_purple)});
         setButtonTint(mBalanceSheetButton, csl);
+
+
+        List<AccountType> accountTypes = new ArrayList<>();
+        accountTypes.add(AccountType.ASSET);
+        accountTypes.add(AccountType.CASH);
+        Money assetsBalance = mAccountsDbAdapter.getAccountBalance(accountTypes);
+
+        accountTypes.clear();
+        accountTypes.add(AccountType.LIABILITY);
+        accountTypes.add(AccountType.CREDIT);
+        Money liabilitiesBalance = mAccountsDbAdapter.getAccountBalance(accountTypes);
+
+        TransactionsActivity.displayBalance(mTotalAssets, assetsBalance);
+        TransactionsActivity.displayBalance(mTotalLiabilities, liabilitiesBalance);
+        TransactionsActivity.displayBalance(mNetWorth, assetsBalance.subtract(liabilitiesBalance));
 
         displayChart();
     }

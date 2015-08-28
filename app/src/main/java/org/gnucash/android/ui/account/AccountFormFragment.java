@@ -392,6 +392,7 @@ public class AccountFormFragment extends Fragment {
         }
 
         mNameEditText.setText(account.getName());
+        mNameEditText.setSelection(mNameEditText.getText().length());
 
         if (mUseDoubleEntry && account.getDefaultTransferAccountUID() != null) {
             long doubleDefaultAccountId = mAccountsDbAdapter.getID(account.getDefaultTransferAccountUID());

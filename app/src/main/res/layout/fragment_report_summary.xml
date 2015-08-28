@@ -99,7 +99,7 @@ limitations under the License.
                     android:layout_height="wrap_content"
                     android:textSize="18sp"
                     android:text="Total Assets"/>
-                <TextView
+                <TextView android:id="@+id/total_assets"
                     android:layout_weight="1"
                     android:gravity="right"
                     android:textSize="18sp"
@@ -113,7 +113,7 @@ limitations under the License.
                     android:layout_height="wrap_content"
                     android:textSize="18sp"
                     android:text="Total Liabilities"/>
-                <TextView
+                <TextView android:id="@+id/total_liabilities"
                     android:layout_weight="1"
                     android:textSize="18sp"
                     tools:text="$ 2,700"
@@ -127,7 +127,7 @@ limitations under the License.
                     android:layout_height="wrap_content"
                     android:textSize="18sp"
                     android:text="Net Worth"/>
-                <TextView
+                <TextView android:id="@+id/net_worth"
                     android:layout_weight="1"
                     tools:text="$ -200"
                     android:textSize="18sp"

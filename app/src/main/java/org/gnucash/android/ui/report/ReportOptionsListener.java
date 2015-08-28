@@ -25,7 +25,6 @@ public interface ReportOptionsListener {
      * @param start Start date in milliseconds since epoch
      * @param end End date in milliseconds since epoch
      */
-    public void updateDateRange(long start, long end);
+    void updateDateRange(long start, long end, ReportsActivity.RangeInterval rangeInterval);
 
-    //TODO: Add interface method for change in currency
 }

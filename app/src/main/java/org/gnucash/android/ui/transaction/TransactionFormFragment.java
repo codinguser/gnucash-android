@@ -392,6 +392,7 @@ public class TransactionFormFragment extends Fragment implements
 	 */
 	private void initializeViewsWithTransaction(){
 		mDescriptionEditText.setText(mTransaction.getDescription());
+        mDescriptionEditText.setSelection(mDescriptionEditText.getText().length());
 
         mTransactionTypeButton.setAccountType(mAccountType);
         mTransactionTypeButton.setChecked(mTransaction.getBalance(mAccountUID).isNegative());

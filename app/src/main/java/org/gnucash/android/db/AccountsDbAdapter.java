@@ -728,6 +728,48 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
         return computeBalance(accountUID, startTimestamp, endTimestamp);
     }
 
+    /**
+     * Compute the account balance for all accounts with the specified type within a specific duration
+     * @param accountType Account Type for which to compute balance
+     * @param startTimestamp Begin time for the duration in milliseconds
+     * @param endTimestamp End time for duration in milliseconds
+     * @return Account balance
+     */
+    public Money getAccountBalance(AccountType accountType, long startTimestamp, long endTimestamp){
+        Cursor cursor = fetchAccounts(AccountEntry.COLUMN_TYPE + "= ?",
+                new String[]{accountType.name()}, null);
+        List<String> accountUidList = new ArrayList<>();
+        while (cursor.moveToNext()){
+            String accountUID = cursor.getString(cursor.getColumnIndexOrThrow(AccountEntry.COLUMN_UID));
+            accountUidList.add(accountUID);
+        }
+        cursor.close();
+
+        boolean hasDebitNormalBalance = accountType.hasDebitNormalBalance();
+        String currencyCode = GnuCashApplication.getDefaultCurrencyCode();
+
+        Log.d(LOG_TAG, "all account list : " + accountUidList.size());
+        SplitsDbAdapter splitsDbAdapter = SplitsDbAdapter.getInstance();
+        Money splitSum = (startTimestamp == -1 && endTimestamp == -1)
+                ? splitsDbAdapter.computeSplitBalance(accountUidList, currencyCode, hasDebitNormalBalance)
+                : splitsDbAdapter.computeSplitBalance(accountUidList, currencyCode, hasDebitNormalBalance, startTimestamp, endTimestamp);
+
+        return splitSum;
+    }
+
+    /**
+     * Returns the account balance for all accounts types specified
+     * @param accountTypes List of account types
+     * @return Money balance of the account types
+     */
+    public Money getAccountBalance(List<AccountType> accountTypes){
+        Money balance = Money.createZeroInstance(GnuCashApplication.getDefaultCurrencyCode());
+        for (AccountType accountType : accountTypes) {
+            balance = balance.add(getAccountBalance(accountType, -1, -1));
+        }
+        return balance;
+    }
+
     private Money computeBalance(String accountUID, long startTimestamp, long endTimestamp) {
         Log.d(LOG_TAG, "Computing account balance for account ID " + accountUID);
         String currencyCode = mTransactionsAdapter.getAccountCurrencyCode(accountUID);
