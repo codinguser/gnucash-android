@@ -501,4 +501,5 @@ Ingen brukerinformasjon vil bli delt i denne prosessen!
 	<string name="label_no_scheduled_exports_to_display">Ingen å vise</string>
 	<string name="title_create_export_schedule">Opprett exporteringsplan</string>
 	<string name="toast_exported_to">Eksportert til: %1$s</string>
+	<string name="toast_legend_too_long">The legend is too long</string>
 </resources>

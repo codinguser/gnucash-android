@@ -501,4 +501,5 @@
     <string name="label_no_scheduled_exports_to_display">Brak zaplanowanych eksportów do pokazania</string>
     <string name="title_create_export_schedule">Zaplanuj eksport</string>
     <string name="toast_exported_to">Wyeksportowane do: %1$s</string>
+    <string name="toast_legend_too_long">The legend is too long</string>
 </resources>

@@ -27,7 +27,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <LinearLayout android:id="@+id/chart"
+        <com.github.mikephil.charting.charts.LineChart android:id="@+id/line_chart"
             android:orientation="horizontal"
             android:layout_width="fill_parent"
             android:layout_height="0dip"

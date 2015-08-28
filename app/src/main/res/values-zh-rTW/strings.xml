@@ -501,4 +501,5 @@ No user-identifiable information will be collected as part of this process!
     <string name="label_no_scheduled_exports_to_display">没有備份任務</string>
     <string name="title_create_export_schedule">建立定時備份</string>
     <string name="toast_exported_to">匯出到：%1$s</string>
+    <string name="toast_legend_too_long">The legend is too long</string>
 </resources>

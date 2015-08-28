@@ -25,7 +25,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -36,8 +35,8 @@ import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
-import com.github.mikephil.charting.utils.Highlight;
 import com.github.mikephil.charting.utils.LargeValueFormatter;
 
 import org.gnucash.android.R;
@@ -79,7 +78,7 @@ public class BarChartActivity extends PassLockActivity implements OnChartValueSe
             Color.parseColor("#f9cd04"), Color.parseColor("#5f33a8"), Color.parseColor("#e005b6"),
             Color.parseColor("#17d6ed"), Color.parseColor("#e4a9a2"), Color.parseColor("#8fe6cd"),
             Color.parseColor("#8b48fb"), Color.parseColor("#343a36"), Color.parseColor("#6decb1"),
-            Color.parseColor("#a6dcfd"), Color.parseColor("#5c3378"), Color.parseColor("#a6dcfd"),
+            Color.parseColor("#f0f8ff"), Color.parseColor("#5c3378"), Color.parseColor("#a6dcfd"),
             Color.parseColor("#ba037c"), Color.parseColor("#708809"), Color.parseColor("#32072c"),
             Color.parseColor("#fddef8"), Color.parseColor("#fa0e6e"), Color.parseColor("#d9e7b5")
     };
@@ -111,11 +110,10 @@ public class BarChartActivity extends PassLockActivity implements OnChartValueSe
         mCurrency = Currency.getInstance(PreferenceManager.getDefaultSharedPreferences(this)
                 .getString(getString(R.string.key_report_currency), Money.DEFAULT_CURRENCY_CODE));
 
-        mChart = new BarChart(this);
-        ((LinearLayout) findViewById(R.id.bar_chart)).addView(mChart);
+        mChart = (BarChart) findViewById(R.id.bar_chart);
         mChart.setOnChartValueSelectedListener(this);
         mChart.setDescription("");
-        mChart.setDrawValuesForWholeStack(false);
+//        mChart.setDrawValuesForWholeStack(false);
         mChart.getXAxis().setDrawGridLines(false);
         mChart.getAxisRight().setEnabled(false);
         mChart.getAxisLeft().enableGridDashedLine(4.0f, 4.0f, 0);
@@ -179,6 +177,7 @@ public class BarChartActivity extends PassLockActivity implements OnChartValueSe
         }
 
         BarDataSet set = new BarDataSet(values, "");
+        set.setDrawValues(false);
         set.setStackLabels(labels.toArray(new String[labels.size()]));
         set.setColors(colors);
 
@@ -276,7 +275,7 @@ public class BarChartActivity extends PassLockActivity implements OnChartValueSe
      */
     private void displayChart() {
         mChart.highlightValues(null);
-        mChart.getLegend().setEnabled(false);
+        setCustomLegend();
 
         mChart.getAxisLeft().setDrawLabels(mChartDataPresent);
         mChart.getXAxis().setDrawLabels(mChartDataPresent);
@@ -292,6 +291,23 @@ public class BarChartActivity extends PassLockActivity implements OnChartValueSe
         }
 
         mChart.invalidate();
+    }
+
+    /**
+     * Sets custom legend. Disable legend if its items count greater than {@code COLORS} array size.
+     */
+    private void setCustomLegend() {
+        Legend legend = mChart.getLegend();
+        BarDataSet dataSet = mChart.getData().getDataSetByIndex(0);
+
+        LinkedHashSet<String> labels = new LinkedHashSet<>(Arrays.asList(dataSet.getStackLabels()));
+        LinkedHashSet<Integer> colors = new LinkedHashSet<>(dataSet.getColors());
+
+        if (COLORS.length >= labels.size()) {
+            legend.setCustom(new ArrayList<>(colors), new ArrayList<>(labels));
+            return;
+        }
+        legend.setEnabled(false);
     }
 
     @Override
@@ -315,14 +331,12 @@ public class BarChartActivity extends PassLockActivity implements OnChartValueSe
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_toggle_legend:
-                // workaround for buggy legend
                 Legend legend = mChart.getLegend();
+                if (!legend.isLegendCustom()) {
+                    Toast.makeText(this, R.string.toast_legend_too_long, Toast.LENGTH_LONG).show();
+                    break;
+                }
                 legend.setEnabled(!mChart.getLegend().isEnabled());
-                BarDataSet dataSet = mChart.getData().getDataSetByIndex(0);
-                LinkedHashSet<String> labels = new LinkedHashSet<>(Arrays.asList(dataSet.getStackLabels()));
-                legend.setLabels(labels.toArray(new String[labels.size()]));
-                LinkedHashSet<Integer> colors = new LinkedHashSet<>(dataSet.getColors());
-                legend.setColors(Arrays.asList(colors.toArray(new Integer[colors.size()])));
                 mChart.invalidate();
                 break;
 
