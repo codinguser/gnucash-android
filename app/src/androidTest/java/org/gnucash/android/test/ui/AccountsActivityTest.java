@@ -256,7 +256,7 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
 	public void testEditAccount(){
 		String editedAccountName = "Edited Account";
         sleep(2000);
-        onView(withId(R.id.options_menu)).perform(longClick());
+        onView(withId(R.id.options_menu)).perform(click());
         onView(withText(R.string.title_edit_account)).perform(click());
 
         onView(withId(R.id.fragment_account_form)).check(matches(isDisplayed()));

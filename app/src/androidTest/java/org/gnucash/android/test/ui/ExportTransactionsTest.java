@@ -165,7 +165,7 @@ public class ExportTransactionsTest extends
 		PreferenceManager.getDefaultSharedPreferences(getActivity()).edit()
 				.putBoolean(mAcccountsActivity.getString(R.string.key_delete_transactions_after_export), true).commit();
 
-		testExport(ExportFormat.QIF);
+		testExport(ExportFormat.XML);
 
 		assertThat(mTransactionsDbAdapter.getRecordsCount()).isEqualTo(0);
 		PreferenceManager.getDefaultSharedPreferences(getActivity()).edit()

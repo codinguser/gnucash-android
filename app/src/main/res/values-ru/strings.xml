@@ -507,4 +507,5 @@
     <string name="label_no_scheduled_exports_to_display">Вы ещё не планировали экспорт данных</string>
     <string name="title_create_export_schedule">Создать расписание экспорта</string>
     <string name="toast_exported_to">Экспортировано в: %1$s</string>
+    <string name="toast_legend_too_long">The legend is too long</string>
 </resources>

@@ -500,4 +500,5 @@ Aucune information permettant d\'identifier l\'utilisateur ne sera recueillis da
     <string name="label_no_scheduled_exports_to_display">Pas d\'exports planifiés à afficher</string>
     <string name="title_create_export_schedule">Créer un export planifié</string>
     <string name="toast_exported_to">Exporté vers : %1$s</string>
+    <string name="toast_legend_too_long">The legend is too long</string>
 </resources>

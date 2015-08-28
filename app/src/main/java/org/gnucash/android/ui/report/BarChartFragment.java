@@ -42,8 +42,8 @@ import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
-import com.github.mikephil.charting.utils.Highlight;
 import com.github.mikephil.charting.utils.LargeValueFormatter;
 
 import org.gnucash.android.R;
@@ -126,7 +126,7 @@ public class BarChartFragment extends Fragment implements OnChartValueSelectedLi
 
         mChart.setOnChartValueSelectedListener(this);
         mChart.setDescription("");
-        mChart.setDrawValuesForWholeStack(false);
+//        mChart.setDrawValuesForWholeStack(false);
         mChart.getXAxis().setDrawGridLines(false);
         mChart.getAxisRight().setEnabled(false);
         mChart.getAxisLeft().enableGridDashedLine(4.0f, 4.0f, 0);
@@ -193,6 +193,7 @@ public class BarChartFragment extends Fragment implements OnChartValueSelectedLi
         }
 
         BarDataSet set = new BarDataSet(values, "");
+        set.setDrawValues(false);
         set.setStackLabels(labels.toArray(new String[labels.size()]));
         set.setColors(colors);
 
@@ -289,7 +290,7 @@ public class BarChartFragment extends Fragment implements OnChartValueSelectedLi
      */
     private void displayChart() {
         mChart.highlightValues(null);
-        mChart.getLegend().setEnabled(false);
+        setCustomLegend();
 
         mChart.getAxisLeft().setDrawLabels(mChartDataPresent);
         mChart.getXAxis().setDrawLabels(mChartDataPresent);
@@ -305,6 +306,23 @@ public class BarChartFragment extends Fragment implements OnChartValueSelectedLi
         }
 
         mChart.invalidate();
+    }
+
+    /**
+     * Sets custom legend. Disable legend if its items count greater than {@code COLORS} array size.
+     */
+    private void setCustomLegend() {
+        Legend legend = mChart.getLegend();
+        BarDataSet dataSet = mChart.getData().getDataSetByIndex(0);
+
+        LinkedHashSet<String> labels = new LinkedHashSet<>(Arrays.asList(dataSet.getStackLabels()));
+        LinkedHashSet<Integer> colors = new LinkedHashSet<>(dataSet.getColors());
+
+        if (ReportsActivity.COLORS.length >= labels.size()) {
+            legend.setCustom(new ArrayList<>(colors), new ArrayList<>(labels));
+            return;
+        }
+        legend.setEnabled(false);
     }
 
     @Override
@@ -328,15 +346,13 @@ public class BarChartFragment extends Fragment implements OnChartValueSelectedLi
             item.setChecked(!item.isChecked());
         switch (item.getItemId()) {
             case R.id.menu_toggle_legend:
-                // workaround for buggy legend
                 Legend legend = mChart.getLegend();
-                legend.setEnabled(!mChart.getLegend().isEnabled());
-                BarDataSet dataSet = mChart.getData().getDataSetByIndex(0);
-                LinkedHashSet<String> labels = new LinkedHashSet<>(Arrays.asList(dataSet.getStackLabels()));
-                legend.setLabels(labels.toArray(new String[labels.size()]));
-                LinkedHashSet<Integer> colors = new LinkedHashSet<>(dataSet.getColors());
-                legend.setColors(Arrays.asList(colors.toArray(new Integer[colors.size()])));
-                mChart.invalidate();
+                if (!legend.isLegendCustom()) {
+                    Toast.makeText(getActivity(), R.string.toast_legend_too_long, Toast.LENGTH_LONG).show();
+                } else {
+                    legend.setEnabled(!mChart.getLegend().isEnabled());
+                    mChart.invalidate();
+                }
                 return true;
 
             case R.id.menu_percentage_mode:
