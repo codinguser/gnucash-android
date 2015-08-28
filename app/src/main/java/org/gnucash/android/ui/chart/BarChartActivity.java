@@ -293,6 +293,9 @@ public class BarChartActivity extends PassLockActivity implements OnChartValueSe
         mChart.invalidate();
     }
 
+    /**
+     * Sets custom legend. Disable legend if its items count greater than {@code COLORS} array size.
+     */
     private void setCustomLegend() {
         Legend legend = mChart.getLegend();
         BarDataSet dataSet = mChart.getData().getDataSetByIndex(0);
@@ -330,7 +333,7 @@ public class BarChartActivity extends PassLockActivity implements OnChartValueSe
             case R.id.menu_toggle_legend:
                 Legend legend = mChart.getLegend();
                 if (!legend.isLegendCustom()) {
-                    Toast.makeText(this, "The legend is too long", Toast.LENGTH_LONG).show();
+                    Toast.makeText(this, R.string.toast_legend_too_long, Toast.LENGTH_LONG).show();
                     break;
                 }
                 legend.setEnabled(!mChart.getLegend().isEnabled());

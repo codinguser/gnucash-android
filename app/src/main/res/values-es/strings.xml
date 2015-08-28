@@ -500,4 +500,5 @@ Este proceso solo recoge informaci&#243;n que no permite identificar al usuario<
 	<string name="label_no_scheduled_exports_to_display">No scheduled exports to display</string>
 	<string name="title_create_export_schedule">Create export schedule</string>
 	<string name="toast_exported_to">Exported to: %1$s</string>
+	<string name="toast_legend_too_long">The legend is too long</string>
 </resources>
