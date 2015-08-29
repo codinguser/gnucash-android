@@ -77,7 +77,7 @@ limitations under the License.
     </LinearLayout>
 
     <android.support.design.widget.TextInputLayout
-        android:id="@+id/textinputlayout"
+        android:id="@+id/name_text_input_layout"
         android:layout_width="match_parent"
         android:layout_marginLeft="7dp"
         android:layout_height="wrap_content">

@@ -25,7 +25,7 @@
             android:orientation="vertical" >
 
         <android.support.design.widget.TextInputLayout
-            android:id="@+id/textinputlayout"
+            android:id="@+id/name_text_input_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
             <EditText
@@ -81,6 +81,23 @@
                      android:layout_marginLeft="@dimen/dialog_padding"
                      android:layout_marginBottom="@dimen/form_row_bottom_margin" />
         </LinearLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/description_input_layout"
+            android:layout_marginBottom="10dp"
+            android:layout_marginLeft="9dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <EditText
+                android:id="@+id/input_account_description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/form_row_bottom_margin"
+                android:ems="15"
+                android:background="@android:color/transparent"
+                android:hint="Account description">
+            </EditText>
+        </android.support.design.widget.TextInputLayout>
 
         <CheckBox android:id="@+id/checkbox_placeholder_account"
                   android:layout_width="match_parent"
