@@ -169,8 +169,15 @@ public class LineChartFragment extends Fragment implements OnChartValueSelectedL
     private LineData getData(List<AccountType> accountTypeList) {
         calculateEarliestAndLatestTimestamps(accountTypeList);
 
-        LocalDate startDate = new LocalDate(mEarliestTransactionTimestamp).withDayOfMonth(1);
-        LocalDate endDate = new LocalDate(mLatestTransactionTimestamp).withDayOfMonth(1);
+        LocalDate startDate;
+        LocalDate endDate;
+        if (mReportStartTime == -1 && mReportEndTime == -1) {
+            startDate = new LocalDate(mEarliestTransactionTimestamp).withDayOfMonth(1);
+            endDate = new LocalDate(mLatestTransactionTimestamp).withDayOfMonth(1);
+        } else {
+            startDate = new LocalDate(mReportStartTime).withDayOfMonth(1);
+            endDate = new LocalDate(mReportEndTime).withDayOfMonth(1);
+        }
         List<String> xValues = new ArrayList<>();
         while (!startDate.isAfter(endDate)) {
             xValues.add(startDate.toString(X_AXIS_PATTERN));
@@ -232,8 +239,15 @@ public class LineChartFragment extends Fragment implements OnChartValueSelectedL
             }
         }
 
-        LocalDateTime earliest = new LocalDateTime(mEarliestTimestampsMap.get(accountType));
-        LocalDateTime latest = new LocalDateTime(mLatestTimestampsMap.get(accountType));
+        LocalDateTime earliest;
+        LocalDateTime latest;
+        if (mReportStartTime == -1 && mReportEndTime == -1) {
+            earliest = new LocalDateTime(mEarliestTimestampsMap.get(accountType));
+            latest = new LocalDateTime(mLatestTimestampsMap.get(accountType));
+        } else {
+            earliest = new LocalDateTime(mReportStartTime);
+            latest = new LocalDateTime(mReportEndTime);
+        }
         Log.d(TAG, "Earliest " + accountType + " date " + earliest.toString("dd MM yyyy"));
         Log.d(TAG, "Latest " + accountType + " date " + latest.toString("dd MM yyyy"));
         int months = Months.monthsBetween(earliest.withDayOfMonth(1).withMillisOfDay(0),
@@ -300,7 +314,9 @@ public class LineChartFragment extends Fragment implements OnChartValueSelectedL
     public void onTimeRangeUpdated(long start, long end) {
         mReportStartTime = start;
         mReportEndTime = end;
-        //TODO: Update chart
+
+        mChart.setData(getData(new ArrayList<>(Arrays.asList(AccountType.INCOME, AccountType.EXPENSE))));
+        mChart.invalidate();
     }
 
     @Override
