@@ -272,7 +272,7 @@ public class TransactionsActivity extends PassLockActivity implements
         mTabLayout = (TabLayout) findViewById(R.id.tab_layout);
         mTabLayout.addTab(mTabLayout.newTab().setText(R.string.section_header_subaccounts));
         if (!isPlaceHolderAccount()) {
-            mTabLayout.addTab(mTabLayout.newTab().setText(R.string.section_header_transactions));
+            mTabLayout.addTab(mTabLayout.newTab().setText(R.string.section_header_transactions), true);
         }
 
         setupActionBarNavigation();

@@ -105,7 +105,8 @@
             android:theme="@style/Theme.GnucashTheme.NoActionBar"
             android:configChanges="orientation|screenSize"/>
         <activity android:name=".ui.report.ReportsActivity"
-            android:theme="@style/Theme.GnucashTheme.NoActionBar"/>
+            android:theme="@style/Theme.GnucashTheme.NoActionBar"
+            android:launchMode="singleTop"/>
         <activity android:name="com.dropbox.sync.android.DbxAuthActivity" />
         <activity
             android:name="com.dropbox.client2.android.AuthActivity"

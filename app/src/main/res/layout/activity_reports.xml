@@ -47,7 +47,8 @@
                     android:id="@+id/report_account_type_spinner"
                     android:layout_gravity="right"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
                 </android.support.v7.widget.Toolbar>
 
             <LinearLayout android:id="@+id/time_range_layout"

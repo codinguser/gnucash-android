@@ -232,11 +232,6 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
         PagerAdapter mPagerAdapter = new AccountViewPagerAdapter(getSupportFragmentManager());
         mViewPager.setAdapter(mPagerAdapter);
 
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-        int lastTabIndex = preferences.getInt(LAST_OPEN_TAB_INDEX, INDEX_TOP_LEVEL_ACCOUNTS_FRAGMENT);
-        int index = intent.getIntExtra(EXTRA_TAB_INDEX, lastTabIndex);
-        mViewPager.setCurrentItem(index);
-
         mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
         tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
@@ -254,6 +249,11 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
 
             }
         });
+
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        int lastTabIndex = preferences.getInt(LAST_OPEN_TAB_INDEX, INDEX_TOP_LEVEL_ACCOUNTS_FRAGMENT);
+        int index = intent.getIntExtra(EXTRA_TAB_INDEX, lastTabIndex);
+        mViewPager.setCurrentItem(index);
 
         FloatingActionButton floatingActionButton = (FloatingActionButton) findViewById(R.id.fab_create_account);
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
