@@ -253,14 +253,14 @@ public class ReportsActivity extends PassLockActivity implements AdapterView.OnI
                 mReportStartTime = new DateTime().dayOfMonth().withMinimumValue().toDate().getTime();
                 mReportEndTime = new DateTime().dayOfMonth().withMaximumValue().toDate().getTime();
                 break;
-            case 2:
-                mReportStartTime = new LocalDate().minusMonths(3).toDate().getTime();
+            case 2: // last 3 months. x-2, x-1, x
+                mReportStartTime = new LocalDate().minusMonths(2).toDate().getTime();
                 break;
             case 3:
-                mReportStartTime = new LocalDate().minusMonths(6).toDate().getTime();
+                mReportStartTime = new LocalDate().minusMonths(5).toDate().getTime();
                 break;
             case 4:
-                mReportStartTime = new LocalDate().minusMonths(12).toDate().getTime();
+                mReportStartTime = new LocalDate().minusMonths(11).toDate().getTime();
                 break;
             case 5:
                 String mCurrencyCode = PreferenceManager.getDefaultSharedPreferences(this).getString(getString(R.string.key_report_currency), Money.DEFAULT_CURRENCY_CODE);
