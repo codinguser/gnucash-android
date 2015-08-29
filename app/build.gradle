@@ -168,7 +168,8 @@ dependencies {
             'joda-time:joda-time:2.7',
             'org.ocpsoft.prettytime:prettytime:3.2.7.Final',
             'com.google.android.gms:play-services-drive:7.0.0',
-            'com.jakewharton:butterknife:7.0.1'
+            'com.jakewharton:butterknife:7.0.1',
+            'com.kobakei:ratethisapp:0.0.3'
     )
 
     compile('com.crashlytics.sdk.android:crashlytics:2.5.0@aar') {

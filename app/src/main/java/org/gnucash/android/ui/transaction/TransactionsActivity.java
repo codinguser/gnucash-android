@@ -354,10 +354,7 @@ public class TransactionsActivity extends PassLockActivity implements
 		mAccountsCursor = mAccountsDbAdapter.fetchAllRecordsOrderedByFullName();
 
         SpinnerAdapter mSpinnerAdapter = new QualifiedAccountNameCursorAdapter(
-                getSupportActionBar().getThemedContext(),
-                android.R.layout.simple_spinner_item, mAccountsCursor);
-		((ResourceCursorAdapter) mSpinnerAdapter).setDropDownViewResource(
-                android.R.layout.simple_spinner_dropdown_item);
+                getSupportActionBar().getThemedContext(), mAccountsCursor);
 
         mToolbarSpinner = (Spinner) findViewById(R.id.spinner_toolbar);
         mToolbarSpinner.setAdapter(mSpinnerAdapter);

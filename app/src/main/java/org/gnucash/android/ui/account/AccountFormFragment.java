@@ -55,14 +55,17 @@ import android.widget.Spinner;
 
 import org.gnucash.android.R;
 import org.gnucash.android.db.AccountsDbAdapter;
+import org.gnucash.android.db.CommoditiesDbAdapter;
 import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.model.Account;
 import org.gnucash.android.model.AccountType;
+import org.gnucash.android.model.Commodity;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.ui.UxArgument;
 import org.gnucash.android.ui.colorpicker.ColorPickerDialog;
 import org.gnucash.android.ui.colorpicker.ColorPickerSwatch;
 import org.gnucash.android.ui.colorpicker.ColorSquare;
+import org.gnucash.android.util.CommoditiesCursorAdapter;
 import org.gnucash.android.util.QualifiedAccountNameCursorAdapter;
 
 import java.util.ArrayList;
@@ -326,12 +329,17 @@ public class AccountFormFragment extends Fragment {
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 		
-		ArrayAdapter<String> currencyArrayAdapter = new ArrayAdapter<String>(
+		ArrayAdapter<String> currencyArrayAdapter = new ArrayAdapter<>(
 				getActivity(), 
 				android.R.layout.simple_spinner_item, 
 				getResources().getStringArray(R.array.currency_names));
 		currencyArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-		mCurrencySpinner.setAdapter(currencyArrayAdapter);
+
+        Cursor cursor = CommoditiesDbAdapter.getInstance().fetchAllRecords();
+        CommoditiesCursorAdapter commoditiesAdapter = new CommoditiesCursorAdapter(
+                getActivity(), cursor);
+        mCurrencySpinner.setAdapter(commoditiesAdapter);
+
 
         mAccountUID = getArguments().getString(UxArgument.SELECTED_ACCOUNT_UID);
 
@@ -463,10 +471,15 @@ public class AccountFormFragment extends Fragment {
      * @param currencyCode ISO 4217 currency code to be selected
      */
     private void setSelectedCurrency(String currencyCode){
-        mCurrencyCodes = Arrays.asList(getResources().getStringArray(R.array.key_currency_codes));
-        if (mCurrencyCodes.contains(currencyCode)){
-            mCurrencySpinner.setSelection(mCurrencyCodes.indexOf(currencyCode));
+        CommoditiesDbAdapter commodityDbAdapter = CommoditiesDbAdapter.getInstance();
+        long commodityId = commodityDbAdapter.getID(commodityDbAdapter.getCommodityUID(currencyCode));
+        int position = 0;
+        for (int i = 0; i < mCurrencySpinner.getCount(); i++) {
+            if (commodityId == mCurrencySpinner.getItemIdAtPosition(i)) {
+                position = i;
+            }
         }
+        mCurrencySpinner.setSelection(position);
     }
 
     /**
@@ -581,9 +594,7 @@ public class AccountFormFragment extends Fragment {
         }
 
         mDefaultTransferAccountCursorAdapter = new QualifiedAccountNameCursorAdapter(getActivity(),
-                android.R.layout.simple_spinner_item,
                 defaultTransferAccountCursor);
-        mDefaultTransferAccountCursorAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mDefaulTransferAccountSpinner.setAdapter(mDefaultTransferAccountCursorAdapter);
     }
 
@@ -624,10 +635,7 @@ public class AccountFormFragment extends Fragment {
         }
 
 		mParentAccountCursorAdapter = new QualifiedAccountNameCursorAdapter(
-				getActivity(), 
-				android.R.layout.simple_spinner_item,
-                mParentAccountCursor);
-		mParentAccountCursorAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+				getActivity(), mParentAccountCursor);
 		mParentAccountSpinner.setAdapter(mParentAccountCursorAdapter);
 	}
 
@@ -749,10 +757,11 @@ public class AccountFormFragment extends Fragment {
             nameChanged = !mAccount.getName().equals(getEnteredName());
             mAccount.setName(getEnteredName());
         }
-			
-		String curCode = mCurrencyCodes.get(mCurrencySpinner
-                .getSelectedItemPosition());
-		mAccount.setCurrency(Currency.getInstance(curCode));
+
+        long commodityId = mCurrencySpinner.getSelectedItemId();
+        Commodity commodity = CommoditiesDbAdapter.getInstance().getRecord(commodityId);
+        mAccount.setCommodityUID(commodity.getUID());
+        mAccount.setCurrency(Currency.getInstance(commodity.getMnemonic()));
 
         AccountType selectedAccountType = getSelectedAccountType();
         mAccount.setAccountType(selectedAccountType);

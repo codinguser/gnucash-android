@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013 - 2014 Ngewi Fet <ngewif@gmail.com>
+ * Copyright (c) 2015 Ngewi Fet <ngewif@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,17 +26,14 @@ import android.widget.TextView;
 import org.gnucash.android.db.DatabaseSchema;
 
 /**
- * Cursor adapter which looks up the fully qualified account name and returns that instead of just the simple name.
- * <p>The fully qualified account name includes the parent hierarchy</p>
- *
- * @author Ngewi Fet <ngewif@gmail.com>
+ * Cursor adapter for displaying list of commodities in a spinner
  */
-public class QualifiedAccountNameCursorAdapter extends SimpleCursorAdapter {
+public class CommoditiesCursorAdapter extends SimpleCursorAdapter {
 
-    public QualifiedAccountNameCursorAdapter(Context context, Cursor cursor) {
-        super(context, android.R.layout.simple_spinner_item, cursor,
-                new String[]{DatabaseSchema.AccountEntry.COLUMN_FULL_NAME},
-                new int[]{android.R.id.text1}, 0);
+    public CommoditiesCursorAdapter(Context context, Cursor c) {
+        super(context, android.R.layout.simple_spinner_item, c,
+                new String[] {DatabaseSchema.CommodityEntry.COLUMN_FULLNAME},
+                new int[] {android.R.id.text1}, 0);
         setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
     }
 

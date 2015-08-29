@@ -49,6 +49,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 
 import com.crashlytics.android.Crashlytics;
+import com.kobakei.ratethisapp.RateThisApp;
 
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
@@ -266,6 +267,13 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
             }
         });
 	}
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        RateThisApp.onStart(this);
+        RateThisApp.showRateDialogIfNeeded(this);
+    }
 
     /**
      * Handles the case where another application has selected to open a (.gnucash or .gnca) file with this app

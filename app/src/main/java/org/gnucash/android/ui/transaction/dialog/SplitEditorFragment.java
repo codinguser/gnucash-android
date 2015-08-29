@@ -317,9 +317,7 @@ public class SplitEditorFragment extends Fragment {
      */
     private void updateTransferAccountsList(Spinner transferAccountSpinner){
 
-        mCursorAdapter = new QualifiedAccountNameCursorAdapter(getActivity(),
-                R.layout.split_account_spinner_item, mCursor);
-        mCursorAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        mCursorAdapter = new QualifiedAccountNameCursorAdapter(getActivity(), mCursor);
         transferAccountSpinner.setAdapter(mCursorAdapter);
     }
 

@@ -75,6 +75,12 @@ public class CommoditiesDbAdapter extends DatabaseAdapter<Commodity> {
         return commodity;
     }
 
+    @Override
+    public Cursor fetchAllRecords() {
+        return mDb.query(mTableName, null, null, null, null, null,
+                CommodityEntry.COLUMN_FULLNAME + " ASC");
+    }
+
     /**
      * Returns the commodity associated with the ISO4217 currency code
      * @param currencyCode 3-letter currency code

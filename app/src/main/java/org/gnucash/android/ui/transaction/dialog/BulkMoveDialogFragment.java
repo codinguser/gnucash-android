@@ -113,9 +113,7 @@ public class BulkMoveDialogFragment extends DialogFragment {
                         "" + accountsDbAdapter.getOrCreateGnuCashRootAccountUID()
                 });
 
-		SimpleCursorAdapter mCursorAdapter = new QualifiedAccountNameCursorAdapter(getActivity(),
-                android.R.layout.simple_spinner_item, cursor);
-		mCursorAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		SimpleCursorAdapter mCursorAdapter = new QualifiedAccountNameCursorAdapter(getActivity(), cursor);
 		mDestinationAccountSpinner.setAdapter(mCursorAdapter);
 		setListeners();
 	}

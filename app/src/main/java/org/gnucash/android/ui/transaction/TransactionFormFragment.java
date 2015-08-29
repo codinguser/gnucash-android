@@ -529,9 +529,7 @@ public class TransactionFormFragment extends Fragment implements
         }
 		mCursor = mAccountsDbAdapter.fetchAccountsOrderedByFullName(conditions, new String[]{mAccountUID, AccountType.ROOT.name()});
 
-        mCursorAdapter = new QualifiedAccountNameCursorAdapter(getActivity(),
-                android.R.layout.simple_spinner_item, mCursor);
-		mCursorAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        mCursorAdapter = new QualifiedAccountNameCursorAdapter(getActivity(), mCursor);
 		mDoubleAccountSpinner.setAdapter(mCursorAdapter);
 	}
 

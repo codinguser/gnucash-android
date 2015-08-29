@@ -78,10 +78,7 @@ public class WidgetConfigurationActivity extends Activity {
 			finish();
 		}
 
-        SimpleCursorAdapter cursorAdapter = new QualifiedAccountNameCursorAdapter(this,
-                android.R.layout.simple_spinner_item,
-                cursor);
-		cursorAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        SimpleCursorAdapter cursorAdapter = new QualifiedAccountNameCursorAdapter(this, cursor);
 		mAccountsSpinner.setAdapter(cursorAdapter);
 		
 		bindListeners();
