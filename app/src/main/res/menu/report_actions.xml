@@ -7,8 +7,6 @@
         app:showAsAction="ifRoom|withText">
         <menu>
             <group android:checkableBehavior="single">
-                <item android:id="@+id/group_by_week"
-                    android:title="Week"/>
 
                 <item android:id="@+id/group_by_month"
                     android:checked="true"
@@ -20,8 +18,6 @@
                 <item android:id="@+id/group_by_year"
                     android:title="Year" />
 
-                <item android:id="@+id/group_all_time"
-                    android:title="All time" />
             </group>
         </menu>
     </item>

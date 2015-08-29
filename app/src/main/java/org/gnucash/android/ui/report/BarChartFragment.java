@@ -88,7 +88,6 @@ public class BarChartFragment extends Fragment implements OnChartValueSelectedLi
     private AccountsDbAdapter mAccountsDbAdapter = AccountsDbAdapter.getInstance();
 
     @Bind(R.id.selected_chart_slice) TextView selectedValueTextView;
-    @Bind(R.id.chart_data_spinner) Spinner mAccountTypeSpinner;
     @Bind(R.id.bar_chart) BarChart mChart;
 
     private Currency mCurrency;
@@ -97,6 +96,14 @@ public class BarChartFragment extends Fragment implements OnChartValueSelectedLi
     private boolean mTotalPercentageMode = true;
     private boolean mChartDataPresent = true;
 
+    /**
+     * Reporting period start time
+     */
+    private long mReportStartTime = -1;
+    /**
+     * Reporting period end time
+     */
+    private long mReportEndTime = -1;
 
     @Nullable
     @Override
@@ -137,7 +144,8 @@ public class BarChartFragment extends Fragment implements OnChartValueSelectedLi
         chartLegend.setPosition(Legend.LegendPosition.BELOW_CHART_CENTER);
         chartLegend.setTextSize(16);
 
-        setUpSpinner();
+        mChart.setData(getData(((ReportsActivity) getActivity()).getAccountType()));
+        displayChart();
     }
 
 
@@ -264,29 +272,6 @@ public class BarChartFragment extends Fragment implements OnChartValueSelectedLi
     }
 
     /**
-     * Sets up settings and data for the account type spinner. Currently used only {@code EXPENSE} and {@code INCOME}
-     * account types.
-     */
-    private void setUpSpinner() {
-        ArrayAdapter<AccountType> dataAdapter = new ArrayAdapter<>(getActivity(),
-                android.R.layout.simple_spinner_item,
-                Arrays.asList(AccountType.EXPENSE, AccountType.INCOME));
-        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        mAccountTypeSpinner.setAdapter(dataAdapter);
-        mAccountTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                mChart.setData(getData((AccountType) mAccountTypeSpinner.getSelectedItem()));
-                displayChart();
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-            }
-        });
-    }
-
-    /**
      * Displays the stacked bar chart
      */
     private void displayChart() {
@@ -327,8 +312,21 @@ public class BarChartFragment extends Fragment implements OnChartValueSelectedLi
     }
 
     @Override
-    public void updateDateRange(long start, long end, ReportsActivity.RangeInterval rangeInterval) {
-        //TODO: update the bar chart to use the rangeInterval
+    public void onTimeRangeUpdated(long start, long end) {
+        mReportStartTime = start;
+        mReportEndTime = end;
+        //TODO: update the bar chart to use the groupInterval
+    }
+
+    @Override
+    public void onGroupingUpdated(ReportsActivity.GroupInterval groupInterval) {
+        //TODO: update bar chart display with appropriate grouping
+    }
+
+    @Override
+    public void onAccountTypeUpdated(AccountType accountType) {
+        mChart.setData(getData(accountType));
+        displayChart();
     }
 
     @Override

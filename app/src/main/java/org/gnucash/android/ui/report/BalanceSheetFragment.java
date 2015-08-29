@@ -94,10 +94,7 @@ public class BalanceSheetFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-
         ((ReportsActivity)getActivity()).setAppBarColor(R.color.account_purple);
-        getActivity().findViewById(R.id.date_range_recyclerview).setVisibility(View.GONE);
-        getActivity().findViewById(R.id.date_range_divider).setVisibility(View.GONE);
     }
 
     /**
@@ -135,12 +132,6 @@ public class BalanceSheetFragment extends Fragment {
         TransactionsActivity.displayBalance(assetBalance, mAccountsDbAdapter.getAccountBalance(accountTypes));
 
         tableLayout.addView(totalView);
-    }
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        getActivity().findViewById(R.id.date_range_recyclerview).setVisibility(View.VISIBLE);
-        getActivity().findViewById(R.id.date_range_divider).setVisibility(View.VISIBLE);
     }
 
 }

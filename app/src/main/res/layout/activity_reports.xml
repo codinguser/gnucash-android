@@ -44,23 +44,36 @@
                 app:popupTheme="@style/ThemeOverlay.AppCompat.Light" >
 
                 <Spinner
-                    android:id="@+id/report_currency_spinner"
+                    android:id="@+id/report_account_type_spinner"
                     android:layout_gravity="right"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
                 </android.support.v7.widget.Toolbar>
 
-            <android.support.v7.widget.RecyclerView android:id="@+id/date_range_recyclerview"
+            <LinearLayout android:id="@+id/time_range_layout"
+                android:padding="@dimen/dialog_padding"
                 android:layout_width="match_parent"
-                android:minHeight="50dp"
-                android:layout_height="0dp"
-                android:layout_weight="1"/>
+                android:layout_height="wrap_content">
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:textSize="14sp"
+                    android:layout_height="wrap_content"
+                    android:text="Time Range:"/>
 
+                <Spinner android:id="@+id/time_range_spinner"
+                    android:layout_weight="2"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
             <View android:id="@+id/date_range_divider"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:layout_marginTop="5dp"
                 android:background="@android:color/darker_gray" />
+
+
 
             <FrameLayout android:id="@+id/fragment_container"
                 android:orientation="vertical"

@@ -505,4 +505,12 @@ No user-identifiable information will be collected as part of this process!
     <string name="title_create_export_schedule">Create export schedule</string>
     <string name="toast_exported_to">Exported to: %1$s</string>
     <string name="toast_legend_too_long">The legend is too long</string>
+    <string-array name="report_time_range">
+        <item>All time</item>
+        <item>Current month</item>
+        <item>Last 3 months</item>
+        <item>Last 6 months</item>
+        <item>Last 12 months</item>
+        <item>Custom range…</item>
+    </string-array>
 </resources>

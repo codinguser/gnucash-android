@@ -72,7 +72,7 @@ import butterknife.ButterKnife;
  * @author Ngewi Fet <ngewif@gmail.com>
  */
 public class PieChartFragment extends Fragment implements OnChartValueSelectedListener,
-        DatePickerDialog.OnDateSetListener, ReportOptionsListener {
+        ReportOptionsListener {
 
     public static final String SELECTED_VALUE_PATTERN = "%s - %.2f (%.2f %%)";
     public static final String DATE_PATTERN = "MMMM\nYYYY";
@@ -93,7 +93,6 @@ public class PieChartFragment extends Fragment implements OnChartValueSelectedLi
 
     @Bind(R.id.pie_chart) PieChart mChart;
     @Bind(R.id.selected_chart_slice) TextView mSelectedValueTextView;
-    @Bind(R.id.chart_data_spinner) Spinner mChartDataTypeSpinner;
 
     private AccountsDbAdapter mAccountsDbAdapter;
     private TransactionsDbAdapter mTransactionsDbAdapter;
@@ -111,8 +110,15 @@ public class PieChartFragment extends Fragment implements OnChartValueSelectedLi
 
     private String mCurrencyCode;
 
-    private long mStartRangeMillis = -1;
-    private long mEndRangeMillis = -1;
+    /**
+     * Start time for reporting period in millis
+     */
+    private long mReportStartTime = -1;
+
+    /**
+     * End time for reporting period in millis
+     */
+    private long mReportEndTime = -1;
 
 
     @Nullable
@@ -144,20 +150,8 @@ public class PieChartFragment extends Fragment implements OnChartValueSelectedLi
         mChart.getLegend().setEnabled(false);
         mChart.setOnChartValueSelectedListener(this);
 
-        setUpSpinner();
-
-        //TODO: We can re-use this in ReportsActivity if we add a "GoTo Date" option
-//        mChartDateTextView.setOnClickListener(new View.OnClickListener() {
-//
-//            @Override
-//            public void onClick(View view) {
-//                DialogFragment newFragment = ChartDatePickerFragment.newInstance(PieChartFragment.this,
-//                        mChartDate.toDate().getTime(),
-//                        mEarliestTransactionDate.toDate().getTime(),
-//                        mLatestTransactionDate.toDate().getTime());
-//                newFragment.show(getActivity().getSupportFragmentManager(), "date_dialog");
-//            }
-//        });
+        mAccountType = ((ReportsActivity)getActivity()).getAccountType();
+        onAccountTypeUpdated(mAccountType);
     }
 
     /**
@@ -209,7 +203,7 @@ public class PieChartFragment extends Fragment implements OnChartValueSelectedLi
                     && !account.isPlaceholderAccount()
                     && account.getCurrency() == Currency.getInstance(mCurrencyCode)) {
 
-                double balance = mAccountsDbAdapter.getAccountsBalance(Collections.singletonList(account.getUID()), mStartRangeMillis, mEndRangeMillis).absolute().asDouble();
+                double balance = mAccountsDbAdapter.getAccountsBalance(Collections.singletonList(account.getUID()), mReportStartTime, mReportEndTime).absolute().asDouble();
                 if (balance != 0) {
                     dataSet.addEntry(new Entry((float) balance, dataSet.getEntryCount()));
                     colors.add(mUseAccountColor && account.getColorHexCode() != null
@@ -225,9 +219,24 @@ public class PieChartFragment extends Fragment implements OnChartValueSelectedLi
     }
 
     @Override
-    public void updateDateRange(long start, long end, ReportsActivity.RangeInterval interval) {
-        mStartRangeMillis = start;
-        mEndRangeMillis = end;
+    public void onTimeRangeUpdated(long start, long end) {
+        mReportStartTime = start;
+        mReportEndTime = end;
+        displayChart();
+    }
+
+    @Override
+    public void onGroupingUpdated(ReportsActivity.GroupInterval groupInterval) {
+        //TODO: Does this make sense for a pie chart? Don't think so
+    }
+
+    @Override
+    public void onAccountTypeUpdated(AccountType accountType) {
+        mAccountType = accountType;
+        mEarliestTransactionDate = new LocalDateTime(mTransactionsDbAdapter.getTimestampOfEarliestTransaction(mAccountType, mCurrencyCode));
+        mLatestTransactionDate = new LocalDateTime(mTransactionsDbAdapter.getTimestampOfLatestTransaction(mAccountType, mCurrencyCode));
+        mChartDate = mLatestTransactionDate;
+
         displayChart();
     }
 
@@ -276,33 +285,6 @@ public class PieChartFragment extends Fragment implements OnChartValueSelectedLi
         mChart.invalidate();
     }
 
-    /**
-     * Sets up settings and data for the account type spinner. Currently used only {@code EXPENSE} and {@code INCOME}
-     * account types.
-     */
-    private void setUpSpinner() {
-        ArrayAdapter<AccountType> dataAdapter = new ArrayAdapter<>(getActivity(),
-                android.R.layout.simple_spinner_item,
-                Arrays.asList(AccountType.EXPENSE, AccountType.INCOME));
-        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        mChartDataTypeSpinner.setAdapter(dataAdapter);
-        mChartDataTypeSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                mAccountType = (AccountType) mChartDataTypeSpinner.getSelectedItem();
-                mEarliestTransactionDate = new LocalDateTime(mTransactionsDbAdapter.getTimestampOfEarliestTransaction(mAccountType, mCurrencyCode));
-                mLatestTransactionDate = new LocalDateTime(mTransactionsDbAdapter.getTimestampOfLatestTransaction(mAccountType, mCurrencyCode));
-                mChartDate = mLatestTransactionDate;
-
-                displayChart();
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-            }
-        });
-    }
-
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.chart_actions, menu);
@@ -316,6 +298,7 @@ public class PieChartFragment extends Fragment implements OnChartValueSelectedLi
         // hide line/bar chart specific menu items
         menu.findItem(R.id.menu_percentage_mode).setVisible(false);
         menu.findItem(R.id.menu_toggle_average_lines).setVisible(false);
+        menu.findItem(R.id.menu_group_reports_by).setVisible(false);
     }
 
     @Override
@@ -385,19 +368,6 @@ public class PieChartFragment extends Fragment implements OnChartValueSelectedLi
         dataSet.setSliceSpace(SPACE_BETWEEN_SLICES);
         dataSet.setColors(newColors);
         return new PieData(newLabels, dataSet);
-    }
-
-    /**
-     * Since JellyBean, the onDateSet() method of the DatePicker class is called twice i.e. once when
-     * OK button is pressed and then when the DatePickerDialog is dismissed. It is a known bug.
-     */
-    @Override
-    public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-        if (view.isShown()) {
-            mChartDate = new LocalDateTime(year, monthOfYear + 1, dayOfMonth, 0, 0);
-            // no matter next or previous
-            displayChart();
-        }
     }
 
     @Override

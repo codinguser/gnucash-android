@@ -43,10 +43,7 @@
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:minHeight="300dp" />
+            android:minHeight="400dp" />
     </android.support.v7.widget.CardView>
 
-    <Spinner android:id="@+id/chart_data_spinner"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
 </LinearLayout>

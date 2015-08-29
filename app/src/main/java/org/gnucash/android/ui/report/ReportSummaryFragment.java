@@ -123,20 +123,16 @@ public class ReportSummaryFragment extends Fragment {
         super.onResume();
         ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(R.string.title_reports);
         ((ReportsActivity)getActivity()).setAppBarColor(R.color.theme_primary);
-        getActivity().findViewById(R.id.date_range_recyclerview).setVisibility(View.GONE);
-        getActivity().findViewById(R.id.date_range_divider).setVisibility(View.GONE);
-    }
 
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        getActivity().findViewById(R.id.date_range_recyclerview).setVisibility(View.VISIBLE);
-        getActivity().findViewById(R.id.date_range_divider).setVisibility(View.VISIBLE);
+        getActivity().findViewById(R.id.time_range_layout).setVisibility(View.GONE);
+        getActivity().findViewById(R.id.date_range_divider).setVisibility(View.GONE);
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
+        setHasOptionsMenu(true);
 
         mChart.setCenterTextSize(PieChartFragment.CENTER_TEXT_SIZE);
         mChart.setDescription("");

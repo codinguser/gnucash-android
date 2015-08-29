@@ -97,6 +97,16 @@ public class LineChartFragment extends Fragment implements OnChartValueSelectedL
     private boolean mChartDataPresent = true;
     private Currency mCurrency;
 
+    /**
+     * Reporting period start time
+     */
+    private long mReportStartTime = -1;
+
+    /**
+     * Reporting period end time
+     */
+    private long mReportEndTime = -1;
+
     @Bind(R.id.line_chart) LineChart mChart;
     @Bind(R.id.selected_chart_slice) TextView mChartSliceInfo;
 
@@ -287,8 +297,20 @@ public class LineChartFragment extends Fragment implements OnChartValueSelectedL
 
 
     @Override
-    public void updateDateRange(long start, long end, ReportsActivity.RangeInterval rangeInterval) {
-        //TODO: Use the rangeInterval to show line chart e.g. if MONTH interval, then plot months as points
+    public void onTimeRangeUpdated(long start, long end) {
+        mReportStartTime = start;
+        mReportEndTime = end;
+        //TODO: Update chart
+    }
+
+    @Override
+    public void onGroupingUpdated(ReportsActivity.GroupInterval groupInterval) {
+        //TODO: update chart
+    }
+
+    @Override
+    public void onAccountTypeUpdated(AccountType accountType) {
+        //FIXME: nothing to see here, line chart shows both income and expense
     }
 
     @Override
