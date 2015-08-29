@@ -30,9 +30,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -240,7 +237,13 @@ public class BarChartFragment extends Fragment implements OnChartValueSelectedLi
     private LocalDate getStartDate(AccountType accountType) {
         TransactionsDbAdapter adapter = TransactionsDbAdapter.getInstance();
         String code = mCurrency.getCurrencyCode();
-        LocalDate startDate = new LocalDate(adapter.getTimestampOfEarliestTransaction(accountType, code)).withDayOfMonth(1);
+        LocalDate startDate;
+        if (mReportStartTime == -1) {
+            startDate = new LocalDate(adapter.getTimestampOfEarliestTransaction(accountType, code));
+        } else {
+            startDate = new LocalDate(mReportStartTime);
+        }
+        startDate = startDate.withDayOfMonth(1);
         Log.d(TAG, accountType + " X-axis star date: " + startDate.toString("dd MM yyyy"));
         return startDate;
     }
@@ -253,7 +256,13 @@ public class BarChartFragment extends Fragment implements OnChartValueSelectedLi
     private LocalDate getEndDate(AccountType accountType) {
         TransactionsDbAdapter adapter = TransactionsDbAdapter.getInstance();
         String code = mCurrency.getCurrencyCode();
-        LocalDate endDate = new LocalDate(adapter.getTimestampOfLatestTransaction(accountType, code)).withDayOfMonth(1);
+        LocalDate endDate;
+        if (mReportEndTime == -1) {
+            endDate = new LocalDate(adapter.getTimestampOfLatestTransaction(accountType, code));
+        } else {
+            endDate = new LocalDate(mReportEndTime);
+        }
+        endDate = endDate.withDayOfMonth(1);
         Log.d(TAG, accountType + " X-axis end date: " + endDate.toString("dd MM yyyy"));
         return endDate;
     }
@@ -315,7 +324,9 @@ public class BarChartFragment extends Fragment implements OnChartValueSelectedLi
     public void onTimeRangeUpdated(long start, long end) {
         mReportStartTime = start;
         mReportEndTime = end;
-        //TODO: update the bar chart to use the groupInterval
+
+        mChart.setData(getData(((ReportsActivity) getActivity()).getAccountType()));
+        displayChart();
     }
 
     @Override
