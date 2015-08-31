@@ -55,7 +55,8 @@ public class QifExporter extends Exporter{
                             TransactionEntry.TABLE_NAME + "_" + TransactionEntry.COLUMN_UID + " AS trans_uid",
                             TransactionEntry.TABLE_NAME + "_" + TransactionEntry.COLUMN_TIMESTAMP + " AS trans_time",
                             TransactionEntry.TABLE_NAME + "_" + TransactionEntry.COLUMN_DESCRIPTION + " AS trans_desc",
-                            SplitEntry.TABLE_NAME + "_" + SplitEntry.COLUMN_AMOUNT + " AS split_amount",
+                            SplitEntry.TABLE_NAME + "_" + SplitEntry.COLUMN_QUANTITY_NUM + " AS split_quantity_num",
+                            SplitEntry.TABLE_NAME + "_" + SplitEntry.COLUMN_QUANTITY_DENOM + " AS split_quantity_denum",
                             SplitEntry.TABLE_NAME + "_" + SplitEntry.COLUMN_TYPE + " AS split_type",
                             SplitEntry.TABLE_NAME + "_" + SplitEntry.COLUMN_MEMO + " AS split_memo",
                             "trans_extra_info.trans_acct_balance AS trans_acct_balance",
@@ -156,9 +157,15 @@ public class QifExporter extends Exporter{
                                 .append(newLine);
                     }
                     String splitType = cursor.getString(cursor.getColumnIndexOrThrow("split_type"));
+                    Double quantity_num = cursor.getDouble(cursor.getColumnIndexOrThrow("split_quantity_num"));
+                    Double quantity_denom = cursor.getDouble(cursor.getColumnIndexOrThrow("split_quantity_denom"));
+                    Double quantity = 0.0;
+                    if (quantity_denom != 0) {
+                        quantity = quantity_num / quantity_denom;
+                    }
                     writer.append(QifHelper.SPLIT_AMOUNT_PREFIX)
                             .append(splitType.equals("DEBIT") ? "-" : "")
-                            .append(cursor.getString(cursor.getColumnIndexOrThrow("split_amount")))
+                            .append(String.format("%f", quantity))
                             .append(newLine);
                 }
                 if (!currentTransactionUID.equals("")) {
