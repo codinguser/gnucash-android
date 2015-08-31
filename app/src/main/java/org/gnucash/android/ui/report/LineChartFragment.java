@@ -263,8 +263,8 @@ public class LineChartFragment extends Fragment implements OnChartValueSelectedL
 
         int count = 0;
         if (mGroupInterval == GroupInterval.YEAR) {
-            count = Years.yearsBetween(earliest.withDayOfMonth(1).withMillisOfDay(0),
-                    latest.withDayOfMonth(1).withMillisOfDay(0)).getYears();
+            count = Years.yearsBetween(earliest.dayOfYear().withMinimumValue().millisOfDay().withMinimumValue(),
+                    latest.dayOfYear().withMaximumValue().millisOfDay().withMaximumValue()).getYears();
         } else {
             count = Months.monthsBetween(earliest.withDayOfMonth(1).withMillisOfDay(0),
                     latest.withDayOfMonth(1).withMillisOfDay(0)).getMonths();
