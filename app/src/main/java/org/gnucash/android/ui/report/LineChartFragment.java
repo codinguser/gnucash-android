@@ -48,9 +48,11 @@ import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.model.Account;
 import org.gnucash.android.model.AccountType;
 import org.gnucash.android.model.Money;
+import org.gnucash.android.ui.report.ReportsActivity.GroupInterval;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 import org.joda.time.Months;
+import org.joda.time.Years;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -96,6 +98,8 @@ public class LineChartFragment extends Fragment implements OnChartValueSelectedL
     private long mLatestTransactionTimestamp;
     private boolean mChartDataPresent = true;
     private Currency mCurrency;
+
+    private GroupInterval mGroupInterval = GroupInterval.MONTH;
 
     /**
      * Reporting period start time
@@ -180,9 +184,15 @@ public class LineChartFragment extends Fragment implements OnChartValueSelectedL
         }
         List<String> xValues = new ArrayList<>();
         while (!startDate.isAfter(endDate)) {
-            xValues.add(startDate.toString(X_AXIS_PATTERN));
-            Log.d(TAG, "X axis " + startDate.toString("MM yy"));
-            startDate = startDate.plusMonths(1);
+            if (mGroupInterval == GroupInterval.YEAR) {
+                xValues.add(startDate.toString(X_AXIS_PATTERN));
+                Log.w(TAG, "X axis " + startDate.toString("yy"));
+                startDate = startDate.plusYears(1);
+            } else {
+                xValues.add(startDate.toString(X_AXIS_PATTERN));
+                Log.d(TAG, "X axis " + startDate.toString("MM yy"));
+                startDate = startDate.plusMonths(1);
+            }
         }
 
         List<LineDataSet> dataSets = new ArrayList<>();
@@ -250,18 +260,36 @@ public class LineChartFragment extends Fragment implements OnChartValueSelectedL
         }
         Log.d(TAG, "Earliest " + accountType + " date " + earliest.toString("dd MM yyyy"));
         Log.d(TAG, "Latest " + accountType + " date " + latest.toString("dd MM yyyy"));
-        int months = Months.monthsBetween(earliest.withDayOfMonth(1).withMillisOfDay(0),
-                latest.withDayOfMonth(1).withMillisOfDay(0)).getMonths();
+
+        int count = 0;
+        if (mGroupInterval == GroupInterval.YEAR) {
+            count = Years.yearsBetween(earliest.withDayOfMonth(1).withMillisOfDay(0),
+                    latest.withDayOfMonth(1).withMillisOfDay(0)).getYears();
+        } else {
+            count = Months.monthsBetween(earliest.withDayOfMonth(1).withMillisOfDay(0),
+                    latest.withDayOfMonth(1).withMillisOfDay(0)).getMonths();
+        }
 
         int offset = getXAxisOffset(accountType);
-        List<Entry> values = new ArrayList<>(months + 1);
-        for (int i = 0; i < months + 1; i++) {
-            long start = earliest.dayOfMonth().withMinimumValue().millisOfDay().withMinimumValue().toDate().getTime();
-            long end = earliest.dayOfMonth().withMaximumValue().millisOfDay().withMaximumValue().toDate().getTime();
+        List<Entry> values = new ArrayList<>(count + 1);
+        for (int i = 0; i < count + 1; i++) {
+            long start;
+            long end;
+            if (mGroupInterval == GroupInterval.YEAR) {
+                start = earliest.dayOfYear().withMinimumValue().millisOfDay().withMinimumValue().toDate().getTime();
+                end = earliest.dayOfYear().withMaximumValue().millisOfDay().withMaximumValue().toDate().getTime();
+
+                earliest = earliest.plusYears(1);
+            } else {
+                start = earliest.dayOfMonth().withMinimumValue().millisOfDay().withMinimumValue().toDate().getTime();
+                end = earliest.dayOfMonth().withMaximumValue().millisOfDay().withMaximumValue().toDate().getTime();
+
+                earliest = earliest.plusMonths(1);
+            }
             float balance = (float) mAccountsDbAdapter.getAccountsBalance(accountUIDList, start, end).asDouble();
             values.add(new Entry(balance, i + offset));
             Log.d(TAG, accountType + earliest.toString(" MMM yyyy") + ", balance = " + balance);
-            earliest = earliest.plusMonths(1);
+
         }
 
         return values;
@@ -320,7 +348,7 @@ public class LineChartFragment extends Fragment implements OnChartValueSelectedL
     }
 
     @Override
-    public void onGroupingUpdated(ReportsActivity.GroupInterval groupInterval) {
+    public void onGroupingUpdated(GroupInterval groupInterval) {
         //TODO: update chart
     }
 
