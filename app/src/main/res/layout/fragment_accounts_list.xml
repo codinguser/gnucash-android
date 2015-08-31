@@ -16,23 +16,29 @@
 -->
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/fragment_account_list"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" >
+    android:orientation="vertical">
 
-    <include layout="@layout/account_balance_toolbar"
-        android:id="@+id/account_balance_toolbar"
-        android:visibility="gone" />
+    <!-- TODO: Added account_balance_toolbar.xml layout at some point in the future, if necessary-->
 
-    <android.support.v7.widget.RecyclerView
+    <org.gnucash.android.ui.util.EmptyRecyclerView
         android:id="@+id/account_recycler_view"
         android:scrollbars="vertical"
         android:paddingBottom="@dimen/card_min_height"
         android:clipToPadding="false"
-        android:layout_above="@id/account_balance_toolbar"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 
+    <TextView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/empty_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:textSize="20sp"
+        android:gravity="center"
+        android:layout_gravity="center"
+        android:visibility="gone"
+        android:textColor="@color/theme_accent"
+        android:text="@string/label_no_accounts" />
 </RelativeLayout>

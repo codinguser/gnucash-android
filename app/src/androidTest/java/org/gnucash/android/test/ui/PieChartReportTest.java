@@ -203,14 +203,14 @@ public class PieChartReportTest extends ActivityInstrumentationTestCase2<Reports
 
         getTestActivity();
 
-        onView(withId(R.id.chart_data_spinner)).perform(click());
+//        onView(withId(R.id.chart_data_spinner)).perform(click());
         onView(withText(containsString(AccountType.INCOME.name()))).perform(click());
 
         onView(withId(R.id.pie_chart)).perform(click());
         String selectedText = String.format(PieChartFragment.SELECTED_VALUE_PATTERN, GIFTS_RECEIVED_INCOME_ACCOUNT_NAME, TRANSACTION3_AMOUNT, 100f);
         onView(withId(R.id.selected_chart_slice)).check(matches(withText(selectedText)));
 
-        onView(withId(R.id.chart_data_spinner)).perform(click());
+//        onView(withId(R.id.chart_data_spinner)).perform(click());
         onView(withText(containsString(AccountType.EXPENSE.name()))).perform(click());
 
         onView(withId(R.id.pie_chart)).perform(click());

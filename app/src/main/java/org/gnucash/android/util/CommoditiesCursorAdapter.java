@@ -20,10 +20,13 @@ import android.content.Context;
 import android.database.Cursor;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.text.TextUtils;
+import android.view.ContextMenu;
 import android.view.View;
 import android.widget.TextView;
 
 import org.gnucash.android.db.DatabaseSchema;
+
+import java.util.Currency;
 
 /**
  * Cursor adapter for displaying list of commodities in a spinner
@@ -42,5 +45,10 @@ public class CommoditiesCursorAdapter extends SimpleCursorAdapter {
         super.bindView(view, context, cursor);
         TextView textView = (TextView) view.findViewById(android.R.id.text1);
         textView.setEllipsize(TextUtils.TruncateAt.MIDDLE);
+
+        String currencyName = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.CommodityEntry.COLUMN_FULLNAME));
+        String currencyCode = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.CommodityEntry.COLUMN_MNEMONIC));
+
+        textView.setText(currencyName + " - " + currencyCode);
     }
 }

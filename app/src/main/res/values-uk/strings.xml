@@ -488,6 +488,9 @@
     <string name="title_create_export_schedule">Створити розклад експорту </string>
     <string name="toast_exported_to">Експортовано в: %1$s</string>
     <string name="toast_legend_too_long">The legend is too long</string>
+    <string name="hint_account_description">Account description</string>
+    <string name="label_no_recent_accounts">No recent accounts</string>
+    <string name="label_no_favorite_accounts">No favorite accounts</string>
     <string-array name="report_time_range">
         <item>All time</item>
         <item>Current month</item>

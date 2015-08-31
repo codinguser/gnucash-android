@@ -75,7 +75,7 @@
                     style="?android:attr/quickContactBadgeStyleSmallWindowMedium"/>
 
             <Spinner android:id="@+id/input_account_type_spinner"
-                     android:layout_width="wrap_content"
+                     android:layout_width="0dp"
                      android:layout_height="wrap_content"
                      android:layout_weight="1"
                      android:layout_marginLeft="@dimen/dialog_padding"
@@ -94,8 +94,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/form_row_bottom_margin"
                 android:ems="15"
+                android:inputType="textCapSentences"
                 android:background="@android:color/transparent"
-                android:hint="Account description">
+                android:hint="@string/hint_account_description">
             </EditText>
         </android.support.design.widget.TextInputLayout>
 

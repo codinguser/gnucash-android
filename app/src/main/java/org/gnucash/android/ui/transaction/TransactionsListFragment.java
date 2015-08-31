@@ -49,6 +49,7 @@ import org.gnucash.android.model.Money;
 import org.gnucash.android.model.Split;
 import org.gnucash.android.ui.FormActivity;
 import org.gnucash.android.ui.UxArgument;
+import org.gnucash.android.ui.util.EmptyRecyclerView;
 import org.gnucash.android.ui.util.Refreshable;
 import org.gnucash.android.ui.widget.WidgetConfigurationActivity;
 import org.ocpsoft.prettytime.PrettyTime;
@@ -79,7 +80,7 @@ public class TransactionsListFragment extends Fragment implements
 
 
 	private TransactionRecyclerAdapter mTransactionRecyclerAdapter;
-	@Bind(R.id.transaction_recycler_view) RecyclerView mRecyclerView;
+	@Bind(R.id.transaction_recycler_view) EmptyRecyclerView mRecyclerView;
 
 
 	@Override
@@ -101,12 +102,13 @@ public class TransactionsListFragment extends Fragment implements
 		mRecyclerView.setHasFixedSize(true);
 		LinearLayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
 		mRecyclerView.setLayoutManager(mLayoutManager);
+		mRecyclerView.setEmptyView(view.findViewById(R.id.empty_view));
 
 		return view;
 	}
 
 	@Override
-	public void onActivityCreated(Bundle savedInstanceState) {		
+	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 		
 		ActionBar aBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
