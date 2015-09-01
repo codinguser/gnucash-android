@@ -157,11 +157,9 @@ public class BaseDrawerActivity extends AppCompatActivity {
                 startActivity(new Intent(this, ReportsActivity.class));
                 break;
 
-            case R.id.nav_item_scheduled_trn: { //show scheduled transactions
+            case R.id.nav_item_scheduled_actions: { //show scheduled transactions
                 Intent intent = new Intent(this, ScheduledActionsActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_SINGLE_TOP);
-                intent.putExtra(ScheduledActionsActivity.EXTRA_DISPLAY_MODE,
-                        ScheduledActionsActivity.DisplayMode.TRANSACTION_ACTIONS);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
                 startActivity(intent);
             }
                 break;
@@ -169,14 +167,6 @@ public class BaseDrawerActivity extends AppCompatActivity {
             case R.id.nav_item_export:{
                 AccountsActivity.openExportFragment(this);
             }
-                break;
-
-            case R.id.nav_item_scheduled_export: //scheduled backup
-                Intent intent = new Intent(this, ScheduledActionsActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_SINGLE_TOP);
-                intent.putExtra(ScheduledActionsActivity.EXTRA_DISPLAY_MODE,
-                        ScheduledActionsActivity.DisplayMode.EXPORT_ACTIONS);
-                startActivity(intent);
                 break;
 
             case R.id.nav_item_settings: //Settings activity

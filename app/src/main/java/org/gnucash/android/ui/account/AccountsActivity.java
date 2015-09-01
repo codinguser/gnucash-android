@@ -213,7 +213,7 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
         setContentView(R.layout.activity_accounts);
         setUpDrawer();
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_transaction_info);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         final Intent intent = getIntent();
@@ -409,18 +409,6 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
         Intent intent = new Intent(activity, FormActivity.class);
         intent.putExtra(UxArgument.FORM_TYPE, FormActivity.FormType.EXPORT_FORM.name());
         activity.startActivity(intent);
-        /*
-        FragmentManager manager = activity.getSupportFragmentManager();
-        FragmentTransaction ft = manager.beginTransaction();
-        Fragment prev = manager.findFragmentByTag(FRAGMENT_EXPORT_DIALOG);
-        if (prev != null) {
-            ft.remove(prev);
-        }
-        ft.addToBackStack(null);
-
-        // Create and show the dialog.
-        DialogFragment exportFragment = new ExportFormFragment();
-        exportFragment.show(ft, FRAGMENT_EXPORT_DIALOG);*/
     }
 
     @Override
@@ -439,26 +427,6 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
 		default:
 			return false;
 		}
-	}
-
-    /**
-     * Creates an intent which can be used start activity for creating new account
-     * @return Intent which can be used to start activity for creating new account
-     */
-    private Intent createNewAccountIntent(){
-        Intent addAccountIntent = new Intent(this, AccountsActivity.class);
-        addAccountIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        addAccountIntent.setAction(Intent.ACTION_INSERT_OR_EDIT);
-        return addAccountIntent;
-    }
-
-
-	/**
-	 * Opens a dialog fragment to create a new account
-	 * @param v View which triggered this callback
-	 */
-	public void onNewAccountClick(View v) {
-        startActivity(createNewAccountIntent());
 	}
 
 	/**

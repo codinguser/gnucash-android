@@ -44,7 +44,7 @@ public class TransactionInfoActivity extends AppCompatActivity{
     @Bind(R.id.trn_time_and_date) TextView mTimeAndDate;
     @Bind(R.id.trn_recurrence) TextView mRecurrence;
     @Bind(R.id.trn_notes) TextView mNotes;
-    @Bind(R.id.toolbar_transaction_info) Toolbar mToolBar;
+    @Bind(R.id.toolbar) Toolbar mToolBar;
     private String mTransactionUID;
     private String mAccountUID;
 

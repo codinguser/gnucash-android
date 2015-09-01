@@ -397,7 +397,7 @@
         a hierarchy of commonly-used accounts, or import your own GnuCash account structure. \n\nBoth options are also
         available in app Settings so you can decide later.
     </string>
-    <string name="title_scheduled_transactions">Scheduled Transactions</string>
+    <string name="title_scheduled_transactions">Sched. Transactions</string>
     <string name="title_select_export_destination">Select destination for export</string>
     <string name="hint_split_memo">Memo</string>
     <string name="label_spend">Spend</string>
@@ -475,10 +475,10 @@
     <string name="toast_install_file_manager">Install a file manager to select files</string>
     <string name="title_select_backup_to_restore">Select backup to restore</string>
     <string name="nav_menu_favorites">Favorites</string>
-    <string name="nav_menu_open">Open...</string>
+    <string name="nav_menu_open">Open…</string>
     <string name="nav_menu_reports">Reports</string>
     <string name="nav_menu_scheduled_transactions">Scheduled Transactions</string>
-    <string name="nav_menu_export">Export...</string>
+    <string name="nav_menu_export">Export…</string>
     <string name="nav_menu_settings">Settings</string>
     <plurals name="label_every_x_days">
         <item quantity="one">Daily</item>
@@ -504,7 +504,7 @@ No user-identifiable information will be collected as part of this process!</str
     <string name="label_old_passcode">Enter your old passcode</string>
     <string name="label_new_passcode">Enter your new passcode</string>
     <string name="nav_menu_scheduled_backups">Scheduled Exports</string>
-    <string name="title_scheduled_exports">Scheduled Exports</string>
+    <string name="title_scheduled_exports">Sched. Exports</string>
     <string name="label_no_scheduled_exports_to_display">No scheduled exports to display</string>
     <string name="title_create_export_schedule">Create export schedule</string>
     <string name="toast_exported_to">Exported to: %1$s</string>
@@ -512,6 +512,8 @@ No user-identifiable information will be collected as part of this process!</str
     <string name="hint_account_description">Account description</string>
     <string name="label_no_recent_accounts">No recent accounts</string>
     <string name="label_no_favorite_accounts">No favorite accounts</string>
+    <string name="nav_menu_scheduled_actions">Scheduled Actions</string>
+    <string name="label_scheduled_action_ended">"Ended, last executed on %1$s"</string>
     <string-array name="report_time_range">
         <item>All time</item>
         <item>Current month</item>

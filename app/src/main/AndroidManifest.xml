@@ -49,11 +49,10 @@
 
     <application android:name="org.gnucash.android.app.GnuCashApplication"
         android:icon="@drawable/ic_launcher"
-        android:label="@string/app_name" 
-        android:theme="@style/Theme.GnucashTheme">
+        android:label="@string/app_name"
+        android:theme="@style/Theme.GnucashTheme.NoActionBar">
         <activity
             android:name=".ui.account.AccountsActivity"
-            android:theme="@style/Theme.GnucashTheme.NoActionBar"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -83,11 +82,12 @@
             android:noHistory="true"
             android:windowSoftInputMode="stateAlwaysHidden">
         </activity>
-        <activity android:name=".ui.settings.SettingsActivity"/>
+        <activity android:name=".ui.settings.SettingsActivity"
+            android:theme="@style/Theme.GnucashTheme" />
         <activity android:name=".ui.transaction.ScheduledActionsActivity" />
-        <activity android:name=".ui.passcode.PasscodePreferenceActivity" />
+        <activity android:name=".ui.passcode.PasscodePreferenceActivity"
+            android:theme="@style/Theme.GnucashTheme" />
         <activity android:name=".ui.transaction.TransactionsActivity"
-            android:theme="@style/Theme.GnucashTheme.NoActionBar"
             android:configChanges="orientation|screenSize">
         </activity>
         <activity android:name=".ui.widget.WidgetConfigurationActivity"
@@ -99,13 +99,10 @@
 		    </intent-filter>
 		</activity>
         <activity android:name=".ui.FormActivity"
-            android:theme="@style/Theme.GnucashTheme.NoActionBar"
             android:configChanges="orientation|screenSize"/>
         <activity android:name=".ui.transaction.TransactionInfoActivity"
-            android:theme="@style/Theme.GnucashTheme.NoActionBar"
             android:configChanges="orientation|screenSize"/>
         <activity android:name=".ui.report.ReportsActivity"
-            android:theme="@style/Theme.GnucashTheme.NoActionBar"
             android:launchMode="singleTop"/>
         <activity android:name="com.dropbox.sync.android.DbxAuthActivity" />
         <activity
