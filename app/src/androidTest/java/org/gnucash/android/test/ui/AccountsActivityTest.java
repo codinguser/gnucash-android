@@ -30,6 +30,8 @@ import android.support.v4.app.Fragment;
 import android.test.ActivityInstrumentationTestCase2;
 import android.util.Log;
 
+import com.kobakei.ratethisapp.RateThisApp;
+
 import org.gnucash.android.R;
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.DatabaseHelper;
@@ -122,6 +124,8 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
      * @param context Application context
      */
     public static void preventFirstRunDialogs(Context context) {
+        RateThisApp.Config config = new RateThisApp.Config(10000, 10000);
+        RateThisApp.init(config);
         Editor editor = PreferenceManager.getDefaultSharedPreferences(context).edit();
 
         //do not show first run dialog

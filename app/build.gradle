@@ -131,11 +131,18 @@ def adb = android.getAdbExe().toString()
 
 afterEvaluate {
     task grantAnimationPermissionDevel(type: Exec, dependsOn: 'installDevelopmentDebug') { // or install{productFlavour}{buildType}
-        commandLine "$adb shell pm grant $android.productFlavors.development.applicationId android.permission.SET_ANIMATION_SCALE".split(' ')
+        commandLine "$adb", 'devices'
+        standardOutput = new ByteArrayOutputStream()
+
+        String output = standardOutput.toString()
+        output.eachLine {
+            def serial = it.split("\\s")[0]
+            commandLine "$adb -s $serial shell pm grant $android.productFlavors.development.applicationId android.permission.SET_ANIMATION_SCALE".split(' ')
+        }
     }
 
     task grantAnimationPermissionProduction(type: Exec, dependsOn: 'installProductionDebug'){
-        commandLine "$adb shell pm grant $android.defaultConfig.applicationId android.permission.SET_ANIMATION_SCALE".split(' ')
+        commandLine "$adb -e shell pm grant $android.defaultConfig.applicationId android.permission.SET_ANIMATION_SCALE".split(' ')
     }
     // When launching individual tests from Android Studio, it seems that only the assemble tasks
     // get called directly, not the install* versions

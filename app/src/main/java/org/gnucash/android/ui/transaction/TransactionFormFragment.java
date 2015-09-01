@@ -687,26 +687,6 @@ public class TransactionFormFragment extends Fragment implements
 		}
 	}
 
-    /**
-     * Callback when the account in the navigation bar is changed by the user
-     * @param newAccountUID GUID of the newly selected account
-     */
-    public void onAccountChanged(String newAccountUID) {
-        if (mMultiCurrency) {
-            Toast.makeText(getActivity(), R.string.toast_error_edit_multi_currency_transaction, Toast.LENGTH_LONG).show();
-            return;
-        }
-        AccountsDbAdapter accountsDbAdapter = AccountsDbAdapter.getInstance();
-        String currencyCode = accountsDbAdapter.getCurrencyCode(newAccountUID);
-        Currency currency = Currency.getInstance(currencyCode);
-        mCurrencyTextView.setText(currency.getSymbol(Locale.getDefault()));
-
-        mAccountType = accountsDbAdapter.getAccountType(newAccountUID);
-        mTransactionTypeButton.setAccountType(mAccountType);
-        mAccountUID = newAccountUID;
-        updateTransferAccountsList();
-    }
-
 	/**
 	 * Collects information from the fragment views and uses it to create
 	 * and save a transaction
