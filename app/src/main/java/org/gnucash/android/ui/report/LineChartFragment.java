@@ -182,8 +182,11 @@ public class LineChartFragment extends Fragment implements OnChartValueSelectedL
             startDate = new LocalDate(mReportStartTime).withDayOfMonth(1);
             endDate = new LocalDate(mReportEndTime).withDayOfMonth(1);
         }
+
+        int count = getDateDiff(new LocalDateTime(startDate.toDate().getTime()), new LocalDateTime(endDate.toDate().getTime()));
+        Log.w(TAG, "Diff " + count);
         List<String> xValues = new ArrayList<>();
-        while (!startDate.isAfter(endDate)) {
+        for (int i = 0; i <= count; i++) {
             switch (mGroupInterval) {
                 case MONTH:
                     xValues.add(startDate.toString(X_AXIS_PATTERN));
@@ -222,6 +225,25 @@ public class LineChartFragment extends Fragment implements OnChartValueSelectedL
             return getEmptyData();
         }
         return lineData;
+    }
+
+    /**
+     * Calculates difference between two date values accordingly to {@code mGroupInterval}
+     * @param start start date
+     * @param end end date
+     * @return difference between two dates or {@code -1}
+     */
+    private int getDateDiff(LocalDateTime start, LocalDateTime end) {
+        switch (mGroupInterval) {
+            case QUARTER:
+                return getQuarter(start) - getQuarter(end);
+            case MONTH:
+                return Months.monthsBetween(start.withDayOfMonth(1).withMillisOfDay(0), end.withDayOfMonth(1).withMillisOfDay(0)).getMonths();
+            case YEAR:
+                return Years.yearsBetween(start.withDayOfYear(1).withMillisOfDay(0), end.withDayOfYear(1).withMillisOfDay(0)).getYears();
+            default:
+                return -1;
+        }
     }
 
     private int getQuarter(LocalDateTime date) {
@@ -275,26 +297,10 @@ public class LineChartFragment extends Fragment implements OnChartValueSelectedL
         Log.d(TAG, "Earliest " + accountType + " date " + earliest.toString("dd MM yyyy"));
         Log.d(TAG, "Latest " + accountType + " date " + latest.toString("dd MM yyyy"));
 
-        int count = 0;
-        switch (mGroupInterval) {
-            case MONTH:
-                count = Months.monthsBetween(earliest.withDayOfMonth(1).withMillisOfDay(0),
-                        latest.withDayOfMonth(1).withMillisOfDay(0)).getMonths();
-                break;
-            case QUARTER:
-                count = getQuarter(latest) - getQuarter(earliest);
-                Log.w(TAG, "count Q " + count);
-                break;
-            case YEAR:
-                count = Years.yearsBetween(earliest.dayOfYear().withMinimumValue().millisOfDay().withMinimumValue(),
-                        latest.dayOfYear().withMaximumValue().millisOfDay().withMaximumValue()).getYears();
-                break;
-//                default:
-        }
-
         int offset = getXAxisOffset(accountType);
+        int count = getDateDiff(earliest, latest);
         List<Entry> values = new ArrayList<>(count + 1);
-        for (int i = 0; i < count + 1; i++) {
+        for (int i = 0; i <= count; i++) {
             long start = 0;
             long end = 0;
             switch (mGroupInterval) {
