@@ -271,6 +271,8 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
     @Override
     protected void onStart() {
         super.onStart();
+        RateThisApp.Config config = new RateThisApp.Config(14, 30);
+        RateThisApp.init(config);
         RateThisApp.onStart(this);
         RateThisApp.showRateDialogIfNeeded(this);
     }

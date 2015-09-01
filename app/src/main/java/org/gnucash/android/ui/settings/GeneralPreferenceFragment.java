@@ -37,11 +37,11 @@ import org.gnucash.android.ui.passcode.PasscodeLockScreenActivity;
 import org.gnucash.android.ui.passcode.PasscodePreferenceActivity;
 
 /**
- * Fragment for configuring passcode to the application
+ * Fragment for general preferences. Currently caters to the passcode and reporting preferences
  * @author Oleksandr Tyshkovets <olexandr.tyshkovets@gmail.com>
  */
 @TargetApi(11)
-public class PasscodePreferenceFragment extends PreferenceFragment {
+public class GeneralPreferenceFragment extends PreferenceFragment implements OnPreferenceChangeListener{
 
     /**
      * Request code for retrieving passcode to store
@@ -62,12 +62,12 @@ public class PasscodePreferenceFragment extends PreferenceFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        addPreferencesFromResource(R.xml.fragment_passcode_preferences);
+        addPreferencesFromResource(R.xml.fragment_general_preferences);
 
         ActionBar actionBar = ((AppCompatPreferenceActivity) getActivity()).getSupportActionBar();
         actionBar.setHomeButtonEnabled(true);
         actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setTitle(R.string.title_passcode_preferences);
+        actionBar.setTitle(R.string.title_general_prefs);
     }
 
     @Override
@@ -102,6 +102,17 @@ public class PasscodePreferenceFragment extends PreferenceFragment {
                         return true;
                     }
                 });
+    }
+
+    @Override
+    public boolean onPreferenceChange(Preference preference, Object newValue) {
+        if (preference.getKey().equals(getString(R.string.key_use_account_color))) {
+            PreferenceManager.getDefaultSharedPreferences(getActivity())
+                    .edit()
+                    .putBoolean(getString(R.string.key_use_account_color), Boolean.valueOf(newValue.toString()))
+                    .commit();
+        }
+        return true;
     }
 
     @Override

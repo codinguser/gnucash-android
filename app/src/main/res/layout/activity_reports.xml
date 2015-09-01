@@ -40,31 +40,32 @@
                 android:layout_height="?attr/actionBarSize"
                 app:layout_scrollFlags="enterAlways"
                 android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-                app:popupTheme="@style/ThemeOverlay.AppCompat.Light" >
-
-                <Spinner
-                    android:id="@+id/report_account_type_spinner"
-                    android:layout_gravity="right"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
-                </android.support.v7.widget.Toolbar>
+                app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
             <LinearLayout android:id="@+id/time_range_layout"
                 android:padding="@dimen/dialog_padding"
+                android:weightSum="4"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
                 <TextView
                     android:layout_width="0dp"
-                    android:layout_weight="1"
+                    android:layout_weight="0.8"
                     android:gravity="center_vertical"
                     android:textSize="14sp"
                     android:layout_height="wrap_content"
-                    android:text="Time Range:"/>
+                    android:text="Period:"/>
 
                 <Spinner android:id="@+id/time_range_spinner"
-                    android:layout_weight="2"
+                    android:layout_weight="1.8"
                     android:layout_width="0dp"
+                    android:layout_height="wrap_content" />
+
+                <Spinner
+                    android:id="@+id/report_account_type_spinner"
+                    android:layout_gravity="right"
+                    android:layout_width="0dp"
+                    android:layout_weight="1.4"
+                    android:layout_marginLeft="5dp"
                     android:layout_height="wrap_content" />
             </LinearLayout>
             <View android:id="@+id/date_range_divider"
@@ -72,7 +73,6 @@
                 android:layout_height="1dp"
                 android:layout_marginTop="5dp"
                 android:background="@android:color/darker_gray" />
-
 
 
             <FrameLayout android:id="@+id/fragment_container"

@@ -109,7 +109,7 @@ public class ReportsActivity extends PassLockActivity implements AdapterView.OnI
         mTimeRangeSpinner.setAdapter(adapter);
         mTimeRangeSpinner.setOnItemSelectedListener(this);
 
-        ArrayAdapter<AccountType> dataAdapter = new ArrayAdapter<>(actionBar.getThemedContext(),
+        ArrayAdapter<AccountType> dataAdapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_spinner_item,
                 Arrays.asList(AccountType.EXPENSE, AccountType.INCOME));
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);

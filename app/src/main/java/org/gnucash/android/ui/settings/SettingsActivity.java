@@ -161,11 +161,9 @@ public class SettingsActivity extends AppCompatPreferenceActivity
 		actionBar.setDisplayHomeAsUpEnabled(true);
 		
 		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB){
+            addPreferencesFromResource(R.xml.fragment_general_preferences);
             addPreferencesFromResource(R.xml.fragment_account_preferences);
 			addPreferencesFromResource(R.xml.fragment_transaction_preferences);
-            addPreferencesFromResource(R.xml.fragment_backup_preferences);
-            addPreferencesFromResource(R.xml.fragment_passcode_preferences);
-            addPreferencesFromResource(R.xml.fragment_report_preferences);
 			addPreferencesFromResource(R.xml.fragment_about_preferences);
 			setDefaultCurrencyListener();
 
@@ -256,11 +254,11 @@ public class SettingsActivity extends AppCompatPreferenceActivity
 		} else if (preference.getKey().equals(getString(R.string.key_enable_passcode))) {
             if ((Boolean) newValue) {
                 startActivityForResult(new Intent(this, PasscodePreferenceActivity.class),
-                        PasscodePreferenceFragment.PASSCODE_REQUEST_CODE);
+                        GeneralPreferenceFragment.PASSCODE_REQUEST_CODE);
             } else {
                 Intent passIntent = new Intent(this, PasscodeLockScreenActivity.class);
                 passIntent.putExtra(UxArgument.DISABLE_PASSCODE, UxArgument.DISABLE_PASSCODE);
-                startActivityForResult(passIntent, PasscodePreferenceFragment.REQUEST_DISABLE_PASSCODE);
+                startActivityForResult(passIntent, GeneralPreferenceFragment.REQUEST_DISABLE_PASSCODE);
             }
         } else if (preference.getKey().equals(getString(R.string.key_use_double_entry))){
             setImbalanceAccountsHidden((Boolean) newValue);
@@ -273,10 +271,9 @@ public class SettingsActivity extends AppCompatPreferenceActivity
     protected boolean isValidFragment(String fragmentName) {
         return BackupPreferenceFragment.class.getName().equals(fragmentName)
                 || AccountPreferencesFragment.class.getName().equals(fragmentName)
-                || PasscodePreferenceFragment.class.getName().equals(fragmentName)
+                || GeneralPreferenceFragment.class.getName().equals(fragmentName)
                 || TransactionsPreferenceFragment.class.getName().equals(fragmentName)
-                || AboutPreferenceFragment.class.getName().equals(fragmentName)
-                || ReportPreferenceFragment.class.getName().equals(fragmentName);
+                || AboutPreferenceFragment.class.getName().equals(fragmentName);
     }
 
     public void setImbalanceAccountsHidden(boolean useDoubleEntry) {
@@ -378,7 +375,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity
 
         if (key.equals(getString(R.string.key_change_passcode))){
             startActivityForResult(new Intent(this, PasscodePreferenceActivity.class),
-                    PasscodePreferenceFragment.REQUEST_CHANGE_PASSCODE);
+                    GeneralPreferenceFragment.REQUEST_CHANGE_PASSCODE);
             return true;
         }
 
@@ -587,7 +584,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity
                     }
                 }
                 break;
-            case PasscodePreferenceFragment.PASSCODE_REQUEST_CODE:
+            case GeneralPreferenceFragment.PASSCODE_REQUEST_CODE:
                 if (resultCode == Activity.RESULT_OK && data != null) {
                     PreferenceManager.getDefaultSharedPreferences(getApplicationContext())
                             .edit()
@@ -610,7 +607,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity
                 }
                 break;
 
-            case PasscodePreferenceFragment.REQUEST_DISABLE_PASSCODE:
+            case GeneralPreferenceFragment.REQUEST_DISABLE_PASSCODE:
                 boolean flag = resultCode != Activity.RESULT_OK;
                 PreferenceManager.getDefaultSharedPreferences(getApplicationContext())
                         .edit()
@@ -619,7 +616,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity
                 ((CheckBoxPreference) findPreference(getString(R.string.key_enable_passcode))).setChecked(flag);
                 break;
 
-            case PasscodePreferenceFragment.REQUEST_CHANGE_PASSCODE:
+            case GeneralPreferenceFragment.REQUEST_CHANGE_PASSCODE:
                 if (resultCode == Activity.RESULT_OK && data != null) {
                     PreferenceManager.getDefaultSharedPreferences(getApplicationContext())
                             .edit()
