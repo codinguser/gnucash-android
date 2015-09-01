@@ -29,7 +29,7 @@
             android:layout_height="128dp"
             android:minHeight="?attr/actionBarSize"
             android:gravity="bottom"
-            app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light" >
             <TextView android:id="@+id/trn_description"
                 android:layout_width="match_parent"

@@ -17,6 +17,7 @@
 package org.gnucash.android.ui.util;
 
 import android.content.Context;
+import android.os.Build;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -49,8 +50,10 @@ public class ScrollingFABBehavior extends CoordinatorLayout.Behavior<FloatingAct
             CoordinatorLayout.LayoutParams lp = (CoordinatorLayout.LayoutParams) fab.getLayoutParams();
             int fabBottomMargin = lp.bottomMargin;
             int distanceToScroll = fab.getHeight() + fabBottomMargin;
-            float ratio = (float)dependency.getY()/(float)toolbarHeight;
-            fab.setTranslationY(-distanceToScroll * ratio);
+            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.GINGERBREAD_MR1) {
+                float ratio = (float) dependency.getY() / (float) toolbarHeight;
+                fab.setTranslationY(-distanceToScroll * ratio);
+            }
         }
         return true;
     }
