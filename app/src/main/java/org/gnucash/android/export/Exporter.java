@@ -20,6 +20,7 @@ package org.gnucash.android.export;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Environment;
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
@@ -190,6 +191,10 @@ public abstract class Exporter {
 
         public ExporterException(ExportParams params){
             super("Failed to generate " + params.getExportFormat().toString());
+        }
+
+        public ExporterException(@NonNull ExportParams params, @NonNull String msg) {
+            super("Failed to generate " + params.getExportFormat().toString() + "-" + msg);
         }
 
         public ExporterException(ExportParams params, Throwable throwable){
