@@ -184,14 +184,24 @@ public class LineChartFragment extends Fragment implements OnChartValueSelectedL
         }
         List<String> xValues = new ArrayList<>();
         while (!startDate.isAfter(endDate)) {
-            if (mGroupInterval == GroupInterval.YEAR) {
-                xValues.add(startDate.toString(X_AXIS_PATTERN));
-                Log.w(TAG, "X axis " + startDate.toString("yy"));
-                startDate = startDate.plusYears(1);
-            } else {
-                xValues.add(startDate.toString(X_AXIS_PATTERN));
-                Log.d(TAG, "X axis " + startDate.toString("MM yy"));
-                startDate = startDate.plusMonths(1);
+            switch (mGroupInterval) {
+                case MONTH:
+                    xValues.add(startDate.toString(X_AXIS_PATTERN));
+                    Log.w(TAG, "X axis " + startDate.toString("MM yy"));
+                    startDate = startDate.plusMonths(1);
+                    break;
+                case QUARTER:
+                    int quarter = getQuarter(new LocalDateTime(startDate.toDate().getTime()));
+                    xValues.add("Q" + quarter + startDate.toString(" yy"));
+                    Log.w(TAG, "X axis " + "Q" + quarter + startDate.toString(" MM yy"));
+                    startDate = startDate.plusMonths(3);
+                    break;
+                case YEAR:
+                    xValues.add(startDate.toString(X_AXIS_PATTERN));
+                    Log.w(TAG, "X axis " + startDate.toString("yy"));
+                    startDate = startDate.plusYears(1);
+                    break;
+//                default:
             }
         }
 
@@ -212,6 +222,10 @@ public class LineChartFragment extends Fragment implements OnChartValueSelectedL
             return getEmptyData();
         }
         return lineData;
+    }
+
+    private int getQuarter(LocalDateTime date) {
+        return date.getMonthOfYear() / 3 + 1;
     }
 
     /**
@@ -262,29 +276,47 @@ public class LineChartFragment extends Fragment implements OnChartValueSelectedL
         Log.d(TAG, "Latest " + accountType + " date " + latest.toString("dd MM yyyy"));
 
         int count = 0;
-        if (mGroupInterval == GroupInterval.YEAR) {
-            count = Years.yearsBetween(earliest.dayOfYear().withMinimumValue().millisOfDay().withMinimumValue(),
-                    latest.dayOfYear().withMaximumValue().millisOfDay().withMaximumValue()).getYears();
-        } else {
-            count = Months.monthsBetween(earliest.withDayOfMonth(1).withMillisOfDay(0),
-                    latest.withDayOfMonth(1).withMillisOfDay(0)).getMonths();
+        switch (mGroupInterval) {
+            case MONTH:
+                count = Months.monthsBetween(earliest.withDayOfMonth(1).withMillisOfDay(0),
+                        latest.withDayOfMonth(1).withMillisOfDay(0)).getMonths();
+                break;
+            case QUARTER:
+                count = getQuarter(latest) - getQuarter(earliest);
+                Log.w(TAG, "count Q " + count);
+                break;
+            case YEAR:
+                count = Years.yearsBetween(earliest.dayOfYear().withMinimumValue().millisOfDay().withMinimumValue(),
+                        latest.dayOfYear().withMaximumValue().millisOfDay().withMaximumValue()).getYears();
+                break;
+//                default:
         }
 
         int offset = getXAxisOffset(accountType);
         List<Entry> values = new ArrayList<>(count + 1);
         for (int i = 0; i < count + 1; i++) {
-            long start;
-            long end;
-            if (mGroupInterval == GroupInterval.YEAR) {
-                start = earliest.dayOfYear().withMinimumValue().millisOfDay().withMinimumValue().toDate().getTime();
-                end = earliest.dayOfYear().withMaximumValue().millisOfDay().withMaximumValue().toDate().getTime();
+            long start = 0;
+            long end = 0;
+            switch (mGroupInterval) {
+                case QUARTER:
+                    int quarter = getQuarter(earliest);
+                    start = earliest.withMonthOfYear(quarter * 3 - 2).dayOfMonth().withMinimumValue().millisOfDay().withMinimumValue().toDate().getTime();
+                    end = earliest.withMonthOfYear(quarter * 3).dayOfMonth().withMaximumValue().millisOfDay().withMaximumValue().toDate().getTime();
 
-                earliest = earliest.plusYears(1);
-            } else {
-                start = earliest.dayOfMonth().withMinimumValue().millisOfDay().withMinimumValue().toDate().getTime();
-                end = earliest.dayOfMonth().withMaximumValue().millisOfDay().withMaximumValue().toDate().getTime();
+                    earliest = earliest.plusMonths(3);
+                    break;
+                case MONTH:
+                    start = earliest.dayOfMonth().withMinimumValue().millisOfDay().withMinimumValue().toDate().getTime();
+                    end = earliest.dayOfMonth().withMaximumValue().millisOfDay().withMaximumValue().toDate().getTime();
 
-                earliest = earliest.plusMonths(1);
+                    earliest = earliest.plusMonths(1);
+                    break;
+                case YEAR:
+                    start = earliest.dayOfYear().withMinimumValue().millisOfDay().withMinimumValue().toDate().getTime();
+                    end = earliest.dayOfYear().withMaximumValue().millisOfDay().withMaximumValue().toDate().getTime();
+
+                    earliest = earliest.plusYears(1);
+                    break;
             }
             float balance = (float) mAccountsDbAdapter.getAccountsBalance(accountUIDList, start, end).asDouble();
             values.add(new Entry(balance, i + offset));
@@ -349,7 +381,11 @@ public class LineChartFragment extends Fragment implements OnChartValueSelectedL
 
     @Override
     public void onGroupingUpdated(GroupInterval groupInterval) {
-        //TODO: update chart
+        mGroupInterval = groupInterval;
+        Log.w(TAG, "GroupInterval = " + groupInterval);
+
+        mChart.setData(getData(new ArrayList<>(Arrays.asList(AccountType.INCOME, AccountType.EXPENSE))));
+        mChart.invalidate();
     }
 
     @Override
