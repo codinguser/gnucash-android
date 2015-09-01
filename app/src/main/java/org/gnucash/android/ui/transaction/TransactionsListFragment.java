@@ -18,6 +18,7 @@ package org.gnucash.android.ui.transaction;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -25,6 +26,7 @@ import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.Loader;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
@@ -100,8 +102,13 @@ public class TransactionsListFragment extends Fragment implements
 		ButterKnife.bind(this, view);
 
 		mRecyclerView.setHasFixedSize(true);
-		LinearLayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
-		mRecyclerView.setLayoutManager(mLayoutManager);
+		if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+			GridLayoutManager gridLayoutManager = new GridLayoutManager(getActivity(), 2);
+			mRecyclerView.setLayoutManager(gridLayoutManager);
+		} else {
+			LinearLayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
+			mRecyclerView.setLayoutManager(mLayoutManager);
+		}
 		mRecyclerView.setEmptyView(view.findViewById(R.id.empty_view));
 
 		return view;
