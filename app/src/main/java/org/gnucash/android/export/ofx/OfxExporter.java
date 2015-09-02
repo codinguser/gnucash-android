@@ -23,6 +23,7 @@ import android.util.Log;
 import com.crashlytics.android.Crashlytics;
 
 import org.gnucash.android.R;
+import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.export.ExportParams;
 import org.gnucash.android.export.Exporter;
@@ -90,7 +91,12 @@ public class OfxExporter extends Exporter{
 		for (Account account : mAccountsList) {		
 			if (account.getTransactionCount() == 0)
 				continue; 
-			
+
+            //do not export imbalance accounts for OFX transactions and double-entry disabled
+            if (!GnuCashApplication.isDoubleEntryEnabled() && account.getName().contains(mContext.getString(R.string.imbalance_account_name)))
+                continue;
+
+
 			//add account details (transactions) to the XML document			
 			account.toOfx(doc, statementTransactionResponse, mParameters.shouldExportAllTransactions());
 			

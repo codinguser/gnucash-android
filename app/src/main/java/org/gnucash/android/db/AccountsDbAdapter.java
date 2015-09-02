@@ -456,24 +456,6 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
     }
 
     /**
-	 * Returns the name of the account with id <code>accountID</code>
-	 * @param accountID Database ID of the account record
-	 * @return Name of the account 
-	 */
-    public String getName(long accountID) {
-		Cursor c = fetchRecord(accountID);
-        try {
-            if (c.moveToFirst()) {
-                return c.getString(c.getColumnIndexOrThrow(AccountEntry.COLUMN_NAME));
-            } else {
-                throw new IllegalArgumentException("account " + accountID + " does not exist");
-            }
-        } finally {
-            c.close();
-        }
-	}
-
-    /**
      * Returns a list of all account entries in the system (includes root account)
      * No transactions are loaded, just the accounts
      * @return List of {@link Account}s in the database
@@ -983,19 +965,7 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
      * @see #getFullyQualifiedAccountName(String)
      */
     public String getAccountName(String accountUID){
-        Cursor cursor = mDb.query(AccountEntry.TABLE_NAME,
-                new String[]{AccountEntry.COLUMN_NAME},
-                AccountEntry.COLUMN_UID + " = ?",
-                new String[]{accountUID}, null, null, null);
-        try {
-            if (cursor.moveToNext()) {
-                return cursor.getString(cursor.getColumnIndexOrThrow(AccountEntry.COLUMN_NAME));
-            } else {
-                throw new IllegalArgumentException("Failed to retrieve account name for account: " + accountUID);
-            }
-        } finally {
-            cursor.close();
-        }
+        return getAttribute(accountUID, AccountEntry.COLUMN_NAME);
     }
 
     /**
@@ -1062,15 +1032,6 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
         throw new IllegalArgumentException("account UID: " + accountUID + " does not exist");
     }
 
-    /**
-     * Overloaded convenience method.
-     * Simply resolves the account UID and calls {@link #getFullyQualifiedAccountName(String)}
-     * @param accountId Database record ID of account
-     * @return Fully qualified (with parent hierarchy) account name
-     */
-    public String getFullyQualifiedAccountName(long accountId){
-        return getFullyQualifiedAccountName(getUID(accountId));
-    }
 
     /**
      * Returns <code>true</code> if the account with unique ID <code>accountUID</code> is a placeholder account.
@@ -1122,7 +1083,7 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
                     continue;
 
                 Transaction transaction = new Transaction(GnuCashApplication.getAppContext().getString(R.string.account_name_opening_balances));
-                transaction.setNote(getName(id));
+                transaction.setNote(getAccountName(accountUID));
                 transaction.setCurrencyCode(currencyCode);
                 TransactionType transactionType = Transaction.getTypeForBalance(getAccountType(accountUID),
                         balance.isNegative());

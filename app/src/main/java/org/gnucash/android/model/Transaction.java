@@ -219,7 +219,7 @@ public class Transaction extends BaseModel{
      * @return List of {@link org.gnucash.android.model.Split}s
      */
     public List<Split> getSplits(String accountUID){
-        List<Split> splits = new ArrayList<Split>();
+        List<Split> splits = new ArrayList<>();
         for (Split split : mSplitList) {
             if (split.getAccountUID().equals(accountUID)){
                 splits.add(split);

@@ -8,8 +8,12 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
 
 import org.gnucash.android.R;
@@ -21,6 +25,7 @@ import org.gnucash.android.model.Money;
 import org.gnucash.android.model.ScheduledAction;
 import org.gnucash.android.model.Split;
 import org.gnucash.android.model.Transaction;
+import org.gnucash.android.model.TransactionType;
 import org.gnucash.android.ui.FormActivity;
 import org.gnucash.android.ui.UxArgument;
 
@@ -45,6 +50,17 @@ public class TransactionDetailActivity extends AppCompatActivity{
     @Bind(R.id.trn_recurrence) TextView mRecurrence;
     @Bind(R.id.trn_notes) TextView mNotes;
     @Bind(R.id.toolbar) Toolbar mToolBar;
+    @Bind(R.id.transaction_account) TextView mTransactionAccount;
+
+    @Bind(R.id.fragment_transaction_details)
+    TableLayout mDetailTableLayout;
+
+    @Bind(R.id.row_amount)
+    TableRow mRowSplitAmount;
+
+    @Bind(R.id.row_transfer_account)
+    TableRow mRowTransferAccount;
+
     private String mTransactionUID;
     private String mAccountUID;
 
@@ -74,7 +90,6 @@ public class TransactionDetailActivity extends AppCompatActivity{
         actionBar.setHomeAsUpIndicator(R.drawable.ic_close_white_24dp);
         actionBar.setDisplayShowTitleEnabled(false);
 
-
         bindViews();
 
         int themeColor = AccountsDbAdapter.getActiveAccountColorResource(mAccountUID);
@@ -83,6 +98,24 @@ public class TransactionDetailActivity extends AppCompatActivity{
         if (Build.VERSION.SDK_INT > 20)
             getWindow().setStatusBarColor(GnuCashApplication.darken(themeColor));
 
+    }
+
+    class SplitAmountViewHolder {
+        @Bind(R.id.split_account_name) TextView accountName;
+        @Bind(R.id.split_debit) TextView splitDebit;
+        @Bind(R.id.split_credit) TextView splitCredit;
+
+        View itemView;
+
+        public SplitAmountViewHolder(View view, Split split){
+            itemView = view;
+            ButterKnife.bind(this, view);
+
+            AccountsDbAdapter accountsDbAdapter = AccountsDbAdapter.getInstance();
+            accountName.setText(accountsDbAdapter.getAccountName(split.getAccountUID()));
+            TextView balanceView = split.getType() == TransactionType.DEBIT ? splitDebit : splitCredit;
+            TransactionsActivity.displayBalance(balanceView, split.getQuantity());
+        }
     }
 
     /**
@@ -94,9 +127,8 @@ public class TransactionDetailActivity extends AppCompatActivity{
 
         mTransactionDescription.setText(transaction.getDescription());
         Money balance = transaction.getBalance(mAccountUID);
-        mTransactionAmount.setText(balance.formattedString());
-        int color = balance.isNegative() ? R.color.debit_red : R.color.credit_green;
-        mTransactionAmount.setTextColor(getResources().getColor(color));
+        TransactionsActivity.displayBalance(mTransactionAmount, balance);
+        mTransactionAccount.setText("in " + AccountsDbAdapter.getInstance().getAccountFullName(mAccountUID));
 
         if (!GnuCashApplication.isDoubleEntryEnabled()){
             findViewById(R.id.row_transfer_account).setVisibility(View.GONE);
@@ -114,7 +146,25 @@ public class TransactionDetailActivity extends AppCompatActivity{
                     }
                 }
             } else {
-                mTransferAccount.setText(transaction.getSplits().size() + " splits");
+                mRowSplitAmount.setVisibility(View.GONE);
+                mRowTransferAccount.setVisibility(View.GONE);
+                LayoutInflater inflater = LayoutInflater.from(this);
+                int index = 0;
+                for (Split split : transaction.getSplits()) {
+                    View view = inflater.inflate(R.layout.item_split_amount_info, mDetailTableLayout, false);
+                    SplitAmountViewHolder viewHolder = new SplitAmountViewHolder(view, split);
+                    mDetailTableLayout.addView(view, index++);
+                }
+
+                View view = inflater.inflate(R.layout.item_split_amount_info, mDetailTableLayout, false);
+                Money accountBalance = AccountsDbAdapter.getInstance().getAccountBalance(mAccountUID, -1, transaction.getTimeMillis());
+                Split split = new Split(accountBalance, mAccountUID);
+                new SplitAmountViewHolder(view, split);
+                TextView runningBalanceLabel = (TextView) view.findViewById(R.id.split_account_name);
+                runningBalanceLabel.setText("Running balance");
+                runningBalanceLabel.setTextSize(16);
+                runningBalanceLabel.setGravity(Gravity.RIGHT);
+                mDetailTableLayout.addView(view, index);
             }
         }
 

@@ -87,9 +87,7 @@
         <activity android:name=".ui.transaction.ScheduledActionsActivity" />
         <activity android:name=".ui.passcode.PasscodePreferenceActivity"
             android:theme="@style/Theme.GnucashTheme" />
-        <activity android:name=".ui.transaction.TransactionsActivity"
-            android:configChanges="orientation|screenSize">
-        </activity>
+        <activity android:name=".ui.transaction.TransactionsActivity" />
         <activity android:name=".ui.widget.WidgetConfigurationActivity"
             android:label="@string/label_widget_configuration"
             android:theme="@style/Dialog.WidgetConfiguration"
