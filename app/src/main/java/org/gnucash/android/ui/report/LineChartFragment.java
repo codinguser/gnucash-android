@@ -306,7 +306,7 @@ public class LineChartFragment extends Fragment implements OnChartValueSelectedL
         Log.d(TAG, "Earliest " + accountType + " date " + earliest.toString("dd MM yyyy"));
         Log.d(TAG, "Latest " + accountType + " date " + latest.toString("dd MM yyyy"));
 
-        int offset = getXAxisOffset(accountType);
+        int xAxisOffset = getDateDiff(new LocalDateTime(mEarliestTransactionTimestamp), new LocalDateTime(mEarliestTimestampsMap.get(accountType)));
         int count = getDateDiff(earliest, latest);
         List<Entry> values = new ArrayList<>(count + 1);
         for (int i = 0; i <= count; i++) {
@@ -334,7 +334,7 @@ public class LineChartFragment extends Fragment implements OnChartValueSelectedL
                     break;
             }
             float balance = (float) mAccountsDbAdapter.getAccountsBalance(accountUIDList, start, end).asDouble();
-            values.add(new Entry(balance, i + offset));
+            values.add(new Entry(balance, i + xAxisOffset));
             Log.d(TAG, accountType + earliest.toString(" MMM yyyy") + ", balance = " + balance);
 
         }
@@ -370,21 +370,7 @@ public class LineChartFragment extends Fragment implements OnChartValueSelectedL
         mEarliestTransactionTimestamp = timestamps.get(0);
         mLatestTransactionTimestamp = timestamps.get(timestamps.size() - 1);
     }
-
-    /**
-     * Returns a difference in months between the global earliest timestamp and the earliest
-     * transaction's timestamp of the specified account type
-     * @param accountType the account type
-     * @return the difference in months
-     */
-    private int getXAxisOffset(AccountType accountType) {
-        return Months.monthsBetween(
-                new LocalDate(mEarliestTransactionTimestamp).withDayOfMonth(1),
-                new LocalDate(mEarliestTimestampsMap.get(accountType)).withDayOfMonth(1)
-        ).getMonths();
-    }
-
-
+    
     @Override
     public void onTimeRangeUpdated(long start, long end) {
         mReportStartTime = start;
