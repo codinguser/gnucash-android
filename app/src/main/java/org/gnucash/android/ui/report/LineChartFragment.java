@@ -172,7 +172,7 @@ public class LineChartFragment extends Fragment implements OnChartValueSelectedL
      */
     private LineData getData(List<AccountType> accountTypeList) {
         calculateEarliestAndLatestTimestamps(accountTypeList);
-
+        // LocalDateTime?
         LocalDate startDate;
         LocalDate endDate;
         if (mReportStartTime == -1 && mReportEndTime == -1) {
@@ -236,7 +236,11 @@ public class LineChartFragment extends Fragment implements OnChartValueSelectedL
     private int getDateDiff(LocalDateTime start, LocalDateTime end) {
         switch (mGroupInterval) {
             case QUARTER:
-                return getQuarter(start) - getQuarter(end);
+                int y = Years.yearsBetween(start.withDayOfYear(1).withMillisOfDay(0), end.withDayOfYear(1).withMillisOfDay(0)).getYears();
+                Log.w(TAG, "year = " + y);
+                Log.w(TAG, "start q = " + getQuarter(start));
+                Log.w(TAG, "end q = " + getQuarter(end));
+                return (getQuarter(end) - getQuarter(start) + 1 + y * 4);
             case MONTH:
                 return Months.monthsBetween(start.withDayOfMonth(1).withMillisOfDay(0), end.withDayOfMonth(1).withMillisOfDay(0)).getMonths();
             case YEAR:
@@ -246,8 +250,13 @@ public class LineChartFragment extends Fragment implements OnChartValueSelectedL
         }
     }
 
+    /**
+     * Returns a quarter of the specified date
+     * @param date date
+     * @return a quarter
+     */
     private int getQuarter(LocalDateTime date) {
-        return date.getMonthOfYear() / 3 + 1;
+        return ((date.getMonthOfYear() - 1) / 3 + 1);
     }
 
     /**
