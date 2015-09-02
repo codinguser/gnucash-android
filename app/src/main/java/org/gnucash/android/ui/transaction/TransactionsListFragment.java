@@ -56,10 +56,8 @@ import org.gnucash.android.ui.util.Refreshable;
 import org.gnucash.android.ui.widget.WidgetConfigurationActivity;
 import org.ocpsoft.prettytime.PrettyTime;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -155,7 +153,7 @@ public class TransactionsListFragment extends Fragment implements
 	}
 
 	public void onListItemClick(long id) {
-		Intent intent = new Intent(getActivity(), TransactionInfoActivity.class);
+		Intent intent = new Intent(getActivity(), TransactionDetailActivity.class);
 		intent.putExtra(UxArgument.SELECTED_TRANSACTION_UID, mTransactionsDbAdapter.getUID(id));
 		intent.putExtra(UxArgument.SELECTED_ACCOUNT_UID, mAccountUID);
 		startActivity(intent);

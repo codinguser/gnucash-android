@@ -36,7 +36,7 @@ import butterknife.OnClick;
  * Activity for displaying transaction information
  * @author Ngewi Fet <ngewif@gmail.com>
  */
-public class TransactionInfoActivity extends AppCompatActivity{
+public class TransactionDetailActivity extends AppCompatActivity{
 
     @Bind(R.id.trn_description) TextView mTransactionDescription;
     @Bind(R.id.transaction_amount)TextView mTransactionAmount;
@@ -54,7 +54,7 @@ public class TransactionInfoActivity extends AppCompatActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_transaction_info);
+        setContentView(R.layout.activity_transaction_detail);
 
         mTransactionUID = getIntent().getStringExtra(UxArgument.SELECTED_TRANSACTION_UID);
         mAccountUID     = getIntent().getStringExtra(UxArgument.SELECTED_ACCOUNT_UID);

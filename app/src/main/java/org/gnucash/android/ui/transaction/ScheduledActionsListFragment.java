@@ -366,8 +366,10 @@ public class ScheduledActionsListFragment extends ListFragment implements
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode == Activity.RESULT_OK)
+        if (resultCode == Activity.RESULT_OK) {
             refreshList();
+            super.onActivityResult(requestCode, resultCode, data);
+        }
     }
 
     /**

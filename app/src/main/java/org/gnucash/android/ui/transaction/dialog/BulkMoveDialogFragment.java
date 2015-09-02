@@ -101,6 +101,7 @@ public class BulkMoveDialogFragment extends DialogFragment {
 		/*
 	  Accounts database adapter
 	 */
+		//FIXME: move only to accounts which have the same currency as this one
         AccountsDbAdapter accountsDbAdapter = AccountsDbAdapter.getInstance();
         String conditions = "(" + DatabaseSchema.AccountEntry.COLUMN_UID    + " != ? AND "
                 + DatabaseSchema.AccountEntry.COLUMN_CURRENCY               + " = ? AND "

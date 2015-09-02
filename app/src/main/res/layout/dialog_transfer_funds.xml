@@ -93,6 +93,7 @@
             android:hint="Exchange rate"/>
         </android.support.design.widget.TextInputLayout>
 
+        <!-- TODO: re-enable this button when fetching of price quotes is implemented -->
         <Button android:id="@+id/btn_fetch_exchange_rate"
             style="?attr/borderlessButtonStyle"
             android:textColor="@color/theme_accent"

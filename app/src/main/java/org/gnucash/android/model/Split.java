@@ -4,6 +4,8 @@ package org.gnucash.android.model;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
+import org.gnucash.android.db.AccountsDbAdapter;
+
 /**
  * A split amount in a transaction.
  * Every transaction is made up of at least two splits (representing a double entry transaction)
@@ -239,6 +241,53 @@ public class Split extends BaseModel{
     public boolean isPairOf(Split other) {
         return mValue.absolute().equals(other.mValue.absolute())
                 && mSplitType.invert().equals(other.mSplitType);
+    }
+
+    /**
+     * Returns the formatted amount (with or without negation sign) for the split value
+     * @return Money amount of value
+     * @see #getFormattedAmount(Money, String, TransactionType)
+     */
+    public Money getFormattedValue(){
+        return getFormattedAmount(mValue, mAccountUID, mSplitType);
+    }
+
+    /**
+     * Returns the formatted amount (with or without negation sign) for the quantity
+     * @return Money amount of quantity
+     * @see #getFormattedAmount(Money, String, TransactionType)
+     */
+    public Money getFormattedQuantity(){
+        return getFormattedAmount(mQuantity, mAccountUID, mSplitType);
+    }
+
+    /**
+     * Splits are saved as absolute values to the database, with no negative numbers.
+     * The type of movement the split causes to the balance of an account determines its sign, and
+     * that depends on the split type and the account type
+     * @param amount Money amount to format
+     * @param accountUID GUID of the account
+     * @param splitType Transaction type of the split
+     * @return -{@code amount} if the amount would reduce the balance of {@code account}, otherwise +{@code amount}
+     */
+    public static Money getFormattedAmount(Money amount, String accountUID, TransactionType splitType){
+        boolean isDebitAccount = AccountsDbAdapter.getInstance().getAccountType(accountUID).hasDebitNormalBalance();
+        Money absAmount = amount.absolute();
+
+        boolean isDebitSplit = splitType == TransactionType.DEBIT;
+        if (isDebitAccount) {
+            if (isDebitSplit) {
+                return absAmount;
+            } else {
+                return absAmount.negate();
+            }
+        } else {
+            if (isDebitSplit) {
+                return absAmount.negate();
+            } else {
+                return absAmount;
+            }
+        }
     }
 
     @Override

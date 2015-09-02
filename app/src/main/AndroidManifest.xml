@@ -100,7 +100,7 @@
 		</activity>
         <activity android:name=".ui.FormActivity"
             android:configChanges="orientation|screenSize"/>
-        <activity android:name=".ui.transaction.TransactionInfoActivity"
+        <activity android:name=".ui.transaction.TransactionDetailActivity"
             android:configChanges="orientation|screenSize"/>
         <activity android:name=".ui.report.ReportsActivity"
             android:launchMode="singleTop"/>

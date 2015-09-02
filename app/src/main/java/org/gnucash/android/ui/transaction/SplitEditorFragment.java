@@ -139,7 +139,7 @@ public class SplitEditorFragment extends Fragment {
             loadSplitViews(splitList);
         } else {
             final Currency currency = Currency.getInstance(mAccountsDbAdapter.getAccountCurrencyCode(mAccountUID));
-            Split split = new Split(new Money(mBaseAmount, currency), mAccountUID);
+            Split split = new Split(new Money(mBaseAmount.abs(), currency), mAccountUID);
             AccountType accountType = mAccountsDbAdapter.getAccountType(mAccountUID);
             TransactionType transactionType = Transaction.getTypeForBalance(accountType, mBaseAmount.signum() < 0);
             split.setType(transactionType);
@@ -262,7 +262,7 @@ public class SplitEditorFragment extends Fragment {
             splitUidTextView.setText(UUID.randomUUID().toString());
 
             if (split != null) {
-                splitAmountEditText.setText(split.getValue().toPlainString());
+                splitAmountEditText.setText(split.getFormattedValue().toPlainString());
                 splitMemoEditText.setText(split.getMemo());
                 splitUidTextView.setText(split.getUID());
                 String splitAccountUID = split.getAccountUID();

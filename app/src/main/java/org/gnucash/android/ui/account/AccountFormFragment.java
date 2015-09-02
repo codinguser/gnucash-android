@@ -395,6 +395,7 @@ public class AccountFormFragment extends Fragment {
 
         if (mAccountsDbAdapter.getTransactionMaxSplitNum(mAccount.getUID()) > 1)
         {
+            //TODO: Allow changing the currency and effecting the change for all transactions without any currency exchange (purely cosmetic change)
             mCurrencySpinner.setEnabled(false);
         }
 
