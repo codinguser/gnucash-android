@@ -243,19 +243,25 @@ public class TransactionFormFragment extends Fragment implements
 	}
 
     /**
-     * Starts the transfer of funds from one currency to another.
-     * <p>Make sure your fragment implements {@code OnTransferFundsListener}</p>
-     * @param from Start currency
-     * @param to Target currency
+     * Starts the transfer of funds from one currency to another
      */
-    private void startTransferFunds(Currency from, Currency to) {
+    private void startTransferFunds() {
+        Currency fromCurrency = Currency.getInstance(mTransactionsDbAdapter.getAccountCurrencyCode(mAccountUID));
+        long id = mTransferAccountSpinner.getSelectedItemId();
+        String targetCurrency = mAccountsDbAdapter.getCurrencyCode((mAccountsDbAdapter.getUID(id)));
+
+        if (fromCurrency.equals(Currency.getInstance(targetCurrency))
+                || !mAmountInputFormatter.isInputModified()
+                || mSplitQuantity != null) //if both accounts have same currency
+            return;
+
         BigDecimal amountBigd = parseInputToDecimal(mAmountEditText.getText().toString());
         if (mSplitQuantity != null || amountBigd.equals(BigDecimal.ZERO))
             return;
-        Money amount 	= new Money(amountBigd, from).absolute();
+        Money amount 	= new Money(amountBigd, fromCurrency).absolute();
 
         TransferFundsDialogFragment fragment
-                = TransferFundsDialogFragment.getInstance(amount, to.getCurrencyCode(), this);
+                = TransferFundsDialogFragment.getInstance(amount, targetCurrency, this);
         fragment.show(getFragmentManager(), "tranfer_funds_editor");
     }
 
@@ -282,11 +288,40 @@ public class TransactionFormFragment extends Fragment implements
             mTransaction = mTransactionsDbAdapter.getRecord(transactionUID);
         }
 
+        setListeners();
         //updateTransferAccountsList must only be called after initializing mAccountsDbAdapter
         // it needs mMultiCurrency to be properly initialized
         updateTransferAccountsList();
+        mTransferAccountSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            /**
+             * Flag for ignoring first call to this listener.
+             * The first call is during layout, but we want it called only in response to user interaction
+             */
+            boolean userInteraction = false;
 
-        setListeners();
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
+                if (mSplitsList.size() == 2) { //when handling simple transfer to one account
+                    for (Split split : mSplitsList) {
+                        if (!split.getAccountUID().equals(mAccountUID)) {
+                            split.setAccountUID(mAccountsDbAdapter.getUID(id));
+                        }
+                        // else case is handled when saving the transactions
+                    }
+                }
+                if (!userInteraction) {
+                    userInteraction = true;
+                    return;
+                }
+                startTransferFunds();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+                //nothing to see here, move along
+            }
+        });
+
         ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
         assert actionBar != null;
 //        actionBar.setSubtitle(mAccountsDbAdapter.getFullyQualifiedAccountName(mAccountUID));
@@ -300,33 +335,6 @@ public class TransactionFormFragment extends Fragment implements
 			initializeViewsWithTransaction();
             mEditMode = true;
 		}
-
-        mTransferAccountSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
-                if (mSplitsList.size() == 2) { //when handling simple transfer to one account
-                    for (Split split : mSplitsList) {
-                        if (!split.getAccountUID().equals(mAccountUID)) {
-                            split.setAccountUID(mAccountsDbAdapter.getUID(id));
-                        }
-                        // else case is handled when saving the transactions
-                    }
-                }
-
-                Currency currency = Currency.getInstance(mTransactionsDbAdapter.getAccountCurrencyCode(mAccountUID));
-                String targetCurrency = mAccountsDbAdapter.getCurrencyCode((mAccountsDbAdapter.getUID(id)));
-
-                if (currency.equals(Currency.getInstance(targetCurrency))) //if both accounts have same currency
-                    return;
-
-                startTransferFunds(currency, Currency.getInstance(targetCurrency));
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-                //nothing to see here, move along
-            }
-        });
 
 	}
 
@@ -438,6 +446,15 @@ public class TransactionFormFragment extends Fragment implements
         mSplitsList = new ArrayList<>(mTransaction.getSplits());
         toggleAmountInputEntryMode(mSplitsList.size() <= 2);
 
+        if (mSplitsList.size() == 2){
+            for (Split split : mSplitsList) {
+                if (split.getAccountUID().equals(mAccountUID)) {
+                    if (!split.getQuantity().getCurrency().equals(mTransaction.getCurrency())){
+                        mSplitQuantity = split.getQuantity();
+                    }
+                }
+            }
+        }
         //if there are more than two splits (which is the default for one entry), then
         //disable editing of the transfer account. User should open editor
         if (mSplitsList.size() == 2 && mSplitsList.get(0).isPairOf(mSplitsList.get(1))) {
@@ -776,6 +793,13 @@ public class TransactionFormFragment extends Fragment implements
                     Split pair = split.createPair(transferAcctUID);
                     if (mSplitQuantity != null)
                         pair.setQuantity(mSplitQuantity);
+                    else {
+                        if (!mAccountsDbAdapter.getCurrencyCode(transferAcctUID).equals(currency.getCurrencyCode())){
+                            startTransferFunds();
+                            mTransaction = null;
+                            return;
+                        }
+                    }
                     mTransaction.addSplit(pair);
                 } else { //split editor was used to enter splits
                     mTransaction.setSplits(mSplitsList);

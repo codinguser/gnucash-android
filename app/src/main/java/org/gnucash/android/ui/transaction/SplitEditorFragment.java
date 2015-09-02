@@ -226,6 +226,7 @@ public class SplitEditorFragment extends Fragment {
 
         View splitView;
         Money quantity;
+        AmountInputFormatter amountInputFormatter;
 
         public SplitViewHolder(View splitView, Split split){
             ButterKnife.bind(this, splitView);
@@ -241,7 +242,8 @@ public class SplitEditorFragment extends Fragment {
         }
 
         private void setListeners(Split split){
-            splitAmountEditText.addTextChangedListener(new AmountInputFormatter(splitAmountEditText));
+            amountInputFormatter = new AmountInputFormatter(splitAmountEditText);
+            splitAmountEditText.addTextChangedListener(amountInputFormatter);
 
             removeSplitButton.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -263,6 +265,7 @@ public class SplitEditorFragment extends Fragment {
 
             if (split != null) {
                 splitAmountEditText.setText(split.getFormattedValue().toPlainString());
+                splitCurrencyTextView.setText(split.getValue().getCurrency().getSymbol());
                 splitMemoEditText.setText(split.getMemo());
                 splitUidTextView.setText(split.getUID());
                 String splitAccountUID = split.getAccountUID();
@@ -393,6 +396,11 @@ public class SplitEditorFragment extends Fragment {
         TransactionTypeSwitch mTypeToggleButton;
         SplitViewHolder mSplitViewHolder;
 
+        /**
+         * Flag to know when account spinner callback is due to user interaction or layout of components
+         */
+        boolean userInteraction = false;
+
         public SplitAccountListener(TransactionTypeSwitch typeToggleButton, SplitViewHolder viewHolder){
             this.mTypeToggleButton = typeToggleButton;
             this.mSplitViewHolder = viewHolder;
@@ -406,7 +414,9 @@ public class SplitEditorFragment extends Fragment {
             String fromCurrencyCode = mAccountsDbAdapter.getCurrencyCode(mAccountUID);
             String targetCurrencyCode = mAccountsDbAdapter.getCurrencyCode(mAccountsDbAdapter.getUID(id));
 
-            if (fromCurrencyCode.equals(targetCurrencyCode)){
+            if (!userInteraction || fromCurrencyCode.equals(targetCurrencyCode)){
+                //first call is on layout, subsequent calls will be true and transfer will work as usual
+                userInteraction = true;
                 return;
             }
 

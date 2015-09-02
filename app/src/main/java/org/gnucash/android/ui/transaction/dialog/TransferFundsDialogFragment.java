@@ -44,6 +44,8 @@ import org.gnucash.android.ui.util.AmountInputFormatter;
 import org.gnucash.android.ui.util.OnTransferFundsListener;
 
 import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
 import java.util.Currency;
 
 import butterknife.Bind;
@@ -195,7 +197,7 @@ public class TransferFundsDialogFragment extends DialogFragment {
             Price price = new Price(commoditiesDbAdapter.getCommodityUID(mOriginAmount.getCurrency().getCurrencyCode()),
                     commoditiesDbAdapter.getCommodityUID(mTargetCurrency.getCurrencyCode()));
             price.setSource(Price.SOURCE_USER);
-            BigDecimal rateDecimal = mConvertedAmount.asBigDecimal().divide(mOriginAmount.asBigDecimal());
+            BigDecimal rateDecimal = mConvertedAmount.asBigDecimal().divide(mOriginAmount.asBigDecimal(), RoundingMode.HALF_EVEN);
             Money rate = new Money(rateDecimal, mTargetCurrency); //the currency is irrelevant
             price.setValueNum(rate.getNumerator());
             price.setValueDenom(rate.getDenominator());
