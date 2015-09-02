@@ -71,7 +71,9 @@
         android:text="Provide either the converted amount or exchange rate in order to transfer funds"
         />
     <TableRow android:gravity="center_vertical"
-        android:padding="@dimen/dialog_padding">
+        android:paddingTop="@dimen/dialog_padding">
+        android:paddingLeft="@dimen/dialog_padding">
+        android:paddingRight="@dimen/dialog_padding">
         <RadioButton android:id="@+id/radio_exchange_rate"
             android:layout_width="0dp"
             android:layout_weight="0.5"
@@ -98,10 +100,13 @@
             android:layout_weight="1"
             android:layout_height="wrap_content"
             android:enabled="false"
+            android:visibility="gone"
             android:text="Fetch quote"/>
     </TableRow>
     <TextView android:id="@+id/label_exchange_rate_example"
-        android:padding="@dimen/dialog_padding"
+        android:paddingLeft="@dimen/dialog_padding"
+        android:paddingRight="@dimen/dialog_padding"
+        android:paddingBottom="@dimen/dialog_padding"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"

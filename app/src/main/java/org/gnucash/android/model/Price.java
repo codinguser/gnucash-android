@@ -15,13 +15,24 @@ public class Price extends BaseModel {
     private int mValueNum;
     private int mValueDenom;
 
+    /**
+     * String indicating that the price was provided by the user
+     */
+    public static final String SOURCE_USER = "user:xfer-dialog";
+
     public Price(){
-        //nothing to see here, just call base
+        mDate = new Timestamp(System.currentTimeMillis());
     }
 
+    /**
+     * Create new instance with the GUIDs of the commodities
+     * @param commodityUID GUID of the origin commodity
+     * @param currencyUID GUID of the target commodity
+     */
     public Price(String commodityUID, String currencyUID){
         this.mCommodityUID = commodityUID;
         this.mCurrencyUID = currencyUID;
+        mDate = new Timestamp(System.currentTimeMillis());
     }
 
     public String getCommodityUID() {

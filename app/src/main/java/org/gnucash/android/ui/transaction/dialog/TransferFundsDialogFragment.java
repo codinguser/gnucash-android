@@ -34,7 +34,10 @@ import android.widget.RadioButton;
 import android.widget.TextView;
 
 import org.gnucash.android.R;
+import org.gnucash.android.db.CommoditiesDbAdapter;
+import org.gnucash.android.db.PricesDbAdapter;
 import org.gnucash.android.model.Money;
+import org.gnucash.android.model.Price;
 import org.gnucash.android.ui.transaction.TransactionFormFragment;
 import org.gnucash.android.ui.transaction.TransactionsActivity;
 import org.gnucash.android.ui.util.AmountInputFormatter;
@@ -70,7 +73,7 @@ public class TransferFundsDialogFragment extends DialogFragment {
 
     @Bind(R.id.btn_save) Button mSaveButton;
     @Bind(R.id.btn_cancel) Button mCancelButton;
-    Money mTransactionAmount;
+    Money mOriginAmount;
     Currency mTargetCurrency;
 
     Money mConvertedAmount;
@@ -79,7 +82,7 @@ public class TransferFundsDialogFragment extends DialogFragment {
     public static TransferFundsDialogFragment getInstance(Money transactionAmount, String targetCurrencyCode,
                                                           OnTransferFundsListener transferFundsListener){
         TransferFundsDialogFragment fragment = new TransferFundsDialogFragment();
-        fragment.mTransactionAmount = transactionAmount;
+        fragment.mOriginAmount = transactionAmount;
         fragment.mTargetCurrency = Currency.getInstance(targetCurrencyCode);
         fragment.mOnTransferFundsListener = transferFundsListener;
         return fragment;
@@ -91,8 +94,8 @@ public class TransferFundsDialogFragment extends DialogFragment {
         View view = inflater.inflate(R.layout.dialog_transfer_funds, container, false);
         ButterKnife.bind(this, view);
 
-        TransactionsActivity.displayBalance(mStartAmountLabel, mTransactionAmount);
-        Currency fromCurrency = mTransactionAmount.getCurrency();
+        TransactionsActivity.displayBalance(mStartAmountLabel, mOriginAmount);
+        Currency fromCurrency = mOriginAmount.getCurrency();
         mFromCurrencyLabel.setText(fromCurrency.getCurrencyCode());
         mToCurrencyLabel.setText(mTargetCurrency.getCurrencyCode());
         mConvertedAmountCurrencyLabel.setText(mTargetCurrency.getCurrencyCode());
@@ -172,7 +175,7 @@ public class TransferFundsDialogFragment extends DialogFragment {
             }
 
             BigDecimal rate = TransactionFormFragment.parseInputToDecimal(exchangeRateString);
-            mConvertedAmount = mTransactionAmount.multiply(rate);
+            mConvertedAmount = mOriginAmount.multiply(rate);
         }
 
         if (mConvertedAmountRadioButton.isChecked()){
@@ -186,8 +189,20 @@ public class TransferFundsDialogFragment extends DialogFragment {
             mConvertedAmount = new Money(amount, mTargetCurrency);
         }
 
-        if (mOnTransferFundsListener != null)
+        if (mOnTransferFundsListener != null) {
+            PricesDbAdapter pricesDbAdapter = PricesDbAdapter.getInstance();
+            CommoditiesDbAdapter commoditiesDbAdapter = CommoditiesDbAdapter.getInstance();
+            Price price = new Price(commoditiesDbAdapter.getCommodityUID(mOriginAmount.getCurrency().getCurrencyCode()),
+                    commoditiesDbAdapter.getCommodityUID(mTargetCurrency.getCurrencyCode()));
+            price.setSource(Price.SOURCE_USER);
+            BigDecimal rateDecimal = mConvertedAmount.asBigDecimal().divide(mOriginAmount.asBigDecimal());
+            Money rate = new Money(rateDecimal, mTargetCurrency); //the currency is irrelevant
+            price.setValueNum(rate.getNumerator());
+            price.setValueDenom(rate.getDenominator());
+            pricesDbAdapter.addRecord(price);
+
             mOnTransferFundsListener.transferComplete(mConvertedAmount);
+        }
         dismiss();
     }
 

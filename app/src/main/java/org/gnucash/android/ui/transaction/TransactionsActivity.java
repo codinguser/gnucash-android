@@ -59,6 +59,8 @@ import org.gnucash.android.ui.util.OnTransactionClickedListener;
 import org.gnucash.android.ui.util.Refreshable;
 import org.gnucash.android.util.QualifiedAccountNameCursorAdapter;
 
+import java.math.BigDecimal;
+
 /**
  * Activity for displaying, creating and editing transactions
  * @author Ngewi Fet <ngewif@gmail.com>
@@ -441,15 +443,6 @@ public class TransactionsActivity extends PassLockActivity implements
         mAccountsCursor.close();
 	}
 
-    /**
-     * Returns the current fragment (either sub-accounts, or transactions) displayed in the activity
-     * @return Current fragment displayed by the view pager
-     */
-    public Fragment getCurrentPagerFragment(){
-        int index = mViewPager.getCurrentItem();
-        return (Fragment) mFragmentPageReferenceMap.get(index);
-    }
-
 	/**
 	 * Returns the global unique ID of the current account
 	 * @return GUID of the current account
@@ -457,28 +450,6 @@ public class TransactionsActivity extends PassLockActivity implements
 	public String getCurrentAccountUID(){
 		return mAccountUID;
 	}
-
-	/**
-	 * Opens a fragment to create a new transaction. 
-	 * Is called from the XML views
-	 * @param v View which triggered this method
-	 */
-	public void onNewTransactionClick(View v){
-		createNewTransaction(mAccountUID);
-	}
-
-
-    /**
-     * Opens a dialog fragment to create a new account which is a sub account of the current account
-     * @param v View which triggered this callback
-     */
-    public void onNewAccountClick(View v) {
-        Intent addAccountIntent = new Intent(this, AccountsActivity.class);
-        addAccountIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        addAccountIntent.setAction(Intent.ACTION_INSERT_OR_EDIT);
-        addAccountIntent.putExtra(UxArgument.PARENT_ACCOUNT_UID, mAccountUID);
-        startActivityForResult(addAccountIntent, AccountsActivity.REQUEST_EDIT_ACCOUNT);
-    }
 
     /**
      * Display the balance of a transaction in a text view and format the text color to match the sign of the amount
@@ -491,6 +462,8 @@ public class TransactionsActivity extends PassLockActivity implements
         int fontColor = balance.isNegative() ?
                 context.getResources().getColor(R.color.debit_red) :
                 context.getResources().getColor(R.color.credit_green);
+        if (balance.asBigDecimal().compareTo(BigDecimal.ZERO) == 0)
+            fontColor = context.getResources().getColor(android.R.color.black);
         balanceTextView.setTextColor(fontColor);
     }
 
