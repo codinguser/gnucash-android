@@ -68,7 +68,7 @@
             android:layout_alignParentBottom="true"
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
-            android:layout_margin="12dp"
+            android:layout_margin="20dp"
             app:elevation="10dp"
             app:layout_behavior="org.gnucash.android.ui.util.ScrollingFABBehavior"
             android:src="@drawable/ic_add_white_48dp"/>

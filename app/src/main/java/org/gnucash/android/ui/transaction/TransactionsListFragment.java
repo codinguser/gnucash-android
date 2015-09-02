@@ -225,20 +225,6 @@ public class TransactionsListFragment extends Fragment implements
 			super(cursor);
 		}
 
-		/**
-		 * Checks if two timestamps have the same calendar month
-		 * @param timeMillis1 Timestamp in milliseconds
-		 * @param timeMillis2 Timestamp in milliseconds
-		 * @return <code>true</code> if both timestamps are on same day, <code>false</code> otherwise
-		 */
-		private boolean isSameMonth(long timeMillis1, long timeMillis2){
-			Date date1 = new Date(timeMillis1);
-			Date date2 = new Date(timeMillis2);
-
-			SimpleDateFormat fmt = new SimpleDateFormat("yyyyMM", Locale.US);
-			return fmt.format(date1).equals(fmt.format(date2));
-		}
-
 		@Override
 		public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 			View v = LayoutInflater.from(parent.getContext())

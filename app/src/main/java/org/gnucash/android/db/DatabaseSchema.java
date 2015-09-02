@@ -95,8 +95,7 @@ public class DatabaseSchema {
         public static final String TABLE_NAME                   = "splits";
 
         public static final String COLUMN_TYPE                  = "type";
-        @Deprecated
-        public static final String COLUMN_AMOUNT                = "amount";
+
         /**
          * The value columns are in the currency of the transaction containing the split
          */

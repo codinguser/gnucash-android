@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+ Copyright (c) 2015 Ngewi Fet <ngewif@gmail.com>
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:focusableInTouchMode="true">
+    <TableRow android:padding="@dimen/dialog_padding">
+        <TextView android:text="Amount:"
+            android:textSize="16sp"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" />
+        <TextView android:id="@+id/amount_to_convert"
+            android:textSize="18sp"
+            android:gravity="right"
+            tools:text="$ 2000.00"
+            android:layout_weight="2"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" />
+    </TableRow>
+
+    <TableRow android:padding="@dimen/dialog_padding">
+        <TextView
+            android:text="From:"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:textSize="16sp"
+            android:gravity="left"
+            android:layout_height="wrap_content" />
+        <TextView android:id="@+id/from_currency"
+            android:layout_width="0dp"
+            android:layout_weight="1.5"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:textSize="18sp"
+            tools:text="USD"/>
+        <TextView android:text="To:"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:textSize="16sp" />
+        <TextView android:id="@+id/to_currency"
+            android:layout_width="0dp"
+            android:layout_weight="1.5"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:textSize="18sp"
+            tools:text="EUR"/>
+    </TableRow>
+
+    <TextView
+        android:padding="@dimen/dialog_padding"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Provide either the converted amount or exchange rate in order to transfer funds"
+        />
+    <TableRow android:gravity="center_vertical"
+        android:padding="@dimen/dialog_padding">
+        <RadioButton android:id="@+id/radio_exchange_rate"
+            android:layout_width="0dp"
+            android:layout_weight="0.5"
+            android:layout_height="wrap_content"
+            android:checked="false" />
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/exchange_rate_text_input_layout"
+            android:layout_width="0dp"
+            android:layout_weight="2"
+            android:layout_height="wrap_content">
+        <EditText android:id="@+id/input_exchange_rate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:enabled="false"
+            android:inputType="number"
+            android:hint="Exchange rate"/>
+        </android.support.design.widget.TextInputLayout>
+
+        <Button android:id="@+id/btn_fetch_exchange_rate"
+            style="?attr/borderlessButtonStyle"
+            android:textColor="@color/theme_accent"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:enabled="false"
+            android:text="Fetch quote"/>
+    </TableRow>
+    <TextView android:id="@+id/label_exchange_rate_example"
+        android:padding="@dimen/dialog_padding"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        tools:text="1 USD = 1.34 EUR"
+        />
+
+    <TableRow android:gravity="center_vertical"
+        android:padding="@dimen/dialog_padding">
+        <RadioButton android:id="@+id/radio_converted_amount"
+            android:layout_width="0dp"
+            android:layout_weight="0.5"
+            android:layout_height="wrap_content"
+            android:checked="true" />
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/converted_amount_text_input_layout"
+            android:layout_width="0dp"
+            android:layout_weight="2"
+            android:layout_height="wrap_content">
+            <EditText android:id="@+id/input_converted_amount"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                android:hint="Converted Amount">
+                <requestFocus />
+            </EditText>
+        </android.support.design.widget.TextInputLayout>
+
+        <TextView android:id="@+id/target_currency"
+            android:textSize="16sp"
+            android:layout_weight="0.7"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            tools:text="EUR"/>
+    </TableRow>
+
+    <include layout="@layout/default_buttons"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"/>
+</TableLayout>

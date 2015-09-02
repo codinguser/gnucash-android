@@ -297,13 +297,19 @@ public class Transaction extends BaseModel{
         AccountsDbAdapter accountsDbAdapter = AccountsDbAdapter.getInstance();
         AccountType accountType = accountsDbAdapter.getAccountType(accountUID);
         String currencyCode = accountsDbAdapter.getAccountCurrencyCode(accountUID);
+        Currency accountCurrency = Currency.getInstance(currencyCode);
 
         boolean isDebitAccount = accountType.hasDebitNormalBalance();
         Money balance = Money.createZeroInstance(currencyCode);
         for (Split split : splitList) {
             if (!split.getAccountUID().equals(accountUID))
                 continue;
-            Money absAmount = split.getValue().absolute().withCurrency(Currency.getInstance(currencyCode));
+            Money absAmount;
+            if (split.getValue().getCurrency() == accountCurrency){
+                absAmount = split.getValue().absolute();
+            } else { //if this split belongs to the account, then either its value or quantity is in the account currency
+                absAmount = split.getQuantity().absolute();
+            }
             boolean isDebitSplit = split.getType() == TransactionType.DEBIT;
             if (isDebitAccount) {
                 if (isDebitSplit) {

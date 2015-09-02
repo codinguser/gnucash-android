@@ -33,7 +33,7 @@ import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.ui.account.AccountFormFragment;
 import org.gnucash.android.ui.export.ExportFormFragment;
 import org.gnucash.android.ui.transaction.TransactionFormFragment;
-import org.gnucash.android.ui.transaction.dialog.SplitEditorFragment;
+import org.gnucash.android.ui.transaction.SplitEditorFragment;
 
 /**
  * Activity for displaying forms in the application.

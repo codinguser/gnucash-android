@@ -62,7 +62,7 @@ public class Split extends BaseModel{
 
     /**
      * Initialize split with a value amount and account
-     * @param value Money value amount of this split
+     * @param amount Money value amount of this split. Value is always in the currency the owning transaction
      * @param accountUID String UID of transfer account
      */
     public Split(@NonNull Money amount, String accountUID){
@@ -108,21 +108,11 @@ public class Split extends BaseModel{
     /**
      * Sets the value amount of the split.<br>
      * The value is in the currency of the containing transaction
-     * <p>If the quantity of the split is null, it will be set to the {@code amount}</p>
-     * @param amount Money value of this split
+     * @param value Money value of this split
      * @see #setQuantity(Money)
      */
     public void setValue(Money value) {
         mValue = value;
-        // remove the following when porting to value/quantity is done
-        if (mQuantity == null) {
-            Log.e(getClass().getSimpleName(), "Are you sure you want set the value instead of the quantity?");
-            try {
-                throw new Exception("");
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
     }
 
     /**
@@ -221,7 +211,7 @@ public class Split extends BaseModel{
         pair.setType(mSplitType.invert());
         pair.setMemo(mMemo);
         pair.setTransactionUID(mTransactionUID);
-
+        pair.setQuantity(mQuantity);
         return pair;
     }
 
@@ -236,6 +226,7 @@ public class Split extends BaseModel{
         split.setType(mSplitType);
         split.setMemo(mMemo);
         split.setTransactionUID(mTransactionUID);
+        split.setQuantity(mQuantity);
         return split;
     }
 
