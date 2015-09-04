@@ -73,6 +73,7 @@ import org.gnucash.android.ui.transaction.dialog.SplitEditorDialogFragment;
 import org.gnucash.android.ui.util.AmountInputFormatter;
 import org.gnucash.android.ui.util.RecurrenceParser;
 import org.gnucash.android.ui.util.TransactionTypeSwitch;
+import org.gnucash.android.ui.util.CustomKeyboard;
 import org.gnucash.android.ui.widget.WidgetConfigurationActivity;
 import org.gnucash.android.util.QualifiedAccountNameCursorAdapter;
 
@@ -218,6 +219,7 @@ public class TransactionFormFragment extends Fragment implements
     private List<Split> mSplitsList = new ArrayList<Split>();
 
     private boolean mEditMode = false;
+    private CustomKeyboard mCalculatorKeyboard;
 
     /**
 	 * Create the view and retrieve references to the UI elements
@@ -301,7 +303,8 @@ public class TransactionFormFragment extends Fragment implements
             mEditMode = true;
 		}
 
-
+        mCalculatorKeyboard = new CustomKeyboard(getActivity(), R.id.calculator_keyboard, R.xml.calculator_keyboard);
+        mCalculatorKeyboard.registerEditText(R.id.input_transaction_amount);
 	}
 
     /**
