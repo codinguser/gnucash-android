@@ -140,13 +140,16 @@ public class ReportsActivity extends PassLockActivity implements AdapterView.OnI
     @Override
     public void onAttachFragment(Fragment fragment) {
         super.onAttachFragment(fragment);
-        //so far only the pie chart makes meaningful use of a specific date range
-        if (fragment instanceof ReportSummaryFragment || fragment instanceof BalanceSheetFragment){
-            findViewById(R.id.time_range_layout).setVisibility(View.GONE);
-            findViewById(R.id.date_range_divider).setVisibility(View.GONE);
-        } else {
-            findViewById(R.id.time_range_layout).setVisibility(View.VISIBLE);
-            findViewById(R.id.date_range_divider).setVisibility(View.VISIBLE);
+        View timeRangeLayout = findViewById(R.id.time_range_layout);
+        View dateRangeDivider = findViewById(R.id.date_range_divider);
+        if (timeRangeLayout != null && dateRangeDivider != null) {
+            if (fragment instanceof ReportSummaryFragment || fragment instanceof BalanceSheetFragment) {
+                timeRangeLayout.setVisibility(View.GONE);
+                dateRangeDivider.setVisibility(View.GONE);
+            } else {
+                timeRangeLayout.setVisibility(View.VISIBLE);
+                dateRangeDivider.setVisibility(View.VISIBLE);
+            }
         }
     }
 
