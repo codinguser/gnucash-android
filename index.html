@@ -1,80 +1,120 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="en-us">
   <head>
-    <meta charset='utf-8' />
-    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
-    <meta name="description" content="Gnucash for Android : Take Gnucash with you!" />
-
-    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
-
-    <title>Gnucash for Android</title>
+    <meta charset="UTF-8">
+    <title>Gnucash for Android by codinguser</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
   </head>
-
   <body>
+    <section class="page-header">
+      <h1 class="project-name">Gnucash for Android</h1>
+      <h2 class="project-tagline">Your finances in your pocket!</h2>
+      <a href="https://github.com/codinguser/gnucash-android" class="btn">View on GitHub</a>
+      <a href="https://github.com/codinguser/gnucash-android/zipball/master" class="btn">Download .zip</a>
+      <a href="https://github.com/codinguser/gnucash-android/tarball/master" class="btn">Download .tar.gz</a>
+    </section>
 
-    <!-- HEADER -->
-    <div id="header_wrap" class="outer">
-        <header class="inner">
-          <a id="forkme_banner" href="https://github.com/codinguser/GnucashMobile">View on GitHub</a>
+    <section class="main-content">
+      <h1>
+<a id="introduction" class="anchor" href="#introduction" aria-hidden="true"><span class="octicon octicon-link"></span></a>Introduction</h1>
 
-          <h1 id="project_title">Gnucash for Android</h1>
-          <h2 id="project_tagline">Take Gnucash with you!</h2>
+<p>GnuCash Android is a companion expense-tracker application for GnuCash (desktop) designed for Android.
+It allows you to record transactions on-the-go and later import the data into GnuCash for the desktop. </p>
 
-            <section id="downloads">
-              
-              <a class="zip_download_link" href="https://github.com/codinguser/GnucashMobile/zipball/master">Download this project as a .zip file</a>
-              <a class="tar_download_link" href="https://github.com/codinguser/GnucashMobile/tarball/master">Download this project as a tar.gz file</a>
-            </section>
-        </header>
-    </div>
+<p>The application supports Android 2.3.4 Gingerbread (API level 10) and above.</p>
 
-    <!-- MAIN CONTENT -->
-    <div id="main_content_wrap" class="outer">
-      <section id="main_content" class="inner">
-        <h1>Introduction</h1>
-
-<p>Gnucash Mobile for Android is companion application for desktop Gnucash designed for Android.
-It allows you to record transactions on-the-go and export them in the OFX format and later import the data into Gnucash for the desktop. You can create multiple accounts for transactions in Gnucash.</p>
-
-<p>The application supports Android 2.2 (API level 8) and above. </p>
-
-<h1>User Guide</h1>
-1. <a href="https://github.com/codinguser/gnucash-android/blob/gh-pages/getting_started.md">Creating Accounts</a>
-
-<h1>Installation</h1>
-
-<p>There are different ways to get the Gnucash app for Android.</p>
-
-<p>You can also build and install the Gnucash for Android application from source. This is of particular interest for those who want to contribute or those who wish to live on the bleeding edge. </p>
-
-<h3>App Store</h3>
-
-<p style="margin-left=30%;"><a href="http://play.google.com/store/apps/details?id=org.gnucash.android">
-                <img alt="Android app on Google Play" src="http://developer.android.com/images/brand/en_app_rgb_wo_60.png"/></a></p>
-
-<h3>Eclipse</h3>
-
-<p>The Android SDK primarily supports Eclipse for development and consequently, all the subprojects in the GnucashMobile folder are Eclipse Android projects. In order to compile the application, you need to import the com_actionbarsherlock and GnucashMobile projects into your eclipse workspace. Then you can just invoke "Run as Android application" from eclipse in order to build and install the application on your Android device.</p>
-
-<p>If you are interested in running the Robotium tests, also import the GnucashTest project into your workspace and run it as "Android JUnit Test".</p>
-
-<h3>Maven</h3>
-
-<p>Gnucash for Android also supports the Apache Maven build automation tool. 
-This method is more interesting if you do not want to download and install eclipse and the necessary Android plugins. It is especially interesting if you already have maven installed.
-There are a few steps you need in order to get up and running with maven. </p>
+<p>Features include:</p>
 
 <ul>
-<li>Download and install <a href="http://maven.apache.org/download.html">Maven</a> (follow the instructions on the website)</li>
-<li>Clone the GnucashMobile source using: git clone git://github.com/codinguser/GnucashMobile.git</li>
-<li>Open a terminal in the GnucashMobile folder and run <em>mvn clean install</em>
-(<strong>Note</strong>: If you also want to run the tests, see this <a href="http://goo.gl/TprMw">blog post</a> for details )</li>
-<li>To install the application on your phone, switch to the GnucashMobile subfolder and run <em>mvn android:deploy</em>
-</li>
-</ul><h1>Licence</h1>
+<li><p>An easy-to-use interface.</p></li>
+<li><p>Chart of Accounts: A master account can have a hierarchy of detail accounts underneath it.<br>
+This allows similar account types (e.g. Cash, Bank, Stock) to be grouped into one master account (e.g. Assets).</p></li>
+<li><p>Split Transactions: A single transaction can be split into several pieces to record taxes, fees, and other compound entries.</p></li>
+<li><p>Double Entry: Every transaction must debit one account and credit another by an equal amount. 
+This ensures that the "books balance": that the difference between income and outflow exactly
+equals the sum of all assets, be they bank, cash, stock or other.</p></li>
+<li><p>Income/Expense Account Types (Categories): These serve not only to categorize your cash flow, but when used properly with the double-entry feature, these can provide an accurate Profit&amp;Loss statement.</p></li>
+<li><p>Scheduled Transactions: GnuCash has the ability to automatically create and enter transactions.</p></li>
+<li><p>Export to GnuCash XML, QIF or OFX. Also, scheduled exports to 3rd-party sync services like DropBox and Google Drive</p></li>
+<li><p>Reports: View summary of transactions (income and expenses) as pie/bar/line charts</p></li>
+</ul>
 
-<p>Gnucash for Android is free software; you can redistribute it and/or 
+<h1>
+<a id="installation" class="anchor" href="#installation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Installation</h1>
+
+<p>There are different ways to get the GnuCash app for Android; through the app store, or building it yourself.</p>
+
+<h3>
+<a id="app-store" class="anchor" href="#app-store" aria-hidden="true"><span class="octicon octicon-link"></span></a>App Store</h3>
+
+<p><a href="http://play.google.com/store/apps/details?id=org.gnucash.android">
+  <img alt="Android app on Google Play" src="http://developer.android.com/images/brand/en_generic_rgb_wo_60.png">
+</a></p>
+
+<h2>
+<a id="building" class="anchor" href="#building" aria-hidden="true"><span class="octicon octicon-link"></span></a>Building</h2>
+
+<h3>
+<a id="with-gradle" class="anchor" href="#with-gradle" aria-hidden="true"><span class="octicon octicon-link"></span></a>With Gradle</h3>
+
+<p>This project requires the <a href="http://developer.android.com/sdk/index.html">Android SDK</a>
+to be installed in your development environment. In addition you'll need to set
+the <code>ANDROID_HOME</code> environment variable to the location of your SDK. For example:</p>
+
+<pre><code>export ANDROID_HOME=/home/&lt;user&gt;/tools/android-sdk
+</code></pre>
+
+<p>After satisfying those requirements, the build is pretty simple:</p>
+
+<ul>
+<li>Run <code>gradlew build installDevelopmentDebug</code> from the within the project folder.
+It will build the project for you and install it to the connected Android device or running emulator.</li>
+</ul>
+
+<p>The app is configured to allow you to install a development and production version in parallel on your device.</p>
+
+<h3>
+<a id="with-android-studio" class="anchor" href="#with-android-studio" aria-hidden="true"><span class="octicon octicon-link"></span></a>With Android Studio</h3>
+
+<p>The easiest way to build is to install <a href="https://developer.android.com/sdk/index.html">Android Studio</a> v1.+
+with <a href="https://www.gradle.org/">Gradle</a> v2.2.1.
+Once installed, then you can import the project into Android Studio:</p>
+
+<ol>
+<li>Open <code>File</code>
+</li>
+<li>Import Project</li>
+<li>Select <code>build.gradle</code> under the project directory</li>
+<li>Click <code>OK</code>
+</li>
+</ol>
+
+<p>Then, Gradle will do everything for you.</p>
+
+<h2>
+<a id="contributing" class="anchor" href="#contributing" aria-hidden="true"><span class="octicon octicon-link"></span></a>Contributing</h2>
+
+<p>There are several ways you could contribute to the development.</p>
+
+<ul>
+<li><p>One way is providing translations for locales which are not yet available, or improving translations.
+See this <a href="http://www.codinguser.com/2012/09/gnucash-for-android-beta-2-lost-in-translation/">blog post</a> for some guidelines.</p></li>
+<li><p>You could as well contribute code, fixing bugs, new features or automated tests. Pull requests are always welcome.
+Take a look at the <a href="https://github.com/codinguser/gnucash-android/issues?state=open">bug tracker</a>
+for ideas where to start.</p></li>
+</ul>
+
+<p>For development, it is recommended to use the Android Studio for development which is available for free.
+Import the project into the IDE using the build.gradle file. The IDE will resolve dependencies automatically.</p>
+
+<h1>
+<a id="licence" class="anchor" href="#licence" aria-hidden="true"><span class="octicon octicon-link"></span></a>Licence</h1>
+
+<p>GnuCash Android is free software; you can redistribute it and/or
 modify it under the terms of the Apache license, version 2.0.
 You may obtain a copy of the License at</p>
 
@@ -86,18 +126,15 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and 
 limitations under the License.</p>
-      </section>
-    </div>
 
-    <!-- FOOTER  -->
-    <div id="footer_wrap" class="outer">
-      <footer class="inner">
-        <p class="copyright">Gnucash for Android maintained by <a href="https://github.com/codinguser">codinguser</a></p>
-        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      <footer class="site-footer">
+        <span class="site-footer-owner"><a href="https://github.com/codinguser/gnucash-android">Gnucash for Android</a> is maintained by <a href="https://github.com/codinguser">codinguser</a>.</span>
+
+        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
       </footer>
-    </div>
 
-    
+    </section>
 
+  
   </body>
 </html>
