@@ -344,6 +344,12 @@ public class LineChartFragment extends Fragment implements OnChartValueSelectedL
      * @param accountTypeList account's types which will be processed
      */
     private void calculateEarliestAndLatestTimestamps(List<AccountType> accountTypeList) {
+        if (mReportStartTime != -1 && mReportEndTime != -1) {
+            mEarliestTransactionTimestamp = mReportStartTime;
+            mLatestTransactionTimestamp = mReportEndTime;
+            return;
+        }
+
         TransactionsDbAdapter dbAdapter = TransactionsDbAdapter.getInstance();
         for (Iterator<AccountType> iter = accountTypeList.iterator(); iter.hasNext();) {
             AccountType type = iter.next();
