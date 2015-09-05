@@ -137,6 +137,7 @@ public class BarChartFragment extends Fragment implements OnChartValueSelectedLi
         mChart.getAxisLeft().enableGridDashedLine(4.0f, 4.0f, 0);
         mChart.getAxisLeft().setValueFormatter(new LargeValueFormatter(mCurrency.getSymbol(Locale.getDefault())));
         Legend chartLegend = mChart.getLegend();
+        chartLegend.setWordWrapEnabled(true);
         chartLegend.setForm(Legend.LegendForm.CIRCLE);
         chartLegend.setPosition(Legend.LegendPosition.BELOW_CHART_CENTER);
         chartLegend.setTextSize(16);
