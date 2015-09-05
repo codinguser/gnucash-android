@@ -20,14 +20,11 @@
 package org.gnucash.android.ui.util;
 
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.inputmethodservice.Keyboard;
 import android.inputmethodservice.KeyboardView;
 import android.inputmethodservice.KeyboardView.OnKeyboardActionListener;
 import android.text.Editable;
 import android.text.InputType;
-import android.text.Layout;
 import android.view.HapticFeedbackConstants;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -67,9 +64,9 @@ public class CustomKeyboard {
             EditText edittext = (EditText) focusCurrent;
             Editable editable = edittext.getText();
             int start = edittext.getSelectionStart();
-            // delete the selection, if chars are selected:
             int end = edittext.getSelectionEnd();
 
+            // delete the selection, if chars are selected:
             if (end > start)
                 editable.delete(start, end);
 
@@ -90,6 +87,7 @@ public class CustomKeyboard {
                     hideCustomKeyboard();
                     break;
                 case -5:
+                    // FIXME: it crashes when at the beginning of the line
                     editable.delete(start - 1, start);
             }
         }
@@ -186,37 +184,17 @@ public class CustomKeyboard {
          * @source http://androidpadanam.wordpress.com/2013/05/29/customkeyboard-example/
          * fixes the cursor not movable bug
          */
-        OnTouchListener otl = new OnTouchListener() {
+        edittext.setOnTouchListener(new OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 if (!isCustomKeyboardVisible())
                     showCustomKeyboard(v);
 
-                /*
-                switch (event.getAction()) {
-                    case MotionEvent.ACTION_DOWN:
-                    case MotionEvent.ACTION_MOVE:
-                        Layout layout = ((EditText) v).getLayout();
-                        float x = event.getX() + edittext.getScrollX();
-                        int offset = layout.getOffsetForHorizontal(0, x);
-
-                        if (offset > 0)
-                            if (x > layout.getLineMax(0))
-                                edittext.setSelection(offset);     // touch was at the end of the text
-                            else
-                                edittext.setSelection(offset - 1);
-                        break;
-                }
-                */
-
                 edittext.onTouchEvent(event);               // Call native handler
 
                 return false;
             }
-
-        };
-
-        edittext.setOnTouchListener(otl);
+        });
     }
 
     /**
