@@ -173,6 +173,7 @@ public class BarChartFragment extends Fragment implements OnChartValueSelectedLi
                     start = tmpDate.dayOfMonth().withMinimumValue().millisOfDay().withMinimumValue().toDate().getTime();
                     end = tmpDate.dayOfMonth().withMaximumValue().millisOfDay().withMaximumValue().toDate().getTime();
 
+                    xValues.add(tmpDate.toString(X_AXIS_PATTERN));
                     tmpDate = tmpDate.plusMonths(1);
                     break;
                 case QUARTER:
@@ -180,12 +181,14 @@ public class BarChartFragment extends Fragment implements OnChartValueSelectedLi
                     start = tmpDate.withMonthOfYear(quarter * 3 - 2).dayOfMonth().withMinimumValue().millisOfDay().withMinimumValue().toDate().getTime();
                     end = tmpDate.withMonthOfYear(quarter * 3).dayOfMonth().withMaximumValue().millisOfDay().withMaximumValue().toDate().getTime();
 
+                    xValues.add("Q" + quarter + tmpDate.toString(" yy"));
                     tmpDate = tmpDate.plusMonths(3);
                     break;
                 case YEAR:
                     start = tmpDate.dayOfYear().withMinimumValue().millisOfDay().withMinimumValue().toDate().getTime();
                     end = tmpDate.dayOfYear().withMaximumValue().millisOfDay().withMaximumValue().toDate().getTime();
 
+                    xValues.add(tmpDate.toString("yyyy"));
                     tmpDate = tmpDate.plusYears(1);
                     break;
             }
@@ -220,8 +223,6 @@ public class BarChartFragment extends Fragment implements OnChartValueSelectedLi
 
             String stackLabels = labels.subList(labels.size() - stack.size(), labels.size()).toString();
             values.add(new BarEntry(floatListToArray(stack), i, stackLabels));
-
-            xValues.add(tmpDate.toString(X_AXIS_PATTERN));
         }
 
         BarDataSet set = new BarDataSet(values, "");
