@@ -305,6 +305,8 @@ public class TransactionFormFragment extends Fragment implements
 
         mCalculatorKeyboard = new CustomKeyboard(getActivity(), R.id.calculator_keyboard, R.xml.calculator_keyboard);
         mCalculatorKeyboard.registerEditText(R.id.input_transaction_amount);
+        // FIXME: decouple from TransactionsActivity
+        ((TransactionsActivity) getActivity()).setOnBackListener(mCalculatorKeyboard);
 	}
 
     /**

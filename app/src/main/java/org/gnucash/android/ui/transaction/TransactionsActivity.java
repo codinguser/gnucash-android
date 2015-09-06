@@ -54,6 +54,7 @@ import org.gnucash.android.ui.UxArgument;
 import org.gnucash.android.ui.account.AccountsActivity;
 import org.gnucash.android.ui.account.AccountsListFragment;
 import org.gnucash.android.ui.passcode.PassLockActivity;
+import org.gnucash.android.ui.util.CustomKeyboard;
 import org.gnucash.android.ui.util.OnAccountClickedListener;
 import org.gnucash.android.ui.util.OnTransactionClickedListener;
 import org.gnucash.android.ui.util.Refreshable;
@@ -155,6 +156,7 @@ public class TransactionsActivity extends PassLockActivity implements
     private PagerAdapter mPagerAdapter;
     private Spinner mToolbarSpinner;
     private TabLayout mTabLayout;
+    private CustomKeyboard mOnBackListener;
 
 
     /**
@@ -566,6 +568,21 @@ public class TransactionsActivity extends PassLockActivity implements
 			fragmentTransaction.addToBackStack(null);
 		fragmentTransaction.commit();
 	}
+
+    public void setOnBackListener(CustomKeyboard keyboard) {
+        mOnBackListener = keyboard;
+    }
+
+    @Override
+    public void onBackPressed() {
+        boolean eventProcessed = false;
+
+        if (mOnBackListener != null)
+            eventProcessed = mOnBackListener.onBackPressed();
+
+        if (!eventProcessed)
+            super.onBackPressed();
+    }
 
     /**
      * Display the balance of a transaction in a text view and format the text color to match the sign of the amount

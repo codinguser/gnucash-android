@@ -88,12 +88,6 @@ public class CustomKeyboard {
                 case 57:
                     editable.insert(start, Character.toString((char) primaryCode));
                     break;
-                /*
-                FIXME: this should be implemented in Activity's onBackPressed()
-                case KeyEvent.KEYCODE_BACK:
-                    hideCustomKeyboard();
-                    break;
-                */
                 case -5:
                     // FIXME: it crashes when at the beginning of the line
                     editable.delete(start - 1, start);
@@ -212,5 +206,13 @@ public class CustomKeyboard {
     public void enableHapticFeedback(boolean goEnabled) {
         mKeyboardView.setHapticFeedbackEnabled(goEnabled);
         hapticFeedback = goEnabled;
+    }
+
+    public boolean onBackPressed() {
+        if (isCustomKeyboardVisible()) {
+            hideCustomKeyboard();
+            return true;
+        } else
+            return false;
     }
 }
