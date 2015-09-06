@@ -71,6 +71,11 @@ public class CustomKeyboard {
                 editable.delete(start, end);
 
             switch (primaryCode) {
+                case 42:
+                case 43:
+                case 45:
+                case 46:
+                case 47:
                 case 48:
                 case 49:
                 case 50:
@@ -83,9 +88,12 @@ public class CustomKeyboard {
                 case 57:
                     editable.insert(start, Character.toString((char) primaryCode));
                     break;
+                /*
+                FIXME: this should be implemented in Activity's onBackPressed()
                 case KeyEvent.KEYCODE_BACK:
                     hideCustomKeyboard();
                     break;
+                */
                 case -5:
                     // FIXME: it crashes when at the beginning of the line
                     editable.delete(start - 1, start);
