@@ -36,6 +36,9 @@ import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
+import net.objecthunter.exp4j.Expression;
+import net.objecthunter.exp4j.ExpressionBuilder;
+
 
 /**
  * When an activity hosts a keyboardView, this class allows several EditText's to register for it.
@@ -91,6 +94,9 @@ public class CustomKeyboard {
                 case -5:
                     // FIXME: it crashes when at the beginning of the line
                     editable.delete(start - 1, start);
+                    break;
+                case 1001:
+                    evaluateEditTextExpression(edittext);
             }
         }
 
@@ -165,8 +171,10 @@ public class CustomKeyboard {
             public void onFocusChange(View v, boolean hasFocus) {
                 if (hasFocus)
                     showCustomKeyboard(v);
-                else
+                else {
                     hideCustomKeyboard();
+                    evaluateEditTextExpression((EditText) v);
+                }
             }
         });
 
@@ -214,5 +222,35 @@ public class CustomKeyboard {
             return true;
         } else
             return false;
+    }
+
+    private void evaluateEditTextExpression(EditText editText) {
+        String amountText = editText.getText().toString();
+
+        if (amountText.trim().isEmpty())
+            return;
+
+        // FIXME: replace the decimal separator of the current locale with '.'
+        ExpressionBuilder expressionBuilder = new ExpressionBuilder(amountText);
+        Expression expression;
+
+        try {
+            expression = expressionBuilder.build();
+        } catch (RuntimeException e) {
+            // FIXME: i18n
+            editText.setError("Invalid expression.");
+            // TODO: log error
+            return;
+        }
+
+        if (expression != null && expression.validate().isValid())
+            // FIXME: limit the decimal places
+            // FIXME: use the locale decimal separator
+            editText.setText(Double.toString(expression.evaluate()));
+        else {
+            // FIXME: i18n
+            editText.setError("Invalid expression.");
+            // TODO: log error
+        }
     }
 }
