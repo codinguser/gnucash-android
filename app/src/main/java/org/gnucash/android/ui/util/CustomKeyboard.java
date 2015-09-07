@@ -69,6 +69,7 @@ public class CustomKeyboard {
             int start = edittext.getSelectionStart();
             int end = edittext.getSelectionEnd();
 
+            // FIXME: use replace() down
             // delete the selection, if chars are selected:
             if (end > start)
                 editable.delete(start, end);
@@ -89,11 +90,12 @@ public class CustomKeyboard {
                 case 55:
                 case 56:
                 case 57:
+                    //editable.replace(start, end, Character.toString((char) primaryCode));
                     editable.insert(start, Character.toString((char) primaryCode));
                     break;
                 case -5:
-                    // FIXME: it crashes when at the beginning of the line
-                    editable.delete(start - 1, start);
+                    int deleteStart = start > 0 ? start - 1: 0;
+                    editable.delete(deleteStart, end);
                     break;
                 case 1001:
                     evaluateEditTextExpression(edittext);
@@ -200,6 +202,7 @@ public class CustomKeyboard {
                 if (!isCustomKeyboardVisible())
                     showCustomKeyboard(v);
 
+                // XXX: Use dispatchTouchEvent()?
                 edittext.onTouchEvent(event);               // Call native handler
 
                 return false;
