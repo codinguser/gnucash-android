@@ -54,8 +54,7 @@ public class QifExporter extends Exporter{
         final String newLine = "\n";
         TransactionsDbAdapter transactionsDbAdapter = mTransactionsDbAdapter;
         try {
-            final String zeroTimeStamp = new Timestamp(0).toString();
-            String lastExportTimeStamp = PreferenceManager.getDefaultSharedPreferences(mContext).getString("qif_last_export", zeroTimeStamp);
+            String lastExportTimeStamp = PreferenceManager.getDefaultSharedPreferences(mContext).getString(Exporter.PREF_LAST_EXPORT_TIME, Exporter.TIMESTAMP_ZERO);
             Cursor cursor = transactionsDbAdapter.fetchTransactionsWithSplitsWithTransactionAccount(
                     new String[]{
                             TransactionEntry.TABLE_NAME + "_" + TransactionEntry.COLUMN_UID + " AS trans_uid",
@@ -213,6 +212,6 @@ public class QifExporter extends Exporter{
 
         /// export successful
         String timeStamp = new Timestamp(System.currentTimeMillis()).toString();
-        PreferenceManager.getDefaultSharedPreferences(mContext).edit().putString("qif_last_export", timeStamp).apply();
+        PreferenceManager.getDefaultSharedPreferences(mContext).edit().putString(Exporter.PREF_LAST_EXPORT_TIME, timeStamp).apply();
     }
 }

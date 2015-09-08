@@ -17,12 +17,17 @@
 package org.gnucash.android.model;
 
 
+import android.preference.PreferenceManager;
+
 import org.gnucash.android.BuildConfig;
+import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.CommoditiesDbAdapter;
+import org.gnucash.android.export.Exporter;
 import org.gnucash.android.export.ofx.OfxHelper;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Currency;
 import java.util.List;
@@ -520,9 +525,10 @@ public class Account extends BaseModel{
 		Element bankTransactionsList = doc.createElement(OfxHelper.TAG_BANK_TRANSACTION_LIST);
 		bankTransactionsList.appendChild(dtstart);
 		bankTransactionsList.appendChild(dtend);
-		
+
+		Timestamp lastExportedTimestamp = Timestamp.valueOf(PreferenceManager.getDefaultSharedPreferences(GnuCashApplication.getAppContext()).getString(Exporter.PREF_LAST_EXPORT_TIME, Exporter.TIMESTAMP_ZERO));
 		for (Transaction transaction : mTransactionsList) {
-			if (!exportAllTransactions && transaction.isExported())
+			if (!exportAllTransactions && /*transaction.isExported()*/ transaction.getModifiedTimestamp().before(lastExportedTimestamp))
 				continue;
             bankTransactionsList.appendChild(transaction.toOFX(doc, getUID()));
 		}		
