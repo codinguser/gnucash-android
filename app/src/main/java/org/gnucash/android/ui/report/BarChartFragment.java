@@ -80,7 +80,9 @@ public class BarChartFragment extends Fragment implements OnChartValueSelectedLi
     ReportOptionsListener {
 
     private static final String TAG = "BarChartFragment";
-    private static final String X_AXIS_PATTERN = "MMM YY";
+    private static final String X_AXIS_MONTH_PATTERN = "MMM YY";
+    private static final String X_AXIS_QUARTER_PATTERN = "Q%d %s";
+    private static final String X_AXIS_YEAR_PATTERN = "YYYY";
     private static final String SELECTED_VALUE_PATTERN = "%s - %.2f (%.2f %%)";
     private static final int ANIMATION_DURATION = 2000;
     private static final int NO_DATA_COLOR = Color.LTGRAY;
@@ -173,7 +175,7 @@ public class BarChartFragment extends Fragment implements OnChartValueSelectedLi
                     start = tmpDate.dayOfMonth().withMinimumValue().millisOfDay().withMinimumValue().toDate().getTime();
                     end = tmpDate.dayOfMonth().withMaximumValue().millisOfDay().withMaximumValue().toDate().getTime();
 
-                    xValues.add(tmpDate.toString(X_AXIS_PATTERN));
+                    xValues.add(tmpDate.toString(X_AXIS_MONTH_PATTERN));
                     tmpDate = tmpDate.plusMonths(1);
                     break;
                 case QUARTER:
@@ -181,14 +183,14 @@ public class BarChartFragment extends Fragment implements OnChartValueSelectedLi
                     start = tmpDate.withMonthOfYear(quarter * 3 - 2).dayOfMonth().withMinimumValue().millisOfDay().withMinimumValue().toDate().getTime();
                     end = tmpDate.withMonthOfYear(quarter * 3).dayOfMonth().withMaximumValue().millisOfDay().withMaximumValue().toDate().getTime();
 
-                    xValues.add("Q" + quarter + tmpDate.toString(" yy"));
+                    xValues.add(String.format(X_AXIS_QUARTER_PATTERN, quarter, tmpDate.toString(" YY")));
                     tmpDate = tmpDate.plusMonths(3);
                     break;
                 case YEAR:
                     start = tmpDate.dayOfYear().withMinimumValue().millisOfDay().withMinimumValue().toDate().getTime();
                     end = tmpDate.dayOfYear().withMaximumValue().millisOfDay().withMaximumValue().toDate().getTime();
 
-                    xValues.add(tmpDate.toString("yyyy"));
+                    xValues.add(tmpDate.toString(X_AXIS_YEAR_PATTERN));
                     tmpDate = tmpDate.plusYears(1);
                     break;
             }
@@ -455,6 +457,6 @@ public class BarChartFragment extends Fragment implements OnChartValueSelectedLi
 
     @Override
     public void onNothingSelected() {
-        selectedValueTextView.setText("Select an bar to view details");
+        selectedValueTextView.setText(R.string.label_select_bar_to_view_details);
     }
 }

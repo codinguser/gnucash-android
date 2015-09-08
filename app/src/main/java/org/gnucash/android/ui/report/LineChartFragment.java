@@ -184,24 +184,24 @@ public class LineChartFragment extends Fragment implements OnChartValueSelectedL
         }
 
         int count = getDateDiff(new LocalDateTime(startDate.toDate().getTime()), new LocalDateTime(endDate.toDate().getTime()));
-        Log.w(TAG, "Diff " + count);
+        Log.d(TAG, "X-axis count" + count);
         List<String> xValues = new ArrayList<>();
         for (int i = 0; i <= count; i++) {
             switch (mGroupInterval) {
                 case MONTH:
                     xValues.add(startDate.toString(X_AXIS_PATTERN));
-                    Log.w(TAG, "X axis " + startDate.toString("MM yy"));
+                    Log.d(TAG, "X-axis " + startDate.toString("MM yy"));
                     startDate = startDate.plusMonths(1);
                     break;
                 case QUARTER:
                     int quarter = getQuarter(new LocalDateTime(startDate.toDate().getTime()));
                     xValues.add("Q" + quarter + startDate.toString(" yy"));
-                    Log.w(TAG, "X axis " + "Q" + quarter + startDate.toString(" MM yy"));
+                    Log.d(TAG, "X-axis " + "Q" + quarter + startDate.toString(" MM yy"));
                     startDate = startDate.plusMonths(3);
                     break;
                 case YEAR:
-                    xValues.add(startDate.toString("yy"));
-                    Log.w(TAG, "X axis " + startDate.toString("yyyy"));
+                    xValues.add(startDate.toString("yyyy"));
+                    Log.d(TAG, "X-axis " + startDate.toString("yyyy"));
                     startDate = startDate.plusYears(1);
                     break;
 //                default:
@@ -300,8 +300,8 @@ public class LineChartFragment extends Fragment implements OnChartValueSelectedL
             earliest = new LocalDateTime(mReportStartTime);
             latest = new LocalDateTime(mReportEndTime);
         }
-        Log.e(TAG, "Earliest " + accountType + " date " + earliest.toString("dd MM yyyy"));
-        Log.e(TAG, "Latest " + accountType + " date " + latest.toString("dd MM yyyy"));
+        Log.d(TAG, "Earliest " + accountType + " date " + earliest.toString("dd MM yyyy"));
+        Log.d(TAG, "Latest " + accountType + " date " + latest.toString("dd MM yyyy"));
 
         int xAxisOffset = getDateDiff(new LocalDateTime(mEarliestTransactionTimestamp), earliest);
         int count = getDateDiff(earliest, latest);
@@ -332,7 +332,7 @@ public class LineChartFragment extends Fragment implements OnChartValueSelectedL
             }
             float balance = (float) mAccountsDbAdapter.getAccountsBalance(accountUIDList, start, end).asDouble();
             values.add(new Entry(balance, i + xAxisOffset));
-            Log.w(TAG, accountType + earliest.toString(" MMM yyyy") + ", balance = " + balance);
+            Log.d(TAG, accountType + earliest.toString(" MMM yyyy") + ", balance = " + balance);
 
         }
 
@@ -386,7 +386,7 @@ public class LineChartFragment extends Fragment implements OnChartValueSelectedL
     @Override
     public void onGroupingUpdated(GroupInterval groupInterval) {
         mGroupInterval = groupInterval;
-        Log.w(TAG, "GroupInterval = " + groupInterval);
+        Log.d(TAG, "GroupInterval " + groupInterval);
 
         mChart.setData(getData(new ArrayList<>(Arrays.asList(AccountType.INCOME, AccountType.EXPENSE))));
         mChart.invalidate();

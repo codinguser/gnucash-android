@@ -505,6 +505,7 @@ No user-identifiable information will be collected as part of this process!</str
 	<string name="label_no_favorite_accounts">No favorite accounts</string>
 	<string name="nav_menu_scheduled_actions">Scheduled Actions</string>
 	<string name="label_scheduled_action_ended">"Ended, last executed on "</string>
+	<string name="label_select_bar_to_view_details">Select a bar to view details</string>
 	<string-array name="report_time_range">
 		<item>All time</item>
 		<item>Current month</item>
