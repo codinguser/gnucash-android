@@ -151,6 +151,14 @@ public class ReportsActivity extends PassLockActivity implements AdapterView.OnI
                 dateRangeDivider.setVisibility(View.VISIBLE);
             }
         }
+        View accountTypeSpinner = findViewById(R.id.report_account_type_spinner);
+        if (accountTypeSpinner != null) {
+            if (fragment instanceof LineChartFragment) {
+                accountTypeSpinner.setVisibility(View.GONE);
+            } else {
+                accountTypeSpinner.setVisibility(View.VISIBLE);
+            }
+        }
     }
 
     /**

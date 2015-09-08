@@ -394,7 +394,7 @@ public class LineChartFragment extends Fragment implements OnChartValueSelectedL
 
     @Override
     public void onAccountTypeUpdated(AccountType accountType) {
-        //FIXME: nothing to see here, line chart shows both income and expense
+        //nothing to see here, line chart shows both income and expense
     }
 
     @Override
