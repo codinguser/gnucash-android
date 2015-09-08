@@ -17,7 +17,6 @@
 
 package org.gnucash.android.ui.report;
 
-import android.app.DatePickerDialog;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -31,11 +30,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemSelectedListener;
-import android.widget.ArrayAdapter;
-import android.widget.DatePicker;
-import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.PieChart;
@@ -44,8 +38,8 @@ import com.github.mikephil.charting.components.Legend.LegendPosition;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
-import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.github.mikephil.charting.highlight.Highlight;
+import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 
 import org.gnucash.android.R;
 import org.gnucash.android.db.AccountsDbAdapter;
@@ -56,7 +50,6 @@ import org.gnucash.android.model.Money;
 import org.joda.time.LocalDateTime;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Currency;
 import java.util.List;
@@ -288,6 +281,7 @@ public class PieChartFragment extends Fragment implements OnChartValueSelectedLi
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.chart_actions, menu);
+        menu.findItem(R.id.menu_toggle_legend).setChecked(false);
     }
 
     @Override

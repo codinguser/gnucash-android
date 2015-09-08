@@ -55,7 +55,7 @@
                     android:layout_height="wrap_content"
                     android:text="Period:"/>
 
-                <Spinner android:id="@+id/time_range_spinner"
+                <org.gnucash.android.ui.util.ReselectSpinner android:id="@+id/time_range_spinner"
                     android:layout_weight="1.8"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content" />

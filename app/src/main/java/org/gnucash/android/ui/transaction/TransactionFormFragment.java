@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012 - 2014 Ngewi Fet <ngewif@gmail.com>
+ * Copyright (c) 2012 - 2015 Ngewi Fet <ngewif@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -638,7 +638,8 @@ public class TransactionFormFragment extends Fragment implements
                 int year = calendar.get(Calendar.YEAR);
                 int monthOfYear = calendar.get(Calendar.MONTH);
                 int dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
-                CalendarDatePickerDialog datePickerDialog = CalendarDatePickerDialog.newInstance(TransactionFormFragment.this,
+                CalendarDatePickerDialog datePickerDialog = CalendarDatePickerDialog.newInstance(
+                        TransactionFormFragment.this,
                         year, monthOfYear, dayOfMonth);
                 datePickerDialog.show(getFragmentManager(), "date_picker_fragment");
 			}

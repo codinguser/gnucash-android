@@ -504,7 +504,8 @@ public class AccountsListFragment extends Fragment implements
                     int drawableResource = !isFavoriteAccount ?
                             R.drawable.ic_star_black_24dp : R.drawable.ic_star_border_black_24dp;
                     holder.favoriteStatus.setImageResource(drawableResource);
-                    refresh();
+                    if (mDisplayMode == DisplayMode.FAVORITES)
+                        refresh();
                 }
             });
 

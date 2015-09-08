@@ -43,11 +43,13 @@ import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.model.AccountType;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.ui.passcode.PassLockActivity;
+import org.gnucash.android.ui.report.dialog.DateRangePickerDialogFragment;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import butterknife.Bind;
@@ -60,7 +62,7 @@ import butterknife.ButterKnife;
  * @author Ngewi Fet <ngewif@gmail.com>
  */
 public class ReportsActivity extends PassLockActivity implements AdapterView.OnItemSelectedListener,
-        DatePickerDialog.OnDateSetListener{
+        DatePickerDialog.OnDateSetListener, DateRangePickerDialogFragment.OnDateRangeSetListener{
 
     static final int[] COLORS = {
             Color.parseColor("#17ee4e"), Color.parseColor("#cc1f09"), Color.parseColor("#3940f7"),
@@ -269,9 +271,11 @@ public class ReportsActivity extends PassLockActivity implements AdapterView.OnI
                 String mCurrencyCode = PreferenceManager.getDefaultSharedPreferences(this).getString(getString(R.string.key_report_currency), Money.DEFAULT_CURRENCY_CODE);
                 long earliestTransactionTime = mTransactionsDbAdapter.getTimestampOfEarliestTransaction(mAccountType, mCurrencyCode);
                 long latestTransactionTime = mTransactionsDbAdapter.getTimestampOfLatestTransaction(mAccountType, mCurrencyCode);
-                DialogFragment newFragment = ChartDatePickerFragment.newInstance(
-                        this, System.currentTimeMillis(), earliestTransactionTime, latestTransactionTime); //TODO: limit to time of earliest transaction in the database
-                newFragment.show(getSupportFragmentManager(), "date_dialog");
+                DialogFragment rangeFragment = DateRangePickerDialogFragment.newInstance(
+                        earliestTransactionTime,
+                        new LocalDate().plusDays(1).toDate().getTime(),
+                        this);
+                rangeFragment.show(getSupportFragmentManager(), "range_dialog");
                 break;
         }
         if (position != 5){ //the date picker will trigger the update itself
@@ -290,5 +294,13 @@ public class ReportsActivity extends PassLockActivity implements AdapterView.OnI
         calendar.set(year, monthOfYear, dayOfMonth);
         mReportStartTime = calendar.getTimeInMillis();
         updateDateRangeOnFragment();
+    }
+
+    @Override
+    public void onDateRangeSet(Date startDate, Date endDate) {
+        mReportStartTime = startDate.getTime();
+        mReportEndTime = endDate.getTime();
+        updateDateRangeOnFragment();
+
     }
 }
