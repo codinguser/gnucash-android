@@ -208,6 +208,17 @@ public class CustomKeyboard {
                 return false;
             }
         });
+
+        // FIXME: for some reason, this prevents the text selection from working
+        edittext.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                if (v != null)
+                    ((InputMethodManager) mHostActivity.getSystemService(Activity.INPUT_METHOD_SERVICE)).hideSoftInputFromWindow(v.getWindowToken(), 0);
+
+                return false;
+            }
+        });
     }
 
     /**
