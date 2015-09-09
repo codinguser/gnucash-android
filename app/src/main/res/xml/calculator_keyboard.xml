@@ -28,7 +28,8 @@
     <Row>
         <Key android:codes="48" android:keyLabel="0" android:keyEdgeFlags="left" />
         <Key android:codes="46" android:keyLabel="." />
-        <Key android:codes="1001" android:keyLabel="=" android:horizontalGap="40%"
+        <Key android:codes="1001" android:keyLabel="=" android:horizontalGap="20%" />
+        <Key android:codes="1002" android:keyIcon="@drawable/navigation_next_item"
             android:keyEdgeFlags="right" />
     </Row>
 </Keyboard>

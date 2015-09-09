@@ -91,6 +91,7 @@ public class CustomKeyboard {
                 case 56:
                 case 57:
                     //editable.replace(start, end, Character.toString((char) primaryCode));
+                    // XXX: could be android:keyOutputText attribute used instead of this?
                     editable.insert(start, Character.toString((char) primaryCode));
                     break;
                 case -5:
@@ -99,6 +100,11 @@ public class CustomKeyboard {
                     break;
                 case 1001:
                     evaluateEditTextExpression(edittext);
+                    break;
+                case 1002:
+                    // FIXME: show the keyboard too
+                    edittext.focusSearch(View.FOCUS_DOWN).requestFocus();
+                    break;
             }
         }
 
