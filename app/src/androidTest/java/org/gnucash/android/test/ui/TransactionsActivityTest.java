@@ -185,7 +185,7 @@ public class TransactionsActivityTest extends
 				.perform(typeText("Lunch"));
 
 		onView(withId(R.id.menu_save)).perform(click());
-		onView(withText(R.string.title_create_account)).check(matches(isDisplayed()));
+		onView(withText(R.string.title_add_transaction)).check(matches(isDisplayed()));
 
 		assertToastDisplayed(R.string.toast_transanction_amount_required);
 

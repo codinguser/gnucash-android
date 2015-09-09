@@ -61,6 +61,9 @@ import org.gnucash.android.util.QualifiedAccountNameCursorAdapter;
 
 import java.math.BigDecimal;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+
 /**
  * Activity for displaying, creating and editing transactions
  * @author Ngewi Fet <ngewif@gmail.com>
@@ -103,18 +106,27 @@ public class TransactionsActivity extends PassLockActivity implements
      */
     private Cursor mAccountsCursor = null;
 
-    private ViewPager mViewPager;
+    @Bind(R.id.pager) ViewPager mViewPager;
+    @Bind(R.id.spinner_toolbar) Spinner mToolbarSpinner;
+    @Bind(R.id.tab_layout) TabLayout mTabLayout;
+    @Bind(R.id.transactions_sum) TextView mSumTextView;
+    @Bind(R.id.fab_create_transaction) FloatingActionButton mCreateFloatingButton;
 
     private SparseArray<Refreshable> mFragmentPageReferenceMap = new SparseArray<>();
 
+    /**
+     * Flag for determining is the currently displayed account is a placeholder account or not.
+     * This will determine if the transactions tab is displayed or not
+     */
+    private boolean mIsPlaceholderAccount;
 
 	private AdapterView.OnItemSelectedListener mTransactionListNavigationListener = new AdapterView.OnItemSelectedListener() {
 
         @Override
         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
             mAccountUID = mAccountsDbAdapter.getUID(id);
-
-            if (isPlaceHolderAccount()){
+            mIsPlaceholderAccount = mAccountsDbAdapter.isPlaceholderAccount(mAccountUID);
+            if (mIsPlaceholderAccount){
                 if (mTabLayout.getTabCount() > 1)
                     mTabLayout.removeTabAt(1);
             } else {
@@ -130,10 +142,9 @@ public class TransactionsActivity extends PassLockActivity implements
             //nothing to see here, move along
         }
 	};
+
     private PagerAdapter mPagerAdapter;
-    private Spinner mToolbarSpinner;
-    private TabLayout mTabLayout;
-    private TextView mSumTextView;
+
 
 
     /**
@@ -147,7 +158,7 @@ public class TransactionsActivity extends PassLockActivity implements
 
         @Override
         public Fragment getItem(int i) {
-            if (isPlaceHolderAccount()){
+            if (mIsPlaceholderAccount){
                 Fragment transactionsListFragment = prepareSubAccountsListFragment();
                 mFragmentPageReferenceMap.put(i, (Refreshable) transactionsListFragment);
                 return transactionsListFragment;
@@ -177,7 +188,7 @@ public class TransactionsActivity extends PassLockActivity implements
 
         @Override
         public CharSequence getPageTitle(int position) {
-            if (isPlaceHolderAccount())
+            if (mIsPlaceholderAccount)
                 return getString(R.string.section_header_subaccounts);
 
             switch (position){
@@ -192,7 +203,7 @@ public class TransactionsActivity extends PassLockActivity implements
 
         @Override
         public int getCount() {
-            if (isPlaceHolderAccount())
+            if (mIsPlaceholderAccount)
                 return 1;
             else
                 return DEFAULT_NUM_PAGES;
@@ -222,14 +233,6 @@ public class TransactionsActivity extends PassLockActivity implements
             Log.i(TAG, "Opening transactions for account:  " +  mAccountUID);
             return transactionsListFragment;
         }
-    }
-
-    /**
-     * Returns <code>true</code> is the current account is a placeholder account, <code>false</code> otherwise.
-     * @return <code>true</code> is the current account is a placeholder account, <code>false</code> otherwise.
-     */
-    private boolean isPlaceHolderAccount(){
-        return mAccountsDbAdapter.isPlaceholderAccount(mAccountUID);
     }
 
     /**
@@ -263,16 +266,15 @@ public class TransactionsActivity extends PassLockActivity implements
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
-        mSumTextView = (TextView) findViewById(R.id.transactions_sum);
-
-        mViewPager = (ViewPager) findViewById(R.id.pager);
+        ButterKnife.bind(this);
 
 		mAccountUID = getIntent().getStringExtra(UxArgument.SELECTED_ACCOUNT_UID);
         mAccountsDbAdapter = AccountsDbAdapter.getInstance();
 
-        mTabLayout = (TabLayout) findViewById(R.id.tab_layout);
+        mIsPlaceholderAccount = mAccountsDbAdapter.isPlaceholderAccount(mAccountUID);
+
         mTabLayout.addTab(mTabLayout.newTab().setText(R.string.section_header_subaccounts));
-        if (!isPlaceHolderAccount()) {
+        if (!mIsPlaceholderAccount) {
             mTabLayout.addTab(mTabLayout.newTab().setText(R.string.section_header_transactions), true);
         }
 
@@ -301,17 +303,17 @@ public class TransactionsActivity extends PassLockActivity implements
             }
         });
 
-        FloatingActionButton createTransactionFAB = (FloatingActionButton) findViewById(R.id.fab_create_transaction);
-        createTransactionFAB.setOnClickListener(new View.OnClickListener() {
+        mCreateFloatingButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                switch (mViewPager.getCurrentItem()){
+                switch (mViewPager.getCurrentItem()) {
                     case INDEX_SUB_ACCOUNTS_FRAGMENT:
                         Intent addAccountIntent = new Intent(TransactionsActivity.this, FormActivity.class);
                         addAccountIntent.setAction(Intent.ACTION_INSERT_OR_EDIT);
                         addAccountIntent.putExtra(UxArgument.FORM_TYPE, FormActivity.FormType.ACCOUNT_FORM.name());
                         addAccountIntent.putExtra(UxArgument.PARENT_ACCOUNT_UID, mAccountUID);
-                        startActivityForResult(addAccountIntent, AccountsActivity.REQUEST_EDIT_ACCOUNT);;
+                        startActivityForResult(addAccountIntent, AccountsActivity.REQUEST_EDIT_ACCOUNT);
+                        ;
                         break;
 
                     case INDEX_TRANSACTIONS_FRAGMENT:
@@ -357,7 +359,6 @@ public class TransactionsActivity extends PassLockActivity implements
         SpinnerAdapter mSpinnerAdapter = new QualifiedAccountNameCursorAdapter(
                 getSupportActionBar().getThemedContext(), mAccountsCursor);
 
-        mToolbarSpinner = (Spinner) findViewById(R.id.spinner_toolbar);
         mToolbarSpinner.setAdapter(mSpinnerAdapter);
         mToolbarSpinner.setOnItemSelectedListener(mTransactionListNavigationListener);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
