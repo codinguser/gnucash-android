@@ -82,6 +82,8 @@ public abstract class DatabaseAdapter<Model extends BaseModel> {
         // create a temporary view, combining accounts, transactions and splits, as this is often used
         // in the queries
         mDb.execSQL("CREATE TEMP VIEW IF NOT EXISTS trans_split_acct AS SELECT "
+                        + TransactionEntry.TABLE_NAME + "." + CommonColumns.COLUMN_MODIFIED_AT + " AS "
+                        + TransactionEntry.TABLE_NAME + "_" + CommonColumns.COLUMN_MODIFIED_AT + " , "
                         + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_UID + " AS "
                         + TransactionEntry.TABLE_NAME + "_" + TransactionEntry.COLUMN_UID + " , "
                         + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_DESCRIPTION + " AS "

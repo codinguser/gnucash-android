@@ -74,7 +74,7 @@ public abstract class BaseModel {
         this.mUID = uid;
     }
 
-    /**
+    /**8
      * Returns the timestamp when this model entry was created in the database
      * @return Timestamp of creation of model
      */
