@@ -8,7 +8,7 @@
         <Key android:codes="55" android:keyLabel="7" android:keyEdgeFlags="left" />
         <Key android:codes="56" android:keyLabel="8" />
         <Key android:codes="57" android:keyLabel="9" />
-        <Key android:codes="-5" android:keyIcon="@drawable/ic_action_backspace"
+        <Key android:codes="-5" android:keyIcon="@drawable/ic_backspace_normal_dark"
             android:isRepeatable="true" />
     </Row>
     <Row>
