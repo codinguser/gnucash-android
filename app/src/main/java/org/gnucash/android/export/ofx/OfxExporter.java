@@ -37,6 +37,7 @@ import org.w3c.dom.ProcessingInstruction;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.sql.Timestamp;
 import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -131,10 +132,13 @@ public class OfxExporter extends Exporter{
         boolean useXmlHeader = PreferenceManager.getDefaultSharedPreferences(mContext)
                 .getBoolean(mContext.getString(R.string.key_xml_ofx_header), false);
 
+        String timeStamp = new Timestamp(System.currentTimeMillis()).toString();
+
         StringWriter stringWriter = new StringWriter();
         //if we want SGML OFX headers, write first to string and then prepend header
         if (useXmlHeader){
             write(document, stringWriter, false);
+            PreferenceManager.getDefaultSharedPreferences(mContext).edit().putString(Exporter.PREF_LAST_EXPORT_TIME, timeStamp).apply();
             return stringWriter.toString();
         } else {
             Node ofxNode = document.getElementsByTagName("OFX").item(0);
@@ -144,6 +148,7 @@ public class OfxExporter extends Exporter{
             StringBuffer stringBuffer = new StringBuffer(OfxHelper.OFX_SGML_HEADER);
             stringBuffer.append('\n');
             stringBuffer.append(stringWriter.toString());
+            PreferenceManager.getDefaultSharedPreferences(mContext).edit().putString(Exporter.PREF_LAST_EXPORT_TIME, timeStamp).apply();
             return stringBuffer.toString();
         }
     }

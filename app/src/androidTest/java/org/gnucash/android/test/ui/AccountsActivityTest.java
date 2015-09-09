@@ -59,6 +59,7 @@ import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu;
 import static android.support.test.espresso.action.ViewActions.clearText;
 import static android.support.test.espresso.action.ViewActions.click;
+import static android.support.test.espresso.action.ViewActions.closeSoftKeyboard;
 import static android.support.test.espresso.action.ViewActions.longClick;
 import static android.support.test.espresso.action.ViewActions.scrollTo;
 import static android.support.test.espresso.action.ViewActions.swipeRight;
@@ -183,8 +184,8 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
         onView(allOf(isDisplayed(), withId(R.id.fab_create_account))).perform(click());
 
         String NEW_ACCOUNT_NAME = "A New Account";
-        onView(withId(R.id.input_account_name)).perform(typeText(NEW_ACCOUNT_NAME));
-        Espresso.closeSoftKeyboard();
+        onView(withId(R.id.input_account_name)).perform(typeText(NEW_ACCOUNT_NAME), closeSoftKeyboard());
+        sleep(1000);
         onView(withId(R.id.checkbox_placeholder_account))
                 .check(matches(isNotChecked()))
                 .perform(click());

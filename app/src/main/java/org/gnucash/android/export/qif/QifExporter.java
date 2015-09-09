@@ -18,15 +18,19 @@ package org.gnucash.android.export.qif;
 
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.preference.PreferenceManager;
 
 import org.gnucash.android.db.AccountsDbAdapter;
+import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.export.ExportParams;
 import org.gnucash.android.export.Exporter;
+import org.gnucash.android.model.Transaction;
 
 import java.io.IOException;
 import java.io.Writer;
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.util.Currency;
 
 import static org.gnucash.android.db.DatabaseSchema.AccountEntry;
@@ -50,6 +54,7 @@ public class QifExporter extends Exporter{
         final String newLine = "\n";
         TransactionsDbAdapter transactionsDbAdapter = mTransactionsDbAdapter;
         try {
+            String lastExportTimeStamp = PreferenceManager.getDefaultSharedPreferences(mContext).getString(Exporter.PREF_LAST_EXPORT_TIME, Exporter.TIMESTAMP_ZERO);
             Cursor cursor = transactionsDbAdapter.fetchTransactionsWithSplitsWithTransactionAccount(
                     new String[]{
                             TransactionEntry.TABLE_NAME + "_" + TransactionEntry.COLUMN_UID + " AS trans_uid",
@@ -77,7 +82,8 @@ public class QifExporter extends Exporter{
                             "trans_split_count == 1 )" +
                             (
                             mParameters.shouldExportAllTransactions() ?
-                                    "" : " AND " + TransactionEntry.TABLE_NAME + "_" + TransactionEntry.COLUMN_EXPORTED + "== 0"
+                                    //"" : " AND " + TransactionEntry.TABLE_NAME + "_" + TransactionEntry.COLUMN_EXPORTED + "== 0"
+                                    "" : " AND " + TransactionEntry.TABLE_NAME + "_" + DatabaseSchema.CommonColumns.COLUMN_MODIFIED_AT + " > \"" + lastExportTimeStamp + "\""
                             ),
                     null,
                     // trans_time ASC : put transactions in time order
@@ -203,5 +209,9 @@ public class QifExporter extends Exporter{
         {
             throw new ExporterException(mParameters, e);
         }
+
+        /// export successful
+        String timeStamp = new Timestamp(System.currentTimeMillis()).toString();
+        PreferenceManager.getDefaultSharedPreferences(mContext).edit().putString(Exporter.PREF_LAST_EXPORT_TIME, timeStamp).apply();
     }
 }
