@@ -130,8 +130,9 @@ public class SplitsDbAdapter extends DatabaseAdapter<Split> {
         String transxUID    = cursor.getString(cursor.getColumnIndexOrThrow(SplitEntry.COLUMN_TRANSACTION_UID));
         String memo         = cursor.getString(cursor.getColumnIndexOrThrow(SplitEntry.COLUMN_MEMO));
 
+        String transactionCurrency = TransactionsDbAdapter.getInstance().getAttribute(transxUID, TransactionEntry.COLUMN_CURRENCY);
+        Money value = new Money(valueNum, valueDenom, transactionCurrency);
         String currencyCode = getAccountCurrencyCode(accountUID);
-        Money value = new Money(valueNum, valueDenom, currencyCode);
         Money quantity = new Money(quantityNum, quantityDenom, currencyCode);
 
         Split split = new Split(value, accountUID);

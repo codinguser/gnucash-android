@@ -18,6 +18,7 @@ package org.gnucash.android.ui.transaction;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -25,6 +26,7 @@ import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.Loader;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
@@ -49,14 +51,13 @@ import org.gnucash.android.model.Money;
 import org.gnucash.android.model.Split;
 import org.gnucash.android.ui.FormActivity;
 import org.gnucash.android.ui.UxArgument;
+import org.gnucash.android.ui.util.EmptyRecyclerView;
 import org.gnucash.android.ui.util.Refreshable;
 import org.gnucash.android.ui.widget.WidgetConfigurationActivity;
 import org.ocpsoft.prettytime.PrettyTime;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -79,7 +80,7 @@ public class TransactionsListFragment extends Fragment implements
 
 
 	private TransactionRecyclerAdapter mTransactionRecyclerAdapter;
-	@Bind(R.id.transaction_recycler_view) RecyclerView mRecyclerView;
+	@Bind(R.id.transaction_recycler_view) EmptyRecyclerView mRecyclerView;
 
 
 	@Override
@@ -99,14 +100,20 @@ public class TransactionsListFragment extends Fragment implements
 		ButterKnife.bind(this, view);
 
 		mRecyclerView.setHasFixedSize(true);
-		LinearLayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
-		mRecyclerView.setLayoutManager(mLayoutManager);
+		if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+			GridLayoutManager gridLayoutManager = new GridLayoutManager(getActivity(), 2);
+			mRecyclerView.setLayoutManager(gridLayoutManager);
+		} else {
+			LinearLayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
+			mRecyclerView.setLayoutManager(mLayoutManager);
+		}
+		mRecyclerView.setEmptyView(view.findViewById(R.id.empty_view));
 
 		return view;
 	}
 
 	@Override
-	public void onActivityCreated(Bundle savedInstanceState) {		
+	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 		
 		ActionBar aBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
@@ -146,7 +153,7 @@ public class TransactionsListFragment extends Fragment implements
 	}
 
 	public void onListItemClick(long id) {
-		Intent intent = new Intent(getActivity(), TransactionInfoActivity.class);
+		Intent intent = new Intent(getActivity(), TransactionDetailActivity.class);
 		intent.putExtra(UxArgument.SELECTED_TRANSACTION_UID, mTransactionsDbAdapter.getUID(id));
 		intent.putExtra(UxArgument.SELECTED_ACCOUNT_UID, mAccountUID);
 		startActivity(intent);
@@ -214,20 +221,6 @@ public class TransactionsListFragment extends Fragment implements
 		private final PrettyTime prettyTime = new PrettyTime();
 		public TransactionRecyclerAdapter(Cursor cursor) {
 			super(cursor);
-		}
-
-		/**
-		 * Checks if two timestamps have the same calendar month
-		 * @param timeMillis1 Timestamp in milliseconds
-		 * @param timeMillis2 Timestamp in milliseconds
-		 * @return <code>true</code> if both timestamps are on same day, <code>false</code> otherwise
-		 */
-		private boolean isSameMonth(long timeMillis1, long timeMillis2){
-			Date date1 = new Date(timeMillis1);
-			Date date2 = new Date(timeMillis2);
-
-			SimpleDateFormat fmt = new SimpleDateFormat("yyyyMM", Locale.US);
-			return fmt.format(date1).equals(fmt.format(date2));
 		}
 
 		@Override

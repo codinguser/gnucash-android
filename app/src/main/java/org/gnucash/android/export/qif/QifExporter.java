@@ -18,15 +18,19 @@ package org.gnucash.android.export.qif;
 
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.preference.PreferenceManager;
 
 import org.gnucash.android.db.AccountsDbAdapter;
+import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.export.ExportParams;
 import org.gnucash.android.export.Exporter;
+import org.gnucash.android.model.Transaction;
 
 import java.io.IOException;
 import java.io.Writer;
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.util.Currency;
 
 import static org.gnucash.android.db.DatabaseSchema.AccountEntry;
@@ -50,12 +54,14 @@ public class QifExporter extends Exporter{
         final String newLine = "\n";
         TransactionsDbAdapter transactionsDbAdapter = mTransactionsDbAdapter;
         try {
+            String lastExportTimeStamp = PreferenceManager.getDefaultSharedPreferences(mContext).getString(Exporter.PREF_LAST_EXPORT_TIME, Exporter.TIMESTAMP_ZERO);
             Cursor cursor = transactionsDbAdapter.fetchTransactionsWithSplitsWithTransactionAccount(
                     new String[]{
                             TransactionEntry.TABLE_NAME + "_" + TransactionEntry.COLUMN_UID + " AS trans_uid",
                             TransactionEntry.TABLE_NAME + "_" + TransactionEntry.COLUMN_TIMESTAMP + " AS trans_time",
                             TransactionEntry.TABLE_NAME + "_" + TransactionEntry.COLUMN_DESCRIPTION + " AS trans_desc",
-                            SplitEntry.TABLE_NAME + "_" + SplitEntry.COLUMN_AMOUNT + " AS split_amount",
+                            SplitEntry.TABLE_NAME + "_" + SplitEntry.COLUMN_QUANTITY_NUM + " AS split_quantity_num",
+                            SplitEntry.TABLE_NAME + "_" + SplitEntry.COLUMN_QUANTITY_DENOM + " AS split_quantity_denom",
                             SplitEntry.TABLE_NAME + "_" + SplitEntry.COLUMN_TYPE + " AS split_type",
                             SplitEntry.TABLE_NAME + "_" + SplitEntry.COLUMN_MEMO + " AS split_memo",
                             "trans_extra_info.trans_acct_balance AS trans_acct_balance",
@@ -76,7 +82,8 @@ public class QifExporter extends Exporter{
                             "trans_split_count == 1 )" +
                             (
                             mParameters.shouldExportAllTransactions() ?
-                                    "" : " AND " + TransactionEntry.TABLE_NAME + "_" + TransactionEntry.COLUMN_EXPORTED + "== 0"
+                                    //"" : " AND " + TransactionEntry.TABLE_NAME + "_" + TransactionEntry.COLUMN_EXPORTED + "== 0"
+                                    "" : " AND " + TransactionEntry.TABLE_NAME + "_" + DatabaseSchema.CommonColumns.COLUMN_MODIFIED_AT + " > \"" + lastExportTimeStamp + "\""
                             ),
                     null,
                     // trans_time ASC : put transactions in time order
@@ -156,9 +163,34 @@ public class QifExporter extends Exporter{
                                 .append(newLine);
                     }
                     String splitType = cursor.getString(cursor.getColumnIndexOrThrow("split_type"));
+                    Double quantity_num = cursor.getDouble(cursor.getColumnIndexOrThrow("split_quantity_num"));
+                    int quantity_denom = cursor.getInt(cursor.getColumnIndexOrThrow("split_quantity_denom"));
+                    int precision = 0;
+                    switch (quantity_denom) {
+                        case 0: // will sometimes happen for zero values
+                            break;
+                        case 1:
+                            precision = 0;
+                            break;
+                        case 10:
+                            precision = 1;
+                            break;
+                        case 100:
+                            precision = 2;
+                            break;
+                        case 1000:
+                            precision = 3;
+                            break;
+                        default:
+                            throw new ExporterException(mParameters, "split quantity has illegal denominator: "+ quantity_denom);
+                    }
+                    Double quantity = 0.0;
+                    if (quantity_denom != 0) {
+                        quantity = quantity_num / quantity_denom;
+                    }
                     writer.append(QifHelper.SPLIT_AMOUNT_PREFIX)
                             .append(splitType.equals("DEBIT") ? "-" : "")
-                            .append(cursor.getString(cursor.getColumnIndexOrThrow("split_amount")))
+                            .append(String.format("%." + precision + "f", quantity))
                             .append(newLine);
                 }
                 if (!currentTransactionUID.equals("")) {
@@ -177,5 +209,9 @@ public class QifExporter extends Exporter{
         {
             throw new ExporterException(mParameters, e);
         }
+
+        /// export successful
+        String timeStamp = new Timestamp(System.currentTimeMillis()).toString();
+        PreferenceManager.getDefaultSharedPreferences(mContext).edit().putString(Exporter.PREF_LAST_EXPORT_TIME, timeStamp).apply();
     }
 }

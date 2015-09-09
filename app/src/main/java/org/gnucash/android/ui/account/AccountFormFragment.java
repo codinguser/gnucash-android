@@ -55,14 +55,17 @@ import android.widget.Spinner;
 
 import org.gnucash.android.R;
 import org.gnucash.android.db.AccountsDbAdapter;
+import org.gnucash.android.db.CommoditiesDbAdapter;
 import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.model.Account;
 import org.gnucash.android.model.AccountType;
+import org.gnucash.android.model.Commodity;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.ui.UxArgument;
 import org.gnucash.android.ui.colorpicker.ColorPickerDialog;
 import org.gnucash.android.ui.colorpicker.ColorPickerSwatch;
 import org.gnucash.android.ui.colorpicker.ColorSquare;
+import org.gnucash.android.util.CommoditiesCursorAdapter;
 import org.gnucash.android.util.QualifiedAccountNameCursorAdapter;
 
 import java.util.ArrayList;
@@ -70,6 +73,9 @@ import java.util.Arrays;
 import java.util.Currency;
 import java.util.HashMap;
 import java.util.List;
+
+import butterknife.Bind;
+import butterknife.ButterKnife;
 
 /**
  * Fragment used for creating and editing accounts
@@ -86,15 +92,15 @@ public class AccountFormFragment extends Fragment {
     /**
 	 * EditText for the name of the account to be created/edited
 	 */
-	private EditText mNameEditText;
+	@Bind(R.id.input_account_name) EditText mNameEditText;
 
-    private TextInputLayout mTextInputLayout;
+    @Bind(R.id.name_text_input_layout) TextInputLayout mTextInputLayout;
 
 	/**
 	 * Spinner for selecting the currency of the account
 	 * Currencies listed are those specified by ISO 4217
 	 */
-	private Spinner mCurrencySpinner;
+	@Bind(R.id.input_currency_spinner) Spinner mCurrencySpinner;
 	
 	/**
 	 * Accounts database adapter
@@ -154,34 +160,39 @@ public class AccountFormFragment extends Fragment {
     /**
      * Spinner for parent account list
      */
-	private Spinner mParentAccountSpinner;
+	@Bind(R.id.input_parent_account) Spinner mParentAccountSpinner;
 
     /**
      * Checkbox which activates the parent account spinner when selected
      * Leaving this unchecked means it is a top-level root account
      */
-	private CheckBox mParentCheckBox;
+	@Bind(R.id.checkbox_parent_account) CheckBox mParentCheckBox;
 
     /**
      * Spinner for the account type
      * @see org.gnucash.android.model.AccountType
      */
-    private Spinner mAccountTypeSpinner;
+    @Bind(R.id.input_account_type_spinner) Spinner mAccountTypeSpinner;
 
     /**
      * Checkbox for activating the default transfer account spinner
      */
-    private CheckBox mDefaultTransferAccountCheckBox;
+    @Bind(R.id.checkbox_default_transfer_account) CheckBox mDefaultTransferAccountCheckBox;
 
     /**
      * Spinner for selecting the default transfer account
      */
-    private Spinner mDefaulTransferAccountSpinner;
+    @Bind(R.id.input_default_transfer_account) Spinner mDefaulTransferAccountSpinner;
+
+    /**
+     * Account description input text view
+     */
+    @Bind(R.id.input_account_description) EditText mDescriptionEditText;
 
     /**
      * Checkbox indicating if account is a placeholder account
      */
-    private CheckBox mPlaceholderCheckBox;
+    @Bind(R.id.checkbox_placeholder_account) CheckBox mPlaceholderCheckBox;
 
     /**
      * Cursor adapter which binds to the spinner for default transfer account
@@ -201,7 +212,7 @@ public class AccountFormFragment extends Fragment {
     /**
      * Trigger for color picker dialog
      */
-    private ColorSquare mColorSquare;
+    @Bind(R.id.input_color_picker) ColorSquare mColorSquare;
 
     private ColorPickerSwatch.OnColorSelectedListener mColorSelectedListener = new ColorPickerSwatch.OnColorSelectedListener() {
         @Override
@@ -246,9 +257,7 @@ public class AccountFormFragment extends Fragment {
 	@Override	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.fragment_account_form, container, false);
-        mTextInputLayout = (TextInputLayout) view.findViewById(R.id.textinputlayout);
-		mCurrencySpinner = (Spinner) view.findViewById(R.id.input_currency_spinner);
-		mNameEditText = (EditText) view.findViewById(R.id.input_account_name);
+        ButterKnife.bind(this, view);
 
         mNameEditText.addTextChangedListener(new TextWatcher() {
             @Override
@@ -263,12 +272,12 @@ public class AccountFormFragment extends Fragment {
 
             @Override
             public void afterTextChanged(Editable s) {
-                if (s.toString().length() > 0){
+                if (s.toString().length() > 0) {
                     mTextInputLayout.setErrorEnabled(false);
                 }
             }
         });
-        mAccountTypeSpinner = (Spinner) view.findViewById(R.id.input_account_type_spinner);
+
         mAccountTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
@@ -283,24 +292,18 @@ public class AccountFormFragment extends Fragment {
             }
         });
 
-        mPlaceholderCheckBox = (CheckBox) view.findViewById(R.id.checkbox_placeholder_account);
 
-		mParentAccountSpinner = (Spinner) view.findViewById(R.id.input_parent_account);
 		mParentAccountSpinner.setEnabled(false);
 
-		mParentCheckBox = (CheckBox) view.findViewById(R.id.checkbox_parent_account);
 		mParentCheckBox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-			
-			@Override
-			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-				mParentAccountSpinner.setEnabled(isChecked);
-			}
-		});
 
-        mDefaulTransferAccountSpinner = (Spinner) view.findViewById(R.id.input_default_transfer_account);
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                mParentAccountSpinner.setEnabled(isChecked);
+            }
+        });
+
         mDefaulTransferAccountSpinner.setEnabled(false);
-
-        mDefaultTransferAccountCheckBox = (CheckBox) view.findViewById(R.id.checkbox_default_transfer_account);
         mDefaultTransferAccountCheckBox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
@@ -308,7 +311,6 @@ public class AccountFormFragment extends Fragment {
             }
         });
 
-        mColorSquare = (ColorSquare) view.findViewById(R.id.input_color_picker);
         mColorSquare.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -327,12 +329,17 @@ public class AccountFormFragment extends Fragment {
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 		
-		ArrayAdapter<String> currencyArrayAdapter = new ArrayAdapter<String>(
+		ArrayAdapter<String> currencyArrayAdapter = new ArrayAdapter<>(
 				getActivity(), 
 				android.R.layout.simple_spinner_item, 
 				getResources().getStringArray(R.array.currency_names));
 		currencyArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-		mCurrencySpinner.setAdapter(currencyArrayAdapter);
+
+        Cursor cursor = CommoditiesDbAdapter.getInstance().fetchAllRecords();
+        CommoditiesCursorAdapter commoditiesAdapter = new CommoditiesCursorAdapter(
+                getActivity(), cursor);
+        mCurrencySpinner.setAdapter(commoditiesAdapter);
+
 
         mAccountUID = getArguments().getString(UxArgument.SELECTED_ACCOUNT_UID);
 
@@ -388,10 +395,15 @@ public class AccountFormFragment extends Fragment {
 
         if (mAccountsDbAdapter.getTransactionMaxSplitNum(mAccount.getUID()) > 1)
         {
+            //TODO: Allow changing the currency and effecting the change for all transactions without any currency exchange (purely cosmetic change)
             mCurrencySpinner.setEnabled(false);
         }
 
         mNameEditText.setText(account.getName());
+        mNameEditText.setSelection(mNameEditText.getText().length());
+
+        if (account.getDescription() != null)
+            mDescriptionEditText.setText(account.getDescription());
 
         if (mUseDoubleEntry && account.getDefaultTransferAccountUID() != null) {
             long doubleDefaultAccountId = mAccountsDbAdapter.getID(account.getDefaultTransferAccountUID());
@@ -460,10 +472,15 @@ public class AccountFormFragment extends Fragment {
      * @param currencyCode ISO 4217 currency code to be selected
      */
     private void setSelectedCurrency(String currencyCode){
-        mCurrencyCodes = Arrays.asList(getResources().getStringArray(R.array.key_currency_codes));
-        if (mCurrencyCodes.contains(currencyCode)){
-            mCurrencySpinner.setSelection(mCurrencyCodes.indexOf(currencyCode));
+        CommoditiesDbAdapter commodityDbAdapter = CommoditiesDbAdapter.getInstance();
+        long commodityId = commodityDbAdapter.getID(commodityDbAdapter.getCommodityUID(currencyCode));
+        int position = 0;
+        for (int i = 0; i < mCurrencySpinner.getCount(); i++) {
+            if (commodityId == mCurrencySpinner.getItemIdAtPosition(i)) {
+                position = i;
+            }
         }
+        mCurrencySpinner.setSelection(position);
     }
 
     /**
@@ -578,9 +595,7 @@ public class AccountFormFragment extends Fragment {
         }
 
         mDefaultTransferAccountCursorAdapter = new QualifiedAccountNameCursorAdapter(getActivity(),
-                android.R.layout.simple_spinner_item,
                 defaultTransferAccountCursor);
-        mDefaultTransferAccountCursorAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mDefaulTransferAccountSpinner.setAdapter(mDefaultTransferAccountCursorAdapter);
     }
 
@@ -621,10 +636,7 @@ public class AccountFormFragment extends Fragment {
         }
 
 		mParentAccountCursorAdapter = new QualifiedAccountNameCursorAdapter(
-				getActivity(), 
-				android.R.layout.simple_spinner_item,
-                mParentAccountCursor);
-		mParentAccountCursorAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+				getActivity(), mParentAccountCursor);
 		mParentAccountSpinner.setAdapter(mParentAccountCursorAdapter);
 	}
 
@@ -746,14 +758,16 @@ public class AccountFormFragment extends Fragment {
             nameChanged = !mAccount.getName().equals(getEnteredName());
             mAccount.setName(getEnteredName());
         }
-			
-		String curCode = mCurrencyCodes.get(mCurrencySpinner
-				.getSelectedItemPosition());
-		mAccount.setCurrency(Currency.getInstance(curCode));
+
+        long commodityId = mCurrencySpinner.getSelectedItemId();
+        Commodity commodity = CommoditiesDbAdapter.getInstance().getRecord(commodityId);
+        mAccount.setCommodityUID(commodity.getUID());
+        mAccount.setCurrency(Currency.getInstance(commodity.getMnemonic()));
 
         AccountType selectedAccountType = getSelectedAccountType();
         mAccount.setAccountType(selectedAccountType);
 
+        mAccount.setDescription(mDescriptionEditText.getText().toString());
         mAccount.setPlaceHolderFlag(mPlaceholderCheckBox.isChecked());
         mAccount.setColorCode(mSelectedColor);
 

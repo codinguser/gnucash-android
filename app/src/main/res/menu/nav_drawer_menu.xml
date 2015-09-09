@@ -22,11 +22,14 @@
         <menu>
             <item
                 android:id="@+id/nav_item_open"
+                android:icon="@drawable/ic_folder_open_black_24dp"
                 android:title="@string/nav_menu_open"/>
             <item
                 android:id="@+id/nav_item_favorites"
+                android:icon="@drawable/ic_star_black_24dp"
                 android:title="@string/nav_menu_favorites"/>
             <item android:id="@+id/nav_item_reports"
+                android:icon="@drawable/ic_equalizer_black_24dp"
                 android:title="@string/nav_menu_reports" />
         </menu>
     </item>
@@ -35,18 +38,18 @@
         android:title="@string/title_transactions">
         <menu>
             <item
-                android:id="@+id/nav_item_scheduled_trn"
-                android:title="@string/nav_menu_scheduled_transactions"/>
-            <item
-                android:id="@+id/nav_item_scheduled_export"
-                android:title="@string/nav_menu_scheduled_backups"/>
+                android:id="@+id/nav_item_scheduled_actions"
+                android:icon="@drawable/ic_settings_backup_restore_black_24dp"
+                android:title="@string/nav_menu_scheduled_actions"/>
             <item
                 android:id="@+id/nav_item_export"
+                android:icon="@drawable/ic_backup_black_24dp"
                 android:title="@string/nav_menu_export"/>
         </menu>
     </item>
     <item
         android:id="@+id/nav_item_settings"
+        android:icon="@drawable/ic_settings_black_24dp"
         android:title="@string/nav_menu_settings"/>
 
 </menu>

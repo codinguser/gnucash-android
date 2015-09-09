@@ -101,6 +101,7 @@ public class BulkMoveDialogFragment extends DialogFragment {
 		/*
 	  Accounts database adapter
 	 */
+		//FIXME: move only to accounts which have the same currency as this one
         AccountsDbAdapter accountsDbAdapter = AccountsDbAdapter.getInstance();
         String conditions = "(" + DatabaseSchema.AccountEntry.COLUMN_UID    + " != ? AND "
                 + DatabaseSchema.AccountEntry.COLUMN_CURRENCY               + " = ? AND "
@@ -113,9 +114,7 @@ public class BulkMoveDialogFragment extends DialogFragment {
                         "" + accountsDbAdapter.getOrCreateGnuCashRootAccountUID()
                 });
 
-		SimpleCursorAdapter mCursorAdapter = new QualifiedAccountNameCursorAdapter(getActivity(),
-                android.R.layout.simple_spinner_item, cursor);
-		mCursorAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		SimpleCursorAdapter mCursorAdapter = new QualifiedAccountNameCursorAdapter(getActivity(), cursor);
 		mDestinationAccountSpinner.setAdapter(mCursorAdapter);
 		setListeners();
 	}

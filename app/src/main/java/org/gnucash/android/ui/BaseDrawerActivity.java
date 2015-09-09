@@ -34,7 +34,7 @@ import org.gnucash.android.R;
 import org.gnucash.android.export.xml.GncXmlExporter;
 import org.gnucash.android.importer.ImportAsyncTask;
 import org.gnucash.android.ui.account.AccountsActivity;
-import org.gnucash.android.ui.chart.ChartReportActivity;
+import org.gnucash.android.ui.report.ReportsActivity;
 import org.gnucash.android.ui.settings.SettingsActivity;
 import org.gnucash.android.ui.transaction.ScheduledActionsActivity;
 
@@ -51,7 +51,6 @@ public class BaseDrawerActivity extends AppCompatActivity {
     protected DrawerLayout  mDrawerLayout;
     protected NavigationView mNavigationView;
 
-    protected CharSequence  mTitle;
     protected ActionBarDrawerToggle mDrawerToggle;
 
     private class DrawerItemClickListener implements NavigationView.OnNavigationItemSelectedListener {
@@ -104,7 +103,6 @@ public class BaseDrawerActivity extends AppCompatActivity {
             /** Called when a drawer has settled in a completely open state. */
             public void onDrawerOpened(View drawerView) {
                 super.onDrawerOpened(drawerView);
-                getSupportActionBar().setTitle("GnuCash");
             }
         };
 
@@ -156,14 +154,12 @@ public class BaseDrawerActivity extends AppCompatActivity {
                 break;
 
             case R.id.nav_item_reports:
-                startActivity(new Intent(this, ChartReportActivity.class));
+                startActivity(new Intent(this, ReportsActivity.class));
                 break;
 
-            case R.id.nav_item_scheduled_trn: { //show scheduled transactions
+            case R.id.nav_item_scheduled_actions: { //show scheduled transactions
                 Intent intent = new Intent(this, ScheduledActionsActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_SINGLE_TOP);
-                intent.putExtra(ScheduledActionsActivity.EXTRA_DISPLAY_MODE,
-                        ScheduledActionsActivity.DisplayMode.TRANSACTION_ACTIONS);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
                 startActivity(intent);
             }
                 break;
@@ -173,14 +169,6 @@ public class BaseDrawerActivity extends AppCompatActivity {
             }
                 break;
 
-            case R.id.nav_item_scheduled_export: //scheduled backup
-                Intent intent = new Intent(this, ScheduledActionsActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_SINGLE_TOP);
-                intent.putExtra(ScheduledActionsActivity.EXTRA_DISPLAY_MODE,
-                        ScheduledActionsActivity.DisplayMode.EXPORT_ACTIONS);
-                startActivity(intent);
-                break;
-
             case R.id.nav_item_settings: //Settings activity
                 startActivity(new Intent(this, SettingsActivity.class));
                 break;
@@ -188,12 +176,6 @@ public class BaseDrawerActivity extends AppCompatActivity {
             //TODO: add help option
         }
         mDrawerLayout.closeDrawer(mNavigationView);
-    }
-
-    @Override
-    public void setTitle(CharSequence title) {
-        mTitle = title;
-        getSupportActionBar().setTitle(mTitle);
     }
 
     @Override

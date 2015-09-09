@@ -33,7 +33,7 @@ import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.ui.account.AccountFormFragment;
 import org.gnucash.android.ui.export.ExportFormFragment;
 import org.gnucash.android.ui.transaction.TransactionFormFragment;
-import org.gnucash.android.ui.transaction.dialog.SplitEditorFragment;
+import org.gnucash.android.ui.transaction.SplitEditorFragment;
 
 /**
  * Activity for displaying forms in the application.
@@ -52,7 +52,7 @@ public class FormActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_form);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_transaction_info);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         android.support.v7.app.ActionBar actionBar = getSupportActionBar();

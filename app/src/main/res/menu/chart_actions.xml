@@ -16,30 +16,38 @@
 -->
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-      xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item android:id="@+id/menu_order_by_size"
-          android:title="@string/menu_order_by_size"
-          app:showAsAction="never" />
+        android:title="@string/menu_order_by_size"
+        android:checkable="true"
+        app:showAsAction="never" />
 
     <item android:id="@+id/menu_toggle_legend"
-          android:title="@string/menu_toggle_legend"
-          app:showAsAction="never" />
+        android:title="@string/menu_toggle_legend"
+        android:checkable="true"
+        app:showAsAction="never" />
 
     <item android:id="@+id/menu_toggle_labels"
-          android:title="@string/menu_toggle_labels"
-          app:showAsAction="never" />
+        android:title="@string/menu_toggle_labels"
+        android:checkable="true"
+        android:checked="true"
+        app:showAsAction="never" />
 
     <item android:id="@+id/menu_percentage_mode"
-          android:title="@string/menu_toggle_percentage_mode"
-          app:showAsAction="never" />
+        android:title="@string/menu_toggle_percentage_mode"
+        android:checkable="true"
+        app:showAsAction="never" />
 
     <item android:id="@+id/menu_toggle_average_lines"
-          android:title="@string/menu_toggle_average_lines"
-          app:showAsAction="never" />
+        android:title="@string/menu_toggle_average_lines"
+        android:checkable="true"
+        app:showAsAction="never" />
 
     <item android:id="@+id/menu_group_other_slice"
-          android:title="@string/menu_group_smaller_slices"
-          app:showAsAction="never" />
+        android:title="@string/menu_group_smaller_slices"
+        android:checkable="true"
+        android:checked="true"
+        app:showAsAction="never" />
 
 </menu>

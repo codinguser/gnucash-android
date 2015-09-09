@@ -375,6 +375,7 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
         Account account = new Account(c.getString(c.getColumnIndexOrThrow(AccountEntry.COLUMN_NAME)));
         populateBaseModelAttributes(c, account);
 
+        account.setDescription(c.getString(c.getColumnIndexOrThrow(AccountEntry.COLUMN_DESCRIPTION)));
         account.setParentUID(c.getString(c.getColumnIndexOrThrow(AccountEntry.COLUMN_PARENT_ACCOUNT_UID)));
         account.setAccountType(AccountType.valueOf(c.getString(c.getColumnIndexOrThrow(AccountEntry.COLUMN_TYPE))));
         Currency currency = Currency.getInstance(c.getString(c.getColumnIndexOrThrow(AccountEntry.COLUMN_CURRENCY)));
@@ -453,24 +454,6 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
     public AccountType getAccountType(long accountId){
         return getAccountType(getUID(accountId));
     }
-
-    /**
-	 * Returns the name of the account with id <code>accountID</code>
-	 * @param accountID Database ID of the account record
-	 * @return Name of the account 
-	 */
-    public String getName(long accountID) {
-		Cursor c = fetchRecord(accountID);
-        try {
-            if (c.moveToFirst()) {
-                return c.getString(c.getColumnIndexOrThrow(AccountEntry.COLUMN_NAME));
-            } else {
-                throw new IllegalArgumentException("account " + accountID + " does not exist");
-            }
-        } finally {
-            c.close();
-        }
-	}
 
     /**
      * Returns a list of all account entries in the system (includes root account)
@@ -728,6 +711,48 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
         return computeBalance(accountUID, startTimestamp, endTimestamp);
     }
 
+    /**
+     * Compute the account balance for all accounts with the specified type within a specific duration
+     * @param accountType Account Type for which to compute balance
+     * @param startTimestamp Begin time for the duration in milliseconds
+     * @param endTimestamp End time for duration in milliseconds
+     * @return Account balance
+     */
+    public Money getAccountBalance(AccountType accountType, long startTimestamp, long endTimestamp){
+        Cursor cursor = fetchAccounts(AccountEntry.COLUMN_TYPE + "= ?",
+                new String[]{accountType.name()}, null);
+        List<String> accountUidList = new ArrayList<>();
+        while (cursor.moveToNext()){
+            String accountUID = cursor.getString(cursor.getColumnIndexOrThrow(AccountEntry.COLUMN_UID));
+            accountUidList.add(accountUID);
+        }
+        cursor.close();
+
+        boolean hasDebitNormalBalance = accountType.hasDebitNormalBalance();
+        String currencyCode = GnuCashApplication.getDefaultCurrencyCode();
+
+        Log.d(LOG_TAG, "all account list : " + accountUidList.size());
+        SplitsDbAdapter splitsDbAdapter = SplitsDbAdapter.getInstance();
+        Money splitSum = (startTimestamp == -1 && endTimestamp == -1)
+                ? splitsDbAdapter.computeSplitBalance(accountUidList, currencyCode, hasDebitNormalBalance)
+                : splitsDbAdapter.computeSplitBalance(accountUidList, currencyCode, hasDebitNormalBalance, startTimestamp, endTimestamp);
+
+        return splitSum;
+    }
+
+    /**
+     * Returns the account balance for all accounts types specified
+     * @param accountTypes List of account types
+     * @return Money balance of the account types
+     */
+    public Money getAccountBalance(List<AccountType> accountTypes){
+        Money balance = Money.createZeroInstance(GnuCashApplication.getDefaultCurrencyCode());
+        for (AccountType accountType : accountTypes) {
+            balance = balance.add(getAccountBalance(accountType, -1, -1));
+        }
+        return balance;
+    }
+
     private Money computeBalance(String accountUID, long startTimestamp, long endTimestamp) {
         Log.d(LOG_TAG, "Computing account balance for account ID " + accountUID);
         String currencyCode = mTransactionsAdapter.getAccountCurrencyCode(accountUID);
@@ -940,19 +965,7 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
      * @see #getFullyQualifiedAccountName(String)
      */
     public String getAccountName(String accountUID){
-        Cursor cursor = mDb.query(AccountEntry.TABLE_NAME,
-                new String[]{AccountEntry.COLUMN_NAME},
-                AccountEntry.COLUMN_UID + " = ?",
-                new String[]{accountUID}, null, null, null);
-        try {
-            if (cursor.moveToNext()) {
-                return cursor.getString(cursor.getColumnIndexOrThrow(AccountEntry.COLUMN_NAME));
-            } else {
-                throw new IllegalArgumentException("Failed to retrieve account name for account: " + accountUID);
-            }
-        } finally {
-            cursor.close();
-        }
+        return getAttribute(accountUID, AccountEntry.COLUMN_NAME);
     }
 
     /**
@@ -1019,15 +1032,6 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
         throw new IllegalArgumentException("account UID: " + accountUID + " does not exist");
     }
 
-    /**
-     * Overloaded convenience method.
-     * Simply resolves the account UID and calls {@link #getFullyQualifiedAccountName(String)}
-     * @param accountId Database record ID of account
-     * @return Fully qualified (with parent hierarchy) account name
-     */
-    public String getFullyQualifiedAccountName(long accountId){
-        return getFullyQualifiedAccountName(getUID(accountId));
-    }
 
     /**
      * Returns <code>true</code> if the account with unique ID <code>accountUID</code> is a placeholder account.
@@ -1079,7 +1083,7 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
                     continue;
 
                 Transaction transaction = new Transaction(GnuCashApplication.getAppContext().getString(R.string.account_name_opening_balances));
-                transaction.setNote(getName(id));
+                transaction.setNote(getAccountName(accountUID));
                 transaction.setCurrencyCode(currencyCode);
                 TransactionType transactionType = Transaction.getTypeForBalance(getAccountType(accountUID),
                         balance.isNegative());

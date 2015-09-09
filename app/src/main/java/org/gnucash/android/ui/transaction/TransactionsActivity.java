@@ -30,7 +30,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.support.v4.widget.ResourceCursorAdapter;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.util.SparseArray;
@@ -59,6 +58,11 @@ import org.gnucash.android.ui.util.OnAccountClickedListener;
 import org.gnucash.android.ui.util.OnTransactionClickedListener;
 import org.gnucash.android.ui.util.Refreshable;
 import org.gnucash.android.util.QualifiedAccountNameCursorAdapter;
+
+import java.math.BigDecimal;
+
+import butterknife.Bind;
+import butterknife.ButterKnife;
 
 /**
  * Activity for displaying, creating and editing transactions
@@ -102,18 +106,27 @@ public class TransactionsActivity extends PassLockActivity implements
      */
     private Cursor mAccountsCursor = null;
 
-    private ViewPager mViewPager;
+    @Bind(R.id.pager) ViewPager mViewPager;
+    @Bind(R.id.spinner_toolbar) Spinner mToolbarSpinner;
+    @Bind(R.id.tab_layout) TabLayout mTabLayout;
+    @Bind(R.id.transactions_sum) TextView mSumTextView;
+    @Bind(R.id.fab_create_transaction) FloatingActionButton mCreateFloatingButton;
 
     private SparseArray<Refreshable> mFragmentPageReferenceMap = new SparseArray<>();
 
+    /**
+     * Flag for determining is the currently displayed account is a placeholder account or not.
+     * This will determine if the transactions tab is displayed or not
+     */
+    private boolean mIsPlaceholderAccount;
 
 	private AdapterView.OnItemSelectedListener mTransactionListNavigationListener = new AdapterView.OnItemSelectedListener() {
 
         @Override
         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
             mAccountUID = mAccountsDbAdapter.getUID(id);
-
-            if (isPlaceHolderAccount()){
+            mIsPlaceholderAccount = mAccountsDbAdapter.isPlaceholderAccount(mAccountUID);
+            if (mIsPlaceholderAccount){
                 if (mTabLayout.getTabCount() > 1)
                     mTabLayout.removeTabAt(1);
             } else {
@@ -129,10 +142,9 @@ public class TransactionsActivity extends PassLockActivity implements
             //nothing to see here, move along
         }
 	};
+
     private PagerAdapter mPagerAdapter;
-    private Spinner mToolbarSpinner;
-    private TabLayout mTabLayout;
-    private TextView mSumTextView;
+
 
 
     /**
@@ -146,7 +158,7 @@ public class TransactionsActivity extends PassLockActivity implements
 
         @Override
         public Fragment getItem(int i) {
-            if (isPlaceHolderAccount()){
+            if (mIsPlaceholderAccount){
                 Fragment transactionsListFragment = prepareSubAccountsListFragment();
                 mFragmentPageReferenceMap.put(i, (Refreshable) transactionsListFragment);
                 return transactionsListFragment;
@@ -176,7 +188,7 @@ public class TransactionsActivity extends PassLockActivity implements
 
         @Override
         public CharSequence getPageTitle(int position) {
-            if (isPlaceHolderAccount())
+            if (mIsPlaceholderAccount)
                 return getString(R.string.section_header_subaccounts);
 
             switch (position){
@@ -191,7 +203,7 @@ public class TransactionsActivity extends PassLockActivity implements
 
         @Override
         public int getCount() {
-            if (isPlaceHolderAccount())
+            if (mIsPlaceholderAccount)
                 return 1;
             else
                 return DEFAULT_NUM_PAGES;
@@ -224,14 +236,6 @@ public class TransactionsActivity extends PassLockActivity implements
     }
 
     /**
-     * Returns <code>true</code> is the current account is a placeholder account, <code>false</code> otherwise.
-     * @return <code>true</code> is the current account is a placeholder account, <code>false</code> otherwise.
-     */
-    private boolean isPlaceHolderAccount(){
-        return mAccountsDbAdapter.isPlaceholderAccount(mAccountUID);
-    }
-
-    /**
      * Refreshes the fragments currently in the transactions activity
      */
     @Override
@@ -258,21 +262,20 @@ public class TransactionsActivity extends PassLockActivity implements
         setContentView(R.layout.activity_transactions);
         setUpDrawer();
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_transaction_info);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
-        mSumTextView = (TextView) findViewById(R.id.transactions_sum);
-
-        mViewPager = (ViewPager) findViewById(R.id.pager);
+        ButterKnife.bind(this);
 
 		mAccountUID = getIntent().getStringExtra(UxArgument.SELECTED_ACCOUNT_UID);
         mAccountsDbAdapter = AccountsDbAdapter.getInstance();
 
-        mTabLayout = (TabLayout) findViewById(R.id.tab_layout);
+        mIsPlaceholderAccount = mAccountsDbAdapter.isPlaceholderAccount(mAccountUID);
+
         mTabLayout.addTab(mTabLayout.newTab().setText(R.string.section_header_subaccounts));
-        if (!isPlaceHolderAccount()) {
-            mTabLayout.addTab(mTabLayout.newTab().setText(R.string.section_header_transactions));
+        if (!mIsPlaceholderAccount) {
+            mTabLayout.addTab(mTabLayout.newTab().setText(R.string.section_header_transactions), true);
         }
 
         setupActionBarNavigation();
@@ -300,17 +303,17 @@ public class TransactionsActivity extends PassLockActivity implements
             }
         });
 
-        FloatingActionButton createTransactionFAB = (FloatingActionButton) findViewById(R.id.fab_create_transaction);
-        createTransactionFAB.setOnClickListener(new View.OnClickListener() {
+        mCreateFloatingButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                switch (mViewPager.getCurrentItem()){
+                switch (mViewPager.getCurrentItem()) {
                     case INDEX_SUB_ACCOUNTS_FRAGMENT:
                         Intent addAccountIntent = new Intent(TransactionsActivity.this, FormActivity.class);
                         addAccountIntent.setAction(Intent.ACTION_INSERT_OR_EDIT);
                         addAccountIntent.putExtra(UxArgument.FORM_TYPE, FormActivity.FormType.ACCOUNT_FORM.name());
                         addAccountIntent.putExtra(UxArgument.PARENT_ACCOUNT_UID, mAccountUID);
-                        startActivityForResult(addAccountIntent, AccountsActivity.REQUEST_EDIT_ACCOUNT);;
+                        startActivityForResult(addAccountIntent, AccountsActivity.REQUEST_EDIT_ACCOUNT);
+                        ;
                         break;
 
                     case INDEX_TRANSACTIONS_FRAGMENT:
@@ -354,12 +357,8 @@ public class TransactionsActivity extends PassLockActivity implements
 		mAccountsCursor = mAccountsDbAdapter.fetchAllRecordsOrderedByFullName();
 
         SpinnerAdapter mSpinnerAdapter = new QualifiedAccountNameCursorAdapter(
-                getSupportActionBar().getThemedContext(),
-                android.R.layout.simple_spinner_item, mAccountsCursor);
-		((ResourceCursorAdapter) mSpinnerAdapter).setDropDownViewResource(
-                android.R.layout.simple_spinner_dropdown_item);
+                getSupportActionBar().getThemedContext(), mAccountsCursor);
 
-        mToolbarSpinner = (Spinner) findViewById(R.id.spinner_toolbar);
         mToolbarSpinner.setAdapter(mSpinnerAdapter);
         mToolbarSpinner.setOnItemSelectedListener(mTransactionListNavigationListener);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -445,15 +444,6 @@ public class TransactionsActivity extends PassLockActivity implements
         mAccountsCursor.close();
 	}
 
-    /**
-     * Returns the current fragment (either sub-accounts, or transactions) displayed in the activity
-     * @return Current fragment displayed by the view pager
-     */
-    public Fragment getCurrentPagerFragment(){
-        int index = mViewPager.getCurrentItem();
-        return (Fragment) mFragmentPageReferenceMap.get(index);
-    }
-
 	/**
 	 * Returns the global unique ID of the current account
 	 * @return GUID of the current account
@@ -461,28 +451,6 @@ public class TransactionsActivity extends PassLockActivity implements
 	public String getCurrentAccountUID(){
 		return mAccountUID;
 	}
-
-	/**
-	 * Opens a fragment to create a new transaction. 
-	 * Is called from the XML views
-	 * @param v View which triggered this method
-	 */
-	public void onNewTransactionClick(View v){
-		createNewTransaction(mAccountUID);
-	}
-
-
-    /**
-     * Opens a dialog fragment to create a new account which is a sub account of the current account
-     * @param v View which triggered this callback
-     */
-    public void onNewAccountClick(View v) {
-        Intent addAccountIntent = new Intent(this, AccountsActivity.class);
-        addAccountIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        addAccountIntent.setAction(Intent.ACTION_INSERT_OR_EDIT);
-        addAccountIntent.putExtra(UxArgument.PARENT_ACCOUNT_UID, mAccountUID);
-        startActivityForResult(addAccountIntent, AccountsActivity.REQUEST_EDIT_ACCOUNT);
-    }
 
     /**
      * Display the balance of a transaction in a text view and format the text color to match the sign of the amount
@@ -495,6 +463,8 @@ public class TransactionsActivity extends PassLockActivity implements
         int fontColor = balance.isNegative() ?
                 context.getResources().getColor(R.color.debit_red) :
                 context.getResources().getColor(R.color.credit_green);
+        if (balance.asBigDecimal().compareTo(BigDecimal.ZERO) == 0)
+            fontColor = context.getResources().getColor(android.R.color.black);
         balanceTextView.setTextColor(fontColor);
     }
 

@@ -423,8 +423,9 @@ public final class Money implements Comparable<Money>{
 	}
 	
 	/**
-	 * Returns a new <code>Money</code> object whose value is the product of the division of this objects 
-	 * value by the factor <code>multiplier</code>
+	 * Returns a new <code>Money</code> object whose value is the product of this object
+	 * and the factor <code>multiplier</code>
+	 * <p>The currency of the returned object is the same as the current object</p>
 	 * @param multiplier Factor to multiply the amount by.
 	 * @return Money object whose value is the product of this objects values and <code>multiplier</code>
 	 */
@@ -432,7 +433,17 @@ public final class Money implements Comparable<Money>{
 		Money moneyFactor = new Money(new BigDecimal(multiplier), mCurrency);
 		return multiply(moneyFactor);
 	}
-	
+
+	/**
+	 * Returns a new <code>Money</code> object whose value is the product of this object
+	 * and the factor <code>multiplier</code>
+	 * @param multiplier Factor to multiply the amount by.
+	 * @return Money object whose value is the product of this objects values and <code>multiplier</code>
+	 */
+	public Money multiply(BigDecimal multiplier){
+		return new Money(mAmount.multiply(multiplier), mCurrency);
+	}
+
 	/**
 	 * Returns true if the amount held by this Money object is negative
 	 * @return <code>true</code> if the amount is negative, <code>false</code> otherwise.

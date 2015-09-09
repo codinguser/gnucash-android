@@ -30,6 +30,8 @@ import android.support.v4.app.Fragment;
 import android.test.ActivityInstrumentationTestCase2;
 import android.util.Log;
 
+import com.kobakei.ratethisapp.RateThisApp;
+
 import org.gnucash.android.R;
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.DatabaseHelper;
@@ -57,6 +59,7 @@ import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu;
 import static android.support.test.espresso.action.ViewActions.clearText;
 import static android.support.test.espresso.action.ViewActions.click;
+import static android.support.test.espresso.action.ViewActions.closeSoftKeyboard;
 import static android.support.test.espresso.action.ViewActions.longClick;
 import static android.support.test.espresso.action.ViewActions.scrollTo;
 import static android.support.test.espresso.action.ViewActions.swipeRight;
@@ -122,6 +125,8 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
      * @param context Application context
      */
     public static void preventFirstRunDialogs(Context context) {
+        RateThisApp.Config config = new RateThisApp.Config(10000, 10000);
+        RateThisApp.init(config);
         Editor editor = PreferenceManager.getDefaultSharedPreferences(context).edit();
 
         //do not show first run dialog
@@ -179,8 +184,8 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
         onView(allOf(isDisplayed(), withId(R.id.fab_create_account))).perform(click());
 
         String NEW_ACCOUNT_NAME = "A New Account";
-        onView(withId(R.id.input_account_name)).perform(typeText(NEW_ACCOUNT_NAME));
-        Espresso.closeSoftKeyboard();
+        onView(withId(R.id.input_account_name)).perform(typeText(NEW_ACCOUNT_NAME), closeSoftKeyboard());
+        sleep(1000);
         onView(withId(R.id.checkbox_placeholder_account))
                 .check(matches(isNotChecked()))
                 .perform(click());
@@ -256,7 +261,7 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
 	public void testEditAccount(){
 		String editedAccountName = "Edited Account";
         sleep(2000);
-        onView(withId(R.id.options_menu)).perform(longClick());
+        onView(withId(R.id.options_menu)).perform(click());
         onView(withText(R.string.title_edit_account)).perform(click());
 
         onView(withId(R.id.fragment_account_form)).check(matches(isDisplayed()));

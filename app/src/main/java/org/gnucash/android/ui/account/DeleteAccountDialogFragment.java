@@ -147,9 +147,7 @@ public class DeleteAccountDialogFragment extends DialogFragment {
         Cursor cursor = accountsDbAdapter.fetchAccountsOrderedByFullName(transactionDeleteConditions,
                 new String[]{mOriginAccountUID, currencyCode, accountType.name()});
 
-        SimpleCursorAdapter mCursorAdapter = new QualifiedAccountNameCursorAdapter(getActivity(),
-                android.R.layout.simple_spinner_item, cursor);
-        mCursorAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        SimpleCursorAdapter mCursorAdapter = new QualifiedAccountNameCursorAdapter(getActivity(), cursor);
         mTransactionsDestinationAccountSpinner.setAdapter(mCursorAdapter);
 
         //target accounts for transactions and accounts have different conditions
@@ -160,9 +158,7 @@ public class DeleteAccountDialogFragment extends DialogFragment {
                 + ")";
         cursor = accountsDbAdapter.fetchAccountsOrderedByFullName(accountMoveConditions,
                 new String[]{mOriginAccountUID, currencyCode, accountType.name()});
-        mCursorAdapter = new QualifiedAccountNameCursorAdapter(getActivity(),
-                android.R.layout.simple_spinner_item, cursor);
-        mCursorAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        mCursorAdapter = new QualifiedAccountNameCursorAdapter(getActivity(), cursor);
         mAccountsDestinationAccountSpinner.setAdapter(mCursorAdapter);
 
         setListeners();

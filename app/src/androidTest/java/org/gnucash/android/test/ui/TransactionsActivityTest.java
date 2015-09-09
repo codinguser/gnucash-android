@@ -157,10 +157,7 @@ public class TransactionsActivityTest extends
 
 
 	private void validateTransactionListDisplayed(){
-		onView(withId(R.id.fragment_transaction_list)).check(matches(isDisplayed()));
-//		Fragment fragment = getActivity().getCurrentPagerFragment();
-//		assertThat(fragment).isNotNull();
-//		assertThat(fragment).isInstanceOf(TransactionsListFragment.class);
+		onView(withId(R.id.transaction_recycler_view)).check(matches(isDisplayed()));
 	}
 	
 	private int getTransactionCount(){
@@ -187,9 +184,8 @@ public class TransactionsActivityTest extends
 				.perform(typeText("Lunch"));
 
 		onView(withId(R.id.menu_save)).perform(click());
-		sleep(1000);
-		//form does not close
-		onView(withId(R.id.fragment_transaction_list)).check(matches(isDisplayed()));
+		onView(withText(R.string.title_add_transaction)).check(matches(isDisplayed()));
+
 		assertToastDisplayed(R.string.toast_transanction_amount_required);
 
 		int afterCount = mTransactionsDbAdapter.getTransactionsCount(DUMMY_ACCOUNT_UID);
@@ -272,7 +268,7 @@ public class TransactionsActivityTest extends
 	public void testEditTransaction(){
 		validateTransactionListDisplayed();
 
-		onView(withId(R.id.options_menu)).perform(click());
+		onView(withId(R.id.edit_transaction)).perform(click());
 		
 		validateEditTransactionFields(mTransaction);
 
@@ -284,7 +280,7 @@ public class TransactionsActivityTest extends
 	 * Tests that transactions splits are automatically balanced and an imbalance account will be created
 	 * This test case assumes that single entry is used
 	 */
-	@Test
+	//TODO: move this to the unit tests
 	public void testAutoBalanceTransactions(){
 		setDoubleEntryEnabled(false);
 		mTransactionsDbAdapter.deleteAllRecords();
@@ -437,7 +433,7 @@ public class TransactionsActivityTest extends
 	@Test
 	public void testToggleTransactionType(){
 		validateTransactionListDisplayed();
-		onView(withText(TRANSACTION_NAME)).perform(click());
+		onView(withId(R.id.edit_transaction)).perform(click());
 
 		validateEditTransactionFields(mTransaction);
 
@@ -460,8 +456,7 @@ public class TransactionsActivityTest extends
 	public void testOpenTransactionEditShouldNotModifyTransaction(){
 		validateTransactionListDisplayed();
 
-		onView(withText(TRANSACTION_NAME)).perform(click());
-
+		onView(withId(R.id.edit_transaction)).perform(click());
 		validateTimeInput(mTransactionTimeMillis);
 
 		clickOnView(R.id.menu_save);
@@ -482,7 +477,7 @@ public class TransactionsActivityTest extends
 	@Test
 	public void testDeleteTransaction(){
 		onView(withId(R.id.options_menu)).perform(click());
-		clickOnView(R.id.context_menu_delete);
+		onView(withText(R.string.menu_delete)).perform(click());
 
 		long id = mAccountsDbAdapter.getID(DUMMY_ACCOUNT_UID);
 		assertEquals(0, mTransactionsDbAdapter.getTransactionsCount(id));
@@ -533,7 +528,7 @@ public class TransactionsActivityTest extends
 						int x = view.getRight() - ((EditText)view).getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width();
 						int y = view.getTop() + view.getHeight()/2;
 
-						return new float[]{x, y};
+						return new float[]{x + 5, y};
 					}
 				}, Press.FINGER);
 	}

@@ -290,6 +290,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             throw new RuntimeException(e);
         }
 
+//TODO: This might slow down insertions: potentially remove and insert commodity UID manually during db inserts
         db.execSQL("CREATE TRIGGER insert_account_commodity "
                 + " AFTER INSERT ON " + AccountEntry.TABLE_NAME
                 + " BEGIN " + "UPDATE " + AccountEntry.TABLE_NAME

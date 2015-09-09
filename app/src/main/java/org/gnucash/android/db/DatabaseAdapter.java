@@ -82,6 +82,8 @@ public abstract class DatabaseAdapter<Model extends BaseModel> {
         // create a temporary view, combining accounts, transactions and splits, as this is often used
         // in the queries
         mDb.execSQL("CREATE TEMP VIEW IF NOT EXISTS trans_split_acct AS SELECT "
+                        + TransactionEntry.TABLE_NAME + "." + CommonColumns.COLUMN_MODIFIED_AT + " AS "
+                        + TransactionEntry.TABLE_NAME + "_" + CommonColumns.COLUMN_MODIFIED_AT + " , "
                         + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_UID + " AS "
                         + TransactionEntry.TABLE_NAME + "_" + TransactionEntry.COLUMN_UID + " , "
                         + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_DESCRIPTION + " AS "
@@ -104,6 +106,10 @@ public abstract class DatabaseAdapter<Model extends BaseModel> {
                         + SplitEntry.TABLE_NAME + "_" + SplitEntry.COLUMN_VALUE_NUM + " , "
                         + SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_VALUE_DENOM + " AS "
                         + SplitEntry.TABLE_NAME + "_" + SplitEntry.COLUMN_VALUE_DENOM + " , "
+                        + SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_QUANTITY_NUM + " AS "
+                        + SplitEntry.TABLE_NAME + "_" + SplitEntry.COLUMN_QUANTITY_NUM + " , "
+                        + SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_QUANTITY_DENOM + " AS "
+                        + SplitEntry.TABLE_NAME + "_" + SplitEntry.COLUMN_QUANTITY_DENOM + " , "
                         + SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_MEMO + " AS "
                         + SplitEntry.TABLE_NAME + "_" + SplitEntry.COLUMN_MEMO + " , "
                         + AccountEntry.TABLE_NAME + "." + AccountEntry.COLUMN_UID + " AS "

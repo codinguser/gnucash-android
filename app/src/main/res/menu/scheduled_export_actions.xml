@@ -2,7 +2,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
       xmlns:app="http://schemas.android.com/apk/res-auto">
     <item android:id="@+id/menu_add_scheduled_export"
-        android:icon="@drawable/content_new_holo_dark"
+        android:icon="@drawable/ic_add_white_24dp"
         android:title="@string/title_create_export_schedule"
         app:showAsAction="always"/>
 </menu>

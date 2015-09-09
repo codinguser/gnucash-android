@@ -21,6 +21,7 @@ import android.app.SearchManager;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -30,6 +31,7 @@ import android.support.v4.content.Loader;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
@@ -53,8 +55,12 @@ import org.gnucash.android.ui.FormActivity;
 import org.gnucash.android.ui.UxArgument;
 import org.gnucash.android.ui.util.AccountBalanceTask;
 import org.gnucash.android.ui.util.CursorRecyclerAdapter;
+import org.gnucash.android.ui.util.EmptyRecyclerView;
 import org.gnucash.android.ui.util.OnAccountClickedListener;
 import org.gnucash.android.ui.util.Refreshable;
+
+import butterknife.Bind;
+import butterknife.ButterKnife;
 
 /**
  * Fragment for displaying the list of accounts in the database
@@ -67,8 +73,9 @@ public class AccountsListFragment extends Fragment implements
         android.support.v7.widget.SearchView.OnQueryTextListener,
         android.support.v7.widget.SearchView.OnCloseListener {
 
-    private RecyclerView mRecyclerView;
-    private AccountRecyclerAdapter mAccountRecyclerAdapter;
+    AccountRecyclerAdapter mAccountRecyclerAdapter;
+    @Bind(R.id.account_recycler_view)  EmptyRecyclerView mRecyclerView;
+    @Bind(R.id.empty_view) TextView mEmptyTextView;
 
     /**
      * Describes the kinds of accounts that should be loaded in the accounts list.
@@ -125,16 +132,31 @@ public class AccountsListFragment extends Fragment implements
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_accounts_list, container,
                 false);
-        TextView sumlabelTextView = (TextView) v.findViewById(R.id.label_sum);
-        sumlabelTextView.setText(R.string.account_balance);
 
-        mRecyclerView = (RecyclerView) v.findViewById(R.id.account_recycler_view);
+        ButterKnife.bind(this, v);
         mRecyclerView.setHasFixedSize(true);
+        mRecyclerView.setEmptyView(mEmptyTextView);
 
-        // use a linear layout manager
-        LinearLayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
-        mRecyclerView.setLayoutManager(mLayoutManager);
-        
+        switch (mDisplayMode){
+
+            case TOP_LEVEL:
+                mEmptyTextView.setText(R.string.label_no_accounts);
+                break;
+            case RECENT:
+                mEmptyTextView.setText(R.string.label_no_recent_accounts);
+                break;
+            case FAVORITES:
+                mEmptyTextView.setText(R.string.label_no_favorite_accounts);
+                break;
+        }
+
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            GridLayoutManager gridLayoutManager = new GridLayoutManager(getActivity(), 2);
+            mRecyclerView.setLayoutManager(gridLayoutManager);
+        } else {
+            LinearLayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
+            mRecyclerView.setLayoutManager(mLayoutManager);
+        }
         return v;
     }
 
@@ -412,23 +434,22 @@ public class AccountsListFragment extends Fragment implements
     }
 
 
-    private class AccountRecyclerAdapter extends CursorRecyclerAdapter<AccountRecyclerAdapter.ViewHolder> {
+    class AccountRecyclerAdapter extends CursorRecyclerAdapter<AccountRecyclerAdapter.AccountViewHolder> {
 
         public AccountRecyclerAdapter(Cursor cursor){
            super(cursor);
         }
 
         @Override
-        public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        public AccountViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             View v = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.cardview_account, parent, false);
 
-            ViewHolder viewHolder = new ViewHolder(v);
-            return viewHolder;
+            return new AccountViewHolder(v);
         }
 
         @Override
-        public void onBindViewHolderCursor(final ViewHolder holder, final Cursor cursor) {
+        public void onBindViewHolderCursor(final AccountViewHolder holder, final Cursor cursor) {
             final String accountUID = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.AccountEntry.COLUMN_UID));
             holder.accoundId = mAccountsDbAdapter.getID(accountUID);
 
@@ -449,7 +470,7 @@ public class AccountsListFragment extends Fragment implements
             holder.colorStripView.setBackgroundColor(colorCode);
 
             boolean isPlaceholderAccount = mAccountsDbAdapter.isPlaceholderAccount(accountUID);
-            if (isPlaceholderAccount){
+            if (isPlaceholderAccount) {
                 holder.createTransaction.setVisibility(View.GONE);
             } else {
                 holder.createTransaction.setOnClickListener(new View.OnClickListener() {
@@ -483,6 +504,7 @@ public class AccountsListFragment extends Fragment implements
                     int drawableResource = !isFavoriteAccount ?
                             R.drawable.ic_star_black_24dp : R.drawable.ic_star_border_black_24dp;
                     holder.favoriteStatus.setImageResource(drawableResource);
+                    refresh();
                 }
             });
 
@@ -494,31 +516,26 @@ public class AccountsListFragment extends Fragment implements
             });
         }
 
-        public class ViewHolder extends RecyclerView.ViewHolder implements PopupMenu.OnMenuItemClickListener{
-            TextView accountName;
-            TextView description;
-            TextView accountBalance;
-            ImageView createTransaction;
-            ImageView favoriteStatus;
-            ImageView optionsMenu;
-            View colorStripView;
+
+        class AccountViewHolder extends RecyclerView.ViewHolder implements PopupMenu.OnMenuItemClickListener{
+            @Bind(R.id.primary_text) TextView accountName;
+            @Bind(R.id.secondary_text) TextView description;
+            @Bind(R.id.account_balance) TextView accountBalance;
+            @Bind(R.id.create_transaction) ImageView createTransaction;
+            @Bind(R.id.favorite_status) ImageView favoriteStatus;
+            @Bind(R.id.options_menu) ImageView optionsMenu;
+            @Bind(R.id.account_color_strip) View colorStripView;
             long accoundId;
 
-            public ViewHolder(View itemView) {
+            public AccountViewHolder(View itemView) {
                 super(itemView);
-                accountName = (TextView) itemView.findViewById(R.id.primary_text);
-                description = (TextView) itemView.findViewById(R.id.secondary_text);
-                accountBalance = (TextView) itemView.findViewById(R.id.account_balance);
-                favoriteStatus = (ImageView) itemView.findViewById(R.id.favorite_status);
-                optionsMenu = (ImageView) itemView.findViewById(R.id.options_menu);
-                createTransaction = (ImageView) itemView.findViewById(R.id.create_transaction);
-                colorStripView = itemView.findViewById(R.id.account_color_strip);
+                ButterKnife.bind(this, itemView);
 
                 optionsMenu.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         PopupMenu popup = new PopupMenu(getActivity(), v);
-                        popup.setOnMenuItemClickListener(ViewHolder.this);
+                        popup.setOnMenuItemClickListener(AccountViewHolder.this);
                         MenuInflater inflater = popup.getMenuInflater();
                         inflater.inflate(R.menu.account_context_menu, popup.getMenu());
                         popup.show();

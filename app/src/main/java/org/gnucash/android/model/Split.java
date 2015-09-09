@@ -4,6 +4,8 @@ package org.gnucash.android.model;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
+import org.gnucash.android.db.AccountsDbAdapter;
+
 /**
  * A split amount in a transaction.
  * Every transaction is made up of at least two splits (representing a double entry transaction)
@@ -62,7 +64,7 @@ public class Split extends BaseModel{
 
     /**
      * Initialize split with a value amount and account
-     * @param value Money value amount of this split
+     * @param amount Money value amount of this split. Value is always in the currency the owning transaction
      * @param accountUID String UID of transfer account
      */
     public Split(@NonNull Money amount, String accountUID){
@@ -108,21 +110,11 @@ public class Split extends BaseModel{
     /**
      * Sets the value amount of the split.<br>
      * The value is in the currency of the containing transaction
-     * <p>If the quantity of the split is null, it will be set to the {@code amount}</p>
-     * @param amount Money value of this split
+     * @param value Money value of this split
      * @see #setQuantity(Money)
      */
     public void setValue(Money value) {
         mValue = value;
-        // remove the following when porting to value/quantity is done
-        if (mQuantity == null) {
-            Log.e(getClass().getSimpleName(), "Are you sure you want set the value instead of the quantity?");
-            try {
-                throw new Exception("");
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
     }
 
     /**
@@ -221,7 +213,7 @@ public class Split extends BaseModel{
         pair.setType(mSplitType.invert());
         pair.setMemo(mMemo);
         pair.setTransactionUID(mTransactionUID);
-
+        pair.setQuantity(mQuantity);
         return pair;
     }
 
@@ -236,6 +228,7 @@ public class Split extends BaseModel{
         split.setType(mSplitType);
         split.setMemo(mMemo);
         split.setTransactionUID(mTransactionUID);
+        split.setQuantity(mQuantity);
         return split;
     }
 
@@ -248,6 +241,53 @@ public class Split extends BaseModel{
     public boolean isPairOf(Split other) {
         return mValue.absolute().equals(other.mValue.absolute())
                 && mSplitType.invert().equals(other.mSplitType);
+    }
+
+    /**
+     * Returns the formatted amount (with or without negation sign) for the split value
+     * @return Money amount of value
+     * @see #getFormattedAmount(Money, String, TransactionType)
+     */
+    public Money getFormattedValue(){
+        return getFormattedAmount(mValue, mAccountUID, mSplitType);
+    }
+
+    /**
+     * Returns the formatted amount (with or without negation sign) for the quantity
+     * @return Money amount of quantity
+     * @see #getFormattedAmount(Money, String, TransactionType)
+     */
+    public Money getFormattedQuantity(){
+        return getFormattedAmount(mQuantity, mAccountUID, mSplitType);
+    }
+
+    /**
+     * Splits are saved as absolute values to the database, with no negative numbers.
+     * The type of movement the split causes to the balance of an account determines its sign, and
+     * that depends on the split type and the account type
+     * @param amount Money amount to format
+     * @param accountUID GUID of the account
+     * @param splitType Transaction type of the split
+     * @return -{@code amount} if the amount would reduce the balance of {@code account}, otherwise +{@code amount}
+     */
+    public static Money getFormattedAmount(Money amount, String accountUID, TransactionType splitType){
+        boolean isDebitAccount = AccountsDbAdapter.getInstance().getAccountType(accountUID).hasDebitNormalBalance();
+        Money absAmount = amount.absolute();
+
+        boolean isDebitSplit = splitType == TransactionType.DEBIT;
+        if (isDebitAccount) {
+            if (isDebitSplit) {
+                return absAmount;
+            } else {
+                return absAmount.negate();
+            }
+        } else {
+            if (isDebitSplit) {
+                return absAmount.negate();
+            } else {
+                return absAmount;
+            }
+        }
     }
 
     @Override
