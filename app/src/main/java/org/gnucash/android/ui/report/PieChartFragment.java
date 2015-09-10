@@ -140,7 +140,7 @@ public class PieChartFragment extends Fragment implements OnChartValueSelectedLi
 
         mChart.setCenterTextSize(CENTER_TEXT_SIZE);
         mChart.setDescription("");
-        mChart.getLegend().setEnabled(false);
+        mChart.getLegend().setWordWrapEnabled(true);
         mChart.setOnChartValueSelectedListener(this);
 
         mAccountType = ((ReportsActivity)getActivity()).getAccountType();
