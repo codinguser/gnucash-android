@@ -611,7 +611,7 @@ public class AccountFormFragment extends Fragment {
         if (mAccount != null){  //if editing an account
             mDescendantAccountUIDs = mAccountsDbAdapter.getDescendantAccountUIDs(mAccount.getUID(), null, null);
             String rootAccountUID = mAccountsDbAdapter.getOrCreateGnuCashRootAccountUID();
-            List<String> descendantAccountUIDs = new ArrayList<String>(mDescendantAccountUIDs);
+            List<String> descendantAccountUIDs = new ArrayList<>(mDescendantAccountUIDs);
             if (rootAccountUID != null)
                 descendantAccountUIDs.add(rootAccountUID);
             // limit cyclic account hierarchies.

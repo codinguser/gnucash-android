@@ -2,10 +2,13 @@ package org.gnucash.android.test.unit.db;
 
 import org.assertj.core.data.Index;
 import org.gnucash.android.BuildConfig;
+import org.gnucash.android.R;
+import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.ScheduledActionDbAdapter;
 import org.gnucash.android.db.SplitsDbAdapter;
 import org.gnucash.android.db.TransactionsDbAdapter;
+import org.gnucash.android.importer.GncXmlImporter;
 import org.gnucash.android.model.Account;
 import org.gnucash.android.model.AccountType;
 import org.gnucash.android.model.Money;
@@ -20,11 +23,15 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
+import org.xml.sax.SAXException;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Currency;
 import java.util.List;
+
+import javax.xml.parsers.ParserConfigurationException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
@@ -324,6 +331,60 @@ public class AccountsDbAdapterTest{
         assertThat(mSplitsDbAdapter.getRecordsCount()).isZero();
 
     }
+
+    @Test
+    public void shouldGetDescendantAccounts(){
+        loadDefaultAccounts();
+
+        String uid = mAccountsDbAdapter.findAccountUidByFullName("Expenses:Auto");
+        List<String> descendants = mAccountsDbAdapter.getDescendantAccountUIDs(uid, null, null);
+
+        assertThat(descendants).hasSize(4);
+    }
+
+    @Test
+    public void shouldReassignDescendantAccounts(){
+        loadDefaultAccounts();
+
+        String savingsAcctUID = mAccountsDbAdapter.findAccountUidByFullName("Assets:Current Assets:Savings Account");
+
+        String currentAssetsUID = mAccountsDbAdapter.findAccountUidByFullName("Assets:Current Assets");
+        String assetsUID = mAccountsDbAdapter.findAccountUidByFullName("Assets");
+
+        assertThat(mAccountsDbAdapter.getParentAccountUID(savingsAcctUID)).isEqualTo(currentAssetsUID);
+        mAccountsDbAdapter.reassignDescendantAccounts(currentAssetsUID, assetsUID);
+        assertThat(mAccountsDbAdapter.getParentAccountUID(savingsAcctUID)).isEqualTo(assetsUID);
+
+        assertThat(mAccountsDbAdapter.getFullyQualifiedAccountName(savingsAcctUID)).isEqualTo("Assets:Savings Account");
+
+    }
+
+    @Test
+    public void shouldCreateImbalanceAccountOnDemand(){
+        assertThat(mAccountsDbAdapter.getRecordsCount()).isEqualTo(0);
+
+        Currency usd = Currency.getInstance("USD");
+        String imbalanceUID = mAccountsDbAdapter.getImbalanceAccountUID(usd);
+        assertThat(imbalanceUID).isNull();
+        assertThat(mAccountsDbAdapter.getRecordsCount()).isEqualTo(0);
+
+        imbalanceUID = mAccountsDbAdapter.getOrCreateImbalanceAccountUID(usd);
+        assertThat(imbalanceUID).isNotNull().isNotEmpty();
+        assertThat(mAccountsDbAdapter.getRecordsCount()).isEqualTo(2);
+    }
+
+    /**
+     * Loads the default accounts from file resource
+     */
+    private void loadDefaultAccounts(){
+        try {
+            GncXmlImporter.parse(GnuCashApplication.getAppContext().getResources().openRawResource(R.raw.default_accounts));
+        } catch (ParserConfigurationException | SAXException | IOException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Could not create default accounts");
+        }
+    }
+
 
 	@After
 	public void tearDown() throws Exception {

@@ -151,8 +151,9 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
                     + AccountEntry.COLUMN_PLACEHOLDER   + " , "
                     + AccountEntry.COLUMN_CREATED_AT    + " , "
                     + AccountEntry.COLUMN_HIDDEN        + " , "
+                    + AccountEntry.COLUMN_COMMODITY_UID + " , "
                     + AccountEntry.COLUMN_PARENT_ACCOUNT_UID + " , "
-                    + AccountEntry.COLUMN_DEFAULT_TRANSFER_ACCOUNT_UID + " ) VALUES ( ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ?)");
+                    + AccountEntry.COLUMN_DEFAULT_TRANSFER_ACCOUNT_UID + " ) VALUES ( ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ?, ?)");
             //commodity_uid is not forgotten. It will be inserted by a database trigger
         }
 
@@ -171,15 +172,18 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
         mReplaceStatement.bindLong(9, account.isPlaceholderAccount() ? 1 : 0);
         mReplaceStatement.bindString(10, account.getCreatedTimestamp().toString());
         mReplaceStatement.bindLong(11, account.isHidden() ? 1 : 0);
+        if (account.getCommodityUID() != null)
+            mReplaceStatement.bindString(12, account.getCommodityUID());
+
         String parentAccountUID = account.getParentUID();
         if (parentAccountUID == null && account.getAccountType() != AccountType.ROOT) {
             parentAccountUID = getOrCreateGnuCashRootAccountUID();
         }
         if (parentAccountUID != null) {
-            mReplaceStatement.bindString(12, parentAccountUID);
+            mReplaceStatement.bindString(13, parentAccountUID);
         }
         if (account.getDefaultTransferAccountUID() != null) {
-            mReplaceStatement.bindString(13, account.getDefaultTransferAccountUID());
+            mReplaceStatement.bindString(14, account.getDefaultTransferAccountUID());
         }
 
         return mReplaceStatement;
@@ -414,17 +418,6 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
 	}
 
     /**
-     * Returns the  unique ID of the parent account of the account with database ID <code>id</code>
-     * If the account has no parent, null is returned.
-     * @param id DB record ID of account . Should not be null
-     * @return DB record UID of the parent account, null if the account has no parent
-     * @see #getParentAccountUID(String)
-     */
-    public String getParentAccountUID(long id){
-        return getParentAccountUID(getUID(id));
-    }
-	
-    /**
      * Returns the color code for the account in format #rrggbb
      * @param accountId Database row ID of the account
      * @return String color code of account or null if none
@@ -496,7 +489,9 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
 	/**
 	 * Returns a list of accounts which have transactions that have not been exported yet
 	 * @return List of {@link Account}s with unexported transactions
+     * @deprecated This uses the exported flag in the database which is no longer supported.
 	 */
+    @Deprecated
     public List<Account> getExportableAccounts(){
         LinkedList<Account> accountsList = new LinkedList<Account>();
         Cursor cursor = mDb.query(

@@ -179,21 +179,6 @@ public class Transaction extends BaseModel{
      * @return Split whose amount is the imbalance of this transaction
      */
     public Split getAutoBalanceSplit(){
-        //The values should be balanced even for multi-currency transactions
-        //Currency lastCurrency = null;
-        //for (Split split : mSplitList) {
-        //    Currency currentCurrency = split.getQuantity().getCurrency();
-        //    if (lastCurrency == null)
-        //        lastCurrency = currentCurrency;
-        //    else if (lastCurrency != currentCurrency){
-        //        return null; //for now we will not autobalance multi-currency transactions
-        //    }
-        //}
-
-        //if all the splits are the same currency but the transaction is another
-        //if (!lastCurrency.getCurrencyCode().equals(mCurrencyCode))
-        //    return null;
-
         Money imbalance = getImbalance();
         if (!imbalance.isAmountZero()){
             Currency currency = Currency.getInstance(mCurrencyCode);

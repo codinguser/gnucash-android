@@ -260,7 +260,7 @@ public abstract class DatabaseAdapter<Model extends BaseModel> {
                 return buildModelInstance(cursor);
             }
             else {
-                throw new IllegalArgumentException("split " + uid + " does not exist");
+                throw new IllegalArgumentException("Record with " + uid + " does not exist");
             }
         } finally {
             cursor.close();

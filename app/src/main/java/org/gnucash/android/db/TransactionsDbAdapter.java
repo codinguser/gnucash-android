@@ -89,6 +89,11 @@ public class TransactionsDbAdapter extends DatabaseAdapter<Transaction> {
         Log.d(LOG_TAG, "Replacing transaction in db");
         mDb.beginTransaction();
         try {
+            Split imbalanceSplit = transaction.getAutoBalanceSplit();
+            if (imbalanceSplit != null){
+                String imbalanceAccountUID = AccountsDbAdapter.getInstance().getOrCreateImbalanceAccountUID(transaction.getCurrency());
+                imbalanceSplit.setAccountUID(imbalanceAccountUID);
+            }
             super.addRecord(transaction);
 
             Log.d(LOG_TAG, "Adding splits for transaction");
@@ -162,9 +167,10 @@ public class TransactionsDbAdapter extends DatabaseAdapter<Transaction> {
                     + TransactionEntry.COLUMN_TIMESTAMP + " , "
                     + TransactionEntry.COLUMN_EXPORTED + " , "
                     + TransactionEntry.COLUMN_CURRENCY + " , "
+                    + TransactionEntry.COLUMN_COMMODITY_UID + " , "
                     + TransactionEntry.COLUMN_CREATED_AT + " , "
                     + TransactionEntry.COLUMN_SCHEDX_ACTION_UID + " , "
-                    + TransactionEntry.COLUMN_TEMPLATE + " ) VALUES ( ? , ? , ? , ?, ? , ? , ? , ? , ?)");
+                    + TransactionEntry.COLUMN_TEMPLATE + " ) VALUES ( ? , ? , ? , ?, ? , ? , ? , ?, ? , ?)");
         }
 
         mReplaceStatement.clearBindings();
@@ -174,12 +180,16 @@ public class TransactionsDbAdapter extends DatabaseAdapter<Transaction> {
         mReplaceStatement.bindLong(4,   transaction.getTimeMillis());
         mReplaceStatement.bindLong(5, transaction.isExported() ? 1 : 0);
         mReplaceStatement.bindString(6, transaction.getCurrencyCode());
-        mReplaceStatement.bindString(7, transaction.getCreatedTimestamp().toString());
+
+        if(transaction.getCommodityUID() != null)
+            mReplaceStatement.bindString(7, transaction.getCommodityUID());
+        mReplaceStatement.bindString(8, transaction.getCreatedTimestamp().toString());
+
         if (transaction.getScheduledActionUID() == null)
-            mReplaceStatement.bindNull(8);
+            mReplaceStatement.bindNull(9);
         else
-            mReplaceStatement.bindString(8,  transaction.getScheduledActionUID());
-        mReplaceStatement.bindLong(9, transaction.isTemplate() ? 1 : 0);
+            mReplaceStatement.bindString(9,  transaction.getScheduledActionUID());
+        mReplaceStatement.bindLong(10, transaction.isTemplate() ? 1 : 0);
 
         return mReplaceStatement;
     }

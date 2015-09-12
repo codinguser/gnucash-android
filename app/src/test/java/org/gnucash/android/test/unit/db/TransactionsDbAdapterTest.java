@@ -89,19 +89,21 @@ public class TransactionsDbAdapterTest {
 		assertThat(mSplitsDbAdapter.getSplitsForTransaction(transaction.getUID())).hasSize(0);
 	}
 
-	/**
-	 * Adding a split to a transaction should set the transaction UID of the split to the GUID of the transaction
-	 */
 	@Test
-	public void addingSplitsShouldSetTransactionUID(){
-		Transaction transaction = new Transaction("");
-		assertThat(transaction.getCurrencyCode()).isEqualTo(Money.DEFAULT_CURRENCY_CODE);
-
-		Split split = new Split(Money.getZeroInstance(), alphaAccount.getUID());
-		assertThat(split.getTransactionUID()).isEmpty();
+	public void shouldBalanceTransactionsOnSave(){
+		Transaction transaction = new Transaction("Auto balance");
+		Split split = new Split(new Money(BigDecimal.TEN, Currency.getInstance(Money.DEFAULT_CURRENCY_CODE)),
+				alphaAccount.getUID());
 
 		transaction.addSplit(split);
-		assertThat(split.getTransactionUID()).isEqualTo(transaction.getUID());
+
+		mTransactionsDbAdapter.addRecord(transaction);
+
+		Transaction trn = mTransactionsDbAdapter.getRecord(transaction.getUID());
+		assertThat(trn.getSplits()).hasSize(2);
+
+		String imbalanceAccountUID = mAccountsDbAdapter.getImbalanceAccountUID(Currency.getInstance(Money.DEFAULT_CURRENCY_CODE));
+		assertThat(trn.getSplits()).extracting("mAccountUID").contains(imbalanceAccountUID);
 	}
 
 	@Test
