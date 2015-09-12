@@ -474,6 +474,20 @@ public class TransactionsDbAdapter extends DatabaseAdapter<Transaction> {
     }
 
     /**
+     * Returns the number of splits for the transaction in the database
+     * @param transactionUID GUID of the transaction
+     * @return Number of splits belonging to the transaction
+     */
+    public long getSplitCount(@NonNull String transactionUID){
+        if (transactionUID == null)
+            return 0;
+        String sql = "SELECT COUNT(*) FROM " + SplitEntry.TABLE_NAME
+                + " WHERE " + SplitEntry.COLUMN_TRANSACTION_UID + "= '" + transactionUID + "'";
+        SQLiteStatement statement = mDb.compileStatement(sql);
+        return statement.simpleQueryForLong();
+    }
+
+    /**
      * Returns a cursor to transactions whose name (UI: description) start with the <code>prefix</code>
      * <p>This method is used for autocomplete suggestions when creating new transactions. <br/>
      * The suggestions are either transactions which have at least one split with {@code accountUID} or templates.</p>

@@ -79,9 +79,7 @@
             android:stretchColumns="1"
             android:orientation="vertical" >
 
-            <TableRow xmlns:tools="http://schemas.android.com/tools"
-                xmlns:android="http://schemas.android.com/apk/res/android"
-                android:layout_width="match_parent"
+            <TableRow android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:weightSum="5"
                 android:paddingTop="5dp"

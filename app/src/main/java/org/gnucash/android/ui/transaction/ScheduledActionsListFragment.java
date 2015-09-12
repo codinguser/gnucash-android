@@ -58,7 +58,6 @@ import org.gnucash.android.model.ScheduledAction;
 import org.gnucash.android.model.Transaction;
 import org.gnucash.android.ui.FormActivity;
 import org.gnucash.android.ui.UxArgument;
-import org.gnucash.android.ui.account.AccountsActivity;
 
 import java.text.DateFormat;
 import java.util.Date;
@@ -227,7 +226,7 @@ public class ScheduledActionsListFragment extends ListFragment implements
         switch (item.getItemId()){
             case R.id.menu_add_scheduled_export:
                 Intent intent = new Intent(getActivity(), FormActivity.class);
-                intent.putExtra(UxArgument.FORM_TYPE, FormActivity.FormType.EXPORT_FORM.name());
+                intent.putExtra(UxArgument.FORM_TYPE, FormActivity.FormType.EXPORT.name());
                 startActivityForResult(intent, 0x1);
                 return true;
             default:
@@ -268,7 +267,7 @@ public class ScheduledActionsListFragment extends ListFragment implements
     public void openTransactionForEdit(String accountUID, String transactionUID, String scheduledActionUid){
         Intent createTransactionIntent = new Intent(getActivity(), FormActivity.class);
         createTransactionIntent.setAction(Intent.ACTION_INSERT_OR_EDIT);
-        createTransactionIntent.putExtra(UxArgument.FORM_TYPE, FormActivity.FormType.TRANSACTION_FORM.name());
+        createTransactionIntent.putExtra(UxArgument.FORM_TYPE, FormActivity.FormType.TRANSACTION.name());
         createTransactionIntent.putExtra(UxArgument.SELECTED_ACCOUNT_UID, accountUID);
         createTransactionIntent.putExtra(UxArgument.SELECTED_TRANSACTION_UID, transactionUID);
         createTransactionIntent.putExtra(UxArgument.SCHEDULED_ACTION_UID, scheduledActionUid);

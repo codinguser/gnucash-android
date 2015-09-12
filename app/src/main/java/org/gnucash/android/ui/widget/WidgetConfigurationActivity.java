@@ -40,6 +40,7 @@ import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.model.Account;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.receivers.TransactionAppWidgetProvider;
+import org.gnucash.android.ui.FormActivity;
 import org.gnucash.android.ui.UxArgument;
 import org.gnucash.android.ui.account.AccountsActivity;
 import org.gnucash.android.ui.transaction.TransactionsActivity;
@@ -178,15 +179,16 @@ public class WidgetConfigurationActivity extends Activity {
 
 		Intent accountViewIntent = new Intent(context, TransactionsActivity.class);
 		accountViewIntent.setAction(Intent.ACTION_VIEW);
-		accountViewIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
+		accountViewIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 		accountViewIntent.putExtra(UxArgument.SELECTED_ACCOUNT_UID, accountUID);
 		PendingIntent accountPendingIntent = PendingIntent
 				.getActivity(context, appWidgetId, accountViewIntent, 0);
 		views.setOnClickPendingIntent(R.id.widget_layout, accountPendingIntent);
 		
-		Intent newTransactionIntent = new Intent(context, TransactionsActivity.class);
+		Intent newTransactionIntent = new Intent(context, FormActivity.class);
 		newTransactionIntent.setAction(Intent.ACTION_INSERT_OR_EDIT);
 		newTransactionIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+		newTransactionIntent.putExtra(UxArgument.FORM_TYPE, FormActivity.FormType.TRANSACTION.name());
 		newTransactionIntent.putExtra(UxArgument.SELECTED_ACCOUNT_UID, accountUID);
 		PendingIntent pendingIntent = PendingIntent
 				.getActivity(context, appWidgetId, newTransactionIntent, 0);	            

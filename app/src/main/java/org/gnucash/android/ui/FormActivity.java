@@ -45,7 +45,7 @@ public class FormActivity extends AppCompatActivity {
 
     private String mAccountUID;
 
-    public enum FormType {ACCOUNT_FORM, TRANSACTION_FORM, EXPORT_FORM, SPLIT_EDITOR}
+    public enum FormType {ACCOUNT, TRANSACTION, EXPORT, SPLIT_EDITOR}
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,15 +76,15 @@ public class FormActivity extends AppCompatActivity {
                 getWindow().setStatusBarColor(GnuCashApplication.darken(colorCode));
         }
         switch (formType){
-            case ACCOUNT_FORM:
+            case ACCOUNT:
                 showAccountFormFragment(intent.getExtras());
                 break;
 
-            case TRANSACTION_FORM:
+            case TRANSACTION:
                 showTransactionFormFragment(intent.getExtras());
                 break;
 
-            case EXPORT_FORM:
+            case EXPORT:
                 showExportFormFragment(null);
                 break;
 

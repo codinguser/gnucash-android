@@ -127,11 +127,15 @@ public class TransactionsActivity extends PassLockActivity implements
             mAccountUID = mAccountsDbAdapter.getUID(id);
             mIsPlaceholderAccount = mAccountsDbAdapter.isPlaceholderAccount(mAccountUID);
             if (mIsPlaceholderAccount){
-                if (mTabLayout.getTabCount() > 1)
+                if (mTabLayout.getTabCount() > 1) {
                     mTabLayout.removeTabAt(1);
+                    mPagerAdapter.notifyDataSetChanged();
+                }
             } else {
-                if (mTabLayout.getTabCount() < 2)
+                if (mTabLayout.getTabCount() < 2) {
                     mTabLayout.addTab(mTabLayout.newTab().setText(R.string.section_header_transactions));
+                    mPagerAdapter.notifyDataSetChanged();
+                }
             }
             //refresh any fragments in the tab with the new account UID
             refresh();
@@ -310,7 +314,7 @@ public class TransactionsActivity extends PassLockActivity implements
                     case INDEX_SUB_ACCOUNTS_FRAGMENT:
                         Intent addAccountIntent = new Intent(TransactionsActivity.this, FormActivity.class);
                         addAccountIntent.setAction(Intent.ACTION_INSERT_OR_EDIT);
-                        addAccountIntent.putExtra(UxArgument.FORM_TYPE, FormActivity.FormType.ACCOUNT_FORM.name());
+                        addAccountIntent.putExtra(UxArgument.FORM_TYPE, FormActivity.FormType.ACCOUNT.name());
                         addAccountIntent.putExtra(UxArgument.PARENT_ACCOUNT_UID, mAccountUID);
                         startActivityForResult(addAccountIntent, AccountsActivity.REQUEST_EDIT_ACCOUNT);
                         ;
@@ -419,7 +423,7 @@ public class TransactionsActivity extends PassLockActivity implements
                 Intent editAccountIntent = new Intent(this, FormActivity.class);
                 editAccountIntent.setAction(Intent.ACTION_INSERT_OR_EDIT);
                 editAccountIntent.putExtra(UxArgument.SELECTED_ACCOUNT_UID, mAccountUID);
-                editAccountIntent.putExtra(UxArgument.FORM_TYPE, FormActivity.FormType.ACCOUNT_FORM.name());
+                editAccountIntent.putExtra(UxArgument.FORM_TYPE, FormActivity.FormType.ACCOUNT.name());
                 startActivityForResult(editAccountIntent, AccountsActivity.REQUEST_EDIT_ACCOUNT);
                 return true;
 
@@ -473,7 +477,7 @@ public class TransactionsActivity extends PassLockActivity implements
         Intent createTransactionIntent = new Intent(this.getApplicationContext(), FormActivity.class);
         createTransactionIntent.setAction(Intent.ACTION_INSERT_OR_EDIT);
         createTransactionIntent.putExtra(UxArgument.SELECTED_ACCOUNT_UID, accountUID);
-        createTransactionIntent.putExtra(UxArgument.FORM_TYPE, FormActivity.FormType.TRANSACTION_FORM.name());
+        createTransactionIntent.putExtra(UxArgument.FORM_TYPE, FormActivity.FormType.TRANSACTION.name());
         startActivity(createTransactionIntent);
 	}
 
@@ -483,7 +487,7 @@ public class TransactionsActivity extends PassLockActivity implements
         createTransactionIntent.setAction(Intent.ACTION_INSERT_OR_EDIT);
         createTransactionIntent.putExtra(UxArgument.SELECTED_ACCOUNT_UID, mAccountUID);
         createTransactionIntent.putExtra(UxArgument.SELECTED_TRANSACTION_UID, transactionUID);
-        createTransactionIntent.putExtra(UxArgument.FORM_TYPE, FormActivity.FormType.TRANSACTION_FORM.name());
+        createTransactionIntent.putExtra(UxArgument.FORM_TYPE, FormActivity.FormType.TRANSACTION.name());
         startActivity(createTransactionIntent);
 	}
 

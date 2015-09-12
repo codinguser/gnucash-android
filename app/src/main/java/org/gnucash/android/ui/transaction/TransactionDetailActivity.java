@@ -8,12 +8,10 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TableLayout;
-import android.widget.TableRow;
 import android.widget.TextView;
 
 import org.gnucash.android.R;
@@ -25,7 +23,6 @@ import org.gnucash.android.model.Money;
 import org.gnucash.android.model.ScheduledAction;
 import org.gnucash.android.model.Split;
 import org.gnucash.android.model.Transaction;
-import org.gnucash.android.model.TransactionType;
 import org.gnucash.android.ui.FormActivity;
 import org.gnucash.android.ui.UxArgument;
 
@@ -169,8 +166,18 @@ public class TransactionDetailActivity extends AppCompatActivity{
      * Refreshes the transaction information
      */
     private void refresh(){
+        removeSplitItemViews();
         bindViews();
     }
+
+    /**
+     * Remove the split item views from the transaction detail prior to refreshing them
+     */
+    private void removeSplitItemViews(){
+        long splitCount = TransactionsDbAdapter.getInstance().getSplitCount(mTransactionUID);
+        mDetailTableLayout.removeViews(0, (int)splitCount);
+    }
+
 
     @OnClick(R.id.fab_edit_transaction)
     public void editTransaction(){
@@ -178,7 +185,7 @@ public class TransactionDetailActivity extends AppCompatActivity{
         createTransactionIntent.setAction(Intent.ACTION_INSERT_OR_EDIT);
         createTransactionIntent.putExtra(UxArgument.SELECTED_ACCOUNT_UID, mAccountUID);
         createTransactionIntent.putExtra(UxArgument.SELECTED_TRANSACTION_UID, mTransactionUID);
-        createTransactionIntent.putExtra(UxArgument.FORM_TYPE, FormActivity.FormType.TRANSACTION_FORM.name());
+        createTransactionIntent.putExtra(UxArgument.FORM_TYPE, FormActivity.FormType.TRANSACTION.name());
         startActivityForResult(createTransactionIntent, REQUEST_EDIT_TRANSACTION);
     }
 

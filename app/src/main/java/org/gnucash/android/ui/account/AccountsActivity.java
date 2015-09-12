@@ -262,7 +262,7 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
             public void onClick(View v) {
                 Intent addAccountIntent = new Intent(AccountsActivity.this, FormActivity.class);
                 addAccountIntent.setAction(Intent.ACTION_INSERT_OR_EDIT);
-                addAccountIntent.putExtra(UxArgument.FORM_TYPE, FormActivity.FormType.ACCOUNT_FORM.name());
+                addAccountIntent.putExtra(UxArgument.FORM_TYPE, FormActivity.FormType.ACCOUNT.name());
                 startActivityForResult(addAccountIntent, AccountsActivity.REQUEST_EDIT_ACCOUNT);
             }
         });
@@ -407,7 +407,7 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
      */
     public static void openExportFragment(FragmentActivity activity) {
         Intent intent = new Intent(activity, FormActivity.class);
-        intent.putExtra(UxArgument.FORM_TYPE, FormActivity.FormType.EXPORT_FORM.name());
+        intent.putExtra(UxArgument.FORM_TYPE, FormActivity.FormType.EXPORT.name());
         activity.startActivity(intent);
     }
 
