@@ -18,6 +18,7 @@ package org.gnucash.android.model;
 
 
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
 
@@ -253,7 +254,14 @@ public final class Money implements Comparable<Money>{
 	 * @return GnuCash numerator for this amount
 	 */
 	public int getNumerator() {
-		return mAmount.scaleByPowerOfTen(mCurrency.getDefaultFractionDigits()).intValueExact();
+		try {
+			return mAmount.scaleByPowerOfTen(getScale()).intValueExact();
+		} catch (ArithmeticException e) {
+			Log.e(getClass().getName(), "Currency " + mCurrency.getCurrencyCode() +
+					" with scale " + getScale() +
+					" has amount " + mAmount.toString());
+			throw e;
+		}
 	}
 
 	/**
@@ -262,7 +270,7 @@ public final class Money implements Comparable<Money>{
 	 * @return GnuCash format denominator
 	 */
 	public int getDenominator() {
-		switch (mCurrency.getDefaultFractionDigits()) {
+		switch (getScale()) {
 			case 0:
 				return 1;
 			case 1:
@@ -271,8 +279,21 @@ public final class Money implements Comparable<Money>{
 				return 100;
 			case 3:
 				return 1000;
+			case 4:
+				return 10000;
 		}
-		throw new RuntimeException("Unsupported number of fraction digits");
+		throw new RuntimeException("Unsupported number of fraction digits " + getScale());
+	}
+
+	private int getScale() {
+		int scale = mCurrency.getDefaultFractionDigits();
+		if (scale < 0) {
+			scale = mAmount.scale();
+		}
+		if (scale < 0) {
+			scale = 0;
+		}
+		return scale;
 	}
 
 	/**
