@@ -90,4 +90,35 @@ public class Price extends BaseModel {
     public void setValueDenom(int valueDenom) {
         this.mValueDenom = valueDenom;
     }
+
+    public void reduce() {
+        if (mValueDenom < 0) {
+            mValueDenom = -mValueDenom;
+            mValueNum = -mValueNum;
+        }
+        if (mValueDenom != 0 && mValueNum != 0) {
+            int num1 = mValueNum;
+            if (num1 < 0) {
+                num1 = -num1;
+            }
+            int num2 = mValueDenom;
+            int commonDivisor = 1;
+            for(;;) {
+                int r = num1 % num2;
+                if (r == 0) {
+                    commonDivisor = num2;
+                    break;
+                }
+                num1 = r;
+                r = num2 % num1;
+                if (r == 0) {
+                    commonDivisor = num1;
+                    break;
+                }
+                num2 = r;
+            }
+            mValueNum /= commonDivisor;
+            mValueDenom /= commonDivisor;
+        }
+    }
 }

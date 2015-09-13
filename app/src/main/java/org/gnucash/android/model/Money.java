@@ -252,8 +252,8 @@ public final class Money implements Comparable<Money>{
 	 * <p>Example: Given an amount 32.50$, the numerator will be 3250</p>
 	 * @return GnuCash numerator for this amount
 	 */
-	public int getNumerator(){
-		return mAmount.multiply(new BigDecimal(getDenominator())).intValue();
+	public int getNumerator() {
+		return mAmount.scaleByPowerOfTen(mCurrency.getDefaultFractionDigits()).intValueExact();
 	}
 
 	/**
@@ -261,8 +261,18 @@ public final class Money implements Comparable<Money>{
 	 * <p>The denominator is 10 raised to the power of number of fractional digits in the currency</p>
 	 * @return GnuCash format denominator
 	 */
-	public int getDenominator(){
-		return (int) Math.pow(10, mCurrency.getDefaultFractionDigits());
+	public int getDenominator() {
+		switch (mCurrency.getDefaultFractionDigits()) {
+			case 0:
+				return 1;
+			case 1:
+				return 10;
+			case 2:
+				return 100;
+			case 3:
+				return 1000;
+		}
+		throw new RuntimeException("Unsupported number of fraction digits");
 	}
 
 	/**
