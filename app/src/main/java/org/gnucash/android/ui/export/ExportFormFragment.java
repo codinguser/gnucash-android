@@ -214,7 +214,9 @@ public class ExportFormFragment extends Fragment implements RecurrencePickerDial
 		Log.i(TAG, "Commencing async export of transactions");
 		new ExportAsyncTask(getActivity()).execute(exportParameters);
 
-		getActivity().finish();
+		// finish the activity will cause the progress dialog to be leaked
+		// which would throw an exception
+		//getActivity().finish();
 	}
 
 	private void bindViews(){
