@@ -94,7 +94,7 @@ public abstract class GncXmlHelper {
     public static final String TAG_SPLIT_QUANTITY   = "split:quantity";
     public static final String TAG_SPLIT_SLOTS      = "split:slots";
 
-    public static final String TAG_PRICEDB = "gnc:princedb";
+    public static final String TAG_PRICEDB = "gnc:pricedb";
     public static final String TAG_PRICE = "price";
     public static final String TAG_PRICE_ID = "price:id";
     public static final String TAG_PRICE_COMMODITY = "price:commodity";
