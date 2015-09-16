@@ -12,8 +12,8 @@ public class Price extends BaseModel {
     private Timestamp mDate;
     private String mSource;
     private String mType;
-    private int mValueNum;
-    private int mValueDenom;
+    private long mValueNum;
+    private long mValueDenom;
 
     /**
      * String indicating that the price was provided by the user
@@ -75,19 +75,19 @@ public class Price extends BaseModel {
         this.mType = type;
     }
 
-    public int getValueNum() {
+    public long getValueNum() {
         return mValueNum;
     }
 
-    public void setValueNum(int valueNum) {
+    public void setValueNum(long valueNum) {
         this.mValueNum = valueNum;
     }
 
-    public int getValueDenom() {
+    public long getValueDenom() {
         return mValueDenom;
     }
 
-    public void setValueDenom(int valueDenom) {
+    public void setValueDenom(long valueDenom) {
         this.mValueDenom = valueDenom;
     }
 
@@ -97,14 +97,14 @@ public class Price extends BaseModel {
             mValueNum = -mValueNum;
         }
         if (mValueDenom != 0 && mValueNum != 0) {
-            int num1 = mValueNum;
+            long num1 = mValueNum;
             if (num1 < 0) {
                 num1 = -num1;
             }
-            int num2 = mValueDenom;
-            int commonDivisor = 1;
+            long num2 = mValueDenom;
+            long commonDivisor = 1;
             for(;;) {
-                int r = num1 % num2;
+                long r = num1 % num2;
                 if (r == 0) {
                     commonDivisor = num2;
                     break;

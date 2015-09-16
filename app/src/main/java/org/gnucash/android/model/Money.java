@@ -253,9 +253,9 @@ public final class Money implements Comparable<Money>{
 	 * <p>Example: Given an amount 32.50$, the numerator will be 3250</p>
 	 * @return GnuCash numerator for this amount
 	 */
-	public int getNumerator() {
+	public long getNumerator() {
 		try {
-			return mAmount.scaleByPowerOfTen(getScale()).intValueExact();
+			return mAmount.scaleByPowerOfTen(getScale()).longValueExact();
 		} catch (ArithmeticException e) {
 			Log.e(getClass().getName(), "Currency " + mCurrency.getCurrencyCode() +
 					" with scale " + getScale() +
@@ -269,7 +269,7 @@ public final class Money implements Comparable<Money>{
 	 * <p>The denominator is 10 raised to the power of number of fractional digits in the currency</p>
 	 * @return GnuCash format denominator
 	 */
-	public int getDenominator() {
+	public long getDenominator() {
 		switch (getScale()) {
 			case 0:
 				return 1;

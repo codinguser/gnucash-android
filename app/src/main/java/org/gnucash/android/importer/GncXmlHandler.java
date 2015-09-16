@@ -698,8 +698,10 @@ public class GncXmlHandler extends DefaultHandler {
                         Crashlytics.log(message);
                         throw new SAXException(message);
                     } else {
-                        mPrice.setValueNum(Integer.valueOf(parts[0]));
-                        mPrice.setValueDenom(Integer.valueOf(parts[1]));
+                        mPrice.setValueNum(Long.valueOf(parts[0]));
+                        mPrice.setValueDenom(Long.valueOf(parts[1]));
+                        Log.d(getClass().getName(), "price " + characterString +
+                        " .. " + mPrice.getValueNum() + "/" + mPrice.getValueDenom());
                     }
                 }
                 break;
@@ -707,11 +709,13 @@ public class GncXmlHandler extends DefaultHandler {
                 if (mPrice != null) {
                     mPrice.setType(characterString);
                 }
+                break;
             case GncXmlHelper.TAG_PRICE:
                 if (mPrice != null) {
                     mPriceList.add(mPrice);
                     mPrice = null;
                 }
+                break;
         }
 
         //reset the accumulated characters

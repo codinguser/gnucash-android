@@ -649,14 +649,14 @@ public class GncXmlExporter extends Exporter{
                 xmlSerializer.endTag(null, GncXmlHelper.TAG_COMMODITY_ID);
                 xmlSerializer.endTag(null, GncXmlHelper.TAG_PRICE_COMMODITY);
                 // currency
-                xmlSerializer.startTag(null, GncXmlHelper.TAG_PRICE_COMMODITY);
+                xmlSerializer.startTag(null, GncXmlHelper.TAG_PRICE_CURRENCY);
                 xmlSerializer.startTag(null, GncXmlHelper.TAG_COMMODITY_SPACE);
                 xmlSerializer.text("ISO4217");
                 xmlSerializer.endTag(null, GncXmlHelper.TAG_COMMODITY_SPACE);
                 xmlSerializer.startTag(null, GncXmlHelper.TAG_COMMODITY_ID);;
                 xmlSerializer.text(mCommoditiesDbAdapter.getCurrencyCode(cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.PriceEntry.COLUMN_CURRENCY_UID))));
                 xmlSerializer.endTag(null, GncXmlHelper.TAG_COMMODITY_ID);
-                xmlSerializer.endTag(null, GncXmlHelper.TAG_PRICE_COMMODITY);
+                xmlSerializer.endTag(null, GncXmlHelper.TAG_PRICE_CURRENCY);
                 // time
                 String strDate = GncXmlHelper.formatDate(Timestamp.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.PriceEntry.COLUMN_DATE))).getTime());
                 xmlSerializer.startTag(null, GncXmlHelper.TAG_PRICE_TIME);
