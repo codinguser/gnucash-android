@@ -412,7 +412,7 @@ public class GncXmlExporter extends Exporter{
             String splitQuantityNum = cursor.getString(cursor.getColumnIndexOrThrow("split_quantity_num"));
             String splitQuantityDenom = cursor.getString(cursor.getColumnIndexOrThrow("split_quantity_denom"));
             if (!exportTemplates) {
-                strValue = (trxType.equals("CREDIT") ? "-" : "") + splitValueNum + "/" + splitQuantityDenom;
+                strValue = (trxType.equals("CREDIT") ? "-" : "") + splitQuantityNum + "/" + splitQuantityDenom;
             }
             xmlSerializer.startTag(null, GncXmlHelper.TAG_SPLIT_QUANTITY);
             xmlSerializer.text(strValue);
