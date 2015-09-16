@@ -19,6 +19,7 @@ package org.gnucash.android.ui.passcode;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.view.WindowManager.LayoutParams;
 
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.ui.BaseDrawerActivity;
@@ -39,13 +40,22 @@ public class PassLockActivity extends BaseDrawerActivity {
     protected void onResume() {
         super.onResume();
 
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        boolean isPassEnabled = prefs.getBoolean(UxArgument.ENABLED_PASSCODE, false);
+        if (isPassEnabled) {
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.HONEYCOMB) {
+                getWindow().addFlags(LayoutParams.FLAG_SECURE);
+            }
+        } else {
+            getWindow().clearFlags(LayoutParams.FLAG_SECURE);
+        }
+
         // Only for Android Lollipop that brings a few changes to the recent apps feature
         if ((getIntent().getFlags() & Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY) != 0) {
             GnuCashApplication.PASSCODE_SESSION_INIT_TIME = 0;
         }
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         String passCode = prefs.getString(UxArgument.PASSCODE, "");
-        if (prefs.getBoolean(UxArgument.ENABLED_PASSCODE, false) && !isSessionActive() && !passCode.trim().isEmpty()) {
+        if (isPassEnabled && !isSessionActive() && !passCode.trim().isEmpty()) {
             startActivity(new Intent(this, PasscodeLockScreenActivity.class)
                     .setAction(getIntent().getAction())
                     .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK)
