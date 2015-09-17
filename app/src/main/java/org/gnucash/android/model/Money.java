@@ -18,6 +18,7 @@ package org.gnucash.android.model;
 
 
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
 
@@ -252,8 +253,15 @@ public final class Money implements Comparable<Money>{
 	 * <p>Example: Given an amount 32.50$, the numerator will be 3250</p>
 	 * @return GnuCash numerator for this amount
 	 */
-	public int getNumerator(){
-		return mAmount.multiply(new BigDecimal(getDenominator())).intValue();
+	public long getNumerator() {
+		try {
+			return mAmount.scaleByPowerOfTen(getScale()).longValueExact();
+		} catch (ArithmeticException e) {
+			Log.e(getClass().getName(), "Currency " + mCurrency.getCurrencyCode() +
+					" with scale " + getScale() +
+					" has amount " + mAmount.toString());
+			throw e;
+		}
 	}
 
 	/**
@@ -261,8 +269,31 @@ public final class Money implements Comparable<Money>{
 	 * <p>The denominator is 10 raised to the power of number of fractional digits in the currency</p>
 	 * @return GnuCash format denominator
 	 */
-	public int getDenominator(){
-		return (int) Math.pow(10, mCurrency.getDefaultFractionDigits());
+	public long getDenominator() {
+		switch (getScale()) {
+			case 0:
+				return 1;
+			case 1:
+				return 10;
+			case 2:
+				return 100;
+			case 3:
+				return 1000;
+			case 4:
+				return 10000;
+		}
+		throw new RuntimeException("Unsupported number of fraction digits " + getScale());
+	}
+
+	private int getScale() {
+		int scale = mCurrency.getDefaultFractionDigits();
+		if (scale < 0) {
+			scale = mAmount.scale();
+		}
+		if (scale < 0) {
+			scale = 0;
+		}
+		return scale;
 	}
 
 	/**

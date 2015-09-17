@@ -94,6 +94,16 @@ public abstract class GncXmlHelper {
     public static final String TAG_SPLIT_QUANTITY   = "split:quantity";
     public static final String TAG_SPLIT_SLOTS      = "split:slots";
 
+    public static final String TAG_PRICEDB = "gnc:pricedb";
+    public static final String TAG_PRICE = "price";
+    public static final String TAG_PRICE_ID = "price:id";
+    public static final String TAG_PRICE_COMMODITY = "price:commodity";
+    public static final String TAG_PRICE_CURRENCY = "price:currency";
+    public static final String TAG_PRICE_TIME = "price:time";
+    public static final String TAG_PRICE_SOURCE = "price:source";
+    public static final String TAG_PRICE_TYPE = "price:type";
+    public static final String TAG_PRICE_VALUE = "price:value";
+
     @Deprecated
     public static final String TAG_RECURRENCE_PERIOD = "trn:recurrence_period";
 

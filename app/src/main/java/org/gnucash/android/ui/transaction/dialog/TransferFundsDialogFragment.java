@@ -197,10 +197,10 @@ public class TransferFundsDialogFragment extends DialogFragment {
             Price price = new Price(commoditiesDbAdapter.getCommodityUID(mOriginAmount.getCurrency().getCurrencyCode()),
                     commoditiesDbAdapter.getCommodityUID(mTargetCurrency.getCurrencyCode()));
             price.setSource(Price.SOURCE_USER);
-            BigDecimal rateDecimal = mConvertedAmount.asBigDecimal().divide(mOriginAmount.asBigDecimal(), RoundingMode.HALF_EVEN);
-            Money rate = new Money(rateDecimal, mTargetCurrency); //the currency is irrelevant
-            price.setValueNum(rate.getNumerator());
-            price.setValueDenom(rate.getDenominator());
+            // fractions cannot be exacted represented by BigDecimal.
+            price.setValueNum(mConvertedAmount.getNumerator() * mOriginAmount.getDenominator());
+            price.setValueDenom(mOriginAmount.getNumerator() * mConvertedAmount.getDenominator());
+            price.reduce();
             pricesDbAdapter.addRecord(price);
 
             mOnTransferFundsListener.transferComplete(mConvertedAmount);

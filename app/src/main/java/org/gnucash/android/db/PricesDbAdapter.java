@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteStatement;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.model.Price;
@@ -67,15 +68,15 @@ public class PricesDbAdapter extends DatabaseAdapter<Price> {
         String dateString   = cursor.getString(cursor.getColumnIndexOrThrow(PriceEntry.COLUMN_DATE));
         String source       = cursor.getString(cursor.getColumnIndexOrThrow(PriceEntry.COLUMN_SOURCE));
         String type         = cursor.getString(cursor.getColumnIndexOrThrow(PriceEntry.COLUMN_TYPE));
-        String valueNum     = cursor.getString(cursor.getColumnIndexOrThrow(PriceEntry.COLUMN_VALUE_NUM));
-        String valueDenom   = cursor.getString(cursor.getColumnIndexOrThrow(PriceEntry.COLUMN_VALUE_DENOM));
+        long valueNum     = cursor.getLong(cursor.getColumnIndexOrThrow(PriceEntry.COLUMN_VALUE_NUM));
+        long valueDenom   = cursor.getLong(cursor.getColumnIndexOrThrow(PriceEntry.COLUMN_VALUE_DENOM));
 
         Price price = new Price(commodityUID, currencyUID);
         price.setDate(Timestamp.valueOf(dateString));
         price.setSource(source);
         price.setType(type);
-        price.setValueNum(Integer.parseInt(valueNum));
-        price.setValueDenom(Integer.parseInt(valueDenom));
+        price.setValueNum(valueNum);
+        price.setValueDenom(valueDenom);
 
         populateBaseModelAttributes(cursor, price);
         return price;
