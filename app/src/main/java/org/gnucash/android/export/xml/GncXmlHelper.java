@@ -72,7 +72,7 @@ public abstract class GncXmlHelper {
     public static final String TAG_SLOT_VALUE       = "slot:value";
     public static final String TAG_ACT_SLOTS        = "act:slots";
     public static final String TAG_SLOT             = "slot";
-    public static final String TAG_ACCT_DESCRIPTION = "act:description"; //TODO: Use this when we add descriptions to the database
+    public static final String TAG_ACCT_DESCRIPTION = "act:description";
 
     public static final String TAG_TRANSACTION      = "gnc:transaction";
     public static final String TAG_TRX_ID           = "trn:id";
