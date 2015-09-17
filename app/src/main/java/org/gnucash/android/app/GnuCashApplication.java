@@ -24,6 +24,7 @@ import android.content.SharedPreferences;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
+import android.os.Build;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
@@ -98,8 +99,8 @@ public class GnuCashApplication extends Application{
         GnuCashApplication.context = getApplicationContext();
 
         //TODO: in production, only start logging if user gave consent
-        Fabric.with(this, new Crashlytics.Builder().core(
-                new CrashlyticsCore.Builder().disabled(!BuildConfig.USE_CRASHLYTICS).build()).build());
+        if (BuildConfig.USE_CRASHLYTICS)
+            Fabric.with(this, new Crashlytics());
 
         mDbHelper = new DatabaseHelper(getApplicationContext());
         try {
