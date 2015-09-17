@@ -98,8 +98,7 @@ public class GnuCashApplication extends Application{
         super.onCreate();
         GnuCashApplication.context = getApplicationContext();
 
-        //TODO: in production, only start logging if user gave consent
-        if (BuildConfig.USE_CRASHLYTICS)
+        if (isCrashlyticsEnabled())
             Fabric.with(this, new Crashlytics());
 
         mDbHelper = new DatabaseHelper(getApplicationContext());

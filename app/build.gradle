@@ -31,7 +31,6 @@ android {
         versionName "${versionMajor}.${versionMinor}.${versionPatch}"
         resValue "string", "app_version_name", "${versionName}"
         resValue "string", "app_minor_version", "${versionMinor}"
-        buildConfigField "boolean", "USE_CRASHLYTICS", "true"
         if (project.hasProperty("RELEASE_DROPBOX_APP_KEY")){
             resValue "string", "dropbox_app_key", RELEASE_DROPBOX_APP_KEY
             resValue "string", "dropbox_app_secret", RELEASE_DROPBOX_APP_SECRET
@@ -102,7 +101,6 @@ android {
             resValue "string", "app_name", "GnuCash-devel"
             versionName "${versionMajor}.${versionMinor}.${versionPatch}-dev${versionBuild}_r${gitSha()}"
             resValue "string", "app_version_name", "${versionName}"
-            buildConfigField "boolean", "USE_CRASHLYTICS", "false"
         }
 
         beta {
@@ -113,7 +111,6 @@ android {
 
         production {
             resValue "string", "app_name", "GnuCash"
-            buildConfigField "boolean", "USE_CRASHLYTICS", "false"
             ext.enableCrashlytics = false
         }
 
@@ -177,7 +174,8 @@ dependencies {
             'com.google.android.gms:play-services-drive:7.0.0',
             'com.jakewharton:butterknife:7.0.1',
             'com.kobakei:ratethisapp:0.0.3',
-            'com.squareup:android-times-square:1.6.4@aar'
+            'com.squareup:android-times-square:1.6.4@aar',
+            'com.github.techfreak:wizardpager:1.0.0'
     )
 
     compile('com.crashlytics.sdk.android:crashlytics:2.5.0@aar') {

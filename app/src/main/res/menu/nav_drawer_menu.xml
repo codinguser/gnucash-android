@@ -15,7 +15,6 @@
  limitations under the License.
 -->
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- TODO: add icons -->
     <item
         android:id="@+id/nav_section_accounts"
         android:title="@string/title_accounts">

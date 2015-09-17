@@ -328,16 +328,12 @@ public class AccountFormFragment extends Fragment {
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-		
-		ArrayAdapter<String> currencyArrayAdapter = new ArrayAdapter<>(
-				getActivity(), 
-				android.R.layout.simple_spinner_item, 
-				getResources().getStringArray(R.array.currency_names));
-		currencyArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
         Cursor cursor = CommoditiesDbAdapter.getInstance().fetchAllRecords();
         CommoditiesCursorAdapter commoditiesAdapter = new CommoditiesCursorAdapter(
-                getActivity(), cursor);
+                getActivity(), android.R.layout.simple_spinner_item);
+        commoditiesAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
         mCurrencySpinner.setAdapter(commoditiesAdapter);
 
 

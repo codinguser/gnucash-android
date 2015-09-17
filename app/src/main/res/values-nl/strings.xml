@@ -512,6 +512,22 @@ No user-identifiable information will be collected as part of this process!
     <string name="nav_menu_scheduled_actions">Scheduled Actions</string>
     <string name="label_scheduled_action_ended">"Ended, last executed on "</string>
     <string name="label_select_bar_to_view_details">Select a bar to view details</string>
+    <string name="btn_wizard_next">Next</string>
+    <string name="btn_wizard_finish">Done</string>
+    <string name="wizard_title_default_currency">Default Currency</string>
+    <string name="wizard_title_account_setup">Account Setup</string>
+    <string name="wizard_title_select_currency">Select Currency</string>
+    <string name="wizard_title_feedback_options">Feedback Options</string>
+    <string name="wizard_option_create_default_accounts">Create default accounts</string>
+    <string name="wizard_option_import_my_accounts">Import my accounts</string>
+    <string name="wizard_option_let_me_handle_it">Let me handle it</string>
+    <string name="wizard_option_currency_other">Other...</string>
+    <string name="wizard_option_auto_send_crash_reports">Automatically send crash reports</string>
+    <string name="wizard_option_disable_crash_reports">Disable crash reports</string>
+    <string name="wizard_btn_back">Back</string>
+    <string name="title_setup_gnucash">Setup GnuCash</string>
+    <string name="wizard_title_welcome_to_gnucash">Welcome to GnuCash</string>
+    <string name="msg_wizard_welcome_page">Before you dive in, \nlet\'s setup a few things first\n\nTo continue, press Next</string>
     <string-array name="report_time_range">
         <item>All time</item>
         <item>Current month</item>

@@ -19,6 +19,7 @@ package org.gnucash.android.ui.account;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -47,6 +48,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
 import com.kobakei.ratethisapp.RateThisApp;
@@ -65,6 +67,7 @@ import org.gnucash.android.ui.transaction.TransactionsActivity;
 import org.gnucash.android.ui.util.OnAccountClickedListener;
 import org.gnucash.android.ui.util.Refreshable;
 import org.gnucash.android.ui.util.TaskDelegate;
+import org.gnucash.android.ui.wizard.FirstRunWizardActivity;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
@@ -136,11 +139,6 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
      * ViewPager which manages the different tabs
      */
     private ViewPager mViewPager;
-
-	/**
-	 * Dialog which is shown to the user on first start prompting the user to create some accounts
-	 */
-	private AlertDialog mDefaultAccountsDialog;
 
 
     /**
@@ -329,21 +327,16 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         boolean firstRun = prefs.getBoolean(getString(R.string.key_first_run), true);
+
         if (firstRun){
-            showFirstRunDialog();
+            startActivity(new Intent(this, FirstRunWizardActivity.class));
+
             //default to using double entry and save the preference explicitly
             prefs.edit().putBoolean(getString(R.string.key_use_double_entry), true).apply();
         }
 
         if (hasNewFeatures()){
-            AlertDialog dialog = showWhatsNewDialog(this);
-            //TODO: remove this when we upgrade to 1.7.0. Users will already know the nav drawer then
-            dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
-                @Override
-                public void onDismiss(DialogInterface dialog) {
-                    mDrawerLayout.openDrawer(mNavigationView);
-                }
-            });
+            showWhatsNewDialog(this);
         }
         GnuCashApplication.startScheduledActionExecutionService(this);
     }
@@ -429,101 +422,6 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
 		}
 	}
 
-	/**
-	 * Shows the user dialog to create default account structure or import existing account structure
-	 */
-	private void showFirstRunDialog() {
-		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		builder.setTitle(R.string.title_default_accounts);
-        builder.setMessage(R.string.msg_confirm_create_default_accounts_first_run);
-
-		builder.setPositiveButton(R.string.btn_create_accounts, new DialogInterface.OnClickListener() {
-            AlertDialog currencyDialog;
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                final AlertDialog.Builder adb = new AlertDialog.Builder(AccountsActivity.this);
-                adb.setTitle(R.string.title_choose_currency);
-                ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(
-                        AccountsActivity.this,
-                        android.R.layout.select_dialog_singlechoice,
-                        getResources().getStringArray(R.array.currency_names));
-
-                final List<String> currencyCodes = Arrays.asList(
-                        getResources().getStringArray(R.array.key_currency_codes));
-                String userCurrencyCode = Currency.getInstance(Locale.getDefault()).getCurrencyCode();
-                int currencyIndex = currencyCodes.indexOf(userCurrencyCode.toUpperCase());
-
-                adb.setSingleChoiceItems(arrayAdapter, currencyIndex, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        String currency = currencyCodes.get(which);
-                        PreferenceManager.getDefaultSharedPreferences(AccountsActivity.this)
-                                .edit()
-                                .putString(getString(R.string.key_default_currency), currency)
-                                .commit();
-
-                        createDefaultAccounts(currency, AccountsActivity.this);
-                        currencyDialog.dismiss();
-                        removeFirstRunFlag();
-                    }
-                });
-                currencyDialog = adb.create();
-                currencyDialog.show();
-            }
-        });
-		
-		builder.setNegativeButton(R.string.btn_cancel, new DialogInterface.OnClickListener() {
-
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                mDefaultAccountsDialog.dismiss();
-            }
-        });
-
-        builder.setNeutralButton(R.string.btn_import_accounts, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                importAccounts();
-            }
-        });
-
-		mDefaultAccountsDialog = builder.create();
-        mDefaultAccountsDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
-            @Override
-            public void onDismiss(DialogInterface dialog) {
-                removeFirstRunFlag();
-                mDrawerLayout.openDrawer(mNavigationView);
-            }
-        });
-		mDefaultAccountsDialog.show();
-
-/*
-        //TODO: For now logging is disabled only for production. In the future, consider enabling for production
-        //show dialog to get user consent for logging
-        new AlertDialog.Builder(this)
-                .setTitle(getString(R.string.title_enable_crashlytics))
-                .setMessage(getString(R.string.msg_enable_crashlytics))
-                .setPositiveButton(R.string.label_enable, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(AccountsActivity.this);
-                        Editor editor = sharedPreferences.edit();
-                        editor.putBoolean(getString(R.string.key_enable_crashlytics), true);
-                        editor.apply();
-                    }
-                })
-                .setNegativeButton(R.string.btn_cancel, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(AccountsActivity.this);
-                        Editor editor = sharedPreferences.edit();
-                        editor.putBoolean(getString(R.string.key_enable_crashlytics), false);
-                        editor.apply();
-                    }
-                }).create().show();
-*/
-	}
-
     /**
      * Creates default accounts with the specified currency code.
      * If the currency parameter is null, then locale currency will be used if available
@@ -548,15 +446,21 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
 
     /**
      * Starts Intent chooser for selecting a GnuCash accounts file to import.
-     * The accounts are actually imported in onActivityResult
+     * The accounts are actually imported in onActivityResult of the calling class
+     * @param activity Activity starting the request and will also handle the response
      */
-    public void importAccounts() {
+    public static void importAccounts(Activity activity) {
         Intent pickIntent = new Intent(Intent.ACTION_GET_CONTENT);
         pickIntent.setType("application/octet-stream");
         Intent chooser = Intent.createChooser(pickIntent, "Select GnuCash account file");
 
-        startActivityForResult(chooser, REQUEST_PICK_ACCOUNTS_FILE);
-
+        try {
+            activity.startActivityForResult(chooser, REQUEST_PICK_ACCOUNTS_FILE);
+        } catch (ActivityNotFoundException ex){
+            Crashlytics.log("No file manager for selecting files available");
+            Crashlytics.logException(ex);
+            Toast.makeText(activity, R.string.toast_install_file_manager, Toast.LENGTH_LONG).show();
+        }
     }
 
     /**
@@ -583,9 +487,10 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
 	 * Removes the flag indicating that the app is being run for the first time. 
 	 * This is called every time the app is started because the next time won't be the first time
 	 */
-	private void removeFirstRunFlag(){
-		Editor editor = PreferenceManager.getDefaultSharedPreferences(this).edit();
-		editor.putBoolean(getString(R.string.key_first_run), false);
+	public static void removeFirstRunFlag(){
+        Context context = GnuCashApplication.getAppContext();
+		Editor editor = PreferenceManager.getDefaultSharedPreferences(context).edit();
+		editor.putBoolean(context.getString(R.string.key_first_run), false);
 		editor.commit();
 	}
 

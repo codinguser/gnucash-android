@@ -24,7 +24,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.preference.PreferenceManager;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.Espresso;
-import android.support.test.espresso.contrib.RecyclerViewActions;
 import android.support.test.runner.AndroidJUnit4;
 import android.support.v4.app.Fragment;
 import android.test.ActivityInstrumentationTestCase2;
@@ -60,7 +59,6 @@ import static android.support.test.espresso.Espresso.openActionBarOverflowOrOpti
 import static android.support.test.espresso.action.ViewActions.clearText;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.closeSoftKeyboard;
-import static android.support.test.espresso.action.ViewActions.longClick;
 import static android.support.test.espresso.action.ViewActions.scrollTo;
 import static android.support.test.espresso.action.ViewActions.swipeRight;
 import static android.support.test.espresso.action.ViewActions.typeText;
@@ -69,7 +67,6 @@ import static android.support.test.espresso.matcher.ViewMatchers.isChecked;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.isNotChecked;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
-import static android.support.test.espresso.matcher.ViewMatchers.withParent;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.allOf;
@@ -140,24 +137,17 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
         editor.commit();
     }
 
-    /*
-        public void testDisplayAccountsList(){
-            final int NUMBER_OF_ACCOUNTS = 15;
-            for (int i = 0; i < NUMBER_OF_ACCOUNTS; i++) {
-                Account account = new Account("Acct " + i);
-                mAccountsDbAdapter.addRecord(account);
-            }
 
-            //there should exist a listview of accounts
-            refreshAccountsList();
-            mSolo.waitForText("Acct");
-            mSolo.scrollToBottom();
+    public void testDisplayAccountsList(){
+        AccountsActivity.createDefaultAccounts("EUR", mAcccountsActivity);
+        mAcccountsActivity.recreate();
 
-            ListView accountsListView = (ListView) mSolo.getView(android.R.id.list);
-            assertNotNull(accountsListView);
-            assertEquals(NUMBER_OF_ACCOUNTS + 1, accountsListView.getCount());
-        }
-    */
+        refreshAccountsList();
+        onView(withText("Assets")).perform(scrollTo());
+        onView(withText("Expenses")).perform(click());
+        onView(withText("Books")).perform(scrollTo());
+    }
+
     @Test
     public void testSearchAccounts(){
         String SEARCH_ACCOUNT_NAME = "Search Account";
@@ -351,7 +341,23 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
         assertThat(account.getUID()).isEqualTo("intent-account");
         assertThat(account.getCurrency().getCurrencyCode()).isEqualTo("EUR");
 	}
-	
+
+    /**
+     * Tests that the setup wizard is displayed on first run
+     */
+    @Test
+    public void shouldShowWizardOnFirstRun(){
+        PreferenceManager.getDefaultSharedPreferences(mAcccountsActivity)
+                .edit()
+                .remove(mAcccountsActivity.getString(R.string.key_first_run))
+                .commit();
+
+        mAcccountsActivity.recreate();
+        //check that wizard is shown
+        onView(withText(mAcccountsActivity.getString(R.string.title_setup_gnucash)))
+                .check(matches(isDisplayed()));
+    }
+
 	@After
 	public void tearDown() throws Exception {
         mAcccountsActivity.finish();

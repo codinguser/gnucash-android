@@ -82,6 +82,16 @@ public class CommoditiesDbAdapter extends DatabaseAdapter<Commodity> {
     }
 
     /**
+     * Fetches all commodities in the database sorted in the specified order
+     * @param orderBy SQL statement for orderBy without the ORDER_BY itself
+     * @return Cursor holding all commodity records
+     */
+    public Cursor fetchAllRecords(String orderBy) {
+        return mDb.query(mTableName, null, null, null, null, null,
+                orderBy);
+    }
+
+    /**
      * Returns the commodity associated with the ISO4217 currency code
      * @param currencyCode 3-letter currency code
      * @return Commodity associated with code or null if none is found

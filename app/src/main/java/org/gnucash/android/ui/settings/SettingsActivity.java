@@ -302,7 +302,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity
         String key = preference.getKey();
 
         if (key.equals(getString(R.string.key_import_accounts))){
-            importAccounts();
+            AccountsActivity.importAccounts(this);
             return true;
         }
 
@@ -495,23 +495,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity
         public void run() {
             mDeleteAccountsClickCount = 0;
             mDeleteTransactionsClickCount = 0;
-        }
-    }
-
-    /**
-     * Starts a request to pick a file to import into GnuCash
-     */
-    public void importAccounts() {
-        Intent pickIntent = new Intent(Intent.ACTION_GET_CONTENT);
-        pickIntent.setType("application/*");
-        Intent chooser = Intent.createChooser(pickIntent, getString(R.string.title_select_gnucash_xml_file));
-
-        try {
-            startActivityForResult(chooser, AccountsActivity.REQUEST_PICK_ACCOUNTS_FILE);
-        } catch (ActivityNotFoundException ex){
-            Crashlytics.log("No file manager for selecting files available");
-            Crashlytics.logException(ex);
-            Toast.makeText(this, R.string.toast_install_file_manager, Toast.LENGTH_LONG).show();
         }
     }
 
