@@ -151,9 +151,12 @@ public class GncXmlExporter extends Exporter{
             xmlSerializer.text(Integer.toString((int) Math.pow(10, Currency.getInstance(acctCurrencyCode).getDefaultFractionDigits())));
             xmlSerializer.endTag(null, GncXmlHelper.TAG_COMMODITY_SCU);
             // account description
-            // this is optional in Gnc XML, and currently not in the db, so description node
-            // is omitted
-            //
+            String description = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.AccountEntry.COLUMN_DESCRIPTION));
+            if (description != null && !description.equals("")) {
+                xmlSerializer.startTag(null, GncXmlHelper.TAG_ACCT_DESCRIPTION);
+                xmlSerializer.text(description);
+                xmlSerializer.endTag(null, GncXmlHelper.TAG_ACCT_DESCRIPTION);
+            }
             // account slots, color, placeholder, default transfer account, favorite
             ArrayList<String> slotKey = new ArrayList<>();
             ArrayList<String> slotType = new ArrayList<>();
