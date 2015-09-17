@@ -43,6 +43,11 @@ import net.objecthunter.exp4j.ExpressionBuilder;
 /**
  * When an activity hosts a keyboardView, this class allows several EditText's to register for it.
  *
+ * Known issues:
+ *  - It's not possible to select text.
+ *  - When in landscape, the EditText is covered by the keyboard.
+ *  - No i18n.
+ *
  * @author Maarten Pennings, extended by SimplicityApks
  * @date 2012 December 23
  */
