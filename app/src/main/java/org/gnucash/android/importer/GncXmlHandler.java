@@ -387,6 +387,9 @@ public class GncXmlHandler extends DefaultHandler {
                     }
                 }
                 break;
+            case GncXmlHelper.TAG_ACCT_DESCRIPTION:
+                mAccount.setDescription(characterString);
+                break;
             case GncXmlHelper.TAG_PARENT_UID:
                 mAccount.setParentUID(characterString);
                 break;
