@@ -29,6 +29,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
+import com.uservoice.uservoicesdk.UserVoice;
 
 import org.gnucash.android.R;
 import org.gnucash.android.export.xml.GncXmlExporter;
@@ -173,7 +174,9 @@ public class BaseDrawerActivity extends AppCompatActivity {
                 startActivity(new Intent(this, SettingsActivity.class));
                 break;
 
-            //TODO: add help option
+            case R.id.nav_item_help:
+                UserVoice.launchUserVoice(this);
+                break;
         }
         mDrawerLayout.closeDrawer(mNavigationView);
     }

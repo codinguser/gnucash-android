@@ -529,6 +529,7 @@ No user-identifiable information will be collected as part of this process!</str
 	<string name="error_exchange_rate_required">An exchange rate is required</string>
 	<string name="error_converted_amount_required">The converted amount is required</string>
 	<string name="title_transfer_funds">Transfer Funds</string>
+	<string name="nav_menu_help"><![CDATA[Help & Feedback]]></string>
 	<string-array name="report_time_range">
 		<item>All time</item>
 		<item>Current month</item>
