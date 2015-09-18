@@ -1,5 +1,10 @@
 /**
  * Copyright 2013 Maarten Pennings extended by SimplicityApks
+ *
+ * Modified by:
+ * Copyright 2015 Àlex Magaz Graça <rivaldi8@gmail.com>
+ * Copyright 2015 Ngewi Fet <ngewif@gmail.com>
+ *
  * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +28,7 @@ import android.app.Activity;
 import android.inputmethodservice.Keyboard;
 import android.inputmethodservice.KeyboardView;
 import android.inputmethodservice.KeyboardView.OnKeyboardActionListener;
+import android.support.annotation.LayoutRes;
 import android.text.Editable;
 import android.text.InputType;
 import android.util.Log;
@@ -64,10 +70,10 @@ import java.util.Locale;
  * @author Maarten Pennings, extended by SimplicityApks
  * @date 2012 December 23
  */
-public class CustomKeyboard {
+public class CalculatorKeyboard {
 
     public static final int KEY_CODE_DECIMAL_SEPARATOR = 46;
-    /** A link to the KeyboardView that is used to render this CustomKeyboard. */
+    /** A link to the KeyboardView that is used to render this CalculatorKeyboard. */
     private KeyboardView mKeyboardView;
     /** A link to the activity that hosts the {@link #mKeyboardView}. */
     private Activity mHostActivity;
@@ -156,13 +162,13 @@ public class CustomKeyboard {
      * Note that to enable EditText's to use this custom keyboard, call the {@link #registerEditText(int)}.
      *
      * @param host The hosting activity.
-     * @param viewid The id of the KeyboardView.
-     * @param layoutid The id of the xml file containing the keyboard layout.
+     * @param keyboardViewId The id of the KeyboardView.
+     * @param xmlLayoutResId The id of the xml file containing the keyboard layout.
      */
-    public CustomKeyboard(Activity host, int viewid, int layoutid) {
+    public CalculatorKeyboard(Activity host, int keyboardViewId, @LayoutRes int xmlLayoutResId) {
         mHostActivity = host;
-        mKeyboardView = (KeyboardView) mHostActivity.findViewById(viewid);
-        Keyboard keyboard = new Keyboard(mHostActivity, layoutid);
+        mKeyboardView = (KeyboardView) mHostActivity.findViewById(keyboardViewId);
+        Keyboard keyboard = new Keyboard(mHostActivity, xmlLayoutResId);
         for (Keyboard.Key key : keyboard.getKeys()) {
             if (key.codes[0] == KEY_CODE_DECIMAL_SEPARATOR){
                 key.label = mDecimalSeparator;
@@ -176,12 +182,12 @@ public class CustomKeyboard {
         mHostActivity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
     }
 
-    /** Returns whether the CustomKeyboard is visible. */
+    /** Returns whether the CalculatorKeyboard is visible. */
     public boolean isCustomKeyboardVisible() {
         return mKeyboardView.getVisibility() == View.VISIBLE;
     }
 
-    /** Make the CustomKeyboard visible, and hide the system keyboard for view v. */
+    /** Make the CalculatorKeyboard visible, and hide the system keyboard for view v. */
     public void showCustomKeyboard(View v) {
         if (v != null)
             ((InputMethodManager) mHostActivity.getSystemService(Activity.INPUT_METHOD_SERVICE)).hideSoftInputFromWindow(v.getWindowToken(), 0);
@@ -190,7 +196,7 @@ public class CustomKeyboard {
         mKeyboardView.setEnabled(true);
     }
 
-    /** Make the CustomKeyboard invisible. */
+    /** Make the CalculatorKeyboard invisible. */
     public void hideCustomKeyboard() {
         mKeyboardView.setVisibility(View.GONE);
         mKeyboardView.setEnabled(false);
@@ -230,30 +236,6 @@ public class CustomKeyboard {
         // Disable spell check (hex strings look like words to Android)
         edittext.setInputType(edittext.getInputType() | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
 
-        /**
-         * Try to show cursor the complicated way:
-         * @source http://androidpadanam.wordpress.com/2013/05/29/customkeyboard-example/
-         * fixes the cursor not movable bug
-         */
-
-        //TODO: find a way to set this listener if the view doesn't already have one
-        //e.g. when using the calculator in split editor
-/*
-        edittext.setOnTouchListener(new OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if (!isCustomKeyboardVisible())
-                    showCustomKeyboard(v);
-
-
-                // XXX: Use dispatchTouchEvent()?
-                edittext.onTouchEvent(event);               // Call native handler
-
-                return false;
-            }
-        });
-*/
-
         // FIXME: for some reason, this prevents the text selection from working
         edittext.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
@@ -266,6 +248,10 @@ public class CustomKeyboard {
         });
     }
 
+    /**
+     * Sets the currency to be used for this calculation
+     * @param currency Currency of the amount being computed
+     */
     public void setCurrency(Currency currency){
         this.mCurrency = currency;
     }
@@ -287,7 +273,7 @@ public class CustomKeyboard {
             return false;
     }
 
-    private void evaluateEditTextExpression(EditText editText) {
+    public void evaluateEditTextExpression(EditText editText) {
         String amountText = editText.getText().toString();
         amountText = amountText.replaceAll(",", ".");
         if (amountText.trim().isEmpty())
@@ -318,7 +304,7 @@ public class CustomKeyboard {
             String resultString = formatter.format(result.doubleValue());
 
             editText.setText(resultString);
-            editText.setSelection(result.toPlainString().length());
+            editText.setSelection(resultString.length());
         } else {
             // FIXME: i18n
             editText.setError("Invalid expression!");
