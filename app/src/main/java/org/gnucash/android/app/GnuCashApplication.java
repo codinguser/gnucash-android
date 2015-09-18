@@ -98,8 +98,9 @@ public class GnuCashApplication extends Application{
         super.onCreate();
         GnuCashApplication.context = getApplicationContext();
 
-        if (isCrashlyticsEnabled())
-            Fabric.with(this, new Crashlytics());
+        Fabric.with(this, new Crashlytics.Builder().core(
+                new CrashlyticsCore.Builder().disabled(!isCrashlyticsEnabled()).build()).build());
+
 
         mDbHelper = new DatabaseHelper(getApplicationContext());
         try {

@@ -56,6 +56,9 @@ import com.doomonafireball.betterpickers.recurrencepicker.EventRecurrence;
 import com.doomonafireball.betterpickers.recurrencepicker.EventRecurrenceFormatter;
 import com.doomonafireball.betterpickers.recurrencepicker.RecurrencePickerDialog;
 
+import net.objecthunter.exp4j.Expression;
+import net.objecthunter.exp4j.ExpressionBuilder;
+
 import org.gnucash.android.R;
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.DatabaseSchema;
@@ -74,6 +77,7 @@ import org.gnucash.android.ui.util.AmountInputFormatter;
 import org.gnucash.android.ui.util.OnTransferFundsListener;
 import org.gnucash.android.ui.util.RecurrenceParser;
 import org.gnucash.android.ui.util.TransactionTypeSwitch;
+import org.gnucash.android.ui.util.CustomKeyboard;
 import org.gnucash.android.ui.widget.WidgetConfigurationActivity;
 import org.gnucash.android.util.QualifiedAccountNameCursorAdapter;
 
@@ -214,6 +218,7 @@ public class TransactionFormFragment extends Fragment implements
     private List<Split> mSplitsList = new ArrayList<Split>();
 
     private boolean mEditMode = false;
+    private CustomKeyboard mCalculatorKeyboard;
 
     /**
      * Split quantity which will be set from the funds transfer dialog
@@ -290,7 +295,6 @@ public class TransactionFormFragment extends Fragment implements
 
         setListeners();
         //updateTransferAccountsList must only be called after initializing mAccountsDbAdapter
-        // it needs mMultiCurrency to be properly initialized
         updateTransferAccountsList();
         mTransferAccountSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             /**
@@ -336,6 +340,11 @@ public class TransactionFormFragment extends Fragment implements
             mEditMode = true;
 		}
 
+        mCalculatorKeyboard = new CustomKeyboard(getActivity(), R.id.calculator_keyboard, R.xml.calculator_keyboard);
+        mCalculatorKeyboard.setCurrency(Currency.getInstance(mAccountsDbAdapter.getCurrencyCode(mAccountUID)));
+        mCalculatorKeyboard.registerEditText(R.id.input_transaction_amount);
+        // FIXME: decouple from FormActivity
+        ((FormActivity) getActivity()).setOnBackListener(mCalculatorKeyboard);
 	}
 
     /**
@@ -599,8 +608,8 @@ public class TransactionFormFragment extends Fragment implements
 	 * Sets click listeners for the dialog buttons
 	 */
 	private void setListeners() {
-        mAmountInputFormatter = new AmountTextWatcher(mAmountEditText); //new AmountInputFormatter(mAmountEditText);
-        mAmountEditText.addTextChangedListener(mAmountInputFormatter);
+        mAmountInputFormatter = new AmountTextWatcher(mAmountEditText);
+        //mAmountEditText.addTextChangedListener(mAmountInputFormatter);
         mAmountEditText.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -613,8 +622,12 @@ public class TransactionFormFragment extends Fragment implements
                     if (event.getRawX() >= (mAmountEditText.getRight() - mAmountEditText.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
                         openSplitEditor();
                         return true;
+                    } else if (!mCalculatorKeyboard.isCustomKeyboardVisible()) {
+                        mCalculatorKeyboard.showCustomKeyboard(v);
                     }
                 }
+
+                mAmountEditText.onTouchEvent(event);
                 return false;
             }
         });
