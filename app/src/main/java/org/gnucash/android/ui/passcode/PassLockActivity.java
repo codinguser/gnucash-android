@@ -22,8 +22,8 @@ import android.preference.PreferenceManager;
 import android.view.WindowManager.LayoutParams;
 
 import org.gnucash.android.app.GnuCashApplication;
-import org.gnucash.android.ui.BaseDrawerActivity;
-import org.gnucash.android.ui.UxArgument;
+import org.gnucash.android.ui.common.BaseDrawerActivity;
+import org.gnucash.android.ui.common.UxArgument;
 
 /**
  * This activity used as the parent class for enabling passcode lock

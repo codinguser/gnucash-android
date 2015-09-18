@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.gnucash.android.ui;
+package org.gnucash.android.ui.common;
 
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
@@ -34,7 +34,7 @@ import org.gnucash.android.ui.account.AccountFormFragment;
 import org.gnucash.android.ui.export.ExportFormFragment;
 import org.gnucash.android.ui.transaction.TransactionFormFragment;
 import org.gnucash.android.ui.transaction.SplitEditorFragment;
-import org.gnucash.android.ui.util.CalculatorKeyboard;
+import org.gnucash.android.ui.util.widget.CalculatorKeyboard;
 
 /**
  * Activity for displaying forms in the application.

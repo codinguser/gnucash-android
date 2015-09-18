@@ -1,4 +1,4 @@
-package org.gnucash.android.ui.util;
+package org.gnucash.android.ui.util.widget;
 
 import android.content.Context;
 import android.util.AttributeSet;

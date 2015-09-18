@@ -62,7 +62,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			+ AccountEntry.COLUMN_NAME 	            + " varchar(255) not null, "
 			+ AccountEntry.COLUMN_TYPE              + " varchar(255) not null, "
 			+ AccountEntry.COLUMN_CURRENCY          + " varchar(255) not null, "
-            + AccountEntry.COLUMN_COMMODITY_UID     + " varchar(255), "
+            + AccountEntry.COLUMN_COMMODITY_UID     + " varchar(255) not null, "
 			+ AccountEntry.COLUMN_DESCRIPTION       + " varchar(255), "
             + AccountEntry.COLUMN_COLOR_CODE        + " varchar(255), "
             + AccountEntry.COLUMN_FAVORITE 		    + " tinyint default 0, "
@@ -88,7 +88,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			+ TransactionEntry.COLUMN_EXPORTED      + " tinyint default 0, "
 			+ TransactionEntry.COLUMN_TEMPLATE      + " tinyint default 0, "
             + TransactionEntry.COLUMN_CURRENCY      + " varchar(255) not null, "
-            + TransactionEntry.COLUMN_COMMODITY_UID + " varchar(255), "
+            + TransactionEntry.COLUMN_COMMODITY_UID + " varchar(255) not null, "
             + TransactionEntry.COLUMN_SCHEDX_ACTION_UID + " varchar(255), "
             + TransactionEntry.COLUMN_CREATED_AT    + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
             + TransactionEntry.COLUMN_MODIFIED_AT   + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
@@ -260,20 +260,20 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         String createAccountUidIndex = "CREATE UNIQUE INDEX '" + AccountEntry.INDEX_UID + "' ON "
                 + AccountEntry.TABLE_NAME + "(" + AccountEntry.COLUMN_UID + ")";
 
-        String createTransactionUidIndex = "CREATE UNIQUE INDEX '"+ TransactionEntry.INDEX_UID +"' ON "
+        String createTransactionUidIndex = "CREATE UNIQUE INDEX '" + TransactionEntry.INDEX_UID + "' ON "
                 + TransactionEntry.TABLE_NAME + "(" + TransactionEntry.COLUMN_UID + ")";
 
-        String createSplitUidIndex = "CREATE UNIQUE INDEX '" + SplitEntry.INDEX_UID +"' ON "
+        String createSplitUidIndex = "CREATE UNIQUE INDEX '" + SplitEntry.INDEX_UID + "' ON "
                 + SplitEntry.TABLE_NAME + "(" + SplitEntry.COLUMN_UID + ")";
 
         String createScheduledEventUidIndex = "CREATE UNIQUE INDEX '" + ScheduledActionEntry.INDEX_UID
-                +"' ON " + ScheduledActionEntry.TABLE_NAME + "(" + ScheduledActionEntry.COLUMN_UID + ")";
+                + "' ON " + ScheduledActionEntry.TABLE_NAME + "(" + ScheduledActionEntry.COLUMN_UID + ")";
 
         String createCommodityUidIndex = "CREATE UNIQUE INDEX '" + CommodityEntry.INDEX_UID
-                +"' ON " + CommodityEntry.TABLE_NAME + "(" + CommodityEntry.COLUMN_UID + ")";
+                + "' ON " + CommodityEntry.TABLE_NAME + "(" + CommodityEntry.COLUMN_UID + ")";
 
         String createPriceUidIndex = "CREATE UNIQUE INDEX '" + PriceEntry.INDEX_UID
-                +"' ON " + PriceEntry.TABLE_NAME + "(" + PriceEntry.COLUMN_UID + ")";
+                + "' ON " + PriceEntry.TABLE_NAME + "(" + PriceEntry.COLUMN_UID + ")";
 
         db.execSQL(createAccountUidIndex);
         db.execSQL(createTransactionUidIndex);
@@ -289,25 +289,5 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             e.printStackTrace();
             throw new RuntimeException(e);
         }
-
-//TODO: This might slow down insertions: potentially remove and insert commodity UID manually during db inserts
-        db.execSQL("CREATE TRIGGER insert_account_commodity "
-                + " AFTER INSERT ON " + AccountEntry.TABLE_NAME
-                + " BEGIN " + "UPDATE " + AccountEntry.TABLE_NAME
-                        + " SET " + AccountEntry.COLUMN_COMMODITY_UID + " = "
-                            + " (SELECT " + CommodityEntry.COLUMN_UID + " FROM " + CommodityEntry.TABLE_NAME
-                            + " WHERE " + AccountEntry.TABLE_NAME + "." + AccountEntry.COLUMN_CURRENCY + " = " + CommodityEntry.TABLE_NAME + "." + CommodityEntry.COLUMN_MNEMONIC + ")"
-                        + " WHERE " + AccountEntry.COLUMN_UID + " = NEW." + AccountEntry.COLUMN_UID + ";"
-                + "  END;");
-
-        db.execSQL("CREATE TRIGGER insert_transaction_commodity "
-                + " AFTER INSERT ON " + TransactionEntry.TABLE_NAME
-                + " BEGIN " + "UPDATE " + TransactionEntry.TABLE_NAME
-                    + " SET " + TransactionEntry.COLUMN_COMMODITY_UID + " = "
-                        + " (SELECT " + CommodityEntry.COLUMN_UID + " FROM " + CommodityEntry.TABLE_NAME
-                        + " WHERE " + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_CURRENCY + " = " + CommodityEntry.TABLE_NAME + "." + CommodityEntry.COLUMN_MNEMONIC + ") "
-                    + " WHERE " + TransactionEntry.COLUMN_UID + " = NEW." + TransactionEntry.COLUMN_UID + ";"
-                + "  END;");
     }
-
 }

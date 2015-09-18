@@ -44,8 +44,6 @@ import org.gnucash.android.ui.util.AmountInputFormatter;
 import org.gnucash.android.ui.util.OnTransferFundsListener;
 
 import java.math.BigDecimal;
-import java.math.MathContext;
-import java.math.RoundingMode;
 import java.util.Currency;
 
 import butterknife.Bind;
@@ -161,7 +159,7 @@ public class TransferFundsDialogFragment extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         Dialog dialog = super.onCreateDialog(savedInstanceState);
-        dialog.setTitle("Transfer Funds");
+        dialog.setTitle(R.string.title_transfer_funds);
         return dialog;
     }
 
@@ -172,7 +170,7 @@ public class TransferFundsDialogFragment extends DialogFragment {
         if (mExchangeRateRadioButton.isChecked()){
             String exchangeRateString = mExchangeRateInput.getText().toString();
             if (exchangeRateString.isEmpty()){
-                mExchangeRateInputLayout.setError("An exchange rate is required");
+                mExchangeRateInputLayout.setError(getString(R.string.error_exchange_rate_required));
                 return;
             }
 
@@ -183,7 +181,7 @@ public class TransferFundsDialogFragment extends DialogFragment {
         if (mConvertedAmountRadioButton.isChecked()){
             String convertedAmount = mConvertedAmountInput.getText().toString();
             if (convertedAmount.isEmpty()){
-                mConvertedAmountInputLayout.setError("The converted amount is required");
+                mConvertedAmountInputLayout.setError(getString(R.string.error_converted_amount_required));
                 return;
             }
 

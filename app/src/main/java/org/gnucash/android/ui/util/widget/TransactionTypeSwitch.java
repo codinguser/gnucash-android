@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.gnucash.android.ui.util;
+package org.gnucash.android.ui.util.widget;
 
 import android.content.Context;
 import android.support.v7.widget.SwitchCompat;
@@ -27,7 +27,6 @@ import org.gnucash.android.R;
 import org.gnucash.android.model.AccountType;
 import org.gnucash.android.model.Transaction;
 import org.gnucash.android.model.TransactionType;
-import org.gnucash.android.ui.transaction.TransactionFormFragment;
 
 /**
  * A special type of {@link android.widget.ToggleButton} which displays the appropriate CREDIT/DEBIT labels for the

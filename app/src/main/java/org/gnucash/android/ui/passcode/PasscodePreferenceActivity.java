@@ -24,7 +24,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import org.gnucash.android.R;
-import org.gnucash.android.ui.UxArgument;
+import org.gnucash.android.ui.common.UxArgument;
 
 /**
  * Activity for entering and confirming passcode

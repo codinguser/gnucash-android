@@ -161,7 +161,6 @@ public abstract class DatabaseAdapter<Model extends BaseModel> {
         //   pick the minimal value of the modified account uid (one of the ones begins with 'a', if exists)
         //   use substr to get account uid
 
-        //FIXME: Check if the split value is properly extracted. Also consider adding split quantity to the view
         mDb.execSQL("CREATE TEMP VIEW IF NOT EXISTS trans_extra_info AS SELECT " + TransactionEntry.TABLE_NAME + "_" + TransactionEntry.COLUMN_UID +
                 " AS trans_acct_t_uid , SUBSTR ( MIN ( ( CASE WHEN IFNULL ( " + SplitEntry.TABLE_NAME + "_" +
                 SplitEntry.COLUMN_MEMO + " , '' ) == '' THEN 'a' ELSE 'b' END ) || " +

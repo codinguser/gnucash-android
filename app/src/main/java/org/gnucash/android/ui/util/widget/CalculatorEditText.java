@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.gnucash.android.ui.util;
+package org.gnucash.android.ui.util.widget;
 
 import android.app.Activity;
 import android.content.Context;
@@ -37,7 +37,7 @@ import net.objecthunter.exp4j.ExpressionBuilder;
 
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
-import org.gnucash.android.ui.FormActivity;
+import org.gnucash.android.ui.common.FormActivity;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
@@ -262,7 +262,6 @@ public class CalculatorEditText extends EditText {
         try {
             expression = expressionBuilder.build();
         } catch (RuntimeException e) {
-            // FIXME: i18n
             setError(getContext().getString(R.string.label_error_invalid_expression));
             String msg = "Invalid expression: " + amountText;
             Log.e(this.getClass().getSimpleName(), msg);
@@ -283,7 +282,6 @@ public class CalculatorEditText extends EditText {
             setText(resultString);
             setSelection(resultString.length());
         } else {
-            // FIXME: i18n
             setError(getContext().getString(R.string.label_error_invalid_expression));
             Log.w(VIEW_LOG_TAG, "Expression is null or invalid: " + expression);
         }

@@ -25,6 +25,7 @@ import android.database.Cursor;
 import android.inputmethodservice.KeyboardView;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -59,6 +60,7 @@ import com.doomonafireball.betterpickers.recurrencepicker.RecurrencePickerDialog
 
 import org.gnucash.android.R;
 import org.gnucash.android.db.AccountsDbAdapter;
+import org.gnucash.android.db.CommoditiesDbAdapter;
 import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.db.ScheduledActionDbAdapter;
 import org.gnucash.android.db.TransactionsDbAdapter;
@@ -68,15 +70,14 @@ import org.gnucash.android.model.ScheduledAction;
 import org.gnucash.android.model.Split;
 import org.gnucash.android.model.Transaction;
 import org.gnucash.android.model.TransactionType;
-import org.gnucash.android.ui.FormActivity;
-import org.gnucash.android.ui.UxArgument;
+import org.gnucash.android.ui.common.FormActivity;
+import org.gnucash.android.ui.common.UxArgument;
 import org.gnucash.android.ui.transaction.dialog.TransferFundsDialogFragment;
-import org.gnucash.android.ui.util.CalculatorEditText;
-import org.gnucash.android.ui.util.CalculatorKeyboard;
+import org.gnucash.android.ui.util.widget.CalculatorEditText;
 import org.gnucash.android.ui.util.OnTransferFundsListener;
 import org.gnucash.android.ui.util.RecurrenceParser;
-import org.gnucash.android.ui.util.TransactionTypeSwitch;
-import org.gnucash.android.ui.widget.WidgetConfigurationActivity;
+import org.gnucash.android.ui.util.widget.TransactionTypeSwitch;
+import org.gnucash.android.ui.homescreen.WidgetConfigurationActivity;
 import org.gnucash.android.util.QualifiedAccountNameCursorAdapter;
 
 import java.math.BigDecimal;
@@ -816,7 +817,9 @@ public class TransactionFormFragment extends Fragment implements
                 }
             }
 
-            mTransaction.setCurrencyCode(mAccountsDbAdapter.getAccountCurrencyCode(mAccountUID));
+            String currencyCode = mAccountsDbAdapter.getAccountCurrencyCode(mAccountUID);
+            mTransaction.setCurrencyCode(currencyCode);
+            mTransaction.setCommodityUID(CommoditiesDbAdapter.getInstance().getCommodityUID(currencyCode));
             mTransaction.setTime(cal.getTimeInMillis());
             mTransaction.setNote(notes);
 
@@ -883,9 +886,7 @@ public class TransactionFormFragment extends Fragment implements
 
             Log.i("TransactionFormFragment", event.toString());
         }
-        Toast.makeText(getActivity(), "Scheduled recurring transaction", Toast.LENGTH_SHORT).show();
-
-        //TODO: localize this toast string for all supported locales
+        Toast.makeText(getActivity(), R.string.toast_scheduled_recurring_transaction, Toast.LENGTH_SHORT).show();
 
     }
 

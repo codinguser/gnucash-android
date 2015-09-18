@@ -22,44 +22,23 @@
  * documentation would be appreciated but is not required.
  */
 
-package org.gnucash.android.ui.util;
+package org.gnucash.android.ui.util.widget;
 
 import android.app.Activity;
 import android.content.Context;
 import android.inputmethodservice.Keyboard;
 import android.inputmethodservice.KeyboardView;
 import android.inputmethodservice.KeyboardView.OnKeyboardActionListener;
-import android.support.annotation.IdRes;
-import android.support.annotation.LayoutRes;
 import android.support.annotation.XmlRes;
 import android.text.Editable;
-import android.text.InputType;
-import android.util.Log;
 import android.view.HapticFeedbackConstants;
-import android.view.KeyEvent;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.View.OnFocusChangeListener;
-import android.view.View.OnTouchListener;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.EditText;
 
-import com.crashlytics.android.Crashlytics;
+import org.gnucash.android.ui.util.widget.CalculatorEditText;
 
-import net.objecthunter.exp4j.Expression;
-import net.objecthunter.exp4j.ExpressionBuilder;
-
-import org.gnucash.android.app.GnuCashApplication;
-
-import java.math.BigDecimal;
-import java.math.MathContext;
-import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
-import java.text.NumberFormat;
-import java.util.Currency;
-import java.util.Locale;
 
 
 /**
@@ -138,8 +117,8 @@ public class CalculatorKeyboard {
                     calculatorEditText.evaluate();
                     break;
                 case 1002:
-                    // FIXME: show the keyboard too
                     calculatorEditText.focusSearch(View.FOCUS_DOWN).requestFocus();
+                    hideCustomKeyboard();
                     break;
             }
         }

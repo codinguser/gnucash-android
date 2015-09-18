@@ -28,7 +28,7 @@ import android.widget.Toast;
 import org.gnucash.android.R;
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.export.xml.GncXmlExporter;
-import org.gnucash.android.ui.widget.WidgetConfigurationActivity;
+import org.gnucash.android.ui.homescreen.WidgetConfigurationActivity;
 
 /**
  * Confirmation dialog for deleting all accounts from the system.

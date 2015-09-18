@@ -88,7 +88,7 @@
         <activity android:name=".ui.passcode.PasscodePreferenceActivity"
             android:theme="@style/Theme.GnucashTheme" />
         <activity android:name=".ui.transaction.TransactionsActivity" />
-        <activity android:name=".ui.widget.WidgetConfigurationActivity"
+        <activity android:name=".ui.homescreen.WidgetConfigurationActivity"
             android:label="@string/label_widget_configuration"
             android:theme="@style/Dialog.WidgetConfiguration"
             android:excludeFromRecents="true">
@@ -96,7 +96,7 @@
 		        <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE"/>
 		    </intent-filter>
 		</activity>
-        <activity android:name=".ui.FormActivity"
+        <activity android:name=".ui.common.FormActivity"
             android:configChanges="orientation|screenSize"/>
         <activity android:name=".ui.transaction.TransactionDetailActivity"
             android:configChanges="orientation|screenSize"/>

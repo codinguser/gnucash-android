@@ -544,6 +544,10 @@ No user-identifiable information will be collected as part of this process!
 	<string name="title_split_editor">Split Editor</string>
 	<string name="toast_error_check_split_amounts">Check that all splits have valid amounts before saving!</string>
 	<string name="label_error_invalid_expression">Invalid expression!</string>
+	<string name="toast_scheduled_recurring_transaction">Scheduled recurring transaction</string>
+	<string name="error_exchange_rate_required">An exchange rate is required</string>
+	<string name="error_converted_amount_required">The converted amount is required</string>
+	<string name="title_transfer_funds">Transfer Funds</string>
 	<string-array name="report_time_range">
 		<item>All time</item>
 		<item>Current month</item>

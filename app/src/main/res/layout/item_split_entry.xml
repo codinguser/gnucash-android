@@ -36,7 +36,7 @@ limitations under the License.
                 android:textSize="22sp"
                 android:text="$"/>
 
-        <org.gnucash.android.ui.util.CalculatorEditText
+        <org.gnucash.android.ui.util.widget.CalculatorEditText
                 android:id="@+id/input_split_amount"
                 android:layout_width="0dp"
                 android:layout_weight="3"
@@ -51,7 +51,7 @@ limitations under the License.
                 android:background="@android:color/transparent"
                 gnucash:keyboardKeysLayout="@xml/calculator_keyboard" />
 
-        <org.gnucash.android.ui.util.TransactionTypeSwitch
+        <org.gnucash.android.ui.util.widget.TransactionTypeSwitch
             android:id="@+id/btn_split_type"
                       android:layout_width="0dp"
                       android:layout_weight="3"

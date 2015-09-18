@@ -872,28 +872,6 @@ public class MigrationHelper {
                 throw new RuntimeException(e);
             }
 
-
-//TODO: This might slow down insertions: potentially remove and insert commodity UID manually during db inserts
-
-            db.execSQL("CREATE TRIGGER insert_account_commodity "
-                    + " AFTER INSERT ON " + AccountEntry.TABLE_NAME
-                    + " BEGIN " + "UPDATE " + AccountEntry.TABLE_NAME
-                    + " SET " + AccountEntry.COLUMN_COMMODITY_UID + " = "
-                    + " (SELECT " + CommodityEntry.COLUMN_UID + " FROM " + CommodityEntry.TABLE_NAME
-                    + " WHERE " + AccountEntry.TABLE_NAME + "." + AccountEntry.COLUMN_CURRENCY + " = " + CommodityEntry.TABLE_NAME + "." + CommodityEntry.COLUMN_MNEMONIC + ")"
-                    + " WHERE " + AccountEntry.COLUMN_UID + " = NEW." + AccountEntry.COLUMN_UID + ";"
-                    + "  END;");
-
-            db.execSQL("CREATE TRIGGER insert_transaction_commodity "
-                    + " AFTER INSERT ON " + TransactionEntry.TABLE_NAME
-                    + " BEGIN " + "UPDATE " + TransactionEntry.TABLE_NAME
-                    + " SET " + TransactionEntry.COLUMN_COMMODITY_UID + " = "
-                    + " (SELECT " + CommodityEntry.COLUMN_UID + " FROM " + CommodityEntry.TABLE_NAME
-                    + " WHERE " + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_CURRENCY + " = " + CommodityEntry.TABLE_NAME + "." + CommodityEntry.COLUMN_MNEMONIC + ") "
-                    + " WHERE " + TransactionEntry.COLUMN_UID + " = NEW." + TransactionEntry.COLUMN_UID + ";"
-                    + "  END;");
-
-
             db.execSQL(" ALTER TABLE " + AccountEntry.TABLE_NAME
                     + " ADD COLUMN " + AccountEntry.COLUMN_COMMODITY_UID + " varchar(255) "
                     + " REFERENCES " + CommodityEntry.TABLE_NAME + " (" + CommodityEntry.COLUMN_UID + ") ");
@@ -971,17 +949,15 @@ public class MigrationHelper {
                     + SplitEntry.TABLE_NAME + "_bak." + SplitEntry.COLUMN_MEMO + " , "
                     + SplitEntry.TABLE_NAME + "_bak." + SplitEntry.COLUMN_TYPE + " , "
                     + SplitEntry.TABLE_NAME + "_bak.amount * 100, " //put the amount as both value and quantity since multicurrency transactions were not supported until now
-                    + "100, " //todo: lookup the currency and use the appropriate denom
+                    + "100, "
                     + SplitEntry.TABLE_NAME + "_bak.amount * 100, " //default units of 2 decimal places were assumed until now
-                    + "100, " //todo: lookup the currency and use the appropriate denom
+                    + "100, "
                     + SplitEntry.TABLE_NAME + "_bak." + SplitEntry.COLUMN_ACCOUNT_UID + " , "
                     + SplitEntry.TABLE_NAME + "_bak." + SplitEntry.COLUMN_TRANSACTION_UID
                     + " FROM " + SplitEntry.TABLE_NAME + "_bak;");
 
             db.execSQL("DROP TABLE " + SplitEntry.TABLE_NAME + "_bak");
 
-
-            //TODO: add migrations here
             db.setTransactionSuccessful();
             oldVersion = 9;
         } finally {

@@ -47,8 +47,6 @@ import butterknife.ButterKnife;
  */
 public class BalanceSheetFragment extends Fragment {
 
-    //TODO: finish generation of text reports
-
     @Bind(R.id.table_assets) TableLayout mAssetsTableLayout;
     @Bind(R.id.table_liabilities) TableLayout mLiabilitiesTableLayout;
     @Bind(R.id.table_equity) TableLayout mEquityTableLayout;

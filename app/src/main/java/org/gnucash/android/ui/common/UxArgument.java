@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.gnucash.android.ui;
+package org.gnucash.android.ui.common;
 
 /**
  * Collection of constants which are passed across multiple pieces of the UI (fragments, activities, dialogs)
