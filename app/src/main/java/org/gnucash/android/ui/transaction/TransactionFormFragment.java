@@ -189,6 +189,11 @@ public class TransactionFormFragment extends Fragment implements
     @Bind(R.id.input_recurrence) TextView mRecurrenceTextView;
 
     /**
+     * View which displays the calculator keyboard
+     */
+    @Bind(R.id.calculator_keyboard) KeyboardView mKeyboardView;
+
+    /**
      * Flag to note if double entry accounting is in use or not
      */
 	private boolean mUseDoubleEntry;
@@ -220,14 +225,30 @@ public class TransactionFormFragment extends Fragment implements
     private boolean mEditMode = false;
 
     /**
-     * Custom calculator keyboard
-     */
-    private CalculatorKeyboard mCalculatorKeyboard;
-
-    /**
      * Split quantity which will be set from the funds transfer dialog
      */
     private Money mSplitQuantity;
+    private View.OnTouchListener mAmountEditTextTouchListener = new View.OnTouchListener() {
+        @Override
+        public boolean onTouch(View v, MotionEvent event) {
+            final int DRAWABLE_LEFT = 0;
+            final int DRAWABLE_TOP = 1;
+            final int DRAWABLE_RIGHT = 2;
+            final int DRAWABLE_BOTTOM = 3;
+
+            if (event.getAction() == MotionEvent.ACTION_UP) {
+                if (event.getRawX() >= (mAmountEditText.getRight() - mAmountEditText.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
+                    openSplitEditor();
+                    return true;
+                } else if (!mAmountEditText.getCalculatorKeyboard().isCustomKeyboardVisible()) {
+                    mAmountEditText.getCalculatorKeyboard().showCustomKeyboard(v);
+                }
+            }
+
+            mAmountEditText.onTouchEvent(event);
+            return false;
+        }
+    };;
 
     /**
 	 * Create the view and retrieve references to the UI elements
@@ -237,7 +258,7 @@ public class TransactionFormFragment extends Fragment implements
 			Bundle savedInstanceState) {
 		View v = inflater.inflate(R.layout.fragment_transaction_form, container, false);
         ButterKnife.bind(this, v);
-        mAmountEditText.bindListeners((KeyboardView) v.findViewById(R.id.calculator_keyboard));
+        mAmountEditText.bindListeners(mKeyboardView);
         return v;
 	}
 
@@ -261,12 +282,14 @@ public class TransactionFormFragment extends Fragment implements
 
         TransferFundsDialogFragment fragment
                 = TransferFundsDialogFragment.getInstance(amount, targetCurrency, this);
-        fragment.show(getFragmentManager(), "tranfer_funds_editor");
+        fragment.show(getFragmentManager(), "transfer_funds_editor");
     }
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
+        mAmountEditText.bindListeners(mKeyboardView);
+        mAmountEditText.setOnTouchListener(mAmountEditTextTouchListener);
     }
 
     @Override
@@ -601,27 +624,7 @@ public class TransactionFormFragment extends Fragment implements
 	 * Sets click listeners for the dialog buttons
 	 */
 	private void setListeners() {
-        mAmountEditText.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                final int DRAWABLE_LEFT = 0;
-                final int DRAWABLE_TOP = 1;
-                final int DRAWABLE_RIGHT = 2;
-                final int DRAWABLE_BOTTOM = 3;
-
-                if (event.getAction() == MotionEvent.ACTION_UP) {
-                    if (event.getRawX() >= (mAmountEditText.getRight() - mAmountEditText.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
-                        openSplitEditor();
-                        return true;
-                    } else if (!mAmountEditText.getCalculatorKeyboard().isCustomKeyboardVisible()) {
-                        mAmountEditText.getCalculatorKeyboard().showCustomKeyboard(v);
-                    }
-                }
-
-                mAmountEditText.onTouchEvent(event);
-                return false;
-            }
-        });
+        mAmountEditText.setOnTouchListener(mAmountEditTextTouchListener);
 
 		mTransactionTypeSwitch.setAmountFormattingListener(mAmountEditText, mCurrencyTextView);
 

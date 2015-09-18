@@ -17,6 +17,7 @@ package org.gnucash.android.ui.transaction;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.database.Cursor;
 import android.inputmethodservice.KeyboardView;
 import android.os.Bundle;
@@ -39,6 +40,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.gnucash.android.R;
 import org.gnucash.android.db.AccountsDbAdapter;
@@ -87,6 +89,7 @@ public class SplitEditorFragment extends Fragment {
     private ArrayList<String> mRemovedSplitUIDs = new ArrayList<>();
 
     CalculatorKeyboard mCalculatorKeyboard;
+
     /**
      * Create and return a new instance of the fragment with the appropriate paramenters
      * @param args Arguments to be set to the fragment. <br>
@@ -142,6 +145,12 @@ public class SplitEditorFragment extends Fragment {
             view.findViewById(R.id.input_accounts_spinner).setEnabled(false);
             view.findViewById(R.id.btn_remove_split).setVisibility(View.GONE);
         }
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        mCalculatorKeyboard = new CalculatorKeyboard(getActivity(), mKeyboardView, R.xml.calculator_keyboard);
     }
 
     private void loadSplitViews(List<Split> splitList) {
@@ -295,7 +304,32 @@ public class SplitEditorFragment extends Fragment {
         transferAccountSpinner.setAdapter(mCursorAdapter);
     }
 
+    /**
+     * Check if all the split amounts have valid values that can be saved
+     * @return {@code true} if splits can be saved, {@code false} otherwise
+     */
+    private boolean canSave(){
+        for (View splitView : mSplitItemViewList) {
+            SplitViewHolder viewHolder = (SplitViewHolder) splitView.getTag();
+            viewHolder.splitAmountEditText.evaluate();
+            if (viewHolder.splitAmountEditText.getError() != null){
+                return false;
+            }
+            //TODO: also check that multicurrency splits have a conversion amount present
+        }
+        return true;
+    }
+
+    /**
+     * Save all the splits from the split editor
+     */
     private void saveSplits() {
+        if (!canSave()){
+            Toast.makeText(getActivity(), R.string.toast_error_check_split_amounts,
+                    Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         List<Split> splitList = extractSplitsFromView();
         ArrayList<String> splitStrings = new ArrayList<>();
         for (Split split : splitList) {
@@ -317,7 +351,7 @@ public class SplitEditorFragment extends Fragment {
         List<Split> splitList = new ArrayList<>();
         for (View splitView : mSplitItemViewList) {
             SplitViewHolder viewHolder = (SplitViewHolder) splitView.getTag();
-            if (viewHolder.splitAmountEditText.getText().length() == 0)
+            if (viewHolder.splitAmountEditText.getValue() == null)
                 continue;
 
             BigDecimal amountBigDecimal = viewHolder.splitAmountEditText.getValue();

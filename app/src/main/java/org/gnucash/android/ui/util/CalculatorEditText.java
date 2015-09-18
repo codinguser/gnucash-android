@@ -263,7 +263,7 @@ public class CalculatorEditText extends EditText {
             expression = expressionBuilder.build();
         } catch (RuntimeException e) {
             // FIXME: i18n
-            setError("Invalid expression!");
+            setError(getContext().getString(R.string.label_error_invalid_expression));
             String msg = "Invalid expression: " + amountText;
             Log.e(this.getClass().getSimpleName(), msg);
             Crashlytics.log(msg);
@@ -284,7 +284,7 @@ public class CalculatorEditText extends EditText {
             setSelection(resultString.length());
         } else {
             // FIXME: i18n
-            setError("Invalid expression!");
+            setError(getContext().getString(R.string.label_error_invalid_expression));
             Log.w(VIEW_LOG_TAG, "Expression is null or invalid: " + expression);
         }
         return getText().toString();

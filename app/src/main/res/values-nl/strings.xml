@@ -529,6 +529,8 @@ No user-identifiable information will be collected as part of this process!
     <string name="wizard_title_welcome_to_gnucash">Welcome to GnuCash</string>
     <string name="msg_wizard_welcome_page">Before you dive in, \nlet\'s setup a few things first\n\nTo continue, press Next</string>
     <string name="title_split_editor">Split Editor</string>
+    <string name="toast_error_check_split_amounts">Check that all splits have valid amounts before saving!</string>
+    <string name="label_error_invalid_expression">Invalid expression!</string>
     <string-array name="report_time_range">
         <item>All time</item>
         <item>Current month</item>
