@@ -16,62 +16,37 @@ limitations under the License.
 -->
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:paddingLeft="@dimen/dialog_padding"
-                android:paddingRight="@dimen/dialog_padding"
-                android:paddingTop="@dimen/dialog_padding"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
     tools:context=".ui.FormActivity">
 
-    <ScrollView android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_above="@+id/footer">
-        <LinearLayout android:id="@+id/split_list_layout"
-                      android:layout_width="match_parent"
-                      android:layout_height="wrap_content"
-                      android:orientation="vertical">
-            <!-- Split edit views will be added here at runtime-->
-        </LinearLayout>
-    </ScrollView>
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/dialog_padding"
+            android:layout_above="@+id/footer">
+            <LinearLayout android:id="@+id/split_list_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="200dp"
+                android:orientation="vertical">
+                <!-- Split edit views will be added here at runtime-->
+            </LinearLayout>
+        </ScrollView>
 
-    <include layout="@layout/horizontal_line"
-             android:layout_width="match_parent"
-             android:layout_height="1dp"
-             android:layout_above="@id/footer"/>
-
-    <Button android:id="@+id/btn_add_split"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:minWidth="100dp"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_gravity="center"
-        android:textColor="@android:color/white"
-        android:text="@string/btn_add_split"/>
-
-    <LinearLayout android:id="@+id/footer"
-                 android:layout_width="match_parent"
-                 android:layout_height="wrap_content"
-                 android:layout_above="@id/btn_add_split">
-
-            <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:textAppearance="?android:attr/textAppearanceSmall"
-                    android:gravity="center_vertical"
-                    android:text="@string/label_imbalance"/>
-
-            <TextView android:id="@+id/imbalance_textview"
-                      android:layout_width="0dp"
-                      android:layout_height="match_parent"
-                      android:layout_weight="1"
-                      android:textAppearance="?android:attr/textAppearanceSmall"
-                      android:gravity="right|center_vertical"
-                      tools:text="$200"/>
     </LinearLayout>
-
+    <android.inputmethodservice.KeyboardView android:id="@+id/calculator_keyboard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:visibility="gone" />
 </RelativeLayout>

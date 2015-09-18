@@ -166,8 +166,15 @@ public class TransactionTypeSwitch extends SwitchCompat {
             }
             String amountText = mAmountEditText.getText().toString();
             if (amountText.length() > 0){
-                String changedSignText = TransactionFormFragment.parseInputToDecimal(amountText).negate().toPlainString();
-                mAmountEditText.setText(changedSignText); //trigger an edit to update the number sign
+                String newText = amountText;
+                if (isChecked && !amountText.startsWith("-")){
+                    newText = "-" + amountText;
+                }
+                if (!isChecked && amountText.startsWith("-")){
+                    newText = amountText.substring(1);
+                }
+                mAmountEditText.setText(newText);
+                mAmountEditText.setSelection(newText.length());
             }
         }
     }
