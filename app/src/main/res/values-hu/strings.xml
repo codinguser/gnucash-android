@@ -527,6 +527,7 @@ No user-identifiable information will be collected as part of this process!
     <string name="title_setup_gnucash">Setup GnuCash</string>
     <string name="wizard_title_welcome_to_gnucash">Welcome to GnuCash</string>
     <string name="msg_wizard_welcome_page">Before you dive in, \nlet\'s setup a few things first\n\nTo continue, press Next</string>
+    <string name="title_split_editor">Split Editor</string>
     <string-array name="report_time_range">
         <item>All time</item>
         <item>Current month</item>

@@ -16,15 +16,13 @@
 -->
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:gnucash="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-        android:padding="@dimen/dialog_padding"
-        android:stretchColumns="1"
-        android:orientation="vertical" >
 
         <TableLayout android:id="@+id/fragment_transaction_form"
             android:layout_width="match_parent"
@@ -57,7 +55,7 @@
                     android:textSize="22dp"
                     android:text="$" />
 
-                <EditText
+                <org.gnucash.android.ui.util.CalculatorEditText
                     android:id="@+id/input_transaction_amount"
                     android:layout_width="0dp"
                     android:layout_weight="3"
@@ -69,7 +67,8 @@
                     android:drawableEnd="@drawable/content_split_holo_light"
                     android:background="@android:color/transparent"
                     android:textColor="@color/debit_red"
-                    android:textSize="20sp" />
+                    android:textSize="20sp"
+                    gnucash:keyboardKeysLayout="@xml/calculator_keyboard"/>
 
                 <org.gnucash.android.ui.util.TransactionTypeSwitch
                     android:id="@+id/input_transaction_type"

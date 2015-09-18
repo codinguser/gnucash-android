@@ -22,6 +22,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.database.Cursor;
+import android.inputmethodservice.KeyboardView;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
@@ -30,7 +31,6 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.text.Editable;
 import android.text.format.DateUtils;
 import android.text.format.Time;
 import android.util.Log;
@@ -71,7 +71,7 @@ import org.gnucash.android.model.TransactionType;
 import org.gnucash.android.ui.FormActivity;
 import org.gnucash.android.ui.UxArgument;
 import org.gnucash.android.ui.transaction.dialog.TransferFundsDialogFragment;
-import org.gnucash.android.ui.util.AmountInputFormatter;
+import org.gnucash.android.ui.util.CalculatorEditText;
 import org.gnucash.android.ui.util.CalculatorKeyboard;
 import org.gnucash.android.ui.util.OnTransferFundsListener;
 import org.gnucash.android.ui.util.RecurrenceParser;
@@ -90,6 +90,9 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
+
+import butterknife.Bind;
+import butterknife.ButterKnife;
 
 /**
  * Fragment for creating or editing transactions
@@ -140,58 +143,50 @@ public class TransactionFormFragment extends Fragment implements
 	/**
 	 * Button for setting the transaction type, either credit or debit
 	 */
-	private TransactionTypeSwitch mTransactionTypeButton;
+	@Bind(R.id.input_transaction_type) TransactionTypeSwitch mTransactionTypeSwitch;
 
 	/**
 	 * Input field for the transaction name (description)
 	 */
-	private AutoCompleteTextView mDescriptionEditText;
+	@Bind(R.id.input_transaction_name) AutoCompleteTextView mDescriptionEditText;
 
 	/**
 	 * Input field for the transaction amount
 	 */
-	private EditText mAmountEditText;
+	@Bind(R.id.input_transaction_amount) CalculatorEditText mAmountEditText;
 
 	/**
 	 * Field for the transaction currency.
 	 * The transaction uses the currency of the account
 	 */
-	private TextView mCurrencyTextView;
+	@Bind(R.id.currency_symbol) TextView mCurrencyTextView;
 
 	/**
 	 * Input field for the transaction description (note)
 	 */
-	private EditText mNotesEditText;
+	@Bind(R.id.input_description) EditText mNotesEditText;
 
 	/**
 	 * Input field for the transaction date
 	 */
-	private TextView mDateTextView;
+	@Bind(R.id.input_date) TextView mDateTextView;
 
 	/**
 	 * Input field for the transaction time
 	 */
-	private TextView mTimeTextView;
-
-	/**
-	 * {@link Calendar} for holding the set date
-	 */
-	private Calendar mDate;
-
-	/**
-	 * {@link Calendar} object holding the set time
-	 */
-	private Calendar mTime;
+	@Bind(R.id.input_time) TextView mTimeTextView;
 
 	/**
 	 * Spinner for selecting the transfer account
 	 */
-	private Spinner mTransferAccountSpinner;
+	@Bind(R.id.input_transfer_account_spinner) Spinner mTransferAccountSpinner;
 
     /**
      * Checkbox indicating if this transaction should be saved as a template or not
      */
-    private CheckBox mSaveTemplateCheckbox;
+    @Bind(R.id.checkbox_save_template) CheckBox mSaveTemplateCheckbox;
+
+    @Bind(R.id.input_recurrence) TextView mRecurrenceTextView;
 
     /**
      * Flag to note if double entry accounting is in use or not
@@ -199,17 +194,24 @@ public class TransactionFormFragment extends Fragment implements
 	private boolean mUseDoubleEntry;
 
     /**
+     * {@link Calendar} for holding the set date
+     */
+    private Calendar mDate;
+
+    /**
+     * {@link Calendar} object holding the set time
+     */
+    private Calendar mTime;
+
+    /**
      * The AccountType of the account to which this transaction belongs.
      * Used for determining the accounting rules for credits and debits
      */
     AccountType mAccountType;
 
-    TextView mRecurrenceTextView;
 
     private String mRecurrenceRule;
     private EventRecurrence mEventRecurrence = new EventRecurrence();
-
-    private AmountInputFormatter mAmountInputFormatter;
 
     private String mAccountUID;
 
@@ -234,18 +236,8 @@ public class TransactionFormFragment extends Fragment implements
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		View v = inflater.inflate(R.layout.fragment_transaction_form, container, false);
-
-		mDescriptionEditText = (AutoCompleteTextView) v.findViewById(R.id.input_transaction_name);
-		mNotesEditText = (EditText) v.findViewById(R.id.input_description);
-		mDateTextView           = (TextView) v.findViewById(R.id.input_date);
-		mTimeTextView           = (TextView) v.findViewById(R.id.input_time);
-		mAmountEditText         = (EditText) v.findViewById(R.id.input_transaction_amount);
-		mCurrencyTextView       = (TextView) v.findViewById(R.id.currency_symbol);
-		mTransactionTypeButton  = (TransactionTypeSwitch) v.findViewById(R.id.input_transaction_type);
-		mTransferAccountSpinner = (Spinner) v.findViewById(R.id.input_transfer_account_spinner);
-        mRecurrenceTextView     = (TextView) v.findViewById(R.id.input_recurrence);
-        mSaveTemplateCheckbox = (CheckBox) v.findViewById(R.id.checkbox_save_template);
-
+        ButterKnife.bind(this, v);
+        mAmountEditText.bindListeners((KeyboardView) v.findViewById(R.id.calculator_keyboard));
         return v;
 	}
 
@@ -258,11 +250,11 @@ public class TransactionFormFragment extends Fragment implements
         String targetCurrency = mAccountsDbAdapter.getCurrencyCode((mAccountsDbAdapter.getUID(id)));
 
         if (fromCurrency.equals(Currency.getInstance(targetCurrency))
-                || !mAmountInputFormatter.isInputModified()
+                || !mAmountEditText.isInputModified()
                 || mSplitQuantity != null) //if both accounts have same currency
             return;
 
-        BigDecimal amountBigd = parseInputToDecimal(mAmountEditText.getText().toString());
+        BigDecimal amountBigd = mAmountEditText.getValue();
         if (mSplitQuantity != null || amountBigd.equals(BigDecimal.ZERO))
             return;
         Money amount 	= new Money(amountBigd, fromCurrency).absolute();
@@ -275,7 +267,6 @@ public class TransactionFormFragment extends Fragment implements
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        initCalculatorKeyboard();
     }
 
     @Override
@@ -347,7 +338,6 @@ public class TransactionFormFragment extends Fragment implements
 			initializeViewsWithTransaction();
             mEditMode = true;
 		}
-
         initCalculatorKeyboard();
 	}
 
@@ -418,7 +408,7 @@ public class TransactionFormFragment extends Fragment implements
                 mTransaction = new Transaction(mTransactionsDbAdapter.getRecord(id), true);
                 mTransaction.setTime(System.currentTimeMillis());
                 //we check here because next method will modify it and we want to catch user-modification
-                boolean amountEntered = mAmountInputFormatter.isInputModified();
+                boolean amountEntered = mAmountEditText.isInputModified();
                 initializeViewsWithTransaction();
                 List<Split> splitList = mTransaction.getSplits();
                 boolean isSplitPair = splitList.size() == 2 && splitList.get(0).isPairOf(splitList.get(1));
@@ -451,10 +441,10 @@ public class TransactionFormFragment extends Fragment implements
 		mDescriptionEditText.setText(mTransaction.getDescription());
         mDescriptionEditText.setSelection(mDescriptionEditText.getText().length());
 
-        mTransactionTypeButton.setAccountType(mAccountType);
-        mTransactionTypeButton.setChecked(mTransaction.getBalance(mAccountUID).isNegative());
+        mTransactionTypeSwitch.setAccountType(mAccountType);
+        mTransactionTypeSwitch.setChecked(mTransaction.getBalance(mAccountUID).isNegative());
 
-		if (!mAmountInputFormatter.isInputModified()){
+		if (!mAmountEditText.isInputModified()){
             //when autocompleting, only change the amount if the user has not manually changed it already
             mAmountEditText.setText(mTransaction.getBalance(mAccountUID).toPlainString());
         }
@@ -510,7 +500,7 @@ public class TransactionFormFragment extends Fragment implements
 
     private void setAmountEditViewVisible(int visibility) {
         getView().findViewById(R.id.layout_double_entry).setVisibility(visibility);
-        mTransactionTypeButton.setVisibility(visibility);
+        mTransactionTypeSwitch.setVisibility(visibility);
     }
 
     private void toggleAmountInputEntryMode(boolean enabled){
@@ -537,9 +527,9 @@ public class TransactionFormFragment extends Fragment implements
 		mTimeTextView.setText(TIME_FORMATTER.format(time));
 		mTime = mDate = Calendar.getInstance();
 
-        mTransactionTypeButton.setAccountType(mAccountType);
+        mTransactionTypeSwitch.setAccountType(mAccountType);
 		String typePref = PreferenceManager.getDefaultSharedPreferences(getActivity()).getString(getString(R.string.key_default_transaction_type), "DEBIT");
-        mTransactionTypeButton.setChecked(TransactionType.valueOf(typePref));
+        mTransactionTypeSwitch.setChecked(TransactionType.valueOf(typePref));
 
 		String code = Money.DEFAULT_CURRENCY_CODE;
 		if (mAccountUID != null){
@@ -594,7 +584,7 @@ public class TransactionFormFragment extends Fragment implements
         String baseAmountString;
 
         if (mTransaction == null){ //if we are creating a new transaction (not editing an existing one)
-            BigDecimal enteredAmount = parseInputToDecimal(mAmountEditText.getText().toString());
+            BigDecimal enteredAmount = mAmountEditText.getValue();
             baseAmountString = enteredAmount.toPlainString();
         } else {
             Money biggestAmount = Money.createZeroInstance(mTransaction.getCurrencyCode());
@@ -623,8 +613,6 @@ public class TransactionFormFragment extends Fragment implements
 	 * Sets click listeners for the dialog buttons
 	 */
 	private void setListeners() {
-        mAmountInputFormatter = new AmountTextWatcher(mAmountEditText);
-        //mAmountEditText.addTextChangedListener(mAmountInputFormatter);
         mAmountEditText.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -637,8 +625,8 @@ public class TransactionFormFragment extends Fragment implements
                     if (event.getRawX() >= (mAmountEditText.getRight() - mAmountEditText.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
                         openSplitEditor();
                         return true;
-                    } else if (!mCalculatorKeyboard.isCustomKeyboardVisible()) {
-                        mCalculatorKeyboard.showCustomKeyboard(v);
+                    } else if (!mAmountEditText.getCalculatorKeyboard().isCustomKeyboardVisible()) {
+                        mAmountEditText.getCalculatorKeyboard().showCustomKeyboard(v);
                     }
                 }
 
@@ -647,7 +635,7 @@ public class TransactionFormFragment extends Fragment implements
             }
         });
 
-		mTransactionTypeButton.setAmountFormattingListener(mAmountEditText, mCurrencyTextView);
+		mTransactionTypeSwitch.setAmountFormattingListener(mAmountEditText, mCurrencyTextView);
 
 		mDateTextView.setOnClickListener(new View.OnClickListener() {
 
@@ -746,6 +734,7 @@ public class TransactionFormFragment extends Fragment implements
 	 * and save a transaction
 	 */
 	private void saveNewTransaction() {
+        mAmountEditText.getCalculatorKeyboard().hideCustomKeyboard();
 		Calendar cal = new GregorianCalendar(
 				mDate.get(Calendar.YEAR),
 				mDate.get(Calendar.MONTH),
@@ -755,7 +744,7 @@ public class TransactionFormFragment extends Fragment implements
 				mTime.get(Calendar.SECOND));
 		String description = mDescriptionEditText.getText().toString();
 		String notes = mNotesEditText.getText().toString();
-		BigDecimal amountBigd = new BigDecimal(mAmountEditText.getText().toString().replaceAll(",", ".").trim());
+		BigDecimal amountBigd = mAmountEditText.getValue();
 
 		Currency currency = Currency.getInstance(mTransactionsDbAdapter.getAccountCurrencyCode(mAccountUID));
 		Money amount 	= new Money(amountBigd, currency).absolute();
@@ -776,10 +765,10 @@ public class TransactionFormFragment extends Fragment implements
             //if it is a simple transfer where the editor was not used, then respect the button
             for (Split split : mSplitsList) {
                 if (split.getAccountUID().equals(mAccountUID)){
-                    split.setType(mTransactionTypeButton.getTransactionType());
+                    split.setType(mTransactionTypeSwitch.getTransactionType());
                     split.setValue(amount);
                 } else {
-                    split.setType(mTransactionTypeButton.getTransactionType().invert());
+                    split.setType(mTransactionTypeSwitch.getTransactionType().invert());
                     if (mSplitQuantity != null)
                         split.setQuantity(mSplitQuantity);
                     split.setValue(amount);
@@ -810,7 +799,7 @@ public class TransactionFormFragment extends Fragment implements
                 //****************** amount entered in the simple interface (not using splits Editor) ************************
                 if (mSplitsList.isEmpty()) {
                     Split split = new Split(amount, mAccountUID);
-                    split.setType(mTransactionTypeButton.getTransactionType());
+                    split.setType(mTransactionTypeSwitch.getTransactionType());
                     mTransaction.addSplit(split);
 
                     String transferAcctUID;
@@ -959,8 +948,7 @@ public class TransactionFormFragment extends Fragment implements
      * @return {@code true} if the transaction can be saved, {@code false} otherwise
      */
     private boolean canSave(){
-        mCalculatorKeyboard.evaluateEditTextExpression(mAmountEditText);
-        return (mAmountEditText.getText().length() > 0 && mAmountEditText.getError() == null)
+        return (mAmountEditText.isInputValid())
                 || (mUseDoubleEntry && mTransferAccountSpinner.getCount() == 0);
     }
 
@@ -973,7 +961,7 @@ public class TransactionFormFragment extends Fragment implements
         Money balance = Transaction.computeBalance(mAccountUID, mSplitsList);
 
         mAmountEditText.setText(balance.toPlainString());
-        mTransactionTypeButton.setChecked(balance.isNegative());
+        mTransactionTypeSwitch.setChecked(balance.isNegative());
         //once we set the split list, do not allow direct editing of the total
         if (mSplitsList.size() > 1){
             toggleAmountInputEntryMode(false);
@@ -1085,27 +1073,6 @@ public class TransactionFormFragment extends Fragment implements
             }
             List<String> removedSplits = data.getStringArrayListExtra(UxArgument.REMOVED_SPLITS);
             setSplitList(splitList, removedSplits);
-        }
-    }
-
-    /**
-     * Formats the amount and adds a negative sign if the amount will decrease the account balance
-     */
-    public class AmountTextWatcher extends AmountInputFormatter {
-
-        public AmountTextWatcher(EditText amountInput) {
-            super(amountInput);
-        }
-
-        @Override
-        public void afterTextChanged(Editable s) {
-            String value = s.toString();
-            if (value.length() > 0 && mTransactionTypeButton.isChecked()){
-                if (s.charAt(0) != '-'){
-                    s = Editable.Factory.getInstance().newEditable("-" + value);
-                }
-            }
-            super.afterTextChanged(s);
         }
     }
 }
