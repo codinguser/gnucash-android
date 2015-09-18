@@ -130,13 +130,13 @@ public class TransactionDetailActivity extends AppCompatActivity{
         LayoutInflater inflater = LayoutInflater.from(this);
         int index = 0;
         for (Split split : transaction.getSplits()) {
-            if (useDoubleEntry && split.getAccountUID().equals(accountsDbAdapter.getImbalanceAccountUID(split.getValue().getCurrency()))){
+            if (!useDoubleEntry && split.getAccountUID().equals(accountsDbAdapter.getImbalanceAccountUID(split.getValue().getCurrency()))){
                 //do now show imbalance accounts for single entry use case
                 continue;
             }
             View view = inflater.inflate(R.layout.item_split_amount_info, mDetailTableLayout, false);
             SplitAmountViewHolder viewHolder = new SplitAmountViewHolder(view, split);
-            mDetailTableLayout.addView(view, index++);
+            mDetailTableLayout.addView(viewHolder.itemView, index++);
         }
 
 

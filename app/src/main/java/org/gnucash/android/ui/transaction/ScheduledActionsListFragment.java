@@ -128,15 +128,23 @@ public class ScheduledActionsListFragment extends ListFragment implements
                         }
                     }
                     mode.finish();
+                    setDefaultStatusBarColor();
                     getLoaderManager().destroyLoader(0);
                     refreshList();
                     return true;
 
                 default:
+                    setDefaultStatusBarColor();
                     return false;
             }
         }
     };
+
+    private void setDefaultStatusBarColor() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getActivity().getWindow().setStatusBarColor(getResources().getColor(R.color.theme_primary_dark));
+        }
+    }
 
     /**
      * Returns a new instance of the fragment for displayed the scheduled action
@@ -194,6 +202,7 @@ public class ScheduledActionsListFragment extends ListFragment implements
 
         setHasOptionsMenu(true);
         getListView().setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
+        ((TextView)getListView().getEmptyView()).setTextColor(getResources().getColor(R.color.theme_accent));
         if (mActionType == ScheduledAction.ActionType.TRANSACTION){
             ((TextView)getListView().getEmptyView()).setText(R.string.label_no_recurring_transactions);
         } else if (mActionType == ScheduledAction.ActionType.BACKUP){
@@ -357,9 +366,7 @@ public class ScheduledActionsListFragment extends ListFragment implements
         int checkedCount = getListView().getCheckedItemIds().length;
         if (checkedCount <= 0 && mActionMode != null) {
             mActionMode.finish();
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
-                getActivity().getWindow().setStatusBarColor(getResources().getColor(R.color.theme_primary_dark));
-            }
+            setDefaultStatusBarColor();
         }
     }
 

@@ -759,29 +759,20 @@ public class TransactionFormFragment extends Fragment implements
                 if (split.getAccountUID().equals(mAccountUID)){
                     split.setType(mTransactionTypeSwitch.getTransactionType());
                     split.setValue(amount);
+                    split.setQuantity(amount);
                 } else {
                     split.setType(mTransactionTypeSwitch.getTransactionType().invert());
                     if (mSplitQuantity != null)
                         split.setQuantity(mSplitQuantity);
+                    else
+                        split.setQuantity(amount);
                     split.setValue(amount);
                 }
             }
         }
 
-        Money splitSum = Money.createZeroInstance(currency.getCurrencyCode());
-        for (Split split : mSplitsList) {
-            Money amt = split.getValue().absolute();
-            if (split.getType() == TransactionType.DEBIT)
-                splitSum = splitSum.subtract(amt);
-            else
-                splitSum = splitSum.add(amt);
-        }
         mAccountsDbAdapter.beginTransaction();
         try {
-            if (!splitSum.isAmountZero()) {
-                Split imbSplit = new Split(splitSum.negate(), mAccountsDbAdapter.getOrCreateImbalanceAccountUID(currency));
-                mSplitsList.add(imbSplit);
-            }
             if (mTransaction != null) { //if editing an existing transaction
                 mTransaction.setSplits(mSplitsList);
                 mTransaction.setDescription(description);
