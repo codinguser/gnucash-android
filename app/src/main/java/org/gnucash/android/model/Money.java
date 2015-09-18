@@ -285,6 +285,11 @@ public final class Money implements Comparable<Money>{
 		throw new RuntimeException("Unsupported number of fraction digits " + getScale());
 	}
 
+	/**
+	 * Returns the scale (precision) used for the decimal places of this amount.
+	 * <p>The scale used depends on the currency</p>
+	 * @return Scale of amount as integer
+	 */
 	private int getScale() {
 		int scale = mCurrency.getDefaultFractionDigits();
 		if (scale < 0) {

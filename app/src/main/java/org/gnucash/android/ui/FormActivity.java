@@ -34,6 +34,7 @@ import org.gnucash.android.ui.account.AccountFormFragment;
 import org.gnucash.android.ui.export.ExportFormFragment;
 import org.gnucash.android.ui.transaction.TransactionFormFragment;
 import org.gnucash.android.ui.transaction.SplitEditorFragment;
+import org.gnucash.android.ui.util.CalculatorKeyboard;
 
 /**
  * Activity for displaying forms in the application.
@@ -44,6 +45,8 @@ import org.gnucash.android.ui.transaction.SplitEditorFragment;
 public class FormActivity extends AppCompatActivity {
 
     private String mAccountUID;
+
+    private CalculatorKeyboard mOnBackListener;
 
     public enum FormType {ACCOUNT, TRANSACTION, EXPORT, SPLIT_EDITOR}
 
@@ -173,4 +176,21 @@ public class FormActivity extends AppCompatActivity {
         fragmentTransaction.add(R.id.fragment_container, fragment);
         fragmentTransaction.commit();
     }
+
+
+    public void setOnBackListener(CalculatorKeyboard keyboard) {
+        mOnBackListener = keyboard;
+    }
+
+    @Override
+    public void onBackPressed() {
+        boolean eventProcessed = false;
+
+        if (mOnBackListener != null)
+            eventProcessed = mOnBackListener.onBackPressed();
+
+        if (!eventProcessed)
+            super.onBackPressed();
+    }
+
 }

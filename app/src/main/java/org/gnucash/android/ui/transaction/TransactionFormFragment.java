@@ -20,6 +20,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -71,6 +72,7 @@ import org.gnucash.android.ui.FormActivity;
 import org.gnucash.android.ui.UxArgument;
 import org.gnucash.android.ui.transaction.dialog.TransferFundsDialogFragment;
 import org.gnucash.android.ui.util.AmountInputFormatter;
+import org.gnucash.android.ui.util.CalculatorKeyboard;
 import org.gnucash.android.ui.util.OnTransferFundsListener;
 import org.gnucash.android.ui.util.RecurrenceParser;
 import org.gnucash.android.ui.util.TransactionTypeSwitch;
@@ -211,9 +213,14 @@ public class TransactionFormFragment extends Fragment implements
 
     private String mAccountUID;
 
-    private List<Split> mSplitsList = new ArrayList<Split>();
+    private List<Split> mSplitsList = new ArrayList<>();
 
     private boolean mEditMode = false;
+
+    /**
+     * Custom calculator keyboard
+     */
+    private CalculatorKeyboard mCalculatorKeyboard;
 
     /**
      * Split quantity which will be set from the funds transfer dialog
@@ -266,6 +273,12 @@ public class TransactionFormFragment extends Fragment implements
     }
 
     @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        initCalculatorKeyboard();
+    }
+
+    @Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 		setHasOptionsMenu(true);
@@ -290,7 +303,6 @@ public class TransactionFormFragment extends Fragment implements
 
         setListeners();
         //updateTransferAccountsList must only be called after initializing mAccountsDbAdapter
-        // it needs mMultiCurrency to be properly initialized
         updateTransferAccountsList();
         mTransferAccountSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             /**
@@ -336,7 +348,19 @@ public class TransactionFormFragment extends Fragment implements
             mEditMode = true;
 		}
 
+        initCalculatorKeyboard();
 	}
+
+    /**
+     * Initializes the calculator keyboard
+     */
+    private void initCalculatorKeyboard() {
+        mCalculatorKeyboard = new CalculatorKeyboard(getActivity(), R.id.calculator_keyboard, R.xml.calculator_keyboard);
+        mCalculatorKeyboard.setCurrency(Currency.getInstance(mAccountsDbAdapter.getCurrencyCode(mAccountUID)));
+        mCalculatorKeyboard.registerEditText(R.id.input_transaction_amount);
+        // FIXME: decouple from FormActivity
+        ((FormActivity) getActivity()).setOnBackListener(mCalculatorKeyboard);
+    }
 
     /**
      * Extension of SimpleCursorAdapter which is used to populate the fields for the list items
@@ -599,8 +623,8 @@ public class TransactionFormFragment extends Fragment implements
 	 * Sets click listeners for the dialog buttons
 	 */
 	private void setListeners() {
-        mAmountInputFormatter = new AmountTextWatcher(mAmountEditText); //new AmountInputFormatter(mAmountEditText);
-        mAmountEditText.addTextChangedListener(mAmountInputFormatter);
+        mAmountInputFormatter = new AmountTextWatcher(mAmountEditText);
+        //mAmountEditText.addTextChangedListener(mAmountInputFormatter);
         mAmountEditText.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -613,8 +637,12 @@ public class TransactionFormFragment extends Fragment implements
                     if (event.getRawX() >= (mAmountEditText.getRight() - mAmountEditText.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
                         openSplitEditor();
                         return true;
+                    } else if (!mCalculatorKeyboard.isCustomKeyboardVisible()) {
+                        mCalculatorKeyboard.showCustomKeyboard(v);
                     }
                 }
+
+                mAmountEditText.onTouchEvent(event);
                 return false;
             }
         });
@@ -623,15 +651,15 @@ public class TransactionFormFragment extends Fragment implements
 
 		mDateTextView.setOnClickListener(new View.OnClickListener() {
 
-			@Override
-			public void onClick(View v) {
-				long dateMillis = 0;
-				try {
-					Date date = DATE_FORMATTER.parse(mDateTextView.getText().toString());
-					dateMillis = date.getTime();
-				} catch (ParseException e) {
-					Log.e(getTag(), "Error converting input time to Date object");
-				}
+            @Override
+            public void onClick(View v) {
+                long dateMillis = 0;
+                try {
+                    Date date = DATE_FORMATTER.parse(mDateTextView.getText().toString());
+                    dateMillis = date.getTime();
+                } catch (ParseException e) {
+                    Log.e(getTag(), "Error converting input time to Date object");
+                }
                 Calendar calendar = Calendar.getInstance();
                 calendar.setTimeInMillis(dateMillis);
 
@@ -642,8 +670,8 @@ public class TransactionFormFragment extends Fragment implements
                         TransactionFormFragment.this,
                         year, monthOfYear, dayOfMonth);
                 datePickerDialog.show(getFragmentManager(), "date_picker_fragment");
-			}
-		});
+            }
+        });
 
 		mTimeTextView.setOnClickListener(new View.OnClickListener() {
 
@@ -727,7 +755,7 @@ public class TransactionFormFragment extends Fragment implements
 				mTime.get(Calendar.SECOND));
 		String description = mDescriptionEditText.getText().toString();
 		String notes = mNotesEditText.getText().toString();
-		BigDecimal amountBigd = parseInputToDecimal(mAmountEditText.getText().toString());
+		BigDecimal amountBigd = new BigDecimal(mAmountEditText.getText().toString().replaceAll(",", ".").trim());
 
 		Currency currency = Currency.getInstance(mTransactionsDbAdapter.getAccountCurrencyCode(mAccountUID));
 		Money amount 	= new Money(amountBigd, currency).absolute();
@@ -779,7 +807,8 @@ public class TransactionFormFragment extends Fragment implements
             } else {
                 mTransaction = new Transaction(description);
 
-                if (mSplitsList.isEmpty()) { //amount entered in the simple interface (not using splits Editor)
+                //****************** amount entered in the simple interface (not using splits Editor) ************************
+                if (mSplitsList.isEmpty()) {
                     Split split = new Split(amount, mAccountUID);
                     split.setType(mTransactionTypeButton.getTransactionType());
                     mTransaction.addSplit(split);
@@ -905,14 +934,17 @@ public class TransactionFormFragment extends Fragment implements
                 return true;
 
 		case R.id.menu_save:
-            if (mAmountEditText.getText().length() == 0) {
-                Toast.makeText(getActivity(), R.string.toast_transanction_amount_required, Toast.LENGTH_SHORT).show();
-            } else if (mUseDoubleEntry && mTransferAccountSpinner.getCount() == 0){
-                Toast.makeText(getActivity(),
-                        R.string.toast_disable_double_entry_to_save_transaction,
-                        Toast.LENGTH_LONG).show();
-            } else {
+            if (canSave()){
                 saveNewTransaction();
+            } else {
+                if (mAmountEditText.getText().length() == 0) {
+                    Toast.makeText(getActivity(), R.string.toast_transanction_amount_required, Toast.LENGTH_SHORT).show();
+                }
+                if (mUseDoubleEntry && mTransferAccountSpinner.getCount() == 0){
+                    Toast.makeText(getActivity(),
+                            R.string.toast_disable_double_entry_to_save_transaction,
+                            Toast.LENGTH_LONG).show();
+                }
             }
 			return true;
 
@@ -920,6 +952,17 @@ public class TransactionFormFragment extends Fragment implements
 			return super.onOptionsItemSelected(item);
 		}
 	}
+
+    /**
+     * Checks if the pre-requisites for saving the transaction are fulfilled
+     * <p>The conditions checked are that a valid amount is entered and that a transfer account is set (where applicable)</p>
+     * @return {@code true} if the transaction can be saved, {@code false} otherwise
+     */
+    private boolean canSave(){
+        mCalculatorKeyboard.evaluateEditTextExpression(mAmountEditText);
+        return (mAmountEditText.getText().length() > 0 && mAmountEditText.getError() == null)
+                || (mUseDoubleEntry && mTransferAccountSpinner.getCount() == 0);
+    }
 
     /**
      * Called by the split editor fragment to notify of finished editing

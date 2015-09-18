@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- FIXME: make locale independent -->
+<Keyboard xmlns:android="http://schemas.android.com/apk/res/android"
+    android:keyWidth="20%p"
+    android:keyHeight="15%p">
+
+    <Row>
+        <Key android:codes="53" android:keyLabel="5" android:keyEdgeFlags="left" />
+        <Key android:codes="54" android:keyLabel="6" />
+        <Key android:codes="55" android:keyLabel="7" />
+        <Key android:codes="56" android:keyLabel="8" />
+        <Key android:codes="57" android:keyLabel="9" />
+        <Key android:codes="42" android:keyLabel="*" />
+        <Key android:codes="47" android:keyLabel="/" android:keyEdgeFlags="right" />
+        <Key android:codes="46" android:keyLabel="." />
+        <Key android:codes="-5" android:keyIcon="@drawable/ic_backspace_normal_dark"
+            android:isRepeatable="true" android:keyEdgeFlags="right"/>
+    </Row>
+    <Row>
+        <Key android:codes="48" android:keyLabel="0" android:keyEdgeFlags="left" />
+        <Key android:codes="49" android:keyLabel="1" />
+        <Key android:codes="50" android:keyLabel="2" />
+        <Key android:codes="51" android:keyLabel="3" />
+        <Key android:codes="52" android:keyLabel="4" android:keyEdgeFlags="left" />
+        <Key android:codes="43" android:keyLabel="+" />
+        <Key android:codes="45" android:keyLabel="-" android:keyEdgeFlags="right" />
+        <Key android:codes="1001" android:keyLabel="=" android:horizontalGap="20%" />
+        <Key android:codes="1002" android:keyIcon="@drawable/ic_chevron_right_white_24dp"
+            android:keyEdgeFlags="right" />
+    </Row>
+</Keyboard>

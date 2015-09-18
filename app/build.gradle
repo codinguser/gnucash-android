@@ -175,7 +175,8 @@ dependencies {
             'com.jakewharton:butterknife:7.0.1',
             'com.kobakei:ratethisapp:0.0.3',
             'com.squareup:android-times-square:1.6.4@aar',
-            'com.github.techfreak:wizardpager:1.0.0'
+            'com.github.techfreak:wizardpager:1.0.0',
+            'net.objecthunter:exp4j:0.4.5'
     )
 
     compile('com.crashlytics.sdk.android:crashlytics:2.5.0@aar') {
