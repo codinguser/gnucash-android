@@ -24,6 +24,7 @@ import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.DialogFragment;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -104,6 +105,21 @@ public class TransferFundsDialogFragment extends DialogFragment {
 
         mSampleExchangeRate.setText("e.g. 1 " + fromCurrency.getCurrencyCode() + " = " + " x.xx " + mTargetCurrency.getCurrencyCode());
         final InputWatcher textChangeListener = new InputWatcher();
+
+        CommoditiesDbAdapter commoditiesDbAdapter = CommoditiesDbAdapter.getInstance();
+        String commodityUID = commoditiesDbAdapter.getCommodityUID(fromCurrency.getCurrencyCode());
+        String currencyUID = commoditiesDbAdapter.getCommodityUID(mTargetCurrency.getCurrencyCode());
+        PricesDbAdapter pricesDbAdapter = PricesDbAdapter.getInstance();
+        Pair<Long, Long> price = pricesDbAdapter.getPrice(commodityUID, currencyUID);
+
+        if (price.first > 0 && price.second > 0) {
+            // a valid price exists
+            BigDecimal num = new BigDecimal(price.first);
+            BigDecimal denom = new BigDecimal(price.second);
+            mExchangeRateInput.setText(num.divide(denom, MathContext.DECIMAL32).toString());
+            mConvertedAmountInput.setText(mOriginAmount.asBigDecimal().multiply(num).divide(denom, mTargetCurrency.getDefaultFractionDigits(), BigDecimal.ROUND_HALF_EVEN).toString());
+        }
+
         mExchangeRateInput.addTextChangedListener(textChangeListener);
         mExchangeRateInput.addTextChangedListener(new AmountInputFormatter(mExchangeRateInput));
         mConvertedAmountInput.addTextChangedListener(textChangeListener);
