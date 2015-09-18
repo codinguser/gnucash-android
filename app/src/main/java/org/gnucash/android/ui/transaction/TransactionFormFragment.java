@@ -338,19 +338,7 @@ public class TransactionFormFragment extends Fragment implements
 			initializeViewsWithTransaction();
             mEditMode = true;
 		}
-        initCalculatorKeyboard();
 	}
-
-    /**
-     * Initializes the calculator keyboard
-     */
-    private void initCalculatorKeyboard() {
-        mCalculatorKeyboard = new CalculatorKeyboard(getActivity(), R.id.calculator_keyboard, R.xml.calculator_keyboard);
-        mCalculatorKeyboard.setCurrency(Currency.getInstance(mAccountsDbAdapter.getCurrencyCode(mAccountUID)));
-        mCalculatorKeyboard.registerEditText(R.id.input_transaction_amount);
-        // FIXME: decouple from FormActivity
-        ((FormActivity) getActivity()).setOnBackListener(mCalculatorKeyboard);
-    }
 
     /**
      * Extension of SimpleCursorAdapter which is used to populate the fields for the list items
