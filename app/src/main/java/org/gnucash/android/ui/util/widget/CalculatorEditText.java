@@ -123,8 +123,10 @@ public class CalculatorEditText extends EditText {
             // NOTE By setting the on focus listener, we can show the custom keyboard when the edit box gets focus, but also hide it when the edit box loses focus
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
-                if (hasFocus)
+                if (hasFocus) {
+                    setSelection(getText().length());
                     mCalculatorKeyboard.showCustomKeyboard(v);
+                }
                 else {
                     mCalculatorKeyboard.hideCustomKeyboard();
                     evaluate();
@@ -157,6 +159,15 @@ public class CalculatorEditText extends EditText {
             }
         });
 
+        setDefaultTouchListener();
+
+        ((FormActivity)mContext).setOnBackListener(mCalculatorKeyboard);
+    }
+
+    /**
+     * Sets the default touch listener which opens the calculator keyboard
+     */
+    public void setDefaultTouchListener() {
         setOnTouchListener(new OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -169,9 +180,8 @@ public class CalculatorEditText extends EditText {
                 return false;
             }
         });
-
-        ((FormActivity)mContext).setOnBackListener(mCalculatorKeyboard);
     }
+
     /**
      * Initializes listeners on the edittext
      */

@@ -45,6 +45,7 @@ import org.gnucash.android.ui.util.AmountInputFormatter;
 import org.gnucash.android.ui.util.OnTransferFundsListener;
 
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.util.Currency;
 
 import butterknife.Bind;

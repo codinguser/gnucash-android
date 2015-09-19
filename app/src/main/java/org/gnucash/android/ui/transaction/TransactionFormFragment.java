@@ -519,6 +519,7 @@ public class TransactionFormFragment extends Fragment implements
         if (enabled){
             mAmountEditText.setFocusable(true);
             mAmountEditText.setOnClickListener(null);
+            mAmountEditText.setDefaultTouchListener();
         } else {
             mAmountEditText.setFocusable(false);
             mAmountEditText.setOnClickListener(new View.OnClickListener() {
@@ -527,6 +528,7 @@ public class TransactionFormFragment extends Fragment implements
                     openSplitEditor();
                 }
             });
+            mAmountEditText.setOnTouchListener(null);
         }
     }
 
