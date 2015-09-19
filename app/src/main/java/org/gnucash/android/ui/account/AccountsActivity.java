@@ -148,6 +148,11 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
     @Bind(R.id.coordinatorLayout) CoordinatorLayout mCoordinatorLayout;
 
     /**
+     * Configuration for rating the app
+     */
+    public static RateThisApp.Config rateAppConfig = new RateThisApp.Config(14, 30);;
+
+    /**
      * Adapter for managing the sub-account and transaction fragment pages in the accounts view
      */
     private class AccountViewPagerAdapter extends FragmentStatePagerAdapter {
@@ -273,8 +278,7 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
     @Override
     protected void onStart() {
         super.onStart();
-        RateThisApp.Config config = new RateThisApp.Config(14, 30);
-        RateThisApp.init(config);
+        RateThisApp.init(rateAppConfig);
         RateThisApp.onStart(this);
         RateThisApp.showRateDialogIfNeeded(this);
     }

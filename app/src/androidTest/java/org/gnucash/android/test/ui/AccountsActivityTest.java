@@ -122,8 +122,7 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
      * @param context Application context
      */
     public static void preventFirstRunDialogs(Context context) {
-        RateThisApp.Config config = new RateThisApp.Config(10000, 10000);
-        RateThisApp.init(config);
+        AccountsActivity.rateAppConfig = new RateThisApp.Config(10000, 10000);
         Editor editor = PreferenceManager.getDefaultSharedPreferences(context).edit();
 
         //do not show first run dialog
@@ -273,8 +272,9 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
                 .perform(click());
 
         Account account = new Account("Transfer Account");
-
+        account.setCurrency(DUMMY_ACCOUNT_CURRENCY);
         Transaction transaction = new Transaction("Simple trxn");
+        transaction.setCurrencyCode(DUMMY_ACCOUNT_CURRENCY.getCurrencyCode());
         Split split = new Split(new Money(BigDecimal.TEN, DUMMY_ACCOUNT_CURRENCY), account.getUID());
         transaction.addSplit(split);
         transaction.addSplit(split.createPair(DUMMY_ACCOUNT_UID));
@@ -346,13 +346,19 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
      * Tests that the setup wizard is displayed on first run
      */
     @Test
-    public void shouldShowWizardOnFirstRun(){
+    public void shouldShowWizardOnFirstRun() throws Throwable {
         PreferenceManager.getDefaultSharedPreferences(mAcccountsActivity)
                 .edit()
                 .remove(mAcccountsActivity.getString(R.string.key_first_run))
                 .commit();
 
-        mAcccountsActivity.recreate();
+        runTestOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mAcccountsActivity.recreate();
+            }
+        });
+
         //check that wizard is shown
         onView(withText(mAcccountsActivity.getString(R.string.title_setup_gnucash)))
                 .check(matches(isDisplayed()));

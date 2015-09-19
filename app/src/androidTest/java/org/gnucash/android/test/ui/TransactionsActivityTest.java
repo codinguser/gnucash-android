@@ -138,6 +138,7 @@ public class TransactionsActivityTest extends
         mAccountsDbAdapter.addRecord(account2);
 
         mTransaction = new Transaction(TRANSACTION_NAME);
+		mTransaction.setCurrencyCode(CURRENCY_CODE);
         mTransaction.setNote("What up?");
         mTransaction.setTime(mTransactionTimeMillis);
         Split split = new Split(new Money(TRANSACTION_AMOUNT, CURRENCY_CODE), DUMMY_ACCOUNT_UID);
@@ -248,7 +249,7 @@ public class TransactionsActivityTest extends
 				.perform(click())
 				.check(matches(withText(R.string.label_spend)));
 
-		String expectedValue = NumberFormat.getInstance().format(-8.99);
+		String expectedValue = NumberFormat.getInstance().format(-899);
 		onView(withId(R.id.input_transaction_amount)).check(matches(withText(expectedValue)));
 
         int transactionsCount = getTransactionCount();
@@ -338,10 +339,9 @@ public class TransactionsActivityTest extends
 
 		//TODO: enable this assert when we fix the sign of amounts in split editor
 
-		onView(withId(R.id.btn_add_split)).perform(click());
+		onView(withId(R.id.menu_add_split)).perform(click());
 
 		onView(allOf(withId(R.id.input_split_amount), withText(""))).perform(typeText("400"));
-		onView(withId(R.id.imbalance_textview)).check(matches(withText("-0.99 $")));
 
 		onView(withId(R.id.btn_save)).perform(click());
 		//after we use split editor, we should not be able to toggle the transaction type
@@ -367,7 +367,7 @@ public class TransactionsActivityTest extends
 		assertThat(imbalanceSplits).hasSize(1);
 
 		Split split = imbalanceSplits.get(0);
-		assertThat(split.getValue().toPlainString()).isEqualTo("0.99");
+		assertThat(split.getValue().asBigDecimal()).isEqualTo(new BigDecimal("99"));
 		assertThat(split.getType()).isEqualTo(TransactionType.CREDIT);
 	}
 
@@ -499,7 +499,7 @@ public class TransactionsActivityTest extends
 
 		int afterCount = mTransactionsDbAdapter.getTransactionsCount(DUMMY_ACCOUNT_UID);
 		
-		assertEquals(beforeCount + 1, afterCount);
+		assertThat(beforeCount + 1).isEqualTo(afterCount);
 		
 		List<Transaction> transactions = mTransactionsDbAdapter.getAllTransactionsForAccount(DUMMY_ACCOUNT_UID);
 		

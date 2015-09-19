@@ -16,17 +16,24 @@
 
 package org.gnucash.android.test.ui;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.Build;
 import android.preference.PreferenceManager;
+import android.support.design.widget.Snackbar;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.contrib.DrawerActions;
 import android.support.test.runner.AndroidJUnit4;
+import android.support.v7.app.AlertDialog;
 import android.test.ActivityInstrumentationTestCase2;
 import android.util.Log;
+import android.view.View;
 import android.widget.CompoundButton;
 
 import org.gnucash.android.R;
+import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.DatabaseHelper;
 import org.gnucash.android.db.ScheduledActionDbAdapter;
@@ -96,14 +103,15 @@ public class ExportTransactionsTest extends
         mAccountsDbAdapter = new AccountsDbAdapter(mDb, mTransactionsDbAdapter);
 		mAccountsDbAdapter.deleteAllRecords();
 
-		Account account = new Account("Exportable");		
+		Account account = new Account("Exportable");
 		Transaction transaction = new Transaction("Pizza");
 		transaction.setNote("What up?");
 		transaction.setTime(System.currentTimeMillis());
-        Split split = new Split(new Money("8.99", "USD"), account.getUID());
+		String currencyCode = GnuCashApplication.getDefaultCurrencyCode();
+        Split split = new Split(new Money("8.99", currencyCode), account.getUID());
 		split.setMemo("Hawaii is the best!");
 		transaction.addSplit(split);
-		transaction.addSplit(split.createPair(mAccountsDbAdapter.getOrCreateImbalanceAccountUID(Currency.getInstance("USD"))));
+		transaction.addSplit(split.createPair(mAccountsDbAdapter.getOrCreateImbalanceAccountUID(Currency.getInstance(currencyCode))));
 		account.addTransaction(transaction);
 
 		mAccountsDbAdapter.addRecord(account);
@@ -139,6 +147,16 @@ public class ExportTransactionsTest extends
 	 * @param format Export format to use
 	 */
     public void testExport(ExportFormat format){
+		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+			if (mAcccountsActivity.checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+					!= PackageManager.PERMISSION_GRANTED) {
+				mAcccountsActivity.requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,
+						Manifest.permission.READ_EXTERNAL_STORAGE}, 0x23);
+
+				onView(withId(android.R.id.button1)).perform(click());
+			}
+		}
+
 		File folder = new File(Exporter.EXPORT_FOLDER_PATH);
 		folder.mkdirs();
 		assertThat(folder).exists();

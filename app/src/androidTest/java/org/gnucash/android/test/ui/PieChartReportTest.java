@@ -110,6 +110,8 @@ public class PieChartReportTest extends ActivityInstrumentationTestCase2<Reports
 		super.setUp();
 		injectInstrumentation(InstrumentationRegistry.getInstrumentation());
 
+        mReportsActivity = getActivity();
+
         SQLiteDatabase db;
         DatabaseHelper dbHelper = new DatabaseHelper(getInstrumentation().getTargetContext());
         try {

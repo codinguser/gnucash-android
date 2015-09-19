@@ -160,7 +160,7 @@ public class Account extends BaseModel{
 	public Account(String name) {
 		setName(name);
         this.mFullName  = mName;
-		this.mCurrency  = Currency.getInstance(Money.DEFAULT_CURRENCY_CODE);
+		this.mCurrency  = Currency.getInstance(GnuCashApplication.getDefaultCurrencyCode());
 	}
 	
 	/**

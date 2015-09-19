@@ -19,6 +19,7 @@ package org.gnucash.android.model;
 import android.content.Intent;
 
 import org.gnucash.android.BuildConfig;
+import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.CommoditiesDbAdapter;
 import org.gnucash.android.export.ofx.OfxHelper;
@@ -167,6 +168,7 @@ public class Transaction extends BaseModel{
 	 * Initializes the different fields to their default values.
 	 */
 	private void initDefaults(){
+        mCurrencyCode = GnuCashApplication.getDefaultCurrencyCode();
 		this.mTimestamp = System.currentTimeMillis();
 	}
 
