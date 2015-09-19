@@ -85,7 +85,7 @@ public class ExportParams {
      */
     public void setExportFormat(ExportFormat exportFormat) {
         this.mExportFormat = exportFormat;
-        mTargetFilepath = GnuCashApplication.getAppContext().getExternalFilesDir(null) + "/" + Exporter.buildExportFilename(mExportFormat);
+        mTargetFilepath = GnuCashApplication.getAppContext().getFilesDir() + "/" + Exporter.buildExportFilename(mExportFormat);
     }
 
     /**

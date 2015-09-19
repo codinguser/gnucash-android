@@ -17,6 +17,7 @@
 
 package org.gnucash.android.ui.account;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
@@ -26,12 +27,16 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Resources;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -71,6 +76,9 @@ import org.gnucash.android.ui.wizard.FirstRunWizardActivity;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+
 /**
  * Manages actions related to accounts, displaying, exporting and creating new accounts
  * The various actions are implemented as Fragments which are then added to this activity
@@ -90,7 +98,7 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
      */
     public static final int REQUEST_EDIT_ACCOUNT = 0x10;
 
-	/**
+    /**
 	 * Logging tag
 	 */
 	protected static final String LOG_TAG = "AccountsActivity";
@@ -124,6 +132,8 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
      * Key for putting argument for tab into bundle arguments
      */
     public static final String EXTRA_TAB_INDEX = "org.gnucash.android.extra.TAB_INDEX";
+    public static final int REQUEST_PERMISSION = 0xAB;
+    public static final int PERMISSION_REQUEST_WRITE_SD_CARD = REQUEST_PERMISSION;
 
     /**
      * Map containing fragments for the different tabs
@@ -133,8 +143,9 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
     /**
      * ViewPager which manages the different tabs
      */
-    private ViewPager mViewPager;
-
+    @Bind(R.id.pager) ViewPager mViewPager;
+    @Bind(R.id.fab_create_account) FloatingActionButton mFloatingActionButton;
+    @Bind(R.id.coordinatorLayout) CoordinatorLayout mCoordinatorLayout;
 
     /**
      * Adapter for managing the sub-account and transaction fragment pages in the accounts view
@@ -205,6 +216,7 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_accounts);
         setUpDrawer();
+        ButterKnife.bind(this);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -219,8 +231,6 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
         tabLayout.addTab(tabLayout.newTab().setText(R.string.title_all_accounts));
         tabLayout.addTab(tabLayout.newTab().setText(R.string.title_favorite_accounts));
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
-
-        mViewPager = (ViewPager) findViewById(R.id.pager);
 
         //show the simple accounts list
         PagerAdapter mPagerAdapter = new AccountViewPagerAdapter(getSupportFragmentManager());
@@ -249,8 +259,7 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
         int index = intent.getIntExtra(EXTRA_TAB_INDEX, lastTabIndex);
         mViewPager.setCurrentItem(index);
 
-        FloatingActionButton floatingActionButton = (FloatingActionButton) findViewById(R.id.fab_create_account);
-        floatingActionButton.setOnClickListener(new View.OnClickListener() {
+        mFloatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent addAccountIntent = new Intent(AccountsActivity.this, FormActivity.class);
@@ -294,6 +303,49 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
         }
     }
 
+    /**
+     * Get permission for WRITING SD card
+     */
+    private void getSDWritePermission(){
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    != PackageManager.PERMISSION_GRANTED) {
+//                if (shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)){
+                    Snackbar.make(mCoordinatorLayout,
+                            "GnuCash requires permission to access the SD card for backup and restore",
+                            Snackbar.LENGTH_INDEFINITE).setAction("GRANT",
+                            new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                                            Manifest.permission.READ_EXTERNAL_STORAGE}, PERMISSION_REQUEST_WRITE_SD_CARD);
+                                }
+                            })
+                            .setActionTextColor(getResources().getColor(R.color.theme_accent))
+                            .show();
+//                }
+            }
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        switch (requestCode){
+            case PERMISSION_REQUEST_WRITE_SD_CARD:{
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    //TODO: permission was granted, yay! do the
+                    // calendar task you need to do.
+
+                } else {
+
+                    // TODO: permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+                }
+            } return;
+        }
+    }
+
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
@@ -328,6 +380,8 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
 
             //default to using double entry and save the preference explicitly
             prefs.edit().putBoolean(getString(R.string.key_use_double_entry), true).apply();
+        } else {
+            getSDWritePermission();
         }
 
         if (hasNewFeatures()){

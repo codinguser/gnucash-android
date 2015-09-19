@@ -873,11 +873,11 @@ public class MigrationHelper {
             }
 
             db.execSQL(" ALTER TABLE " + AccountEntry.TABLE_NAME
-                    + " ADD COLUMN " + AccountEntry.COLUMN_COMMODITY_UID + " varchar(255) "
+                    + " ADD COLUMN " + AccountEntry.COLUMN_COMMODITY_UID + " varchar(255) not null "
                     + " REFERENCES " + CommodityEntry.TABLE_NAME + " (" + CommodityEntry.COLUMN_UID + ") ");
 
             db.execSQL(" ALTER TABLE " + TransactionEntry.TABLE_NAME
-                    + " ADD COLUMN " + TransactionEntry.COLUMN_COMMODITY_UID + " varchar(255) "
+                    + " ADD COLUMN " + TransactionEntry.COLUMN_COMMODITY_UID + " varchar(255) not null"
                     + " REFERENCES " + CommodityEntry.TABLE_NAME + " (" + CommodityEntry.COLUMN_UID + ") ");
 
             db.execSQL("UPDATE " + AccountEntry.TABLE_NAME + " SET " + AccountEntry.COLUMN_COMMODITY_UID + " = "

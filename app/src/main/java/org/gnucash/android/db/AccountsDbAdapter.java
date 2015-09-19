@@ -31,6 +31,7 @@ import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.model.Account;
 import org.gnucash.android.model.AccountType;
+import org.gnucash.android.model.Commodity;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.model.Split;
 import org.gnucash.android.model.Transaction;
@@ -172,8 +173,11 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
         mReplaceStatement.bindLong(9, account.isPlaceholderAccount() ? 1 : 0);
         mReplaceStatement.bindString(10, account.getCreatedTimestamp().toString());
         mReplaceStatement.bindLong(11, account.isHidden() ? 1 : 0);
-        if (account.getCommodityUID() != null)
-            mReplaceStatement.bindString(12, account.getCommodityUID());
+        String commodityUID = account.getCommodityUID();
+        if (commodityUID == null)
+            commodityUID = CommoditiesDbAdapter.getInstance().getCommodityUID(account.getCurrency().getCurrencyCode());
+
+        mReplaceStatement.bindString(12, commodityUID);
 
         String parentAccountUID = account.getParentUID();
         if (parentAccountUID == null && account.getAccountType() != AccountType.ROOT) {
@@ -920,7 +924,9 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
         contentValues.put(AccountEntry.COLUMN_FULL_NAME, rootAccount.getFullName());
         contentValues.put(AccountEntry.COLUMN_TYPE, rootAccount.getAccountType().name());
         contentValues.put(AccountEntry.COLUMN_HIDDEN, rootAccount.isHidden() ? 1 : 0);
-        contentValues.put(AccountEntry.COLUMN_CURRENCY, GnuCashApplication.getDefaultCurrencyCode());
+        String defaultCurrencyCode = GnuCashApplication.getDefaultCurrencyCode();
+        contentValues.put(AccountEntry.COLUMN_CURRENCY, defaultCurrencyCode);
+        contentValues.put(AccountEntry.COLUMN_COMMODITY_UID, CommoditiesDbAdapter.getInstance().getCommodityUID(defaultCurrencyCode));
         Log.i(LOG_TAG, "Creating ROOT account");
         mDb.insert(AccountEntry.TABLE_NAME, null, contentValues);
         return rootAccount.getUID();

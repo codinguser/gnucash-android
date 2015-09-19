@@ -16,11 +16,15 @@
 
 package org.gnucash.android.ui.export;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBar;
@@ -52,6 +56,7 @@ import org.gnucash.android.export.ExportAsyncTask;
 import org.gnucash.android.export.ExportFormat;
 import org.gnucash.android.export.ExportParams;
 import org.gnucash.android.model.ScheduledAction;
+import org.gnucash.android.ui.account.AccountsActivity;
 import org.gnucash.android.ui.settings.SettingsActivity;
 import org.gnucash.android.ui.util.RecurrenceParser;
 
@@ -192,6 +197,21 @@ public class ExportFormFragment extends Fragment implements RecurrencePickerDial
 		assert supportActionBar != null;
 		supportActionBar.setTitle(R.string.title_export_dialog);
 		setHasOptionsMenu(true);
+
+		getSDWritePermission();
+	}
+
+	/**
+	 * Get permission for WRITING SD card for Android Marshmallow and above
+	 */
+	private void getSDWritePermission(){
+		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+			if (getActivity().checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+					!= PackageManager.PERMISSION_GRANTED) {
+				getActivity().requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,
+						Manifest.permission.READ_EXTERNAL_STORAGE}, AccountsActivity.PERMISSION_REQUEST_WRITE_SD_CARD);
+			}
+		}
 	}
 
 	/**

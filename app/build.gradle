@@ -20,13 +20,13 @@ def gitSha() {
 
 
 android {
-    compileSdkVersion 21
-    buildToolsVersion "22.0.1"
+    compileSdkVersion 23
+    buildToolsVersion "23.0.1"
     defaultConfig {
         applicationId "org.gnucash.android"
         testApplicationId 'org.gnucash.android.test'
         minSdkVersion 10
-        targetSdkVersion 21 //robolectric tests only support up to API level 21 at the moment
+        targetSdkVersion 23 //robolectric tests only support up to API level 21 at the moment
         versionCode versionMajor * 10000 + versionMinor * 1000 + versionPatch * 100 + versionBuild
         versionName "${versionMajor}.${versionMinor}.${versionPatch}"
         resValue "string", "app_version_name", "${versionName}"
@@ -176,9 +176,14 @@ dependencies {
             'com.kobakei:ratethisapp:0.0.3',
             'com.squareup:android-times-square:1.6.4@aar',
             'com.github.techfreak:wizardpager:1.0.0',
-            'net.objecthunter:exp4j:0.4.5',
-            'com.uservoice:uservoice-android-sdk:+'
+            'net.objecthunter:exp4j:0.4.5'
     )
+
+    compile ('com.uservoice:uservoice-android-sdk:1.2.+') {
+        exclude module: 'commons-logging'
+        exclude module: 'httpcore'
+        exclude module: 'httpclient'
+    }
 
     compile('com.crashlytics.sdk.android:crashlytics:2.5.0@aar') {
         transitive = true;

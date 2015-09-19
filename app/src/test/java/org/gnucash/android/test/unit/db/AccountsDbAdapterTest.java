@@ -1,5 +1,7 @@
 package org.gnucash.android.test.unit.db;
 
+import android.os.Build;
+
 import org.assertj.core.data.Index;
 import org.gnucash.android.BuildConfig;
 import org.gnucash.android.R;
@@ -37,7 +39,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(GnucashTestRunner.class) //package is required so that resources can be found in dev mode
-@Config(constants = BuildConfig.class, packageName = "org.gnucash.android", shadows = {ShadowCrashlytics.class})
+@Config(constants = BuildConfig.class, sdk = 21, packageName = "org.gnucash.android", shadows = {ShadowCrashlytics.class})
 public class AccountsDbAdapterTest{
 
 	private static final String BRAVO_ACCOUNT_NAME = "Bravo";

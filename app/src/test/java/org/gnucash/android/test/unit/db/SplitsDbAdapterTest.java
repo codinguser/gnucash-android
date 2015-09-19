@@ -27,7 +27,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Some tests for the splits database adapter
  */
 @RunWith(GnucashTestRunner.class) //package is required so that resources can be found in dev mode
-@Config(constants = BuildConfig.class, packageName = "org.gnucash.android", shadows = {ShadowCrashlytics.class})
+@Config(constants = BuildConfig.class, sdk = 21, packageName = "org.gnucash.android", shadows = {ShadowCrashlytics.class})
 public class SplitsDbAdapterTest {
 
     private AccountsDbAdapter mAccountsDbAdapter;
