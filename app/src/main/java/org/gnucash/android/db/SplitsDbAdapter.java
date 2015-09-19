@@ -24,6 +24,7 @@ import android.database.sqlite.SQLiteStatement;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Log;
+import android.util.Pair;
 
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.model.AccountType;
@@ -183,42 +184,76 @@ public class SplitsDbAdapter extends DatabaseAdapter<Split> {
 
         Cursor cursor;
         String[] selectionArgs = null;
-        String selection = SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_ACCOUNT_UID + " in ( '" + TextUtils.join("' , '", accountUIDList) + "' ) AND " +
-                SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_TRANSACTION_UID + " = " + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_UID + " AND " +
-                TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_TEMPLATE + " = 0";
+        String selection = DatabaseSchema.AccountEntry.TABLE_NAME + "_" + DatabaseSchema.CommonColumns.COLUMN_UID + " in ( '" + TextUtils.join("' , '", accountUIDList) + "' ) AND " +
+                TransactionEntry.TABLE_NAME + "_" + TransactionEntry.COLUMN_TEMPLATE + " = 0";
 
         if (startTimestamp != -1 && endTimestamp != -1) {
-            selection += " AND " + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_TIMESTAMP + " BETWEEN ? AND ? ";
+            selection += " AND " + TransactionEntry.TABLE_NAME + "_" + TransactionEntry.COLUMN_TIMESTAMP + " BETWEEN ? AND ? ";
             selectionArgs = new String[]{String.valueOf(startTimestamp), String.valueOf(endTimestamp)};
         } else if (startTimestamp == -1 && endTimestamp != -1) {
-            selection += " AND " + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_TIMESTAMP + " <= ?";
+            selection += " AND " + TransactionEntry.TABLE_NAME + "_" + TransactionEntry.COLUMN_TIMESTAMP + " <= ?";
             selectionArgs = new String[]{String.valueOf(endTimestamp)};
-        } else if (startTimestamp != -1 && endTimestamp == -1) {
-            selection += " AND " + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_TIMESTAMP + " >= ?";
+        } else if (startTimestamp != -1/* && endTimestamp == -1*/) {
+            selection += " AND " + TransactionEntry.TABLE_NAME + "_" + TransactionEntry.COLUMN_TIMESTAMP + " >= ?";
             selectionArgs = new String[]{String.valueOf(startTimestamp)};
         }
 
-        cursor = mDb.query(SplitEntry.TABLE_NAME + " , " + TransactionEntry.TABLE_NAME,
-                new String[]{"TOTAL ( CASE WHEN " + SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_TYPE + " = 'DEBIT' THEN " +
-                        SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_QUANTITY_NUM + " ELSE - " +
-                        SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_QUANTITY_NUM + " END )",
-                        SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_QUANTITY_DENOM},
-                selection, selectionArgs, null, null, null);
+        cursor = mDb.query("trans_split_acct",
+                new String[]{"TOTAL ( CASE WHEN " + SplitEntry.TABLE_NAME + "_" + SplitEntry.COLUMN_TYPE + " = 'DEBIT' THEN " +
+                        SplitEntry.TABLE_NAME + "_" + SplitEntry.COLUMN_QUANTITY_NUM + " ELSE - " +
+                        SplitEntry.TABLE_NAME + "_" + SplitEntry.COLUMN_QUANTITY_NUM + " END )",
+                        SplitEntry.TABLE_NAME + "_" + SplitEntry.COLUMN_QUANTITY_DENOM,
+                        DatabaseSchema.AccountEntry.TABLE_NAME + "_" + DatabaseSchema.AccountEntry.COLUMN_CURRENCY},
+                selection, selectionArgs, DatabaseSchema.AccountEntry.TABLE_NAME + "_" + DatabaseSchema.AccountEntry.COLUMN_CURRENCY, null, null);
 
         try {
-            if (cursor.moveToFirst()) {
-                int amount_num = cursor.getInt(0);
-                int amount_denom = cursor.getInt(1);
-                Log.d(LOG_TAG, "amount return " + amount_num + "/" + amount_denom);
+            Money total = Money.createZeroInstance(currencyCode);
+            CommoditiesDbAdapter commoditiesDbAdapter = null;
+            PricesDbAdapter pricesDbAdapter = null;
+            Currency currency = null;
+            String currencyUID = null;
+            while (cursor.moveToNext()) {
+                long amount_num = cursor.getLong(0);
+                long amount_denom = cursor.getLong(1);
+                String commodity = cursor.getString(2);
+                //Log.d(getClass().getName(), commodity + " " + amount_num + "/" + amount_denom);
+                if (commodity.equals("XXX") || amount_num == 0) {
+                    // ignore custom currency
+                    continue;
+                }
                 if (!hasDebitNormalBalance) {
                     amount_num = -amount_num;
                 }
-                return new Money(amount_num, amount_denom, currencyCode);
+                if (commodity.equals(currencyCode)) {
+                    // currency matches
+                    total = total.add(new Money(amount_num, amount_denom, currencyCode));
+                    //Log.d(getClass().getName(), "currency " + commodity + " sub - total " + total);
+                } else {
+                    // there is a second currency involved
+                    if (commoditiesDbAdapter == null) {
+                        commoditiesDbAdapter = new CommoditiesDbAdapter(mDb);
+                        pricesDbAdapter = new PricesDbAdapter(mDb);
+                        currency = Currency.getInstance(currencyCode);
+                        currencyUID = commoditiesDbAdapter.getCommodityUID(currencyCode);
+                    }
+                    // get price
+                    String commodityUID = commoditiesDbAdapter.getCommodityUID(commodity);
+                    Pair<Long, Long> price = pricesDbAdapter.getPrice(commodityUID, currencyUID);
+                    if (price.first <= 0 || price.second <= 0) {
+                        // no price exists, just ignore it
+                        continue;
+                    }
+                    BigDecimal amount = Money.getBigDecimal(amount_num, amount_denom);
+                    BigDecimal amountConverted = amount.multiply(new BigDecimal(price.first))
+                            .divide(new BigDecimal(price.second), currency.getDefaultFractionDigits(), BigDecimal.ROUND_HALF_EVEN);
+                    total = total.add(new Money(amountConverted, currency));
+                    //Log.d(getClass().getName(), "currency " + commodity + " sub - total " + total);
+                }
             }
+            return total;
         } finally {
             cursor.close();
         }
-        return new Money("0", currencyCode);
     }
 
     /**
