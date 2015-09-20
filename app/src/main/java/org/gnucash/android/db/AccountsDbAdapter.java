@@ -758,21 +758,18 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
         Log.d(LOG_TAG, "Computing account balance for account ID " + accountUID);
         String currencyCode = mTransactionsAdapter.getAccountCurrencyCode(accountUID);
         boolean hasDebitNormalBalance = getAccountType(accountUID).hasDebitNormalBalance();
-        Money balance = Money.createZeroInstance(currencyCode);
 
         List<String> accountsList = getDescendantAccountUIDs(accountUID,
-                AccountEntry.COLUMN_CURRENCY + " = ? ",
-                new String[]{currencyCode});
+                null, null);
 
         accountsList.add(0, accountUID);
 
         Log.d(LOG_TAG, "all account list : " + accountsList.size());
-		SplitsDbAdapter splitsDbAdapter = SplitsDbAdapter.getInstance();
-        Money splitSum = (startTimestamp == -1 && endTimestamp == -1)
+        SplitsDbAdapter splitsDbAdapter = SplitsDbAdapter.getInstance();
+        return (startTimestamp == -1 && endTimestamp == -1)
                 ? splitsDbAdapter.computeSplitBalance(accountsList, currencyCode, hasDebitNormalBalance)
                 : splitsDbAdapter.computeSplitBalance(accountsList, currencyCode, hasDebitNormalBalance, startTimestamp, endTimestamp);
         
-        return balance.add(splitSum);
     }
 
     /**

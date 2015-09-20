@@ -24,6 +24,8 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.graphics.Color;
+import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
@@ -463,8 +465,12 @@ public class AccountsListFragment extends Fragment implements
                 holder.description.setVisibility(View.GONE);
 
             // add a summary of transactions to the account view
-            new AccountBalanceTask(holder.accountBalance).execute(accountUID);
-
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                // Make sure the balance task is truely multithread
+                new AccountBalanceTask(holder.accountBalance).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, accountUID);
+            } else {
+                new AccountBalanceTask(holder.accountBalance).execute(accountUID);
+            }
             String accountColor = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.AccountEntry.COLUMN_COLOR_CODE));
             int colorCode = accountColor == null ? Color.TRANSPARENT : Color.parseColor(accountColor);
             holder.colorStripView.setBackgroundColor(colorCode);

@@ -21,6 +21,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.drawable.ColorDrawable;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -251,7 +252,12 @@ public class TransactionsActivity extends PassLockActivity implements
         if (mPagerAdapter != null)
             mPagerAdapter.notifyDataSetChanged();
 
-        new AccountBalanceTask(mSumTextView).execute(mAccountUID);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            // make sure the account balance task is truely multi-thread
+            new AccountBalanceTask(mSumTextView).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, mAccountUID);
+        } else {
+            new AccountBalanceTask(mSumTextView).execute(mAccountUID);
+        }
     }
 
     @Override
