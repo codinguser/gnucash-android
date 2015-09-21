@@ -180,8 +180,11 @@ public class TransactionsDbAdapter extends DatabaseAdapter<Transaction> {
         mReplaceStatement.bindLong(5, transaction.isExported() ? 1 : 0);
         mReplaceStatement.bindString(6, transaction.getCurrencyCode());
 
-        if(transaction.getCommodityUID() != null)
-            mReplaceStatement.bindString(7, transaction.getCommodityUID());
+        String commodityUID = transaction.getCommodityUID();
+        if (commodityUID == null)
+            commodityUID = CommoditiesDbAdapter.getInstance().getCommodityUID(transaction.getCurrency().getCurrencyCode());
+
+        mReplaceStatement.bindString(7, commodityUID);
         mReplaceStatement.bindString(8, transaction.getCreatedTimestamp().toString());
 
         if (transaction.getScheduledActionUID() == null)

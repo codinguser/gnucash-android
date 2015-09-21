@@ -24,7 +24,6 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBar;
@@ -44,9 +43,9 @@ import android.widget.RadioButton;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import com.doomonafireball.betterpickers.recurrencepicker.EventRecurrence;
-import com.doomonafireball.betterpickers.recurrencepicker.EventRecurrenceFormatter;
-import com.doomonafireball.betterpickers.recurrencepicker.RecurrencePickerDialog;
+import com.codetroopers.betterpickers.recurrencepicker.EventRecurrence;
+import com.codetroopers.betterpickers.recurrencepicker.EventRecurrenceFormatter;
+import com.codetroopers.betterpickers.recurrencepicker.RecurrencePickerDialog;
 import com.dropbox.sync.android.DbxAccountManager;
 
 import org.gnucash.android.R;

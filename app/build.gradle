@@ -154,9 +154,9 @@ afterEvaluate {
     }
 }
 
-def androidSupportVersion       = "22.2.1"
-def androidEspressoVersion      = "2.2"
-def androidSupportTestVersion   = "0.3"
+def androidSupportVersion       = "23.0.1"
+def androidEspressoVersion      = "2.2.1"
+def androidSupportTestVersion   = "0.4"
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
@@ -166,8 +166,8 @@ dependencies {
             'com.android.support:cardview-v7:'      + androidSupportVersion,
             'com.android.support:recyclerview-v7:'  + androidSupportVersion,
             'com.viewpagerindicator:library:2.4.1@aar',
-            'com.doomonafireball.betterpickers:library:1.6.0',
-            'org.jraf:android-switch-backport:1.4.0@aar',
+            'com.code-troopers.betterpickers:library:2.0.3',
+            'org.jraf:android-switch-backport:2.0.1@aar',
             'com.github.PhilJay:MPAndroidChart:v2.1.3',
             'joda-time:joda-time:2.7',
             'org.ocpsoft.prettytime:prettytime:3.2.7.Final',
@@ -202,7 +202,7 @@ dependencies {
         exclude module: 'recyclerview-v7'
     }
 
-    androidTestCompile('com.squareup.assertj:assertj-android:1.0.0'){
+    androidTestCompile('com.squareup.assertj:assertj-android:1.1.0'){
         exclude group: 'com.android.support', module:'support-annotations'
     }
 }
