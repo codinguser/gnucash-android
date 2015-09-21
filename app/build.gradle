@@ -157,7 +157,7 @@ afterEvaluate {
     }
 }
 
-def androidSupportVersion       = "23.0.1"
+def androidSupportVersion       = "22.2.1"
 def androidEspressoVersion      = "2.2.1"
 def androidSupportTestVersion   = "0.4"
 
