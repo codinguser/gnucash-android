@@ -2,7 +2,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item android:id="@+id/menu_group_reports_by"
-        android:title="Group By"
+        android:title="@string/menu_group_by"
         android:icon="@drawable/ic_filter_list_white_24dp"
         app:showAsAction="ifRoom|withText">
         <menu>
@@ -10,13 +10,13 @@
 
                 <item android:id="@+id/group_by_month"
                     android:checked="true"
-                    android:title="Month" />
+                    android:title="@string/menu_group_by_month" />
 
                 <item android:id="@+id/group_by_quarter"
-                    android:title="Quarter" />
+                    android:title="@string/menu_group_by_quarter" />
 
                 <item android:id="@+id/group_by_year"
-                    android:title="Year" />
+                    android:title="@string/menu_group_by_year" />
 
             </group>
         </menu>

@@ -29,7 +29,7 @@
             android:layout_height="wrap_content"
             android:focusableInTouchMode="true">
             <TableRow android:padding="@dimen/dialog_padding">
-                <TextView android:text="Amount:"
+                <TextView android:text="@string/label_transaction_amount"
                     android:textSize="16sp"
                     android:layout_weight="1"
                     android:layout_width="0dp"
@@ -44,7 +44,7 @@
 
             <TableRow android:padding="@dimen/dialog_padding">
                 <TextView
-                    android:text="From:"
+                    android:text="@string/label_convert_from"
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:textSize="16sp"
@@ -57,7 +57,7 @@
                     android:textStyle="bold"
                     android:textSize="18sp"
                     tools:text="USD"/>
-                <TextView android:text="To:"
+                <TextView android:text="@string/label_convert_to"
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="wrap_content"
@@ -75,7 +75,7 @@
                 android:padding="@dimen/dialog_padding"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Provide either the converted amount or exchange rate in order to transfer funds"
+                android:text="@string/msg_provide_exchange_rate"
                 />
             <TableRow android:gravity="center_vertical"
                 android:paddingTop="@dimen/dialog_padding"
@@ -98,7 +98,7 @@
                         android:enabled="false"
                         android:inputType="numberDecimal"
                         gnucash:keyboardKeysLayout="@xml/calculator_keyboard"
-                        android:hint="Exchange rate"/>
+                        android:hint="@string/hint_exchange_rate"/>
                 </android.support.design.widget.TextInputLayout>
 
                 <!-- TODO: re-enable this button when fetching of price quotes is implemented -->
@@ -110,7 +110,7 @@
                     android:layout_height="wrap_content"
                     android:enabled="false"
                     android:visibility="gone"
-                    android:text="Fetch quote"/>
+                    android:text="@string/btn_fetch_quote"/>
             </TableRow>
             <TextView android:id="@+id/label_exchange_rate_example"
                 android:paddingLeft="@dimen/dialog_padding"
@@ -139,7 +139,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:inputType="numberDecimal"
-                        android:hint="Converted Amount">
+                        android:hint="@string/hint_converted_amount">
                         <requestFocus />
                     </EditText>
                 </android.support.design.widget.TextInputLayout>

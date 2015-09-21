@@ -45,7 +45,7 @@
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
         android:checked="true"
-        android:text="Move to:" />
+        android:text="@string/label_move_to" />
 
     <Spinner android:id="@+id/target_accounts_spinner"
         android:layout_width="wrap_content"

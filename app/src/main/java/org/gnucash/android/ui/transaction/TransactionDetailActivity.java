@@ -103,7 +103,7 @@ public class TransactionDetailActivity extends AppCompatActivity{
             ButterKnife.bind(this, view);
 
             AccountsDbAdapter accountsDbAdapter = AccountsDbAdapter.getInstance();
-            accountName.setText(accountsDbAdapter.getAccountName(split.getAccountUID()));
+            accountName.setText(accountsDbAdapter.getAccountFullName(split.getAccountUID()));
             Money quantity = split.getFormattedQuantity();
             TextView balanceView = quantity.isNegative() ? splitDebit : splitCredit;
             TransactionsActivity.displayBalance(balanceView, quantity);
@@ -141,7 +141,7 @@ public class TransactionDetailActivity extends AppCompatActivity{
 
 
         Date trnDate = new Date(transaction.getTimeMillis());
-        String timeAndDate = DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.SHORT).format(trnDate);
+        String timeAndDate = DateFormat.getDateInstance(DateFormat.FULL).format(trnDate);
         mTimeAndDate.setText(timeAndDate);
 
         if (transaction.getScheduledActionUID() != null){
@@ -153,7 +153,7 @@ public class TransactionDetailActivity extends AppCompatActivity{
             findViewById(R.id.row_trn_recurrence).setVisibility(View.GONE);
         }
 
-        if (transaction.getNote() != null){
+        if (transaction.getNote() != null && !transaction.getNote().isEmpty()){
             mNotes.setText(transaction.getNote());
             findViewById(R.id.row_trn_notes).setVisibility(View.VISIBLE);
         } else {

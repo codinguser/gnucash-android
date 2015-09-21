@@ -52,7 +52,7 @@
                     style="@style/FormIcon"
                     android:gravity="center"
                     android:textColor="@color/debit_red"
-                    android:textSize="22dp"
+                    android:textSize="22sp"
                     android:text="$" />
 
                 <org.gnucash.android.ui.util.widget.CalculatorEditText

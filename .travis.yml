@@ -21,7 +21,7 @@ android:
     - sys-img-armeabi-v7a-android-21
 
 before_install:
-    - android update sdk -u --filter platform-tools,android-23,build-tools-23.0.1 --no-ui --accept-license
+    - echo "y" | android update sdk -u --filter platform-tools,android-23,build-tools-23.0.1 --no-ui
 # Emulator Management: Create, Start and Wait
 # Re-enable this when we figure out how to reliably build on Travis
 #before_script:

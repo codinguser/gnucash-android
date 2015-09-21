@@ -32,6 +32,7 @@
         android:layout_gravity="center"
         android:textSize="14sp"
         android:ellipsize="start"
+        android:singleLine="true"
         tools:text="Computer"
         android:textColor="@android:color/black" />
 

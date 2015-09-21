@@ -18,6 +18,7 @@
 package org.gnucash.android.ui.account;
 
 import android.Manifest;
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
@@ -57,6 +58,7 @@ import android.widget.Toast;
 import com.crashlytics.android.Crashlytics;
 import com.kobakei.ratethisapp.RateThisApp;
 
+import org.gnucash.android.BuildConfig;
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.AccountsDbAdapter;
@@ -278,9 +280,12 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
     @Override
     protected void onStart() {
         super.onStart();
-        RateThisApp.init(rateAppConfig);
-        RateThisApp.onStart(this);
-        RateThisApp.showRateDialogIfNeeded(this);
+
+        if (BuildConfig.CAN_REQUEST_RATING) {
+            RateThisApp.init(rateAppConfig);
+            RateThisApp.onStart(this);
+            RateThisApp.showRateDialogIfNeeded(this);
+        }
     }
 
     /**
@@ -310,6 +315,7 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
     /**
      * Get permission for WRITING SD card
      */
+    @TargetApi(23)
     private void getSDWritePermission(){
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)

@@ -122,7 +122,7 @@
             </TableRow>
 
             <TableRow android:id="@+id/row_time_and_date"
-                android:layout_marginTop="@dimen/edge_padding"
+                android:layout_marginTop="20dp"
                 style="@style/FormRow" >
 
                 <ImageView style="@style/FormIcon"

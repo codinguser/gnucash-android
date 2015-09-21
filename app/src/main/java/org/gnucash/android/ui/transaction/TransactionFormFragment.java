@@ -658,7 +658,6 @@ public class TransactionFormFragment extends Fragment implements
 
             @Override
             public void onClick(View v) {
-                FragmentTransaction ft = getFragmentManager().beginTransaction();
                 long timeMillis = 0;
                 try {
                     Date date = TIME_FORMATTER.parse(mTimeTextView.getText().toString());

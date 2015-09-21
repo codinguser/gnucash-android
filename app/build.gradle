@@ -31,6 +31,8 @@ android {
         versionName "${versionMajor}.${versionMinor}.${versionPatch}"
         resValue "string", "app_version_name", "${versionName}"
         resValue "string", "app_minor_version", "${versionMinor}"
+        buildConfigField "boolean", "CAN_REQUEST_RATING", "false"
+
         if (project.hasProperty("RELEASE_DROPBOX_APP_KEY")){
             resValue "string", "dropbox_app_key", RELEASE_DROPBOX_APP_KEY
             resValue "string", "dropbox_app_secret", RELEASE_DROPBOX_APP_SECRET
@@ -111,6 +113,7 @@ android {
 
         production {
             resValue "string", "app_name", "GnuCash"
+            buildConfigField "boolean", "CAN_REQUEST_RATING", "true"
             ext.enableCrashlytics = false
         }
 

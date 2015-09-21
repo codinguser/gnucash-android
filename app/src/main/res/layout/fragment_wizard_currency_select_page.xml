@@ -21,7 +21,7 @@
     <TextView style="@style/WizardPageTitle"
         android:text="@string/wizard_title_select_currency"/>
 
-    <ListView xmlns:android="http://schemas.android.com/apk/res/android"
+    <ListView
         android:id="@android:id/list"
         android:tag="currency_list_view"
         android:padding="@dimen/dialog_padding"

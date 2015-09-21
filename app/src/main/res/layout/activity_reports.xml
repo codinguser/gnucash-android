@@ -53,7 +53,7 @@
                     android:gravity="center_vertical"
                     android:textSize="14sp"
                     android:layout_height="wrap_content"
-                    android:text="Period:"/>
+                    android:text="@string/label_report_period"/>
 
                 <org.gnucash.android.ui.util.widget.ReselectSpinner
                     android:id="@+id/time_range_spinner"

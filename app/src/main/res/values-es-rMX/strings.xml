@@ -535,6 +535,27 @@ No user-identifiable information will be collected as part of this process!
     <string name="title_transfer_funds">Transfer Funds</string>
     <string name="nav_menu_help"><![CDATA[Help & Feedback]]></string>
     <string name="label_select_pie_slice_to_see_details">Select a slice to see details</string>
+    <string name="label_report_period">Period:</string>
+    <string name="label_convert_from">From:</string>
+    <string name="label_convert_to">To:</string>
+    <string name="msg_provide_exchange_rate">Provide either the converted amount or exchange rate in order to transfer funds</string>
+    <string name="hint_exchange_rate">Exchange rate</string>
+    <string name="btn_fetch_quote">Fetch quote</string>
+    <string name="hint_converted_amount">Converted Amount</string>
+    <string name="title_report_sheet">Sheet</string>
+    <string name="label_last_3_months_expenses">Expenses for last 3 months</string>
+    <string name="label_total_assets">Total Assets</string>
+    <string name="label_total_liabilities">Total Liabilities</string>
+    <string name="label_net_worth">Net Worth</string>
+    <string name="label_assets">Assets</string>
+    <string name="label_liabilities">Liabilities</string>
+    <string name="label_equity">Equity</string>
+    <string name="label_total_liabilities_and_equity"><![CDATA[Total Liabilites & Equity]]></string>
+    <string name="label_move_to">Move to:</string>
+    <string name="menu_group_by">Group By</string>
+    <string name="menu_group_by_month">Month</string>
+    <string name="menu_group_by_quarter">Quarter</string>
+    <string name="menu_group_by_year">Year</string>
     <string-array name="report_time_range">
         <item>All time</item>
         <item>Current month</item>

@@ -31,6 +31,7 @@ import org.xml.sax.SAXException;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Locale;
 
 import javax.xml.parsers.ParserConfigurationException;
 
