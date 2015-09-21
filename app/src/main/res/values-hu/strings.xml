@@ -265,7 +265,7 @@
 	<string name="label_widget_configuration">Select Account</string>
 	<string name="toast_no_transactions_to_export">There are no transactions available to export</string>
 	<string name="title_about_gnucash">About GnuCash</string>
-	<string name="summary_about_gnucash">Gnucash is a mobile finance expense tracker application for Android.\nIt enables flexible tracking of expenses on-the-go which can be exported to the Open Financial eXchange (OFX) format and imported into GnuCash for the desktop.</string>
+	<string name="summary_about_gnucash">A mobile finance management and expense-tracker designed for Android</string>
 	<string name="title_about">About</string>
 	<string name="toast_format_exported_to">%1$s file exported to:\n</string>
 	<string name="title_export_email">GnuCash %1$s export</string>
@@ -297,11 +297,11 @@
 	<string name="summary_xml_ofx_header">Enable this option when exporting to third-party application other than GnuCash for desktop</string>
 	<string name="title_whats_new">What\'s New</string>
 	<string name="whats_new">
-        - Visual reports (Bar/Pie/line charts) \n
-        - Scheduled backups of (QIF, OFX, and XML)\n
-        - Backup/Export to DropBox and Google Drive\n
-        - Better recurrence options for scheduled transactions\n
-        - Navigation drawer for easier access to options\n
+        - New Material app design \n
+        - Multi-currency transactions\n
+        - Calculator to transaction amounts\n
+        - Better reporting options\n
+        - New help &amp; feedback section\n
         - Multiple bug fixes and improvements\n
 	</string>
 	<string name="label_dismiss">Dismiss</string>

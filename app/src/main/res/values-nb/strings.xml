@@ -266,7 +266,7 @@
 	<string name="label_widget_configuration">Velg konto</string>
 	<string name="toast_no_transactions_to_export">Ingen transaksjoner å eksportere</string>
 	<string name="title_about_gnucash">Om Gnucash</string>
-	<string name="summary_about_gnucash">GnucashMobile er en mobil regnskapsfører for Android.\nDen gir muligheten til å raskt og fleksibelt logge transaksjoner som kan eksporteres til OFX (Open Financial eXchange)-format og importeres i regnskapsprogrammet GnuCash for PC.</string> 
+	<string name="summary_about_gnucash">A mobile finance management and expense-tracker designed for Android</string>
 	<string name="title_about">Om</string>
 	<string name="toast_format_exported_to">%1$s-fil eksportert til:\n</string>
 	<string name="title_export_email">Gnucash Android %1$s-eksportering</string>
@@ -298,12 +298,12 @@
 	<string name="summary_xml_ofx_header">Velg denne hvis du skal eksportere til annen programvare enn GnuCash for PC.</string>
 	<string name="title_whats_new">Hva er nytt</string>
 	<string name="whats_new">
-        - Visuelle Rapporter (Bar/Kake/linjediagrammer) \n
-        - Planlegge sikkerhetskopiering (QIF, OFX, and XML)\n
-        - Sikkerhetskopiering til DropBox og Google Disk\n
-        - Bedret innstillinger for gjentagende planlagte transaksjoner\n
-        - Navigasjonssskuff for enklere tilgang til innstillinger\n
-        - Mange feilrettinger og forbedringer\n
+        - New Material app design \n
+        - Multi-currency transactions\n
+        - Calculator to transaction amounts\n
+        - Better reporting options\n
+        - New help &amp; feedback section\n
+        - Multiple bug fixes and improvements\n
 	</string>
 	<string name="label_dismiss">Ferdig</string>
     <string name="toast_transanction_amount_required">Oppgi et beløp for å lagre transaksjonen</string>

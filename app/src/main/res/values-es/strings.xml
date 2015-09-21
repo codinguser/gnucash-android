@@ -265,7 +265,7 @@
 	<string name="label_widget_configuration">Seleccionar Cuenta</string>
 	<string name="toast_no_transactions_to_export">No hay transacciones disponibles para exportar</string>
 	<string name="title_about_gnucash">Acerca de Gnucash</string>
-	<string name="summary_about_gnucash">GnucashMobile es una aplicaci&#243;n de registro de gastos financieros para Android.\nPermite un registro flexible de gastos en cualquier lugar que luego pueden ser exportados al formato Open Financial eXchange (OFX) e importados en la aplicaci&#243;n Gnucash para el escritorio.</string>
+	<string name="summary_about_gnucash">A mobile finance management and expense-tracker designed for Android</string>
 	<string name="title_about">Acerca de</string>
 	<string name="toast_format_exported_to">Archivo %1$s exportado a:\n</string>
 	<string name="title_export_email">Exportaci&#243;n %1$s de Gnucash Android</string>
@@ -476,12 +476,12 @@
         <item quantity="other">Cada %d a&#241;os</item>
     </plurals>
 	<string name="whats_new">
-        - Informes visuales (Barra/Tarta/linea) \n
-        - Copias de seguridad programadas (QIF, OFX y XML)\n
-        - Copia de seguridad/Exportar a DropBox y Google Drive\n
-        - M&#225;s opciones de recurrencia para transacciones programadas\n
-        - Caj&#243;n de navegaci&#243;n para f&#225;cil acceso a las opciones\n
-        - M&#250;ltiples fallos solucionados y otras mejoras\n
+        - New Material app design \n
+        - Multi-currency transactions\n
+        - Calculator to transaction amounts\n
+        - Better reporting options\n
+        - New help &amp; feedback section\n
+        - Multiple bug fixes and improvements\n
 	</string>
     <string name="title_enable_crashlytics">Activar registro de cuelgues</string>
     <string name="msg_enable_crashlytics">Activar para enviar informaci&#243;n de errores a los desarolladores (recomendado).

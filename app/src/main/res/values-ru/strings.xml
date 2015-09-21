@@ -265,7 +265,7 @@
         <string name="label_widget_configuration">Выберите счёт</string>
 	<string name="toast_no_transactions_to_export">Нет проводок для экспорта</string>
 	<string name="title_about_gnucash">О Gnucash</string>
-        <string name="summary_about_gnucash">Gnucash - программа учёта финансов для Android.\nОна позволяет легко отслеживать расходы и передавать информацию в Gnucash для рабочей станции посредством файлов формата OFX (Open Financial eXchange).</string>
+        <string name="summary_about_gnucash">A mobile finance management and expense-tracker designed for Android</string>
 	<string name="title_about">О программе</string>
 	<string name="toast_format_exported_to">Файл %1$s экспортирован в:\n</string>
 	<string name="title_export_email">Экспорт %1$s-файла из Gnucash Android</string>
@@ -297,12 +297,12 @@
 	<string name="summary_xml_ofx_header">Включите эту опцию, если экспортируете в программы отличные от GnuCash для ПК</string>
 	<string name="title_whats_new">Новости</string>
 	<string name="whats_new">
-        - Наглядные отчёты (Гистограммы/круговые диаграммы/графики) \n
-        - Планировщик резервного сохранения (QIF, OFX или XML)\n
-        - Сохранение/Экспорт в DropBox и Google Drive\n
-        - Улучшенные настройки повторяющихся проводок\n
-        - Меню быстрого доступа к настройкам\n
-        - Множественные исправления ошибок и улучшения\n
+        - New Material app design \n
+        - Multi-currency transactions\n
+        - Calculator to transaction amounts\n
+        - Better reporting options\n
+        - New help &amp; feedback section\n
+        - Multiple bug fixes and improvements\n
 	</string>
 	<string name="label_dismiss">Отказаться</string>
     <string name="toast_transanction_amount_required">Введите сумму, чтобы сохранить проводку</string>

@@ -839,10 +839,13 @@ public class MigrationHelper {
      * <p>This migration accomplishes the following:
      *  <ul>
      *      <li>Adds a commodities table to the database</li>
+     *      <li>Adds prices table to the database</li>
+     *      <li>Add separate columns for split value and quantity</li>
      *  </ul>
      * </p>
      * @param db SQLite Database to be upgraded
      * @return New database version (9) if upgrade successful, old version (8) if unsuccessful
+     * @throws RuntimeException if the default commodities could not be imported
      */
     static int upgradeDbToVersion9(SQLiteDatabase db){
         Log.i(DatabaseHelper.LOG_TAG, "Upgrading database to version 9");

@@ -275,7 +275,7 @@
     <string name="title_passcode_disabled">没有設置密碼</string>
     <string name="title_change_passcode">修改密碼</string>
     <string name="title_about_gnucash">關於GnuCash</string>
-    <string name="summary_about_gnucash">Gnucash for android是一個移動版的財務管理軟件。提供靈活的跟蹤開支的功能，可以匯出OFX格式（開放金融交易格式）數據，並匯入到桌面版的 GnuCash中。</string>
+    <string name="summary_about_gnucash">A mobile finance management and expense-tracker designed for Android</string>
     <string name="title_about">關於</string>
     <string name="toast_format_exported_to">%1$s文件保存到：\n</string>
     <string name="title_export_email">GnuCash Android %1$s 匯出</string>
@@ -307,12 +307,12 @@
     <string name="summary_xml_ofx_header">当匯出數據到GnuCash桌面版以外的程序時需要開啟這個選項。</string>
     <string name="title_whats_new">新功能</string>
     <string name="whats_new">
-        - 圖表報表 (圓形圖、棒形圖、折線統計圖) \n
-        - 定時備份 (QIF, OFX, and XML)\n
-        - 匯出到DropBox或者Google Drive\n
-        - 定期交易的設置調整\n
-        - 右拉的導航選單\n
-        - 部份功能調整及錯誤修復\n
+        - New Material app design \n
+        - Multi-currency transactions\n
+        - Calculator to transaction amounts\n
+        - Better reporting options\n
+        - New help &amp; feedback section\n
+        - Multiple bug fixes and improvements\n
     </string>
     <string name="label_dismiss">知道了</string>
     <string name="toast_transanction_amount_required">輸入金額才能保存交易</string>

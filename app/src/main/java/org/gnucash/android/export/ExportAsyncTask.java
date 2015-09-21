@@ -197,6 +197,7 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
 
     /**
      * Transmits the exported transactions to the designated location, either SD card or third-party application
+     * Finishes the activity if the export was starting  in the context of an activity
      * @param exportResult Result of background export execution
      */
     @Override
@@ -246,6 +247,7 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
         if (mContext instanceof Activity) {
             if (mProgressDialog != null && mProgressDialog.isShowing())
                 mProgressDialog.dismiss();
+            ((Activity) mContext).finish();
         }
     }
 

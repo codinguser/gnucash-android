@@ -264,7 +264,7 @@
 	  <string name="label_widget_configuration">Selecionar Conta</string>
 	  <string name="toast_no_transactions_to_export">Não existem transações disponíveis para exportar</string>
 	  <string name="title_about_gnucash">Sobre o GnuCash</string>
-	  <string name="summary_about_gnucash">GnuCash é um aplicativo para controle de despesas no Android.\nEle proporciona uma forma flexível de registrar despesas on-the-go, que podem ser exportadas para o formato Open Financial eXchange (OFX) e importadas para o Gnucash para desktop.</string>
+	  <string name="summary_about_gnucash">A mobile finance management and expense-tracker designed for Android</string>
 	  <string name="title_about">Sobre</string>
 	  <string name="toast_format_exported_to">Arquivo %1$s exportado para:\n</string>
 	  <string name="title_export_email">Exportar GnuCash %1$s</string>
@@ -282,7 +282,7 @@
 	  <string name="msg_delete_transaction_confirmation">Você tem certeza que quer deletar essa esta transação?</string>
 	  <string name="title_export_preference_category">Exportar</string>
 	  <string name="title_export_all_transactions">Exportar todas as transações</string>
-	  <string name="title_always_delete_exported_transactions">Delear transações exportadas</string>
+	  <string name="title_always_delete_exported_transactions">Deletar transações exportadas</string>
 	  <string name="title_default_export_email">Email padrão para exportação</string>
 	  <string name="summary_default_export_email">O email padrão para enviar a exportação. Você poderá alterar isso quando for exportar.</string>  
 	  <string name="label_double_entry_account">Conta de transferência</string>
@@ -296,12 +296,12 @@
 	  <string name="summary_xml_ofx_header">Habilitar essa opção quando estiver exportando para um software terceiro, diferente do GnuCash para desktop</string>
 	  <string name="title_whats_new">O que há de novo</string>
 	  <string name="whats_new">
-        - Relatórios visuais (gráficos de Barras/Pizza/Linhas) \n
-        - Backups agendados de (QIF, OFX, and XML)\n
-        - Backup/Exportar para DropBox e Google Drive\n
-        - Melhores opções de recorrência para transações agendadas\n
-        - Gaveta de Navegação para facilitar o acesso as opções\n
-        - Multiplas correções de bugs e melhoramentos\n
+        - New Material app design \n
+        - Multi-currency transactions\n
+        - Calculator to transaction amounts\n
+        - Better reporting options\n
+        - New help &amp; feedback section\n
+        - Multiple bug fixes and improvements\n
 	</string>
 	  <string name="label_dismiss">Descartar</string>
     <string name="toast_transanction_amount_required">Adicione um valor para salvar a transação</string>

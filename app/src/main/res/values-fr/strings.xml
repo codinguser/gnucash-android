@@ -265,7 +265,7 @@
     <string name="label_widget_configuration">S&#233;lectionner un compte</string>
     <string name="toast_no_transactions_to_export">Il n\'existe pas de transaction disponible pour l\'exportation</string>
     <string name="title_about_gnucash">À propos de GnuCash</string>
-    <string name="summary_about_gnucash">GnucashMobile est une application mobile de suivis de finance pour Android.\nElle permet un suivi simple des d&#233;penses qui peut &#234;tre export&#233; vers le format Open Financial eXchange (OFX) et import&#233; dans GnuCash pour PC.</string>
+    <string name="summary_about_gnucash">A mobile finance management and expense-tracker designed for Android</string>
     <string name="title_about">A propos</string>
     <string name="toast_format_exported_to">Fichier %1$s export&#233; en :\n</string>
     <string name="title_export_email">GnuCash Android %1$s export</string>
@@ -297,12 +297,12 @@
     <string name="summary_xml_ofx_header">Activez cette option lors d\'un export vers une application tierce autre que GnuCash pour PC</string>
     <string name="title_whats_new">Nouveautées</string>
 	<string name="whats_new">
-        - Raports en graphiques\n
-        - Sauvegardes planifiées en (QIF, OFX, et XML)\n
-        - Sauvegarde/Export vers DropBox et Google Drive\n
-        - De meilleures options de récurrence pour les transactions planifiées\n
-        - Panneau de navigation pour un accès plus simple aux options\n
-        - Multiples correcttions de bug et améliorations\n
+        - New Material app design \n
+        - Multi-currency transactions\n
+        - Calculator to transaction amounts\n
+        - Better reporting options\n
+        - New help &amp; feedback section\n
+        - Multiple bug fixes and improvements\n
 	</string>
     <string name="label_dismiss">Passer</string>
     <string name="toast_transanction_amount_required">Entrez un montant pour sauvegarder la transaction</string>

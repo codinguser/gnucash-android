@@ -16,7 +16,7 @@
 -->
 
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <string name="label_create_account">Criar Conta</string>
+    <string name="title_create_account">Criar Conta</string>
     <string name="title_edit_account">Editar Conta</string>
     <string name="info_details">Info</string>
 	<string name="menu_export">Exportar</string>
@@ -275,8 +275,7 @@
     <string name="title_passcode_disabled">Palavra passe desligada</string>
     <string name="title_change_passcode">Mudar Palavra Passe</string>
 	<string name="title_about_gnucash">Sobre o GnuCash</string>
-	<string name="summary_about_gnucash">Gnucash &#233; uma aplica&#231;&#227;o m&#243;vel para Android de registo de despesas.\n
-        Permite um registo flex&#237;vel de despesas que pode ser exportado para m&#250;ltiplos formatos (OFX, QIF) e importado para o Gnucash para Desktop</string>
+	<string name="summary_about_gnucash">A mobile finance management and expense-tracker designed for Android</string>
 	<string name="title_about">Sobre</string>
 	<string name="toast_format_exported_to">%1$s ficheiro exportado para:\n</string>
 	<string name="title_export_email">GnuCash Android %1$s exporta&#231;&#227;o</string>
@@ -308,12 +307,12 @@
 	<string name="summary_xml_ofx_header">Active esta op&#231;&#227;o quando fizer exporta&#231;&#245;es para outras aplica&#231;&#245;es que n&#227;o seja o GnuCash para Desktop</string>
 	<string name="title_whats_new">O que h&#225; de novo</string>
 	<string name="whats_new">
-		- Relat&#243;rios (Gr&#225;ficos de Barras/Linhas/Circulares)\n
-        - Agendamentos de Backups (QIF, OFX, e XML)\n
-        - Backup/Exporta&#231;&#245;es para DropBox e Google Drive\n
-        - Melhores op&#231;&#245;es para transa&#231;&#245;es agendadas\n
-        - Acesso mais f&#225;cila &#224;s Op&#231;&#245;es\n
-        - Correc&#231;&#227;o de diversos bugs e melhoramentos\n
+		- New Material app design \n
+        - Multi-currency transactions\n
+        - Calculator to transaction amounts\n
+        - Better reporting options\n
+        - New help &amp; feedback section\n
+        - Multiple bug fixes and improvements\n
 	</string>
 	<string name="label_dismiss">Descartar</string>
     <string name="toast_transanction_amount_required">Introduza um valor para gravar a transa&#231;&#227;o</string>

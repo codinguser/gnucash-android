@@ -266,11 +266,7 @@
 	<string name="label_widget_configuration">Επιλογή Λογαριασμού</string>
 	<string name="toast_no_transactions_to_export">Δεν υπάρχουν διαθέσιμες συναλλαγές για εξαγωγή</string>
 	<string name="title_about_gnucash">Πληροφορίες για GnuCash</string>
-	<string name="summary_about_gnucash">Το GnuCash είναι μια εφαρμογή
-	παρακολούθησης εξόδων για κινητά Android.\nΕπιτρέπει ευέλικτη παρακολούθηση
-	εξόδων εν κινήσει τα οποία μπορούν να εξαχθούν σε μορφή Open Financial
-	eXchange (OFX) και να εισαχθούν στην εφαρμογή GnuCash για τον
-	υπολογιστή.</string>
+	<string name="summary_about_gnucash">A mobile finance management and expense-tracker designed for Android</string>
 	<string name="title_about">Πληροφορίες</string>
 	<string name="toast_format_exported_to">Αρχείο %1$s εξήχθη σε:\n</string>
 	<string name="title_export_email">Εξαγωγή GnuCash Android %1$s</string>
@@ -303,11 +299,11 @@
 	<string name="summary_xml_ofx_header">Ενεργοποίηση αυτής της επιλογής για εξαγωγή σε εφαρμογές τρίτων, εκτός του GnuCash για επιτραπέζιο υπολογιστή.</string>
 	<string name="title_whats_new">Τι νέο υπάρχει</string>
 	<string name="whats_new">
-        - Visual reports (Bar/Pie/line charts) \n
-        - Scheduled backups of (QIF, OFX, and XML)\n
-        - Backup/Export to DropBox and Google Drive\n
-        - Better recurrence options for scheduled transactions\n
-        - Navigation drawer for easier access to options\n
+        - New Material app design \n
+        - Multi-currency transactions\n
+        - Calculator to transaction amounts\n
+        - Better reporting options\n
+        - New help &amp; feedback section\n
         - Multiple bug fixes and improvements\n
 	</string>
 	<string name="label_dismiss">Απόρριψη</string>
