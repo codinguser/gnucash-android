@@ -164,6 +164,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + PriceEntry.COLUMN_VALUE_DENOM     + " integer not null, "
             + PriceEntry.COLUMN_CREATED_AT      + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
             + PriceEntry.COLUMN_MODIFIED_AT     + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
+            + "UNIQUE (" + PriceEntry.COLUMN_COMMODITY_UID + ", " + PriceEntry.COLUMN_CURRENCY_UID + ") ON CONFLICT REPLACE, "
             + "FOREIGN KEY (" 	+ PriceEntry.COLUMN_COMMODITY_UID + ") REFERENCES " + CommodityEntry.TABLE_NAME + " (" + CommodityEntry.COLUMN_UID + ") ON DELETE CASCADE, "
             + "FOREIGN KEY (" 	+ PriceEntry.COLUMN_CURRENCY_UID + ") REFERENCES " + CommodityEntry.TABLE_NAME + " (" + CommodityEntry.COLUMN_UID + ") ON DELETE CASCADE "
             + ");" + createUpdatedAtTrigger(PriceEntry.TABLE_NAME);
@@ -208,7 +209,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		Log.i(LOG_TAG, "Upgrading database from version "
                 + oldVersion + " to " + newVersion);
 
-        Toast.makeText(GnuCashApplication.getAppContext(), "Upgrading GnuCash database", Toast.LENGTH_LONG).show();
+        Toast.makeText(GnuCashApplication.getAppContext(), "Upgrading GnuCash database", Toast.LENGTH_SHORT).show();
         /*
         * NOTE: In order to modify the database, create a new static method in the MigrationHelper class
         * called upgradeDbToVersion<#>, e.g. int upgradeDbToVersion10(SQLiteDatabase) in order to upgrade to version 10.

@@ -351,7 +351,7 @@ public class MigrationHelper {
 
 
     /**
-     * Code for upgrading the database to the {@link DatabaseSchema#SPLITS_DB_VERSION} from version 6.<br>
+     * Code for upgrading the database to version 7 from version 6.<br>
      * Tasks accomplished in migration:
      *  <ul>
      *      <li>Added new splits table for transaction splits</li>
@@ -447,7 +447,7 @@ public class MigrationHelper {
             // drop backup transaction table
             db.execSQL("DROP TABLE " + TransactionEntry.TABLE_NAME + "_bak");
             db.setTransactionSuccessful();
-            oldVersion = SPLITS_DB_VERSION;
+            oldVersion = 7;
         } finally {
             db.endTransaction();
         }
@@ -876,11 +876,11 @@ public class MigrationHelper {
             }
 
             db.execSQL(" ALTER TABLE " + AccountEntry.TABLE_NAME
-                    + " ADD COLUMN " + AccountEntry.COLUMN_COMMODITY_UID + " varchar(255) not null "
+                    + " ADD COLUMN " + AccountEntry.COLUMN_COMMODITY_UID + " varchar(255) "
                     + " REFERENCES " + CommodityEntry.TABLE_NAME + " (" + CommodityEntry.COLUMN_UID + ") ");
 
             db.execSQL(" ALTER TABLE " + TransactionEntry.TABLE_NAME
-                    + " ADD COLUMN " + TransactionEntry.COLUMN_COMMODITY_UID + " varchar(255) not null"
+                    + " ADD COLUMN " + TransactionEntry.COLUMN_COMMODITY_UID + " varchar(255) "
                     + " REFERENCES " + CommodityEntry.TABLE_NAME + " (" + CommodityEntry.COLUMN_UID + ") ");
 
             db.execSQL("UPDATE " + AccountEntry.TABLE_NAME + " SET " + AccountEntry.COLUMN_COMMODITY_UID + " = "
@@ -907,6 +907,7 @@ public class MigrationHelper {
                     + PriceEntry.COLUMN_VALUE_DENOM     + " integer not null, "
                     + PriceEntry.COLUMN_CREATED_AT      + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
                     + PriceEntry.COLUMN_MODIFIED_AT     + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
+                    + "UNIQUE (" + PriceEntry.COLUMN_COMMODITY_UID + ", " + PriceEntry.COLUMN_CURRENCY_UID + ") ON CONFLICT REPLACE, "
                     + "FOREIGN KEY (" 	+ PriceEntry.COLUMN_COMMODITY_UID + ") REFERENCES " + CommodityEntry.TABLE_NAME + " (" + CommodityEntry.COLUMN_UID + ") ON DELETE CASCADE, "
                     + "FOREIGN KEY (" 	+ PriceEntry.COLUMN_CURRENCY_UID + ") REFERENCES " + CommodityEntry.TABLE_NAME + " (" + CommodityEntry.COLUMN_UID + ") ON DELETE CASCADE "
                     + ");" + DatabaseHelper.createUpdatedAtTrigger(PriceEntry.TABLE_NAME);
