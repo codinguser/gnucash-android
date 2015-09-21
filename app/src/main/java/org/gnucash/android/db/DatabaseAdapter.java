@@ -191,7 +191,7 @@ public abstract class DatabaseAdapter<Model extends BaseModel> {
      * @param model Model to be saved to the database
      */
     public void addRecord(@NonNull final Model model){
-        Log.d(LOG_TAG, String.format("Adding %s record to database: ", model.getClass().getName()));
+        Log.d(LOG_TAG, String.format("Adding %s record to database: ", model.getClass().getSimpleName()));
         compileReplaceStatement(model).execute();
     }
 
@@ -448,6 +448,30 @@ public abstract class DatabaseAdapter<Model extends BaseModel> {
                 return cursor.getString(0);
             } else {
                 throw new IllegalArgumentException("Account " + accountUID + " does not exist");
+            }
+        } finally {
+            cursor.close();
+        }
+    }
+
+
+    /**
+     * Returns the commodity GUID for the given ISO 4217 currency code
+     * @param currencyCode ISO 4217 currency code
+     * @return GUID of commodity
+     */
+    public String getCommodityUID(String currencyCode){
+        String where = DatabaseSchema.CommodityEntry.COLUMN_MNEMONIC + "= ?";
+        String[] whereArgs = new String[]{currencyCode};
+
+        Cursor cursor = mDb.query(DatabaseSchema.CommodityEntry.TABLE_NAME,
+                new String[]{DatabaseSchema.CommodityEntry.COLUMN_UID},
+                where, whereArgs, null, null, null);
+        try {
+            if (cursor.moveToNext()) {
+                return cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.CommodityEntry.COLUMN_UID));
+            } else {
+                throw new IllegalArgumentException("Currency code not found in commodities");
             }
         } finally {
             cursor.close();

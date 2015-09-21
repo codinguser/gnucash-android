@@ -811,7 +811,7 @@ public class TransactionFormFragment extends Fragment implements
 
             String currencyCode = mAccountsDbAdapter.getAccountCurrencyCode(mAccountUID);
             mTransaction.setCurrencyCode(currencyCode);
-            mTransaction.setCommodityUID(CommoditiesDbAdapter.getInstance().getCommodityUID(currencyCode));
+            mTransaction.setCommodityUID(mAccountsDbAdapter.getCommodityUID(currencyCode));
             mTransaction.setTime(cal.getTimeInMillis());
             mTransaction.setNote(notes);
 

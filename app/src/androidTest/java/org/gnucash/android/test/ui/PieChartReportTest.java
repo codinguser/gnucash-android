@@ -134,6 +134,7 @@ public class PieChartReportTest extends ActivityInstrumentationTestCase2<Reports
     private void getTestActivity() {
         setActivityIntent(new Intent(Intent.ACTION_VIEW));
         mReportsActivity = getActivity();
+        onView(withId(R.id.btn_pie_chart)).perform(click());
     }
 
     private void addTransactionForCurrentMonth() throws Exception {
@@ -205,18 +206,18 @@ public class PieChartReportTest extends ActivityInstrumentationTestCase2<Reports
 
         getTestActivity();
 
-//        onView(withId(R.id.chart_data_spinner)).perform(click());
-        onView(withText(containsString(AccountType.INCOME.name()))).perform(click());
+        onView(withId(R.id.report_account_type_spinner)).perform(click());
+        onView(withText(AccountType.INCOME.name())).perform(click());
 
         onView(withId(R.id.pie_chart)).perform(click());
         String selectedText = String.format(PieChartFragment.SELECTED_VALUE_PATTERN, GIFTS_RECEIVED_INCOME_ACCOUNT_NAME, TRANSACTION3_AMOUNT, 100f);
         onView(withId(R.id.selected_chart_slice)).check(matches(withText(selectedText)));
 
-//        onView(withId(R.id.chart_data_spinner)).perform(click());
-        onView(withText(containsString(AccountType.EXPENSE.name()))).perform(click());
+        onView(withId(R.id.report_account_type_spinner)).perform(click());
+        onView(withText(AccountType.EXPENSE.name())).perform(click());
 
         onView(withId(R.id.pie_chart)).perform(click());
-        onView(withId(R.id.selected_chart_slice)).check(matches(withText("")));
+        onView(withId(R.id.selected_chart_slice)).check(matches(withText(R.string.label_select_pie_slice_to_see_details)));
     }
 
     public static ViewAction clickXY(final Position horizontal, final Position vertical){

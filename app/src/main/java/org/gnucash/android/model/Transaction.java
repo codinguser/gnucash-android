@@ -168,7 +168,7 @@ public class Transaction extends BaseModel{
 	 * Initializes the different fields to their default values.
 	 */
 	private void initDefaults(){
-        mCurrencyCode = GnuCashApplication.getDefaultCurrencyCode();
+        mCurrencyCode = Money.DEFAULT_CURRENCY_CODE;
 		this.mTimestamp = System.currentTimeMillis();
 	}
 

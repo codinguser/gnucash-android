@@ -24,6 +24,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.preference.PreferenceManager;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.Espresso;
+import android.support.test.espresso.ViewInteraction;
+import android.support.test.espresso.matcher.ViewMatchers;
 import android.support.test.runner.AndroidJUnit4;
 import android.support.v4.app.Fragment;
 import android.test.ActivityInstrumentationTestCase2;
@@ -66,6 +68,7 @@ import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.isChecked;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.isNotChecked;
+import static android.support.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -234,10 +237,17 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
         sleep(1000);
         onView(withId(R.id.checkbox_parent_account)).check(matches(allOf(isChecked())));
         onView(withId(R.id.input_account_name)).perform(typeText("Trading account"));
+        Espresso.closeSoftKeyboard();
+        onView(withId(R.id.layout_parent_account)).check(matches(isDisplayed()));
+
         onView(withId(R.id.input_account_type_spinner)).perform(click());
+
         onData(allOf(is(instanceOf(String.class)), is(AccountType.TRADING.name()))).perform(click());
 
+
+        onView(withId(R.id.layout_parent_account)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.GONE)));
         onView(withId(R.id.layout_parent_account)).check(matches(not(isDisplayed())));
+
         onView(withId(R.id.menu_save)).perform(click());
         sleep(1000);
         //no sub-accounts

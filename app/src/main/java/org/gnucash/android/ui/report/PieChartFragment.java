@@ -160,7 +160,7 @@ public class PieChartFragment extends Fragment implements OnChartValueSelectedLi
      * Manages all actions about displaying the pie chart
      */
     private void displayChart() {
-        mSelectedValueTextView.setText("Select a slice to see details");
+        mSelectedValueTextView.setText(R.string.label_select_pie_slice_to_see_details);
         mChart.highlightValues(null);
         mChart.clear();
 

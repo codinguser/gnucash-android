@@ -21,7 +21,6 @@ import android.preference.PreferenceManager;
 
 import org.gnucash.android.BuildConfig;
 import org.gnucash.android.app.GnuCashApplication;
-import org.gnucash.android.db.CommoditiesDbAdapter;
 import org.gnucash.android.export.Exporter;
 import org.gnucash.android.export.ofx.OfxHelper;
 import org.w3c.dom.Document;
@@ -160,7 +159,7 @@ public class Account extends BaseModel{
 	public Account(String name) {
 		setName(name);
         this.mFullName  = mName;
-		this.mCurrency  = Currency.getInstance(GnuCashApplication.getDefaultCurrencyCode());
+		this.mCurrency  = Currency.getInstance(Money.DEFAULT_CURRENCY_CODE);
 	}
 	
 	/**

@@ -533,6 +533,7 @@ No user-identifiable information will be collected as part of this process!
     <string name="error_converted_amount_required">The converted amount is required</string>
     <string name="title_transfer_funds">Transfer Funds</string>
     <string name="nav_menu_help"><![CDATA[Help & Feedback]]></string>
+    <string name="label_select_pie_slice_to_see_details">Select a slice to see details</string>
     <string-array name="report_time_range">
         <item>All time</item>
         <item>Current month</item>

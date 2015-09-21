@@ -11,6 +11,7 @@ import org.gnucash.android.model.Split;
 import org.gnucash.android.model.Transaction;
 import org.gnucash.android.test.unit.util.GnucashTestRunner;
 import org.gnucash.android.test.unit.util.ShadowCrashlytics;
+import org.gnucash.android.test.unit.util.ShadowUserVoice;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -25,7 +26,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 
 @RunWith(GnucashTestRunner.class) //package is required so that resources can be found in dev mode
-@Config(constants = BuildConfig.class, sdk = 21, packageName = "org.gnucash.android", shadows = {ShadowCrashlytics.class})
+@Config(constants = BuildConfig.class, sdk = 21, packageName = "org.gnucash.android", shadows = {ShadowCrashlytics.class, ShadowUserVoice.class})
 public class TransactionsDbAdapterTest {
 	private static final String ALPHA_ACCOUNT_NAME  = "Alpha";
 	private static final String BRAVO_ACCOUNT_NAME  = "Bravo";

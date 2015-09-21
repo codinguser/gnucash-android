@@ -501,4 +501,5 @@ Neste processo n&#227;o ser&#227;o recolhidas informa&#231;&#245;es do utilizado
     <string name="label_no_scheduled_exports_to_display">N&#227;o existem exporta&#231;&#245;es agendadas para mostrar</string>
     <string name="title_create_export_schedule">Criar uma exporta&#231;&#227;o agendada</string>
     <string name="toast_exported_to">Exportado para : %1$s</string>
+    <string name="label_select_pie_slice_to_see_details">Select a slice to see details</string>
 </resources>

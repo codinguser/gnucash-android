@@ -107,7 +107,9 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
 		if (account.getAccountType() != AccountType.ROOT){
             //update the fully qualified account name
             updateRecord(accountUID, AccountEntry.COLUMN_FULL_NAME, getFullyQualifiedAccountName(accountUID));
-			for (Transaction t : account.getTransactions()) {
+            String commodityUID = getCommodityUID(account.getCurrency().getCurrencyCode());
+            for (Transaction t : account.getTransactions()) {
+                t.setCommodityUID(commodityUID);
 		        mTransactionsAdapter.addRecord(t);
 			}
 		}
@@ -925,7 +927,7 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
         contentValues.put(AccountEntry.COLUMN_HIDDEN, rootAccount.isHidden() ? 1 : 0);
         String defaultCurrencyCode = GnuCashApplication.getDefaultCurrencyCode();
         contentValues.put(AccountEntry.COLUMN_CURRENCY, defaultCurrencyCode);
-        contentValues.put(AccountEntry.COLUMN_COMMODITY_UID, CommoditiesDbAdapter.getInstance().getCommodityUID(defaultCurrencyCode));
+        contentValues.put(AccountEntry.COLUMN_COMMODITY_UID, getCommodityUID(defaultCurrencyCode));
         Log.i(LOG_TAG, "Creating ROOT account");
         mDb.insert(AccountEntry.TABLE_NAME, null, contentValues);
         return rootAccount.getUID();

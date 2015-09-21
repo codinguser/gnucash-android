@@ -1,10 +1,11 @@
 package org.gnucash.android.test.unit.util;
 
+import com.crashlytics.android.Crashlytics;
+import com.uservoice.uservoicesdk.UserVoice;
+
 import org.junit.runners.model.InitializationError;
 import org.robolectric.RobolectricGradleTestRunner;
-import org.robolectric.internal.SdkConfig;
-import org.robolectric.internal.bytecode.ClassHandler;
-import org.robolectric.internal.bytecode.ShadowMap;
+import org.robolectric.internal.bytecode.InstrumentationConfiguration;
 
 /**
  * Test runner for application
@@ -16,16 +17,11 @@ public class GnucashTestRunner extends RobolectricGradleTestRunner {
     }
 
     @Override
-    protected ShadowMap createShadowMap() {
-        return super.createShadowMap()
-                .newBuilder().addShadowClass(ShadowCrashlytics.class).build();
+    public InstrumentationConfiguration createClassLoaderConfig() {
+        InstrumentationConfiguration.Builder builder = InstrumentationConfiguration.newBuilder()
+                .addInstrumentedClass(Crashlytics.class.getName())
+                .addInstrumentedClass(UserVoice.class.getName());
+
+        return builder.build();
     }
-
-    @Override
-    protected ClassHandler createClassHandler(ShadowMap shadowMap, SdkConfig sdkConfig) {
-        ShadowMap map = shadowMap.newBuilder().addShadowClass(ShadowCrashlytics.class).build();
-        return super.createClassHandler(map, sdkConfig);
-    }
-
-
 }
