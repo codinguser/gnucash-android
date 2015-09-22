@@ -113,6 +113,9 @@ public class CalculatorKeyboard {
                     int deleteStart = start > 0 ? start - 1: 0;
                     editable.delete(deleteStart, end);
                     break;
+                case 1003: // C[lear]
+                    editable.clear();
+                    break;
                 case 1001:
                     calculatorEditText.evaluate();
                     break;
