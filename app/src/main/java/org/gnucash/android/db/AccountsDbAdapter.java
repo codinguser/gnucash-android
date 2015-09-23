@@ -27,11 +27,11 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
+
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.model.Account;
 import org.gnucash.android.model.AccountType;
-import org.gnucash.android.model.Commodity;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.model.Split;
 import org.gnucash.android.model.Transaction;
@@ -1163,13 +1163,14 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
     }
 
     /**
-     * Returns the list of currencies in the database
-     * @return List of currencies in the database
+     * Returns the list of currencies in use in the database.
+     * <p>This is not the same as the list of all available commodities</p>
+     * @return List of currencies in use
      */
-    public List<Currency> getCurrencies(){
+    public List<Currency> getCurrenciesInUse(){
         Cursor cursor = mDb.query(true, AccountEntry.TABLE_NAME, new String[]{AccountEntry.COLUMN_CURRENCY},
                 null, null, null, null, null, null);
-        List<Currency> currencyList = new ArrayList<Currency>();
+        List<Currency> currencyList = new ArrayList<>();
         try {
             while (cursor.moveToNext()) {
                 String currencyCode = cursor.getString(cursor.getColumnIndexOrThrow(AccountEntry.COLUMN_CURRENCY));

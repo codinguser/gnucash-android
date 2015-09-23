@@ -23,7 +23,6 @@ import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
 
-import org.gnucash.android.db.CommoditiesDbAdapter;
 import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.export.ExportFormat;
@@ -49,7 +48,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Currency;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.UUID;
@@ -719,7 +717,7 @@ public class GncXmlExporter extends Exporter{
             xmlSerializer.text(UUID.randomUUID().toString().replaceAll("-", ""));
             xmlSerializer.endTag(null, GncXmlHelper.TAG_BOOK_ID);
             //commodity count
-            List<Currency> currencies = mAccountsDbAdapter.getCurrencies();
+            List<Currency> currencies = mAccountsDbAdapter.getCurrenciesInUse();
             for (int i = 0; i< currencies.size();i++) {
                 if (currencies.get(i).getCurrencyCode().equals("XXX")) {
                     currencies.remove(i);

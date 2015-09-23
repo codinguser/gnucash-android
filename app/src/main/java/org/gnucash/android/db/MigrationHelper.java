@@ -24,6 +24,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Environment;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
@@ -49,13 +50,21 @@ import java.io.InputStream;
 import java.math.BigDecimal;
 import java.nio.channels.FileChannel;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-import static org.gnucash.android.db.DatabaseSchema.*;
+import static org.gnucash.android.db.DatabaseSchema.AccountEntry;
+import static org.gnucash.android.db.DatabaseSchema.CommodityEntry;
+import static org.gnucash.android.db.DatabaseSchema.CommonColumns;
+import static org.gnucash.android.db.DatabaseSchema.PriceEntry;
+import static org.gnucash.android.db.DatabaseSchema.ScheduledActionEntry;
+import static org.gnucash.android.db.DatabaseSchema.SplitEntry;
+import static org.gnucash.android.db.DatabaseSchema.TransactionEntry;
 
 /**
  * Collection of helper methods which are used during database migrations
@@ -728,20 +737,6 @@ public class MigrationHelper {
 
             //auto-balance existing splits
             Log.i(DatabaseHelper.LOG_TAG, "Auto-balancing existing transaction splits");
-//            cursor = transactionsDbAdapter.fetchAllRecords();
-//            while (cursor.moveToNext()){
-//                Transaction transaction = transactionsDbAdapter.buildModelInstance(cursor);
-//                if (transaction.isTemplate())
-//                    continue;
-//                Money imbalance = transaction.getImbalance();
-//                if (!imbalance.isAmountZero()){
-//                    Split split = new Split(imbalance.negate(),
-//                            accountsDbAdapter.getOrCreateImbalanceAccountUID(imbalance.getCurrency()));
-//                    split.setTransactionUID(transaction.getUID());
-//                    splitsDbAdapter.addRecord(split);
-//                }
-//            }
-//            cursor.close();
             cursor = db.query(
                     TransactionEntry.TABLE_NAME + " , " + SplitEntry.TABLE_NAME + " ON "
                             + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_UID + "=" + SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_TRANSACTION_UID
@@ -952,13 +947,111 @@ public class MigrationHelper {
                     + SplitEntry.TABLE_NAME + "_bak." + SplitEntry.COLUMN_UID + " , "
                     + SplitEntry.TABLE_NAME + "_bak." + SplitEntry.COLUMN_MEMO + " , "
                     + SplitEntry.TABLE_NAME + "_bak." + SplitEntry.COLUMN_TYPE + " , "
-                    + SplitEntry.TABLE_NAME + "_bak.amount * 100, " //put the amount as both value and quantity since multicurrency transactions were not supported until now
+                    + SplitEntry.TABLE_NAME + "_bak.amount * 100, " //we will update this value in the next steps
                     + "100, "
                     + SplitEntry.TABLE_NAME + "_bak.amount * 100, " //default units of 2 decimal places were assumed until now
                     + "100, "
                     + SplitEntry.TABLE_NAME + "_bak." + SplitEntry.COLUMN_ACCOUNT_UID + " , "
                     + SplitEntry.TABLE_NAME + "_bak." + SplitEntry.COLUMN_TRANSACTION_UID
                     + " FROM " + SplitEntry.TABLE_NAME + "_bak;");
+
+
+            //************** UPDATE SPLITS WHOSE CURRENCIES HAVE NO DECIMAL PLACES *****************
+            //get all account UIDs which have currencies with fraction digits of 0
+            String query = "SELECT " + "A." + AccountEntry.COLUMN_UID + " AS account_uid "
+                    + " FROM " + AccountEntry.TABLE_NAME + " AS A, " + CommodityEntry.TABLE_NAME + " AS C "
+                    + " WHERE A." + AccountEntry.COLUMN_CURRENCY + " = C." + CommodityEntry.COLUMN_MNEMONIC
+                    + " AND C." + CommodityEntry.COLUMN_FRACTION + "= 1";
+
+            Cursor cursor = db.rawQuery(query, null);
+
+            List<String> accountUIDs = new ArrayList<>();
+            try {
+                while (cursor.moveToNext()) {
+                    String accountUID = cursor.getString(cursor.getColumnIndexOrThrow("account_uid"));
+                    accountUIDs.add(accountUID);
+                }
+            } finally {
+                cursor.close();
+            }
+
+            String accounts = TextUtils.join("' , '", accountUIDs);
+            db.execSQL("REPLACE INTO " + SplitEntry.TABLE_NAME + " ( "
+                    + SplitEntry.COLUMN_UID + " , "
+                    + SplitEntry.COLUMN_MEMO + " , "
+                    + SplitEntry.COLUMN_TYPE + " , "
+                    + SplitEntry.COLUMN_ACCOUNT_UID + " , "
+                    + SplitEntry.COLUMN_TRANSACTION_UID + " , "
+                    + SplitEntry.COLUMN_CREATED_AT + " , "
+                    + SplitEntry.COLUMN_MODIFIED_AT + " , "
+                    + SplitEntry.COLUMN_VALUE_NUM + " , "
+                    + SplitEntry.COLUMN_VALUE_DENOM + " , "
+                    + SplitEntry.COLUMN_QUANTITY_NUM + " , "
+                    + SplitEntry.COLUMN_QUANTITY_DENOM
+                    + ")  SELECT "
+                    + SplitEntry.COLUMN_UID + " , "
+                    + SplitEntry.COLUMN_MEMO + " , "
+                    + SplitEntry.COLUMN_TYPE + " , "
+                    + SplitEntry.COLUMN_ACCOUNT_UID + " , "
+                    + SplitEntry.COLUMN_TRANSACTION_UID + " , "
+                    + SplitEntry.COLUMN_CREATED_AT + " , "
+                    + SplitEntry.COLUMN_MODIFIED_AT + " , "
+                    + " ROUND (" + SplitEntry.COLUMN_VALUE_NUM + "/ 100), "
+                    + "1, "
+                    + " ROUND (" + SplitEntry.COLUMN_QUANTITY_NUM + "/ 100), "
+                    + "1 "
+                    + " FROM " + SplitEntry.TABLE_NAME
+                    + " WHERE " + SplitEntry.COLUMN_ACCOUNT_UID + " IN ('" + accounts + "')"
+                    + ";");
+
+
+
+            //************ UPDATE SPLITS WITH CURRENCIES HAVING 3 DECIMAL PLACES *******************
+            query = "SELECT " + "A." + AccountEntry.COLUMN_UID + " AS account_uid "
+                    + " FROM " + AccountEntry.TABLE_NAME + " AS A, " + CommodityEntry.TABLE_NAME + " AS C "
+                    + " WHERE A." + AccountEntry.COLUMN_CURRENCY + " = C." + CommodityEntry.COLUMN_MNEMONIC
+                    + " AND C." + CommodityEntry.COLUMN_FRACTION + "= 1000";
+
+            cursor = db.rawQuery(query, null);
+
+            accountUIDs.clear();
+            try {
+                while (cursor.moveToNext()) {
+                    String accountUID = cursor.getString(cursor.getColumnIndexOrThrow("account_uid"));
+                    accountUIDs.add(accountUID);
+                }
+            } finally {
+                cursor.close();
+            }
+
+            accounts = TextUtils.join("' , '", accountUIDs);
+            db.execSQL("REPLACE INTO " + SplitEntry.TABLE_NAME + " ( "
+                    + SplitEntry.COLUMN_UID             + " , "
+                    + SplitEntry.COLUMN_MEMO            + " , "
+                    + SplitEntry.COLUMN_TYPE            + " , "
+                    + SplitEntry.COLUMN_ACCOUNT_UID     + " , "
+                    + SplitEntry.COLUMN_TRANSACTION_UID + " , "
+                    + SplitEntry.COLUMN_CREATED_AT      + " , "
+                    + SplitEntry.COLUMN_MODIFIED_AT     + " , "
+                    + SplitEntry.COLUMN_VALUE_NUM       + " , "
+                    + SplitEntry.COLUMN_VALUE_DENOM     + " , "
+                    + SplitEntry.COLUMN_QUANTITY_NUM    + " , "
+                    + SplitEntry.COLUMN_QUANTITY_DENOM
+                    + ")  SELECT "
+                    + SplitEntry.COLUMN_UID + " , "
+                    + SplitEntry.COLUMN_MEMO + " , "
+                    + SplitEntry.COLUMN_TYPE + " , "
+                    + SplitEntry.COLUMN_ACCOUNT_UID + " , "
+                    + SplitEntry.COLUMN_TRANSACTION_UID + " , "
+                    + SplitEntry.COLUMN_CREATED_AT  + " , "
+                    + SplitEntry.COLUMN_MODIFIED_AT + " , "
+                    + " ROUND (" + SplitEntry.COLUMN_VALUE_NUM + "* 10), " //add an extra zero because we used only 2 digits before
+                    + "1000, "
+                    + " ROUND (" + SplitEntry.COLUMN_QUANTITY_NUM + "* 10), "
+                    + "1000 "
+                    + " FROM " + SplitEntry.TABLE_NAME
+                    + " WHERE " + SplitEntry.COLUMN_ACCOUNT_UID + " IN ('" + accounts + "')"
+                    + ";");
 
             db.execSQL("DROP TABLE " + SplitEntry.TABLE_NAME + "_bak");
 

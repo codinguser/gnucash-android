@@ -278,7 +278,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity
     public void setImbalanceAccountsHidden(boolean useDoubleEntry) {
         String isHidden = useDoubleEntry ? "0" : "1";
         AccountsDbAdapter accountsDbAdapter = AccountsDbAdapter.getInstance();
-        List<Currency> currencies = accountsDbAdapter.getCurrencies();
+        List<Currency> currencies = accountsDbAdapter.getCurrenciesInUse();
         for (Currency currency : currencies) {
             String uid = accountsDbAdapter.getImbalanceAccountUID(currency);
             if (uid != null){

@@ -66,7 +66,7 @@ public abstract class DatabaseAdapter<Model extends BaseModel> {
         if (!db.isOpen() || db.isReadOnly())
             throw new IllegalArgumentException("Database not open or is read-only. Require writeable database");
 
-        if (mDb.getVersion() >= DatabaseSchema.SPLITS_DB_VERSION) {
+        if (mDb.getVersion() >= 9) {
             createTempView();
         }
     }

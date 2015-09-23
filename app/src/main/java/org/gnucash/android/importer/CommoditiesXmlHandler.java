@@ -48,6 +48,10 @@ public class CommoditiesXmlHandler extends DefaultHandler {
             String fullname = attributes.getValue(ATTR_FULL_NAME);
             String namespace = attributes.getValue(ATTR_NAMESPACE);
             String cusip = attributes.getValue(ATTR_EXCHANGE_CODE);
+            //TODO: investigate how up-to-date the currency XML list is and use of parts-per-unit vs smallest-fraction.
+            //some currencies like XAF have smallest fraction 100, but parts-per-unit of 1.
+            // However java.util.Currency agrees only with the parts-per-unit although we use smallest-fraction in the app
+            // This could lead to inconsistencies over time
             String smallestFraction = attributes.getValue(ATTR_SMALLEST_FRACTION);
             String localSymbol = attributes.getValue(ATTR_LOCAL_SYMBOL);
 
