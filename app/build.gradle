@@ -158,8 +158,8 @@ afterEvaluate {
 }
 
 def androidSupportVersion       = "22.2.1"
-def androidEspressoVersion      = "2.2.1"
-def androidSupportTestVersion   = "0.4"
+def androidEspressoVersion      = "2.2"
+def androidSupportTestVersion   = "0.3"
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])

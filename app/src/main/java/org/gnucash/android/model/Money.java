@@ -144,8 +144,8 @@ public final class Money implements Comparable<Money>{
 	 * @param currencyCode Currency code as specified by ISO 4217
 	 */
 	public Money(String amount, String currencyCode){
-		setAmount(amount);
 		setCurrency(Currency.getInstance(currencyCode));
+		setAmount(amount);
 	}
 
 	/**
@@ -176,8 +176,8 @@ public final class Money implements Comparable<Money>{
      * @param money Money instance to be cloned
      */
     public Money(Money money){
-        setAmount(money.asBigDecimal());
-        setCurrency(money.getCurrency());
+		setCurrency(money.getCurrency());
+		setAmount(money.asBigDecimal());
     }
 
     /**
