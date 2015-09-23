@@ -556,6 +556,8 @@ Nenhuma informação de  identificação do usuário será coletada neste proces
 	<string name="menu_group_by_month">Month</string>
 	<string name="menu_group_by_quarter">Quarter</string>
 	<string name="menu_group_by_year">Year</string>
+	<string name="title_balance_sheet_report">Balance Sheet</string>
+	<string name="label_balance_sheet_total">Total:</string>
 	<string-array name="report_time_range">
 		<item>All time</item>
 		<item>Current month</item>

@@ -154,6 +154,7 @@ public class ReportSummaryFragment extends Fragment {
         List<AccountType> accountTypes = new ArrayList<>();
         accountTypes.add(AccountType.ASSET);
         accountTypes.add(AccountType.CASH);
+        accountTypes.add(AccountType.BANK);
         Money assetsBalance = mAccountsDbAdapter.getAccountBalance(accountTypes);
 
         accountTypes.clear();
@@ -163,7 +164,7 @@ public class ReportSummaryFragment extends Fragment {
 
         TransactionsActivity.displayBalance(mTotalAssets, assetsBalance);
         TransactionsActivity.displayBalance(mTotalLiabilities, liabilitiesBalance);
-        TransactionsActivity.displayBalance(mNetWorth, assetsBalance.subtract(liabilitiesBalance));
+        TransactionsActivity.displayBalance(mNetWorth, assetsBalance.add(liabilitiesBalance));
 
         displayChart();
     }

@@ -23,9 +23,13 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
 
 import org.gnucash.android.R;
@@ -67,11 +71,13 @@ public class BalanceSheetFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle("Balance Sheet");
+        ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(R.string.title_balance_sheet_report);
+        setHasOptionsMenu(true);
 
         List<AccountType> accountTypes = new ArrayList<>();
         accountTypes.add(AccountType.ASSET);
         accountTypes.add(AccountType.CASH);
+        accountTypes.add(AccountType.BANK);
         loadAccountViews(accountTypes, mAssetsTableLayout);
 
         accountTypes.clear();
@@ -93,6 +99,12 @@ public class BalanceSheetFragment extends Fragment {
     public void onResume() {
         super.onResume();
         ((ReportsActivity)getActivity()).setAppBarColor(R.color.account_purple);
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+        menu.findItem(R.id.menu_group_reports_by).setVisible(false);
     }
 
     /**
@@ -120,10 +132,13 @@ public class BalanceSheetFragment extends Fragment {
         }
 
         View totalView = inflater.inflate(R.layout.row_balance_sheet, tableLayout, false);
+        TableLayout.LayoutParams layoutParams = (TableLayout.LayoutParams) totalView.getLayoutParams();
+        layoutParams.setMargins(layoutParams.leftMargin, 20, layoutParams.rightMargin, layoutParams.bottomMargin);
+        totalView.setLayoutParams(layoutParams);
 
         TextView accountName = (TextView) totalView.findViewById(R.id.account_name);
         accountName.setTextSize(16);
-        accountName.setText("Total: ");
+        accountName.setText(R.string.label_balance_sheet_total);
         TextView assetBalance = (TextView) totalView.findViewById(R.id.account_balance);
         assetBalance.setTextSize(16);
         assetBalance.setTypeface(null, Typeface.BOLD);

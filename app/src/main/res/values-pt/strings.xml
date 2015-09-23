@@ -523,4 +523,6 @@ Neste processo n&#227;o ser&#227;o recolhidas informa&#231;&#245;es do utilizado
     <string name="menu_group_by_month">Month</string>
     <string name="menu_group_by_quarter">Quarter</string>
     <string name="menu_group_by_year">Year</string>
+    <string name="title_balance_sheet_report">Balance Sheet</string>
+    <string name="label_balance_sheet_total">Total:</string>
 </resources>
