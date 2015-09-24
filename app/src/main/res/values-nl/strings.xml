@@ -2,6 +2,7 @@
 <!--
  Copyright (c) 2012 - 2014 Ngewi Fet <ngewif@gmail.com>
  Copyright (c) 2012 - 2014 Geert Janssens <janssens-geert@telenet.be>
+ Copyright (c) 2015 Mark Haanen <i18n@haanen.net>
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -259,7 +260,7 @@
     </string-array>
 	<string name="error_no_accounts">Geen rekeningen beschikbaar.\nU moet een rekening aanmaken alvorens een widget toe te voegen</string>
 	<string name="title_build_version">Versie</string>
-	<string name="title_license">License</string>
+	<string name="title_license">Licentie</string>
 	<string name="summary_licence_details">Apache License v2.0. Klik voor details</string>
 	<string name="title_general_prefs">Algemeen</string>
 	<string name="label_widget_configuration">Account kiezen</string>
@@ -290,7 +291,7 @@
 	<string name="summary_use_double_entry">Alle transacties zullen worden overgedragen van het ene account naar de andere</string>
 	<string name="title_use_double_entry">Schakel dubbel boekhouden in</string>
 	<string name="account_balance">Saldo</string>
-	<string name="toast_no_account_name_entered">Vul een accountnaam in</string>
+	<string name="toast_no_account_name_entered">Vul een rekeningnaam in</string>
 	<string name="label_account_currency">Munteenheid</string>
 	<string name="label_parent_account">Hoofdrekening</string>
 	<string name="title_xml_ofx_header">Gebruik XML OFX hoofding</string>
@@ -403,7 +404,7 @@
     <string name="label_account_balance">Balance:</string>
     <string name="toast_no_recent_backup">No recent backup found</string>
     <string name="account_name_opening_balances">Openingsbalans</string>
-    <string name="account_name_equity">Eigen Vermogen</string>
+    <string name="account_name_equity">Eigen vermogen</string>
     <string name="summary_save_opening_balances">Enable to save the current account balance (before deleting transactions) as new opening balance after deleting transactions
     </string>
     <string name="title_save_opening_balances">Save account opening balances</string>
@@ -472,20 +473,20 @@
     <string name="nav_menu_export">Export...</string>
     <string name="nav_menu_settings">Settings</string>
     <plurals name="label_every_x_days">
-        <item quantity="one">Daily</item>
-        <item quantity="other">Every %d days</item>
+        <item quantity="one">Dagelijks</item>
+        <item quantity="other">Elke %d dagen</item>
     </plurals>
     <plurals name="label_every_x_weeks">
-        <item quantity="one">Weekly</item>
-        <item quantity="other">Every %d weeks</item>
+        <item quantity="one">Wekelijks</item>
+        <item quantity="other">Elke %d weken</item>
     </plurals>
     <plurals name="label_every_x_months">
-        <item quantity="one">Monthly</item>
-        <item quantity="other">Every %d months</item>
+        <item quantity="one">Maandelijks</item>
+        <item quantity="other">Elke %d maanden</item>
     </plurals>
     <plurals name="label_every_x_years">
-        <item quantity="one">Yearly</item>
-        <item quantity="other">Every %d years</item>
+        <item quantity="one">Jaarlijks</item>
+        <item quantity="other">Elke %d jaren</item>
     </plurals>
     <string name="title_enable_crashlytics">Enable Crash Logging</string>
     <string name="msg_enable_crashlytics">Enable to send information about malfunctions to the developers for improvement (recommended).
@@ -493,8 +494,8 @@ No user-identifiable information will be collected as part of this process!
     </string>
     <string name="label_export_format">Export Format</string>
     <string name="toast_backup_folder_not_found">Backup folder cannot be found. Make sure the SD Card is mounted!</string>
-    <string name="header_report_settings">Reports</string>
-    <string name="label_report_currency">Select currency</string>
+    <string name="header_report_settings">Rapporten</string>
+    <string name="label_report_currency">Munteenheid selecteren</string>
     <string name="title_use_account_color">Account color in reports</string>
     <string name="summary_use_account_color">Use account color in the bar/pie chart</string>
     <string name="label_confirm_passcode">Please confirm your passcode</string>
@@ -537,29 +538,29 @@ No user-identifiable information will be collected as part of this process!
     <string name="title_transfer_funds">Transfer Funds</string>
     <string name="nav_menu_help"><![CDATA[Help & Feedback]]></string>
     <string name="label_select_pie_slice_to_see_details">Select a slice to see details</string>
-    <string name="label_report_period">Period:</string>
-    <string name="label_convert_from">From:</string>
-    <string name="label_convert_to">To:</string>
+    <string name="label_report_period">Periode:</string>
+    <string name="label_convert_from">Van:</string>
+    <string name="label_convert_to">Tot:</string>
     <string name="msg_provide_exchange_rate">Provide either the converted amount or exchange rate in order to transfer funds</string>
-    <string name="hint_exchange_rate">Exchange rate</string>
-    <string name="btn_fetch_quote">Fetch quote</string>
-    <string name="hint_converted_amount">Converted Amount</string>
-    <string name="title_report_sheet">Sheet</string>
-    <string name="label_last_3_months_expenses">Expenses for last 3 months</string>
-    <string name="label_total_assets">Total Assets</string>
-    <string name="label_total_liabilities">Total Liabilities</string>
-    <string name="label_net_worth">Net Worth</string>
-    <string name="label_assets">Assets</string>
-    <string name="label_liabilities">Liabilities</string>
-    <string name="label_equity">Equity</string>
-    <string name="label_total_liabilities_and_equity"><![CDATA[Total Liabilites & Equity]]></string>
-    <string name="label_move_to">Move to:</string>
-    <string name="menu_group_by">Group By</string>
-    <string name="menu_group_by_month">Month</string>
-    <string name="menu_group_by_quarter">Quarter</string>
-    <string name="menu_group_by_year">Year</string>
-    <string name="title_balance_sheet_report">Balance Sheet</string>
-    <string name="label_balance_sheet_total">Total:</string>
+    <string name="hint_exchange_rate">Wisselkoers</string>
+    <string name="btn_fetch_quote">Koers opvragen</string>
+    <string name="hint_converted_amount">Omgerekend bedrag</string>
+    <string name="title_report_sheet">Blad</string>
+    <string name="label_last_3_months_expenses">Kosten voor de afgelopen 3 maanden</string>
+    <string name="label_total_assets">Totaal activa</string>
+    <string name="label_total_liabilities">Totaal vreemd vermogen</string>
+    <string name="label_net_worth">Totaal eigen vermogen</string>
+    <string name="label_assets">Activa</string>
+    <string name="label_liabilities">Vreemd vermogen</string>
+    <string name="label_equity">Eigen vermogen</string>
+    <string name="label_total_liabilities_and_equity">Totaal passiva</string>
+    <string name="label_move_to">Verplaatsen naar:</string>
+    <string name="menu_group_by">Groeperen op</string>
+    <string name="menu_group_by_month">Maand</string>
+    <string name="menu_group_by_quarter">Kwartaal</string>
+    <string name="menu_group_by_year">Jaar</string>
+    <string name="title_balance_sheet_report">Balans</string>
+    <string name="label_balance_sheet_total">Totaal:</string>
     <string-array name="report_time_range">
         <item>All time</item>
         <item>Current month</item>
