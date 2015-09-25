@@ -42,7 +42,7 @@ import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.model.AccountType;
 import org.gnucash.android.model.Money;
-import org.gnucash.android.ui.passcode.PassLockActivity;
+import org.gnucash.android.ui.common.BaseDrawerActivity;
 import org.gnucash.android.ui.report.dialog.DateRangePickerDialogFragment;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
@@ -61,7 +61,7 @@ import butterknife.ButterKnife;
  * @author Oleksandr Tyshkovets <olexandr.tyshkovets@gmail.com>
  * @author Ngewi Fet <ngewif@gmail.com>
  */
-public class ReportsActivity extends PassLockActivity implements AdapterView.OnItemSelectedListener,
+public class ReportsActivity extends BaseDrawerActivity implements AdapterView.OnItemSelectedListener,
         DatePickerDialog.OnDateSetListener, DateRangePickerDialogFragment.OnDateRangeSetListener{
 
     static final int[] COLORS = {

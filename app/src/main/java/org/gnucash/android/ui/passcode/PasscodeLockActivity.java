@@ -19,6 +19,7 @@ package org.gnucash.android.ui.passcode;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.support.v7.app.AppCompatActivity;
 import android.view.WindowManager.LayoutParams;
 
 import org.gnucash.android.app.GnuCashApplication;
@@ -32,9 +33,9 @@ import org.gnucash.android.ui.common.UxArgument;
  * @see org.gnucash.android.ui.account.AccountsActivity
  * @see org.gnucash.android.ui.transaction.TransactionsActivity
  */
-public class PassLockActivity extends BaseDrawerActivity {
+public class PasscodeLockActivity extends AppCompatActivity {
 
-    private static final String TAG = "PassLockActivity";
+    private static final String TAG = "PasscodeLockActivity";
 
     @Override
     protected void onResume() {

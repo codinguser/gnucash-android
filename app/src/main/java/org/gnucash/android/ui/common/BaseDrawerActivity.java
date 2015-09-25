@@ -23,7 +23,6 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
@@ -35,6 +34,7 @@ import org.gnucash.android.R;
 import org.gnucash.android.export.xml.GncXmlExporter;
 import org.gnucash.android.importer.ImportAsyncTask;
 import org.gnucash.android.ui.account.AccountsActivity;
+import org.gnucash.android.ui.passcode.PasscodeLockActivity;
 import org.gnucash.android.ui.report.ReportsActivity;
 import org.gnucash.android.ui.settings.SettingsActivity;
 import org.gnucash.android.ui.transaction.ScheduledActionsActivity;
@@ -45,10 +45,13 @@ import java.io.InputStream;
 
 /**
  * Base activity implementing the navigation drawer, to be extended by all activities requiring one
+ * <p>All subclasses should call the {@link #setUpDrawer()} method in {@link #onCreate(Bundle)}, after the
+ * activity layout has been set.<br/>
+ * The activity layout of the subclass is expected to contain {@code DrawerLayout} and a {@code NavigationView}</p>
  *
  * @author Ngewi Fet <ngewif@gmail.com>
  */
-public class BaseDrawerActivity extends AppCompatActivity {
+public class BaseDrawerActivity extends PasscodeLockActivity {
     protected DrawerLayout  mDrawerLayout;
     protected NavigationView mNavigationView;
 

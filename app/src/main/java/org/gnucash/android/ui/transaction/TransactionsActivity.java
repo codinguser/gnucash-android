@@ -49,11 +49,11 @@ import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.model.Account;
 import org.gnucash.android.model.Money;
+import org.gnucash.android.ui.common.BaseDrawerActivity;
 import org.gnucash.android.ui.common.FormActivity;
 import org.gnucash.android.ui.common.UxArgument;
 import org.gnucash.android.ui.account.AccountsActivity;
 import org.gnucash.android.ui.account.AccountsListFragment;
-import org.gnucash.android.ui.passcode.PassLockActivity;
 import org.gnucash.android.ui.util.AccountBalanceTask;
 import org.gnucash.android.ui.util.OnAccountClickedListener;
 import org.gnucash.android.ui.util.OnTransactionClickedListener;
@@ -69,7 +69,7 @@ import butterknife.ButterKnife;
  * Activity for displaying, creating and editing transactions
  * @author Ngewi Fet <ngewif@gmail.com>
  */
-public class TransactionsActivity extends PassLockActivity implements
+public class TransactionsActivity extends BaseDrawerActivity implements
         Refreshable, OnAccountClickedListener, OnTransactionClickedListener{
 
 	/**

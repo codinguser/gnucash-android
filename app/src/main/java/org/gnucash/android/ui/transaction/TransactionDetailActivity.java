@@ -6,7 +6,6 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -25,6 +24,7 @@ import org.gnucash.android.model.Split;
 import org.gnucash.android.model.Transaction;
 import org.gnucash.android.ui.common.FormActivity;
 import org.gnucash.android.ui.common.UxArgument;
+import org.gnucash.android.ui.passcode.PasscodeLockActivity;
 
 import java.text.DateFormat;
 import java.util.Date;
@@ -38,7 +38,7 @@ import butterknife.OnClick;
  * Activity for displaying transaction information
  * @author Ngewi Fet <ngewif@gmail.com>
  */
-public class TransactionDetailActivity extends AppCompatActivity{
+public class TransactionDetailActivity extends PasscodeLockActivity {
 
     @Bind(R.id.trn_description) TextView mTransactionDescription;
     @Bind(R.id.trn_time_and_date) TextView mTimeAndDate;

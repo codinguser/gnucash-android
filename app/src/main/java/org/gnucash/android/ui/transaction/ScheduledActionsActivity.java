@@ -26,13 +26,13 @@ import android.support.v7.widget.Toolbar;
 
 import org.gnucash.android.R;
 import org.gnucash.android.model.ScheduledAction;
-import org.gnucash.android.ui.passcode.PassLockActivity;
+import org.gnucash.android.ui.common.BaseDrawerActivity;
 
 /**
  * Activity for displaying scheduled actions
  * @author Ngewi Fet <ngewif@gmail.com>
  */
-public class ScheduledActionsActivity extends PassLockActivity {
+public class ScheduledActionsActivity extends BaseDrawerActivity {
 
     public static final int INDEX_SCHEDULED_TRANSACTIONS    = 0;
     public static final int INDEX_SCHEDULED_EXPORTS         = 1;

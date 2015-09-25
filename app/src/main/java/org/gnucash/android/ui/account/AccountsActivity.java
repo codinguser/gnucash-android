@@ -66,9 +66,9 @@ import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.export.xml.GncXmlExporter;
 import org.gnucash.android.importer.ImportAsyncTask;
 import org.gnucash.android.model.Money;
+import org.gnucash.android.ui.common.BaseDrawerActivity;
 import org.gnucash.android.ui.common.FormActivity;
 import org.gnucash.android.ui.common.UxArgument;
-import org.gnucash.android.ui.passcode.PassLockActivity;
 import org.gnucash.android.ui.transaction.TransactionsActivity;
 import org.gnucash.android.ui.util.OnAccountClickedListener;
 import org.gnucash.android.ui.util.Refreshable;
@@ -88,7 +88,7 @@ import butterknife.ButterKnife;
  * @author Ngewi Fet <ngewif@gmail.com>
  * @author Oleksandr Tyshkovets <olexandr.tyshkovets@gmail.com>
  */
-public class AccountsActivity extends PassLockActivity implements OnAccountClickedListener {
+public class AccountsActivity extends BaseDrawerActivity implements OnAccountClickedListener {
 
     /**
      * Request code for GnuCash account structure file to import

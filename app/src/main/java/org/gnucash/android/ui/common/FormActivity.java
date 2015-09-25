@@ -23,7 +23,6 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
@@ -32,6 +31,7 @@ import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.ui.account.AccountFormFragment;
 import org.gnucash.android.ui.export.ExportFormFragment;
+import org.gnucash.android.ui.passcode.PasscodeLockActivity;
 import org.gnucash.android.ui.transaction.TransactionFormFragment;
 import org.gnucash.android.ui.transaction.SplitEditorFragment;
 import org.gnucash.android.ui.util.widget.CalculatorKeyboard;
@@ -42,7 +42,7 @@ import org.gnucash.android.ui.util.widget.CalculatorKeyboard;
  * menu options (e.g. for saving etc)
  * @author Ngewi Fet <ngewif@gmail.com>
  */
-public class FormActivity extends AppCompatActivity {
+public class FormActivity extends PasscodeLockActivity {
 
     private String mAccountUID;
 
