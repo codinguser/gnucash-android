@@ -836,6 +836,7 @@ public class MigrationHelper {
      *      <li>Adds a commodities table to the database</li>
      *      <li>Adds prices table to the database</li>
      *      <li>Add separate columns for split value and quantity</li>
+     *      <li>Migrate amounts to use the correct denominations for the currency</li>
      *  </ul>
      * </p>
      * @param db SQLite Database to be upgraded
@@ -1045,9 +1046,9 @@ public class MigrationHelper {
                     + SplitEntry.COLUMN_TRANSACTION_UID + " , "
                     + SplitEntry.COLUMN_CREATED_AT  + " , "
                     + SplitEntry.COLUMN_MODIFIED_AT + " , "
-                    + " ROUND (" + SplitEntry.COLUMN_VALUE_NUM + "* 10), " //add an extra zero because we used only 2 digits before
+                    + SplitEntry.COLUMN_VALUE_NUM + "* 10, " //add an extra zero because we used only 2 digits before
                     + "1000, "
-                    + " ROUND (" + SplitEntry.COLUMN_QUANTITY_NUM + "* 10), "
+                    + SplitEntry.COLUMN_QUANTITY_NUM + "* 10, "
                     + "1000 "
                     + " FROM " + SplitEntry.TABLE_NAME
                     + " WHERE " + SplitEntry.COLUMN_ACCOUNT_UID + " IN ('" + accounts + "')"

@@ -496,7 +496,7 @@
         <item quantity="other">Every %d years</item>
     </plurals>
     <string name="title_enable_crashlytics">Enable Crash Logging</string>
-    <string name="msg_enable_crashlytics">Send information about app malfunction to the developers.\nThe information collected is not used to identify or contact you!</string>
+    <string name="msg_enable_crashlytics">Automatically send information about app malfunction to the developers.</string>
     <string name="label_export_format">Export Format</string>
     <string name="toast_backup_folder_not_found">Backup folder cannot be found. Make sure the SD Card is mounted!</string>
     <string name="label_old_passcode">Enter your old passcode</string>
