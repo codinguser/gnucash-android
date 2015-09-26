@@ -25,6 +25,7 @@
         <Key android:codes="57" android:keyLabel="9" />
         <Key android:codes="-5" android:keyIcon="@drawable/ic_backspace_normal_dark"
             android:isRepeatable="true" />
+        <Key android:codes="1003" android:keyLabel="C" android:keyEdgeFlags="right" />
     </Row>
     <Row>
         <Key android:codes="52" android:keyLabel="4" android:keyEdgeFlags="left" />
