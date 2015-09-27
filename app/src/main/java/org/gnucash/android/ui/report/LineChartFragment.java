@@ -43,6 +43,7 @@ import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.github.mikephil.charting.utils.LargeValueFormatter;
 
 import org.gnucash.android.R;
+import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.model.Account;
@@ -129,8 +130,7 @@ public class LineChartFragment extends Fragment implements OnChartValueSelectedL
         ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(R.string.title_line_chart);
         setHasOptionsMenu(true);
 
-        mCurrency = Currency.getInstance(PreferenceManager.getDefaultSharedPreferences(getActivity())
-                .getString(getString(R.string.key_report_currency), Money.DEFAULT_CURRENCY_CODE));
+        mCurrency = Currency.getInstance(GnuCashApplication.getDefaultCurrencyCode());
 
         mChart.setOnChartValueSelectedListener(this);
         mChart.setDescription("");

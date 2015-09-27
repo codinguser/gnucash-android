@@ -23,6 +23,7 @@ import android.preference.PreferenceFragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 
+import org.gnucash.android.BuildConfig;
 import org.gnucash.android.R;
 import org.gnucash.android.ui.account.AccountsActivity;
 
@@ -50,6 +51,9 @@ public class AboutPreferenceFragment extends PreferenceFragment{
 	public void onResume() {
 		super.onResume();
 		Preference pref = findPreference(getString(R.string.key_build_version));
+		if (BuildConfig.FLAVOR.equals("development")){
+			pref.setSummary(pref.getSummary() + " built: " + BuildConfig.BUILD_TIME);
+		}
         pref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {

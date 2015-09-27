@@ -42,6 +42,7 @@ import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 
 import org.gnucash.android.R;
+import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.model.Account;
@@ -135,8 +136,7 @@ public class PieChartFragment extends Fragment implements OnChartValueSelectedLi
         mAccountsDbAdapter = AccountsDbAdapter.getInstance();
         mTransactionsDbAdapter = TransactionsDbAdapter.getInstance();
 
-        mCurrencyCode = PreferenceManager.getDefaultSharedPreferences(getActivity())
-                .getString(getString(R.string.key_report_currency), Money.DEFAULT_CURRENCY_CODE);
+        mCurrencyCode = GnuCashApplication.getDefaultCurrencyCode();
 
         mChart.setCenterTextSize(CENTER_TEXT_SIZE);
         mChart.setDescription("");

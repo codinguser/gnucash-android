@@ -238,7 +238,7 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
         onView(withId(R.id.checkbox_parent_account)).check(matches(allOf(isChecked())));
         onView(withId(R.id.input_account_name)).perform(typeText("Trading account"));
         Espresso.closeSoftKeyboard();
-        onView(withId(R.id.layout_parent_account)).check(matches(isDisplayed()));
+        onView(withId(R.id.layout_parent_account)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
 
         onView(withId(R.id.input_account_type_spinner)).perform(click());
 

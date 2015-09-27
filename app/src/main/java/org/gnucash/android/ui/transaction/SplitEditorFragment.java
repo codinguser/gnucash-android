@@ -233,7 +233,7 @@ public class SplitEditorFragment extends Fragment {
         public SplitViewHolder(View splitView, Split split){
             ButterKnife.bind(this, splitView);
             this.splitView = splitView;
-            if (split != null)
+            if (split != null && !split.getQuantity().equals(split.getValue()))
                 this.quantity = split.getQuantity();
             setListeners(split);
         }
