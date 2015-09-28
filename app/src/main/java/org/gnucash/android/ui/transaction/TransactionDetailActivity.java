@@ -176,6 +176,8 @@ public class TransactionDetailActivity extends PasscodeLockActivity {
     private void removeSplitItemViews(){
         long splitCount = TransactionsDbAdapter.getInstance().getSplitCount(mTransactionUID);
         mDetailTableLayout.removeViews(0, (int)splitCount);
+        mDebitBalance.setText("");
+        mCreditBalance.setText("");
     }
 
 

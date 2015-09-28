@@ -101,7 +101,7 @@
                     android:layout_weight="1.5"
                     android:layout_height="wrap_content"
                     android:textSize="18sp"
-                    android:text="@string/label_total_liabilities_and_equity"/>
+                    android:text="@string/label_net_worth"/>
                 <TextView android:id="@+id/total_liability_and_equity"
                     android:layout_weight="1"
                     android:gravity="right"

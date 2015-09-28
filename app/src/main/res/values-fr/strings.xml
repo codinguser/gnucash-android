@@ -556,11 +556,11 @@ Aucune information permettant d\'identifier l\'utilisateur ne sera recueillis da
     <string name="title_balance_sheet_report">Balance Sheet</string>
     <string name="label_balance_sheet_total">Total:</string>
     <string-array name="report_time_range">
-        <item>All time</item>
         <item>Current month</item>
         <item>Last 3 months</item>
         <item>Last 6 months</item>
         <item>Last 12 months</item>
+        <item>All time</item>
         <item>Custom range…</item>
     </string-array>
 </resources>

@@ -129,13 +129,13 @@ public class TransactionsActivity extends BaseDrawerActivity implements
             mIsPlaceholderAccount = mAccountsDbAdapter.isPlaceholderAccount(mAccountUID);
             if (mIsPlaceholderAccount){
                 if (mTabLayout.getTabCount() > 1) {
-                    mTabLayout.removeTabAt(1);
                     mPagerAdapter.notifyDataSetChanged();
+                    mTabLayout.removeTabAt(1);
                 }
             } else {
                 if (mTabLayout.getTabCount() < 2) {
-                    mTabLayout.addTab(mTabLayout.newTab().setText(R.string.section_header_transactions));
                     mPagerAdapter.notifyDataSetChanged();
+                    mTabLayout.addTab(mTabLayout.newTab().setText(R.string.section_header_transactions));
                 }
             }
             //refresh any fragments in the tab with the new account UID

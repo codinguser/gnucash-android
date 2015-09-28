@@ -110,6 +110,7 @@ public class ReportsActivity extends BaseDrawerActivity implements AdapterView.O
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mTimeRangeSpinner.setAdapter(adapter);
         mTimeRangeSpinner.setOnItemSelectedListener(this);
+        mTimeRangeSpinner.setSelection(1);
 
         ArrayAdapter<AccountType> dataAdapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_spinner_item,
@@ -258,22 +259,22 @@ public class ReportsActivity extends BaseDrawerActivity implements AdapterView.O
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         mReportEndTime = System.currentTimeMillis();
         switch (position){
-            case 0: //ALL TIME
-                mReportStartTime = -1;
-                mReportEndTime = -1;
-                break;
-            case 1: //current month
+            case 0: //current month
                 mReportStartTime = new DateTime().dayOfMonth().withMinimumValue().toDate().getTime();
                 mReportEndTime = new DateTime().dayOfMonth().withMaximumValue().toDate().getTime();
                 break;
-            case 2: // last 3 months. x-2, x-1, x
+            case 1: // last 3 months. x-2, x-1, x
                 mReportStartTime = new LocalDate().minusMonths(2).toDate().getTime();
                 break;
-            case 3:
+            case 2:
                 mReportStartTime = new LocalDate().minusMonths(5).toDate().getTime();
                 break;
-            case 4:
+            case 3:
                 mReportStartTime = new LocalDate().minusMonths(11).toDate().getTime();
+                break;
+            case 4: //ALL TIME
+                mReportStartTime = -1;
+                mReportEndTime = -1;
                 break;
             case 5:
                 String mCurrencyCode = PreferenceManager.getDefaultSharedPreferences(this).getString(getString(R.string.key_report_currency), Money.DEFAULT_CURRENCY_CODE);

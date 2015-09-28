@@ -746,12 +746,14 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
     /**
      * Returns the account balance for all accounts types specified
      * @param accountTypes List of account types
+     * @param start Begin timestamp for transactions
+     * @param end End timestamp of transactions
      * @return Money balance of the account types
      */
-    public Money getAccountBalance(List<AccountType> accountTypes){
+    public Money getAccountBalance(List<AccountType> accountTypes, long start, long end){
         Money balance = Money.createZeroInstance(GnuCashApplication.getDefaultCurrencyCode());
         for (AccountType accountType : accountTypes) {
-            balance = balance.add(getAccountBalance(accountType, -1, -1));
+            balance = balance.add(getAccountBalance(accountType, start, end));
         }
         return balance;
     }

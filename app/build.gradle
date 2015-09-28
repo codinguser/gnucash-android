@@ -9,7 +9,7 @@ def versionPatch = 0
 def versionBuild = 1
 
 def buildTime() {
-    def df = new SimpleDateFormat("yyyy/MM/dd - HH:mm 'UTC'")
+    def df = new SimpleDateFormat("yyyyMMdd HH:mm 'UTC'")
     df.setTimeZone(TimeZone.getTimeZone("UTC"))
     return df.format(new Date())
 }

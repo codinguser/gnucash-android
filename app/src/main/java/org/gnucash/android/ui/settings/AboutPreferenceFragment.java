@@ -52,7 +52,7 @@ public class AboutPreferenceFragment extends PreferenceFragment{
 		super.onResume();
 		Preference pref = findPreference(getString(R.string.key_build_version));
 		if (BuildConfig.FLAVOR.equals("development")){
-			pref.setSummary(pref.getSummary() + " built: " + BuildConfig.BUILD_TIME);
+			pref.setSummary(pref.getSummary() + " - Built: " + BuildConfig.BUILD_TIME);
 		}
         pref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
