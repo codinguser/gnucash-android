@@ -53,6 +53,11 @@ public final class UxArgument {
     public static final String PASSCODE                 = "passcode";
 
     /**
+     * Key for skipping the passcode screen. Use this only when there is no other choice.
+     */
+    public static final String SKIP_PASSCODE_SCREEN     = "skip_passcode_screen";
+
+    /**
      * Amount passed as a string
      */
     public static final String AMOUNT_STRING = "starting_amount";

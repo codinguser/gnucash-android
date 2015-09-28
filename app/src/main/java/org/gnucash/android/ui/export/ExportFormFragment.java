@@ -56,6 +56,7 @@ import org.gnucash.android.export.ExportFormat;
 import org.gnucash.android.export.ExportParams;
 import org.gnucash.android.model.ScheduledAction;
 import org.gnucash.android.ui.account.AccountsActivity;
+import org.gnucash.android.ui.common.UxArgument;
 import org.gnucash.android.ui.settings.SettingsActivity;
 import org.gnucash.android.ui.util.RecurrenceParser;
 
@@ -199,6 +200,18 @@ public class ExportFormFragment extends Fragment implements RecurrencePickerDial
 
 		getSDWritePermission();
 	}
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        // test context
+        // When the user try to export sharing to 3rd party service like DropBox
+        // then pausing all activities. That cause passcode screen appearing happened.
+        // We use a disposable flag to skip this unnecessary passcode screen.
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext());
+        prefs.edit().putBoolean(UxArgument.SKIP_PASSCODE_SCREEN, true).apply();
+        Log.w(TAG, "onPause");
+    }
 
 	/**
 	 * Get permission for WRITING SD card for Android Marshmallow and above
