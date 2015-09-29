@@ -23,7 +23,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.WindowManager.LayoutParams;
 
 import org.gnucash.android.app.GnuCashApplication;
-import org.gnucash.android.ui.common.BaseDrawerActivity;
 import org.gnucash.android.ui.common.UxArgument;
 
 /**
@@ -55,8 +54,12 @@ public class PasscodeLockActivity extends AppCompatActivity {
         if ((getIntent().getFlags() & Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY) != 0) {
             GnuCashApplication.PASSCODE_SESSION_INIT_TIME = 0;
         }
+
+        // see ExportFormFragment.onPause()
+        boolean skipPasscode = prefs.getBoolean(UxArgument.SKIP_PASSCODE_SCREEN, false);
+        prefs.edit().remove(UxArgument.SKIP_PASSCODE_SCREEN).apply();
         String passCode = prefs.getString(UxArgument.PASSCODE, "");
-        if (isPassEnabled && !isSessionActive() && !passCode.trim().isEmpty()) {
+        if (isPassEnabled && !isSessionActive() && !passCode.trim().isEmpty() && !skipPasscode) {
             startActivity(new Intent(this, PasscodeLockScreenActivity.class)
                     .setAction(getIntent().getAction())
                     .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK)
