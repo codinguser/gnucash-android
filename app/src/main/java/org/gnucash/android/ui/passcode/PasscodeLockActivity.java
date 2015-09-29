@@ -20,7 +20,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.WindowManager.LayoutParams;
 
 import org.gnucash.android.app.GnuCashApplication;
@@ -40,7 +39,6 @@ public class PasscodeLockActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        Log.w(TAG, "onResume");
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         boolean isPassEnabled = prefs.getBoolean(UxArgument.ENABLED_PASSCODE, false);
@@ -57,10 +55,11 @@ public class PasscodeLockActivity extends AppCompatActivity {
             GnuCashApplication.PASSCODE_SESSION_INIT_TIME = 0;
         }
 
-        boolean ignorePasscode = prefs.getBoolean(UxArgument.SKIP_PASSCODE_SCREEN, false);
-        //remove DISPOSABLE PASS
+        // see ExportFormFragment.onPause()
+        boolean skipPasscode = prefs.getBoolean(UxArgument.SKIP_PASSCODE_SCREEN, false);
+        prefs.edit().remove(UxArgument.SKIP_PASSCODE_SCREEN).apply();
         String passCode = prefs.getString(UxArgument.PASSCODE, "");
-        if (isPassEnabled && !isSessionActive() && !passCode.trim().isEmpty() && !ignorePasscode) {
+        if (isPassEnabled && !isSessionActive() && !passCode.trim().isEmpty() && !skipPasscode) {
             startActivity(new Intent(this, PasscodeLockScreenActivity.class)
                     .setAction(getIntent().getAction())
                     .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK)
@@ -75,7 +74,6 @@ public class PasscodeLockActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         GnuCashApplication.PASSCODE_SESSION_INIT_TIME = System.currentTimeMillis();
-        Log.w(TAG, "onPause");
     }
 
     /**

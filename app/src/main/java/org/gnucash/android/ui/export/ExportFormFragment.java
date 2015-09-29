@@ -204,13 +204,11 @@ public class ExportFormFragment extends Fragment implements RecurrencePickerDial
     @Override
     public void onPause() {
         super.onPause();
-        // test context
         // When the user try to export sharing to 3rd party service like DropBox
         // then pausing all activities. That cause passcode screen appearing happened.
         // We use a disposable flag to skip this unnecessary passcode screen.
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext());
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
         prefs.edit().putBoolean(UxArgument.SKIP_PASSCODE_SCREEN, true).apply();
-        Log.w(TAG, "onPause");
     }
 
 	/**
