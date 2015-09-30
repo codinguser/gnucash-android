@@ -1,7 +1,7 @@
 language: android
 jdk: oraclejdk7
 sudo: false
-env: TARGET="android-23" NAME="android-23"
+env: TARGET="android-21" NAME="android-21"
 
 cache:
   directories:
@@ -22,10 +22,10 @@ android:
     - extra-google-google_play_services
     - extra-google-m2repository
     - extra-android-m2repository
-    - addon-google_apis-google-23
+    - addon-google_apis-google-21
 
     # Specify at least one system image, if you need to run emulator(s) during your tests
-    - sys-img-armeabi-v7a-android-23
+    - sys-img-armeabi-v7a-android-21
 
 
 # Emulator Management: Create, Start and Wait

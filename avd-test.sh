@@ -20,14 +20,14 @@ function disable_animation() {
   echo "Done"
 }
 
-if [ ! -d "$HOME/.android/avd/$NAME.avd" ] || [ ! -f "$HOME/.android/avd/$NAME.ini" ]; then 
+if [ ! -d "$HOME/.android/avd/$NAME.avd" ] || [ ! -f "$HOME/.android/avd/$NAME.ini" ]; then
   mkdir sdcard
   mksdcard -l gnucash-sdcard 64M sdcard/gnucash-sdcard.img
-  echo "no" | android create avd --force -n "$NAME" -t "$TARGET" --abi armeabi-v7a 
+  echo "no" | android create avd --force -n "$NAME" -t "$TARGET" --abi armeabi-v7a
   emulator -avd "$NAME" -no-skin -no-audio -no-boot-anim -no-window -sdcard sdcard/gnucash-sdcard.img &
   android-wait-for-emulator
   adb shell input keyevent 82
-  disable_animation 
+  #disable_animation 
 else
   echo "Using AVD cache"
   emulator -avd "$NAME" -no-audio -no-window -no-skin -no-boot-anim &
