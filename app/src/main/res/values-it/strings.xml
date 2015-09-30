@@ -47,7 +47,7 @@
     <string name="menu_move">SPOSTA</string>
     <string name="title_selected">%1$d selezionate</string>
     <string name="label_account_balance">Somma totale:</string>
-    <string name="label_export_destination">Destinazione di esportazione</string>
+    <string name="label_export_destination">Export To:</string>
     <string name="title_export_dialog">Esporta transazioni</string>
     <string name="option_export_all_transactions">Esporta tutte le transazioni</string>
     <string name="hint_export_choice">Di default, verranno esportate solo le transazioni dall\'ultima esportazione. Selezionare questa opzione per esportare tutte le transazioni</string>
@@ -490,7 +490,7 @@
     <string name="msg_enable_crashlytics">Enable to send information about malfunctions to the developers for improvement (recommended).
 No user-identifiable information will be collected as part of this process!
     </string>
-    <string name="label_export_format">Export Format</string>
+    <string name="label_export_format">Format</string>
     <string name="toast_backup_folder_not_found">Backup folder cannot be found. Make sure the SD Card is mounted!</string>
     <string name="header_report_settings">Reports</string>
     <string name="label_report_currency">Select currency</string>

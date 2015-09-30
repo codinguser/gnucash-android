@@ -47,7 +47,7 @@
     <string name="label_transaction_description">Omschrijving</string>
     <string name="menu_move">Verplaatsen</string>
     <string name="title_selected">%1$d geselecteerd</string>
-    <string name="label_export_destination">Export bestemming</string>
+    <string name="label_export_destination">Export To:</string>
     <string name="title_export_dialog">OFX exporteren</string>
     <string name="option_export_all_transactions">Alle boekingen exporteren</string>
     <string name="hint_export_choice">Aanvinken om alle boekingen te exporteren. Anders worden uitsluitend de nieuwe boekingen sinds de laatste export ge&#235;xporteerd.</string>
@@ -492,7 +492,7 @@
     <string name="msg_enable_crashlytics">Enable to send information about malfunctions to the developers for improvement (recommended).
 No user-identifiable information will be collected as part of this process!
     </string>
-    <string name="label_export_format">Export Format</string>
+    <string name="label_export_format">Format</string>
     <string name="toast_backup_folder_not_found">Backup folder cannot be found. Make sure the SD Card is mounted!</string>
     <string name="header_report_settings">Rapporten</string>
     <string name="label_report_currency">Munteenheid selecteren</string>

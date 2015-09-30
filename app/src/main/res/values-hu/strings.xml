@@ -46,7 +46,7 @@
     <string name="menu_move">MOVE</string>
     <string name="title_selected">%1$d selected</string>
     <string name="label_account_balance">Balance:</string>
-    <string name="label_export_destination">Export Destination</string>
+    <string name="label_export_destination">Export To:</string>
     <string name="title_export_dialog">Export Transactions</string>
     <string name="option_export_all_transactions">Export all transactions</string>
     <string name="hint_export_choice">By default, only new transactions since last export will be exported. Check this option to export all transactions</string>
@@ -490,7 +490,7 @@
     <string name="msg_enable_crashlytics">Enable to send information about malfunctions to the developers for improvement (recommended).
 No user-identifiable information will be collected as part of this process!
     </string>
-    <string name="label_export_format">Export Format</string>
+    <string name="label_export_format">Format</string>
     <string name="toast_backup_folder_not_found">Backup folder cannot be found. Make sure the SD Card is mounted!</string>
     <string name="header_report_settings">Reports</string>
     <string name="label_report_currency">Select currency</string>

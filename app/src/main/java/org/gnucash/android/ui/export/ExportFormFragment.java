@@ -70,7 +70,8 @@ import butterknife.ButterKnife;
  * Dialog fragment for exporting account information as OFX files.
  * @author Ngewi Fet <ngewif@gmail.com>
  */
-public class ExportFormFragment extends Fragment implements RecurrencePickerDialog.OnRecurrenceSetListener {
+public class
+		ExportFormFragment extends Fragment implements RecurrencePickerDialog.OnRecurrenceSetListener {
 		
 	/**
 	 * Spinner for selecting destination for the exported file.
@@ -149,6 +150,7 @@ public class ExportFormFragment extends Fragment implements RecurrencePickerDial
 			case R.id.radio_xml_format:
 				mExportFormat = ExportFormat.XML;
 				mExportWarningTextView.setText(R.string.export_warning_xml);
+
 				break;
         }
     }
@@ -329,6 +331,7 @@ public class ExportFormFragment extends Fragment implements RecurrencePickerDial
 		//this part (setting the export format) must come after the recurrence view bindings above
         String defaultExportFormat = sharedPrefs.getString(getString(R.string.key_default_export_format), ExportFormat.QIF.name());
         mExportFormat = ExportFormat.valueOf(defaultExportFormat);
+
         View.OnClickListener clickListener = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -356,6 +359,13 @@ public class ExportFormFragment extends Fragment implements RecurrencePickerDial
 		if (defaultExportFormat.equalsIgnoreCase(ExportFormat.XML.name())){
 			xmlRadioButton.performClick();
 		}
+
+		if (GnuCashApplication.isDoubleEntryEnabled()){
+			ofxRadioButton.setVisibility(View.GONE);
+		} else {
+			xmlRadioButton.setVisibility(View.GONE);
+		}
+
 	}
 
 	@Override

@@ -51,7 +51,7 @@
     <string name="menu_move">PRZENIEŚ</string>
     <string name="title_selected">%1$d wybranych</string>
     <string name="label_account_balance">Saldo:</string>
-    <string name="label_export_destination">Cel eksportu</string>
+    <string name="label_export_destination">Export To:</string>
     <string name="title_export_dialog">Eksport transakcji</string>
     <string name="option_export_all_transactions">Eksportuj wszystkie transakcje</string>
     <string name="hint_export_choice">By default, only new transactions since last export will be exported. Check this option to export all transactions</string>
@@ -491,7 +491,7 @@
     <string name="title_enable_crashlytics">Włącz logowanie błędów</string>
     <string name="msg_enable_crashlytics">Włącz by wysyłać inforamcje o błędach do twórców w celu poleszania aplikacji (zalecane).
 Żadne informacje umożliwiające identyfikację użytkownika nie będą zbierane w ramach tego procesu!</string>
-    <string name="label_export_format">Format eksportu</string>
+    <string name="label_export_format">Format</string>
     <string name="toast_backup_folder_not_found">Folder kopii zapasowej nie może być odnaleziony. Upewnij się, że KARTA SD jest zamontowana!</string>
     <string name="label_old_passcode">Wpisz stare hasło</string>
     <string name="label_new_passcode">Wpisz nowe hasło</string>

@@ -52,7 +52,7 @@
     <string name="menu_move">移动</string>
     <string name="title_selected">%1$d 已选中</string>
     <string name="label_account_balance">合计：</string>
-    <string name="label_export_destination">导出到</string>
+    <string name="label_export_destination">Export To:</string>
     <string name="title_export_dialog">导出交易资料</string>
     <string name="option_export_all_transactions">导出所有交易</string>
     <string name="hint_export_choice">默认情况下，自上次导出后新增的交易才会被导出。选择此项后所有的交易都会被导出。</string>
@@ -493,7 +493,7 @@
     <string name="msg_enable_crashlytics">Enable to send information about malfunctions to the developers for improvement (recommended).
 No user-identifiable information will be collected as part of this process!
     </string>
-    <string name="label_export_format">导出格式</string>
+    <string name="label_export_format">Format</string>
     <string name="toast_backup_folder_not_found">找不到备份目录，请确认SD卡正常。</string>
     <string name="label_old_passcode">先输入现在的密码</string>
     <string name="label_new_passcode">请输入新密码</string>

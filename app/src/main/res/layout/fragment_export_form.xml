@@ -27,50 +27,63 @@
         android:layout_marginTop="@dimen/dialog_padding"
         android:orientation="vertical" >
 
-        <TextView
-            android:text="@string/label_export_destination"
-            android:layout_height="wrap_content"
-            android:layout_width="wrap_content"
-            android:layout_marginBottom="-8dip"
-            style="@style/TextAppearance.EditTransaction_LabelSmall" />
-
-        <Spinner android:id="@+id/spinner_export_destination"
-            android:layout_height="?android:attr/listPreferredItemHeight"
+        <LinearLayout android:orientation="horizontal"
+            android:gravity="center_vertical"
             android:layout_width="match_parent"
-            android:layout_marginBottom="@dimen/dialog_padding" />
+            android:layout_height="wrap_content" >
+            <TextView
+                android:text="@string/label_export_destination"
+                android:layout_marginLeft="8dp"
+                android:layout_height="?android:attr/listPreferredItemHeight"
+                android:layout_width="wrap_content"
+                android:gravity="center_vertical"
+                style="@style/TextAppearance.EditTransaction_Small" />
 
-        <TextView
-            android:id="@+id/label_export_format"
-            android:text="@string/label_export_format"
-            android:layout_height="wrap_content"
-            android:layout_width="wrap_content"
-            android:layout_marginBottom="-8dip"
-            style="@style/TextAppearance.EditTransaction_LabelSmall" />
-
-        <RadioGroup
+            <Spinner android:id="@+id/spinner_export_destination"
+                android:layout_marginLeft="15dp"
+                android:layout_height="?android:attr/listPreferredItemHeight"
+                android:layout_width="match_parent" />
+        </LinearLayout>
+        <LinearLayout android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/dialog_padding"
-            android:orientation="horizontal">
-
-            <RadioButton android:id="@+id/radio_qif_format"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="-8dp">
+            <TextView
+                android:id="@+id/label_export_format"
+                android:text="@string/label_export_format"
+                android:gravity="center_vertical"
+                android:layout_marginLeft="8dp"
+                android:layout_height="?android:attr/listPreferredItemHeight"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginRight="20dp"
-                android:checked="true"
-                android:text="QIF" />
+                style="@style/TextAppearance.EditTransaction_Small" />
 
-            <RadioButton android:id="@+id/radio_ofx_format"
-                android:layout_width="wrap_content"
+            <RadioGroup
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="20dp"
-                android:text="OFX"/>
+                android:layout_marginLeft="35dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
 
-            <RadioButton android:id="@+id/radio_xml_format"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="XML"/>
-        </RadioGroup>
+                <RadioButton android:id="@+id/radio_qif_format"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="20dp"
+                    android:checked="true"
+                    android:text="QIF" />
+
+                <RadioButton android:id="@+id/radio_ofx_format"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="20dp"
+                    android:text="OFX"/>
+
+                <RadioButton android:id="@+id/radio_xml_format"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="XML"/>
+            </RadioGroup>
+        </LinearLayout>
         <TextView android:id="@+id/export_warning"
             tools:text="Some format-based export warning"
             android:textColor="@color/title_green"
@@ -107,12 +120,12 @@
                 android:text="@string/label_recurring_transaction"
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
-                android:layout_marginBottom="-8dip"
-                style="@style/TextAppearance.EditTransaction_LabelSmall" />
+                style="@style/TextAppearance.EditTransaction_Small" />
 
             <TextView android:id="@+id/input_recurrence"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:minHeight="40dp"
                 android:gravity="center"
                 android:text="@string/label_tap_to_create_schedule"
                 style="@style/Dropdown.TextView" />

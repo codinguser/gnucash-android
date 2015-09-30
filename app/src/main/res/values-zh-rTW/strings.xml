@@ -51,7 +51,7 @@
     <string name="menu_move">移動</string>
     <string name="title_selected">%1$d 已選中</string>
     <string name="label_account_balance">合計：</string>
-    <string name="label_export_destination">匯出到</string>
+    <string name="label_export_destination">Export To:</string>
     <string name="title_export_dialog">匯出交易資料</string>
     <string name="option_export_all_transactions">匯出所有交易</string>
     <string name="hint_export_choice">預設情况下，自上次匯出後新增的交易才會被匯出。選擇此項後所有的交易都會被匯出。</string>
@@ -492,7 +492,7 @@
     <string name="msg_enable_crashlytics">Enable to send information about malfunctions to the developers for improvement (recommended).
 No user-identifiable information will be collected as part of this process!
     </string>
-    <string name="label_export_format">匯出格式</string>
+    <string name="label_export_format">Format</string>
     <string name="toast_backup_folder_not_found">找不到備份目錄，請確認SD卡正常。</string>
     <string name="label_old_passcode">先輸入現在的密碼</string>
     <string name="label_new_passcode">請輸入新密碼</string>

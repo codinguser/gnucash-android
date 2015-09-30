@@ -46,7 +46,7 @@
     <string name="label_transaction_description">Note</string>
     <string name="menu_move">DÉPLACER</string>
     <string name="title_selected">%1$d s&#233;lectionné(s)</string>
-    <string name="label_export_destination">Destination d\'export</string>
+    <string name="label_export_destination">Export To:</string>
     <string name="title_export_dialog">Exporter les transactions</string>
     <string name="option_export_all_transactions">Exporter toutes les transactions</string>
     <string name="hint_export_choice">Par d&#233;faut, seul les nouvelles transactions depuis le dernier export seront exportées. Cochez cette option pour exporter toutes les transactions</string>
@@ -486,7 +486,7 @@
     <string name="msg_enable_crashlytics">Activer pour envoyer aux développeurs d\'amélioration des informations sur les dysfonctionnements (recommandé).
 Aucune information permettant d\'identifier l\'utilisateur ne sera recueillis dans le cadre de ce processus!
     </string>
-    <string name="label_export_format">Format d\'Export</string>
+    <string name="label_export_format">Format</string>
     <string name="toast_backup_folder_not_found">Le répertoire de sauvegarde non trouvé. Vérifiez la carte SD !</string>
     <string name="header_report_settings">Rapports</string>
     <string name="label_report_currency">Sélectionnez la monnaie</string>

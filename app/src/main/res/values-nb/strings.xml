@@ -47,7 +47,7 @@
     <string name="label_transaction_description">Notat</string>
     <string name="menu_move">FLYTT</string>
     <string name="title_selected">%1$d valgt</string>
-    <string name="label_export_destination">Eksportmottaker</string>
+    <string name="label_export_destination">Export To:</string>
     <string name="title_export_dialog">Eksporter transaksjoner</string>
     <string name="option_export_all_transactions">Eksporter alle transaksjoner</string>
     <string name="hint_export_choice">Vanligvis vil kun nye transaksjoner bli eksportert.  Merk dette valget for å eksportere alle transaksjonene</string>
@@ -487,7 +487,7 @@
     <string name="msg_enable_crashlytics">Skru på feilrapportering til utviklerene for utbedring (anbefalt).
 Ingen brukerinformasjon vil bli delt i denne prosessen!
     </string>
-    <string name="label_export_format">Eksporteringsformat</string>
+    <string name="label_export_format">Format</string>
 	<string name="toast_backup_folder_not_found">Mappe for sikkerhetskopier ikke funnet. Sjekk at SD kortet er montert!</string>
 	<string name="header_report_settings">Rapporter</string>
 	<string name="label_report_currency">Velg valuta</string>

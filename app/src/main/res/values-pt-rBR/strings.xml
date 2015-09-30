@@ -492,7 +492,7 @@ Nenhuma informação de  identificação do usuário será coletada neste proces
 	<string name="label_confirm_passcode">Please confirm your passcode</string>
 	<string name="label_new_passcode">Enter your new passcode</string>
 	<string name="label_old_passcode">Enter your old passcode</string>
-    <string name="label_export_format">Formato de exportação</string>
+    <string name="label_export_format">Formato </string>
 	<string name="toast_backup_folder_not_found">Pasta de backup não encontrada. Verifique se o cartão SD está conectado!</string>
 	<string name="header_report_settings">Relatórios</string>
 	<string name="label_report_currency">Selecionar moeda</string>

@@ -28,7 +28,7 @@
     <string name="label_transaction_description">Опис</string>
     <string name="menu_move">ПЕРЕНЕСТИ</string>
     <string name="title_selected">%1$d обрано</string>
-    <string name="label_export_destination">Експортувати в</string>
+    <string name="label_export_destination">Export To:</string>
     <string name="title_export_dialog">Експорт транзакцій</string>
     <string name="option_export_all_transactions">Експортувати все</string>
     <string name="hint_export_choice">Експортувати всі транзакції, а не тільки нові.</string>
@@ -473,7 +473,7 @@
     </plurals>
     <string name="title_enable_crashlytics">Вести журнал відмов програми</string>
     <string name="msg_enable_crashlytics">Вести журнал відмов програми (рекомендуємо). Обіцяємо не збирати приватну інформацію.</string>
-    <string name="label_export_format">Формат для експорту</string>
+    <string name="label_export_format">Формат </string>
     <string name="toast_backup_folder_not_found">​​Каталог для резервних копій не знайдено. Карта пам\'яті точно підключена?</string>
     <string name="header_report_settings">Звіти</string>
     <string name="label_report_currency">Виберіть валюту</string>

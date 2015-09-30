@@ -51,7 +51,7 @@
     <string name="menu_move">MOVER</string>
     <string name="title_selected">%1$d seleccionado</string>
     <string name="label_account_balance">Saldo:</string>
-    <string name="label_export_destination">Destino da Exporta&#231;&#227;o</string>
+    <string name="label_export_destination">Export To:</string>
     <string name="title_export_dialog">Exportar Transa&#231;&#245;es</string>
     <string name="option_export_all_transactions">Exportar todas as transa&#231;&#245;es</string>
     <string name="hint_export_choice">Por defeito, apenas as novas transa&#231;&#245;es ap&#243;s a &#250;ltima exporta&#231;&#227;o ser&#227;o exportadas. Marque esta op&#231;&#227;o para exportar todas as transa&#231;&#245;es</string>
@@ -376,9 +376,7 @@
     <!-- Default title for color picker dialog [CHAR LIMIT=30] -->
     <string name="color_picker_default_title">Escolha uma c&#244;r</string>
     <!-- Content description for a color square. -->
-    <string name="color_swatch_description">C&#244;r <xliff:g id="color_index" example="14">%1$d</xliff:g></string>
     <!-- Content description for a selected color square. -->
-    <string name="color_swatch_description_selected">C&#244;r <xliff:g id="color_index" example="14">%1$d</xliff:g> selected</string>
     <string name="label_account_color_and_type">C&#244;r da Conta &amp; Tipo</string>
     <string name="label_delete_sub_accounts">Apagar sub-contas</string>
     <string name="title_recent_accounts">Recentes</string>
@@ -492,7 +490,7 @@
     <string name="title_enable_crashlytics">Permite o registo de Crash</string>
     <string name="msg_enable_crashlytics">Permite o envio de informa&#231;&#245;es aos programadores para melhoria do programa (recomendado).
 Neste processo n&#227;o ser&#227;o recolhidas informa&#231;&#245;es do utilizador!</string>
-    <string name="label_export_format">Formato de exporta&#231;&#227;o</string>
+    <string name="label_export_format">Formato </string>
     <string name="toast_backup_folder_not_found">Pasta de Backup n&#227;o encontrada. Tenha a certeze que o cart&#227;o SD est&#225; montado!</string>
     <string name="label_old_passcode">Introduza a palavra passe antiga</string>
     <string name="label_new_passcode">Introduza a nova palavra passe</string>
@@ -525,4 +523,35 @@ Neste processo n&#227;o ser&#227;o recolhidas informa&#231;&#245;es do utilizado
     <string name="menu_group_by_year">Year</string>
     <string name="title_balance_sheet_report">Balance Sheet</string>
     <string name="label_balance_sheet_total">Total:</string>
+    <string name="label_error_invalid_expression">Invalid expression!</string>
+    <string name="error_converted_amount_required">The converted amount is required</string>
+    <string name="error_exchange_rate_required">An exchange rate is required</string>
+    <string name="btn_wizard_finish">Done</string>
+    <string name="btn_wizard_next">Next</string>
+    <string name="label_scheduled_action_ended">"Ended, last executed on %1$s"</string>
+    <string name="label_select_bar_to_view_details">Select a bar to view details</string>
+    <string name="msg_wizard_welcome_page">Before you dive in, \nlet\'s setup a few things first\n\nTo continue, press Next</string>
+    <string name="nav_menu_help"><![CDATA[Help & Feedback]]></string>
+    <string name="nav_menu_scheduled_actions">Scheduled Actions</string>
+    <string name="title_setup_gnucash">Setup GnuCash</string>
+    <string name="title_split_editor">Split Editor</string>
+    <string name="title_transfer_funds">Transfer Funds</string>
+    <string name="toast_error_check_split_amounts">Check that all splits have valid amounts before saving!</string>
+    <string name="toast_legend_too_long">The legend is too long</string>
+    <string name="toast_scheduled_recurring_transaction">Scheduled recurring transaction</string>
+    <string name="wizard_btn_back">Back</string>
+    <string name="wizard_option_auto_send_crash_reports">Automatically send crash reports</string>
+    <string name="wizard_option_create_default_accounts">Create default accounts</string>
+    <string name="wizard_option_currency_other">Other...</string>
+    <string name="wizard_option_disable_crash_reports">Disable crash reports</string>
+    <string name="wizard_option_import_my_accounts">Import my accounts</string>
+    <string name="wizard_option_let_me_handle_it">Let me handle it</string>
+    <string name="wizard_title_account_setup">Account Setup</string>
+    <string name="wizard_title_default_currency">Default Currency</string>
+    <string name="wizard_title_feedback_options">Feedback Options</string>
+    <string name="wizard_title_select_currency">Select Currency</string>
+    <string name="wizard_title_welcome_to_gnucash">Welcome to GnuCash</string>
+    <string name="label_no_favorite_accounts">No favorite accounts</string>
+    <string name="label_no_recent_accounts">No recent accounts</string>
+    <string name="hint_account_description">Account description</string>
 </resources>

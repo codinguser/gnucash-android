@@ -47,6 +47,7 @@ import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.DatabaseSchema;
+import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.model.Account;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.ui.common.BaseDrawerActivity;
@@ -126,6 +127,7 @@ public class TransactionsActivity extends BaseDrawerActivity implements
         @Override
         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
             mAccountUID = mAccountsDbAdapter.getUID(id);
+            getIntent().putExtra(UxArgument.SELECTED_ACCOUNT_UID, mAccountUID); //update the intent in case the account gets rotated
             mIsPlaceholderAccount = mAccountsDbAdapter.isPlaceholderAccount(mAccountUID);
             if (mIsPlaceholderAccount){
                 if (mTabLayout.getTabCount() > 1) {
@@ -285,17 +287,15 @@ public class TransactionsActivity extends BaseDrawerActivity implements
 
         mTabLayout.addTab(mTabLayout.newTab().setText(R.string.section_header_subaccounts));
         if (!mIsPlaceholderAccount) {
-            mTabLayout.addTab(mTabLayout.newTab().setText(R.string.section_header_transactions), true);
+            mTabLayout.addTab(mTabLayout.newTab().setText(R.string.section_header_transactions));
         }
 
         setupActionBarNavigation();
 
         mPagerAdapter = new AccountViewPagerAdapter(getSupportFragmentManager());
         mViewPager.setAdapter(mPagerAdapter);
-
-        mViewPager.setCurrentItem(INDEX_TRANSACTIONS_FRAGMENT);
-
         mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(mTabLayout));
+
         mTabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
@@ -304,14 +304,22 @@ public class TransactionsActivity extends BaseDrawerActivity implements
 
             @Override
             public void onTabUnselected(TabLayout.Tab tab) {
-
+                //nothing to see here, move along
             }
 
             @Override
             public void onTabReselected(TabLayout.Tab tab) {
-
+                //nothing to see here, move along
             }
         });
+
+        //if there are no transactions, and there are sub-accounts, show the sub-accounts
+        if (TransactionsDbAdapter.getInstance().getTransactionsCount(mAccountUID) == 0
+                && mAccountsDbAdapter.getSubAccountCount(mAccountUID) > 0){
+            mViewPager.setCurrentItem(INDEX_SUB_ACCOUNTS_FRAGMENT);
+        } else {
+            mViewPager.setCurrentItem(INDEX_TRANSACTIONS_FRAGMENT);
+        }
 
         mCreateFloatingButton.setOnClickListener(new View.OnClickListener() {
             @Override

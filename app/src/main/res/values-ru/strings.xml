@@ -46,7 +46,7 @@
     <string name="label_transaction_description">Замечание</string>
     <string name="menu_move">ПЕРЕНЕСТИ</string>
     <string name="title_selected">%1$d выбрано</string>
-    <string name="label_export_destination">Экспортировать в</string>
+    <string name="label_export_destination">Export To:</string>
     <string name="title_export_dialog">Экспорт проводок</string>
     <string name="option_export_all_transactions">Экспортировать все</string>
     <string name="hint_export_choice">Экспортировать все проводки, а не только новые.</string>
@@ -493,7 +493,7 @@
     </plurals>
     <string name="title_enable_crashlytics">Записывать отказы программы</string>
     <string name="msg_enable_crashlytics">Включить запись отказов программы (рекомендуем). Обещаем не собирать приватную информацию.</string>
-    <string name="label_export_format">Формат для экспорта</string>
+    <string name="label_export_format">Формат </string>
     <string name="toast_backup_folder_not_found">Каталог для резервных копий не найден. Карта помяти точно подключена?</string>
     <string name="header_report_settings">Отчёты</string>
     <string name="label_report_currency">Выбор валюты</string>

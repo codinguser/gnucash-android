@@ -46,7 +46,7 @@
     <string name="label_transaction_description">Nota</string>
     <string name="menu_move">MOVER</string>
     <string name="title_selected">%1$d seleccionado</string>
-    <string name="label_export_destination">Destino de la exportaci&#243;n</string>
+    <string name="label_export_destination">Export To:</string>
     <string name="title_export_dialog">Export Transactions</string>
     <string name="option_export_all_transactions">Exportar todas las transacciones</string>
     <string name="hint_export_choice">Por defecto solo las nuevas transacciones desde la &#250;ltima exportaci&#243;n ser&#225;n exportadas. Seleccione esta opci&#243;n para exportar todas las transacciones</string>
@@ -486,7 +486,7 @@
     <string name="title_enable_crashlytics">Activar registro de cuelgues</string>
     <string name="msg_enable_crashlytics">Activar para enviar informaci&#243;n de errores a los desarolladores (recomendado).
 Este proceso solo recoge informaci&#243;n que no permite identificar al usuario</string>
-    <string name="label_export_format">Formato de exportaci&#243;n</string>
+    <string name="label_export_format">Format</string>
 	<string name="toast_backup_folder_not_found">Backup folder cannot be found. Make sure the SD Card is mounted!</string>
 	<string name="header_report_settings">Reports</string>
 	<string name="label_report_currency">Select currency</string>
