@@ -17,20 +17,27 @@
 
 package org.gnucash.android.ui.account;
 
+import android.Manifest;
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Resources;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -46,11 +53,12 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
+import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
 import com.kobakei.ratethisapp.RateThisApp;
 
+import org.gnucash.android.BuildConfig;
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.AccountsDbAdapter;
@@ -58,20 +66,20 @@ import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.export.xml.GncXmlExporter;
 import org.gnucash.android.importer.ImportAsyncTask;
 import org.gnucash.android.model.Money;
-import org.gnucash.android.ui.FormActivity;
-import org.gnucash.android.ui.UxArgument;
-import org.gnucash.android.ui.passcode.PassLockActivity;
+import org.gnucash.android.ui.common.BaseDrawerActivity;
+import org.gnucash.android.ui.common.FormActivity;
+import org.gnucash.android.ui.common.UxArgument;
 import org.gnucash.android.ui.transaction.TransactionsActivity;
 import org.gnucash.android.ui.util.OnAccountClickedListener;
 import org.gnucash.android.ui.util.Refreshable;
 import org.gnucash.android.ui.util.TaskDelegate;
+import org.gnucash.android.ui.wizard.FirstRunWizardActivity;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
-import java.util.Arrays;
-import java.util.Currency;
-import java.util.List;
-import java.util.Locale;
+
+import butterknife.Bind;
+import butterknife.ButterKnife;
 
 /**
  * Manages actions related to accounts, displaying, exporting and creating new accounts
@@ -80,7 +88,7 @@ import java.util.Locale;
  * @author Ngewi Fet <ngewif@gmail.com>
  * @author Oleksandr Tyshkovets <olexandr.tyshkovets@gmail.com>
  */
-public class AccountsActivity extends PassLockActivity implements OnAccountClickedListener {
+public class AccountsActivity extends BaseDrawerActivity implements OnAccountClickedListener {
 
     /**
      * Request code for GnuCash account structure file to import
@@ -92,7 +100,7 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
      */
     public static final int REQUEST_EDIT_ACCOUNT = 0x10;
 
-	/**
+    /**
 	 * Logging tag
 	 */
 	protected static final String LOG_TAG = "AccountsActivity";
@@ -126,6 +134,8 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
      * Key for putting argument for tab into bundle arguments
      */
     public static final String EXTRA_TAB_INDEX = "org.gnucash.android.extra.TAB_INDEX";
+    public static final int REQUEST_PERMISSION = 0xAB;
+    public static final int PERMISSION_REQUEST_WRITE_SD_CARD = REQUEST_PERMISSION;
 
     /**
      * Map containing fragments for the different tabs
@@ -135,13 +145,14 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
     /**
      * ViewPager which manages the different tabs
      */
-    private ViewPager mViewPager;
+    @Bind(R.id.pager) ViewPager mViewPager;
+    @Bind(R.id.fab_create_account) FloatingActionButton mFloatingActionButton;
+    @Bind(R.id.coordinatorLayout) CoordinatorLayout mCoordinatorLayout;
 
-	/**
-	 * Dialog which is shown to the user on first start prompting the user to create some accounts
-	 */
-	private AlertDialog mDefaultAccountsDialog;
-
+    /**
+     * Configuration for rating the app
+     */
+    public static RateThisApp.Config rateAppConfig = new RateThisApp.Config(14, 30);;
 
     /**
      * Adapter for managing the sub-account and transaction fragment pages in the accounts view
@@ -212,6 +223,7 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_accounts);
         setUpDrawer();
+        ButterKnife.bind(this);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -226,8 +238,6 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
         tabLayout.addTab(tabLayout.newTab().setText(R.string.title_all_accounts));
         tabLayout.addTab(tabLayout.newTab().setText(R.string.title_favorite_accounts));
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
-
-        mViewPager = (ViewPager) findViewById(R.id.pager);
 
         //show the simple accounts list
         PagerAdapter mPagerAdapter = new AccountViewPagerAdapter(getSupportFragmentManager());
@@ -256,13 +266,12 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
         int index = intent.getIntExtra(EXTRA_TAB_INDEX, lastTabIndex);
         mViewPager.setCurrentItem(index);
 
-        FloatingActionButton floatingActionButton = (FloatingActionButton) findViewById(R.id.fab_create_account);
-        floatingActionButton.setOnClickListener(new View.OnClickListener() {
+        mFloatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent addAccountIntent = new Intent(AccountsActivity.this, FormActivity.class);
                 addAccountIntent.setAction(Intent.ACTION_INSERT_OR_EDIT);
-                addAccountIntent.putExtra(UxArgument.FORM_TYPE, FormActivity.FormType.ACCOUNT_FORM.name());
+                addAccountIntent.putExtra(UxArgument.FORM_TYPE, FormActivity.FormType.ACCOUNT.name());
                 startActivityForResult(addAccountIntent, AccountsActivity.REQUEST_EDIT_ACCOUNT);
             }
         });
@@ -271,10 +280,12 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
     @Override
     protected void onStart() {
         super.onStart();
-        RateThisApp.Config config = new RateThisApp.Config(14, 30);
-        RateThisApp.init(config);
-        RateThisApp.onStart(this);
-        RateThisApp.showRateDialogIfNeeded(this);
+
+        if (BuildConfig.CAN_REQUEST_RATING) {
+            RateThisApp.init(rateAppConfig);
+            RateThisApp.onStart(this);
+            RateThisApp.showRateDialogIfNeeded(this);
+        }
     }
 
     /**
@@ -298,6 +309,50 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
             } finally {
                 removeFirstRunFlag();
             }
+        }
+    }
+
+    /**
+     * Get permission for WRITING SD card
+     */
+    @TargetApi(23)
+    private void getSDWritePermission(){
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    != PackageManager.PERMISSION_GRANTED) {
+//                if (shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)){
+                    Snackbar.make(mCoordinatorLayout,
+                            "GnuCash requires permission to access the SD card for backup and restore",
+                            Snackbar.LENGTH_INDEFINITE).setAction("GRANT",
+                            new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                                            Manifest.permission.READ_EXTERNAL_STORAGE}, PERMISSION_REQUEST_WRITE_SD_CARD);
+                                }
+                            })
+                            .setActionTextColor(getResources().getColor(R.color.theme_accent))
+                            .show();
+//                }
+            }
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        switch (requestCode){
+            case PERMISSION_REQUEST_WRITE_SD_CARD:{
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    //TODO: permission was granted, yay! do the
+                    // calendar task you need to do.
+
+                } else {
+
+                    // TODO: permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+                }
+            } return;
         }
     }
 
@@ -329,21 +384,18 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         boolean firstRun = prefs.getBoolean(getString(R.string.key_first_run), true);
+
         if (firstRun){
-            showFirstRunDialog();
+            startActivity(new Intent(this, FirstRunWizardActivity.class));
+
             //default to using double entry and save the preference explicitly
             prefs.edit().putBoolean(getString(R.string.key_use_double_entry), true).apply();
+        } else {
+            getSDWritePermission();
         }
 
         if (hasNewFeatures()){
-            AlertDialog dialog = showWhatsNewDialog(this);
-            //TODO: remove this when we upgrade to 1.7.0. Users will already know the nav drawer then
-            dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
-                @Override
-                public void onDismiss(DialogInterface dialog) {
-                    mDrawerLayout.openDrawer(mNavigationView);
-                }
-            });
+            showWhatsNewDialog(this);
         }
         GnuCashApplication.startScheduledActionExecutionService(this);
     }
@@ -407,7 +459,7 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
      */
     public static void openExportFragment(FragmentActivity activity) {
         Intent intent = new Intent(activity, FormActivity.class);
-        intent.putExtra(UxArgument.FORM_TYPE, FormActivity.FormType.EXPORT_FORM.name());
+        intent.putExtra(UxArgument.FORM_TYPE, FormActivity.FormType.EXPORT.name());
         activity.startActivity(intent);
     }
 
@@ -427,101 +479,6 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
 		default:
 			return false;
 		}
-	}
-
-	/**
-	 * Shows the user dialog to create default account structure or import existing account structure
-	 */
-	private void showFirstRunDialog() {
-		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		builder.setTitle(R.string.title_default_accounts);
-        builder.setMessage(R.string.msg_confirm_create_default_accounts_first_run);
-
-		builder.setPositiveButton(R.string.btn_create_accounts, new DialogInterface.OnClickListener() {
-            AlertDialog currencyDialog;
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                final AlertDialog.Builder adb = new AlertDialog.Builder(AccountsActivity.this);
-                adb.setTitle(R.string.title_choose_currency);
-                ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(
-                        AccountsActivity.this,
-                        android.R.layout.select_dialog_singlechoice,
-                        getResources().getStringArray(R.array.currency_names));
-
-                final List<String> currencyCodes = Arrays.asList(
-                        getResources().getStringArray(R.array.key_currency_codes));
-                String userCurrencyCode = Currency.getInstance(Locale.getDefault()).getCurrencyCode();
-                int currencyIndex = currencyCodes.indexOf(userCurrencyCode.toUpperCase());
-
-                adb.setSingleChoiceItems(arrayAdapter, currencyIndex, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        String currency = currencyCodes.get(which);
-                        PreferenceManager.getDefaultSharedPreferences(AccountsActivity.this)
-                                .edit()
-                                .putString(getString(R.string.key_default_currency), currency)
-                                .commit();
-
-                        createDefaultAccounts(currency, AccountsActivity.this);
-                        currencyDialog.dismiss();
-                        removeFirstRunFlag();
-                    }
-                });
-                currencyDialog = adb.create();
-                currencyDialog.show();
-            }
-        });
-		
-		builder.setNegativeButton(R.string.btn_cancel, new DialogInterface.OnClickListener() {
-
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                mDefaultAccountsDialog.dismiss();
-            }
-        });
-
-        builder.setNeutralButton(R.string.btn_import_accounts, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                importAccounts();
-            }
-        });
-
-		mDefaultAccountsDialog = builder.create();
-        mDefaultAccountsDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
-            @Override
-            public void onDismiss(DialogInterface dialog) {
-                removeFirstRunFlag();
-                mDrawerLayout.openDrawer(mNavigationView);
-            }
-        });
-		mDefaultAccountsDialog.show();
-
-/*
-        //TODO: For now logging is disabled only for production. In the future, consider enabling for production
-        //show dialog to get user consent for logging
-        new AlertDialog.Builder(this)
-                .setTitle(getString(R.string.title_enable_crashlytics))
-                .setMessage(getString(R.string.msg_enable_crashlytics))
-                .setPositiveButton(R.string.label_enable, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(AccountsActivity.this);
-                        Editor editor = sharedPreferences.edit();
-                        editor.putBoolean(getString(R.string.key_enable_crashlytics), true);
-                        editor.apply();
-                    }
-                })
-                .setNegativeButton(R.string.btn_cancel, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(AccountsActivity.this);
-                        Editor editor = sharedPreferences.edit();
-                        editor.putBoolean(getString(R.string.key_enable_crashlytics), false);
-                        editor.apply();
-                    }
-                }).create().show();
-*/
 	}
 
     /**
@@ -548,15 +505,21 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
 
     /**
      * Starts Intent chooser for selecting a GnuCash accounts file to import.
-     * The accounts are actually imported in onActivityResult
+     * The accounts are actually imported in onActivityResult of the calling class
+     * @param activity Activity starting the request and will also handle the response
      */
-    public void importAccounts() {
+    public static void importAccounts(Activity activity) {
         Intent pickIntent = new Intent(Intent.ACTION_GET_CONTENT);
         pickIntent.setType("application/octet-stream");
         Intent chooser = Intent.createChooser(pickIntent, "Select GnuCash account file");
 
-        startActivityForResult(chooser, REQUEST_PICK_ACCOUNTS_FILE);
-
+        try {
+            activity.startActivityForResult(chooser, REQUEST_PICK_ACCOUNTS_FILE);
+        } catch (ActivityNotFoundException ex){
+            Crashlytics.log("No file manager for selecting files available");
+            Crashlytics.logException(ex);
+            Toast.makeText(activity, R.string.toast_install_file_manager, Toast.LENGTH_LONG).show();
+        }
     }
 
     /**
@@ -583,9 +546,10 @@ public class AccountsActivity extends PassLockActivity implements OnAccountClick
 	 * Removes the flag indicating that the app is being run for the first time. 
 	 * This is called every time the app is started because the next time won't be the first time
 	 */
-	private void removeFirstRunFlag(){
-		Editor editor = PreferenceManager.getDefaultSharedPreferences(this).edit();
-		editor.putBoolean(getString(R.string.key_first_run), false);
+	public static void removeFirstRunFlag(){
+        Context context = GnuCashApplication.getAppContext();
+		Editor editor = PreferenceManager.getDefaultSharedPreferences(context).edit();
+		editor.putBoolean(context.getString(R.string.key_first_run), false);
 		editor.commit();
 	}
 

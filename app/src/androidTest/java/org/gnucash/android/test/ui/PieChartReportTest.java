@@ -19,6 +19,7 @@ package org.gnucash.android.test.ui;
 import android.content.Intent;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import android.preference.PreferenceManager;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.ViewAction;
 import android.support.test.espresso.action.CoordinatesProvider;
@@ -110,6 +111,8 @@ public class PieChartReportTest extends ActivityInstrumentationTestCase2<Reports
 		super.setUp();
 		injectInstrumentation(InstrumentationRegistry.getInstrumentation());
 
+        mReportsActivity = getActivity();
+
         SQLiteDatabase db;
         DatabaseHelper dbHelper = new DatabaseHelper(getInstrumentation().getTargetContext());
         try {
@@ -122,6 +125,9 @@ public class PieChartReportTest extends ActivityInstrumentationTestCase2<Reports
         mAccountsDbAdapter = new AccountsDbAdapter(db, mTransactionsDbAdapter);
         mAccountsDbAdapter.deleteAllRecords();
 
+        PreferenceManager.getDefaultSharedPreferences(mReportsActivity).edit()
+                .putString(mReportsActivity.getString(R.string.key_default_currency), CURRENCY.getCurrencyCode())
+                .commit();
         // creates default accounts
         GncXmlImporter.parse(GnuCashApplication.getAppContext().getResources().openRawResource(R.raw.default_accounts));
 	}
@@ -132,6 +138,7 @@ public class PieChartReportTest extends ActivityInstrumentationTestCase2<Reports
     private void getTestActivity() {
         setActivityIntent(new Intent(Intent.ACTION_VIEW));
         mReportsActivity = getActivity();
+        onView(withId(R.id.btn_pie_chart)).perform(click());
     }
 
     private void addTransactionForCurrentMonth() throws Exception {
@@ -165,18 +172,11 @@ public class PieChartReportTest extends ActivityInstrumentationTestCase2<Reports
     }
 
 
-    //TODO: fix tests before readding @Test annotation
+    @Test
     public void testNoData() {
         getTestActivity();
-
-//        onView(withId(R.id.chart_date)).check(matches(withText("Overall")));
-//        onView(withId(R.id.chart_date)).check(matches(not(isEnabled())));
-//
-//        onView(withId(R.id.previous_month_chart_button)).check(matches(not(isEnabled())));
-//        onView(withId(R.id.next_month_chart_button)).check(matches(not(isEnabled())));
-
         onView(withId(R.id.pie_chart)).perform(click());
-        onView(withId(R.id.selected_chart_slice)).check(matches(withText("")));
+        onView(withId(R.id.selected_chart_slice)).check(matches(withText(R.string.label_select_pie_slice_to_see_details)));
     }
 
     @Test
@@ -203,18 +203,22 @@ public class PieChartReportTest extends ActivityInstrumentationTestCase2<Reports
 
         getTestActivity();
 
-//        onView(withId(R.id.chart_data_spinner)).perform(click());
-        onView(withText(containsString(AccountType.INCOME.name()))).perform(click());
+        Thread.sleep(1000);
+
+        onView(withId(R.id.report_account_type_spinner)).perform(click());
+        onView(withText(AccountType.INCOME.name())).perform(click());
+
+        Thread.sleep(1000);
 
         onView(withId(R.id.pie_chart)).perform(click());
         String selectedText = String.format(PieChartFragment.SELECTED_VALUE_PATTERN, GIFTS_RECEIVED_INCOME_ACCOUNT_NAME, TRANSACTION3_AMOUNT, 100f);
         onView(withId(R.id.selected_chart_slice)).check(matches(withText(selectedText)));
 
-//        onView(withId(R.id.chart_data_spinner)).perform(click());
-        onView(withText(containsString(AccountType.EXPENSE.name()))).perform(click());
+        onView(withId(R.id.report_account_type_spinner)).perform(click());
+        onView(withText(AccountType.EXPENSE.name())).perform(click());
 
         onView(withId(R.id.pie_chart)).perform(click());
-        onView(withId(R.id.selected_chart_slice)).check(matches(withText("")));
+        onView(withId(R.id.selected_chart_slice)).check(matches(withText(R.string.label_select_pie_slice_to_see_details)));
     }
 
     public static ViewAction clickXY(final Position horizontal, final Position vertical){

@@ -18,37 +18,41 @@ package org.gnucash.android.util;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.support.annotation.LayoutRes;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.text.TextUtils;
 import android.view.ContextMenu;
 import android.view.View;
 import android.widget.TextView;
 
+import org.gnucash.android.db.CommoditiesDbAdapter;
 import org.gnucash.android.db.DatabaseSchema;
 
 import java.util.Currency;
 
 /**
- * Cursor adapter for displaying list of commodities in a spinner
+ * Cursor adapter for displaying list of commodities.
+ * <p>You should provide the layout and the layout should contain a view with the id {@code android:id/text1},
+ * which is where the name of the commodity will be displayed</p>
+ * <p>The list is sorted by the currency code (which is also displayed first before the full name)</p>
  */
 public class CommoditiesCursorAdapter extends SimpleCursorAdapter {
 
-    public CommoditiesCursorAdapter(Context context, Cursor c) {
-        super(context, android.R.layout.simple_spinner_item, c,
-                new String[] {DatabaseSchema.CommodityEntry.COLUMN_FULLNAME},
+    public CommoditiesCursorAdapter(Context context, @LayoutRes int itemLayoutResource) {
+        super(context, itemLayoutResource,
+                CommoditiesDbAdapter.getInstance().fetchAllRecords(DatabaseSchema.CommodityEntry.COLUMN_MNEMONIC + " ASC"),
+                new String[]{DatabaseSchema.CommodityEntry.COLUMN_FULLNAME},
                 new int[] {android.R.id.text1}, 0);
-        setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
     }
 
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
-        super.bindView(view, context, cursor);
         TextView textView = (TextView) view.findViewById(android.R.id.text1);
         textView.setEllipsize(TextUtils.TruncateAt.MIDDLE);
 
         String currencyName = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.CommodityEntry.COLUMN_FULLNAME));
         String currencyCode = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.CommodityEntry.COLUMN_MNEMONIC));
 
-        textView.setText(currencyName + " - " + currencyCode);
+        textView.setText(currencyCode + " - " + currencyName);
     }
 }

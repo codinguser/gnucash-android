@@ -61,7 +61,7 @@ import org.gnucash.android.model.Account;
 import org.gnucash.android.model.AccountType;
 import org.gnucash.android.model.Commodity;
 import org.gnucash.android.model.Money;
-import org.gnucash.android.ui.UxArgument;
+import org.gnucash.android.ui.common.UxArgument;
 import org.gnucash.android.ui.colorpicker.ColorPickerDialog;
 import org.gnucash.android.ui.colorpicker.ColorPickerSwatch;
 import org.gnucash.android.ui.colorpicker.ColorSquare;
@@ -328,16 +328,12 @@ public class AccountFormFragment extends Fragment {
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-		
-		ArrayAdapter<String> currencyArrayAdapter = new ArrayAdapter<>(
-				getActivity(), 
-				android.R.layout.simple_spinner_item, 
-				getResources().getStringArray(R.array.currency_names));
-		currencyArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
         Cursor cursor = CommoditiesDbAdapter.getInstance().fetchAllRecords();
         CommoditiesCursorAdapter commoditiesAdapter = new CommoditiesCursorAdapter(
-                getActivity(), cursor);
+                getActivity(), android.R.layout.simple_spinner_item);
+        commoditiesAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
         mCurrencySpinner.setAdapter(commoditiesAdapter);
 
 
@@ -405,9 +401,23 @@ public class AccountFormFragment extends Fragment {
         if (account.getDescription() != null)
             mDescriptionEditText.setText(account.getDescription());
 
-        if (mUseDoubleEntry && account.getDefaultTransferAccountUID() != null) {
-            long doubleDefaultAccountId = mAccountsDbAdapter.getID(account.getDefaultTransferAccountUID());
-            setDefaultTransferAccountSelection(doubleDefaultAccountId);
+        if (mUseDoubleEntry) {
+            if (account.getDefaultTransferAccountUID() != null) {
+                long doubleDefaultAccountId = mAccountsDbAdapter.getID(account.getDefaultTransferAccountUID());
+                setDefaultTransferAccountSelection(doubleDefaultAccountId, true);
+            } else {
+                String currentAccountUID = account.getParentUID();
+                long defaultTransferAccountID = 0;
+                String rootAccountUID = mAccountsDbAdapter.getOrCreateGnuCashRootAccountUID();
+                while (!currentAccountUID.equals(rootAccountUID)) {
+                    defaultTransferAccountID = mAccountsDbAdapter.getDefaultTransferAccountID(mAccountsDbAdapter.getID(currentAccountUID));
+                    if (defaultTransferAccountID > 0) {
+                        setDefaultTransferAccountSelection(defaultTransferAccountID, false);
+                        break; //we found a parent with default transfer setting
+                    }
+                    currentAccountUID = mAccountsDbAdapter.getParentAccountUID(currentAccountUID);
+                }
+            }
         }
 
         mPlaceholderCheckBox.setChecked(account.isPlaceholderAccount());
@@ -506,15 +516,15 @@ public class AccountFormFragment extends Fragment {
      * Selects the account with ID <code>parentAccountId</code> in the default transfer account spinner
      * @param defaultTransferAccountId Record ID of parent account to be selected
      */
-    private void setDefaultTransferAccountSelection(long defaultTransferAccountId){
-        if (defaultTransferAccountId > 0){
-            mDefaultTransferAccountCheckBox.setChecked(true);
-            mDefaulTransferAccountSpinner.setEnabled(true);
+    private void setDefaultTransferAccountSelection(long defaultTransferAccountId, boolean enableTransferAccount) {
+        if (defaultTransferAccountId > 0) {
+            mDefaultTransferAccountCheckBox.setChecked(enableTransferAccount);
+            mDefaulTransferAccountSpinner.setEnabled(enableTransferAccount);
         } else
             return;
 
         for (int pos = 0; pos < mDefaultTransferAccountCursorAdapter.getCount(); pos++) {
-            if (mDefaultTransferAccountCursorAdapter.getItemId(pos) == defaultTransferAccountId){
+            if (mDefaultTransferAccountCursorAdapter.getItemId(pos) == defaultTransferAccountId) {
                 mDefaulTransferAccountSpinner.setSelection(pos);
                 break;
             }
@@ -611,7 +621,7 @@ public class AccountFormFragment extends Fragment {
         if (mAccount != null){  //if editing an account
             mDescendantAccountUIDs = mAccountsDbAdapter.getDescendantAccountUIDs(mAccount.getUID(), null, null);
             String rootAccountUID = mAccountsDbAdapter.getOrCreateGnuCashRootAccountUID();
-            List<String> descendantAccountUIDs = new ArrayList<String>(mDescendantAccountUIDs);
+            List<String> descendantAccountUIDs = new ArrayList<>(mDescendantAccountUIDs);
             if (rootAccountUID != null)
                 descendantAccountUIDs.add(rootAccountUID);
             // limit cyclic account hierarchies.

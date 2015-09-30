@@ -27,12 +27,11 @@ import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
-import org.gnucash.android.ui.UxArgument;
+import org.gnucash.android.ui.common.UxArgument;
 import org.gnucash.android.ui.passcode.PasscodeLockScreenActivity;
 import org.gnucash.android.ui.passcode.PasscodePreferenceActivity;
 

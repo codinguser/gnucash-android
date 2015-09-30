@@ -85,10 +85,14 @@ public class TransactionsDbAdapter extends DatabaseAdapter<Transaction> {
 	 */
     @Override
 	public void addRecord(@NonNull Transaction transaction){
-        //TODO: Override this method to balance transaction splits before saving to database
         Log.d(LOG_TAG, "Replacing transaction in db");
         mDb.beginTransaction();
         try {
+            Split imbalanceSplit = transaction.getAutoBalanceSplit();
+            if (imbalanceSplit != null){
+                String imbalanceAccountUID = AccountsDbAdapter.getInstance().getOrCreateImbalanceAccountUID(transaction.getCurrency());
+                imbalanceSplit.setAccountUID(imbalanceAccountUID);
+            }
             super.addRecord(transaction);
 
             Log.d(LOG_TAG, "Adding splits for transaction");
@@ -162,9 +166,10 @@ public class TransactionsDbAdapter extends DatabaseAdapter<Transaction> {
                     + TransactionEntry.COLUMN_TIMESTAMP + " , "
                     + TransactionEntry.COLUMN_EXPORTED + " , "
                     + TransactionEntry.COLUMN_CURRENCY + " , "
+                    + TransactionEntry.COLUMN_COMMODITY_UID + " , "
                     + TransactionEntry.COLUMN_CREATED_AT + " , "
                     + TransactionEntry.COLUMN_SCHEDX_ACTION_UID + " , "
-                    + TransactionEntry.COLUMN_TEMPLATE + " ) VALUES ( ? , ? , ? , ?, ? , ? , ? , ? , ?)");
+                    + TransactionEntry.COLUMN_TEMPLATE + " ) VALUES ( ? , ? , ? , ?, ? , ? , ? , ?, ? , ?)");
         }
 
         mReplaceStatement.clearBindings();
@@ -174,12 +179,19 @@ public class TransactionsDbAdapter extends DatabaseAdapter<Transaction> {
         mReplaceStatement.bindLong(4,   transaction.getTimeMillis());
         mReplaceStatement.bindLong(5, transaction.isExported() ? 1 : 0);
         mReplaceStatement.bindString(6, transaction.getCurrencyCode());
-        mReplaceStatement.bindString(7, transaction.getCreatedTimestamp().toString());
+
+        String commodityUID = transaction.getCommodityUID();
+        if (commodityUID == null)
+            commodityUID = getCommodityUID(transaction.getCurrency().getCurrencyCode());
+
+        mReplaceStatement.bindString(7, commodityUID);
+        mReplaceStatement.bindString(8, transaction.getCreatedTimestamp().toString());
+
         if (transaction.getScheduledActionUID() == null)
-            mReplaceStatement.bindNull(8);
+            mReplaceStatement.bindNull(9);
         else
-            mReplaceStatement.bindString(8,  transaction.getScheduledActionUID());
-        mReplaceStatement.bindLong(9, transaction.isTemplate() ? 1 : 0);
+            mReplaceStatement.bindString(9,  transaction.getScheduledActionUID());
+        mReplaceStatement.bindLong(10, transaction.isTemplate() ? 1 : 0);
 
         return mReplaceStatement;
     }
@@ -469,6 +481,20 @@ public class TransactionsDbAdapter extends DatabaseAdapter<Transaction> {
     public long getTemplateTransactionsCount(){
         String sql = "SELECT COUNT(*) FROM " + TransactionEntry.TABLE_NAME
                 + " WHERE " + TransactionEntry.COLUMN_TEMPLATE + "=1";
+        SQLiteStatement statement = mDb.compileStatement(sql);
+        return statement.simpleQueryForLong();
+    }
+
+    /**
+     * Returns the number of splits for the transaction in the database
+     * @param transactionUID GUID of the transaction
+     * @return Number of splits belonging to the transaction
+     */
+    public long getSplitCount(@NonNull String transactionUID){
+        if (transactionUID == null)
+            return 0;
+        String sql = "SELECT COUNT(*) FROM " + SplitEntry.TABLE_NAME
+                + " WHERE " + SplitEntry.COLUMN_TRANSACTION_UID + "= '" + transactionUID + "'";
         SQLiteStatement statement = mDb.compileStatement(sql);
         return statement.simpleQueryForLong();
     }

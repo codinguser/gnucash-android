@@ -72,7 +72,7 @@ public abstract class GncXmlHelper {
     public static final String TAG_SLOT_VALUE       = "slot:value";
     public static final String TAG_ACT_SLOTS        = "act:slots";
     public static final String TAG_SLOT             = "slot";
-    public static final String TAG_ACCT_DESCRIPTION = "act:description"; //TODO: Use this when we add descriptions to the database
+    public static final String TAG_ACCT_DESCRIPTION = "act:description";
 
     public static final String TAG_TRANSACTION      = "gnc:transaction";
     public static final String TAG_TRX_ID           = "trn:id";
@@ -93,6 +93,16 @@ public abstract class GncXmlHelper {
     public static final String TAG_SPLIT_VALUE      = "split:value";
     public static final String TAG_SPLIT_QUANTITY   = "split:quantity";
     public static final String TAG_SPLIT_SLOTS      = "split:slots";
+
+    public static final String TAG_PRICEDB = "gnc:pricedb";
+    public static final String TAG_PRICE = "price";
+    public static final String TAG_PRICE_ID = "price:id";
+    public static final String TAG_PRICE_COMMODITY = "price:commodity";
+    public static final String TAG_PRICE_CURRENCY = "price:currency";
+    public static final String TAG_PRICE_TIME = "price:time";
+    public static final String TAG_PRICE_SOURCE = "price:source";
+    public static final String TAG_PRICE_TYPE = "price:type";
+    public static final String TAG_PRICE_VALUE = "price:value";
 
     @Deprecated
     public static final String TAG_RECURRENCE_PERIOD = "trn:recurrence_period";

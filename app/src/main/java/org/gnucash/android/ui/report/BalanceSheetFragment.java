@@ -23,6 +23,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TableLayout;
@@ -47,13 +48,11 @@ import butterknife.ButterKnife;
  */
 public class BalanceSheetFragment extends Fragment {
 
-    //TODO: finish generation of text reports
-
     @Bind(R.id.table_assets) TableLayout mAssetsTableLayout;
     @Bind(R.id.table_liabilities) TableLayout mLiabilitiesTableLayout;
     @Bind(R.id.table_equity) TableLayout mEquityTableLayout;
 
-    @Bind(R.id.total_liability_and_equity) TextView mTotalLiabilitiesAndEquity;
+    @Bind(R.id.total_liability_and_equity) TextView mNetWorth;
 
 
     AccountsDbAdapter mAccountsDbAdapter = AccountsDbAdapter.getInstance();
@@ -69,32 +68,39 @@ public class BalanceSheetFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle("Balance Sheet");
+        ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(R.string.title_balance_sheet_report);
+        setHasOptionsMenu(true);
 
         List<AccountType> accountTypes = new ArrayList<>();
         accountTypes.add(AccountType.ASSET);
         accountTypes.add(AccountType.CASH);
+        accountTypes.add(AccountType.BANK);
         loadAccountViews(accountTypes, mAssetsTableLayout);
+        Money assetsBalance = mAccountsDbAdapter.getAccountBalance(accountTypes, -1, System.currentTimeMillis());
 
         accountTypes.clear();
         accountTypes.add(AccountType.LIABILITY);
         accountTypes.add(AccountType.CREDIT);
         loadAccountViews(accountTypes, mLiabilitiesTableLayout);
+        Money liabilitiesBalance = mAccountsDbAdapter.getAccountBalance(accountTypes, -1, System.currentTimeMillis());
 
         accountTypes.clear();
         accountTypes.add(AccountType.EQUITY);
-        loadAccountViews(accountTypes,    mEquityTableLayout);
+        loadAccountViews(accountTypes, mEquityTableLayout);
 
-        Money equityBalance = mAccountsDbAdapter.getAccountBalance(AccountType.EQUITY, -1, -1);
-        Money liabilitiesBalance = mAccountsDbAdapter.getAccountBalance(AccountType.LIABILITY, -1, -1);
-
-        TransactionsActivity.displayBalance(mTotalLiabilitiesAndEquity, liabilitiesBalance.add(equityBalance));
+        TransactionsActivity.displayBalance(mNetWorth, assetsBalance.subtract(liabilitiesBalance));
     }
 
     @Override
     public void onResume() {
         super.onResume();
         ((ReportsActivity)getActivity()).setAppBarColor(R.color.account_purple);
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+        menu.findItem(R.id.menu_group_reports_by).setVisible(false);
     }
 
     /**
@@ -122,14 +128,17 @@ public class BalanceSheetFragment extends Fragment {
         }
 
         View totalView = inflater.inflate(R.layout.row_balance_sheet, tableLayout, false);
+        TableLayout.LayoutParams layoutParams = (TableLayout.LayoutParams) totalView.getLayoutParams();
+        layoutParams.setMargins(layoutParams.leftMargin, 20, layoutParams.rightMargin, layoutParams.bottomMargin);
+        totalView.setLayoutParams(layoutParams);
 
         TextView accountName = (TextView) totalView.findViewById(R.id.account_name);
         accountName.setTextSize(16);
-        accountName.setText("Total: ");
-        TextView assetBalance = (TextView) totalView.findViewById(R.id.account_balance);
-        assetBalance.setTextSize(16);
-        assetBalance.setTypeface(null, Typeface.BOLD);
-        TransactionsActivity.displayBalance(assetBalance, mAccountsDbAdapter.getAccountBalance(accountTypes));
+        accountName.setText(R.string.label_balance_sheet_total);
+        TextView accountBalance = (TextView) totalView.findViewById(R.id.account_balance);
+        accountBalance.setTextSize(16);
+        accountBalance.setTypeface(null, Typeface.BOLD);
+        TransactionsActivity.displayBalance(accountBalance, mAccountsDbAdapter.getAccountBalance(accountTypes, -1, System.currentTimeMillis()));
 
         tableLayout.addView(totalView);
     }

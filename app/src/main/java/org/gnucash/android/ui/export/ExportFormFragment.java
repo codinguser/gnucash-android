@@ -16,9 +16,12 @@
 
 package org.gnucash.android.ui.export;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
@@ -40,9 +43,9 @@ import android.widget.RadioButton;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import com.doomonafireball.betterpickers.recurrencepicker.EventRecurrence;
-import com.doomonafireball.betterpickers.recurrencepicker.EventRecurrenceFormatter;
-import com.doomonafireball.betterpickers.recurrencepicker.RecurrencePickerDialog;
+import com.codetroopers.betterpickers.recurrencepicker.EventRecurrence;
+import com.codetroopers.betterpickers.recurrencepicker.EventRecurrenceFormatter;
+import com.codetroopers.betterpickers.recurrencepicker.RecurrencePickerDialog;
 import com.dropbox.sync.android.DbxAccountManager;
 
 import org.gnucash.android.R;
@@ -52,6 +55,8 @@ import org.gnucash.android.export.ExportAsyncTask;
 import org.gnucash.android.export.ExportFormat;
 import org.gnucash.android.export.ExportParams;
 import org.gnucash.android.model.ScheduledAction;
+import org.gnucash.android.ui.account.AccountsActivity;
+import org.gnucash.android.ui.common.UxArgument;
 import org.gnucash.android.ui.settings.SettingsActivity;
 import org.gnucash.android.ui.util.RecurrenceParser;
 
@@ -192,6 +197,31 @@ public class ExportFormFragment extends Fragment implements RecurrencePickerDial
 		assert supportActionBar != null;
 		supportActionBar.setTitle(R.string.title_export_dialog);
 		setHasOptionsMenu(true);
+
+		getSDWritePermission();
+	}
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        // When the user try to export sharing to 3rd party service like DropBox
+        // then pausing all activities. That cause passcode screen appearing happened.
+        // We use a disposable flag to skip this unnecessary passcode screen.
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        prefs.edit().putBoolean(UxArgument.SKIP_PASSCODE_SCREEN, true).apply();
+    }
+
+	/**
+	 * Get permission for WRITING SD card for Android Marshmallow and above
+	 */
+	private void getSDWritePermission(){
+		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+			if (getActivity().checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+					!= PackageManager.PERMISSION_GRANTED) {
+				getActivity().requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,
+						Manifest.permission.READ_EXTERNAL_STORAGE}, AccountsActivity.PERMISSION_REQUEST_WRITE_SD_CARD);
+			}
+		}
 	}
 
 	/**
@@ -214,7 +244,9 @@ public class ExportFormFragment extends Fragment implements RecurrencePickerDial
 		Log.i(TAG, "Commencing async export of transactions");
 		new ExportAsyncTask(getActivity()).execute(exportParameters);
 
-		getActivity().finish();
+		// finish the activity will cause the progress dialog to be leaked
+		// which would throw an exception
+		//getActivity().finish();
 	}
 
 	private void bindViews(){

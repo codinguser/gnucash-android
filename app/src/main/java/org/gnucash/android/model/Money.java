@@ -18,6 +18,7 @@ package org.gnucash.android.model;
 
 
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
 
@@ -76,12 +77,6 @@ public final class Money implements Comparable<Money>{
 	 * Defaults to {@link #DEFAULT_ROUNDING_MODE}
 	 */
 	protected RoundingMode ROUNDING_MODE = DEFAULT_ROUNDING_MODE;
-	
-	/**
-	 * Number of decimal places to limit fractions to in arithmetic operations
-	 * Defaults to {@link #DEFAULT_DECIMAL_PLACES}
-	 */
-	protected int DECIMAL_PLACES = DEFAULT_DECIMAL_PLACES;
 
 	/**
 	 * Default currency code (according ISO 4217) 
@@ -139,7 +134,7 @@ public final class Money implements Comparable<Money>{
 	 */
 	public Money(BigDecimal amount, Currency currency){
 		this.mAmount = amount;
-		this.mCurrency = currency;
+		setCurrency(currency);
 	}
 	
 	/**
@@ -149,22 +144,8 @@ public final class Money implements Comparable<Money>{
 	 * @param currencyCode Currency code as specified by ISO 4217
 	 */
 	public Money(String amount, String currencyCode){
-		setAmount(amount);
 		setCurrency(Currency.getInstance(currencyCode));
-	}
-	
-	/**
-	 * Overloaded constructor
-	 * Accepts <code>context</code> options for rounding mode during operations on this money object
-	 * @param amount {@link BigDecimal} value of the money instance
-	 * @param currency {@link Currency} associated with the <code>amount</code>
-	 * @param context {@link MathContext} specifying rounding mode during operations
-	 */
-	public Money(BigDecimal amount, Currency currency, MathContext context){
 		setAmount(amount);
-		setCurrency(currency);
-		ROUNDING_MODE = context.getRoundingMode();
-		DECIMAL_PLACES = context.getPrecision();
 	}
 
 	/**
@@ -195,8 +176,8 @@ public final class Money implements Comparable<Money>{
      * @param money Money instance to be cloned
      */
     public Money(Money money){
-        setAmount(money.asBigDecimal());
-        setCurrency(money.getCurrency());
+		setCurrency(money.getCurrency());
+		setAmount(money.asBigDecimal());
     }
 
     /**
@@ -243,7 +224,6 @@ public final class Money implements Comparable<Money>{
 	 * @param currency {@link Currency} to assign to the Money object  
 	 */
 	private void setCurrency(Currency currency) {
-		//TODO: Consider doing a conversion of the value as well in the future
 		this.mCurrency = currency;
 	}
 
@@ -252,8 +232,15 @@ public final class Money implements Comparable<Money>{
 	 * <p>Example: Given an amount 32.50$, the numerator will be 3250</p>
 	 * @return GnuCash numerator for this amount
 	 */
-	public int getNumerator(){
-		return mAmount.multiply(new BigDecimal(getDenominator())).intValue();
+	public long getNumerator() {
+		try {
+			return mAmount.scaleByPowerOfTen(getScale()).longValueExact();
+		} catch (ArithmeticException e) {
+			Log.e(getClass().getName(), "Currency " + mCurrency.getCurrencyCode() +
+					" with scale " + getScale() +
+					" has amount " + mAmount.toString());
+			throw e;
+		}
 	}
 
 	/**
@@ -261,8 +248,36 @@ public final class Money implements Comparable<Money>{
 	 * <p>The denominator is 10 raised to the power of number of fractional digits in the currency</p>
 	 * @return GnuCash format denominator
 	 */
-	public int getDenominator(){
-		return (int) Math.pow(10, mCurrency.getDefaultFractionDigits());
+	public long getDenominator() {
+		switch (getScale()) {
+			case 0:
+				return 1;
+			case 1:
+				return 10;
+			case 2:
+				return 100;
+			case 3:
+				return 1000;
+			case 4:
+				return 10000;
+		}
+		throw new RuntimeException("Unsupported number of fraction digits " + getScale());
+	}
+
+	/**
+	 * Returns the scale (precision) used for the decimal places of this amount.
+	 * <p>The scale used depends on the currency</p>
+	 * @return Scale of amount as integer
+	 */
+	private int getScale() {
+		int scale = mCurrency.getDefaultFractionDigits();
+		if (scale < 0) {
+			scale = mAmount.scale();
+		}
+		if (scale < 0) {
+			scale = 0;
+		}
+		return scale;
 	}
 
 	/**
@@ -302,14 +317,14 @@ public final class Money implements Comparable<Money>{
 	/**
 	 * Returns a string representation of the Money object formatted according to 
 	 * the <code>locale</code> and includes the currency symbol. 
-	 * The output precision is limited to {@link #DECIMAL_PLACES}.
+	 * The output precision is limited to the number of fractional digits supported by the currency
 	 * @param locale Locale to use when formatting the object
 	 * @return String containing formatted Money representation
 	 */
     public String formattedString(Locale locale){
 		NumberFormat formatter = NumberFormat.getInstance(locale);
-		formatter.setMinimumFractionDigits(DECIMAL_PLACES);
-		formatter.setMaximumFractionDigits(DECIMAL_PLACES);
+		formatter.setMinimumFractionDigits(mCurrency.getDefaultFractionDigits());
+		formatter.setMaximumFractionDigits(mCurrency.getDefaultFractionDigits());
 		return formatter.format(asDouble()) + " " + mCurrency.getSymbol(locale);
 	}
 
@@ -335,7 +350,7 @@ public final class Money implements Comparable<Money>{
 	 * @param amount {@link BigDecimal} amount to be set
 	 */
 	private void setAmount(BigDecimal amount) {
-		mAmount = amount.setScale(DECIMAL_PLACES, ROUNDING_MODE);
+		mAmount = amount.setScale(mCurrency.getDefaultFractionDigits(), ROUNDING_MODE);
 	}
 	
 	/**
@@ -457,7 +472,7 @@ public final class Money implements Comparable<Money>{
 	 * @return String representation of the amount (without currency) of the Money object
 	 */
 	public String toPlainString(){
-		return mAmount.setScale(DECIMAL_PLACES, ROUNDING_MODE).toPlainString();
+		return mAmount.setScale(mCurrency.getDefaultFractionDigits(), ROUNDING_MODE).toPlainString();
 	}
 	
 	/**

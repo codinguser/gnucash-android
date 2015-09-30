@@ -28,6 +28,8 @@ import com.crashlytics.android.Crashlytics;
 import org.gnucash.android.BuildConfig;
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.AccountsDbAdapter;
+import org.gnucash.android.db.CommoditiesDbAdapter;
+import org.gnucash.android.db.PricesDbAdapter;
 import org.gnucash.android.db.ScheduledActionDbAdapter;
 import org.gnucash.android.db.SplitsDbAdapter;
 import org.gnucash.android.db.TransactionsDbAdapter;
@@ -90,6 +92,8 @@ public abstract class Exporter {
     protected TransactionsDbAdapter mTransactionsDbAdapter;
     protected SplitsDbAdapter mSplitsDbAdapter;
     protected ScheduledActionDbAdapter mScheduledActionDbAdapter;
+    protected PricesDbAdapter mPricesDbAdpater;
+    protected CommoditiesDbAdapter mCommoditiesDbAdapter;
     protected Context mContext;
 
     public Exporter(ExportParams params, SQLiteDatabase db) {
@@ -100,11 +104,15 @@ public abstract class Exporter {
             mTransactionsDbAdapter = TransactionsDbAdapter.getInstance();
             mSplitsDbAdapter = SplitsDbAdapter.getInstance();
             mScheduledActionDbAdapter = ScheduledActionDbAdapter.getInstance();
+            mPricesDbAdpater = PricesDbAdapter.getInstance();
+            mCommoditiesDbAdapter = CommoditiesDbAdapter.getInstance();
         } else {
             mSplitsDbAdapter = new SplitsDbAdapter(db);
             mTransactionsDbAdapter = new TransactionsDbAdapter(db, mSplitsDbAdapter);
             mAccountsDbAdapter = new AccountsDbAdapter(db, mTransactionsDbAdapter);
             mScheduledActionDbAdapter = new ScheduledActionDbAdapter(db);
+            mPricesDbAdpater = new PricesDbAdapter(db);
+            mCommoditiesDbAdapter = new CommoditiesDbAdapter(db);
         }
     }
 

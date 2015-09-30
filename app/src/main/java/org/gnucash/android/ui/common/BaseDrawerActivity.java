@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.gnucash.android.ui;
+package org.gnucash.android.ui.common;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -23,17 +23,18 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
+import com.uservoice.uservoicesdk.UserVoice;
 
 import org.gnucash.android.R;
 import org.gnucash.android.export.xml.GncXmlExporter;
 import org.gnucash.android.importer.ImportAsyncTask;
 import org.gnucash.android.ui.account.AccountsActivity;
+import org.gnucash.android.ui.passcode.PasscodeLockActivity;
 import org.gnucash.android.ui.report.ReportsActivity;
 import org.gnucash.android.ui.settings.SettingsActivity;
 import org.gnucash.android.ui.transaction.ScheduledActionsActivity;
@@ -44,10 +45,13 @@ import java.io.InputStream;
 
 /**
  * Base activity implementing the navigation drawer, to be extended by all activities requiring one
+ * <p>All subclasses should call the {@link #setUpDrawer()} method in {@link #onCreate(Bundle)}, after the
+ * activity layout has been set.<br/>
+ * The activity layout of the subclass is expected to contain {@code DrawerLayout} and a {@code NavigationView}</p>
  *
  * @author Ngewi Fet <ngewif@gmail.com>
  */
-public class BaseDrawerActivity extends AppCompatActivity {
+public class BaseDrawerActivity extends PasscodeLockActivity {
     protected DrawerLayout  mDrawerLayout;
     protected NavigationView mNavigationView;
 
@@ -173,7 +177,9 @@ public class BaseDrawerActivity extends AppCompatActivity {
                 startActivity(new Intent(this, SettingsActivity.class));
                 break;
 
-            //TODO: add help option
+            case R.id.nav_item_help:
+                UserVoice.launchUserVoice(this);
+                break;
         }
         mDrawerLayout.closeDrawer(mNavigationView);
     }

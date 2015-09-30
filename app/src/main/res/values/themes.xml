@@ -54,4 +54,8 @@
         <item name="spinBars">true</item>
         <item name="color">@android:color/white</item>
     </style>
+
+    <style name="UserVoiceTheme" parent="Theme.GnucashTheme">
+        <!-- theme customizations -->
+    </style>
 </resources>

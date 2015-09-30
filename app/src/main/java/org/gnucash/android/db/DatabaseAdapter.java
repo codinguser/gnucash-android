@@ -66,7 +66,7 @@ public abstract class DatabaseAdapter<Model extends BaseModel> {
         if (!db.isOpen() || db.isReadOnly())
             throw new IllegalArgumentException("Database not open or is read-only. Require writeable database");
 
-        if (mDb.getVersion() >= DatabaseSchema.SPLITS_DB_VERSION) {
+        if (mDb.getVersion() >= 9) {
             createTempView();
         }
     }
@@ -161,7 +161,6 @@ public abstract class DatabaseAdapter<Model extends BaseModel> {
         //   pick the minimal value of the modified account uid (one of the ones begins with 'a', if exists)
         //   use substr to get account uid
 
-        //FIXME: Check if the split value is properly extracted. Also consider adding split quantity to the view
         mDb.execSQL("CREATE TEMP VIEW IF NOT EXISTS trans_extra_info AS SELECT " + TransactionEntry.TABLE_NAME + "_" + TransactionEntry.COLUMN_UID +
                 " AS trans_acct_t_uid , SUBSTR ( MIN ( ( CASE WHEN IFNULL ( " + SplitEntry.TABLE_NAME + "_" +
                 SplitEntry.COLUMN_MEMO + " , '' ) == '' THEN 'a' ELSE 'b' END ) || " +
@@ -192,7 +191,7 @@ public abstract class DatabaseAdapter<Model extends BaseModel> {
      * @param model Model to be saved to the database
      */
     public void addRecord(@NonNull final Model model){
-        Log.d(LOG_TAG, String.format("Adding %s record to database: ", model.getClass().getName()));
+        Log.d(LOG_TAG, String.format("Adding %s record to database: ", model.getClass().getSimpleName()));
         compileReplaceStatement(model).execute();
     }
 
@@ -260,7 +259,7 @@ public abstract class DatabaseAdapter<Model extends BaseModel> {
                 return buildModelInstance(cursor);
             }
             else {
-                throw new IllegalArgumentException("split " + uid + " does not exist");
+                throw new IllegalArgumentException("Record with " + uid + " does not exist");
             }
         } finally {
             cursor.close();
@@ -449,6 +448,30 @@ public abstract class DatabaseAdapter<Model extends BaseModel> {
                 return cursor.getString(0);
             } else {
                 throw new IllegalArgumentException("Account " + accountUID + " does not exist");
+            }
+        } finally {
+            cursor.close();
+        }
+    }
+
+
+    /**
+     * Returns the commodity GUID for the given ISO 4217 currency code
+     * @param currencyCode ISO 4217 currency code
+     * @return GUID of commodity
+     */
+    public String getCommodityUID(String currencyCode){
+        String where = DatabaseSchema.CommodityEntry.COLUMN_MNEMONIC + "= ?";
+        String[] whereArgs = new String[]{currencyCode};
+
+        Cursor cursor = mDb.query(DatabaseSchema.CommodityEntry.TABLE_NAME,
+                new String[]{DatabaseSchema.CommodityEntry.COLUMN_UID},
+                where, whereArgs, null, null, null);
+        try {
+            if (cursor.moveToNext()) {
+                return cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.CommodityEntry.COLUMN_UID));
+            } else {
+                throw new IllegalArgumentException("Currency code not found in commodities");
             }
         } finally {
             cursor.close();

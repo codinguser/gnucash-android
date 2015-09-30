@@ -56,9 +56,8 @@ import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.export.ExportParams;
 import org.gnucash.android.model.ScheduledAction;
 import org.gnucash.android.model.Transaction;
-import org.gnucash.android.ui.FormActivity;
-import org.gnucash.android.ui.UxArgument;
-import org.gnucash.android.ui.account.AccountsActivity;
+import org.gnucash.android.ui.common.FormActivity;
+import org.gnucash.android.ui.common.UxArgument;
 
 import java.text.DateFormat;
 import java.util.Date;
@@ -129,15 +128,23 @@ public class ScheduledActionsListFragment extends ListFragment implements
                         }
                     }
                     mode.finish();
+                    setDefaultStatusBarColor();
                     getLoaderManager().destroyLoader(0);
                     refreshList();
                     return true;
 
                 default:
+                    setDefaultStatusBarColor();
                     return false;
             }
         }
     };
+
+    private void setDefaultStatusBarColor() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getActivity().getWindow().setStatusBarColor(getResources().getColor(R.color.theme_primary_dark));
+        }
+    }
 
     /**
      * Returns a new instance of the fragment for displayed the scheduled action
@@ -195,6 +202,7 @@ public class ScheduledActionsListFragment extends ListFragment implements
 
         setHasOptionsMenu(true);
         getListView().setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
+        ((TextView)getListView().getEmptyView()).setTextColor(getResources().getColor(R.color.theme_accent));
         if (mActionType == ScheduledAction.ActionType.TRANSACTION){
             ((TextView)getListView().getEmptyView()).setText(R.string.label_no_recurring_transactions);
         } else if (mActionType == ScheduledAction.ActionType.BACKUP){
@@ -227,7 +235,7 @@ public class ScheduledActionsListFragment extends ListFragment implements
         switch (item.getItemId()){
             case R.id.menu_add_scheduled_export:
                 Intent intent = new Intent(getActivity(), FormActivity.class);
-                intent.putExtra(UxArgument.FORM_TYPE, FormActivity.FormType.EXPORT_FORM.name());
+                intent.putExtra(UxArgument.FORM_TYPE, FormActivity.FormType.EXPORT.name());
                 startActivityForResult(intent, 0x1);
                 return true;
             default:
@@ -268,7 +276,7 @@ public class ScheduledActionsListFragment extends ListFragment implements
     public void openTransactionForEdit(String accountUID, String transactionUID, String scheduledActionUid){
         Intent createTransactionIntent = new Intent(getActivity(), FormActivity.class);
         createTransactionIntent.setAction(Intent.ACTION_INSERT_OR_EDIT);
-        createTransactionIntent.putExtra(UxArgument.FORM_TYPE, FormActivity.FormType.TRANSACTION_FORM.name());
+        createTransactionIntent.putExtra(UxArgument.FORM_TYPE, FormActivity.FormType.TRANSACTION.name());
         createTransactionIntent.putExtra(UxArgument.SELECTED_ACCOUNT_UID, accountUID);
         createTransactionIntent.putExtra(UxArgument.SELECTED_TRANSACTION_UID, transactionUID);
         createTransactionIntent.putExtra(UxArgument.SCHEDULED_ACTION_UID, scheduledActionUid);
@@ -358,9 +366,7 @@ public class ScheduledActionsListFragment extends ListFragment implements
         int checkedCount = getListView().getCheckedItemIds().length;
         if (checkedCount <= 0 && mActionMode != null) {
             mActionMode.finish();
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
-                getActivity().getWindow().setStatusBarColor(getResources().getColor(R.color.theme_primary_dark));
-            }
+            setDefaultStatusBarColor();
         }
     }
 
@@ -555,7 +561,8 @@ public class ScheduledActionsListFragment extends ListFragment implements
 
             TextView descriptionTextView = (TextView) view.findViewById(R.id.secondary_text);
             descriptionTextView.setText(scheduledAction.getRepeatString());
-            if (scheduledAction.getEndTime() < System.currentTimeMillis()){
+            long endTime = scheduledAction.getEndTime();
+            if (endTime > 0 && endTime < System.currentTimeMillis()){
                 ((TextView)view.findViewById(R.id.primary_text)).setTextColor(getResources().getColor(android.R.color.darker_gray));
                 descriptionTextView.setText(getString(R.string.label_scheduled_action_ended,
                         DateFormat.getInstance().format(new Date(scheduledAction.getLastRun()))));

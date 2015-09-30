@@ -24,6 +24,8 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.graphics.Color;
+import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
@@ -51,11 +53,11 @@ import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.DatabaseCursorLoader;
 import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.model.Account;
-import org.gnucash.android.ui.FormActivity;
-import org.gnucash.android.ui.UxArgument;
+import org.gnucash.android.ui.common.FormActivity;
+import org.gnucash.android.ui.common.UxArgument;
 import org.gnucash.android.ui.util.AccountBalanceTask;
 import org.gnucash.android.ui.util.CursorRecyclerAdapter;
-import org.gnucash.android.ui.util.EmptyRecyclerView;
+import org.gnucash.android.ui.util.widget.EmptyRecyclerView;
 import org.gnucash.android.ui.util.OnAccountClickedListener;
 import org.gnucash.android.ui.util.Refreshable;
 
@@ -301,7 +303,7 @@ public class AccountsListFragment extends Fragment implements
         Intent editAccountIntent = new Intent(AccountsListFragment.this.getActivity(), FormActivity.class);
         editAccountIntent.setAction(Intent.ACTION_INSERT_OR_EDIT);
         editAccountIntent.putExtra(UxArgument.SELECTED_ACCOUNT_UID, mAccountsDbAdapter.getUID(accountId));
-        editAccountIntent.putExtra(UxArgument.FORM_TYPE, FormActivity.FormType.ACCOUNT_FORM.name());
+        editAccountIntent.putExtra(UxArgument.FORM_TYPE, FormActivity.FormType.ACCOUNT.name());
         startActivityForResult(editAccountIntent, AccountsActivity.REQUEST_EDIT_ACCOUNT);
     }
 
@@ -463,8 +465,12 @@ public class AccountsListFragment extends Fragment implements
                 holder.description.setVisibility(View.GONE);
 
             // add a summary of transactions to the account view
-            new AccountBalanceTask(holder.accountBalance).execute(accountUID);
-
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                // Make sure the balance task is truely multithread
+                new AccountBalanceTask(holder.accountBalance).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, accountUID);
+            } else {
+                new AccountBalanceTask(holder.accountBalance).execute(accountUID);
+            }
             String accountColor = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.AccountEntry.COLUMN_COLOR_CODE));
             int colorCode = accountColor == null ? Color.TRANSPARENT : Color.parseColor(accountColor);
             holder.colorStripView.setBackgroundColor(colorCode);
@@ -480,7 +486,7 @@ public class AccountsListFragment extends Fragment implements
                         Intent intent = new Intent(getActivity(), FormActivity.class);
                         intent.setAction(Intent.ACTION_INSERT_OR_EDIT);
                         intent.putExtra(UxArgument.SELECTED_ACCOUNT_UID, accountUID);
-                        intent.putExtra(UxArgument.FORM_TYPE, FormActivity.FormType.TRANSACTION_FORM.name());
+                        intent.putExtra(UxArgument.FORM_TYPE, FormActivity.FormType.TRANSACTION.name());
                         getActivity().startActivity(intent);
                     }
                 });
@@ -504,7 +510,8 @@ public class AccountsListFragment extends Fragment implements
                     int drawableResource = !isFavoriteAccount ?
                             R.drawable.ic_star_black_24dp : R.drawable.ic_star_border_black_24dp;
                     holder.favoriteStatus.setImageResource(drawableResource);
-                    refresh();
+                    if (mDisplayMode == DisplayMode.FAVORITES)
+                        refresh();
                 }
             });
 

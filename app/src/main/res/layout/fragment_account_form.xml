@@ -20,7 +20,7 @@
             android:layout_height="match_parent">
     <LinearLayout android:id="@+id/fragment_account_form"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:padding="@dimen/dialog_padding"
             android:orientation="vertical" >
 
@@ -42,17 +42,27 @@
             </EditText>
         </android.support.design.widget.TextInputLayout>
 
-        <TextView
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="@dimen/form_row_bottom_margin">
+            <TextView
                 android:text="@string/label_account_currency"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_width="wrap_content"
-                android:layout_marginBottom="-8dip"
-                style="@style/TextAppearance.EditTransaction_LabelSmall" />
+                android:gravity="center_vertical"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="@dimen/dialog_padding"
+                style="@style/TextAppearance.EditTransaction_Small"/>
 
-        <Spinner android:id="@+id/input_currency_spinner"
-                 android:layout_width="match_parent"
-                 android:layout_height="wrap_content"
-                 android:layout_marginBottom="@dimen/form_row_bottom_margin" />
+            <Spinner android:id="@+id/input_currency_spinner"
+                android:minHeight="?android:attr/listPreferredItemHeight"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+        </LinearLayout>
+
 
         <TextView
                 android:text="@string/label_account_color_and_type"
@@ -76,10 +86,10 @@
 
             <Spinner android:id="@+id/input_account_type_spinner"
                      android:layout_width="0dp"
+                    android:minHeight="?android:attr/listPreferredItemHeight"
                      android:layout_height="wrap_content"
                      android:layout_weight="1"
-                     android:layout_marginLeft="@dimen/dialog_padding"
-                     android:layout_marginBottom="@dimen/form_row_bottom_margin" />
+                     android:layout_marginLeft="@dimen/dialog_padding" />
         </LinearLayout>
 
         <android.support.design.widget.TextInputLayout
@@ -95,7 +105,6 @@
                 android:layout_marginBottom="@dimen/form_row_bottom_margin"
                 android:ems="15"
                 android:inputType="textCapSentences"
-                android:background="@android:color/transparent"
                 android:hint="@string/hint_account_description">
             </EditText>
         </android.support.design.widget.TextInputLayout>

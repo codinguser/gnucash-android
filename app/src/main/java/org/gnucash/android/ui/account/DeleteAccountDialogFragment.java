@@ -38,7 +38,7 @@ import org.gnucash.android.db.SplitsDbAdapter;
 import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.model.AccountType;
 import org.gnucash.android.ui.util.Refreshable;
-import org.gnucash.android.ui.widget.WidgetConfigurationActivity;
+import org.gnucash.android.ui.homescreen.WidgetConfigurationActivity;
 import org.gnucash.android.util.QualifiedAccountNameCursorAdapter;
 
 import java.util.Currency;

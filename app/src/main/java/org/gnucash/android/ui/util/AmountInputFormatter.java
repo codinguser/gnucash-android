@@ -33,7 +33,9 @@ import java.util.Locale;
  * of 2.45
  *
  * @author Ngewi Fet <ngewif@gmail.com>
+ * @deprecated Use {@link org.gnucash.android.ui.util.widget.CalculatorEditText} for getting input amounts from the user
  */
+@Deprecated
 public class AmountInputFormatter implements TextWatcher {
     private String current = "0";
     private EditText amountEditText;

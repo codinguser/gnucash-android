@@ -21,7 +21,6 @@ package org.gnucash.android.ui.settings;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -59,7 +58,7 @@ import org.gnucash.android.export.xml.GncXmlExporter;
 import org.gnucash.android.importer.ImportAsyncTask;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.model.Transaction;
-import org.gnucash.android.ui.UxArgument;
+import org.gnucash.android.ui.common.UxArgument;
 import org.gnucash.android.ui.account.AccountsActivity;
 import org.gnucash.android.ui.passcode.PasscodeLockScreenActivity;
 import org.gnucash.android.ui.passcode.PasscodePreferenceActivity;
@@ -279,7 +278,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity
     public void setImbalanceAccountsHidden(boolean useDoubleEntry) {
         String isHidden = useDoubleEntry ? "0" : "1";
         AccountsDbAdapter accountsDbAdapter = AccountsDbAdapter.getInstance();
-        List<Currency> currencies = accountsDbAdapter.getCurrencies();
+        List<Currency> currencies = accountsDbAdapter.getCurrenciesInUse();
         for (Currency currency : currencies) {
             String uid = accountsDbAdapter.getImbalanceAccountUID(currency);
             if (uid != null){
@@ -302,7 +301,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity
         String key = preference.getKey();
 
         if (key.equals(getString(R.string.key_import_accounts))){
-            importAccounts();
+            AccountsActivity.importAccounts(this);
             return true;
         }
 
@@ -495,23 +494,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity
         public void run() {
             mDeleteAccountsClickCount = 0;
             mDeleteTransactionsClickCount = 0;
-        }
-    }
-
-    /**
-     * Starts a request to pick a file to import into GnuCash
-     */
-    public void importAccounts() {
-        Intent pickIntent = new Intent(Intent.ACTION_GET_CONTENT);
-        pickIntent.setType("application/*");
-        Intent chooser = Intent.createChooser(pickIntent, getString(R.string.title_select_gnucash_xml_file));
-
-        try {
-            startActivityForResult(chooser, AccountsActivity.REQUEST_PICK_ACCOUNTS_FILE);
-        } catch (ActivityNotFoundException ex){
-            Crashlytics.log("No file manager for selecting files available");
-            Crashlytics.logException(ex);
-            Toast.makeText(this, R.string.toast_install_file_manager, Toast.LENGTH_LONG).show();
         }
     }
 

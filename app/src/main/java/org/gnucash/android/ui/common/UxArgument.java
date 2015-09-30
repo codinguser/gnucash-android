@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.gnucash.android.ui;
+package org.gnucash.android.ui.common;
 
 /**
  * Collection of constants which are passed across multiple pieces of the UI (fragments, activities, dialogs)
@@ -51,6 +51,11 @@ public final class UxArgument {
      * Key for storing the passcode
      */
     public static final String PASSCODE                 = "passcode";
+
+    /**
+     * Key for skipping the passcode screen. Use this only when there is no other choice.
+     */
+    public static final String SKIP_PASSCODE_SCREEN     = "skip_passcode_screen";
 
     /**
      * Amount passed as a string

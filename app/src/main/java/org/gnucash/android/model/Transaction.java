@@ -19,6 +19,7 @@ package org.gnucash.android.model;
 import android.content.Intent;
 
 import org.gnucash.android.BuildConfig;
+import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.CommoditiesDbAdapter;
 import org.gnucash.android.export.ofx.OfxHelper;
@@ -167,6 +168,7 @@ public class Transaction extends BaseModel{
 	 * Initializes the different fields to their default values.
 	 */
 	private void initDefaults(){
+        mCurrencyCode = Money.DEFAULT_CURRENCY_CODE;
 		this.mTimestamp = System.currentTimeMillis();
 	}
 
@@ -179,21 +181,6 @@ public class Transaction extends BaseModel{
      * @return Split whose amount is the imbalance of this transaction
      */
     public Split getAutoBalanceSplit(){
-        //The values should be balanced even for multi-currency transactions
-        //Currency lastCurrency = null;
-        //for (Split split : mSplitList) {
-        //    Currency currentCurrency = split.getQuantity().getCurrency();
-        //    if (lastCurrency == null)
-        //        lastCurrency = currentCurrency;
-        //    else if (lastCurrency != currentCurrency){
-        //        return null; //for now we will not autobalance multi-currency transactions
-        //    }
-        //}
-
-        //if all the splits are the same currency but the transaction is another
-        //if (!lastCurrency.getCurrencyCode().equals(mCurrencyCode))
-        //    return null;
-
         Money imbalance = getImbalance();
         if (!imbalance.isAmountZero()){
             Currency currency = Currency.getInstance(mCurrencyCode);

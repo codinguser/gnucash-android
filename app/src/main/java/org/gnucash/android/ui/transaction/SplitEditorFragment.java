@@ -17,14 +17,14 @@ package org.gnucash.android.ui.transaction;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.database.Cursor;
+import android.inputmethodservice.KeyboardView;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -32,12 +32,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.gnucash.android.R;
 import org.gnucash.android.db.AccountsDbAdapter;
@@ -47,12 +47,13 @@ import org.gnucash.android.model.Money;
 import org.gnucash.android.model.Split;
 import org.gnucash.android.model.Transaction;
 import org.gnucash.android.model.TransactionType;
-import org.gnucash.android.ui.FormActivity;
-import org.gnucash.android.ui.UxArgument;
+import org.gnucash.android.ui.common.FormActivity;
+import org.gnucash.android.ui.common.UxArgument;
 import org.gnucash.android.ui.transaction.dialog.TransferFundsDialogFragment;
-import org.gnucash.android.ui.util.AmountInputFormatter;
+import org.gnucash.android.ui.util.widget.CalculatorEditText;
+import org.gnucash.android.ui.util.widget.CalculatorKeyboard;
 import org.gnucash.android.ui.util.OnTransferFundsListener;
-import org.gnucash.android.ui.util.TransactionTypeSwitch;
+import org.gnucash.android.ui.util.widget.TransactionTypeSwitch;
 import org.gnucash.android.util.QualifiedAccountNameCursorAdapter;
 
 import java.math.BigDecimal;
@@ -71,9 +72,8 @@ import butterknife.ButterKnife;
  */
 public class SplitEditorFragment extends Fragment {
 
-    @Bind(R.id.split_list_layout) LinearLayout mSplitsLinearLayout;
-    @Bind(R.id.imbalance_textview) TextView mImbalanceTextView;
-    @Bind(R.id.btn_add_split) Button mAddSplit;
+    @Bind(R.id.split_list_layout)   LinearLayout mSplitsLinearLayout;
+    @Bind(R.id.calculator_keyboard) KeyboardView mKeyboardView;
 
     private AccountsDbAdapter mAccountsDbAdapter;
     private Cursor mCursor;
@@ -81,10 +81,11 @@ public class SplitEditorFragment extends Fragment {
     private List<View> mSplitItemViewList;
     private String mAccountUID;
 
-    private BalanceTextWatcher mBalanceUpdater = new BalanceTextWatcher();
     private BigDecimal mBaseAmount = BigDecimal.ZERO;
 
     private ArrayList<String> mRemovedSplitUIDs = new ArrayList<>();
+
+    CalculatorKeyboard mCalculatorKeyboard;
 
     /**
      * Create and return a new instance of the fragment with the appropriate paramenters
@@ -102,13 +103,6 @@ public class SplitEditorFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_split_editor, container, false);
         ButterKnife.bind(this, view);
-
-        mAddSplit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                addSplitView(null);
-            }
-        });
         return view;
     }
 
@@ -118,9 +112,10 @@ public class SplitEditorFragment extends Fragment {
 
         ActionBar actionBar = ((AppCompatActivity)getActivity()).getSupportActionBar();
         assert actionBar != null;
-        actionBar.setTitle(R.string.title_transaction_splits);
+        actionBar.setTitle(R.string.title_split_editor);
         setHasOptionsMenu(true);
 
+        mCalculatorKeyboard = new CalculatorKeyboard(getActivity(), mKeyboardView, R.xml.calculator_keyboard);
         mSplitItemViewList = new ArrayList<>();
 
         //we are editing splits for a new transaction.
@@ -147,8 +142,12 @@ public class SplitEditorFragment extends Fragment {
             view.findViewById(R.id.input_accounts_spinner).setEnabled(false);
             view.findViewById(R.id.btn_remove_split).setVisibility(View.GONE);
         }
+    }
 
-        updateTotal();
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        mCalculatorKeyboard = new CalculatorKeyboard(getActivity(), mKeyboardView, R.xml.calculator_keyboard);
     }
 
     private void loadSplitViews(List<Split> splitList) {
@@ -159,7 +158,7 @@ public class SplitEditorFragment extends Fragment {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.default_save_actions, menu);
+        inflater.inflate(R.menu.split_editor_actions, menu);
     }
 
     @Override
@@ -173,6 +172,10 @@ public class SplitEditorFragment extends Fragment {
 
             case R.id.menu_save:
                 saveSplits();
+                return true;
+
+            case R.id.menu_add_split:
+                addSplitView(null);
                 return true;
 
             default:
@@ -217,7 +220,7 @@ public class SplitEditorFragment extends Fragment {
      */
     class SplitViewHolder implements OnTransferFundsListener{
         @Bind(R.id.input_split_memo)        EditText splitMemoEditText;
-        @Bind(R.id.input_split_amount)      EditText splitAmountEditText;
+        @Bind(R.id.input_split_amount)      CalculatorEditText splitAmountEditText;
         @Bind(R.id.btn_remove_split)        ImageView removeSplitButton;
         @Bind(R.id.input_accounts_spinner)  Spinner accountsSpinner;
         @Bind(R.id.split_currency_symbol)   TextView splitCurrencyTextView;
@@ -226,12 +229,11 @@ public class SplitEditorFragment extends Fragment {
 
         View splitView;
         Money quantity;
-        AmountInputFormatter amountInputFormatter;
 
         public SplitViewHolder(View splitView, Split split){
             ButterKnife.bind(this, splitView);
             this.splitView = splitView;
-            if (split != null)
+            if (split != null && !split.getQuantity().equals(split.getValue()))
                 this.quantity = split.getQuantity();
             setListeners(split);
         }
@@ -242,8 +244,7 @@ public class SplitEditorFragment extends Fragment {
         }
 
         private void setListeners(Split split){
-            amountInputFormatter = new AmountInputFormatter(splitAmountEditText);
-            splitAmountEditText.addTextChangedListener(amountInputFormatter);
+            splitAmountEditText.bindListeners(mCalculatorKeyboard);
 
             removeSplitButton.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -251,7 +252,6 @@ public class SplitEditorFragment extends Fragment {
                     mRemovedSplitUIDs.add(splitUidTextView.getText().toString());
                     mSplitsLinearLayout.removeView(splitView);
                     mSplitItemViewList.remove(splitView);
-                    updateTotal();
                 }
             });
 
@@ -264,6 +264,7 @@ public class SplitEditorFragment extends Fragment {
             splitUidTextView.setText(UUID.randomUUID().toString());
 
             if (split != null) {
+                splitAmountEditText.setCurrency(split.getValue().getCurrency());
                 splitAmountEditText.setText(split.getFormattedValue().toPlainString());
                 splitCurrencyTextView.setText(split.getValue().getCurrency().getSymbol());
                 splitMemoEditText.setText(split.getMemo());
@@ -276,14 +277,6 @@ public class SplitEditorFragment extends Fragment {
 
             accountsSpinner.setOnItemSelectedListener(new SplitAccountListener(splitTypeButton, this));
 
-            //put these balance update triggers last last so as to avoid computing while still loading
-            splitAmountEditText.addTextChangedListener(mBalanceUpdater);
-            splitTypeButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    updateTotal();
-                }
-            });
         }
     }
 
@@ -308,7 +301,32 @@ public class SplitEditorFragment extends Fragment {
         transferAccountSpinner.setAdapter(mCursorAdapter);
     }
 
+    /**
+     * Check if all the split amounts have valid values that can be saved
+     * @return {@code true} if splits can be saved, {@code false} otherwise
+     */
+    private boolean canSave(){
+        for (View splitView : mSplitItemViewList) {
+            SplitViewHolder viewHolder = (SplitViewHolder) splitView.getTag();
+            viewHolder.splitAmountEditText.evaluate();
+            if (viewHolder.splitAmountEditText.getError() != null){
+                return false;
+            }
+            //TODO: also check that multicurrency splits have a conversion amount present
+        }
+        return true;
+    }
+
+    /**
+     * Save all the splits from the split editor
+     */
     private void saveSplits() {
+        if (!canSave()){
+            Toast.makeText(getActivity(), R.string.toast_error_check_split_amounts,
+                    Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         List<Split> splitList = extractSplitsFromView();
         ArrayList<String> splitStrings = new ArrayList<>();
         for (Split split : splitList) {
@@ -330,10 +348,11 @@ public class SplitEditorFragment extends Fragment {
         List<Split> splitList = new ArrayList<>();
         for (View splitView : mSplitItemViewList) {
             SplitViewHolder viewHolder = (SplitViewHolder) splitView.getTag();
-            if (viewHolder.splitAmountEditText.getText().toString().isEmpty())
+            if (viewHolder.splitAmountEditText.getValue() == null)
                 continue;
 
-            BigDecimal amountBigDecimal = TransactionFormFragment.parseInputToDecimal(viewHolder.splitAmountEditText.getText().toString());
+            BigDecimal amountBigDecimal = viewHolder.splitAmountEditText.getValue();
+
             String currencyCode = mAccountsDbAdapter.getCurrencyCode(mAccountUID);
             Money valueAmount = new Money(amountBigDecimal, Currency.getInstance(currencyCode));
 
@@ -347,45 +366,6 @@ public class SplitEditorFragment extends Fragment {
             splitList.add(split);
         }
         return splitList;
-    }
-
-    /**
-     * Updates the displayed total for the transaction.
-     * Computes the total of the splits, the unassigned balance and the split sum
-     */
-    private void updateTotal(){
-        List<Split> splitList   = extractSplitsFromView();
-        String currencyCode     = mAccountsDbAdapter.getCurrencyCode(mAccountUID);
-        Money splitSum          = Money.createZeroInstance(currencyCode);
-        for (Split split : splitList) {
-            Money amount = split.getValue().absolute();
-            if (split.getType() == TransactionType.DEBIT)
-                splitSum = splitSum.subtract(amount);
-            else
-                splitSum = splitSum.add(amount);
-        }
-        TransactionsActivity.displayBalance(mImbalanceTextView, splitSum);
-    }
-
-    /**
-     * Updates the displayed balance of the accounts when the amount of a split is changed
-     */
-    private class BalanceTextWatcher implements TextWatcher {
-
-        @Override
-        public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
-
-        }
-
-        @Override
-        public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
-
-        }
-
-        @Override
-        public void afterTextChanged(Editable editable) {
-            updateTotal();
-        }
     }
 
     /**
@@ -420,13 +400,11 @@ public class SplitEditorFragment extends Fragment {
                 return;
             }
 
-            String stringAmount = mSplitViewHolder.splitAmountEditText.getText().toString();
-            if (stringAmount.isEmpty())
+            BigDecimal amountBigD = mSplitViewHolder.splitAmountEditText.getValue();
+            if (amountBigD == null)
                 return;
 
-            Money amount = new Money(
-                    TransactionFormFragment.parseInputToDecimal(stringAmount),
-                    Currency.getInstance(fromCurrencyCode));
+            Money amount = new Money(amountBigD, Currency.getInstance(fromCurrencyCode));
             TransferFundsDialogFragment fragment
                     = TransferFundsDialogFragment.getInstance(amount, targetCurrencyCode, mSplitViewHolder);
             fragment.show(getFragmentManager(), "tranfer_funds_editor");

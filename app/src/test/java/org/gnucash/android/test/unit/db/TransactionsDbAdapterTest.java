@@ -11,6 +11,7 @@ import org.gnucash.android.model.Split;
 import org.gnucash.android.model.Transaction;
 import org.gnucash.android.test.unit.util.GnucashTestRunner;
 import org.gnucash.android.test.unit.util.ShadowCrashlytics;
+import org.gnucash.android.test.unit.util.ShadowUserVoice;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -25,7 +26,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 
 @RunWith(GnucashTestRunner.class) //package is required so that resources can be found in dev mode
-@Config(constants = BuildConfig.class, packageName = "org.gnucash.android", shadows = {ShadowCrashlytics.class})
+@Config(constants = BuildConfig.class, sdk = 21, packageName = "org.gnucash.android", shadows = {ShadowCrashlytics.class, ShadowUserVoice.class})
 public class TransactionsDbAdapterTest {
 	private static final String ALPHA_ACCOUNT_NAME  = "Alpha";
 	private static final String BRAVO_ACCOUNT_NAME  = "Bravo";
@@ -89,19 +90,21 @@ public class TransactionsDbAdapterTest {
 		assertThat(mSplitsDbAdapter.getSplitsForTransaction(transaction.getUID())).hasSize(0);
 	}
 
-	/**
-	 * Adding a split to a transaction should set the transaction UID of the split to the GUID of the transaction
-	 */
 	@Test
-	public void addingSplitsShouldSetTransactionUID(){
-		Transaction transaction = new Transaction("");
-		assertThat(transaction.getCurrencyCode()).isEqualTo(Money.DEFAULT_CURRENCY_CODE);
-
-		Split split = new Split(Money.getZeroInstance(), alphaAccount.getUID());
-		assertThat(split.getTransactionUID()).isEmpty();
+	public void shouldBalanceTransactionsOnSave(){
+		Transaction transaction = new Transaction("Auto balance");
+		Split split = new Split(new Money(BigDecimal.TEN, Currency.getInstance(Money.DEFAULT_CURRENCY_CODE)),
+				alphaAccount.getUID());
 
 		transaction.addSplit(split);
-		assertThat(split.getTransactionUID()).isEqualTo(transaction.getUID());
+
+		mTransactionsDbAdapter.addRecord(transaction);
+
+		Transaction trn = mTransactionsDbAdapter.getRecord(transaction.getUID());
+		assertThat(trn.getSplits()).hasSize(2);
+
+		String imbalanceAccountUID = mAccountsDbAdapter.getImbalanceAccountUID(Currency.getInstance(Money.DEFAULT_CURRENCY_CODE));
+		assertThat(trn.getSplits()).extracting("mAccountUID").contains(imbalanceAccountUID);
 	}
 
 	@Test

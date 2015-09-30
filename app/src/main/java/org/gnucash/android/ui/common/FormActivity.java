@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.gnucash.android.ui;
+package org.gnucash.android.ui.common;
 
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
@@ -23,7 +23,6 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
@@ -32,8 +31,10 @@ import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.ui.account.AccountFormFragment;
 import org.gnucash.android.ui.export.ExportFormFragment;
+import org.gnucash.android.ui.passcode.PasscodeLockActivity;
 import org.gnucash.android.ui.transaction.TransactionFormFragment;
 import org.gnucash.android.ui.transaction.SplitEditorFragment;
+import org.gnucash.android.ui.util.widget.CalculatorKeyboard;
 
 /**
  * Activity for displaying forms in the application.
@@ -41,11 +42,13 @@ import org.gnucash.android.ui.transaction.SplitEditorFragment;
  * menu options (e.g. for saving etc)
  * @author Ngewi Fet <ngewif@gmail.com>
  */
-public class FormActivity extends AppCompatActivity {
+public class FormActivity extends PasscodeLockActivity {
 
     private String mAccountUID;
 
-    public enum FormType {ACCOUNT_FORM, TRANSACTION_FORM, EXPORT_FORM, SPLIT_EDITOR}
+    private CalculatorKeyboard mOnBackListener;
+
+    public enum FormType {ACCOUNT, TRANSACTION, EXPORT, SPLIT_EDITOR}
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,15 +79,15 @@ public class FormActivity extends AppCompatActivity {
                 getWindow().setStatusBarColor(GnuCashApplication.darken(colorCode));
         }
         switch (formType){
-            case ACCOUNT_FORM:
+            case ACCOUNT:
                 showAccountFormFragment(intent.getExtras());
                 break;
 
-            case TRANSACTION_FORM:
+            case TRANSACTION:
                 showTransactionFormFragment(intent.getExtras());
                 break;
 
-            case EXPORT_FORM:
+            case EXPORT:
                 showExportFormFragment(null);
                 break;
 
@@ -173,4 +176,21 @@ public class FormActivity extends AppCompatActivity {
         fragmentTransaction.add(R.id.fragment_container, fragment);
         fragmentTransaction.commit();
     }
+
+
+    public void setOnBackListener(CalculatorKeyboard keyboard) {
+        mOnBackListener = keyboard;
+    }
+
+    @Override
+    public void onBackPressed() {
+        boolean eventProcessed = false;
+
+        if (mOnBackListener != null)
+            eventProcessed = mOnBackListener.onBackPressed();
+
+        if (!eventProcessed)
+            super.onBackPressed();
+    }
+
 }

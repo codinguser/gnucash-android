@@ -6,14 +6,11 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TableLayout;
-import android.widget.TableRow;
 import android.widget.TextView;
 
 import org.gnucash.android.R;
@@ -25,9 +22,9 @@ import org.gnucash.android.model.Money;
 import org.gnucash.android.model.ScheduledAction;
 import org.gnucash.android.model.Split;
 import org.gnucash.android.model.Transaction;
-import org.gnucash.android.model.TransactionType;
-import org.gnucash.android.ui.FormActivity;
-import org.gnucash.android.ui.UxArgument;
+import org.gnucash.android.ui.common.FormActivity;
+import org.gnucash.android.ui.common.UxArgument;
+import org.gnucash.android.ui.passcode.PasscodeLockActivity;
 
 import java.text.DateFormat;
 import java.util.Date;
@@ -41,7 +38,7 @@ import butterknife.OnClick;
  * Activity for displaying transaction information
  * @author Ngewi Fet <ngewif@gmail.com>
  */
-public class TransactionDetailActivity extends AppCompatActivity{
+public class TransactionDetailActivity extends PasscodeLockActivity {
 
     @Bind(R.id.trn_description) TextView mTransactionDescription;
     @Bind(R.id.trn_time_and_date) TextView mTimeAndDate;
@@ -106,7 +103,7 @@ public class TransactionDetailActivity extends AppCompatActivity{
             ButterKnife.bind(this, view);
 
             AccountsDbAdapter accountsDbAdapter = AccountsDbAdapter.getInstance();
-            accountName.setText(accountsDbAdapter.getAccountName(split.getAccountUID()));
+            accountName.setText(accountsDbAdapter.getAccountFullName(split.getAccountUID()));
             Money quantity = split.getFormattedQuantity();
             TextView balanceView = quantity.isNegative() ? splitDebit : splitCredit;
             TransactionsActivity.displayBalance(balanceView, quantity);
@@ -133,18 +130,18 @@ public class TransactionDetailActivity extends AppCompatActivity{
         LayoutInflater inflater = LayoutInflater.from(this);
         int index = 0;
         for (Split split : transaction.getSplits()) {
-            if (useDoubleEntry && split.getAccountUID().equals(accountsDbAdapter.getImbalanceAccountUID(split.getValue().getCurrency()))){
+            if (!useDoubleEntry && split.getAccountUID().equals(accountsDbAdapter.getImbalanceAccountUID(split.getValue().getCurrency()))){
                 //do now show imbalance accounts for single entry use case
                 continue;
             }
             View view = inflater.inflate(R.layout.item_split_amount_info, mDetailTableLayout, false);
             SplitAmountViewHolder viewHolder = new SplitAmountViewHolder(view, split);
-            mDetailTableLayout.addView(view, index++);
+            mDetailTableLayout.addView(viewHolder.itemView, index++);
         }
 
 
         Date trnDate = new Date(transaction.getTimeMillis());
-        String timeAndDate = DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.SHORT).format(trnDate);
+        String timeAndDate = DateFormat.getDateInstance(DateFormat.FULL).format(trnDate);
         mTimeAndDate.setText(timeAndDate);
 
         if (transaction.getScheduledActionUID() != null){
@@ -156,7 +153,7 @@ public class TransactionDetailActivity extends AppCompatActivity{
             findViewById(R.id.row_trn_recurrence).setVisibility(View.GONE);
         }
 
-        if (transaction.getNote() != null){
+        if (transaction.getNote() != null && !transaction.getNote().isEmpty()){
             mNotes.setText(transaction.getNote());
             findViewById(R.id.row_trn_notes).setVisibility(View.VISIBLE);
         } else {
@@ -169,8 +166,20 @@ public class TransactionDetailActivity extends AppCompatActivity{
      * Refreshes the transaction information
      */
     private void refresh(){
+        removeSplitItemViews();
         bindViews();
     }
+
+    /**
+     * Remove the split item views from the transaction detail prior to refreshing them
+     */
+    private void removeSplitItemViews(){
+        long splitCount = TransactionsDbAdapter.getInstance().getSplitCount(mTransactionUID);
+        mDetailTableLayout.removeViews(0, (int)splitCount);
+        mDebitBalance.setText("");
+        mCreditBalance.setText("");
+    }
+
 
     @OnClick(R.id.fab_edit_transaction)
     public void editTransaction(){
@@ -178,7 +187,7 @@ public class TransactionDetailActivity extends AppCompatActivity{
         createTransactionIntent.setAction(Intent.ACTION_INSERT_OR_EDIT);
         createTransactionIntent.putExtra(UxArgument.SELECTED_ACCOUNT_UID, mAccountUID);
         createTransactionIntent.putExtra(UxArgument.SELECTED_TRANSACTION_UID, mTransactionUID);
-        createTransactionIntent.putExtra(UxArgument.FORM_TYPE, FormActivity.FormType.TRANSACTION_FORM.name());
+        createTransactionIntent.putExtra(UxArgument.FORM_TYPE, FormActivity.FormType.TRANSACTION.name());
         startActivityForResult(createTransactionIntent, REQUEST_EDIT_TRANSACTION);
     }
 

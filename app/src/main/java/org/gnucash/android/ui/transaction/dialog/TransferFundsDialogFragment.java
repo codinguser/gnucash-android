@@ -24,6 +24,7 @@ import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.DialogFragment;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -45,7 +46,6 @@ import org.gnucash.android.ui.util.OnTransferFundsListener;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
-import java.math.RoundingMode;
 import java.util.Currency;
 
 import butterknife.Bind;
@@ -104,6 +104,21 @@ public class TransferFundsDialogFragment extends DialogFragment {
 
         mSampleExchangeRate.setText("e.g. 1 " + fromCurrency.getCurrencyCode() + " = " + " x.xx " + mTargetCurrency.getCurrencyCode());
         final InputWatcher textChangeListener = new InputWatcher();
+
+        CommoditiesDbAdapter commoditiesDbAdapter = CommoditiesDbAdapter.getInstance();
+        String commodityUID = commoditiesDbAdapter.getCommodityUID(fromCurrency.getCurrencyCode());
+        String currencyUID = commoditiesDbAdapter.getCommodityUID(mTargetCurrency.getCurrencyCode());
+        PricesDbAdapter pricesDbAdapter = PricesDbAdapter.getInstance();
+        Pair<Long, Long> price = pricesDbAdapter.getPrice(commodityUID, currencyUID);
+
+        if (price.first > 0 && price.second > 0) {
+            // a valid price exists
+            BigDecimal num = new BigDecimal(price.first);
+            BigDecimal denom = new BigDecimal(price.second);
+            mExchangeRateInput.setText(num.divide(denom, MathContext.DECIMAL32).toString());
+            mConvertedAmountInput.setText(mOriginAmount.asBigDecimal().multiply(num).divide(denom, mTargetCurrency.getDefaultFractionDigits(), BigDecimal.ROUND_HALF_EVEN).toString());
+        }
+
         mExchangeRateInput.addTextChangedListener(textChangeListener);
         mExchangeRateInput.addTextChangedListener(new AmountInputFormatter(mExchangeRateInput));
         mConvertedAmountInput.addTextChangedListener(textChangeListener);
@@ -161,7 +176,7 @@ public class TransferFundsDialogFragment extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         Dialog dialog = super.onCreateDialog(savedInstanceState);
-        dialog.setTitle("Transfer Funds");
+        dialog.setTitle(R.string.title_transfer_funds);
         return dialog;
     }
 
@@ -172,7 +187,7 @@ public class TransferFundsDialogFragment extends DialogFragment {
         if (mExchangeRateRadioButton.isChecked()){
             String exchangeRateString = mExchangeRateInput.getText().toString();
             if (exchangeRateString.isEmpty()){
-                mExchangeRateInputLayout.setError("An exchange rate is required");
+                mExchangeRateInputLayout.setError(getString(R.string.error_exchange_rate_required));
                 return;
             }
 
@@ -183,7 +198,7 @@ public class TransferFundsDialogFragment extends DialogFragment {
         if (mConvertedAmountRadioButton.isChecked()){
             String convertedAmount = mConvertedAmountInput.getText().toString();
             if (convertedAmount.isEmpty()){
-                mConvertedAmountInputLayout.setError("The converted amount is required");
+                mConvertedAmountInputLayout.setError(getString(R.string.error_converted_amount_required));
                 return;
             }
 
@@ -197,10 +212,10 @@ public class TransferFundsDialogFragment extends DialogFragment {
             Price price = new Price(commoditiesDbAdapter.getCommodityUID(mOriginAmount.getCurrency().getCurrencyCode()),
                     commoditiesDbAdapter.getCommodityUID(mTargetCurrency.getCurrencyCode()));
             price.setSource(Price.SOURCE_USER);
-            BigDecimal rateDecimal = mConvertedAmount.asBigDecimal().divide(mOriginAmount.asBigDecimal(), RoundingMode.HALF_EVEN);
-            Money rate = new Money(rateDecimal, mTargetCurrency); //the currency is irrelevant
-            price.setValueNum(rate.getNumerator());
-            price.setValueDenom(rate.getDenominator());
+            // fractions cannot be exacted represented by BigDecimal.
+            price.setValueNum(mConvertedAmount.getNumerator() * mOriginAmount.getDenominator());
+            price.setValueDenom(mOriginAmount.getNumerator() * mConvertedAmount.getDenominator());
+            price.reduce();
             pricesDbAdapter.addRecord(price);
 
             mOnTransferFundsListener.transferComplete(mConvertedAmount);

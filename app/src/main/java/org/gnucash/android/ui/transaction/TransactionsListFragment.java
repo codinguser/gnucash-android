@@ -49,11 +49,11 @@ import org.gnucash.android.db.SplitsDbAdapter;
 import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.model.Split;
-import org.gnucash.android.ui.FormActivity;
-import org.gnucash.android.ui.UxArgument;
-import org.gnucash.android.ui.util.EmptyRecyclerView;
+import org.gnucash.android.ui.common.FormActivity;
+import org.gnucash.android.ui.common.UxArgument;
+import org.gnucash.android.ui.util.widget.EmptyRecyclerView;
 import org.gnucash.android.ui.util.Refreshable;
-import org.gnucash.android.ui.widget.WidgetConfigurationActivity;
+import org.gnucash.android.ui.homescreen.WidgetConfigurationActivity;
 import org.ocpsoft.prettytime.PrettyTime;
 
 import java.util.Date;
@@ -274,7 +274,7 @@ public class TransactionsListFragment extends Fragment implements
 				@Override
 				public void onClick(View v) {
 					Intent intent = new Intent(getActivity(), FormActivity.class);
-					intent.putExtra(UxArgument.FORM_TYPE, FormActivity.FormType.TRANSACTION_FORM.name());
+					intent.putExtra(UxArgument.FORM_TYPE, FormActivity.FormType.TRANSACTION.name());
 					intent.putExtra(UxArgument.SELECTED_TRANSACTION_UID, transactionUID);
 					intent.putExtra(UxArgument.SELECTED_ACCOUNT_UID, mAccountUID);
 					startActivity(intent);

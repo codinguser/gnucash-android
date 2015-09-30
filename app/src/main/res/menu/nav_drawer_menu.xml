@@ -15,7 +15,6 @@
  limitations under the License.
 -->
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- TODO: add icons -->
     <item
         android:id="@+id/nav_section_accounts"
         android:title="@string/title_accounts">
@@ -51,5 +50,9 @@
         android:id="@+id/nav_item_settings"
         android:icon="@drawable/ic_settings_black_24dp"
         android:title="@string/nav_menu_settings"/>
+    <item
+        android:id="@+id/nav_item_help"
+        android:icon="@drawable/ic_help_black_24dp"
+        android:title="@string/nav_menu_help"/>
 
 </menu>

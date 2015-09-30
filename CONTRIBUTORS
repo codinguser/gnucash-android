@@ -1,16 +1,17 @@
-GnuCash for Android is a community effort which is made possible by the contributions of 
+GnuCash for Android is a community effort which is made possible by the contributions of
 several different people.
-Appreciation goes to Muslim Chochlov and the to whole GnuCash community for guiding the 
+Appreciation goes to Muslim Chochlov and the to whole GnuCash community for guiding the
 project through the early phases and providing valuable feedback.
 
-Lead Developer: 
+Lead Developer:
 Ngewi Fet <ngewif@gmail.com>
 
 Main contributors to core app experience:
 Yongxin Wang <fefe.wyx@gmail.com>
 Oleksandr Tyshkovets <olexandr.tyshkovets@gmail.com>
+Àlex Magaz Graça <rivaldi8@gmail.com>
 
-The following people (in no particular order) contributed (code and translations) to GnuCash for Android:
+The following people (in no particular order) contributed (patches and translations) to GnuCash Android:
 Christian Stimming <christian@cstimming.de>
 Cristian Marchi <cri.penta@gmail.com>
 Menelaos Maglis <mmaglis@metacom.gr>
@@ -27,5 +28,4 @@ Alex Lei <lxbzmy@gmail.com>
 Matthew Hague <matthewhague@zoho.com>
 Spanti Nicola <rydroid_dev@yahoo.com>
 Jesse Shieh <jesse.shieh.pub@gmail.com>
-Àlex Magaz Graça <rivaldi8@gmail.com>
 Terry Chung <terrywmc@gmail.com>

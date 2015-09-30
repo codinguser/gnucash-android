@@ -57,7 +57,7 @@ limitations under the License.
                 android:layout_weight="1"
                 android:drawableLeft="@drawable/ic_subject_white_24dp"
                 android:drawableStart="@drawable/ic_subject_white_24dp"
-                android:text="Summary"/>
+                android:text="@string/title_report_sheet"/>
 
         </TableRow>
     </TableLayout>
@@ -67,7 +67,7 @@ limitations under the License.
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="16sp"
-        android:text="Expenses for last 3 months"/>
+        android:text="@string/label_last_3_months_expenses"/>
 
     <android.support.v7.widget.CardView
         android:id="@+id/card_report_summary_chart"
@@ -98,7 +98,7 @@ limitations under the License.
                     android:layout_weight="1"
                     android:layout_height="wrap_content"
                     android:textSize="18sp"
-                    android:text="Total Assets"/>
+                    android:text="@string/label_total_assets"/>
                 <TextView android:id="@+id/total_assets"
                     android:layout_weight="1"
                     android:gravity="right"
@@ -112,7 +112,7 @@ limitations under the License.
                     android:layout_weight="1"
                     android:layout_height="wrap_content"
                     android:textSize="18sp"
-                    android:text="Total Liabilities"/>
+                    android:text="@string/label_total_liabilities"/>
                 <TextView android:id="@+id/total_liabilities"
                     android:layout_weight="1"
                     android:textSize="18sp"
@@ -126,7 +126,7 @@ limitations under the License.
                     android:layout_weight="1"
                     android:layout_height="wrap_content"
                     android:textSize="18sp"
-                    android:text="Net Worth"/>
+                    android:text="@string/label_net_worth"/>
                 <TextView android:id="@+id/net_worth"
                     android:layout_weight="1"
                     tools:text="$ -200"

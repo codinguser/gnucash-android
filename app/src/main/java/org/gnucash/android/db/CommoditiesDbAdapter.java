@@ -82,6 +82,16 @@ public class CommoditiesDbAdapter extends DatabaseAdapter<Commodity> {
     }
 
     /**
+     * Fetches all commodities in the database sorted in the specified order
+     * @param orderBy SQL statement for orderBy without the ORDER_BY itself
+     * @return Cursor holding all commodity records
+     */
+    public Cursor fetchAllRecords(String orderBy) {
+        return mDb.query(mTableName, null, null, null, null, null,
+                orderBy);
+    }
+
+    /**
      * Returns the commodity associated with the ISO4217 currency code
      * @param currencyCode 3-letter currency code
      * @return Commodity associated with code or null if none is found
@@ -96,22 +106,15 @@ public class CommoditiesDbAdapter extends DatabaseAdapter<Commodity> {
         return commodity;
     }
 
-    /**
-     * Returns the commodity GUID for the given ISO 4217 currency code
-     * @param currencyCode ISO 4217 currency code
-     * @return GUID of commodity
-     */
-    public String getCommodityUID(String currencyCode){
-        String where = CommodityEntry.COLUMN_MNEMONIC + "= ?";
-        String[] whereArgs = new String[]{currencyCode};
-
-        Cursor cursor = mDb.query(mTableName, new String[]{CommodityEntry.COLUMN_UID},
-                where, whereArgs, null, null, null);
+    public String getCurrencyCode(@NonNull String guid) {
+        Cursor cursor = mDb.query(mTableName, new String[]{CommodityEntry.COLUMN_MNEMONIC},
+                DatabaseSchema.CommonColumns.COLUMN_UID + " = ?", new String[]{guid},
+                null, null, null);
         try {
             if (cursor.moveToNext()) {
-                return cursor.getString(cursor.getColumnIndexOrThrow(CommodityEntry.COLUMN_UID));
+                return cursor.getString(cursor.getColumnIndexOrThrow(CommodityEntry.COLUMN_MNEMONIC));
             } else {
-                throw new IllegalArgumentException("Currency code not found in commodities");
+                throw new IllegalArgumentException("guid " + guid + " not exits in commodity db");
             }
         } finally {
             cursor.close();

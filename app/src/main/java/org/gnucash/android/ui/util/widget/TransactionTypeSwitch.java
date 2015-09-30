@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.gnucash.android.ui.util;
+package org.gnucash.android.ui.util.widget;
 
 import android.content.Context;
 import android.support.v7.widget.SwitchCompat;
@@ -27,7 +27,6 @@ import org.gnucash.android.R;
 import org.gnucash.android.model.AccountType;
 import org.gnucash.android.model.Transaction;
 import org.gnucash.android.model.TransactionType;
-import org.gnucash.android.ui.transaction.TransactionFormFragment;
 
 /**
  * A special type of {@link android.widget.ToggleButton} which displays the appropriate CREDIT/DEBIT labels for the
@@ -166,8 +165,15 @@ public class TransactionTypeSwitch extends SwitchCompat {
             }
             String amountText = mAmountEditText.getText().toString();
             if (amountText.length() > 0){
-                String changedSignText = TransactionFormFragment.parseInputToDecimal(amountText).negate().toPlainString();
-                mAmountEditText.setText(changedSignText); //trigger an edit to update the number sign
+                String newText = amountText;
+                if (isChecked && !amountText.startsWith("-")){
+                    newText = "-" + amountText;
+                }
+                if (!isChecked && amountText.startsWith("-")){
+                    newText = amountText.substring(1);
+                }
+                mAmountEditText.setText(newText);
+                mAmountEditText.setSelection(newText.length());
             }
         }
     }

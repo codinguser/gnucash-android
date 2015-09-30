@@ -44,6 +44,7 @@ import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.github.mikephil.charting.utils.LargeValueFormatter;
 
 import org.gnucash.android.R;
+import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.model.Account;
@@ -52,6 +53,7 @@ import org.gnucash.android.model.Money;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 import org.joda.time.Months;
+import org.joda.time.Years;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -66,6 +68,9 @@ import java.util.Map;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
+import static org.gnucash.android.ui.report.ReportsActivity.COLORS;
+import static org.gnucash.android.ui.report.ReportsActivity.GroupInterval;
+
 /**
  * Activity used for drawing a bar chart
  *
@@ -76,7 +81,9 @@ public class BarChartFragment extends Fragment implements OnChartValueSelectedLi
     ReportOptionsListener {
 
     private static final String TAG = "BarChartFragment";
-    private static final String X_AXIS_PATTERN = "MMM YY";
+    private static final String X_AXIS_MONTH_PATTERN = "MMM YY";
+    private static final String X_AXIS_QUARTER_PATTERN = "Q%d %s";
+    private static final String X_AXIS_YEAR_PATTERN = "YYYY";
     private static final String SELECTED_VALUE_PATTERN = "%s - %.2f (%.2f %%)";
     private static final int ANIMATION_DURATION = 2000;
     private static final int NO_DATA_COLOR = Color.LTGRAY;
@@ -102,6 +109,8 @@ public class BarChartFragment extends Fragment implements OnChartValueSelectedLi
      */
     private long mReportEndTime = -1;
 
+    private GroupInterval mGroupInterval = GroupInterval.MONTH;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -126,8 +135,7 @@ public class BarChartFragment extends Fragment implements OnChartValueSelectedLi
         mUseAccountColor = PreferenceManager.getDefaultSharedPreferences(getActivity())
                 .getBoolean(getString(R.string.key_use_account_color), false);
 
-        mCurrency = Currency.getInstance(PreferenceManager.getDefaultSharedPreferences(getActivity())
-                .getString(getString(R.string.key_report_currency), Money.DEFAULT_CURRENCY_CODE));
+        mCurrency = Currency.getInstance(GnuCashApplication.getDefaultCurrencyCode());
 
         mChart.setOnChartValueSelectedListener(this);
         mChart.setDescription("");
@@ -138,8 +146,8 @@ public class BarChartFragment extends Fragment implements OnChartValueSelectedLi
         mChart.getAxisLeft().setValueFormatter(new LargeValueFormatter(mCurrency.getSymbol(Locale.getDefault())));
         Legend chartLegend = mChart.getLegend();
         chartLegend.setForm(Legend.LegendForm.CIRCLE);
-        chartLegend.setPosition(Legend.LegendPosition.BELOW_CHART_CENTER);
-        chartLegend.setTextSize(16);
+        chartLegend.setPosition(Legend.LegendPosition.RIGHT_OF_CHART_INSIDE);
+//        chartLegend.setWordWrapEnabled(true); in MPAndroidChart 2.1.3 legend wrapping cause app crash
 
         mChart.setData(getData(((ReportsActivity) getActivity()).getAccountType()));
         displayChart();
@@ -158,9 +166,34 @@ public class BarChartFragment extends Fragment implements OnChartValueSelectedLi
         Map<String, Integer> accountToColorMap = new LinkedHashMap<>();
         List<String> xValues = new ArrayList<>();
         LocalDateTime tmpDate = new LocalDateTime(getStartDate(accountType).toDate().getTime());
-        for (int i = 0; i <= Months.monthsBetween(getStartDate(accountType), getEndDate(accountType)).getMonths(); i++) {
-            long start = tmpDate.dayOfMonth().withMinimumValue().millisOfDay().withMinimumValue().toDate().getTime();
-            long end = tmpDate.dayOfMonth().withMaximumValue().millisOfDay().withMaximumValue().toDate().getTime();
+        int count = getDateDiff(new LocalDateTime(getStartDate(accountType).toDate().getTime()), new LocalDateTime(getEndDate(accountType).toDate().getTime()));
+        for (int i = 0; i <= count; i++) {
+            long start = 0;
+            long end = 0;
+            switch (mGroupInterval) {
+                case MONTH:
+                    start = tmpDate.dayOfMonth().withMinimumValue().millisOfDay().withMinimumValue().toDate().getTime();
+                    end = tmpDate.dayOfMonth().withMaximumValue().millisOfDay().withMaximumValue().toDate().getTime();
+
+                    xValues.add(tmpDate.toString(X_AXIS_MONTH_PATTERN));
+                    tmpDate = tmpDate.plusMonths(1);
+                    break;
+                case QUARTER:
+                    int quarter = getQuarter(tmpDate);
+                    start = tmpDate.withMonthOfYear(quarter * 3 - 2).dayOfMonth().withMinimumValue().millisOfDay().withMinimumValue().toDate().getTime();
+                    end = tmpDate.withMonthOfYear(quarter * 3).dayOfMonth().withMaximumValue().millisOfDay().withMaximumValue().toDate().getTime();
+
+                    xValues.add(String.format(X_AXIS_QUARTER_PATTERN, quarter, tmpDate.toString(" YY")));
+                    tmpDate = tmpDate.plusMonths(3);
+                    break;
+                case YEAR:
+                    start = tmpDate.dayOfYear().withMinimumValue().millisOfDay().withMinimumValue().toDate().getTime();
+                    end = tmpDate.dayOfYear().withMaximumValue().millisOfDay().withMaximumValue().toDate().getTime();
+
+                    xValues.add(tmpDate.toString(X_AXIS_YEAR_PATTERN));
+                    tmpDate = tmpDate.plusYears(1);
+                    break;
+            }
             List<Float> stack = new ArrayList<>();
             for (Account account : mAccountsDbAdapter.getSimpleAccountList()) {
                 if (account.getAccountType() == accountType
@@ -175,9 +208,9 @@ public class BarChartFragment extends Fragment implements OnChartValueSelectedLi
                             if (mUseAccountColor) {
                                 color = (account.getColorHexCode() != null)
                                         ? Color.parseColor(account.getColorHexCode())
-                                        : ReportsActivity.COLORS[accountToColorMap.size() % ReportsActivity.COLORS.length];
+                                        : COLORS[accountToColorMap.size() % COLORS.length];
                             } else {
-                                color = ReportsActivity.COLORS[accountToColorMap.size() % ReportsActivity.COLORS.length];
+                                color = COLORS[accountToColorMap.size() % COLORS.length];
                             }
                             accountToColorMap.put(account.getUID(), color);
                         }
@@ -192,10 +225,6 @@ public class BarChartFragment extends Fragment implements OnChartValueSelectedLi
 
             String stackLabels = labels.subList(labels.size() - stack.size(), labels.size()).toString();
             values.add(new BarEntry(floatListToArray(stack), i, stackLabels));
-
-            xValues.add(tmpDate.toString(X_AXIS_PATTERN));
-
-            tmpDate = tmpDate.plusMonths(1);
         }
 
         BarDataSet set = new BarDataSet(values, "");
@@ -268,6 +297,35 @@ public class BarChartFragment extends Fragment implements OnChartValueSelectedLi
     }
 
     /**
+     * Calculates difference between two date values accordingly to {@code mGroupInterval}
+     * @param start start date
+     * @param end end date
+     * @return difference between two dates or {@code -1}
+     */
+    private int getDateDiff(LocalDateTime start, LocalDateTime end) {
+        switch (mGroupInterval) {
+            case QUARTER:
+                int y = Years.yearsBetween(start.withDayOfYear(1).withMillisOfDay(0), end.withDayOfYear(1).withMillisOfDay(0)).getYears();
+                return (getQuarter(end) - getQuarter(start) + y * 4);
+            case MONTH:
+                return Months.monthsBetween(start.withDayOfMonth(1).withMillisOfDay(0), end.withDayOfMonth(1).withMillisOfDay(0)).getMonths();
+            case YEAR:
+                return Years.yearsBetween(start.withDayOfYear(1).withMillisOfDay(0), end.withDayOfYear(1).withMillisOfDay(0)).getYears();
+            default:
+                return -1;
+        }
+    }
+
+    /**
+     * Returns a quarter of the specified date
+     * @param date date
+     * @return a quarter
+     */
+    private int getQuarter(LocalDateTime date) {
+        return ((date.getMonthOfYear() - 1) / 3 + 1);
+    }
+
+    /**
      * Converts the specified list of floats to an array
      * @param list a list of floats
      * @return a float array
@@ -313,7 +371,7 @@ public class BarChartFragment extends Fragment implements OnChartValueSelectedLi
         LinkedHashSet<String> labels = new LinkedHashSet<>(Arrays.asList(dataSet.getStackLabels()));
         LinkedHashSet<Integer> colors = new LinkedHashSet<>(dataSet.getColors());
 
-        if (ReportsActivity.COLORS.length >= labels.size()) {
+        if (COLORS.length >= labels.size()) {
             legend.setCustom(new ArrayList<>(colors), new ArrayList<>(labels));
             return;
         }
@@ -330,8 +388,10 @@ public class BarChartFragment extends Fragment implements OnChartValueSelectedLi
     }
 
     @Override
-    public void onGroupingUpdated(ReportsActivity.GroupInterval groupInterval) {
-        //TODO: update bar chart display with appropriate grouping
+    public void onGroupingUpdated(GroupInterval groupInterval) {
+        mGroupInterval = groupInterval;
+        mChart.setData(getData(((ReportsActivity) getActivity()).getAccountType()));
+        displayChart();
     }
 
     @Override
@@ -397,6 +457,6 @@ public class BarChartFragment extends Fragment implements OnChartValueSelectedLi
 
     @Override
     public void onNothingSelected() {
-        selectedValueTextView.setText("Select an bar to view details");
+        selectedValueTextView.setText(R.string.label_select_bar_to_view_details);
     }
 }

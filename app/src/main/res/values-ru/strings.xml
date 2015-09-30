@@ -265,7 +265,7 @@
         <string name="label_widget_configuration">Выберите счёт</string>
 	<string name="toast_no_transactions_to_export">Нет проводок для экспорта</string>
 	<string name="title_about_gnucash">О Gnucash</string>
-        <string name="summary_about_gnucash">Gnucash - программа учёта финансов для Android.\nОна позволяет легко отслеживать расходы и передавать информацию в Gnucash для рабочей станции посредством файлов формата OFX (Open Financial eXchange).</string>
+        <string name="summary_about_gnucash">A mobile finance management and expense-tracker designed for Android</string>
 	<string name="title_about">О программе</string>
 	<string name="toast_format_exported_to">Файл %1$s экспортирован в:\n</string>
 	<string name="title_export_email">Экспорт %1$s-файла из Gnucash Android</string>
@@ -297,12 +297,12 @@
 	<string name="summary_xml_ofx_header">Включите эту опцию, если экспортируете в программы отличные от GnuCash для ПК</string>
 	<string name="title_whats_new">Новости</string>
 	<string name="whats_new">
-        - Наглядные отчёты (Гистограммы/круговые диаграммы/графики) \n
-        - Планировщик резервного сохранения (QIF, OFX или XML)\n
-        - Сохранение/Экспорт в DropBox и Google Drive\n
-        - Улучшенные настройки повторяющихся проводок\n
-        - Меню быстрого доступа к настройкам\n
-        - Множественные исправления ошибок и улучшения\n
+        - New Material app design \n
+        - Multi-currency transactions\n
+        - Calculator to transaction amounts\n
+        - Better reporting options\n
+        - New help &amp; feedback section\n
+        - Multiple bug fixes and improvements\n
 	</string>
 	<string name="label_dismiss">Отказаться</string>
     <string name="toast_transanction_amount_required">Введите сумму, чтобы сохранить проводку</string>
@@ -513,12 +513,61 @@
     <string name="label_no_favorite_accounts">No favorite accounts</string>
     <string name="nav_menu_scheduled_actions">Scheduled Actions</string>
     <string name="label_scheduled_action_ended">"Ended, last executed on "</string>
+    <string name="label_select_bar_to_view_details">Select a bar to view details</string>
+    <string name="btn_wizard_next">Next</string>
+    <string name="btn_wizard_finish">Done</string>
+    <string name="wizard_title_default_currency">Default Currency</string>
+    <string name="wizard_title_account_setup">Account Setup</string>
+    <string name="wizard_title_select_currency">Select Currency</string>
+    <string name="wizard_title_feedback_options">Feedback Options</string>
+    <string name="wizard_option_create_default_accounts">Create default accounts</string>
+    <string name="wizard_option_import_my_accounts">Import my accounts</string>
+    <string name="wizard_option_let_me_handle_it">Let me handle it</string>
+    <string name="wizard_option_currency_other">Other...</string>
+    <string name="wizard_option_auto_send_crash_reports">Automatically send crash reports</string>
+    <string name="wizard_option_disable_crash_reports">Disable crash reports</string>
+    <string name="wizard_btn_back">Back</string>
+    <string name="title_setup_gnucash">Setup GnuCash</string>
+    <string name="wizard_title_welcome_to_gnucash">Welcome to GnuCash</string>
+    <string name="msg_wizard_welcome_page">Before you dive in, \nlet\'s setup a few things first\n\nTo continue, press Next</string>
+    <string name="title_split_editor">Split Editor</string>
+    <string name="toast_error_check_split_amounts">Check that all splits have valid amounts before saving!</string>
+    <string name="label_error_invalid_expression">Invalid expression!</string>
+    <string name="toast_scheduled_recurring_transaction">Scheduled recurring transaction</string>
+    <string name="error_exchange_rate_required">An exchange rate is required</string>
+    <string name="error_converted_amount_required">The converted amount is required</string>
+    <string name="title_transfer_funds">Transfer Funds</string>
+    <string name="nav_menu_help"><![CDATA[Help & Feedback]]></string>
+    <string name="label_select_pie_slice_to_see_details">Select a slice to see details</string>
+    <string name="label_report_period">Period:</string>
+    <string name="label_convert_from">From:</string>
+    <string name="label_convert_to">To:</string>
+    <string name="msg_provide_exchange_rate">Provide either the converted amount or exchange rate in order to transfer funds</string>
+    <string name="hint_exchange_rate">Exchange rate</string>
+    <string name="btn_fetch_quote">Fetch quote</string>
+    <string name="hint_converted_amount">Converted Amount</string>
+    <string name="title_report_sheet">Sheet</string>
+    <string name="label_last_3_months_expenses">Expenses for last 3 months</string>
+    <string name="label_total_assets">Total Assets</string>
+    <string name="label_total_liabilities">Total Liabilities</string>
+    <string name="label_net_worth">Net Worth</string>
+    <string name="label_assets">Assets</string>
+    <string name="label_liabilities">Liabilities</string>
+    <string name="label_equity">Equity</string>
+    <string name="label_total_liabilities_and_equity"><![CDATA[Total Liabilites & Equity]]></string>
+    <string name="label_move_to">Move to:</string>
+    <string name="menu_group_by">Group By</string>
+    <string name="menu_group_by_month">Month</string>
+    <string name="menu_group_by_quarter">Quarter</string>
+    <string name="menu_group_by_year">Year</string>
+    <string name="title_balance_sheet_report">Balance Sheet</string>
+    <string name="label_balance_sheet_total">Total:</string>
     <string-array name="report_time_range">
-        <item>All time</item>
         <item>Current month</item>
         <item>Last 3 months</item>
         <item>Last 6 months</item>
         <item>Last 12 months</item>
+        <item>All time</item>
         <item>Custom range…</item>
     </string-array>
 </resources>

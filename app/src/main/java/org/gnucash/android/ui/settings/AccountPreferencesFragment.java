@@ -84,7 +84,7 @@ public class AccountPreferencesFragment extends PreferenceFragment {
                 new AlertDialog.Builder(getActivity())
                         .setTitle(R.string.title_create_default_accounts)
                         .setMessage(R.string.msg_confirm_create_default_accounts_setting)
-                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .setIcon(R.drawable.ic_warning_black_24dp)
                         .setPositiveButton(R.string.btn_create_accounts, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {

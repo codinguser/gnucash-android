@@ -29,8 +29,9 @@ import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.core.CrashlyticsCore;
+import com.uservoice.uservoicesdk.Config;
+import com.uservoice.uservoicesdk.UserVoice;
 
-import org.gnucash.android.BuildConfig;
 import org.gnucash.android.R;
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.CommoditiesDbAdapter;
@@ -97,9 +98,15 @@ public class GnuCashApplication extends Application{
         super.onCreate();
         GnuCashApplication.context = getApplicationContext();
 
-        //TODO: in production, only start logging if user gave consent
         Fabric.with(this, new Crashlytics.Builder().core(
-                new CrashlyticsCore.Builder().disabled(!BuildConfig.USE_CRASHLYTICS).build()).build());
+                new CrashlyticsCore.Builder().disabled(!isCrashlyticsEnabled()).build()).build());
+
+        // Set this up once when your application launches
+        Config config = new Config("gnucash.uservoice.com");
+        config.setTopicId(107400);
+        config.setForumId(320493);
+        // config.identifyUser("USER_ID", "User Name", "email@example.com");
+        UserVoice.init(config, this);
 
         mDbHelper = new DatabaseHelper(getApplicationContext());
         try {

@@ -29,7 +29,7 @@
         android:textSize="18sp"
         android:textStyle="bold"
         android:textColor="@color/theme_accent"
-        android:text="Assets"/>
+        android:text="@string/label_assets"/>
     <android.support.v7.widget.CardView
         android:id="@+id/assets_card"
         app:elevation="10dp"
@@ -49,7 +49,7 @@
         android:textSize="18sp"
         android:textStyle="bold"
         android:textColor="@color/theme_accent"
-        android:text="Liabilities"/>
+        android:text="@string/label_liabilities"/>
     <android.support.v7.widget.CardView
         android:id="@+id/liabilities_card"
         app:elevation="10dp"
@@ -70,7 +70,7 @@
         android:textSize="18sp"
         android:textStyle="bold"
         android:textColor="@color/theme_accent"
-        android:text="Equity"/>
+        android:text="@string/label_equity"/>
     <android.support.v7.widget.CardView
         android:id="@+id/equity_card"
         app:elevation="10dp"
@@ -101,7 +101,7 @@
                     android:layout_weight="1.5"
                     android:layout_height="wrap_content"
                     android:textSize="18sp"
-                    android:text="Total Liabilites &amp; Equity"/>
+                    android:text="@string/label_net_worth"/>
                 <TextView android:id="@+id/total_liability_and_equity"
                     android:layout_weight="1"
                     android:gravity="right"

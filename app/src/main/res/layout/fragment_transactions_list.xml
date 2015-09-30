@@ -21,7 +21,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <org.gnucash.android.ui.util.EmptyRecyclerView
+    <org.gnucash.android.ui.util.widget.EmptyRecyclerView
         android:id="@+id/transaction_recycler_view"
         android:scrollbars="vertical"
         android:paddingBottom="@dimen/card_min_height"
@@ -29,7 +29,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 
-    <TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    <TextView
         android:id="@+id/empty_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

@@ -80,6 +80,12 @@ public class DatabaseSchema {
         public static final String COLUMN_CURRENCY              = "currency_code";
         public static final String COLUMN_COMMODITY_UID         = "commodity_uid";
         public static final String COLUMN_TIMESTAMP             = "timestamp";
+
+        /**
+         * Flag for marking transactions which have been exported
+         * @deprecated Transactions are exported based on last modified timestamp
+         */
+        @Deprecated
         public static final String COLUMN_EXPORTED              = "is_exported";
         public static final String COLUMN_TEMPLATE              = "is_template";
         public static final String COLUMN_SCHEDX_ACTION_UID     = "scheduled_action_uid";

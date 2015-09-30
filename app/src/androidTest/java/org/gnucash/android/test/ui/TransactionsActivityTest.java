@@ -48,7 +48,7 @@ import org.gnucash.android.model.Split;
 import org.gnucash.android.model.Transaction;
 import org.gnucash.android.model.TransactionType;
 import org.gnucash.android.receivers.TransactionRecorder;
-import org.gnucash.android.ui.UxArgument;
+import org.gnucash.android.ui.common.UxArgument;
 import org.gnucash.android.ui.transaction.TransactionFormFragment;
 import org.gnucash.android.ui.transaction.TransactionsActivity;
 import org.junit.After;
@@ -66,7 +66,6 @@ import java.util.Locale;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.clearText;
 import static android.support.test.espresso.action.ViewActions.click;
-import static android.support.test.espresso.action.ViewActions.longClick;
 import static android.support.test.espresso.action.ViewActions.typeText;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.RootMatchers.withDecorView;
@@ -138,6 +137,7 @@ public class TransactionsActivityTest extends
         mAccountsDbAdapter.addRecord(account2);
 
         mTransaction = new Transaction(TRANSACTION_NAME);
+		mTransaction.setCurrencyCode(CURRENCY_CODE);
         mTransaction.setNote("What up?");
         mTransaction.setTime(mTransactionTimeMillis);
         Split split = new Split(new Money(TRANSACTION_AMOUNT, CURRENCY_CODE), DUMMY_ACCOUNT_UID);
@@ -207,7 +207,7 @@ public class TransactionsActivityTest extends
 
 	/**
 	 * Checks that a specific toast message is displayed
-	 * @param toastString
+	 * @param toastString String that should be displayed
 	 */
 	private void assertToastDisplayed(int toastString) {
 		onView(withText(toastString))
@@ -248,7 +248,7 @@ public class TransactionsActivityTest extends
 				.perform(click())
 				.check(matches(withText(R.string.label_spend)));
 
-		String expectedValue = NumberFormat.getInstance().format(-8.99);
+		String expectedValue = NumberFormat.getInstance().format(-899);
 		onView(withId(R.id.input_transaction_amount)).check(matches(withText(expectedValue)));
 
         int transactionsCount = getTransactionCount();
@@ -315,6 +315,7 @@ public class TransactionsActivityTest extends
 	/**
 	 * Tests input of transaction splits using the split editor.
 	 * Also validates that the imbalance from the split editor will be automatically added as a split
+	 * //FIXME: find a more reliable way to test opening of the split editor
 	 */
 	@Test
 	public void testSplitEditor(){
@@ -336,14 +337,11 @@ public class TransactionsActivityTest extends
 
 		onView(withId(R.id.split_list_layout)).check(matches(allOf(isDisplayed(), hasDescendant(withId(R.id.input_split_amount)))));
 
-		//TODO: enable this assert when we fix the sign of amounts in split editor
-
-		onView(withId(R.id.btn_add_split)).perform(click());
+		onView(withId(R.id.menu_add_split)).perform(click());
 
 		onView(allOf(withId(R.id.input_split_amount), withText(""))).perform(typeText("400"));
-		onView(withId(R.id.imbalance_textview)).check(matches(withText("-0.99 $")));
 
-		onView(withId(R.id.btn_save)).perform(click());
+		onView(withId(R.id.menu_save)).perform(click());
 		//after we use split editor, we should not be able to toggle the transaction type
 		onView(withId(R.id.input_transaction_type)).check(matches(not(isDisplayed())));
 
@@ -367,7 +365,7 @@ public class TransactionsActivityTest extends
 		assertThat(imbalanceSplits).hasSize(1);
 
 		Split split = imbalanceSplits.get(0);
-		assertThat(split.getValue().toPlainString()).isEqualTo("0.99");
+		assertThat(split.getValue().asBigDecimal()).isEqualTo(new BigDecimal("99.00"));
 		assertThat(split.getType()).isEqualTo(TransactionType.CREDIT);
 	}
 
@@ -494,12 +492,13 @@ public class TransactionsActivityTest extends
 		transactionIntent.putExtra(Transaction.EXTRA_AMOUNT, new BigDecimal(4.99));
 		transactionIntent.putExtra(Transaction.EXTRA_ACCOUNT_UID, DUMMY_ACCOUNT_UID);
 		transactionIntent.putExtra(Transaction.EXTRA_TRANSACTION_TYPE, TransactionType.DEBIT.name());
+		transactionIntent.putExtra(Account.EXTRA_CURRENCY_CODE, "USD");
 
 		new TransactionRecorder().onReceive(mTransactionsActivity, transactionIntent);
 
 		int afterCount = mTransactionsDbAdapter.getTransactionsCount(DUMMY_ACCOUNT_UID);
 		
-		assertEquals(beforeCount + 1, afterCount);
+		assertThat(beforeCount + 1).isEqualTo(afterCount);
 		
 		List<Transaction> transactions = mTransactionsDbAdapter.getAllTransactionsForAccount(DUMMY_ACCOUNT_UID);
 		
@@ -524,9 +523,11 @@ public class TransactionsActivityTest extends
 				new CoordinatesProvider() {
 					@Override
 					public float[] calculateCoordinates(View view) {
-						final int DRAWABLE_RIGHT = 2;
-						int x = view.getRight() - ((EditText)view).getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width();
-						int y = view.getTop() + view.getHeight()/2;
+						int[] xy = new int[2];
+						view.getLocationOnScreen(xy);
+
+						float x = xy[0] + view.getWidth()* 0.9f;
+						float y = xy[1] + view.getHeight() * 0.5f;
 
 						return new float[]{x + 5, y};
 					}
