@@ -260,8 +260,8 @@ public class ReportsActivity extends BaseDrawerActivity implements AdapterView.O
         mReportEndTime = System.currentTimeMillis();
         switch (position){
             case 0: //current month
-                mReportStartTime = new DateTime().dayOfMonth().withMinimumValue().toDate().getTime();
-                mReportEndTime = new DateTime().dayOfMonth().withMaximumValue().toDate().getTime();
+                mReportStartTime = new DateTime().dayOfMonth().withMinimumValue().millisOfDay().withMinimumValue()
+                        .toDate().getTime();
                 break;
             case 1: // last 3 months. x-2, x-1, x
                 mReportStartTime = new LocalDate().minusMonths(2).toDate().getTime();
