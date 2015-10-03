@@ -47,7 +47,6 @@ import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.model.Account;
 import org.gnucash.android.model.AccountType;
-import org.gnucash.android.model.Money;
 import org.joda.time.LocalDateTime;
 
 import java.util.ArrayList;
@@ -143,7 +142,10 @@ public class PieChartFragment extends Fragment implements OnChartValueSelectedLi
         mChart.getLegend().setWordWrapEnabled(true);
         mChart.setOnChartValueSelectedListener(this);
 
-        mAccountType = ((ReportsActivity)getActivity()).getAccountType();
+        ReportsActivity reportsActivity = (ReportsActivity) getActivity();
+        mReportStartTime = reportsActivity.getReportStartTime();
+        mReportEndTime = reportsActivity.getReportEndTime();
+        mAccountType = reportsActivity.getAccountType();
         onAccountTypeUpdated(mAccountType);
     }
 

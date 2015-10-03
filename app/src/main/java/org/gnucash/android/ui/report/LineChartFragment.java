@@ -19,7 +19,6 @@ package org.gnucash.android.ui.report;
 
 import android.graphics.Color;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
@@ -48,7 +47,6 @@ import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.model.Account;
 import org.gnucash.android.model.AccountType;
-import org.gnucash.android.model.Money;
 import org.gnucash.android.ui.report.ReportsActivity.GroupInterval;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
@@ -131,6 +129,10 @@ public class LineChartFragment extends Fragment implements OnChartValueSelectedL
         setHasOptionsMenu(true);
 
         mCurrency = Currency.getInstance(GnuCashApplication.getDefaultCurrencyCode());
+
+        ReportsActivity reportsActivity = (ReportsActivity) getActivity();
+        mReportStartTime = reportsActivity.getReportStartTime();
+        mReportEndTime = reportsActivity.getReportEndTime();
 
         mChart.setOnChartValueSelectedListener(this);
         mChart.setDescription("");

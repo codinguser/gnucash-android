@@ -49,7 +49,6 @@ import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.model.Account;
 import org.gnucash.android.model.AccountType;
-import org.gnucash.android.model.Money;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 import org.joda.time.Months;
@@ -136,6 +135,10 @@ public class BarChartFragment extends Fragment implements OnChartValueSelectedLi
                 .getBoolean(getString(R.string.key_use_account_color), false);
 
         mCurrency = Currency.getInstance(GnuCashApplication.getDefaultCurrencyCode());
+
+        ReportsActivity reportsActivity = (ReportsActivity) getActivity();
+        mReportStartTime = reportsActivity.getReportStartTime();
+        mReportEndTime = reportsActivity.getReportEndTime();
 
         mChart.setOnChartValueSelectedListener(this);
         mChart.setDescription("");

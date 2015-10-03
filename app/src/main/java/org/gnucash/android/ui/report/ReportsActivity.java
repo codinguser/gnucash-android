@@ -78,7 +78,7 @@ public class ReportsActivity extends BaseDrawerActivity implements AdapterView.O
     @Bind(R.id.report_account_type_spinner) Spinner mAccountTypeSpinner;
 
     TransactionsDbAdapter mTransactionsDbAdapter;
-    AccountType mAccountType = AccountType.EXPENSE;
+    private AccountType mAccountType = AccountType.EXPENSE;
 
     public enum GroupInterval {WEEK, MONTH, QUARTER, YEAR, ALL}
 
@@ -174,10 +174,6 @@ public class ReportsActivity extends BaseDrawerActivity implements AdapterView.O
 
         if (Build.VERSION.SDK_INT > 20)
             getWindow().setStatusBarColor(GnuCashApplication.darken(resolvedColor));
-    }
-
-    public AccountType getAccountType(){
-        return mAccountType;
     }
 
     /**
@@ -312,4 +308,17 @@ public class ReportsActivity extends BaseDrawerActivity implements AdapterView.O
         updateDateRangeOnFragment();
 
     }
+
+    public AccountType getAccountType(){
+        return mAccountType;
+    }
+
+    public long getReportEndTime() {
+        return mReportEndTime;
+    }
+
+    public long getReportStartTime() {
+        return mReportStartTime;
+    }
+
 }
