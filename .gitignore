@@ -24,3 +24,4 @@ out/
 gradle.properties
 crashlytics.properties
 app/*.tap
+*~

@@ -51,7 +51,7 @@
     <string name="menu_move">MOVER</string>
     <string name="title_selected">%1$d seleccionado</string>
     <string name="label_account_balance">Saldo:</string>
-    <string name="label_export_destination">Export To:</string>
+    <string name="label_export_destination">Exportar para:</string>
     <string name="title_export_dialog">Exportar Transa&#231;&#245;es</string>
     <string name="option_export_all_transactions">Exportar todas as transa&#231;&#245;es</string>
     <string name="hint_export_choice">Por defeito, apenas as novas transa&#231;&#245;es ap&#243;s a &#250;ltima exporta&#231;&#227;o ser&#227;o exportadas. Marque esta op&#231;&#227;o para exportar todas as transa&#231;&#245;es</string>
@@ -275,7 +275,7 @@
     <string name="title_passcode_disabled">Palavra passe desligada</string>
     <string name="title_change_passcode">Mudar Palavra Passe</string>
 	<string name="title_about_gnucash">Sobre o GnuCash</string>
-	<string name="summary_about_gnucash">A mobile finance management and expense-tracker designed for Android</string>
+	<string name="summary_about_gnucash">Uma aplica&#231;&#227;o m&#243;vel para Android de gest&#227;o e registo de despesas</string>
 	<string name="title_about">Sobre</string>
 	<string name="toast_format_exported_to">%1$s ficheiro exportado para:\n</string>
 	<string name="title_export_email">GnuCash Android %1$s exporta&#231;&#227;o</string>
@@ -307,12 +307,12 @@
 	<string name="summary_xml_ofx_header">Active esta op&#231;&#227;o quando fizer exporta&#231;&#245;es para outras aplica&#231;&#245;es que n&#227;o seja o GnuCash para Desktop</string>
 	<string name="title_whats_new">O que h&#225; de novo</string>
 	<string name="whats_new">
-		- New Material app design \n
-        - Multi-currency transactions\n
-        - Calculator to transaction amounts\n
-        - Better reporting options\n
-        - New help &amp; feedback section\n
-        - Multiple bug fixes and improvements\n
+		- Novo desenho da aplica&#231;&#227;o\n
+        - Transa&#231;&#245;es multi-moeda\n
+        - Calculadora para os montantes das transa&#231;&#245;es\n
+        - Melhores op&#231;&#245;es nos relat&#243;rios\n
+        - Nova sec&#231;&#227; de ajuda e feedback\n
+        - V&#225;rios melhoramentos e correc&#231;&#227;o de bugs\n
 	</string>
 	<string name="label_dismiss">Descartar</string>
     <string name="toast_transanction_amount_required">Introduza um valor para gravar a transa&#231;&#227;o</string>
@@ -499,59 +499,59 @@ Neste processo n&#227;o ser&#227;o recolhidas informa&#231;&#245;es do utilizado
     <string name="label_no_scheduled_exports_to_display">N&#227;o existem exporta&#231;&#245;es agendadas para mostrar</string>
     <string name="title_create_export_schedule">Criar uma exporta&#231;&#227;o agendada</string>
     <string name="toast_exported_to">Exportado para : %1$s</string>
-    <string name="label_select_pie_slice_to_see_details">Select a slice to see details</string>
-    <string name="label_report_period">Period:</string>
-    <string name="label_convert_from">From:</string>
-    <string name="label_convert_to">To:</string>
-    <string name="msg_provide_exchange_rate">Provide either the converted amount or exchange rate in order to transfer funds</string>
-    <string name="hint_exchange_rate">Exchange rate</string>
-    <string name="btn_fetch_quote">Fetch quote</string>
-    <string name="hint_converted_amount">Converted Amount</string>
-    <string name="title_report_sheet">Sheet</string>
-    <string name="label_last_3_months_expenses">Expenses for last 3 months</string>
-    <string name="label_total_assets">Total Assets</string>
-    <string name="label_total_liabilities">Total Liabilities</string>
-    <string name="label_net_worth">Net Worth</string>
-    <string name="label_assets">Assets</string>
-    <string name="label_liabilities">Liabilities</string>
-    <string name="label_equity">Equity</string>
-    <string name="label_total_liabilities_and_equity"><![CDATA[Total Liabilites & Equity]]></string>
-    <string name="label_move_to">Move to:</string>
-    <string name="menu_group_by">Group By</string>
-    <string name="menu_group_by_month">Month</string>
-    <string name="menu_group_by_quarter">Quarter</string>
-    <string name="menu_group_by_year">Year</string>
-    <string name="title_balance_sheet_report">Balance Sheet</string>
+    <string name="label_select_pie_slice_to_see_details">Escolha uma sec&#231;&#227;o para ver os detalhes</string>
+    <string name="label_report_period">Per&#2337;odo:</string>
+    <string name="label_convert_from">De:</string>
+    <string name="label_convert_to">Para:</string>
+    <string name="msg_provide_exchange_rate">Forne&#231;a o montante convertido ou a taxa de c&#226;mbio para a transfer&#234;ncia</string>
+    <string name="hint_exchange_rate">Taxa de c&#226;mbio</string>
+    <string name="btn_fetch_quote">Obter cota&#231;&#227;o</string>
+    <string name="hint_converted_amount">Montante convertido</string>
+    <string name="title_report_sheet">Folha</string>
+    <string name="label_last_3_months_expenses">Despesas dos &#250;ltimos 3 meses</string>
+    <string name="label_total_assets">Activos Totais</string>
+    <string name="label_total_liabilities">Total do Passivo</string>
+    <string name="label_net_worth">Valor L&#237;quido</string>
+    <string name="label_assets">Activo</string>
+    <string name="label_liabilities">Passivo</string>
+    <string name="label_equity">Capital Pr&#243;prio</string>
+    <string name="label_total_liabilities_and_equity"><![CDATA[Total Passivo & Capital Pr&#243;prio]]></string>
+    <string name="label_move_to">Mover para</string>
+    <string name="menu_group_by">Agrupar por</string>
+    <string name="menu_group_by_month">M&#234;s</string>
+    <string name="menu_group_by_quarter">Trimestre</string>
+    <string name="menu_group_by_year">Ano</string>
+    <string name="title_balance_sheet_report">Balan&#231;o</string>
     <string name="label_balance_sheet_total">Total:</string>
-    <string name="label_error_invalid_expression">Invalid expression!</string>
-    <string name="error_converted_amount_required">The converted amount is required</string>
-    <string name="error_exchange_rate_required">An exchange rate is required</string>
-    <string name="btn_wizard_finish">Done</string>
-    <string name="btn_wizard_next">Next</string>
-    <string name="label_scheduled_action_ended">"Ended, last executed on %1$s"</string>
-    <string name="label_select_bar_to_view_details">Select a bar to view details</string>
-    <string name="msg_wizard_welcome_page">Before you dive in, \nlet\'s setup a few things first\n\nTo continue, press Next</string>
-    <string name="nav_menu_help"><![CDATA[Help & Feedback]]></string>
-    <string name="nav_menu_scheduled_actions">Scheduled Actions</string>
-    <string name="title_setup_gnucash">Setup GnuCash</string>
-    <string name="title_split_editor">Split Editor</string>
-    <string name="title_transfer_funds">Transfer Funds</string>
-    <string name="toast_error_check_split_amounts">Check that all splits have valid amounts before saving!</string>
-    <string name="toast_legend_too_long">The legend is too long</string>
-    <string name="toast_scheduled_recurring_transaction">Scheduled recurring transaction</string>
-    <string name="wizard_btn_back">Back</string>
-    <string name="wizard_option_auto_send_crash_reports">Automatically send crash reports</string>
-    <string name="wizard_option_create_default_accounts">Create default accounts</string>
-    <string name="wizard_option_currency_other">Other...</string>
-    <string name="wizard_option_disable_crash_reports">Disable crash reports</string>
-    <string name="wizard_option_import_my_accounts">Import my accounts</string>
-    <string name="wizard_option_let_me_handle_it">Let me handle it</string>
-    <string name="wizard_title_account_setup">Account Setup</string>
-    <string name="wizard_title_default_currency">Default Currency</string>
-    <string name="wizard_title_feedback_options">Feedback Options</string>
-    <string name="wizard_title_select_currency">Select Currency</string>
-    <string name="wizard_title_welcome_to_gnucash">Welcome to GnuCash</string>
-    <string name="label_no_favorite_accounts">No favorite accounts</string>
-    <string name="label_no_recent_accounts">No recent accounts</string>
-    <string name="hint_account_description">Account description</string>
+    <string name="label_error_invalid_expression">Express&#227;o inv&#225;lida!</string>
+    <string name="error_converted_amount_required">O montante convertido &#233; obrigat&#243;rio.</string>
+    <string name="error_exchange_rate_required">&#201; obrigat&#243;ria uma taxa de c&#226;mbio</string>
+    <string name="btn_wizard_finish">Feito</string>
+    <string name="btn_wizard_next">Seguinte</string>
+    <string name="label_scheduled_action_ended">"Feito, execu&#231;&#227;o completada em %1$s"</string>
+    <string name="label_select_bar_to_view_details">Escolha uma barra para ver os detalhes</string>
+    <string name="msg_wizard_welcome_page">Antes de iniciar, \nvamos efectuar umas configura&#231;&#245;es primeiro\n\nPara continuar, fa&#231;a Seguinte</string>
+    <string name="nav_menu_help"><![CDATA[Ajuda & Feedback]]></string>
+    <string name="nav_menu_scheduled_actions">Ac&#231;&#245;es agendadas</string>
+    <string name="title_setup_gnucash">Configurar GnuCash</string>
+    <string name="title_split_editor">Editor de contrapartidas</string>
+	<string name="title_transfer_funds">Transfer&#234;ncias</string>
+    <string name="toast_error_check_split_amounts">Confirme que todas as contrapartidas t&#234;m montantes v&#225;lidos antes de gravar!</string>
+    <string name="toast_legend_too_long">A legenda &#233; grande demais</string>
+    <string name="toast_scheduled_recurring_transaction">Transa&#231;&#227;o agendade recorrente</string>
+    <string name="wizard_btn_back">Anterior</string>
+    <string name="wizard_option_auto_send_crash_reports">Envia relat&#243;rios de erros automaticamente</string>
+    <string name="wizard_option_create_default_accounts">Criar contas por defeito</string>
+    <string name="wizard_option_currency_other">Outros...</string>
+    <string name="wizard_option_disable_crash_reports">Desactivar relat&#243;rios de erros</string>
+    <string name="wizard_option_import_my_accounts">Importar as minhas contas</string>
+    <string name="wizard_option_let_me_handle_it">Deixe-me tratar disso</string>
+    <string name="wizard_title_account_setup">Configura&#231;&#227;o de Contas</string>
+    <string name="wizard_title_default_currency">Moeda padr&#227;o</string>
+    <string name="wizard_title_feedback_options">Op&#231;&#245;es de Feedback</string>
+    <string name="wizard_title_select_currency">Escolha a moeda</string>
+    <string name="wizard_title_welcome_to_gnucash">Bemvindo ao GnuCash</string>
+    <string name="label_no_favorite_accounts">Sem Contas favoritas</string>
+    <string name="label_no_recent_accounts">Sem Contas recentes</string>
+    <string name="hint_account_description">Descri&#231;&#227;o da Conta</string>
 </resources>

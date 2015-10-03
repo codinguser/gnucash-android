@@ -8,7 +8,6 @@ buildscript {
 		classpath 'io.fabric.tools:gradle:1.+'
 	}
 }
-
 allprojects {
     repositories {
 		maven { url "http://dl.bintray.com/populov/maven" }
@@ -18,4 +17,7 @@ allprojects {
         jcenter()
         mavenCentral()
     }
+}
+
+dependencies {
 }
