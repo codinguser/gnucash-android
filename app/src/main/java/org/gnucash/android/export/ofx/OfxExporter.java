@@ -23,6 +23,7 @@ import android.util.Log;
 import com.crashlytics.android.Crashlytics;
 
 import org.gnucash.android.R;
+import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.export.ExportParams;
 import org.gnucash.android.export.Exporter;
@@ -36,6 +37,7 @@ import org.w3c.dom.ProcessingInstruction;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.sql.Timestamp;
 import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -43,7 +45,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
@@ -91,7 +92,12 @@ public class OfxExporter extends Exporter{
 		for (Account account : mAccountsList) {		
 			if (account.getTransactionCount() == 0)
 				continue; 
-			
+
+            //do not export imbalance accounts for OFX transactions and double-entry disabled
+            if (!GnuCashApplication.isDoubleEntryEnabled() && account.getName().contains(mContext.getString(R.string.imbalance_account_name)))
+                continue;
+
+
 			//add account details (transactions) to the XML document			
 			account.toOfx(doc, statementTransactionResponse, mParameters.shouldExportAllTransactions());
 			
@@ -103,7 +109,7 @@ public class OfxExporter extends Exporter{
 
     public String generateExport() throws ExporterException {
         mAccountsList = mParameters.shouldExportAllTransactions() ?
-                mAccountsDbAdapter.getAllAccounts() : mAccountsDbAdapter.getExportableAccounts();
+                mAccountsDbAdapter.getAllRecords() : mAccountsDbAdapter.getExportableAccounts();
 
         DocumentBuilderFactory docFactory = DocumentBuilderFactory
                 .newInstance();
@@ -126,10 +132,13 @@ public class OfxExporter extends Exporter{
         boolean useXmlHeader = PreferenceManager.getDefaultSharedPreferences(mContext)
                 .getBoolean(mContext.getString(R.string.key_xml_ofx_header), false);
 
+        String timeStamp = new Timestamp(System.currentTimeMillis()).toString();
+
         StringWriter stringWriter = new StringWriter();
         //if we want SGML OFX headers, write first to string and then prepend header
         if (useXmlHeader){
             write(document, stringWriter, false);
+            PreferenceManager.getDefaultSharedPreferences(mContext).edit().putString(Exporter.PREF_LAST_EXPORT_TIME, timeStamp).apply();
             return stringWriter.toString();
         } else {
             Node ofxNode = document.getElementsByTagName("OFX").item(0);
@@ -139,6 +148,7 @@ public class OfxExporter extends Exporter{
             StringBuffer stringBuffer = new StringBuffer(OfxHelper.OFX_SGML_HEADER);
             stringBuffer.append('\n');
             stringBuffer.append(stringWriter.toString());
+            PreferenceManager.getDefaultSharedPreferences(mContext).edit().putString(Exporter.PREF_LAST_EXPORT_TIME, timeStamp).apply();
             return stringBuffer.toString();
         }
     }

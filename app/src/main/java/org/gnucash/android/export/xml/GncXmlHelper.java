@@ -72,7 +72,7 @@ public abstract class GncXmlHelper {
     public static final String TAG_SLOT_VALUE       = "slot:value";
     public static final String TAG_ACT_SLOTS        = "act:slots";
     public static final String TAG_SLOT             = "slot";
-    public static final String TAG_ACCT_DESCRIPTION = "act:description"; //TODO: Use this when we add descriptions to the database
+    public static final String TAG_ACCT_DESCRIPTION = "act:description";
 
     public static final String TAG_TRANSACTION      = "gnc:transaction";
     public static final String TAG_TRX_ID           = "trn:id";
@@ -93,6 +93,16 @@ public abstract class GncXmlHelper {
     public static final String TAG_SPLIT_VALUE      = "split:value";
     public static final String TAG_SPLIT_QUANTITY   = "split:quantity";
     public static final String TAG_SPLIT_SLOTS      = "split:slots";
+
+    public static final String TAG_PRICEDB = "gnc:pricedb";
+    public static final String TAG_PRICE = "price";
+    public static final String TAG_PRICE_ID = "price:id";
+    public static final String TAG_PRICE_COMMODITY = "price:commodity";
+    public static final String TAG_PRICE_CURRENCY = "price:currency";
+    public static final String TAG_PRICE_TIME = "price:time";
+    public static final String TAG_PRICE_SOURCE = "price:source";
+    public static final String TAG_PRICE_TYPE = "price:type";
+    public static final String TAG_PRICE_VALUE = "price:value";
 
     @Deprecated
     public static final String TAG_RECURRENCE_PERIOD = "trn:recurrence_period";
@@ -161,7 +171,7 @@ public abstract class GncXmlHelper {
 
     /**
      * Parses amount strings from GnuCash XML into {@link java.math.BigDecimal}s.
-     * The amounts are formatted as 12345/4100
+     * The amounts are formatted as 12345/100
      * @param amountString String containing the amount
      * @return BigDecimal with numerical value
      * @throws ParseException if the amount could not be parsed
@@ -174,7 +184,9 @@ public abstract class GncXmlHelper {
         }
 
         int scale = amountString.length() - pos - 2; //do this before, because we could modify the string
-        String numerator = TransactionFormFragment.stripCurrencyFormatting(amountString.substring(0, pos));
+        //String numerator = TransactionFormFragment.stripCurrencyFormatting(amountString.substring(0, pos));
+        String numerator = amountString.substring(0,pos);
+        numerator = TransactionFormFragment.stripCurrencyFormatting(numerator);
         BigInteger numeratorInt = new BigInteger(numerator);
         return new BigDecimal(numeratorInt, scale);
     }
@@ -201,7 +213,6 @@ public abstract class GncXmlHelper {
      * So we will use the device locale here and hope that the user has the same locale on the desktop GnuCash</p>
      * @param amount Amount to be formatted
      * @return String representation of amount
-     * @see #parseTemplateSplitAmount(String)
      */
     public static String formatTemplateSplitAmount(BigDecimal amount){
         //TODO: If we ever implement an application-specific locale setting, use it here as well

@@ -176,7 +176,8 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
 
         switch (mExportParams.getExportTarget()) {
             case SHARING:
-                shareFile(mExportParams.getTargetFilepath());
+                File output = copyExportToSDCard();
+                shareFile(output.getAbsolutePath());
                 return true;
 
             case DROPBOX:
@@ -197,6 +198,7 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
 
     /**
      * Transmits the exported transactions to the designated location, either SD card or third-party application
+     * Finishes the activity if the export was starting  in the context of an activity
      * @param exportResult Result of background export execution
      */
     @Override
@@ -246,6 +248,7 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
         if (mContext instanceof Activity) {
             if (mProgressDialog != null && mProgressDialog.isShowing())
                 mProgressDialog.dismiss();
+            ((Activity) mContext).finish();
         }
     }
 
@@ -377,8 +380,9 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
     /**
      * Copies the exported file from the internal storage where it is generated to external storage
      * which is accessible to the user
+     * @return File to which the export was copied
      */
-    private void copyExportToSDCard() {
+    private File copyExportToSDCard() {
         Log.i(TAG, "Moving exported file to external storage");
         File src = new File(mExportParams.getTargetFilepath());
         File dst = Exporter.createExportFile(mExportParams.getExportFormat());
@@ -386,6 +390,7 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
         try {
             copyFile(src, dst);
             src.delete();
+            return dst;
         } catch (IOException e) {
             Crashlytics.logException(e);
             Log.e(TAG, e.getMessage());
@@ -409,7 +414,7 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
         transactionsDbAdapter.deleteAllNonTemplateTransactions();
 
         if (preserveOpeningBalances) {
-            transactionsDbAdapter.bulkAddTransactions(openingBalances);
+            transactionsDbAdapter.bulkAddRecords(openingBalances);
         }
     }
 

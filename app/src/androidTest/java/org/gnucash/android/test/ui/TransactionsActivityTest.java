@@ -24,9 +24,17 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.preference.PreferenceManager;
 import android.support.test.InstrumentationRegistry;
+import android.support.test.espresso.Espresso;
+import android.support.test.espresso.ViewAction;
+import android.support.test.espresso.action.CoordinatesProvider;
+import android.support.test.espresso.action.GeneralClickAction;
+import android.support.test.espresso.action.Press;
+import android.support.test.espresso.action.Tap;
 import android.support.test.runner.AndroidJUnit4;
 import android.test.ActivityInstrumentationTestCase2;
 import android.util.Log;
+import android.view.View;
+import android.widget.EditText;
 
 import org.gnucash.android.R;
 import org.gnucash.android.db.AccountsDbAdapter;
@@ -40,7 +48,7 @@ import org.gnucash.android.model.Split;
 import org.gnucash.android.model.Transaction;
 import org.gnucash.android.model.TransactionType;
 import org.gnucash.android.receivers.TransactionRecorder;
-import org.gnucash.android.ui.UxArgument;
+import org.gnucash.android.ui.common.UxArgument;
 import org.gnucash.android.ui.transaction.TransactionFormFragment;
 import org.gnucash.android.ui.transaction.TransactionsActivity;
 import org.junit.After;
@@ -58,7 +66,6 @@ import java.util.Locale;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.clearText;
 import static android.support.test.espresso.action.ViewActions.click;
-import static android.support.test.espresso.action.ViewActions.longClick;
 import static android.support.test.espresso.action.ViewActions.typeText;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.RootMatchers.withDecorView;
@@ -127,12 +134,11 @@ public class TransactionsActivityTest extends
         account2.setUID(TRANSFER_ACCOUNT_UID);
         account2.setCurrency(Currency.getInstance(CURRENCY_CODE));
 
-        long id1 = mAccountsDbAdapter.addAccount(account);
-        long id2 = mAccountsDbAdapter.addAccount(account2);
-        assertThat(id1).isGreaterThan(0);
-        assertThat(id2).isGreaterThan(0);
+        mAccountsDbAdapter.addRecord(account);
+        mAccountsDbAdapter.addRecord(account2);
 
         mTransaction = new Transaction(TRANSACTION_NAME);
+		mTransaction.setCurrencyCode(CURRENCY_CODE);
         mTransaction.setNote("What up?");
         mTransaction.setTime(mTransactionTimeMillis);
         Split split = new Split(new Money(TRANSACTION_AMOUNT, CURRENCY_CODE), DUMMY_ACCOUNT_UID);
@@ -142,7 +148,7 @@ public class TransactionsActivityTest extends
         mTransaction.addSplit(split.createPair(TRANSFER_ACCOUNT_UID));
         account.addTransaction(mTransaction);
 
-        mTransactionsDbAdapter.addTransaction(mTransaction);
+        mTransactionsDbAdapter.addRecord(mTransaction);
 
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.putExtra(UxArgument.SELECTED_ACCOUNT_UID, DUMMY_ACCOUNT_UID);
@@ -152,10 +158,7 @@ public class TransactionsActivityTest extends
 
 
 	private void validateTransactionListDisplayed(){
-		onView(withId(R.id.fragment_transaction_list)).check(matches(isDisplayed()));
-//		Fragment fragment = getActivity().getCurrentPagerFragment();
-//		assertThat(fragment).isNotNull();
-//		assertThat(fragment).isInstanceOf(TransactionsListFragment.class);
+		onView(withId(R.id.transaction_recycler_view)).check(matches(isDisplayed()));
 	}
 	
 	private int getTransactionCount(){
@@ -175,14 +178,15 @@ public class TransactionsActivityTest extends
 		validateTransactionListDisplayed();
 		
 		int beforeCount = mTransactionsDbAdapter.getTransactionsCount(DUMMY_ACCOUNT_UID);
-        onView(withId(R.id.menu_add_transaction)).perform(click());
+        onView(withId(R.id.fab_create_transaction)).perform(click());
 
 		onView(withId(R.id.input_transaction_name))
 				.check(matches(isDisplayed()))
 				.perform(typeText("Lunch"));
 
 		onView(withId(R.id.menu_save)).perform(click());
-		sleep(500);
+		onView(withText(R.string.title_add_transaction)).check(matches(isDisplayed()));
+
 		assertToastDisplayed(R.string.toast_transanction_amount_required);
 
 		int afterCount = mTransactionsDbAdapter.getTransactionsCount(DUMMY_ACCOUNT_UID);
@@ -204,7 +208,7 @@ public class TransactionsActivityTest extends
 
 	/**
 	 * Checks that a specific toast message is displayed
-	 * @param toastString
+	 * @param toastString String that should be displayed
 	 */
 	private void assertToastDisplayed(int toastString) {
 		onView(withText(toastString))
@@ -236,7 +240,7 @@ public class TransactionsActivityTest extends
 		setDefaultTransactionType(TransactionType.DEBIT);
         validateTransactionListDisplayed();
 
-		onView(withId(R.id.menu_add_transaction)).perform(click());
+		onView(withId(R.id.fab_create_transaction)).perform(click());
 
 		onView(withId(R.id.input_transaction_name)).perform(typeText("Lunch"));
 		onView(withId(R.id.input_transaction_amount)).perform(typeText("899"));
@@ -245,7 +249,7 @@ public class TransactionsActivityTest extends
 				.perform(click())
 				.check(matches(withText(R.string.label_spend)));
 
-		String expectedValue = NumberFormat.getInstance().format(-8.99);
+		String expectedValue = NumberFormat.getInstance().format(-899);
 		onView(withId(R.id.input_transaction_amount)).check(matches(withText(expectedValue)));
 
         int transactionsCount = getTransactionCount();
@@ -265,7 +269,7 @@ public class TransactionsActivityTest extends
 	public void testEditTransaction(){
 		validateTransactionListDisplayed();
 
-		onView(withText(TRANSACTION_NAME)).perform(click());
+		onView(withId(R.id.edit_transaction)).perform(click());
 		
 		validateEditTransactionFields(mTransaction);
 
@@ -277,27 +281,27 @@ public class TransactionsActivityTest extends
 	 * Tests that transactions splits are automatically balanced and an imbalance account will be created
 	 * This test case assumes that single entry is used
 	 */
-	@Test
+	//TODO: move this to the unit tests
 	public void testAutoBalanceTransactions(){
 		setDoubleEntryEnabled(false);
 		mTransactionsDbAdapter.deleteAllRecords();
 
-		assertThat(mTransactionsDbAdapter.getTotalTransactionsCount()).isEqualTo(0);
+		assertThat(mTransactionsDbAdapter.getRecordsCount()).isEqualTo(0);
 		String imbalanceAcctUID = mAccountsDbAdapter.getImbalanceAccountUID(Currency.getInstance(CURRENCY_CODE));
 		assertThat(imbalanceAcctUID).isNull();
 
 		validateTransactionListDisplayed();
-		onView(withId(R.id.menu_add_transaction)).perform(click());
+		onView(withId(R.id.fab_create_transaction)).perform(click());
 		onView(withId(R.id.fragment_transaction_form)).check(matches(isDisplayed()));
 
 		onView(withId(R.id.input_transaction_name)).perform(typeText("Autobalance"));
 		onView(withId(R.id.input_transaction_amount)).perform(typeText("499"));
 
 		//no double entry so no split editor
-		onView(withId(R.id.btn_open_splits)).check(matches(not(isDisplayed())));
+		//TODO: check that the split drawable is not displayed
 		onView(withId(R.id.menu_save)).perform(click());
 
-		assertThat(mTransactionsDbAdapter.getTotalTransactionsCount()).isEqualTo(1);
+		assertThat(mTransactionsDbAdapter.getRecordsCount()).isEqualTo(1);
 		Transaction transaction = mTransactionsDbAdapter.getAllTransactions().get(0);
 		assertThat(transaction.getSplits()).hasSize(2);
 		imbalanceAcctUID = mAccountsDbAdapter.getImbalanceAccountUID(Currency.getInstance(CURRENCY_CODE));
@@ -312,6 +316,7 @@ public class TransactionsActivityTest extends
 	/**
 	 * Tests input of transaction splits using the split editor.
 	 * Also validates that the imbalance from the split editor will be automatically added as a split
+	 * //FIXME: find a more reliable way to test opening of the split editor
 	 */
 	@Test
 	public void testSplitEditor(){
@@ -324,23 +329,20 @@ public class TransactionsActivityTest extends
 		assertThat(imbalanceAcctUID).isNull();
 
 		validateTransactionListDisplayed();
-		onView(withId(R.id.menu_add_transaction)).perform(click());
+		onView(withId(R.id.fab_create_transaction)).perform(click());
 
 		onView(withId(R.id.input_transaction_name)).perform(typeText("Autobalance"));
 		onView(withId(R.id.input_transaction_amount)).perform(typeText("499"));
 
-		onView(withId(R.id.btn_open_splits)).perform(click());
+		onView(withId(R.id.input_transaction_amount)).perform(clickSplitIcon());
 
 		onView(withId(R.id.split_list_layout)).check(matches(allOf(isDisplayed(), hasDescendant(withId(R.id.input_split_amount)))));
 
-		//TODO: enable this assert when we fix the sign of amounts in split editor
-
-		onView(withId(R.id.btn_add_split)).perform(click());
+		onView(withId(R.id.menu_add_split)).perform(click());
 
 		onView(allOf(withId(R.id.input_split_amount), withText(""))).perform(typeText("400"));
-		onView(withId(R.id.imbalance_textview)).check(matches(withText("-0.99 $")));
 
-		onView(withId(R.id.btn_save)).perform(click());
+		onView(withId(R.id.menu_save)).perform(click());
 		//after we use split editor, we should not be able to toggle the transaction type
 		onView(withId(R.id.input_transaction_type)).check(matches(not(isDisplayed())));
 
@@ -364,7 +366,7 @@ public class TransactionsActivityTest extends
 		assertThat(imbalanceSplits).hasSize(1);
 
 		Split split = imbalanceSplits.get(0);
-		assertThat(split.getAmount().toPlainString()).isEqualTo("0.99");
+		assertThat(split.getValue().asBigDecimal()).isEqualTo(new BigDecimal("99.00"));
 		assertThat(split.getType()).isEqualTo(TransactionType.CREDIT);
 	}
 
@@ -380,17 +382,16 @@ public class TransactionsActivityTest extends
 	public void testDefaultTransactionType(){
 		setDefaultTransactionType(TransactionType.CREDIT);
 
-		onView(withId(R.id.menu_add_transaction)).perform(click());
+		onView(withId(R.id.fab_create_transaction)).perform(click());
 		onView(withId(R.id.input_transaction_type)).check(matches(allOf(isChecked(), withText(R.string.label_spend))));
-		onView(withId(R.id.menu_cancel)).perform(click());
-
+		Espresso.pressBack();
 		//now validate the other case
 
 		setDefaultTransactionType(TransactionType.DEBIT);
 
-		onView(withId(R.id.menu_add_transaction)).perform(click());
+		onView(withId(R.id.fab_create_transaction)).perform(click());
 		onView(withId(R.id.input_transaction_type)).check(matches(allOf(not(isChecked()), withText(R.string.label_receive))));
-		onView(withId(R.id.menu_cancel)).perform(click());
+		Espresso.pressBack();
 	}
 
 	private void setDefaultTransactionType(TransactionType type) {
@@ -403,12 +404,12 @@ public class TransactionsActivityTest extends
 	//FIXME: Improve on this test
 	public void childAccountsShouldUseParentTransferAccountSetting(){
 		Account transferAccount = new Account("New Transfer Acct");
-		mAccountsDbAdapter.addAccount(transferAccount);
-		mAccountsDbAdapter.addAccount(new Account("Higher account"));
+		mAccountsDbAdapter.addRecord(transferAccount);
+		mAccountsDbAdapter.addRecord(new Account("Higher account"));
 
 		Account childAccount = new Account("Child Account");
 		childAccount.setParentUID(DUMMY_ACCOUNT_UID);
-		mAccountsDbAdapter.addAccount(childAccount);
+		mAccountsDbAdapter.addRecord(childAccount);
 		ContentValues contentValues = new ContentValues();
 		contentValues.put(DatabaseSchema.AccountEntry.COLUMN_DEFAULT_TRANSFER_ACCOUNT_UID, transferAccount.getUID());
 		mAccountsDbAdapter.updateRecord(DUMMY_ACCOUNT_UID, contentValues);
@@ -431,7 +432,7 @@ public class TransactionsActivityTest extends
 	@Test
 	public void testToggleTransactionType(){
 		validateTransactionListDisplayed();
-		onView(withText(TRANSACTION_NAME)).perform(click());
+		onView(withId(R.id.edit_transaction)).perform(click());
 
 		validateEditTransactionFields(mTransaction);
 
@@ -454,8 +455,7 @@ public class TransactionsActivityTest extends
 	public void testOpenTransactionEditShouldNotModifyTransaction(){
 		validateTransactionListDisplayed();
 
-		onView(withText(TRANSACTION_NAME)).perform(click());
-
+		onView(withId(R.id.edit_transaction)).perform(click());
 		validateTimeInput(mTransactionTimeMillis);
 
 		clickOnView(R.id.menu_save);
@@ -475,34 +475,11 @@ public class TransactionsActivityTest extends
 
 	@Test
 	public void testDeleteTransaction(){
-		onView(withId(R.id.primary_text)).perform(longClick());
-		clickOnView(R.id.context_menu_delete);
+		onView(withId(R.id.options_menu)).perform(click());
+		onView(withText(R.string.menu_delete)).perform(click());
 
 		long id = mAccountsDbAdapter.getID(DUMMY_ACCOUNT_UID);
 		assertEquals(0, mTransactionsDbAdapter.getTransactionsCount(id));
-	}
-
-	@Test
-	public void testBulkMoveTransactions(){
-        String targetAccountName = "Target";
-        Account account = new Account(targetAccountName);
-		account.setCurrency(Currency.getInstance(Locale.getDefault()));
-		mAccountsDbAdapter.addAccount(account);
-		
-		int beforeOriginCount = mAccountsDbAdapter.getAccount(DUMMY_ACCOUNT_UID).getTransactionCount();
-		
-		validateTransactionListDisplayed();
-
-		clickOnView(R.id.checkbox_transaction);
-		clickOnView(R.id.context_menu_move_transactions);
-
-		clickOnView(R.id.btn_save);
-
-		int targetCount = mAccountsDbAdapter.getAccount(account.getUID()).getTransactionCount();
-		assertThat(targetCount).isEqualTo(1);
-		
-		int afterOriginCount = mAccountsDbAdapter.getAccount(DUMMY_ACCOUNT_UID).getTransactionCount();
-		assertThat(afterOriginCount).isEqualTo(beforeOriginCount-1);
 	}
 
 	//TODO: add normal transaction recording
@@ -516,12 +493,13 @@ public class TransactionsActivityTest extends
 		transactionIntent.putExtra(Transaction.EXTRA_AMOUNT, new BigDecimal(4.99));
 		transactionIntent.putExtra(Transaction.EXTRA_ACCOUNT_UID, DUMMY_ACCOUNT_UID);
 		transactionIntent.putExtra(Transaction.EXTRA_TRANSACTION_TYPE, TransactionType.DEBIT.name());
+		transactionIntent.putExtra(Account.EXTRA_CURRENCY_CODE, "USD");
 
 		new TransactionRecorder().onReceive(mTransactionsActivity, transactionIntent);
 
 		int afterCount = mTransactionsDbAdapter.getTransactionsCount(DUMMY_ACCOUNT_UID);
 		
-		assertEquals(beforeCount + 1, afterCount);
+		assertThat(beforeCount + 1).isEqualTo(afterCount);
 		
 		List<Transaction> transactions = mTransactionsDbAdapter.getAllTransactionsForAccount(DUMMY_ACCOUNT_UID);
 		
@@ -539,6 +517,22 @@ public class TransactionsActivityTest extends
 	 */
 	private void clickOnView(int viewId){
 		onView(withId(viewId)).perform(click());
+	}
+
+	public static ViewAction clickSplitIcon(){
+		return new GeneralClickAction(Tap.SINGLE,
+				new CoordinatesProvider() {
+					@Override
+					public float[] calculateCoordinates(View view) {
+						int[] xy = new int[2];
+						view.getLocationOnScreen(xy);
+
+						float x = xy[0] + view.getWidth()* 0.9f;
+						float y = xy[1] + view.getHeight() * 0.5f;
+
+						return new float[]{x + 5, y};
+					}
+				}, Press.FINGER);
 	}
 
 	@Override

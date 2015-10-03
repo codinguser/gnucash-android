@@ -19,35 +19,25 @@
     android:id="@+id/fragment_transaction_list"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" >
-    
-	<include layout="@layout/transactions_sum_bar" android:id="@+id/transactions_sum_bar" />
-		
-    <ListView android:id="@id/android:list"        
+    android:orientation="vertical">
+
+    <org.gnucash.android.ui.util.widget.EmptyRecyclerView
+        android:id="@+id/transaction_recycler_view"
+        android:scrollbars="vertical"
+        android:paddingBottom="@dimen/card_min_height"
+        android:clipToPadding="false"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"	
-        android:layout_above="@id/transactions_sum_bar"
-        android:listSelector="@drawable/abs__list_selector_holo_light"
-        android:drawSelectorOnTop="false"/>
-    
-	<LinearLayout
-        android:id="@id/android:empty"
+        android:layout_height="match_parent"/>
+
+    <TextView
+        android:id="@+id/empty_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@id/transactions_sum_bar"
+        android:textSize="20sp"
         android:gravity="center"
-        android:orientation="vertical">
-		<TextView 
-		    android:layout_width="match_parent"
-		    android:layout_height="wrap_content"
-		    android:gravity="center" 		    
-		    android:text="@string/label_no_transactions"		    
-		    style="@style/ListItem"/>
-        <Button
-            android:id="@+id/add_transaction_button"
-            style="@style/ButtonStyle"
-            android:onClick="onNewTransactionClick"
-            android:text="@string/title_add_transaction" />
-    </LinearLayout>
-    
+        android:layout_gravity="center"
+        android:visibility="gone"
+        android:textColor="@color/theme_accent"
+        android:text="@string/label_no_transactions" />
+    <!-- TODO: Added account_balance_toolbar.xml layout at some point in the future, if necessary-->
 </RelativeLayout>

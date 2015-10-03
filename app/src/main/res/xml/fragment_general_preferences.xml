@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory android:title="@string/title_passcode_preferences">
+        <CheckBoxPreference android:key="@string/key_enable_passcode" />
+        <Preference android:key="@string/key_change_passcode"
+            android:title="@string/title_change_passcode"
+            android:dependency="@string/key_enable_passcode" />
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/title_report_prefs">
+        <CheckBoxPreference android:key="@string/key_use_account_color"
+            android:title="@string/title_use_account_color"
+            android:summary="@string/summary_use_account_color" />
+    </PreferenceCategory>
+
+
+</PreferenceScreen>

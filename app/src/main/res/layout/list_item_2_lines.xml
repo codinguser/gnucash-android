@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Copyright (c) 2013 Ngewi Fet <ngewif@gmail.com>
+Copyright (c) 2013 - 2015 Ngewi Fet <ngewif@gmail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@ limitations under the License.
 
 <RelativeLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
         android:layout_height="wrap_content"
         android:layout_width="0dp"
         android:layout_weight="1"
@@ -36,8 +37,8 @@ limitations under the License.
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:singleLine="true"
-            android:ellipsize="end"
+            android:ellipsize="middle"
             android:layout_below="@id/primary_text"
             android:textAppearance="?android:attr/textAppearanceSmall"
-            android:text="@string/label_transaction_name"/>
+            tools:text="@string/label_transaction_name"/>
 </RelativeLayout>

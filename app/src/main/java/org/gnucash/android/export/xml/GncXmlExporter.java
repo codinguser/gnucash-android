@@ -30,6 +30,7 @@ import org.gnucash.android.export.ExportParams;
 import org.gnucash.android.export.Exporter;
 import org.gnucash.android.model.Account;
 import org.gnucash.android.model.AccountType;
+import org.gnucash.android.model.Money;
 import org.gnucash.android.model.PeriodType;
 import org.gnucash.android.model.ScheduledAction;
 import org.gnucash.android.model.TransactionType;
@@ -113,6 +114,8 @@ public class GncXmlExporter extends Exporter{
     }
 
     private void exportAccounts(XmlSerializer xmlSerializer) throws IOException {
+        // gnucash desktop requires that parent account appears before its descendants.
+        // sort by full-name to fulfill the request
         Cursor cursor = mAccountsDbAdapter.fetchAccounts(null, null, DatabaseSchema.AccountEntry.COLUMN_FULL_NAME + " ASC");
         while (cursor.moveToNext()) {
             // write account
@@ -147,9 +150,12 @@ public class GncXmlExporter extends Exporter{
             xmlSerializer.text(Integer.toString((int) Math.pow(10, Currency.getInstance(acctCurrencyCode).getDefaultFractionDigits())));
             xmlSerializer.endTag(null, GncXmlHelper.TAG_COMMODITY_SCU);
             // account description
-            // this is optional in Gnc XML, and currently not in the db, so description node
-            // is omitted
-            //
+            String description = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.AccountEntry.COLUMN_DESCRIPTION));
+            if (description != null && !description.equals("")) {
+                xmlSerializer.startTag(null, GncXmlHelper.TAG_ACCT_DESCRIPTION);
+                xmlSerializer.text(description);
+                xmlSerializer.endTag(null, GncXmlHelper.TAG_ACCT_DESCRIPTION);
+            }
             // account slots, color, placeholder, default transfer account, favorite
             ArrayList<String> slotKey = new ArrayList<>();
             ArrayList<String> slotType = new ArrayList<>();
@@ -268,8 +274,10 @@ public class GncXmlExporter extends Exporter{
                         SplitEntry.TABLE_NAME+"."+ SplitEntry.COLUMN_UID + " AS split_uid",
                         SplitEntry.TABLE_NAME+"."+ SplitEntry.COLUMN_MEMO + " AS split_memo",
                         SplitEntry.TABLE_NAME+"."+ SplitEntry.COLUMN_TYPE + " AS split_type",
-                        SplitEntry.TABLE_NAME+"."+ SplitEntry.COLUMN_AMOUNT + " AS split_amount",
-                        SplitEntry.TABLE_NAME+"."+ SplitEntry.COLUMN_ACCOUNT_UID + " AS split_acct_uid"},
+                        SplitEntry.TABLE_NAME+"."+ SplitEntry.COLUMN_VALUE_NUM + " AS split_value_num",
+                        SplitEntry.TABLE_NAME+"."+ SplitEntry.COLUMN_VALUE_DENOM + " AS split_value_denom",
+                        SplitEntry.TABLE_NAME+"."+ SplitEntry.COLUMN_QUANTITY_NUM + " AS split_quantity_num",
+                        SplitEntry.TABLE_NAME+"."+ SplitEntry.COLUMN_QUANTITY_DENOM + " AS split_quantity_denom",                        SplitEntry.TABLE_NAME+"."+ SplitEntry.COLUMN_ACCOUNT_UID + " AS split_acct_uid"},
                         where, null,
                         TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_TIMESTAMP + " ASC , " +
                         TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_UID + " ASC ");
@@ -392,16 +400,22 @@ public class GncXmlExporter extends Exporter{
             xmlSerializer.endTag(null, GncXmlHelper.TAG_RECONCILED_STATE);
             // value, in the transaction's currency
             String trxType = cursor.getString(cursor.getColumnIndexOrThrow("split_type"));
-            BigDecimal splitAmount = new BigDecimal(cursor.getString(cursor.getColumnIndexOrThrow("split_amount")));
+            int splitValueNum = cursor.getInt(cursor.getColumnIndexOrThrow("split_value_num"));
+            int splitValueDenom = cursor.getInt(cursor.getColumnIndexOrThrow("split_value_denom"));
+            BigDecimal splitAmount = Money.getBigDecimal(splitValueNum, splitValueDenom);
             String strValue = "0/" + denomString;
             if (!exportTemplates) { //when doing normal transaction export
-                strValue = (trxType.equals("CREDIT") ? "-" : "") + GncXmlHelper.formatSplitAmount(splitAmount, trxCurrency);
+                strValue = (trxType.equals("CREDIT") ? "-" : "") + splitValueNum + "/" + splitValueDenom;
             }
             xmlSerializer.startTag(null, GncXmlHelper.TAG_SPLIT_VALUE);
             xmlSerializer.text(strValue);
             xmlSerializer.endTag(null, GncXmlHelper.TAG_SPLIT_VALUE);
             // quantity, in the split account's currency
-            // TODO: multi currency support.
+            String splitQuantityNum = cursor.getString(cursor.getColumnIndexOrThrow("split_quantity_num"));
+            String splitQuantityDenom = cursor.getString(cursor.getColumnIndexOrThrow("split_quantity_denom"));
+            if (!exportTemplates) {
+                strValue = (trxType.equals("CREDIT") ? "-" : "") + splitQuantityNum + "/" + splitQuantityDenom;
+            }
             xmlSerializer.startTag(null, GncXmlHelper.TAG_SPLIT_QUANTITY);
             xmlSerializer.text(strValue);
             xmlSerializer.endTag(null, GncXmlHelper.TAG_SPLIT_QUANTITY);
@@ -615,6 +629,67 @@ public class GncXmlExporter extends Exporter{
         }
     }
 
+    private void exportPrices(XmlSerializer xmlSerializer) throws IOException {
+        xmlSerializer.startTag(null, GncXmlHelper.TAG_PRICEDB);
+        xmlSerializer.attribute(null, GncXmlHelper.ATTR_KEY_VERSION, "1");
+        Cursor cursor = mPricesDbAdpater.fetchAllRecords();
+        try {
+            while(cursor.moveToNext()) {
+                xmlSerializer.startTag(null, GncXmlHelper.TAG_PRICE);
+                // GUID
+                xmlSerializer.startTag(null, GncXmlHelper.TAG_PRICE_ID);
+                xmlSerializer.attribute(null, GncXmlHelper.ATTR_KEY_TYPE, GncXmlHelper.ATTR_VALUE_GUID);
+                xmlSerializer.text(cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.CommonColumns.COLUMN_UID)));
+                xmlSerializer.endTag(null, GncXmlHelper.TAG_PRICE_ID);
+                // commodity
+                xmlSerializer.startTag(null, GncXmlHelper.TAG_PRICE_COMMODITY);
+                xmlSerializer.startTag(null, GncXmlHelper.TAG_COMMODITY_SPACE);
+                xmlSerializer.text("ISO4217");
+                xmlSerializer.endTag(null, GncXmlHelper.TAG_COMMODITY_SPACE);
+                xmlSerializer.startTag(null, GncXmlHelper.TAG_COMMODITY_ID);;
+                xmlSerializer.text(mCommoditiesDbAdapter.getCurrencyCode(cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.PriceEntry.COLUMN_COMMODITY_UID))));
+                xmlSerializer.endTag(null, GncXmlHelper.TAG_COMMODITY_ID);
+                xmlSerializer.endTag(null, GncXmlHelper.TAG_PRICE_COMMODITY);
+                // currency
+                xmlSerializer.startTag(null, GncXmlHelper.TAG_PRICE_CURRENCY);
+                xmlSerializer.startTag(null, GncXmlHelper.TAG_COMMODITY_SPACE);
+                xmlSerializer.text("ISO4217");
+                xmlSerializer.endTag(null, GncXmlHelper.TAG_COMMODITY_SPACE);
+                xmlSerializer.startTag(null, GncXmlHelper.TAG_COMMODITY_ID);;
+                xmlSerializer.text(mCommoditiesDbAdapter.getCurrencyCode(cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.PriceEntry.COLUMN_CURRENCY_UID))));
+                xmlSerializer.endTag(null, GncXmlHelper.TAG_COMMODITY_ID);
+                xmlSerializer.endTag(null, GncXmlHelper.TAG_PRICE_CURRENCY);
+                // time
+                String strDate = GncXmlHelper.formatDate(Timestamp.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.PriceEntry.COLUMN_DATE))).getTime());
+                xmlSerializer.startTag(null, GncXmlHelper.TAG_PRICE_TIME);
+                xmlSerializer.startTag(null, GncXmlHelper.TAG_TS_DATE);
+                xmlSerializer.text(strDate);
+                xmlSerializer.endTag(null, GncXmlHelper.TAG_TS_DATE);
+                xmlSerializer.endTag(null, GncXmlHelper.TAG_PRICE_TIME);
+                // source
+                xmlSerializer.startTag(null, GncXmlHelper.TAG_PRICE_SOURCE);
+                xmlSerializer.text(cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.PriceEntry.COLUMN_SOURCE)));
+                xmlSerializer.endTag(null, GncXmlHelper.TAG_PRICE_SOURCE);
+                // type, optional
+                String type = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.PriceEntry.COLUMN_TYPE));
+                if (type != null && !type.equals("")) {
+                    xmlSerializer.startTag(null, GncXmlHelper.TAG_PRICE_TYPE);
+                    xmlSerializer.text(type);
+                    xmlSerializer.endTag(null, GncXmlHelper.TAG_PRICE_TYPE);
+                }
+                // value
+                xmlSerializer.startTag(null, GncXmlHelper.TAG_PRICE_VALUE);
+                xmlSerializer.text(cursor.getLong(cursor.getColumnIndexOrThrow(DatabaseSchema.PriceEntry.COLUMN_VALUE_NUM))
+                                + "/" + cursor.getLong(cursor.getColumnIndexOrThrow(DatabaseSchema.PriceEntry.COLUMN_VALUE_DENOM)));
+                xmlSerializer.endTag(null, GncXmlHelper.TAG_PRICE_VALUE);
+                xmlSerializer.endTag(null, GncXmlHelper.TAG_PRICE);
+            }
+        } finally {
+            cursor.close();
+        }
+        xmlSerializer.endTag(null, GncXmlHelper.TAG_PRICEDB);
+    }
+
     @Override
     public void generateExport(Writer writer) throws ExporterException{
         try {
@@ -642,7 +717,7 @@ public class GncXmlExporter extends Exporter{
             xmlSerializer.text(UUID.randomUUID().toString().replaceAll("-", ""));
             xmlSerializer.endTag(null, GncXmlHelper.TAG_BOOK_ID);
             //commodity count
-            List<Currency> currencies = mAccountsDbAdapter.getCurrencies();
+            List<Currency> currencies = mAccountsDbAdapter.getCurrenciesInUse();
             for (int i = 0; i< currencies.size();i++) {
                 if (currencies.get(i).getCurrencyCode().equals("XXX")) {
                     currencies.remove(i);
@@ -660,12 +735,23 @@ public class GncXmlExporter extends Exporter{
             //transaction count
             xmlSerializer.startTag(null, GncXmlHelper.TAG_COUNT_DATA);
             xmlSerializer.attribute(null, GncXmlHelper.ATTR_KEY_CD_TYPE, "transaction");
-            xmlSerializer.text(mTransactionsDbAdapter.getTotalTransactionsCount() + "");
+            xmlSerializer.text(mTransactionsDbAdapter.getRecordsCount() + "");
             xmlSerializer.endTag(null, GncXmlHelper.TAG_COUNT_DATA);
+            //price count
+            long priceCount = mPricesDbAdpater.getRecordsCount();
+            if (priceCount > 0) {
+                xmlSerializer.startTag(null, GncXmlHelper.TAG_COUNT_DATA);
+                xmlSerializer.attribute(null, GncXmlHelper.ATTR_KEY_CD_TYPE, "price");
+                xmlSerializer.text(priceCount + "");
+                xmlSerializer.endTag(null, GncXmlHelper.TAG_COUNT_DATA);
+            }
             // export the commodities used in the DB
             exportCommodity(xmlSerializer, currencies);
-            // accounts. bulk import does not rely on account order
-            // the cursor gather account in arbitrary order
+            // prices
+            if (priceCount > 0) {
+                exportPrices(xmlSerializer);
+            }
+            // accounts.
             exportAccounts(xmlSerializer);
             // transactions.
             exportTransactions(xmlSerializer, false);

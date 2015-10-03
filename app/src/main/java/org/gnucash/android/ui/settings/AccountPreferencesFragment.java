@@ -25,9 +25,8 @@ import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
-
-import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.SherlockPreferenceActivity;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 
 import org.gnucash.android.R;
 import org.gnucash.android.model.Money;
@@ -49,7 +48,7 @@ public class AccountPreferencesFragment extends PreferenceFragment {
         super.onCreate(savedInstanceState);
 
         addPreferencesFromResource(R.xml.fragment_account_preferences);
-        ActionBar actionBar = ((SherlockPreferenceActivity) getActivity()).getSupportActionBar();
+        ActionBar actionBar = ((AppCompatPreferenceActivity) getActivity()).getSupportActionBar();
         actionBar.setHomeButtonEnabled(true);
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setTitle(R.string.title_account_preferences);
@@ -85,7 +84,7 @@ public class AccountPreferencesFragment extends PreferenceFragment {
                 new AlertDialog.Builder(getActivity())
                         .setTitle(R.string.title_create_default_accounts)
                         .setMessage(R.string.msg_confirm_create_default_accounts_setting)
-                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .setIcon(R.drawable.ic_warning_black_24dp)
                         .setPositiveButton(R.string.btn_create_accounts, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {

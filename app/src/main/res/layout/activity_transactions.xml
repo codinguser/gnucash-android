@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
  Copyright (c) 2012 - 2015 Ngewi Fet <ngewif@gmail.com>
- 
+
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
  You may obtain a copy of the License at
- 
+
     http://www.apache.org/licenses/LICENSE-2.0
- 
+
  Unless required by applicable law or agreed to in writing, software
  distributed under the License is distributed on an "AS IS" BASIS,
  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,44 +21,67 @@
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <LinearLayout
-        android:id="@+id/fragment_container"
-        android:orientation="vertical"
+
+    <android.support.design.widget.CoordinatorLayout
+        android:id="@+id/coordinatorLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <TextView
-            android:id="@+id/section_header_transactions"
+        <android.support.design.widget.AppBarLayout
+            android:id="@+id/fragment_container"
+            android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/section_header_height"
-            android:paddingLeft="10dp"
-            android:background="@android:color/darker_gray"
-            android:textColor="@android:color/white"
-            android:text="@string/section_header_transactions"
-            />
+            android:layout_height="wrap_content">
 
-        <com.viewpagerindicator.TitlePageIndicator
-            android:id="@+id/titles"
-            android:layout_height="wrap_content"
-            android:layout_width="fill_parent"
-            android:textColor="@color/title_green"
-            app:footerColor="@color/title_green"
-            app:selectedColor="@color/title_green"
-            app:selectedBold="true"/>
+            <include layout="@layout/toolbar_transactions_activity" />
+
+            <android.support.design.widget.TabLayout
+                android:id="@+id/tab_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?attr/colorPrimary"
+                app:elevation="10dp"
+                android:minHeight="?attr/actionBarSize"
+                app:tabIndicatorColor="@android:color/white"
+                app:tabGravity="fill"
+                android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"/>
+
+        </android.support.design.widget.AppBarLayout>
 
         <android.support.v4.view.ViewPager
             android:id="@+id/pager"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="wrap_content"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
-    </LinearLayout>
+        <include layout="@layout/account_balance_toolbar"
+            android:id="@+id/account_balance_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:visibility="gone"
+            app:layout_scrollFlags="scroll|enterAlways" />
 
-    <ListView android:id="@+id/left_drawer"
-        android:layout_width="240dp"
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fab_create_transaction"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@id/account_balance_toolbar"
+            android:layout_gravity="end|bottom|right"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_margin="20dp"
+            app:elevation="6dp"
+            app:layout_behavior="org.gnucash.android.ui.util.ScrollingFABBehavior"
+            android:src="@drawable/ic_add_white_48dp"/>
+
+    </android.support.design.widget.CoordinatorLayout>
+
+    <android.support.design.widget.NavigationView
+        android:id="@+id/nav_view"
+        android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start"
-        android:choiceMode="singleChoice"
-        android:divider="@android:color/transparent"
-        android:dividerHeight="0dp"
-        android:background="#111"/>
+        app:headerLayout="@layout/nav_drawer_header"
+        app:menu="@menu/nav_drawer_menu"/>
 </android.support.v4.widget.DrawerLayout>

@@ -99,7 +99,7 @@ public class SchedulerService extends IntentService {
             case TRANSACTION:
                 String eventUID = scheduledAction.getActionUID();
                 TransactionsDbAdapter transactionsDbAdapter = TransactionsDbAdapter.getInstance();
-                Transaction trxnTemplate = transactionsDbAdapter.getTransaction(eventUID);
+                Transaction trxnTemplate = transactionsDbAdapter.getRecord(eventUID);
                 Transaction recurringTrxn = new Transaction(trxnTemplate, true);
 
                 //we may be executing scheduled action significantly after scheduled time (depending on when Android fires the alarm)
@@ -112,7 +112,7 @@ public class SchedulerService extends IntentService {
                 }
                 recurringTrxn.setTime(transactionTime);
                 recurringTrxn.setCreatedTimestamp(new Timestamp(transactionTime));
-                transactionsDbAdapter.addTransaction(recurringTrxn);
+                transactionsDbAdapter.addRecord(recurringTrxn);
                 break;
 
             case BACKUP:
