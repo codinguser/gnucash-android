@@ -540,7 +540,7 @@ Neste processo n&#227;o ser&#227;o recolhidas informa&#231;&#245;es do utilizado
     <string name="toast_legend_too_long">A legenda &#233; grande demais</string>
     <string name="toast_scheduled_recurring_transaction">Transa&#231;&#227;o agendade recorrente</string>
     <string name="wizard_btn_back">Anterior</string>
-    <string name="wizard_option_auto_send_crash_reports">Envia relat&#243;&#243;rios de erros automaticamente</string>
+    <string name="wizard_option_auto_send_crash_reports">Envia relat&#243;rios de erros automaticamente</string>
     <string name="wizard_option_create_default_accounts">Criar contas por defeito</string>
     <string name="wizard_option_currency_other">Outros...</string>
     <string name="wizard_option_disable_crash_reports">Desactivar relat&#243;rios de erros</string>
