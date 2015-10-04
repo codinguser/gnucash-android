@@ -93,7 +93,7 @@ public class PieChartFragment extends Fragment implements OnChartValueSelectedLi
     private LocalDateTime mEarliestTransactionDate;
     private LocalDateTime mLatestTransactionDate;
 
-    private AccountType mAccountType = AccountType.EXPENSE;
+    private AccountType mAccountType;
 
     private boolean mChartDataPresent = true;
 
@@ -146,7 +146,8 @@ public class PieChartFragment extends Fragment implements OnChartValueSelectedLi
         mReportStartTime = reportsActivity.getReportStartTime();
         mReportEndTime = reportsActivity.getReportEndTime();
         mAccountType = reportsActivity.getAccountType();
-        onAccountTypeUpdated(mAccountType);
+
+        displayChart();
     }
 
     /**
@@ -215,9 +216,11 @@ public class PieChartFragment extends Fragment implements OnChartValueSelectedLi
 
     @Override
     public void onTimeRangeUpdated(long start, long end) {
-        mReportStartTime = start;
-        mReportEndTime = end;
-        displayChart();
+        if (mReportStartTime != start || mReportEndTime != end) {
+            mReportStartTime = start;
+            mReportEndTime = end;
+            displayChart();
+        }
     }
 
     @Override
@@ -227,12 +230,14 @@ public class PieChartFragment extends Fragment implements OnChartValueSelectedLi
 
     @Override
     public void onAccountTypeUpdated(AccountType accountType) {
-        mAccountType = accountType;
-        mEarliestTransactionDate = new LocalDateTime(mTransactionsDbAdapter.getTimestampOfEarliestTransaction(mAccountType, mCurrencyCode));
-        mLatestTransactionDate = new LocalDateTime(mTransactionsDbAdapter.getTimestampOfLatestTransaction(mAccountType, mCurrencyCode));
-        mChartDate = mLatestTransactionDate;
+        if (mAccountType != accountType) {
+            mAccountType = accountType;
+            mEarliestTransactionDate = new LocalDateTime(mTransactionsDbAdapter.getTimestampOfEarliestTransaction(mAccountType, mCurrencyCode));
+            mLatestTransactionDate = new LocalDateTime(mTransactionsDbAdapter.getTimestampOfLatestTransaction(mAccountType, mCurrencyCode));
+            mChartDate = mLatestTransactionDate;
 
-        displayChart();
+            displayChart();
+        }
     }
 
     /**

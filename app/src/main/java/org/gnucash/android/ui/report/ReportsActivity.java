@@ -83,7 +83,7 @@ public class ReportsActivity extends BaseDrawerActivity implements AdapterView.O
 
     // default time range is the last 3 months
     private long mReportStartTime = new LocalDate().minusMonths(2).dayOfMonth().withMinimumValue().toDate().getTime();
-    private long mReportEndTime = new LocalDate().toDate().getTime();
+    private long mReportEndTime = new LocalDate().plusDays(1).toDate().getTime();
 
 
     GroupInterval mReportGroupInterval = GroupInterval.MONTH;
@@ -254,7 +254,7 @@ public class ReportsActivity extends BaseDrawerActivity implements AdapterView.O
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        mReportEndTime = new LocalDate().toDate().getTime();
+        mReportEndTime = new LocalDate().plusDays(1).toDate().getTime();
         switch (position){
             case 0: //current month
                 mReportStartTime = new LocalDate().dayOfMonth().withMinimumValue().toDate().getTime();
