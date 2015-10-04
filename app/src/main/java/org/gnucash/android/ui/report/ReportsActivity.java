@@ -44,7 +44,6 @@ import org.gnucash.android.model.AccountType;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.ui.common.BaseDrawerActivity;
 import org.gnucash.android.ui.report.dialog.DateRangePickerDialogFragment;
-import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 
 import java.util.Arrays;
@@ -82,8 +81,10 @@ public class ReportsActivity extends BaseDrawerActivity implements AdapterView.O
 
     public enum GroupInterval {WEEK, MONTH, QUARTER, YEAR, ALL}
 
-    private long mReportStartTime = -1;
-    private long mReportEndTime = -1;
+    // default time range is the last 3 months
+    private long mReportStartTime = new LocalDate().minusMonths(2).dayOfMonth().withMinimumValue().toDate().getTime();
+    private long mReportEndTime = new LocalDate().toDate().getTime();
+
 
     GroupInterval mReportGroupInterval = GroupInterval.MONTH;
 
@@ -253,20 +254,19 @@ public class ReportsActivity extends BaseDrawerActivity implements AdapterView.O
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        mReportEndTime = System.currentTimeMillis();
+        mReportEndTime = new LocalDate().toDate().getTime();
         switch (position){
             case 0: //current month
-                mReportStartTime = new DateTime().dayOfMonth().withMinimumValue().millisOfDay().withMinimumValue()
-                        .toDate().getTime();
+                mReportStartTime = new LocalDate().dayOfMonth().withMinimumValue().toDate().getTime();
                 break;
             case 1: // last 3 months. x-2, x-1, x
-                mReportStartTime = new LocalDate().minusMonths(2).toDate().getTime();
+                mReportStartTime = new LocalDate().minusMonths(2).dayOfMonth().withMinimumValue().toDate().getTime();
                 break;
             case 2:
-                mReportStartTime = new LocalDate().minusMonths(5).toDate().getTime();
+                mReportStartTime = new LocalDate().minusMonths(5).dayOfMonth().withMinimumValue().toDate().getTime();
                 break;
             case 3:
-                mReportStartTime = new LocalDate().minusMonths(11).toDate().getTime();
+                mReportStartTime = new LocalDate().minusMonths(11).dayOfMonth().withMinimumValue().toDate().getTime();
                 break;
             case 4: //ALL TIME
                 mReportStartTime = -1;
