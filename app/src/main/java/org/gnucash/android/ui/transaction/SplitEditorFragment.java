@@ -261,7 +261,7 @@ public class SplitEditorFragment extends Fragment {
             splitCurrencyTextView.setText(accountCurrency.getSymbol());
             splitTypeButton.setAmountFormattingListener(splitAmountEditText, splitCurrencyTextView);
             splitTypeButton.setChecked(mBaseAmount.signum() > 0);
-            splitUidTextView.setText(UUID.randomUUID().toString());
+            splitUidTextView.setText(UUID.randomUUID().toString().replaceAll("-", ""));
 
             if (split != null) {
                 splitAmountEditText.setCurrency(split.getValue().getCurrency());
