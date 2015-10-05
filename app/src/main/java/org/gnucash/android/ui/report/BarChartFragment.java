@@ -386,18 +386,22 @@ public class BarChartFragment extends Fragment implements OnChartValueSelectedLi
 
     @Override
     public void onTimeRangeUpdated(long start, long end) {
-        mReportStartTime = start;
-        mReportEndTime = end;
+        if (mReportStartTime != start || mReportEndTime != end) {
+            mReportStartTime = start;
+            mReportEndTime = end;
 
-        mChart.setData(getData());
-        displayChart();
+            mChart.setData(getData());
+            displayChart();
+        }
     }
 
     @Override
     public void onGroupingUpdated(GroupInterval groupInterval) {
-        mGroupInterval = groupInterval;
-        mChart.setData(getData());
-        displayChart();
+        if (mGroupInterval != groupInterval) {
+            mGroupInterval = groupInterval;
+            mChart.setData(getData());
+            displayChart();
+        }
     }
 
     @Override

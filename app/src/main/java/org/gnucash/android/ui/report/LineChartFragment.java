@@ -173,6 +173,7 @@ public class LineChartFragment extends Fragment implements OnChartValueSelectedL
      * @return a {@code LineData} instance that represents a user data
      */
     private LineData getData(List<AccountType> accountTypeList) {
+        Log.w(TAG, "getData");
         calculateEarliestAndLatestTimestamps(accountTypeList);
         // LocalDateTime?
         LocalDate startDate;
@@ -378,20 +379,21 @@ public class LineChartFragment extends Fragment implements OnChartValueSelectedL
 
     @Override
     public void onTimeRangeUpdated(long start, long end) {
-        mReportStartTime = start;
-        mReportEndTime = end;
-
-        mChart.setData(getData(new ArrayList<>(Arrays.asList(AccountType.INCOME, AccountType.EXPENSE))));
-        mChart.invalidate();
+        if (mReportStartTime != start || mReportEndTime != end) {
+            mReportStartTime = start;
+            mReportEndTime = end;
+            mChart.setData(getData(new ArrayList<>(Arrays.asList(AccountType.INCOME, AccountType.EXPENSE))));
+            mChart.invalidate();
+        }
     }
 
     @Override
     public void onGroupingUpdated(GroupInterval groupInterval) {
-        mGroupInterval = groupInterval;
-        Log.d(TAG, "GroupInterval " + groupInterval);
-
-        mChart.setData(getData(new ArrayList<>(Arrays.asList(AccountType.INCOME, AccountType.EXPENSE))));
-        mChart.invalidate();
+        if (mGroupInterval != groupInterval) {
+            mGroupInterval = groupInterval;
+            mChart.setData(getData(new ArrayList<>(Arrays.asList(AccountType.INCOME, AccountType.EXPENSE))));
+            mChart.invalidate();
+        }
     }
 
     @Override
