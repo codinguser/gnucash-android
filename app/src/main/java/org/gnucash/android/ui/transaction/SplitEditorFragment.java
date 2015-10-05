@@ -43,6 +43,7 @@ import org.gnucash.android.R;
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.model.AccountType;
+import org.gnucash.android.model.BaseModel;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.model.Split;
 import org.gnucash.android.model.Transaction;
@@ -261,7 +262,7 @@ public class SplitEditorFragment extends Fragment {
             splitCurrencyTextView.setText(accountCurrency.getSymbol());
             splitTypeButton.setAmountFormattingListener(splitAmountEditText, splitCurrencyTextView);
             splitTypeButton.setChecked(mBaseAmount.signum() > 0);
-            splitUidTextView.setText(UUID.randomUUID().toString().replaceAll("-", ""));
+            splitUidTextView.setText(BaseModel.generateUID());
 
             if (split != null) {
                 splitAmountEditText.setCurrency(split.getValue().getCurrency());

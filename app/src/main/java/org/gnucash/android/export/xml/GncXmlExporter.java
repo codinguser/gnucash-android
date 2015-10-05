@@ -30,6 +30,7 @@ import org.gnucash.android.export.ExportParams;
 import org.gnucash.android.export.Exporter;
 import org.gnucash.android.model.Account;
 import org.gnucash.android.model.AccountType;
+import org.gnucash.android.model.BaseModel;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.model.PeriodType;
 import org.gnucash.android.model.ScheduledAction;
@@ -290,7 +291,7 @@ public class GncXmlExporter extends Exporter{
             mRootTemplateAccount.setAccountType(AccountType.ROOT);
             mTransactionToTemplateAccountMap.put(" ", mRootTemplateAccount);
             while (cursor.moveToNext()) {
-                Account account = new Account(UUID.randomUUID().toString().replaceAll("-", ""));
+                Account account = new Account(BaseModel.generateUID());
                 account.setAccountType(AccountType.BANK);
                 String trnUID = cursor.getString(cursor.getColumnIndexOrThrow("trans_uid"));
                 mTransactionToTemplateAccountMap.put(trnUID, account);
@@ -714,7 +715,7 @@ public class GncXmlExporter extends Exporter{
             // book_id
             xmlSerializer.startTag(null, GncXmlHelper.TAG_BOOK_ID);
             xmlSerializer.attribute(null, GncXmlHelper.ATTR_KEY_TYPE, GncXmlHelper.ATTR_VALUE_GUID);
-            xmlSerializer.text(UUID.randomUUID().toString().replaceAll("-", ""));
+            xmlSerializer.text(BaseModel.generateUID());
             xmlSerializer.endTag(null, GncXmlHelper.TAG_BOOK_ID);
             //commodity count
             List<Currency> currencies = mAccountsDbAdapter.getCurrenciesInUse();

@@ -32,6 +32,7 @@ import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.export.xml.GncXmlHelper;
 import org.gnucash.android.model.Account;
 import org.gnucash.android.model.AccountType;
+import org.gnucash.android.model.BaseModel;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.model.PeriodType;
 import org.gnucash.android.model.Price;
@@ -671,7 +672,7 @@ public class GncXmlHandler extends DefaultHandler {
                 if (mScheduledAction.getActionType() == ScheduledAction.ActionType.TRANSACTION) {
                     mScheduledAction.setActionUID(mTemplateAccountToTransactionMap.get(characterString));
                 } else {
-                    mScheduledAction.setActionUID(UUID.randomUUID().toString().replaceAll("-",""));
+                    mScheduledAction.setActionUID(BaseModel.generateUID());
                 }
                 break;
             case GncXmlHelper.TAG_SCHEDULED_ACTION:
