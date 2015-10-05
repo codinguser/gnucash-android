@@ -54,6 +54,7 @@ import org.gnucash.android.db.ScheduledActionDbAdapter;
 import org.gnucash.android.export.ExportAsyncTask;
 import org.gnucash.android.export.ExportFormat;
 import org.gnucash.android.export.ExportParams;
+import org.gnucash.android.model.BaseModel;
 import org.gnucash.android.model.ScheduledAction;
 import org.gnucash.android.ui.account.AccountsActivity;
 import org.gnucash.android.ui.common.UxArgument;
@@ -239,7 +240,7 @@ public class
 				ScheduledAction.ActionType.BACKUP);
 		for (ScheduledAction scheduledAction : scheduledActions) {
 			scheduledAction.setTag(exportParameters.toCsv());
-			scheduledAction.setActionUID(UUID.randomUUID().toString().replaceAll("-", ""));
+			scheduledAction.setActionUID(BaseModel.generateUID());
 			ScheduledActionDbAdapter.getInstance().addRecord(scheduledAction);
 		}
 

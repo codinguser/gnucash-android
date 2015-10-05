@@ -34,6 +34,7 @@ import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.export.Exporter;
 import org.gnucash.android.importer.CommoditiesXmlHandler;
 import org.gnucash.android.model.AccountType;
+import org.gnucash.android.model.BaseModel;
 import org.gnucash.android.model.Commodity;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.model.Transaction;
@@ -208,11 +209,6 @@ public class MigrationHelper {
                 oldExportFolder.delete();
         }
     };
-
-    public static String generateUUID()
-    {
-        return UUID.randomUUID().toString().replaceAll("-", "");
-    }
 
 
     /**
@@ -665,7 +661,7 @@ public class MigrationHelper {
                 }
                 else
                 {
-                    rootAccountUID = generateUUID();
+                    rootAccountUID = BaseModel.generateUID();
                     contentValues.clear();
                     contentValues.put(CommonColumns.COLUMN_UID, rootAccountUID);
                     contentValues.put(CommonColumns.COLUMN_CREATED_AT, timestamp);
@@ -707,7 +703,7 @@ public class MigrationHelper {
                 //scheduledAction.setLastRun(System.currentTimeMillis()); //prevent this from being executed at the end of migration
 
                 contentValues.clear();
-                contentValues.put(CommonColumns.COLUMN_UID, generateUUID());
+                contentValues.put(CommonColumns.COLUMN_UID, BaseModel.generateUID());
                 contentValues.put(CommonColumns.COLUMN_CREATED_AT, timestamp);
                 contentValues.put(ScheduledActionEntry.COLUMN_ACTION_UID, cursor.getString(cursor.getColumnIndexOrThrow(TransactionEntry.COLUMN_UID)));
                 contentValues.put(ScheduledActionEntry.COLUMN_PERIOD,    cursor.getLong(cursor.getColumnIndexOrThrow("recurrence_period")));
@@ -774,7 +770,7 @@ public class MigrationHelper {
                                 imbalanceAccountUID = c.getString(c.getColumnIndexOrThrow(AccountEntry.COLUMN_UID));
                             }
                             else {
-                                imbalanceAccountUID = generateUUID();
+                                imbalanceAccountUID = BaseModel.generateUID();
                                 contentValues.clear();
                                 contentValues.put(CommonColumns.COLUMN_UID, imbalanceAccountUID);
                                 contentValues.put(CommonColumns.COLUMN_CREATED_AT, timestamp);
@@ -795,7 +791,7 @@ public class MigrationHelper {
                         }
                         String TransactionUID = cursor.getString(cursor.getColumnIndexOrThrow("trans_uid"));
                         contentValues.clear();
-                        contentValues.put(CommonColumns.COLUMN_UID, generateUUID());
+                        contentValues.put(CommonColumns.COLUMN_UID, BaseModel.generateUID());
                         contentValues.put(CommonColumns.COLUMN_CREATED_AT, timestamp);
                         contentValues.put("amount",     decimalImbalance.abs().toPlainString());
                         contentValues.put(SplitEntry.COLUMN_TYPE,       decimalImbalance.compareTo(BigDecimal.ZERO) < 0 ? "DEBIT" : "CREDIT");
