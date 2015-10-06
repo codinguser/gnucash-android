@@ -45,7 +45,6 @@ import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.model.Account;
 import org.gnucash.android.model.AccountType;
 import org.gnucash.android.model.Money;
-import org.gnucash.android.model.Transaction;
 import org.gnucash.android.ui.transaction.TransactionsActivity;
 import org.joda.time.LocalDateTime;
 
@@ -63,6 +62,9 @@ import butterknife.ButterKnife;
  * @author Ngewi Fet <ngewif@gmail.com>
  */
 public class ReportSummaryFragment extends Fragment {
+
+    public static final int LEGEND_TEXT_SIZE = 14;
+
     @Bind(R.id.btn_pie_chart) Button mPieChartButton;
     @Bind(R.id.btn_bar_chart) Button mBarChartButton;
     @Bind(R.id.btn_line_chart) Button mLineChartButton;
@@ -73,7 +75,7 @@ public class ReportSummaryFragment extends Fragment {
     @Bind(R.id.total_liabilities) TextView mTotalLiabilities;
     @Bind(R.id.net_worth) TextView mNetWorth;
 
-    AccountsDbAdapter mAccountsDbAdapter;
+    private AccountsDbAdapter mAccountsDbAdapter;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -138,8 +140,7 @@ public class ReportSummaryFragment extends Fragment {
         mChart.setDescription("");
         mChart.getLegend().setEnabled(true);
         mChart.getLegend().setPosition(Legend.LegendPosition.RIGHT_OF_CHART_CENTER);
-        mChart.getLegend().setTextSize(14);
-//        mChart.setOnChartValueSelectedListener(this);
+        mChart.getLegend().setTextSize(LEGEND_TEXT_SIZE);
 
         ColorStateList csl = new ColorStateList(new int[][]{new int[0]}, new int[]{getResources().getColor(R.color.account_green)});
         setButtonTint(mPieChartButton, csl);
@@ -255,8 +256,7 @@ public class ReportSummaryFragment extends Fragment {
 
     private void loadFragment(Fragment fragment){
         FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager
-                .beginTransaction();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
         fragmentTransaction.replace(R.id.fragment_container, fragment);
         fragmentTransaction.addToBackStack(null);
