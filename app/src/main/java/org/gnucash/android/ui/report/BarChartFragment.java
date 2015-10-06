@@ -152,8 +152,8 @@ public class BarChartFragment extends Fragment implements OnChartValueSelectedLi
         mChart.getAxisLeft().setValueFormatter(new LargeValueFormatter(mCurrency.getSymbol(Locale.getDefault())));
         Legend chartLegend = mChart.getLegend();
         chartLegend.setForm(Legend.LegendForm.CIRCLE);
-        chartLegend.setPosition(Legend.LegendPosition.RIGHT_OF_CHART_INSIDE);
-//        chartLegend.setWordWrapEnabled(true); in MPAndroidChart 2.1.3 legend wrapping cause app crash
+        chartLegend.setPosition(Legend.LegendPosition.BELOW_CHART_CENTER);
+        chartLegend.setWordWrapEnabled(true);
 
         mChart.setData(getData());
         displayChart();
@@ -350,6 +350,7 @@ public class BarChartFragment extends Fragment implements OnChartValueSelectedLi
     private void displayChart() {
         mChart.highlightValues(null);
         setCustomLegend();
+        mChart.notifyDataSetChanged();
 
         mChart.getAxisLeft().setDrawLabels(mChartDataPresent);
         mChart.getXAxis().setDrawLabels(mChartDataPresent);
