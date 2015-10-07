@@ -46,7 +46,7 @@ import org.gnucash.android.model.Account;
 import org.gnucash.android.model.AccountType;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.ui.transaction.TransactionsActivity;
-import org.joda.time.LocalDateTime;
+import org.joda.time.LocalDate;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -181,7 +181,6 @@ public class ReportSummaryFragment extends Fragment {
      */
     private PieData getData() {
         String mCurrencyCode = GnuCashApplication.getDefaultCurrencyCode();
-        LocalDateTime mChartDate = new LocalDateTime();
         PieDataSet dataSet = new PieDataSet(null, "");
         List<String> labels = new ArrayList<>();
         List<Integer> colors = new ArrayList<>();
@@ -190,10 +189,8 @@ public class ReportSummaryFragment extends Fragment {
                     && !account.isPlaceholderAccount()
                     && account.getCurrency() == Currency.getInstance(mCurrencyCode)) {
 
-                long start = -1; long end = -1;
-                start = mChartDate.minusMonths(3).dayOfMonth().withMinimumValue().millisOfDay().withMinimumValue().toDate().getTime();
-                end = mChartDate.dayOfMonth().withMaximumValue().millisOfDay().withMaximumValue().toDate().getTime();
-
+                long start = new LocalDate().minusMonths(2).dayOfMonth().withMinimumValue().toDate().getTime();
+                long end = new LocalDate().plusDays(1).toDate().getTime();
                 double balance = mAccountsDbAdapter.getAccountsBalance(Collections.singletonList(account.getUID()), start, end).absolute().asDouble();
                 if (balance != 0) {
                     dataSet.addEntry(new Entry((float) balance, dataSet.getEntryCount()));
