@@ -561,6 +561,10 @@ No user-identifiable information will be collected as part of this process!
     <string name="menu_group_by_year">Jaar</string>
     <string name="title_balance_sheet_report">Balans</string>
     <string name="label_balance_sheet_total">Totaal:</string>
+    <string name="title_google_plus_community">Google+ Community</string>
+    <string name="title_translate_gnucash">Translate GnuCash</string>
+    <string name="summary_google_plus">Share ideas, discuss changes or report problems</string>
+    <string name="summary_translate_gnucash">Translate or proof-read on CrowdIn</string>
     <string-array name="report_time_range">
         <item>Huidige maand</item>
         <item>Afgelopen 3 maanden</item>

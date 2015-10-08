@@ -15,7 +15,7 @@
  limitations under the License.
 -->
 
-<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<resources>
     <string name="title_create_account">Utwórz konto</string>
     <string name="title_edit_account">Edytuj konto</string>
     <string name="info_details">Info</string>
@@ -555,6 +555,10 @@
     <string name="menu_group_by_year">Roku</string>
     <string name="title_balance_sheet_report">Bilans</string>
     <string name="label_balance_sheet_total">Suma:</string>
+    <string name="title_google_plus_community">Google+ Community</string>
+    <string name="title_translate_gnucash">Translate GnuCash</string>
+    <string name="summary_google_plus">Share ideas, discuss changes or report problems</string>
+    <string name="summary_translate_gnucash">Translate or proof-read on CrowdIn</string>
     <string-array name="report_time_range">
         <item>Bieżący miesiąc</item>
         <item>Ostatnie 3 miesiące</item>

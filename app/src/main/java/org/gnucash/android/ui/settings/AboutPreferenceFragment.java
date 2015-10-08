@@ -21,7 +21,6 @@ import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 
 import org.gnucash.android.BuildConfig;
 import org.gnucash.android.R;
@@ -50,7 +49,7 @@ public class AboutPreferenceFragment extends PreferenceFragment{
 	@Override
 	public void onResume() {
 		super.onResume();
-		Preference pref = findPreference(getString(R.string.key_build_version));
+		Preference pref = findPreference(getString(R.string.key_about_gnucash));
 		if (BuildConfig.FLAVOR.equals("development")){
 			pref.setSummary(pref.getSummary() + " - Built: " + BuildConfig.BUILD_TIME);
 		}

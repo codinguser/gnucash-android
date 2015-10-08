@@ -555,6 +555,10 @@ Aucune information permettant d\'identifier l\'utilisateur ne sera recueillis da
     <string name="menu_group_by_year">Année</string>
     <string name="title_balance_sheet_report">Bilans</string>
     <string name="label_balance_sheet_total">Total:</string>
+    <string name="title_google_plus_community">Google+ Community</string>
+    <string name="title_translate_gnucash">Translate GnuCash</string>
+    <string name="summary_google_plus">Share ideas, discuss changes or report problems</string>
+    <string name="summary_translate_gnucash">Translate or proof-read on CrowdIn</string>
     <string-array name="report_time_range">
         <item>Mois actuel</item>
         <item>3 derniers mois</item>

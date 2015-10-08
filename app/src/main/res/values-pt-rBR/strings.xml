@@ -558,6 +558,10 @@ Nenhuma informação de  identificação do usuário será coletada neste proces
 	<string name="menu_group_by_year">Ano</string>
 	<string name="title_balance_sheet_report">Balanço</string>
 	<string name="label_balance_sheet_total">Total:</string>
+	<string name="title_google_plus_community">Google+ Community</string>
+	<string name="title_translate_gnucash">Translate GnuCash</string>
+	<string name="summary_google_plus">Share ideas, discuss changes or report problems</string>
+	<string name="summary_translate_gnucash">Translate or proof-read on CrowdIn</string>
 	<string-array name="report_time_range">
 		<item>Mês atual</item>
 		<item>Last 3 meses</item>
