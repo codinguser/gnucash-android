@@ -51,9 +51,9 @@ import org.gnucash.android.model.TransactionType;
 import org.gnucash.android.ui.common.FormActivity;
 import org.gnucash.android.ui.common.UxArgument;
 import org.gnucash.android.ui.transaction.dialog.TransferFundsDialogFragment;
+import org.gnucash.android.ui.util.OnTransferFundsListener;
 import org.gnucash.android.ui.util.widget.CalculatorEditText;
 import org.gnucash.android.ui.util.widget.CalculatorKeyboard;
-import org.gnucash.android.ui.util.OnTransferFundsListener;
 import org.gnucash.android.ui.util.widget.TransactionTypeSwitch;
 import org.gnucash.android.util.QualifiedAccountNameCursorAdapter;
 
@@ -61,7 +61,6 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Currency;
 import java.util.List;
-import java.util.UUID;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -266,7 +265,7 @@ public class SplitEditorFragment extends Fragment {
 
             if (split != null) {
                 splitAmountEditText.setCurrency(split.getValue().getCurrency());
-                splitAmountEditText.setText(split.getFormattedValue().toPlainString());
+                splitAmountEditText.setText(split.getFormattedValue().formattedAmount());
                 splitCurrencyTextView.setText(split.getValue().getCurrency().getSymbol());
                 splitMemoEditText.setText(split.getMemo());
                 splitUidTextView.setText(split.getUID());

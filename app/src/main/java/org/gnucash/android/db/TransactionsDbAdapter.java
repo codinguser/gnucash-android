@@ -220,6 +220,28 @@ public class TransactionsDbAdapter extends DatabaseAdapter<Transaction> {
     }
 
     /**
+     * Returns a cursor to all scheduled transactions which have at least one split in the account
+     * <p>This is basically a set of all template transactions for this account</p>
+     * @param accountUID GUID of account
+     * @return Cursor with set of transactions
+     */
+    public Cursor fetchScheduledTransactionsForAccount(String accountUID){
+        SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
+        queryBuilder.setTables(TransactionEntry.TABLE_NAME
+                + " INNER JOIN " + SplitEntry.TABLE_NAME + " ON "
+                + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_UID + " = "
+                + SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_TRANSACTION_UID);
+        queryBuilder.setDistinct(true);
+        String[] projectionIn = new String[]{TransactionEntry.TABLE_NAME + ".*"};
+        String selection = SplitEntry.TABLE_NAME + "." + SplitEntry.COLUMN_ACCOUNT_UID + " = ?"
+                + " AND " + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_TEMPLATE + " = 1";
+        String[] selectionArgs = new String[]{accountUID};
+        String sortOrder = TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_TIMESTAMP + " DESC";
+
+        return queryBuilder.query(mDb, projectionIn, selection, selectionArgs, null, null, sortOrder);
+    }
+
+    /**
      * Deletes all transactions which contain a split in the account.
      * <p><b>Note:</b>As long as the transaction has one split which belongs to the account {@code accountUID},
      * it will be deleted. The other splits belonging to the transaction will also go away</p>
@@ -483,6 +505,23 @@ public class TransactionsDbAdapter extends DatabaseAdapter<Transaction> {
                 + " WHERE " + TransactionEntry.COLUMN_TEMPLATE + "=1";
         SQLiteStatement statement = mDb.compileStatement(sql);
         return statement.simpleQueryForLong();
+    }
+
+    /**
+     * Returns a list of all scheduled transactions in the database
+     * @return List of all scheduled transactions
+     */
+    public List<Transaction> getScheduledTransactionsForAccount(String accountUID){
+        Cursor cursor = fetchScheduledTransactionsForAccount(accountUID);
+        List<Transaction> scheduledTransactions = new ArrayList<>();
+        try {
+            while (cursor.moveToNext()) {
+                scheduledTransactions.add(buildModelInstance(cursor));
+            }
+            return scheduledTransactions;
+        } finally {
+            cursor.close();
+        }
     }
 
     /**

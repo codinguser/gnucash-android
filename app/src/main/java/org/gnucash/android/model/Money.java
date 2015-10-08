@@ -26,7 +26,6 @@ import org.gnucash.android.app.GnuCashApplication;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.math.MathContext;
 import java.math.RoundingMode;
 import java.security.InvalidParameterException;
 import java.text.DecimalFormat;
@@ -468,13 +467,27 @@ public final class Money implements Comparable<Money>{
 	}
 	
 	/**
-	 * Returns the string representation of the amount (without currency) of the Money object
+	 * Returns the string representation of the amount (without currency) of the Money object.
+	 * <p>This string is not locale-formatted. The decimal operator is a period (.)</p>
 	 * @return String representation of the amount (without currency) of the Money object
 	 */
 	public String toPlainString(){
 		return mAmount.setScale(mCurrency.getDefaultFractionDigits(), ROUNDING_MODE).toPlainString();
 	}
-	
+
+	/**
+	 * Returns the formatted amount in the default locale
+	 * <p>This prints the money amount with locale formatting like the decimal separation character</p>
+	 * @return Locale-formatted amount
+	 */
+	public String formattedAmount(){
+		NumberFormat formatter = NumberFormat.getInstance();
+		formatter.setMinimumFractionDigits(mCurrency.getDefaultFractionDigits());
+		formatter.setMaximumFractionDigits(mCurrency.getDefaultFractionDigits());
+		formatter.setGroupingUsed(false);
+		return formatter.format(asDouble());
+	}
+
 	/**
 	 * Returns the string representation of the Money object (value + currency) formatted according
 	 * to the default locale

@@ -62,13 +62,14 @@ import org.gnucash.android.ui.settings.SettingsActivity;
 import org.gnucash.android.ui.util.RecurrenceParser;
 
 import java.util.List;
-import java.util.UUID;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
 /**
- * Dialog fragment for exporting account information as OFX files.
+ * Dialog fragment for exporting accounts and transactions in various formats
+ * <p>The dialog is used for collecting information on the export options and then passing them
+ * to the {@link org.gnucash.android.export.Exporter} responsible for exporting</p>
  * @author Ngewi Fet <ngewif@gmail.com>
  */
 public class

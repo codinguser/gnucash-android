@@ -27,7 +27,6 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -38,7 +37,6 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
@@ -47,6 +45,7 @@ import android.widget.AutoCompleteTextView;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.FilterQueryProvider;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -59,7 +58,6 @@ import com.codetroopers.betterpickers.recurrencepicker.RecurrencePickerDialog;
 
 import org.gnucash.android.R;
 import org.gnucash.android.db.AccountsDbAdapter;
-import org.gnucash.android.db.CommoditiesDbAdapter;
 import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.db.ScheduledActionDbAdapter;
 import org.gnucash.android.db.TransactionsDbAdapter;
@@ -194,6 +192,11 @@ public class TransactionFormFragment extends Fragment implements
     @Bind(R.id.calculator_keyboard) KeyboardView mKeyboardView;
 
     /**
+     * Open the split editor
+     */
+    @Bind(R.id.btn_split_editor) ImageView mOpenSplitEditor;
+
+    /**
      * Flag to note if double entry accounting is in use or not
      */
 	private boolean mUseDoubleEntry;
@@ -228,27 +231,6 @@ public class TransactionFormFragment extends Fragment implements
      * Split quantity which will be set from the funds transfer dialog
      */
     private Money mSplitQuantity;
-    private View.OnTouchListener mAmountEditTextTouchListener = new View.OnTouchListener() {
-        @Override
-        public boolean onTouch(View v, MotionEvent event) {
-            final int DRAWABLE_LEFT = 0;
-            final int DRAWABLE_TOP = 1;
-            final int DRAWABLE_RIGHT = 2;
-            final int DRAWABLE_BOTTOM = 3;
-
-            if (event.getAction() == MotionEvent.ACTION_UP) {
-                if (event.getRawX() >= (mAmountEditText.getRight() - mAmountEditText.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
-                    openSplitEditor();
-                    return true;
-                } else if (!mAmountEditText.getCalculatorKeyboard().isCustomKeyboardVisible()) {
-                    mAmountEditText.getCalculatorKeyboard().showCustomKeyboard(v);
-                }
-            }
-
-            mAmountEditText.onTouchEvent(event);
-            return false;
-        }
-    };;
 
     /**
 	 * Create the view and retrieve references to the UI elements
@@ -259,6 +241,12 @@ public class TransactionFormFragment extends Fragment implements
 		View v = inflater.inflate(R.layout.fragment_transaction_form, container, false);
         ButterKnife.bind(this, v);
         mAmountEditText.bindListeners(mKeyboardView);
+        mOpenSplitEditor.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openSplitEditor();
+            }
+        });
         return v;
 	}
 
@@ -289,7 +277,6 @@ public class TransactionFormFragment extends Fragment implements
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         mAmountEditText.bindListeners(mKeyboardView);
-        mAmountEditText.setOnTouchListener(mAmountEditTextTouchListener);
     }
 
     @Override
@@ -457,7 +444,7 @@ public class TransactionFormFragment extends Fragment implements
 
 		if (!mAmountEditText.isInputModified()){
             //when autocompleting, only change the amount if the user has not manually changed it already
-            mAmountEditText.setText(mTransaction.getBalance(mAccountUID).toPlainString());
+            mAmountEditText.setText(mTransaction.getBalance(mAccountUID).formattedAmount());
         }
 		mCurrencyTextView.setText(mTransaction.getCurrency().getSymbol(Locale.getDefault()));
 		mNotesEditText.setText(mTransaction.getNote());
@@ -512,6 +499,7 @@ public class TransactionFormFragment extends Fragment implements
     private void setAmountEditViewVisible(int visibility) {
         getView().findViewById(R.id.layout_double_entry).setVisibility(visibility);
         mTransactionTypeSwitch.setVisibility(visibility);
+        mOpenSplitEditor.setVisibility(visibility);
     }
 
     private void toggleAmountInputEntryMode(boolean enabled){
@@ -626,8 +614,6 @@ public class TransactionFormFragment extends Fragment implements
 	 * Sets click listeners for the dialog buttons
 	 */
 	private void setListeners() {
-        mAmountEditText.setOnTouchListener(mAmountEditTextTouchListener);
-
 		mTransactionTypeSwitch.setAmountFormattingListener(mAmountEditText, mCurrencyTextView);
 
 		mDateTextView.setOnClickListener(new View.OnClickListener() {

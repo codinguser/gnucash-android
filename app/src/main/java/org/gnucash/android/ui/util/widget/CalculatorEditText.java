@@ -126,8 +126,7 @@ public class CalculatorEditText extends EditText {
                 if (hasFocus) {
                     setSelection(getText().length());
                     mCalculatorKeyboard.showCustomKeyboard(v);
-                }
-                else {
+                } else {
                     mCalculatorKeyboard.hideCustomKeyboard();
                     evaluate();
                 }
@@ -261,19 +260,18 @@ public class CalculatorEditText extends EditText {
      * @return Result of arithmetic evaluation which is same as text displayed in edittext
      */
     public String evaluate(){
-        String amountText = getText().toString();
-        amountText = amountText.replaceAll(",", ".");
-        if (amountText.trim().isEmpty())
-            return amountText.trim();
+        String amountString = getCleanString();
+        if (amountString.isEmpty())
+            return amountString;
 
-        ExpressionBuilder expressionBuilder = new ExpressionBuilder(amountText);
+        ExpressionBuilder expressionBuilder = new ExpressionBuilder(amountString);
         Expression expression;
 
         try {
             expression = expressionBuilder.build();
         } catch (RuntimeException e) {
             setError(getContext().getString(R.string.label_error_invalid_expression));
-            String msg = "Invalid expression: " + amountText;
+            String msg = "Invalid expression: " + amountString;
             Log.e(this.getClass().getSimpleName(), msg);
             Crashlytics.log(msg);
             return "";
@@ -308,6 +306,15 @@ public class CalculatorEditText extends EditText {
     }
 
     /**
+     * Returns the amount string formatted as a decimal in Locale.US and trimmed.
+     * This also converts decimal operators from other locales into a period (.)
+     * @return String with the amount in the EditText or empty string if there is no input
+     */
+    public String getCleanString(){
+        return getText().toString().replaceAll(",", ".").trim();
+    }
+
+    /**
      * Returns true if the content of this view has been modified
      * @return {@code true} if content has changed, {@code false} otherwise
      */
@@ -322,9 +329,9 @@ public class CalculatorEditText extends EditText {
      */
     public BigDecimal getValue(){
         evaluate();
-        String amountText = getText().toString();
-        if (amountText.isEmpty())
+        String amountString = getCleanString();
+        if (amountString.isEmpty())
             return null;
-        return new BigDecimal(amountText.replaceAll(",", ".").trim());
+        return new BigDecimal(amountString);
     }
 }
