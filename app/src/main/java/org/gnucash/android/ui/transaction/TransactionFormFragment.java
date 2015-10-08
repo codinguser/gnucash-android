@@ -505,8 +505,7 @@ public class TransactionFormFragment extends Fragment implements
     private void toggleAmountInputEntryMode(boolean enabled){
         if (enabled){
             mAmountEditText.setFocusable(true);
-            mAmountEditText.setOnClickListener(null);
-            mAmountEditText.setDefaultTouchListener();
+            mAmountEditText.bindListeners(mKeyboardView);
         } else {
             mAmountEditText.setFocusable(false);
             mAmountEditText.setOnClickListener(new View.OnClickListener() {
@@ -515,7 +514,6 @@ public class TransactionFormFragment extends Fragment implements
                     openSplitEditor();
                 }
             });
-            mAmountEditText.setOnTouchListener(null);
         }
     }
 

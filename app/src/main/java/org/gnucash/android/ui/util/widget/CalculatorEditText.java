@@ -158,27 +158,21 @@ public class CalculatorEditText extends EditText {
             }
         });
 
-        setDefaultTouchListener();
-
-        ((FormActivity)mContext).setOnBackListener(mCalculatorKeyboard);
-    }
-
-    /**
-     * Sets the default touch listener which opens the calculator keyboard
-     */
-    public void setDefaultTouchListener() {
+        // Although it looks redundant having both onClickListener and OnTouchListener, removing
+        // one of them makes the standard keyboard show up in addition to the calculator one.
         setOnTouchListener(new OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 if (!mCalculatorKeyboard.isCustomKeyboardVisible())
                     mCalculatorKeyboard.showCustomKeyboard(v);
 
-
                 // XXX: Use dispatchTouchEvent()?
-                onTouchEvent(event);               // Call native handler
+                onTouchEvent(event);
                 return false;
             }
         });
+
+        ((FormActivity)mContext).setOnBackListener(mCalculatorKeyboard);
     }
 
     /**
