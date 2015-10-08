@@ -16,10 +16,18 @@
 -->
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
-    <Preference android:key="@string/key_about" android:summary="@string/summary_about_gnucash"
-                android:title="@string/title_about"/>
-    <Preference android:key="@string/key_build_version" android:title="@string/title_build_version"
-        android:summary="@string/app_version_name"/>
+    <Preference android:key="@string/key_about_gnucash" android:summary="@string/app_version_name"
+                android:title="@string/title_about_gnucash"/>
+    <Preference android:title="@string/title_google_plus_community"
+        android:summary="@string/summary_google_plus" >
+        <intent android:action="android.intent.action.VIEW"
+            android:data="https://plus.google.com/communities/104728406764752407046"/>
+    </Preference>
+    <Preference android:title="@string/title_translate_gnucash"
+        android:summary="@string/summary_translate_gnucash">
+        <intent android:action="android.intent.action.VIEW"
+            android:data="https://crowdin.com/project/gnucash-android" />
+    </Preference>
     <Preference android:summary="@string/summary_licence_details" 
         android:title="@string/title_license" 
         android:key="@string/key_license">
