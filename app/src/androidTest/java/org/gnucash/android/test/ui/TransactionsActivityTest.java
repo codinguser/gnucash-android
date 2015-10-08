@@ -25,16 +25,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.preference.PreferenceManager;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.Espresso;
-import android.support.test.espresso.ViewAction;
-import android.support.test.espresso.action.CoordinatesProvider;
-import android.support.test.espresso.action.GeneralClickAction;
-import android.support.test.espresso.action.Press;
-import android.support.test.espresso.action.Tap;
 import android.support.test.runner.AndroidJUnit4;
 import android.test.ActivityInstrumentationTestCase2;
 import android.util.Log;
-import android.view.View;
-import android.widget.EditText;
 
 import org.gnucash.android.R;
 import org.gnucash.android.db.AccountsDbAdapter;
@@ -334,7 +327,7 @@ public class TransactionsActivityTest extends
 		onView(withId(R.id.input_transaction_name)).perform(typeText("Autobalance"));
 		onView(withId(R.id.input_transaction_amount)).perform(typeText("499"));
 
-		onView(withId(R.id.input_transaction_amount)).perform(clickSplitIcon());
+		onView(withId(R.id.btn_split_editor)).perform(click());
 
 		onView(withId(R.id.split_list_layout)).check(matches(allOf(isDisplayed(), hasDescendant(withId(R.id.input_split_amount)))));
 
@@ -517,22 +510,6 @@ public class TransactionsActivityTest extends
 	 */
 	private void clickOnView(int viewId){
 		onView(withId(viewId)).perform(click());
-	}
-
-	public static ViewAction clickSplitIcon(){
-		return new GeneralClickAction(Tap.SINGLE,
-				new CoordinatesProvider() {
-					@Override
-					public float[] calculateCoordinates(View view) {
-						int[] xy = new int[2];
-						view.getLocationOnScreen(xy);
-
-						float x = xy[0] + view.getWidth()* 0.9f;
-						float y = xy[1] + view.getHeight() * 0.5f;
-
-						return new float[]{x + 5, y};
-					}
-				}, Press.FINGER);
 	}
 
 	@Override

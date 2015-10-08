@@ -36,8 +36,6 @@ import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 
-import org.gnucash.android.ui.util.widget.CalculatorEditText;
-
 import java.text.DecimalFormatSymbols;
 
 
@@ -65,7 +63,7 @@ public class CalculatorKeyboard {
     private Context mContext;
     private boolean hapticFeedback;
 
-    final String mDecimalSeparator = Character.toString(DecimalFormatSymbols.getInstance().getDecimalSeparator());
+    public static final String LOCALE_DECIMAL_SEPARATOR = Character.toString(DecimalFormatSymbols.getInstance().getDecimalSeparator());
 
     private OnKeyboardActionListener mOnKeyboardActionListener = new OnKeyboardActionListener() {
         @Override
@@ -89,7 +87,7 @@ public class CalculatorKeyboard {
 
             switch (primaryCode) {
                 case KEY_CODE_DECIMAL_SEPARATOR:
-                    editable.insert(start, mDecimalSeparator);
+                    editable.insert(start, LOCALE_DECIMAL_SEPARATOR);
                     break;
                 case 42:
                 case 43:
@@ -157,7 +155,7 @@ public class CalculatorKeyboard {
         Keyboard keyboard = new Keyboard(mContext, keyboardLayoutResId);
         for (Keyboard.Key key : keyboard.getKeys()) {
             if (key.codes[0] == KEY_CODE_DECIMAL_SEPARATOR){
-                key.label = mDecimalSeparator;
+                key.label = LOCALE_DECIMAL_SEPARATOR;
                 break;
             }
         }

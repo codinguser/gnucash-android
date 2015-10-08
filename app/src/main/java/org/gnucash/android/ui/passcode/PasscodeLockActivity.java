@@ -20,6 +20,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.WindowManager.LayoutParams;
 
 import org.gnucash.android.app.GnuCashApplication;
@@ -59,13 +60,14 @@ public class PasscodeLockActivity extends AppCompatActivity {
         boolean skipPasscode = prefs.getBoolean(UxArgument.SKIP_PASSCODE_SCREEN, false);
         prefs.edit().remove(UxArgument.SKIP_PASSCODE_SCREEN).apply();
         String passCode = prefs.getString(UxArgument.PASSCODE, "");
+
         if (isPassEnabled && !isSessionActive() && !passCode.trim().isEmpty() && !skipPasscode) {
+            Log.v(TAG, "Show passcode screen");
             startActivity(new Intent(this, PasscodeLockScreenActivity.class)
-                    .setAction(getIntent().getAction())
-                    .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK)
-                    .putExtra(UxArgument.PASSCODE_CLASS_CALLER, this.getClass().getName())
-                    .putExtra(UxArgument.SELECTED_ACCOUNT_UID,
-                            getIntent().getStringExtra(UxArgument.SELECTED_ACCOUNT_UID))
+                            .setAction(getIntent().getAction())
+                            .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                            .putExtra(UxArgument.PASSCODE_CLASS_CALLER, this.getClass().getName())
+                            .putExtras(getIntent().getExtras())
             );
         }
     }
