@@ -47,8 +47,6 @@ import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.model.Account;
 import org.gnucash.android.model.AccountType;
-import org.gnucash.android.model.Money;
-import org.joda.time.LocalDateTime;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -69,7 +67,6 @@ public class PieChartFragment extends Fragment implements OnChartValueSelectedLi
         ReportOptionsListener {
 
     public static final String SELECTED_VALUE_PATTERN = "%s - %.2f (%.2f %%)";
-    public static final String DATE_PATTERN = "MMMM\nYYYY";
     public static final String TOTAL_VALUE_LABEL_PATTERN = "%s\n%.2f %s";
     private static final int ANIMATION_DURATION = 1800;
     public static final int NO_DATA_COLOR = Color.LTGRAY;
@@ -83,18 +80,13 @@ public class PieChartFragment extends Fragment implements OnChartValueSelectedLi
      */
     private static final double GROUPING_SMALLER_SLICES_THRESHOLD = 5;
 
-    private LocalDateTime mChartDate = new LocalDateTime();
-
     @Bind(R.id.pie_chart) PieChart mChart;
     @Bind(R.id.selected_chart_slice) TextView mSelectedValueTextView;
 
     private AccountsDbAdapter mAccountsDbAdapter;
     private TransactionsDbAdapter mTransactionsDbAdapter;
 
-    private LocalDateTime mEarliestTransactionDate;
-    private LocalDateTime mLatestTransactionDate;
-
-    private AccountType mAccountType = AccountType.EXPENSE;
+    private AccountType mAccountType;
 
     private boolean mChartDataPresent = true;
 
@@ -126,8 +118,8 @@ public class PieChartFragment extends Fragment implements OnChartValueSelectedLi
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(R.string.title_pie_chart);
 
+        ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(R.string.title_pie_chart);
         setHasOptionsMenu(true);
 
         mUseAccountColor = PreferenceManager.getDefaultSharedPreferences(getActivity())
@@ -143,8 +135,12 @@ public class PieChartFragment extends Fragment implements OnChartValueSelectedLi
         mChart.getLegend().setWordWrapEnabled(true);
         mChart.setOnChartValueSelectedListener(this);
 
-        mAccountType = ((ReportsActivity)getActivity()).getAccountType();
-        onAccountTypeUpdated(mAccountType);
+        ReportsActivity reportsActivity = (ReportsActivity) getActivity();
+        mReportStartTime = reportsActivity.getReportStartTime();
+        mReportEndTime = reportsActivity.getReportEndTime();
+        mAccountType = reportsActivity.getAccountType();
+
+        displayChart();
     }
 
     /**
@@ -196,7 +192,8 @@ public class PieChartFragment extends Fragment implements OnChartValueSelectedLi
                     && !account.isPlaceholderAccount()
                     && account.getCurrency() == Currency.getInstance(mCurrencyCode)) {
 
-                double balance = mAccountsDbAdapter.getAccountsBalance(Collections.singletonList(account.getUID()), mReportStartTime, mReportEndTime).absolute().asDouble();
+                double balance = mAccountsDbAdapter.getAccountsBalance(Collections.singletonList(account.getUID()),
+                        mReportStartTime, mReportEndTime).absolute().asDouble();
                 if (balance != 0) {
                     dataSet.addEntry(new Entry((float) balance, dataSet.getEntryCount()));
                     colors.add(mUseAccountColor && account.getColorHexCode() != null
@@ -213,24 +210,24 @@ public class PieChartFragment extends Fragment implements OnChartValueSelectedLi
 
     @Override
     public void onTimeRangeUpdated(long start, long end) {
-        mReportStartTime = start;
-        mReportEndTime = end;
-        displayChart();
+        if (mReportStartTime != start || mReportEndTime != end) {
+            mReportStartTime = start;
+            mReportEndTime = end;
+            displayChart();
+        }
     }
 
     @Override
     public void onGroupingUpdated(ReportsActivity.GroupInterval groupInterval) {
-        //TODO: Does this make sense for a pie chart? Don't think so
+        //nothing to see here, this doesn't make sense for a pie chart
     }
 
     @Override
     public void onAccountTypeUpdated(AccountType accountType) {
-        mAccountType = accountType;
-        mEarliestTransactionDate = new LocalDateTime(mTransactionsDbAdapter.getTimestampOfEarliestTransaction(mAccountType, mCurrencyCode));
-        mLatestTransactionDate = new LocalDateTime(mTransactionsDbAdapter.getTimestampOfLatestTransaction(mAccountType, mCurrencyCode));
-        mChartDate = mLatestTransactionDate;
-
-        displayChart();
+        if (mAccountType != accountType) {
+            mAccountType = accountType;
+            displayChart();
+        }
     }
 
     /**

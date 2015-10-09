@@ -22,7 +22,6 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -41,10 +40,8 @@ import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.model.AccountType;
-import org.gnucash.android.model.Money;
 import org.gnucash.android.ui.common.BaseDrawerActivity;
 import org.gnucash.android.ui.report.dialog.DateRangePickerDialogFragment;
-import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 
 import java.util.Arrays;
@@ -77,15 +74,16 @@ public class ReportsActivity extends BaseDrawerActivity implements AdapterView.O
     @Bind(R.id.time_range_spinner) Spinner mTimeRangeSpinner;
     @Bind(R.id.report_account_type_spinner) Spinner mAccountTypeSpinner;
 
-    TransactionsDbAdapter mTransactionsDbAdapter;
-    AccountType mAccountType = AccountType.EXPENSE;
+    private TransactionsDbAdapter mTransactionsDbAdapter;
+    private AccountType mAccountType = AccountType.EXPENSE;
 
     public enum GroupInterval {WEEK, MONTH, QUARTER, YEAR, ALL}
 
-    private long mReportStartTime = -1;
-    private long mReportEndTime = -1;
+    // default time range is the last 3 months
+    private long mReportStartTime = new LocalDate().minusMonths(2).dayOfMonth().withMinimumValue().toDate().getTime();
+    private long mReportEndTime = new LocalDate().plusDays(1).toDate().getTime();
 
-    GroupInterval mReportGroupInterval = GroupInterval.MONTH;
+    private GroupInterval mReportGroupInterval = GroupInterval.MONTH;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -176,10 +174,6 @@ public class ReportsActivity extends BaseDrawerActivity implements AdapterView.O
             getWindow().setStatusBarColor(GnuCashApplication.darken(resolvedColor));
     }
 
-    public AccountType getAccountType(){
-        return mAccountType;
-    }
-
     /**
      * Updates the reporting time range for all listening fragments
      */
@@ -257,29 +251,27 @@ public class ReportsActivity extends BaseDrawerActivity implements AdapterView.O
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        mReportEndTime = System.currentTimeMillis();
+        mReportEndTime = new LocalDate().plusDays(1).toDate().getTime();
         switch (position){
             case 0: //current month
-                mReportStartTime = new DateTime().dayOfMonth().withMinimumValue().toDate().getTime();
-                mReportEndTime = new DateTime().dayOfMonth().withMaximumValue().toDate().getTime();
+                mReportStartTime = new LocalDate().dayOfMonth().withMinimumValue().toDate().getTime();
                 break;
             case 1: // last 3 months. x-2, x-1, x
-                mReportStartTime = new LocalDate().minusMonths(2).toDate().getTime();
+                mReportStartTime = new LocalDate().minusMonths(2).dayOfMonth().withMinimumValue().toDate().getTime();
                 break;
             case 2:
-                mReportStartTime = new LocalDate().minusMonths(5).toDate().getTime();
+                mReportStartTime = new LocalDate().minusMonths(5).dayOfMonth().withMinimumValue().toDate().getTime();
                 break;
             case 3:
-                mReportStartTime = new LocalDate().minusMonths(11).toDate().getTime();
+                mReportStartTime = new LocalDate().minusMonths(11).dayOfMonth().withMinimumValue().toDate().getTime();
                 break;
             case 4: //ALL TIME
                 mReportStartTime = -1;
                 mReportEndTime = -1;
                 break;
             case 5:
-                String mCurrencyCode = PreferenceManager.getDefaultSharedPreferences(this).getString(getString(R.string.key_report_currency), Money.DEFAULT_CURRENCY_CODE);
+                String mCurrencyCode = GnuCashApplication.getDefaultCurrencyCode();
                 long earliestTransactionTime = mTransactionsDbAdapter.getTimestampOfEarliestTransaction(mAccountType, mCurrencyCode);
-                long latestTransactionTime = mTransactionsDbAdapter.getTimestampOfLatestTransaction(mAccountType, mCurrencyCode);
                 DialogFragment rangeFragment = DateRangePickerDialogFragment.newInstance(
                         earliestTransactionTime,
                         new LocalDate().plusDays(1).toDate().getTime(),
@@ -312,4 +304,17 @@ public class ReportsActivity extends BaseDrawerActivity implements AdapterView.O
         updateDateRangeOnFragment();
 
     }
+
+    public AccountType getAccountType(){
+        return mAccountType;
+    }
+
+    public long getReportEndTime() {
+        return mReportEndTime;
+    }
+
+    public long getReportStartTime() {
+        return mReportStartTime;
+    }
+
 }
