@@ -191,4 +191,29 @@ public class DatabaseSchema {
         public static final String INDEX_UID = "prices_uid_index";
 
     }
+
+
+    public static abstract class BudgetEntry implements CommonColumns {
+        public static final String TABLE_NAME           = "budgets";
+
+        public static final String COLUMN_NAME          = "name";
+        public static final String COLUMN_DESCRIPTION   = "description";
+        public static final String COLUMN_AMOUNT_NUM    = "amount_num";
+        public static final String COLUMN_AMOUNT_DENOM  = "amount_denom";
+        public static final String COLUMN_NUM_PERIODS   = "num_periods";
+        public static final String COLUMN_ACCOUNT_UID   = "account_uid";
+        public static final String COLUMN_RECURRENCE_UID = "recurrence_uid";
+
+        public static final String INDEX_UID = "budgets_uid_index";
+    }
+
+    public static abstract class RecurrenceEntry implements CommonColumns {
+        public static final String TABLE_NAME           = "recurrences";
+
+        public static final String COLUMN_MULTIPLIER    = "recurrence_mult";
+        public static final String COLUMN_PERIOD_TYPE   = "recurrence_period_type";
+        public static final String COLUMN_PERIOD_START  = "recurrence_period_start";
+
+        public static final String INDEX_UID = "recurrence_uid_index";
+    }
 }

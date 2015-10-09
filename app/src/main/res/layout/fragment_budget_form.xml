@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+ Copyright (c) 2015 Ngewi Fet <ngewif@gmail.com>
+ 
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+ 
+    http://www.apache.org/licenses/LICENSE-2.0
+ 
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:gnucash="http://schemas.android.com/apk/res-auto"
+    android:animateLayoutChanges="true"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        xmlns:gnucash="http://schemas.android.com/apk/res-auto">
+        <TableLayout android:id="@+id/fragment_account_form"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/dialog_padding"
+            android:orientation="vertical" >
+
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/name_text_input_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <EditText
+                    android:id="@+id/input_budget_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/form_row_bottom_margin"
+                    android:ems="15"
+                    android:inputType="textCapWords"
+                    android:singleLine="true"
+                    android:ellipsize="start"
+                    android:hint="Budget name"
+                    style="@style/ListItemText">
+                </EditText>
+            </android.support.design.widget.TextInputLayout>
+
+            <TableRow style="@style/FormRow">
+                <TextView
+                    android:id="@+id/currency_symbol"
+                    style="@style/FormIcon"
+                    android:gravity="center"
+                    android:textColor="@color/debit_red"
+                    android:textSize="22sp"
+                    android:text="$" />
+
+                <org.gnucash.android.ui.util.widget.CalculatorEditText
+                    android:id="@+id/input_transaction_amount"
+                    android:layout_width="0dp"
+                    android:layout_weight="3"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/label_transaction_amount"
+                    android:inputType="none"
+                    android:nextFocusDown="@+id/input_description"
+                    android:background="@android:color/transparent"
+                    android:textColor="@color/debit_red"
+                    android:textSize="20sp"
+                    gnucash:keyboardKeysLayout="@xml/calculator_keyboard"/>
+            </TableRow>
+
+            <TableRow style="@style/FormRow">
+                <ImageView style="@style/FormIcon"
+                    android:src="@drawable/ic_action_sort_by_size"/>
+
+                <EditText android:id="@+id/input_description"
+                    android:layout_width="0dp"
+                    android:layout_weight="5"
+                    android:layout_height="wrap_content"
+                    android:singleLine="false"
+                    android:background="@android:color/transparent"
+                    android:hint="Description"
+                    android:inputType="textMultiLine|textCapSentences" />
+            </TableRow>
+            <View style="@style/Divider" />
+            <TableRow style="@style/FormRow">
+
+                <ImageView style="@style/FormIcon"
+                    android:src="@drawable/ic_action_rotate_right"/>
+
+                <TextView android:id="@+id/input_recurrence"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="5"
+                    android:gravity="left"
+                    android:text="@string/label_tap_to_create_schedule"
+                    style="@style/Dropdown.TextView" />
+
+            </TableRow>
+
+        </TableLayout>
+    </ScrollView>
+    <android.inputmethodservice.KeyboardView android:id="@+id/calculator_keyboard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:visibility="gone" />
+</RelativeLayout>

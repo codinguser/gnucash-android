@@ -53,16 +53,17 @@ import java.nio.channels.FileChannel;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 import static org.gnucash.android.db.DatabaseSchema.AccountEntry;
+import static org.gnucash.android.db.DatabaseSchema.BudgetEntry;
 import static org.gnucash.android.db.DatabaseSchema.CommodityEntry;
 import static org.gnucash.android.db.DatabaseSchema.CommonColumns;
 import static org.gnucash.android.db.DatabaseSchema.PriceEntry;
+import static org.gnucash.android.db.DatabaseSchema.RecurrenceEntry;
 import static org.gnucash.android.db.DatabaseSchema.ScheduledActionEntry;
 import static org.gnucash.android.db.DatabaseSchema.SplitEntry;
 import static org.gnucash.android.db.DatabaseSchema.TransactionEntry;
@@ -1054,6 +1055,60 @@ public class MigrationHelper {
 
             db.setTransactionSuccessful();
             oldVersion = 9;
+        } finally {
+            db.endTransaction();
+        }
+        return oldVersion;
+    }
+
+    /**
+     * Upgrades the database to version 10.
+     * <p>This migration makes the following changes to the database:
+     * <ul>
+     *     <li>Adds a table for budgets</li>
+     *     <li>Adds an extra table for recurrences</li>
+     *     <li>Migrate scheduled transaction recurrences to own table</li>
+     *     <li>Adds flags for reconciled status to split table</li>
+     *     <li>Add flags for autocreate and create notification to scheduled actions</li>
+     * </ul>
+     * </p>
+     * @param db SQlite database to be upgraded
+     * @return New database version, 10 if migration succeeds, 9 otherwise
+     */
+    static int upgradeDbToVersion10(SQLiteDatabase db){
+        Log.i(DatabaseHelper.LOG_TAG, "Upgrading database to version 9");
+        int oldVersion = 9;
+
+        db.beginTransaction();
+        try {
+
+            String createBudgetsTable = "CREATE TABLE " + DatabaseSchema.BudgetEntry.TABLE_NAME + " ("
+                    + BudgetEntry._ID                   + " integer primary key autoincrement, "
+                    + BudgetEntry.COLUMN_UID            + " varchar(255) not null UNIQUE, "
+                    + BudgetEntry.COLUMN_NAME           + " varchar(255) not null, "
+                    + BudgetEntry.COLUMN_DESCRIPTION    + " varchar(255), "
+                    + BudgetEntry.COLUMN_ACCOUNT_UID    + " varchar(255) not null, "
+                    + BudgetEntry.COLUMN_RECURRENCE_UID + " varchar(255) not null, "
+                    + BudgetEntry.COLUMN_AMOUNT_NUM     + " integer not null, "
+                    + BudgetEntry.COLUMN_AMOUNT_DENOM   + " integer not null, "
+                    + BudgetEntry.COLUMN_NUM_PERIODS    + " integer, "
+                    + "FOREIGN KEY (" 	+ BudgetEntry.COLUMN_ACCOUNT_UID + ") REFERENCES " + AccountEntry.TABLE_NAME + " (" + AccountEntry.COLUMN_UID + ") ON DELETE CASCADE, "
+                    + "FOREIGN KEY (" 	+ BudgetEntry.COLUMN_RECURRENCE_UID + ") REFERENCES " + RecurrenceEntry.TABLE_NAME + " (" + RecurrenceEntry.COLUMN_UID + ") "
+                    + ");" + DatabaseHelper.createUpdatedAtTrigger(DatabaseSchema.BudgetEntry.TABLE_NAME);
+
+            String createRecurrencesTable = "CREATE TABLE " + RecurrenceEntry.TABLE_NAME + " ("
+                    + RecurrenceEntry._ID                   + " integer primary key autoincrement, "
+                    + RecurrenceEntry.COLUMN_UID            + " varchar(255) not null UNIQUE, "
+                    + RecurrenceEntry.COLUMN_MULTIPLIER     + " integer not null default 1, "
+                    + RecurrenceEntry.COLUMN_PERIOD_TYPE    + " varchar(255) not null, "
+                    + RecurrenceEntry.COLUMN_PERIOD_START   + " varchar(255) not null); "
+                    + DatabaseHelper.createUpdatedAtTrigger(RecurrenceEntry.TABLE_NAME);
+
+
+            //TODO: migrate Scheduled transactions recurrence to the extra table
+
+            db.setTransactionSuccessful();
+            oldVersion = 10;
         } finally {
             db.endTransaction();
         }

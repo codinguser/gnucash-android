@@ -34,9 +34,11 @@ import com.uservoice.uservoicesdk.UserVoice;
 
 import org.gnucash.android.R;
 import org.gnucash.android.db.AccountsDbAdapter;
+import org.gnucash.android.db.BudgetDbAdapter;
 import org.gnucash.android.db.CommoditiesDbAdapter;
 import org.gnucash.android.db.DatabaseHelper;
 import org.gnucash.android.db.PricesDbAdapter;
+import org.gnucash.android.db.RecurrenceDbAdapter;
 import org.gnucash.android.db.ScheduledActionDbAdapter;
 import org.gnucash.android.db.SplitsDbAdapter;
 import org.gnucash.android.db.TransactionsDbAdapter;
@@ -82,6 +84,10 @@ public class GnuCashApplication extends Application{
 
     private static PricesDbAdapter mPricesDbAdapter;
 
+    private static BudgetDbAdapter mBudgetDbAdapter;
+
+    private static RecurrenceDbAdapter mRecurrenceDbAdapter;
+
     /**
      * Returns darker version of specified <code>color</code>.
      * Use for theming the status bar color when setting the color of the actionBar
@@ -122,6 +128,8 @@ public class GnuCashApplication extends Application{
         mScheduledActionDbAdapter   = new ScheduledActionDbAdapter(mDb);
         mCommoditiesDbAdapter       = new CommoditiesDbAdapter(mDb);
         mPricesDbAdapter            = new PricesDbAdapter(mDb);
+        mBudgetDbAdapter            = new BudgetDbAdapter(mDb);
+        mRecurrenceDbAdapter        = new RecurrenceDbAdapter(mDb);
     }
 
     public static AccountsDbAdapter getAccountsDbAdapter() {
@@ -146,6 +154,14 @@ public class GnuCashApplication extends Application{
 
     public static PricesDbAdapter getPricesDbAdapter(){
         return mPricesDbAdapter;
+    }
+
+    public static BudgetDbAdapter getBudgetDbAdapter() {
+        return mBudgetDbAdapter;
+    }
+
+    public static RecurrenceDbAdapter getRecurrenceDbAdapter() {
+        return mRecurrenceDbAdapter;
     }
 
     /**
