@@ -63,12 +63,13 @@ public class PasscodeLockActivity extends AppCompatActivity {
 
         if (isPassEnabled && !isSessionActive() && !passCode.trim().isEmpty() && !skipPasscode) {
             Log.v(TAG, "Show passcode screen");
-            startActivity(new Intent(this, PasscodeLockScreenActivity.class)
-                            .setAction(getIntent().getAction())
-                            .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK)
-                            .putExtra(UxArgument.PASSCODE_CLASS_CALLER, this.getClass().getName())
-                            .putExtras(getIntent().getExtras())
-            );
+            Intent intent = new Intent(this, PasscodeLockScreenActivity.class)
+                    .setAction(getIntent().getAction())
+                    .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                    .putExtra(UxArgument.PASSCODE_CLASS_CALLER, this.getClass().getName());
+            if (getIntent().getExtras() != null)
+                intent.putExtras(getIntent().getExtras());
+            startActivity(intent);
         }
     }
 
