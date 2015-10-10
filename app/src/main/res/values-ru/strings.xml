@@ -46,7 +46,7 @@
     <string name="label_transaction_description">Замечание</string>
     <string name="menu_move">ПЕРЕНЕСТИ</string>
     <string name="title_selected">%1$d выбрано</string>
-    <string name="label_export_destination">Export To:</string>
+    <string name="label_export_destination">Экспортировать в:</string>
     <string name="title_export_dialog">Экспорт проводок</string>
     <string name="option_export_all_transactions">Экспортировать все</string>
     <string name="hint_export_choice">Экспортировать все проводки, а не только новые.</string>
@@ -265,11 +265,11 @@
         <string name="label_widget_configuration">Выберите счёт</string>
 	<string name="toast_no_transactions_to_export">Нет проводок для экспорта</string>
 	<string name="title_about_gnucash">О Gnucash</string>
-        <string name="summary_about_gnucash">A mobile finance management and expense-tracker designed for Android</string>
+        <string name="summary_about_gnucash">Программа учёта расходов для Android</string>
 	<string name="title_about">О программе</string>
 	<string name="toast_format_exported_to">Файл %1$s экспортирован в:\n</string>
 	<string name="title_export_email">Экспорт %1$s-файла из Gnucash Android</string>
-	<string name="description_export_email">GnuCash Android export from </string>
+	<string name="description_export_email">Экспорт из GnuCash Android </string>
 	<string name="header_transaction_settings">Проводки</string>
 	<string name="title_transaction_preferences">Свойства проводки</string>
 	<string name="title_account_preferences">Свойства счёта</string>
@@ -297,12 +297,12 @@
 	<string name="summary_xml_ofx_header">Включите эту опцию, если экспортируете в программы отличные от GnuCash для ПК</string>
 	<string name="title_whats_new">Новости</string>
 	<string name="whats_new">
-        - New Material app design \n
-        - Multi-currency transactions\n
-        - Calculator to transaction amounts\n
-        - Better reporting options\n
-        - New help &amp; feedback section\n
-        - Multiple bug fixes and improvements\n
+        - Новый материальный дизайн\n
+        - Проводки в нескольких валютах\n
+        - Калькулятор в сумме проводки\n
+        - Улучшены отчёты\n
+        - Новая секция справки и обратной связи\n
+        - Множественные исправления ошибок и улучшения\n
 	</string>
 	<string name="label_dismiss">Отказаться</string>
     <string name="toast_transanction_amount_required">Введите сумму, чтобы сохранить проводку</string>
@@ -430,10 +430,10 @@
     <string name="title_line_chart">График</string>
     <string name="title_bar_chart">Гистограмма</string>
     <string name="menu_order_by_size">Отсортировать по размеру</string>
-    <string name="menu_toggle_legend">Show legend</string>
-    <string name="menu_toggle_labels">Show labels</string>
-    <string name="menu_toggle_percentage_mode">Show percentage</string>
-    <string name="menu_toggle_average_lines">Show average lines</string>
+    <string name="menu_toggle_legend">Показать легенду</string>
+    <string name="menu_toggle_labels">Показать ярлыки</string>
+    <string name="menu_toggle_percentage_mode">Показать %%</string>
+    <string name="menu_toggle_average_lines">Показывать промежуточные линии</string>
     <string name="menu_group_smaller_slices">Группировать мелкие части</string>
     <string name="label_chart_no_data">Нет данных для диаграммы</string>
     <string name="label_chart_overall">За всё время</string>
@@ -507,71 +507,71 @@
     <string name="label_no_scheduled_exports_to_display">Вы ещё не планировали экспорт данных</string>
     <string name="title_create_export_schedule">Создать расписание экспорта</string>
     <string name="toast_exported_to">Экспортировано в: %1$s</string>
-    <string name="toast_legend_too_long">The legend is too long</string>
-    <string name="hint_account_description">Account description</string>
-    <string name="label_no_recent_accounts">No recent accounts</string>
-    <string name="label_no_favorite_accounts">No favorite accounts</string>
-    <string name="nav_menu_scheduled_actions">Scheduled Actions</string>
-    <string name="label_scheduled_action_ended">"Ended, last executed on "</string>
-    <string name="label_select_bar_to_view_details">Select a bar to view details</string>
-    <string name="btn_wizard_next">Next</string>
-    <string name="btn_wizard_finish">Done</string>
-    <string name="wizard_title_default_currency">Default Currency</string>
-    <string name="wizard_title_account_setup">Account Setup</string>
-    <string name="wizard_title_select_currency">Select Currency</string>
-    <string name="wizard_title_feedback_options">Feedback Options</string>
-    <string name="wizard_option_create_default_accounts">Create default accounts</string>
-    <string name="wizard_option_import_my_accounts">Import my accounts</string>
-    <string name="wizard_option_let_me_handle_it">Let me handle it</string>
-    <string name="wizard_option_currency_other">Other...</string>
-    <string name="wizard_option_auto_send_crash_reports">Automatically send crash reports</string>
-    <string name="wizard_option_disable_crash_reports">Disable crash reports</string>
-    <string name="wizard_btn_back">Back</string>
-    <string name="title_setup_gnucash">Setup GnuCash</string>
-    <string name="wizard_title_welcome_to_gnucash">Welcome to GnuCash</string>
-    <string name="msg_wizard_welcome_page">Before you dive in, \nlet\'s setup a few things first\n\nTo continue, press Next</string>
-    <string name="title_split_editor">Split Editor</string>
-    <string name="toast_error_check_split_amounts">Check that all splits have valid amounts before saving!</string>
-    <string name="label_error_invalid_expression">Invalid expression!</string>
-    <string name="toast_scheduled_recurring_transaction">Scheduled recurring transaction</string>
-    <string name="error_exchange_rate_required">An exchange rate is required</string>
-    <string name="error_converted_amount_required">The converted amount is required</string>
-    <string name="title_transfer_funds">Transfer Funds</string>
-    <string name="nav_menu_help"><![CDATA[Help & Feedback]]></string>
-    <string name="label_select_pie_slice_to_see_details">Select a slice to see details</string>
-    <string name="label_report_period">Period:</string>
-    <string name="label_convert_from">From:</string>
-    <string name="label_convert_to">To:</string>
-    <string name="msg_provide_exchange_rate">Provide either the converted amount or exchange rate in order to transfer funds</string>
-    <string name="hint_exchange_rate">Exchange rate</string>
-    <string name="btn_fetch_quote">Fetch quote</string>
-    <string name="hint_converted_amount">Converted Amount</string>
-    <string name="title_report_sheet">Sheet</string>
-    <string name="label_last_3_months_expenses">Expenses for last 3 months</string>
-    <string name="label_total_assets">Total Assets</string>
-    <string name="label_total_liabilities">Total Liabilities</string>
-    <string name="label_net_worth">Net Worth</string>
-    <string name="label_assets">Assets</string>
-    <string name="label_liabilities">Liabilities</string>
-    <string name="label_equity">Equity</string>
-    <string name="label_total_liabilities_and_equity"><![CDATA[Total Liabilites & Equity]]></string>
-    <string name="label_move_to">Move to:</string>
-    <string name="menu_group_by">Group By</string>
-    <string name="menu_group_by_month">Month</string>
-    <string name="menu_group_by_quarter">Quarter</string>
-    <string name="menu_group_by_year">Year</string>
-    <string name="title_balance_sheet_report">Balance Sheet</string>
-    <string name="label_balance_sheet_total">Total:</string>
-    <string name="title_google_plus_community">Google+ Community</string>
-    <string name="title_translate_gnucash">Translate GnuCash</string>
-    <string name="summary_google_plus">Share ideas, discuss changes or report problems</string>
-    <string name="summary_translate_gnucash">Translate or proof-read on CrowdIn</string>
+    <string name="toast_legend_too_long">Слишком длинная легенда</string>
+    <string name="hint_account_description">Описание счёта</string>
+    <string name="label_no_recent_accounts">Нет последних счетов</string>
+    <string name="label_no_favorite_accounts">Нет избранных счетов</string>
+    <string name="nav_menu_scheduled_actions">Запланированные действия</string>
+    <string name="label_scheduled_action_ended">"Завершено. Последний раз выполнено "</string>
+    <string name="label_select_bar_to_view_details">Выберите, чтобы посмотреть детали</string>
+    <string name="btn_wizard_next">Далее</string>
+    <string name="btn_wizard_finish">Конец</string>
+    <string name="wizard_title_default_currency">Валюта по умолчанию</string>
+    <string name="wizard_title_account_setup">Настройки счёта</string>
+    <string name="wizard_title_select_currency">Выберите валюту</string>
+    <string name="wizard_title_feedback_options">Настройки обратной связи</string>
+    <string name="wizard_option_create_default_accounts">Создать счета по умолчанию</string>
+    <string name="wizard_option_import_my_accounts">Импортировать мои счета</string>
+    <string name="wizard_option_let_me_handle_it">Сам сделаю</string>
+    <string name="wizard_option_currency_other">Другая…</string>
+    <string name="wizard_option_auto_send_crash_reports">Автоматически посылать отчёты о падениях</string>
+    <string name="wizard_option_disable_crash_reports">Отключить отчёты о падениях</string>
+    <string name="wizard_btn_back">Назад</string>
+    <string name="title_setup_gnucash">Настройка GnuCash</string>
+    <string name="wizard_title_welcome_to_gnucash">Добро пожаловать в GnuCash</string>
+    <string name="msg_wizard_welcome_page">Прежде, чем вы начныте,\nдавайте настроим некоторые вещи.\n\nДля продолжения нажмите «Далее».</string>
+    <string name="title_split_editor">Редактор разбиения</string>
+    <string name="toast_error_check_split_amounts">Проверьте, что все части корректно распределены перед сохранением!</string>
+    <string name="label_error_invalid_expression">Неверное выражение!</string>
+    <string name="toast_scheduled_recurring_transaction">Запланированная повторяющаяся проводка</string>
+    <string name="error_exchange_rate_required">Нужен курс обмена</string>
+    <string name="error_converted_amount_required">Нужна обмененная сумма</string>
+    <string name="title_transfer_funds">Перевод денег</string>
+    <string name="nav_menu_help"><![CDATA[Справка & Обратная связь]]></string>
+    <string name="label_select_pie_slice_to_see_details">Выберите часть, чтобы посмотреть подробно</string>
+    <string name="label_report_period">Период:</string>
+    <string name="label_convert_from">С:</string>
+    <string name="label_convert_to">До:</string>
+    <string name="msg_provide_exchange_rate">Заполните или обменянную сумму или курс обмена</string>
+    <string name="hint_exchange_rate">EКурс обмена</string>
+    <string name="btn_fetch_quote">Получить котировки</string>
+    <string name="hint_converted_amount">Обмененная сумма</string>
+    <string name="title_report_sheet">Сводка</string>
+    <string name="label_last_3_months_expenses">Расходы за последний квартал</string>
+    <string name="label_total_assets">Итоговые активы</string>
+    <string name="label_total_liabilities">Итоговые долги</string>
+    <string name="label_net_worth">Новая цена</string>
+    <string name="label_assets">Активы</string>
+    <string name="label_liabilities">Долги</string>
+    <string name="label_equity">Акции</string>
+    <string name="label_total_liabilities_and_equity"><![CDATA[Итого по долгам и акциям]]></string>
+    <string name="label_move_to">Переместить в:</string>
+    <string name="menu_group_by">Группировать по</string>
+    <string name="menu_group_by_month">Месяц</string>
+    <string name="menu_group_by_quarter">Квартал</string>
+    <string name="menu_group_by_year">Год</string>
+    <string name="title_balance_sheet_report">Сводный баланс</string>
+    <string name="label_balance_sheet_total">Итого:</string>
+    <string name="title_google_plus_community">Сообщество Google+</string>
+    <string name="title_translate_gnucash">Перевести GnuCash</string>
+    <string name="summary_google_plus">Поделиться идеями, обсудить изменения или сообщить о проблемах</string>
+    <string name="summary_translate_gnucash">Перевести или вычитать на CrowdIn</string>
     <string-array name="report_time_range">
-        <item>Current month</item>
-        <item>Last 3 months</item>
-        <item>Last 6 months</item>
-        <item>Last 12 months</item>
-        <item>All time</item>
-        <item>Custom range…</item>
+        <item>Текущий месяц</item>
+        <item>Последний квартал</item>
+        <item>Последнее полугодие</item>
+        <item>Последний год</item>
+        <item>Всё время</item>
+        <item>Другой интервал…</item>
     </string-array>
 </resources>
