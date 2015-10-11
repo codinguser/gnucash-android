@@ -46,11 +46,14 @@
 	        android:layout_marginLeft="@dimen/widget_margin"
 	        android:layout_marginRight="@dimen/widget_margin" />      
 	    
-	    <ImageButton android:id="@+id/btn_new_transaction" 
+	    <ImageButton android:id="@+id/btn_new_transaction"
 	        android:layout_width="48dp"
 	        android:layout_height="wrap_content"
 	        android:layout_marginRight="@dimen/edge_padding"
 	        android:layout_marginLeft="@dimen/edge_padding"
+	        android:layout_marginTop="@dimen/edge_padding"
+	        android:layout_marginBottom="@dimen/edge_padding"
+	        android:scaleType="centerInside"
 	        android:src="@drawable/content_new_holo_light"
 	        android:background="@drawable/appwidget_bg_clickable"
 	        android:contentDescription="@string/description_add_transaction_icon"/>
