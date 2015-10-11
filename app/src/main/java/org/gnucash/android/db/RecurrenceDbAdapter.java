@@ -25,6 +25,8 @@ import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.model.PeriodType;
 import org.gnucash.android.model.Recurrence;
 
+import java.sql.Timestamp;
+
 import static org.gnucash.android.db.DatabaseSchema.RecurrenceEntry;
 
 /**
@@ -54,7 +56,7 @@ public class RecurrenceDbAdapter extends DatabaseAdapter<Recurrence> {
         periodType.setMultiplier((int) multiplier);
 
         Recurrence recurrence = new Recurrence(periodType);
-        recurrence.setPeriodStart(periodStart);
+        recurrence.setPeriodStart(Timestamp.valueOf(periodStart));
         populateBaseModelAttributes(cursor, recurrence);
 
         return recurrence;
@@ -75,7 +77,7 @@ public class RecurrenceDbAdapter extends DatabaseAdapter<Recurrence> {
         mReplaceStatement.bindLong(2,   recurrence.getPeriodType().getMultiplier());
         mReplaceStatement.bindString(3, recurrence.getPeriodType().name());
         if (recurrence.getPeriodStart() != null)
-            mReplaceStatement.bindString(4, recurrence.getPeriodStart());
+            mReplaceStatement.bindString(4, recurrence.getPeriodStart().toString());
 
         return mReplaceStatement;
     }

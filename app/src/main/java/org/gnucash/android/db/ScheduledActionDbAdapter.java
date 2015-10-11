@@ -60,9 +60,10 @@ public class ScheduledActionDbAdapter extends DatabaseAdapter<ScheduledAction> {
      * @return Database record ID of the edited scheduled action
      */
     public long updateRecurrenceAttributes(ScheduledAction scheduledAction){
+        RecurrenceDbAdapter.getInstance().addRecord(scheduledAction.getRecurrence());
+
         ContentValues contentValues = new ContentValues();
         populateBaseModelAttributes(contentValues, scheduledAction);
-        contentValues.put(ScheduledActionEntry.COLUMN_PERIOD,    scheduledAction.getPeriod());
         contentValues.put(ScheduledActionEntry.COLUMN_START_TIME, scheduledAction.getStartTime());
         contentValues.put(ScheduledActionEntry.COLUMN_END_TIME,  scheduledAction.getEndTime());
         contentValues.put(ScheduledActionEntry.COLUMN_TAG,       scheduledAction.getTag());
@@ -85,12 +86,17 @@ public class ScheduledActionDbAdapter extends DatabaseAdapter<ScheduledAction> {
                     + ScheduledActionEntry.COLUMN_START_TIME        + " , "
                     + ScheduledActionEntry.COLUMN_END_TIME          + " , "
                     + ScheduledActionEntry.COLUMN_LAST_RUN 		    + " , "
-                    + ScheduledActionEntry.COLUMN_PERIOD 	        + " , "
                     + ScheduledActionEntry.COLUMN_ENABLED           + " , "
                     + ScheduledActionEntry.COLUMN_CREATED_AT        + " , "
                     + ScheduledActionEntry.COLUMN_TAG               + " , "
-                    + ScheduledActionEntry.COLUMN_TOTAL_FREQUENCY + " , "
-                    + ScheduledActionEntry.COLUMN_EXECUTION_COUNT   + " ) VALUES ( ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? )");
+                    + ScheduledActionEntry.COLUMN_TOTAL_FREQUENCY   + " , "
+                    + ScheduledActionEntry.COLUMN_RECURRENCE_UID    + " , "
+                    + ScheduledActionEntry.COLUMN_AUTO_CREATE       + " , "
+                    + ScheduledActionEntry.COLUMN_AUTO_NOTIFY       + " , "
+                    + ScheduledActionEntry.COLUMN_ADVANCE_CREATION  + " , "
+                    + ScheduledActionEntry.COLUMN_ADVANCE_NOTIFY    + " , "
+                    + ScheduledActionEntry.COLUMN_TEMPLATE_ACCT_UID + " , "
+                    + ScheduledActionEntry.COLUMN_EXECUTION_COUNT   + " ) VALUES ( ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? )");
         }
 
         mReplaceStatement.clearBindings();
@@ -99,16 +105,22 @@ public class ScheduledActionDbAdapter extends DatabaseAdapter<ScheduledAction> {
         mReplaceStatement.bindString(3, schedxAction.getActionType().name());
         mReplaceStatement.bindLong(4,   schedxAction.getStartTime());
         mReplaceStatement.bindLong(5,   schedxAction.getEndTime());
-        mReplaceStatement.bindLong(6,   schedxAction.getLastRun());
-        mReplaceStatement.bindLong(7,   schedxAction.getPeriod());
-        mReplaceStatement.bindLong(8,   schedxAction.isEnabled() ? 1 : 0);
-        mReplaceStatement.bindString(9, schedxAction.getCreatedTimestamp().toString());
+        mReplaceStatement.bindLong(6,   schedxAction.getLastRunTime());
+        mReplaceStatement.bindLong(7,   schedxAction.isEnabled() ? 1 : 0);
+        mReplaceStatement.bindString(8, schedxAction.getCreatedTimestamp().toString());
         if (schedxAction.getTag() == null)
-            mReplaceStatement.bindNull(10);
+            mReplaceStatement.bindNull(9);
         else
-            mReplaceStatement.bindString(10, schedxAction.getTag());
-        mReplaceStatement.bindString(11, Integer.toString(schedxAction.getTotalFrequency()));
-        mReplaceStatement.bindString(12, Integer.toString(schedxAction.getExecutionCount()));
+            mReplaceStatement.bindString(9, schedxAction.getTag());
+        mReplaceStatement.bindString(10, Integer.toString(schedxAction.getTotalFrequency()));
+        mReplaceStatement.bindString(11, schedxAction.getRecurrence().getUID());
+        mReplaceStatement.bindLong(12,   schedxAction.shouldAutoCreate() ? 1 : 0);
+        mReplaceStatement.bindLong(13,   schedxAction.shouldAutoNotify() ? 1 : 0);
+        mReplaceStatement.bindLong(14,   schedxAction.shouldAdvanceCreate() ? 1 : 0);
+        mReplaceStatement.bindLong(15,   schedxAction.shouldAdvanceNotify() ? 1 : 0);
+        mReplaceStatement.bindString(16, schedxAction.getTemplateAccountUID());
+
+        mReplaceStatement.bindString(17, Integer.toString(schedxAction.getExecutionCount()));
 
         return mReplaceStatement;
     }
@@ -122,7 +134,6 @@ public class ScheduledActionDbAdapter extends DatabaseAdapter<ScheduledAction> {
     @Override
     public ScheduledAction buildModelInstance(@NonNull final Cursor cursor){
         String actionUid = cursor.getString(cursor.getColumnIndexOrThrow(ScheduledActionEntry.COLUMN_ACTION_UID));
-        long period     = cursor.getLong(cursor.getColumnIndexOrThrow(ScheduledActionEntry.COLUMN_PERIOD));
         long startTime  = cursor.getLong(cursor.getColumnIndexOrThrow(ScheduledActionEntry.COLUMN_START_TIME));
         long endTime    = cursor.getLong(cursor.getColumnIndexOrThrow(ScheduledActionEntry.COLUMN_END_TIME));
         long lastRun    = cursor.getLong(cursor.getColumnIndexOrThrow(ScheduledActionEntry.COLUMN_LAST_RUN));
@@ -131,10 +142,15 @@ public class ScheduledActionDbAdapter extends DatabaseAdapter<ScheduledAction> {
         boolean enabled = cursor.getInt(cursor.getColumnIndexOrThrow(ScheduledActionEntry.COLUMN_ENABLED)) > 0;
         int numOccurrences = cursor.getInt(cursor.getColumnIndexOrThrow(ScheduledActionEntry.COLUMN_TOTAL_FREQUENCY));
         int execCount = cursor.getInt(cursor.getColumnIndexOrThrow(ScheduledActionEntry.COLUMN_EXECUTION_COUNT));
+        int autoCreate = cursor.getInt(cursor.getColumnIndexOrThrow(ScheduledActionEntry.COLUMN_AUTO_CREATE));
+        int autoNotify = cursor.getInt(cursor.getColumnIndexOrThrow(ScheduledActionEntry.COLUMN_AUTO_NOTIFY));
+        int advanceCreate = cursor.getInt(cursor.getColumnIndexOrThrow(ScheduledActionEntry.COLUMN_ADVANCE_CREATION));
+        int advanceNotify = cursor.getInt(cursor.getColumnIndexOrThrow(ScheduledActionEntry.COLUMN_ADVANCE_NOTIFY));
+        String recurrenceUID = cursor.getString(cursor.getColumnIndexOrThrow(ScheduledActionEntry.COLUMN_RECURRENCE_UID));
+        String templateActUID = cursor.getString(cursor.getColumnIndexOrThrow(ScheduledActionEntry.COLUMN_TEMPLATE_ACCT_UID));
 
         ScheduledAction event = new ScheduledAction(ScheduledAction.ActionType.valueOf(typeString));
         populateBaseModelAttributes(cursor, event);
-        event.setPeriod(period);
         event.setStartTime(startTime);
         event.setEndTime(endTime);
         event.setActionUID(actionUid);
@@ -143,6 +159,13 @@ public class ScheduledActionDbAdapter extends DatabaseAdapter<ScheduledAction> {
         event.setEnabled(enabled);
         event.setTotalFrequency(numOccurrences);
         event.setExecutionCount(execCount);
+        event.setAutoCreate(autoCreate == 1);
+        event.setAutoNotify(autoNotify == 1);
+        event.setAdvanceCreation(advanceCreate == 1);
+        event.setAdvanceNotify(advanceNotify == 1);
+        //TODO: optimize by doing overriding fetchRecord(String) and join the two tables
+        event.setRecurrence(RecurrenceDbAdapter.getInstance().getRecord(recurrenceUID));
+        event.setTemplateAccountUID(templateActUID);
 
         return event;
     }

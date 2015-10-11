@@ -12,6 +12,8 @@ import org.gnucash.android.importer.GncXmlImporter;
 import org.gnucash.android.model.Account;
 import org.gnucash.android.model.AccountType;
 import org.gnucash.android.model.Money;
+import org.gnucash.android.model.PeriodType;
+import org.gnucash.android.model.Recurrence;
 import org.gnucash.android.model.ScheduledAction;
 import org.gnucash.android.model.Split;
 import org.gnucash.android.model.Transaction;
@@ -220,6 +222,7 @@ public class AccountsDbAdapterTest{
 
         ScheduledAction scheduledAction = new ScheduledAction(ScheduledAction.ActionType.BACKUP);
         scheduledAction.setActionUID("Test-uid");
+        scheduledAction.setRecurrence(new Recurrence(PeriodType.WEEK));
         ScheduledActionDbAdapter scheduledActionDbAdapter = ScheduledActionDbAdapter.getInstance();
 
         scheduledActionDbAdapter.addRecord(scheduledAction);

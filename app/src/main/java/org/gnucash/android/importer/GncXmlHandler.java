@@ -53,7 +53,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
-import java.util.UUID;
 import java.util.regex.Pattern;
 
 /**
@@ -902,8 +901,8 @@ public class GncXmlHandler extends DefaultHandler {
         }
 
         long lastRuntime = scheduledAction.getStartTime();
-        if (scheduledAction.getLastRun() > 0){
-            lastRuntime = scheduledAction.getLastRun();
+        if (scheduledAction.getLastRunTime() > 0){
+            lastRuntime = scheduledAction.getLastRunTime();
         }
 
         int generatedTransactionCount = 0;

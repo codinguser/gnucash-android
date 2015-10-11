@@ -37,6 +37,8 @@ import org.gnucash.android.model.AccountType;
 import org.gnucash.android.model.BaseModel;
 import org.gnucash.android.model.Commodity;
 import org.gnucash.android.model.Money;
+import org.gnucash.android.model.PeriodType;
+import org.gnucash.android.model.Recurrence;
 import org.gnucash.android.model.Transaction;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -491,7 +493,7 @@ public class MigrationHelper {
                     + ScheduledActionEntry.COLUMN_UID            + " varchar(255) not null UNIQUE, "
                     + ScheduledActionEntry.COLUMN_ACTION_UID    + " varchar(255) not null, "
                     + ScheduledActionEntry.COLUMN_TYPE           + " varchar(255) not null, "
-                    + ScheduledActionEntry.COLUMN_PERIOD         + " integer not null, "
+                    + "period "                                 + " integer not null, "
                     + ScheduledActionEntry.COLUMN_LAST_RUN       + " integer default 0, "
                     + ScheduledActionEntry.COLUMN_START_TIME     + " integer not null, "
                     + ScheduledActionEntry.COLUMN_END_TIME       + " integer default 0, "
@@ -707,7 +709,7 @@ public class MigrationHelper {
                 contentValues.put(CommonColumns.COLUMN_UID, BaseModel.generateUID());
                 contentValues.put(CommonColumns.COLUMN_CREATED_AT, timestamp);
                 contentValues.put(ScheduledActionEntry.COLUMN_ACTION_UID, cursor.getString(cursor.getColumnIndexOrThrow(TransactionEntry.COLUMN_UID)));
-                contentValues.put(ScheduledActionEntry.COLUMN_PERIOD,    cursor.getLong(cursor.getColumnIndexOrThrow("recurrence_period")));
+                contentValues.put("period", cursor.getLong(cursor.getColumnIndexOrThrow("recurrence_period")));
                 contentValues.put(ScheduledActionEntry.COLUMN_START_TIME, timestampT.getTime());
                 contentValues.put(ScheduledActionEntry.COLUMN_END_TIME, 0);
                 contentValues.put(ScheduledActionEntry.COLUMN_LAST_RUN, lastRun);
@@ -1104,8 +1106,48 @@ public class MigrationHelper {
                     + RecurrenceEntry.COLUMN_PERIOD_START   + " varchar(255) not null); "
                     + DatabaseHelper.createUpdatedAtTrigger(RecurrenceEntry.TABLE_NAME);
 
+            db.execSQL(" ALTER TABLE " + ScheduledActionEntry.TABLE_NAME
+                    + " ADD COLUMN " + ScheduledActionEntry.COLUMN_RECURRENCE_UID + " varchar(255) ");
+            db.execSQL(" ALTER TABLE " + ScheduledActionEntry.TABLE_NAME
+                    + " ADD COLUMN " + ScheduledActionEntry.COLUMN_TEMPLATE_ACCT_UID + " varchar(255) ");
+            db.execSQL(" ALTER TABLE " + ScheduledActionEntry.TABLE_NAME
+                    + " ADD COLUMN " + ScheduledActionEntry.COLUMN_AUTO_CREATE + " tinyint default 1");
+            db.execSQL(" ALTER TABLE " + ScheduledActionEntry.TABLE_NAME
+                    + " ADD COLUMN " + ScheduledActionEntry.COLUMN_AUTO_NOTIFY + " tinyint default 0");
+            db.execSQL(" ALTER TABLE " + ScheduledActionEntry.TABLE_NAME
+                    + " ADD COLUMN " + ScheduledActionEntry.COLUMN_ADVANCE_CREATION + " tinyint default 1");
+            db.execSQL(" ALTER TABLE " + ScheduledActionEntry.TABLE_NAME
+                    + " ADD COLUMN " + ScheduledActionEntry.COLUMN_ADVANCE_NOTIFY + " tinyint default 0");
 
-            //TODO: migrate Scheduled transactions recurrence to the extra table
+            Cursor cursor = db.query(ScheduledActionEntry.TABLE_NAME,
+                    new String[]{ScheduledActionEntry.COLUMN_UID,
+                            "period",
+                            ScheduledActionEntry.COLUMN_START_TIME
+                    },
+                    null, null, null, null, null);
+
+            ContentValues contentValues = new ContentValues();
+            while (cursor.moveToNext()){
+                String uid = cursor.getString(cursor.getColumnIndexOrThrow(ScheduledActionEntry.COLUMN_UID));
+                long period = cursor.getLong(cursor.getColumnIndexOrThrow("period"));
+                long startTime = cursor.getLong(cursor.getColumnIndexOrThrow(ScheduledActionEntry.COLUMN_START_TIME));
+                PeriodType periodType = Recurrence.getPeriodType(period);
+                Recurrence recurrence = new Recurrence(periodType);
+                recurrence.setPeriodStart(new Timestamp(startTime));
+
+                contentValues.clear();
+                contentValues.put(RecurrenceEntry.COLUMN_UID, recurrence.getUID());
+                contentValues.put(RecurrenceEntry.COLUMN_MULTIPLIER, recurrence.getPeriodType().getMultiplier());
+                contentValues.put(RecurrenceEntry.COLUMN_PERIOD_TYPE, recurrence.getPeriodType().name());
+                contentValues.put(RecurrenceEntry.COLUMN_PERIOD_START, recurrence.getPeriodStart().toString());
+                db.insert(RecurrenceEntry.TABLE_NAME, null, contentValues);
+
+                contentValues.clear();
+                contentValues.put(ScheduledActionEntry.COLUMN_RECURRENCE_UID, recurrence.getUID());
+                contentValues.put(ScheduledActionEntry.COLUMN_TEMPLATE_ACCT_UID, BaseModel.generateUID());
+                db.update(ScheduledActionEntry.TABLE_NAME, contentValues,
+                        ScheduledActionEntry.COLUMN_UID + " = ?", new String[]{uid});
+            }
 
             db.setTransactionSuccessful();
             oldVersion = 10;

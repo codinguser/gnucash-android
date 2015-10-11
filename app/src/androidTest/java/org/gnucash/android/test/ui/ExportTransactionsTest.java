@@ -235,7 +235,7 @@ public class ExportTransactionsTest extends
 				.extracting("mActionType").contains(ScheduledAction.ActionType.BACKUP);
 
 		ScheduledAction action = scheduledActions.get(0);
-		assertThat(action.getPeriodType()).isEqualTo(PeriodType.WEEK);
+		assertThat(action.getRecurrence().getPeriodType()).isEqualTo(PeriodType.WEEK);
 		assertThat(action.getEndTime()).isEqualTo(0);
 	}
 

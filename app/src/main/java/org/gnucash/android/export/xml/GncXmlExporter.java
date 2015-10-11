@@ -24,6 +24,7 @@ import android.util.Log;
 import com.crashlytics.android.Crashlytics;
 
 import org.gnucash.android.db.DatabaseSchema;
+import org.gnucash.android.db.RecurrenceDbAdapter;
 import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.export.ExportFormat;
 import org.gnucash.android.export.ExportParams;
@@ -33,6 +34,7 @@ import org.gnucash.android.model.AccountType;
 import org.gnucash.android.model.BaseModel;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.model.PeriodType;
+import org.gnucash.android.model.Recurrence;
 import org.gnucash.android.model.ScheduledAction;
 import org.gnucash.android.model.TransactionType;
 import org.xmlpull.v1.XmlPullParserFactory;
@@ -51,7 +53,6 @@ import java.util.Currency;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.UUID;
 import java.util.zip.GZIPOutputStream;
 
 import static org.gnucash.android.db.DatabaseSchema.ScheduledActionEntry;
@@ -290,6 +291,9 @@ public class GncXmlExporter extends Exporter{
             mRootTemplateAccount = new Account("Template Root");
             mRootTemplateAccount.setAccountType(AccountType.ROOT);
             mTransactionToTemplateAccountMap.put(" ", mRootTemplateAccount);
+
+            //FIXME: Retrieve the template account GUIDs from the scheduled action table and create accounts with that
+            //this will allow use to maintain the template account GUID when we import from the desktop and also use the same for the splits
             while (cursor.moveToNext()) {
                 Account account = new Account(BaseModel.generateUID());
                 account.setAccountType(AccountType.BANK);
@@ -578,11 +582,14 @@ public class GncXmlExporter extends Exporter{
             xmlSerializer.text(accountUID.getUID());
             xmlSerializer.endTag(null, GncXmlHelper.TAG_SX_TEMPL_ACCOUNT);
 
+            //// FIXME: 11.10.2015 Retrieve the information for this section from the recurrence table
             xmlSerializer.startTag(null, GncXmlHelper.TAG_SX_SCHEDULE);
             xmlSerializer.startTag(null, GncXmlHelper.TAG_RECURRENCE);
             xmlSerializer.attribute(null, GncXmlHelper.ATTR_KEY_VERSION, GncXmlHelper.RECURRENCE_VERSION);
-            long period = cursor.getLong(cursor.getColumnIndexOrThrow(ScheduledActionEntry.COLUMN_PERIOD));
-            PeriodType periodType = ScheduledAction.getPeriodType(period);
+
+            String recurrenceUID = cursor.getString(cursor.getColumnIndexOrThrow(ScheduledActionEntry.COLUMN_RECURRENCE_UID));
+            Recurrence recurrence = RecurrenceDbAdapter.getInstance().getRecord(recurrenceUID);
+            PeriodType periodType = recurrence.getPeriodType();
             xmlSerializer.startTag(null, GncXmlHelper.TAG_RX_MULT);
             xmlSerializer.text(String.valueOf(periodType.getMultiplier()));
             xmlSerializer.endTag(null, GncXmlHelper.TAG_RX_MULT);

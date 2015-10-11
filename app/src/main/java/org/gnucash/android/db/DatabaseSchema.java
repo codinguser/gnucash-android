@@ -127,11 +127,26 @@ public class DatabaseSchema {
         public static final String COLUMN_START_TIME        = "start_time";
         public static final String COLUMN_END_TIME          = "end_time";
         public static final String COLUMN_LAST_RUN          = "last_run";
-        public static final String COLUMN_PERIOD            = "period";
-        public static final String COLUMN_TAG               = "tag"; //for any action-specific information
+
+        /**
+         * Tag for scheduledAction-specific information e.g. backup parameters for backup
+         */
+        public static final String COLUMN_TAG               = "tag";
         public static final String COLUMN_ENABLED           = "is_enabled";
         public static final String COLUMN_TOTAL_FREQUENCY   = "total_frequency";
+
+        /**
+         * Number of times this scheduledAction has been run. Analogous to instance_count in GnuCash desktop SQL
+         */
         public static final String COLUMN_EXECUTION_COUNT   = "execution_count";
+
+        public static final String COLUMN_RECURRENCE_UID    = "recurrence_uid";
+        public static final String COLUMN_AUTO_CREATE       = "auto_create";
+        public static final String COLUMN_AUTO_NOTIFY       = "auto_notify";
+        public static final String COLUMN_ADVANCE_CREATION  = "adv_creation";
+        public static final String COLUMN_ADVANCE_NOTIFY    = "adv_notify";
+        public static final String COLUMN_TEMPLATE_ACCT_UID = "template_act_uid";
+
 
         public static final String INDEX_UID            = "scheduled_action_uid_index";
     }
@@ -206,6 +221,7 @@ public class DatabaseSchema {
 
         public static final String INDEX_UID = "budgets_uid_index";
     }
+
 
     public static abstract class RecurrenceEntry implements CommonColumns {
         public static final String TABLE_NAME           = "recurrences";

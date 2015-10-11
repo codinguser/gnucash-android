@@ -470,7 +470,7 @@ public class ScheduledActionsListFragment extends ListFragment implements
             if (endTime > 0 && endTime < System.currentTimeMillis()){
                 ((TextView)view.findViewById(R.id.primary_text)).setTextColor(getResources().getColor(android.R.color.darker_gray));
                 descriptionTextView.setText(getString(R.string.label_scheduled_action_ended,
-                        DateFormat.getInstance().format(new Date(scheduledAction.getLastRun()))));
+                        DateFormat.getInstance().format(new Date(scheduledAction.getLastRunTime()))));
             } else {
                 descriptionTextView.setText(scheduledAction.getRepeatString());
             }
@@ -565,7 +565,7 @@ public class ScheduledActionsListFragment extends ListFragment implements
             if (endTime > 0 && endTime < System.currentTimeMillis()){
                 ((TextView)view.findViewById(R.id.primary_text)).setTextColor(getResources().getColor(android.R.color.darker_gray));
                 descriptionTextView.setText(getString(R.string.label_scheduled_action_ended,
-                        DateFormat.getInstance().format(new Date(scheduledAction.getLastRun()))));
+                        DateFormat.getInstance().format(new Date(scheduledAction.getLastRunTime()))));
             } else {
                 descriptionTextView.setText(scheduledAction.getRepeatString());
             }

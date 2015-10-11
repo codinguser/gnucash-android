@@ -79,7 +79,7 @@ public enum PeriodType {
      */
     public String getFrequencyRepeatString(){
         Resources res = GnuCashApplication.getAppContext().getResources();
-
+        //todo: take multiplier into account here
         switch (this) {
             case DAY:
                 return res.getQuantityString(R.plurals.label_every_x_days, mMultiplier, mMultiplier);

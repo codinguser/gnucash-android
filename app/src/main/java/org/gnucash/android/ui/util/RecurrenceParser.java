@@ -20,6 +20,8 @@ import android.text.format.Time;
 
 import com.codetroopers.betterpickers.recurrencepicker.EventRecurrence;
 
+import org.gnucash.android.model.PeriodType;
+import org.gnucash.android.model.Recurrence;
 import org.gnucash.android.model.ScheduledAction;
 
 import java.util.ArrayList;
@@ -57,27 +59,23 @@ public class RecurrenceParser {
 
         switch(eventRecurrence.freq){
             case EventRecurrence.DAILY: {
-                if (eventRecurrence.interval == 0) //I assume this is a bug from the picker library
-                    period = DAY_MILLIS;
-                else
-                    period = eventRecurrence.interval * DAY_MILLIS;
-
                 ScheduledAction scheduledAction = new ScheduledAction(actionType);
-                scheduledAction.setPeriod(period);
+                PeriodType periodType = PeriodType.DAY;
+                int interval = eventRecurrence.interval == 0 ? 1 : eventRecurrence.interval; //bug from betterpickers library sometimes returns 0 as the interval
+                periodType.setMultiplier(interval);
+                scheduledAction.setRecurrence(new Recurrence(periodType));
                 parseEndTime(eventRecurrence, scheduledAction);
                 scheduledActionList.add(scheduledAction);
             }
                 break;
 
             case EventRecurrence.WEEKLY: {
-                if (eventRecurrence.interval == 0)
-                    period = WEEK_MILLIS;
-                else
-                    period = eventRecurrence.interval * WEEK_MILLIS;
+                PeriodType periodType = PeriodType.WEEK;
+                int interval = eventRecurrence.interval == 0 ? 1 : eventRecurrence.interval;
+                periodType.setMultiplier(interval);
                 for (int day : eventRecurrence.byday) {
                     ScheduledAction scheduledAction = new ScheduledAction(actionType);
-                    scheduledAction.setPeriod(period);
-
+                    scheduledAction.setRecurrence(new Recurrence(periodType));
                     scheduledAction.setStartTime(nextDayOfWeek(day2CalendarDay(day)).getTimeInMillis());
                     parseEndTime(eventRecurrence, scheduledAction);
                     scheduledActionList.add(scheduledAction);
@@ -86,12 +84,11 @@ public class RecurrenceParser {
             break;
 
             case EventRecurrence.MONTHLY: {
-                if (eventRecurrence.interval == 0)
-                    period = MONTH_MILLIS;
-                else
-                    period = eventRecurrence.interval * MONTH_MILLIS;
+                PeriodType periodType = PeriodType.MONTH;
+                int interval = eventRecurrence.interval == 0 ? 1 : eventRecurrence.interval;
+                periodType.setMultiplier(interval);
                 ScheduledAction event = new ScheduledAction(actionType);
-                event.setPeriod(period);
+                event.setRecurrence(new Recurrence(periodType));
                 Calendar now = Calendar.getInstance();
                 now.add(Calendar.MONTH, 1);
                 event.setStartTime(now.getTimeInMillis());
@@ -102,12 +99,12 @@ public class RecurrenceParser {
                 break;
 
             case EventRecurrence.YEARLY: {
-                if (eventRecurrence.interval == 0)
-                    period = YEAR_MILLIS;
-                else
-                    period = eventRecurrence.interval * YEAR_MILLIS;
+                PeriodType periodType = PeriodType.YEAR;
+                int interval = eventRecurrence.interval == 0 ? 1 : eventRecurrence.interval;
+                periodType.setMultiplier(interval);
                 ScheduledAction event = new ScheduledAction(actionType);
-                event.setPeriod(period);
+                event.setRecurrence(new Recurrence(periodType));
+
                 Calendar now = Calendar.getInstance();
                 now.add(Calendar.YEAR, 1);
                 event.setStartTime(now.getTimeInMillis());
