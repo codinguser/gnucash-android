@@ -122,7 +122,7 @@
     <item>科多巴</item>
     <item>哥斯达黎加科朗</item>
     <item>克罗地亚库纳</item>
-    <item>古巴可兌換披索</item>
+    <item>Cuban Convertible Peso</item>
     <item>古巴比索</item>
     <item>捷克克朗</item>
     <item>达拉斯</item>
@@ -177,13 +177,13 @@
     <item>马来西亚林吉特</item>
     <item>毛里求斯卢比</item>
     <item>墨西哥比索</item>
-    <item>Mexican Unidad de Inversion (MXV)</item>
+    <item>Mexican Unidad de Inversion (UDI)</item>
     <item>摩尔多瓦列伊</item>
     <item>摩洛哥迪拉姆</item>
     <item>莫桑比克的梅蒂卡尔</item>
     <item>Mvdol</item>
-    <item>尼日利亞奈拉</item>
-    <item>厄立特里亞奈克法</item>
+    <item>Naira</item>
+    <item>Nakfa</item>
     <item>纳米比亚元</item>
     <item>尼泊尔卢比</item>
     <item>荷兰安的列斯荷兰盾</item>
@@ -191,76 +191,76 @@
     <item>新罗马尼亚列伊</item>
     <item>新台币</item>
     <item>新西兰元</item>
-    <item>不丹魯姆</item>
+    <item>Ngultrum</item>
     <item>北韩元</item>
     <item>挪威克朗</item>
     <item>秘鲁 索尔</item>
-    <item>毛里塔尼亞烏吉亞</item>
-    <item>東加潘加</item>
+    <item>Ouguiya</item>
+    <item>Pa’anga</item>
     <item>巴基斯坦卢比</item>
-    <item>鈀</item>
-    <item>澳門幣</item>
-    <item>菲律賓披索</item>
-    <item>白金</item>
-    <item>英鎊</item>
-    <item>波茨華拿普拉</item>
-    <item>卡塔爾里亞爾</item>
-    <item>危地馬拉格查爾</item>
-    <item>南非蘭特</item>
-    <item>阿曼里亞爾</item>
-    <item>柬埔寨瑞爾</item>
-    <item>馬爾代夫拉菲亞</item>
-    <item>印尼盾</item>
+    <item>Palladium</item>
+    <item>Pataca</item>
+    <item>Philippine Peso</item>
+    <item>Platinum</item>
+    <item>Pound Sterling</item>
+    <item>Pula</item>
+    <item>Qatari Rial</item>
+    <item>Quetzal</item>
+    <item>Rand</item>
+    <item>Rial Omani</item>
+    <item>Riel</item>
+    <item>Rufiyaa</item>
+    <item>Rupiah</item>
     <item>俄罗斯卢布</item>
-    <item>盧旺達法郎</item>
-    <item>聖海倫娜鎊</item>
-    <item>沙地阿拉伯里亞爾</item>
-    <item>SDR(特別提款權)</item>
-    <item>塞爾維亞第納爾</item>
-    <item>塞席爾盧比</item>
+    <item>Rwanda Franc</item>
+    <item>Saint Helena Pound</item>
+    <item>Saudi Riyal</item>
+    <item>SDR (Special Drawing Right)</item>
+    <item>Serbian Dinar</item>
+    <item>Seychelles Rupee</item>
     <item>白银</item>
     <item>新加坡元</item>
-    <item>所羅門群島元</item>
-    <item>吉爾吉斯索姆</item>
-    <item>索馬里先令</item>
-    <item>塔吉克莫尼</item>
-    <item>南蘇丹鎊</item>
-    <item>斯里蘭卡盧比</item>
-    <item>厄瓜多爾蘇克雷</item>
-    <item>蘇丹鎊</item>
-    <item>蘇里南元</item>
+    <item>Solomon Islands Dollar</item>
+    <item>Som</item>
+    <item>Somali Shilling</item>
+    <item>Somoni</item>
+    <item>South Sudanese Pound</item>
+    <item>Sri Lanka Rupee</item>
+    <item>Sucre</item>
+    <item>Sudanese Pound</item>
+    <item>Surinam Dollar</item>
     <item>瑞典克朗</item>
     <item>瑞士法郎</item>
-    <item>敘利亞鎊</item>
-    <item>孟加拉塔卡</item>
-    <item>薩摩亞塔拉</item>
-    <item>坦桑尼亞先令</item>
-    <item>哈薩克堅戈</item>
+    <item>Syrian Pound</item>
+    <item>Taka</item>
+    <item>Tala</item>
+    <item>Tanzanian Shilling</item>
+    <item>Tenge</item>
     <item>无</item>
-    <item>千里達和多巴哥元</item>
-    <item>蒙古圖格里克</item>
-    <item>突尼西亞第納爾</item>
-    <item>土耳其里拉</item>
-    <item>土庫曼馬納特</item>
-    <item>阿聯迪拉姆</item>
-    <item>烏干達先令</item>
-    <item>國際鐵路聯盟法郎</item>
-    <item>哥倫比亞Unidad de Valor Real</item>
-    <item>智利Unidades de fomento</item>
+    <item>Trinidad and Tobago Dollar</item>
+    <item>Tugrik</item>
+    <item>Tunisian Dinar</item>
+    <item>Turkish Lira</item>
+    <item>Turkmenistan New Manat</item>
+    <item>UAE Dirham</item>
+    <item>Uganda Shilling</item>
+    <item>UIC-Franc</item>
+    <item>Unidad de Valor Real</item>
+    <item>Unidades de fomento</item>
     <item>Uruguay Peso en Unidades Indexadas (URUIURUI)</item>
     <item>Uruguayan Peso</item>
     <item>美元</item>
-    <item>烏茲別克索姆</item>
-    <item>瓦努阿圖瓦圖</item>
+    <item>Uzbekistan Sum</item>
+    <item>Vatu</item>
     <item>“世界投资报告”欧元</item>
     <item>“世界投资报告”法郎</item>
     <item>韩元</item>
-    <item>也門里亞爾</item>
+    <item>Yemeni Rial</item>
     <item>日元</item>
     <item>人民币</item>
-    <item>贊比亞克瓦查</item>
+    <item>Zambian Kwacha</item>
     <item>津巴布韦元</item>
-    <item>波蘭茲羅提</item>
+    <item>Zloty</item>
   </string-array>
   <string name="error_no_accounts">GnuCash里还没有科目信息。\n使用小部件前需要添加科目</string>
   <string name="title_build_version">版本号</string>
