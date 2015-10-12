@@ -94,8 +94,10 @@ public class SplitsDbAdapter extends DatabaseAdapter<Split> {
                     + SplitEntry.COLUMN_QUANTITY_NUM + " , "
                     + SplitEntry.COLUMN_QUANTITY_DENOM + " , "
                     + SplitEntry.COLUMN_CREATED_AT + " , "
+                    + SplitEntry.COLUMN_RECONCILE_STATE + " , "
+                    + SplitEntry.COLUMN_RECONCILE_DATE + " , "
                     + SplitEntry.COLUMN_ACCOUNT_UID + " , "
-                    + SplitEntry.COLUMN_TRANSACTION_UID + " ) VALUES ( ? , ? , ? , ? , ? , ? , ? , ? , ? , ? ) ");
+                    + SplitEntry.COLUMN_TRANSACTION_UID + " ) VALUES ( ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? ) ");
         }
 
         mReplaceStatement.clearBindings();
@@ -104,13 +106,15 @@ public class SplitsDbAdapter extends DatabaseAdapter<Split> {
             mReplaceStatement.bindString(2, split.getMemo());
         }
         mReplaceStatement.bindString(3, split.getType().name());
-        mReplaceStatement.bindLong(4,   split.getValue().getNumerator());
+        mReplaceStatement.bindLong(4, split.getValue().getNumerator());
         mReplaceStatement.bindLong(5,   split.getValue().getDenominator());
-        mReplaceStatement.bindLong(6,   split.getQuantity().getNumerator());
-        mReplaceStatement.bindLong(7,   split.getQuantity().getDenominator());
+        mReplaceStatement.bindLong(6, split.getQuantity().getNumerator());
+        mReplaceStatement.bindLong(7, split.getQuantity().getDenominator());
         mReplaceStatement.bindString(8, split.getCreatedTimestamp().toString());
-        mReplaceStatement.bindString(9, split.getAccountUID());
-        mReplaceStatement.bindString(10, split.getTransactionUID());
+        mReplaceStatement.bindString(9, String.valueOf(split.getReconcileState()));
+        mReplaceStatement.bindString(10, split.getReconcileDate().toString());
+        mReplaceStatement.bindString(11, split.getAccountUID());
+        mReplaceStatement.bindString(12, split.getTransactionUID());
 
         return mReplaceStatement;
     }
@@ -130,6 +134,8 @@ public class SplitsDbAdapter extends DatabaseAdapter<Split> {
         String accountUID   = cursor.getString(cursor.getColumnIndexOrThrow(SplitEntry.COLUMN_ACCOUNT_UID));
         String transxUID    = cursor.getString(cursor.getColumnIndexOrThrow(SplitEntry.COLUMN_TRANSACTION_UID));
         String memo         = cursor.getString(cursor.getColumnIndexOrThrow(SplitEntry.COLUMN_MEMO));
+        String reconcileState = cursor.getString(cursor.getColumnIndexOrThrow(SplitEntry.COLUMN_RECONCILE_STATE));
+        String reconcileDate  = cursor.getString(cursor.getColumnIndexOrThrow(SplitEntry.COLUMN_RECONCILE_DATE));
 
         String transactionCurrency = TransactionsDbAdapter.getInstance().getAttribute(transxUID, TransactionEntry.COLUMN_CURRENCY);
         Money value = new Money(valueNum, valueDenom, transactionCurrency);
@@ -142,6 +148,8 @@ public class SplitsDbAdapter extends DatabaseAdapter<Split> {
         split.setTransactionUID(transxUID);
         split.setType(TransactionType.valueOf(typeName));
         split.setMemo(memo);
+        split.setReconcileState(reconcileState.charAt(0));
+        split.setReconcileDate(Timestamp.valueOf(reconcileDate));
 
         return split;
     }

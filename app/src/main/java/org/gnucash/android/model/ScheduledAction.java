@@ -183,30 +183,6 @@ public class ScheduledAction extends BaseModel{
     }
 
     /**
-     * Sets the period given the period type.
-     * The {@link PeriodType} should have the multiplier set,
-     * e.g. bi-weekly actions have period type {@link PeriodType#WEEK} and multiplier 2
-     * @param periodType Type of period
-     */
-    public void setPeriod(PeriodType periodType){
-        int multiplier = periodType.getMultiplier();
-        switch (periodType){
-            case DAY:
-                mPeriod = RecurrenceParser.DAY_MILLIS * multiplier;
-                break;
-            case WEEK:
-                mPeriod = RecurrenceParser.WEEK_MILLIS * multiplier;
-                break;
-            case MONTH:
-                mPeriod = RecurrenceParser.MONTH_MILLIS * multiplier;
-                break;
-            case YEAR:
-                mPeriod = RecurrenceParser.YEAR_MILLIS * multiplier;
-                break;
-        }
-    }
-
-    /**
      * Returns the time of first execution of the scheduled action
      * @return Start time of scheduled action in milliseconds since Epoch
      */

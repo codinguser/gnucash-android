@@ -307,6 +307,7 @@ public class GncXmlExporter extends Exporter{
             cursor.moveToPrevious();
         }
 
+        //// FIXME: 12.10.2015 export split reconciled_state and reconciled_date to the export
         while (cursor.moveToNext()){
             String curTrxUID = cursor.getString(cursor.getColumnIndexOrThrow("trans_uid"));
             if (!lastTrxUID.equals(curTrxUID)) { // new transaction starts

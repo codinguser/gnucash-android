@@ -69,6 +69,7 @@ public abstract class DatabaseAdapter<Model extends BaseModel> {
         if (mDb.getVersion() >= 9) {
             createTempView();
         }
+        LOG_TAG = getClass().getSimpleName();
     }
 
     private void createTempView() {
@@ -81,6 +82,8 @@ public abstract class DatabaseAdapter<Model extends BaseModel> {
         //
         // create a temporary view, combining accounts, transactions and splits, as this is often used
         // in the queries
+
+        //todo: would it be useful to add the split reconciled_state and reconciled_date to this view?
         mDb.execSQL("CREATE TEMP VIEW IF NOT EXISTS trans_split_acct AS SELECT "
                         + TransactionEntry.TABLE_NAME + "." + CommonColumns.COLUMN_MODIFIED_AT + " AS "
                         + TransactionEntry.TABLE_NAME + "_" + CommonColumns.COLUMN_MODIFIED_AT + " , "

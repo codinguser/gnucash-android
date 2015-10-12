@@ -2,7 +2,7 @@ Change Log
 ===============================================================================
 Version 2.1.0 *(2016-xx-xx)*
 ----------------------------
-* Feature: Account-based budgeting
+* Feature: Budgets
 * Improved: Scheduled transactions now have more accurate timestamps
 * Improved: Generate all scheduled transactions even if a scheduled is missed (e.g. device off)
 

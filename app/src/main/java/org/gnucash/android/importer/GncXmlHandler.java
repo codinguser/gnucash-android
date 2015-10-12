@@ -36,6 +36,7 @@ import org.gnucash.android.model.BaseModel;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.model.PeriodType;
 import org.gnucash.android.model.Price;
+import org.gnucash.android.model.Recurrence;
 import org.gnucash.android.model.ScheduledAction;
 import org.gnucash.android.model.Split;
 import org.gnucash.android.model.Transaction;
@@ -574,6 +575,7 @@ public class GncXmlHandler extends DefaultHandler {
                         mTemplateAccountToTransactionMap.put(characterString, mTransaction.getUID());
                 }
                 break;
+            //todo: import split reconciled state and date
             case GncXmlHelper.TAG_TRN_SPLIT:
                 mTransaction.addSplit(mSplit);
                 break;
@@ -618,6 +620,7 @@ public class GncXmlHandler extends DefaultHandler {
             case GncXmlHelper.TAG_SX_AUTO_CREATE:
                 mScheduledAction.setAutoCreate(characterString.equals("y"));
                 break;
+            //todo: export auto_notify, advance_create, advance_notify
             case GncXmlHelper.TAG_SX_NUM_OCCUR:
                 mScheduledAction.setTotalFrequency(Integer.parseInt(characterString));
                 break;
@@ -629,7 +632,7 @@ public class GncXmlHandler extends DefaultHandler {
                     PeriodType periodType = PeriodType.valueOf(characterString.toUpperCase());
                     periodType.setMultiplier(mRecurrenceMultiplier);
                     if (mScheduledAction != null) //there might be recurrence tags for bugdets and other stuff
-                        mScheduledAction.setPeriod(periodType);
+                        mScheduledAction.setRecurrence(new Recurrence(periodType));
                 } catch (IllegalArgumentException ex){ //the period type constant is not supported
                     String msg = "Unsupported period constant: " + characterString;
                     Log.e(LOG_TAG, msg);

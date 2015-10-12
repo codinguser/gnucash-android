@@ -2,9 +2,10 @@ package org.gnucash.android.model;
 
 
 import android.support.annotation.NonNull;
-import android.util.Log;
 
 import org.gnucash.android.db.AccountsDbAdapter;
+
+import java.sql.Timestamp;
 
 /**
  * A split amount in a transaction.
@@ -17,6 +18,23 @@ import org.gnucash.android.db.AccountsDbAdapter;
  * @author Ngewi Fet <ngewif@gmail.com>
  */
 public class Split extends BaseModel{
+
+    /**
+     * Flag indicating that the split has been reconciled
+     */
+    public static final char FLAG_RECONCILED        = 'y';
+
+    /**
+     * Flag indicating that the split has not been reconciled
+     */
+    public static final char FLAG_NOT_RECONCILED    = 'n';
+
+    /**
+     * Flag indicating that the split has been cleared, but not reconciled
+     */
+    public static final char FLAG_CLEARED           = 'c';
+
+
     /**
      * Amount value of this split which is in the currency of the transaction
      */
@@ -46,6 +64,13 @@ public class Split extends BaseModel{
      * Memo associated with this split
      */
     private String mMemo;
+
+    private char mReconcileState = FLAG_NOT_RECONCILED;
+
+    /**
+     * Database required non-null field
+     */
+    private Timestamp mReconcileDate = new Timestamp(System.currentTimeMillis());
 
     /**
      * Initialize split with a value amount and account
@@ -290,6 +315,63 @@ public class Split extends BaseModel{
         }
     }
 
+    /**
+     * Return the reconciled state of this split
+     * <p>
+     *     The reconciled state is one of the following values:
+     *     <ul>
+     *         <li><b>y</b>: means this split has been reconciled</li>
+     *         <li><b>n</b>: means this split is not reconciled</li>
+     *         <li><b>c</b>: means split has been cleared, but not reconciled</li>
+     *     </ul>
+     * </p> <br>
+     * You can check the return value against the reconciled flags {@link #FLAG_RECONCILED}, {@link #FLAG_NOT_RECONCILED}, {@link #FLAG_CLEARED}
+     * @return Character showing reconciled state
+     */
+    public char getReconcileState() {
+        return mReconcileState;
+    }
+
+    /**
+     * Check if this split is reconciled
+     * @return {@code true} if the split is reconciled, {@code false} otherwise
+     */
+    public boolean isReconciled(){
+        return mReconcileState == FLAG_RECONCILED;
+    }
+
+    /**
+     * Set reconciled state of this split.
+     * <p>
+     *     The reconciled state is one of the following values:
+     *     <ul>
+     *         <li><b>y</b>: means this split has been reconciled</li>
+     *         <li><b>n</b>: means this split is not reconciled</li>
+     *         <li><b>c</b>: means split has been cleared, but not reconciled</li>
+     *     </ul>
+     * </p>
+     * @param reconcileState One of the following flags {@link #FLAG_RECONCILED}, {@link #FLAG_NOT_RECONCILED}, {@link #FLAG_CLEARED}
+     */
+    public void setReconcileState(char reconcileState) {
+        this.mReconcileState = reconcileState;
+    }
+
+    /**
+     * Return the date of reconciliation
+     * @return Timestamp
+     */
+    public Timestamp getReconcileDate() {
+        return mReconcileDate;
+    }
+
+    /**
+     * Set reconciliation date for this split
+     * @param reconcileDate Timestamp of reconciliation
+     */
+    public void setReconcileDate(Timestamp reconcileDate) {
+        this.mReconcileDate = reconcileDate;
+    }
+
     @Override
     public String toString() {
         return mSplitType.name() + " of " + mValue.toString() + " in account: " + mAccountUID;
@@ -305,7 +387,7 @@ public class Split extends BaseModel{
      */
     public String toCsv(){
         String sep = ";";
-
+        //TODO: add reconciled state and date
         String splitString = getUID() + sep + mValue.getNumerator() + sep + mValue.getDenominator() + sep + mValue.getCurrency().getCurrencyCode() + sep
                 + mQuantity.getNumerator() + sep + mQuantity.getDenominator() + sep + mQuantity.getCurrency().getCurrencyCode()
                 + sep + mTransactionUID + sep + mAccountUID + sep + mSplitType.name();
@@ -325,6 +407,7 @@ public class Split extends BaseModel{
      * @return Split instance parsed from the string
      */
     public static Split parseSplit(String splitCsvString) {
+        //TODO: parse reconciled state and date
         String[] tokens = splitCsvString.split(";");
         if (tokens.length < 8) { //old format splits
             Money amount = new Money(tokens[0], tokens[1]);

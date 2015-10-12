@@ -32,6 +32,8 @@ import static org.gnucash.android.db.DatabaseSchema.BudgetEntry;
  */
 public class BudgetDbAdapter extends DatabaseAdapter<Budget>{
 
+    private RecurrenceDbAdapter mRecurrenceDbAdapter;
+
     /**
      * Opens the database adapter with an existing database
      *
@@ -39,6 +41,7 @@ public class BudgetDbAdapter extends DatabaseAdapter<Budget>{
      */
     public BudgetDbAdapter(SQLiteDatabase db) {
         super(db, BudgetEntry.TABLE_NAME);
+        mRecurrenceDbAdapter = new RecurrenceDbAdapter(db);
     }
 
     /**
@@ -47,6 +50,11 @@ public class BudgetDbAdapter extends DatabaseAdapter<Budget>{
      */
     public static BudgetDbAdapter getInstance(){
         return GnuCashApplication.getBudgetDbAdapter();
+    }
+
+    @Override
+    public void addRecord(@NonNull Budget model) {
+        super.addRecord(model);
     }
 
     @Override

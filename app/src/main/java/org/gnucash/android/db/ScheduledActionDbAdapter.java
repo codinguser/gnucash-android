@@ -37,8 +37,11 @@ import static org.gnucash.android.db.DatabaseSchema.ScheduledActionEntry;
  */
 public class ScheduledActionDbAdapter extends DatabaseAdapter<ScheduledAction> {
 
+    RecurrenceDbAdapter mRecurrenceDbAdapter;
+
     public ScheduledActionDbAdapter(SQLiteDatabase db){
         super(db, ScheduledActionEntry.TABLE_NAME);
+        mRecurrenceDbAdapter = new RecurrenceDbAdapter(db);
         LOG_TAG = "ScheduledActionDbAdapter";
     }
 
@@ -104,9 +107,9 @@ public class ScheduledActionDbAdapter extends DatabaseAdapter<ScheduledAction> {
         mReplaceStatement.bindString(2, schedxAction.getActionUID());
         mReplaceStatement.bindString(3, schedxAction.getActionType().name());
         mReplaceStatement.bindLong(4,   schedxAction.getStartTime());
-        mReplaceStatement.bindLong(5,   schedxAction.getEndTime());
-        mReplaceStatement.bindLong(6,   schedxAction.getLastRunTime());
-        mReplaceStatement.bindLong(7,   schedxAction.isEnabled() ? 1 : 0);
+        mReplaceStatement.bindLong(5, schedxAction.getEndTime());
+        mReplaceStatement.bindLong(6, schedxAction.getLastRunTime());
+        mReplaceStatement.bindLong(7, schedxAction.isEnabled() ? 1 : 0);
         mReplaceStatement.bindString(8, schedxAction.getCreatedTimestamp().toString());
         if (schedxAction.getTag() == null)
             mReplaceStatement.bindNull(9);
@@ -117,7 +120,7 @@ public class ScheduledActionDbAdapter extends DatabaseAdapter<ScheduledAction> {
         mReplaceStatement.bindLong(12,   schedxAction.shouldAutoCreate() ? 1 : 0);
         mReplaceStatement.bindLong(13,   schedxAction.shouldAutoNotify() ? 1 : 0);
         mReplaceStatement.bindLong(14,   schedxAction.shouldAdvanceCreate() ? 1 : 0);
-        mReplaceStatement.bindLong(15,   schedxAction.shouldAdvanceNotify() ? 1 : 0);
+        mReplaceStatement.bindLong(15, schedxAction.shouldAdvanceNotify() ? 1 : 0);
         mReplaceStatement.bindString(16, schedxAction.getTemplateAccountUID());
 
         mReplaceStatement.bindString(17, Integer.toString(schedxAction.getExecutionCount()));

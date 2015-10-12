@@ -39,6 +39,7 @@ import org.gnucash.android.model.Commodity;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.model.PeriodType;
 import org.gnucash.android.model.Recurrence;
+import org.gnucash.android.model.Split;
 import org.gnucash.android.model.Transaction;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -1071,7 +1072,7 @@ public class MigrationHelper {
      *     <li>Adds an extra table for recurrences</li>
      *     <li>Migrate scheduled transaction recurrences to own table</li>
      *     <li>Adds flags for reconciled status to split table</li>
-     *     <li>Add flags for autocreate and create notification to scheduled actions</li>
+     *     <li>Add flags for auto-/advance- create and notification to scheduled actions</li>
      * </ul>
      * </p>
      * @param db SQlite database to be upgraded
@@ -1106,20 +1107,68 @@ public class MigrationHelper {
                     + RecurrenceEntry.COLUMN_PERIOD_START   + " varchar(255) not null); "
                     + DatabaseHelper.createUpdatedAtTrigger(RecurrenceEntry.TABLE_NAME);
 
-            db.execSQL(" ALTER TABLE " + ScheduledActionEntry.TABLE_NAME
-                    + " ADD COLUMN " + ScheduledActionEntry.COLUMN_RECURRENCE_UID + " varchar(255) ");
-            db.execSQL(" ALTER TABLE " + ScheduledActionEntry.TABLE_NAME
-                    + " ADD COLUMN " + ScheduledActionEntry.COLUMN_TEMPLATE_ACCT_UID + " varchar(255) ");
-            db.execSQL(" ALTER TABLE " + ScheduledActionEntry.TABLE_NAME
-                    + " ADD COLUMN " + ScheduledActionEntry.COLUMN_AUTO_CREATE + " tinyint default 1");
-            db.execSQL(" ALTER TABLE " + ScheduledActionEntry.TABLE_NAME
-                    + " ADD COLUMN " + ScheduledActionEntry.COLUMN_AUTO_NOTIFY + " tinyint default 0");
-            db.execSQL(" ALTER TABLE " + ScheduledActionEntry.TABLE_NAME
-                    + " ADD COLUMN " + ScheduledActionEntry.COLUMN_ADVANCE_CREATION + " tinyint default 1");
-            db.execSQL(" ALTER TABLE " + ScheduledActionEntry.TABLE_NAME
-                    + " ADD COLUMN " + ScheduledActionEntry.COLUMN_ADVANCE_NOTIFY + " tinyint default 0");
+            db.execSQL("ALTER TABLE " + ScheduledActionEntry.TABLE_NAME + " RENAME TO " + ScheduledActionEntry.TABLE_NAME + "_bak");
 
-            Cursor cursor = db.query(ScheduledActionEntry.TABLE_NAME,
+            db.execSQL("CREATE TABLE " + ScheduledActionEntry.TABLE_NAME + " ("
+                    + ScheduledActionEntry._ID                      + " integer primary key autoincrement, "
+                    + ScheduledActionEntry.COLUMN_UID               + " varchar(255) not null UNIQUE, "
+                    + ScheduledActionEntry.COLUMN_ACTION_UID        + " varchar(255) not null, "
+                    + ScheduledActionEntry.COLUMN_TYPE              + " varchar(255) not null, "
+                    + ScheduledActionEntry.COLUMN_RECURRENCE_UID    + " varchar(255) not null, "
+                    + ScheduledActionEntry.COLUMN_TEMPLATE_ACCT_UID + " varchar(255) not null, "
+                    + ScheduledActionEntry.COLUMN_LAST_RUN          + " integer default 0, "
+                    + ScheduledActionEntry.COLUMN_START_TIME        + " integer not null, "
+                    + ScheduledActionEntry.COLUMN_END_TIME          + " integer default 0, "
+                    + ScheduledActionEntry.COLUMN_TAG               + " text, "
+                    + ScheduledActionEntry.COLUMN_ENABLED           + " tinyint default 1, " //enabled by default
+                    + ScheduledActionEntry.COLUMN_AUTO_CREATE       + " tinyint default 1, "
+                    + ScheduledActionEntry.COLUMN_AUTO_NOTIFY       + " tinyint default 0, "
+                    + ScheduledActionEntry.COLUMN_ADVANCE_CREATION  + " tinyint default 1, "
+                    + ScheduledActionEntry.COLUMN_ADVANCE_NOTIFY    + " tinyint default 0, "
+                    + ScheduledActionEntry.COLUMN_TOTAL_FREQUENCY   + " integer default 0, "
+                    + ScheduledActionEntry.COLUMN_EXECUTION_COUNT   + " integer default 0, "
+                    + ScheduledActionEntry.COLUMN_CREATED_AT        + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
+                    + ScheduledActionEntry.COLUMN_MODIFIED_AT       + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP "
+                    + ");" + DatabaseHelper.createUpdatedAtTrigger(ScheduledActionEntry.TABLE_NAME));
+
+
+            // initialize new transaction table with data from old table
+            db.execSQL("INSERT INTO " + ScheduledActionEntry.TABLE_NAME + " ( "
+                            + ScheduledActionEntry._ID + " , "
+                            + ScheduledActionEntry.COLUMN_UID + " , "
+                            + ScheduledActionEntry.COLUMN_ACTION_UID + " , "
+                            + ScheduledActionEntry.COLUMN_TYPE + " , "
+                            + ScheduledActionEntry.COLUMN_LAST_RUN + " , "
+                            + ScheduledActionEntry.COLUMN_START_TIME + " , "
+                            + ScheduledActionEntry.COLUMN_END_TIME + " , "
+                            + ScheduledActionEntry.COLUMN_ENABLED + " , "
+                            + ScheduledActionEntry.COLUMN_TOTAL_FREQUENCY + " , "
+                            + ScheduledActionEntry.COLUMN_EXECUTION_COUNT + " , "
+                            + ScheduledActionEntry.COLUMN_CREATED_AT + " , "
+                            + ScheduledActionEntry.COLUMN_MODIFIED_AT + " , "
+                            + ScheduledActionEntry.COLUMN_RECURRENCE_UID + " , "
+                            + ScheduledActionEntry.COLUMN_TEMPLATE_ACCT_UID + " , "
+                            + ScheduledActionEntry.COLUMN_TAG
+                            + ")  SELECT "
+                            + ScheduledActionEntry.TABLE_NAME + "_bak." + ScheduledActionEntry._ID + " , "
+                            + ScheduledActionEntry.TABLE_NAME + "_bak." + ScheduledActionEntry.COLUMN_UID + " , "
+                            + ScheduledActionEntry.TABLE_NAME + "_bak." + ScheduledActionEntry.COLUMN_ACTION_UID + " , "
+                            + ScheduledActionEntry.TABLE_NAME + "_bak." + ScheduledActionEntry.COLUMN_TYPE + " , "
+                            + ScheduledActionEntry.TABLE_NAME + "_bak." + ScheduledActionEntry.COLUMN_LAST_RUN + " , "
+                            + ScheduledActionEntry.TABLE_NAME + "_bak." + ScheduledActionEntry.COLUMN_START_TIME + " , "
+                            + ScheduledActionEntry.TABLE_NAME + "_bak." + ScheduledActionEntry.COLUMN_END_TIME + " , "
+                            + ScheduledActionEntry.TABLE_NAME + "_bak." + ScheduledActionEntry.COLUMN_ENABLED + " , "
+                            + ScheduledActionEntry.TABLE_NAME + "_bak." + ScheduledActionEntry.COLUMN_TOTAL_FREQUENCY + " , "
+                            + ScheduledActionEntry.TABLE_NAME + "_bak." + ScheduledActionEntry.COLUMN_EXECUTION_COUNT + " , "
+                            + ScheduledActionEntry.TABLE_NAME + "_bak." + ScheduledActionEntry.COLUMN_CREATED_AT + " , "
+                            + ScheduledActionEntry.TABLE_NAME + "_bak." + ScheduledActionEntry.COLUMN_MODIFIED_AT + " , "
+                            + " 'dummy-string' ," //will be updated in next steps
+                            + " 'dummy-string' ,"
+                            + ScheduledActionEntry.TABLE_NAME + "_bak." + ScheduledActionEntry.COLUMN_TAG
+                            + " FROM " + ScheduledActionEntry.TABLE_NAME + "_bak;");
+
+            //update the template-account-guid and the recurrence guid for all scheduled actions
+            Cursor cursor = db.query(ScheduledActionEntry.TABLE_NAME + "_bak",
                     new String[]{ScheduledActionEntry.COLUMN_UID,
                             "period",
                             ScheduledActionEntry.COLUMN_START_TIME
@@ -1148,6 +1197,18 @@ public class MigrationHelper {
                 db.update(ScheduledActionEntry.TABLE_NAME, contentValues,
                         ScheduledActionEntry.COLUMN_UID + " = ?", new String[]{uid});
             }
+            cursor.close();
+
+            db.execSQL("DROP TABLE " + ScheduledActionEntry.TABLE_NAME + "_bak");
+
+            db.execSQL(" ALTER TABLE " + SplitEntry.TABLE_NAME
+                    + " ADD COLUMN " + SplitEntry.COLUMN_RECONCILE_STATE + " varchar(1) not null default 'n' ");
+            db.execSQL(" ALTER TABLE " + SplitEntry.TABLE_NAME
+                    + " ADD COLUMN " + SplitEntry.COLUMN_RECONCILE_DATE + " timestamp ");
+
+            contentValues.clear();
+            contentValues.put(SplitEntry.COLUMN_RECONCILE_DATE, new Timestamp(System.currentTimeMillis()).toString());
+            db.insert(SplitEntry.TABLE_NAME, null, contentValues);
 
             db.setTransactionSuccessful();
             oldVersion = 10;

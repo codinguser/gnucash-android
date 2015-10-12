@@ -118,8 +118,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + SplitEntry.COLUMN_QUANTITY_DENOM  + " integer not null, "
             + SplitEntry.COLUMN_ACCOUNT_UID 	+ " varchar(255) not null, "
             + SplitEntry.COLUMN_TRANSACTION_UID + " varchar(255) not null, "
-            + SplitEntry.COLUMN_CREATED_AT       + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
-            + SplitEntry.COLUMN_MODIFIED_AT      + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
+            + SplitEntry.COLUMN_RECONCILE_STATE + " varchar(1) not null default 'n', "
+            + SplitEntry.COLUMN_RECONCILE_DATE  + " timestamp not null default current_timestamp, "
+            + SplitEntry.COLUMN_CREATED_AT      + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
+            + SplitEntry.COLUMN_MODIFIED_AT     + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
             + "FOREIGN KEY (" 	+ SplitEntry.COLUMN_ACCOUNT_UID + ") REFERENCES " + AccountEntry.TABLE_NAME + " (" + AccountEntry.COLUMN_UID + ") ON DELETE CASCADE, "
             + "FOREIGN KEY (" 	+ SplitEntry.COLUMN_TRANSACTION_UID + ") REFERENCES " + TransactionEntry.TABLE_NAME + " (" + TransactionEntry.COLUMN_UID + ") ON DELETE CASCADE "
             + ");" + createUpdatedAtTrigger(SplitEntry.TABLE_NAME);
@@ -249,8 +251,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         /*
         * NOTE: In order to modify the database, create a new static method in the MigrationHelper class
         * called upgradeDbToVersion<#>, e.g. int upgradeDbToVersion10(SQLiteDatabase) in order to upgrade to version 10.
-        * The upgrade method should return the current database version as the return value.
-        * Then all you need to do is incremend the DatabaseSchema.DATABASE_VERSION to the appropriate number.
+        * The upgrade method should return the new (upgraded) database version as the return value.
+        * Then all you need to do is increment the DatabaseSchema.DATABASE_VERSION to the appropriate number to trigger an upgrade.
         */
 		if (oldVersion > newVersion) {
             throw new IllegalArgumentException("Database downgrades are not supported at the moment");
@@ -283,7 +285,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 
     /**
-     * Creates the tables in the database
+     * Creates the tables in the database and import default commodities into the database
      * @param db Database instance
      */
     private void createDatabaseTables(SQLiteDatabase db) {
