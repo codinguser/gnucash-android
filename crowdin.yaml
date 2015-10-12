@@ -3,10 +3,11 @@ base_path: .
 
 files:
   -
-    source: app/src/main/res/values/strings.xml
-    translation: app/src/main/res/values-%two_letters_code%/%original_file_name%
+    source: '/app/src/main/res/values/strings.xml'
+    translation: '/app/src/main/res/values-%android_code%/%original_file_name%'
     languages_mapping:
-      two_letters_code:
-        es-MX: es-rMX
-        pt-BR: pt-rBR
-        zh-TW: zh-rTW
+      android_code:
+        de: de
+        ru: ru
+        fr: fr
+        es-ES: es

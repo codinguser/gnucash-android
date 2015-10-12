@@ -197,6 +197,11 @@ public class TransactionFormFragment extends Fragment implements
     @Bind(R.id.btn_split_editor) ImageView mOpenSplitEditor;
 
     /**
+     * Layout for transfer account and associated views
+     */
+    @Bind(R.id.layout_double_entry) View mDoubleEntryLayout;
+
+    /**
      * Flag to note if double entry accounting is in use or not
      */
 	private boolean mUseDoubleEntry;
@@ -417,10 +422,10 @@ public class TransactionFormFragment extends Fragment implements
                 } else {
                     if (amountEntered){ //if user entered own amount, clear loaded splits and use the user value
                         mSplitsList.clear();
-                        setAmountEditViewVisible(View.VISIBLE);
+                        setDoubleEntryViewsVisibility(View.VISIBLE);
                     } else {
                         if (mUseDoubleEntry) { //don't hide the view in single entry mode
-                            setAmountEditViewVisible(View.GONE);
+                            setDoubleEntryViewsVisibility(View.GONE);
                         }
                     }
                 }
@@ -477,9 +482,7 @@ public class TransactionFormFragment extends Fragment implements
                 }
             }
         } else {
-            if (mUseDoubleEntry) {
-                setAmountEditViewVisible(View.GONE);
-            }
+                setDoubleEntryViewsVisibility(View.GONE);
         }
 
 		String currencyCode = mTransactionsDbAdapter.getAccountCurrencyCode(mAccountUID);
@@ -496,10 +499,9 @@ public class TransactionFormFragment extends Fragment implements
         }
     }
 
-    private void setAmountEditViewVisible(int visibility) {
-        getView().findViewById(R.id.layout_double_entry).setVisibility(visibility);
+    private void setDoubleEntryViewsVisibility(int visibility) {
+        mDoubleEntryLayout.setVisibility(visibility);
         mTransactionTypeSwitch.setVisibility(visibility);
-        mOpenSplitEditor.setVisibility(visibility);
     }
 
     private void toggleAmountInputEntryMode(boolean enabled){
@@ -932,7 +934,8 @@ public class TransactionFormFragment extends Fragment implements
         //once we set the split list, do not allow direct editing of the total
         if (mSplitsList.size() > 1){
             toggleAmountInputEntryMode(false);
-            setAmountEditViewVisible(View.GONE);
+            setDoubleEntryViewsVisibility(View.GONE);
+            mOpenSplitEditor.setVisibility(View.VISIBLE);
         }
     }
 
