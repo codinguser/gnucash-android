@@ -37,6 +37,7 @@ import net.objecthunter.exp4j.ExpressionBuilder;
 
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
+import org.gnucash.android.model.Money;
 import org.gnucash.android.ui.common.FormActivity;
 
 import java.math.BigDecimal;
@@ -53,7 +54,8 @@ import java.util.Locale;
  */
 public class CalculatorEditText extends EditText {
     CalculatorKeyboard mCalculatorKeyboard;
-    private Currency mCurrency = Currency.getInstance(GnuCashApplication.getDefaultCurrencyCode());
+    //use the Money variable so that we can inflate layouts statically
+    private Currency mCurrency = Currency.getInstance(Money.DEFAULT_CURRENCY_CODE); //Currency.getInstance(GnuCashApplication.getDefaultCurrencyCode());
     private Context mContext;
 
     /**

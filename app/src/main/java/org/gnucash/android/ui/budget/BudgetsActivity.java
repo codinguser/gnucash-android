@@ -40,7 +40,7 @@ public class BudgetsActivity extends BaseDrawerActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_accounts);
+        setContentView(R.layout.activity_budgets);
         setUpDrawer();
         ButterKnife.bind(this);
 

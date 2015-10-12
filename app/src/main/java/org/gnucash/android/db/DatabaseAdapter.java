@@ -230,11 +230,11 @@ public abstract class DatabaseAdapter<Model extends BaseModel> {
 
     /**
      * Builds an instance of the model from the database record entry
-     * <p>This method should not modify the cursor in any way</p>
+     * <p>When implementing this method, remember to call {@link #populateBaseModelAttributes(Cursor, BaseModel)}</p>
      * @param cursor Cursor pointing to the record
-     * @return
+     * @return New instance of the model from database record
      */
-    protected abstract Model buildModelInstance(@NonNull final Cursor cursor);
+    public abstract Model buildModelInstance(@NonNull final Cursor cursor);
 
     /**
      * Generates an {@link SQLiteStatement} with values from the {@code model}.
@@ -297,12 +297,12 @@ public abstract class DatabaseAdapter<Model extends BaseModel> {
     }
 
     /**
-     * Adds the attributes of the base model to the ContentValues object provided
+     * Extracts the attributes of the base model and adds them to the ContentValues object provided
      * @param contentValues Content values to which to add attributes
      * @param model {@link org.gnucash.android.model.BaseModel} from which to extract values
      * @return {@link android.content.ContentValues} with the data to be inserted into the db
      */
-    protected ContentValues populateBaseModelAttributes(@NonNull ContentValues contentValues, @NonNull Model model){
+    protected ContentValues extractBaseModelAttributes(@NonNull ContentValues contentValues, @NonNull Model model){
         contentValues.put(CommonColumns.COLUMN_UID, model.getUID());
         contentValues.put(CommonColumns.COLUMN_CREATED_AT, model.getCreatedTimestamp().toString());
         //there is a trigger in the database for updated the modified_at column

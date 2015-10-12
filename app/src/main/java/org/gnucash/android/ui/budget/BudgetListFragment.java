@@ -66,6 +66,7 @@ public class BudgetListFragment extends Fragment implements Refreshable,
         mBudgetRecyclerAdapter = new BudgetRecyclerAdapter(null);
 
         mRecyclerView.setAdapter(mBudgetRecyclerAdapter);
+        getLoaderManager().initLoader(0, null, this);
     }
 
     @Override
@@ -156,7 +157,7 @@ public class BudgetListFragment extends Fragment implements Refreshable,
         @Override
         public BudgetViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             View v = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.cardview_account, parent, false);
+                    .inflate(R.layout.cardview_budget, parent, false);
 
             return new BudgetViewHolder(v);
         }

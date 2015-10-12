@@ -102,6 +102,8 @@
             android:configChanges="orientation|screenSize"/>
         <activity android:name=".ui.report.ReportsActivity"
             android:launchMode="singleTop"/>
+        <activity android:name=".ui.budget.BudgetsActivity"
+            android:launchMode="singleTop"/>
         <activity android:name=".ui.wizard.FirstRunWizardActivity"
             android:theme="@style/Theme.GnucashTheme" />
         <activity android:name="com.dropbox.sync.android.DbxAuthActivity" />

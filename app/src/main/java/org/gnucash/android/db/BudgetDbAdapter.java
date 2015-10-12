@@ -53,11 +53,6 @@ public class BudgetDbAdapter extends DatabaseAdapter<Budget>{
     }
 
     @Override
-    public void addRecord(@NonNull Budget model) {
-        super.addRecord(model);
-    }
-
-    @Override
     public Budget buildModelInstance(@NonNull Cursor cursor) {
         String name = cursor.getString(cursor.getColumnIndexOrThrow(BudgetEntry.COLUMN_NAME));
         String description = cursor.getString(cursor.getColumnIndexOrThrow(BudgetEntry.COLUMN_DESCRIPTION));
@@ -70,7 +65,7 @@ public class BudgetDbAdapter extends DatabaseAdapter<Budget>{
         String currencyCode = getAccountCurrencyCode(accountUID);
         Budget budget = new Budget(name, new Money(amountNum, amountDenom, currencyCode));
         budget.setDescription(description);
-        budget.setRecurrenceUID(recurrenceUID);
+        budget.setRecurrence(mRecurrenceDbAdapter.getRecord(recurrenceUID));
         budget.setNumberOfPeriods(numPeriods);
         populateBaseModelAttributes(cursor, budget);
 
@@ -99,7 +94,7 @@ public class BudgetDbAdapter extends DatabaseAdapter<Budget>{
         mReplaceStatement.bindString(4, budget.getAccountUID());
         mReplaceStatement.bindLong(5, budget.getAmount().getNumerator());
         mReplaceStatement.bindLong(6, budget.getAmount().getDenominator());
-        mReplaceStatement.bindString(7, budget.getRecurrenceUID());
+        mReplaceStatement.bindString(7, budget.getRecurrence().getUID());
         mReplaceStatement.bindLong(8, budget.getNumberOfPeriods());
 
         return mReplaceStatement;

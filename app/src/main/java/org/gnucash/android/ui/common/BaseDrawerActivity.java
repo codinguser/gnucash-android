@@ -36,6 +36,7 @@ import org.gnucash.android.R;
 import org.gnucash.android.export.xml.GncXmlExporter;
 import org.gnucash.android.importer.ImportAsyncTask;
 import org.gnucash.android.ui.account.AccountsActivity;
+import org.gnucash.android.ui.budget.BudgetsActivity;
 import org.gnucash.android.ui.passcode.PasscodeLockActivity;
 import org.gnucash.android.ui.report.ReportsActivity;
 import org.gnucash.android.ui.settings.SettingsActivity;
@@ -161,6 +162,10 @@ public class BaseDrawerActivity extends PasscodeLockActivity {
 
             case R.id.nav_item_reports:
                 startActivity(new Intent(this, ReportsActivity.class));
+                break;
+
+            case R.id.nav_item_budgets:
+                startActivity(new Intent(this, BudgetsActivity.class));
                 break;
 
             case R.id.nav_item_scheduled_actions: { //show scheduled transactions

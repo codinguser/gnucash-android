@@ -24,18 +24,18 @@ import android.support.annotation.NonNull;
  */
 public class Budget extends BaseModel {
 
-    private String name;
-    private String description;
-    private Money amount;
-    private String accountUID;
-    private String recurrenceUID;
-    private long numberOfPeriods = 12; //default to 12 periods per year
+    private String mName;
+    private String mDescription;
+    private Money mAmount;
+    private String mAccountUID;
+    private Recurrence mRecurrence;
+    private long mNumberOfPeriods = 12; //default to 12 periods per year
 
     /**
      * Default constructor
      */
     public Budget(){
-        //nothing to see here
+        //nothing to see here, move along
     }
 
     /**
@@ -45,8 +45,8 @@ public class Budget extends BaseModel {
      * @param amount Money amount of this budget
      */
     public Budget(@NonNull String name, @NonNull Money amount){
-        this.name = name;
-        this.amount = amount;
+        this.mName = name;
+        this.mAmount = amount;
     }
 
     /**
@@ -54,7 +54,7 @@ public class Budget extends BaseModel {
      * @return name of the budget
      */
     public String getName() {
-        return name;
+        return mName;
     }
 
     /**
@@ -62,7 +62,7 @@ public class Budget extends BaseModel {
      * @param name String name of budget
      */
     public void setName(@NonNull String name) {
-        this.name = name;
+        this.mName = name;
     }
 
     /**
@@ -70,7 +70,7 @@ public class Budget extends BaseModel {
      * @return String description of budget
      */
     public String getDescription() {
-        return description;
+        return mDescription;
     }
 
     /**
@@ -78,7 +78,7 @@ public class Budget extends BaseModel {
      * @param description String description
      */
     public void setDescription(String description) {
-        this.description = description;
+        this.mDescription = description;
     }
 
     /**
@@ -86,7 +86,7 @@ public class Budget extends BaseModel {
      * @return Money amount of budget
      */
     public Money getAmount() {
-        return amount;
+        return mAmount;
     }
 
     /**
@@ -94,7 +94,7 @@ public class Budget extends BaseModel {
      * @param amount Money amount of the budget
      */
     public void setAmount(@NonNull Money amount) {
-        this.amount = amount;
+        this.mAmount = amount;
     }
 
     /**
@@ -102,7 +102,7 @@ public class Budget extends BaseModel {
      * @return Account GUID string
      */
     public String getAccountUID() {
-        return accountUID;
+        return mAccountUID;
     }
 
     /**
@@ -110,23 +110,23 @@ public class Budget extends BaseModel {
      * @param accountUID Account GUID string
      */
     public void setAccountUID(@NonNull String accountUID) {
-        this.accountUID = accountUID;
+        this.mAccountUID = accountUID;
     }
 
     /**
-     * Returns the GUID of the recurrence record for this budget
-     * @return GUID of recurrence record
+     * Returns the recurrence for this budget
+     * @return Recurrence object for this budget
      */
-    public String getRecurrenceUID() {
-        return recurrenceUID;
+    public Recurrence getRecurrence() {
+        return mRecurrence;
     }
 
     /**
-     * Set the GUID of the recurrence record for this budget
-     * @param recurrenceUID GUID string of recurrence
+     * Set the recurrence pattern for this budget
+     * @param recurrence Recurrence object
      */
-    public void setRecurrenceUID(@NonNull String recurrenceUID) {
-        this.recurrenceUID = recurrenceUID;
+    public void setRecurrence(@NonNull Recurrence recurrence) {
+        this.mRecurrence = recurrence;
     }
 
     /**
@@ -134,7 +134,7 @@ public class Budget extends BaseModel {
      * @return Number of periods
      */
     public long getNumberOfPeriods() {
-        return numberOfPeriods;
+        return mNumberOfPeriods;
     }
 
     /**
@@ -142,6 +142,6 @@ public class Budget extends BaseModel {
      * @param numberOfPeriods Number of periods as long
      */
     public void setNumberOfPeriods(long numberOfPeriods) {
-        this.numberOfPeriods = numberOfPeriods;
+        this.mNumberOfPeriods = numberOfPeriods;
     }
 }

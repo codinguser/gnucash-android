@@ -66,7 +66,7 @@ public class ScheduledActionDbAdapter extends DatabaseAdapter<ScheduledAction> {
         RecurrenceDbAdapter.getInstance().addRecord(scheduledAction.getRecurrence());
 
         ContentValues contentValues = new ContentValues();
-        populateBaseModelAttributes(contentValues, scheduledAction);
+        extractBaseModelAttributes(contentValues, scheduledAction);
         contentValues.put(ScheduledActionEntry.COLUMN_START_TIME, scheduledAction.getStartTime());
         contentValues.put(ScheduledActionEntry.COLUMN_END_TIME,  scheduledAction.getEndTime());
         contentValues.put(ScheduledActionEntry.COLUMN_TAG,       scheduledAction.getTag());
@@ -167,7 +167,7 @@ public class ScheduledActionDbAdapter extends DatabaseAdapter<ScheduledAction> {
         event.setAdvanceCreation(advanceCreate == 1);
         event.setAdvanceNotify(advanceNotify == 1);
         //TODO: optimize by doing overriding fetchRecord(String) and join the two tables
-        event.setRecurrence(RecurrenceDbAdapter.getInstance().getRecord(recurrenceUID));
+        event.setRecurrence(mRecurrenceDbAdapter.getRecord(recurrenceUID));
         event.setTemplateAccountUID(templateActUID);
 
         return event;
@@ -184,7 +184,7 @@ public class ScheduledActionDbAdapter extends DatabaseAdapter<ScheduledAction> {
                 ScheduledActionEntry.COLUMN_ACTION_UID + "= ?",
                 new String[]{actionUID}, null, null, null);
 
-        List<ScheduledAction> scheduledActions = new ArrayList<ScheduledAction>();
+        List<ScheduledAction> scheduledActions = new ArrayList<>();
         try {
             while (cursor.moveToNext()) {
                 scheduledActions.add(buildModelInstance(cursor));
@@ -202,7 +202,7 @@ public class ScheduledActionDbAdapter extends DatabaseAdapter<ScheduledAction> {
     public List<ScheduledAction> getAllEnabledScheduledActions(){
         Cursor cursor = mDb.query(mTableName,
                 null, ScheduledActionEntry.COLUMN_ENABLED + "=1", null, null, null, null);
-        List<ScheduledAction> scheduledActions = new ArrayList<ScheduledAction>();
+        List<ScheduledAction> scheduledActions = new ArrayList<>();
         while (cursor.moveToNext()){
             scheduledActions.add(buildModelInstance(cursor));
         }

@@ -1085,7 +1085,7 @@ public class MigrationHelper {
         db.beginTransaction();
         try {
 
-            String createBudgetsTable = "CREATE TABLE " + DatabaseSchema.BudgetEntry.TABLE_NAME + " ("
+            db.execSQL("CREATE TABLE " + DatabaseSchema.BudgetEntry.TABLE_NAME + " ("
                     + BudgetEntry._ID                   + " integer primary key autoincrement, "
                     + BudgetEntry.COLUMN_UID            + " varchar(255) not null UNIQUE, "
                     + BudgetEntry.COLUMN_NAME           + " varchar(255) not null, "
@@ -1097,15 +1097,15 @@ public class MigrationHelper {
                     + BudgetEntry.COLUMN_NUM_PERIODS    + " integer, "
                     + "FOREIGN KEY (" 	+ BudgetEntry.COLUMN_ACCOUNT_UID + ") REFERENCES " + AccountEntry.TABLE_NAME + " (" + AccountEntry.COLUMN_UID + ") ON DELETE CASCADE, "
                     + "FOREIGN KEY (" 	+ BudgetEntry.COLUMN_RECURRENCE_UID + ") REFERENCES " + RecurrenceEntry.TABLE_NAME + " (" + RecurrenceEntry.COLUMN_UID + ") "
-                    + ");" + DatabaseHelper.createUpdatedAtTrigger(DatabaseSchema.BudgetEntry.TABLE_NAME);
+                    + ");" + DatabaseHelper.createUpdatedAtTrigger(DatabaseSchema.BudgetEntry.TABLE_NAME));
 
-            String createRecurrencesTable = "CREATE TABLE " + RecurrenceEntry.TABLE_NAME + " ("
+            db.execSQL("CREATE TABLE " + RecurrenceEntry.TABLE_NAME + " ("
                     + RecurrenceEntry._ID                   + " integer primary key autoincrement, "
                     + RecurrenceEntry.COLUMN_UID            + " varchar(255) not null UNIQUE, "
                     + RecurrenceEntry.COLUMN_MULTIPLIER     + " integer not null default 1, "
                     + RecurrenceEntry.COLUMN_PERIOD_TYPE    + " varchar(255) not null, "
                     + RecurrenceEntry.COLUMN_PERIOD_START   + " varchar(255) not null); "
-                    + DatabaseHelper.createUpdatedAtTrigger(RecurrenceEntry.TABLE_NAME);
+                    + DatabaseHelper.createUpdatedAtTrigger(RecurrenceEntry.TABLE_NAME));
 
             db.execSQL("ALTER TABLE " + ScheduledActionEntry.TABLE_NAME + " RENAME TO " + ScheduledActionEntry.TABLE_NAME + "_bak");
 

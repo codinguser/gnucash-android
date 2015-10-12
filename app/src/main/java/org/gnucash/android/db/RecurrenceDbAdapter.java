@@ -47,7 +47,7 @@ public class RecurrenceDbAdapter extends DatabaseAdapter<Recurrence> {
     }
 
     @Override
-    protected Recurrence buildModelInstance(@NonNull Cursor cursor) {
+    public Recurrence buildModelInstance(@NonNull Cursor cursor) {
         String type = cursor.getString(cursor.getColumnIndexOrThrow(RecurrenceEntry.COLUMN_PERIOD_TYPE));
         long multiplier = cursor.getLong(cursor.getColumnIndexOrThrow(RecurrenceEntry.COLUMN_MULTIPLIER));
         String periodStart = cursor.getString(cursor.getColumnIndexOrThrow(RecurrenceEntry.COLUMN_PERIOD_START));
