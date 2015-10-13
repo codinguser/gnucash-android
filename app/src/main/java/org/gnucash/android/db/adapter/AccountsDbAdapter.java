@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.gnucash.android.db;
+package org.gnucash.android.db.adapter;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -30,6 +30,7 @@ import android.util.Log;
 
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
+import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.model.Account;
 import org.gnucash.android.model.AccountType;
 import org.gnucash.android.model.Money;

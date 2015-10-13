@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.gnucash.android.db;
+package org.gnucash.android.db.adapter;
 
 import android.content.ContentValues;
 import android.database.Cursor;
@@ -23,6 +23,7 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 
 import org.gnucash.android.app.GnuCashApplication;
+import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.model.ScheduledAction;
 
 import java.util.ArrayList;

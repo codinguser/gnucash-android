@@ -24,7 +24,7 @@ import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
 
-import org.gnucash.android.db.TransactionsDbAdapter;
+import org.gnucash.android.db.adapter.TransactionsDbAdapter;
 import org.gnucash.android.model.Account;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.model.Split;

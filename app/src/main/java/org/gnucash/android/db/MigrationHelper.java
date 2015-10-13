@@ -31,6 +31,7 @@ import com.crashlytics.android.Crashlytics;
 
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
+import org.gnucash.android.db.adapter.AccountsDbAdapter;
 import org.gnucash.android.export.Exporter;
 import org.gnucash.android.importer.CommoditiesXmlHandler;
 import org.gnucash.android.model.AccountType;
@@ -39,7 +40,6 @@ import org.gnucash.android.model.Commodity;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.model.PeriodType;
 import org.gnucash.android.model.Recurrence;
-import org.gnucash.android.model.Split;
 import org.gnucash.android.model.Transaction;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -82,7 +82,7 @@ public class MigrationHelper {
 
     /**
      * Performs same function as {@link AccountsDbAdapter#getFullyQualifiedAccountName(String)}
-     * <p>This method is only necessary because we cannot open the database again (by instantiating {@link org.gnucash.android.db.AccountsDbAdapter}
+     * <p>This method is only necessary because we cannot open the database again (by instantiating {@link AccountsDbAdapter}
      * while it is locked for upgrades. So we re-implement the method here.</p>
      * @param db SQLite database
      * @param accountUID Unique ID of account whose fully qualified name is to be determined

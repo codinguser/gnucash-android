@@ -17,8 +17,6 @@
 
 package org.gnucash.android.export.xml;
 
-import android.support.annotation.NonNull;
-
 import org.gnucash.android.ui.transaction.TransactionFormFragment;
 
 import java.math.BigDecimal;
@@ -29,8 +27,6 @@ import java.text.SimpleDateFormat;
 import java.util.Currency;
 import java.util.Date;
 import java.util.Locale;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Collection of helper tags and methods for Gnc XML export
@@ -89,20 +85,21 @@ public abstract class GncXmlHelper {
     public static final String TAG_SPLIT_ID         = "split:id";
     public static final String TAG_SPLIT_MEMO       = "split:memo";
     public static final String TAG_RECONCILED_STATE = "split:reconciled-state";
+    public static final String TAG_RECONCILED_DATE  = "split:recondiled-date";
     public static final String TAG_SPLIT_ACCOUNT    = "split:account";
     public static final String TAG_SPLIT_VALUE      = "split:value";
     public static final String TAG_SPLIT_QUANTITY   = "split:quantity";
     public static final String TAG_SPLIT_SLOTS      = "split:slots";
 
-    public static final String TAG_PRICEDB = "gnc:pricedb";
-    public static final String TAG_PRICE = "price";
-    public static final String TAG_PRICE_ID = "price:id";
-    public static final String TAG_PRICE_COMMODITY = "price:commodity";
-    public static final String TAG_PRICE_CURRENCY = "price:currency";
-    public static final String TAG_PRICE_TIME = "price:time";
-    public static final String TAG_PRICE_SOURCE = "price:source";
-    public static final String TAG_PRICE_TYPE = "price:type";
-    public static final String TAG_PRICE_VALUE = "price:value";
+    public static final String TAG_PRICEDB          = "gnc:pricedb";
+    public static final String TAG_PRICE            = "price";
+    public static final String TAG_PRICE_ID         = "price:id";
+    public static final String TAG_PRICE_COMMODITY  = "price:commodity";
+    public static final String TAG_PRICE_CURRENCY   = "price:currency";
+    public static final String TAG_PRICE_TIME       = "price:time";
+    public static final String TAG_PRICE_SOURCE     = "price:source";
+    public static final String TAG_PRICE_TYPE       = "price:type";
+    public static final String TAG_PRICE_VALUE      = "price:value";
 
     @Deprecated
     public static final String TAG_RECURRENCE_PERIOD = "trn:recurrence_period";
@@ -196,7 +193,10 @@ public abstract class GncXmlHelper {
      * @param amount Split amount as BigDecimal
      * @param trxCurrency Currency of the transaction
      * @return Formatted split amount
+     * @deprecated Just use the values for numerator and denominator which are saved in the database
      */
+    //todo: do we still need this method in export? Seeing as how the numerator and denominator are already saved separately to the db
+    @Deprecated
     public static String formatSplitAmount(BigDecimal amount, Currency trxCurrency){
         int fractionDigits = trxCurrency.getDefaultFractionDigits();
         int denomInt = (int) Math.pow(10, fractionDigits);

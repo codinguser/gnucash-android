@@ -3,7 +3,7 @@ package org.gnucash.android.model;
 
 import android.support.annotation.NonNull;
 
-import org.gnucash.android.db.AccountsDbAdapter;
+import org.gnucash.android.db.adapter.AccountsDbAdapter;
 
 import java.sql.Timestamp;
 

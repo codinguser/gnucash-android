@@ -21,14 +21,11 @@ import android.database.Cursor;
 import android.support.annotation.LayoutRes;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.text.TextUtils;
-import android.view.ContextMenu;
 import android.view.View;
 import android.widget.TextView;
 
-import org.gnucash.android.db.CommoditiesDbAdapter;
+import org.gnucash.android.db.adapter.CommoditiesDbAdapter;
 import org.gnucash.android.db.DatabaseSchema;
-
-import java.util.Currency;
 
 /**
  * Cursor adapter for displaying list of commodities.

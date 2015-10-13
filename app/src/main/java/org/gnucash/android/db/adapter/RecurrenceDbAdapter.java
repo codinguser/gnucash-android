@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.gnucash.android.db;
+package org.gnucash.android.db.adapter;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;

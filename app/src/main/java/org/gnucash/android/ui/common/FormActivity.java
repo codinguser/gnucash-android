@@ -28,7 +28,7 @@ import android.view.MenuItem;
 
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
-import org.gnucash.android.db.AccountsDbAdapter;
+import org.gnucash.android.db.adapter.AccountsDbAdapter;
 import org.gnucash.android.ui.account.AccountFormFragment;
 import org.gnucash.android.ui.budget.BudgetFormFragment;
 import org.gnucash.android.ui.export.ExportFormFragment;

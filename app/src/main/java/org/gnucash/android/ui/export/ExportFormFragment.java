@@ -50,7 +50,7 @@ import com.dropbox.sync.android.DbxAccountManager;
 
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
-import org.gnucash.android.db.ScheduledActionDbAdapter;
+import org.gnucash.android.db.adapter.ScheduledActionDbAdapter;
 import org.gnucash.android.export.ExportAsyncTask;
 import org.gnucash.android.export.ExportFormat;
 import org.gnucash.android.export.ExportParams;

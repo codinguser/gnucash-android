@@ -20,12 +20,11 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.preference.PreferenceManager;
 
-import org.gnucash.android.db.AccountsDbAdapter;
+import org.gnucash.android.db.adapter.AccountsDbAdapter;
 import org.gnucash.android.db.DatabaseSchema;
-import org.gnucash.android.db.TransactionsDbAdapter;
+import org.gnucash.android.db.adapter.TransactionsDbAdapter;
 import org.gnucash.android.export.ExportParams;
 import org.gnucash.android.export.Exporter;
-import org.gnucash.android.model.Transaction;
 
 import java.io.IOException;
 import java.io.Writer;

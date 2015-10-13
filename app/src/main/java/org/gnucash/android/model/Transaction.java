@@ -19,9 +19,7 @@ package org.gnucash.android.model;
 import android.content.Intent;
 
 import org.gnucash.android.BuildConfig;
-import org.gnucash.android.app.GnuCashApplication;
-import org.gnucash.android.db.AccountsDbAdapter;
-import org.gnucash.android.db.CommoditiesDbAdapter;
+import org.gnucash.android.db.adapter.AccountsDbAdapter;
 import org.gnucash.android.export.ofx.OfxHelper;
 import org.gnucash.android.model.Account.OfxAccountType;
 import org.w3c.dom.Document;

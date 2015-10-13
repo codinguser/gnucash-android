@@ -35,8 +35,8 @@ import android.widget.RadioButton;
 import android.widget.TextView;
 
 import org.gnucash.android.R;
-import org.gnucash.android.db.CommoditiesDbAdapter;
-import org.gnucash.android.db.PricesDbAdapter;
+import org.gnucash.android.db.adapter.CommoditiesDbAdapter;
+import org.gnucash.android.db.adapter.PricesDbAdapter;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.model.Price;
 import org.gnucash.android.ui.transaction.TransactionFormFragment;

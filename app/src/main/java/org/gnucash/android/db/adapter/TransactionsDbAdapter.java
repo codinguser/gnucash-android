@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.gnucash.android.db;
+package org.gnucash.android.db.adapter;
 
 import android.content.ContentValues;
 import android.database.Cursor;

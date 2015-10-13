@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.gnucash.android.db;
+package org.gnucash.android.db.adapter;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -27,7 +27,7 @@ import android.util.Log;
 import android.util.Pair;
 
 import org.gnucash.android.app.GnuCashApplication;
-import org.gnucash.android.model.AccountType;
+import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.model.Split;
 import org.gnucash.android.model.TransactionType;
