@@ -141,8 +141,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + ScheduledActionEntry.COLUMN_ENABLED           + " tinyint default 1, " //enabled by default
             + ScheduledActionEntry.COLUMN_AUTO_CREATE       + " tinyint default 1, "
             + ScheduledActionEntry.COLUMN_AUTO_NOTIFY       + " tinyint default 0, "
-            + ScheduledActionEntry.COLUMN_ADVANCE_CREATION  + " tinyint default 1, "
-            + ScheduledActionEntry.COLUMN_ADVANCE_NOTIFY    + " tinyint default 0, "
+            + ScheduledActionEntry.COLUMN_ADVANCE_CREATION  + " integer default 0, "
+            + ScheduledActionEntry.COLUMN_ADVANCE_NOTIFY    + " integer default 0, "
             + ScheduledActionEntry.COLUMN_TOTAL_FREQUENCY   + " integer default 0, "
             + ScheduledActionEntry.COLUMN_EXECUTION_COUNT   + " integer default 0, "
             + ScheduledActionEntry.COLUMN_CREATED_AT        + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "

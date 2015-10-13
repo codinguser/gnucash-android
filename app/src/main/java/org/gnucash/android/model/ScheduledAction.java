@@ -15,7 +15,6 @@
  */
 package org.gnucash.android.model;
 
-import org.gnucash.android.ui.util.RecurrenceParser;
 import org.joda.time.LocalDate;
 
 import java.sql.Timestamp;
@@ -84,8 +83,8 @@ public class ScheduledAction extends BaseModel{
      */
     private boolean mAutoCreate = true;
     private boolean mAutoNotify = false;
-    private boolean mAdvanceCreation = true;
-    private boolean mAdvanceNotify = false;
+    private int mAdvanceCreateDays = 0;
+    private int mAdvanceNotifyDays = 0;
     private String mTemplateAccountUID;
 
     public ScheduledAction(ActionType actionType){
@@ -331,39 +330,39 @@ public class ScheduledAction extends BaseModel{
     }
 
     /**
-     * Checks whether the scheduled transaction will be created in advance
+     * Returns number of days in advance to create the transaction
      * <p>This flag is currently unused in the app. It is only included here for compatibility with GnuCash desktop XML</p>
-     * @return {@code true} if advance creation enabled, {@code false} otherwise
+     * @return Number of days in advance to create transaction
      */
-    public boolean shouldAdvanceCreate() {
-        return mAdvanceCreation;
+    public int getAdvanceCreateDays() {
+        return mAdvanceCreateDays;
     }
 
     /**
-     * Set whether to advance create the scheduled transaction
+     * Set number of days in advance to create the transaction
      * <p>This flag is currently unused in the app. It is only included here for compatibility with GnuCash desktop XML</p>
-     * @param advanceCreation Boolean flag
+     * @param advanceCreateDays Number of days
      */
-    public void setAdvanceCreation(boolean advanceCreation) {
-        this.mAdvanceCreation = advanceCreation;
+    public void setAdvanceCreateDays(int advanceCreateDays) {
+        this.mAdvanceCreateDays = advanceCreateDays;
     }
 
     /**
-     * Check whether the user will be notified before any advance creation of scheduled transactions
+     * Returns the number of days in advance to notify of scheduled transactions
      * <p>This flag is currently unused in the app. It is only included here for compatibility with GnuCash desktop XML</p>
      * @return {@code true} if user will be notified, {@code false} otherwise
      */
-    public boolean shouldAdvanceNotify() {
-        return mAdvanceNotify;
+    public int getAdvanceNotifyDays() {
+        return mAdvanceNotifyDays;
     }
 
     /**
-     * Set flag whether this scheduled action should notify user before creation
+     * Set number of days in advance to notify of scheduled transactions
      * <p>This flag is currently unused in the app. It is only included here for compatibility with GnuCash desktop XML</p>
-     * @param advanceNotify Boolean flag with true if notification should be displayed, false if not
+     * @param advanceNotifyDays Number of days
      */
-    public void setAdvanceNotify(boolean advanceNotify) {
-        this.mAdvanceNotify = advanceNotify;
+    public void setAdvanceNotifyDays(int advanceNotifyDays) {
+        this.mAdvanceNotifyDays = advanceNotifyDays;
     }
 
     /**

@@ -120,8 +120,8 @@ public class ScheduledActionDbAdapter extends DatabaseAdapter<ScheduledAction> {
         mReplaceStatement.bindString(11, schedxAction.getRecurrence().getUID());
         mReplaceStatement.bindLong(12,   schedxAction.shouldAutoCreate() ? 1 : 0);
         mReplaceStatement.bindLong(13,   schedxAction.shouldAutoNotify() ? 1 : 0);
-        mReplaceStatement.bindLong(14,   schedxAction.shouldAdvanceCreate() ? 1 : 0);
-        mReplaceStatement.bindLong(15, schedxAction.shouldAdvanceNotify() ? 1 : 0);
+        mReplaceStatement.bindLong(14,   schedxAction.getAdvanceCreateDays());
+        mReplaceStatement.bindLong(15,   schedxAction.getAdvanceNotifyDays());
         mReplaceStatement.bindString(16, schedxAction.getTemplateAccountUID());
 
         mReplaceStatement.bindString(17, Integer.toString(schedxAction.getExecutionCount()));
@@ -165,8 +165,8 @@ public class ScheduledActionDbAdapter extends DatabaseAdapter<ScheduledAction> {
         event.setExecutionCount(execCount);
         event.setAutoCreate(autoCreate == 1);
         event.setAutoNotify(autoNotify == 1);
-        event.setAdvanceCreation(advanceCreate == 1);
-        event.setAdvanceNotify(advanceNotify == 1);
+        event.setAdvanceCreateDays(advanceCreate);
+        event.setAdvanceNotifyDays(advanceNotify);
         //TODO: optimize by doing overriding fetchRecord(String) and join the two tables
         event.setRecurrence(mRecurrenceDbAdapter.getRecord(recurrenceUID));
         event.setTemplateAccountUID(templateActUID);

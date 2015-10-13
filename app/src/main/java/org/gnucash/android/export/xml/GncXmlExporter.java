@@ -36,6 +36,7 @@ import org.gnucash.android.model.Money;
 import org.gnucash.android.model.PeriodType;
 import org.gnucash.android.model.Recurrence;
 import org.gnucash.android.model.ScheduledAction;
+import org.gnucash.android.model.Split;
 import org.gnucash.android.model.TransactionType;
 import org.xmlpull.v1.XmlPullParserFactory;
 import org.xmlpull.v1.XmlSerializer;
@@ -402,8 +403,9 @@ public class GncXmlExporter extends Exporter{
             }
             // reconciled
             xmlSerializer.startTag(null, GncXmlHelper.TAG_RECONCILED_STATE);
-            xmlSerializer.text("n");
+            xmlSerializer.text("n"); //fixme: retrieve reconciled state from the split in the db
             xmlSerializer.endTag(null, GncXmlHelper.TAG_RECONCILED_STATE);
+            //todo: if split is reconciled, add reconciled date
             // value, in the transaction's currency
             String trxType = cursor.getString(cursor.getColumnIndexOrThrow("split_type"));
             int splitValueNum = cursor.getInt(cursor.getColumnIndexOrThrow("split_value_num"));
@@ -498,7 +500,8 @@ public class GncXmlExporter extends Exporter{
                 ScheduledActionEntry.COLUMN_TYPE + "=?", new String[]{ScheduledAction.ActionType.TRANSACTION.name()});
 
         while (cursor.moveToNext()) {
-            String actionUID = cursor.getString(cursor.getColumnIndexOrThrow(ScheduledActionEntry.COLUMN_ACTION_UID));
+            ScheduledAction scheduledAction = mScheduledActionDbAdapter.buildModelInstance(cursor);
+            String actionUID = scheduledAction.getActionUID();
             Account accountUID = mTransactionToTemplateAccountMap.get(actionUID);
 
             if (accountUID == null) //if the action UID does not belong to a transaction we've seen before, skip it
@@ -514,7 +517,7 @@ public class GncXmlExporter extends Exporter{
             xmlSerializer.endTag(null, GncXmlHelper.TAG_SX_ID);
             xmlSerializer.startTag(null, GncXmlHelper.TAG_SX_NAME);
 
-            ScheduledAction.ActionType actionType = ScheduledAction.ActionType.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(ScheduledActionEntry.COLUMN_TYPE)));
+            ScheduledAction.ActionType actionType = scheduledAction.getActionType();
             if (actionType == ScheduledAction.ActionType.TRANSACTION) {
                 String description = TransactionsDbAdapter.getInstance().getAttribute(actionUID, TransactionEntry.COLUMN_DESCRIPTION);
                 xmlSerializer.text(description);
@@ -523,20 +526,19 @@ public class GncXmlExporter extends Exporter{
             }
             xmlSerializer.endTag(null, GncXmlHelper.TAG_SX_NAME);
             xmlSerializer.startTag(null, GncXmlHelper.TAG_SX_ENABLED);
-            boolean enabled = cursor.getShort(cursor.getColumnIndexOrThrow(ScheduledActionEntry.COLUMN_ENABLED)) > 0;
-            xmlSerializer.text(enabled ? "y" : "n");
+            xmlSerializer.text(scheduledAction.isEnabled() ? "y" : "n");
             xmlSerializer.endTag(null, GncXmlHelper.TAG_SX_ENABLED);
             xmlSerializer.startTag(null, GncXmlHelper.TAG_SX_AUTO_CREATE);
-            xmlSerializer.text("n"); //we do not want transactions auto-created on the desktop.
+            xmlSerializer.text(scheduledAction.shouldAutoCreate() ? "y" : "n");
             xmlSerializer.endTag(null, GncXmlHelper.TAG_SX_AUTO_CREATE);
             xmlSerializer.startTag(null, GncXmlHelper.TAG_SX_AUTO_CREATE_NOTIFY);
-            xmlSerializer.text("n"); //TODO: if we ever support notifying before creating a scheduled transaction, then update this
+            xmlSerializer.text(scheduledAction.shouldAutoNotify() ? "y" : "n");
             xmlSerializer.endTag(null, GncXmlHelper.TAG_SX_AUTO_CREATE_NOTIFY);
             xmlSerializer.startTag(null, GncXmlHelper.TAG_SX_ADVANCE_CREATE_DAYS);
-            xmlSerializer.text("0");
+            xmlSerializer.text(Integer.toString(scheduledAction.getAdvanceCreateDays()));
             xmlSerializer.endTag(null, GncXmlHelper.TAG_SX_ADVANCE_CREATE_DAYS);
             xmlSerializer.startTag(null, GncXmlHelper.TAG_SX_ADVANCE_REMIND_DAYS);
-            xmlSerializer.text("0");
+            xmlSerializer.text(Integer.toString(scheduledAction.getAdvanceNotifyDays()));
             xmlSerializer.endTag(null, GncXmlHelper.TAG_SX_ADVANCE_REMIND_DAYS);
             xmlSerializer.startTag(null, GncXmlHelper.TAG_SX_INSTANCE_COUNT);
             String scheduledActionUID = cursor.getString(cursor.getColumnIndexOrThrow(ScheduledActionEntry.COLUMN_UID));
