@@ -292,8 +292,7 @@ public class TransactionFormFragment extends Fragment implements
 		SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
 		mUseDoubleEntry = sharedPrefs.getBoolean(getString(R.string.key_use_double_entry), false);
 		if (!mUseDoubleEntry){
-			getView().findViewById(R.id.layout_double_entry).setVisibility(View.GONE);
-            mAmountEditText.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+			mDoubleEntryLayout.setVisibility(View.GONE);
 		}
 
         mAccountUID = getArguments().getString(UxArgument.SELECTED_ACCOUNT_UID);
@@ -418,7 +417,7 @@ public class TransactionFormFragment extends Fragment implements
                 if (isSplitPair){
                     mSplitsList.clear();
                     if (!amountEntered) //if user already entered an amount
-                        mAmountEditText.setText(splitList.get(0).getValue().toPlainString());
+                        mAmountEditText.setValue(splitList.get(0).getValue().asBigDecimal());
                 } else {
                     if (amountEntered){ //if user entered own amount, clear loaded splits and use the user value
                         mSplitsList.clear();
@@ -449,7 +448,7 @@ public class TransactionFormFragment extends Fragment implements
 
 		if (!mAmountEditText.isInputModified()){
             //when autocompleting, only change the amount if the user has not manually changed it already
-            mAmountEditText.setText(mTransaction.getBalance(mAccountUID).formattedAmount());
+            mAmountEditText.setValue(mTransaction.getBalance(mAccountUID).asBigDecimal());
         }
 		mCurrencyTextView.setText(mTransaction.getCurrency().getSymbol(Locale.getDefault()));
 		mNotesEditText.setText(mTransaction.getNote());
@@ -577,7 +576,7 @@ public class TransactionFormFragment extends Fragment implements
      * Opens the split editor dialog
      */
     private void openSplitEditor(){
-        if (mAmountEditText.getText().toString().length() == 0){
+        if (mAmountEditText.getValue() == null){
             Toast.makeText(getActivity(), "Please enter an amount to split", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -895,7 +894,7 @@ public class TransactionFormFragment extends Fragment implements
             if (canSave()){
                 saveNewTransaction();
             } else {
-                if (mAmountEditText.getText().length() == 0) {
+                if (mAmountEditText.getValue() == null) {
                     Toast.makeText(getActivity(), R.string.toast_transanction_amount_required, Toast.LENGTH_SHORT).show();
                 }
                 if (mUseDoubleEntry && mTransferAccountSpinner.getCount() == 0){
@@ -929,7 +928,7 @@ public class TransactionFormFragment extends Fragment implements
         mSplitsList = splitList;
         Money balance = Transaction.computeBalance(mAccountUID, mSplitsList);
 
-        mAmountEditText.setText(balance.toPlainString());
+        mAmountEditText.setValue(balance.asBigDecimal());
         mTransactionTypeSwitch.setChecked(balance.isNegative());
         //once we set the split list, do not allow direct editing of the total
         if (mSplitsList.size() > 1){
