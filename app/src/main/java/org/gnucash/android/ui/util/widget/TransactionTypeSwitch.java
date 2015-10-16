@@ -28,6 +28,8 @@ import org.gnucash.android.model.AccountType;
 import org.gnucash.android.model.Transaction;
 import org.gnucash.android.model.TransactionType;
 
+import java.math.BigDecimal;
+
 /**
  * A special type of {@link android.widget.ToggleButton} which displays the appropriate CREDIT/DEBIT labels for the
  * different account types.
@@ -107,7 +109,7 @@ public class TransactionTypeSwitch extends SwitchCompat {
      * @param amoutView Amount string {@link android.widget.EditText}
      * @param currencyTextView Currency symbol text view
      */
-    public void setAmountFormattingListener(EditText amoutView, TextView currencyTextView){
+    public void setAmountFormattingListener(CalculatorEditText amoutView, TextView currencyTextView){
         setOnCheckedChangeListener(new OnTypeChangedListener(amoutView, currencyTextView));
     }
 
@@ -136,14 +138,14 @@ public class TransactionTypeSwitch extends SwitchCompat {
     }
 
     private class OnTypeChangedListener implements OnCheckedChangeListener{
-        private EditText mAmountEditText;
+        private CalculatorEditText mAmountEditText;
         private TextView mCurrencyTextView;
         /**
          * Constructor with the amount view
          * @param amountEditText EditText displaying the amount value
          * @param currencyTextView Currency symbol text view
          */
-        public OnTypeChangedListener(EditText amountEditText, TextView currencyTextView){
+        public OnTypeChangedListener(CalculatorEditText amountEditText, TextView currencyTextView){
             this.mAmountEditText = amountEditText;
             this.mCurrencyTextView = currencyTextView;
         }
@@ -163,17 +165,13 @@ public class TransactionTypeSwitch extends SwitchCompat {
                 mAmountEditText.setTextColor(green);
                 mCurrencyTextView.setTextColor(green);
             }
-            String amountText = mAmountEditText.getText().toString();
-            if (amountText.length() > 0){
-                String newText = amountText;
-                if (isChecked && !amountText.startsWith("-")){
-                    newText = "-" + amountText;
+            BigDecimal amount = mAmountEditText.getValue();
+            if (amount != null){
+                if ((isChecked && amount.signum() > 0) //we switched to debit but the amount is +ve
+                        || (!isChecked && amount.signum() < 0)){ //credit but amount is -ve
+                    mAmountEditText.setValue(amount.negate());
                 }
-                if (!isChecked && amountText.startsWith("-")){
-                    newText = amountText.substring(1);
-                }
-                mAmountEditText.setText(newText);
-                mAmountEditText.setSelection(newText.length());
+
             }
         }
     }

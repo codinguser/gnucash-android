@@ -275,16 +275,7 @@ public class CalculatorEditText extends EditText {
 
         if (expression != null && expression.validate().isValid()) {
             BigDecimal result = new BigDecimal(expression.evaluate());
-            result = result.setScale(mCurrency.getDefaultFractionDigits(), BigDecimal.ROUND_HALF_EVEN);
-
-            DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance(Locale.getDefault());
-            formatter.setMinimumFractionDigits(0);
-            formatter.setMaximumFractionDigits(mCurrency.getDefaultFractionDigits());
-            formatter.setGroupingUsed(false);
-            String resultString = formatter.format(result.doubleValue());
-
-            setText(resultString);
-            setSelection(resultString.length());
+            setValue(result);
         } else {
             setError(getContext().getString(R.string.label_error_invalid_expression));
             Log.w(VIEW_LOG_TAG, "Expression is null or invalid: " + expression);
@@ -329,5 +320,24 @@ public class CalculatorEditText extends EditText {
         if (amountString.isEmpty())
             return null;
         return new BigDecimal(amountString);
+    }
+
+    /**
+     * Set the text to the value of {@code amount} formatted according to the locale
+     * <p>The number of decimal places are determined by the currency set to the view, and the
+     * decimal separator is determined by the device locale. There are no thousandths separators.</p>
+     * @param amount BigDecimal amount
+     */
+    public void setValue(BigDecimal amount){
+        BigDecimal newAmount = amount.setScale(mCurrency.getDefaultFractionDigits(), BigDecimal.ROUND_HALF_EVEN);
+
+        DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance(Locale.getDefault());
+        formatter.setMinimumFractionDigits(0);
+        formatter.setMaximumFractionDigits(mCurrency.getDefaultFractionDigits());
+        formatter.setGroupingUsed(false);
+        String resultString = formatter.format(newAmount.doubleValue());
+
+        setText(resultString);
+        setSelection(resultString.length());
     }
 }
