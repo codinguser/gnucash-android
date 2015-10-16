@@ -65,7 +65,7 @@
             tools:ignore="ContentDescription" />
 
         <TextView
-            android:id="@+id/budget_amount"
+            android:id="@+id/budget_indicator"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:singleLine="true"

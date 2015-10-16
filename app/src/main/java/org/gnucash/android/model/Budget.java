@@ -18,6 +18,8 @@ package org.gnucash.android.model;
 
 import android.support.annotation.NonNull;
 
+import org.joda.time.LocalDateTime;
+
 /**
  * Budgets model
  * @author Ngewi Fet <ngewif@gmail.com>
@@ -135,6 +137,56 @@ public class Budget extends BaseModel {
      */
     public long getNumberOfPeriods() {
         return mNumberOfPeriods;
+    }
+
+    /**
+     * Returns the timestamp of the start of current period of the budget
+     * @return Start timestamp in milliseconds
+     */
+    public long getStartofCurrentPeriod(){
+        LocalDateTime localDate = new LocalDateTime();
+        int interval = mRecurrence.getPeriodType().getMultiplier();
+        //// FIXME: 16.10.2015 consider the interval
+        switch (mRecurrence.getPeriodType()){
+            case DAY:
+                localDate = localDate.millisOfDay().withMinimumValue();
+                break;
+            case WEEK:
+                localDate = localDate.dayOfWeek().withMinimumValue().millisOfDay().withMinimumValue();
+                break;
+            case MONTH:
+                localDate = localDate.dayOfMonth().withMinimumValue().millisOfDay().withMinimumValue();
+                break;
+            case YEAR:
+                localDate = localDate.dayOfYear().withMinimumValue().millisOfDay().withMinimumValue();
+                break;
+        }
+        return localDate.toDate().getTime();
+    }
+
+    /**
+     * Returns the end timestamp of the current period
+     * @return End timestamp in milliseconds
+     */
+    public long getEndOfCurrentPeriod(){
+        LocalDateTime localDate = new LocalDateTime();
+        int interval = mRecurrence.getPeriodType().getMultiplier();
+        //// FIXME: 16.10.2015 Consider the interval
+        switch (mRecurrence.getPeriodType()){
+            case DAY:
+                localDate = localDate.millisOfDay().withMaximumValue();
+                break;
+            case WEEK:
+                localDate = localDate.dayOfWeek().withMaximumValue().millisOfDay().withMaximumValue();
+                break;
+            case MONTH:
+                localDate = localDate.dayOfMonth().withMaximumValue().millisOfDay().withMaximumValue();
+                break;
+            case YEAR:
+                localDate = localDate.dayOfYear().withMaximumValue().millisOfDay().withMaximumValue();
+                break;
+        }
+        return localDate.toDate().getTime();
     }
 
     /**

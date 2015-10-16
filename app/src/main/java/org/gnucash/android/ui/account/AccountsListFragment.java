@@ -21,12 +21,15 @@ import android.app.SearchManager;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.ColorRes;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.Loader;
@@ -46,13 +49,18 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import org.gnucash.android.R;
 import org.gnucash.android.db.adapter.AccountsDbAdapter;
 import org.gnucash.android.db.DatabaseCursorLoader;
 import org.gnucash.android.db.DatabaseSchema;
+import org.gnucash.android.db.adapter.BudgetDbAdapter;
 import org.gnucash.android.model.Account;
+import org.gnucash.android.model.Budget;
+import org.gnucash.android.model.Money;
+import org.gnucash.android.ui.budget.BudgetListFragment;
 import org.gnucash.android.ui.common.FormActivity;
 import org.gnucash.android.ui.common.UxArgument;
 import org.gnucash.android.ui.util.AccountBalanceTask;
@@ -466,7 +474,7 @@ public class AccountsListFragment extends Fragment implements
 
             // add a summary of transactions to the account view
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                // Make sure the balance task is truely multithread
+                // Make sure the balance task is truly multithread
                 new AccountBalanceTask(holder.accountBalance).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, accountUID);
             } else {
                 new AccountBalanceTask(holder.accountBalance).execute(accountUID);
@@ -491,6 +499,22 @@ public class AccountsListFragment extends Fragment implements
                     }
                 });
             }
+
+            Budget budget = BudgetDbAdapter.getInstance().getAccountBudget(accountUID);
+            if (budget != null){
+                Money balance = mAccountsDbAdapter.getAccountBalance(accountUID, budget.getStartofCurrentPeriod(), budget.getEndOfCurrentPeriod());
+                int budgetProgress = balance.divide(budget.getAmount()).asBigDecimal().intValue();
+                holder.budgetIndicator.setProgress(budgetProgress);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
+                    holder.budgetIndicator.setProgressTintList(ColorStateList.valueOf(BudgetListFragment.getTrafficlightColor(budgetProgress)));
+                } else {
+                    //// TODO: 16.10.2015 Set the progress indicator color
+                }
+            }
+            int[] colors = new int[]{Color.RED, Color.YELLOW, Color.GREEN};
+            GradientDrawable gradientDrawable = new GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT, colors);
+            holder.budgetIndicator.setProgressDrawable(gradientDrawable);
+
 
             if (mAccountsDbAdapter.isFavoriteAccount(accountUID)){
                 holder.favoriteStatus.setImageResource(R.drawable.ic_star_black_24dp);
@@ -532,6 +556,7 @@ public class AccountsListFragment extends Fragment implements
             @Bind(R.id.favorite_status) ImageView favoriteStatus;
             @Bind(R.id.options_menu) ImageView optionsMenu;
             @Bind(R.id.account_color_strip) View colorStripView;
+            @Bind(R.id.budget_indicator) ProgressBar budgetIndicator;
             long accoundId;
 
             public AccountViewHolder(View itemView) {

@@ -99,4 +99,24 @@ public class BudgetDbAdapter extends DatabaseAdapter<Budget>{
 
         return mReplaceStatement;
     }
+
+    /**
+     * Returns the budget for an account
+     * <p>This method assumes that there is only one budget per account</p>
+     * @param accountUID GUID of the account
+     * @return Budget instance for the account
+     */
+    public Budget getAccountBudget(String accountUID) {
+        Cursor cursor = fetchAllRecords(BudgetEntry.COLUMN_ACCOUNT_UID + " = ?", new String[]{accountUID});
+        try{
+            if (cursor.moveToNext()){
+                return buildModelInstance(cursor);
+            } else {
+                return null;
+            }
+        } finally {
+            cursor.close();
+        }
+    }
+
 }

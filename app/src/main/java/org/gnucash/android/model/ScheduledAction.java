@@ -466,7 +466,9 @@ public class ScheduledAction extends BaseModel{
      * @param transaction Transaction to be scheduled
      * @param period Period in milliseconds since Epoch
      * @return Scheduled Action
+     * @deprecated Used for parsing legacy backup files. Use {@link Recurrence} instead
      */
+    @Deprecated
     public static ScheduledAction parseScheduledAction(Transaction transaction, long period){
         ScheduledAction scheduledAction = new ScheduledAction(ActionType.TRANSACTION);
         scheduledAction.mActionUID = transaction.getUID();

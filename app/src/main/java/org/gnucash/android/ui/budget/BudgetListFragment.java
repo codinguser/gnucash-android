@@ -2,12 +2,15 @@ package org.gnucash.android.ui.budget;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -55,6 +58,13 @@ public class BudgetListFragment extends Fragment implements Refreshable,
         View view = inflater.inflate(R.layout.fragment_budget_list, container, false);
         ButterKnife.bind(this, view);
 
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            GridLayoutManager gridLayoutManager = new GridLayoutManager(getActivity(), 2);
+            mRecyclerView.setLayoutManager(gridLayoutManager);
+        } else {
+            LinearLayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
+            mRecyclerView.setLayoutManager(mLayoutManager);
+        }
         return view;
     }
 
@@ -66,6 +76,7 @@ public class BudgetListFragment extends Fragment implements Refreshable,
         mBudgetRecyclerAdapter = new BudgetRecyclerAdapter(null);
 
         mRecyclerView.setAdapter(mBudgetRecyclerAdapter);
+
         getLoaderManager().initLoader(0, null, this);
     }
 
@@ -124,7 +135,7 @@ public class BudgetListFragment extends Fragment implements Refreshable,
      * @param value Value between 0 and 1 indicating the red to green ratio
      * @return Color between red and green
      */
-    int getTrafficlightColor(double value){
+    public static int getTrafficlightColor(double value){
         return android.graphics.Color.HSVToColor(new float[]{(float)value*120f,1f,1f});
     }
 
@@ -165,7 +176,7 @@ public class BudgetListFragment extends Fragment implements Refreshable,
         class BudgetViewHolder extends RecyclerView.ViewHolder implements PopupMenu.OnMenuItemClickListener{
             @Bind(R.id.primary_text) TextView budgetName;
             @Bind(R.id.secondary_text) TextView accountName;
-            @Bind(R.id.budget_amount) TextView budgetAmount;
+            @Bind(R.id.budget_indicator) TextView budgetAmount;
             @Bind(R.id.options_menu) ImageView optionsMenu;
             long budgetId;
 

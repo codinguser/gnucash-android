@@ -5,6 +5,9 @@ import org.gnucash.android.BuildConfig;
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.adapter.AccountsDbAdapter;
+import org.gnucash.android.db.adapter.BudgetDbAdapter;
+import org.gnucash.android.db.adapter.CommoditiesDbAdapter;
+import org.gnucash.android.db.adapter.PricesDbAdapter;
 import org.gnucash.android.db.adapter.ScheduledActionDbAdapter;
 import org.gnucash.android.db.adapter.SplitsDbAdapter;
 import org.gnucash.android.db.adapter.TransactionsDbAdapter;
@@ -233,6 +236,9 @@ public class AccountsDbAdapterTest{
         assertThat(mTransactionsDbAdapter.getRecordsCount()).isZero();
         assertThat(mSplitsDbAdapter.getRecordsCount()).isZero();
         assertThat(scheduledActionDbAdapter.getRecordsCount()).isZero();
+        assertThat(PricesDbAdapter.getInstance().getRecordsCount()).isZero();
+        assertThat(BudgetDbAdapter.getInstance().getRecordsCount()).isZero();
+        assertThat(CommoditiesDbAdapter.getInstance().getRecordsCount()).isGreaterThan(50); //commodities should remain
     }
 
     @Test
@@ -375,6 +381,40 @@ public class AccountsDbAdapterTest{
         imbalanceUID = mAccountsDbAdapter.getOrCreateImbalanceAccountUID(usd);
         assertThat(imbalanceUID).isNotNull().isNotEmpty();
         assertThat(mAccountsDbAdapter.getRecordsCount()).isEqualTo(2);
+    }
+
+    @Test
+    public void editingAccountShouldNotDeleteTemplateSplits(){
+        Currency currency = Currency.getInstance("EUR");
+        Account account = new Account("First");
+        account.setCurrency(currency);
+        Account transferAccount = new Account("Transfer");
+        transferAccount.setCurrency(currency);
+
+        mAccountsDbAdapter.addRecord(account);
+        mAccountsDbAdapter.addRecord(transferAccount);
+
+        assertThat(mAccountsDbAdapter.getRecordsCount()).isEqualTo(3); //plus root account
+
+        Money money = new Money(BigDecimal.TEN, currency);
+        Transaction transaction = new Transaction("Template");
+        transaction.setTemplate(true);
+        transaction.setCurrencyCode(currency.getCurrencyCode());
+        Split split = new Split(money, account.getUID());
+        transaction.addSplit(split);
+        transaction.addSplit(split.createPair(transferAccount.getUID()));
+
+        mTransactionsDbAdapter.addRecord(transaction);
+        List<Transaction> transactions = mTransactionsDbAdapter.getAllRecords();
+
+        assertThat(mTransactionsDbAdapter.getScheduledTransactionsForAccount(account.getUID())).hasSize(1);
+
+        //edit the account
+        account.setName("Edited account");
+        mAccountsDbAdapter.addRecord(account);
+
+        assertThat(mTransactionsDbAdapter.getScheduledTransactionsForAccount(account.getUID())).hasSize(1);
+        assertThat(mSplitsDbAdapter.getSplitsForTransaction(transaction.getUID())).hasSize(2);
     }
 
     /**

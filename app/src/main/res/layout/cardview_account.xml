@@ -104,16 +104,20 @@
             android:layout_toLeftOf="@id/create_transaction"
             android:layout_marginRight="@dimen/edge_padding"/>
 
-        <TextView
-            android:id="@+id/budget_view"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+        <ProgressBar
+            android:id="@+id/budget_indicator"
+            android:layout_width="100dp"
+            android:layout_height="8dp"
             android:singleLine="true"
             android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            android:layout_marginLeft="@dimen/strip_width"
+            android:layout_marginStart="@dimen/strip_width"
+            android:max="100"
+            android:indeterminate="false"
             android:background="@color/account_gold"
             android:paddingBottom="4dp"
             android:layout_alignBottom="@id/options_menu"
-            android:layout_toLeftOf="@id/account_balance"
             android:layout_marginRight="@dimen/edge_padding"/>
     </RelativeLayout>
 
