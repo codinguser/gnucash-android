@@ -23,6 +23,8 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -451,13 +453,20 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
         }
         SimpleDateFormat formatter = (SimpleDateFormat) SimpleDateFormat.getDateTimeInstance();
 
-        ArrayList<CharSequence> extraText = new ArrayList<CharSequence>();
+        ArrayList<CharSequence> extraText = new ArrayList<>();
         extraText.add(mContext.getString(R.string.description_export_email)
                 + " " + formatter.format(new Date(System.currentTimeMillis())));
         shareIntent.putExtra(Intent.EXTRA_TEXT, extraText);
 
-        if (mContext instanceof Activity)
-            mContext.startActivity(Intent.createChooser(shareIntent, mContext.getString(R.string.title_select_export_destination)));
+        if (mContext instanceof Activity) {
+            List<ResolveInfo> activities = mContext.getPackageManager().queryIntentActivities(shareIntent, 0);
+            if (activities != null && !activities.isEmpty()) {
+                mContext.startActivity(Intent.createChooser(shareIntent, mContext.getString(R.string.title_select_export_destination)));
+            } else {
+                Toast.makeText(mContext, R.string.toast_no_compatible_apps_to_receive_export,
+                        Toast.LENGTH_LONG).show();
+            }
+        }
     }
 
     /**

@@ -554,6 +554,7 @@ Neste processo não serão recolhidas informações do utilizador!</string>
   <string name="title_translate_gnucash">Traduza o GnuCash</string>
   <string name="summary_google_plus">Partilhe ideias, discuta alterações ou reporte problemas</string>
   <string name="summary_translate_gnucash">Traduza ou reveja em Crowdin</string>
+  <string name="toast_no_compatible_apps_to_receive_export">No compatible apps to receive the exported transactions!</string>
   <string-array name="report_time_range">
     <item>Mês actual</item>
     <item>Últimos 3 meses</item>

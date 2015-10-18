@@ -562,6 +562,7 @@
   <string name="title_translate_gnucash">Перевести GnuCash</string>
   <string name="summary_google_plus">Поделиться идеями, обсудить изменения или сообщить о проблемах</string>
   <string name="summary_translate_gnucash">Перевести или вычитать на CrowdIn</string>
+  <string name="toast_no_compatible_apps_to_receive_export">No compatible apps to receive the exported transactions!</string>
   <string-array name="report_time_range">
     <item>Текущий месяц</item>
     <item>Последний квартал</item>

@@ -556,6 +556,7 @@ Este proceso solo recoge información que no permite identificar al usuario</str
   <string name="title_translate_gnucash">Traducir GnuCash</string>
   <string name="summary_google_plus">Compartir ideas, discutir cambios o reportar problemas</string>
   <string name="summary_translate_gnucash">Traducir o revisar en CrowdIn</string>
+  <string name="toast_no_compatible_apps_to_receive_export">No compatible apps to receive the exported transactions!</string>
   <string-array name="report_time_range">
     <item>Mes actual</item>
     <item>Últimos 3 meses</item>
