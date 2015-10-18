@@ -94,7 +94,7 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
     /**
      * Log tag
      */
-    public static final String TAG = "ExporterAsyncTask";
+    public static final String TAG = "ExportAsyncTask";
 
     /**
      * Export parameters
