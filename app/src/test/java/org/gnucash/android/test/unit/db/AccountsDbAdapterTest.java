@@ -1,5 +1,7 @@
 package org.gnucash.android.test.unit.db;
 
+import android.content.Intent;
+
 import org.assertj.core.data.Index;
 import org.gnucash.android.BuildConfig;
 import org.gnucash.android.R;
@@ -24,10 +26,13 @@ import org.gnucash.android.model.TransactionType;
 import org.gnucash.android.test.unit.util.GnucashTestRunner;
 import org.gnucash.android.test.unit.util.ShadowCrashlytics;
 import org.gnucash.android.test.unit.util.ShadowUserVoice;
+import org.gnucash.android.ui.common.FormActivity;
+import org.gnucash.android.ui.common.UxArgument;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 import org.xml.sax.SAXException;
 
@@ -415,6 +420,22 @@ public class AccountsDbAdapterTest{
 
         assertThat(mTransactionsDbAdapter.getScheduledTransactionsForAccount(account.getUID())).hasSize(1);
         assertThat(mSplitsDbAdapter.getSplitsForTransaction(transaction.getUID())).hasSize(2);
+    }
+
+    @Test
+    public void testGetCurrenciesInUse(){
+        int expectedSize = 0;
+        List<Currency> currencies = mAccountsDbAdapter.getCurrenciesInUse();
+        assertThat(currencies).hasSize(expectedSize);
+
+        Account account = new Account("Dummy", Currency.getInstance("USD"));
+        mAccountsDbAdapter.addRecord(account);
+        assertThat(mAccountsDbAdapter.getCurrenciesInUse()).hasSize(++expectedSize);
+
+        account = new Account("Dummy", Currency.getInstance("EUR"));
+        mAccountsDbAdapter.addRecord(account);
+        assertThat(mAccountsDbAdapter.getCurrenciesInUse()).hasSize(++expectedSize);
+
     }
 
     /**

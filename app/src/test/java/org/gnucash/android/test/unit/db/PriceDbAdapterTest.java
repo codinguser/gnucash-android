@@ -1,7 +1,5 @@
 package org.gnucash.android.test.unit.db;
 
-import com.ibm.icu.impl.StringUCharacterIterator;
-
 import org.gnucash.android.BuildConfig;
 import org.gnucash.android.db.adapter.CommoditiesDbAdapter;
 import org.gnucash.android.db.adapter.PricesDbAdapter;
@@ -43,7 +41,7 @@ public class PriceDbAdapterTest {
         Price price1 = new Price(commodityUID, currencyUID);
         price1.setValueNum(187);
         price1.setValueDenom(100);
-        pricesDbAdapter.addRecord(price);
+        pricesDbAdapter.addRecord(price1);
 
         assertThat(pricesDbAdapter.getRecordsCount()).isEqualTo(1);
         Price savedPrice = pricesDbAdapter.getAllRecords().get(0);
