@@ -390,13 +390,7 @@ public class ScheduledAction extends BaseModel{
      * @return String description of repeat schedule
      */
     public String getRepeatString(){
-        String dayOfWeek = new SimpleDateFormat("EEEE", Locale.US).format(new Date(mStartDate));
-        PeriodType periodType = mRecurrence.getPeriodType();
-        StringBuilder ruleBuilder = new StringBuilder(periodType.getFrequencyRepeatString());
-
-        if (periodType == PeriodType.WEEK) {
-            ruleBuilder.append(" on ").append(dayOfWeek);
-        }
+        StringBuilder ruleBuilder = new StringBuilder(mRecurrence.getRepeatString());
 
         if (mEndDate > 0){
             ruleBuilder.append(", ");
@@ -416,23 +410,8 @@ public class ScheduledAction extends BaseModel{
      */
     public String getRuleString(){
         String separator = ";";
-        PeriodType periodType = mRecurrence.getPeriodType();
 
-        StringBuilder ruleBuilder = new StringBuilder();
-
-//        =======================================================================
-        //This section complies with the formal rules, but the betterpickers library doesn't like/need it
-
-//        SimpleDateFormat startDateFormat = new SimpleDateFormat("'TZID'=zzzz':'yyyyMMdd'T'HHmmss", Locale.US);
-//        ruleBuilder.append("DTSTART;");
-//        ruleBuilder.append(startDateFormat.format(new Date(mStartDate)));
-//            ruleBuilder.append("\n");
-//        ruleBuilder.append("RRULE:");
-//        ========================================================================
-
-        ruleBuilder.append("FREQ=").append(periodType.getFrequencyDescription()).append(separator);
-        ruleBuilder.append("INTERVAL=").append(periodType.getMultiplier()).append(separator);
-        ruleBuilder.append(periodType.getByParts(mStartDate)).append(separator);
+        StringBuilder ruleBuilder = new StringBuilder(mRecurrence.getRuleString());
 
         if (mEndDate > 0){
             SimpleDateFormat df = new SimpleDateFormat("yyyyMMdd'T'HHmmss'Z'", Locale.US);

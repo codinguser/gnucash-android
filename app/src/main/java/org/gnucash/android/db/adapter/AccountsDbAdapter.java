@@ -931,6 +931,7 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
         rootAccount.setAccountType(AccountType.ROOT);
         rootAccount.setFullName(ROOT_ACCOUNT_FULL_NAME);
         rootAccount.setHidden(true);
+        rootAccount.setPlaceHolderFlag(true);
         ContentValues contentValues = new ContentValues();
         contentValues.put(AccountEntry.COLUMN_UID, rootAccount.getUID());
         contentValues.put(AccountEntry.COLUMN_NAME, rootAccount.getName());

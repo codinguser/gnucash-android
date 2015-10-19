@@ -1084,6 +1084,15 @@ public class MigrationHelper {
 
         db.beginTransaction();
         try {
+            db.execSQL("CREATE TABLE " + RecurrenceEntry.TABLE_NAME + " ("
+                    + RecurrenceEntry._ID                   + " integer primary key autoincrement, "
+                    + RecurrenceEntry.COLUMN_UID            + " varchar(255) not null UNIQUE, "
+                    + RecurrenceEntry.COLUMN_MULTIPLIER     + " integer not null default 1, "
+                    + RecurrenceEntry.COLUMN_PERIOD_TYPE    + " varchar(255) not null, "
+                    + RecurrenceEntry.COLUMN_PERIOD_START   + " varchar(255) not null, "
+                    + RecurrenceEntry.COLUMN_CREATED_AT     + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
+                    + RecurrenceEntry.COLUMN_MODIFIED_AT    + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP); "
+                    + DatabaseHelper.createUpdatedAtTrigger(RecurrenceEntry.TABLE_NAME));
 
             db.execSQL("CREATE TABLE " + DatabaseSchema.BudgetEntry.TABLE_NAME + " ("
                     + BudgetEntry._ID                   + " integer primary key autoincrement, "
@@ -1095,18 +1104,14 @@ public class MigrationHelper {
                     + BudgetEntry.COLUMN_AMOUNT_NUM     + " integer not null, "
                     + BudgetEntry.COLUMN_AMOUNT_DENOM   + " integer not null, "
                     + BudgetEntry.COLUMN_NUM_PERIODS    + " integer, "
+                    + BudgetEntry.COLUMN_CREATED_AT      + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
+                    + BudgetEntry.COLUMN_MODIFIED_AT     + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
                     + "FOREIGN KEY (" 	+ BudgetEntry.COLUMN_ACCOUNT_UID + ") REFERENCES " + AccountEntry.TABLE_NAME + " (" + AccountEntry.COLUMN_UID + ") ON DELETE CASCADE, "
                     + "FOREIGN KEY (" 	+ BudgetEntry.COLUMN_RECURRENCE_UID + ") REFERENCES " + RecurrenceEntry.TABLE_NAME + " (" + RecurrenceEntry.COLUMN_UID + ") "
                     + ");" + DatabaseHelper.createUpdatedAtTrigger(DatabaseSchema.BudgetEntry.TABLE_NAME));
 
-            db.execSQL("CREATE TABLE " + RecurrenceEntry.TABLE_NAME + " ("
-                    + RecurrenceEntry._ID                   + " integer primary key autoincrement, "
-                    + RecurrenceEntry.COLUMN_UID            + " varchar(255) not null UNIQUE, "
-                    + RecurrenceEntry.COLUMN_MULTIPLIER     + " integer not null default 1, "
-                    + RecurrenceEntry.COLUMN_PERIOD_TYPE    + " varchar(255) not null, "
-                    + RecurrenceEntry.COLUMN_PERIOD_START   + " varchar(255) not null); "
-                    + DatabaseHelper.createUpdatedAtTrigger(RecurrenceEntry.TABLE_NAME));
 
+            //extract recurrences from scheduled actions table and put in the recurrence table
             db.execSQL("ALTER TABLE " + ScheduledActionEntry.TABLE_NAME + " RENAME TO " + ScheduledActionEntry.TABLE_NAME + "_bak");
 
             db.execSQL("CREATE TABLE " + ScheduledActionEntry.TABLE_NAME + " ("

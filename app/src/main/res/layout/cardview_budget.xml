@@ -30,7 +30,7 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:minHeight="@dimen/card_min_height">
 
         <View android:id="@+id/account_color_strip"
@@ -64,21 +64,31 @@
             android:src="@drawable/ic_more_vert_black_24dp"
             tools:ignore="ContentDescription" />
 
-        <TextView
+        <ProgressBar
             android:id="@+id/budget_indicator"
+            style="@android:style/Widget.ProgressBar.Horizontal"
+            android:progressDrawable="@drawable/budget_progress_indicator"
+            android:layout_width="match_parent"
+            android:layout_height="8dp"
+            android:layout_alignParentBottom="true"
+            android:max="100"
+            android:indeterminate="false"
+            tools:background="@color/account_gold"
+            android:paddingBottom="4dp"
+            android:layout_toLeftOf="@id/options_menu"
+            android:layout_marginRight="@dimen/edge_padding"/>
+
+        <TextView
+            android:id="@+id/budget_amount"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:singleLine="true"
-            android:layout_alignParentBottom="true"
             android:padding="5dp"
-            android:layout_marginBottom="4dp"
             android:textSize="18sp"
-            android:textColor="@android:color/white"
-            android:background="@color/title_green"
-            android:layout_alignBottom="@id/options_menu"
+            android:layout_above="@id/budget_indicator"
             android:layout_toLeftOf="@id/options_menu"
             android:layout_marginRight="@dimen/edge_padding"
-            android:gravity="left"
+            android:gravity="right"
             tools:text="$ 2000 of $ 2,500"/>
     </RelativeLayout>
 

@@ -21,6 +21,9 @@ import android.support.annotation.NonNull;
 import org.gnucash.android.ui.util.RecurrenceParser;
 
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 /**
  * Model for recurrences in the database
@@ -130,5 +133,50 @@ public class Recurrence extends BaseModel {
                 break;
         }
         return mPeriodType.getMultiplier() * baseMillis;
+    }
+
+    /**
+     * Returns the event schedule (start, end and recurrence)
+     * @return String description of repeat schedule
+     */
+    public String getRepeatString(){
+        String dayOfWeek = new SimpleDateFormat("EEEE", Locale.US).format(new Date(mPeriodStart.getTime()));
+
+        StringBuilder ruleBuilder = new StringBuilder(mPeriodType.getFrequencyRepeatString());
+
+        if (mPeriodType == PeriodType.WEEK) {
+            ruleBuilder.append(" on ").append(dayOfWeek);
+        }
+
+        return ruleBuilder.toString();
+    }
+
+        /**
+         * Creates an RFC 2445 string which describes this recurring event.
+         * <p>See http://recurrance.sourceforge.net/</p>
+         * <p>The output of this method is not meant for human consumption</p>
+         * @return String describing event
+         */
+    public String getRuleString(){
+        String separator = ";";
+
+        StringBuilder ruleBuilder = new StringBuilder();
+
+//        =======================================================================
+        //This section complies with the formal rules, but the betterpickers library doesn't like/need it
+
+//        SimpleDateFormat startDateFormat = new SimpleDateFormat("'TZID'=zzzz':'yyyyMMdd'T'HHmmss", Locale.US);
+//        ruleBuilder.append("DTSTART;");
+//        ruleBuilder.append(startDateFormat.format(new Date(mStartDate)));
+//            ruleBuilder.append("\n");
+//        ruleBuilder.append("RRULE:");
+//        ========================================================================
+
+
+        ruleBuilder.append("FREQ=").append(mPeriodType.getFrequencyDescription()).append(separator);
+        ruleBuilder.append("INTERVAL=").append(mPeriodType.getMultiplier()).append(separator);
+        ruleBuilder.append(mPeriodType.getByParts(mPeriodStart.getTime())).append(separator);
+
+        return ruleBuilder.toString();
     }
 }

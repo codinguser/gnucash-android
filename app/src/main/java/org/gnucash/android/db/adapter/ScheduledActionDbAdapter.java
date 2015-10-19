@@ -54,6 +54,12 @@ public class ScheduledActionDbAdapter extends DatabaseAdapter<ScheduledAction> {
         return GnuCashApplication.getScheduledEventDbAdapter();
     }
 
+    @Override
+    public void addRecord(@NonNull ScheduledAction scheduledAction) {
+        mRecurrenceDbAdapter.addRecord(scheduledAction.getRecurrence());
+        super.addRecord(scheduledAction);
+    }
+
     /**
      * Updates only the recurrence attributes of the scheduled action.
      * The recurrence attributes are the period, start time, end time and/or total frequency.

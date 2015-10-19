@@ -116,7 +116,7 @@ public class TransactionFormFragment extends Fragment implements
 	/**
 	 * Adapter for transfer account spinner
 	 */
-	private SimpleCursorAdapter mCursorAdapter;
+	private QualifiedAccountNameCursorAdapter mAccountCursorAdapter;
 
 	/**
 	 * Cursor for transfer account spinner
@@ -568,8 +568,8 @@ public class TransactionFormFragment extends Fragment implements
         }
 		mCursor = mAccountsDbAdapter.fetchAccountsOrderedByFullName(conditions, new String[]{mAccountUID, AccountType.ROOT.name()});
 
-        mCursorAdapter = new QualifiedAccountNameCursorAdapter(getActivity(), mCursor);
-		mTransferAccountSpinner.setAdapter(mCursorAdapter);
+        mAccountCursorAdapter = new QualifiedAccountNameCursorAdapter(getActivity(), mCursor);
+		mTransferAccountSpinner.setAdapter(mAccountCursorAdapter);
 	}
 
     /**
@@ -692,18 +692,9 @@ public class TransactionFormFragment extends Fragment implements
      * @param accountId Database ID of the transfer account
      */
 	private void setSelectedTransferAccount(long accountId){
-		for (int pos = 0; pos < mCursorAdapter.getCount(); pos++) {
-			if (mCursorAdapter.getItemId(pos) == accountId){
-                final int position = pos;
-                mTransferAccountSpinner.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        mTransferAccountSpinner.setSelection(position);
-                    }
-                }, 100);
-				break;
-			}
-		}
+        int position = mAccountCursorAdapter.getPosition(mAccountsDbAdapter.getUID(accountId));
+        if (position >= 0)
+            mTransferAccountSpinner.setSelection(position);
 	}
 
 	/**

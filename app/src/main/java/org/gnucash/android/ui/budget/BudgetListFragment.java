@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.database.Cursor;
+import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -19,7 +21,9 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import org.gnucash.android.R;
@@ -51,12 +55,16 @@ public class BudgetListFragment extends Fragment implements Refreshable,
     private BudgetDbAdapter mBudgetDbAdapter;
 
     @Bind(R.id.budget_recycler_view) EmptyRecyclerView mRecyclerView;
+    @Bind(R.id.empty_view) Button mProposeBudgets;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_budget_list, container, false);
         ButterKnife.bind(this, view);
+
+        mRecyclerView.setHasFixedSize(true);
+        mRecyclerView.setEmptyView(mProposeBudgets);
 
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
             GridLayoutManager gridLayoutManager = new GridLayoutManager(getActivity(), 2);
@@ -130,15 +138,6 @@ public class BudgetListFragment extends Fragment implements Refreshable,
         refresh();
     }
 
-    /**
-     * Returns a color between red and green depending on the value parameter
-     * @param value Value between 0 and 1 indicating the red to green ratio
-     * @return Color between red and green
-     */
-    public static int getTrafficlightColor(double value){
-        return android.graphics.Color.HSVToColor(new float[]{(float)value*120f,1f,1f});
-    }
-
     class BudgetRecyclerAdapter extends CursorRecyclerAdapter<BudgetRecyclerAdapter.BudgetViewHolder>{
 
         public BudgetRecyclerAdapter(Cursor cursor) {
@@ -156,12 +155,11 @@ public class BudgetListFragment extends Fragment implements Refreshable,
             holder.accountName.setText(accountsDbAdapter.getAccountFullName(budget.getAccountUID()));
 
             Money accountBalance = accountsDbAdapter.getAccountBalance(budget.getAccountUID());
-            double redGreenRatio = 1 / (accountBalance.divide(budget.getAmount())).asDouble();
-
-            int bgColor = getTrafficlightColor(redGreenRatio);
-
-            holder.budgetAmount.setBackgroundColor(bgColor);
             holder.budgetAmount.setText(accountBalance.formattedAmount() + " of " + budget.getAmount().formattedAmount());
+
+            double progress = accountBalance.divide(budget.getAmount()).asDouble() * 100;
+            holder.budgetIndicator.setProgress((int)progress);
+
 
         }
 
@@ -176,8 +174,9 @@ public class BudgetListFragment extends Fragment implements Refreshable,
         class BudgetViewHolder extends RecyclerView.ViewHolder implements PopupMenu.OnMenuItemClickListener{
             @Bind(R.id.primary_text) TextView budgetName;
             @Bind(R.id.secondary_text) TextView accountName;
-            @Bind(R.id.budget_indicator) TextView budgetAmount;
+            @Bind(R.id.budget_amount) TextView budgetAmount;
             @Bind(R.id.options_menu) ImageView optionsMenu;
+            @Bind(R.id.budget_indicator) ProgressBar budgetIndicator;
             long budgetId;
 
             public BudgetViewHolder(View itemView) {
@@ -190,7 +189,7 @@ public class BudgetListFragment extends Fragment implements Refreshable,
                         android.support.v7.widget.PopupMenu popup = new android.support.v7.widget.PopupMenu(getActivity(), v);
                         popup.setOnMenuItemClickListener(BudgetViewHolder.this);
                         MenuInflater inflater = popup.getMenuInflater();
-                        inflater.inflate(R.menu.account_context_menu, popup.getMenu());
+                        inflater.inflate(R.menu.budget_context_menu, popup.getMenu());
                         popup.show();
                     }
                 });
@@ -202,6 +201,10 @@ public class BudgetListFragment extends Fragment implements Refreshable,
                 switch (item.getItemId()){
                     case R.id.context_menu_edit_budget:
                         editBudget(budgetId);
+                        return true;
+
+                    case R.id.context_menu_goto_account:
+                        //// TODO: 19.10.2015 open the account for the budget
                         return true;
 
                     case R.id.context_menu_delete:

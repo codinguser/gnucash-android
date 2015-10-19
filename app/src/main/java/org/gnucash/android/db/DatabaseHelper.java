@@ -194,6 +194,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + BudgetEntry.COLUMN_AMOUNT_NUM     + " integer not null, "
             + BudgetEntry.COLUMN_AMOUNT_DENOM   + " integer not null, "
             + BudgetEntry.COLUMN_NUM_PERIODS    + " integer, "
+            + BudgetEntry.COLUMN_CREATED_AT     + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
+            + BudgetEntry.COLUMN_MODIFIED_AT    + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
             + "FOREIGN KEY (" 	+ BudgetEntry.COLUMN_ACCOUNT_UID + ") REFERENCES " + AccountEntry.TABLE_NAME + " (" + AccountEntry.COLUMN_UID + ") ON DELETE CASCADE, "
             + "FOREIGN KEY (" 	+ BudgetEntry.COLUMN_RECURRENCE_UID + ") REFERENCES " + RecurrenceEntry.TABLE_NAME + " (" + RecurrenceEntry.COLUMN_UID + ") "
             + ");" + createUpdatedAtTrigger(BudgetEntry.TABLE_NAME);
@@ -203,7 +205,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + RecurrenceEntry.COLUMN_UID            + " varchar(255) not null UNIQUE, "
             + RecurrenceEntry.COLUMN_MULTIPLIER     + " integer not null default 1, "
             + RecurrenceEntry.COLUMN_PERIOD_TYPE    + " varchar(255) not null, "
-            + RecurrenceEntry.COLUMN_PERIOD_START   + " varchar(255) not null); "
+            + RecurrenceEntry.COLUMN_PERIOD_START   + " varchar(255) not null, "
+            + RecurrenceEntry.COLUMN_CREATED_AT     + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
+            + RecurrenceEntry.COLUMN_MODIFIED_AT    + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP); "
             + createUpdatedAtTrigger(RecurrenceEntry.TABLE_NAME);
 
 

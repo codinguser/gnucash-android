@@ -503,17 +503,10 @@ public class AccountsListFragment extends Fragment implements
             Budget budget = BudgetDbAdapter.getInstance().getAccountBudget(accountUID);
             if (budget != null){
                 Money balance = mAccountsDbAdapter.getAccountBalance(accountUID, budget.getStartofCurrentPeriod(), budget.getEndOfCurrentPeriod());
-                int budgetProgress = balance.divide(budget.getAmount()).asBigDecimal().intValue();
-                holder.budgetIndicator.setProgress(budgetProgress);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
-                    holder.budgetIndicator.setProgressTintList(ColorStateList.valueOf(BudgetListFragment.getTrafficlightColor(budgetProgress)));
-                } else {
-                    //// TODO: 16.10.2015 Set the progress indicator color
-                }
+                double budgetProgress = balance.divide(budget.getAmount()).asBigDecimal().doubleValue() * 100;
+                holder.budgetIndicator.setVisibility(View.VISIBLE);
+                holder.budgetIndicator.setProgress((int) budgetProgress);
             }
-            int[] colors = new int[]{Color.RED, Color.YELLOW, Color.GREEN};
-            GradientDrawable gradientDrawable = new GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT, colors);
-            holder.budgetIndicator.setProgressDrawable(gradientDrawable);
 
 
             if (mAccountsDbAdapter.isFavoriteAccount(accountUID)){

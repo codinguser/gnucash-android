@@ -106,17 +106,20 @@
 
         <ProgressBar
             android:id="@+id/budget_indicator"
+            style="@android:style/Widget.ProgressBar.Horizontal"
+            android:progressDrawable="@drawable/budget_progress_indicator"
             android:layout_width="100dp"
             android:layout_height="8dp"
-            android:singleLine="true"
             android:layout_alignParentBottom="true"
             android:layout_alignParentLeft="true"
             android:layout_marginLeft="@dimen/strip_width"
             android:layout_marginStart="@dimen/strip_width"
             android:max="100"
+            tools:progress="50"
             android:indeterminate="false"
-            android:background="@color/account_gold"
             android:paddingBottom="4dp"
+            android:background="@android:color/transparent"
+            android:visibility="gone"
             android:layout_alignBottom="@id/options_menu"
             android:layout_marginRight="@dimen/edge_padding"/>
     </RelativeLayout>

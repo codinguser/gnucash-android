@@ -397,6 +397,7 @@ public final class Money implements Comparable<Money>{
 	 * Returns a new <code>Money</code> object whose value is the quotient of the values of 
 	 * this object and <code>divisor</code>.
 	 * This object is the dividend and <code>divisor</code> is the divisor
+	 * <p>This method uses the rounding mode {@link BigDecimal#ROUND_HALF_EVEN}</p>
 	 * @param divisor Second operand in the division.
 	 * @return Money object whose value is the quotient of this object and <code>divisor</code>
 	 * @throws IllegalArgumentException if the <code>Money</code> objects to be added have different Currencies
@@ -405,7 +406,7 @@ public final class Money implements Comparable<Money>{
 		if (!mCurrency.equals(divisor.mCurrency))
 			throw new IllegalArgumentException("Operation can only be performed on money with same currency");
 		
-		BigDecimal bigD = mAmount.divide(divisor.mAmount);		
+		BigDecimal bigD = mAmount.divide(divisor.mAmount, BigDecimal.ROUND_HALF_EVEN);
 		return new Money(bigD, mCurrency);
 	}
 	
