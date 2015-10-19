@@ -25,11 +25,11 @@
   <string name="label_account_name">Kontoname</string>
   <string name="btn_cancel">Abbrechen</string>
   <string name="btn_save">Speichern</string>
-  <string name="label_passcode">Enter Passcode</string>
-  <string name="toast_wrong_passcode">Wrong passcode, please try again</string>
-  <string name="toast_passcode_set">Passcode set</string>
-  <string name="label_confirm_passcode">Please confirm your passcode</string>
-  <string name="toast_invalid_passcode_confirmation">Invalid passcode confirmation. Please try again</string>
+  <string name="label_passcode">Zugangscode eingeben</string>
+  <string name="toast_wrong_passcode">Falscher Zugangscode, bitte versuchen Sie es erneut</string>
+  <string name="toast_passcode_set">Zugangscode festgelegt</string>
+  <string name="label_confirm_passcode">Bitte bestätigen Sie Ihren Zugangscode</string>
+  <string name="toast_invalid_passcode_confirmation">Ungültiger Passcode. Bitte versuchen Sie es erneut</string>
   <string name="label_transaction_name">Beschreibung</string>
   <string name="label_transaction_amount">Betrag </string>
   <string name="title_add_transaction">Neue Buchung</string>
@@ -56,7 +56,7 @@
   <string name="option_export_all_transactions">Alle Buchungen exportieren</string>
   <string name="hint_export_choice">Auswählen, um alle Buchungen zu exportieren. Andernfalls werden nur die neuen Buchungen seit letztem Export exportiert.</string>
   <string name="toast_export_error">Fehler beim Exportieren der %1$s-Datei</string>
-  <string name="btn_export">Export</string>
+  <string name="btn_export">Exportieren</string>
   <string name="option_delete_after_export">Löschen nach dem Exportieren</string>
   <string name="hint_delete_after_export">Alle exportierten Buchungen werden nach dem Export gelöscht.</string>
   <string name="title_settings">Einstellungen</string>
@@ -81,17 +81,17 @@
   <string name="label_permission_group">Ihre GnuCash-Daten</string>
   <string name="description_permission_group">Lesen und Bearbeiten von GnuCash-Daten</string>
   <string name="label_permission_record_transaction">Buchungen speichern in GnuCash</string>
-  <string name="label_permission_create_account">Create accounts in GnuCash</string>
+  <string name="label_permission_create_account">Konten in GnuCash erstellen</string>
   <string name="label_display_account">Konto anzeigen</string>
   <string name="btn_create_accounts">Konten erstellen</string>
   <string name="title_default_accounts">Zu erstellende Konten auswählen</string>
   <string-array name="currency_names">
     <item>Afghani</item>
-    <item>Algerian Dinar</item>
-    <item>Argentine Peso</item>
-    <item>Armenian Dram</item>
+    <item>Algerischer Dinar</item>
+    <item>Argentinischer Peso</item>
+    <item>Armenischer Dram</item>
     <item>Aruban Florin</item>
-    <item>Australian Dollar</item>
+    <item>Australischer Dollar</item>
     <item>Azerbaijanian Manat</item>
     <item>Bahamian Dollar</item>
     <item>Bahraini Dinar</item>
@@ -103,11 +103,11 @@
     <item>Bermudian Dollar</item>
     <item>Bolivar Fuerte</item>
     <item>Boliviano</item>
-    <item>Brazilian Real</item>
+    <item>Brasilianischer Real</item>
     <item>Brunei Dollar</item>
     <item>Bulgarian Lev</item>
     <item>Burundi Franc</item>
-    <item>Canadian Dollar</item>
+    <item>Kanadische Dollar</item>
     <item>Cape Verde Escudo</item>
     <item>Cayman Islands Dollar</item>
     <item>CFA Franc BCEAO</item>
@@ -115,18 +115,18 @@
     <item>CFP Franc</item>
     <item>Chilean Peso</item>
     <item>Testing currency</item>
-    <item>Colombian Peso</item>
+    <item>Kolumbianischer Peso</item>
     <item>Comoro Franc</item>
-    <item>Congolese Franc</item>
+    <item>Kongolesischer Franc</item>
     <item>Convertible Mark</item>
     <item>Cordoba Oro</item>
     <item>Costa Rican Colon</item>
-    <item>Croatian Kuna</item>
+    <item>Kroatische Kuna</item>
     <item>Cuban Convertible Peso</item>
-    <item>Cuban Peso</item>
-    <item>Czech Koruna</item>
+    <item>Kubanischer Peso</item>
+    <item>Tschechische Krone</item>
     <item>Dalasi</item>
-    <item>Danish Krone</item>
+    <item>Dänische Krone</item>
     <item>Denar</item>
     <item>Djibouti Franc</item>
     <item>Dobra</item>
@@ -150,11 +150,11 @@
     <item>Hong Kong Dollar</item>
     <item>Hryvnia</item>
     <item>Iceland Krona</item>
-    <item>Indian Rupee</item>
-    <item>Iranian Rial</item>
-    <item>Iraqi Dinar</item>
+    <item>Indische Rupie</item>
+    <item>Iranischer Rial</item>
+    <item>Irakischer Dinar</item>
     <item>Jamaican Dollar</item>
-    <item>Jordanian Dinar</item>
+    <item>Jordanischer Dinar</item>
     <item>Kenyan Shilling</item>
     <item>Kina</item>
     <item>Kip</item>
@@ -168,15 +168,15 @@
     <item>Lek</item>
     <item>Lempira</item>
     <item>Leone</item>
-    <item>Liberian Dollar</item>
-    <item>Libyan Dinar</item>
+    <item>Liberianischer Dollar</item>
+    <item>Libyscher Dinar</item>
     <item>Lilangeni</item>
     <item>Lithuanian Litas</item>
     <item>Loti</item>
     <item>Malagasy Ariary</item>
     <item>Malaysian Ringgit</item>
     <item>Mauritius Rupee</item>
-    <item>Mexican Peso</item>
+    <item>Mexikanischer Peso</item>
     <item>Mexican Unidad de Inversion (UDI)</item>
     <item>Moldovan Leu</item>
     <item>Moroccan Dirham</item>
@@ -556,6 +556,7 @@ No user-identifiable information will be collected as part of this process!</str
   <string name="title_translate_gnucash">Translate GnuCash</string>
   <string name="summary_google_plus">Share ideas, discuss changes or report problems</string>
   <string name="summary_translate_gnucash">Translate or proof-read on CrowdIn</string>
+  <string name="toast_no_compatible_apps_to_receive_export">No compatible apps to receive the exported transactions!</string>
   <string name="nav_menu_budgets">Budgets</string>
   <string-array name="report_time_range">
     <item>Current month</item>

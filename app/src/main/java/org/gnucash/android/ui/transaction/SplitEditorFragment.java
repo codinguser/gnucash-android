@@ -354,7 +354,7 @@ public class SplitEditorFragment extends Fragment {
             BigDecimal amountBigDecimal = viewHolder.splitAmountEditText.getValue();
 
             String currencyCode = mAccountsDbAdapter.getCurrencyCode(mAccountUID);
-            Money valueAmount = new Money(amountBigDecimal, Currency.getInstance(currencyCode));
+            Money valueAmount = new Money(amountBigDecimal.abs(), Currency.getInstance(currencyCode));
 
             String accountUID = mAccountsDbAdapter.getUID(viewHolder.accountsSpinner.getSelectedItemId());
             Split split = new Split(valueAmount, accountUID);
@@ -362,7 +362,7 @@ public class SplitEditorFragment extends Fragment {
             split.setType(viewHolder.splitTypeButton.getTransactionType());
             split.setUID(viewHolder.splitUidTextView.getText().toString().trim());
             if (viewHolder.quantity != null)
-                split.setQuantity(viewHolder.quantity);
+                split.setQuantity(viewHolder.quantity.absolute());
             splitList.add(split);
         }
         return splitList;
