@@ -31,7 +31,6 @@ import java.util.TimeZone;
 */
 public class ScheduledAction extends BaseModel{
 
-    private long mPeriod;
     private long mStartDate;
     private long mEndDate;
     private String mTag;
@@ -206,16 +205,6 @@ public class ScheduledAction extends BaseModel{
      */
     public long getEndTime() {
         return mEndDate;
-    }
-
-    /**
-     * Returns the approximate end time of this scheduled action.
-     * <p>This is useful when the number of occurences was set, rather than a specific end time.
-     * The end time is then computed from the start time, period and number of occurrences.</p>
-     * @return End time in milliseconds for the scheduled action
-     */
-    public long getApproxEndTime(){
-        return mStartDate + (mPeriod * mTotalFrequency);
     }
 
     /**
@@ -457,7 +446,8 @@ public class ScheduledAction extends BaseModel{
     public static ScheduledAction parseScheduledAction(Transaction transaction, long period){
         ScheduledAction scheduledAction = new ScheduledAction(ActionType.TRANSACTION);
         scheduledAction.mActionUID = transaction.getUID();
-        scheduledAction.mPeriod = period;
+        Recurrence recurrence = new Recurrence(PeriodType.parse(period));
+        scheduledAction.setRecurrence(recurrence);
         return scheduledAction;
     }
 

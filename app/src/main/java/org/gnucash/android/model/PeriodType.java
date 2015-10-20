@@ -20,6 +20,7 @@ import android.content.res.Resources;
 
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
+import org.gnucash.android.ui.util.RecurrenceParser;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -34,6 +35,44 @@ public enum PeriodType {
     DAY, WEEK, MONTH, YEAR;
 
     int mMultiplier = 1; //multiplier for the period type
+
+    /**
+     * Computes the {@link PeriodType} for a given {@code period}
+     * @param period Period in milliseconds since Epoch
+     * @return PeriodType corresponding to the period
+     */
+    public static PeriodType parse(long period){
+        PeriodType periodType = DAY;
+        int result = (int) (period/ RecurrenceParser.YEAR_MILLIS);
+        if (result > 0) {
+            periodType = YEAR;
+            periodType.setMultiplier(result);
+            return periodType;
+        }
+
+        result = (int) (period/RecurrenceParser.MONTH_MILLIS);
+        if (result > 0) {
+            periodType = MONTH;
+            periodType.setMultiplier(result);
+            return periodType;
+        }
+
+        result = (int) (period/RecurrenceParser.WEEK_MILLIS);
+        if (result > 0) {
+            periodType = WEEK;
+            periodType.setMultiplier(result);
+            return periodType;
+        }
+
+        result = (int) (period/RecurrenceParser.DAY_MILLIS);
+        if (result > 0) {
+            periodType = DAY;
+            periodType.setMultiplier(result);
+            return periodType;
+        }
+
+        return periodType;
+    }
 
     /**
      * Sets the multiplier for this period type

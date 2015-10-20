@@ -427,7 +427,7 @@ public abstract class DatabaseAdapter<Model extends BaseModel> {
             if (cursor.moveToFirst()) {
                 uid = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.CommonColumns.COLUMN_UID));
             } else {
-                throw new IllegalArgumentException("Account record ID " + id + " does not exist in the db");
+                throw new IllegalArgumentException("Record with ID " + id + " does not exist in the db");
             }
         } finally {
             cursor.close();

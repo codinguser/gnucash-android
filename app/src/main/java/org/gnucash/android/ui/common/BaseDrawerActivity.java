@@ -196,7 +196,7 @@ public class BaseDrawerActivity extends PasscodeLockActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == Activity.RESULT_CANCELED){
-            return;
+            super.onActivityResult(requestCode, resultCode, data);
         }
 
         switch (requestCode) {
@@ -209,6 +209,9 @@ public class BaseDrawerActivity extends PasscodeLockActivity {
                     Crashlytics.logException(e);
                     Toast.makeText(this, R.string.toast_error_importing_accounts, Toast.LENGTH_SHORT).show();
                 }
+                break;
+            default:
+                super.onActivityResult(requestCode, resultCode, data);
                 break;
         }
     }

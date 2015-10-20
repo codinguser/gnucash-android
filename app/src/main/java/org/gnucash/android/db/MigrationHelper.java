@@ -1185,7 +1185,7 @@ public class MigrationHelper {
                 String uid = cursor.getString(cursor.getColumnIndexOrThrow(ScheduledActionEntry.COLUMN_UID));
                 long period = cursor.getLong(cursor.getColumnIndexOrThrow("period"));
                 long startTime = cursor.getLong(cursor.getColumnIndexOrThrow(ScheduledActionEntry.COLUMN_START_TIME));
-                PeriodType periodType = Recurrence.getPeriodType(period);
+                PeriodType periodType = PeriodType.parse(period);
                 Recurrence recurrence = new Recurrence(periodType);
                 recurrence.setPeriodStart(new Timestamp(startTime));
 

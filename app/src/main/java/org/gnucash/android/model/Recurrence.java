@@ -73,44 +73,6 @@ public class Recurrence extends BaseModel {
 
 
     /**
-     * Computes the {@link PeriodType} for a given {@code period}
-     * @param period Period in milliseconds since Epoch
-     * @return PeriodType corresponding to the period
-     */
-    public static PeriodType getPeriodType(long period){
-        PeriodType periodType = PeriodType.DAY;
-        int result = (int) (period/ RecurrenceParser.YEAR_MILLIS);
-        if (result > 0) {
-            periodType = PeriodType.YEAR;
-            periodType.setMultiplier(result);
-            return periodType;
-        }
-
-        result = (int) (period/RecurrenceParser.MONTH_MILLIS);
-        if (result > 0) {
-            periodType = PeriodType.MONTH;
-            periodType.setMultiplier(result);
-            return periodType;
-        }
-
-        result = (int) (period/RecurrenceParser.WEEK_MILLIS);
-        if (result > 0) {
-            periodType = PeriodType.WEEK;
-            periodType.setMultiplier(result);
-            return periodType;
-        }
-
-        result = (int) (period/RecurrenceParser.DAY_MILLIS);
-        if (result > 0) {
-            periodType = PeriodType.DAY;
-            periodType.setMultiplier(result);
-            return periodType;
-        }
-
-        return periodType;
-    }
-
-    /**
      * Returns an approximate period for this recurrence
      * <p>The period is approximate because months do not all have the same number of days,
      * but that is assumed</p>

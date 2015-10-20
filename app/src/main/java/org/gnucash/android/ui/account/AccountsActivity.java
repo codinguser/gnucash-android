@@ -40,11 +40,11 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.util.SparseArray;
@@ -61,8 +61,8 @@ import com.kobakei.ratethisapp.RateThisApp;
 import org.gnucash.android.BuildConfig;
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
-import org.gnucash.android.db.adapter.AccountsDbAdapter;
 import org.gnucash.android.db.DatabaseSchema;
+import org.gnucash.android.db.adapter.AccountsDbAdapter;
 import org.gnucash.android.export.xml.GncXmlExporter;
 import org.gnucash.android.importer.ImportAsyncTask;
 import org.gnucash.android.model.Money;
@@ -457,7 +457,7 @@ public class AccountsActivity extends BaseDrawerActivity implements OnAccountCli
     /**
      * Displays the dialog for exporting transactions
      */
-    public static void openExportFragment(FragmentActivity activity) {
+    public static void openExportFragment(AppCompatActivity activity) {
         Intent intent = new Intent(activity, FormActivity.class);
         intent.putExtra(UxArgument.FORM_TYPE, FormActivity.FormType.EXPORT.name());
         activity.startActivity(intent);

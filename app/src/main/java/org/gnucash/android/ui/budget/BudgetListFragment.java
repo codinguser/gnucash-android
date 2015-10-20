@@ -4,8 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.database.Cursor;
-import android.graphics.Color;
-import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -27,13 +25,14 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import org.gnucash.android.R;
+import org.gnucash.android.db.DatabaseCursorLoader;
 import org.gnucash.android.db.adapter.AccountsDbAdapter;
 import org.gnucash.android.db.adapter.BudgetDbAdapter;
-import org.gnucash.android.db.DatabaseCursorLoader;
 import org.gnucash.android.model.Budget;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.ui.common.FormActivity;
 import org.gnucash.android.ui.common.UxArgument;
+import org.gnucash.android.ui.transaction.TransactionsActivity;
 import org.gnucash.android.ui.util.CursorRecyclerAdapter;
 import org.gnucash.android.ui.util.Refreshable;
 import org.gnucash.android.ui.util.widget.EmptyRecyclerView;
@@ -49,6 +48,7 @@ public class BudgetListFragment extends Fragment implements Refreshable,
 
     private static final String LOG_TAG = "BudgetListFragment";
     private static final int REQUEST_EDIT_BUDGET = 0xB;
+    private static final int REQUEST_OPEN_ACCOUNT = 0xC;
 
     private BudgetRecyclerAdapter mBudgetRecyclerAdapter;
 
@@ -112,6 +112,11 @@ public class BudgetListFragment extends Fragment implements Refreshable,
         getLoaderManager().restartLoader(0, null, this);
     }
 
+    /**
+     * This method does nothing with the GUID.
+     * Is equivalent to calling {@link #refresh()}
+     * @param uid GUID of relevant item to be refreshed
+     */
     @Override
     public void refresh(String uid) {
         refresh();
@@ -138,6 +143,17 @@ public class BudgetListFragment extends Fragment implements Refreshable,
         refresh();
     }
 
+    private void goToAccount(long budgetId){
+        Intent intent = new Intent(getActivity(), TransactionsActivity.class);
+        intent.putExtra(UxArgument.SELECTED_ACCOUNT_UID, mBudgetDbAdapter.getAccountUID(budgetId));
+        startActivityForResult(intent, REQUEST_OPEN_ACCOUNT);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        refresh();
+    }
+
     class BudgetRecyclerAdapter extends CursorRecyclerAdapter<BudgetRecyclerAdapter.BudgetViewHolder>{
 
         public BudgetRecyclerAdapter(Cursor cursor) {
@@ -154,12 +170,14 @@ public class BudgetListFragment extends Fragment implements Refreshable,
             AccountsDbAdapter accountsDbAdapter = AccountsDbAdapter.getInstance();
             holder.accountName.setText(accountsDbAdapter.getAccountFullName(budget.getAccountUID()));
 
+            holder.budgetRecurrence.setText(budget.getAmount().formattedString() + " " + budget.getRecurrence().getRepeatString());
+
             Money accountBalance = accountsDbAdapter.getAccountBalance(budget.getAccountUID());
-            holder.budgetAmount.setText(accountBalance.formattedAmount() + " of " + budget.getAmount().formattedAmount());
+            String usedAmount = accountBalance.getCurrency().getSymbol() + accountBalance.formattedAmount() + " of " + budget.getAmount().formattedString();
+            holder.budgetAmount.setText(usedAmount);
 
             double progress = accountBalance.divide(budget.getAmount()).asDouble() * 100;
             holder.budgetIndicator.setProgress((int)progress);
-
 
         }
 
@@ -172,11 +190,12 @@ public class BudgetListFragment extends Fragment implements Refreshable,
         }
 
         class BudgetViewHolder extends RecyclerView.ViewHolder implements PopupMenu.OnMenuItemClickListener{
-            @Bind(R.id.primary_text) TextView budgetName;
-            @Bind(R.id.secondary_text) TextView accountName;
-            @Bind(R.id.budget_amount) TextView budgetAmount;
-            @Bind(R.id.options_menu) ImageView optionsMenu;
-            @Bind(R.id.budget_indicator) ProgressBar budgetIndicator;
+            @Bind(R.id.primary_text)        TextView budgetName;
+            @Bind(R.id.secondary_text)      TextView accountName;
+            @Bind(R.id.budget_amount)       TextView budgetAmount;
+            @Bind(R.id.options_menu)        ImageView optionsMenu;
+            @Bind(R.id.budget_indicator)    ProgressBar budgetIndicator;
+            @Bind(R.id.budget_recurrence)   TextView budgetRecurrence;
             long budgetId;
 
             public BudgetViewHolder(View itemView) {
@@ -204,7 +223,7 @@ public class BudgetListFragment extends Fragment implements Refreshable,
                         return true;
 
                     case R.id.context_menu_goto_account:
-                        //// TODO: 19.10.2015 open the account for the budget
+                        goToAccount(budgetId);
                         return true;
 
                     case R.id.context_menu_delete:

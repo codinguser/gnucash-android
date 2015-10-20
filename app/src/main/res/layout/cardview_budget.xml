@@ -28,68 +28,79 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:orientation="vertical"
         android:minHeight="@dimen/card_min_height">
-
-        <View android:id="@+id/account_color_strip"
-            android:layout_width="@dimen/strip_width"
-            android:layout_height="match_parent"
-            android:minHeight="@dimen/card_min_height"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"/>
 
         <include android:id="@+id/list_item_2_lines"
             layout="@layout/list_item_2_lines"
             android:paddingTop="6dp"
             android:layout_height="wrap_content"
-            android:layout_width="wrap_content"
-            android:layout_toRightOf="@id/account_color_strip"
-            android:layout_marginTop="@dimen/edge_padding"
-            android:layout_marginLeft="@dimen/edge_padding"
-            android:layout_marginRight="@dimen/edge_padding"/>
-
-        <ImageView
-            android:id="@+id/options_menu"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentRight="true"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:paddingTop="20dp"
-            android:paddingBottom="4dp"
-            android:paddingLeft="24dp"
-            android:scaleType="centerInside"
-            android:src="@drawable/ic_more_vert_black_24dp"
-            tools:ignore="ContentDescription" />
-
-        <ProgressBar
-            android:id="@+id/budget_indicator"
-            style="@android:style/Widget.ProgressBar.Horizontal"
-            android:progressDrawable="@drawable/budget_progress_indicator"
             android:layout_width="match_parent"
-            android:layout_height="8dp"
-            android:layout_alignParentBottom="true"
-            android:max="100"
-            android:indeterminate="false"
-            tools:background="@color/account_gold"
-            android:paddingBottom="4dp"
-            android:layout_toLeftOf="@id/options_menu"
-            android:layout_marginRight="@dimen/edge_padding"/>
+            android:layout_toRightOf="@id/account_color_strip"
+            android:layout_marginTop="@dimen/dialog_padding"
+            android:layout_marginLeft="@dimen/dialog_padding"
+            android:layout_marginRight="@dimen/dialog_padding"/>
 
         <TextView
-            android:id="@+id/budget_amount"
+            android:id="@+id/budget_recurrence"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:singleLine="true"
-            android:padding="5dp"
-            android:textSize="18sp"
-            android:layout_above="@id/budget_indicator"
-            android:layout_toLeftOf="@id/options_menu"
-            android:layout_marginRight="@dimen/edge_padding"
-            android:gravity="right"
-            tools:text="$ 2000 of $ 2,500"/>
-    </RelativeLayout>
+            android:textSize="15sp"
+            android:gravity="left|start"
+            android:layout_margin="@dimen/dialog_padding"
+            tools:text="$2,500 monthly until 02/14"/>
 
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <ImageView
+                android:id="@+id/options_menu"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentBottom="true"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:paddingTop="20dp"
+                android:paddingBottom="4dp"
+                android:paddingLeft="24dp"
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_more_vert_black_24dp"
+                tools:ignore="ContentDescription" />
+
+            <LinearLayout android:id="@+id/budget_progress_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_toLeftOf="@id/options_menu"
+                android:layout_marginRight="@dimen/dialog_padding"
+                android:layout_marginLeft="@dimen/dialog_padding"
+                android:orientation="vertical">
+                <TextView
+                    android:id="@+id/budget_amount"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:singleLine="true"
+                    android:padding="5dp"
+                    android:textSize="18sp"
+                    android:gravity="right"
+                    android:textColor="@android:color/black"
+                    tools:text="$ 2000 of $ 2,500"/>
+
+                <ProgressBar
+                    android:id="@+id/budget_indicator"
+                    style="@android:style/Widget.ProgressBar.Horizontal"
+                    android:progressDrawable="@drawable/budget_progress_indicator"
+                    android:layout_width="match_parent"
+                    android:layout_height="10dp"
+                    android:max="100"
+                    android:indeterminate="false"
+                    tools:background="@color/account_gold"
+                    android:paddingBottom="4dp"/>
+            </LinearLayout>
+
+        </RelativeLayout>
+</LinearLayout>
 </android.support.v7.widget.CardView>
