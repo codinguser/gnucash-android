@@ -27,11 +27,18 @@ import org.gnucash.android.export.ExportParams;
 import org.gnucash.android.export.Exporter;
 import org.gnucash.android.model.Transaction;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Currency;
+import java.util.List;
 
 import static org.gnucash.android.db.DatabaseSchema.AccountEntry;
 import static org.gnucash.android.db.DatabaseSchema.SplitEntry;
@@ -213,5 +220,45 @@ public class QifExporter extends Exporter{
         /// export successful
         String timeStamp = new Timestamp(System.currentTimeMillis()).toString();
         PreferenceManager.getDefaultSharedPreferences(mContext).edit().putString(Exporter.PREF_LAST_EXPORT_TIME, timeStamp).apply();
+    }
+
+    //FIXME: fix javadoc
+    /**
+     * Copies a file from <code>src</code> to <code>dst</code>
+     * @param src Absolute path to the source file
+     * @param dst Absolute path to the destination file
+     * @throws IOException if the file could not be copied
+     */
+    public static List<String> splitQIF(File src, File dst) throws IOException {
+        // split only at the last dot
+        String[] pathParts = dst.getPath().split("(?=\\.[^\\.]+$)");
+        ArrayList<String> splitFiles = new ArrayList<>();
+        String line;
+        BufferedReader in = new BufferedReader(new FileReader(src));
+        BufferedWriter out = null;
+        try {
+            while ((line = in.readLine()) != null) {
+                if (line.startsWith(QifHelper.INTERNAL_CURRENCY_PREFIX)) {
+                    String currencyCode = line.substring(1);
+                    if (out != null) {
+                        out.close();
+                    }
+                    String newFileName = pathParts[0] + "_" + currencyCode + pathParts[1];
+                    splitFiles.add(newFileName);
+                    out = new BufferedWriter(new FileWriter(newFileName));
+                } else {
+                    if (out == null) {
+                        throw new IllegalArgumentException(src.getPath() + " format is not correct");
+                    }
+                    out.append(line).append('\n');
+                }
+            }
+        } finally {
+            in.close();
+            if (out != null) {
+                out.close();
+            }
+        }
+        return splitFiles;
     }
 }

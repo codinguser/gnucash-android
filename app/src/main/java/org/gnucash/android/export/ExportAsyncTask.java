@@ -23,7 +23,6 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -53,7 +52,6 @@ import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.export.ofx.OfxExporter;
 import org.gnucash.android.export.qif.QifExporter;
-import org.gnucash.android.export.qif.QifHelper;
 import org.gnucash.android.export.xml.GncXmlExporter;
 import org.gnucash.android.model.Transaction;
 import org.gnucash.android.ui.account.AccountsActivity;
@@ -61,13 +59,10 @@ import org.gnucash.android.ui.account.AccountsListFragment;
 import org.gnucash.android.ui.settings.SettingsActivity;
 import org.gnucash.android.ui.transaction.TransactionsActivity;
 
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -371,7 +366,7 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
         List<String> exportedFilePaths;
         if (mExportParams.getExportFormat() == ExportFormat.QIF) {
             String path = mExportParams.getTargetFilepath();
-            exportedFilePaths = splitQIF(new File(path), new File(path));
+            exportedFilePaths = QifExporter.splitQIF(new File(path), new File(path));
         } else {
             exportedFilePaths = new ArrayList<>();
             exportedFilePaths.add(mExportParams.getTargetFilepath());
@@ -433,7 +428,7 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
         ArrayList<Uri> exportFiles = new ArrayList<>();
         if (mExportParams.getExportFormat() == ExportFormat.QIF) {
             try {
-                List<String> splitFiles = splitQIF(new File(path), new File(path));
+                List<String> splitFiles = QifExporter.splitQIF(new File(path), new File(path));
                 for (String file : splitFiles) {
                     exportFiles.add(Uri.parse("file://" + file));
                 }
@@ -478,7 +473,7 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
     public void copyFile(File src, File dst) throws IOException {
         //TODO: Make this asynchronous at some time, t in the future.
         if (mExportParams.getExportFormat() == ExportFormat.QIF) {
-            splitQIF(src, dst);
+            QifExporter.splitQIF(src, dst);
         } else {
             FileChannel inChannel = new FileInputStream(src).getChannel();
             FileChannel outChannel = new FileOutputStream(dst).getChannel();
@@ -490,45 +485,6 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
                 outChannel.close();
             }
         }
-    }
-
-    /**
-     * Copies a file from <code>src</code> to <code>dst</code>
-     * @param src Absolute path to the source file
-     * @param dst Absolute path to the destination file
-     * @throws IOException if the file could not be copied
-     */
-    private static List<String> splitQIF(File src, File dst) throws IOException {
-        // split only at the last dot
-        String[] pathParts = dst.getPath().split("(?=\\.[^\\.]+$)");
-        ArrayList<String> splitFiles = new ArrayList<>();
-        String line;
-        BufferedReader in = new BufferedReader(new FileReader(src));
-        BufferedWriter out = null;
-        try {
-            while ((line = in.readLine()) != null) {
-                if (line.startsWith(QifHelper.INTERNAL_CURRENCY_PREFIX)) {
-                    String currencyCode = line.substring(1);
-                    if (out != null) {
-                        out.close();
-                    }
-                    String newFileName = pathParts[0] + "_" + currencyCode + pathParts[1];
-                    splitFiles.add(newFileName);
-                    out = new BufferedWriter(new FileWriter(newFileName));
-                } else {
-                    if (out == null) {
-                        throw new IllegalArgumentException(src.getPath() + " format is not correct");
-                    }
-                    out.append(line).append('\n');
-                }
-            }
-        } finally {
-            in.close();
-            if (out != null) {
-                out.close();
-            }
-        }
-        return splitFiles;
     }
 
 }
