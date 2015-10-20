@@ -186,7 +186,7 @@ public class ExportTransactionsTest extends
 			file.delete();
 		}
 
-		DrawerActions.openDrawer(R.id.drawer_layout);
+		onView(withId(R.id.drawer_layout)).perform(DrawerActions.open());
 		onView(withText(R.string.nav_menu_export)).perform(click());
 		onView(withText(format.name())).perform(click());
 
@@ -217,7 +217,7 @@ public class ExportTransactionsTest extends
 	 */
 	@Test
 	public void shouldCreateExportSchedule(){
-		DrawerActions.openDrawer(R.id.drawer_layout);
+		onView(withId(R.id.drawer_layout)).perform(DrawerActions.open());
 		onView(withText(R.string.nav_menu_export)).perform(click());
 
 		onView(withText(ExportFormat.XML.name())).perform(click());

@@ -195,7 +195,9 @@ public class ScheduledAction extends BaseModel{
      */
     public void setStartTime(long startDate) {
         this.mStartDate = startDate;
-        mRecurrence.setPeriodStart(new Timestamp(startDate));
+        if (mRecurrence != null) {
+            mRecurrence.setPeriodStart(new Timestamp(startDate));
+        }
     }
 
     /**
@@ -434,10 +436,14 @@ public class ScheduledAction extends BaseModel{
 
     /**
      * Sets the recurrence pattern of this scheduled action
+     * <p>This also sets the start period of the recurrence object, if there is one</p>
      * @param recurrence {@link Recurrence} object
      */
     public void setRecurrence(Recurrence recurrence) {
         this.mRecurrence = recurrence;
+        if (mStartDate > 0){
+            mRecurrence.setPeriodStart(new Timestamp(mStartDate));
+        }
     }
 
     /**
