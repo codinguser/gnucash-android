@@ -162,8 +162,15 @@ def androidSupportVersion       = "22.2.1"
 def androidEspressoVersion      = "2.2"
 def androidSupportTestVersion   = "0.3"
 
+repositories{
+    flatDir{
+        dirs 'libs'
+    }
+}
+
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile(name:'owncloud_library', ext:'aar')
     compile('com.android.support:support-v4:'       + androidSupportVersion,
             'com.android.support:appcompat-v7:'     + androidSupportVersion,
             'com.android.support:design:'           + androidSupportVersion,
@@ -180,7 +187,8 @@ dependencies {
             'com.kobakei:ratethisapp:0.0.3',
             'com.squareup:android-times-square:1.6.4@aar',
             'com.github.techfreak:wizardpager:1.0.0',
-            'net.objecthunter:exp4j:0.4.5'
+            'net.objecthunter:exp4j:0.4.5',
+            'org.apache.jackrabbit:jackrabbit-webdav:2.11.1'
     )
 
     compile ('com.uservoice:uservoice-android-sdk:1.2.+') {
