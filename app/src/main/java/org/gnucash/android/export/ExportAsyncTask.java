@@ -173,7 +173,7 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
 
         switch (mExportParams.getExportTarget()) {
             case SHARING:
-                File output = copyExportToSDCard();
+                File output = moveExportToSDCard();
                 shareFile(output.getAbsolutePath());
                 return true;
 
@@ -186,7 +186,7 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
                 return true;
 
             case SD_CARD:
-                copyExportToSDCard();
+                moveExportToSDCard();
                 return true;
         }
 
@@ -375,11 +375,11 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
     }
 
     /**
-     * Copies the exported file from the internal storage where it is generated to external storage
-     * which is accessible to the user
-     * @return File to which the export was copied
+     * Moves the exported file from the internal storage where it is generated to external storage
+     * which is accessible to the user.
+     * @return File to which the export was moved.
      */
-    private File copyExportToSDCard() {
+    private File moveExportToSDCard() {
         Log.i(TAG, "Moving exported file to external storage");
         File src = new File(mExportParams.getTargetFilepath());
         File dst = Exporter.createExportFile(mExportParams.getExportFormat());
