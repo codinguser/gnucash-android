@@ -126,7 +126,13 @@ public class BudgetDbAdapter extends DatabaseAdapter<Budget>{
         }
     }
 
-    public String getAccountUID(long budgetId) {
-        return getAttribute(getUID(budgetId), BudgetEntry.COLUMN_ACCOUNT_UID);
+
+    /**
+     * Returns the account GUID for the budget
+     * @param budgetUID GUID of the budget
+     * @return GUID of the account associated with the budget
+     */
+    public String getAccountUID(String budgetUID) {
+        return getAttribute(budgetUID, BudgetEntry.COLUMN_ACCOUNT_UID);
     }
 }

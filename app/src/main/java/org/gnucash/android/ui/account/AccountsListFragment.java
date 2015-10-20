@@ -506,6 +506,8 @@ public class AccountsListFragment extends Fragment implements
                 double budgetProgress = balance.divide(budget.getAmount()).asBigDecimal().doubleValue() * 100;
                 holder.budgetIndicator.setVisibility(View.VISIBLE);
                 holder.budgetIndicator.setProgress((int) budgetProgress);
+            } else {
+                holder.budgetIndicator.setVisibility(View.GONE);
             }
 
 

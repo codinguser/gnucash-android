@@ -160,8 +160,7 @@ public class BudgetFormFragment extends Fragment implements RecurrencePickerDial
      * Loads the accounts in the spinner
      */
     private void updateBudgetAccountsList(){
-        String conditions = "(" + DatabaseSchema.AccountEntry.COLUMN_HIDDEN + " = 0"
-                + " AND " + DatabaseSchema.AccountEntry.COLUMN_PLACEHOLDER + " = 0" + ")";
+        String conditions = "(" + DatabaseSchema.AccountEntry.COLUMN_HIDDEN + " = 0 )";
 
         if (mAccountCursor != null) {
             mAccountCursor.close();
