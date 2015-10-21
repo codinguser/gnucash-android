@@ -196,6 +196,10 @@ public class SettingsActivity extends AppCompatPreferenceActivity
             pref.setOnPreferenceClickListener(this);
             toggleGoogleDrivePreference(pref);
 
+            pref = findPreference(getString(R.string.key_owncloud_sync));
+            pref.setOnPreferenceClickListener(this);
+            toggleOwncloudPreference(pref);
+
             pref = findPreference(getString(R.string.key_create_backup));
             pref.setOnPreferenceClickListener(this);
 
@@ -325,6 +329,11 @@ public class SettingsActivity extends AppCompatPreferenceActivity
             toggleGoogleDrivePreference(preference);
         }
 
+        if (key.equals(getString(R.string.key_owncloud_sync))){
+            toggleOwncloudSync();
+            toggleOwncloudPreference(preference);
+        }
+
         if (key.equals(getString(R.string.key_create_backup))){
             boolean result = GncXmlExporter.createBackup();
             int msg = result ? R.string.toast_backup_successful : R.string.toast_backup_failed;
@@ -414,6 +423,13 @@ public class SettingsActivity extends AppCompatPreferenceActivity
      */
     public void toggleDropboxPreference(Preference pref) {
         ((CheckBoxPreference)pref).setChecked(mDbxAccountManager.hasLinkedAccount());
+    }
+
+    /**
+     * Toggles the checkbox of the Oncloud Sync preference if a Owncloud account is linked
+     * @param pref Owncloud Sync preference
+     */
+    public void toggleOwncloudPreference(Preference pref) {
     }
 
     /**

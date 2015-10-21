@@ -190,6 +190,10 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
                 copyExportToGoogleDrive();
                 return true;
 
+            case OWNCLOUD:
+                copyExportToOwncloud();
+                return true;
+
             case SD_CARD:
                 copyExportToSDCard();
                 return true;
@@ -222,6 +226,9 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
                         break;
                     case GOOGLE_DRIVE:
                         targetLocation = "Google Drive -> " + mContext.getString(R.string.app_name);
+                        break;
+                    case OWNCLOUD:
+                        targetLocation = "Owncloud -> " + mContext.getString(R.string.app_name);
                         break;
                     default:
                         targetLocation = "external service";
@@ -359,6 +366,9 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
                 dbExportFile.close();
             }
         }
+    }
+
+    private void copyExportToOwncloud() {
     }
 
     /**

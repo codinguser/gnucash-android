@@ -285,6 +285,10 @@ public class
 						SettingsActivity.mGoogleApiClient.connect();
 						break;
 					case 3:
+						recurrenceOptionsView.setVisibility(View.VISIBLE);
+						mExportTarget = ExportParams.ExportTarget.OWNCLOUD;
+						break;
+					case 4:
 						mExportTarget = ExportParams.ExportTarget.SHARING;
 						recurrenceOptionsView.setVisibility(View.GONE);
 						break;
