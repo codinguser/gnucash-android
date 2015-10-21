@@ -25,10 +25,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.text.format.Time;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -45,7 +43,7 @@ import android.widget.TextView;
 
 import com.codetroopers.betterpickers.recurrencepicker.EventRecurrence;
 import com.codetroopers.betterpickers.recurrencepicker.EventRecurrenceFormatter;
-import com.codetroopers.betterpickers.recurrencepicker.RecurrencePickerDialog;
+import com.codetroopers.betterpickers.recurrencepicker.RecurrencePickerDialogFragment;
 import com.dropbox.sync.android.DbxAccountManager;
 
 import org.gnucash.android.R;
@@ -60,6 +58,7 @@ import org.gnucash.android.ui.account.AccountsActivity;
 import org.gnucash.android.ui.common.UxArgument;
 import org.gnucash.android.ui.settings.SettingsActivity;
 import org.gnucash.android.ui.util.RecurrenceParser;
+import org.gnucash.android.ui.util.RecurrenceViewClickListener;
 
 import java.util.List;
 
@@ -73,7 +72,7 @@ import butterknife.ButterKnife;
  * @author Ngewi Fet <ngewif@gmail.com>
  */
 public class
-		ExportFormFragment extends Fragment implements RecurrencePickerDialog.OnRecurrenceSetListener {
+		ExportFormFragment extends Fragment implements RecurrencePickerDialogFragment.OnRecurrenceSetListener {
 		
 	/**
 	 * Spinner for selecting destination for the exported file.
@@ -305,30 +304,7 @@ public class
 		
 		mDeleteAllCheckBox.setChecked(sharedPrefs.getBoolean(getString(R.string.key_delete_transactions_after_export), false));
 
-		mRecurrenceTextView.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				FragmentManager fm = getActivity().getSupportFragmentManager();
-				Bundle b = new Bundle();
-				Time t = new Time();
-				t.setToNow();
-				b.putLong(RecurrencePickerDialog.BUNDLE_START_TIME_MILLIS, t.toMillis(false));
-				b.putString(RecurrencePickerDialog.BUNDLE_TIME_ZONE, t.timezone);
-
-				// may be more efficient to serialize and pass in EventRecurrence
-				b.putString(RecurrencePickerDialog.BUNDLE_RRULE, mRecurrenceRule);
-
-				RecurrencePickerDialog rpd = (RecurrencePickerDialog) fm.findFragmentByTag(
-						"recurrence_picker");
-				if (rpd != null) {
-					rpd.dismiss();
-				}
-				rpd = new RecurrencePickerDialog();
-				rpd.setArguments(b);
-				rpd.setOnRecurrenceSetListener(ExportFormFragment.this);
-				rpd.show(fm, "recurrence_picker");
-			}
-		});
+		mRecurrenceTextView.setOnClickListener(new RecurrenceViewClickListener((AppCompatActivity) getActivity(), mRecurrenceRule, this));
 
 		//this part (setting the export format) must come after the recurrence view bindings above
         String defaultExportFormat = sharedPrefs.getString(getString(R.string.key_default_export_format), ExportFormat.QIF.name());

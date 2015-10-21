@@ -26,12 +26,10 @@ import android.inputmethodservice.KeyboardView;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.text.format.DateUtils;
-import android.text.format.Time;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -50,15 +48,15 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.codetroopers.betterpickers.calendardatepicker.CalendarDatePickerDialog;
-import com.codetroopers.betterpickers.radialtimepicker.RadialTimePickerDialog;
+import com.codetroopers.betterpickers.calendardatepicker.CalendarDatePickerDialogFragment;
+import com.codetroopers.betterpickers.radialtimepicker.RadialTimePickerDialogFragment;
 import com.codetroopers.betterpickers.recurrencepicker.EventRecurrence;
 import com.codetroopers.betterpickers.recurrencepicker.EventRecurrenceFormatter;
-import com.codetroopers.betterpickers.recurrencepicker.RecurrencePickerDialog;
+import com.codetroopers.betterpickers.recurrencepicker.RecurrencePickerDialogFragment;
 
 import org.gnucash.android.R;
-import org.gnucash.android.db.adapter.AccountsDbAdapter;
 import org.gnucash.android.db.DatabaseSchema;
+import org.gnucash.android.db.adapter.AccountsDbAdapter;
 import org.gnucash.android.db.adapter.ScheduledActionDbAdapter;
 import org.gnucash.android.db.adapter.TransactionsDbAdapter;
 import org.gnucash.android.model.AccountType;
@@ -73,6 +71,7 @@ import org.gnucash.android.ui.homescreen.WidgetConfigurationActivity;
 import org.gnucash.android.ui.transaction.dialog.TransferFundsDialogFragment;
 import org.gnucash.android.ui.util.OnTransferFundsListener;
 import org.gnucash.android.ui.util.RecurrenceParser;
+import org.gnucash.android.ui.util.RecurrenceViewClickListener;
 import org.gnucash.android.ui.util.widget.CalculatorEditText;
 import org.gnucash.android.ui.util.widget.TransactionTypeSwitch;
 import org.gnucash.android.util.QualifiedAccountNameCursorAdapter;
@@ -97,10 +96,9 @@ import butterknife.ButterKnife;
  * @author Ngewi Fet <ngewif@gmail.com>
  */
 public class TransactionFormFragment extends Fragment implements
-        CalendarDatePickerDialog.OnDateSetListener, RadialTimePickerDialog.OnTimeSetListener,
-        RecurrencePickerDialog.OnRecurrenceSetListener, OnTransferFundsListener {
+        CalendarDatePickerDialogFragment.OnDateSetListener, RadialTimePickerDialogFragment.OnTimeSetListener,
+        RecurrencePickerDialogFragment.OnRecurrenceSetListener, OnTransferFundsListener {
 
-    private static final String FRAGMENT_TAG_RECURRENCE_PICKER  = "recurrence_picker";
     private static final int REQUEST_SPLIT_EDITOR = 0x11;
 
     /**
@@ -632,7 +630,7 @@ public class TransactionFormFragment extends Fragment implements
                 int year = calendar.get(Calendar.YEAR);
                 int monthOfYear = calendar.get(Calendar.MONTH);
                 int dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
-                CalendarDatePickerDialog datePickerDialog = CalendarDatePickerDialog.newInstance(
+                CalendarDatePickerDialogFragment datePickerDialog = CalendarDatePickerDialogFragment.newInstance(
                         TransactionFormFragment.this,
                         year, monthOfYear, dayOfMonth);
                 datePickerDialog.show(getFragmentManager(), "date_picker_fragment");
@@ -654,37 +652,14 @@ public class TransactionFormFragment extends Fragment implements
                 Calendar calendar = Calendar.getInstance();
                 calendar.setTimeInMillis(timeMillis);
 
-                RadialTimePickerDialog timePickerDialog = RadialTimePickerDialog.newInstance(
+                RadialTimePickerDialogFragment timePickerDialog = RadialTimePickerDialogFragment.newInstance(
                         TransactionFormFragment.this, calendar.get(Calendar.HOUR_OF_DAY),
                         calendar.get(Calendar.MINUTE), true);
                 timePickerDialog.show(getFragmentManager(), "time_picker_dialog_fragment");
             }
         });
 
-        mRecurrenceTextView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                FragmentManager fm = getActivity().getSupportFragmentManager();
-                Bundle b = new Bundle();
-                Time t = new Time();
-                t.setToNow();
-                b.putLong(RecurrencePickerDialog.BUNDLE_START_TIME_MILLIS, t.toMillis(false));
-                b.putString(RecurrencePickerDialog.BUNDLE_TIME_ZONE, t.timezone);
-
-                // may be more efficient to serialize and pass in EventRecurrence
-                b.putString(RecurrencePickerDialog.BUNDLE_RRULE, mRecurrenceRule);
-
-                RecurrencePickerDialog rpd = (RecurrencePickerDialog) fm.findFragmentByTag(
-                        FRAGMENT_TAG_RECURRENCE_PICKER);
-                if (rpd != null) {
-                    rpd.dismiss();
-                }
-                rpd = new RecurrencePickerDialog();
-                rpd.setArguments(b);
-                rpd.setOnRecurrenceSetListener(TransactionFormFragment.this);
-                rpd.show(fm, FRAGMENT_TAG_RECURRENCE_PICKER);
-            }
-        });
+        mRecurrenceTextView.setOnClickListener(new RecurrenceViewClickListener((AppCompatActivity) getActivity(), mRecurrenceRule, this));
 	}
 
     /**
@@ -946,7 +921,7 @@ public class TransactionFormFragment extends Fragment implements
 	}
 
     @Override
-    public void onDateSet(CalendarDatePickerDialog calendarDatePickerDialog, int year, int monthOfYear, int dayOfMonth) {
+    public void onDateSet(CalendarDatePickerDialogFragment calendarDatePickerDialog, int year, int monthOfYear, int dayOfMonth) {
         Calendar cal = new GregorianCalendar(year, monthOfYear, dayOfMonth);
         mDateTextView.setText(DATE_FORMATTER.format(cal.getTime()));
         mDate.set(Calendar.YEAR, year);
@@ -955,7 +930,7 @@ public class TransactionFormFragment extends Fragment implements
     }
 
     @Override
-    public void onTimeSet(RadialTimePickerDialog radialTimePickerDialog, int hourOfDay, int minute) {
+    public void onTimeSet(RadialTimePickerDialogFragment radialTimePickerDialog, int hourOfDay, int minute) {
         Calendar cal = new GregorianCalendar(0, 0, 0, hourOfDay, minute);
         mTimeTextView.setText(TIME_FORMATTER.format(cal.getTime()));
         mTime.set(Calendar.HOUR_OF_DAY, hourOfDay);

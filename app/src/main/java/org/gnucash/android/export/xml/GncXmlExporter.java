@@ -32,11 +32,11 @@ import org.gnucash.android.export.Exporter;
 import org.gnucash.android.model.Account;
 import org.gnucash.android.model.AccountType;
 import org.gnucash.android.model.BaseModel;
+import org.gnucash.android.model.Budget;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.model.PeriodType;
 import org.gnucash.android.model.Recurrence;
 import org.gnucash.android.model.ScheduledAction;
-import org.gnucash.android.model.Split;
 import org.gnucash.android.model.TransactionType;
 import org.xmlpull.v1.XmlPullParserFactory;
 import org.xmlpull.v1.XmlSerializer;
@@ -125,21 +125,21 @@ public class GncXmlExporter extends Exporter{
             xmlSerializer.startTag(null, GncXmlHelper.TAG_ACCOUNT);
             xmlSerializer.attribute(null, GncXmlHelper.ATTR_KEY_VERSION, GncXmlHelper.BOOK_VERSION);
             // account name
-            xmlSerializer.startTag(null, GncXmlHelper.TAG_NAME);
+            xmlSerializer.startTag(null, GncXmlHelper.TAG_ACCT_NAME);
             xmlSerializer.text(cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.AccountEntry.COLUMN_NAME)));
-            xmlSerializer.endTag(null, GncXmlHelper.TAG_NAME);
+            xmlSerializer.endTag(null, GncXmlHelper.TAG_ACCT_NAME);
             // account guid
             xmlSerializer.startTag(null, GncXmlHelper.TAG_ACCT_ID);
             xmlSerializer.attribute(null, GncXmlHelper.ATTR_KEY_TYPE, GncXmlHelper.ATTR_VALUE_GUID);
             xmlSerializer.text(cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.AccountEntry.COLUMN_UID)));
             xmlSerializer.endTag(null, GncXmlHelper.TAG_ACCT_ID);
             // account type
-            xmlSerializer.startTag(null, GncXmlHelper.TAG_TYPE);
+            xmlSerializer.startTag(null, GncXmlHelper.TAG_ACCT_TYPE);
             String acct_type = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.AccountEntry.COLUMN_TYPE));
             xmlSerializer.text(acct_type);
-            xmlSerializer.endTag(null, GncXmlHelper.TAG_TYPE);
+            xmlSerializer.endTag(null, GncXmlHelper.TAG_ACCT_TYPE);
             // commodity
-            xmlSerializer.startTag(null, GncXmlHelper.TAG_ACCOUNT_COMMODITY);
+            xmlSerializer.startTag(null, GncXmlHelper.TAG_ACCT_COMMODITY);
             xmlSerializer.startTag(null, GncXmlHelper.TAG_COMMODITY_SPACE);
             xmlSerializer.text("ISO4217");
             xmlSerializer.endTag(null, GncXmlHelper.TAG_COMMODITY_SPACE);
@@ -147,7 +147,7 @@ public class GncXmlExporter extends Exporter{
             String acctCurrencyCode = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.AccountEntry.COLUMN_CURRENCY));
             xmlSerializer.text(acctCurrencyCode);
             xmlSerializer.endTag(null, GncXmlHelper.TAG_COMMODITY_ID);
-            xmlSerializer.endTag(null, GncXmlHelper.TAG_ACCOUNT_COMMODITY);
+            xmlSerializer.endTag(null, GncXmlHelper.TAG_ACCT_COMMODITY);
             // commodity scu
             xmlSerializer.startTag(null, GncXmlHelper.TAG_COMMODITY_SCU);
             xmlSerializer.text(Integer.toString((int) Math.pow(10, Currency.getInstance(acctCurrencyCode).getDefaultFractionDigits())));
@@ -185,9 +185,9 @@ public class GncXmlExporter extends Exporter{
             slotType.add(GncXmlHelper.ATTR_VALUE_STRING);
             slotValue.add(Boolean.toString(cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseSchema.AccountEntry.COLUMN_FAVORITE)) != 0));
 
-            xmlSerializer.startTag(null, GncXmlHelper.TAG_ACT_SLOTS);
+            xmlSerializer.startTag(null, GncXmlHelper.TAG_ACCT_SLOTS);
             exportSlots(xmlSerializer, slotKey, slotType, slotValue);
-            xmlSerializer.endTag(null, GncXmlHelper.TAG_ACT_SLOTS);
+            xmlSerializer.endTag(null, GncXmlHelper.TAG_ACCT_SLOTS);
 
             // parent uid
             String parentUID = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.AccountEntry.COLUMN_PARENT_ACCOUNT_UID));
@@ -216,20 +216,20 @@ public class GncXmlExporter extends Exporter{
             xmlSerializer.startTag(null, GncXmlHelper.TAG_ACCOUNT);
             xmlSerializer.attribute(null, GncXmlHelper.ATTR_KEY_VERSION, GncXmlHelper.BOOK_VERSION);
             // account name
-            xmlSerializer.startTag(null, GncXmlHelper.TAG_NAME);
+            xmlSerializer.startTag(null, GncXmlHelper.TAG_ACCT_NAME);
             xmlSerializer.text(account.getName());
-            xmlSerializer.endTag(null, GncXmlHelper.TAG_NAME);
+            xmlSerializer.endTag(null, GncXmlHelper.TAG_ACCT_NAME);
             // account guid
             xmlSerializer.startTag(null, GncXmlHelper.TAG_ACCT_ID);
             xmlSerializer.attribute(null, GncXmlHelper.ATTR_KEY_TYPE, GncXmlHelper.ATTR_VALUE_GUID);
             xmlSerializer.text(account.getUID());
             xmlSerializer.endTag(null, GncXmlHelper.TAG_ACCT_ID);
             // account type
-            xmlSerializer.startTag(null, GncXmlHelper.TAG_TYPE);
+            xmlSerializer.startTag(null, GncXmlHelper.TAG_ACCT_TYPE);
             xmlSerializer.text(account.getAccountType().name());
-            xmlSerializer.endTag(null, GncXmlHelper.TAG_TYPE);
+            xmlSerializer.endTag(null, GncXmlHelper.TAG_ACCT_TYPE);
             // commodity
-            xmlSerializer.startTag(null, GncXmlHelper.TAG_ACCOUNT_COMMODITY);
+            xmlSerializer.startTag(null, GncXmlHelper.TAG_ACCT_COMMODITY);
             xmlSerializer.startTag(null, GncXmlHelper.TAG_COMMODITY_SPACE);
             xmlSerializer.text("template");
             xmlSerializer.endTag(null, GncXmlHelper.TAG_COMMODITY_SPACE);
@@ -237,7 +237,7 @@ public class GncXmlExporter extends Exporter{
             String acctCurrencyCode = "template";
             xmlSerializer.text(acctCurrencyCode);
             xmlSerializer.endTag(null, GncXmlHelper.TAG_COMMODITY_ID);
-            xmlSerializer.endTag(null, GncXmlHelper.TAG_ACCOUNT_COMMODITY);
+            xmlSerializer.endTag(null, GncXmlHelper.TAG_ACCT_COMMODITY);
             // commodity scu
             xmlSerializer.startTag(null, GncXmlHelper.TAG_COMMODITY_SCU);
             xmlSerializer.text("1");
@@ -587,23 +587,13 @@ public class GncXmlExporter extends Exporter{
 
             //// FIXME: 11.10.2015 Retrieve the information for this section from the recurrence table
             xmlSerializer.startTag(null, GncXmlHelper.TAG_SX_SCHEDULE);
-            xmlSerializer.startTag(null, GncXmlHelper.TAG_RECURRENCE);
+            xmlSerializer.startTag(null, GncXmlHelper.TAG_GNC_RECURRENCE);
             xmlSerializer.attribute(null, GncXmlHelper.ATTR_KEY_VERSION, GncXmlHelper.RECURRENCE_VERSION);
 
             String recurrenceUID = cursor.getString(cursor.getColumnIndexOrThrow(ScheduledActionEntry.COLUMN_RECURRENCE_UID));
             Recurrence recurrence = RecurrenceDbAdapter.getInstance().getRecord(recurrenceUID);
-            PeriodType periodType = recurrence.getPeriodType();
-            xmlSerializer.startTag(null, GncXmlHelper.TAG_RX_MULT);
-            xmlSerializer.text(String.valueOf(periodType.getMultiplier()));
-            xmlSerializer.endTag(null, GncXmlHelper.TAG_RX_MULT);
-            xmlSerializer.startTag(null, GncXmlHelper.TAG_RX_PERIOD_TYPE);
-            xmlSerializer.text(periodType.name().toLowerCase());
-            xmlSerializer.endTag(null, GncXmlHelper.TAG_RX_PERIOD_TYPE);
-
-            long recurrenceStartTime = cursor.getLong(cursor.getColumnIndexOrThrow(ScheduledActionEntry.COLUMN_START_TIME));
-            serializeDate(xmlSerializer, GncXmlHelper.TAG_RX_START, recurrenceStartTime);
-
-            xmlSerializer.endTag(null, GncXmlHelper.TAG_RECURRENCE);
+            exportRecurrence(xmlSerializer, recurrence);
+            xmlSerializer.endTag(null, GncXmlHelper.TAG_GNC_RECURRENCE);
             xmlSerializer.endTag(null, GncXmlHelper.TAG_SX_SCHEDULE);
 
             xmlSerializer.endTag(null, GncXmlHelper.TAG_SCHEDULED_ACTION);
@@ -629,7 +619,7 @@ public class GncXmlExporter extends Exporter{
     private void exportCommodity(XmlSerializer xmlSerializer, List<Currency> currencies) throws IOException {
         for (Currency currency : currencies) {
             xmlSerializer.startTag(null, GncXmlHelper.TAG_COMMODITY);
-            xmlSerializer.attribute(null, GncXmlHelper.ATTR_KEY_VERSION, "2.0.0");
+            xmlSerializer.attribute(null, GncXmlHelper.ATTR_KEY_VERSION, GncXmlHelper.BOOK_VERSION);
             xmlSerializer.startTag(null, GncXmlHelper.TAG_COMMODITY_SPACE);
             xmlSerializer.text("ISO4217");
             xmlSerializer.endTag(null, GncXmlHelper.TAG_COMMODITY_SPACE);
@@ -699,6 +689,73 @@ public class GncXmlExporter extends Exporter{
             cursor.close();
         }
         xmlSerializer.endTag(null, GncXmlHelper.TAG_PRICEDB);
+    }
+
+    /**
+     * Exports the recurrence to GnuCash XML, except the recurrence tags itself i.e. the actual recurrence attributes only
+     * <p>This is because there are different recurrence start tags for transactions and budgets.<br>
+     *     So make sure to write the recurrence start/closing tags before/after calling this method.</p>
+     * @param xmlSerializer XML serializer
+     * @param recurrence Recurrence object
+     */
+    private void exportRecurrence(XmlSerializer xmlSerializer, Recurrence recurrence) throws IOException{
+        PeriodType periodType = recurrence.getPeriodType();
+        xmlSerializer.startTag(null, GncXmlHelper.TAG_RX_MULT);
+        xmlSerializer.text(String.valueOf(periodType.getMultiplier()));
+        xmlSerializer.endTag(null, GncXmlHelper.TAG_RX_MULT);
+        xmlSerializer.startTag(null, GncXmlHelper.TAG_RX_PERIOD_TYPE);
+        xmlSerializer.text(periodType.name().toLowerCase());
+        xmlSerializer.endTag(null, GncXmlHelper.TAG_RX_PERIOD_TYPE);
+
+        long recurrenceStartTime = recurrence.getPeriodStart().getTime();
+        serializeDate(xmlSerializer, GncXmlHelper.TAG_RX_START, recurrenceStartTime);
+    }
+
+    private void exportBudgets(XmlSerializer xmlSerializer) throws IOException {
+        Cursor cursor = mBudgetsDbAdapter.fetchAllRecords();
+        while(cursor.moveToNext()) {
+            Budget budget = mBudgetsDbAdapter.buildModelInstance(cursor);
+            xmlSerializer.startTag(null,    GncXmlHelper.TAG_BUDGET);
+            xmlSerializer.attribute(null,   GncXmlHelper.ATTR_KEY_VERSION, GncXmlHelper.BOOK_VERSION);
+            xmlSerializer.startTag(null,    GncXmlHelper.TAG_BUDGET_ID);
+            xmlSerializer.attribute(null,   GncXmlHelper.ATTR_KEY_TYPE, GncXmlHelper.ATTR_VALUE_GUID);
+            xmlSerializer.text(budget.getUID());
+            xmlSerializer.endTag(null,      GncXmlHelper.TAG_BUDGET_ID);
+            xmlSerializer.startTag(null,    GncXmlHelper.TAG_BUDGET_NAME);
+            xmlSerializer.text(budget.getName());
+            xmlSerializer.endTag(null,      GncXmlHelper.TAG_BUDGET_NAME);
+            xmlSerializer.startTag(null,    GncXmlHelper.TAG_BUDGET_DESCRIPTION);
+            xmlSerializer.text(budget.getDescription() == null ? "" : budget.getDescription());
+            xmlSerializer.endTag(null,      GncXmlHelper.TAG_BUDGET_DESCRIPTION);
+            xmlSerializer.startTag(null,    GncXmlHelper.TAG_BUDGET_NUM_PERIODS);
+            xmlSerializer.text(Long.toString(budget.getNumberOfPeriods()));
+            xmlSerializer.endTag(null,      GncXmlHelper.TAG_BUDGET_NUM_PERIODS);
+            xmlSerializer.startTag(null,    GncXmlHelper.TAG_BUDGET_RECURRENCE);
+            exportRecurrence(xmlSerializer, budget.getRecurrence());
+            xmlSerializer.endTag(null,      GncXmlHelper.TAG_BUDGET_RECURRENCE);
+
+            //export budget slots
+            ArrayList<String> slotKey = new ArrayList<>();
+            ArrayList<String> slotType = new ArrayList<>();
+            ArrayList<String> slotValue = new ArrayList<>();
+
+
+            Money amount = budget.getAmount();
+            for (int period = 0; period < budget.getNumberOfPeriods(); period++) {
+                slotKey.add(String.valueOf(period));
+                slotType.add(GncXmlHelper.ATTR_VALUE_NUMERIC);
+                slotValue.add(amount.getNumerator() + "/" + amount.getDenominator());
+            }
+            //budget slots
+            xmlSerializer.startTag(null, GncXmlHelper.TAG_BUDGET_SLOTS);
+            xmlSerializer.startTag(null, GncXmlHelper.TAG_SLOT_VALUE);
+            xmlSerializer.attribute(null, GncXmlHelper.ATTR_KEY_TYPE, GncXmlHelper.ATTR_VALUE_FRAME);
+            exportSlots(xmlSerializer, slotKey, slotType, slotValue);
+            xmlSerializer.endTag(null, GncXmlHelper.TAG_SLOT_VALUE);
+            xmlSerializer.endTag(null, GncXmlHelper.TAG_BUDGET_SLOTS);
+            xmlSerializer.endTag(null, GncXmlHelper.TAG_BUDGET);
+        }
+        cursor.close();
     }
 
     @Override
@@ -775,6 +832,9 @@ public class GncXmlExporter extends Exporter{
             }
             //scheduled actions
             exportScheduledTransactions(xmlSerializer);
+
+            //budgets
+            exportBudgets(xmlSerializer);
 
             xmlSerializer.endTag(null, GncXmlHelper.TAG_BOOK);
             xmlSerializer.endTag(null, GncXmlHelper.TAG_ROOT);

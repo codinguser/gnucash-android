@@ -130,6 +130,7 @@ public class BudgetListFragment extends Fragment implements Refreshable,
     public void onResume() {
         super.onResume();
         refresh();
+        getActivity().findViewById(R.id.fab_create_budget).setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -145,14 +146,6 @@ public class BudgetListFragment extends Fragment implements Refreshable,
     @Override
     public void refresh(String uid) {
         refresh();
-    }
-
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        if (activity instanceof BudgetsActivity){
-            activity.findViewById(R.id.fab_create_budget).setVisibility(View.VISIBLE);
-        }
     }
 
     /**

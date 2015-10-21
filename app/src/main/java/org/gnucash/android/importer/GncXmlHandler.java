@@ -349,14 +349,14 @@ public class GncXmlHandler extends DefaultHandler {
         }
 
         switch (qualifiedName) {
-            case GncXmlHelper.TAG_NAME:
+            case GncXmlHelper.TAG_ACCT_NAME:
                 mAccount.setName(characterString);
                 mAccount.setFullName(characterString);
                 break;
             case GncXmlHelper.TAG_ACCT_ID:
                 mAccount.setUID(characterString);
                 break;
-            case GncXmlHelper.TAG_TYPE:
+            case GncXmlHelper.TAG_ACCT_TYPE:
                 AccountType accountType = AccountType.valueOf(characterString);
                 mAccount.setAccountType(accountType);
                 mAccount.setHidden(accountType == AccountType.ROOT); //flag root account as hidden
