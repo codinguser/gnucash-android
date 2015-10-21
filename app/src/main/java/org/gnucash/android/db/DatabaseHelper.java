@@ -36,6 +36,7 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import static org.gnucash.android.db.DatabaseSchema.AccountEntry;
 import static org.gnucash.android.db.DatabaseSchema.BudgetEntry;
+import static org.gnucash.android.db.DatabaseSchema.BudgetAmountEntry;
 import static org.gnucash.android.db.DatabaseSchema.CommodityEntry;
 import static org.gnucash.android.db.DatabaseSchema.CommonColumns;
 import static org.gnucash.android.db.DatabaseSchema.PriceEntry;
@@ -189,16 +190,27 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + BudgetEntry.COLUMN_UID            + " varchar(255) not null UNIQUE, "
             + BudgetEntry.COLUMN_NAME           + " varchar(255) not null, "
             + BudgetEntry.COLUMN_DESCRIPTION    + " varchar(255), "
-            + BudgetEntry.COLUMN_ACCOUNT_UID    + " varchar(255) not null, "
             + BudgetEntry.COLUMN_RECURRENCE_UID + " varchar(255) not null, "
-            + BudgetEntry.COLUMN_AMOUNT_NUM     + " integer not null, "
-            + BudgetEntry.COLUMN_AMOUNT_DENOM   + " integer not null, "
             + BudgetEntry.COLUMN_NUM_PERIODS    + " integer, "
             + BudgetEntry.COLUMN_CREATED_AT     + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
             + BudgetEntry.COLUMN_MODIFIED_AT    + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
-            + "FOREIGN KEY (" 	+ BudgetEntry.COLUMN_ACCOUNT_UID + ") REFERENCES " + AccountEntry.TABLE_NAME + " (" + AccountEntry.COLUMN_UID + ") ON DELETE CASCADE, "
             + "FOREIGN KEY (" 	+ BudgetEntry.COLUMN_RECURRENCE_UID + ") REFERENCES " + RecurrenceEntry.TABLE_NAME + " (" + RecurrenceEntry.COLUMN_UID + ") "
             + ");" + createUpdatedAtTrigger(BudgetEntry.TABLE_NAME);
+
+    private static final String BUDGET_AMOUNTS_TABLE_CREATE = "CREATE TABLE " + BudgetAmountEntry.TABLE_NAME + " ("
+            + BudgetAmountEntry._ID                   + " integer primary key autoincrement, "
+            + BudgetAmountEntry.COLUMN_UID            + " varchar(255) not null UNIQUE, "
+            + BudgetAmountEntry.COLUMN_BUDGET_UID     + " varchar(255) not null, "
+            + BudgetAmountEntry.COLUMN_ACCOUNT_UID    + " varchar(255) not null, "
+            + BudgetAmountEntry.COLUMN_AMOUNT_NUM     + " integer not null, "
+            + BudgetAmountEntry.COLUMN_AMOUNT_DENOM   + " integer not null, "
+            + BudgetAmountEntry.COLUMN_PERIOD_NUM     + " integer not null, "
+            + BudgetAmountEntry.COLUMN_CREATED_AT     + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
+            + BudgetAmountEntry.COLUMN_MODIFIED_AT    + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
+            + "FOREIGN KEY (" 	+ BudgetAmountEntry.COLUMN_ACCOUNT_UID + ") REFERENCES " + AccountEntry.TABLE_NAME + " (" + AccountEntry.COLUMN_UID + ") ON DELETE CASCADE, "
+            + "FOREIGN KEY (" 	+ BudgetAmountEntry.COLUMN_BUDGET_UID + ") REFERENCES " + BudgetEntry.TABLE_NAME + " (" + BudgetEntry.COLUMN_UID + ") ON DELETE CASCADE "
+            + ");" + createUpdatedAtTrigger(BudgetAmountEntry.TABLE_NAME);
+
 
     private static final String RECURRENCE_TABLE_CREATE = "CREATE TABLE " + RecurrenceEntry.TABLE_NAME + " ("
             + RecurrenceEntry._ID                   + " integer primary key autoincrement, "
@@ -300,8 +312,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(SCHEDULED_ACTIONS_TABLE_CREATE);
         db.execSQL(COMMODITIES_TABLE_CREATE);
         db.execSQL(PRICES_TABLE_CREATE);
-        db.execSQL(BUDGETS_TABLE_CREATE);
         db.execSQL(RECURRENCE_TABLE_CREATE);
+        db.execSQL(BUDGETS_TABLE_CREATE);
+        db.execSQL(BUDGET_AMOUNTS_TABLE_CREATE);
 
 
         String createAccountUidIndex = "CREATE UNIQUE INDEX '" + AccountEntry.INDEX_UID + "' ON "
@@ -325,6 +338,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         String createBudgetUidIndex = "CREATE UNIQUE INDEX '" + BudgetEntry.INDEX_UID
                 + "' ON " + BudgetEntry.TABLE_NAME + "(" + BudgetEntry.COLUMN_UID + ")";
 
+        String createBudgetAmountUidIndex = "CREATE UNIQUE INDEX '" + BudgetAmountEntry.INDEX_UID
+                + "' ON " + BudgetAmountEntry.TABLE_NAME + "(" + BudgetAmountEntry.COLUMN_UID + ")";
+
         String createRecurrenceUidIndex = "CREATE UNIQUE INDEX '" + RecurrenceEntry.INDEX_UID
                 + "' ON " + RecurrenceEntry.TABLE_NAME + "(" + RecurrenceEntry.COLUMN_UID + ")";
 
@@ -336,6 +352,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(createPriceUidIndex);
         db.execSQL(createBudgetUidIndex);
         db.execSQL(createRecurrenceUidIndex);
+        db.execSQL(createBudgetAmountUidIndex);
 
         try {
             MigrationHelper.importCommodities(db);

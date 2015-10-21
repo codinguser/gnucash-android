@@ -211,13 +211,23 @@ public class DatabaseSchema {
 
         public static final String COLUMN_NAME          = "name";
         public static final String COLUMN_DESCRIPTION   = "description";
-        public static final String COLUMN_AMOUNT_NUM    = "amount_num";
-        public static final String COLUMN_AMOUNT_DENOM  = "amount_denom";
         public static final String COLUMN_NUM_PERIODS   = "num_periods";
-        public static final String COLUMN_ACCOUNT_UID   = "account_uid";
         public static final String COLUMN_RECURRENCE_UID = "recurrence_uid";
 
         public static final String INDEX_UID = "budgets_uid_index";
+    }
+
+
+    public static abstract class BudgetAmountEntry implements CommonColumns {
+        public static final String TABLE_NAME           = "budget_amounts";
+
+        public static final String COLUMN_BUDGET_UID    = "budget_uid";
+        public static final String COLUMN_ACCOUNT_UID   = "account_uid";
+        public static final String COLUMN_PERIOD_NUM    = "period_num";
+        public static final String COLUMN_AMOUNT_NUM    = "amount_num";
+        public static final String COLUMN_AMOUNT_DENOM  = "amount_denom";
+
+        public static final String INDEX_UID            = "budget_amounts_uid_index";
     }
 
 

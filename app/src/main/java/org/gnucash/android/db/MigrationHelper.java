@@ -63,6 +63,7 @@ import javax.xml.parsers.SAXParserFactory;
 
 import static org.gnucash.android.db.DatabaseSchema.AccountEntry;
 import static org.gnucash.android.db.DatabaseSchema.BudgetEntry;
+import static org.gnucash.android.db.DatabaseSchema.BudgetAmountEntry;
 import static org.gnucash.android.db.DatabaseSchema.CommodityEntry;
 import static org.gnucash.android.db.DatabaseSchema.CommonColumns;
 import static org.gnucash.android.db.DatabaseSchema.PriceEntry;
@@ -849,7 +850,7 @@ public class MigrationHelper {
 
         db.beginTransaction();
         try {
-            String createCommoditiesSql = "CREATE TABLE " + CommodityEntry.TABLE_NAME + " ("
+            db.execSQL("CREATE TABLE " + CommodityEntry.TABLE_NAME + " ("
                     + CommodityEntry._ID                + " integer primary key autoincrement, "
                     + CommodityEntry.COLUMN_UID         + " varchar(255) not null UNIQUE, "
                     + CommodityEntry.COLUMN_NAMESPACE   + " varchar(255) not null default " + Commodity.Namespace.ISO4217.name() + ", "
@@ -861,8 +862,10 @@ public class MigrationHelper {
                     + CommodityEntry.COLUMN_QUOTE_FLAG  + " integer not null, "
                     + CommodityEntry.COLUMN_CREATED_AT  + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
                     + CommodityEntry.COLUMN_MODIFIED_AT + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP "
-                    + ");" + DatabaseHelper.createUpdatedAtTrigger(CommodityEntry.TABLE_NAME);
-            db.execSQL(createCommoditiesSql);
+                    + ");" + DatabaseHelper.createUpdatedAtTrigger(CommodityEntry.TABLE_NAME));
+            db.execSQL("CREATE UNIQUE INDEX '" + CommodityEntry.INDEX_UID
+                    + "' ON " + CommodityEntry.TABLE_NAME + "(" + CommodityEntry.COLUMN_UID + ")");
+
             try {
                 importCommodities(db);
             } catch (SAXException | ParserConfigurationException | IOException e) {
@@ -891,7 +894,7 @@ public class MigrationHelper {
                     + " WHERE " + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_COMMODITY_UID + " = " + CommodityEntry.TABLE_NAME + "." + CommodityEntry.COLUMN_UID
                     + ")");
 
-            String createPricesSql = "CREATE TABLE " + PriceEntry.TABLE_NAME + " ("
+            db.execSQL("CREATE TABLE " + PriceEntry.TABLE_NAME + " ("
                     + PriceEntry._ID                    + " integer primary key autoincrement, "
                     + PriceEntry.COLUMN_UID             + " varchar(255) not null UNIQUE, "
                     + PriceEntry.COLUMN_COMMODITY_UID 	+ " varchar(255) not null, "
@@ -906,8 +909,9 @@ public class MigrationHelper {
                     + "UNIQUE (" + PriceEntry.COLUMN_COMMODITY_UID + ", " + PriceEntry.COLUMN_CURRENCY_UID + ") ON CONFLICT REPLACE, "
                     + "FOREIGN KEY (" 	+ PriceEntry.COLUMN_COMMODITY_UID + ") REFERENCES " + CommodityEntry.TABLE_NAME + " (" + CommodityEntry.COLUMN_UID + ") ON DELETE CASCADE, "
                     + "FOREIGN KEY (" 	+ PriceEntry.COLUMN_CURRENCY_UID + ") REFERENCES " + CommodityEntry.TABLE_NAME + " (" + CommodityEntry.COLUMN_UID + ") ON DELETE CASCADE "
-                    + ");" + DatabaseHelper.createUpdatedAtTrigger(PriceEntry.TABLE_NAME);
-            db.execSQL(createPricesSql);
+                    + ");" + DatabaseHelper.createUpdatedAtTrigger(PriceEntry.TABLE_NAME));
+            db.execSQL("CREATE UNIQUE INDEX '" + PriceEntry.INDEX_UID
+                    + "' ON " + PriceEntry.TABLE_NAME + "(" + PriceEntry.COLUMN_UID + ")");
 
 
             //store split amounts as integer components numerator and denominator
@@ -1094,21 +1098,37 @@ public class MigrationHelper {
                     + RecurrenceEntry.COLUMN_MODIFIED_AT    + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP); "
                     + DatabaseHelper.createUpdatedAtTrigger(RecurrenceEntry.TABLE_NAME));
 
-            db.execSQL("CREATE TABLE " + DatabaseSchema.BudgetEntry.TABLE_NAME + " ("
+            db.execSQL("CREATE TABLE " + BudgetEntry.TABLE_NAME + " ("
                     + BudgetEntry._ID                   + " integer primary key autoincrement, "
                     + BudgetEntry.COLUMN_UID            + " varchar(255) not null UNIQUE, "
                     + BudgetEntry.COLUMN_NAME           + " varchar(255) not null, "
                     + BudgetEntry.COLUMN_DESCRIPTION    + " varchar(255), "
-                    + BudgetEntry.COLUMN_ACCOUNT_UID    + " varchar(255) not null, "
                     + BudgetEntry.COLUMN_RECURRENCE_UID + " varchar(255) not null, "
-                    + BudgetEntry.COLUMN_AMOUNT_NUM     + " integer not null, "
-                    + BudgetEntry.COLUMN_AMOUNT_DENOM   + " integer not null, "
                     + BudgetEntry.COLUMN_NUM_PERIODS    + " integer, "
-                    + BudgetEntry.COLUMN_CREATED_AT      + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
-                    + BudgetEntry.COLUMN_MODIFIED_AT     + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
-                    + "FOREIGN KEY (" 	+ BudgetEntry.COLUMN_ACCOUNT_UID + ") REFERENCES " + AccountEntry.TABLE_NAME + " (" + AccountEntry.COLUMN_UID + ") ON DELETE CASCADE, "
+                    + BudgetEntry.COLUMN_CREATED_AT     + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
+                    + BudgetEntry.COLUMN_MODIFIED_AT    + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
                     + "FOREIGN KEY (" 	+ BudgetEntry.COLUMN_RECURRENCE_UID + ") REFERENCES " + RecurrenceEntry.TABLE_NAME + " (" + RecurrenceEntry.COLUMN_UID + ") "
-                    + ");" + DatabaseHelper.createUpdatedAtTrigger(DatabaseSchema.BudgetEntry.TABLE_NAME));
+                    + ");" + DatabaseHelper.createUpdatedAtTrigger(BudgetEntry.TABLE_NAME));
+
+            db.execSQL("CREATE UNIQUE INDEX '" + BudgetEntry.INDEX_UID
+                    + "' ON " + BudgetEntry.TABLE_NAME + "(" + BudgetEntry.COLUMN_UID + ")");
+
+            db.execSQL("CREATE TABLE " + BudgetAmountEntry.TABLE_NAME + " ("
+                    + BudgetAmountEntry._ID                   + " integer primary key autoincrement, "
+                    + BudgetAmountEntry.COLUMN_UID            + " varchar(255) not null UNIQUE, "
+                    + BudgetAmountEntry.COLUMN_BUDGET_UID     + " varchar(255) not null, "
+                    + BudgetAmountEntry.COLUMN_ACCOUNT_UID    + " varchar(255) not null, "
+                    + BudgetAmountEntry.COLUMN_AMOUNT_NUM     + " integer not null, "
+                    + BudgetAmountEntry.COLUMN_AMOUNT_DENOM   + " integer not null, "
+                    + BudgetAmountEntry.COLUMN_PERIOD_NUM     + " integer not null, "
+                    + BudgetAmountEntry.COLUMN_CREATED_AT     + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
+                    + BudgetAmountEntry.COLUMN_MODIFIED_AT    + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
+                    + "FOREIGN KEY (" 	+ BudgetAmountEntry.COLUMN_ACCOUNT_UID + ") REFERENCES " + AccountEntry.TABLE_NAME + " (" + AccountEntry.COLUMN_UID + ") ON DELETE CASCADE, "
+                    + "FOREIGN KEY (" 	+ BudgetAmountEntry.COLUMN_BUDGET_UID + ") REFERENCES " + BudgetEntry.TABLE_NAME + " (" + BudgetEntry.COLUMN_UID + ") ON DELETE CASCADE "
+                    + ");" + DatabaseHelper.createUpdatedAtTrigger(BudgetAmountEntry.TABLE_NAME));
+
+            db.execSQL("CREATE UNIQUE INDEX '" + BudgetAmountEntry.INDEX_UID
+                    + "' ON " + BudgetAmountEntry.TABLE_NAME + "(" + BudgetAmountEntry.COLUMN_UID + ")");
 
 
             //extract recurrences from scheduled actions table and put in the recurrence table

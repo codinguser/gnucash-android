@@ -20,6 +20,8 @@ import android.support.annotation.NonNull;
 
 import org.joda.time.LocalDateTime;
 
+import java.util.List;
+
 /**
  * Budgets model
  * @author Ngewi Fet <ngewif@gmail.com>
@@ -28,9 +30,8 @@ public class Budget extends BaseModel {
 
     private String mName;
     private String mDescription;
-    private Money mAmount;
-    private String mAccountUID;
     private Recurrence mRecurrence;
+    private List<BudgetAmount> budgetAmounts;
     private long mNumberOfPeriods = 12; //default to 12 periods per year
 
     /**
@@ -44,11 +45,9 @@ public class Budget extends BaseModel {
      * Overloaded constructor.
      * Initializes the name and amount of this budget
      * @param name String name of the budget
-     * @param amount Money amount of this budget
      */
-    public Budget(@NonNull String name, @NonNull Money amount){
+    public Budget(@NonNull String name){
         this.mName = name;
-        this.mAmount = amount;
     }
 
     /**
@@ -84,38 +83,6 @@ public class Budget extends BaseModel {
     }
 
     /**
-     * Returns the amount of this budget
-     * @return Money amount of budget
-     */
-    public Money getAmount() {
-        return mAmount;
-    }
-
-    /**
-     * Sets the amount for this budget
-     * @param amount Money amount of the budget
-     */
-    public void setAmount(@NonNull Money amount) {
-        this.mAmount = amount;
-    }
-
-    /**
-     * Return the account GUID associated with this budget
-     * @return Account GUID string
-     */
-    public String getAccountUID() {
-        return mAccountUID;
-    }
-
-    /**
-     * Sets the GUID of the account associated with this budget
-     * @param accountUID Account GUID string
-     */
-    public void setAccountUID(@NonNull String accountUID) {
-        this.mAccountUID = accountUID;
-    }
-
-    /**
      * Returns the recurrence for this budget
      * @return Recurrence object for this budget
      */
@@ -129,6 +96,22 @@ public class Budget extends BaseModel {
      */
     public void setRecurrence(@NonNull Recurrence recurrence) {
         this.mRecurrence = recurrence;
+    }
+
+    /**
+     * Return list of budget amounts associated with this budget
+     * @return List of budget amounts
+     */
+    public List<BudgetAmount> getBudgetAmounts() {
+        return budgetAmounts;
+    }
+
+    /**
+     * Set the list of budget amounts
+     * @param budgetAmounts List of budget amounts
+     */
+    public void setBudgetAmounts(List<BudgetAmount> budgetAmounts) {
+        this.budgetAmounts = budgetAmounts;
     }
 
     /**

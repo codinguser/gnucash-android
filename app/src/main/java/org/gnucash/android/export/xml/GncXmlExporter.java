@@ -33,6 +33,7 @@ import org.gnucash.android.model.Account;
 import org.gnucash.android.model.AccountType;
 import org.gnucash.android.model.BaseModel;
 import org.gnucash.android.model.Budget;
+import org.gnucash.android.model.BudgetAmount;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.model.PeriodType;
 import org.gnucash.android.model.Recurrence;
@@ -739,19 +740,30 @@ public class GncXmlExporter extends Exporter{
             ArrayList<String> slotType = new ArrayList<>();
             ArrayList<String> slotValue = new ArrayList<>();
 
-
-            Money amount = budget.getAmount();
-            for (int period = 0; period < budget.getNumberOfPeriods(); period++) {
-                slotKey.add(String.valueOf(period));
-                slotType.add(GncXmlHelper.ATTR_VALUE_NUMERIC);
-                slotValue.add(amount.getNumerator() + "/" + amount.getDenominator());
-            }
-            //budget slots
             xmlSerializer.startTag(null, GncXmlHelper.TAG_BUDGET_SLOTS);
-            xmlSerializer.startTag(null, GncXmlHelper.TAG_SLOT_VALUE);
-            xmlSerializer.attribute(null, GncXmlHelper.ATTR_KEY_TYPE, GncXmlHelper.ATTR_VALUE_FRAME);
-            exportSlots(xmlSerializer, slotKey, slotType, slotValue);
-            xmlSerializer.endTag(null, GncXmlHelper.TAG_SLOT_VALUE);
+            for (BudgetAmount budgetAmount : budget.getBudgetAmounts()) {
+                xmlSerializer.startTag(null, GncXmlHelper.TAG_SLOT);
+                xmlSerializer.startTag(null, GncXmlHelper.TAG_SLOT_KEY);
+                xmlSerializer.text(budgetAmount.getAccountUID());
+                xmlSerializer.endTag(null, GncXmlHelper.TAG_SLOT_KEY);
+
+                xmlSerializer.startTag(null, GncXmlHelper.TAG_SLOT_VALUE);
+                xmlSerializer.attribute(null, GncXmlHelper.ATTR_KEY_TYPE, GncXmlHelper.ATTR_VALUE_FRAME);
+
+                Money amount = budgetAmount.getAmount();
+                for (int period = 0; period < budget.getNumberOfPeriods(); period++) {
+                    slotKey.add(String.valueOf(period));
+                    slotType.add(GncXmlHelper.ATTR_VALUE_NUMERIC);
+                    slotValue.add(amount.getNumerator() + "/" + amount.getDenominator());
+                }
+                //budget slots
+
+                xmlSerializer.startTag(null, GncXmlHelper.TAG_SLOT_VALUE);
+                xmlSerializer.attribute(null, GncXmlHelper.ATTR_KEY_TYPE, GncXmlHelper.ATTR_VALUE_FRAME);
+                exportSlots(xmlSerializer, slotKey, slotType, slotValue);
+                xmlSerializer.endTag(null, GncXmlHelper.TAG_SLOT_VALUE);
+            }
+
             xmlSerializer.endTag(null, GncXmlHelper.TAG_BUDGET_SLOTS);
             xmlSerializer.endTag(null, GncXmlHelper.TAG_BUDGET);
         }

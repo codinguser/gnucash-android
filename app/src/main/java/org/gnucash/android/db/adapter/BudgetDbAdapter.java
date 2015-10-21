@@ -22,10 +22,11 @@ import android.database.sqlite.SQLiteStatement;
 import android.support.annotation.NonNull;
 
 import org.gnucash.android.app.GnuCashApplication;
+import org.gnucash.android.db.DatabaseSchema.BudgetEntry;
 import org.gnucash.android.model.Budget;
-import org.gnucash.android.model.Money;
+import org.gnucash.android.model.BudgetAmount;
 
-import static org.gnucash.android.db.DatabaseSchema.BudgetEntry;
+;
 
 /**
  * Database adapter for accessing {@link org.gnucash.android.model.Budget} records
@@ -33,6 +34,7 @@ import static org.gnucash.android.db.DatabaseSchema.BudgetEntry;
 public class BudgetDbAdapter extends DatabaseAdapter<Budget>{
 
     private RecurrenceDbAdapter mRecurrenceDbAdapter;
+    private BudgetAmountsDbAdapter mBudgetAmountsDbAdapter;
 
     /**
      * Opens the database adapter with an existing database
@@ -42,6 +44,7 @@ public class BudgetDbAdapter extends DatabaseAdapter<Budget>{
     public BudgetDbAdapter(SQLiteDatabase db) {
         super(db, BudgetEntry.TABLE_NAME);
         mRecurrenceDbAdapter = new RecurrenceDbAdapter(db);
+        mBudgetAmountsDbAdapter = new BudgetAmountsDbAdapter(db);
     }
 
     /**
@@ -56,25 +59,26 @@ public class BudgetDbAdapter extends DatabaseAdapter<Budget>{
     public void addRecord(@NonNull Budget budget) {
         mRecurrenceDbAdapter.addRecord(budget.getRecurrence());
         super.addRecord(budget);
+        mBudgetAmountsDbAdapter.deleteBudgetAmountsForBudget(budget.getUID());
+        for (BudgetAmount budgetAmount : budget.getBudgetAmounts()) {
+            mBudgetAmountsDbAdapter.addRecord(budgetAmount);
+        }
     }
 
     @Override
     public Budget buildModelInstance(@NonNull Cursor cursor) {
         String name = cursor.getString(cursor.getColumnIndexOrThrow(BudgetEntry.COLUMN_NAME));
         String description = cursor.getString(cursor.getColumnIndexOrThrow(BudgetEntry.COLUMN_DESCRIPTION));
-        String accountUID = cursor.getString(cursor.getColumnIndexOrThrow(BudgetEntry.COLUMN_ACCOUNT_UID));
         String recurrenceUID = cursor.getString(cursor.getColumnIndexOrThrow(BudgetEntry.COLUMN_RECURRENCE_UID));
-        long amountNum = cursor.getLong(cursor.getColumnIndexOrThrow(BudgetEntry.COLUMN_AMOUNT_NUM));
-        long amountDenom = cursor.getLong(cursor.getColumnIndexOrThrow(BudgetEntry.COLUMN_AMOUNT_DENOM));
         long numPeriods = cursor.getLong(cursor.getColumnIndexOrThrow(BudgetEntry.COLUMN_NUM_PERIODS));
 
-        String currencyCode = getAccountCurrencyCode(accountUID);
-        Budget budget = new Budget(name, new Money(amountNum, amountDenom, currencyCode));
-        budget.setAccountUID(accountUID);
+
+        Budget budget = new Budget(name);
         budget.setDescription(description);
         budget.setRecurrence(mRecurrenceDbAdapter.getRecord(recurrenceUID));
         budget.setNumberOfPeriods(numPeriods);
         populateBaseModelAttributes(cursor, budget);
+        budget.setBudgetAmounts(mBudgetAmountsDbAdapter.getBudgetAmountsForBudget(budget.getUID()));
 
         return budget;
     }
@@ -86,11 +90,8 @@ public class BudgetDbAdapter extends DatabaseAdapter<Budget>{
                     + BudgetEntry.COLUMN_UID            + " , "
                     + BudgetEntry.COLUMN_NAME           + " , "
                     + BudgetEntry.COLUMN_DESCRIPTION    + " , "
-                    + BudgetEntry.COLUMN_ACCOUNT_UID    + " , "
-                    + BudgetEntry.COLUMN_AMOUNT_NUM     + " , "
-                    + BudgetEntry.COLUMN_AMOUNT_DENOM   + " , "
                     + BudgetEntry.COLUMN_RECURRENCE_UID + " , "
-                    + BudgetEntry.COLUMN_NUM_PERIODS    + " ) VALUES ( ? , ? , ? , ? , ? , ? , ? , ? ) ");
+                    + BudgetEntry.COLUMN_NUM_PERIODS    + " ) VALUES (? , ? , ? , ? , ? ) ");
         }
 
         mReplaceStatement.clearBindings();
@@ -98,41 +99,10 @@ public class BudgetDbAdapter extends DatabaseAdapter<Budget>{
         mReplaceStatement.bindString(2, budget.getName());
         if (budget.getDescription() != null)
             mReplaceStatement.bindString(3, budget.getDescription());
-        mReplaceStatement.bindString(4, budget.getAccountUID());
-        mReplaceStatement.bindLong(5, budget.getAmount().getNumerator());
-        mReplaceStatement.bindLong(6, budget.getAmount().getDenominator());
-        mReplaceStatement.bindString(7, budget.getRecurrence().getUID());
-        mReplaceStatement.bindLong(8, budget.getNumberOfPeriods());
+        mReplaceStatement.bindString(4, budget.getRecurrence().getUID());
+        mReplaceStatement.bindLong(5, budget.getNumberOfPeriods());
 
         return mReplaceStatement;
     }
 
-    /**
-     * Returns the budget for an account
-     * <p>This method assumes that there is only one budget per account</p>
-     * @param accountUID GUID of the account
-     * @return Budget instance for the account
-     */
-    public Budget getAccountBudget(String accountUID) {
-        Cursor cursor = fetchAllRecords(BudgetEntry.COLUMN_ACCOUNT_UID + " = ?", new String[]{accountUID});
-        try{
-            if (cursor.moveToNext()){
-                return buildModelInstance(cursor);
-            } else {
-                return null;
-            }
-        } finally {
-            cursor.close();
-        }
-    }
-
-
-    /**
-     * Returns the account GUID for the budget
-     * @param budgetUID GUID of the budget
-     * @return GUID of the account associated with the budget
-     */
-    public String getAccountUID(String budgetUID) {
-        return getAttribute(budgetUID, BudgetEntry.COLUMN_ACCOUNT_UID);
-    }
 }
