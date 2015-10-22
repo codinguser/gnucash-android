@@ -222,19 +222,19 @@ public class QifExporter extends Exporter{
         PreferenceManager.getDefaultSharedPreferences(mContext).edit().putString(Exporter.PREF_LAST_EXPORT_TIME, timeStamp).apply();
     }
 
-    //FIXME: fix javadoc
     /**
-     * Copies a file from <code>src</code> to <code>dst</code>
-     * @param src Absolute path to the source file
-     * @param dst Absolute path to the destination file
-     * @throws IOException if the file could not be copied
+     * Splits a Qif file into several ones for each currency.
+     *
+     * @param file File object of the Qif file to split.
+     * @return a list of paths of the newly created Qif files.
+     * @throws IOException if something went wrong while splitting the file.
      */
-    public static List<String> splitQIF(File src, File dst) throws IOException {
+    public static List<String> splitQIF(File file) throws IOException {
         // split only at the last dot
-        String[] pathParts = dst.getPath().split("(?=\\.[^\\.]+$)");
+        String[] pathParts = file.getPath().split("(?=\\.[^\\.]+$)");
         ArrayList<String> splitFiles = new ArrayList<>();
         String line;
-        BufferedReader in = new BufferedReader(new FileReader(src));
+        BufferedReader in = new BufferedReader(new FileReader(file));
         BufferedWriter out = null;
         try {
             while ((line = in.readLine()) != null) {
@@ -248,7 +248,7 @@ public class QifExporter extends Exporter{
                     out = new BufferedWriter(new FileWriter(newFileName));
                 } else {
                     if (out == null) {
-                        throw new IllegalArgumentException(src.getPath() + " format is not correct");
+                        throw new IllegalArgumentException(file.getPath() + " format is not correct");
                     }
                     out.append(line).append('\n');
                 }

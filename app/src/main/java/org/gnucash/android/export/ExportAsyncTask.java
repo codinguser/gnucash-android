@@ -146,6 +146,7 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
             File file = new File(mExportParams.getTargetFilepath());
             BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), "UTF-8"));
             try {
+                // FIXME: detect if there aren't transactions to export and inform the user
                 mExporter.generateExport(writer);
                 writer.flush();
             }
@@ -366,7 +367,7 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
         List<String> exportedFilePaths;
         if (mExportParams.getExportFormat() == ExportFormat.QIF) {
             String path = mExportParams.getTargetFilepath();
-            exportedFilePaths = QifExporter.splitQIF(new File(path), new File(path));
+            exportedFilePaths = QifExporter.splitQIF(new File(path));
         } else {
             exportedFilePaths = new ArrayList<>();
             exportedFilePaths.add(mExportParams.getTargetFilepath());
@@ -428,7 +429,7 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
         ArrayList<Uri> exportFiles = new ArrayList<>();
         if (mExportParams.getExportFormat() == ExportFormat.QIF) {
             try {
-                List<String> splitFiles = QifExporter.splitQIF(new File(path), new File(path));
+                List<String> splitFiles = QifExporter.splitQIF(new File(path));
                 for (String file : splitFiles) {
                     exportFiles.add(Uri.parse("file://" + file));
                 }
