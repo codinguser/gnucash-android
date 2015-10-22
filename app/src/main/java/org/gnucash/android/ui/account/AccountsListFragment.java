@@ -21,15 +21,12 @@ import android.app.SearchManager;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.graphics.Color;
-import android.graphics.drawable.GradientDrawable;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.ColorRes;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.Loader;
@@ -53,21 +50,22 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import org.gnucash.android.R;
-import org.gnucash.android.db.adapter.AccountsDbAdapter;
 import org.gnucash.android.db.DatabaseCursorLoader;
 import org.gnucash.android.db.DatabaseSchema;
+import org.gnucash.android.db.adapter.AccountsDbAdapter;
 import org.gnucash.android.db.adapter.BudgetDbAdapter;
 import org.gnucash.android.model.Account;
 import org.gnucash.android.model.Budget;
 import org.gnucash.android.model.Money;
-import org.gnucash.android.ui.budget.BudgetListFragment;
 import org.gnucash.android.ui.common.FormActivity;
 import org.gnucash.android.ui.common.UxArgument;
 import org.gnucash.android.ui.util.AccountBalanceTask;
 import org.gnucash.android.ui.util.CursorRecyclerAdapter;
-import org.gnucash.android.ui.util.widget.EmptyRecyclerView;
 import org.gnucash.android.ui.util.OnAccountClickedListener;
 import org.gnucash.android.ui.util.Refreshable;
+import org.gnucash.android.ui.util.widget.EmptyRecyclerView;
+
+import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -500,10 +498,13 @@ public class AccountsListFragment extends Fragment implements
                 });
             }
 
-            Budget budget = BudgetDbAdapter.getInstance().getAccountBudget(accountUID);
-            if (budget != null){
+            List<Budget> budgets = BudgetDbAdapter.getInstance().getAccountBudgets(accountUID);
+            //TODO: include fetch only active budgets
+            if (budgets.size() == 1){
+                Budget budget = budgets.get(0);
                 Money balance = mAccountsDbAdapter.getAccountBalance(accountUID, budget.getStartofCurrentPeriod(), budget.getEndOfCurrentPeriod());
-                double budgetProgress = balance.divide(budget.getAmount()).asBigDecimal().doubleValue() * 100;
+                double budgetProgress = balance.divide(budget.getAmount(accountUID)).asBigDecimal().doubleValue() * 100;
+
                 holder.budgetIndicator.setVisibility(View.VISIBLE);
                 holder.budgetIndicator.setProgress((int) budgetProgress);
             } else {

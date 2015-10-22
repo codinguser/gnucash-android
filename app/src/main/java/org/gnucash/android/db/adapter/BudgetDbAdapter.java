@@ -18,15 +18,21 @@ package org.gnucash.android.db.adapter;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteQueryBuilder;
 import android.database.sqlite.SQLiteStatement;
 import android.support.annotation.NonNull;
 
 import org.gnucash.android.app.GnuCashApplication;
+import org.gnucash.android.db.DatabaseSchema.BudgetAmountEntry;
 import org.gnucash.android.db.DatabaseSchema.BudgetEntry;
 import org.gnucash.android.model.Budget;
 import org.gnucash.android.model.BudgetAmount;
+import org.gnucash.android.model.Money;
+import org.gnucash.android.model.Recurrence;
 
-;
+import java.util.ArrayList;
+import java.util.List;
+
 
 /**
  * Database adapter for accessing {@link org.gnucash.android.model.Budget} records
@@ -63,6 +69,27 @@ public class BudgetDbAdapter extends DatabaseAdapter<Budget>{
         for (BudgetAmount budgetAmount : budget.getBudgetAmounts()) {
             mBudgetAmountsDbAdapter.addRecord(budgetAmount);
         }
+    }
+
+    @Override
+    public long bulkAddRecords(@NonNull List<Budget> budgetList) {
+        List<BudgetAmount> budgetAmountList = new ArrayList<>(budgetList.size()*2);
+        for (Budget budget : budgetList) {
+            budgetAmountList.addAll(budget.getBudgetAmounts());
+        }
+
+        long nRow = super.bulkAddRecords(budgetList);
+
+        if (nRow > 0 && !budgetAmountList.isEmpty()){
+            mBudgetAmountsDbAdapter.bulkAddRecords(budgetAmountList);
+        }
+
+        List<Recurrence> recurrenceList = new ArrayList<>(budgetList.size());
+        for (Budget budget : budgetList) {
+            recurrenceList.add(budget.getRecurrence());
+        }
+        mRecurrenceDbAdapter.bulkAddRecords(recurrenceList);
+        return nRow;
     }
 
     @Override
@@ -105,4 +132,56 @@ public class BudgetDbAdapter extends DatabaseAdapter<Budget>{
         return mReplaceStatement;
     }
 
+    /**
+     * Fetch all budgets which have an amount specified for the account
+     * @param accountUID GUID of account
+     * @return Cursor with budgets data
+     */
+    public Cursor fetchBudgetsForAccount(String accountUID){
+        SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
+        queryBuilder.setTables(BudgetEntry.TABLE_NAME + "," + BudgetAmountEntry.TABLE_NAME
+                + " ON " + BudgetEntry.TABLE_NAME + "." + BudgetEntry.COLUMN_UID + " = "
+                + BudgetAmountEntry.TABLE_NAME + "." + BudgetAmountEntry.COLUMN_BUDGET_UID);
+
+        queryBuilder.setDistinct(true);
+        String[] projectionIn = new String[]{BudgetEntry.TABLE_NAME + ".*"};
+        String selection = BudgetAmountEntry.TABLE_NAME + "." + BudgetAmountEntry.COLUMN_ACCOUNT_UID + " = ?";
+        String[] selectionArgs = new String[]{accountUID};
+        String sortOrder = BudgetEntry.TABLE_NAME + "." + BudgetEntry.COLUMN_NAME + " ASC";
+
+        return queryBuilder.query(mDb, projectionIn, selection, selectionArgs, null, null, sortOrder);
+    }
+
+    /**
+     * Returns the budgets associated with a specific account
+     * @param accountUID GUID of the account
+     * @return List of budgets for the account
+     */
+    public List<Budget> getAccountBudgets(String accountUID) {
+        Cursor cursor = fetchBudgetsForAccount(accountUID);
+        List<Budget> budgets = new ArrayList<>();
+        while(cursor.moveToNext()){
+            budgets.add(buildModelInstance(cursor));
+        }
+        cursor.close();
+        return budgets;
+    }
+
+    /**
+     * Returns the sum of the account balances for all accounts in a budget for a specified time period
+     * <p>This represents the total amount spent within the account of this budget in a given period</p>
+     * @param budgetUID GUID of budget
+     * @param periodStart Start of the budgeting period in millis
+     * @param periodEnd End of the budgeting period in millis
+     * @return Balance of all the accounts
+     */
+    public Money getAccountSum(String budgetUID, long periodStart, long periodEnd){
+        List<BudgetAmount> budgetAmounts = mBudgetAmountsDbAdapter.getBudgetAmountsForBudget(budgetUID);
+        List<String> accountUIDs = new ArrayList<>();
+        for (BudgetAmount budgetAmount : budgetAmounts) {
+            accountUIDs.add(budgetAmount.getAccountUID());
+        }
+
+        return AccountsDbAdapter.getInstance().getAccountsBalance(accountUIDs, periodStart, periodEnd);
+    }
 }

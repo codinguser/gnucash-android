@@ -51,7 +51,6 @@ import org.gnucash.android.model.Budget;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.ui.common.FormActivity;
 import org.gnucash.android.ui.common.UxArgument;
-import org.gnucash.android.ui.transaction.TransactionsActivity;
 import org.gnucash.android.ui.util.CursorRecyclerAdapter;
 import org.gnucash.android.ui.util.Refreshable;
 import org.gnucash.android.ui.util.widget.EmptyRecyclerView;
@@ -183,13 +182,6 @@ public class BudgetListFragment extends Fragment implements Refreshable,
         refresh();
     }
 
-    private void goToAccount(long budgetId){
-        String budgetUID = mBudgetDbAdapter.getUID(budgetId);
-        Intent intent = new Intent(getActivity(), TransactionsActivity.class);
-        intent.putExtra(UxArgument.SELECTED_ACCOUNT_UID, mBudgetDbAdapter.getAccountUID(budgetUID));
-        startActivityForResult(intent, REQUEST_OPEN_ACCOUNT);
-    }
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == Activity.RESULT_OK){
@@ -211,17 +203,23 @@ public class BudgetListFragment extends Fragment implements Refreshable,
             holder.budgetName.setText(budget.getName());
 
             AccountsDbAdapter accountsDbAdapter = AccountsDbAdapter.getInstance();
-            holder.accountName.setText(accountsDbAdapter.getAccountFullName(budget.getAccountUID()));
+            String accountString;
+            if (budget.getBudgetAmounts().size() == 1){
+                accountString = accountsDbAdapter.getAccountFullName(budget.getBudgetAmounts().get(0).getAccountUID());
+            } else {
+                accountString = budget.getBudgetAmounts().size() + " budgeted accounts";
+            }
+            holder.accountName.setText(accountString);
 
-            holder.budgetRecurrence.setText(budget.getAmount().formattedString() + "  " + budget.getRecurrence().getRepeatString());
+            holder.budgetRecurrence.setText(budget.getRecurrence().getRepeatString());
 
-            Money accountBalance = accountsDbAdapter.getAccountBalance(budget.getAccountUID(),
+            Money accountBalance = mBudgetDbAdapter.getAccountSum(budget.getUID(),
                     budget.getStartofCurrentPeriod(), budget.getEndOfCurrentPeriod());
 
-            String usedAmount = accountBalance.getCurrency().getSymbol() + accountBalance.formattedAmount() + " of " + budget.getAmount().formattedString();
+            String usedAmount = accountBalance.getCurrency().getSymbol() + accountBalance.formattedAmount() + " of " + budget.getAmountSum().formattedString();
             holder.budgetAmount.setText(usedAmount);
 
-            double budgetProgress = accountBalance.divide(budget.getAmount()).asBigDecimal().doubleValue() * 100;
+            double budgetProgress = accountBalance.divide(budget.getAmountSum()).asBigDecimal().doubleValue() * 100;
             holder.budgetIndicator.setProgress((int)budgetProgress);
 
             holder.itemView.setOnClickListener(new View.OnClickListener() {
@@ -271,10 +269,6 @@ public class BudgetListFragment extends Fragment implements Refreshable,
                 switch (item.getItemId()){
                     case R.id.context_menu_edit_budget:
                         editBudget(budgetId);
-                        return true;
-
-                    case R.id.context_menu_goto_account:
-                        goToAccount(budgetId);
                         return true;
 
                     case R.id.context_menu_delete:

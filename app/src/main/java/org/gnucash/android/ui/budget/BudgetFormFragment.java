@@ -45,6 +45,7 @@ import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.db.adapter.AccountsDbAdapter;
 import org.gnucash.android.db.adapter.BudgetDbAdapter;
 import org.gnucash.android.model.Budget;
+import org.gnucash.android.model.BudgetAmount;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.model.ScheduledAction;
 import org.gnucash.android.ui.common.UxArgument;
@@ -134,14 +135,15 @@ public class BudgetFormFragment extends Fragment implements RecurrencePickerDial
      * @param budget Budget to use to initialize the views
      */
     private void initViews(Budget budget){
-        int position = mAccountCursorAdapter.getPosition(budget.getAccountUID());
-        if (position >= 0){
-            mBudgetAccountSpinner.setSelection(position);
-        }
+        // FIXME: 22.10.2015 allow multiple account views
+//        int position = mAccountCursorAdapter.getPosition(budget.getAccountUID());
+//        if (position >= 0){
+//            mBudgetAccountSpinner.setSelection(position);
+//        }
         mRecurrenceRule = budget.getRecurrence().getRuleString();
 
         mBudgetNameInput.setText(budget.getName());
-        mBudgetAmountInput.setValue(budget.getAmount().asBigDecimal());
+//        mBudgetAmountInput.setValue(budget.getAmount().asBigDecimal());
         mDescriptionInput.setText(budget.getDescription());
         mRecurrenceInput.setText(budget.getRecurrence().getRuleString());
         mEventRecurrence.parse(budget.getRecurrence().getRuleString());
@@ -161,6 +163,7 @@ public class BudgetFormFragment extends Fragment implements RecurrencePickerDial
 
         mAccountCursorAdapter = new QualifiedAccountNameCursorAdapter(getActivity(), mAccountCursor);
         mBudgetAccountSpinner.setAdapter(mAccountCursorAdapter);
+
     }
 
     /**
@@ -173,7 +176,8 @@ public class BudgetFormFragment extends Fragment implements RecurrencePickerDial
         String budgetName = mBudgetNameInput.getText().toString();
         boolean canSave = mRecurrenceRule != null
                 && mBudgetAmountInput.getValue() != null
-                && !budgetName.isEmpty();
+                && !budgetName.isEmpty()
+                && mBudgetAccountSpinner.getCount() > 0; //there is at least one account in the system
         if (!canSave){
             if (mBudgetAmountInput.getValue() == null)
                 mBudgetNameInput.setError("A budget amount is required!");
@@ -205,13 +209,16 @@ public class BudgetFormFragment extends Fragment implements RecurrencePickerDial
         Money amount = new Money(mBudgetAmountInput.getValue(), Currency.getInstance(currencyCode));
 
         if (mBudget == null){
-            mBudget = new Budget(name, amount);
+            mBudget = new Budget(name);
         } else {
             mBudget.setName(name);
-            mBudget.setAmount(amount);
         }
 
-        mBudget.setAccountUID(accountUID);
+        BudgetAmount budgetAmount = new BudgetAmount(amount, accountUID);
+        budgetAmount.setAmount(amount);
+        // TODO: 22.10.2015 set the period num of the budget amount
+        mBudget.addBudgetAmount(budgetAmount);
+
         mBudget.setDescription(mDescriptionInput.getText().toString().trim());
 
         List<ScheduledAction> events = RecurrenceParser.parse(mEventRecurrence,

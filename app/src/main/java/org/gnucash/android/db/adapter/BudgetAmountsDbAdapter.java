@@ -20,14 +20,14 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteStatement;
 import android.support.annotation.NonNull;
 
-import static org.gnucash.android.db.DatabaseSchema.BudgetAmountEntry;
-
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.model.BudgetAmount;
 import org.gnucash.android.model.Money;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.gnucash.android.db.DatabaseSchema.BudgetAmountEntry;
 
 /**
  * Database adapter for {@link BudgetAmount}s
@@ -44,7 +44,7 @@ public class BudgetAmountsDbAdapter extends DatabaseAdapter<BudgetAmount> {
         super(db, BudgetAmountEntry.TABLE_NAME);
     }
 
-    public BudgetAmountsDbAdapter getInstance(){
+    public static BudgetAmountsDbAdapter getInstance(){
         return GnuCashApplication.getBudgetAmountsDbAdapter();
     }
 
@@ -112,5 +112,34 @@ public class BudgetAmountsDbAdapter extends DatabaseAdapter<BudgetAmount> {
     public int deleteBudgetAmountsForBudget(String budgetUID){
         return mDb.delete(mTableName, BudgetAmountEntry.COLUMN_BUDGET_UID + "=?",
                 new String[]{budgetUID});
+    }
+
+    /**
+     * Returns the budgets associated with a specific account
+     * @param accountUID GUID of the account
+     * @return List of {@link BudgetAmount}s for the account
+     */
+    public List<BudgetAmount> getBudgetAmounts(String accountUID) {
+        Cursor cursor = fetchAllRecords(BudgetAmountEntry.COLUMN_ACCOUNT_UID + " = ?", new String[]{accountUID});
+        List<BudgetAmount> budgetAmounts = new ArrayList<>();
+        while(cursor.moveToNext()){
+            budgetAmounts.add(buildModelInstance(cursor));
+        }
+        cursor.close();
+        return budgetAmounts;
+    }
+
+    /**
+     * Returns the sum of the budget amounts for a particular account
+     * @param accountUID GUID of the account
+     * @return Sum of the budget amounts
+     */
+    public Money getBudgetAmountSum(String accountUID){
+        List<BudgetAmount> budgetAmounts = getBudgetAmounts(accountUID);
+        Money sum = Money.createZeroInstance(getAccountCurrencyCode(accountUID));
+        for (BudgetAmount budgetAmount : budgetAmounts) {
+            sum = sum.add(budgetAmount.getAmount());
+        }
+        return sum;
     }
 }

@@ -367,11 +367,11 @@ public final class Money implements Comparable<Money>{
 	 * 
 	 * @param addend Second operand in the addition.
 	 * @return Money object whose value is the sum of this object and <code>money</code>
-	 * @throws IllegalArgumentException if the <code>Money</code> objects to be added have different Currencies
+	 * @throws CurrencyMismatchException if the <code>Money</code> objects to be added have different Currencies
 	 */
     public Money add(Money addend){
 		if (!mCurrency.equals(addend.mCurrency))
-			throw new IllegalArgumentException("Only Money with same currency can be added");
+			throw new CurrencyMismatchException();
 		
 		BigDecimal bigD = mAmount.add(addend.mAmount);
 		return new Money(bigD, mCurrency);
@@ -383,11 +383,11 @@ public final class Money implements Comparable<Money>{
 	 * This object is the minuend and the parameter is the subtrahend
 	 * @param subtrahend Second operand in the subtraction.
 	 * @return Money object whose value is the difference of this object and <code>subtrahend</code>
-	 * @throws IllegalArgumentException if the <code>Money</code> objects to be added have different Currencies
+	 * @throws CurrencyMismatchException if the <code>Money</code> objects to be added have different Currencies
 	 */
     public Money subtract(Money subtrahend){
 		if (!mCurrency.equals(subtrahend.mCurrency))
-			throw new IllegalArgumentException("Operation can only be performed on money with same currency");
+			throw new CurrencyMismatchException();
 		
 		BigDecimal bigD = mAmount.subtract(subtrahend.mAmount);		
 		return new Money(bigD, mCurrency);
@@ -400,11 +400,11 @@ public final class Money implements Comparable<Money>{
 	 * <p>This method uses the rounding mode {@link BigDecimal#ROUND_HALF_EVEN}</p>
 	 * @param divisor Second operand in the division.
 	 * @return Money object whose value is the quotient of this object and <code>divisor</code>
-	 * @throws IllegalArgumentException if the <code>Money</code> objects to be added have different Currencies
+	 * @throws CurrencyMismatchException if the <code>Money</code> objects to be added have different Currencies
 	 */
     public Money divide(Money divisor){
 		if (!mCurrency.equals(divisor.mCurrency))
-			throw new IllegalArgumentException("Operation can only be performed on money with same currency");
+			throw new CurrencyMismatchException();
 		
 		BigDecimal bigD = mAmount.divide(divisor.mAmount, BigDecimal.ROUND_HALF_EVEN);
 		return new Money(bigD, mCurrency);
@@ -427,11 +427,11 @@ public final class Money implements Comparable<Money>{
 	 * 
 	 * @param money Second operand in the multiplication.
 	 * @return Money object whose value is the product of this object and <code>money</code>
-	 * @throws IllegalArgumentException if the <code>Money</code> objects to be added have different Currencies
+	 * @throws CurrencyMismatchException if the <code>Money</code> objects to be added have different Currencies
 	 */
     public Money multiply(Money money){
 		if (!mCurrency.equals(money.mCurrency))
-			throw new IllegalArgumentException("Operation can only be performed on money with same currency");
+			throw new CurrencyMismatchException();
 		
 		BigDecimal bigD = mAmount.multiply(money.mAmount);		
 		return new Money(bigD, mCurrency);
@@ -532,7 +532,7 @@ public final class Money implements Comparable<Money>{
 	@Override
 	public int compareTo(@NonNull Money another) {
 		if (!mCurrency.equals(another.mCurrency))
-			throw new IllegalArgumentException("Cannot compare different currencies yet");
+			throw new CurrencyMismatchException();
 		return mAmount.compareTo(another.mAmount);
 	}
 
@@ -571,5 +571,12 @@ public final class Money implements Comparable<Money>{
 	 */
     public boolean isAmountZero() {
 		return mAmount.compareTo(BigDecimal.ZERO) == 0;
+	}
+
+	public class CurrencyMismatchException extends IllegalArgumentException{
+		@Override
+		public String getMessage() {
+			return "Cannot perform operation on Money instances with different currencies";
+		}
 	}
 }

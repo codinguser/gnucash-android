@@ -142,7 +142,7 @@ public class TransactionsDbAdapter extends DatabaseAdapter<Transaction> {
             try {
                 start = System.nanoTime();
                 long nSplits = mSplitsDbAdapter.bulkAddRecords(splitList);
-                Log.d(LOG_TAG, String.format("%d splits inserted in %d ns", splitList.size(), System.nanoTime()-start));
+                Log.d(LOG_TAG, String.format("%d splits inserted in %d ns", nSplits, System.nanoTime()-start));
             }
             finally {
                 SQLiteStatement deleteEmptyTransaction = mDb.compileStatement("DELETE FROM " +

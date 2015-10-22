@@ -16,7 +16,6 @@
 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_marginLeft="@dimen/dialog_padding"
     android:layout_marginRight="@dimen/dialog_padding"
@@ -39,90 +38,12 @@
         android:singleLine="true"
         android:textSize="15sp"
         android:gravity="left|start"
-        tools:text="$2,500 monthly until 02/14"/>
+        tools:text="$2,500 monthly"/>
 
-    <RelativeLayout
+    <org.gnucash.android.ui.util.widget.EmptyRecyclerView
+        android:id="@+id/budget_amount_recycler"
+        android:layout_marginTop="@dimen/edge_padding"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/dialog_padding"
-        android:layout_marginBottom="@dimen/dialog_padding">
-
-        <LinearLayout android:id="@+id/labels_layout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <TextView
-                android:id="@+id/label_spent"
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="wrap_content"
-                android:singleLine="true"
-                android:textSize="14sp"
-                android:gravity="left|start"
-                android:text="Spent"/>
-
-            <TextView
-                android:id="@+id/label_left"
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="wrap_content"
-                android:singleLine="true"
-                android:textSize="14sp"
-                android:gravity="right|end"
-                android:text="Left"/>
-        </LinearLayout>
-
-        <TextView
-            android:id="@+id/budget_spent"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:singleLine="true"
-            android:textSize="15sp"
-            android:gravity="left|start"
-            android:layout_alignParentLeft="true"
-            android:layout_below="@id/labels_layout"
-            android:textColor="@android:color/black"
-            tools:text="$500"/>
-
-        <TextView
-            android:id="@+id/budget_left"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:singleLine="true"
-            android:textSize="15sp"
-            android:gravity="right|end"
-            android:layout_toRightOf="@id/budget_spent"
-            android:layout_below="@id/labels_layout"
-            android:layout_alignParentRight="true"
-            android:textColor="@android:color/black"
-            tools:text="$2,500"/>
-
-
-        <ProgressBar
-            android:id="@+id/budget_indicator"
-            style="@android:style/Widget.ProgressBar.Horizontal"
-            android:progressDrawable="@drawable/budget_progress_indicator"
-            android:layout_width="match_parent"
-            android:layout_height="10dp"
-            android:layout_below="@id/budget_spent"
-            android:layout_marginTop="5dp"
-            android:max="100"
-            android:indeterminate="false"
-            tools:progress="40" />
-    </RelativeLayout>
-
-    <android.support.v7.widget.CardView
-        android:layout_width="match_parent"
-        android:padding="@dimen/dialog_padding"
-        app:cardElevation="@dimen/edge_padding"
-        android:layout_height="0dp"
-        android:layout_weight="2.5">
-
-        <com.github.mikephil.charting.charts.BarChart
-            android:id="@+id/budget_chart"
-            android:minHeight="200dp"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-
-    </android.support.v7.widget.CardView>
+        android:layout_height="match_parent" />
 
 </LinearLayout>

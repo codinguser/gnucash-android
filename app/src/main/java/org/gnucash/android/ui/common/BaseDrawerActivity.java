@@ -33,7 +33,6 @@ import com.crashlytics.android.Crashlytics;
 import com.uservoice.uservoicesdk.UserVoice;
 
 import org.gnucash.android.R;
-import org.gnucash.android.export.xml.GncXmlExporter;
 import org.gnucash.android.importer.ImportAsyncTask;
 import org.gnucash.android.ui.account.AccountsActivity;
 import org.gnucash.android.ui.budget.BudgetsActivity;
@@ -202,7 +201,8 @@ public class BaseDrawerActivity extends PasscodeLockActivity {
         switch (requestCode) {
             case AccountsActivity.REQUEST_PICK_ACCOUNTS_FILE:
                 try {
-                    GncXmlExporter.createBackup();
+                    // TODO: 22.10.2015 Make sure we preserve all databases if we leave this backup disabled
+//                    GncXmlExporter.createBackup();
                     InputStream accountInputStream = getContentResolver().openInputStream(data.getData());
                     new ImportAsyncTask(this).execute(accountInputStream);
                 } catch (FileNotFoundException e) {

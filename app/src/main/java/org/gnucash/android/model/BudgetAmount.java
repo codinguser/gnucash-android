@@ -31,6 +31,11 @@ public class BudgetAmount extends BaseModel {
         this.mAccountUID = accountUID;
     }
 
+    public BudgetAmount(Money amount, String accountUID){
+        this.mAmount = amount;
+        this.mAccountUID = accountUID;
+    }
+    
     public String getBudgetUID() {
         return mBudgetUID;
     }

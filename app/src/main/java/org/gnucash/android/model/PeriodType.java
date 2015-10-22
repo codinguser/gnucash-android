@@ -32,7 +32,7 @@ import java.util.Locale;
  * @see org.gnucash.android.model.ScheduledAction
 */
 public enum PeriodType {
-    DAY, WEEK, MONTH, YEAR;
+    DAY, WEEK, MONTH, YEAR; // TODO: 22.10.2015 add support for hourly
 
     int mMultiplier = 1; //multiplier for the period type
 

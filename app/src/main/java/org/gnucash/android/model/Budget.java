@@ -17,9 +17,11 @@
 package org.gnucash.android.model;
 
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import org.joda.time.LocalDateTime;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -31,7 +33,7 @@ public class Budget extends BaseModel {
     private String mName;
     private String mDescription;
     private Recurrence mRecurrence;
-    private List<BudgetAmount> budgetAmounts;
+    private List<BudgetAmount> mBudgetAmounts = new ArrayList<>();
     private long mNumberOfPeriods = 12; //default to 12 periods per year
 
     /**
@@ -103,7 +105,7 @@ public class Budget extends BaseModel {
      * @return List of budget amounts
      */
     public List<BudgetAmount> getBudgetAmounts() {
-        return budgetAmounts;
+        return mBudgetAmounts;
     }
 
     /**
@@ -111,7 +113,51 @@ public class Budget extends BaseModel {
      * @param budgetAmounts List of budget amounts
      */
     public void setBudgetAmounts(List<BudgetAmount> budgetAmounts) {
-        this.budgetAmounts = budgetAmounts;
+        this.mBudgetAmounts = budgetAmounts;
+    }
+
+    /**
+     * Adds a BudgetAmount to this budget
+     * @param budgetAmount Budget amount
+     */
+    public void addBudgetAmount(BudgetAmount budgetAmount){
+        budgetAmount.setBudgetUID(getUID());
+        mBudgetAmounts.add(budgetAmount);
+    }
+
+    /**
+     * Returns the budget amount for a specific account
+     * @param accountUID GUID of the account
+     * @return Money amount of the budget or null if the budget has no amount for the account
+     */
+    public Money getAmount(@NonNull String accountUID){
+        //TODO: add consideration for the current period
+        for (BudgetAmount budgetAmount : mBudgetAmounts) {
+            if (budgetAmount.getAccountUID().equals(accountUID))
+                return budgetAmount.getAmount();
+        }
+        return null;
+    }
+
+    /**
+     * Returns the sum of all budget amounts in this budget
+     * <p><b>NOTE:</b> This method ignores budgets of accounts which are in different currencies</p>
+     * @return Money sum of all amounts
+     */
+    public Money getAmountSum(){
+        Money sum = null; //we explicitly allow this null instead of a money instance, because this method should never return null for a budget
+        for (BudgetAmount budgetAmount : mBudgetAmounts) {
+            if (sum == null){
+                sum = budgetAmount.getAmount();
+            } else {
+                try {
+                    sum = sum.add(budgetAmount.getAmount());
+                } catch (Money.CurrencyMismatchException ex){
+                    Log.i(getClass().getSimpleName(), "Skip some budget amounts with different currency");
+                }
+            }
+        }
+        return sum;
     }
 
     /**

@@ -747,10 +747,10 @@ public class GncXmlExporter extends Exporter{
                 xmlSerializer.text(budgetAmount.getAccountUID());
                 xmlSerializer.endTag(null, GncXmlHelper.TAG_SLOT_KEY);
 
-                xmlSerializer.startTag(null, GncXmlHelper.TAG_SLOT_VALUE);
-                xmlSerializer.attribute(null, GncXmlHelper.ATTR_KEY_TYPE, GncXmlHelper.ATTR_VALUE_FRAME);
-
                 Money amount = budgetAmount.getAmount();
+                slotKey.clear();
+                slotType.clear();
+                slotValue.clear();
                 for (int period = 0; period < budget.getNumberOfPeriods(); period++) {
                     slotKey.add(String.valueOf(period));
                     slotType.add(GncXmlHelper.ATTR_VALUE_NUMERIC);
