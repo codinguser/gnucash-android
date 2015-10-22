@@ -114,6 +114,9 @@ public class Budget extends BaseModel {
      */
     public void setBudgetAmounts(List<BudgetAmount> budgetAmounts) {
         this.mBudgetAmounts = budgetAmounts;
+        for (BudgetAmount budgetAmount : mBudgetAmounts) {
+            budgetAmount.setBudgetUID(getUID());
+        }
     }
 
     /**

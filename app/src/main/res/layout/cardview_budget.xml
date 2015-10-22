@@ -51,7 +51,8 @@
             android:singleLine="true"
             android:textSize="15sp"
             android:gravity="left|start"
-            android:layout_margin="@dimen/dialog_padding"
+            android:layout_marginLeft="@dimen/dialog_padding"
+            android:layout_marginRight="@dimen/dialog_padding"
             tools:text="$2,500 monthly until 02/14"/>
 
         <RelativeLayout

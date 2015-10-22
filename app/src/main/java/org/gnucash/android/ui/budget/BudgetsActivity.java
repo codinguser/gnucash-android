@@ -24,6 +24,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 
 import org.gnucash.android.R;
+import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.ui.common.BaseDrawerActivity;
 import org.gnucash.android.ui.common.FormActivity;
 import org.gnucash.android.ui.common.UxArgument;
@@ -71,5 +72,14 @@ public class BudgetsActivity extends BaseDrawerActivity {
         addAccountIntent.setAction(Intent.ACTION_INSERT_OR_EDIT);
         addAccountIntent.putExtra(UxArgument.FORM_TYPE, FormActivity.FormType.BUDGET.name());
         startActivityForResult(addAccountIntent, REQUEST_CREATE_BUDGET);
+    }
+
+    /**
+     * Returns a color between red and green depending on the value parameter
+     * @param value Value between 0 and 1 indicating the red to green ratio
+     * @return Color between red and green
+     */
+    public static int getBudgetProgressColor(double value){
+        return GnuCashApplication.darken(android.graphics.Color.HSVToColor(new float[]{(float)value*120f,1f,1f}));
     }
 }

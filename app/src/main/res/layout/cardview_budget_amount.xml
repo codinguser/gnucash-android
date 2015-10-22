@@ -17,12 +17,19 @@
 <android.support.v7.widget.CardView  xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:cardCornerRadius="4dp"
+    app:cardUseCompatPadding="true"
+    app:cardPreventCornerOverlap="false"
+    app:cardElevation="5dp"
+    android:foreground="?selectableItemBackground"
+    android:focusable="true"
+    android:clickable="true"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    app:cardElevation="@dimen/edge_padding">
+    android:orientation="vertical">
 
     <RelativeLayout
+        android:padding="@dimen/dialog_padding"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/dialog_padding"
@@ -39,8 +46,9 @@
                 android:layout_weight="2"
                 android:layout_height="wrap_content"
                 android:singleLine="true"
-                android:textSize="14sp"
+                android:textSize="16sp"
                 android:gravity="left|start"
+                android:textColor="@android:color/black"
                 tools:text="Expenses:Phone:Android"/>
 
             <TextView
@@ -49,7 +57,8 @@
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
                 android:singleLine="true"
-                android:textSize="14sp"
+                android:textSize="16sp"
+                android:textColor="@android:color/black"
                 android:gravity="right|end"
                 tools:text="$ 3000"/>
         </LinearLayout>
@@ -119,7 +128,7 @@
 
         <com.github.mikephil.charting.charts.BarChart
             android:id="@+id/budget_chart"
-            android:minHeight="200dp"
+            android:minHeight="50dp"
             android:layout_marginTop="@dimen/dialog_padding"
             android:layout_below="@id/budget_indicator"
             android:layout_alignParentBottom="true"

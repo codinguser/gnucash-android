@@ -28,6 +28,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PopupMenu;
@@ -130,6 +131,7 @@ public class BudgetListFragment extends Fragment implements Refreshable,
         super.onResume();
         refresh();
         getActivity().findViewById(R.id.fab_create_budget).setVisibility(View.VISIBLE);
+        ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle("Budgets");
     }
 
     @Override
@@ -211,7 +213,8 @@ public class BudgetListFragment extends Fragment implements Refreshable,
             }
             holder.accountName.setText(accountString);
 
-            holder.budgetRecurrence.setText(budget.getRecurrence().getRepeatString());
+            holder.budgetRecurrence.setText(budget.getRecurrence().getRepeatString() + " - "
+                    + budget.getRecurrence().getDaysLeft() + " days left");
 
             Money accountBalance = mBudgetDbAdapter.getAccountSum(budget.getUID(),
                     budget.getStartofCurrentPeriod(), budget.getEndOfCurrentPeriod());
@@ -219,8 +222,10 @@ public class BudgetListFragment extends Fragment implements Refreshable,
             String usedAmount = accountBalance.getCurrency().getSymbol() + accountBalance.formattedAmount() + " of " + budget.getAmountSum().formattedString();
             holder.budgetAmount.setText(usedAmount);
 
-            double budgetProgress = accountBalance.divide(budget.getAmountSum()).asBigDecimal().doubleValue() * 100;
-            holder.budgetIndicator.setProgress((int)budgetProgress);
+            double budgetProgress = accountBalance.divide(budget.getAmountSum()).asBigDecimal().doubleValue();
+            holder.budgetIndicator.setProgress((int) (budgetProgress * 100));
+
+            holder.budgetAmount.setTextColor(BudgetsActivity.getBudgetProgressColor(1 - budgetProgress));
 
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override

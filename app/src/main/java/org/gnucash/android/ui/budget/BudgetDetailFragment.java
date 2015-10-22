@@ -22,6 +22,7 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -37,6 +38,7 @@ import android.widget.TextView;
 import com.github.mikephil.charting.charts.BarChart;
 
 import org.gnucash.android.R;
+import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.db.adapter.AccountsDbAdapter;
 import org.gnucash.android.db.adapter.BudgetDbAdapter;
 import org.gnucash.android.model.Budget;
@@ -136,6 +138,8 @@ public class BudgetDetailFragment extends Fragment implements Refreshable {
     @Override
     public void refresh() {
         bindViews();
+        String budgetName = mBudgetDbAdapter.getAttribute(mBudgetUID, DatabaseSchema.BudgetEntry.COLUMN_NAME);
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(budgetName);
     }
 
     @Override
@@ -194,14 +198,18 @@ public class BudgetDetailFragment extends Fragment implements Refreshable {
             Money projectedAmount = budgetAmount.getAmount();
             AccountsDbAdapter accountsDbAdapter = AccountsDbAdapter.getInstance();
 
+            holder.budgetAccount.setText(accountsDbAdapter.getAccountFullName(budgetAmount.getAccountUID()));
+            holder.budgetAmount.setText(projectedAmount.formattedString());
+
             Money spentAmount = accountsDbAdapter.getAccountBalance(budgetAmount.getAccountUID(),
                     mBudget.getStartofCurrentPeriod(), mBudget.getEndOfCurrentPeriod());
 
             holder.budgetSpent.setText(spentAmount.absolute().formattedString());
             holder.budgetLeft.setText(projectedAmount.subtract(spentAmount.absolute()).formattedString());
 
-            double budgetProgress = spentAmount.divide(projectedAmount).asBigDecimal().doubleValue() * 100;
-            holder.budgetIndicator.setProgress((int) budgetProgress);
+            double budgetProgress = spentAmount.divide(projectedAmount).asBigDecimal().doubleValue();
+            holder.budgetIndicator.setProgress((int) budgetProgress * 100);
+            holder.budgetSpent.setTextColor(BudgetsActivity.getBudgetProgressColor(1 - budgetProgress));
 
             //TODO: implement chart
             //TODO: display chart for past months/weeks/years depending on budget periodtype
@@ -222,6 +230,8 @@ public class BudgetDetailFragment extends Fragment implements Refreshable {
         }
 
         class BudgetAmountViewHolder extends RecyclerView.ViewHolder {
+            @Bind(R.id.budget_account)      TextView budgetAccount;
+            @Bind(R.id.budget_amount)       TextView budgetAmount;
             @Bind(R.id.budget_spent)        TextView budgetSpent;
             @Bind(R.id.budget_left)         TextView budgetLeft;
             @Bind(R.id.budget_indicator)    ProgressBar budgetIndicator;

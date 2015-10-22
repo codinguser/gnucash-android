@@ -19,6 +19,8 @@ package org.gnucash.android.model;
 import android.support.annotation.NonNull;
 
 import org.gnucash.android.ui.util.RecurrenceParser;
+import org.joda.time.Days;
+import org.joda.time.LocalDate;
 
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
@@ -140,5 +142,31 @@ public class Recurrence extends BaseModel {
         ruleBuilder.append(mPeriodType.getByParts(mPeriodStart.getTime())).append(separator);
 
         return ruleBuilder.toString();
+    }
+
+    /**
+     * Return the number of days left in this period
+     * @return Number of days left in period
+     */
+    public int getDaysLeft(){
+        LocalDate startDate = new LocalDate(System.currentTimeMillis());
+        int interval = mPeriodType.getMultiplier() - 1;
+        LocalDate endDate = null;
+        switch (mPeriodType){
+            case DAY:
+                endDate = new LocalDate(System.currentTimeMillis()).plusDays(interval);
+                break;
+            case WEEK:
+                endDate = startDate.dayOfWeek().withMaximumValue().plusWeeks(interval);
+                break;
+            case MONTH:
+                endDate = startDate.dayOfMonth().withMaximumValue().plusMonths(interval);
+                break;
+            case YEAR:
+                endDate = startDate.dayOfYear().withMaximumValue().plusYears(interval);
+                break;
+        }
+
+        return Days.daysBetween(startDate, endDate).getDays();
     }
 }
