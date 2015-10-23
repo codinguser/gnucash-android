@@ -16,8 +16,8 @@
  limitations under the License.
 -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-  <string name="title_create_account">Crear Cuenta</string>
-  <string name="title_edit_account">Editar Cuenta</string>
+  <string name="title_create_account">Crear cuenta</string>
+  <string name="title_edit_account">Editar cuenta</string>
   <string name="info_details">Información</string>
   <string name="menu_export">Exportar OFX</string>
   <string name="description_add_transaction_icon">Añadir una nueva transacción a una cuenta</string>
@@ -556,7 +556,7 @@ Este proceso solo recoge información que no permite identificar al usuario</str
   <string name="title_translate_gnucash">Traducir GnuCash</string>
   <string name="summary_google_plus">Compartir ideas, discutir cambios o reportar problemas</string>
   <string name="summary_translate_gnucash">Traducir o revisar en CrowdIn</string>
-  <string name="toast_no_compatible_apps_to_receive_export">No compatible apps to receive the exported transactions!</string>
+  <string name="toast_no_compatible_apps_to_receive_export">¡No hay aplicaciones compatibles para recibir las transacciones exportadas!</string>
   <string name="nav_menu_budgets">Budgets</string>
   <string-array name="report_time_range">
     <item>Mes actual</item>

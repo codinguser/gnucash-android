@@ -27,9 +27,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
 
-import com.crashlytics.android.Crashlytics;
 import com.uservoice.uservoicesdk.UserVoice;
 
 import org.gnucash.android.R;
@@ -40,9 +38,6 @@ import org.gnucash.android.ui.passcode.PasscodeLockActivity;
 import org.gnucash.android.ui.report.ReportsActivity;
 import org.gnucash.android.ui.settings.SettingsActivity;
 import org.gnucash.android.ui.transaction.ScheduledActionsActivity;
-
-import java.io.FileNotFoundException;
-import java.io.InputStream;
 
 
 /**
@@ -63,7 +58,7 @@ public class BaseDrawerActivity extends PasscodeLockActivity {
 
         @Override
         public boolean onNavigationItemSelected(MenuItem menuItem) {
-            selectItem(menuItem.getItemId());
+            onDrawerMenuItemClicked(menuItem.getItemId());
             return true;
         }
 
@@ -139,14 +134,10 @@ public class BaseDrawerActivity extends PasscodeLockActivity {
     /**
      * Handler for the navigation drawer items
      * */
-    protected void selectItem(int itemId) {
+    protected void onDrawerMenuItemClicked(int itemId) {
         switch (itemId){
             case R.id.nav_item_open: { //Open... files
-                Intent pickIntent = new Intent(Intent.ACTION_GET_CONTENT);
-                pickIntent.setType("application/*");
-                Intent chooser = Intent.createChooser(pickIntent, getString(R.string.title_select_gnucash_xml_file));
-
-                startActivityForResult(chooser, AccountsActivity.REQUEST_PICK_ACCOUNTS_FILE);
+                AccountsActivity.startXmlFileChooser(this);
             }
             break;
 
@@ -200,19 +191,12 @@ public class BaseDrawerActivity extends PasscodeLockActivity {
 
         switch (requestCode) {
             case AccountsActivity.REQUEST_PICK_ACCOUNTS_FILE:
-                try {
-                    // TODO: 22.10.2015 Make sure we preserve all databases if we leave this backup disabled
-//                    GncXmlExporter.createBackup();
-                    InputStream accountInputStream = getContentResolver().openInputStream(data.getData());
-                    new ImportAsyncTask(this).execute(accountInputStream);
-                } catch (FileNotFoundException e) {
-                    Crashlytics.logException(e);
-                    Toast.makeText(this, R.string.toast_error_importing_accounts, Toast.LENGTH_SHORT).show();
-                }
+                AccountsActivity.importXmlFileFromIntent(this, data);
                 break;
             default:
                 super.onActivityResult(requestCode, resultCode, data);
                 break;
         }
     }
+
 }

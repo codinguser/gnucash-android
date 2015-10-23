@@ -302,7 +302,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity
         String key = preference.getKey();
 
         if (key.equals(getString(R.string.key_import_accounts))){
-            AccountsActivity.importAccounts(this);
+            AccountsActivity.startXmlFileChooser(this);
             return true;
         }
 
@@ -558,13 +558,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity
         switch (requestCode) {
             case AccountsActivity.REQUEST_PICK_ACCOUNTS_FILE:
                 if (resultCode == Activity.RESULT_OK && data != null) {
-                    try {
-                        InputStream accountInputStream = getContentResolver().openInputStream(data.getData());
-                        new ImportAsyncTask(this).execute(accountInputStream);
-                    } catch (FileNotFoundException e) {
-                        Crashlytics.logException(e);
-                        Toast.makeText(this, R.string.toast_error_importing_accounts, Toast.LENGTH_SHORT).show();
-                    }
+                    AccountsActivity.importXmlFileFromIntent(this, data);
                 }
                 break;
             case GeneralPreferenceFragment.PASSCODE_REQUEST_CODE:
