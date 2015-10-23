@@ -46,7 +46,7 @@ import com.codetroopers.betterpickers.recurrencepicker.RecurrencePickerDialogFra
 import org.gnucash.android.R;
 import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.db.adapter.AccountsDbAdapter;
-import org.gnucash.android.db.adapter.BudgetDbAdapter;
+import org.gnucash.android.db.adapter.BudgetsDbAdapter;
 import org.gnucash.android.model.Budget;
 import org.gnucash.android.model.BudgetAmount;
 import org.gnucash.android.model.Money;
@@ -81,7 +81,7 @@ public class BudgetFormFragment extends Fragment implements RecurrencePickerDial
     String mRecurrenceRule;
     private Cursor mAccountCursor;
     private AccountsDbAdapter mAccountsDbAdapter;
-    private BudgetDbAdapter mBudgetDbAdapter;
+    private BudgetsDbAdapter mBudgetsDbAdapter;
 
     private Budget mBudget;
     private QualifiedAccountNameCursorAdapter mAccountCursorAdapter;
@@ -105,7 +105,7 @@ public class BudgetFormFragment extends Fragment implements RecurrencePickerDial
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mAccountsDbAdapter = AccountsDbAdapter.getInstance();
-        mBudgetDbAdapter = BudgetDbAdapter.getInstance();
+        mBudgetsDbAdapter = BudgetsDbAdapter.getInstance();
     }
 
     @Override
@@ -118,7 +118,7 @@ public class BudgetFormFragment extends Fragment implements RecurrencePickerDial
 
         String budgetUID = getArguments().getString(UxArgument.BUDGET_UID);
         if (budgetUID != null){ //if we are editing the budget
-            initViews(mBudget = mBudgetDbAdapter.getRecord(budgetUID));
+            initViews(mBudget = mBudgetsDbAdapter.getRecord(budgetUID));
             loadBudgetAmountViews(mBudget.getBudgetAmounts());
         } else {
             BudgetAmountViewHolder viewHolder = (BudgetAmountViewHolder) addBudgetAmountView(null).getTag();
@@ -268,7 +268,7 @@ public class BudgetFormFragment extends Fragment implements RecurrencePickerDial
             mBudget.setRecurrence(events.get(0).getRecurrence());
         }
 
-        mBudgetDbAdapter.addRecord(mBudget);
+        mBudgetsDbAdapter.addRecord(mBudget);
         getActivity().finish();
     }
 

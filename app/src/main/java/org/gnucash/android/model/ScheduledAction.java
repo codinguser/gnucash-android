@@ -88,7 +88,6 @@ public class ScheduledAction extends BaseModel{
 
     public ScheduledAction(ActionType actionType){
         mActionType = actionType;
-        mStartDate = System.currentTimeMillis();
         mEndDate = 0;
         mIsEnabled = true; //all actions are enabled by default
     }
@@ -432,6 +431,8 @@ public class ScheduledAction extends BaseModel{
         this.mRecurrence = recurrence;
         if (mStartDate > 0){
             mRecurrence.setPeriodStart(new Timestamp(mStartDate));
+        } else {
+            mStartDate = mRecurrence.getPeriodStart().getTime();
         }
     }
 

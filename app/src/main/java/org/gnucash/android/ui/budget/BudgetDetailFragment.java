@@ -40,7 +40,7 @@ import com.github.mikephil.charting.charts.BarChart;
 import org.gnucash.android.R;
 import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.db.adapter.AccountsDbAdapter;
-import org.gnucash.android.db.adapter.BudgetDbAdapter;
+import org.gnucash.android.db.adapter.BudgetsDbAdapter;
 import org.gnucash.android.model.Budget;
 import org.gnucash.android.model.BudgetAmount;
 import org.gnucash.android.model.Money;
@@ -50,6 +50,7 @@ import org.gnucash.android.ui.transaction.TransactionsActivity;
 import org.gnucash.android.ui.util.Refreshable;
 import org.gnucash.android.ui.util.widget.EmptyRecyclerView;
 
+import java.math.RoundingMode;
 import java.util.List;
 
 import butterknife.Bind;
@@ -65,7 +66,7 @@ public class BudgetDetailFragment extends Fragment implements Refreshable {
     @Bind(R.id.budget_amount_recycler) EmptyRecyclerView mRecyclerView;
 
     private String mBudgetUID;
-    private BudgetDbAdapter mBudgetDbAdapter;
+    private BudgetsDbAdapter mBudgetsDbAdapter;
 
     public static BudgetDetailFragment newInstance(String budgetUID){
         BudgetDetailFragment fragment = new BudgetDetailFragment();
@@ -99,7 +100,7 @@ public class BudgetDetailFragment extends Fragment implements Refreshable {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        mBudgetDbAdapter = BudgetDbAdapter.getInstance();
+        mBudgetsDbAdapter = BudgetsDbAdapter.getInstance();
         mBudgetUID = getArguments().getString(UxArgument.BUDGET_UID);
         bindViews();
 
@@ -107,7 +108,7 @@ public class BudgetDetailFragment extends Fragment implements Refreshable {
     }
 
     private void bindViews(){
-        Budget budget = mBudgetDbAdapter.getRecord(mBudgetUID);
+        Budget budget = mBudgetsDbAdapter.getRecord(mBudgetUID);
         mBudgetNameTextView.setText(budget.getName());
 
         String description = budget.getDescription();
@@ -138,7 +139,7 @@ public class BudgetDetailFragment extends Fragment implements Refreshable {
     @Override
     public void refresh() {
         bindViews();
-        String budgetName = mBudgetDbAdapter.getAttribute(mBudgetUID, DatabaseSchema.BudgetEntry.COLUMN_NAME);
+        String budgetName = mBudgetsDbAdapter.getAttribute(mBudgetUID, DatabaseSchema.BudgetEntry.COLUMN_NAME);
         ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(budgetName);
     }
 
@@ -182,7 +183,7 @@ public class BudgetDetailFragment extends Fragment implements Refreshable {
         private Budget mBudget;
 
         public BudgetAmountAdapter(){
-            mBudget = mBudgetDbAdapter.getRecord(mBudgetUID);
+            mBudget = mBudgetsDbAdapter.getRecord(mBudgetUID);
             mBudgetAmounts = mBudget.getBudgetAmounts();
         }
 
@@ -204,10 +205,12 @@ public class BudgetDetailFragment extends Fragment implements Refreshable {
             Money spentAmount = accountsDbAdapter.getAccountBalance(budgetAmount.getAccountUID(),
                     mBudget.getStartofCurrentPeriod(), mBudget.getEndOfCurrentPeriod());
 
-            holder.budgetSpent.setText(spentAmount.absolute().formattedString());
-            holder.budgetLeft.setText(projectedAmount.subtract(spentAmount.absolute()).formattedString());
+            holder.budgetSpent.setText(spentAmount.abs().formattedString());
+            holder.budgetLeft.setText(projectedAmount.subtract(spentAmount.abs()).formattedString());
 
-            double budgetProgress = spentAmount.divide(projectedAmount).asBigDecimal().doubleValue();
+            double budgetProgress = spentAmount.asBigDecimal().divide(projectedAmount.asBigDecimal(),
+                    spentAmount.getCurrency().getDefaultFractionDigits(), RoundingMode.HALF_EVEN)
+                    .doubleValue();
             holder.budgetIndicator.setProgress((int) budgetProgress * 100);
             holder.budgetSpent.setTextColor(BudgetsActivity.getBudgetProgressColor(1 - budgetProgress));
 

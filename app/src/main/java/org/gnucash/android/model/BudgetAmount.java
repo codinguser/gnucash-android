@@ -16,7 +16,8 @@
 package org.gnucash.android.model;
 
 /**
- * Model for budget amounts
+ * Budget amounts for the different accounts.
+ * The {@link Money} amounts are absolute values
  * @see Budget
  */
 public class BudgetAmount extends BaseModel {
@@ -26,13 +27,23 @@ public class BudgetAmount extends BaseModel {
     private long mPeriodNum;
     private Money mAmount;
 
+    /**
+     * Create a new budget amount
+     * @param budgetUID GUID of the budget
+     * @param accountUID GUID of the account
+     */
     public BudgetAmount(String budgetUID, String accountUID){
         this.mBudgetUID = budgetUID;
         this.mAccountUID = accountUID;
     }
 
+    /**
+     * Creates a new budget amount with the absolute value of {@code amount}
+     * @param amount Money amount of the budget
+     * @param accountUID GUID of the account
+     */
     public BudgetAmount(Money amount, String accountUID){
-        this.mAmount = amount;
+        this.mAmount = amount.abs();
         this.mAccountUID = accountUID;
     }
     
@@ -64,7 +75,12 @@ public class BudgetAmount extends BaseModel {
         return mAmount;
     }
 
+    /**
+     * Sets the amount for the budget
+     * <p>The absolute value of the amount is used</p>
+     * @param amount Money amount
+     */
     public void setAmount(Money amount) {
-        this.mAmount = amount;
+        this.mAmount = amount.abs();
     }
 }

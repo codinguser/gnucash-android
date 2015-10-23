@@ -1,13 +1,11 @@
 package org.gnucash.android.test.unit.db;
 
-import android.content.Intent;
-
 import org.assertj.core.data.Index;
 import org.gnucash.android.BuildConfig;
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.adapter.AccountsDbAdapter;
-import org.gnucash.android.db.adapter.BudgetDbAdapter;
+import org.gnucash.android.db.adapter.BudgetsDbAdapter;
 import org.gnucash.android.db.adapter.CommoditiesDbAdapter;
 import org.gnucash.android.db.adapter.PricesDbAdapter;
 import org.gnucash.android.db.adapter.ScheduledActionDbAdapter;
@@ -26,13 +24,10 @@ import org.gnucash.android.model.TransactionType;
 import org.gnucash.android.test.unit.util.GnucashTestRunner;
 import org.gnucash.android.test.unit.util.ShadowCrashlytics;
 import org.gnucash.android.test.unit.util.ShadowUserVoice;
-import org.gnucash.android.ui.common.FormActivity;
-import org.gnucash.android.ui.common.UxArgument;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 import org.xml.sax.SAXException;
 
@@ -242,7 +237,7 @@ public class AccountsDbAdapterTest{
         assertThat(mSplitsDbAdapter.getRecordsCount()).isZero();
         assertThat(scheduledActionDbAdapter.getRecordsCount()).isZero();
         assertThat(PricesDbAdapter.getInstance().getRecordsCount()).isZero();
-        assertThat(BudgetDbAdapter.getInstance().getRecordsCount()).isZero();
+        assertThat(BudgetsDbAdapter.getInstance().getRecordsCount()).isZero();
         assertThat(CommoditiesDbAdapter.getInstance().getRecordsCount()).isGreaterThan(50); //commodities should remain
     }
 

@@ -53,7 +53,7 @@ import org.gnucash.android.R;
 import org.gnucash.android.db.DatabaseCursorLoader;
 import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.db.adapter.AccountsDbAdapter;
-import org.gnucash.android.db.adapter.BudgetDbAdapter;
+import org.gnucash.android.db.adapter.BudgetsDbAdapter;
 import org.gnucash.android.model.Account;
 import org.gnucash.android.model.Budget;
 import org.gnucash.android.model.Money;
@@ -498,7 +498,7 @@ public class AccountsListFragment extends Fragment implements
                 });
             }
 
-            List<Budget> budgets = BudgetDbAdapter.getInstance().getAccountBudgets(accountUID);
+            List<Budget> budgets = BudgetsDbAdapter.getInstance().getAccountBudgets(accountUID);
             //TODO: include fetch only active budgets
             if (budgets.size() == 1){
                 Budget budget = budgets.get(0);

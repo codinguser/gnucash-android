@@ -52,6 +52,11 @@ public class Budget extends BaseModel {
         this.mName = name;
     }
 
+    public Budget(@NonNull String name, @NonNull Recurrence recurrence){
+        this.mName = name;
+        this.mRecurrence = recurrence;
+    }
+
     /**
      * Returns the name of the budget
      * @return name of the budget
@@ -154,7 +159,7 @@ public class Budget extends BaseModel {
                 sum = budgetAmount.getAmount();
             } else {
                 try {
-                    sum = sum.add(budgetAmount.getAmount());
+                    sum = sum.add(budgetAmount.getAmount().abs());
                 } catch (Money.CurrencyMismatchException ex){
                     Log.i(getClass().getSimpleName(), "Skip some budget amounts with different currency");
                 }

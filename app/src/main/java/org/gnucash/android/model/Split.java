@@ -234,7 +234,7 @@ public class Split extends BaseModel{
      * @see TransactionType#invert()
      */
     public Split createPair(String accountUID){
-        Split pair = new Split(mValue.absolute(), accountUID);
+        Split pair = new Split(mValue.abs(), accountUID);
         pair.setType(mSplitType.invert());
         pair.setMemo(mMemo);
         pair.setTransactionUID(mTransactionUID);
@@ -264,7 +264,7 @@ public class Split extends BaseModel{
      * @return whether the two splits are a pair
      */
     public boolean isPairOf(Split other) {
-        return mValue.absolute().equals(other.mValue.absolute())
+        return mValue.abs().equals(other.mValue.abs())
                 && mSplitType.invert().equals(other.mSplitType);
     }
 
@@ -297,7 +297,7 @@ public class Split extends BaseModel{
      */
     public static Money getFormattedAmount(Money amount, String accountUID, TransactionType splitType){
         boolean isDebitAccount = AccountsDbAdapter.getInstance().getAccountType(accountUID).hasDebitNormalBalance();
-        Money absAmount = amount.absolute();
+        Money absAmount = amount.abs();
 
         boolean isDebitSplit = splitType == TransactionType.DEBIT;
         if (isDebitAccount) {

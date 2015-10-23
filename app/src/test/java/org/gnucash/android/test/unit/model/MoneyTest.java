@@ -70,7 +70,7 @@ public class MoneyTest{
 		validateImmutability();				
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test(expected = Money.CurrencyMismatchException.class)
 	public void testAdditionWithIncompatibleCurrency(){
 		Money addend = new Money("4", "USD");
 		mMoneyInEur.add(addend);
@@ -84,7 +84,7 @@ public class MoneyTest{
 		validateImmutability();		
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test(expected = Money.CurrencyMismatchException.class)
 	public void testSubtractionWithDifferentCurrency(){
 		Money addend = new Money("4", "USD");
 		mMoneyInEur.subtract(addend);
@@ -98,7 +98,7 @@ public class MoneyTest{
 		validateImmutability();
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test(expected = Money.CurrencyMismatchException.class)
 	public void testMultiplicationWithDifferentCurrencies(){
 		Money addend = new Money("4", "USD");
 		mMoneyInEur.multiply(addend);
@@ -112,7 +112,7 @@ public class MoneyTest{
 		validateImmutability();
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test(expected = Money.CurrencyMismatchException.class)
 	public void testDivisionWithDifferentCurrency(){
 		Money addend = new Money("4", "USD");
 		mMoneyInEur.divide(addend);

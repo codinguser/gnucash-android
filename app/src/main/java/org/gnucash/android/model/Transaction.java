@@ -260,7 +260,7 @@ public class Transaction extends BaseModel{
                 // values in transactions are always in the same currency
                 throw new RuntimeException("Splits values in transaction are not in the same currency");
             }
-            Money amount = split.getValue().absolute();
+            Money amount = split.getValue().abs();
             if (split.getType() == TransactionType.DEBIT)
                 imbalance = imbalance.subtract(amount);
             else
@@ -291,9 +291,9 @@ public class Transaction extends BaseModel{
                 continue;
             Money absAmount;
             if (split.getValue().getCurrency() == accountCurrency){
-                absAmount = split.getValue().absolute();
+                absAmount = split.getValue().abs();
             } else { //if this split belongs to the account, then either its value or quantity is in the account currency
-                absAmount = split.getQuantity().absolute();
+                absAmount = split.getQuantity().abs();
             }
             boolean isDebitSplit = split.getType() == TransactionType.DEBIT;
             if (isDebitAccount) {

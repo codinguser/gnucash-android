@@ -193,7 +193,7 @@ public class PieChartFragment extends Fragment implements OnChartValueSelectedLi
                     && account.getCurrency() == Currency.getInstance(mCurrencyCode)) {
 
                 double balance = mAccountsDbAdapter.getAccountsBalance(Collections.singletonList(account.getUID()),
-                        mReportStartTime, mReportEndTime).absolute().asDouble();
+                        mReportStartTime, mReportEndTime).abs().asDouble();
                 if (balance != 0) {
                     dataSet.addEntry(new Entry((float) balance, dataSet.getEntryCount()));
                     colors.add(mUseAccountColor && account.getColorHexCode() != null

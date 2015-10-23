@@ -75,7 +75,7 @@ public class TransactionRecorder extends BroadcastReceiver {
             BigDecimal amountBigDecimal = (BigDecimal) args.getSerializable(Transaction.EXTRA_AMOUNT);
             amountBigDecimal = amountBigDecimal.setScale(Currency.getInstance(currencyCode).getDefaultFractionDigits(), BigDecimal.ROUND_HALF_EVEN).round(MathContext.DECIMAL128);
             Money amount = new Money(amountBigDecimal, Currency.getInstance(currencyCode));
-            Split split = new Split(amount.absolute(), accountUID);
+            Split split = new Split(amount.abs(), accountUID);
             split.setType(type);
             transaction.addSplit(split);
 

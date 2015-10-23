@@ -35,7 +35,7 @@ import com.uservoice.uservoicesdk.UserVoice;
 import org.gnucash.android.R;
 import org.gnucash.android.db.adapter.AccountsDbAdapter;
 import org.gnucash.android.db.adapter.BudgetAmountsDbAdapter;
-import org.gnucash.android.db.adapter.BudgetDbAdapter;
+import org.gnucash.android.db.adapter.BudgetsDbAdapter;
 import org.gnucash.android.db.adapter.CommoditiesDbAdapter;
 import org.gnucash.android.db.DatabaseHelper;
 import org.gnucash.android.db.adapter.PricesDbAdapter;
@@ -85,7 +85,7 @@ public class GnuCashApplication extends Application{
 
     private static PricesDbAdapter mPricesDbAdapter;
 
-    private static BudgetDbAdapter mBudgetDbAdapter;
+    private static BudgetsDbAdapter mBudgetsDbAdapter;
 
     private static BudgetAmountsDbAdapter mBudgetAmountsDbAdapter;
 
@@ -131,7 +131,7 @@ public class GnuCashApplication extends Application{
         mScheduledActionDbAdapter   = new ScheduledActionDbAdapter(mDb);
         mCommoditiesDbAdapter       = new CommoditiesDbAdapter(mDb);
         mPricesDbAdapter            = new PricesDbAdapter(mDb);
-        mBudgetDbAdapter            = new BudgetDbAdapter(mDb);
+        mBudgetsDbAdapter = new BudgetsDbAdapter(mDb);
         mBudgetAmountsDbAdapter     = new BudgetAmountsDbAdapter(mDb);
         mRecurrenceDbAdapter        = new RecurrenceDbAdapter(mDb);
     }
@@ -160,8 +160,8 @@ public class GnuCashApplication extends Application{
         return mPricesDbAdapter;
     }
 
-    public static BudgetDbAdapter getBudgetDbAdapter() {
-        return mBudgetDbAdapter;
+    public static BudgetsDbAdapter getBudgetDbAdapter() {
+        return mBudgetsDbAdapter;
     }
 
     public static RecurrenceDbAdapter getRecurrenceDbAdapter() {

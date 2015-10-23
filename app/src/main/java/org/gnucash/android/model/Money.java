@@ -281,10 +281,11 @@ public final class Money implements Comparable<Money>{
 
 	/**
 	 * Returns the amount represented by this Money object
+	 * <p>The scale and rounding mode of the returned value are set to that of this Money object</p>
 	 * @return {@link BigDecimal} valure of amount in object
 	 */
 	public BigDecimal asBigDecimal() {
-		return mAmount;
+		return mAmount.setScale(mCurrency.getDefaultFractionDigits(), RoundingMode.HALF_EVEN);
 	}
 	
 	/**
@@ -561,7 +562,7 @@ public final class Money implements Comparable<Money>{
      * Returns a new instance of {@link Money} object with the absolute value of the current object
      * @return Money object with absolute value of this instance
      */
-    public Money absolute() {
+    public Money abs() {
         return new Money(mAmount.abs(), mCurrency);
     }
 

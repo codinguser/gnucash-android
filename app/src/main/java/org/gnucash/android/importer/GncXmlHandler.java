@@ -24,7 +24,7 @@ import android.util.Log;
 import com.crashlytics.android.Crashlytics;
 
 import org.gnucash.android.db.adapter.AccountsDbAdapter;
-import org.gnucash.android.db.adapter.BudgetDbAdapter;
+import org.gnucash.android.db.adapter.BudgetsDbAdapter;
 import org.gnucash.android.db.adapter.CommoditiesDbAdapter;
 import org.gnucash.android.db.adapter.PricesDbAdapter;
 import org.gnucash.android.db.adapter.ScheduledActionDbAdapter;
@@ -242,7 +242,7 @@ public class GncXmlHandler extends DefaultHandler {
 
     private PricesDbAdapter mPricesDbAdapter;
 
-    private BudgetDbAdapter mBudgetDbAdapter;
+    private BudgetsDbAdapter mBudgetsDbAdapter;
 
     /**
      * Creates a handler for handling XML stream events when parsing the XML backup file
@@ -267,14 +267,14 @@ public class GncXmlHandler extends DefaultHandler {
             mScheduledActionsDbAdapter = ScheduledActionDbAdapter.getInstance();
             mCommoditiesDbAdapter = CommoditiesDbAdapter.getInstance();
             mPricesDbAdapter = PricesDbAdapter.getInstance();
-            mBudgetDbAdapter = BudgetDbAdapter.getInstance();
+            mBudgetsDbAdapter = BudgetsDbAdapter.getInstance();
         } else {
             mTransactionsDbAdapter = new TransactionsDbAdapter(db, new SplitsDbAdapter(db));
             mAccountsDbAdapter = new AccountsDbAdapter(db, mTransactionsDbAdapter);
             mScheduledActionsDbAdapter = new ScheduledActionDbAdapter(db);
             mCommoditiesDbAdapter = new CommoditiesDbAdapter(db);
             mPricesDbAdapter = new PricesDbAdapter(db);
-            mBudgetDbAdapter = new BudgetDbAdapter(db);
+            mBudgetsDbAdapter = new BudgetsDbAdapter(db);
         }
 
         mContent = new StringBuilder();
@@ -923,7 +923,7 @@ public class GncXmlHandler extends DefaultHandler {
             long nPrices = mPricesDbAdapter.bulkAddRecords(mPriceList);
             Log.d(getClass().getSimpleName(), String.format("%d prices inserted", nPrices));
 
-            long nBudgets = mBudgetDbAdapter.bulkAddRecords(mBudgetList);
+            long nBudgets = mBudgetsDbAdapter.bulkAddRecords(mBudgetList);
             Log.d(getClass().getSimpleName(), String.format("%d budgets inserted", nBudgets));
 
             long endTime = System.nanoTime();
@@ -959,7 +959,7 @@ public class GncXmlHandler extends DefaultHandler {
         try {
             BigDecimal amountBigD = GncXmlHelper.parseSplitAmount(characterString);
             Money amount = new Money(amountBigD, getCurrencyForAccount(mSplit.getAccountUID()));
-            mSplit.setValue(amount.absolute());
+            mSplit.setValue(amount.abs());
             mSplit.setType(splitType);
             mIgnoreTemplateTransaction = false; //we have successfully parsed an amount
         } catch (NumberFormatException | ParseException e) {

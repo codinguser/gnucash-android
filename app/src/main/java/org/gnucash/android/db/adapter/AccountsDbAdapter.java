@@ -803,7 +803,7 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
                 ? splitsDbAdapter.computeSplitBalance(accountUIDList, currencyCode, true)
                 : splitsDbAdapter.computeSplitBalance(accountUIDList, currencyCode, true, startTimestamp, endTimestamp);
 
-        return balance.add(splitSum).absolute();
+        return balance.add(splitSum).abs();
     }
 
     /**
@@ -1102,7 +1102,7 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
                 transaction.setCurrencyCode(currencyCode);
                 TransactionType transactionType = Transaction.getTypeForBalance(getAccountType(accountUID),
                         balance.isNegative());
-                Split split = new Split(balance.absolute(), accountUID);
+                Split split = new Split(balance.abs(), accountUID);
                 split.setType(transactionType);
                 transaction.addSplit(split);
                 transaction.addSplit(split.createPair(getOrCreateOpeningBalanceAccountUID()));

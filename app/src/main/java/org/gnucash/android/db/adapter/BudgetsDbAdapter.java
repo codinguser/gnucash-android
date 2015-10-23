@@ -37,7 +37,7 @@ import java.util.List;
 /**
  * Database adapter for accessing {@link org.gnucash.android.model.Budget} records
  */
-public class BudgetDbAdapter extends DatabaseAdapter<Budget>{
+public class BudgetsDbAdapter extends DatabaseAdapter<Budget>{
 
     private RecurrenceDbAdapter mRecurrenceDbAdapter;
     private BudgetAmountsDbAdapter mBudgetAmountsDbAdapter;
@@ -47,7 +47,7 @@ public class BudgetDbAdapter extends DatabaseAdapter<Budget>{
      *
      * @param db        SQLiteDatabase object
      */
-    public BudgetDbAdapter(SQLiteDatabase db) {
+    public BudgetsDbAdapter(SQLiteDatabase db) {
         super(db, BudgetEntry.TABLE_NAME);
         mRecurrenceDbAdapter = new RecurrenceDbAdapter(db);
         mBudgetAmountsDbAdapter = new BudgetAmountsDbAdapter(db);
@@ -55,14 +55,17 @@ public class BudgetDbAdapter extends DatabaseAdapter<Budget>{
 
     /**
      * Returns an instance of the budget database adapter
-     * @return BudgetDbAdapter instance
+     * @return BudgetsDbAdapter instance
      */
-    public static BudgetDbAdapter getInstance(){
+    public static BudgetsDbAdapter getInstance(){
         return GnuCashApplication.getBudgetDbAdapter();
     }
 
     @Override
     public void addRecord(@NonNull Budget budget) {
+        if (budget.getBudgetAmounts().size() == 0)
+            throw new IllegalArgumentException("Budgets must have budget amounts");
+
         mRecurrenceDbAdapter.addRecord(budget.getRecurrence());
         super.addRecord(budget);
         mBudgetAmountsDbAdapter.deleteBudgetAmountsForBudget(budget.getUID());
@@ -78,17 +81,18 @@ public class BudgetDbAdapter extends DatabaseAdapter<Budget>{
             budgetAmountList.addAll(budget.getBudgetAmounts());
         }
 
+        List<Recurrence> recurrenceList = new ArrayList<>(budgetList.size());
+        for (Budget budget : budgetList) {
+            recurrenceList.add(budget.getRecurrence());
+        }
+        mRecurrenceDbAdapter.bulkAddRecords(recurrenceList);
+
         long nRow = super.bulkAddRecords(budgetList);
 
         if (nRow > 0 && !budgetAmountList.isEmpty()){
             mBudgetAmountsDbAdapter.bulkAddRecords(budgetAmountList);
         }
 
-        List<Recurrence> recurrenceList = new ArrayList<>(budgetList.size());
-        for (Budget budget : budgetList) {
-            recurrenceList.add(budget.getRecurrence());
-        }
-        mRecurrenceDbAdapter.bulkAddRecords(recurrenceList);
         return nRow;
     }
 

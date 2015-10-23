@@ -47,7 +47,7 @@ import android.widget.TextView;
 import org.gnucash.android.R;
 import org.gnucash.android.db.DatabaseCursorLoader;
 import org.gnucash.android.db.adapter.AccountsDbAdapter;
-import org.gnucash.android.db.adapter.BudgetDbAdapter;
+import org.gnucash.android.db.adapter.BudgetsDbAdapter;
 import org.gnucash.android.model.Budget;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.ui.common.FormActivity;
@@ -55,6 +55,8 @@ import org.gnucash.android.ui.common.UxArgument;
 import org.gnucash.android.ui.util.CursorRecyclerAdapter;
 import org.gnucash.android.ui.util.Refreshable;
 import org.gnucash.android.ui.util.widget.EmptyRecyclerView;
+
+import java.math.RoundingMode;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -71,7 +73,7 @@ public class BudgetListFragment extends Fragment implements Refreshable,
 
     private BudgetRecyclerAdapter mBudgetRecyclerAdapter;
 
-    private BudgetDbAdapter mBudgetDbAdapter;
+    private BudgetsDbAdapter mBudgetsDbAdapter;
 
     @Bind(R.id.budget_recycler_view) EmptyRecyclerView mRecyclerView;
     @Bind(R.id.empty_view) Button mProposeBudgets;
@@ -99,7 +101,7 @@ public class BudgetListFragment extends Fragment implements Refreshable,
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        mBudgetDbAdapter = BudgetDbAdapter.getInstance();
+        mBudgetsDbAdapter = BudgetsDbAdapter.getInstance();
         mBudgetRecyclerAdapter = new BudgetRecyclerAdapter(null);
 
         mRecyclerView.setAdapter(mBudgetRecyclerAdapter);
@@ -171,7 +173,7 @@ public class BudgetListFragment extends Fragment implements Refreshable,
         Intent addAccountIntent = new Intent(getActivity(), FormActivity.class);
         addAccountIntent.setAction(Intent.ACTION_INSERT_OR_EDIT);
         addAccountIntent.putExtra(UxArgument.FORM_TYPE, FormActivity.FormType.BUDGET.name());
-        addAccountIntent.putExtra(UxArgument.BUDGET_UID, mBudgetDbAdapter.getUID(budgetId));
+        addAccountIntent.putExtra(UxArgument.BUDGET_UID, mBudgetsDbAdapter.getUID(budgetId));
         startActivityForResult(addAccountIntent, REQUEST_EDIT_BUDGET);
     }
 
@@ -180,7 +182,7 @@ public class BudgetListFragment extends Fragment implements Refreshable,
      * @param budgetId Database record ID
      */
     private void deleteBudget(long budgetId){
-        BudgetDbAdapter.getInstance().deleteRecord(budgetId);
+        BudgetsDbAdapter.getInstance().deleteRecord(budgetId);
         refresh();
     }
 
@@ -199,8 +201,8 @@ public class BudgetListFragment extends Fragment implements Refreshable,
 
         @Override
         public void onBindViewHolderCursor(BudgetViewHolder holder, Cursor cursor) {
-            final Budget budget = mBudgetDbAdapter.buildModelInstance(cursor);
-            holder.budgetId = mBudgetDbAdapter.getID(budget.getUID());
+            final Budget budget = mBudgetsDbAdapter.buildModelInstance(cursor);
+            holder.budgetId = mBudgetsDbAdapter.getID(budget.getUID());
 
             holder.budgetName.setText(budget.getName());
 
@@ -216,13 +218,15 @@ public class BudgetListFragment extends Fragment implements Refreshable,
             holder.budgetRecurrence.setText(budget.getRecurrence().getRepeatString() + " - "
                     + budget.getRecurrence().getDaysLeft() + " days left");
 
-            Money accountBalance = mBudgetDbAdapter.getAccountSum(budget.getUID(),
+            Money accountBalance = mBudgetsDbAdapter.getAccountSum(budget.getUID(),
                     budget.getStartofCurrentPeriod(), budget.getEndOfCurrentPeriod());
 
             String usedAmount = accountBalance.getCurrency().getSymbol() + accountBalance.formattedAmount() + " of " + budget.getAmountSum().formattedString();
             holder.budgetAmount.setText(usedAmount);
 
-            double budgetProgress = accountBalance.divide(budget.getAmountSum()).asBigDecimal().doubleValue();
+            double budgetProgress = accountBalance.asBigDecimal().divide(budget.getAmountSum().asBigDecimal(),
+                    accountBalance.getCurrency().getDefaultFractionDigits(), RoundingMode.HALF_EVEN)
+                    .doubleValue();
             holder.budgetIndicator.setProgress((int) (budgetProgress * 100));
 
             holder.budgetAmount.setTextColor(BudgetsActivity.getBudgetProgressColor(1 - budgetProgress));
@@ -304,7 +308,7 @@ public class BudgetListFragment extends Fragment implements Refreshable,
 
         @Override
         public Cursor loadInBackground() {
-            mDatabaseAdapter = BudgetDbAdapter.getInstance();
+            mDatabaseAdapter = BudgetsDbAdapter.getInstance();
             return mDatabaseAdapter.fetchAllRecords();
         }
     }

@@ -362,7 +362,7 @@ public class SplitEditorFragment extends Fragment {
             split.setType(viewHolder.splitTypeButton.getTransactionType());
             split.setUID(viewHolder.splitUidTextView.getText().toString().trim());
             if (viewHolder.quantity != null)
-                split.setQuantity(viewHolder.quantity.absolute());
+                split.setQuantity(viewHolder.quantity.abs());
             splitList.add(split);
         }
         return splitList;
