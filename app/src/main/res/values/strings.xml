@@ -482,6 +482,11 @@
     <string name="nav_menu_scheduled_transactions">Scheduled Transactions</string>
     <string name="nav_menu_export">Export…</string>
     <string name="nav_menu_settings">Settings</string>
+    <string name="username">User Name</string>
+    <string name="password">Password</string>
+    <string name="owncloud_server">Owncloud Address</string>
+    <string name="owncloud_server_invalid">OC server not found</string>
+    <string name="owncloud_user_invalid">OC username/password invalid</string>
     <plurals name="label_every_x_days">
         <item quantity="one">Daily</item>
         <item quantity="other">Every %d days</item>

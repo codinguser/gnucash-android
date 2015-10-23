@@ -418,6 +418,17 @@ public class SettingsActivity extends AppCompatPreferenceActivity
     }
 
     /**
+     * Toggles synchronization with Owncloud on or off
+     */
+    @TargetApi(11)
+    private void toggleOwncloudSync(){
+
+        OwncloudAccountDialog ocDialog = OwncloudAccountDialog.newInstance();
+        ocDialog.show(getFragmentManager(), "owncloud_dialog");
+
+    }
+
+    /**
      * Toggles the checkbox of the DropBox Sync preference if a DropBox account is linked
      * @param pref DropBox Sync preference
      */
