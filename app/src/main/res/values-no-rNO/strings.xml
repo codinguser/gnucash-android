@@ -16,241 +16,241 @@
  limitations under the License.
 -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-  <string name="title_create_account">Create Account</string>
-  <string name="title_edit_account">Edit Account</string>
-  <string name="info_details">Info</string>
-  <string name="menu_export">Export&#8230;</string>
-  <string name="description_add_transaction_icon">Add a new transaction to an account</string>
-  <string name="label_no_accounts">No accounts to display</string>
-  <string name="label_account_name">Account name</string>
-  <string name="btn_cancel">Cancel</string>
-  <string name="btn_save">Save</string>
-  <string name="label_passcode">Enter Passcode</string>
-  <string name="toast_wrong_passcode">Wrong passcode, please try again</string>
-  <string name="toast_passcode_set">Passcode set</string>
-  <string name="label_confirm_passcode">Please confirm your passcode</string>
-  <string name="toast_invalid_passcode_confirmation">Invalid passcode confirmation. Please try again</string>
-  <string name="label_transaction_name">Description</string>
-  <string name="label_transaction_amount">Amount</string>
-  <string name="title_add_transaction">New transaction</string>
-  <string name="label_no_transactions">No transactions to display</string>
-  <string name="label_timeanddate">DATE &amp; TIME</string>
-  <string name="label_account">Account</string>
-  <string name="label_debit">DEBIT</string>
-  <string name="label_credit">CREDIT</string>
-  <string name="title_accounts">Accounts</string>
-  <string name="title_transactions">Transactions</string>
-  <string name="menu_delete">Delete</string>
-  <string name="alert_dialog_ok_delete">Delete</string>
-  <string name="alert_dialog_cancel">Cancel</string>
-  <string name="toast_account_deleted">Account deleted</string>
-  <string name="title_confirm_delete">Confirm delete</string>
-  <string name="delete_account_confirmation_message">All transactions in this account will also be deleted</string>
-  <string name="title_edit_transaction">Edit Transaction</string>
-  <string name="label_transaction_description">Add note</string>
-  <string name="menu_move">MOVE</string>
-  <string name="title_selected">%1$d selected</string>
-  <string name="label_account_balance">Balance:</string>
-  <string name="label_export_destination">Export To:</string>
-  <string name="title_export_dialog">Export Transactions</string>
-  <string name="option_export_all_transactions">Export all transactions</string>
-  <string name="hint_export_choice">By default, only new transactions since last export will be exported. Check this option to export all transactions</string>
-  <string name="toast_export_error">Error exporting %1$s file</string>
-  <string name="btn_export">Export</string>
-  <string name="option_delete_after_export">Delete after export</string>
-  <string name="hint_delete_after_export">All exported transactions will be deleted when exporting is completed</string>
-  <string name="title_settings">Settings</string>
+  <string name="title_create_account">Opprett konto</string>
+  <string name="title_edit_account">Rediger konto</string>
+  <string name="info_details">Informasjon</string>
+  <string name="menu_export">Eksport...</string>
+  <string name="description_add_transaction_icon">Legge til en ny transaksjon i en konto</string>
+  <string name="label_no_accounts">Ingen kontoer for å vise</string>
+  <string name="label_account_name">Kontonavn</string>
+  <string name="btn_cancel">Avbryt</string>
+  <string name="btn_save">Lagre</string>
+  <string name="label_passcode">Angi passord</string>
+  <string name="toast_wrong_passcode">Feil passord, prøv igjen</string>
+  <string name="toast_passcode_set">Passord satt</string>
+  <string name="label_confirm_passcode">Bekreft passordet ditt</string>
+  <string name="toast_invalid_passcode_confirmation">Ugyldig passord bekreftelse. Prøv på nytt</string>
+  <string name="label_transaction_name">Beskrivelse</string>
+  <string name="label_transaction_amount">Beløp</string>
+  <string name="title_add_transaction">Ny transaksjon</string>
+  <string name="label_no_transactions">Ingen transaksjoner å vise</string>
+  <string name="label_timeanddate">DATO &amp; TID</string>
+  <string name="label_account">Konto</string>
+  <string name="label_debit">DEBET</string>
+  <string name="label_credit">KREDIT</string>
+  <string name="title_accounts">Kontoer</string>
+  <string name="title_transactions">Transaksjoner</string>
+  <string name="menu_delete">Slett</string>
+  <string name="alert_dialog_ok_delete">Slett</string>
+  <string name="alert_dialog_cancel">Avbryt</string>
+  <string name="toast_account_deleted">Konto slettet</string>
+  <string name="title_confirm_delete">Bekreft sletting</string>
+  <string name="delete_account_confirmation_message">Alle transaksjoner i denne kontoen vil også slettes</string>
+  <string name="title_edit_transaction">Redigere transaksjonen</string>
+  <string name="label_transaction_description">Legg til notat</string>
+  <string name="menu_move">FLYTT</string>
+  <string name="title_selected">%1$d valgt</string>
+  <string name="label_account_balance">Saldo:</string>
+  <string name="label_export_destination">Eksporter til:</string>
+  <string name="title_export_dialog">Eksport av transaksjoner</string>
+  <string name="option_export_all_transactions">Eksportere alle transaksjoner</string>
+  <string name="hint_export_choice">Standard eksporteres bare nye transaksjoner siden siste eksport. Merk dette alternativet for å eksportere alle transaksjoner</string>
+  <string name="toast_export_error">Feil ved eksport av %1$s</string>
+  <string name="btn_export">Eksporter</string>
+  <string name="option_delete_after_export">Slette etter eksport</string>
+  <string name="hint_delete_after_export">Alle eksporterte transaksjoner slettes når eksport er fullført</string>
+  <string name="title_settings">Innstillinger</string>
   <string-array name="export_destinations">
-    <item>SD Card</item>
+    <item>SD-kort</item>
     <item>DropBox</item>
-    <item>Google Drive</item>
-    <item>Send to&#8230;</item>
+    <item>Google Disk</item>
+    <item>Send til&#8230;</item>
   </string-array>
-  <string name="btn_move">Move</string>
-  <string name="title_move_transactions">Move %1$d transaction(s)</string>
-  <string name="label_move_destination">Destination Account</string>
-  <string name="permission_access_sdcard">Access SD Card</string>
-  <string name="toast_incompatible_currency">Cannot move transactions.\nThe destination account uses a different currency from origin account</string>
-  <string name="header_general_settings">General</string>
-  <string name="header_about_gnucash">About</string>
-  <string name="title_choose_currency">Choose default currency</string>
-  <string name="title_default_currency">Default currency</string>
-  <string name="summary_default_currency">Default currency to assign to new accounts</string>
-  <string name="label_permission_record_transactions">Enables recording transactions in GnuCash for Android</string>
-  <string name="label_permission_create_accounts">Enables creation of accounts in GnuCash for Android</string>
-  <string name="label_permission_group">Your GnuCash data</string>
-  <string name="description_permission_group">Read and modify GnuCash data</string>
-  <string name="label_permission_record_transaction">Record transactions in GnuCash</string>
-  <string name="label_permission_create_account">Create accounts in GnuCash</string>
-  <string name="label_display_account">Display account</string>
-  <string name="btn_create_accounts">Create Accounts</string>
-  <string name="title_default_accounts">Select accounts to create</string>
+  <string name="btn_move">Flytt</string>
+  <string name="title_move_transactions">Flytt %1$d transaksjon(er)</string>
+  <string name="label_move_destination">Målkonto</string>
+  <string name="permission_access_sdcard">Aksesser SD-kort</string>
+  <string name="toast_incompatible_currency">Kan ikke flytte transaksjonene. \nMålkontoen bruker en annen valuta enn opprinnelig konto</string>
+  <string name="header_general_settings">Generelt</string>
+  <string name="header_about_gnucash">Om</string>
+  <string name="title_choose_currency">Velg standardvaluta</string>
+  <string name="title_default_currency">Standardvaluta</string>
+  <string name="summary_default_currency">Standardvalutaen som skal tilordnes nye kontoer</string>
+  <string name="label_permission_record_transactions">Aktiverer registrering av transaksjoner i GnuCash for Android</string>
+  <string name="label_permission_create_accounts">Aktiverer oppretting av kontoer i GnuCash for Android</string>
+  <string name="label_permission_group">Dine GnuCash data</string>
+  <string name="description_permission_group">Lese og endre GnuCash data</string>
+  <string name="label_permission_record_transaction">Registrere transaksjoner i GnuCash</string>
+  <string name="label_permission_create_account">Opprette kontoer i GnuCash</string>
+  <string name="label_display_account">Vis konto</string>
+  <string name="btn_create_accounts">Opprett konto</string>
+  <string name="title_default_accounts">Velg kontoer å opprette</string>
   <string-array name="currency_names">
-    <item>Afghani</item>
-    <item>Algerian Dinar</item>
-    <item>Argentine Peso</item>
-    <item>Armenian Dram</item>
-    <item>Aruban Florin</item>
-    <item>Australian Dollar</item>
-    <item>Azerbaijanian Manat</item>
+    <item>Afghanske</item>
+    <item>Algeriske dinarer</item>
+    <item>Argentinsk Peso</item>
+    <item>Armensk Dram</item>
+    <item>Arubiske gylden</item>
+    <item>Australske Dollar</item>
+    <item>Aserbajdsjanske Manat</item>
     <item>Bahamian Dollar</item>
-    <item>Bahraini Dinar</item>
+    <item>Bahraini dinarer</item>
     <item>Baht</item>
     <item>Balboa</item>
     <item>Barbados Dollar</item>
-    <item>Belarussian Ruble</item>
+    <item>Hviterussiske rubler</item>
     <item>Belize Dollar</item>
     <item>Bermudian Dollar</item>
     <item>Bolivar Fuerte</item>
     <item>Boliviano</item>
-    <item>Brazilian Real</item>
+    <item>Brasilianske Real</item>
     <item>Brunei Dollar</item>
-    <item>Bulgarian Lev</item>
+    <item>Bulgarske Lev</item>
     <item>Burundi Franc</item>
-    <item>Canadian Dollar</item>
-    <item>Cape Verde Escudo</item>
-    <item>Cayman Islands Dollar</item>
+    <item>Kanadiske Dollar</item>
+    <item>Kapp Verde Escudo</item>
+    <item>Caymanøyene Dollar</item>
     <item>CFA Franc BCEAO</item>
     <item>CFA Franc BEAC</item>
     <item>CFP Franc</item>
-    <item>Chilean Peso</item>
-    <item>Testing currency</item>
-    <item>Colombian Peso</item>
+    <item>Chilenske pesos</item>
+    <item>Testing valuta</item>
+    <item>Colombianske Peso</item>
     <item>Comoro Franc</item>
-    <item>Congolese Franc</item>
-    <item>Convertible Mark</item>
+    <item>Kongolesiske Franc</item>
+    <item>Konvertible Mark</item>
     <item>Cordoba Oro</item>
-    <item>Costa Rican Colon</item>
-    <item>Croatian Kuna</item>
-    <item>Cuban Convertible Peso</item>
-    <item>Cuban Peso</item>
-    <item>Czech Koruna</item>
+    <item>Costa Rica kolon</item>
+    <item>Kroatiske Kuna</item>
+    <item>Cubansk konvertibel Peso</item>
+    <item>Cubansk Peso</item>
+    <item>Tsjekkiske Koruna</item>
     <item>Dalasi</item>
-    <item>Danish Krone</item>
+    <item>Dansk Krone</item>
     <item>Denar</item>
     <item>Djibouti Franc</item>
     <item>Dobra</item>
-    <item>Dominican Peso</item>
+    <item>Dominikanske pesos</item>
     <item>Dong</item>
-    <item>East Caribbean Dollar</item>
-    <item>Egyptian Pound</item>
-    <item>El Salvador Colon</item>
+    <item>Østkaribiske Dollar</item>
+    <item>Egyptisk pund</item>
+    <item>El Salvador kolon</item>
     <item>Ethiopian Birr</item>
     <item>Euro</item>
-    <item>Falkland Islands Pound</item>
+    <item>Falklandske pund</item>
     <item>Fiji Dollar</item>
     <item>Forint</item>
     <item>Ghana Cedi</item>
-    <item>Gibraltar Pound</item>
-    <item>Gold</item>
+    <item>Gibraltarske pund</item>
+    <item>Gull</item>
     <item>Gourde</item>
     <item>Guarani</item>
     <item>Guinea Franc</item>
     <item>Guyana Dollar</item>
     <item>Hong Kong Dollar</item>
     <item>Hryvnia</item>
-    <item>Iceland Krona</item>
-    <item>Indian Rupee</item>
-    <item>Iranian Rial</item>
-    <item>Iraqi Dinar</item>
-    <item>Jamaican Dollar</item>
-    <item>Jordanian Dinar</item>
-    <item>Kenyan Shilling</item>
+    <item>Islandske kroner</item>
+    <item>Indiske rupi</item>
+    <item>Iranske Rial</item>
+    <item>Irakiske dinarer</item>
+    <item>Jamaicanske Dollar</item>
+    <item>Jordanske dinarer</item>
+    <item>Kenyanske Shilling</item>
     <item>Kina</item>
     <item>Kip</item>
-    <item>Kuwaiti Dinar</item>
+    <item>Kuwaitiske dinarer</item>
     <item>Kwacha</item>
     <item>Kwanza</item>
     <item>Kyat</item>
     <item>Lari</item>
-    <item>Latvian Lats</item>
-    <item>Lebanese Pound</item>
+    <item>Latviske Lats</item>
+    <item>Libanesiske pund</item>
     <item>Lek</item>
     <item>Lempira</item>
     <item>Leone</item>
-    <item>Liberian Dollar</item>
-    <item>Libyan Dinar</item>
+    <item>Liberiske Dollar</item>
+    <item>Libyske dinarer</item>
     <item>Lilangeni</item>
-    <item>Lithuanian Litas</item>
+    <item>Litauisk Litas</item>
     <item>Loti</item>
-    <item>Malagasy Ariary</item>
-    <item>Malaysian Ringgit</item>
-    <item>Mauritius Rupee</item>
-    <item>Mexican Peso</item>
-    <item>Mexican Unidad de Inversion (UDI)</item>
-    <item>Moldovan Leu</item>
-    <item>Moroccan Dirham</item>
-    <item>Mozambique Metical</item>
+    <item>Gassiske Ariary</item>
+    <item>Malaysiske Ringgit</item>
+    <item>Mauritius rupi</item>
+    <item>Meksikansk Peso</item>
+    <item>Meksikansk Unidad de inversjon (UDI)</item>
+    <item>Moldova Leu</item>
+    <item>Marokkanske Dirham</item>
+    <item>Mosambik Metical</item>
     <item>Mvdol</item>
     <item>Naira</item>
     <item>Nakfa</item>
-    <item>Namibia Dollar</item>
-    <item>Nepalese Rupee</item>
-    <item>Netherlands Antillean Guilder</item>
-    <item>New Israeli Sheqel</item>
-    <item>New Romanian Leu</item>
-    <item>New Taiwan Dollar</item>
-    <item>New Zealand Dollar</item>
+    <item>Namibiske Dollar</item>
+    <item>Nepalske rupi</item>
+    <item>Nederlandske antillegylden</item>
+    <item>Israelske shekel</item>
+    <item>Nye rumenske Leu</item>
+    <item>Nye taiwanske Dollar</item>
+    <item>Newzealandske Dollar</item>
     <item>Ngultrum</item>
-    <item>North Korean Won</item>
-    <item>Norwegian Krone</item>
+    <item>Nordkoreanske Won</item>
+    <item>Norske kroner</item>
     <item>Nuevo Sol</item>
     <item>Ouguiya</item>
-    <item>Pa’anga</item>
-    <item>Pakistan Rupee</item>
+    <item>Pa\'anga</item>
+    <item>Pakistanske rupi</item>
     <item>Palladium</item>
     <item>Pataca</item>
-    <item>Philippine Peso</item>
-    <item>Platinum</item>
-    <item>Pound Sterling</item>
+    <item>Filippinske Peso</item>
+    <item>Platina</item>
+    <item>Pund Sterling</item>
     <item>Pula</item>
     <item>Qatari Rial</item>
     <item>Quetzal</item>
     <item>Rand</item>
-    <item>Rial Omani</item>
+    <item>Omansk Rial</item>
     <item>Riel</item>
     <item>Rufiyaa</item>
     <item>Rupiah</item>
-    <item>Russian Ruble</item>
+    <item>Russisk rubel</item>
     <item>Rwanda Franc</item>
-    <item>Saint Helena Pound</item>
-    <item>Saudi Riyal</item>
-    <item>SDR (Special Drawing Right)</item>
-    <item>Serbian Dinar</item>
-    <item>Seychelles Rupee</item>
-    <item>Silver</item>
-    <item>Singapore Dollar</item>
-    <item>Solomon Islands Dollar</item>
+    <item>Sankthelenske pund</item>
+    <item>Saudiarabiske Riyal</item>
+    <item>SDR (spesielle tegning rett)</item>
+    <item>Serbiske dinarer</item>
+    <item>Seychellene rupi</item>
+    <item>Sølv</item>
+    <item>Singapor Dollar</item>
+    <item>Salomonøyene Dollar</item>
     <item>Som</item>
-    <item>Somali Shilling</item>
+    <item>Somaliske Shilling</item>
     <item>Somoni</item>
-    <item>South Sudanese Pound</item>
-    <item>Sri Lanka Rupee</item>
+    <item>Sør Sudanske pund</item>
+    <item>Srilankiske rupi</item>
     <item>Sucre</item>
-    <item>Sudanese Pound</item>
+    <item>Sudanske pund</item>
     <item>Surinam Dollar</item>
-    <item>Swedish Krona</item>
-    <item>Swiss Franc</item>
-    <item>Syrian Pound</item>
+    <item>Svenske kroner</item>
+    <item>Sveitsiske Franc</item>
+    <item>Syriske pund</item>
     <item>Taka</item>
     <item>Tala</item>
-    <item>Tanzanian Shilling</item>
+    <item>Tanzanianske Shilling</item>
     <item>Tenge</item>
-    <item>No currency</item>
-    <item>Trinidad and Tobago Dollar</item>
+    <item>Ingen valuta</item>
+    <item>Trinidad og Tobagos Dollar</item>
     <item>Tugrik</item>
-    <item>Tunisian Dinar</item>
-    <item>Turkish Lira</item>
-    <item>Turkmenistan New Manat</item>
+    <item>Tunisiske dinarer</item>
+    <item>Tyrkiske Lira</item>
+    <item>Turkmensk nye Manat</item>
     <item>UAE Dirham</item>
-    <item>Uganda Shilling</item>
-    <item>UIC-Franc</item>
+    <item>Ugandiske Shilling</item>
+    <item>UIC Franc</item>
     <item>Unidad de Valor Real</item>
     <item>Unidades de fomento</item>
-    <item>Uruguay Peso en Unidades Indexadas (URUIURUI)</item>
-    <item>Uruguayan peso</item>
+    <item>Uruguay Peso no Unidades Indexadas (URUIURUI)</item>
+    <item>Uruguayanske peso</item>
     <item>US Dollar</item>
-    <item>Uzbekistan Sum</item>
+    <item>Usbekiske Sum</item>
     <item>Vatu</item>
     <item>WIR Euro</item>
     <item>WIR Franc</item>
@@ -258,117 +258,112 @@
     <item>Yemeni Rial</item>
     <item>Yen</item>
     <item>Yuan Renminbi</item>
-    <item>Zambian Kwacha</item>
-    <item>Zimbabwe Dollar</item>
+    <item>Zambiske Kwacha</item>
+    <item>Zimbabwiske Dollar</item>
     <item>Zloty</item>
   </string-array>
-  <string name="error_no_accounts">No accounts exist in GnuCash.\nCreate an account before adding a widget</string>
-  <string name="title_build_version">Build version</string>
-  <string name="title_license">License</string>
-  <string name="summary_licence_details">Apache License v2.0. Click for details</string>
-  <string name="title_general_prefs">General Preferences</string>
-  <string name="label_widget_configuration">Select Account</string>
-  <string name="toast_no_transactions_to_export">There are no transactions available to export</string>
-  <string name="header_passcode_settings">Passcode</string>
-  <string name="title_passcode_preferences">Passcode Preferences</string>
-  <string name="title_passcode_enabled">Passcode Turned On</string>
-  <string name="title_passcode_disabled">Passcode Turned Off</string>
-  <string name="title_change_passcode">Change Passcode</string>
-  <string name="title_about_gnucash">About GnuCash</string>
-  <string name="summary_about_gnucash">A mobile finance management and expense-tracker designed for Android</string>
-  <string name="title_about">About</string>
-  <string name="toast_format_exported_to">%1$s file exported to:\n</string>
-  <string name="title_export_email">GnuCash Android %1$s export</string>
-  <string name="description_export_email">GnuCash Android Export from </string>
-  <string name="header_transaction_settings">Transactions</string>
-  <string name="title_transaction_preferences">Transaction Preferences</string>
-  <string name="title_account_preferences">Account Preferences</string>
-  <string name="title_default_transaction_type">Default Transaction Type</string>
-  <string name="summary_default_transaction_type">The type of transaction to use by default, CREDIT or DEBIT</string>
+  <string name="error_no_accounts">Det finnes ingen kontoer i GnuCash.\nOpprett en konto før du legger til en widget</string>
+  <string name="title_build_version">Byggversjon</string>
+  <string name="title_license">Lisens</string>
+  <string name="summary_licence_details">Apache Lisens v2.0. Klikk for mer informasjon</string>
+  <string name="title_general_prefs">Generelle innstillinger</string>
+  <string name="label_widget_configuration">Velg konto</string>
+  <string name="toast_no_transactions_to_export">Det finnes ingen transaksjoner som er tilgjengelige for eksport</string>
+  <string name="header_passcode_settings">Passord</string>
+  <string name="title_passcode_preferences">Passordpreferanser</string>
+  <string name="title_passcode_enabled">Passord aktivert</string>
+  <string name="title_passcode_disabled">Passord deaktivert</string>
+  <string name="title_change_passcode">Endre passord</string>
+  <string name="title_about_gnucash">Om GnuCash</string>
+  <string name="summary_about_gnucash">En mobil økonomistyrer og utgiftsfører laget for Android</string>
+  <string name="title_about">Om</string>
+  <string name="toast_format_exported_to">%1$s filen er eksportert til: \n</string>
+  <string name="title_export_email">GnuCash Android %1$s eksport</string>
+  <string name="description_export_email">GnuCash Android eksport fra </string>
+  <string name="header_transaction_settings">Transaksjoner</string>
+  <string name="title_transaction_preferences">Transaksjonsinnstillinger</string>
+  <string name="title_account_preferences">Kontoinnstillinger</string>
+  <string name="title_default_transaction_type">Standard transaksjonstype</string>
+  <string name="summary_default_transaction_type">Standard transaksjonstype å bruke, kredit- eller debet</string>
   <string-array name="transaction_types">
-    <item>CREDIT</item>
-    <item>DEBIT</item>
+    <item>KREDIT</item>
+    <item>DEBET</item>
   </string-array>
-  <string name="msg_delete_all_transactions_confirmation">Are you sure you want to delete ALL transactions?</string>
-  <string name="msg_delete_transaction_confirmation">Are you sure you want to delete this transaction?</string>
-  <string name="title_export_preference_category">Export</string>
-  <string name="title_export_all_transactions">Export all transactions</string>
-  <string name="title_always_delete_exported_transactions">Delete exported transactions</string>
-  <string name="title_default_export_email">Default export email</string>
-  <string name="summary_default_export_email">The default email address to send exports to. You can still change this when you export.</string>
-  <string name="label_double_entry_account">Transfer Account</string>
-  <string name="summary_use_double_entry">All transactions will be a transfer from one account to another</string>
-  <string name="title_use_double_entry">Activate Double Entry</string>
-  <string name="account_balance">Balance</string>
-  <string name="toast_no_account_name_entered">Enter an account name to create an account</string>
-  <string name="label_account_currency">Currency</string>
-  <string name="label_parent_account">Parent account</string>
-  <string name="title_xml_ofx_header">Use XML OFX header</string>
-  <string name="summary_xml_ofx_header">Enable this option when exporting to third-party application other than GnuCash for desktop</string>
-  <string name="title_whats_new">What\'s New</string>
+  <string name="msg_delete_all_transactions_confirmation">Er du sikker på at du vil slette alle transaksjoner?</string>
+  <string name="msg_delete_transaction_confirmation">Er du sikker på at du vil slette denne transaksjonen?</string>
+  <string name="title_export_preference_category">Eksport</string>
+  <string name="title_export_all_transactions">Eksportere alle transaksjoner</string>
+  <string name="title_always_delete_exported_transactions">Slett eksporterte transaksjoner</string>
+  <string name="title_default_export_email">Standard eksport e-post</string>
+  <string name="summary_default_export_email">Standard postadresse å sende eksporter til. Du kan endre dette når du eksporterer.</string>
+  <string name="label_double_entry_account">Overføringskonto</string>
+  <string name="summary_use_double_entry">Alle transaksjoner blir en overføring fra en konto til en annen</string>
+  <string name="title_use_double_entry">Aktiver dobbel bokføring</string>
+  <string name="account_balance">Balanse</string>
+  <string name="toast_no_account_name_entered">Angi kontonavn for å opprette en konto</string>
+  <string name="label_account_currency">Valuta</string>
+  <string name="label_parent_account">Overordnet konto</string>
+  <string name="title_xml_ofx_header">Bruk XML OFX topptekst</string>
+  <string name="summary_xml_ofx_header">Aktiver dette alternativet når du eksporterer til tredjeparts programvare, borsett fra GnuCash for PC</string>
+  <string name="title_whats_new">Hva er nytt</string>
   <string name="whats_new">
-        - New Material app design \n
-        - Multi-currency transactions\n
-        - Calculator to transaction amounts\n
-        - Better reporting options\n
-        - New help &amp; feedback section\n
-        - Multiple bug fixes and improvements\n
-	</string>
-  <string name="label_dismiss">Dismiss</string>
-  <string name="toast_transanction_amount_required">Enter an amount to save the transaction</string>
-  <string name="toast_error_edit_multi_currency_transaction">Multi-currency transactions cannot be modified</string>
-  <string name="menu_import_accounts">Import GnuCash Accounts</string>
-  <string name="btn_import_accounts">Import Accounts</string>
-  <string name="toast_error_importing_accounts">An error occurred while importing the GnuCash accounts</string>
-  <string name="toast_success_importing_accounts">GnuCash Accounts successfully imported</string>
-  <string name="summary_import_accounts">Import account structure exported from GnuCash desktop</string>
-  <string name="title_import_accounts">Import GnuCash XML</string>
-  <string name="summary_delete_all_accounts">Delete all accounts in the database. All transactions will be deleted as
-        well.
-    </string>
-  <string name="title_delete_all_accounts">Delete all accounts</string>
-  <string name="header_account_settings">Accounts</string>
-  <string name="toast_all_accounts_deleted">All accounts have been successfully deleted</string>
-  <string name="confirm_delete_all_accounts">Are you sure you want to delete all accounts and transactions?\n\nThis
-        operation cannot be undone!
-    </string>
-  <string name="label_account_type">Account Type</string>
-  <string name="summary_delete_all_transactions">All transactions in all accounts will be deleted!</string>
-  <string name="title_delete_all_transactions">Delete all transactions</string>
-  <string name="toast_all_transactions_deleted">All transactions successfully deleted!</string>
-  <string name="title_progress_importing_accounts">Importing accounts</string>
-  <string name="toast_tap_again_to_confirm_delete">Tap again to confirm. ALL entries will be deleted!!</string>
-  <string name="section_header_transactions">Transactions</string>
-  <string name="section_header_subaccounts">Sub-Accounts</string>
-  <string name="menu_search_accounts">Search</string>
-  <string name="title_default_export_format">Default Export Format</string>
-  <string name="summary_default_export_format">File format to use by default when exporting transactions</string>
-  <string name="menu_export_transactions">Export transactions&#8230;</string>
-  <string name="label_recurring_transaction">Recurrence</string>
-  <string name="imbalance_account_name">Imbalance</string>
-  <string name="title_progress_exporting_transactions">Exporting transactions</string>
-  <string name="label_no_recurring_transactions">No recurring transactions to display.</string>
-  <string name="toast_recurring_transaction_deleted">Successfully deleted recurring transaction</string>
-  <string name="label_placeholder_account">Placeholder account</string>
-  <string name="label_default_transfer_account">Default Transfer Account</string>
+- Nytt Material app design \n
+- Multivaluta transaksjoner \n
+- Kalkulator til transaksjonsbeløp \n
+- Forbedrede rapport muligheter \n
+- Ny Hjelp &amp; Tilbakemeldingsseksjon \n
+- Mange feilrettinger og forbedringer \n</string>
+  <string name="label_dismiss">Avvis</string>
+  <string name="toast_transanction_amount_required">Angi et beløp for å lagre transaksjonen</string>
+  <string name="toast_error_edit_multi_currency_transaction">Multi-valutatransaksjoner kan ikke endres</string>
+  <string name="menu_import_accounts">Importere GnuCash kontoer</string>
+  <string name="btn_import_accounts">Importere kontoer</string>
+  <string name="toast_error_importing_accounts">Det oppstod en feil under import av GnuCash kontoene</string>
+  <string name="toast_success_importing_accounts">GnuCash kontoer importert</string>
+  <string name="summary_import_accounts">Importere kontostrukturen eksportert fra GnuCash desktop</string>
+  <string name="title_import_accounts">Importere GnuCash XML</string>
+  <string name="summary_delete_all_accounts">Slett alle kontoer i databasen. Alle transaksjoner vil også bli slettet.    </string>
+  <string name="title_delete_all_accounts">Slette alle kontoer</string>
+  <string name="header_account_settings">Kontoer</string>
+  <string name="toast_all_accounts_deleted">Alle kontoer ble slettet</string>
+  <string name="confirm_delete_all_accounts">Er du sikker på at du vil slette alle kontoer og transaksjoner? \n\nDenne operasjonen kan ikke angres!    </string>
+  <string name="label_account_type">Kontotype</string>
+  <string name="summary_delete_all_transactions">Alle transaksjoner i alle kontoer vil bli slettet!</string>
+  <string name="title_delete_all_transactions">Slett alle transaksjoner</string>
+  <string name="toast_all_transactions_deleted">Alle transaksjoner slettet!</string>
+  <string name="title_progress_importing_accounts">Importere kontoer</string>
+  <string name="toast_tap_again_to_confirm_delete">Trykk igjen for å bekrefte. ALLE oppføringene slettes!!</string>
+  <string name="section_header_transactions">Transaksjoner</string>
+  <string name="section_header_subaccounts">Underkontoer</string>
+  <string name="menu_search_accounts">Søk</string>
+  <string name="title_default_export_format">Standard eksportformat</string>
+  <string name="summary_default_export_format">Filformat som skal brukes som standard når du eksporterer transaksjoner</string>
+  <string name="menu_export_transactions">Eksporter transaksjoner&#8230;</string>
+  <string name="label_recurring_transaction">Gjentakelse</string>
+  <string name="imbalance_account_name">Ubalanse</string>
+  <string name="title_progress_exporting_transactions">Eksportere transaksjoner</string>
+  <string name="label_no_recurring_transactions">Ingen gjentakende transaksjoner å vise.</string>
+  <string name="toast_recurring_transaction_deleted">Slettet gjentakende transaksjon</string>
+  <string name="label_placeholder_account">Plassholder-konto</string>
+  <string name="label_default_transfer_account">Standardkontoen for overføring</string>
   <plurals name="label_sub_accounts">
-    <item quantity="one">%d sub-account</item>
-    <item quantity="other">%d sub-accounts</item>
+    <item quantity="one">%d under-konto</item>
+    <item quantity="other">%d under-kontoer</item>
   </plurals>
   <string-array name="account_type_entry_values">
-    <item>CASH</item>
+    <item>KONTANTER</item>
     <item>BANK</item>
-    <item>CREDIT CARD</item>
-    <item>ASSET</item>
-    <item>LIABILITY</item>
-    <item>INCOME</item>
-    <item>EXPENSE</item>
-    <item>PAYABLE</item>
-    <item>RECEIVABLE</item>
-    <item>EQUITY</item>
-    <item>CURRENCY</item>
-    <item>STOCK</item>
-    <item>MUTUAL FUND</item>
+    <item>KREDITTKORT</item>
+    <item>AKTIVA</item>
+    <item>GJELD</item>
+    <item>INNTEKT</item>
+    <item>UTGIFT</item>
+    <item>UTGÅENDE</item>
+    <item>INNGÅENDE</item>
+    <item>EGENKAPITAL</item>
+    <item>VALUTA</item>
+    <item>AKSJE</item>
+    <item>FOND</item>
     <item>TRADING</item>
   </string-array>
   <string-array name="export_formats">
@@ -376,196 +371,192 @@
     <item>OFX</item>
     <item>XML</item>
   </string-array>
-  <string name="color_picker_default_title">Select a Color</string>
-  <string name="label_account_color_and_type">Account Color &amp; Type</string>
-  <string name="label_delete_sub_accounts">Delete sub-accounts</string>
-  <string name="title_recent_accounts">Recent</string>
-  <string name="title_favorite_accounts">Favorites</string>
-  <string name="title_all_accounts">All</string>
-  <string name="summary_create_default_accounts">Creates default GnuCash commonly-used account structure</string>
-  <string name="title_create_default_accounts">Create default accounts</string>
-  <string name="msg_confirm_create_default_accounts_setting">All existing accounts and transactions on the device will be deleted.\n\nAre you sure you want to proceed?</string>
-  <string name="menu_scheduled_transactions">Scheduled Transactions</string>
-  <string name="msg_confirm_create_default_accounts_first_run">Welcome to GnuCash Android! \nYou can either create
-        a hierarchy of commonly-used accounts, or import your own GnuCash account structure. \n\nBoth options are also
-        available in app Settings so you can decide later.
-    </string>
-  <string name="title_scheduled_transactions">Transactions</string>
-  <string name="title_select_export_destination">Select destination for export</string>
-  <string name="hint_split_memo">Memo</string>
-  <string name="label_spend">Spend</string>
-  <string name="label_receive">Receive</string>
-  <string name="label_withdrawal">Withdrawal</string>
-  <string name="label_deposit">Deposit</string>
-  <string name="label_payment">Payment</string>
-  <string name="label_charge">Charge</string>
-  <string name="label_decrease">Decrease</string>
-  <string name="label_increase">Increase</string>
-  <string name="label_income">Income</string>
-  <string name="label_rebate">Rebate</string>
-  <string name="label_expense">Expense</string>
-  <string name="label_bill">Bill</string>
-  <string name="label_invoice">Invoice</string>
-  <string name="label_buy">Buy</string>
-  <string name="label_sell">Sell</string>
-  <string name="label_repeats">Repeats</string>
-  <string name="toast_no_recent_backup">No recent backup found</string>
-  <string name="account_name_opening_balances">Opening Balances</string>
-  <string name="account_name_equity">Equity</string>
-  <string name="summary_save_opening_balances">Enable to save the current account balance (before deleting transactions) as new opening balance after deleting transactions
-    </string>
-  <string name="title_save_opening_balances">Save account opening balances</string>
-  <string name="export_warning_ofx">OFX does not support double-entry transactions</string>
-  <string name="export_warning_qif">Generates separate QIF files per currency</string>
-  <string name="title_transaction_splits">Transaction splits</string>
-  <string name="label_imbalance">Imbalance:</string>
-  <string name="btn_add_split">Add split</string>
-  <string name="menu_title_favorite">Favorite</string>
-  <string name="drawer_open">Navigation drawer opened</string>
-  <string name="drawer_close">Navigation drawer closed</string>
-  <string name="title_reports">Reports</string>
-  <string name="title_pie_chart">Pie Chart</string>
-  <string name="title_line_chart">Line Chart</string>
-  <string name="title_bar_chart">Bar Chart</string>
-  <string name="title_report_prefs">Report Preferences</string>
-  <string name="label_report_currency">Select currency</string>
-  <string name="title_use_account_color">Account color in reports</string>
-  <string name="summary_use_account_color">Use account color in the bar/pie chart</string>
-  <string name="header_report_settings">Reports</string>
-  <string name="menu_order_by_size">Order by size</string>
-  <string name="menu_toggle_legend">Show legend</string>
-  <string name="menu_toggle_labels">Show labels</string>
-  <string name="menu_toggle_percentage_mode">Show percentage</string>
-  <string name="menu_toggle_average_lines">Show average lines</string>
-  <string name="menu_group_smaller_slices">Group Smaller Slices</string>
-  <string name="label_chart_no_data">No chart data available</string>
-  <string name="label_chart_overall">Overall</string>
-  <string name="label_chart_total">Total</string>
-  <string name="label_other_slice">Other</string>
-  <string name="toast_chart_percentage_mode_total">The percentage of selected value calculated from the total amount</string>
-  <string name="toast_chart_percentage_mode_current_bar">The percentage of selected value calculated from the current stacked bar amount</string>
-  <string name="label_save_template">Save as template</string>
-  <string name="label_delete_account_transactions_description">This account contains transactions. \nWhat would you like to do with these transactions</string>
-  <string name="label_delete_account_subaccounts_description">This account contains sub-accounts. \nWhat would you like to do with these sub-accounts</string>
-  <string name="label_delete_transactions">Delete transactions</string>
-  <string name="toast_disable_double_entry_to_save_transaction">Create and specify a transfer account OR disable double-entry in settings to save the transaction</string>
-  <string name="label_tap_to_create_schedule">Tap to create schedule</string>
-  <string name="title_restore_backup">Restore Backup&#8230;</string>
-  <string name="header_backup_and_export_settings">Backup &amp; export</string>
+  <string name="color_picker_default_title">Velg en farge</string>
+  <string name="label_account_color_and_type">Konto farge &amp; Type</string>
+  <string name="label_delete_sub_accounts">Slett underkontoer</string>
+  <string name="title_recent_accounts">Siste</string>
+  <string name="title_favorite_accounts">Favoritter</string>
+  <string name="title_all_accounts">Alle</string>
+  <string name="summary_create_default_accounts">Oppretter standard GnuCash kontostruktur</string>
+  <string name="title_create_default_accounts">Opprette standardkontoer</string>
+  <string name="msg_confirm_create_default_accounts_setting">Alle eksisterende kontoer og transaksjoner på enheten blir slettet.\n\nEr du sikker på at du vil fortsette?</string>
+  <string name="menu_scheduled_transactions">Planlagte transaksjoner</string>
+  <string name="msg_confirm_create_default_accounts_first_run">Velkommen til GnuCash Android! \nDu kan enten opprette et hierarki av brukte kontoer, eller importere din egen GnuCash kontostruktur. \n\nBegge alternativer er også tilgjengelige i app innstillinger så du kan velge senere.</string>
+  <string name="title_scheduled_transactions">Transaksjoner</string>
+  <string name="title_select_export_destination">Velg sted for eksport</string>
+  <string name="hint_split_memo">Notat</string>
+  <string name="label_spend">Bruke</string>
+  <string name="label_receive">Motta</string>
+  <string name="label_withdrawal">Uttak</string>
+  <string name="label_deposit">Innskudd</string>
+  <string name="label_payment">Betaling</string>
+  <string name="label_charge">Belast</string>
+  <string name="label_decrease">Reduser</string>
+  <string name="label_increase">Øk</string>
+  <string name="label_income">Inntekt</string>
+  <string name="label_rebate">Rabatt</string>
+  <string name="label_expense">Utgift</string>
+  <string name="label_bill">Regning</string>
+  <string name="label_invoice">Faktura</string>
+  <string name="label_buy">Kjøp</string>
+  <string name="label_sell">Selg</string>
+  <string name="label_repeats">Gjentar</string>
+  <string name="toast_no_recent_backup">Ingen nylig sikkerhetskopi funnet</string>
+  <string name="account_name_opening_balances">Åpningssaldoer</string>
+  <string name="account_name_equity">Egenkapital</string>
+  <string name="summary_save_opening_balances">Aktiver lagring av den gjeldende saldoen (før sletting av transaksjoner) som ny startsaldo etter sletting av transaksjoner    </string>
+  <string name="title_save_opening_balances">Lagre konto startsaldoer</string>
+  <string name="export_warning_ofx">OFX støtter ikke dobbeltoppføringstransaksjoner</string>
+  <string name="export_warning_qif">Genererer separate QIF filer per valuta</string>
+  <string name="title_transaction_splits">Transaksjonssplitter</string>
+  <string name="label_imbalance">Ubalanse:</string>
+  <string name="btn_add_split">Legge til splitt</string>
+  <string name="menu_title_favorite">Favoritt</string>
+  <string name="drawer_open">Navigasjonskuffen åpnet</string>
+  <string name="drawer_close">Navigasjonsskuff lukket</string>
+  <string name="title_reports">Rapporter</string>
+  <string name="title_pie_chart">Sektordiagram</string>
+  <string name="title_line_chart">Linjediagram</string>
+  <string name="title_bar_chart">Stolpediagram</string>
+  <string name="title_report_prefs">Rapportinnstillinger</string>
+  <string name="label_report_currency">Velg valuta</string>
+  <string name="title_use_account_color">Kontofarge i rapporter</string>
+  <string name="summary_use_account_color">Bruke kontofargen i søyle/sektordiagrammet</string>
+  <string name="header_report_settings">Rapporter</string>
+  <string name="menu_order_by_size">Sorter etter størrelse</string>
+  <string name="menu_toggle_legend">Vis forklaring</string>
+  <string name="menu_toggle_labels">Vis etiketter</string>
+  <string name="menu_toggle_percentage_mode">Vis prosent</string>
+  <string name="menu_toggle_average_lines">Viser gjennomsnittslinjer</string>
+  <string name="menu_group_smaller_slices">Grupper mindre deler</string>
+  <string name="label_chart_no_data">Ingen diagramdata tilgjengelig</string>
+  <string name="label_chart_overall">Total</string>
+  <string name="label_chart_total">Totalt</string>
+  <string name="label_other_slice">Andre</string>
+  <string name="toast_chart_percentage_mode_total">Prosentandelen av valgte verdien beregnet ut i fra totalbeløpet</string>
+  <string name="toast_chart_percentage_mode_current_bar">Prosentandelen av valgte verdien beregnet ut i fra gjeldende stacked bar amount</string>
+  <string name="label_save_template">Lagre som mal</string>
+  <string name="label_delete_account_transactions_description">Denne kontoen inneholder transaksjoner. \nHva vil du gjøre med disse transaksjonene</string>
+  <string name="label_delete_account_subaccounts_description">Denne kontoen inneholder underordnede kontoer. \nHva vil du gjøre med disse</string>
+  <string name="label_delete_transactions">Slett transaksjoner</string>
+  <string name="toast_disable_double_entry_to_save_transaction">Opprette og angi en konto for overføring eller deaktivere dobbel bokføring for å lagre transaksjonen</string>
+  <string name="label_tap_to_create_schedule">Trykk for å opprette plan</string>
+  <string name="title_restore_backup">Gjenopprette sikkerhetskopi&#8230;</string>
+  <string name="header_backup_and_export_settings">Backup &amp; eksport</string>
   <string name="title_dropbox_sync_preference">DropBox Sync</string>
-  <string name="title_backup_preference_category">Backup</string>
-  <string name="summary_dropbox_sync">Enable to sync to DropBox</string>
-  <string name="title_select_gnucash_xml_file">Select GnuCash XML file</string>
-  <string name="title_backup_prefs">Backup Preferences</string>
-  <string name="title_create_backup_pref">Create Backup</string>
-  <string name="summary_create_backup_pref">By default backups are saved to the SDCARD</string>
-  <string name="summary_restore_backup_pref">Select a specific backup to restore</string>
-  <string name="toast_backup_successful">Backup successful</string>
-  <string name="toast_backup_failed">Backup failed</string>
-  <string name="export_warning_xml">Exports all accounts and transactions</string>
+  <string name="title_backup_preference_category">Sikkerhetskopiering</string>
+  <string name="summary_dropbox_sync">Aktiver synkronisering til DropBox</string>
+  <string name="title_select_gnucash_xml_file">Velg GnuCash XML-fil</string>
+  <string name="title_backup_prefs">Innstillinger for sikkerhetskopiering</string>
+  <string name="title_create_backup_pref">Opprett sikkerhetskopi</string>
+  <string name="summary_create_backup_pref">Som standard lagres sikkerhetskopier på SD minne-kortet</string>
+  <string name="summary_restore_backup_pref">Velg en bestemt backup å gjenopprette</string>
+  <string name="toast_backup_successful">Sikkerhetskopiering vellykket</string>
+  <string name="toast_backup_failed">Sikkerhetskopiering mislyktes</string>
+  <string name="export_warning_xml">Eksporterer alle kontoer og transaksjoner</string>
   <string name="title_google_drive_sync_pref">Google Drive Sync</string>
-  <string name="summary_google_drive_sync">Enable to sync to Google Drive</string>
-  <string name="toast_install_file_manager">Install a file manager to select files</string>
-  <string name="title_select_backup_to_restore">Select backup to restore</string>
-  <string name="nav_menu_favorites">Favorites</string>
-  <string name="nav_menu_open">Open&#8230;</string>
-  <string name="nav_menu_reports">Reports</string>
-  <string name="nav_menu_scheduled_transactions">Scheduled Transactions</string>
-  <string name="nav_menu_export">Export&#8230;</string>
-  <string name="nav_menu_settings">Settings</string>
+  <string name="summary_google_drive_sync">Aktiver Sync til Google Disk</string>
+  <string name="toast_install_file_manager">Installer en filbehandler for å velge filer</string>
+  <string name="title_select_backup_to_restore">Velg sikkerhetskopien som skal gjenopprettes</string>
+  <string name="nav_menu_favorites">Favoritter</string>
+  <string name="nav_menu_open">Åpne&#8230;</string>
+  <string name="nav_menu_reports">Rapporter</string>
+  <string name="nav_menu_scheduled_transactions">Planlagte transaksjoner</string>
+  <string name="nav_menu_export">Eksport&#8230;</string>
+  <string name="nav_menu_settings">Innstillinger</string>
   <plurals name="label_every_x_days">
-    <item quantity="one">Daily</item>
-    <item quantity="other">Every %d days</item>
+    <item quantity="one">Daglig</item>
+    <item quantity="other">Hver %d dag</item>
   </plurals>
   <plurals name="label_every_x_weeks">
-    <item quantity="one">Weekly</item>
-    <item quantity="other">Every %d weeks</item>
+    <item quantity="one">Ukentlig</item>
+    <item quantity="other">Hver %d uke</item>
   </plurals>
   <plurals name="label_every_x_months">
-    <item quantity="one">Monthly</item>
-    <item quantity="other">Every %d months</item>
+    <item quantity="one">Månedlig</item>
+    <item quantity="other">Hver %d måned</item>
   </plurals>
   <plurals name="label_every_x_years">
-    <item quantity="one">Yearly</item>
-    <item quantity="other">Every %d years</item>
+    <item quantity="one">Årlig</item>
+    <item quantity="other">Hvert %d år</item>
   </plurals>
-  <string name="title_enable_crashlytics">Enable Crash Logging</string>
-  <string name="msg_enable_crashlytics">Automatically send information about app malfunction to the developers.</string>
+  <string name="title_enable_crashlytics">Aktiver Logging av feil</string>
+  <string name="msg_enable_crashlytics">Send automatisk informasjon om feil på app til utviklerne.</string>
   <string name="label_export_format"> Format</string>
-  <string name="toast_backup_folder_not_found">Backup folder cannot be found. Make sure the SD Card is mounted!</string>
-  <string name="label_old_passcode">Enter your old passcode</string>
-  <string name="label_new_passcode">Enter your new passcode</string>
-  <string name="nav_menu_scheduled_backups">Scheduled Exports</string>
-  <string name="title_scheduled_exports">Exports</string>
-  <string name="label_no_scheduled_exports_to_display">No scheduled exports to display</string>
-  <string name="title_create_export_schedule">Create export schedule</string>
-  <string name="toast_exported_to">Exported to: %1$s</string>
-  <string name="toast_legend_too_long">The legend is too long</string>
-  <string name="hint_account_description">Account description</string>
-  <string name="label_no_recent_accounts">No recent accounts</string>
-  <string name="label_no_favorite_accounts">No favorite accounts</string>
-  <string name="nav_menu_scheduled_actions">Scheduled Actions</string>
-  <string name="label_scheduled_action_ended">"Ended, last executed on %1$s"</string>
-  <string name="label_select_bar_to_view_details">Select a bar to view details</string>
-  <string name="btn_wizard_next">Next</string>
-  <string name="btn_wizard_finish">Done</string>
-  <string name="wizard_title_default_currency">Default Currency</string>
-  <string name="wizard_title_account_setup">Account Setup</string>
-  <string name="wizard_title_select_currency">Select Currency</string>
-  <string name="wizard_title_feedback_options">Feedback Options</string>
-  <string name="wizard_option_create_default_accounts">Create default accounts</string>
-  <string name="wizard_option_import_my_accounts">Import my accounts</string>
-  <string name="wizard_option_let_me_handle_it">Let me handle it</string>
-  <string name="wizard_option_currency_other">Other&#8230;</string>
-  <string name="wizard_option_auto_send_crash_reports">Automatically send crash reports</string>
-  <string name="wizard_option_disable_crash_reports">Disable crash reports</string>
-  <string name="wizard_btn_back">Back</string>
-  <string name="title_setup_gnucash">Setup GnuCash</string>
-  <string name="wizard_title_welcome_to_gnucash">Welcome to GnuCash</string>
-  <string name="msg_wizard_welcome_page">Before you dive in, \nlet\'s setup a few things first\n\nTo continue, press Next</string>
-  <string name="title_split_editor">Split Editor</string>
-  <string name="toast_error_check_split_amounts">Check that all splits have valid amounts before saving!</string>
-  <string name="label_error_invalid_expression">Invalid expression!</string>
-  <string name="toast_scheduled_recurring_transaction">Scheduled recurring transaction</string>
-  <string name="error_exchange_rate_required">An exchange rate is required</string>
-  <string name="error_converted_amount_required">The converted amount is required</string>
-  <string name="title_transfer_funds">Transfer Funds</string>
-  <string name="nav_menu_help"><![CDATA[Help & Feedback]]></string>
-  <string name="label_select_pie_slice_to_see_details">Select a slice to see details</string>
-  <string name="label_report_period">Period:</string>
-  <string name="label_convert_from">From:</string>
-  <string name="label_convert_to">To:</string>
-  <string name="msg_provide_exchange_rate">Provide either the converted amount or exchange rate in order to transfer funds</string>
-  <string name="hint_exchange_rate">Exchange rate</string>
-  <string name="btn_fetch_quote">Fetch quote</string>
-  <string name="hint_converted_amount">Converted Amount</string>
-  <string name="title_report_sheet">Sheet</string>
-  <string name="label_last_3_months_expenses">Expenses for last 3 months</string>
-  <string name="label_total_assets">Total Assets</string>
-  <string name="label_total_liabilities">Total Liabilities</string>
-  <string name="label_net_worth">Net Worth</string>
-  <string name="label_assets">Assets</string>
-  <string name="label_liabilities">Liabilities</string>
-  <string name="label_equity">Equity</string>
-  <string name="label_total_liabilities_and_equity"><![CDATA[Total Liabilites & Equity]]></string>
-  <string name="label_move_to">Move to:</string>
-  <string name="menu_group_by">Group By</string>
-  <string name="menu_group_by_month">Month</string>
-  <string name="menu_group_by_quarter">Quarter</string>
-  <string name="menu_group_by_year">Year</string>
-  <string name="title_balance_sheet_report">Balance Sheet</string>
-  <string name="label_balance_sheet_total">Total:</string>
-  <string name="title_google_plus_community">Google+ Community</string>
-  <string name="title_translate_gnucash">Translate GnuCash</string>
-  <string name="summary_google_plus">Share ideas, discuss changes or report problems</string>
-  <string name="summary_translate_gnucash">Translate or proof-read on CrowdIn</string>
-  <string name="toast_no_compatible_apps_to_receive_export">No compatible apps to receive the exported transactions!</string>
+  <string name="toast_backup_folder_not_found">Finner ikke sikkerhetskopimappen. Kontroller at SD-kortet er montert!</string>
+  <string name="label_old_passcode">Angi ditt gamle passord</string>
+  <string name="label_new_passcode">Skriv inn ditt nye passord</string>
+  <string name="nav_menu_scheduled_backups">Planlagte eksporteringer</string>
+  <string name="title_scheduled_exports">Eksporter</string>
+  <string name="label_no_scheduled_exports_to_display">Ingen planlagte eksporter å vise</string>
+  <string name="title_create_export_schedule">Opprette ekporteringsplan</string>
+  <string name="toast_exported_to">Eksportert til: %1$s</string>
+  <string name="toast_legend_too_long">Forklaringen er for lang</string>
+  <string name="hint_account_description">Kontobeskrivelse</string>
+  <string name="label_no_recent_accounts">Ingen nylige kontoer</string>
+  <string name="label_no_favorite_accounts">Ingen favoritt kontoer</string>
+  <string name="nav_menu_scheduled_actions">Planlagte handlinger</string>
+  <string name="label_scheduled_action_ended">"Avsluttet. Sist kjørt på %1$s"</string>
+  <string name="label_select_bar_to_view_details">Velg en søyle for å vise detaljer</string>
+  <string name="btn_wizard_next">Neste</string>
+  <string name="btn_wizard_finish">Ferdig</string>
+  <string name="wizard_title_default_currency">Standardvaluta</string>
+  <string name="wizard_title_account_setup">Konfigurering av konto</string>
+  <string name="wizard_title_select_currency">Velg valuta</string>
+  <string name="wizard_title_feedback_options">Alternativer for tilbakemelding</string>
+  <string name="wizard_option_create_default_accounts">Opprette standardkontoer</string>
+  <string name="wizard_option_import_my_accounts">Import kontoene mine</string>
+  <string name="wizard_option_let_me_handle_it">La meg håndtere det</string>
+  <string name="wizard_option_currency_other">Andre&#8230;</string>
+  <string name="wizard_option_auto_send_crash_reports">Send feilrapporter automatisk</string>
+  <string name="wizard_option_disable_crash_reports">Deaktivere programstopprapporter</string>
+  <string name="wizard_btn_back">Tilbake</string>
+  <string name="title_setup_gnucash">Oppsett av GnuCash</string>
+  <string name="wizard_title_welcome_to_gnucash">Velkommen til GnuCash</string>
+  <string name="msg_wizard_welcome_page">Før du hopper i det i \nla oss sette opp et par ting\n\nTrykk neste for å fortsette</string>
+  <string name="title_split_editor">Splitt Editor</string>
+  <string name="toast_error_check_split_amounts">Sjekk at alle splitter har gyldig beløp før lagring!</string>
+  <string name="label_error_invalid_expression">Ugyldig uttrykk!</string>
+  <string name="toast_scheduled_recurring_transaction">Planlagt gjentakende transaksjon</string>
+  <string name="error_exchange_rate_required">En valutakurs kreves</string>
+  <string name="error_converted_amount_required">Det konverterte beløpet kreves</string>
+  <string name="title_transfer_funds">Overføre penger</string>
+  <string name="nav_menu_help"><![CDATA[Hjelp & tilbakemelding]]></string>
+  <string name="label_select_pie_slice_to_see_details">Merk et stykke for å se detaljer</string>
+  <string name="label_report_period">Periode:</string>
+  <string name="label_convert_from">Fra:</string>
+  <string name="label_convert_to">Til:</string>
+  <string name="msg_provide_exchange_rate">Oppgi enten konvertert beløp eller valutakursen for å overføre penger</string>
+  <string name="hint_exchange_rate">Valutakurs</string>
+  <string name="btn_fetch_quote">Hent verdi</string>
+  <string name="hint_converted_amount">Konvertert beløp</string>
+  <string name="title_report_sheet">Ark</string>
+  <string name="label_last_3_months_expenses">Utgifter for de siste 3 månedene</string>
+  <string name="label_total_assets">Totalt Eiendeler</string>
+  <string name="label_total_liabilities">Totalt Gjeld</string>
+  <string name="label_net_worth">Formue</string>
+  <string name="label_assets">Eiendeler</string>
+  <string name="label_liabilities">Gjeld</string>
+  <string name="label_equity">Egenkapital</string>
+  <string name="label_total_liabilities_and_equity"><![CDATA[Totalt Gjeld & Egenkapital]]></string>
+  <string name="label_move_to">Flytt til:</string>
+  <string name="menu_group_by">Gruppere etter</string>
+  <string name="menu_group_by_month">Måned</string>
+  <string name="menu_group_by_quarter">Kvartal</string>
+  <string name="menu_group_by_year">År</string>
+  <string name="title_balance_sheet_report">Balanseskjema</string>
+  <string name="label_balance_sheet_total">Totalt:</string>
+  <string name="title_google_plus_community">Google + Community</string>
+  <string name="title_translate_gnucash">Oversette GnuCash</string>
+  <string name="summary_google_plus">Dele ideer, diskutere endringer eller rapportere problemer</string>
+  <string name="summary_translate_gnucash">Oversette eller korrekturles på CrowdIn</string>
+  <string name="toast_no_compatible_apps_to_receive_export">Ingen kompatible apper til å motta de eksporterte transaksjonene!</string>
   <string-array name="report_time_range">
-    <item>Current month</item>
-    <item>Last 3 months</item>
-    <item>Last 6 months</item>
-    <item>Last 12 months</item>
-    <item>All time</item>
-    <item>Custom range&#8230;</item>
+    <item>Gjeldende måned</item>
+    <item>Siste 3 måneder</item>
+    <item>Siste 6 måneder</item>
+    <item>Siste 12 måneder</item>
+    <item>Tidsrom</item>
+    <item>Tilpasset tidsrom&#8230;</item>
   </string-array>
 </resources>

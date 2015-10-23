@@ -77,6 +77,7 @@ import org.gnucash.android.ui.wizard.FirstRunWizardActivity;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.util.ArrayList;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -134,8 +135,7 @@ public class AccountsActivity extends BaseDrawerActivity implements OnAccountCli
      * Key for putting argument for tab into bundle arguments
      */
     public static final String EXTRA_TAB_INDEX = "org.gnucash.android.extra.TAB_INDEX";
-    public static final int REQUEST_PERMISSION = 0xAB;
-    public static final int PERMISSION_REQUEST_WRITE_SD_CARD = REQUEST_PERMISSION;
+    public static final int REQUEST_PERMISSION_WRITE_SD_CARD = 0xAB;
 
     /**
      * Map containing fragments for the different tabs
@@ -328,7 +328,7 @@ public class AccountsActivity extends BaseDrawerActivity implements OnAccountCli
                                 @Override
                                 public void onClick(View view) {
                                     requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                                            Manifest.permission.READ_EXTERNAL_STORAGE}, PERMISSION_REQUEST_WRITE_SD_CARD);
+                                            Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_PERMISSION_WRITE_SD_CARD);
                                 }
                             })
                             .setActionTextColor(getResources().getColor(R.color.theme_accent))
@@ -341,7 +341,7 @@ public class AccountsActivity extends BaseDrawerActivity implements OnAccountCli
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         switch (requestCode){
-            case PERMISSION_REQUEST_WRITE_SD_CARD:{
+            case REQUEST_PERMISSION_WRITE_SD_CARD:{
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 
                     //TODO: permission was granted, yay! do the
@@ -505,12 +505,21 @@ public class AccountsActivity extends BaseDrawerActivity implements OnAccountCli
 
     /**
      * Starts Intent chooser for selecting a GnuCash accounts file to import.
-     * The accounts are actually imported in onActivityResult of the calling class
+     * <p>The {@code activity} is responsible for the actual import of the file and can do so by calling {@link #importXmlFileFromIntent(Activity, Intent)}<br>
+     * The calling class should respond to the request code {@link AccountsActivity#REQUEST_PICK_ACCOUNTS_FILE} in its {@link #onActivityResult(int, int, Intent)} method</p>
      * @param activity Activity starting the request and will also handle the response
+     * @see #importXmlFileFromIntent(Activity, Intent)
      */
-    public static void importAccounts(Activity activity) {
+    public static void startXmlFileChooser(Activity activity) {
         Intent pickIntent = new Intent(Intent.ACTION_GET_CONTENT);
-        pickIntent.setType("application/octet-stream");
+//        ArrayList<String> mimeTypes = new ArrayList<>();
+//        mimeTypes.add("application/*");
+//        mimeTypes.add("file/*");
+//        mimeTypes.add("text/*");
+//        mimeTypes.add("application/vnd.google-apps.file");
+//        pickIntent.putStringArrayListExtra(Intent.EXTRA_MIME_TYPES, mimeTypes);
+        pickIntent.addCategory(Intent.CATEGORY_OPENABLE);
+        pickIntent.setType("*/*");
         Intent chooser = Intent.createChooser(pickIntent, "Select GnuCash account file");
 
         try {
@@ -519,6 +528,24 @@ public class AccountsActivity extends BaseDrawerActivity implements OnAccountCli
             Crashlytics.log("No file manager for selecting files available");
             Crashlytics.logException(ex);
             Toast.makeText(activity, R.string.toast_install_file_manager, Toast.LENGTH_LONG).show();
+        }
+    }
+
+
+    /**
+     * Reads and XML file from an intent and imports it into the database
+     * <p>This method is usually called in response to {@link AccountsActivity#startXmlFileChooser(Activity)}</p>
+     * @param context Activity context
+     * @param data Intent data containing the XML uri
+     */
+    public static void importXmlFileFromIntent(Activity context, Intent data) {
+        try {
+            GncXmlExporter.createBackup();
+            InputStream accountInputStream = context.getContentResolver().openInputStream(data.getData());
+            new ImportAsyncTask(context).execute(accountInputStream);
+        } catch (FileNotFoundException e) {
+            Crashlytics.logException(e);
+            Toast.makeText(context, R.string.toast_error_importing_accounts, Toast.LENGTH_SHORT).show();
         }
     }
 
