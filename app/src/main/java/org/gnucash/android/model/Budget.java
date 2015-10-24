@@ -183,19 +183,18 @@ public class Budget extends BaseModel {
     public long getStartofCurrentPeriod(){
         LocalDateTime localDate = new LocalDateTime();
         int interval = mRecurrence.getPeriodType().getMultiplier();
-        //// FIXME: 16.10.2015 consider the interval
         switch (mRecurrence.getPeriodType()){
             case DAY:
-                localDate = localDate.millisOfDay().withMinimumValue();
+                localDate = localDate.millisOfDay().withMinimumValue().plusDays(interval);
                 break;
             case WEEK:
-                localDate = localDate.dayOfWeek().withMinimumValue().millisOfDay().withMinimumValue();
+                localDate = localDate.dayOfWeek().withMinimumValue().minusDays(interval);
                 break;
             case MONTH:
-                localDate = localDate.dayOfMonth().withMinimumValue().millisOfDay().withMinimumValue();
+                localDate = localDate.dayOfMonth().withMinimumValue().minusMonths(interval);
                 break;
             case YEAR:
-                localDate = localDate.dayOfYear().withMinimumValue().millisOfDay().withMinimumValue();
+                localDate = localDate.dayOfYear().withMinimumValue().minusYears(interval);
                 break;
         }
         return localDate.toDate().getTime();
@@ -208,19 +207,63 @@ public class Budget extends BaseModel {
     public long getEndOfCurrentPeriod(){
         LocalDateTime localDate = new LocalDateTime();
         int interval = mRecurrence.getPeriodType().getMultiplier();
-        //// FIXME: 16.10.2015 Consider the interval
         switch (mRecurrence.getPeriodType()){
             case DAY:
-                localDate = localDate.millisOfDay().withMaximumValue();
+                localDate = localDate.millisOfDay().withMaximumValue().plusDays(interval);
                 break;
             case WEEK:
-                localDate = localDate.dayOfWeek().withMaximumValue().millisOfDay().withMaximumValue();
+                localDate = localDate.dayOfWeek().withMaximumValue().plusWeeks(interval);
                 break;
             case MONTH:
-                localDate = localDate.dayOfMonth().withMaximumValue().millisOfDay().withMaximumValue();
+                localDate = localDate.dayOfMonth().withMaximumValue().plusMonths(interval);
                 break;
             case YEAR:
-                localDate = localDate.dayOfYear().withMaximumValue().millisOfDay().withMaximumValue();
+                localDate = localDate.dayOfYear().withMaximumValue().plusYears(interval);
+                break;
+        }
+        return localDate.toDate().getTime();
+    }
+
+    public long getStartOfPeriod(int periodNum){
+        LocalDateTime localDate = new LocalDateTime(mRecurrence.getPeriodStart().getTime());
+        int interval = mRecurrence.getPeriodType().getMultiplier() * periodNum;
+        switch (mRecurrence.getPeriodType()){
+            case DAY:
+                localDate = localDate.millisOfDay().withMinimumValue().plusDays(interval);
+                break;
+            case WEEK:
+                localDate = localDate.dayOfWeek().withMinimumValue().minusDays(interval);
+                break;
+            case MONTH:
+                localDate = localDate.dayOfMonth().withMinimumValue().minusMonths(interval);
+                break;
+            case YEAR:
+                localDate = localDate.dayOfYear().withMinimumValue().minusYears(interval);
+                break;
+        }
+        return localDate.toDate().getTime();
+    }
+
+    /**
+     * Returns the end timestamp of the period
+     * @param periodNum Number of the period
+     * @return End timestamp in milliseconds of the period
+     */
+    public long getEndOfPeriod(int periodNum){
+        LocalDateTime localDate = new LocalDateTime();
+        int interval = mRecurrence.getPeriodType().getMultiplier() * periodNum;
+        switch (mRecurrence.getPeriodType()){
+            case DAY:
+                localDate = localDate.millisOfDay().withMaximumValue().plusDays(interval);
+                break;
+            case WEEK:
+                localDate = localDate.dayOfWeek().withMaximumValue().plusWeeks(interval);
+                break;
+            case MONTH:
+                localDate = localDate.dayOfMonth().withMaximumValue().plusMonths(interval);
+                break;
+            case YEAR:
+                localDate = localDate.dayOfYear().withMaximumValue().plusYears(interval);
                 break;
         }
         return localDate.toDate().getTime();

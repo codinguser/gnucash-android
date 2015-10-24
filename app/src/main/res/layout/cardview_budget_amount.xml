@@ -128,7 +128,7 @@
 
         <com.github.mikephil.charting.charts.BarChart
             android:id="@+id/budget_chart"
-            android:minHeight="50dp"
+            android:minHeight="200dp"
             android:layout_marginTop="@dimen/dialog_padding"
             android:layout_below="@id/budget_indicator"
             android:layout_alignParentBottom="true"

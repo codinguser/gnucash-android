@@ -151,7 +151,7 @@ public class CalculatorEditText extends EditText {
         setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                if (v != null)
+                if (v != null && !isInEditMode())
                     ((InputMethodManager) GnuCashApplication.getAppContext()
                             .getSystemService(Activity.INPUT_METHOD_SERVICE))
                             .hideSoftInputFromWindow(v.getWindowToken(), 0);

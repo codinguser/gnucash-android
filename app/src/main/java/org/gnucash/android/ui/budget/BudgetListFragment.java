@@ -49,6 +49,7 @@ import org.gnucash.android.db.DatabaseCursorLoader;
 import org.gnucash.android.db.adapter.AccountsDbAdapter;
 import org.gnucash.android.db.adapter.BudgetsDbAdapter;
 import org.gnucash.android.model.Budget;
+import org.gnucash.android.model.BudgetAmount;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.ui.common.FormActivity;
 import org.gnucash.android.ui.common.UxArgument;
@@ -56,7 +57,9 @@ import org.gnucash.android.ui.util.CursorRecyclerAdapter;
 import org.gnucash.android.ui.util.Refreshable;
 import org.gnucash.android.ui.util.widget.EmptyRecyclerView;
 
+import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Currency;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -218,14 +221,21 @@ public class BudgetListFragment extends Fragment implements Refreshable,
             holder.budgetRecurrence.setText(budget.getRecurrence().getRepeatString() + " - "
                     + budget.getRecurrence().getDaysLeft() + " days left");
 
-            Money accountBalance = mBudgetsDbAdapter.getAccountSum(budget.getUID(),
-                    budget.getStartofCurrentPeriod(), budget.getEndOfCurrentPeriod());
+            BigDecimal spentAmountValue = BigDecimal.ZERO;
+            for (BudgetAmount budgetAmount : budget.getBudgetAmounts()) {
+                Money balance = accountsDbAdapter.getAccountBalance(budgetAmount.getAccountUID(),
+                        budget.getStartofCurrentPeriod(), budget.getEndOfCurrentPeriod());
+                spentAmountValue = spentAmountValue.add(balance.asBigDecimal());
+            }
 
-            String usedAmount = accountBalance.getCurrency().getSymbol() + accountBalance.formattedAmount() + " of " + budget.getAmountSum().formattedString();
+            Money budgetTotal = budget.getAmountSum();
+            Currency currency = budgetTotal.getCurrency();
+            String usedAmount = currency.getSymbol() + spentAmountValue+ " of "
+                    + budgetTotal.formattedString();
             holder.budgetAmount.setText(usedAmount);
 
-            double budgetProgress = accountBalance.asBigDecimal().divide(budget.getAmountSum().asBigDecimal(),
-                    accountBalance.getCurrency().getDefaultFractionDigits(), RoundingMode.HALF_EVEN)
+            double budgetProgress = spentAmountValue.divide(budgetTotal.asBigDecimal(),
+                    currency.getDefaultFractionDigits(), RoundingMode.HALF_EVEN)
                     .doubleValue();
             holder.budgetIndicator.setProgress((int) (budgetProgress * 100));
 

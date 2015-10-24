@@ -33,7 +33,9 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <TableRow android:layout_height="wrap_content"
+        <TableRow
+            android:padding="@dimen/dialog_padding"
+            android:layout_height="wrap_content"
             android:layout_width="match_parent"
             android:gravity="center_vertical">
             <TextView
@@ -72,6 +74,7 @@
         <TableRow android:id="@+id/layout_double_entry"
             android:layout_height="wrap_content"
             android:layout_width="match_parent"
+            android:padding="@dimen/dialog_padding"
             android:gravity="center_vertical" >
 
             <ImageView style="@style/FormIcon"

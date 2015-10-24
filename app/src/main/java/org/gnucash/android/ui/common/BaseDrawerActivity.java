@@ -31,7 +31,6 @@ import android.view.View;
 import com.uservoice.uservoicesdk.UserVoice;
 
 import org.gnucash.android.R;
-import org.gnucash.android.importer.ImportAsyncTask;
 import org.gnucash.android.ui.account.AccountsActivity;
 import org.gnucash.android.ui.budget.BudgetsActivity;
 import org.gnucash.android.ui.passcode.PasscodeLockActivity;
@@ -135,6 +134,7 @@ public class BaseDrawerActivity extends PasscodeLockActivity {
      * Handler for the navigation drawer items
      * */
     protected void onDrawerMenuItemClicked(int itemId) {
+        mNavigationView.getMenu().findItem(itemId).setChecked(true);
         switch (itemId){
             case R.id.nav_item_open: { //Open... files
                 AccountsActivity.startXmlFileChooser(this);

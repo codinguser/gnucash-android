@@ -19,6 +19,7 @@ package org.gnucash.android.ui.budget;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -36,6 +37,10 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.BarChart;
+import com.github.mikephil.charting.components.LimitLine;
+import com.github.mikephil.charting.data.BarData;
+import com.github.mikephil.charting.data.BarDataSet;
+import com.github.mikephil.charting.data.BarEntry;
 
 import org.gnucash.android.R;
 import org.gnucash.android.db.DatabaseSchema;
@@ -50,7 +55,9 @@ import org.gnucash.android.ui.transaction.TransactionsActivity;
 import org.gnucash.android.ui.util.Refreshable;
 import org.gnucash.android.ui.util.widget.EmptyRecyclerView;
 
+import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.Bind;
@@ -126,13 +133,10 @@ public class BudgetDetailFragment extends Fragment implements Refreshable {
     public void onResume() {
         super.onResume();
         refresh();
-    }
 
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        if (activity instanceof BudgetsActivity){
-            activity.findViewById(R.id.fab_create_budget).setVisibility(View.GONE);
+        View view = getActivity().findViewById(R.id.fab_create_budget);
+        if (view != null){
+            view.setVisibility(View.GONE);
         }
     }
 
@@ -211,11 +215,11 @@ public class BudgetDetailFragment extends Fragment implements Refreshable {
             double budgetProgress = spentAmount.asBigDecimal().divide(projectedAmount.asBigDecimal(),
                     spentAmount.getCurrency().getDefaultFractionDigits(), RoundingMode.HALF_EVEN)
                     .doubleValue();
-            holder.budgetIndicator.setProgress((int) budgetProgress * 100);
+            holder.budgetIndicator.setProgress((int) (budgetProgress * 100));
             holder.budgetSpent.setTextColor(BudgetsActivity.getBudgetProgressColor(1 - budgetProgress));
+            holder.budgetLeft.setTextColor(BudgetsActivity.getBudgetProgressColor(1 - budgetProgress));
 
-            //TODO: implement chart
-            //TODO: display chart for past months/weeks/years depending on budget periodtype
+            generateChartData(holder.budgetChart, budgetAmount);
 
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -225,6 +229,55 @@ public class BudgetDetailFragment extends Fragment implements Refreshable {
                     startActivityForResult(intent, 0x10);
                 }
             });
+        }
+
+        /**
+         * Generate the chart data for the chart
+         * @param barChart View where to display the chart
+         * @param budgetAmount BudgetAmount to visualize
+         */
+        public void generateChartData(BarChart barChart, BudgetAmount budgetAmount) {
+            // FIXME: 25.10.15 chart is broken
+
+            AccountsDbAdapter accountsDbAdapter = AccountsDbAdapter.getInstance();
+
+            List<BarEntry> barEntries = new ArrayList<>();
+            List<String> xVals = new ArrayList<>();
+
+            //todo: refactor getNumberOfPeriods into budget
+            int budgetPeriods = (int) mBudget.getNumberOfPeriods();
+            budgetPeriods = budgetPeriods == 0 ? 12 : budgetPeriods;
+            int periods = mBudget.getRecurrence().getNumberOfPeriods(budgetPeriods);
+
+            for (int periodNum = 1; periodNum <= periods; periodNum++) {
+                BigDecimal amount = accountsDbAdapter.getAccountBalance(budgetAmount.getAccountUID(),
+                        mBudget.getStartOfPeriod(periodNum), mBudget.getEndOfPeriod(periodNum))
+                        .asBigDecimal();
+
+                if (amount.equals(BigDecimal.ZERO))
+                    continue;
+
+                barEntries.add(new BarEntry(amount.floatValue(), periodNum));
+                xVals.add(mBudget.getRecurrence().getTextOfCurrentPeriod(periodNum));
+            }
+
+            String label = accountsDbAdapter.getAccountName(budgetAmount.getAccountUID());
+            BarDataSet barDataSet = new BarDataSet(barEntries, label);
+
+            BarData barData = new BarData(xVals, barDataSet);
+            LimitLine limitLine = new LimitLine(budgetAmount.getAmount().asBigDecimal().floatValue());
+            limitLine.setLineWidth(2f);
+            limitLine.setLineColor(Color.RED);
+
+
+            barChart.setData(barData);
+            barChart.getAxisLeft().addLimitLine(limitLine);
+            BigDecimal maxValue = budgetAmount.getAmount().add(budgetAmount.getAmount().multiply(new BigDecimal("0.2"))).asBigDecimal();
+            barChart.getAxisLeft().setAxisMaxValue(maxValue.floatValue());
+            barChart.animateX(1000);
+            barChart.setAutoScaleMinMaxEnabled(true);
+            barChart.setDrawValueAboveBar(true);
+            barChart.invalidate();
         }
 
         @Override

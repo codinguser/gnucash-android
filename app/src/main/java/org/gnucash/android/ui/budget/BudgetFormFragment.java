@@ -31,9 +31,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.TableLayout;
 import android.widget.TextView;
@@ -57,6 +57,7 @@ import org.gnucash.android.ui.util.RecurrenceViewClickListener;
 import org.gnucash.android.ui.util.widget.CalculatorEditText;
 import org.gnucash.android.util.QualifiedAccountNameCursorAdapter;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Currency;
 import java.util.List;
@@ -72,13 +73,14 @@ public class BudgetFormFragment extends Fragment implements RecurrencePickerDial
     @Bind(R.id.input_budget_name)   EditText mBudgetNameInput;
     @Bind(R.id.input_description)   EditText mDescriptionInput;
     @Bind(R.id.input_recurrence)    TextView mRecurrenceInput;
-    @Bind(R.id.name_text_input_layout) TextInputLayout mNameTextInputLayout;
-    @Bind(R.id.calculator_keyboard) KeyboardView mKeyboardView;
-    @Bind(R.id.budget_table_layout) TableLayout mBudgetAmountTableLayout;
-    @Bind(R.id.scroll_view)         ScrollView mScrollView;
+    @Bind(R.id.name_text_input_layout)  TextInputLayout mNameTextInputLayout;
+    @Bind(R.id.calculator_keyboard)     KeyboardView mKeyboardView;
+    @Bind(R.id.budget_amount_table_layout) TableLayout mBudgetAmountTableLayout;
+    @Bind(R.id.btn_add_budget_amount)   Button mAddBudgetAmount;
 
     EventRecurrence mEventRecurrence = new EventRecurrence();
     String mRecurrenceRule;
+
     private Cursor mAccountCursor;
     private AccountsDbAdapter mAccountsDbAdapter;
     private BudgetsDbAdapter mBudgetsDbAdapter;
@@ -98,6 +100,12 @@ public class BudgetFormFragment extends Fragment implements RecurrencePickerDial
         mRecurrenceInput.setOnClickListener(
                 new RecurrenceViewClickListener((AppCompatActivity) getActivity(), mRecurrenceRule, this));
 
+        mAddBudgetAmount.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                addBudgetAmountView(null);
+            }
+        });
         return view;
     }
 
@@ -144,7 +152,10 @@ public class BudgetFormFragment extends Fragment implements RecurrencePickerDial
         List<BudgetAmount> budgetAmounts = new ArrayList<>();
         for (View view : mBudgetAmountViews) {
             BudgetAmountViewHolder viewHolder = (BudgetAmountViewHolder) view.getTag();
-            Money amount = new Money(viewHolder.amountEditText.getValue(),
+            BigDecimal amountValue = viewHolder.amountEditText.getValue();
+            if (amountValue == null)
+                continue;
+            Money amount = new Money(amountValue,
                     Currency.getInstance(Money.DEFAULT_CURRENCY_CODE));
             String accountUID = mAccountsDbAdapter.getUID(viewHolder.budgetAccountSpinner.getSelectedItemId());
             BudgetAmount budgetAmount = new BudgetAmount(amount, accountUID);
@@ -166,9 +177,9 @@ public class BudgetFormFragment extends Fragment implements RecurrencePickerDial
         if (budgetAmount != null){
             viewHolder.bindViews(budgetAmount);
         }
-        mBudgetAmountTableLayout.addView(budgetAmountView, mBudgetAmountTableLayout.getChildCount());
+        mBudgetAmountTableLayout.addView(budgetAmountView, 0);
         mBudgetAmountViews.add(budgetAmountView);
-        mScrollView.fullScroll(ScrollView.FOCUS_DOWN);
+//        mScrollView.fullScroll(ScrollView.FOCUS_DOWN);
         return budgetAmountView;
     }
 
@@ -274,7 +285,7 @@ public class BudgetFormFragment extends Fragment implements RecurrencePickerDial
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.budget_form_actions, menu);
+        inflater.inflate(R.menu.default_save_actions, menu);
     }
 
     @Override
@@ -282,10 +293,6 @@ public class BudgetFormFragment extends Fragment implements RecurrencePickerDial
         switch (item.getItemId()){
             case R.id.menu_save:
                 saveBudget();
-                return true;
-
-            case R.id.menu_add_budget_amount:
-                addBudgetAmountView(null);
                 return true;
         }
         return false;

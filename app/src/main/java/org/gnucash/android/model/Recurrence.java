@@ -21,6 +21,9 @@ import android.support.annotation.NonNull;
 import org.gnucash.android.ui.util.RecurrenceParser;
 import org.joda.time.Days;
 import org.joda.time.LocalDate;
+import org.joda.time.Months;
+import org.joda.time.Weeks;
+import org.joda.time.Years;
 
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
@@ -169,4 +172,52 @@ public class Recurrence extends BaseModel {
 
         return Days.daysBetween(startDate, endDate).getDays();
     }
+
+    /**
+     * Returns the number of periods from the start date of this occurence until the end of the
+     * interval multiplier specified in the {@link PeriodType}
+     * @return Number of periods in this recurrence
+     */
+    public int getNumberOfPeriods(int numberOfPeriods) {
+        LocalDate startDate = new LocalDate(mPeriodStart.getTime());
+        LocalDate endDate;
+        int interval = mPeriodType.getMultiplier();
+        switch (mPeriodType){
+
+            case DAY:
+                return 1;
+            case WEEK:
+                endDate = startDate.dayOfWeek().withMaximumValue().plusWeeks(numberOfPeriods);
+                return Weeks.weeksBetween(startDate, endDate).getWeeks() / interval;
+            case MONTH:
+                endDate = startDate.dayOfMonth().withMaximumValue().plusMonths(numberOfPeriods);
+                return Months.monthsBetween(startDate, endDate).getMonths() / interval;
+            case YEAR:
+                endDate = startDate.dayOfYear().withMaximumValue().plusYears(numberOfPeriods);
+                return Years.yearsBetween(startDate, endDate).getYears() / interval;
+        }
+
+        return 0;
+    }
+
+    /**
+     * Return the name of the current period
+     * @return String of current period
+     */
+    public String getTextOfCurrentPeriod(int periodNum){
+        LocalDate startDate = new LocalDate(mPeriodStart.getTime());
+        switch (mPeriodType){
+
+            case DAY:
+                return startDate.dayOfWeek().getAsText();
+            case WEEK:
+                return startDate.weekOfWeekyear().getAsText();
+            case MONTH:
+                return startDate.monthOfYear().getAsText();
+            case YEAR:
+                return startDate.year().getAsText();
+        }
+        return "Period " + periodNum;
+    }
+
 }
