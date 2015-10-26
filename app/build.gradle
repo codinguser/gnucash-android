@@ -6,7 +6,7 @@ apply plugin: 'io.fabric'
 def versionMajor = 2
 def versionMinor = 0
 def versionPatch = 0
-def versionBuild = 7
+def versionBuild = 8
 
 def buildTime() {
     def df = new SimpleDateFormat("yyyyMMdd HH:mm 'UTC'")
@@ -115,7 +115,6 @@ android {
         production {
             resValue "string", "app_name", "GnuCash"
             buildConfigField "boolean", "CAN_REQUEST_RATING", "true"
-            ext.enableCrashlytics = false
         }
 
     }
