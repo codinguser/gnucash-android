@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
- Copyright (c) 2012 Ngewi Fet <ngewif@gmail.com>
+ Copyright (c) 2012 - 2015 Ngewi Fet <ngewif@gmail.com>
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -27,25 +27,25 @@
     <View android:layout_width="match_parent"
         android:layout_height="0dp" />
 
-    <LinearLayout style="?android:attr/buttonBarStyle"
+    <LinearLayout style="buttonBarStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"        
         android:orientation="horizontal">
 
         <Button android:id="@+id/btn_cancel"
-            style="?android:attr/buttonBarButtonStyle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:drawableLeft="@drawable/navigation_cancel_holo_light"
+            style="?attr/borderlessButtonStyle"
+            android:textColor="@color/theme_accent"
             android:text="@string/btn_cancel" />
 
         <Button android:id="@+id/btn_save"
-            style="?android:attr/buttonBarButtonStyle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:drawableLeft="@drawable/navigation_accept_holo_light"
+            style="?attr/borderlessButtonStyle"
+            android:textColor="@color/theme_accent"
             android:text="@string/btn_save" />
     </LinearLayout>
 </LinearLayout>

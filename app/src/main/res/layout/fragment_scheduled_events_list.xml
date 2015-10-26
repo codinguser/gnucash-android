@@ -9,8 +9,8 @@
               android:id="@id/android:list"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
-              android:layout_above="@id/transactions_sum_bar"
-              android:listSelector="@drawable/abs__list_selector_holo_light"
+              android:layout_above="@id/account_balance_toolbar"
+              android:listSelector="@drawable/abc_list_selector_holo_light"
               android:drawSelectorOnTop="false"/>
 
     <TextView android:id="@id/android:empty"

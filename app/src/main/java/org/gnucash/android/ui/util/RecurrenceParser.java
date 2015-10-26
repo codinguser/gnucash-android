@@ -18,7 +18,7 @@ package org.gnucash.android.ui.util;
 
 import android.text.format.Time;
 
-import com.doomonafireball.betterpickers.recurrencepicker.EventRecurrence;
+import com.codetroopers.betterpickers.recurrencepicker.EventRecurrence;
 
 import org.gnucash.android.model.ScheduledAction;
 
@@ -27,7 +27,7 @@ import java.util.Calendar;
 import java.util.List;
 
 /**
- * Parses {@link com.doomonafireball.betterpickers.recurrencepicker.EventRecurrence}s to generate
+ * Parses {@link EventRecurrence}s to generate
  * {@link org.gnucash.android.model.ScheduledAction}s
  *
  * @author Ngewi Fet <ngewif@gmail.com>

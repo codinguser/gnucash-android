@@ -15,16 +15,19 @@
  limitations under the License.
 -->
 
-<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto">
+<!--
     <item android:id="@+id/context_menu_move_transactions"
           android:icon="@drawable/content_copy_holo_dark"
           android:title="@string/menu_move"
-          android:showAsAction="always" 
+          app:showAsAction="always"
           android:orderInCategory="1" /> 
-            
+-->
+    <!-- TODO: Add duplicate option -->
 	<item android:id="@+id/context_menu_delete"
           android:icon="@drawable/content_discard_holo_dark"
           android:title="@string/menu_delete"
-          android:showAsAction="always"
+          app:showAsAction="always"
           android:orderInCategory="2"/> 
 </menu>

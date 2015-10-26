@@ -16,79 +16,105 @@
 package org.gnucash.android.ui.transaction;
 
 import android.os.Bundle;
+import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
+import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
+import android.support.v7.widget.Toolbar;
 
 import org.gnucash.android.R;
-import org.gnucash.android.ui.export.ScheduledExportListFragment;
-import org.gnucash.android.ui.passcode.PassLockActivity;
-
-import java.util.MissingFormatArgumentException;
+import org.gnucash.android.model.ScheduledAction;
+import org.gnucash.android.ui.common.BaseDrawerActivity;
 
 /**
  * Activity for displaying scheduled actions
  * @author Ngewi Fet <ngewif@gmail.com>
  */
-public class ScheduledActionsActivity extends PassLockActivity {
+public class ScheduledActionsActivity extends BaseDrawerActivity {
 
-    public enum DisplayMode {ALL_ACTIONS, TRANSACTION_ACTIONS, EXPORT_ACTIONS}
+    public static final int INDEX_SCHEDULED_TRANSACTIONS    = 0;
+    public static final int INDEX_SCHEDULED_EXPORTS         = 1;
 
-    public static final String EXTRA_DISPLAY_MODE = "org.gnucash.android.extra.DISPLAY_MODE";
-
-    private DisplayMode mDisplayMode = DisplayMode.ALL_ACTIONS;
+    ViewPager mViewPager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        setContentView(R.layout.activity_scheduled_events);
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_scheduled_events);
+        setUpDrawer();
 
-        mDisplayMode = (DisplayMode) getIntent().getSerializableExtra(EXTRA_DISPLAY_MODE);
-        if (mDisplayMode == null)
-            throw new MissingFormatArgumentException("Missing argument for which kind of scheduled events to display");
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle(R.string.nav_menu_scheduled_actions);
 
-        switch (mDisplayMode){
-            case ALL_ACTIONS:
-                //TODO: do we even want this option. For now fall through to SX
+        TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
+        tabLayout.addTab(tabLayout.newTab().setText(R.string.title_scheduled_transactions));
+        tabLayout.addTab(tabLayout.newTab().setText(R.string.title_scheduled_exports));
+        tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
-            case TRANSACTION_ACTIONS:
-                showScheduledTransactionsFragment();
-                break;
+        mViewPager = (ViewPager) findViewById(R.id.pager);
 
-            case EXPORT_ACTIONS:
-                showScheduledExportsFragment();
-                break;
+        //show the simple accounts list
+        PagerAdapter mPagerAdapter = new ScheduledActionsViewPager(getSupportFragmentManager());
+        mViewPager.setAdapter(mPagerAdapter);
+
+        mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+        tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                mViewPager.setCurrentItem(tab.getPosition());
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+                //nothing to see here, move along
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+                //nothing to see here, move along
+            }
+        });
+    }
+
+
+    /**
+     * View pager adapter for managing the scheduled action views
+     */
+    private class ScheduledActionsViewPager extends FragmentStatePagerAdapter {
+
+        public ScheduledActionsViewPager(FragmentManager fm) {
+            super(fm);
         }
-    }
 
-    /**
-     * Shows the fragment with scheduled exports
-     */
-    private void showScheduledExportsFragment(){
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager
-                .beginTransaction();
+        @Override
+        public CharSequence getPageTitle(int position) {
+            switch (position){
+                case INDEX_SCHEDULED_TRANSACTIONS:
+                    return getString(R.string.title_scheduled_transactions);
+                case INDEX_SCHEDULED_EXPORTS:
+                    return getString(R.string.title_scheduled_exports);
+                default:
+                    return super.getPageTitle(position);
+            }
+        }
 
-        ScheduledExportListFragment exportListFragment = new ScheduledExportListFragment();
+        @Override
+        public Fragment getItem(int position) {
+            switch (position){
+                case INDEX_SCHEDULED_TRANSACTIONS:
+                    return ScheduledActionsListFragment.getInstance(ScheduledAction.ActionType.TRANSACTION);
+                case INDEX_SCHEDULED_EXPORTS:
+                    return ScheduledActionsListFragment.getInstance(ScheduledAction.ActionType.BACKUP);
+            }
+            return null;
+        }
 
-        fragmentTransaction.replace(R.id.fragment_container,
-                exportListFragment, "fragment_recurring_transactions");
-
-        fragmentTransaction.commit();
-    }
-
-    /**
-     * Launches the fragment which lists the recurring transactions in the database
-     */
-    private void showScheduledTransactionsFragment(){
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager
-                .beginTransaction();
-
-        ScheduledTransactionsListFragment scheduledTransactionsListFragment = new ScheduledTransactionsListFragment();
-
-        fragmentTransaction.replace(R.id.fragment_container,
-                scheduledTransactionsListFragment, "fragment_recurring_transactions");
-
-        fragmentTransaction.commit();
+        @Override
+        public int getCount() {
+            return 2;
+        }
     }
 }

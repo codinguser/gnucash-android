@@ -27,13 +27,23 @@ import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.design.widget.TextInputLayout;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.SimpleCursorAdapter;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -42,23 +52,20 @@ import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
 import android.widget.Spinner;
-import android.widget.Toast;
-
-import com.actionbarsherlock.app.SherlockFragment;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuInflater;
-import com.actionbarsherlock.view.MenuItem;
 
 import org.gnucash.android.R;
 import org.gnucash.android.db.AccountsDbAdapter;
+import org.gnucash.android.db.CommoditiesDbAdapter;
 import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.model.Account;
 import org.gnucash.android.model.AccountType;
+import org.gnucash.android.model.Commodity;
 import org.gnucash.android.model.Money;
-import org.gnucash.android.ui.UxArgument;
+import org.gnucash.android.ui.common.UxArgument;
 import org.gnucash.android.ui.colorpicker.ColorPickerDialog;
 import org.gnucash.android.ui.colorpicker.ColorPickerSwatch;
 import org.gnucash.android.ui.colorpicker.ColorSquare;
+import org.gnucash.android.util.CommoditiesCursorAdapter;
 import org.gnucash.android.util.QualifiedAccountNameCursorAdapter;
 
 import java.util.ArrayList;
@@ -67,12 +74,15 @@ import java.util.Currency;
 import java.util.HashMap;
 import java.util.List;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+
 /**
  * Fragment used for creating and editing accounts
  * @author Ngewi Fet <ngewif@gmail.com>
  * @author Yongxin Wang <fefe.wyx@gmail.com>
  */
-public class AccountFormFragment extends SherlockFragment {
+public class AccountFormFragment extends Fragment {
 
     /**
      * Tag for the color picker dialog fragment
@@ -82,13 +92,15 @@ public class AccountFormFragment extends SherlockFragment {
     /**
 	 * EditText for the name of the account to be created/edited
 	 */
-	private EditText mNameEditText;
-	
+	@Bind(R.id.input_account_name) EditText mNameEditText;
+
+    @Bind(R.id.name_text_input_layout) TextInputLayout mTextInputLayout;
+
 	/**
 	 * Spinner for selecting the currency of the account
 	 * Currencies listed are those specified by ISO 4217
 	 */
-	private Spinner mCurrencySpinner;
+	@Bind(R.id.input_currency_spinner) Spinner mCurrencySpinner;
 	
 	/**
 	 * Accounts database adapter
@@ -148,34 +160,39 @@ public class AccountFormFragment extends SherlockFragment {
     /**
      * Spinner for parent account list
      */
-	private Spinner mParentAccountSpinner;
+	@Bind(R.id.input_parent_account) Spinner mParentAccountSpinner;
 
     /**
      * Checkbox which activates the parent account spinner when selected
      * Leaving this unchecked means it is a top-level root account
      */
-	private CheckBox mParentCheckBox;
+	@Bind(R.id.checkbox_parent_account) CheckBox mParentCheckBox;
 
     /**
      * Spinner for the account type
      * @see org.gnucash.android.model.AccountType
      */
-    private Spinner mAccountTypeSpinner;
+    @Bind(R.id.input_account_type_spinner) Spinner mAccountTypeSpinner;
 
     /**
      * Checkbox for activating the default transfer account spinner
      */
-    private CheckBox mDefaultTransferAccountCheckBox;
+    @Bind(R.id.checkbox_default_transfer_account) CheckBox mDefaultTransferAccountCheckBox;
 
     /**
      * Spinner for selecting the default transfer account
      */
-    private Spinner mDefaulTransferAccountSpinner;
+    @Bind(R.id.input_default_transfer_account) Spinner mDefaulTransferAccountSpinner;
+
+    /**
+     * Account description input text view
+     */
+    @Bind(R.id.input_account_description) EditText mDescriptionEditText;
 
     /**
      * Checkbox indicating if account is a placeholder account
      */
-    private CheckBox mPlaceholderCheckBox;
+    @Bind(R.id.checkbox_placeholder_account) CheckBox mPlaceholderCheckBox;
 
     /**
      * Cursor adapter which binds to the spinner for default transfer account
@@ -195,7 +212,7 @@ public class AccountFormFragment extends SherlockFragment {
     /**
      * Trigger for color picker dialog
      */
-    private ColorSquare mColorSquare;
+    @Bind(R.id.input_color_picker) ColorSquare mColorSquare;
 
     private ColorPickerSwatch.OnColorSelectedListener mColorSelectedListener = new ColorPickerSwatch.OnColorSelectedListener() {
         @Override
@@ -239,13 +256,28 @@ public class AccountFormFragment extends SherlockFragment {
 	 */
 	@Override	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		View view = inflater.inflate(R.layout.fragment_new_account, container, false);
-		getSherlockActivity().getSupportActionBar().setTitle(R.string.label_create_account);
-		mCurrencySpinner = (Spinner) view.findViewById(R.id.input_currency_spinner);
-		mNameEditText = (EditText) view.findViewById(R.id.input_account_name);
-		//mNameEditText.requestFocus();
+		View view = inflater.inflate(R.layout.fragment_account_form, container, false);
+        ButterKnife.bind(this, view);
 
-        mAccountTypeSpinner = (Spinner) view.findViewById(R.id.input_account_type_spinner);
+        mNameEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                //nothing to see here, move along
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                //nothing to see here, move along
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (s.toString().length() > 0) {
+                    mTextInputLayout.setErrorEnabled(false);
+                }
+            }
+        });
+
         mAccountTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
@@ -260,24 +292,18 @@ public class AccountFormFragment extends SherlockFragment {
             }
         });
 
-        mPlaceholderCheckBox = (CheckBox) view.findViewById(R.id.checkbox_placeholder_account);
 
-		mParentAccountSpinner = (Spinner) view.findViewById(R.id.input_parent_account);
 		mParentAccountSpinner.setEnabled(false);
 
-		mParentCheckBox = (CheckBox) view.findViewById(R.id.checkbox_parent_account);
 		mParentCheckBox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-			
-			@Override
-			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-				mParentAccountSpinner.setEnabled(isChecked);
-			}
-		});
 
-        mDefaulTransferAccountSpinner = (Spinner) view.findViewById(R.id.input_default_transfer_account);
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                mParentAccountSpinner.setEnabled(isChecked);
+            }
+        });
+
         mDefaulTransferAccountSpinner.setEnabled(false);
-
-        mDefaultTransferAccountCheckBox = (CheckBox) view.findViewById(R.id.checkbox_default_transfer_account);
         mDefaultTransferAccountCheckBox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
@@ -285,7 +311,6 @@ public class AccountFormFragment extends SherlockFragment {
             }
         });
 
-        mColorSquare = (ColorSquare) view.findViewById(R.id.input_color_picker);
         mColorSquare.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -303,19 +328,23 @@ public class AccountFormFragment extends SherlockFragment {
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-		
-		ArrayAdapter<String> currencyArrayAdapter = new ArrayAdapter<String>(
-				getActivity(), 
-				android.R.layout.simple_spinner_item, 
-				getResources().getStringArray(R.array.currency_names));
-		currencyArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-		mCurrencySpinner.setAdapter(currencyArrayAdapter);
+
+        Cursor cursor = CommoditiesDbAdapter.getInstance().fetchAllRecords();
+        CommoditiesCursorAdapter commoditiesAdapter = new CommoditiesCursorAdapter(
+                getActivity(), android.R.layout.simple_spinner_item);
+        commoditiesAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        mCurrencySpinner.setAdapter(commoditiesAdapter);
+
 
         mAccountUID = getArguments().getString(UxArgument.SELECTED_ACCOUNT_UID);
 
+        ActionBar supportActionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
         if (mAccountUID != null) {
-            mAccount = mAccountsDbAdapter.getAccount(mAccountUID);
-            getSherlockActivity().getSupportActionBar().setTitle(R.string.title_edit_account);
+            mAccount = mAccountsDbAdapter.getRecord(mAccountUID);
+            supportActionBar.setTitle(R.string.title_edit_account);
+        } else {
+            supportActionBar.setTitle(R.string.title_create_account);
         }
 
         mRootAccountUID = mAccountsDbAdapter.getOrCreateGnuCashRootAccountUID();
@@ -329,10 +358,11 @@ public class AccountFormFragment extends SherlockFragment {
 
         if (mAccount != null){
             initializeViewsWithAccount(mAccount);
+            //do not immediately open the keyboard when editing an account
+            getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         } else {
             initializeViews();
         }
-
 
 	}
 
@@ -361,14 +391,33 @@ public class AccountFormFragment extends SherlockFragment {
 
         if (mAccountsDbAdapter.getTransactionMaxSplitNum(mAccount.getUID()) > 1)
         {
+            //TODO: Allow changing the currency and effecting the change for all transactions without any currency exchange (purely cosmetic change)
             mCurrencySpinner.setEnabled(false);
         }
 
         mNameEditText.setText(account.getName());
+        mNameEditText.setSelection(mNameEditText.getText().length());
 
-        if (mUseDoubleEntry && account.getDefaultTransferAccountUID() != null) {
-            long doubleDefaultAccountId = mAccountsDbAdapter.getID(account.getDefaultTransferAccountUID());
-            setDefaultTransferAccountSelection(doubleDefaultAccountId);
+        if (account.getDescription() != null)
+            mDescriptionEditText.setText(account.getDescription());
+
+        if (mUseDoubleEntry) {
+            if (account.getDefaultTransferAccountUID() != null) {
+                long doubleDefaultAccountId = mAccountsDbAdapter.getID(account.getDefaultTransferAccountUID());
+                setDefaultTransferAccountSelection(doubleDefaultAccountId, true);
+            } else {
+                String currentAccountUID = account.getParentUID();
+                long defaultTransferAccountID = 0;
+                String rootAccountUID = mAccountsDbAdapter.getOrCreateGnuCashRootAccountUID();
+                while (!currentAccountUID.equals(rootAccountUID)) {
+                    defaultTransferAccountID = mAccountsDbAdapter.getDefaultTransferAccountID(mAccountsDbAdapter.getID(currentAccountUID));
+                    if (defaultTransferAccountID > 0) {
+                        setDefaultTransferAccountSelection(defaultTransferAccountID, false);
+                        break; //we found a parent with default transfer setting
+                    }
+                    currentAccountUID = mAccountsDbAdapter.getParentAccountUID(currentAccountUID);
+                }
+            }
         }
 
         mPlaceholderCheckBox.setChecked(account.isPlaceholderAccount());
@@ -433,10 +482,15 @@ public class AccountFormFragment extends SherlockFragment {
      * @param currencyCode ISO 4217 currency code to be selected
      */
     private void setSelectedCurrency(String currencyCode){
-        mCurrencyCodes = Arrays.asList(getResources().getStringArray(R.array.key_currency_codes));
-        if (mCurrencyCodes.contains(currencyCode)){
-            mCurrencySpinner.setSelection(mCurrencyCodes.indexOf(currencyCode));
+        CommoditiesDbAdapter commodityDbAdapter = CommoditiesDbAdapter.getInstance();
+        long commodityId = commodityDbAdapter.getID(commodityDbAdapter.getCommodityUID(currencyCode));
+        int position = 0;
+        for (int i = 0; i < mCurrencySpinner.getCount(); i++) {
+            if (commodityId == mCurrencySpinner.getItemIdAtPosition(i)) {
+                position = i;
+            }
         }
+        mCurrencySpinner.setSelection(position);
     }
 
     /**
@@ -462,15 +516,15 @@ public class AccountFormFragment extends SherlockFragment {
      * Selects the account with ID <code>parentAccountId</code> in the default transfer account spinner
      * @param defaultTransferAccountId Record ID of parent account to be selected
      */
-    private void setDefaultTransferAccountSelection(long defaultTransferAccountId){
-        if (defaultTransferAccountId > 0){
-            mDefaultTransferAccountCheckBox.setChecked(true);
-            mDefaulTransferAccountSpinner.setEnabled(true);
+    private void setDefaultTransferAccountSelection(long defaultTransferAccountId, boolean enableTransferAccount) {
+        if (defaultTransferAccountId > 0) {
+            mDefaultTransferAccountCheckBox.setChecked(enableTransferAccount);
+            mDefaulTransferAccountSpinner.setEnabled(enableTransferAccount);
         } else
             return;
 
         for (int pos = 0; pos < mDefaultTransferAccountCursorAdapter.getCount(); pos++) {
-            if (mDefaultTransferAccountCursorAdapter.getItemId(pos) == defaultTransferAccountId){
+            if (mDefaultTransferAccountCursorAdapter.getItemId(pos) == defaultTransferAccountId) {
                 mDefaulTransferAccountSpinner.setSelection(pos);
                 break;
             }
@@ -514,7 +568,7 @@ public class AccountFormFragment extends SherlockFragment {
     }
 
     @Override
-	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {		
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 		super.onCreateOptionsMenu(menu, inflater);
 		inflater.inflate(R.menu.default_save_actions, menu);
 	}
@@ -526,7 +580,7 @@ public class AccountFormFragment extends SherlockFragment {
 			saveAccount();
 			return true;
 
-		case R.id.menu_cancel:
+		case android.R.id.home:
 			finishFragment();
 			return true;
 		}
@@ -551,9 +605,7 @@ public class AccountFormFragment extends SherlockFragment {
         }
 
         mDefaultTransferAccountCursorAdapter = new QualifiedAccountNameCursorAdapter(getActivity(),
-                android.R.layout.simple_spinner_item,
                 defaultTransferAccountCursor);
-        mDefaultTransferAccountCursorAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mDefaulTransferAccountSpinner.setAdapter(mDefaultTransferAccountCursorAdapter);
     }
 
@@ -569,7 +621,7 @@ public class AccountFormFragment extends SherlockFragment {
         if (mAccount != null){  //if editing an account
             mDescendantAccountUIDs = mAccountsDbAdapter.getDescendantAccountUIDs(mAccount.getUID(), null, null);
             String rootAccountUID = mAccountsDbAdapter.getOrCreateGnuCashRootAccountUID();
-            List<String> descendantAccountUIDs = new ArrayList<String>(mDescendantAccountUIDs);
+            List<String> descendantAccountUIDs = new ArrayList<>(mDescendantAccountUIDs);
             if (rootAccountUID != null)
                 descendantAccountUIDs.add(rootAccountUID);
             // limit cyclic account hierarchies.
@@ -594,10 +646,7 @@ public class AccountFormFragment extends SherlockFragment {
         }
 
 		mParentAccountCursorAdapter = new QualifiedAccountNameCursorAdapter(
-				getActivity(), 
-				android.R.layout.simple_spinner_item,
-                mParentAccountCursor);
-		mParentAccountCursorAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+				getActivity(), mParentAccountCursor);
 		mParentAccountSpinner.setAdapter(mParentAccountCursorAdapter);
 	}
 
@@ -675,7 +724,7 @@ public class AccountFormFragment extends SherlockFragment {
 	 * Depends on how the fragment was loaded, it might have a backstack or not
 	 */
 	private void finishFragment() {
-		InputMethodManager imm = (InputMethodManager) getSherlockActivity().getSystemService(
+		InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(
 			      Context.INPUT_METHOD_SERVICE);
 			imm.hideSoftInputFromWindow(mNameEditText.getWindowToken(), 0);
 
@@ -684,7 +733,7 @@ public class AccountFormFragment extends SherlockFragment {
             getActivity().setResult(Activity.RESULT_OK);
             getActivity().finish();
         } else {
-		    getSherlockActivity().getSupportFragmentManager().popBackStack();
+		    getActivity().getSupportFragmentManager().popBackStack();
         }
 	}
 	
@@ -709,9 +758,8 @@ public class AccountFormFragment extends SherlockFragment {
 		if (mAccount == null){
 			String name = getEnteredName();
 			if (name == null || name.length() == 0){
-				Toast.makeText(getSherlockActivity(), 
-						R.string.toast_no_account_name_entered, 
-						Toast.LENGTH_LONG).show();
+                mTextInputLayout.setErrorEnabled(true);
+                mTextInputLayout.setError(getString(R.string.toast_no_account_name_entered));
 				return;				
 			}
 			mAccount = new Account(getEnteredName());
@@ -720,14 +768,16 @@ public class AccountFormFragment extends SherlockFragment {
             nameChanged = !mAccount.getName().equals(getEnteredName());
             mAccount.setName(getEnteredName());
         }
-			
-		String curCode = mCurrencyCodes.get(mCurrencySpinner
-				.getSelectedItemPosition());
-		mAccount.setCurrency(Currency.getInstance(curCode));
+
+        long commodityId = mCurrencySpinner.getSelectedItemId();
+        Commodity commodity = CommoditiesDbAdapter.getInstance().getRecord(commodityId);
+        mAccount.setCommodityUID(commodity.getUID());
+        mAccount.setCurrency(Currency.getInstance(commodity.getMnemonic()));
 
         AccountType selectedAccountType = getSelectedAccountType();
         mAccount.setAccountType(selectedAccountType);
 
+        mAccount.setDescription(mDescriptionEditText.getText().toString());
         mAccount.setPlaceHolderFlag(mPlaceholderCheckBox.isChecked());
         mAccount.setColorCode(mSelectedColor);
 
@@ -799,7 +849,7 @@ public class AccountFormFragment extends SherlockFragment {
 		if (mAccountsDbAdapter == null)
 			mAccountsDbAdapter = AccountsDbAdapter.getInstance();
         // bulk update, will not update transactions
-		mAccountsDbAdapter.bulkAddAccounts(accountsToUpdate);
+		mAccountsDbAdapter.bulkAddRecords(accountsToUpdate);
 
 		finishFragment();
 	}

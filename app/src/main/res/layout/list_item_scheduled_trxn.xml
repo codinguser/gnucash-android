@@ -15,7 +15,7 @@
  limitations under the License.
 -->
 
-<org.gnucash.android.ui.util.CheckableLinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<org.gnucash.android.ui.util.widget.CheckableLinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
                                                    android:layout_width="match_parent"
                                                    android:layout_height="wrap_content"
                                                    style="@style/ListItem"
@@ -74,4 +74,4 @@
             android:textColor="@android:color/black"
             android:text="Amount"/>
     </RelativeLayout>
-</org.gnucash.android.ui.util.CheckableLinearLayout>
+</org.gnucash.android.ui.util.widget.CheckableLinearLayout>

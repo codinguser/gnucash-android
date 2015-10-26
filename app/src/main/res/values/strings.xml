@@ -16,7 +16,7 @@
 -->
 
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <string name="label_create_account">Create Account</string>
+    <string name="title_create_account">Create Account</string>
     <string name="title_edit_account">Edit Account</string>
     <string name="info_details">Info</string>
     <string name="menu_export">Export…</string>
@@ -40,18 +40,18 @@
     <string name="label_credit">CREDIT</string>
     <string name="title_accounts">Accounts</string>
     <string name="title_transactions">Transactions</string>
-    <string name="menu_delete">DELETE</string>
+    <string name="menu_delete">Delete</string>
     <string name="alert_dialog_ok_delete">Delete</string>
     <string name="alert_dialog_cancel">Cancel</string>
     <string name="toast_account_deleted">Account deleted</string>
     <string name="title_confirm_delete">Confirm delete</string>
     <string name="delete_account_confirmation_message">All transactions in this account will also be deleted</string>
     <string name="title_edit_transaction">Edit Transaction</string>
-    <string name="label_transaction_description">Note</string>
+    <string name="label_transaction_description">Add note</string>
     <string name="menu_move">MOVE</string>
     <string name="title_selected">%1$d selected</string>
     <string name="label_account_balance">Balance:</string>
-    <string name="label_export_destination">Export Destination</string>
+    <string name="label_export_destination">Export To:</string>
     <string name="title_export_dialog">Export Transactions</string>
     <string name="option_export_all_transactions">Export all transactions</string>
     <string name="hint_export_choice">By default, only new transactions since last export will be exported. Check this option to export all transactions</string>
@@ -64,7 +64,7 @@
         <item>SD Card</item>
         <item>DropBox</item>
         <item>Google Drive</item>
-        <item>Share file&#8230;</item>
+        <item>Send to&#8230;</item>
     </string-array>
     <string name="btn_move">Move</string>
     <string name="title_move_transactions">Move %1$d transaction(s)</string>
@@ -275,8 +275,7 @@
     <string name="title_passcode_disabled">Passcode Turned Off</string>
     <string name="title_change_passcode">Change Passcode</string>
 	<string name="title_about_gnucash">About GnuCash</string>
-	<string name="summary_about_gnucash">Gnucash is a mobile finance expense tracker application for Android.\n
-        It enables flexible tracking of expenses on-the-go which can be exported to multiple formats (OFX, QIF) and imported into GnuCash for the desktop.</string>
+	<string name="summary_about_gnucash">A mobile finance management and expense-tracker designed for Android</string>
 	<string name="title_about">About</string>
 	<string name="toast_format_exported_to">%1$s file exported to:\n</string>
 	<string name="title_export_email">GnuCash Android %1$s export</string>
@@ -308,11 +307,11 @@
 	<string name="summary_xml_ofx_header">Enable this option when exporting to third-party application other than GnuCash for desktop</string>
 	<string name="title_whats_new">What\'s New</string>
 	<string name="whats_new">
-        - Visual reports (Bar/Pie/line charts) \n
-        - Scheduled backups of (QIF, OFX, and XML)\n
-        - Backup/Export to DropBox and Google Drive\n
-        - Better recurrence options for scheduled transactions\n
-        - Navigation drawer for easier access to options\n
+        - New Material app design \n
+        - Multi-currency transactions\n
+        - Calculator to transaction amounts\n
+        - Better reporting options\n
+        - New help &amp; feedback section\n
         - Multiple bug fixes and improvements\n
 	</string>
 	<string name="label_dismiss">Dismiss</string>
@@ -397,7 +396,7 @@
         a hierarchy of commonly-used accounts, or import your own GnuCash account structure. \n\nBoth options are also
         available in app Settings so you can decide later.
     </string>
-    <string name="title_scheduled_transactions">Scheduled Transactions</string>
+    <string name="title_scheduled_transactions">Transactions</string>
     <string name="title_select_export_destination">Select destination for export</string>
     <string name="hint_split_memo">Memo</string>
     <string name="label_spend">Spend</string>
@@ -440,10 +439,10 @@
     <string name="summary_use_account_color">Use account color in the bar/pie chart</string>
     <string name="header_report_settings">Reports</string>
     <string name="menu_order_by_size">Order by size</string>
-    <string name="menu_toggle_legend">Toggle legend</string>
-    <string name="menu_toggle_labels">Toggle labels</string>
-    <string name="menu_toggle_percentage_mode">Toggle percentage</string>
-    <string name="menu_toggle_average_lines">Toggle average lines</string>
+    <string name="menu_toggle_legend">Show legend</string>
+    <string name="menu_toggle_labels">Show labels</string>
+    <string name="menu_toggle_percentage_mode">Show percentage</string>
+    <string name="menu_toggle_average_lines">Show average lines</string>
     <string name="menu_group_smaller_slices">Group Smaller Slices</string>
     <string name="label_chart_no_data">No chart data available</string>
     <string name="label_chart_overall">Overall</string>
@@ -475,10 +474,10 @@
     <string name="toast_install_file_manager">Install a file manager to select files</string>
     <string name="title_select_backup_to_restore">Select backup to restore</string>
     <string name="nav_menu_favorites">Favorites</string>
-    <string name="nav_menu_open">Open...</string>
+    <string name="nav_menu_open">Open…</string>
     <string name="nav_menu_reports">Reports</string>
     <string name="nav_menu_scheduled_transactions">Scheduled Transactions</string>
-    <string name="nav_menu_export">Export...</string>
+    <string name="nav_menu_export">Export…</string>
     <string name="nav_menu_settings">Settings</string>
     <plurals name="label_every_x_days">
         <item quantity="one">Daily</item>
@@ -497,15 +496,82 @@
         <item quantity="other">Every %d years</item>
     </plurals>
     <string name="title_enable_crashlytics">Enable Crash Logging</string>
-    <string name="msg_enable_crashlytics">Enable to send information about malfunctions to the developers for improvement (recommended).
-No user-identifiable information will be collected as part of this process!</string>
-    <string name="label_export_format">Export Format</string>
+    <string name="msg_enable_crashlytics">Automatically send information about app malfunction to the developers.</string>
+    <string name="label_export_format"> Format</string>
     <string name="toast_backup_folder_not_found">Backup folder cannot be found. Make sure the SD Card is mounted!</string>
     <string name="label_old_passcode">Enter your old passcode</string>
     <string name="label_new_passcode">Enter your new passcode</string>
     <string name="nav_menu_scheduled_backups">Scheduled Exports</string>
-    <string name="title_scheduled_exports">Scheduled Exports</string>
+    <string name="title_scheduled_exports">Exports</string>
     <string name="label_no_scheduled_exports_to_display">No scheduled exports to display</string>
     <string name="title_create_export_schedule">Create export schedule</string>
     <string name="toast_exported_to">Exported to: %1$s</string>
+    <string name="toast_legend_too_long">The legend is too long</string>
+    <string name="hint_account_description">Account description</string>
+    <string name="label_no_recent_accounts">No recent accounts</string>
+    <string name="label_no_favorite_accounts">No favorite accounts</string>
+    <string name="nav_menu_scheduled_actions">Scheduled Actions</string>
+    <string name="label_scheduled_action_ended">"Ended, last executed on %1$s"</string>
+    <string name="label_select_bar_to_view_details">Select a bar to view details</string>
+    <string name="btn_wizard_next">Next</string>
+    <string name="btn_wizard_finish">Done</string>
+    <string name="wizard_title_default_currency">Default Currency</string>
+    <string name="wizard_title_account_setup">Account Setup</string>
+    <string name="wizard_title_select_currency">Select Currency</string>
+    <string name="wizard_title_feedback_options">Feedback Options</string>
+    <string name="wizard_option_create_default_accounts">Create default accounts</string>
+    <string name="wizard_option_import_my_accounts">Import my accounts</string>
+    <string name="wizard_option_let_me_handle_it">Let me handle it</string>
+    <string name="wizard_option_currency_other">Other…</string>
+    <string name="wizard_option_auto_send_crash_reports">Automatically send crash reports</string>
+    <string name="wizard_option_disable_crash_reports">Disable crash reports</string>
+    <string name="wizard_btn_back">Back</string>
+    <string name="title_setup_gnucash">Setup GnuCash</string>
+    <string name="wizard_title_welcome_to_gnucash">Welcome to GnuCash</string>
+    <string name="msg_wizard_welcome_page">Before you dive in, \nlet\'s setup a few things first\n\nTo continue, press Next</string>
+    <string name="title_split_editor">Split Editor</string>
+    <string name="toast_error_check_split_amounts">Check that all splits have valid amounts before saving!</string>
+    <string name="label_error_invalid_expression">Invalid expression!</string>
+    <string name="toast_scheduled_recurring_transaction">Scheduled recurring transaction</string>
+    <string name="error_exchange_rate_required">An exchange rate is required</string>
+    <string name="error_converted_amount_required">The converted amount is required</string>
+    <string name="title_transfer_funds">Transfer Funds</string>
+    <string name="nav_menu_help"><![CDATA[Help & Feedback]]></string>
+    <string name="label_select_pie_slice_to_see_details">Select a slice to see details</string>
+    <string name="label_report_period">Period:</string>
+    <string name="label_convert_from">From:</string>
+    <string name="label_convert_to">To:</string>
+    <string name="msg_provide_exchange_rate">Provide either the converted amount or exchange rate in order to transfer funds</string>
+    <string name="hint_exchange_rate">Exchange rate</string>
+    <string name="btn_fetch_quote">Fetch quote</string>
+    <string name="hint_converted_amount">Converted Amount</string>
+    <string name="title_report_sheet">Sheet</string>
+    <string name="label_last_3_months_expenses">Expenses for last 3 months</string>
+    <string name="label_total_assets">Total Assets</string>
+    <string name="label_total_liabilities">Total Liabilities</string>
+    <string name="label_net_worth">Net Worth</string>
+    <string name="label_assets">Assets</string>
+    <string name="label_liabilities">Liabilities</string>
+    <string name="label_equity">Equity</string>
+    <string name="label_total_liabilities_and_equity"><![CDATA[Total Liabilites & Equity]]></string>
+    <string name="label_move_to">Move to:</string>
+    <string name="menu_group_by">Group By</string>
+    <string name="menu_group_by_month">Month</string>
+    <string name="menu_group_by_quarter">Quarter</string>
+    <string name="menu_group_by_year">Year</string>
+    <string name="title_balance_sheet_report">Balance Sheet</string>
+    <string name="label_balance_sheet_total">Total:</string>
+    <string name="title_google_plus_community">Google+ Community</string>
+    <string name="title_translate_gnucash">Translate GnuCash</string>
+    <string name="summary_google_plus">Share ideas, discuss changes or report problems</string>
+    <string name="summary_translate_gnucash">Translate or proof-read on CrowdIn</string>
+    <string name="toast_no_compatible_apps_to_receive_export">No compatible apps to receive the exported transactions!</string>
+    <string-array name="report_time_range">
+        <item>Current month</item>
+        <item>Last 3 months</item>
+        <item>Last 6 months</item>
+        <item>Last 12 months</item>
+        <item>All time</item>
+        <item>Custom range…</item>
+    </string-array>
 </resources>

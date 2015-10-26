@@ -20,6 +20,7 @@ package org.gnucash.android.export;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Environment;
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
@@ -27,6 +28,8 @@ import com.crashlytics.android.Crashlytics;
 import org.gnucash.android.BuildConfig;
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.AccountsDbAdapter;
+import org.gnucash.android.db.CommoditiesDbAdapter;
+import org.gnucash.android.db.PricesDbAdapter;
 import org.gnucash.android.db.ScheduledActionDbAdapter;
 import org.gnucash.android.db.SplitsDbAdapter;
 import org.gnucash.android.db.TransactionsDbAdapter;
@@ -34,6 +37,7 @@ import org.gnucash.android.db.TransactionsDbAdapter;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.Writer;
+import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -73,6 +77,13 @@ public abstract class Exporter {
     protected ExportParams mParameters;
 
     private static final SimpleDateFormat EXPORT_FILENAME_DATE_FORMAT = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US);
+
+    /**
+     * last export time in preferences
+     */
+    public static final String PREF_LAST_EXPORT_TIME = "last_export_time";
+
+    public static final String TIMESTAMP_ZERO = new Timestamp(0).toString();
     /**
      * Adapter for retrieving accounts to export
      * Subclasses should close this object when they are done with exporting
@@ -81,6 +92,8 @@ public abstract class Exporter {
     protected TransactionsDbAdapter mTransactionsDbAdapter;
     protected SplitsDbAdapter mSplitsDbAdapter;
     protected ScheduledActionDbAdapter mScheduledActionDbAdapter;
+    protected PricesDbAdapter mPricesDbAdpater;
+    protected CommoditiesDbAdapter mCommoditiesDbAdapter;
     protected Context mContext;
 
     public Exporter(ExportParams params, SQLiteDatabase db) {
@@ -91,11 +104,15 @@ public abstract class Exporter {
             mTransactionsDbAdapter = TransactionsDbAdapter.getInstance();
             mSplitsDbAdapter = SplitsDbAdapter.getInstance();
             mScheduledActionDbAdapter = ScheduledActionDbAdapter.getInstance();
+            mPricesDbAdpater = PricesDbAdapter.getInstance();
+            mCommoditiesDbAdapter = CommoditiesDbAdapter.getInstance();
         } else {
             mSplitsDbAdapter = new SplitsDbAdapter(db);
             mTransactionsDbAdapter = new TransactionsDbAdapter(db, mSplitsDbAdapter);
             mAccountsDbAdapter = new AccountsDbAdapter(db, mTransactionsDbAdapter);
             mScheduledActionDbAdapter = new ScheduledActionDbAdapter(db);
+            mPricesDbAdpater = new PricesDbAdapter(db);
+            mCommoditiesDbAdapter = new CommoditiesDbAdapter(db);
         }
     }
 
@@ -190,6 +207,10 @@ public abstract class Exporter {
 
         public ExporterException(ExportParams params){
             super("Failed to generate " + params.getExportFormat().toString());
+        }
+
+        public ExporterException(@NonNull ExportParams params, @NonNull String msg) {
+            super("Failed to generate " + params.getExportFormat().toString() + "-" + msg);
         }
 
         public ExporterException(ExportParams params, Throwable throwable){

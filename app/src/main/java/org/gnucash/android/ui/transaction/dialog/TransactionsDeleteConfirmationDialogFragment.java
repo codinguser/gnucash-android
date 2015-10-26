@@ -20,8 +20,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
-
-import com.actionbarsherlock.app.SherlockDialogFragment;
+import android.support.v4.app.DialogFragment;
 
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
@@ -29,10 +28,9 @@ import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.export.xml.GncXmlExporter;
 import org.gnucash.android.model.Transaction;
-import org.gnucash.android.ui.UxArgument;
-import org.gnucash.android.ui.account.AccountsListFragment;
+import org.gnucash.android.ui.common.UxArgument;
 import org.gnucash.android.ui.util.Refreshable;
-import org.gnucash.android.ui.widget.WidgetConfigurationActivity;
+import org.gnucash.android.ui.homescreen.WidgetConfigurationActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,7 +41,7 @@ import java.util.List;
  * @author Ngewi Fet <ngewif@gmail.com>
  *
  */
-public class TransactionsDeleteConfirmationDialogFragment extends SherlockDialogFragment {
+public class TransactionsDeleteConfirmationDialogFragment extends DialogFragment {
 
     public static TransactionsDeleteConfirmationDialogFragment newInstance(int title, long id) {
         TransactionsDeleteConfirmationDialogFragment frag = new TransactionsDeleteConfirmationDialogFragment();
@@ -76,7 +74,7 @@ public class TransactionsDeleteConfirmationDialogFragment extends SherlockDialog
                                     transactionsDbAdapter.deleteAllRecords();
 
                                     if (preserveOpeningBalances) {
-                                        transactionsDbAdapter.bulkAddTransactions(openingBalances);
+                                        transactionsDbAdapter.bulkAddRecords(openingBalances);
                                     }
                                 } else {
                                     transactionsDbAdapter.deleteRecord(rowId);

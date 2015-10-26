@@ -17,8 +17,11 @@
 package org.gnucash.android.importer;
 
 import android.database.sqlite.SQLiteDatabase;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
+import org.gnucash.android.app.GnuCashApplication;
+import org.gnucash.android.export.Exporter;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
@@ -27,6 +30,7 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PushbackInputStream;
+import java.sql.Timestamp;
 import java.util.zip.GZIPInputStream;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -82,12 +86,16 @@ public class GncXmlImporter {
             bos = new BufferedInputStream(pb);
 
         //TODO: Set an error handler which can log errors
-
+        Log.d(GncXmlImporter.class.getSimpleName(), "Start import");
         GncXmlHandler handler = new GncXmlHandler();
         xr.setContentHandler(handler);
         long startTime = System.nanoTime();
         xr.parse(new InputSource(bos));
         long endTime = System.nanoTime();
-        Log.d("Import", String.format("%d ns spent on importing the file", endTime-startTime));
+
+        String timeStamp = new Timestamp(System.currentTimeMillis()).toString();
+        PreferenceManager.getDefaultSharedPreferences(GnuCashApplication.getAppContext()).edit().putString(Exporter.PREF_LAST_EXPORT_TIME, timeStamp).apply();
+
+        Log.d(GncXmlImporter.class.getSimpleName(), String.format("%d ns spent on importing the file", endTime-startTime));
     }
 }

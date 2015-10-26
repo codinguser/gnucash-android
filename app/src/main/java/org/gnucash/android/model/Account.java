@@ -17,11 +17,16 @@
 package org.gnucash.android.model;
 
 
+import android.preference.PreferenceManager;
+
 import org.gnucash.android.BuildConfig;
+import org.gnucash.android.app.GnuCashApplication;
+import org.gnucash.android.export.Exporter;
 import org.gnucash.android.export.ofx.OfxHelper;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Currency;
 import java.util.List;
@@ -81,10 +86,17 @@ public class Account extends BaseModel{
     private String mFullName;
 
 	/**
+	 * Account description
+	 */
+	private String mDescription;
+
+	/**
 	 * Currency used by transactions in this account
 	 */
 	private Currency mCurrency; 
-	
+
+	private String mCommodityUID;
+
 	/**
 	 * Type of account
 	 * Defaults to {@link AccountType#CASH}
@@ -94,7 +106,7 @@ public class Account extends BaseModel{
 	/**
 	 * List of transactions in this account
 	 */
-	private List<Transaction> mTransactionsList = new ArrayList<Transaction>();
+	private List<Transaction> mTransactionsList = new ArrayList<>();
 
 	/**
 	 * Account UID of the parent account. Can be null
@@ -193,6 +205,22 @@ public class Account extends BaseModel{
     public void setFullName(String fullName) {
         this.mFullName = fullName;
     }
+
+	/**
+	 * Returns the account mDescription
+	 * @return String with mDescription
+	 */
+	public String getDescription() {
+		return mDescription;
+	}
+
+	/**
+	 * Sets the account mDescription
+	 * @param description String mDescription
+	 */
+	public void setDescription(String description) {
+		this.mDescription = description;
+	}
 
 	/**
 	 * Get the type of account
@@ -308,12 +336,28 @@ public class Account extends BaseModel{
 
 	/**
 	 * Sets the currency to be used by this account
-	 * @param mCurrency the mCurrency to set
+	 * @param currency the mCurrency to set
 	 */
-	public void setCurrency(Currency mCurrency) {
-		this.mCurrency = mCurrency;
+	public void setCurrency(Currency currency) {
+		this.mCurrency = currency;
 		//TODO: Maybe at some time t, this method should convert all 
 		//transaction values to the corresponding value in the new currency
+	}
+
+	/**
+	 * Returns the commodity GUID for this account
+	 * @return String GUID of commodity
+	 */
+	public String getCommodityUID() {
+		return mCommodityUID;
+	}
+
+	/**
+	 * Sets the commodity GUID for this account
+	 * @param commodityUID String commodity GUID
+	 */
+	public void setCommodityUID(String commodityUID) {
+		this.mCommodityUID = commodityUID;
 	}
 
 	/**
@@ -480,9 +524,10 @@ public class Account extends BaseModel{
 		Element bankTransactionsList = doc.createElement(OfxHelper.TAG_BANK_TRANSACTION_LIST);
 		bankTransactionsList.appendChild(dtstart);
 		bankTransactionsList.appendChild(dtend);
-		
+
+		Timestamp lastExportedTimestamp = Timestamp.valueOf(PreferenceManager.getDefaultSharedPreferences(GnuCashApplication.getAppContext()).getString(Exporter.PREF_LAST_EXPORT_TIME, Exporter.TIMESTAMP_ZERO));
 		for (Transaction transaction : mTransactionsList) {
-			if (!exportAllTransactions && transaction.isExported())
+			if (!exportAllTransactions && /*transaction.isExported()*/ transaction.getModifiedTimestamp().before(lastExportedTimestamp))
 				continue;
             bankTransactionsList.appendChild(transaction.toOFX(doc, getUID()));
 		}		

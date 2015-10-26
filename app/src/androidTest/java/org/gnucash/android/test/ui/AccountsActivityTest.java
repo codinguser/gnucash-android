@@ -24,10 +24,14 @@ import android.database.sqlite.SQLiteDatabase;
 import android.preference.PreferenceManager;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.Espresso;
+import android.support.test.espresso.ViewInteraction;
+import android.support.test.espresso.matcher.ViewMatchers;
 import android.support.test.runner.AndroidJUnit4;
 import android.support.v4.app.Fragment;
 import android.test.ActivityInstrumentationTestCase2;
 import android.util.Log;
+
+import com.kobakei.ratethisapp.RateThisApp;
 
 import org.gnucash.android.R;
 import org.gnucash.android.db.AccountsDbAdapter;
@@ -53,9 +57,10 @@ import java.util.List;
 
 import static android.support.test.espresso.Espresso.onData;
 import static android.support.test.espresso.Espresso.onView;
+import static android.support.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu;
 import static android.support.test.espresso.action.ViewActions.clearText;
 import static android.support.test.espresso.action.ViewActions.click;
-import static android.support.test.espresso.action.ViewActions.longClick;
+import static android.support.test.espresso.action.ViewActions.closeSoftKeyboard;
 import static android.support.test.espresso.action.ViewActions.scrollTo;
 import static android.support.test.espresso.action.ViewActions.swipeRight;
 import static android.support.test.espresso.action.ViewActions.typeText;
@@ -63,6 +68,7 @@ import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.isChecked;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.isNotChecked;
+import static android.support.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -110,7 +116,7 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
 		Account account = new Account(DUMMY_ACCOUNT_NAME);
         account.setUID(DUMMY_ACCOUNT_UID);
 		account.setCurrency(Currency.getInstance(DUMMY_ACCOUNT_CURRENCY_CODE));
-		mAccountsDbAdapter.addAccount(account);
+		mAccountsDbAdapter.addRecord(account);
         refreshAccountsList();
 	}
 
@@ -119,6 +125,7 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
      * @param context Application context
      */
     public static void preventFirstRunDialogs(Context context) {
+        AccountsActivity.rateAppConfig = new RateThisApp.Config(10000, 10000);
         Editor editor = PreferenceManager.getDefaultSharedPreferences(context).edit();
 
         //do not show first run dialog
@@ -132,39 +139,32 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
         editor.commit();
     }
 
-    /*
-        public void testDisplayAccountsList(){
-            final int NUMBER_OF_ACCOUNTS = 15;
-            for (int i = 0; i < NUMBER_OF_ACCOUNTS; i++) {
-                Account account = new Account("Acct " + i);
-                mAccountsDbAdapter.addAccount(account);
-            }
 
-            //there should exist a listview of accounts
-            refreshAccountsList();
-            mSolo.waitForText("Acct");
-            mSolo.scrollToBottom();
+    public void testDisplayAccountsList(){
+        AccountsActivity.createDefaultAccounts("EUR", mAcccountsActivity);
+        mAcccountsActivity.recreate();
 
-            ListView accountsListView = (ListView) mSolo.getView(android.R.id.list);
-            assertNotNull(accountsListView);
-            assertEquals(NUMBER_OF_ACCOUNTS + 1, accountsListView.getCount());
-        }
-    */
+        refreshAccountsList();
+        onView(withText("Assets")).perform(scrollTo());
+        onView(withText("Expenses")).perform(click());
+        onView(withText("Books")).perform(scrollTo());
+    }
+
     @Test
     public void testSearchAccounts(){
         String SEARCH_ACCOUNT_NAME = "Search Account";
 
         Account account = new Account(SEARCH_ACCOUNT_NAME);
         account.setParentUID(DUMMY_ACCOUNT_UID);
-        mAccountsDbAdapter.addAccount(account);
+        mAccountsDbAdapter.addRecord(account);
 
         //enter search query
 //        ActionBarUtils.clickSherlockActionBarItem(mSolo, R.id.menu_search);
         onView(withId(R.id.menu_search)).perform(click());
-        onView(withId(R.id.abs__search_src_text)).perform(typeText("Se"));
+        onView(withId(R.id.search_src_text)).perform(typeText("Se"));
         onView(withText(SEARCH_ACCOUNT_NAME)).check(matches(isDisplayed()));
 
-        onView(withId(R.id.abs__search_src_text)).perform(clearText());
+        onView(withId(R.id.search_src_text)).perform(clearText());
         onView(withId(R.id.primary_text)).check(matches(not(withText(SEARCH_ACCOUNT_NAME))));
     }
 
@@ -173,11 +173,11 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
      */
     @Test
 	public void testCreateAccount(){
-        onView(withId(R.id.menu_add_account)).check(matches(isDisplayed())).perform(click());
+        onView(allOf(isDisplayed(), withId(R.id.fab_create_account))).perform(click());
 
         String NEW_ACCOUNT_NAME = "A New Account";
-        onView(withId(R.id.input_account_name)).perform(typeText(NEW_ACCOUNT_NAME));
-        Espresso.closeSoftKeyboard();
+        onView(withId(R.id.input_account_name)).perform(typeText(NEW_ACCOUNT_NAME), closeSoftKeyboard());
+        sleep(1000);
         onView(withId(R.id.checkbox_placeholder_account))
                 .check(matches(isNotChecked()))
                 .perform(click());
@@ -188,7 +188,7 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
 
         onView(withId(R.id.menu_save)).perform(click());
 
-		List<Account> accounts = mAccountsDbAdapter.getAllAccounts();
+		List<Account> accounts = mAccountsDbAdapter.getAllRecords();
         assertThat(accounts).isNotNull();
         assertThat(accounts).hasSize(2);
 		Account newestAccount = accounts.get(0); //because of alphabetical sorting
@@ -202,12 +202,13 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
     public void testChangeParentAccount() {
         final String accountName = "Euro Account";
         Account account = new Account(accountName, Currency.getInstance("EUR"));
-        mAccountsDbAdapter.addAccount(account);
+        mAccountsDbAdapter.addRecord(account);
 
         refreshAccountsList();
 
-        onView(withText(accountName)).perform(longClick());
-        onView(withId(R.id.context_menu_edit_accounts)).perform(click());
+        onView(withText(accountName)).perform(click());
+        openActionBarOverflowOrOptionsMenu(mAcccountsActivity);
+        onView(withText(R.string.title_edit_account)).perform(click());
         onView(withId(R.id.fragment_account_form)).check(matches(isDisplayed()));
         Espresso.closeSoftKeyboard();
         onView(withId(R.id.checkbox_parent_account)).perform(scrollTo())
@@ -216,7 +217,7 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
 
         onView(withId(R.id.menu_save)).perform(click());
 
-        Account editedAccount = mAccountsDbAdapter.getAccount(account.getUID());
+        Account editedAccount = mAccountsDbAdapter.getRecord(account.getUID());
         String parentUID = editedAccount.getParentUID();
 
         assertThat(parentUID).isNotNull();
@@ -232,16 +233,23 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
     public void shouldHideParentAccountViewWhenNoParentsExist(){
         onView(allOf(withText(DUMMY_ACCOUNT_NAME), isDisplayed())).perform(click());
         onView(withId(R.id.fragment_transaction_list)).perform(swipeRight());
-        onView(withText(R.string.label_create_account)).check(matches(isDisplayed())).perform(click());
+        onView(withId(R.id.fab_create_transaction)).check(matches(isDisplayed())).perform(click());
         sleep(1000);
         onView(withId(R.id.checkbox_parent_account)).check(matches(allOf(isChecked())));
         onView(withId(R.id.input_account_name)).perform(typeText("Trading account"));
+        Espresso.closeSoftKeyboard();
+        onView(withId(R.id.layout_parent_account)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
+
         onView(withId(R.id.input_account_type_spinner)).perform(click());
+
         onData(allOf(is(instanceOf(String.class)), is(AccountType.TRADING.name()))).perform(click());
 
-        onView(withId(R.id.layout_parent_account)).check(matches(not(isDisplayed())));
-        onView(withId(R.id.menu_save)).perform(click());
 
+        onView(withId(R.id.layout_parent_account)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.GONE)));
+        onView(withId(R.id.layout_parent_account)).check(matches(not(isDisplayed())));
+
+        onView(withId(R.id.menu_save)).perform(click());
+        sleep(1000);
         //no sub-accounts
         assertThat(mAccountsDbAdapter.getSubAccountCount(DUMMY_ACCOUNT_UID)).isEqualTo(0);
         assertThat(mAccountsDbAdapter.getSubAccountCount(mAccountsDbAdapter.getOrCreateGnuCashRootAccountUID())).isEqualTo(2);
@@ -252,8 +260,8 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
 	public void testEditAccount(){
 		String editedAccountName = "Edited Account";
         sleep(2000);
-        onView(withId(R.id.primary_text)).perform(longClick());
-        onView(withId(R.id.context_menu_edit_accounts)).perform(click());
+        onView(withId(R.id.options_menu)).perform(click());
+        onView(withText(R.string.title_edit_account)).perform(click());
 
         onView(withId(R.id.fragment_account_form)).check(matches(isDisplayed()));
 
@@ -261,7 +269,7 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
 
         onView(withId(R.id.menu_save)).perform(click());
 
-		List<Account> accounts = mAccountsDbAdapter.getAllAccounts();
+		List<Account> accounts = mAccountsDbAdapter.getAllRecords();
 		Account latest = accounts.get(0);  //will be the first due to alphabetical sorting
 
         assertThat(latest.getName()).isEqualTo(editedAccountName);
@@ -270,24 +278,26 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
 
     @Test
     public void editingAccountShouldNotDeleteTransactions(){
-        onView(allOf(withText(DUMMY_ACCOUNT_NAME), isDisplayed()))
-                .perform(longClick());
-        Account account = new Account("Transfer Account");
+        onView(allOf(withId(R.id.options_menu), isDisplayed()))
+                .perform(click());
 
+        Account account = new Account("Transfer Account");
+        account.setCurrency(DUMMY_ACCOUNT_CURRENCY);
         Transaction transaction = new Transaction("Simple trxn");
+        transaction.setCurrencyCode(DUMMY_ACCOUNT_CURRENCY.getCurrencyCode());
         Split split = new Split(new Money(BigDecimal.TEN, DUMMY_ACCOUNT_CURRENCY), account.getUID());
         transaction.addSplit(split);
         transaction.addSplit(split.createPair(DUMMY_ACCOUNT_UID));
         account.addTransaction(transaction);
-        mAccountsDbAdapter.addAccount(account);
+        mAccountsDbAdapter.addRecord(account);
 
-        assertThat(mAccountsDbAdapter.getAccount(DUMMY_ACCOUNT_UID).getTransactionCount()).isEqualTo(1);
+        assertThat(mAccountsDbAdapter.getRecord(DUMMY_ACCOUNT_UID).getTransactionCount()).isEqualTo(1);
         assertThat(mSplitsDbAdapter.getSplitsForTransaction(transaction.getUID())).hasSize(2);
 
-        onView(withId(R.id.context_menu_edit_accounts)).perform(click());
+        onView(withText(R.string.title_edit_account)).perform(click());
 
         onView(withId(R.id.menu_save)).perform(click());
-        assertThat(mAccountsDbAdapter.getAccount(DUMMY_ACCOUNT_UID).getTransactionCount()).isEqualTo(1);
+        assertThat(mAccountsDbAdapter.getRecord(DUMMY_ACCOUNT_UID).getTransactionCount()).isEqualTo(1);
         assertThat(mSplitsDbAdapter.fetchSplitsForAccount(DUMMY_ACCOUNT_UID).getCount()).isEqualTo(1);
         assertThat(mSplitsDbAdapter.getSplitsForTransaction(transaction.getUID())).hasSize(2);
 
@@ -309,8 +319,8 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
     @Test(expected = IllegalArgumentException.class)
 	public void testDeleteSimpleAccount() {
         sleep(2000);
-        onView(withId(R.id.primary_text)).perform(longClick());
-        onView(withId(R.id.context_menu_delete)).perform(click());
+        onView(withId(R.id.options_menu)).perform(click());
+        onView(withText(R.string.menu_delete)).perform(click());
 
         //the account has no sub-accounts
 //        onView(withId(R.id.accounts_options)).check(matches(not(isDisplayed())));
@@ -335,13 +345,35 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
 
         new AccountCreator().onReceive(mAcccountsActivity, intent);
 
-		Account account = mAccountsDbAdapter.getAccount("intent-account");
+		Account account = mAccountsDbAdapter.getRecord("intent-account");
 		assertThat(account).isNotNull();
         assertThat(account.getName()).isEqualTo("Intent Account");
         assertThat(account.getUID()).isEqualTo("intent-account");
         assertThat(account.getCurrency().getCurrencyCode()).isEqualTo("EUR");
 	}
-	
+
+    /**
+     * Tests that the setup wizard is displayed on first run
+     */
+    @Test
+    public void shouldShowWizardOnFirstRun() throws Throwable {
+        PreferenceManager.getDefaultSharedPreferences(mAcccountsActivity)
+                .edit()
+                .remove(mAcccountsActivity.getString(R.string.key_first_run))
+                .commit();
+
+        runTestOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mAcccountsActivity.recreate();
+            }
+        });
+
+        //check that wizard is shown
+        onView(withText(mAcccountsActivity.getString(R.string.title_setup_gnucash)))
+                .check(matches(isDisplayed()));
+    }
+
 	@After
 	public void tearDown() throws Exception {
         mAcccountsActivity.finish();

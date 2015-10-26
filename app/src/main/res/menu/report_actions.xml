@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item android:id="@+id/menu_group_reports_by"
+        android:title="@string/menu_group_by"
+        android:icon="@drawable/ic_filter_list_white_24dp"
+        app:showAsAction="ifRoom|withText">
+        <menu>
+            <group android:checkableBehavior="single">
+
+                <item android:id="@+id/group_by_month"
+                    android:checked="true"
+                    android:title="@string/menu_group_by_month" />
+
+                <item android:id="@+id/group_by_quarter"
+                    android:title="@string/menu_group_by_quarter" />
+
+                <item android:id="@+id/group_by_year"
+                    android:title="@string/menu_group_by_year" />
+
+            </group>
+        </menu>
+    </item>
+</menu>

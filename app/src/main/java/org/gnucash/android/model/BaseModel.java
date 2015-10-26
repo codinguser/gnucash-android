@@ -45,12 +45,11 @@ public abstract class BaseModel {
     }
 
     /**
-     * Method for generating the Global Unique ID for the object and sets the internal variable which can be retrieved with {@link #getUID()}.
-     * Subclasses can override this method to provide a different implementation
+     * Method for generating the Global Unique ID for the model object
      * @return Random GUID for the model object
      */
-    protected String generateUID(){
-        return mUID = UUID.randomUUID().toString().replaceAll("-", "");
+    public static String generateUID(){
+        return UUID.randomUUID().toString().replaceAll("-", "");
     }
 
     /**
@@ -74,7 +73,7 @@ public abstract class BaseModel {
         this.mUID = uid;
     }
 
-    /**
+    /**8
      * Returns the timestamp when this model entry was created in the database
      * @return Timestamp of creation of model
      */

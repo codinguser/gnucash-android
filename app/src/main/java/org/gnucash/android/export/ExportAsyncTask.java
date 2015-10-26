@@ -23,6 +23,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -51,7 +52,6 @@ import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.export.ofx.OfxExporter;
 import org.gnucash.android.export.qif.QifExporter;
-import org.gnucash.android.export.qif.QifHelper;
 import org.gnucash.android.export.xml.GncXmlExporter;
 import org.gnucash.android.model.Transaction;
 import org.gnucash.android.ui.account.AccountsActivity;
@@ -59,13 +59,10 @@ import org.gnucash.android.ui.account.AccountsListFragment;
 import org.gnucash.android.ui.settings.SettingsActivity;
 import org.gnucash.android.ui.transaction.TransactionsActivity;
 
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -92,7 +89,7 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
     /**
      * Log tag
      */
-    public static final String TAG = "ExporterAsyncTask";
+    public static final String TAG = "ExportAsyncTask";
 
     /**
      * Export parameters
@@ -149,6 +146,7 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
             File file = new File(mExportParams.getTargetFilepath());
             BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), "UTF-8"));
             try {
+                // FIXME: detect if there aren't transactions to export and inform the user
                 mExporter.generateExport(writer);
                 writer.flush();
             }
@@ -176,7 +174,8 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
 
         switch (mExportParams.getExportTarget()) {
             case SHARING:
-                shareFile(mExportParams.getTargetFilepath());
+                File output = moveExportToSDCard();
+                shareFile(output.getAbsolutePath());
                 return true;
 
             case DROPBOX:
@@ -188,7 +187,7 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
                 return true;
 
             case SD_CARD:
-                copyExportToSDCard();
+                moveExportToSDCard();
                 return true;
         }
 
@@ -197,6 +196,7 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
 
     /**
      * Transmits the exported transactions to the designated location, either SD card or third-party application
+     * Finishes the activity if the export was starting  in the context of an activity
      * @param exportResult Result of background export execution
      */
     @Override
@@ -246,6 +246,7 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
         if (mContext instanceof Activity) {
             if (mProgressDialog != null && mProgressDialog.isShowing())
                 mProgressDialog.dismiss();
+            ((Activity) mContext).finish();
         }
     }
 
@@ -366,7 +367,7 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
         List<String> exportedFilePaths;
         if (mExportParams.getExportFormat() == ExportFormat.QIF) {
             String path = mExportParams.getTargetFilepath();
-            exportedFilePaths = splitQIF(new File(path), new File(path));
+            exportedFilePaths = QifExporter.splitQIF(new File(path));
         } else {
             exportedFilePaths = new ArrayList<>();
             exportedFilePaths.add(mExportParams.getTargetFilepath());
@@ -375,10 +376,11 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
     }
 
     /**
-     * Copies the exported file from the internal storage where it is generated to external storage
-     * which is accessible to the user
+     * Moves the exported file from the internal storage where it is generated to external storage
+     * which is accessible to the user.
+     * @return File to which the export was moved.
      */
-    private void copyExportToSDCard() {
+    private File moveExportToSDCard() {
         Log.i(TAG, "Moving exported file to external storage");
         File src = new File(mExportParams.getTargetFilepath());
         File dst = Exporter.createExportFile(mExportParams.getExportFormat());
@@ -386,6 +388,7 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
         try {
             copyFile(src, dst);
             src.delete();
+            return dst;
         } catch (IOException e) {
             Crashlytics.logException(e);
             Log.e(TAG, e.getMessage());
@@ -409,7 +412,7 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
         transactionsDbAdapter.deleteAllNonTemplateTransactions();
 
         if (preserveOpeningBalances) {
-            transactionsDbAdapter.bulkAddTransactions(openingBalances);
+            transactionsDbAdapter.bulkAddRecords(openingBalances);
         }
     }
 
@@ -426,7 +429,7 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
         ArrayList<Uri> exportFiles = new ArrayList<>();
         if (mExportParams.getExportFormat() == ExportFormat.QIF) {
             try {
-                List<String> splitFiles = splitQIF(new File(path), new File(path));
+                List<String> splitFiles = QifExporter.splitQIF(new File(path));
                 for (String file : splitFiles) {
                     exportFiles.add(Uri.parse("file://" + file));
                 }
@@ -446,13 +449,20 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
         }
         SimpleDateFormat formatter = (SimpleDateFormat) SimpleDateFormat.getDateTimeInstance();
 
-        ArrayList<CharSequence> extraText = new ArrayList<CharSequence>();
+        ArrayList<CharSequence> extraText = new ArrayList<>();
         extraText.add(mContext.getString(R.string.description_export_email)
                 + " " + formatter.format(new Date(System.currentTimeMillis())));
         shareIntent.putExtra(Intent.EXTRA_TEXT, extraText);
 
-        if (mContext instanceof Activity)
-            mContext.startActivity(Intent.createChooser(shareIntent, mContext.getString(R.string.title_select_export_destination)));
+        if (mContext instanceof Activity) {
+            List<ResolveInfo> activities = mContext.getPackageManager().queryIntentActivities(shareIntent, 0);
+            if (activities != null && !activities.isEmpty()) {
+                mContext.startActivity(Intent.createChooser(shareIntent, mContext.getString(R.string.title_select_export_destination)));
+            } else {
+                Toast.makeText(mContext, R.string.toast_no_compatible_apps_to_receive_export,
+                        Toast.LENGTH_LONG).show();
+            }
+        }
     }
 
     /**
@@ -463,58 +473,15 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
      */
     public void copyFile(File src, File dst) throws IOException {
         //TODO: Make this asynchronous at some time, t in the future.
-        if (mExportParams.getExportFormat() == ExportFormat.QIF) {
-            splitQIF(src, dst);
-        } else {
-            FileChannel inChannel = new FileInputStream(src).getChannel();
-            FileChannel outChannel = new FileOutputStream(dst).getChannel();
-            try {
-                inChannel.transferTo(0, inChannel.size(), outChannel);
-            } finally {
-                if (inChannel != null)
-                    inChannel.close();
-                outChannel.close();
-            }
-        }
-    }
-
-    /**
-     * Copies a file from <code>src</code> to <code>dst</code>
-     * @param src Absolute path to the source file
-     * @param dst Absolute path to the destination file
-     * @throws IOException if the file could not be copied
-     */
-    private static List<String> splitQIF(File src, File dst) throws IOException {
-        // split only at the last dot
-        String[] pathParts = dst.getPath().split("(?=\\.[^\\.]+$)");
-        ArrayList<String> splitFiles = new ArrayList<>();
-        String line;
-        BufferedReader in = new BufferedReader(new FileReader(src));
-        BufferedWriter out = null;
+        FileChannel inChannel = new FileInputStream(src).getChannel();
+        FileChannel outChannel = new FileOutputStream(dst).getChannel();
         try {
-            while ((line = in.readLine()) != null) {
-                if (line.startsWith(QifHelper.INTERNAL_CURRENCY_PREFIX)) {
-                    String currencyCode = line.substring(1);
-                    if (out != null) {
-                        out.close();
-                    }
-                    String newFileName = pathParts[0] + "_" + currencyCode + pathParts[1];
-                    splitFiles.add(newFileName);
-                    out = new BufferedWriter(new FileWriter(newFileName));
-                } else {
-                    if (out == null) {
-                        throw new IllegalArgumentException(src.getPath() + " format is not correct");
-                    }
-                    out.append(line).append('\n');
-                }
-            }
+            inChannel.transferTo(0, inChannel.size(), outChannel);
         } finally {
-            in.close();
-            if (out != null) {
-                out.close();
-            }
+            if (inChannel != null)
+                inChannel.close();
+            outChannel.close();
         }
-        return splitFiles;
     }
 
 }

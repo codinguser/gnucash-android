@@ -15,22 +15,19 @@
  limitations under the License.
 -->
 
-<menu xmlns:android="http://schemas.android.com/apk/res/android" >
-    <item android:id="@+id/menu_favorite_account"
-        android:icon="@android:drawable/btn_star_big_off"
-        android:title="@string/menu_title_favorite"
-        android:showAsAction="ifRoom" />
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item android:id="@+id/context_menu_edit_accounts"
           android:icon="@drawable/content_edit_holo_dark"
           android:title="@string/title_edit_account"
-          android:showAsAction="always" 
+          app:showAsAction="always"
           android:orderInCategory="1"/> 
           
 	<item android:id="@+id/context_menu_delete"
           android:icon="@drawable/content_discard_holo_dark"
           android:title="@string/menu_delete"
-          android:showAsAction="always"
+          app:showAsAction="always"
           android:orderInCategory="2"/>    
 
 </menu>

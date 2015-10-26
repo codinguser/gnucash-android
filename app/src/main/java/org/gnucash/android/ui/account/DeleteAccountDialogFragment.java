@@ -18,6 +18,7 @@ package org.gnucash.android.ui.account;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -29,8 +30,6 @@ import android.widget.RadioButton;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import com.actionbarsherlock.app.SherlockDialogFragment;
-
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.AccountsDbAdapter;
@@ -39,7 +38,7 @@ import org.gnucash.android.db.SplitsDbAdapter;
 import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.model.AccountType;
 import org.gnucash.android.ui.util.Refreshable;
-import org.gnucash.android.ui.widget.WidgetConfigurationActivity;
+import org.gnucash.android.ui.homescreen.WidgetConfigurationActivity;
 import org.gnucash.android.util.QualifiedAccountNameCursorAdapter;
 
 import java.util.Currency;
@@ -53,7 +52,7 @@ import java.util.List;
  *
  * @author Ngewi Fet <ngewif@gmail.com>
  */
-public class DeleteAccountDialogFragment extends SherlockDialogFragment {
+public class DeleteAccountDialogFragment extends DialogFragment {
 
     /**
      * Spinner for selecting the account to move the transactions to
@@ -125,7 +124,6 @@ public class DeleteAccountDialogFragment extends SherlockDialogFragment {
         mCancelButton = (Button) view.findViewById(R.id.btn_cancel);
         mOkButton = (Button) view.findViewById(R.id.btn_save);
         mOkButton.setText(R.string.alert_dialog_ok_delete);
-        mOkButton.setCompoundDrawablesWithIntrinsicBounds(R.drawable.content_discard_holo_light,0,0,0);
         return view;
     }
 
@@ -149,9 +147,7 @@ public class DeleteAccountDialogFragment extends SherlockDialogFragment {
         Cursor cursor = accountsDbAdapter.fetchAccountsOrderedByFullName(transactionDeleteConditions,
                 new String[]{mOriginAccountUID, currencyCode, accountType.name()});
 
-        SimpleCursorAdapter mCursorAdapter = new QualifiedAccountNameCursorAdapter(getActivity(),
-                android.R.layout.simple_spinner_item, cursor);
-        mCursorAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        SimpleCursorAdapter mCursorAdapter = new QualifiedAccountNameCursorAdapter(getActivity(), cursor);
         mTransactionsDestinationAccountSpinner.setAdapter(mCursorAdapter);
 
         //target accounts for transactions and accounts have different conditions
@@ -162,9 +158,7 @@ public class DeleteAccountDialogFragment extends SherlockDialogFragment {
                 + ")";
         cursor = accountsDbAdapter.fetchAccountsOrderedByFullName(accountMoveConditions,
                 new String[]{mOriginAccountUID, currencyCode, accountType.name()});
-        mCursorAdapter = new QualifiedAccountNameCursorAdapter(getActivity(),
-                android.R.layout.simple_spinner_item, cursor);
-        mCursorAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        mCursorAdapter = new QualifiedAccountNameCursorAdapter(getActivity(), cursor);
         mAccountsDestinationAccountSpinner.setAdapter(mCursorAdapter);
 
         setListeners();

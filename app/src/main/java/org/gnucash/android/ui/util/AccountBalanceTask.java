@@ -28,6 +28,7 @@ import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.model.Money;
+import org.gnucash.android.ui.transaction.TransactionsActivity;
 
 import java.lang.ref.WeakReference;
 
@@ -59,7 +60,7 @@ public class AccountBalanceTask extends AsyncTask<String, Void, Money> {
         try {
             balance = accountsDbAdapter.getAccountBalance(params[0], -1, System.currentTimeMillis());
         } catch (Exception ex) {
-            Log.e(LOG_TAG, "Error computing account balance: " + ex);
+            Log.e(LOG_TAG, "Error computing account balance ", ex);
             Crashlytics.logException(ex);
         }
         return balance;
@@ -71,10 +72,7 @@ public class AccountBalanceTask extends AsyncTask<String, Void, Money> {
             final Context context = GnuCashApplication.getAppContext();
             final TextView balanceTextView = accountBalanceTextViewReference.get();
             if (balanceTextView != null){
-                balanceTextView.setText(balance.formattedString());
-                int fontColor = balance.isNegative() ? context.getResources().getColor(R.color.debit_red) :
-                        context.getResources().getColor(R.color.credit_green);
-                balanceTextView.setTextColor(fontColor);
+                TransactionsActivity.displayBalance(balanceTextView, balance);
             }
         }
     }

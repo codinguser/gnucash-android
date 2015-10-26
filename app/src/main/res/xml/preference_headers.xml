@@ -15,27 +15,18 @@
  limitations under the License.
 -->
 <preference-headers xmlns:android="http://schemas.android.com/apk/res/android">
+    <header android:fragment="org.gnucash.android.ui.settings.GeneralPreferenceFragment"
+        android:title="@string/header_general_settings" />
     <header android:fragment="org.gnucash.android.ui.settings.AccountPreferencesFragment"
             android:title="@string/header_account_settings" />
     <header android:fragment="org.gnucash.android.ui.settings.TransactionsPreferenceFragment" 
         android:title="@string/header_transaction_settings" />
     <header android:fragment="org.gnucash.android.ui.settings.BackupPreferenceFragment"
         android:title="@string/header_backup_and_export_settings" />
-    <header android:fragment="org.gnucash.android.ui.settings.PasscodePreferenceFragment"
-        android:title="@string/header_passcode_settings" />
-    <header android:fragment="org.gnucash.android.ui.settings.ReportPreferenceFragment"
-            android:title="@string/header_report_settings" />
     <header android:fragment="org.gnucash.android.ui.settings.AboutPreferenceFragment"
         android:title="@string/header_about_gnucash" />
     <header android:title="Rate in Play Store">
         <intent android:action="android.intent.action.VIEW"
                 android:data="market://details?id=org.gnucash.android" />
-    </header>
-    <header android:title="Send feedback">
-        <intent android:action="android.intent.action.VIEW"
-                android:data="mailto:gnucash.org@gmail.com" >
-            <extra android:name="android.intent.extra.SUBJECT" android:value="GnuCash Android Feedback" />
-            <extra android:name="android.intent.extra.TEXT" android:value="@string/app_version_name" />
-        </intent>
     </header>
 </preference-headers>
