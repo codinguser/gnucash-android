@@ -6,7 +6,7 @@ apply plugin: 'io.fabric'
 def versionMajor = 2
 def versionMinor = 0
 def versionPatch = 0
-def versionBuild = 5
+def versionBuild = 7
 
 def buildTime() {
     def df = new SimpleDateFormat("yyyyMMdd HH:mm 'UTC'")
