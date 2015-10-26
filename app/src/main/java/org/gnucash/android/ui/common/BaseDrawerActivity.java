@@ -17,30 +17,25 @@ package org.gnucash.android.ui.common;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
 
-import com.crashlytics.android.Crashlytics;
 import com.uservoice.uservoicesdk.UserVoice;
 
 import org.gnucash.android.R;
-import org.gnucash.android.export.xml.GncXmlExporter;
-import org.gnucash.android.importer.ImportAsyncTask;
 import org.gnucash.android.ui.account.AccountsActivity;
 import org.gnucash.android.ui.passcode.PasscodeLockActivity;
 import org.gnucash.android.ui.report.ReportsActivity;
 import org.gnucash.android.ui.settings.SettingsActivity;
 import org.gnucash.android.ui.transaction.ScheduledActionsActivity;
-
-import java.io.FileNotFoundException;
-import java.io.InputStream;
 
 
 /**
@@ -61,7 +56,7 @@ public class BaseDrawerActivity extends PasscodeLockActivity {
 
         @Override
         public boolean onNavigationItemSelected(MenuItem menuItem) {
-            selectItem(menuItem.getItemId());
+            onDrawerMenuItemClicked(menuItem.getItemId());
             return true;
         }
 
@@ -137,14 +132,10 @@ public class BaseDrawerActivity extends PasscodeLockActivity {
     /**
      * Handler for the navigation drawer items
      * */
-    protected void selectItem(int itemId) {
+    protected void onDrawerMenuItemClicked(int itemId) {
         switch (itemId){
             case R.id.nav_item_open: { //Open... files
-                Intent pickIntent = new Intent(Intent.ACTION_GET_CONTENT);
-                pickIntent.setType("application/*");
-                Intent chooser = Intent.createChooser(pickIntent, getString(R.string.title_select_gnucash_xml_file));
-
-                startActivityForResult(chooser, AccountsActivity.REQUEST_PICK_ACCOUNTS_FILE);
+                AccountsActivity.startXmlFileChooser(this);
             }
             break;
 
@@ -178,6 +169,8 @@ public class BaseDrawerActivity extends PasscodeLockActivity {
                 break;
 
             case R.id.nav_item_help:
+                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+                prefs.edit().putBoolean(UxArgument.SKIP_PASSCODE_SCREEN, true).apply();
                 UserVoice.launchUserVoice(this);
                 break;
         }
@@ -192,15 +185,9 @@ public class BaseDrawerActivity extends PasscodeLockActivity {
 
         switch (requestCode) {
             case AccountsActivity.REQUEST_PICK_ACCOUNTS_FILE:
-                try {
-                    GncXmlExporter.createBackup();
-                    InputStream accountInputStream = getContentResolver().openInputStream(data.getData());
-                    new ImportAsyncTask(this).execute(accountInputStream);
-                } catch (FileNotFoundException e) {
-                    Crashlytics.logException(e);
-                    Toast.makeText(this, R.string.toast_error_importing_accounts, Toast.LENGTH_SHORT).show();
-                }
+                AccountsActivity.importXmlFileFromIntent(this, data);
                 break;
         }
     }
+
 }

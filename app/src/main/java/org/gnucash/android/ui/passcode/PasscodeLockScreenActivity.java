@@ -59,7 +59,7 @@ public class PasscodeLockScreenActivity extends AppCompatActivity
                     .setClassName(this, getIntent().getStringExtra(UxArgument.PASSCODE_CLASS_CALLER))
                     .setAction(getIntent().getAction())
                     .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK)
-                    .putExtra(UxArgument.SELECTED_ACCOUNT_UID, getIntent().getStringExtra(UxArgument.SELECTED_ACCOUNT_UID))
+                    .putExtras(getIntent().getExtras())
             );
         } else {
             Toast.makeText(this, R.string.toast_wrong_passcode, Toast.LENGTH_SHORT).show();

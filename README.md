@@ -72,6 +72,10 @@ Once installed, then you can import the project into Android Studio:
 
 Then, Gradle will do everything for you.
 
+## Support
+
+Google+ Community: https://plus.google.com/communities/104728406764752407046
+
 ## Contributing
 
 There are several ways you could contribute to the development.

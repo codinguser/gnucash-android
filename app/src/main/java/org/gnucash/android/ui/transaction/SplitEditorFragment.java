@@ -43,6 +43,7 @@ import org.gnucash.android.R;
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.model.AccountType;
+import org.gnucash.android.model.BaseModel;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.model.Split;
 import org.gnucash.android.model.Transaction;
@@ -50,9 +51,9 @@ import org.gnucash.android.model.TransactionType;
 import org.gnucash.android.ui.common.FormActivity;
 import org.gnucash.android.ui.common.UxArgument;
 import org.gnucash.android.ui.transaction.dialog.TransferFundsDialogFragment;
+import org.gnucash.android.ui.util.OnTransferFundsListener;
 import org.gnucash.android.ui.util.widget.CalculatorEditText;
 import org.gnucash.android.ui.util.widget.CalculatorKeyboard;
-import org.gnucash.android.ui.util.OnTransferFundsListener;
 import org.gnucash.android.ui.util.widget.TransactionTypeSwitch;
 import org.gnucash.android.util.QualifiedAccountNameCursorAdapter;
 
@@ -60,7 +61,6 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Currency;
 import java.util.List;
-import java.util.UUID;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -261,11 +261,11 @@ public class SplitEditorFragment extends Fragment {
             splitCurrencyTextView.setText(accountCurrency.getSymbol());
             splitTypeButton.setAmountFormattingListener(splitAmountEditText, splitCurrencyTextView);
             splitTypeButton.setChecked(mBaseAmount.signum() > 0);
-            splitUidTextView.setText(UUID.randomUUID().toString());
+            splitUidTextView.setText(BaseModel.generateUID());
 
             if (split != null) {
                 splitAmountEditText.setCurrency(split.getValue().getCurrency());
-                splitAmountEditText.setText(split.getFormattedValue().toPlainString());
+                splitAmountEditText.setValue(split.getFormattedValue().asBigDecimal());
                 splitCurrencyTextView.setText(split.getValue().getCurrency().getSymbol());
                 splitMemoEditText.setText(split.getMemo());
                 splitUidTextView.setText(split.getUID());
@@ -354,7 +354,7 @@ public class SplitEditorFragment extends Fragment {
             BigDecimal amountBigDecimal = viewHolder.splitAmountEditText.getValue();
 
             String currencyCode = mAccountsDbAdapter.getCurrencyCode(mAccountUID);
-            Money valueAmount = new Money(amountBigDecimal, Currency.getInstance(currencyCode));
+            Money valueAmount = new Money(amountBigDecimal.abs(), Currency.getInstance(currencyCode));
 
             String accountUID = mAccountsDbAdapter.getUID(viewHolder.accountsSpinner.getSelectedItemId());
             Split split = new Split(valueAmount, accountUID);
@@ -362,7 +362,7 @@ public class SplitEditorFragment extends Fragment {
             split.setType(viewHolder.splitTypeButton.getTransactionType());
             split.setUID(viewHolder.splitUidTextView.getText().toString().trim());
             if (viewHolder.quantity != null)
-                split.setQuantity(viewHolder.quantity);
+                split.setQuantity(viewHolder.quantity.absolute());
             splitList.add(split);
         }
         return splitList;

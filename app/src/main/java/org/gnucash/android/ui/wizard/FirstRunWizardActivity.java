@@ -17,11 +17,14 @@
 
 package org.gnucash.android.ui.wizard;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
@@ -78,6 +81,9 @@ public class FirstRunWizardActivity extends AppCompatActivity implements
     @Bind(R.id.strip)       StepPagerStrip mStepPagerStrip;
 
     private List<Page> mCurrentPageSequence;
+    private String mAccountOptions;
+    private String mCurrencyCode;
+
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -132,17 +138,17 @@ public class FirstRunWizardActivity extends AppCompatActivity implements
                         page.getReviewItems(reviewItems);
                     }
 
-                    String currencyCode = GnuCashApplication.getDefaultCurrencyCode();
-                    String accountOptions = getString(R.string.wizard_option_let_me_handle_it); //default value, do nothing
+                    mCurrencyCode = GnuCashApplication.getDefaultCurrencyCode();
+                    mAccountOptions = getString(R.string.wizard_option_let_me_handle_it); //default value, do nothing
                     String feedbackOption = getString(R.string.wizard_option_disable_crash_reports);
                     for (ReviewItem reviewItem : reviewItems) {
                         String title = reviewItem.getTitle();
                         if (title.equals(getString(R.string.wizard_title_default_currency))){
-                            currencyCode = reviewItem.getDisplayValue();
+                            mCurrencyCode = reviewItem.getDisplayValue();
                         } else if (title.equals(getString(R.string.wizard_title_select_currency))){
-                            currencyCode = reviewItem.getDisplayValue();
+                            mCurrencyCode = reviewItem.getDisplayValue();
                         } else if (title.equals(getString(R.string.wizard_title_account_setup))){
-                            accountOptions = reviewItem.getDisplayValue();
+                            mAccountOptions = reviewItem.getDisplayValue();
                         } else if (title.equals(getString(R.string.wizard_title_feedback_options))){
                             feedbackOption = reviewItem.getDisplayValue();
                         }
@@ -150,7 +156,7 @@ public class FirstRunWizardActivity extends AppCompatActivity implements
 
                     SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(FirstRunWizardActivity.this);
                     SharedPreferences.Editor preferenceEditor = preferences.edit();
-                    preferenceEditor.putString(getString(R.string.key_default_currency), currencyCode);
+                    preferenceEditor.putString(getString(R.string.key_default_currency), mCurrencyCode);
 
 
                     if (feedbackOption.equals(getString(R.string.wizard_option_auto_send_crash_reports))){
@@ -161,15 +167,12 @@ public class FirstRunWizardActivity extends AppCompatActivity implements
                     preferenceEditor.apply();
 
 
-
-                    if (accountOptions.equals(getString(R.string.wizard_option_create_default_accounts))){
-                        AccountsActivity.createDefaultAccounts(currencyCode, FirstRunWizardActivity.this);
-                    } else if (accountOptions.equals(getString(R.string.wizard_option_import_my_accounts))){
-                        AccountsActivity.importAccounts(FirstRunWizardActivity.this);
+                    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                                Manifest.permission.READ_EXTERNAL_STORAGE}, AccountsActivity.REQUEST_PERMISSION_WRITE_SD_CARD);
+                    } else { //on other version of Android, just proceed with processing. On Android M, we import when permission grant returns
+                        createAccountsAndFinish();
                     }
-
-                    finish();
-                    AccountsActivity.removeFirstRunFlag();
                 } else {
                     if (mEditingAfterReview) {
                         mPager.setCurrentItem(mPagerAdapter.getCount() - 1);
@@ -196,6 +199,21 @@ public class FirstRunWizardActivity extends AppCompatActivity implements
 
         onPageTreeChanged();
         updateBottomBar();
+    }
+
+    /**
+     * Create accounts depending on the user preference (import or default set) and finish this activity
+     * <p>This method also removes the first run flag from the application</p>
+     */
+    private void createAccountsAndFinish() {
+        AccountsActivity.removeFirstRunFlag();
+
+        if (mAccountOptions.equals(getString(R.string.wizard_option_create_default_accounts))){
+            AccountsActivity.createDefaultAccounts(mCurrencyCode, FirstRunWizardActivity.this);
+            finish();
+        } else if (mAccountOptions.equals(getString(R.string.wizard_option_import_my_accounts))){
+            AccountsActivity.startXmlFileChooser(this);
+        }
     }
 
     @Override
@@ -235,16 +253,28 @@ public class FirstRunWizardActivity extends AppCompatActivity implements
         switch (requestCode){
             case AccountsActivity.REQUEST_PICK_ACCOUNTS_FILE:
                 if (resultCode == Activity.RESULT_OK && data != null) {
-                    try {
-                        InputStream accountInputStream = getContentResolver().openInputStream(data.getData());
-                        new ImportAsyncTask(this).execute(accountInputStream);
-                    } catch (FileNotFoundException e) {
-                        Crashlytics.logException(e);
-                        Toast.makeText(this, R.string.toast_error_importing_accounts, Toast.LENGTH_SHORT).show();
-                    }
+                    AccountsActivity.importXmlFileFromIntent(this, data);
                 }
+                finish();
                 break;
         }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        switch (requestCode){
+            case AccountsActivity.REQUEST_PERMISSION_WRITE_SD_CARD:{
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    createAccountsAndFinish();
+                } else {
+                    // permission denied, boo!
+                    // nothing to see here, move along
+                    finish();
+                    AccountsActivity.removeFirstRunFlag();
+                }
+            }
+        }
+
     }
 
     @Override

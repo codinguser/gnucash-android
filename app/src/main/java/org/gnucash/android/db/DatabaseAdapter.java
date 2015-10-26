@@ -208,7 +208,7 @@ public abstract class DatabaseAdapter<Model extends BaseModel> {
         }
 
         Log.i(LOG_TAG, String.format("Bulk adding %d %s records to the database", modelList.size(),
-                modelList.size() == 0 ? "null": modelList.get(0).getClass().getName()));
+                modelList.size() == 0 ? "null": modelList.get(0).getClass().getSimpleName()));
         long nRow = 0;
         try {
             mDb.beginTransaction();

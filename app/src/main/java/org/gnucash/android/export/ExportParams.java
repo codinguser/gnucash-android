@@ -85,7 +85,8 @@ public class ExportParams {
      */
     public void setExportFormat(ExportFormat exportFormat) {
         this.mExportFormat = exportFormat;
-        mTargetFilepath = GnuCashApplication.getAppContext().getFilesDir() + "/" + Exporter.buildExportFilename(mExportFormat);
+        this.mTargetFilepath = GnuCashApplication.getAppContext().getFilesDir() + "/"
+                            + Exporter.buildExportFilename(mExportFormat);
     }
 
     /**
@@ -143,14 +144,6 @@ public class ExportParams {
      */
     public String getTargetFilepath() {
         return mTargetFilepath;
-    }
-
-    /**
-     * Sets target file path for transactions in private application storage
-     * @param mTargetFilepath String path to file
-     */
-    public void setTargetFilepath(String mTargetFilepath) {
-        this.mTargetFilepath = mTargetFilepath;
     }
 
     @Override

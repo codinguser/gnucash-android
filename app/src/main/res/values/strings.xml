@@ -51,7 +51,7 @@
     <string name="menu_move">MOVE</string>
     <string name="title_selected">%1$d selected</string>
     <string name="label_account_balance">Balance:</string>
-    <string name="label_export_destination">Export Destination</string>
+    <string name="label_export_destination">Export To:</string>
     <string name="title_export_dialog">Export Transactions</string>
     <string name="option_export_all_transactions">Export all transactions</string>
     <string name="hint_export_choice">By default, only new transactions since last export will be exported. Check this option to export all transactions</string>
@@ -497,7 +497,7 @@
     </plurals>
     <string name="title_enable_crashlytics">Enable Crash Logging</string>
     <string name="msg_enable_crashlytics">Automatically send information about app malfunction to the developers.</string>
-    <string name="label_export_format">Export Format</string>
+    <string name="label_export_format"> Format</string>
     <string name="toast_backup_folder_not_found">Backup folder cannot be found. Make sure the SD Card is mounted!</string>
     <string name="label_old_passcode">Enter your old passcode</string>
     <string name="label_new_passcode">Enter your new passcode</string>
@@ -522,7 +522,7 @@
     <string name="wizard_option_create_default_accounts">Create default accounts</string>
     <string name="wizard_option_import_my_accounts">Import my accounts</string>
     <string name="wizard_option_let_me_handle_it">Let me handle it</string>
-    <string name="wizard_option_currency_other">Other...</string>
+    <string name="wizard_option_currency_other">Other…</string>
     <string name="wizard_option_auto_send_crash_reports">Automatically send crash reports</string>
     <string name="wizard_option_disable_crash_reports">Disable crash reports</string>
     <string name="wizard_btn_back">Back</string>
@@ -561,6 +561,11 @@
     <string name="menu_group_by_year">Year</string>
     <string name="title_balance_sheet_report">Balance Sheet</string>
     <string name="label_balance_sheet_total">Total:</string>
+    <string name="title_google_plus_community">Google+ Community</string>
+    <string name="title_translate_gnucash">Translate GnuCash</string>
+    <string name="summary_google_plus">Share ideas, discuss changes or report problems</string>
+    <string name="summary_translate_gnucash">Translate or proof-read on CrowdIn</string>
+    <string name="toast_no_compatible_apps_to_receive_export">No compatible apps to receive the exported transactions!</string>
     <string-array name="report_time_range">
         <item>Current month</item>
         <item>Last 3 months</item>

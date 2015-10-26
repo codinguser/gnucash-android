@@ -16,30 +16,25 @@ limitations under the License.
 -->
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:animateLayoutChanges="true"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ui.FormActivity">
 
-    <LinearLayout
-        android:orientation="vertical"
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <ScrollView
+        android:layout_height="match_parent"
+        android:layout_above="@+id/calculator_keyboard"
+        android:padding="@dimen/dialog_padding">
+        <LinearLayout android:id="@+id/split_list_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="@dimen/dialog_padding"
-            android:layout_above="@+id/footer">
-            <LinearLayout android:id="@+id/split_list_layout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:minHeight="200dp"
-                android:orientation="vertical">
-                <!-- Split edit views will be added here at runtime-->
-            </LinearLayout>
-        </ScrollView>
+            android:minHeight="200dp"
+            android:orientation="vertical">
+            <!-- Split edit views will be added here at runtime-->
+        </LinearLayout>
+    </ScrollView>
 
-    </LinearLayout>
     <android.inputmethodservice.KeyboardView android:id="@+id/calculator_keyboard"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

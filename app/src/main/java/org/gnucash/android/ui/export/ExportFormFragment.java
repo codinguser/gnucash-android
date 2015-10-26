@@ -54,6 +54,7 @@ import org.gnucash.android.db.ScheduledActionDbAdapter;
 import org.gnucash.android.export.ExportAsyncTask;
 import org.gnucash.android.export.ExportFormat;
 import org.gnucash.android.export.ExportParams;
+import org.gnucash.android.model.BaseModel;
 import org.gnucash.android.model.ScheduledAction;
 import org.gnucash.android.ui.account.AccountsActivity;
 import org.gnucash.android.ui.common.UxArgument;
@@ -61,16 +62,18 @@ import org.gnucash.android.ui.settings.SettingsActivity;
 import org.gnucash.android.ui.util.RecurrenceParser;
 
 import java.util.List;
-import java.util.UUID;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
 /**
- * Dialog fragment for exporting account information as OFX files.
+ * Dialog fragment for exporting accounts and transactions in various formats
+ * <p>The dialog is used for collecting information on the export options and then passing them
+ * to the {@link org.gnucash.android.export.Exporter} responsible for exporting</p>
  * @author Ngewi Fet <ngewif@gmail.com>
  */
-public class ExportFormFragment extends Fragment implements RecurrencePickerDialog.OnRecurrenceSetListener {
+public class
+		ExportFormFragment extends Fragment implements RecurrencePickerDialog.OnRecurrenceSetListener {
 		
 	/**
 	 * Spinner for selecting destination for the exported file.
@@ -149,6 +152,7 @@ public class ExportFormFragment extends Fragment implements RecurrencePickerDial
 			case R.id.radio_xml_format:
 				mExportFormat = ExportFormat.XML;
 				mExportWarningTextView.setText(R.string.export_warning_xml);
+
 				break;
         }
     }
@@ -219,7 +223,7 @@ public class ExportFormFragment extends Fragment implements RecurrencePickerDial
 			if (getActivity().checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
 					!= PackageManager.PERMISSION_GRANTED) {
 				getActivity().requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,
-						Manifest.permission.READ_EXTERNAL_STORAGE}, AccountsActivity.PERMISSION_REQUEST_WRITE_SD_CARD);
+						Manifest.permission.READ_EXTERNAL_STORAGE}, AccountsActivity.REQUEST_PERMISSION_WRITE_SD_CARD);
 			}
 		}
 	}
@@ -237,7 +241,7 @@ public class ExportFormFragment extends Fragment implements RecurrencePickerDial
 				ScheduledAction.ActionType.BACKUP);
 		for (ScheduledAction scheduledAction : scheduledActions) {
 			scheduledAction.setTag(exportParameters.toCsv());
-			scheduledAction.setActionUID(UUID.randomUUID().toString().replaceAll("-", ""));
+			scheduledAction.setActionUID(BaseModel.generateUID());
 			ScheduledActionDbAdapter.getInstance().addRecord(scheduledAction);
 		}
 
@@ -329,6 +333,7 @@ public class ExportFormFragment extends Fragment implements RecurrencePickerDial
 		//this part (setting the export format) must come after the recurrence view bindings above
         String defaultExportFormat = sharedPrefs.getString(getString(R.string.key_default_export_format), ExportFormat.QIF.name());
         mExportFormat = ExportFormat.valueOf(defaultExportFormat);
+
         View.OnClickListener clickListener = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -356,6 +361,13 @@ public class ExportFormFragment extends Fragment implements RecurrencePickerDial
 		if (defaultExportFormat.equalsIgnoreCase(ExportFormat.XML.name())){
 			xmlRadioButton.performClick();
 		}
+
+		if (GnuCashApplication.isDoubleEntryEnabled()){
+			ofxRadioButton.setVisibility(View.GONE);
+		} else {
+			xmlRadioButton.setVisibility(View.GONE);
+		}
+
 	}
 
 	@Override

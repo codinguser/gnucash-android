@@ -49,7 +49,6 @@ import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.model.Account;
 import org.gnucash.android.model.AccountType;
-import org.gnucash.android.model.Money;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 import org.joda.time.Months;
@@ -96,6 +95,8 @@ public class BarChartFragment extends Fragment implements OnChartValueSelectedLi
 
     private Currency mCurrency;
 
+    private AccountType mAccountType;
+
     private boolean mUseAccountColor = true;
     private boolean mTotalPercentageMode = true;
     private boolean mChartDataPresent = true;
@@ -137,6 +138,11 @@ public class BarChartFragment extends Fragment implements OnChartValueSelectedLi
 
         mCurrency = Currency.getInstance(GnuCashApplication.getDefaultCurrencyCode());
 
+        ReportsActivity reportsActivity = (ReportsActivity) getActivity();
+        mReportStartTime = reportsActivity.getReportStartTime();
+        mReportEndTime = reportsActivity.getReportEndTime();
+        mAccountType = reportsActivity.getAccountType();
+
         mChart.setOnChartValueSelectedListener(this);
         mChart.setDescription("");
 //        mChart.setDrawValuesForWholeStack(false);
@@ -146,27 +152,27 @@ public class BarChartFragment extends Fragment implements OnChartValueSelectedLi
         mChart.getAxisLeft().setValueFormatter(new LargeValueFormatter(mCurrency.getSymbol(Locale.getDefault())));
         Legend chartLegend = mChart.getLegend();
         chartLegend.setForm(Legend.LegendForm.CIRCLE);
-        chartLegend.setPosition(Legend.LegendPosition.RIGHT_OF_CHART_INSIDE);
-//        chartLegend.setWordWrapEnabled(true); in MPAndroidChart 2.1.3 legend wrapping cause app crash
+        chartLegend.setPosition(Legend.LegendPosition.BELOW_CHART_CENTER);
+        chartLegend.setWordWrapEnabled(true);
 
-        mChart.setData(getData(((ReportsActivity) getActivity()).getAccountType()));
+        mChart.setData(getData());
         displayChart();
     }
 
 
     /**
      * Returns a data object that represents a user data of the specified account types
-     * @param accountType account's type which will be displayed
      * @return a {@code BarData} instance that represents a user data
      */
-    private BarData getData(AccountType accountType) {
+    private BarData getData() {
         List<BarEntry> values = new ArrayList<>();
         List<String> labels = new ArrayList<>();
         List<Integer> colors = new ArrayList<>();
         Map<String, Integer> accountToColorMap = new LinkedHashMap<>();
         List<String> xValues = new ArrayList<>();
-        LocalDateTime tmpDate = new LocalDateTime(getStartDate(accountType).toDate().getTime());
-        int count = getDateDiff(new LocalDateTime(getStartDate(accountType).toDate().getTime()), new LocalDateTime(getEndDate(accountType).toDate().getTime()));
+        LocalDateTime tmpDate = new LocalDateTime(getStartDate(mAccountType).toDate().getTime());
+        int count = getDateDiff(new LocalDateTime(getStartDate(mAccountType).toDate().getTime()),
+                new LocalDateTime(getEndDate(mAccountType).toDate().getTime()));
         for (int i = 0; i <= count; i++) {
             long start = 0;
             long end = 0;
@@ -196,7 +202,7 @@ public class BarChartFragment extends Fragment implements OnChartValueSelectedLi
             }
             List<Float> stack = new ArrayList<>();
             for (Account account : mAccountsDbAdapter.getSimpleAccountList()) {
-                if (account.getAccountType() == accountType
+                if (account.getAccountType() == mAccountType
                         && !account.isPlaceholderAccount()
                         && account.getCurrency() == mCurrency) {
 
@@ -218,7 +224,7 @@ public class BarChartFragment extends Fragment implements OnChartValueSelectedLi
                         stack.add((float) balance);
                         labels.add(account.getName());
                         colors.add(accountToColorMap.get(account.getUID()));
-                        Log.d(TAG, accountType + tmpDate.toString(" MMMM yyyy ") + account.getName() + " = " + stack.get(stack.size() - 1));
+                        Log.d(TAG, mAccountType + tmpDate.toString(" MMMM yyyy ") + account.getName() + " = " + stack.get(stack.size() - 1));
                     }
                 }
             }
@@ -344,6 +350,7 @@ public class BarChartFragment extends Fragment implements OnChartValueSelectedLi
     private void displayChart() {
         mChart.highlightValues(null);
         setCustomLegend();
+        mChart.notifyDataSetChanged();
 
         mChart.getAxisLeft().setDrawLabels(mChartDataPresent);
         mChart.getXAxis().setDrawLabels(mChartDataPresent);
@@ -380,24 +387,31 @@ public class BarChartFragment extends Fragment implements OnChartValueSelectedLi
 
     @Override
     public void onTimeRangeUpdated(long start, long end) {
-        mReportStartTime = start;
-        mReportEndTime = end;
+        if (mReportStartTime != start || mReportEndTime != end) {
+            mReportStartTime = start;
+            mReportEndTime = end;
 
-        mChart.setData(getData(((ReportsActivity) getActivity()).getAccountType()));
-        displayChart();
+            mChart.setData(getData());
+            displayChart();
+        }
     }
 
     @Override
     public void onGroupingUpdated(GroupInterval groupInterval) {
-        mGroupInterval = groupInterval;
-        mChart.setData(getData(((ReportsActivity) getActivity()).getAccountType()));
-        displayChart();
+        if (mGroupInterval != groupInterval) {
+            mGroupInterval = groupInterval;
+            mChart.setData(getData());
+            displayChart();
+        }
     }
 
     @Override
     public void onAccountTypeUpdated(AccountType accountType) {
-        mChart.setData(getData(accountType));
-        displayChart();
+        if (mAccountType != accountType) {
+            mAccountType = accountType;
+            mChart.setData(getData());
+            displayChart();
+        }
     }
 
     @Override

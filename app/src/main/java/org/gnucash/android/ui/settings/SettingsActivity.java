@@ -58,8 +58,8 @@ import org.gnucash.android.export.xml.GncXmlExporter;
 import org.gnucash.android.importer.ImportAsyncTask;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.model.Transaction;
-import org.gnucash.android.ui.common.UxArgument;
 import org.gnucash.android.ui.account.AccountsActivity;
+import org.gnucash.android.ui.common.UxArgument;
 import org.gnucash.android.ui.passcode.PasscodeLockScreenActivity;
 import org.gnucash.android.ui.passcode.PasscodePreferenceActivity;
 
@@ -163,6 +163,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity
             addPreferencesFromResource(R.xml.fragment_general_preferences);
             addPreferencesFromResource(R.xml.fragment_account_preferences);
 			addPreferencesFromResource(R.xml.fragment_transaction_preferences);
+            addPreferencesFromResource(R.xml.fragment_backup_preferences);
 			addPreferencesFromResource(R.xml.fragment_about_preferences);
 			setDefaultCurrencyListener();
 
@@ -181,7 +182,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity
             pref = findPreference(getString(R.string.key_delete_all_accounts));
             pref.setOnPreferenceClickListener(this);
 
-            pref = findPreference(getString(R.string.key_build_version));
+            pref = findPreference(getString(R.string.key_about_gnucash));
             pref.setOnPreferenceClickListener(this);
 
             pref = findPreference(getString(R.string.key_change_passcode));
@@ -301,7 +302,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity
         String key = preference.getKey();
 
         if (key.equals(getString(R.string.key_import_accounts))){
-            AccountsActivity.importAccounts(this);
+            AccountsActivity.startXmlFileChooser(this);
             return true;
         }
 
@@ -309,7 +310,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity
             restoreBackup();
         }
 
-        if (key.equals(getString(R.string.key_build_version))){
+        if (key.equals(getString(R.string.key_about_gnucash))){
             AccountsActivity.showWhatsNewDialog(this);
             return true;
         }
@@ -557,13 +558,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity
         switch (requestCode) {
             case AccountsActivity.REQUEST_PICK_ACCOUNTS_FILE:
                 if (resultCode == Activity.RESULT_OK && data != null) {
-                    try {
-                        InputStream accountInputStream = getContentResolver().openInputStream(data.getData());
-                        new ImportAsyncTask(this).execute(accountInputStream);
-                    } catch (FileNotFoundException e) {
-                        Crashlytics.logException(e);
-                        Toast.makeText(this, R.string.toast_error_importing_accounts, Toast.LENGTH_SHORT).show();
-                    }
+                    AccountsActivity.importXmlFileFromIntent(this, data);
                 }
                 break;
             case GeneralPreferenceFragment.PASSCODE_REQUEST_CODE:

@@ -19,7 +19,6 @@ package org.gnucash.android.ui.report;
 
 import android.graphics.Color;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
@@ -48,7 +47,6 @@ import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.model.Account;
 import org.gnucash.android.model.AccountType;
-import org.gnucash.android.model.Money;
 import org.gnucash.android.ui.report.ReportsActivity.GroupInterval;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
@@ -132,6 +130,10 @@ public class LineChartFragment extends Fragment implements OnChartValueSelectedL
 
         mCurrency = Currency.getInstance(GnuCashApplication.getDefaultCurrencyCode());
 
+        ReportsActivity reportsActivity = (ReportsActivity) getActivity();
+        mReportStartTime = reportsActivity.getReportStartTime();
+        mReportEndTime = reportsActivity.getReportEndTime();
+
         mChart.setOnChartValueSelectedListener(this);
         mChart.setDescription("");
         mChart.getXAxis().setDrawGridLines(false);
@@ -171,6 +173,7 @@ public class LineChartFragment extends Fragment implements OnChartValueSelectedL
      * @return a {@code LineData} instance that represents a user data
      */
     private LineData getData(List<AccountType> accountTypeList) {
+        Log.w(TAG, "getData");
         calculateEarliestAndLatestTimestamps(accountTypeList);
         // LocalDateTime?
         LocalDate startDate;
@@ -376,20 +379,21 @@ public class LineChartFragment extends Fragment implements OnChartValueSelectedL
 
     @Override
     public void onTimeRangeUpdated(long start, long end) {
-        mReportStartTime = start;
-        mReportEndTime = end;
-
-        mChart.setData(getData(new ArrayList<>(Arrays.asList(AccountType.INCOME, AccountType.EXPENSE))));
-        mChart.invalidate();
+        if (mReportStartTime != start || mReportEndTime != end) {
+            mReportStartTime = start;
+            mReportEndTime = end;
+            mChart.setData(getData(new ArrayList<>(Arrays.asList(AccountType.INCOME, AccountType.EXPENSE))));
+            mChart.invalidate();
+        }
     }
 
     @Override
     public void onGroupingUpdated(GroupInterval groupInterval) {
-        mGroupInterval = groupInterval;
-        Log.d(TAG, "GroupInterval " + groupInterval);
-
-        mChart.setData(getData(new ArrayList<>(Arrays.asList(AccountType.INCOME, AccountType.EXPENSE))));
-        mChart.invalidate();
+        if (mGroupInterval != groupInterval) {
+            mGroupInterval = groupInterval;
+            mChart.setData(getData(new ArrayList<>(Arrays.asList(AccountType.INCOME, AccountType.EXPENSE))));
+            mChart.invalidate();
+        }
     }
 
     @Override

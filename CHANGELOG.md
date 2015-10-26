@@ -1,6 +1,6 @@
 Change Log
 ===============================================================================
-Version 2.0.0 *(2015-xx-xx)*
+Version 2.0.0 *(2015-11-01)*
 ----------------------------
 * Feature: Updated app design to use Material Design guidelines
 * Feature: Setup wizard on first run of the application

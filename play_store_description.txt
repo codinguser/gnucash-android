@@ -1,0 +1,36 @@
+GnuCash is a mobile finance expense tracker application for Android.
+
+It is a companion application for GnuCash for the desktop and enables flexible tracking of expenses on-the-go which can be exported to QIF or OFX formats.
+
+Some of feature highligts  include:
+
+<b>&bull; An easy-to-use interface.</b>
+
+<b>&bull; Chart of Accounts</b>: A master account can have a hierarchy of detail accounts underneath it.
+This allows similar account types (e.g. Cash, Bank, Stock) to be grouped into one master account (e.g. Assets).
+You can also import an existing account hierarchy from GnuCash desktop.
+
+<b>&bull; Split Transactions</b>: A single transaction can be split into several pieces to record taxes, fees, and other compound entries.
+
+<b>&bull; Double Entry</b>: Every transaction must debit one account and credit another by an equal amount. This ensures that the "books balance": that the difference between income and outflow exactly equals the sum of all assets, be they bank, cash, stock or other.
+
+<b>&bull; Income/Expense Account Types (Categories)</b>: These serve not only to categorize your cash flow, but when used properly with the double-entry feature, these can provide an accurate Profit&Loss statement.
+
+<b>&bull; Scheduled Transactions</b>: GnuCash has the ability to automatically create and enter transactions.
+
+<b>&bull; Export to GnuCash XML, QIF or OFX</b>: GnuCash can export your accounts/transactions in different formats for use in other programs. Also, scheduled exports to 3rd-party sync services like DropBox and Google Drive can be enabled.
+
+<b>&bull; Reports</b>: View summary of transactions (income and expenses) as pie/bar/line charts
+
+<b>&bull; Homescreen widget</b> for quick access to your accounts and recording of transactions
+
+<br/><b><u>NOTE</u></b>: that the app does not offer full compatibility with GnuCash for the desktop. You cannot synchronize between the desktop app and this one. But you can import your accounts and transactions from GnuCash XML files.
+
+<br/><small>
+<i><u>What does the app use the requested permissions for? </u></i>
+&bull; READ_EXTERNAL_STORAGE: Used to export transactions/accounts to the SD card
+&bull; RECEIVE_BOOT_COMPLETED: Used to restart service for scheduled transactions or exports after device is rebooted
+&bull; VIBRATE: Used to provide haptic feedback when entering some inputs
+&bull; WAKE_LOCK: Used for keeping device active when exporting scheduled transactions in the background service
+&bull; INTERNET/ACCESS_NETWORK_STATE: Used when exporting accounts/transactions to 3rd-party service like Google Drive or DropBox
+</small>

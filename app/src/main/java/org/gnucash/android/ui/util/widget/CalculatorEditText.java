@@ -126,8 +126,7 @@ public class CalculatorEditText extends EditText {
                 if (hasFocus) {
                     setSelection(getText().length());
                     mCalculatorKeyboard.showCustomKeyboard(v);
-                }
-                else {
+                } else {
                     mCalculatorKeyboard.hideCustomKeyboard();
                     evaluate();
                 }
@@ -159,27 +158,21 @@ public class CalculatorEditText extends EditText {
             }
         });
 
-        setDefaultTouchListener();
-
-        ((FormActivity)mContext).setOnBackListener(mCalculatorKeyboard);
-    }
-
-    /**
-     * Sets the default touch listener which opens the calculator keyboard
-     */
-    public void setDefaultTouchListener() {
+        // Although it looks redundant having both onClickListener and OnTouchListener, removing
+        // one of them makes the standard keyboard show up in addition to the calculator one.
         setOnTouchListener(new OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 if (!mCalculatorKeyboard.isCustomKeyboardVisible())
                     mCalculatorKeyboard.showCustomKeyboard(v);
 
-
                 // XXX: Use dispatchTouchEvent()?
-                onTouchEvent(event);               // Call native handler
+                onTouchEvent(event);
                 return false;
             }
         });
+
+        ((FormActivity)mContext).setOnBackListener(mCalculatorKeyboard);
     }
 
     /**
@@ -261,19 +254,18 @@ public class CalculatorEditText extends EditText {
      * @return Result of arithmetic evaluation which is same as text displayed in edittext
      */
     public String evaluate(){
-        String amountText = getText().toString();
-        amountText = amountText.replaceAll(",", ".");
-        if (amountText.trim().isEmpty())
-            return amountText.trim();
+        String amountString = getCleanString();
+        if (amountString.isEmpty())
+            return amountString;
 
-        ExpressionBuilder expressionBuilder = new ExpressionBuilder(amountText);
+        ExpressionBuilder expressionBuilder = new ExpressionBuilder(amountString);
         Expression expression;
 
         try {
             expression = expressionBuilder.build();
         } catch (RuntimeException e) {
             setError(getContext().getString(R.string.label_error_invalid_expression));
-            String msg = "Invalid expression: " + amountText;
+            String msg = "Invalid expression: " + amountString;
             Log.e(this.getClass().getSimpleName(), msg);
             Crashlytics.log(msg);
             return "";
@@ -281,16 +273,7 @@ public class CalculatorEditText extends EditText {
 
         if (expression != null && expression.validate().isValid()) {
             BigDecimal result = new BigDecimal(expression.evaluate());
-            result = result.setScale(mCurrency.getDefaultFractionDigits(), BigDecimal.ROUND_HALF_EVEN);
-
-            DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance(Locale.getDefault());
-            formatter.setMinimumFractionDigits(0);
-            formatter.setMaximumFractionDigits(mCurrency.getDefaultFractionDigits());
-            formatter.setGroupingUsed(false);
-            String resultString = formatter.format(result.doubleValue());
-
-            setText(resultString);
-            setSelection(resultString.length());
+            setValue(result);
         } else {
             setError(getContext().getString(R.string.label_error_invalid_expression));
             Log.w(VIEW_LOG_TAG, "Expression is null or invalid: " + expression);
@@ -308,6 +291,15 @@ public class CalculatorEditText extends EditText {
     }
 
     /**
+     * Returns the amount string formatted as a decimal in Locale.US and trimmed.
+     * This also converts decimal operators from other locales into a period (.)
+     * @return String with the amount in the EditText or empty string if there is no input
+     */
+    public String getCleanString(){
+        return getText().toString().replaceAll(",", ".").trim();
+    }
+
+    /**
      * Returns true if the content of this view has been modified
      * @return {@code true} if content has changed, {@code false} otherwise
      */
@@ -322,9 +314,28 @@ public class CalculatorEditText extends EditText {
      */
     public BigDecimal getValue(){
         evaluate();
-        String amountText = getText().toString();
-        if (amountText.isEmpty())
+        String amountString = getCleanString();
+        if (amountString.isEmpty())
             return null;
-        return new BigDecimal(amountText.replaceAll(",", ".").trim());
+        return new BigDecimal(amountString);
+    }
+
+    /**
+     * Set the text to the value of {@code amount} formatted according to the locale
+     * <p>The number of decimal places are determined by the currency set to the view, and the
+     * decimal separator is determined by the device locale. There are no thousandths separators.</p>
+     * @param amount BigDecimal amount
+     */
+    public void setValue(BigDecimal amount){
+        BigDecimal newAmount = amount.setScale(mCurrency.getDefaultFractionDigits(), BigDecimal.ROUND_HALF_EVEN);
+
+        DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance(Locale.getDefault());
+        formatter.setMinimumFractionDigits(0);
+        formatter.setMaximumFractionDigits(mCurrency.getDefaultFractionDigits());
+        formatter.setGroupingUsed(false);
+        String resultString = formatter.format(newAmount.doubleValue());
+
+        setText(resultString);
+        setSelection(resultString.length());
     }
 }

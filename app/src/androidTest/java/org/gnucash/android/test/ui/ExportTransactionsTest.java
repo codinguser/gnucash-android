@@ -22,14 +22,12 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
 import android.preference.PreferenceManager;
-import android.support.design.widget.Snackbar;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.contrib.DrawerActions;
+import android.support.test.espresso.matcher.ViewMatchers;
 import android.support.test.runner.AndroidJUnit4;
-import android.support.v7.app.AlertDialog;
 import android.test.ActivityInstrumentationTestCase2;
 import android.util.Log;
-import android.view.View;
 import android.widget.CompoundButton;
 
 import org.gnucash.android.R;
@@ -59,9 +57,11 @@ import java.util.List;
 
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
+import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.isAssignableFrom;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.isEnabled;
+import static android.support.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -126,7 +126,28 @@ public class ExportTransactionsTest extends
 	 */
 	@Test
 	public void testOfxExport(){
+		PreferenceManager.getDefaultSharedPreferences(mAcccountsActivity)
+				.edit().putBoolean(mAcccountsActivity.getString(R.string.key_use_double_entry), false)
+				.commit();
         testExport(ExportFormat.OFX);
+		PreferenceManager.getDefaultSharedPreferences(mAcccountsActivity)
+				.edit().putBoolean(mAcccountsActivity.getString(R.string.key_use_double_entry), true)
+				.commit();
+	}
+
+	@Test
+	public void shouldNotOfferXmlExportInSingleEntryMode(){
+		PreferenceManager.getDefaultSharedPreferences(mAcccountsActivity)
+				.edit().putBoolean(mAcccountsActivity.getString(R.string.key_use_double_entry), false)
+				.commit();
+
+		DrawerActions.openDrawer(R.id.drawer_layout);
+		onView(withText(R.string.nav_menu_export)).perform(click());
+		onView(withId(R.id.radio_xml_format)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.GONE)));
+
+		PreferenceManager.getDefaultSharedPreferences(mAcccountsActivity)
+				.edit().putBoolean(mAcccountsActivity.getString(R.string.key_use_double_entry), true)
+				.commit();
 	}
 
 	/**

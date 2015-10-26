@@ -93,14 +93,15 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
 
     /**
 	 * Adds an account to the database. 
-	 * If an account already exists in the database with the same unique ID, 
-	 * then just update that account. 
+	 * If an account already exists in the database with the same GUID, it is replaced.
 	 * @param account {@link Account} to be inserted to database
 	 * @return Database row ID of the inserted account
 	 */
     @Override
 	public void addRecord(@NonNull Account account){
         Log.d(LOG_TAG, "Replace account to db");
+        //in-case the account already existed, we want to update the templates based on it as well
+        List<Transaction> templateTransactions = mTransactionsAdapter.getScheduledTransactionsForAccount(account.getUID());
         super.addRecord(account);
         String accountUID = account.getUID();
 		//now add transactions if there are any
@@ -112,26 +113,34 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
                 t.setCommodityUID(commodityUID);
 		        mTransactionsAdapter.addRecord(t);
 			}
-		}
+            for (Transaction transaction : templateTransactions) {
+                mTransactionsAdapter.addRecord(transaction);
+            }
+        }
 	}
 
     /**
      * Adds some accounts and their transactions to the database in bulk.
-     * If an account already exists in the database with the same unique ID,
-     * then just update that account. This function will NOT try to determine the full name
+     * <p>If an account already exists in the database with the same GUID, it is replaced.
+     * This function will NOT try to determine the full name
      * of the accounts inserted, full names should be generated prior to the insert.
-     * All or none of the accounts will be inserted;
+     * <br>All or none of the accounts will be inserted;</p>
      * @param accountList {@link Account} to be inserted to database
      * @return number of rows inserted
      */
     @Override
     public long bulkAddRecords(@NonNull List<Account> accountList){
-        long nRow = super.bulkAddRecords(accountList);
+        //scheduled transactions are not fetched from the database when getting account transactions
+        //so we retrieve those which affect this account and then re-save them later
+        //this is necessary because the database has ON DELETE CASCADE between accounts and splits
+        //and all accounts are editing via SQL REPLACE
 
         List<Transaction> transactionList = new ArrayList<>(accountList.size()*2);
         for (Account account : accountList) {
             transactionList.addAll(account.getTransactions());
+            transactionList.addAll(mTransactionsAdapter.getScheduledTransactionsForAccount(account.getUID()));
         }
+        long nRow = super.bulkAddRecords(accountList);
 
         if (nRow > 0 && !transactionList.isEmpty()){
             mTransactionsAdapter.bulkAddRecords(transactionList);
