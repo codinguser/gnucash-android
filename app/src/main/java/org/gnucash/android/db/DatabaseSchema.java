@@ -28,7 +28,7 @@ public class DatabaseSchema {
      * Database version.
      * With any change to the database schema, this number must increase
      */
-    static final int DATABASE_VERSION = 8;
+    public static final int DATABASE_VERSION = 9;
 
     /**
      * Database version where Splits were introduced
@@ -53,7 +53,8 @@ public class DatabaseSchema {
 
         public static final String COLUMN_NAME                  = "name";
         public static final String COLUMN_CURRENCY              = "currency_code";
-        public static final String COLUMN_DESCRIPTION           = "description"; //TODO: Use me. Just added it because we are migrating the whole table anyway
+        public static final String COLUMN_COMMODITY_UID         = "commodity_uid";
+        public static final String COLUMN_DESCRIPTION           = "description";
         public static final String COLUMN_PARENT_ACCOUNT_UID    = "parent_account_uid";
         public static final String COLUMN_PLACEHOLDER           = "is_placeholder";
         public static final String COLUMN_COLOR_CODE            = "color_code";
@@ -77,7 +78,14 @@ public class DatabaseSchema {
         public static final String COLUMN_DESCRIPTION           = "name";
         public static final String COLUMN_NOTES                 = "description";
         public static final String COLUMN_CURRENCY              = "currency_code";
+        public static final String COLUMN_COMMODITY_UID         = "commodity_uid";
         public static final String COLUMN_TIMESTAMP             = "timestamp";
+
+        /**
+         * Flag for marking transactions which have been exported
+         * @deprecated Transactions are exported based on last modified timestamp
+         */
+        @Deprecated
         public static final String COLUMN_EXPORTED              = "is_exported";
         public static final String COLUMN_TEMPLATE              = "is_template";
         public static final String COLUMN_SCHEDX_ACTION_UID     = "scheduled_action_uid";
@@ -93,7 +101,17 @@ public class DatabaseSchema {
         public static final String TABLE_NAME                   = "splits";
 
         public static final String COLUMN_TYPE                  = "type";
-        public static final String COLUMN_AMOUNT                = "amount";
+
+        /**
+         * The value columns are in the currency of the transaction containing the split
+         */
+        public static final String COLUMN_VALUE_NUM             = "value_num";
+        public static final String COLUMN_VALUE_DENOM           = "value_denom";
+        /**
+         * The quantity columns are in the currency of the account to which the split belongs
+         */
+        public static final String COLUMN_QUANTITY_NUM          = "quantity_num";
+        public static final String COLUMN_QUANTITY_DENOM        = "quantity_denom";
         public static final String COLUMN_MEMO                  = "memo";
         public static final String COLUMN_ACCOUNT_UID           = "account_uid";
         public static final String COLUMN_TRANSACTION_UID       = "transaction_uid";
@@ -116,5 +134,61 @@ public class DatabaseSchema {
         public static final String COLUMN_EXECUTION_COUNT   = "execution_count";
 
         public static final String INDEX_UID            = "scheduled_action_uid_index";
+    }
+
+    public static abstract class CommodityEntry implements CommonColumns {
+        public static final String TABLE_NAME           = "commodities";
+
+        /**
+         * The namespace field denotes the namespace for this commodity,
+         * either a currency or symbol from a quote source
+         */
+        public static final String COLUMN_NAMESPACE     = "namespace";
+
+        /**
+         * The fullname is the official full name of the currency
+         */
+        public static final String COLUMN_FULLNAME      = "fullname";
+
+        /**
+         * The mnemonic is the official abbreviated designation for the currency
+         */
+        public static final String COLUMN_MNEMONIC      = "mnemonic";
+
+        public static final String COLUMN_LOCAL_SYMBOL  = "local_symbol";
+
+        /**
+         * The fraction is the number of sub-units that the basic commodity can be divided into
+         */
+        public static final String COLUMN_FRACTION      = "fraction";
+
+        /**
+         * A CUSIP is a nine-character alphanumeric code that identifies a North American financial security
+         * for the purposes of facilitating clearing and settlement of trades
+         */
+        public static final String COLUMN_CUSIP         = "cusip";
+
+        /**
+         * TRUE if prices are to be downloaded for this commodity from a quote source
+         */
+        public static final String COLUMN_QUOTE_FLAG    = "quote_flag";
+
+        public static final String INDEX_UID = "commodities_uid_index";
+    }
+
+
+    public static abstract class PriceEntry implements CommonColumns {
+        public static final String TABLE_NAME = "prices";
+
+        public static final String COLUMN_COMMODITY_UID = "commodity_guid";
+        public static final String COLUMN_CURRENCY_UID  = "currency_guid";
+        public static final String COLUMN_DATE          = "date";
+        public static final String COLUMN_SOURCE        = "source";
+        public static final String COLUMN_TYPE          = "type";
+        public static final String COLUMN_VALUE_NUM     = "value_num";
+        public static final String COLUMN_VALUE_DENOM   = "value_denom";
+
+        public static final String INDEX_UID = "prices_uid_index";
+
     }
 }

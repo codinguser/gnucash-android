@@ -21,7 +21,6 @@ package org.gnucash.android.ui.settings;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -33,13 +32,12 @@ import android.preference.CheckBoxPreference;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.PreferenceManager;
+import android.support.v7.app.ActionBar;
 import android.util.Log;
+import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
-import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.SherlockPreferenceActivity;
-import com.actionbarsherlock.view.MenuItem;
 import com.crashlytics.android.Crashlytics;
 import com.dropbox.sync.android.DbxAccountManager;
 import com.google.android.gms.common.ConnectionResult;
@@ -60,8 +58,8 @@ import org.gnucash.android.export.xml.GncXmlExporter;
 import org.gnucash.android.importer.ImportAsyncTask;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.model.Transaction;
-import org.gnucash.android.ui.UxArgument;
 import org.gnucash.android.ui.account.AccountsActivity;
+import org.gnucash.android.ui.common.UxArgument;
 import org.gnucash.android.ui.passcode.PasscodeLockScreenActivity;
 import org.gnucash.android.ui.passcode.PasscodePreferenceActivity;
 
@@ -86,7 +84,8 @@ import java.util.TimerTask;
  * @author Oleksandr Tyshkovets <olexandr.tyshkovets@gmail.com>
  * @author Yongxin Wang <fefe.wyx@gmail.com>
  */
-public class SettingsActivity extends SherlockPreferenceActivity implements OnPreferenceChangeListener, Preference.OnPreferenceClickListener{
+public class SettingsActivity extends AppCompatPreferenceActivity
+        implements OnPreferenceChangeListener, Preference.OnPreferenceClickListener{
 
     public static final String LOG_TAG = "SettingsActivity";
 
@@ -131,6 +130,7 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
      */
     public static GoogleApiClient mGoogleApiClient;
 
+
     /**
 	 * Constructs the headers to display in the header list when the Settings activity is first opened
 	 * Only available on Honeycomb and above
@@ -143,7 +143,7 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
 
 	@SuppressWarnings("deprecation")
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {		
+	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
         String dropboxAppKey = getString(R.string.dropbox_app_key, DROPBOX_APP_KEY);
@@ -160,11 +160,10 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
 		actionBar.setDisplayHomeAsUpEnabled(true);
 		
 		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB){
+            addPreferencesFromResource(R.xml.fragment_general_preferences);
             addPreferencesFromResource(R.xml.fragment_account_preferences);
 			addPreferencesFromResource(R.xml.fragment_transaction_preferences);
             addPreferencesFromResource(R.xml.fragment_backup_preferences);
-            addPreferencesFromResource(R.xml.fragment_passcode_preferences);
-            addPreferencesFromResource(R.xml.fragment_report_preferences);
 			addPreferencesFromResource(R.xml.fragment_about_preferences);
 			setDefaultCurrencyListener();
 
@@ -183,7 +182,7 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
             pref = findPreference(getString(R.string.key_delete_all_accounts));
             pref.setOnPreferenceClickListener(this);
 
-            pref = findPreference(getString(R.string.key_build_version));
+            pref = findPreference(getString(R.string.key_about_gnucash));
             pref.setOnPreferenceClickListener(this);
 
             pref = findPreference(getString(R.string.key_change_passcode));
@@ -255,11 +254,11 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
 		} else if (preference.getKey().equals(getString(R.string.key_enable_passcode))) {
             if ((Boolean) newValue) {
                 startActivityForResult(new Intent(this, PasscodePreferenceActivity.class),
-                        PasscodePreferenceFragment.PASSCODE_REQUEST_CODE);
+                        GeneralPreferenceFragment.PASSCODE_REQUEST_CODE);
             } else {
                 Intent passIntent = new Intent(this, PasscodeLockScreenActivity.class);
                 passIntent.putExtra(UxArgument.DISABLE_PASSCODE, UxArgument.DISABLE_PASSCODE);
-                startActivityForResult(passIntent, PasscodePreferenceFragment.REQUEST_DISABLE_PASSCODE);
+                startActivityForResult(passIntent, GeneralPreferenceFragment.REQUEST_DISABLE_PASSCODE);
             }
         } else if (preference.getKey().equals(getString(R.string.key_use_double_entry))){
             setImbalanceAccountsHidden((Boolean) newValue);
@@ -272,16 +271,15 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
     protected boolean isValidFragment(String fragmentName) {
         return BackupPreferenceFragment.class.getName().equals(fragmentName)
                 || AccountPreferencesFragment.class.getName().equals(fragmentName)
-                || PasscodePreferenceFragment.class.getName().equals(fragmentName)
+                || GeneralPreferenceFragment.class.getName().equals(fragmentName)
                 || TransactionsPreferenceFragment.class.getName().equals(fragmentName)
-                || AboutPreferenceFragment.class.getName().equals(fragmentName)
-                || ReportPreferenceFragment.class.getName().equals(fragmentName);
+                || AboutPreferenceFragment.class.getName().equals(fragmentName);
     }
 
     public void setImbalanceAccountsHidden(boolean useDoubleEntry) {
         String isHidden = useDoubleEntry ? "0" : "1";
         AccountsDbAdapter accountsDbAdapter = AccountsDbAdapter.getInstance();
-        List<Currency> currencies = accountsDbAdapter.getCurrencies();
+        List<Currency> currencies = accountsDbAdapter.getCurrenciesInUse();
         for (Currency currency : currencies) {
             String uid = accountsDbAdapter.getImbalanceAccountUID(currency);
             if (uid != null){
@@ -304,7 +302,7 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
         String key = preference.getKey();
 
         if (key.equals(getString(R.string.key_import_accounts))){
-            importAccounts();
+            AccountsActivity.startXmlFileChooser(this);
             return true;
         }
 
@@ -312,7 +310,7 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
             restoreBackup();
         }
 
-        if (key.equals(getString(R.string.key_build_version))){
+        if (key.equals(getString(R.string.key_about_gnucash))){
             AccountsActivity.showWhatsNewDialog(this);
             return true;
         }
@@ -366,7 +364,7 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
                 transactionsDbAdapter.deleteAllRecords();
 
                 if (preserveOpeningBalances) {
-                    transactionsDbAdapter.bulkAddTransactions(openingBalances);
+                    transactionsDbAdapter.bulkAddRecords(openingBalances);
                 }
                 Toast.makeText(this, R.string.toast_all_transactions_deleted, Toast.LENGTH_LONG).show();
             }
@@ -377,7 +375,7 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
 
         if (key.equals(getString(R.string.key_change_passcode))){
             startActivityForResult(new Intent(this, PasscodePreferenceActivity.class),
-                    PasscodePreferenceFragment.REQUEST_CHANGE_PASSCODE);
+                    GeneralPreferenceFragment.REQUEST_CHANGE_PASSCODE);
             return true;
         }
 
@@ -501,23 +499,6 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
     }
 
     /**
-     * Starts a request to pick a file to import into GnuCash
-     */
-    public void importAccounts() {
-        Intent pickIntent = new Intent(Intent.ACTION_GET_CONTENT);
-        pickIntent.setType("application/*");
-        Intent chooser = Intent.createChooser(pickIntent, getString(R.string.title_select_gnucash_xml_file));
-
-        try {
-            startActivityForResult(chooser, AccountsActivity.REQUEST_PICK_ACCOUNTS_FILE);
-        } catch (ActivityNotFoundException ex){
-            Crashlytics.log("No file manager for selecting files available");
-            Crashlytics.logException(ex);
-            Toast.makeText(this, R.string.toast_install_file_manager, Toast.LENGTH_LONG).show();
-        }
-    }
-
-    /**
      * Opens a dialog for a user to select a backup to restore and then restores the backup
      */
     public void restoreBackup() {
@@ -577,16 +558,10 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
         switch (requestCode) {
             case AccountsActivity.REQUEST_PICK_ACCOUNTS_FILE:
                 if (resultCode == Activity.RESULT_OK && data != null) {
-                    try {
-                        InputStream accountInputStream = getContentResolver().openInputStream(data.getData());
-                        new ImportAsyncTask(this).execute(accountInputStream);
-                    } catch (FileNotFoundException e) {
-                        Crashlytics.logException(e);
-                        Toast.makeText(this, R.string.toast_error_importing_accounts, Toast.LENGTH_SHORT).show();
-                    }
+                    AccountsActivity.importXmlFileFromIntent(this, data);
                 }
                 break;
-            case PasscodePreferenceFragment.PASSCODE_REQUEST_CODE:
+            case GeneralPreferenceFragment.PASSCODE_REQUEST_CODE:
                 if (resultCode == Activity.RESULT_OK && data != null) {
                     PreferenceManager.getDefaultSharedPreferences(getApplicationContext())
                             .edit()
@@ -609,7 +584,7 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
                 }
                 break;
 
-            case PasscodePreferenceFragment.REQUEST_DISABLE_PASSCODE:
+            case GeneralPreferenceFragment.REQUEST_DISABLE_PASSCODE:
                 boolean flag = resultCode != Activity.RESULT_OK;
                 PreferenceManager.getDefaultSharedPreferences(getApplicationContext())
                         .edit()
@@ -618,7 +593,7 @@ public class SettingsActivity extends SherlockPreferenceActivity implements OnPr
                 ((CheckBoxPreference) findPreference(getString(R.string.key_enable_passcode))).setChecked(flag);
                 break;
 
-            case PasscodePreferenceFragment.REQUEST_CHANGE_PASSCODE:
+            case GeneralPreferenceFragment.REQUEST_CHANGE_PASSCODE:
                 if (resultCode == Activity.RESULT_OK && data != null) {
                     PreferenceManager.getDefaultSharedPreferences(getApplicationContext())
                             .edit()

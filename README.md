@@ -5,9 +5,9 @@
 # Introduction
 
 GnuCash Android is a companion expense-tracker application for GnuCash (desktop) designed for Android.
-It allows you to record transactions on-the-go and later import the data into GnuCash for the desktop. 
+It allows you to record transactions on-the-go and later import the data into GnuCash for the desktop.
 
-The application supports Android 2.3.4 Gingerbread (API level 10) and above.
+The application supports Android 2.3.3 Gingerbread (API level 10) and above.
 
 Features include:
 
@@ -18,7 +18,7 @@ Features include:
 
   * Split Transactions: A single transaction can be split into several pieces to record taxes, fees, and other compound entries.
 
-  * Double Entry: Every transaction must debit one account and credit another by an equal amount. 
+  * Double Entry: Every transaction must debit one account and credit another by an equal amount.
     This ensures that the "books balance": that the difference between income and outflow exactly
     equals the sum of all assets, be they bank, cash, stock or other.
 
@@ -62,7 +62,7 @@ The app is configured to allow you to install a development and production versi
 
 ### With Android Studio
 The easiest way to build is to install [Android Studio](https://developer.android.com/sdk/index.html) v1.+
-with [Gradle](https://www.gradle.org/) v2.2.1.
+with [Gradle](https://www.gradle.org/) v2.4.
 Once installed, then you can import the project into Android Studio:
 
 1. Open `File`
@@ -71,6 +71,10 @@ Once installed, then you can import the project into Android Studio:
 4. Click `OK`
 
 Then, Gradle will do everything for you.
+
+## Support
+
+Google+ Community: https://plus.google.com/communities/104728406764752407046
 
 ## Contributing
 
@@ -96,5 +100,5 @@ You may obtain a copy of the License at
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and 
+See the License for the specific language governing permissions and
 limitations under the License.

@@ -33,10 +33,11 @@ import org.gnucash.android.db.DatabaseSchema;
  */
 public class QualifiedAccountNameCursorAdapter extends SimpleCursorAdapter {
 
-    public QualifiedAccountNameCursorAdapter(Context context, int layout, Cursor c) {
-        super(context, layout, c,
-                new String[] {DatabaseSchema.AccountEntry.COLUMN_FULL_NAME},
-                new int[] {android.R.id.text1}, 0);
+    public QualifiedAccountNameCursorAdapter(Context context, Cursor cursor) {
+        super(context, android.R.layout.simple_spinner_item, cursor,
+                new String[]{DatabaseSchema.AccountEntry.COLUMN_FULL_NAME},
+                new int[]{android.R.id.text1}, 0);
+        setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
     }
 
     @Override

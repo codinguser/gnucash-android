@@ -1,54 +1,27 @@
 package org.gnucash.android.test.unit.util;
 
+import com.crashlytics.android.Crashlytics;
+import com.uservoice.uservoicesdk.UserVoice;
+
 import org.junit.runners.model.InitializationError;
 import org.robolectric.RobolectricGradleTestRunner;
-import org.robolectric.annotation.Config;
-import org.robolectric.internal.bytecode.ClassInfo;
-import org.robolectric.internal.bytecode.InstrumentingClassLoaderConfig;
-import org.robolectric.internal.bytecode.ShadowMap;
-import org.robolectric.manifest.AndroidManifest;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import org.robolectric.internal.bytecode.InstrumentationConfiguration;
 
 /**
  * Test runner for application
  */
 public class GnucashTestRunner extends RobolectricGradleTestRunner {
 
-    private static final List<String> CUSTOM_SHADOW_TARGETS =
-            Collections.unmodifiableList(Arrays.asList(
-                    "com.crashlytics.android.Crashlytics"
-            ));
     public GnucashTestRunner(Class<?> klass) throws InitializationError {
         super(klass);
     }
 
     @Override
-    protected ShadowMap createShadowMap() {
-        return super.createShadowMap()
-                .newBuilder().addShadowClass(ShadowCrashlytics.class).build();
+    public InstrumentationConfiguration createClassLoaderConfig() {
+        InstrumentationConfiguration.Builder builder = InstrumentationConfiguration.newBuilder()
+                .addInstrumentedClass(Crashlytics.class.getName())
+                .addInstrumentedClass(UserVoice.class.getName());
+
+        return builder.build();
     }
-
-    @Override
-    protected AndroidManifest getAppManifest(Config config) {
-        return super.getAppManifest(config);
-    }
-
-    @Override
-    public InstrumentingClassLoaderConfig createSetup() {
-        return new InstrumenterConfig();
-    }
-
-    private class InstrumenterConfig extends InstrumentingClassLoaderConfig {
-
-        @Override
-        public boolean shouldInstrument(ClassInfo classInfo) {
-            return CUSTOM_SHADOW_TARGETS.contains(classInfo.getName())
-                    || super.shouldInstrument(classInfo);
-        }
-
-    }
-
 }

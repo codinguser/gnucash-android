@@ -1,40 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="key_default_currency">default_currency</string>
-    <string name="key_first_run">key_first_run</string>
-    <string name="key_build_version">build_version</string>
-    <string name="key_license">app_license</string>
-    <string name="key_enable_passcode">enable_passcode</string>
-    <string name="key_change_passcode">change_passcode</string>
-    <string name="key_about">about_gnucash</string>
-    <string name="key_default_transaction_type">default_transaction_type</string>
-    <string name="key_export_all_transactions">export_all_transactions</string>
-    <string name="key_delete_transactions_after_export">delete_transactions_after_export</string>
-    <string name="key_default_export_email">export_email_target</string>
-    <string name="key_use_double_entry">use_double_entry</string>
-    <string name="key_xml_ofx_header">xml_ofx_header</string>
-    <string name="key_previous_minor_version">previous_minor_version</string>
-    <string name="key_import_accounts">import_gnucash_accounts</string>
-    <string name="key_delete_all_accounts">delete_all_accounts</string>
-    <string name="key_delete_all_transactions">delete_all_transactions</string>
-    <string name="key_default_export_format">default_export_format</string>
-    <string name="key_recurring_transaction_ids">recurring_transaction_ids</string>
-    <string name="key_create_default_accounts">create_default_accounts</string>
-    <string name="key_save_opening_balances">save_opening_balances</string>
-    <string name="key_restore_backup">restore_backup</string>
-    <string name="key_dropbox_sync">dropbox_sync</string>
-    <string name="key_create_backup">create_backup</string>
-    <string name="key_google_drive_sync">google_drive_sync</string>
-    <string name="key_google_drive_app_folder_id">google_drive_app_folder</string>
-    <string name="key_report_currency">report_currency</string>
-    <string name="key_enable_crashlytics">enable_crashlytics</string>
-    <string name="key_use_account_color">use_account_color</string>
+    <string name="key_default_currency" translatable="false">default_currency</string>
+    <string name="key_first_run" translatable="false">key_first_run</string>
+    <string name="key_build_version" translatable="false">build_version</string>
+    <string name="key_license" translatable="false">app_license</string>
+    <string name="key_enable_passcode" translatable="false">enable_passcode</string>
+    <string name="key_change_passcode" translatable="false">change_passcode</string>
+    <string name="key_about_gnucash" translatable="false">about_gnucash</string>
+    <string name="key_default_transaction_type" translatable="false">default_transaction_type</string>
+    <string name="key_export_all_transactions" translatable="false">export_all_transactions</string>
+    <string name="key_delete_transactions_after_export" translatable="false">delete_transactions_after_export</string>
+    <string name="key_default_export_email" translatable="false">export_email_target</string>
+    <string name="key_use_double_entry" translatable="false">use_double_entry</string>
+    <string name="key_xml_ofx_header" translatable="false">xml_ofx_header</string>
+    <string name="key_previous_minor_version" translatable="false">previous_minor_version</string>
+    <string name="key_import_accounts" translatable="false">import_gnucash_accounts</string>
+    <string name="key_delete_all_accounts" translatable="false">delete_all_accounts</string>
+    <string name="key_delete_all_transactions" translatable="false">delete_all_transactions</string>
+    <string name="key_default_export_format" translatable="false">default_export_format</string>
+    <string name="key_recurring_transaction_ids" translatable="false">recurring_transaction_ids</string>
+    <string name="key_create_default_accounts" translatable="false">create_default_accounts</string>
+    <string name="key_save_opening_balances" translatable="false">save_opening_balances</string>
+    <string name="key_restore_backup" translatable="false">restore_backup</string>
+    <string name="key_dropbox_sync" translatable="false">dropbox_sync</string>
+    <string name="key_create_backup" translatable="false">create_backup</string>
+    <string name="key_google_drive_sync" translatable="false">google_drive_sync</string>
+    <string name="key_google_drive_app_folder_id" translatable="false">google_drive_app_folder</string>
+    <string name="key_report_currency" translatable="false">report_currency</string>
+    <string name="key_enable_crashlytics" translatable="false">enable_crashlytics</string>
+    <string name="key_use_account_color" translatable="false">use_account_color</string>
 
-    <string-array name="key_transaction_type_values">
+    <string-array name="key_transaction_type_values" translatable="false">
         <item>CREDIT</item>
         <item>DEBIT</item>
     </string-array>
-    <string-array name="key_account_type_entries">
+    <string-array name="key_account_type_entries" translatable="false">
         <item>CASH</item>
         <item>BANK</item>
         <item>CREDIT</item>
@@ -50,12 +50,12 @@
         <item>MUTUAL</item>
         <item>TRADING</item>
     </string-array>
-    <string-array name="key_export_format_values">
+    <string-array name="key_export_format_values" translatable="false">
         <item>QIF</item>
         <item>OFX</item>
         <item>XML</item>
     </string-array>
-    <string-array name="key_currency_codes">
+    <string-array name="key_currency_codes" translatable="false">
         <item>AFN</item>
         <item>DZD</item>
         <item>ARS</item>

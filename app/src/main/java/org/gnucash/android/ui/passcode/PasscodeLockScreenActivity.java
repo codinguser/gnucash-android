@@ -19,20 +19,19 @@ package org.gnucash.android.ui.passcode;
 import android.content.Intent;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.actionbarsherlock.app.SherlockFragmentActivity;
-
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
-import org.gnucash.android.ui.UxArgument;
+import org.gnucash.android.ui.common.UxArgument;
 
 /**
  * Activity for displaying and managing the passcode lock screen.
  * @author Oleksandr Tyshkovets <olexandr.tyshkovets@gmail.com>
  */
-public class PasscodeLockScreenActivity extends SherlockFragmentActivity
+public class PasscodeLockScreenActivity extends AppCompatActivity
         implements KeyboardFragment.OnPasscodeEnteredListener {
 
     private static final String TAG = "PassLockScreenActivity";
@@ -60,7 +59,7 @@ public class PasscodeLockScreenActivity extends SherlockFragmentActivity
                     .setClassName(this, getIntent().getStringExtra(UxArgument.PASSCODE_CLASS_CALLER))
                     .setAction(getIntent().getAction())
                     .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK)
-                    .putExtra(UxArgument.SELECTED_ACCOUNT_UID, getIntent().getStringExtra(UxArgument.SELECTED_ACCOUNT_UID))
+                    .putExtras(getIntent().getExtras())
             );
         } else {
             Toast.makeText(this, R.string.toast_wrong_passcode, Toast.LENGTH_SHORT).show();

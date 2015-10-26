@@ -40,7 +40,7 @@ public class SplitTest {
         assertThat(clone1).isEqualTo(split);
 
         Split clone2 = new Split(split, true);
-        assertThat(clone2.toCsv()).isEqualTo(split.toCsv());
+        assertThat(clone2.getUID()).isNotEqualTo(split.getUID());
     }
 
     /**
@@ -55,7 +55,7 @@ public class SplitTest {
         Split pair = split.createPair("test");
 
         assertThat(pair.getType()).isEqualTo(TransactionType.DEBIT);
-        assertThat(pair.getAmount()).isEqualTo(split.getAmount());
+        assertThat(pair.getValue()).isEqualTo(split.getValue());
         assertThat(pair.getMemo()).isEqualTo(split.getMemo());
         assertThat(pair.getTransactionUID()).isEqualTo(split.getTransactionUID());
     }
@@ -66,14 +66,14 @@ public class SplitTest {
         split.setTransactionUID("terminator-trx");
         split.setType(TransactionType.CREDIT);
 
-        assertThat(split.toCsv()).isEqualTo("10.00;EUR;random-account;terminator-trx;CREDIT");
+        assertThat(split.toCsv()).isEqualTo(split.getUID() + ";1000;100;EUR;1000;100;EUR;terminator-trx;random-account;CREDIT");
     }
 
     @Test
     public void shouldParseCsv(){
-        String csv = "4.90;USD;test-account;trx-action;DEBIT;Didn't you get the memo?";
+        String csv = "test-split-uid;490;100;USD;490;100;USD;trx-action;test-account;DEBIT;Didn't you get the memo?";
         Split split = Split.parseSplit(csv);
-        assertThat(split.getAmount()).isEqualTo(new Money("4.90", "USD"));
+        assertThat(split.getValue().getNumerator()).isEqualTo(new Money("4.90", "USD").getNumerator());
         assertThat(split.getTransactionUID()).isEqualTo("trx-action");
         assertThat(split.getAccountUID()).isEqualTo("test-account");
         assertThat(split.getType()).isEqualTo(TransactionType.DEBIT);

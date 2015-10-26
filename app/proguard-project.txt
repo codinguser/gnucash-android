@@ -23,6 +23,8 @@
     protected Object[][] getContents();
 }
 
+-keep class android.support.v7.widget.SearchView { *; }
+
 -keep public class com.google.android.gms.common.internal.safeparcel.SafeParcelable {
     public static final *** NULL;
 }

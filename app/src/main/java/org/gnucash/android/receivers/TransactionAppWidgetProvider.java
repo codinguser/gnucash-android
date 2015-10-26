@@ -21,8 +21,8 @@ import android.content.Context;
 import android.content.SharedPreferences.Editor;
 import android.preference.PreferenceManager;
 
-import org.gnucash.android.ui.UxArgument;
-import org.gnucash.android.ui.widget.WidgetConfigurationActivity;
+import org.gnucash.android.ui.common.UxArgument;
+import org.gnucash.android.ui.homescreen.WidgetConfigurationActivity;
 
 /**
  * {@link AppWidgetProvider} which is responsible for managing widgets on the homescreen

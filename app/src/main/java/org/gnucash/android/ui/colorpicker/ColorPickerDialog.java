@@ -20,11 +20,10 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ProgressBar;
-
-import com.actionbarsherlock.app.SherlockDialogFragment;
 
 import org.gnucash.android.R;
 import org.gnucash.android.ui.colorpicker.ColorPickerSwatch.OnColorSelectedListener;
@@ -33,7 +32,7 @@ import org.gnucash.android.ui.colorpicker.ColorPickerSwatch.OnColorSelectedListe
  * A dialog which takes in as input an array of colors and creates a palette allowing the user to
  * select a specific color swatch, which invokes a listener.
  */
-public class ColorPickerDialog extends SherlockDialogFragment implements OnColorSelectedListener {
+public class ColorPickerDialog extends DialogFragment implements OnColorSelectedListener {
 
     public static final int SIZE_LARGE = 1;
     public static final int SIZE_SMALL = 2;

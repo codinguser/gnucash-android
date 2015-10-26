@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
- Copyright (c) 2012 Ngewi Fet <ngewif@gmail.com>
+ Copyright (c) 2012 - 2015 Ngewi Fet <ngewif@gmail.com>
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -19,37 +19,26 @@
     android:id="@+id/fragment_account_list"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" >
+    android:orientation="vertical">
 
-    <include layout="@layout/transactions_sum_bar" 
-        android:id="@+id/transactions_sum_bar" 
-        android:visibility="gone" />
-    
-    <ListView android:id="@id/android:list"        
+    <!-- TODO: Added account_balance_toolbar.xml layout at some point in the future, if necessary-->
+
+    <org.gnucash.android.ui.util.widget.EmptyRecyclerView
+        android:id="@+id/account_recycler_view"
+        android:scrollbars="vertical"
+        android:paddingBottom="@dimen/card_min_height"
+        android:clipToPadding="false"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"	
-        android:layout_above="@id/transactions_sum_bar"
-        android:listSelector="@drawable/abs__list_selector_holo_light"
-        android:drawSelectorOnTop="false"
-        />
-    
-	<LinearLayout
-        android:id="@id/android:empty"
+        android:layout_height="match_parent"/>
+
+    <TextView
+        android:id="@+id/empty_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@id/transactions_sum_bar"
+        android:textSize="20sp"
         android:gravity="center"
-        android:orientation="vertical">
-		<TextView 
-		    android:layout_width="match_parent"
-		    android:layout_height="wrap_content"
-		    android:gravity="center" 
-		    android:text="@string/label_no_accounts"		    
-		    style="@style/ListItem"/>
-        <Button
-            android:id="@+id/add_account_button"
-            style="@style/ButtonStyle"
-            android:onClick="onNewAccountClick"
-            android:text="@string/label_create_account" />
-    </LinearLayout>
+        android:layout_gravity="center"
+        android:visibility="gone"
+        android:textColor="@color/theme_accent"
+        android:text="@string/label_no_accounts" />
 </RelativeLayout>

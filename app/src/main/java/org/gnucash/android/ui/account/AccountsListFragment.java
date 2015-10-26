@@ -18,58 +18,66 @@ package org.gnucash.android.ui.account;
 
 import android.app.Activity;
 import android.app.SearchManager;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.database.Cursor;
 import android.graphics.Color;
-import android.graphics.Rect;
+import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.Loader;
-import android.support.v4.widget.SimpleCursorAdapter;
+import android.support.v4.view.MenuItemCompat;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.PopupMenu;
+import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.TouchDelegate;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemLongClickListener;
-import android.widget.ImageButton;
-import android.widget.ListAdapter;
-import android.widget.ListView;
+import android.widget.ImageView;
 import android.widget.TextView;
-
-import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.SherlockListFragment;
-import com.actionbarsherlock.view.ActionMode;
-import com.actionbarsherlock.view.ActionMode.Callback;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuInflater;
-import com.actionbarsherlock.view.MenuItem;
 
 import org.gnucash.android.R;
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.DatabaseCursorLoader;
 import org.gnucash.android.db.DatabaseSchema;
-import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.model.Account;
-import org.gnucash.android.ui.UxArgument;
-import org.gnucash.android.ui.transaction.TransactionsActivity;
+import org.gnucash.android.ui.common.FormActivity;
+import org.gnucash.android.ui.common.UxArgument;
 import org.gnucash.android.ui.util.AccountBalanceTask;
+import org.gnucash.android.ui.util.CursorRecyclerAdapter;
+import org.gnucash.android.ui.util.widget.EmptyRecyclerView;
 import org.gnucash.android.ui.util.OnAccountClickedListener;
 import org.gnucash.android.ui.util.Refreshable;
+
+import butterknife.Bind;
+import butterknife.ButterKnife;
 
 /**
  * Fragment for displaying the list of accounts in the database
  *
  * @author Ngewi Fet <ngewif@gmail.com>
  */
-public class AccountsListFragment extends SherlockListFragment implements
+public class AccountsListFragment extends Fragment implements
         Refreshable,
-        LoaderCallbacks<Cursor>, OnItemLongClickListener,
-        com.actionbarsherlock.widget.SearchView.OnQueryTextListener,
-        com.actionbarsherlock.widget.SearchView.OnCloseListener {
+        LoaderCallbacks<Cursor>,
+        android.support.v7.widget.SearchView.OnQueryTextListener,
+        android.support.v7.widget.SearchView.OnCloseListener {
+
+    AccountRecyclerAdapter mAccountRecyclerAdapter;
+    @Bind(R.id.account_recycler_view)  EmptyRecyclerView mRecyclerView;
+    @Bind(R.id.empty_view) TextView mEmptyTextView;
 
     /**
      * Describes the kinds of accounts that should be loaded in the accounts list.
@@ -90,11 +98,6 @@ public class AccountsListFragment extends SherlockListFragment implements
      */
     protected static final String TAG = "AccountsListFragment";
 
-
-    /**
-     * {@link ListAdapter} for the accounts which will be bound to the list
-     */
-    AccountsCursorAdapter mAccountsCursorAdapter;
     /**
      * Database adapter for loading Account records from the database
      */
@@ -103,30 +106,6 @@ public class AccountsListFragment extends SherlockListFragment implements
      * Listener to be notified when an account is clicked
      */
     private OnAccountClickedListener mAccountSelectedListener;
-    /**
-     * Flag to indicate if the fragment is in edit mode
-     * Edit mode means an account has been selected (through long press) and the
-     * context action bar (CAB) is activated
-     */
-    private boolean mInEditMode = false;
-    /**
-     * Android action mode
-     * Is not null only when an accoun is selected and the Context ActionBar (CAB) is activated
-     */
-    private ActionMode mActionMode = null;
-
-    /**
-     * Stores the database ID of the currently selected account when in action mode.
-     * This is necessary because getSelectedItemId() does not work properly (by design)
-     * in touch mode (which is the majority of devices today)
-     */
-    private long mSelectedItemId = -1;
-
-    /**
-     * Database record ID of the account whose children will be loaded by the list fragment.
-     * If no parent account is specified, then all top-level accounts are loaded.
-     */
-//    private long mParentAccountId = -1;
 
     /**
      * GUID of the account whose children will be loaded in the list fragment.
@@ -142,69 +121,7 @@ public class AccountsListFragment extends SherlockListFragment implements
     /**
      * Search view for searching accounts
      */
-    private com.actionbarsherlock.widget.SearchView mSearchView;
-
-    /**
-     * Callbacks for the CAB menu
-     */
-    private ActionMode.Callback mActionModeCallbacks = new Callback() {
-
-        String mSelectedAccountUID;
-
-        @Override
-        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-            MenuInflater inflater = mode.getMenuInflater();
-            inflater.inflate(R.menu.account_context_menu, menu);
-            mode.setTitle(getString(R.string.title_selected, 1));
-            mSelectedAccountUID = mAccountsDbAdapter.getUID(mSelectedItemId);
-            return true;
-        }
-
-        @Override
-        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-            // nothing to see here, move along
-            MenuItem favoriteAccountMenuItem = menu.findItem(R.id.menu_favorite_account);
-            boolean isFavoriteAccount = AccountsDbAdapter.getInstance().isFavoriteAccount(mSelectedAccountUID);
-
-            int favoriteIcon = isFavoriteAccount ? android.R.drawable.btn_star_big_on : android.R.drawable.btn_star_big_off;
-            favoriteAccountMenuItem.setIcon(favoriteIcon);
-
-            return true;
-        }
-
-        @Override
-        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-            switch (item.getItemId()) {
-                case R.id.menu_favorite_account:
-                    boolean isFavorite = mAccountsDbAdapter.isFavoriteAccount(mSelectedAccountUID);
-                    //toggle favorite preference
-                    mAccountsDbAdapter.updateAccount(mSelectedItemId,
-                            DatabaseSchema.AccountEntry.COLUMN_FAVORITE, isFavorite ? "0" : "1");
-                    mode.invalidate();
-                    return true;
-
-                case R.id.context_menu_edit_accounts:
-                    openCreateOrEditActivity(mSelectedItemId);
-                    mode.finish();
-                    mActionMode = null;
-                    return true;
-
-                case R.id.context_menu_delete:
-                    tryDeleteAccount(mSelectedItemId);
-                    mode.finish();
-                    mActionMode = null;
-                    return true;
-
-                default:
-                    return false;
-            }
-        }
-
-        @Override
-        public void onDestroyActionMode(ActionMode mode) {
-            finishEditMode();
-        }
-    };
+    private android.support.v7.widget.SearchView mSearchView;
 
     public static AccountsListFragment newInstance(DisplayMode displayMode){
         AccountsListFragment fragment = new AccountsListFragment();
@@ -217,8 +134,31 @@ public class AccountsListFragment extends SherlockListFragment implements
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_accounts_list, container,
                 false);
-        TextView sumlabelTextView = (TextView) v.findViewById(R.id.label_sum);
-        sumlabelTextView.setText(R.string.account_balance);
+
+        ButterKnife.bind(this, v);
+        mRecyclerView.setHasFixedSize(true);
+        mRecyclerView.setEmptyView(mEmptyTextView);
+
+        switch (mDisplayMode){
+
+            case TOP_LEVEL:
+                mEmptyTextView.setText(R.string.label_no_accounts);
+                break;
+            case RECENT:
+                mEmptyTextView.setText(R.string.label_no_recent_accounts);
+                break;
+            case FAVORITES:
+                mEmptyTextView.setText(R.string.label_no_favorite_accounts);
+                break;
+        }
+
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            GridLayoutManager gridLayoutManager = new GridLayoutManager(getActivity(), 2);
+            mRecyclerView.setLayoutManager(gridLayoutManager);
+        } else {
+            LinearLayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
+            mRecyclerView.setLayoutManager(mLayoutManager);
+        }
         return v;
     }
 
@@ -231,34 +171,30 @@ public class AccountsListFragment extends SherlockListFragment implements
             mParentAccountUID = args.getString(UxArgument.PARENT_ACCOUNT_UID);
 
         mAccountsDbAdapter = AccountsDbAdapter.getInstance();
-        mAccountsCursorAdapter = new AccountsCursorAdapter(
-                getActivity().getApplicationContext(),
-                R.layout.list_item_account, null,
-                new String[]{DatabaseSchema.AccountEntry.COLUMN_NAME},
-                new int[]{R.id.primary_text});
-
-        setListAdapter(mAccountsCursorAdapter);
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        ActionBar actionbar = getSherlockActivity().getSupportActionBar();
+        ActionBar actionbar = ((AppCompatActivity) getActivity()).getSupportActionBar();
         actionbar.setTitle(R.string.title_accounts);
         actionbar.setDisplayHomeAsUpEnabled(true);
-
         setHasOptionsMenu(true);
 
-        ListView lv = getListView();
-        lv.setOnItemLongClickListener(this);
-        lv.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+
+        // specify an adapter (see also next example)
+        mAccountRecyclerAdapter = new AccountRecyclerAdapter(null);
+        mRecyclerView.setAdapter(mAccountRecyclerAdapter);
+
         getLoaderManager().initLoader(0, null, this);
     }
 
     @Override
     public void onResume() {
         super.onResume();
+        ActionBar actionbar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+        actionbar.setTitle(R.string.title_accounts);
         refresh();
     }
 
@@ -272,31 +208,8 @@ public class AccountsListFragment extends SherlockListFragment implements
         }
     }
 
-    @Override
-    public void onListItemClick(ListView listView, View view, int position, long id) {
-        super.onListItemClick(listView, view, position, id);
-        if (mInEditMode) {
-            mSelectedItemId = id;
-            listView.setItemChecked(position, true);
-            return;
-        }
-        mAccountSelectedListener.accountSelected(mAccountsDbAdapter.getUID(id));
-    }
-
-    @Override
-    public boolean onItemLongClick(AdapterView<?> parent, View view, int position,
-                                   long id) {
-        if (mActionMode != null) {
-            return false;
-        }
-        mInEditMode = true;
-        mSelectedItemId = id;
-        // Start the CAB using the ActionMode.Callback defined above
-        mActionMode = getSherlockActivity().startActionMode(
-                mActionModeCallbacks);
-
-        getListView().setItemChecked(position, true);
-        return true;
+    public void onListItemClick(String accountUID) {
+        mAccountSelectedListener.accountSelected(accountUID);
     }
 
     @Override
@@ -315,12 +228,11 @@ public class AccountsListFragment extends SherlockListFragment implements
      * @param rowId The record ID of the account
      */
     public void tryDeleteAccount(long rowId) {
-        Account acc = mAccountsDbAdapter.getAccount(rowId);
+        Account acc = mAccountsDbAdapter.getRecord(rowId);
         if (acc.getTransactionCount() > 0 || mAccountsDbAdapter.getSubAccountCount(acc.getUID()) > 0) {
             showConfirmationDialog(rowId);
         } else {
             mAccountsDbAdapter.deleteRecord(rowId);
-            mAccountsCursorAdapter.swapCursor(null);
             refresh();
         }
     }
@@ -334,18 +246,7 @@ public class AccountsListFragment extends SherlockListFragment implements
         DeleteAccountDialogFragment alertFragment =
                 DeleteAccountDialogFragment.newInstance(mAccountsDbAdapter.getUID(id));
         alertFragment.setTargetFragment(this, 0);
-        alertFragment.show(getSherlockActivity().getSupportFragmentManager(), "delete_confirmation_dialog");
-    }
-
-    /**
-     * Finish the edit mode and dismisses the Contextual ActionBar
-     * Any selected (highlighted) accounts are deselected
-     */
-    public void finishEditMode() {
-        mInEditMode = false;
-        getListView().setItemChecked(getListView().getCheckedItemPosition(), false);
-        mActionMode = null;
-        mSelectedItemId = -1;
+        alertFragment.show(getActivity().getSupportFragmentManager(), "delete_confirmation_dialog");
     }
 
     @Override
@@ -357,8 +258,8 @@ public class AccountsListFragment extends SherlockListFragment implements
             // Associate searchable configuration with the SearchView
             SearchManager searchManager =
                     (SearchManager) getActivity().getSystemService(Context.SEARCH_SERVICE);
-            mSearchView =
-                    (com.actionbarsherlock.widget.SearchView) menu.findItem(R.id.menu_search).getActionView();
+            mSearchView = (android.support.v7.widget.SearchView)
+                MenuItemCompat.getActionView(menu.findItem(R.id.menu_search));
             if (mSearchView == null)
                 return;
 
@@ -369,25 +270,6 @@ public class AccountsListFragment extends SherlockListFragment implements
         }
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-
-            case R.id.menu_add_account:
-                Intent addAccountIntent = new Intent(getActivity(), AccountsActivity.class);
-                addAccountIntent.setAction(Intent.ACTION_INSERT_OR_EDIT);
-                addAccountIntent.putExtra(UxArgument.PARENT_ACCOUNT_UID, mParentAccountUID);
-                startActivityForResult(addAccountIntent, AccountsActivity.REQUEST_EDIT_ACCOUNT);
-                return true;
-
-            case R.id.menu_export:
-                AccountsActivity.showExportDialog(getActivity());
-                return true;
-
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
 
     @Override
     public void refresh(String parentAccountUID) {
@@ -418,9 +300,10 @@ public class AccountsListFragment extends SherlockListFragment implements
      * @param accountId Long record ID of account to be edited. Pass 0 to create a new account.
      */
     public void openCreateOrEditActivity(long accountId){
-        Intent editAccountIntent = new Intent(AccountsListFragment.this.getActivity(), AccountsActivity.class);
+        Intent editAccountIntent = new Intent(AccountsListFragment.this.getActivity(), FormActivity.class);
         editAccountIntent.setAction(Intent.ACTION_INSERT_OR_EDIT);
         editAccountIntent.putExtra(UxArgument.SELECTED_ACCOUNT_UID, mAccountsDbAdapter.getUID(accountId));
+        editAccountIntent.putExtra(UxArgument.FORM_TYPE, FormActivity.FormType.ACCOUNT.name());
         startActivityForResult(editAccountIntent, AccountsActivity.REQUEST_EDIT_ACCOUNT);
     }
 
@@ -440,14 +323,14 @@ public class AccountsListFragment extends SherlockListFragment implements
     @Override
     public void onLoadFinished(Loader<Cursor> loaderCursor, Cursor cursor) {
         Log.d(TAG, "Accounts loader finished. Swapping in cursor");
-        mAccountsCursorAdapter.swapCursor(cursor);
-        mAccountsCursorAdapter.notifyDataSetChanged();
+        mAccountRecyclerAdapter.swapCursor(cursor);
+        mAccountRecyclerAdapter.notifyDataSetChanged();
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> arg0) {
         Log.d(TAG, "Resetting the accounts loader");
-        mAccountsCursorAdapter.swapCursor(null);
+        mAccountRecyclerAdapter.swapCursor(null);
     }
 
     @Override
@@ -552,108 +435,138 @@ public class AccountsListFragment extends SherlockListFragment implements
         }
     }
 
-    /**
-     * Overrides the {@link SimpleCursorAdapter} to provide custom binding of the
-     * information from the database to the views
-     *
-     * @author Ngewi Fet <ngewif@gmail.com>
-     */
-    private class AccountsCursorAdapter extends SimpleCursorAdapter {
-        TransactionsDbAdapter transactionsDBAdapter;
 
-        public AccountsCursorAdapter(Context context, int layout, Cursor c,
-                                     String[] from, int[] to) {
-            super(context, layout, c, from, to, 0);
-            transactionsDBAdapter = TransactionsDbAdapter.getInstance();
+    class AccountRecyclerAdapter extends CursorRecyclerAdapter<AccountRecyclerAdapter.AccountViewHolder> {
+
+        public AccountRecyclerAdapter(Cursor cursor){
+           super(cursor);
         }
 
         @Override
-        public void bindView(View v, Context context, Cursor cursor) {
-            // perform the default binding
-            super.bindView(v, context, cursor);
+        public AccountViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            View v = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.cardview_account, parent, false);
 
+            return new AccountViewHolder(v);
+        }
+
+        @Override
+        public void onBindViewHolderCursor(final AccountViewHolder holder, final Cursor cursor) {
             final String accountUID = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.AccountEntry.COLUMN_UID));
+            holder.accoundId = mAccountsDbAdapter.getID(accountUID);
 
-            TextView subAccountTextView = (TextView) v.findViewById(R.id.secondary_text);
+            holder.accountName.setText(cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.AccountEntry.COLUMN_NAME)));
             int subAccountCount = mAccountsDbAdapter.getSubAccountCount(accountUID);
             if (subAccountCount > 0) {
-                subAccountTextView.setVisibility(View.VISIBLE);
+                holder.description.setVisibility(View.VISIBLE);
                 String text = getResources().getQuantityString(R.plurals.label_sub_accounts, subAccountCount, subAccountCount);
-                subAccountTextView.setText(text);
+                holder.description.setText(text);
             } else
-                subAccountTextView.setVisibility(View.GONE);
+                holder.description.setVisibility(View.GONE);
 
             // add a summary of transactions to the account view
-            TextView accountBalanceTextView = (TextView) v
-                    .findViewById(R.id.transactions_summary);
-            new AccountBalanceTask(accountBalanceTextView).execute(accountUID);
-
-            View colorStripView = v.findViewById(R.id.account_color_strip);
-            String accountColor = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.AccountEntry.COLUMN_COLOR_CODE));
-            if (accountColor != null){
-                int color = Color.parseColor(accountColor);
-                colorStripView.setBackgroundColor(color);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                // Make sure the balance task is truely multithread
+                new AccountBalanceTask(holder.accountBalance).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, accountUID);
             } else {
-                colorStripView.setBackgroundColor(Color.TRANSPARENT);
+                new AccountBalanceTask(holder.accountBalance).execute(accountUID);
             }
+            String accountColor = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.AccountEntry.COLUMN_COLOR_CODE));
+            int colorCode = accountColor == null ? Color.TRANSPARENT : Color.parseColor(accountColor);
+            holder.colorStripView.setBackgroundColor(colorCode);
 
             boolean isPlaceholderAccount = mAccountsDbAdapter.isPlaceholderAccount(accountUID);
-            ImageButton newTransactionButton = (ImageButton) v.findViewById(R.id.btn_new_transaction);
-            if (isPlaceholderAccount){
-                newTransactionButton.setVisibility(View.GONE);
-                v.findViewById(R.id.vertical_line).setVisibility(View.GONE);
+            if (isPlaceholderAccount) {
+                holder.createTransaction.setVisibility(View.GONE);
             } else {
-                newTransactionButton.setOnClickListener(new View.OnClickListener() {
+                holder.createTransaction.setOnClickListener(new View.OnClickListener() {
 
                     @Override
                     public void onClick(View v) {
-                        Intent intent = new Intent(getActivity(), TransactionsActivity.class);
+                        Intent intent = new Intent(getActivity(), FormActivity.class);
                         intent.setAction(Intent.ACTION_INSERT_OR_EDIT);
                         intent.putExtra(UxArgument.SELECTED_ACCOUNT_UID, accountUID);
+                        intent.putExtra(UxArgument.FORM_TYPE, FormActivity.FormType.TRANSACTION.name());
                         getActivity().startActivity(intent);
                     }
                 });
             }
-            newTransactionButton.setFocusable(false);
-        }
 
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            View itemView = super.getView(position, convertView, parent);
-            TextView secondaryText = (TextView) itemView.findViewById(R.id.secondary_text);
-
-            ListView listView = (ListView) parent;
-            if (mInEditMode && listView.isItemChecked(position)){
-                itemView.setBackgroundColor(getResources().getColor(R.color.abs__holo_blue_light));
-                secondaryText.setTextColor(getResources().getColor(android.R.color.white));
+            if (mAccountsDbAdapter.isFavoriteAccount(accountUID)){
+                holder.favoriteStatus.setImageResource(R.drawable.ic_star_black_24dp);
             } else {
-                itemView.setBackgroundColor(getResources().getColor(android.R.color.transparent));
-                secondaryText.setTextColor(getResources().getColor(android.R.color.secondary_text_light_nodisable));
+                holder.favoriteStatus.setImageResource(R.drawable.ic_star_border_black_24dp);
             }
 
-
-            //increase the touch target area for the add new transaction button
-
-            final View addTransactionButton = itemView.findViewById(R.id.btn_new_transaction);
-            final View parentView = itemView;
-            parentView.post(new Runnable() {
+            holder.favoriteStatus.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void run() {
-                    if (isAdded()){ //may be run when fragment has been unbound from activity
-                        final android.graphics.Rect hitRect = new Rect();
-                        float extraPadding = getResources().getDimension(R.dimen.edge_padding);
-                        addTransactionButton.getHitRect(hitRect);
-                        hitRect.right   += extraPadding;
-                        hitRect.bottom  += extraPadding;
-                        hitRect.top     -= extraPadding;
-                        hitRect.left    -= extraPadding;
-                        parentView.setTouchDelegate(new TouchDelegate(hitRect, addTransactionButton));
-                    }
+                public void onClick(View v) {
+                    boolean isFavoriteAccount = mAccountsDbAdapter.isFavoriteAccount(accountUID);
+
+                    ContentValues contentValues = new ContentValues();
+                    contentValues.put(DatabaseSchema.AccountEntry.COLUMN_FAVORITE, !isFavoriteAccount);
+                    mAccountsDbAdapter.updateRecord(accountUID, contentValues);
+
+                    int drawableResource = !isFavoriteAccount ?
+                            R.drawable.ic_star_black_24dp : R.drawable.ic_star_border_black_24dp;
+                    holder.favoriteStatus.setImageResource(drawableResource);
+                    if (mDisplayMode == DisplayMode.FAVORITES)
+                        refresh();
                 }
             });
 
-            return itemView;
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onListItemClick(accountUID);
+                }
+            });
+        }
+
+
+        class AccountViewHolder extends RecyclerView.ViewHolder implements PopupMenu.OnMenuItemClickListener{
+            @Bind(R.id.primary_text) TextView accountName;
+            @Bind(R.id.secondary_text) TextView description;
+            @Bind(R.id.account_balance) TextView accountBalance;
+            @Bind(R.id.create_transaction) ImageView createTransaction;
+            @Bind(R.id.favorite_status) ImageView favoriteStatus;
+            @Bind(R.id.options_menu) ImageView optionsMenu;
+            @Bind(R.id.account_color_strip) View colorStripView;
+            long accoundId;
+
+            public AccountViewHolder(View itemView) {
+                super(itemView);
+                ButterKnife.bind(this, itemView);
+
+                optionsMenu.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        PopupMenu popup = new PopupMenu(getActivity(), v);
+                        popup.setOnMenuItemClickListener(AccountViewHolder.this);
+                        MenuInflater inflater = popup.getMenuInflater();
+                        inflater.inflate(R.menu.account_context_menu, popup.getMenu());
+                        popup.show();
+                    }
+                });
+
+            }
+
+
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                switch (item.getItemId()){
+                    case R.id.context_menu_edit_accounts:
+                        openCreateOrEditActivity(accoundId);
+                        return true;
+
+                    case R.id.context_menu_delete:
+                        tryDeleteAccount(accoundId);
+                        return true;
+
+                    default:
+                        return false;
+                }
+            }
         }
     }
-
 }

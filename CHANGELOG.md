@@ -1,5 +1,37 @@
 Change Log
 ===============================================================================
+Version 2.0.0 *(2015-11-01)*
+----------------------------
+* Feature: Updated app design to use Material Design guidelines
+* Feature: Setup wizard on first run of the application
+* Feature: Support for multi-currency transactions
+* Feature: New report summary page and more options for display/grouping reports
+* Feature: Calculator keyboard when entering transactions
+* Feature: Use appropriate decimal places per currency
+* Feature: New help & feedback section with UserVoice
+* Feature: New transaction detail view with running account balance
+* Feature: Export/import commodity prices to/from GnuCash XML
+* Feature: Prompt for rating the application after a number of starts
+* Feature: Support for Android M permissions model
+* Feature: New horizontal layout for account and transaction lists
+* Feature: Automatic sending of crash reports with user permission (opt-in)
+* Feature: Default transfer account setting propagates to child accounts
+* Feature: Export transactions from a particular date
+* Improved: Transactions are always balanced at the database layer before saving
+* Improved: OFX export do not try to support double entry anymore
+* Improved: Restructured the app settings categories
+* Improved: Highlight active scheduled actions
+* Improved: Restructured navigation drawer and added icons
+* Improved: Currencies are listed sorted by currency code
+* Improved: Show relative time in transaction list
+* Improved: Added Portuguese translation
+* Improved: Account balances are now computed faster (in parallel)
+* Fixed: Data leak through app screenshot when passcode is set
+* Fixed: Some inconsistencies when importing GnuCash XML
+* Fixed: "Save" and "Cancel" transaction buttons not displayed in Gingerbread
+* Fixed: Word-wrap on transaction type switch
+* Fixed: Crash when restoring backups with poorly formatted amount strings
+
 Version 1.6.4 *(2015-08-12)*
 ----------------------------
 * Fixed: Crashes during backup restoration

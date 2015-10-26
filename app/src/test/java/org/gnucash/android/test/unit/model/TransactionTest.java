@@ -1,6 +1,7 @@
 package org.gnucash.android.test.unit.model;
 
 import org.gnucash.android.model.Money;
+import org.gnucash.android.model.Split;
 import org.gnucash.android.model.Transaction;
 import org.junit.Test;
 
@@ -26,4 +27,20 @@ public class TransactionTest {
 		assertThat(transaction.getTimeMillis()).isEqualTo(clone2.getTimeMillis());
 		//TODO: Clone the created_at and modified_at times?
 	}
+
+	/**
+	 * Adding a split to a transaction should set the transaction UID of the split to the GUID of the transaction
+	 */
+	@Test
+	public void addingSplitsShouldSetTransactionUID(){
+		Transaction transaction = new Transaction("");
+		assertThat(transaction.getCurrencyCode()).isEqualTo(Money.DEFAULT_CURRENCY_CODE);
+
+		Split split = new Split(Money.getZeroInstance(), "test-account");
+		assertThat(split.getTransactionUID()).isEmpty();
+
+		transaction.addSplit(split);
+		assertThat(split.getTransactionUID()).isEqualTo(transaction.getUID());
+	}
+
 }

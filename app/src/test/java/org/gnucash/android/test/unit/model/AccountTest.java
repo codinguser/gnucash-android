@@ -45,4 +45,21 @@ public class AccountTest{
 		account.setColorCode("443859");
 	}
 
+	@Test
+	public void shouldSetFullNameWhenCreated(){
+		String fullName = "Full name ";
+		Account account = new Account(fullName);
+		assertThat(account.getName()).isEqualTo(fullName.trim()); //names are trimmed
+		assertThat(account.getFullName()).isEqualTo(fullName.trim()); //names are trimmed
+	}
+
+	@Test
+	public void settingNameShouldNotChangeFullName(){
+		String fullName = "Full name";
+		Account account = new Account(fullName);
+
+		account.setName("Name");
+		assertThat(account.getName()).isEqualTo("Name");
+		assertThat(account.getFullName()).isEqualTo(fullName);
+	}
 }

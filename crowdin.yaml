@@ -1,0 +1,13 @@
+base_url: https://api.crowdin.com
+base_path: .
+
+files:
+  -
+    source: '/app/src/main/res/values/strings.xml'
+    translation: '/app/src/main/res/values-%android_code%/%original_file_name%'
+    languages_mapping:
+      android_code:
+        de: de
+        ru: ru
+        fr: fr
+        es-ES: es

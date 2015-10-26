@@ -182,7 +182,7 @@
   <act:slots>
     <slot>
       <slot:key>color</slot:key>
-      <slot:value type="string">#319D67</slot:value>
+      <slot:value type="string">#1B4F15</slot:value>
     </slot>
     <slot>
       <slot:key>placeholder</slot:key>

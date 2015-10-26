@@ -16,16 +16,22 @@
 
 package org.gnucash.android.test.ui;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.Build;
 import android.preference.PreferenceManager;
 import android.support.test.InstrumentationRegistry;
+import android.support.test.espresso.contrib.DrawerActions;
+import android.support.test.espresso.matcher.ViewMatchers;
 import android.support.test.runner.AndroidJUnit4;
 import android.test.ActivityInstrumentationTestCase2;
 import android.util.Log;
 import android.widget.CompoundButton;
 
 import org.gnucash.android.R;
+import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.DatabaseHelper;
 import org.gnucash.android.db.ScheduledActionDbAdapter;
@@ -51,9 +57,11 @@ import java.util.List;
 
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
+import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.isAssignableFrom;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.isEnabled;
+import static android.support.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -95,17 +103,18 @@ public class ExportTransactionsTest extends
         mAccountsDbAdapter = new AccountsDbAdapter(mDb, mTransactionsDbAdapter);
 		mAccountsDbAdapter.deleteAllRecords();
 
-		Account account = new Account("Exportable");		
+		Account account = new Account("Exportable");
 		Transaction transaction = new Transaction("Pizza");
 		transaction.setNote("What up?");
 		transaction.setTime(System.currentTimeMillis());
-        Split split = new Split(new Money("8.99", "USD"), account.getUID());
+		String currencyCode = GnuCashApplication.getDefaultCurrencyCode();
+        Split split = new Split(new Money("8.99", currencyCode), account.getUID());
 		split.setMemo("Hawaii is the best!");
 		transaction.addSplit(split);
-		transaction.addSplit(split.createPair(mAccountsDbAdapter.getOrCreateImbalanceAccountUID(Currency.getInstance("USD"))));
+		transaction.addSplit(split.createPair(mAccountsDbAdapter.getOrCreateImbalanceAccountUID(Currency.getInstance(currencyCode))));
 		account.addTransaction(transaction);
 
-		mAccountsDbAdapter.addAccount(account);
+		mAccountsDbAdapter.addRecord(account);
 
 	}
 	
@@ -117,7 +126,28 @@ public class ExportTransactionsTest extends
 	 */
 	@Test
 	public void testOfxExport(){
+		PreferenceManager.getDefaultSharedPreferences(mAcccountsActivity)
+				.edit().putBoolean(mAcccountsActivity.getString(R.string.key_use_double_entry), false)
+				.commit();
         testExport(ExportFormat.OFX);
+		PreferenceManager.getDefaultSharedPreferences(mAcccountsActivity)
+				.edit().putBoolean(mAcccountsActivity.getString(R.string.key_use_double_entry), true)
+				.commit();
+	}
+
+	@Test
+	public void shouldNotOfferXmlExportInSingleEntryMode(){
+		PreferenceManager.getDefaultSharedPreferences(mAcccountsActivity)
+				.edit().putBoolean(mAcccountsActivity.getString(R.string.key_use_double_entry), false)
+				.commit();
+
+		DrawerActions.openDrawer(R.id.drawer_layout);
+		onView(withText(R.string.nav_menu_export)).perform(click());
+		onView(withId(R.id.radio_xml_format)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.GONE)));
+
+		PreferenceManager.getDefaultSharedPreferences(mAcccountsActivity)
+				.edit().putBoolean(mAcccountsActivity.getString(R.string.key_use_double_entry), true)
+				.commit();
 	}
 
 	/**
@@ -138,6 +168,16 @@ public class ExportTransactionsTest extends
 	 * @param format Export format to use
 	 */
     public void testExport(ExportFormat format){
+		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+			if (mAcccountsActivity.checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+					!= PackageManager.PERMISSION_GRANTED) {
+				mAcccountsActivity.requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,
+						Manifest.permission.READ_EXTERNAL_STORAGE}, 0x23);
+
+				onView(withId(android.R.id.button1)).perform(click());
+			}
+		}
+
 		File folder = new File(Exporter.EXPORT_FOLDER_PATH);
 		folder.mkdirs();
 		assertThat(folder).exists();
@@ -145,13 +185,12 @@ public class ExportTransactionsTest extends
 		for (File file : folder.listFiles()) {
 			file.delete();
 		}
-		//legacy menu will be removed in the future
-		//onView(withId(R.id.menu_export)).perform(click());
-		onView(withId(android.R.id.home)).perform(click());
+
+		DrawerActions.openDrawer(R.id.drawer_layout);
 		onView(withText(R.string.nav_menu_export)).perform(click());
 		onView(withText(format.name())).perform(click());
 
-		onView(withId(R.id.btn_save)).perform(click());
+		onView(withId(R.id.menu_save)).perform(click());
 
 		assertThat(folder.listFiles().length).isEqualTo(1);
 		File exportFile = folder.listFiles()[0];
@@ -165,7 +204,7 @@ public class ExportTransactionsTest extends
 		PreferenceManager.getDefaultSharedPreferences(getActivity()).edit()
 				.putBoolean(mAcccountsActivity.getString(R.string.key_delete_transactions_after_export), true).commit();
 
-		testExport(ExportFormat.QIF);
+		testExport(ExportFormat.XML);
 
 		assertThat(mTransactionsDbAdapter.getRecordsCount()).isEqualTo(0);
 		PreferenceManager.getDefaultSharedPreferences(getActivity()).edit()
@@ -178,7 +217,7 @@ public class ExportTransactionsTest extends
 	 */
 	@Test
 	public void shouldCreateExportSchedule(){
-		onView(withId(android.R.id.home)).perform(click());
+		DrawerActions.openDrawer(R.id.drawer_layout);
 		onView(withText(R.string.nav_menu_export)).perform(click());
 
 		onView(withText(ExportFormat.XML.name())).perform(click());
@@ -188,7 +227,7 @@ public class ExportTransactionsTest extends
 		onView(allOf(isAssignableFrom(CompoundButton.class), isDisplayed(), isEnabled())).perform(click());
 		onView(withText("Done")).perform(click());
 
-		onView(withId(R.id.btn_save)).perform(click());
+		onView(withId(R.id.menu_save)).perform(click());
 		ScheduledActionDbAdapter scheduledactionDbAdapter = new ScheduledActionDbAdapter(mDb);
 		List<ScheduledAction> scheduledActions = scheduledactionDbAdapter.getAllEnabledScheduledActions();
 		assertThat(scheduledActions)

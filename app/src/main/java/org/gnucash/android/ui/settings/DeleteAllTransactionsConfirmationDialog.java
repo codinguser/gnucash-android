@@ -32,7 +32,7 @@ import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.export.xml.GncXmlExporter;
 import org.gnucash.android.model.Transaction;
-import org.gnucash.android.ui.widget.WidgetConfigurationActivity;
+import org.gnucash.android.ui.homescreen.WidgetConfigurationActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -73,7 +73,7 @@ public class DeleteAllTransactionsConfirmationDialog extends DialogFragment {
                                 Log.i("DeleteDialog", String.format("Deleted %d transactions successfully", count));
 
                                 if (preserveOpeningBalances) {
-                                    transactionsDbAdapter.bulkAddTransactions(openingBalances);
+                                    transactionsDbAdapter.bulkAddRecords(openingBalances);
                                 }
                                 Toast.makeText(context, R.string.toast_all_transactions_deleted, Toast.LENGTH_SHORT).show();
                                 WidgetConfigurationActivity.updateAllWidgets(getActivity());
