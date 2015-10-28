@@ -89,7 +89,6 @@ public class QifExporter extends Exporter{
                             "trans_split_count == 1 )" +
                             (
                             mParameters.shouldExportAllTransactions() ?
-                                    //"" : " AND " + TransactionEntry.TABLE_NAME + "_" + TransactionEntry.COLUMN_EXPORTED + "== 0"
                                     "" : " AND " + TransactionEntry.TABLE_NAME + "_" + DatabaseSchema.CommonColumns.COLUMN_MODIFIED_AT + " > \"" + lastExportTimeStamp + "\""
                             ),
                     null,
@@ -111,10 +110,6 @@ public class QifExporter extends Exporter{
                             // end last transaction
                         }
                         if (!accountUID.equals(currentAccountUID)) {
-                            // no need to end account
-                            //if (!currentAccountUID.equals("")) {
-                            //    // end last account
-                            //}
                             if (!currencyCode.equals(currentCurrencyCode)) {
                                 currentCurrencyCode = currencyCode;
                                 writer.append(QifHelper.INTERNAL_CURRENCY_PREFIX)
