@@ -37,10 +37,10 @@ public class TransactionAppWidgetProvider extends AppWidgetProvider {
 	public void onUpdate(Context context, AppWidgetManager appWidgetManager,
 			int[] appWidgetIds) {
 		super.onUpdate(context, appWidgetManager, appWidgetIds);
-		final int N = appWidgetIds.length;
+		final int appWidgetsIdsCount = appWidgetIds.length;
 
         // Perform this loop procedure for each App Widget that belongs to this provider
-        for (int i=0; i<N; i++) {
+        for (int i=0; i < appWidgetsIdsCount; i++) {
             int appWidgetId = appWidgetIds[i];
 
             String accountUID = PreferenceManager
