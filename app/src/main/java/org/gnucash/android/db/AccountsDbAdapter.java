@@ -1224,12 +1224,11 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
         try {
             if (cursor.moveToFirst()) {
                 return (int)cursor.getLong(0);
-            } else {
-                return 0;
             }
         }
         finally {
             cursor.close();
         }
+        return 0;
     }
 }
