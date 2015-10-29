@@ -42,18 +42,20 @@ import android.widget.TextView;
 
 import org.gnucash.android.R;
 import org.gnucash.android.db.AccountsDbAdapter;
-import org.gnucash.android.ui.util.CursorRecyclerAdapter;
 import org.gnucash.android.db.DatabaseCursorLoader;
 import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.db.SplitsDbAdapter;
 import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.model.Split;
+import org.gnucash.android.model.Transaction;
 import org.gnucash.android.ui.common.FormActivity;
 import org.gnucash.android.ui.common.UxArgument;
-import org.gnucash.android.ui.util.widget.EmptyRecyclerView;
-import org.gnucash.android.ui.util.Refreshable;
 import org.gnucash.android.ui.homescreen.WidgetConfigurationActivity;
+import org.gnucash.android.ui.transaction.dialog.BulkMoveDialogFragment;
+import org.gnucash.android.ui.util.CursorRecyclerAdapter;
+import org.gnucash.android.ui.util.Refreshable;
+import org.gnucash.android.ui.util.widget.EmptyRecyclerView;
 import org.ocpsoft.prettytime.PrettyTime;
 
 import java.util.Date;
@@ -317,6 +319,21 @@ public class TransactionsListFragment extends Fragment implements
 						mTransactionsDbAdapter.deleteRecord(transactionId);
 						WidgetConfigurationActivity.updateAllWidgets(getActivity());
 						refresh();
+						return true;
+
+					case R.id.context_menu_duplicate_transaction:
+						Transaction transaction = mTransactionsDbAdapter.getRecord(transactionId);
+						Transaction duplicate = new Transaction(transaction, true);
+						duplicate.setTime(System.currentTimeMillis());
+						mTransactionsDbAdapter.addRecord(duplicate);
+						refresh();
+						return true;
+
+					case R.id.context_menu_move_transaction:
+						long[] ids = new long[]{transactionId};
+						BulkMoveDialogFragment fragment = BulkMoveDialogFragment.newInstance(ids, mAccountUID);
+						fragment.show(getActivity().getSupportFragmentManager(), "bulk_move_transactions");
+						fragment.setTargetFragment(TransactionsListFragment.this, 0);
 						return true;
 
 					default:

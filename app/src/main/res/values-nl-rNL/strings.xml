@@ -15,7 +15,7 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<resources>
   <string name="title_create_account">Nieuwe rekening</string>
   <string name="title_edit_account">Rekening bewerken</string>
   <string name="info_details">Info</string>
@@ -561,6 +561,8 @@ No user-identifiable information will be collected as part of this process!
   <string name="summary_google_plus">Ideeën uitwisselen, bespreken van wijzigingen of problemen melden</string>
   <string name="summary_translate_gnucash">Vertalen of nalezen op CrowdIn</string>
   <string name="toast_no_compatible_apps_to_receive_export">No compatible apps to receive the exported transactions!</string>
+  <string name="menu_move_transaction">Move...</string>
+  <string name="menu_duplicate_transaction">Duplicate</string>
   <string-array name="report_time_range">
     <item>Huidige maand</item>
     <item>Afgelopen 3 maanden</item>

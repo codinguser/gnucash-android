@@ -15,7 +15,7 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<resources>
   <string name="title_create_account">Opprett konto</string>
   <string name="title_edit_account">Rediger konto</string>
   <string name="info_details">Informasjon</string>
@@ -551,6 +551,8 @@
   <string name="summary_google_plus">Dele ideer, diskutere endringer eller rapportere problemer</string>
   <string name="summary_translate_gnucash">Oversette eller korrekturles på CrowdIn</string>
   <string name="toast_no_compatible_apps_to_receive_export">Ingen kompatible apper til å motta de eksporterte transaksjonene!</string>
+  <string name="menu_move_transaction">Move...</string>
+  <string name="menu_duplicate_transaction">Duplicate</string>
   <string-array name="report_time_range">
     <item>Gjeldende måned</item>
     <item>Siste 3 måneder</item>
