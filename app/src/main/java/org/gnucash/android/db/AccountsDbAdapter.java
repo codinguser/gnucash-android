@@ -786,12 +786,12 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
     }
 
     /**
-     * Returns the absolute balance of account list within the specified time range while taking sub-accounts
-     * into consideration. The default currency takes as base currency.
+     * Returns the balance of account list within the specified time range. The default currency
+     * takes as base currency.
      * @param accountUIDList list of account UIDs
      * @param startTimestamp the start timestamp of the time range
      * @param endTimestamp the end timestamp of the time range
-     * @return the absolute balance of account list
+     * @return Money balance of account list
      */
     public Money getAccountsBalance(List<String> accountUIDList, long startTimestamp, long endTimestamp) {
         String currencyCode = GnuCashApplication.getDefaultCurrencyCode();
@@ -802,7 +802,7 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
                 ? splitsDbAdapter.computeSplitBalance(accountUIDList, currencyCode, true)
                 : splitsDbAdapter.computeSplitBalance(accountUIDList, currencyCode, true, startTimestamp, endTimestamp);
 
-        return balance.add(splitSum).absolute();
+        return balance.add(splitSum);
     }
 
     /**
