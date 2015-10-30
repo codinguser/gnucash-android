@@ -15,7 +15,7 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<resources>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
   <string name="title_create_account">Créer un compte</string>
   <string name="title_edit_account">Éditer le compte</string>
   <string name="info_details">Informations</string>

@@ -100,6 +100,12 @@ public class DeleteAccountDialogFragment extends DialogFragment {
     }
 
     @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setStyle(DialogFragment.STYLE_NORMAL, R.style.CustomDialog);
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.dialog_account_delete, container, false);
         mTransactionOptionsView = view.findViewById(R.id.transactions_options);

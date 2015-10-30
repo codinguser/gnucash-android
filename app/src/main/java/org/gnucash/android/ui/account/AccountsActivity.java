@@ -152,7 +152,7 @@ public class AccountsActivity extends BaseDrawerActivity implements OnAccountCli
     /**
      * Configuration for rating the app
      */
-    public static RateThisApp.Config rateAppConfig = new RateThisApp.Config(14, 30);;
+    public static RateThisApp.Config rateAppConfig = new RateThisApp.Config(14, 50);
 
     /**
      * Adapter for managing the sub-account and transaction fragment pages in the accounts view
