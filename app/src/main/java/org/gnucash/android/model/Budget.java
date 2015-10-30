@@ -21,8 +21,14 @@ import android.util.Log;
 
 import org.joda.time.LocalDateTime;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Currency;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Budgets model
@@ -139,12 +145,27 @@ public class Budget extends BaseModel {
      * @return Money amount of the budget or null if the budget has no amount for the account
      */
     public Money getAmount(@NonNull String accountUID){
-        //TODO: add consideration for the current period
         for (BudgetAmount budgetAmount : mBudgetAmounts) {
             if (budgetAmount.getAccountUID().equals(accountUID))
                 return budgetAmount.getAmount();
         }
         return null;
+    }
+
+    /**
+     * Returns the budget amount for a specific account and period
+     * @param accountUID GUID of the account
+     * @param periodNum Budgeting period, zero-based index
+     * @return Money amount or zero if no matching {@link BudgetAmount} is found for the period
+     */
+    public Money getAmount(@NonNull String accountUID, int periodNum){
+        for (BudgetAmount budgetAmount : mBudgetAmounts) {
+            if (budgetAmount.getAccountUID().equals(accountUID)
+                    && (budgetAmount.getPeriodNum() == periodNum || budgetAmount.getPeriodNum() == -1)){
+                return budgetAmount.getAmount();
+            }
+        }
+        return Money.getZeroInstance();
     }
 
     /**
@@ -275,5 +296,113 @@ public class Budget extends BaseModel {
      */
     public void setNumberOfPeriods(long numberOfPeriods) {
         this.mNumberOfPeriods = numberOfPeriods;
+    }
+
+    /**
+     * Returns the number of accounts in this budget
+     * @return Number of budgeted accounts
+     */
+    public int getNumberOfAccounts(){
+        Set<String> accountSet = new HashSet<>();
+        for (BudgetAmount budgetAmount : mBudgetAmounts) {
+            accountSet.add(budgetAmount.getAccountUID());
+        }
+        return accountSet.size();
+    }
+
+    /**
+     * Returns the list of budget amounts where only one BudgetAmount is present if the amount of the budget amount
+     * is the same for all periods in the budget.
+     * BudgetAmounts with different amounts per period are still return separately
+     * <p>
+     *     This method is used during import because GnuCash desktop saves one BudgetAmount per period for the whole budgeting period.
+     *     While this can be easily displayed in a table form on the desktop, it is not feasible in the Android app.
+     *     So we display only one BudgetAmount if it covers all periods in the budgeting period
+     * </p>
+     * @return List of {@link BudgetAmount}s
+     */
+    public List<BudgetAmount> getCompactedBudgetAmounts(){
+
+        Map<String, List<BigDecimal>> accountAmountMap = new HashMap<>();
+        for (BudgetAmount budgetAmount : mBudgetAmounts) {
+            String accountUID = budgetAmount.getAccountUID();
+            BigDecimal amount = budgetAmount.getAmount().asBigDecimal();
+            if (accountAmountMap.containsKey(accountUID)){
+                accountAmountMap.get(accountUID).add(amount);
+            } else {
+                List<BigDecimal> amounts = new ArrayList<>();
+                amounts.add(amount);
+                accountAmountMap.put(accountUID, amounts);
+            }
+        }
+
+        List<BudgetAmount> compactBudgetAmounts = new ArrayList<>();
+        Currency currency = Currency.getInstance(Money.DEFAULT_CURRENCY_CODE);
+        for (Map.Entry<String, List<BigDecimal>> entry : accountAmountMap.entrySet()) {
+            List<BigDecimal> amounts = entry.getValue();
+            BigDecimal first = amounts.get(0);
+            boolean allSame = true;
+            for (BigDecimal bigDecimal : amounts) {
+                allSame &= bigDecimal.equals(first);
+            }
+
+            if (allSame){
+                if (amounts.size() == 1) {
+                    for (BudgetAmount bgtAmount : mBudgetAmounts) {
+                        if (bgtAmount.getAccountUID().equals(entry.getKey())) {
+                            compactBudgetAmounts.add(bgtAmount);
+                            break;
+                        }
+                    }
+                } else {
+                    BudgetAmount bgtAmount = new BudgetAmount(getUID(), entry.getKey());
+                    bgtAmount.setAmount(new Money(first, currency));
+                    bgtAmount.setPeriodNum(-1);
+                    compactBudgetAmounts.add(bgtAmount);
+                }
+            } else {
+                //if not all amounts are the same, then just add them as we read them
+                for (BudgetAmount bgtAmount : mBudgetAmounts) {
+                    if (bgtAmount.getAccountUID().equals(entry.getKey())){
+                        compactBudgetAmounts.add(bgtAmount);
+                    }
+                }
+            }
+        }
+
+        return compactBudgetAmounts;
+    }
+
+    /**
+     * Returns a list of budget amounts where each period has it's own budget amount
+     * <p>Any budget amounts in the database with a period number of -1 are expanded to individual budget amounts for all periods</p>
+     * <p>This method is useful with exporting budget amounts to XML</p>
+     * @return List of expande
+     */
+    public List<BudgetAmount> getExpandedBudgetAmounts(){
+        List<BudgetAmount> amountsToAdd = new ArrayList<>();
+        List<BudgetAmount> amountsToRemove = new ArrayList<>();
+        for (BudgetAmount budgetAmount : mBudgetAmounts) {
+            if (budgetAmount.getPeriodNum() == -1){
+                amountsToRemove.add(budgetAmount);
+                String accountUID = budgetAmount.getAccountUID();
+                for (int period = 0; period < mNumberOfPeriods; period++) {
+                    BudgetAmount bgtAmount = new BudgetAmount(getUID(), accountUID);
+                    bgtAmount.setAmount(budgetAmount.getAmount());
+                    bgtAmount.setPeriodNum(period);
+                    amountsToAdd.add(bgtAmount);
+                }
+            }
+        }
+
+        List<BudgetAmount> expandedBudgetAmounts = new ArrayList<>(mBudgetAmounts);
+        for (BudgetAmount bgtAmount : amountsToRemove) {
+            expandedBudgetAmounts.remove(bgtAmount);
+        }
+
+        for (BudgetAmount bgtAmount : amountsToAdd) {
+            expandedBudgetAmounts.add(bgtAmount);
+        }
+        return expandedBudgetAmounts;
     }
 }

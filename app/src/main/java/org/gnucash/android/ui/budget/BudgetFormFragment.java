@@ -127,7 +127,7 @@ public class BudgetFormFragment extends Fragment implements RecurrencePickerDial
         String budgetUID = getArguments().getString(UxArgument.BUDGET_UID);
         if (budgetUID != null){ //if we are editing the budget
             initViews(mBudget = mBudgetsDbAdapter.getRecord(budgetUID));
-            loadBudgetAmountViews(mBudget.getBudgetAmounts());
+            loadBudgetAmountViews(mBudget.getCompactedBudgetAmounts());
         } else {
             BudgetAmountViewHolder viewHolder = (BudgetAmountViewHolder) addBudgetAmountView(null).getTag();
             viewHolder.removeItemBtn.setVisibility(View.GONE); //there should always be at least one

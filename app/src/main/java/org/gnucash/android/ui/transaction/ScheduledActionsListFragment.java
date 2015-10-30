@@ -610,7 +610,7 @@ public class ScheduledActionsListFragment extends ListFragment implements
 
             Cursor c = mDatabaseAdapter.fetchAllRecords(
                     DatabaseSchema.ScheduledActionEntry.COLUMN_TYPE + "=?",
-                    new String[]{ScheduledAction.ActionType.BACKUP.name()});
+                    new String[]{ScheduledAction.ActionType.BACKUP.name()}, null);
 
             registerContentObserver(c);
             return c;

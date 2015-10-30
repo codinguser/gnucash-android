@@ -62,8 +62,8 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 import static org.gnucash.android.db.DatabaseSchema.AccountEntry;
-import static org.gnucash.android.db.DatabaseSchema.BudgetEntry;
 import static org.gnucash.android.db.DatabaseSchema.BudgetAmountEntry;
+import static org.gnucash.android.db.DatabaseSchema.BudgetEntry;
 import static org.gnucash.android.db.DatabaseSchema.CommodityEntry;
 import static org.gnucash.android.db.DatabaseSchema.CommonColumns;
 import static org.gnucash.android.db.DatabaseSchema.PriceEntry;
@@ -1153,7 +1153,8 @@ public class MigrationHelper {
                     + ScheduledActionEntry.COLUMN_TOTAL_FREQUENCY   + " integer default 0, "
                     + ScheduledActionEntry.COLUMN_EXECUTION_COUNT   + " integer default 0, "
                     + ScheduledActionEntry.COLUMN_CREATED_AT        + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
-                    + ScheduledActionEntry.COLUMN_MODIFIED_AT       + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP "
+                    + ScheduledActionEntry.COLUMN_MODIFIED_AT       + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
+                    + "FOREIGN KEY (" 	+ ScheduledActionEntry.COLUMN_RECURRENCE_UID + ") REFERENCES " + RecurrenceEntry.TABLE_NAME + " (" + RecurrenceEntry.COLUMN_UID + ") "
                     + ");" + DatabaseHelper.createUpdatedAtTrigger(ScheduledActionEntry.TABLE_NAME));
 
 
@@ -1229,11 +1230,7 @@ public class MigrationHelper {
             db.execSQL(" ALTER TABLE " + SplitEntry.TABLE_NAME
                     + " ADD COLUMN " + SplitEntry.COLUMN_RECONCILE_STATE + " varchar(1) not null default 'n' ");
             db.execSQL(" ALTER TABLE " + SplitEntry.TABLE_NAME
-                    + " ADD COLUMN " + SplitEntry.COLUMN_RECONCILE_DATE + " timestamp ");
-
-            contentValues.clear();
-            contentValues.put(SplitEntry.COLUMN_RECONCILE_DATE, new Timestamp(System.currentTimeMillis()).toString());
-            db.insert(SplitEntry.TABLE_NAME, null, contentValues);
+                    + " ADD COLUMN " + SplitEntry.COLUMN_RECONCILE_DATE + " timestamp not null default CURRENT_TIMESTAMP ");
 
             db.setTransactionSuccessful();
             oldVersion = 10;

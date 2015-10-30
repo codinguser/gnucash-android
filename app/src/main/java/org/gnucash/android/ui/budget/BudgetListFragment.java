@@ -46,6 +46,7 @@ import android.widget.TextView;
 
 import org.gnucash.android.R;
 import org.gnucash.android.db.DatabaseCursorLoader;
+import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.db.adapter.AccountsDbAdapter;
 import org.gnucash.android.db.adapter.BudgetsDbAdapter;
 import org.gnucash.android.model.Budget;
@@ -211,10 +212,11 @@ public class BudgetListFragment extends Fragment implements Refreshable,
 
             AccountsDbAdapter accountsDbAdapter = AccountsDbAdapter.getInstance();
             String accountString;
-            if (budget.getBudgetAmounts().size() == 1){
+            int numberOfAccounts = budget.getNumberOfAccounts();
+            if (numberOfAccounts == 1){
                 accountString = accountsDbAdapter.getAccountFullName(budget.getBudgetAmounts().get(0).getAccountUID());
             } else {
-                accountString = budget.getBudgetAmounts().size() + " budgeted accounts";
+                accountString = numberOfAccounts + " budgeted accounts";
             }
             holder.accountName.setText(accountString);
 
@@ -222,7 +224,7 @@ public class BudgetListFragment extends Fragment implements Refreshable,
                     + budget.getRecurrence().getDaysLeft() + " days left");
 
             BigDecimal spentAmountValue = BigDecimal.ZERO;
-            for (BudgetAmount budgetAmount : budget.getBudgetAmounts()) {
+            for (BudgetAmount budgetAmount : budget.getCompactedBudgetAmounts()) {
                 Money balance = accountsDbAdapter.getAccountBalance(budgetAmount.getAccountUID(),
                         budget.getStartofCurrentPeriod(), budget.getEndOfCurrentPeriod());
                 spentAmountValue = spentAmountValue.add(balance.asBigDecimal());
@@ -319,7 +321,7 @@ public class BudgetListFragment extends Fragment implements Refreshable,
         @Override
         public Cursor loadInBackground() {
             mDatabaseAdapter = BudgetsDbAdapter.getInstance();
-            return mDatabaseAdapter.fetchAllRecords();
+            return mDatabaseAdapter.fetchAllRecords(null, null, DatabaseSchema.BudgetEntry.COLUMN_NAME + " ASC");
         }
     }
 }

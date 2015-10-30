@@ -33,11 +33,11 @@ import com.uservoice.uservoicesdk.Config;
 import com.uservoice.uservoicesdk.UserVoice;
 
 import org.gnucash.android.R;
+import org.gnucash.android.db.DatabaseHelper;
 import org.gnucash.android.db.adapter.AccountsDbAdapter;
 import org.gnucash.android.db.adapter.BudgetAmountsDbAdapter;
 import org.gnucash.android.db.adapter.BudgetsDbAdapter;
 import org.gnucash.android.db.adapter.CommoditiesDbAdapter;
-import org.gnucash.android.db.DatabaseHelper;
 import org.gnucash.android.db.adapter.PricesDbAdapter;
 import org.gnucash.android.db.adapter.RecurrenceDbAdapter;
 import org.gnucash.android.db.adapter.ScheduledActionDbAdapter;
@@ -234,6 +234,15 @@ public class GnuCashApplication extends Application{
             currencyCode = prefs.getString(context.getString(R.string.key_default_currency), currencyCode);
         }
         return currencyCode;
+    }
+
+    /**
+     * Returns default application currency.
+     * <p>See {@link #getDefaultCurrencyCode()} for how it is determined</p>
+     * @return Currency instance
+     */
+    public static Currency getDefaultCurrency(){
+        return Currency.getInstance(getDefaultCurrencyCode());
     }
 
     /**

@@ -24,6 +24,10 @@ public class BudgetAmount extends BaseModel {
 
     private String mBudgetUID;
     private String mAccountUID;
+    /**
+     * Period number for this budget amount
+     * A value of -1 indicates that this budget amount applies to all periods
+     */
     private long mPeriodNum;
     private Money mAmount;
 
@@ -63,14 +67,28 @@ public class BudgetAmount extends BaseModel {
         this.mAccountUID = accountUID;
     }
 
+    /**
+     * Returns the period number of this budget amount
+     * <p>The period is zero-based index, and a value of -1 indicates that this budget amount is applicable to all budgeting periods</p>
+     * @return Period number
+     */
     public long getPeriodNum() {
         return mPeriodNum;
     }
 
+    /**
+     * Set the period number for this budget amount
+     * <p>A value of -1 indicates that this BudgetAmount is for all periods</p>
+     * @param periodNum Zero-based period number of the budget amount
+     */
     public void setPeriodNum(long periodNum) {
         this.mPeriodNum = periodNum;
     }
 
+    /**
+     * Returns the Money amount of this budget amount
+     * @return Money amount
+     */
     public Money getAmount() {
         return mAmount;
     }

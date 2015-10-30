@@ -188,7 +188,7 @@ public class BudgetDetailFragment extends Fragment implements Refreshable {
 
         public BudgetAmountAdapter(){
             mBudget = mBudgetsDbAdapter.getRecord(mBudgetUID);
-            mBudgetAmounts = mBudget.getBudgetAmounts();
+            mBudgetAmounts = mBudget.getCompactedBudgetAmounts();
         }
 
         @Override
@@ -212,9 +212,13 @@ public class BudgetDetailFragment extends Fragment implements Refreshable {
             holder.budgetSpent.setText(spentAmount.abs().formattedString());
             holder.budgetLeft.setText(projectedAmount.subtract(spentAmount.abs()).formattedString());
 
-            double budgetProgress = spentAmount.asBigDecimal().divide(projectedAmount.asBigDecimal(),
-                    spentAmount.getCurrency().getDefaultFractionDigits(), RoundingMode.HALF_EVEN)
-                    .doubleValue();
+            double budgetProgress = 0;
+            if (projectedAmount.asDouble() != 0){
+                budgetProgress = spentAmount.asBigDecimal().divide(projectedAmount.asBigDecimal(),
+                        spentAmount.getCurrency().getDefaultFractionDigits(), RoundingMode.HALF_EVEN)
+                        .doubleValue();
+            }
+
             holder.budgetIndicator.setProgress((int) (budgetProgress * 100));
             holder.budgetSpent.setTextColor(BudgetsActivity.getBudgetProgressColor(1 - budgetProgress));
             holder.budgetLeft.setTextColor(BudgetsActivity.getBudgetProgressColor(1 - budgetProgress));

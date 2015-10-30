@@ -24,6 +24,7 @@ import android.util.Log;
 
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.DatabaseSchema;
+import org.gnucash.android.model.Recurrence;
 import org.gnucash.android.model.ScheduledAction;
 
 import java.util.ArrayList;
@@ -58,6 +59,20 @@ public class ScheduledActionDbAdapter extends DatabaseAdapter<ScheduledAction> {
     public void addRecord(@NonNull ScheduledAction scheduledAction) {
         mRecurrenceDbAdapter.addRecord(scheduledAction.getRecurrence());
         super.addRecord(scheduledAction);
+    }
+
+    @Override
+    public long bulkAddRecords(@NonNull List<ScheduledAction> scheduledActions) {
+        List<Recurrence> recurrenceList = new ArrayList<>(scheduledActions.size());
+        for (ScheduledAction scheduledAction : scheduledActions) {
+            recurrenceList.add(scheduledAction.getRecurrence());
+        }
+
+        //first add the recurrences, they have no dependencies (foreign key constraints)
+        long nRecurrences = mRecurrenceDbAdapter.bulkAddRecords(recurrenceList);
+        Log.d(LOG_TAG, String.format("Added %d recurrences for scheduled actions", nRecurrences));
+
+        return super.bulkAddRecords(scheduledActions);
     }
 
     /**

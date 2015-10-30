@@ -1,7 +1,5 @@
 package org.gnucash.android.test.unit.db;
 
-import android.database.sqlite.SQLiteConstraintException;
-
 import org.gnucash.android.BuildConfig;
 import org.gnucash.android.db.adapter.ScheduledActionDbAdapter;
 import org.gnucash.android.model.BaseModel;
@@ -17,6 +15,7 @@ import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
 import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -58,7 +57,6 @@ public class ScheduledActionDbAdapterTest {
         mScheduledActionDbAdapter.addRecord(scheduledAction);
     }
 
-
     @Test
     public void testGenerateRepeatString(){
         ScheduledAction scheduledAction = new ScheduledAction(ScheduledAction.ActionType.TRANSACTION);
@@ -71,4 +69,5 @@ public class ScheduledActionDbAdapterTest {
         assertThat(scheduledAction.getRepeatString().trim()).isEqualTo(repeatString);
 
     }
+
 }

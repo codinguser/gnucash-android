@@ -21,6 +21,9 @@ import org.gnucash.android.model.BudgetAmount;
 import org.gnucash.android.model.Money;
 import org.junit.Test;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -38,6 +41,16 @@ public class BudgetTest {
 
         assertThat(budget.getBudgetAmounts()).hasSize(1);
         assertThat(budgetAmount.getBudgetUID()).isEqualTo(budget.getUID());
+
+        //setting a whole list should also set the budget UIDs
+        List<BudgetAmount> budgetAmounts = new ArrayList<>();
+        budgetAmounts.add(new BudgetAmount(Money.getZeroInstance(),"test"));
+        budgetAmounts.add(new BudgetAmount(Money.getZeroInstance(), "second"));
+
+        budget.setBudgetAmounts(budgetAmounts);
+
+        assertThat(budget.getBudgetAmounts()).extracting("mBudgetUID")
+                .contains(budget.getUID());
     }
 
     @Test
@@ -52,5 +65,122 @@ public class BudgetTest {
 
         assertThat(budget.getAmount("account1")).isEqualTo(accountAmount.abs());
         assertThat(budget.getAmountSum()).isEqualTo(new Money("30", "USD"));
+    }
+
+    /**
+     * Tests that the method {@link Budget#getCompactedBudgetAmounts()} does not aggregate
+     * {@link BudgetAmount}s which have different money amounts
+     */
+    @Test
+    public void shouldNotCompactBudgetAmountsWithDifferentAmounts(){
+        Budget budget = new Budget("Test");
+        budget.setNumberOfPeriods(6);
+        BudgetAmount budgetAmount = new BudgetAmount(new Money("10", "USD"), "test");
+        budgetAmount.setPeriodNum(1);
+        budget.addBudgetAmount(budgetAmount);
+
+        budgetAmount = new BudgetAmount(new Money("15", "USD"), "test");
+        budgetAmount.setPeriodNum(2);
+        budget.addBudgetAmount(budgetAmount);
+
+        budgetAmount = new BudgetAmount(new Money("5", "USD"), "secondAccount");
+        budgetAmount.setPeriodNum(5);
+        budget.addBudgetAmount(budgetAmount);
+
+        List<BudgetAmount> compactedBudgetAmounts = budget.getCompactedBudgetAmounts();
+        assertThat(compactedBudgetAmounts).hasSize(3);
+        assertThat(compactedBudgetAmounts).extracting("mAccountUID")
+                .contains("test", "secondAccount");
+
+        assertThat(compactedBudgetAmounts).extracting("mPeriodNum")
+                .contains(1L, 2L, 5L).doesNotContain(-1L);
+    }
+
+    /**
+     * Tests that the method {@link Budget#getCompactedBudgetAmounts()} aggregates {@link BudgetAmount}s
+     * with the same amount but leaves others untouched
+     */
+    @Test
+    public void addingSameAmounts_shouldCompactOnRetrieval(){
+        Budget budget = new Budget("Test");
+        budget.setNumberOfPeriods(6);
+        BudgetAmount budgetAmount = new BudgetAmount(new Money("10", "USD"), "first");
+        budgetAmount.setPeriodNum(1);
+        budget.addBudgetAmount(budgetAmount);
+
+        budgetAmount = new BudgetAmount(new Money("10", "USD"), "first");
+        budgetAmount.setPeriodNum(2);
+        budget.addBudgetAmount(budgetAmount);
+
+        budgetAmount = new BudgetAmount(new Money("10", "USD"), "first");
+        budgetAmount.setPeriodNum(5);
+        budget.addBudgetAmount(budgetAmount);
+
+        budgetAmount = new BudgetAmount(new Money("10", "EUR"), "second");
+        budgetAmount.setPeriodNum(4);
+        budget.addBudgetAmount(budgetAmount);
+
+        budgetAmount = new BudgetAmount(new Money("13", "EUR"), "third");
+        budgetAmount.setPeriodNum(-1);
+        budget.addBudgetAmount(budgetAmount);
+
+        List<BudgetAmount> compactedBudgetAmounts = budget.getCompactedBudgetAmounts();
+
+        assertThat(compactedBudgetAmounts).hasSize(3);
+        assertThat(compactedBudgetAmounts).extracting("mPeriodNum").hasSize(3)
+                .contains(-1L, 4L).doesNotContain(1L, 2L, 3L);
+
+        assertThat(compactedBudgetAmounts).extracting("mAccountUID").hasSize(3)
+                .contains("first", "second", "third");
+
+    }
+
+    /**
+     * Test that when we set a periodNumber of -1 to a budget amount, the method {@link Budget#getExpandedBudgetAmounts()}
+     * should create new budget amounts for each of the periods in the budgeting period
+     */
+    @Test
+    public void addingNegativePeriodNum_shouldExpandOnRetrieval(){
+        Budget budget = new Budget("Test");
+        budget.setNumberOfPeriods(6);
+        BudgetAmount budgetAmount = new BudgetAmount(new Money("10", "USD"), "first");
+        budgetAmount.setPeriodNum(-1);
+        budget.addBudgetAmount(budgetAmount);
+
+        List<BudgetAmount> expandedBudgetAmount = budget.getExpandedBudgetAmounts();
+
+        assertThat(expandedBudgetAmount).hasSize(6);
+
+        assertThat(expandedBudgetAmount).extracting("mPeriodNum").hasSize(6)
+                .contains(0L,1L,2L,3L,4L,5L).doesNotContain(-1L);
+
+        assertThat(expandedBudgetAmount).extracting("mAccountUID").hasSize(6);
+    }
+
+    @Test
+    public void testGetNumberOfAccounts(){
+        Budget budget = new Budget("Test");
+        budget.setNumberOfPeriods(6);
+        BudgetAmount budgetAmount = new BudgetAmount(new Money("10", "USD"), "first");
+        budgetAmount.setPeriodNum(1);
+        budget.addBudgetAmount(budgetAmount);
+
+        budgetAmount = new BudgetAmount(new Money("10", "USD"), "first");
+        budgetAmount.setPeriodNum(2);
+        budget.addBudgetAmount(budgetAmount);
+
+        budgetAmount = new BudgetAmount(new Money("10", "USD"), "first");
+        budgetAmount.setPeriodNum(5);
+        budget.addBudgetAmount(budgetAmount);
+
+        budgetAmount = new BudgetAmount(new Money("10", "EUR"), "second");
+        budgetAmount.setPeriodNum(4);
+        budget.addBudgetAmount(budgetAmount);
+
+        budgetAmount = new BudgetAmount(new Money("13", "EUR"), "third");
+        budgetAmount.setPeriodNum(-1);
+        budget.addBudgetAmount(budgetAmount);
+
+        assertThat(budget.getNumberOfAccounts()).isEqualTo(3);
     }
 }

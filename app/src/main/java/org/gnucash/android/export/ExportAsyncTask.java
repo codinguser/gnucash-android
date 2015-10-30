@@ -157,7 +157,7 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
         } catch (final Exception e) {
             Log.e(TAG, "Error exporting: " + e.getMessage());
             Crashlytics.logException(e);
-
+            e.printStackTrace();
             if (mContext instanceof Activity) {
                 ((Activity)mContext).runOnUiThread(new Runnable() {
                     @Override

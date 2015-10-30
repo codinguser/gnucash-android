@@ -35,8 +35,8 @@ import java.lang.reflect.Method;
 import javax.xml.parsers.ParserConfigurationException;
 
 import static org.gnucash.android.db.DatabaseSchema.AccountEntry;
-import static org.gnucash.android.db.DatabaseSchema.BudgetEntry;
 import static org.gnucash.android.db.DatabaseSchema.BudgetAmountEntry;
+import static org.gnucash.android.db.DatabaseSchema.BudgetEntry;
 import static org.gnucash.android.db.DatabaseSchema.CommodityEntry;
 import static org.gnucash.android.db.DatabaseSchema.CommonColumns;
 import static org.gnucash.android.db.DatabaseSchema.PriceEntry;
@@ -147,7 +147,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + ScheduledActionEntry.COLUMN_TOTAL_FREQUENCY   + " integer default 0, "
             + ScheduledActionEntry.COLUMN_EXECUTION_COUNT   + " integer default 0, "
             + ScheduledActionEntry.COLUMN_CREATED_AT        + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
-            + ScheduledActionEntry.COLUMN_MODIFIED_AT       + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP "
+            + ScheduledActionEntry.COLUMN_MODIFIED_AT       + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
+            + "FOREIGN KEY (" 	+ ScheduledActionEntry.COLUMN_RECURRENCE_UID + ") REFERENCES " + RecurrenceEntry.TABLE_NAME + " (" + RecurrenceEntry.COLUMN_UID + ") "
             + ");" + createUpdatedAtTrigger(ScheduledActionEntry.TABLE_NAME);
 
     public static final String COMMODITIES_TABLE_CREATE = "CREATE TABLE " + DatabaseSchema.CommodityEntry.TABLE_NAME + " ("

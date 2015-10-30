@@ -81,14 +81,17 @@ public class BudgetsDbAdapter extends DatabaseAdapter<Budget>{
             budgetAmountList.addAll(budget.getBudgetAmounts());
         }
 
+        //first add the recurrences, they have no dependencies (foreign key constraints)
         List<Recurrence> recurrenceList = new ArrayList<>(budgetList.size());
         for (Budget budget : budgetList) {
             recurrenceList.add(budget.getRecurrence());
         }
         mRecurrenceDbAdapter.bulkAddRecords(recurrenceList);
 
+        //now add the budgets themselves
         long nRow = super.bulkAddRecords(budgetList);
 
+        //then add the budget amounts, they require the budgets to exist
         if (nRow > 0 && !budgetAmountList.isEmpty()){
             mBudgetAmountsDbAdapter.bulkAddRecords(budgetAmountList);
         }

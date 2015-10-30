@@ -263,7 +263,7 @@ public abstract class DatabaseAdapter<Model extends BaseModel> {
                 return buildModelInstance(cursor);
             }
             else {
-                throw new IllegalArgumentException("Record with " + uid + " does not exist");
+                throw new IllegalArgumentException(LOG_TAG + ": Record with " + uid + " does not exist");
             }
         } finally {
             cursor.close();
@@ -354,17 +354,18 @@ public abstract class DatabaseAdapter<Model extends BaseModel> {
 	 * @return {@link Cursor} to all records in table <code>tableName</code>
 	 */
 	public Cursor fetchAllRecords(){
-		return fetchAllRecords(null, null);
+		return fetchAllRecords(null, null, null);
 	}
 
     /**
      * Fetch all records from database matching conditions
      * @param where SQL where clause
      * @param whereArgs String arguments for where clause
+     * @param orderBy SQL orderby clause
      * @return Cursor to records matching conditions
      */
-    public Cursor fetchAllRecords(String where, String[] whereArgs){
-        return mDb.query(mTableName, null, where, whereArgs, null, null, null);
+    public Cursor fetchAllRecords(String where, String[] whereArgs, String orderBy){
+        return mDb.query(mTableName, null, where, whereArgs, null, null, orderBy);
     }
 
 	/**

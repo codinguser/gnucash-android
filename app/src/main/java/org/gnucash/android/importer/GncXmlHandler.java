@@ -209,7 +209,15 @@ public class GncXmlHandler extends DefaultHandler {
     boolean mIsLastRun          = false;
     boolean mIsRecurrenceStart  = false;
     boolean mInBudgetSlot       = false;
-    boolean mInBudgetAmountSlot = false;
+
+    /**
+     * Saves the attribute of the slot tag
+     * Used for determining where we are in the budget amounts
+     */
+    String mSlotTagAttribute = null;
+
+    String mBudgetAmountAccountUID = null;
+
     /**
      * Multiplier for the recurrence period type. e.g. period type of week and multiplier of 2 means bi-weekly
      */
@@ -361,10 +369,13 @@ public class GncXmlHandler extends DefaultHandler {
             case GncXmlHelper.TAG_BUDGET_SLOTS:
                 mInBudgetSlot = true;
                 break;
-            case GncXmlHelper.TAG_SLOT_VALUE:
-                if (mInBudgetSlot) {
-                    mInBudgetAmountSlot = true;
+            case GncXmlHelper.TAG_SLOT:
+                if (mInBudgetSlot){
+                    mBudgetAmount = new BudgetAmount(mBudget.getUID(), mBudgetAmountAccountUID);
                 }
+                break;
+            case GncXmlHelper.TAG_SLOT_VALUE:
+                mSlotTagAttribute = attributes.getValue(GncXmlHelper.ATTR_KEY_TYPE);
                 break;
         }
     }
@@ -447,6 +458,8 @@ public class GncXmlHandler extends DefaultHandler {
                     mISO4217Currency = false;
                 }
                 break;
+            case GncXmlHelper.TAG_SLOT:
+                break;
             case GncXmlHelper.TAG_SLOT_KEY:
                 switch (characterString) {
                     case GncXmlHelper.KEY_PLACEHOLDER:
@@ -477,10 +490,10 @@ public class GncXmlHandler extends DefaultHandler {
                         mInDebitNumericSlot = true;
                         break;
                 }
-                if (mInBudgetSlot && !mInBudgetAmountSlot){
-                    mBudgetAmount = new BudgetAmount(mBudget.getUID(), characterString);
-                }
-                if (mInBudgetSlot && mInBudgetAmountSlot){
+                if (mInBudgetSlot && mBudgetAmountAccountUID == null){
+                    mBudgetAmountAccountUID = characterString;
+                    mBudgetAmount.setAccountUID(characterString);
+                } else if (mInBudgetSlot){
                     mBudgetAmount.setPeriodNum(Long.parseLong(characterString));
                 }
                 break;
@@ -531,17 +544,21 @@ public class GncXmlHandler extends DefaultHandler {
                     handleEndOfTemplateNumericSlot(characterString, TransactionType.CREDIT);
                 } else if (mInTemplates && mInDebitNumericSlot) {
                     handleEndOfTemplateNumericSlot(characterString, TransactionType.DEBIT);
-                } else if (mInBudgetSlot && mInBudgetAmountSlot){
-                    try {
-                        BigDecimal bigDecimal = GncXmlHelper.parseSplitAmount(characterString);
-                        //currency doesn't matter since we don't persist it in the budgets table
-                        mBudgetAmount.setAmount(new Money(bigDecimal, Currency.getInstance(Money.DEFAULT_CURRENCY_CODE)));
-                    } catch (ParseException e) {
-                        mBudgetAmount.setAmount(Money.getZeroInstance()); //just put zero, in case it was a formula we couldnt parse
-                        e.printStackTrace();
-                    } finally {
-                        mBudget.addBudgetAmount(mBudgetAmount);
-                        mInBudgetAmountSlot = false;
+                } else if (mInBudgetSlot){
+                    if (mSlotTagAttribute.equals(GncXmlHelper.ATTR_VALUE_NUMERIC)) {
+                        try {
+                            BigDecimal bigDecimal = GncXmlHelper.parseSplitAmount(characterString);
+                            //currency doesn't matter since we don't persist it in the budgets table
+                            mBudgetAmount.setAmount(new Money(bigDecimal, Currency.getInstance(Money.DEFAULT_CURRENCY_CODE)));
+                        } catch (ParseException e) {
+                            mBudgetAmount.setAmount(Money.getZeroInstance()); //just put zero, in case it was a formula we couldnt parse
+                            e.printStackTrace();
+                        } finally {
+                            mBudget.addBudgetAmount(mBudgetAmount);
+                        }
+                        mSlotTagAttribute = GncXmlHelper.ATTR_VALUE_FRAME;
+                    } else {
+                        mBudgetAmountAccountUID = null;
                     }
                 }
                 break;
@@ -786,7 +803,8 @@ public class GncXmlHandler extends DefaultHandler {
                 break;
 
             case GncXmlHelper.TAG_BUDGET:
-                mBudgetList.add(mBudget);
+                if (mBudget.getBudgetAmounts().size() > 0) //ignore if no budget amounts exist for the budget
+                    mBudgetList.add(mBudget);
                 break;
 
             case GncXmlHelper.TAG_BUDGET_NAME:
