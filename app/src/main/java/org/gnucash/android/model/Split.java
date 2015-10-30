@@ -116,6 +116,7 @@ public class Split extends BaseModel{
         this.mValue         = new Money(sourceSplit.mValue);
         this.mQuantity      = new Money(sourceSplit.mQuantity);
 
+        //todo: clone reconciled status
         if (generateUID){
             generateUID();
         } else {

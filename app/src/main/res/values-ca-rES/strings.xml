@@ -15,7 +15,7 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<resources>
   <string name="title_create_account">Crea un compte</string>
   <string name="title_edit_account">Edita el compte</string>
   <string name="info_details">Informació</string>
@@ -560,6 +560,8 @@
   <string name="summary_google_plus">Share ideas, discuss changes or report problems</string>
   <string name="summary_translate_gnucash">Translate or proof-read on CrowdIn</string>
   <string name="toast_no_compatible_apps_to_receive_export">No compatible apps to receive the exported transactions!</string>
+  <string name="menu_move_transaction">Move...</string>
+  <string name="menu_duplicate_transaction">Duplicate</string>
   <string name="nav_menu_budgets">Budgets</string>
   <string-array name="report_time_range">
     <item>Mes actual</item>

@@ -475,6 +475,39 @@ public class TransactionsActivityTest extends
 		assertEquals(0, mTransactionsDbAdapter.getTransactionsCount(id));
 	}
 
+	@Test
+	public void testMoveTransaction(){
+		Account account = new Account("Move account");
+		account.setCurrency(Currency.getInstance(CURRENCY_CODE));
+		mAccountsDbAdapter.addRecord(account);
+
+		assertThat(mTransactionsDbAdapter.getAllTransactionsForAccount(account.getUID())).hasSize(0);
+
+		onView(withId(R.id.options_menu)).perform(click());
+		onView(withText(R.string.menu_move_transaction)).perform(click());
+
+		onView(withId(R.id.btn_save)).perform(click());
+
+		assertThat(mTransactionsDbAdapter.getAllTransactionsForAccount(DUMMY_ACCOUNT_UID)).hasSize(0);
+
+		assertThat(mTransactionsDbAdapter.getAllTransactionsForAccount(account.getUID())).hasSize(1);
+
+	}
+
+	@Test
+	public void testDuplicateTransaction(){
+		assertThat(mTransactionsDbAdapter.getAllTransactionsForAccount(DUMMY_ACCOUNT_UID)).hasSize(1);
+
+		onView(withId(R.id.options_menu)).perform(click());
+		onView(withText(R.string.menu_duplicate_transaction)).perform(click());
+
+		List<Transaction> dummyAccountTrns = mTransactionsDbAdapter.getAllTransactionsForAccount(DUMMY_ACCOUNT_UID);
+		assertThat(dummyAccountTrns).hasSize(2);
+
+		assertThat(dummyAccountTrns.get(0).getDescription()).isEqualTo(dummyAccountTrns.get(1).getDescription());
+		assertThat(dummyAccountTrns.get(0).getTimeMillis()).isNotEqualTo(dummyAccountTrns.get(1).getTimeMillis());
+	}
+
 	//TODO: add normal transaction recording
 	@Test
 	public void testLegacyIntentTransactionRecording(){
