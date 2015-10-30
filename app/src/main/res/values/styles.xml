@@ -141,4 +141,8 @@
         <item name="android:textColor">@android:color/black</item>
     </style>
 
+    <style name="CustomDialog" parent="Theme.AppCompat.Light.Dialog">
+        <item name="android:windowNoTitle">false</item>
+    </style>
+
 </resources>

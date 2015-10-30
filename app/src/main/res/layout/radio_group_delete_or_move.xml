@@ -48,7 +48,7 @@
         android:text="@string/label_move_to" />
 
     <Spinner android:id="@+id/target_accounts_spinner"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:layout_width="match_parent"
+        android:layout_height="?android:listPreferredItemHeight"/>
 
 </RadioGroup>
