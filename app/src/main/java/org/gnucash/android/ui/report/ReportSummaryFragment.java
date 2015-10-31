@@ -191,8 +191,9 @@ public class ReportSummaryFragment extends Fragment {
 
                 long start = new LocalDate().minusMonths(2).dayOfMonth().withMinimumValue().toDate().getTime();
                 long end = new LocalDate().plusDays(1).toDate().getTime();
-                double balance = mAccountsDbAdapter.getAccountsBalance(Collections.singletonList(account.getUID()), start, end).absolute().asDouble();
-                if (balance != 0) {
+                double balance = mAccountsDbAdapter.getAccountsBalance(
+                        Collections.singletonList(account.getUID()), start, end).asDouble();
+                if (balance > 0) {
                     dataSet.addEntry(new Entry((float) balance, dataSet.getEntryCount()));
                     colors.add(account.getColorHexCode() != null
                             ? Color.parseColor(account.getColorHexCode())
