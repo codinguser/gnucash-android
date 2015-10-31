@@ -259,8 +259,10 @@ public class Transaction extends BaseModel{
         Money imbalance = Money.createZeroInstance(mCurrencyCode);
         for (Split split : mSplitList) {
             if (!split.getValue().getCurrency().getCurrencyCode().equals(mCurrencyCode)) {
-                // values in transactions are always in the same currency
-                throw new RuntimeException("Splits values in transaction are not in the same currency");
+                // this may happen when importing XML exported from GNCA before 2.0.0
+                // these transactions should only be imported from XML exported from GNC desktop
+                // so imbalance split should not be generated for them
+                return Money.createZeroInstance(mCurrencyCode);
             }
             Money amount = split.getValue().absolute();
             if (split.getType() == TransactionType.DEBIT)
