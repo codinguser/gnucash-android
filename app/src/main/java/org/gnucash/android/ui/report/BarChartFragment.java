@@ -148,6 +148,7 @@ public class BarChartFragment extends Fragment implements OnChartValueSelectedLi
 //        mChart.setDrawValuesForWholeStack(false);
         mChart.getXAxis().setDrawGridLines(false);
         mChart.getAxisRight().setEnabled(false);
+        mChart.getAxisLeft().setStartAtZero(false);
         mChart.getAxisLeft().enableGridDashedLine(4.0f, 4.0f, 0);
         mChart.getAxisLeft().setValueFormatter(new LargeValueFormatter(mCurrency.getSymbol(Locale.getDefault())));
         Legend chartLegend = mChart.getLegend();
