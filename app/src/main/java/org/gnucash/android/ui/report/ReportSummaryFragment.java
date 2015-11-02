@@ -34,7 +34,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.PieChart;
-import com.github.mikephil.charting.components.Legend;
+import com.github.mikephil.charting.components.Legend.LegendForm;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
@@ -56,6 +56,8 @@ import java.util.Locale;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+
+import static com.github.mikephil.charting.components.Legend.LegendPosition;
 
 /**
  * Shows a summary of reports
@@ -139,7 +141,9 @@ public class ReportSummaryFragment extends Fragment {
         mChart.setCenterTextSize(PieChartFragment.CENTER_TEXT_SIZE);
         mChart.setDescription("");
         mChart.getLegend().setEnabled(true);
-        mChart.getLegend().setPosition(Legend.LegendPosition.RIGHT_OF_CHART_CENTER);
+        mChart.getLegend().setWordWrapEnabled(true);
+        mChart.getLegend().setForm(LegendForm.CIRCLE);
+        mChart.getLegend().setPosition(LegendPosition.RIGHT_OF_CHART_CENTER);
         mChart.getLegend().setTextSize(LEGEND_TEXT_SIZE);
 
         ColorStateList csl = new ColorStateList(new int[][]{new int[0]}, new int[]{getResources().getColor(R.color.account_green)});
@@ -225,6 +229,9 @@ public class ReportSummaryFragment extends Fragment {
             mChart.setTouchEnabled(true);
         } else {
             mChart.setData(getEmptyData());
+            mChart.setCenterText(getResources().getString(R.string.label_chart_no_data));
+            mChart.getLegend().setEnabled(false);
+            mChart.setTouchEnabled(false);
         }
 
         mChart.invalidate();
