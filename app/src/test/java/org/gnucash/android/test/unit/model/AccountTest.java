@@ -15,15 +15,24 @@
  */
 package org.gnucash.android.test.unit.model;
 
+import org.gnucash.android.BuildConfig;
 import org.gnucash.android.model.Account;
+import org.gnucash.android.model.Commodity;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.model.Transaction;
+import org.gnucash.android.test.unit.util.GnucashTestRunner;
+import org.gnucash.android.test.unit.util.ShadowCrashlytics;
+import org.gnucash.android.test.unit.util.ShadowUserVoice;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.annotation.Config;
 
 import java.util.Currency;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@RunWith(GnucashTestRunner.class)
+@Config(constants = BuildConfig.class, sdk = 21, packageName = "org.gnucash.android", shadows = {ShadowCrashlytics.class, ShadowUserVoice.class})
 public class AccountTest{
 
 	@Test
@@ -40,7 +49,7 @@ public class AccountTest{
 
 	@Test
 	public void testTransactionsHaveSameCurrencyAsAccount(){
-		Account acc1 = new Account("Japanese", Currency.getInstance("JPY"));
+		Account acc1 = new Account("Japanese", Commodity.JPY);
 		acc1.setUID("simile");
 		Transaction trx = new Transaction("Underground");
 		Transaction term = new Transaction( "Tube");
@@ -76,5 +85,22 @@ public class AccountTest{
 		account.setName("Name");
 		assertThat(account.getName()).isEqualTo("Name");
 		assertThat(account.getFullName()).isEqualTo(fullName);
+	}
+
+	@Test
+	public void settingCommodity_shouldSetCurrencyCode(){
+		Account account = new Account("Test", Commodity.USD);
+		account.setCommodity(Commodity.JPY);
+
+		assertThat(account.getCurrency()).isEqualTo(Currency.getInstance("JPY"));
+	}
+
+	@Test
+	public void settingCurrencyCode_shouldNotSetCommodity(){
+		Account account = new Account("Test EUR account", Commodity.EUR);
+		account.setCurrencyCode("USD");
+
+		assertThat(account.getCommodity()).isEqualTo(Commodity.EUR);
+		assertThat(account.getCurrency()).isEqualTo(Currency.getInstance("USD"));
 	}
 }

@@ -253,7 +253,7 @@ public class AccountsDbAdapterTest{
 
     @Test
     public void shouldComputeAccountBalanceCorrectly(){
-        Account account = new Account("Test", Currency.getInstance("USD"));
+        Account account = new Account("Test", Commodity.USD);
         account.setAccountType(AccountType.ASSET); //debit normal account balance
         Account transferAcct = new Account("Transfer");
 
@@ -262,7 +262,7 @@ public class AccountsDbAdapterTest{
 
         Transaction transaction = new Transaction("Test description");
         mTransactionsDbAdapter.addRecord(transaction);
-        Split split = new Split(new Money(BigDecimal.TEN, Commodity.getInstance("USD")), account.getUID());
+        Split split = new Split(new Money(BigDecimal.TEN, Commodity.USD), account.getUID());
         split.setTransactionUID(transaction.getUID());
         split.setType(TransactionType.DEBIT);
         mSplitsDbAdapter.addRecord(split);

@@ -49,7 +49,6 @@ import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Currency;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -372,7 +371,7 @@ public class GncXmlHandler extends DefaultHandler {
             case GncXmlHelper.TAG_COMMODITY_ID:
                 String currencyCode = mISO4217Currency ? characterString : NO_CURRENCY_CODE;
                 if (mAccount != null) {
-                    mAccount.setCurrency(Currency.getInstance(currencyCode));
+                    mAccount.setCurrencyCode(currencyCode);
                 }
                 if (mTransaction != null) {
                     mTransaction.setCurrencyCode(currencyCode);
@@ -767,7 +766,7 @@ public class GncXmlHandler extends DefaultHandler {
             String currencyCode = split.getAccountUID();
             Account imbAccount = mapImbalanceAccount.get(currencyCode);
             if (imbAccount == null) {
-                imbAccount = new Account(imbalancePrefix + currencyCode, Currency.getInstance(currencyCode));
+                imbAccount = new Account(imbalancePrefix + currencyCode, Commodity.getInstance(currencyCode));
                 imbAccount.setParentUID(mRootAccount.getUID());
                 imbAccount.setAccountType(AccountType.BANK);
                 mapImbalanceAccount.put(currencyCode, imbAccount);

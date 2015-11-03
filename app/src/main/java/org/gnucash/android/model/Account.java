@@ -93,9 +93,13 @@ public class Account extends BaseModel{
 	/**
 	 * Currency used by transactions in this account
 	 */
-	private Currency mCurrency; 
+	private String mCurrencyCode;
 
-	private String mCommodityUID;
+	/**
+	 * Commodity used by this account
+	 */
+	private Commodity mCommodity;
+
 
 	/**
 	 * Type of account
@@ -159,18 +163,18 @@ public class Account extends BaseModel{
 	public Account(String name) {
 		setName(name);
         this.mFullName  = mName;
-		this.mCurrency  = Currency.getInstance(Money.DEFAULT_CURRENCY_CODE);
+		setCommodity(Commodity.DEFAULT_COMMODITY);
 	}
 	
 	/**
 	 * Overloaded constructor
 	 * @param name Name of the account
-	 * @param currency {@link Currency} to be used by transactions in this account
+	 * @param commodity {@link Commodity} to be used by transactions in this account
 	 */
-	public Account(String name, Currency currency){
+	public Account(String name, Commodity commodity){
 		setName(name);
         this.mFullName  = mName;
-		this.mCurrency  = currency;
+		setCommodity(commodity);
 	}
 
 	/**
@@ -244,7 +248,7 @@ public class Account extends BaseModel{
 	 * @param transaction {@link Transaction} to be added to the account
 	 */
 	public void addTransaction(Transaction transaction){
-		transaction.setCurrencyCode(mCurrency.getCurrencyCode());
+		transaction.setCommodity(mCommodity);
 		mTransactionsList.add(transaction);
 	}
 	
@@ -281,7 +285,7 @@ public class Account extends BaseModel{
 	 * @return {@link Money} aggregate amount of all transactions in account.
 	 */
 	public Money getBalance(){
-		Money balance = Money.createZeroInstance(mCurrency.getCurrencyCode());
+		Money balance = Money.createZeroInstance(mCurrencyCode);
         for (Transaction transaction : mTransactionsList) {
             balance.add(transaction.getBalance(getUID()));
 		}
@@ -331,7 +335,15 @@ public class Account extends BaseModel{
 	 * @return the mCurrency
 	 */
 	public Currency getCurrency() {
-		return mCurrency;
+		return Currency.getInstance(mCurrencyCode);
+	}
+
+	/**
+	 * Sets the currency code of this account
+	 * @param currencyCode ISO 4217 3-letter currency code
+	 */
+	public void setCurrencyCode(String currencyCode){
+		this.mCurrencyCode = currencyCode;
 	}
 
 	/**
@@ -339,33 +351,17 @@ public class Account extends BaseModel{
 	 * @return
 	 */
 	public Commodity getCommodity(){
-		return Commodity.getInstance(mCurrency.getCurrencyCode());
+		return mCommodity;
 	}
 
 	/**
-	 * Sets the currency to be used by this account
-	 * @param currency the mCurrency to set
+	 * Sets the commodity of this account
+	 * @param commodity Commodity of the account
 	 */
-	public void setCurrency(Currency currency) {
-		this.mCurrency = currency;
-		//TODO: Maybe at some time t, this method should convert all 
-		//transaction values to the corresponding value in the new currency
-	}
-
-	/**
-	 * Returns the commodity GUID for this account
-	 * @return String GUID of commodity
-	 */
-	public String getCommodityUID() {
-		return mCommodityUID;
-	}
-
-	/**
-	 * Sets the commodity GUID for this account
-	 * @param commodityUID String commodity GUID
-	 */
-	public void setCommodityUID(String commodityUID) {
-		this.mCommodityUID = commodityUID;
+	public void setCommodity(Commodity commodity){
+		this.mCommodity = commodity;
+		this.mCurrencyCode = commodity.getCurrencyCode();
+		//todo: should we also change commodity of transactions? Transactions can have splits from different accounts
 	}
 
 	/**
@@ -479,7 +475,7 @@ public class Account extends BaseModel{
 	 */
 	public void toOfx(Document doc, Element parent, boolean exportAllTransactions){
 		Element currency = doc.createElement(OfxHelper.TAG_CURRENCY_DEF);
-		currency.appendChild(doc.createTextNode(mCurrency.getCurrencyCode()));						
+		currency.appendChild(doc.createTextNode(mCommodity.getCurrencyCode()));
 		
 		//================= BEGIN BANK ACCOUNT INFO (BANKACCTFROM) =================================
 		

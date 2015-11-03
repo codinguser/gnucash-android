@@ -16,12 +16,6 @@
 
 package org.gnucash.android.test.unit.model;
 
-import java.math.BigDecimal;
-import java.util.Currency;
-import java.util.Locale;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
 import org.gnucash.android.BuildConfig;
 import org.gnucash.android.model.Commodity;
 import org.gnucash.android.model.Money;
@@ -33,7 +27,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
-import static org.junit.Assert.*;
+import java.math.BigDecimal;
+import java.util.Currency;
+import java.util.Locale;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotSame;
 
 @RunWith(GnucashTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = 21, packageName = "org.gnucash.android", shadows = {ShadowCrashlytics.class, ShadowUserVoice.class})
@@ -138,12 +138,16 @@ public class MoneyTest{
 	public void testPrinting(){
 		assertEquals(mMoneyInEur.asString(), mMoneyInEur.toPlainString());
 		assertEquals(amountString, mMoneyInEur.asString());
-		
+
 		// the unicode for Euro symbol is \u20AC
-		String symbol = Currency.getInstance("EUR").getSymbol(Locale.GERMAN);
-		String symbolUS = Currency.getInstance("EUR").getSymbol(Locale.US);
-		assertEquals("15,75 " + symbol, mMoneyInEur.formattedString(Locale.GERMAN));
-		assertEquals("15.75 " + symbolUS, mMoneyInEur.formattedString(Locale.US));
+
+		String symbol = Currency.getInstance("EUR").getSymbol(Locale.GERMANY);
+		String actualOuputDE = mMoneyInEur.formattedString(Locale.GERMANY);
+		assertThat(actualOuputDE).isEqualTo("15,75 " + symbol);
+
+		symbol = Currency.getInstance("EUR").getSymbol(Locale.US);
+		String actualOuputUS = mMoneyInEur.formattedString(Locale.US);
+		assertThat(actualOuputUS).isEqualTo("15.75 " + symbol);
 		
 		//always prints with 2 decimal places only
 		Money some = new Money("9.7469", CURRENCY_CODE);

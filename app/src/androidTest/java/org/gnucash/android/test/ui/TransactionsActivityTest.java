@@ -36,6 +36,7 @@ import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.db.SplitsDbAdapter;
 import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.model.Account;
+import org.gnucash.android.model.Commodity;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.model.Split;
 import org.gnucash.android.model.Transaction;
@@ -121,11 +122,11 @@ public class TransactionsActivityTest extends
 		mTransactionTimeMillis = System.currentTimeMillis();
         Account account = new Account(DUMMY_ACCOUNT_NAME);
         account.setUID(DUMMY_ACCOUNT_UID);
-        account.setCurrency(Currency.getInstance(CURRENCY_CODE));
+        account.setCommodity(Commodity.getInstance(CURRENCY_CODE));
 
         Account account2 = new Account(TRANSFER_ACCOUNT_NAME);
         account2.setUID(TRANSFER_ACCOUNT_UID);
-        account2.setCurrency(Currency.getInstance(CURRENCY_CODE));
+        account2.setCommodity(Commodity.getInstance(CURRENCY_CODE));
 
         mAccountsDbAdapter.addRecord(account);
         mAccountsDbAdapter.addRecord(account2);
@@ -478,7 +479,7 @@ public class TransactionsActivityTest extends
 	@Test
 	public void testMoveTransaction(){
 		Account account = new Account("Move account");
-		account.setCurrency(Currency.getInstance(CURRENCY_CODE));
+		account.setCommodity(Commodity.getInstance(CURRENCY_CODE));
 		mAccountsDbAdapter.addRecord(account);
 
 		assertThat(mTransactionsDbAdapter.getAllTransactionsForAccount(account.getUID())).hasSize(0);

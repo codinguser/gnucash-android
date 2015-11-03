@@ -287,28 +287,33 @@ public final class Money implements Comparable<Money>{
 	 * @return String containing formatted Money representation
 	 */
     public String formattedString(Locale locale){
+/*
+//todo: enable this code for 2.1 release. Test better too
 		NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(locale);
 		Currency currency = Currency.getInstance(mCommodity.getCurrencyCode());
-		currencyFormat.setCurrency(currency);
 
 		String symbol;
-		if (mCommodity.getCurrencyCode().equalsIgnoreCase("USD") && !locale.equals(Locale.US)) {
+		if (mCommodity.equals(Commodity.USD) && !locale.equals(Locale.US)) {
 			symbol = "US$";
+		} else if (mCommodity.equals(Commodity.EUR) {
+			symbol = currency.getSymbol(Locale.GERMANY); //euro currency is pretty unique around the world
 		} else {
 			symbol = currency.getSymbol(Locale.US); // US locale has the best symbol formatting table.
 		}
 		DecimalFormatSymbols decimalFormatSymbols = ((DecimalFormat)currencyFormat).getDecimalFormatSymbols();
 		decimalFormatSymbols.setCurrencySymbol(symbol);
 		((DecimalFormat)currencyFormat).setDecimalFormatSymbols(decimalFormatSymbols);
+		currencyFormat.setMinimumFractionDigits(mCommodity.getSmallestFractionDigits());
+		currencyFormat.setMaximumFractionDigits(mCommodity.getSmallestFractionDigits());
 
 		return currencyFormat.format(asDouble());
-/*
+*/
+
 		NumberFormat formatter = NumberFormat.getInstance(locale);
 		formatter.setMinimumFractionDigits(mCommodity.getSmallestFractionDigits());
 		formatter.setMaximumFractionDigits(mCommodity.getSmallestFractionDigits());
 		Currency currency = Currency.getInstance(mCommodity.getCurrencyCode());
 		return formatter.format(asDouble()) + " " + currency.getSymbol(locale);
-*/
 	}
 
     /**

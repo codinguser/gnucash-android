@@ -22,26 +22,23 @@ import org.gnucash.android.db.CommoditiesDbAdapter;
  * At the moment only ISO4217 currencies are supported
  */
 public class Commodity extends BaseModel {
+
     public enum Namespace { ISO4217 } //Namespace for commodities
 
     private Namespace mNamespace = Namespace.ISO4217;
-/*
-    public static final Commodity USD = CommoditiesDbAdapter.getInstance().getCommodity("USD");
-    public static final Commodity EUR = CommoditiesDbAdapter.getInstance().getCommodity("EUR");
-    public static final Commodity GBP = CommoditiesDbAdapter.getInstance().getCommodity("GBP");
-    public static final Commodity CHF = CommoditiesDbAdapter.getInstance().getCommodity("CHF");
-    public static final Commodity CAD = CommoditiesDbAdapter.getInstance().getCommodity("CAD");
-    public static final Commodity JPY = CommoditiesDbAdapter.getInstance().getCommodity("JPY");
-    public static final Commodity AUD = CommoditiesDbAdapter.getInstance().getCommodity("AUD");
-*/
 
-    public static final Commodity USD = new Commodity("", "USD", 100);
-    public static final Commodity EUR = new Commodity("", "EUR", 100);
-    public static final Commodity GBP = new Commodity("", "GBP", 100);
-    public static final Commodity CHF = new Commodity("", "CHF", 100);
-    public static final Commodity CAD = new Commodity("", "CAD", 100);
-    public static final Commodity JPY = new Commodity("", "JPY", 1);
-    public static final Commodity AUD = new Commodity("", "AUD", 100);
+    /**
+     * Default commodity for device locale
+     */
+    public static Commodity DEFAULT_COMMODITY = new Commodity("US Dollars", "USD", 100); //this value is a stub. Will be overwritten when the app is launched
+
+    public static Commodity USD = new Commodity("", "USD", 100);
+    public static Commodity EUR = new Commodity("", "EUR", 100);
+    public static Commodity GBP = new Commodity("", "GBP", 100);
+    public static Commodity CHF = new Commodity("", "CHF", 100);
+    public static Commodity CAD = new Commodity("", "CAD", 100);
+    public static Commodity JPY = new Commodity("", "JPY", 1);
+    public static Commodity AUD = new Commodity("", "AUD", 100);
 
     /**
      * This is the currency code for ISO4217 currencies

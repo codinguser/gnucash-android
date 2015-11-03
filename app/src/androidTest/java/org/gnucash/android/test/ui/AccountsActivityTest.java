@@ -116,7 +116,7 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
 
 		Account account = new Account(DUMMY_ACCOUNT_NAME);
         account.setUID(DUMMY_ACCOUNT_UID);
-		account.setCurrency(Currency.getInstance(DUMMY_ACCOUNT_CURRENCY_CODE));
+		account.setCommodity(Commodity.getInstance(DUMMY_ACCOUNT_CURRENCY_CODE));
 		mAccountsDbAdapter.addRecord(account);
         refreshAccountsList();
 	}
@@ -202,7 +202,7 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
     @Test
     public void testChangeParentAccount() {
         final String accountName = "Euro Account";
-        Account account = new Account(accountName, Currency.getInstance("EUR"));
+        Account account = new Account(accountName, Commodity.EUR);
         mAccountsDbAdapter.addRecord(account);
 
         refreshAccountsList();
@@ -283,7 +283,7 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
                 .perform(click());
 
         Account account = new Account("Transfer Account");
-        account.setCurrency(Currency.getInstance(DUMMY_ACCOUNT_CURRENCY.getCurrencyCode()));
+        account.setCommodity(Commodity.getInstance(DUMMY_ACCOUNT_CURRENCY.getCurrencyCode()));
         Transaction transaction = new Transaction("Simple trxn");
         transaction.setCurrencyCode(DUMMY_ACCOUNT_CURRENCY.getCurrencyCode());
         Split split = new Split(new Money(BigDecimal.TEN, DUMMY_ACCOUNT_CURRENCY), account.getUID());

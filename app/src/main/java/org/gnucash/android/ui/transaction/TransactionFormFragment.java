@@ -58,6 +58,7 @@ import com.codetroopers.betterpickers.recurrencepicker.RecurrencePickerDialog;
 
 import org.gnucash.android.R;
 import org.gnucash.android.db.AccountsDbAdapter;
+import org.gnucash.android.db.CommoditiesDbAdapter;
 import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.db.ScheduledActionDbAdapter;
 import org.gnucash.android.db.TransactionsDbAdapter;
@@ -796,7 +797,8 @@ public class TransactionFormFragment extends Fragment implements
 
             String currencyCode = mAccountsDbAdapter.getAccountCurrencyCode(mAccountUID);
             mTransaction.setCurrencyCode(currencyCode);
-            mTransaction.setCommodityUID(mAccountsDbAdapter.getCommodityUID(currencyCode));
+            Commodity commodity = CommoditiesDbAdapter.getInstance().getCommodity(currencyCode);
+            mTransaction.setCommodity(commodity);
             mTransaction.setTime(cal.getTimeInMillis());
             mTransaction.setNote(notes);
 

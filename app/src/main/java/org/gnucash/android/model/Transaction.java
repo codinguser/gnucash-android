@@ -19,9 +19,7 @@ package org.gnucash.android.model;
 import android.content.Intent;
 
 import org.gnucash.android.BuildConfig;
-import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.AccountsDbAdapter;
-import org.gnucash.android.db.CommoditiesDbAdapter;
 import org.gnucash.android.export.ofx.OfxHelper;
 import org.gnucash.android.model.Account.OfxAccountType;
 import org.w3c.dom.Document;
@@ -90,7 +88,7 @@ public class Transaction extends BaseModel{
     /**
      * GUID of commodity associated with this transaction
      */
-    private String mCommodityUID;
+    private Commodity mCommodity;
 
     /**
      * The splits making up this transaction
@@ -168,7 +166,7 @@ public class Transaction extends BaseModel{
 	 * Initializes the different fields to their default values.
 	 */
 	private void initDefaults(){
-        mCurrencyCode = Money.DEFAULT_CURRENCY_CODE;
+        setCommodity(Commodity.DEFAULT_COMMODITY);
 		this.mTimestamp = System.currentTimeMillis();
 	}
 
@@ -345,19 +343,20 @@ public class Transaction extends BaseModel{
     }
 
     /**
-     * Returns the GUID of the commodity for this transaction
-     * @return GUID of commodity
+     * Returns the  commodity for this transaction
+     * @return Commodity of the transaction
      */
-    public String getCommodityUID() {
-        return mCommodityUID;
+    public Commodity getCommodity() {
+        return mCommodity;
     }
 
     /**
      * Sets the commodity for this transaction
-     * @param commodityUID GUID of commodity
+     * @param commodity Commodity instance
      */
-    public void setCommodityUID(String commodityUID) {
-        this.mCommodityUID = commodityUID;
+    public void setCommodity(Commodity commodity) {
+        this.mCommodity = commodity;
+        this.mCurrencyCode = commodity.getCurrencyCode();
     }
 
     /**

@@ -21,6 +21,16 @@ public class CommoditiesDbAdapter extends DatabaseAdapter<Commodity> {
      */
     public CommoditiesDbAdapter(SQLiteDatabase db) {
         super(db, CommodityEntry.TABLE_NAME);
+        /**
+         * initialize commonly used commodities
+         */
+        Commodity.USD = getCommodity("USD");
+        Commodity.EUR = getCommodity("EUR");
+        Commodity.GBP = getCommodity("GBP");
+        Commodity.CHF = getCommodity("CHF");
+        Commodity.CAD = getCommodity("CAD");
+        Commodity.JPY = getCommodity("JPY");
+        Commodity.AUD = getCommodity("AUD");
     }
 
     public static CommoditiesDbAdapter getInstance(){
@@ -49,7 +59,7 @@ public class CommoditiesDbAdapter extends DatabaseAdapter<Commodity> {
         mReplaceStatement.bindString(5, commodity.getLocalSymbol());
         mReplaceStatement.bindString(6, commodity.getCusip());
         mReplaceStatement.bindLong(7, commodity.getSmallestFraction());
-        mReplaceStatement.bindLong(8,   commodity.getQuoteFlag());
+        mReplaceStatement.bindLong(8, commodity.getQuoteFlag());
 
         return mReplaceStatement;
     }
