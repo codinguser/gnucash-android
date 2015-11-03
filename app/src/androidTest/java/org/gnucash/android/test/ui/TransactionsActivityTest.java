@@ -57,6 +57,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import static android.support.test.espresso.Espresso.onData;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.clearText;
 import static android.support.test.espresso.action.ViewActions.click;
@@ -70,6 +71,7 @@ import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 
@@ -493,6 +495,46 @@ public class TransactionsActivityTest extends
 
 		assertThat(mTransactionsDbAdapter.getAllTransactionsForAccount(account.getUID())).hasSize(1);
 
+	}
+
+//	@Test //// FIXME: 03.11.2015 fix and re-enable this test
+	public void editingSplit_shouldNotSetAmountToZero(){
+		setDoubleEntryEnabled(true);
+		mTransactionsDbAdapter.deleteAllRecords();
+
+		Account account = new Account("Z Account", Commodity.getInstance(CURRENCY_CODE));
+		mAccountsDbAdapter.addRecord(account);
+
+		onView(withId(R.id.fab_create_transaction)).perform(click());
+
+		onView(withId(R.id.input_transaction_name)).perform(typeText("Test Split"));
+		onView(withId(R.id.input_transaction_amount)).perform(typeText("1024"));
+
+		onView(withId(R.id.menu_save)).perform(click());
+
+		onView(withText("Test Split")).perform(click());
+		onView(withId(R.id.fab_edit_transaction)).perform(click());
+
+		onView(withId(R.id.btn_split_editor)).perform(click());
+
+//		onView(withSpinnerText(DUMMY_ACCOUNT_NAME)).perform(click()); //// FIXME: 03.11.2015 properly select the spinner
+		onData(withId(R.id.input_accounts_spinner))
+				.inAdapterView(withId(R.id.split_list_layout))
+				.atPosition(1)
+				.perform(click());
+		onData(allOf(is(instanceOf(String.class)), is(account.getFullName()))).perform(click());
+//		onView(withText(account.getFullName())).perform(click());
+
+		onView(withId(R.id.menu_save)).perform(click());
+		onView(withId(R.id.menu_save)).perform(click());
+
+		//split should have moved from account, it should now be empty
+		onView(withId(R.id.empty_view)).check(matches(isDisplayed()));
+
+		assertThat(mAccountsDbAdapter.getAccountBalance(DUMMY_ACCOUNT_UID)).isEqualTo(Money.createZeroInstance(CURRENCY_CODE));
+
+		//split
+		assertThat(mAccountsDbAdapter.getAccountBalance(account.getUID())).isEqualTo(new Money("1024", CURRENCY_CODE));
 	}
 
 	@Test

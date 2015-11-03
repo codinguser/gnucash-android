@@ -740,7 +740,9 @@ public class TransactionFormFragment extends Fragment implements
         }
 
         //capture any edits which were done directly (not using split editor)
-        if (mSplitsList.size() == 2 && mSplitsList.get(0).isPairOf(mSplitsList.get(1))) {
+        if (mSplitsList.size() == 2 && mSplitsList.get(0).isPairOf(mSplitsList.get(1))
+                //we also check that at least one of the splits belongs to this account, otherwise the account was changed in the splits and the value would be zero
+                && (mSplitsList.get(0).getAccountUID().equals(mAccountUID) || mSplitsList.get(1).getAccountUID().equals(mAccountUID))) {
             //if it is a simple transfer where the editor was not used, then respect the button
             for (Split split : mSplitsList) {
                 if (split.getAccountUID().equals(mAccountUID)){
