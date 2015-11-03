@@ -15,6 +15,8 @@
  */
 package org.gnucash.android.model;
 
+import org.gnucash.android.db.CommoditiesDbAdapter;
+
 /**
  * Commodities are the currencies used in the application.
  * At the moment only ISO4217 currencies are supported
@@ -23,6 +25,23 @@ public class Commodity extends BaseModel {
     public enum Namespace { ISO4217 } //Namespace for commodities
 
     private Namespace mNamespace = Namespace.ISO4217;
+/*
+    public static final Commodity USD = CommoditiesDbAdapter.getInstance().getCommodity("USD");
+    public static final Commodity EUR = CommoditiesDbAdapter.getInstance().getCommodity("EUR");
+    public static final Commodity GBP = CommoditiesDbAdapter.getInstance().getCommodity("GBP");
+    public static final Commodity CHF = CommoditiesDbAdapter.getInstance().getCommodity("CHF");
+    public static final Commodity CAD = CommoditiesDbAdapter.getInstance().getCommodity("CAD");
+    public static final Commodity JPY = CommoditiesDbAdapter.getInstance().getCommodity("JPY");
+    public static final Commodity AUD = CommoditiesDbAdapter.getInstance().getCommodity("AUD");
+*/
+
+    public static final Commodity USD = new Commodity("", "USD", 100);
+    public static final Commodity EUR = new Commodity("", "EUR", 100);
+    public static final Commodity GBP = new Commodity("", "GBP", 100);
+    public static final Commodity CHF = new Commodity("", "CHF", 100);
+    public static final Commodity CAD = new Commodity("", "CAD", 100);
+    public static final Commodity JPY = new Commodity("", "JPY", 1);
+    public static final Commodity AUD = new Commodity("", "AUD", 100);
 
     /**
      * This is the currency code for ISO4217 currencies
@@ -46,6 +65,23 @@ public class Commodity extends BaseModel {
         setSmallestFraction(smallestFraction);
     }
 
+    /**
+     * Returns an instance of commodity for the specified currencyCode
+     * @param currencyCode ISO 4217 currency code (3-letter)
+     */
+    public static Commodity getInstance(String currencyCode){
+        switch (currencyCode){ //save time for database trip
+            case "USD": return USD;
+            case "EUR": return EUR;
+            case "GBP": return GBP;
+            case "CHF": return CHF;
+            case "JPY": return JPY;
+            case "AUD": return AUD;
+            case "CAD": return CAD;
+            default: return CommoditiesDbAdapter.getInstance().getCommodity(currencyCode);
+        }
+    }
+
     public Namespace getNamespace() {
         return mNamespace;
     }
@@ -60,6 +96,14 @@ public class Commodity extends BaseModel {
      */
     public String getMnemonic() {
         return mMnemonic;
+    }
+
+    /**
+     * Alias for {@link #getMnemonic()}
+     * @return ISO 4217 code for this commodity
+     */
+    public String getCurrencyCode(){
+        return getMnemonic();
     }
 
     public void setMnemonic(String mMnemonic) {
@@ -114,7 +158,10 @@ public class Commodity extends BaseModel {
 
     /**
      * Returns the (minimum) number of digits that this commodity supports in its fractional part
+     * <p>For any unsupported values for the smallest fraction, a default value of 2 is returned.
+     * Supported values for the smallest fraction are powers of 10 i.e. 1, 10, 100 etc</p>
      * @return Number of digits in fraction
+     * @see #getSmallestFraction()
      */
     public int getSmallestFractionDigits(){
         switch (mSmallestFraction) {
@@ -122,8 +169,12 @@ public class Commodity extends BaseModel {
             case 10:    return 1;
             case 100:   return 2;
             case 1000:  return 3;
+            case 10000: return 4;
+            case 100000: return 5;
+            case 1000000: return 6;
             default:
-                throw new UnsupportedOperationException("Invalid fraction digits in commodity with fraction: " + mSmallestFraction);
+                return 2;
+                //throw new UnsupportedOperationException("Invalid fraction digits in commodity with fraction: " + mSmallestFraction);
         }
     }
 
@@ -135,7 +186,9 @@ public class Commodity extends BaseModel {
      * @throws IllegalArgumentException if the smallest fraction is not a power of 10
      */
     public void setSmallestFraction(int smallestFraction) {
-        if (smallestFraction != 1 && smallestFraction != 10 && smallestFraction != 100 && smallestFraction != 1000 && smallestFraction != 10000) //make sure we are not getting digits
+        if (smallestFraction != 1 && smallestFraction != 10 && smallestFraction != 100
+                && smallestFraction != 1000 && smallestFraction != 10000
+                && smallestFraction != 1000000 ) //make sure we are not getting digits
             this.mSmallestFraction = 100;
         else
             this.mSmallestFraction = smallestFraction;
@@ -147,5 +200,27 @@ public class Commodity extends BaseModel {
 
     public void setQuoteFlag(int quoteFlag) {
         this.mQuoteFlag = quoteFlag;
+    }
+
+    /**
+     * Overrides {@link BaseModel#equals(Object)} to compare only the currency codes of the commodity.
+     * <p>Two commodities are considered equal if they have the same currency code</p>
+     * @param o Commodity instance to compare
+     * @return {@code true} if both instances have same currency code, {@code false} otherwise
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Commodity commodity = (Commodity) o;
+
+        return mMnemonic.equals(commodity.mMnemonic);
+
+    }
+
+    @Override
+    public int hashCode() {
+        return mMnemonic.hashCode();
     }
 }

@@ -62,6 +62,7 @@ import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.db.ScheduledActionDbAdapter;
 import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.model.AccountType;
+import org.gnucash.android.model.Commodity;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.model.ScheduledAction;
 import org.gnucash.android.model.Split;
@@ -269,9 +270,9 @@ public class TransactionFormFragment extends Fragment implements
             return;
 
         BigDecimal amountBigd = mAmountEditText.getValue();
-        if (mSplitQuantity != null || amountBigd.equals(BigDecimal.ZERO))
+        if (amountBigd.equals(BigDecimal.ZERO))
             return;
-        Money amount 	= new Money(amountBigd, fromCurrency).absolute();
+        Money amount 	= new Money(amountBigd, Commodity.getInstance(fromCurrency.getCurrencyCode())).absolute();
 
         TransferFundsDialogFragment fragment
                 = TransferFundsDialogFragment.getInstance(amount, targetCurrency, this);
@@ -724,7 +725,7 @@ public class TransactionFormFragment extends Fragment implements
 		BigDecimal amountBigd = mAmountEditText.getValue();
 
 		Currency currency = Currency.getInstance(mTransactionsDbAdapter.getAccountCurrencyCode(mAccountUID));
-		Money amount 	= new Money(amountBigd, currency).absolute();
+		Money amount 	= new Money(amountBigd, Commodity.getInstance(currency.getCurrencyCode())).absolute();
 
         if (mSplitsList.size() == 1){ //means split editor was opened but no split was added
             String transferAcctUID;

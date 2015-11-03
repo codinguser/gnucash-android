@@ -335,6 +335,14 @@ public class Account extends BaseModel{
 	}
 
 	/**
+	 * Return the commodity for this account
+	 * @return
+	 */
+	public Commodity getCommodity(){
+		return Commodity.getInstance(mCurrency.getCurrencyCode());
+	}
+
+	/**
 	 * Sets the currency to be used by this account
 	 * @param currency the mCurrency to set
 	 */

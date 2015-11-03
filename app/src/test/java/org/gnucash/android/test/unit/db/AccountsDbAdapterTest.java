@@ -11,6 +11,7 @@ import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.importer.GncXmlImporter;
 import org.gnucash.android.model.Account;
 import org.gnucash.android.model.AccountType;
+import org.gnucash.android.model.Commodity;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.model.ScheduledAction;
 import org.gnucash.android.model.Split;
@@ -261,7 +262,7 @@ public class AccountsDbAdapterTest{
 
         Transaction transaction = new Transaction("Test description");
         mTransactionsDbAdapter.addRecord(transaction);
-        Split split = new Split(new Money(BigDecimal.TEN, Currency.getInstance("USD")), account.getUID());
+        Split split = new Split(new Money(BigDecimal.TEN, Commodity.getInstance("USD")), account.getUID());
         split.setTransactionUID(transaction.getUID());
         split.setType(TransactionType.DEBIT);
         mSplitsDbAdapter.addRecord(split);

@@ -1,6 +1,7 @@
 package org.gnucash.android.test.unit.model;
 
 import org.gnucash.android.BuildConfig;
+import org.gnucash.android.model.Commodity;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.model.Split;
 import org.gnucash.android.model.Transaction;
@@ -40,7 +41,7 @@ public class SplitTest {
 
     @Test
     public void testCloning(){
-        Split split = new Split(new Money(BigDecimal.TEN, Currency.getInstance("EUR")), "random-account");
+        Split split = new Split(new Money(BigDecimal.TEN, Commodity.getInstance("EUR")), "random-account");
         split.setTransactionUID("terminator-trx");
         split.setType(TransactionType.CREDIT);
 
@@ -57,7 +58,7 @@ public class SplitTest {
      */
     @Test
     public void shouldCreateInversePair(){
-        Split split = new Split(new Money("2"), "dummy");
+        Split split = new Split(new Money("2", "USD"), "dummy");
         split.setType(TransactionType.CREDIT);
         split.setTransactionUID("random-trx");
         Split pair = split.createPair("test");
@@ -70,7 +71,7 @@ public class SplitTest {
 
     @Test
     public void shouldGenerateValidCsv(){
-        Split split = new Split(new Money(BigDecimal.TEN, Currency.getInstance("EUR")), "random-account");
+        Split split = new Split(new Money(BigDecimal.TEN, Commodity.getInstance("EUR")), "random-account");
         split.setTransactionUID("terminator-trx");
         split.setType(TransactionType.CREDIT);
 

@@ -205,7 +205,7 @@ public class TransferFundsDialogFragment extends DialogFragment {
             }
 
             BigDecimal amount = TransactionFormFragment.parseInputToDecimal(convertedAmount);
-            mConvertedAmount = new Money(amount, mTargetCurrency);
+            mConvertedAmount = new Money(amount, Commodity.getInstance(mTargetCurrency.getCurrencyCode()));
         }
 
         if (mOnTransferFundsListener != null) {

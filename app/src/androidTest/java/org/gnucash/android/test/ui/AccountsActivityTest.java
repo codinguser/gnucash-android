@@ -40,6 +40,7 @@ import org.gnucash.android.db.SplitsDbAdapter;
 import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.model.Account;
 import org.gnucash.android.model.AccountType;
+import org.gnucash.android.model.Commodity;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.model.Split;
 import org.gnucash.android.model.Transaction;
@@ -80,7 +81,7 @@ import static org.hamcrest.Matchers.not;
 @RunWith(AndroidJUnit4.class)
 public class AccountsActivityTest extends ActivityInstrumentationTestCase2<AccountsActivity> {
 	private static final String DUMMY_ACCOUNT_CURRENCY_CODE = "USD";
-    private static final Currency DUMMY_ACCOUNT_CURRENCY = Currency.getInstance(DUMMY_ACCOUNT_CURRENCY_CODE);
+    private static final Commodity DUMMY_ACCOUNT_CURRENCY = Commodity.getInstance(DUMMY_ACCOUNT_CURRENCY_CODE);
 	private static final String DUMMY_ACCOUNT_NAME = "Dummy account";
     public static final String  DUMMY_ACCOUNT_UID   = "dummy-account";
     private DatabaseHelper mDbHelper;
@@ -282,7 +283,7 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
                 .perform(click());
 
         Account account = new Account("Transfer Account");
-        account.setCurrency(DUMMY_ACCOUNT_CURRENCY);
+        account.setCurrency(Currency.getInstance(DUMMY_ACCOUNT_CURRENCY.getCurrencyCode()));
         Transaction transaction = new Transaction("Simple trxn");
         transaction.setCurrencyCode(DUMMY_ACCOUNT_CURRENCY.getCurrencyCode());
         Split split = new Split(new Money(BigDecimal.TEN, DUMMY_ACCOUNT_CURRENCY), account.getUID());
