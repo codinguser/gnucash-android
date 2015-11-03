@@ -366,7 +366,7 @@ public class PieChartFragment extends Fragment implements OnChartValueSelectedLi
         if (e == null) return;
         String label = mChart.getData().getXVals().get(e.getXIndex());
         float value = e.getVal();
-        float percent = value / mChart.getYValueSum() * 100;
+        float percent = value / mChart.getData().getYValueSum() * 100;
         mSelectedValueTextView.setText(String.format(SELECTED_VALUE_PATTERN, label, value, percent));
     }
 
