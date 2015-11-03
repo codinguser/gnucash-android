@@ -796,11 +796,12 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
     public Money getAccountsBalance(List<String> accountUIDList, long startTimestamp, long endTimestamp) {
         String currencyCode = GnuCashApplication.getDefaultCurrencyCode();
         Money balance = Money.createZeroInstance(currencyCode);
+        boolean hasDebitNormalBalance = getAccountType(accountUIDList.get(0)).hasDebitNormalBalance();
 
         SplitsDbAdapter splitsDbAdapter = SplitsDbAdapter.getInstance();
         Money splitSum = (startTimestamp == -1 && endTimestamp == -1)
-                ? splitsDbAdapter.computeSplitBalance(accountUIDList, currencyCode, true)
-                : splitsDbAdapter.computeSplitBalance(accountUIDList, currencyCode, true, startTimestamp, endTimestamp);
+                ? splitsDbAdapter.computeSplitBalance(accountUIDList, currencyCode, hasDebitNormalBalance)
+                : splitsDbAdapter.computeSplitBalance(accountUIDList, currencyCode, hasDebitNormalBalance, startTimestamp, endTimestamp);
 
         return balance.add(splitSum);
     }
