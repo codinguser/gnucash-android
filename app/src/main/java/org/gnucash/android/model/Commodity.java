@@ -1,3 +1,18 @@
+/*
+ * Copyright (c) 2015 Ngewi Fet <ngewif@gmail.com>
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.gnucash.android.model;
 
 /**
@@ -16,19 +31,19 @@ public class Commodity extends BaseModel {
     private String mFullname;
     private String mCusip;
     private String mLocalSymbol = "";
-    private int mFraction;
+    private int mSmallestFraction;
     private int mQuoteFlag;
 
     /**
      * Create a new commodity
      * @param fullname Official full name of the currency
      * @param mnemonic Official abbreviated designation for the currency
-     * @param fraction Number of sub-units that the basic commodity can be divided into
+     * @param smallestFraction Number of sub-units that the basic commodity can be divided into, as power of 10. e.g. 10^&lt;number_of_fraction_digits&gt;
      */
-    public Commodity(String fullname, String mnemonic, int fraction){
+    public Commodity(String fullname, String mnemonic, int smallestFraction){
         this.mFullname = fullname;
         this.mMnemonic = mnemonic;
-        this.mFraction = fraction;
+        setSmallestFraction(smallestFraction);
     }
 
     public Namespace getNamespace() {
@@ -88,12 +103,42 @@ public class Commodity extends BaseModel {
         this.mLocalSymbol = localSymbol;
     }
 
-    public int getFraction() {
-        return mFraction;
+    /**
+     * Returns the smallest fraction supported by the commodity as a power of 10.
+     * <p>i.e. for commodities with no fractions, 1 is returned, for commodities with 2 fractions, 100 is returned</p>
+     * @return Smallest fraction as power of 10
+     */
+    public int getSmallestFraction() {
+        return mSmallestFraction;
     }
 
-    public void setFraction(int fraction) {
-        this.mFraction = fraction;
+    /**
+     * Returns the (minimum) number of digits that this commodity supports in its fractional part
+     * @return Number of digits in fraction
+     */
+    public int getSmallestFractionDigits(){
+        switch (mSmallestFraction) {
+            case 1:     return 0;
+            case 10:    return 1;
+            case 100:   return 2;
+            case 1000:  return 3;
+            default:
+                throw new UnsupportedOperationException("Invalid fraction digits in commodity with fraction: " + mSmallestFraction);
+        }
+    }
+
+    /**
+     * Sets the smallest fraction for the commodity.
+     * <p>The fraction is a power of 10. So commodities with 2 fraction digits, have fraction of 10^2 = 100.<br>
+     *     If the parameter is any other value, a default fraction of 100 will be set</p>
+     * @param smallestFraction Smallest fraction as power of ten
+     * @throws IllegalArgumentException if the smallest fraction is not a power of 10
+     */
+    public void setSmallestFraction(int smallestFraction) {
+        if (smallestFraction != 1 && smallestFraction != 10 && smallestFraction != 100 && smallestFraction != 1000 && smallestFraction != 10000) //make sure we are not getting digits
+            this.mSmallestFraction = 100;
+        else
+            this.mSmallestFraction = smallestFraction;
     }
 
     public int getQuoteFlag() {

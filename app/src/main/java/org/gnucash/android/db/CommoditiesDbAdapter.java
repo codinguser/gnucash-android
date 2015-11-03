@@ -37,7 +37,7 @@ public class CommoditiesDbAdapter extends DatabaseAdapter<Commodity> {
                     + CommodityEntry.COLUMN_MNEMONIC        + " , "
                     + CommodityEntry.COLUMN_LOCAL_SYMBOL    + " , "
                     + CommodityEntry.COLUMN_CUSIP           + " , "
-                    + CommodityEntry.COLUMN_FRACTION        + " , "
+                    + CommodityEntry.COLUMN_SMALLEST_FRACTION + " , "
                     + CommodityEntry.COLUMN_QUOTE_FLAG      + " ) VALUES ( ? , ? , ? , ? , ? , ? , ? , ? ) ");
         }
 
@@ -48,7 +48,7 @@ public class CommoditiesDbAdapter extends DatabaseAdapter<Commodity> {
         mReplaceStatement.bindString(4, commodity.getMnemonic());
         mReplaceStatement.bindString(5, commodity.getLocalSymbol());
         mReplaceStatement.bindString(6, commodity.getCusip());
-        mReplaceStatement.bindLong(7, commodity.getFraction());
+        mReplaceStatement.bindLong(7, commodity.getSmallestFraction());
         mReplaceStatement.bindLong(8,   commodity.getQuoteFlag());
 
         return mReplaceStatement;
@@ -62,7 +62,7 @@ public class CommoditiesDbAdapter extends DatabaseAdapter<Commodity> {
         String cusip = cursor.getString(cursor.getColumnIndexOrThrow(CommodityEntry.COLUMN_CUSIP));
         String localSymbol = cursor.getString(cursor.getColumnIndexOrThrow(CommodityEntry.COLUMN_LOCAL_SYMBOL));
 
-        int fraction = cursor.getInt(cursor.getColumnIndexOrThrow(CommodityEntry.COLUMN_FRACTION));
+        int fraction = cursor.getInt(cursor.getColumnIndexOrThrow(CommodityEntry.COLUMN_SMALLEST_FRACTION));
         int quoteFlag = cursor.getInt(cursor.getColumnIndexOrThrow(CommodityEntry.COLUMN_QUOTE_FLAG));
 
         Commodity commodity = new Commodity(fullname, mnemonic, fraction);

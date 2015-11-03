@@ -23,6 +23,7 @@ import android.util.Log;
 import com.crashlytics.android.Crashlytics;
 
 import org.gnucash.android.app.GnuCashApplication;
+import org.gnucash.android.db.CommoditiesDbAdapter;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -49,11 +50,12 @@ import java.util.Locale;
  */
 public final class Money implements Comparable<Money>{
 
+	//// FIXME: 03.11.2015 Currency#getDefaultFractionDigits() is unreliable. Switch to Commodity
 	/**
 	 * Currency of the account
 	 */
 	private Currency mCurrency;
-	
+
 	/**
 	 * Amount value held by this object
 	 */
@@ -135,7 +137,17 @@ public final class Money implements Comparable<Money>{
 		this.mAmount = amount;
 		setCurrency(currency);
 	}
-	
+
+	/**
+	 * Creates a new money amount
+	 * @param amount Value of the amount
+	 * @param commodity Commodity of the money
+	 */
+	public Money(BigDecimal amount, Commodity commodity){
+		this.mAmount = amount;
+		mCurrency = Currency.getInstance(commodity.getMnemonic());
+	}
+
 	/**
 	 * Overloaded constructor.
 	 * Accepts strings as arguments and parses them to create the Money object
@@ -269,7 +281,8 @@ public final class Money implements Comparable<Money>{
 	 * @return Scale of amount as integer
 	 */
 	private int getScale() {
-		int scale = mCurrency.getDefaultFractionDigits();
+		Commodity commodity = CommoditiesDbAdapter.getInstance().getCommodity(mCurrency.getCurrencyCode());
+		int scale = commodity.getSmallestFractionDigits();
 		if (scale < 0) {
 			scale = mAmount.scale();
 		}
@@ -322,8 +335,9 @@ public final class Money implements Comparable<Money>{
 	 */
     public String formattedString(Locale locale){
 		NumberFormat formatter = NumberFormat.getInstance(locale);
-		formatter.setMinimumFractionDigits(mCurrency.getDefaultFractionDigits());
-		formatter.setMaximumFractionDigits(mCurrency.getDefaultFractionDigits());
+		Commodity commodity = CommoditiesDbAdapter.getInstance().getCommodity(mCurrency.getCurrencyCode());
+		formatter.setMinimumFractionDigits(commodity.getSmallestFractionDigits());
+		formatter.setMaximumFractionDigits(commodity.getSmallestFractionDigits());
 		return formatter.format(asDouble()) + " " + mCurrency.getSymbol(locale);
 	}
 
@@ -349,7 +363,8 @@ public final class Money implements Comparable<Money>{
 	 * @param amount {@link BigDecimal} amount to be set
 	 */
 	private void setAmount(BigDecimal amount) {
-		mAmount = amount.setScale(mCurrency.getDefaultFractionDigits(), ROUNDING_MODE);
+		Commodity commodity = CommoditiesDbAdapter.getInstance().getCommodity(mCurrency.getCurrencyCode());
+		mAmount = amount.setScale(commodity.getSmallestFractionDigits(), ROUNDING_MODE);
 	}
 	
 	/**
@@ -472,20 +487,8 @@ public final class Money implements Comparable<Money>{
 	 * @return String representation of the amount (without currency) of the Money object
 	 */
 	public String toPlainString(){
-		return mAmount.setScale(mCurrency.getDefaultFractionDigits(), ROUNDING_MODE).toPlainString();
-	}
-
-	/**
-	 * Returns the formatted amount in the default locale
-	 * <p>This prints the money amount with locale formatting like the decimal separation character</p>
-	 * @return Locale-formatted amount
-	 */
-	public String formattedAmount(){
-		NumberFormat formatter = NumberFormat.getInstance();
-		formatter.setMinimumFractionDigits(mCurrency.getDefaultFractionDigits());
-		formatter.setMaximumFractionDigits(mCurrency.getDefaultFractionDigits());
-		formatter.setGroupingUsed(false);
-		return formatter.format(asDouble());
+		Commodity commodity = CommoditiesDbAdapter.getInstance().getCommodity(getCurrency().getCurrencyCode());
+		return mAmount.setScale(commodity.getSmallestFractionDigits(), ROUNDING_MODE).toPlainString();
 	}
 
 	/**

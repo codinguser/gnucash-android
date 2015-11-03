@@ -21,12 +21,21 @@ import java.util.Currency;
 import java.util.Locale;
 
 import static org.assertj.core.api.Assertions.assertThat;
+
+import org.gnucash.android.BuildConfig;
 import org.gnucash.android.model.Money;
+import org.gnucash.android.test.unit.util.GnucashTestRunner;
+import org.gnucash.android.test.unit.util.ShadowCrashlytics;
+import org.gnucash.android.test.unit.util.ShadowUserVoice;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.annotation.Config;
 
 import static org.junit.Assert.*;
 
+@RunWith(GnucashTestRunner.class)
+@Config(constants = BuildConfig.class, sdk = 21, packageName = "org.gnucash.android", shadows = {ShadowCrashlytics.class, ShadowUserVoice.class})
 public class MoneyTest{
 
 	private static final String CURRENCY_CODE = "EUR";

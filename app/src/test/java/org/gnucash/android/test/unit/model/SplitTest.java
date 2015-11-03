@@ -1,10 +1,16 @@
 package org.gnucash.android.test.unit.model;
 
+import org.gnucash.android.BuildConfig;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.model.Split;
 import org.gnucash.android.model.Transaction;
 import org.gnucash.android.model.TransactionType;
+import org.gnucash.android.test.unit.util.GnucashTestRunner;
+import org.gnucash.android.test.unit.util.ShadowCrashlytics;
+import org.gnucash.android.test.unit.util.ShadowUserVoice;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.annotation.Config;
 
 import java.math.BigDecimal;
 import java.util.Currency;
@@ -16,6 +22,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Ngewi
  */
+@RunWith(GnucashTestRunner.class)
+@Config(constants = BuildConfig.class, sdk = 21, packageName = "org.gnucash.android", shadows = {ShadowCrashlytics.class, ShadowUserVoice.class})
 public class SplitTest {
 
     @Test
