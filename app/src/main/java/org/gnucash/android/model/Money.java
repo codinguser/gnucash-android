@@ -84,7 +84,7 @@ public final class Money implements Comparable<Money>{
      */
     public static Money getZeroInstance(){
 		if (sDefaultZero == null) {
-			String currencyCode = Currency.getInstance(GnuCashApplication.getDefaultLocale()).getCurrencyCode();
+			String currencyCode = GnuCashApplication.getDefaultCurrencyCode();
 			sDefaultZero = new Money(BigDecimal.ZERO, Commodity.getInstance(currencyCode));
 		}
 		return sDefaultZero;
@@ -211,9 +211,11 @@ public final class Money implements Comparable<Money>{
 		try {
 			return mAmount.scaleByPowerOfTen(getScale()).longValueExact();
 		} catch (ArithmeticException e) {
-			Log.e(getClass().getName(), "Currency " + mCommodity.getCurrencyCode() +
+			String msg = "Currency " + mCommodity.getCurrencyCode() +
 					" with scale " + getScale() +
-					" has amount " + mAmount.toString());
+					" has amount " + mAmount.toString();
+			Crashlytics.log(msg);
+			Log.e(getClass().getName(), msg);
 			throw e;
 		}
 	}
@@ -225,16 +227,14 @@ public final class Money implements Comparable<Money>{
 	 */
 	public long getDenominator() {
 		switch (getScale()) {
-			case 0:
-				return 1;
-			case 1:
-				return 10;
-			case 2:
-				return 100;
-			case 3:
-				return 1000;
-			case 4:
-				return 10000;
+			case 0: return 1;
+			case 1: return 10;
+			case 2: return 100;
+			case 3: return 1000;
+			case 4: return 10000;
+			case 5: return 100000;
+			case 6: return 1000000; //I think GnuCash XML can have gold and silver with this denom
+
 		}
 		throw new RuntimeException("Unsupported number of fraction digits " + getScale());
 	}

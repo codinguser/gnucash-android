@@ -317,7 +317,7 @@ public class CalculatorEditText extends EditText {
     public BigDecimal getValue(){
         evaluate();
         String amountString = getCleanString();
-        if (amountString.isEmpty())
+        if (amountString.isEmpty() || !amountString.matches("\\d+")) //value should contain atleast one digit
             return null;
         return new BigDecimal(amountString);
     }
