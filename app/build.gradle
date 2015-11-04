@@ -6,7 +6,7 @@ apply plugin: 'io.fabric'
 def versionMajor = 2
 def versionMinor = 0
 def versionPatch = 1
-def versionBuild = 0
+def versionBuild = 1
 
 def buildTime() {
     def df = new SimpleDateFormat("yyyyMMdd HH:mm 'UTC'")
@@ -138,11 +138,13 @@ afterEvaluate {
         output.eachLine {
             def serial = it.split("\\s")[0]
             commandLine "$adb -s $serial shell pm grant $android.productFlavors.development.applicationId android.permission.SET_ANIMATION_SCALE".split(' ')
+            commandLine "$adb -s $serial shell pm grant $android.productFlavors.development.applicationId android.permission.WRITE_EXTERNAL_STORAGE".split(' ')
         }
     }
 
     task grantAnimationPermissionProduction(type: Exec, dependsOn: 'installProductionDebug'){
         commandLine "$adb -e shell pm grant $android.defaultConfig.applicationId android.permission.SET_ANIMATION_SCALE".split(' ')
+        commandLine "$adb -e shell pm grant $android.defaultConfig.applicationId android.permission.WRITE_EXTERNAL_STORAGE".split(' ')
     }
     // When launching individual tests from Android Studio, it seems that only the assemble tasks
     // get called directly, not the install* versions

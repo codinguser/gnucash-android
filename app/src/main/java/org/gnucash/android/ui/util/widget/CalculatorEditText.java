@@ -317,9 +317,17 @@ public class CalculatorEditText extends EditText {
     public BigDecimal getValue(){
         evaluate();
         String amountString = getCleanString();
-        if (amountString.isEmpty() || !amountString.matches("\\d+")) //value should contain atleast one digit
+        if (amountString.isEmpty())
             return null;
-        return new BigDecimal(amountString);
+        try { //catch any exceptions in the conversion e.g. if a string with only "-" is entered
+            return new BigDecimal(amountString);
+        } catch (Exception e){
+            String msg = "Error parsing amount string " + amountString + " from CalculatorEditText";
+            Log.i(getClass().getSimpleName(), msg, e);
+            Crashlytics.log(msg);
+            Crashlytics.logException(e);
+            return null;
+        }
     }
 
     /**
