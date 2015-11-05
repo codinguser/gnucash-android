@@ -31,7 +31,6 @@ import org.xml.sax.SAXException;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Locale;
 
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -143,7 +142,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + CommodityEntry.COLUMN_MNEMONIC    + " varchar(255) not null, "
             + CommodityEntry.COLUMN_LOCAL_SYMBOL+ " varchar(255) not null default '', "
             + CommodityEntry.COLUMN_CUSIP       + " varchar(255), "
-            + CommodityEntry.COLUMN_FRACTION    + " integer not null, "
+            + CommodityEntry.COLUMN_SMALLEST_FRACTION + " integer not null, "
             + CommodityEntry.COLUMN_QUOTE_FLAG  + " integer not null, "
             + CommodityEntry.COLUMN_CREATED_AT  + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
             + CommodityEntry.COLUMN_MODIFIED_AT + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP "

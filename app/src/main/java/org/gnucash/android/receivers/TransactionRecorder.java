@@ -24,8 +24,10 @@ import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
 
+import org.gnucash.android.db.CommoditiesDbAdapter;
 import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.model.Account;
+import org.gnucash.android.model.Commodity;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.model.Split;
 import org.gnucash.android.model.Transaction;
@@ -73,8 +75,9 @@ public class TransactionRecorder extends BroadcastReceiver {
         if (accountUID != null) {
             TransactionType type = TransactionType.valueOf(args.getString(Transaction.EXTRA_TRANSACTION_TYPE));
             BigDecimal amountBigDecimal = (BigDecimal) args.getSerializable(Transaction.EXTRA_AMOUNT);
-            amountBigDecimal = amountBigDecimal.setScale(Currency.getInstance(currencyCode).getDefaultFractionDigits(), BigDecimal.ROUND_HALF_EVEN).round(MathContext.DECIMAL128);
-            Money amount = new Money(amountBigDecimal, Currency.getInstance(currencyCode));
+            Commodity commodity = CommoditiesDbAdapter.getInstance().getCommodity(currencyCode);
+            amountBigDecimal = amountBigDecimal.setScale(commodity.getSmallestFractionDigits(), BigDecimal.ROUND_HALF_EVEN).round(MathContext.DECIMAL128);
+            Money amount = new Money(amountBigDecimal, Commodity.getInstance(currencyCode));
             Split split = new Split(amount.absolute(), accountUID);
             split.setType(type);
             transaction.addSplit(split);

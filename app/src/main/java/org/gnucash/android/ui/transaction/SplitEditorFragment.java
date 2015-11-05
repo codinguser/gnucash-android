@@ -44,6 +44,7 @@ import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.model.AccountType;
 import org.gnucash.android.model.BaseModel;
+import org.gnucash.android.model.Commodity;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.model.Split;
 import org.gnucash.android.model.Transaction;
@@ -133,8 +134,8 @@ public class SplitEditorFragment extends Fragment {
             //aha! there are some splits. Let's load those instead
             loadSplitViews(splitList);
         } else {
-            final Currency currency = Currency.getInstance(mAccountsDbAdapter.getAccountCurrencyCode(mAccountUID));
-            Split split = new Split(new Money(mBaseAmount.abs(), currency), mAccountUID);
+            final String currencyCode = mAccountsDbAdapter.getAccountCurrencyCode(mAccountUID);
+            Split split = new Split(new Money(mBaseAmount.abs(), Commodity.getInstance(currencyCode)), mAccountUID);
             AccountType accountType = mAccountsDbAdapter.getAccountType(mAccountUID);
             TransactionType transactionType = Transaction.getTypeForBalance(accountType, mBaseAmount.signum() < 0);
             split.setType(transactionType);
@@ -354,7 +355,7 @@ public class SplitEditorFragment extends Fragment {
             BigDecimal amountBigDecimal = viewHolder.splitAmountEditText.getValue();
 
             String currencyCode = mAccountsDbAdapter.getCurrencyCode(mAccountUID);
-            Money valueAmount = new Money(amountBigDecimal.abs(), Currency.getInstance(currencyCode));
+            Money valueAmount = new Money(amountBigDecimal.abs(), Commodity.getInstance(currencyCode));
 
             String accountUID = mAccountsDbAdapter.getUID(viewHolder.accountsSpinner.getSelectedItemId());
             Split split = new Split(valueAmount, accountUID);
@@ -404,7 +405,7 @@ public class SplitEditorFragment extends Fragment {
             if (amountBigD == null)
                 return;
 
-            Money amount = new Money(amountBigD, Currency.getInstance(fromCurrencyCode));
+            Money amount = new Money(amountBigD, Commodity.getInstance(fromCurrencyCode));
             TransferFundsDialogFragment fragment
                     = TransferFundsDialogFragment.getInstance(amount, targetCurrencyCode, mSplitViewHolder);
             fragment.show(getFragmentManager(), "tranfer_funds_editor");
