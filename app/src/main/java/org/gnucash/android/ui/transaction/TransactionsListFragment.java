@@ -264,12 +264,7 @@ public class TransactionsListFragment extends Fragment implements
 			holder.transactionNote.setText(text);
 
 			long dateMillis = cursor.getLong(cursor.getColumnIndexOrThrow(DatabaseSchema.TransactionEntry.COLUMN_TIMESTAMP));
-			String dateText;
-			if (dateMillis > System.currentTimeMillis()){
-				dateText = simpleDateFormat.format(new Date(dateMillis));
-			} else {
-				dateText = DateUtils.getRelativeTimeSpanString(dateMillis).toString();
-			}
+			String dateText = DateUtils.getRelativeTimeSpanString(dateMillis, System.currentTimeMillis(), DateUtils.DAY_IN_MILLIS).toString();
 			holder.transactionDate.setText(dateText);
 
 			final long id = holder.transactionId;
