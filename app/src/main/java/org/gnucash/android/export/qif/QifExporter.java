@@ -229,11 +229,15 @@ public class QifExporter extends Exporter{
      * @throws IOException if something went wrong while splitting the file.
      */
     public static List<String> splitQIF(File file) throws IOException {
+        return splitQIF(file, file);
+    }
+
+    public static List<String> splitQIF(File src, File dst) throws IOException {
         // split only at the last dot
-        String[] pathParts = file.getPath().split("(?=\\.[^\\.]+$)");
+        String[] pathParts = dst.getPath().split("(?=\\.[^\\.]+$)");
         ArrayList<String> splitFiles = new ArrayList<>();
         String line;
-        BufferedReader in = new BufferedReader(new FileReader(file));
+        BufferedReader in = new BufferedReader(new FileReader(src));
         BufferedWriter out = null;
         try {
             while ((line = in.readLine()) != null) {
@@ -247,7 +251,7 @@ public class QifExporter extends Exporter{
                     out = new BufferedWriter(new FileWriter(newFileName));
                 } else {
                     if (out == null) {
-                        throw new IllegalArgumentException(file.getPath() + " format is not correct");
+                        throw new IllegalArgumentException(src.getPath() + " format is not correct");
                     }
                     out.append(line).append('\n');
                 }

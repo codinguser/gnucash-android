@@ -337,7 +337,6 @@ public class Budget extends BaseModel {
         }
 
         List<BudgetAmount> compactBudgetAmounts = new ArrayList<>();
-        Currency currency = Currency.getInstance(Money.DEFAULT_CURRENCY_CODE);
         for (Map.Entry<String, List<BigDecimal>> entry : accountAmountMap.entrySet()) {
             List<BigDecimal> amounts = entry.getValue();
             BigDecimal first = amounts.get(0);
@@ -356,7 +355,7 @@ public class Budget extends BaseModel {
                     }
                 } else {
                     BudgetAmount bgtAmount = new BudgetAmount(getUID(), entry.getKey());
-                    bgtAmount.setAmount(new Money(first, currency));
+                    bgtAmount.setAmount(new Money(first, Commodity.DEFAULT_COMMODITY));
                     bgtAmount.setPeriodNum(-1);
                     compactBudgetAmounts.add(bgtAmount);
                 }

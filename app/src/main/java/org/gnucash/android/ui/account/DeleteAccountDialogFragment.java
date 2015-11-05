@@ -228,13 +228,7 @@ public class DeleteAccountDialogFragment extends DialogFragment {
                 }
 
                 if (GnuCashApplication.isDoubleEntryEnabled()){ //reassign splits to imbalance
-                    Currency accountCurrency = Currency.getInstance(accountsDbAdapter.getCurrencyCode(mOriginAccountUID));
-                    String imbalanceAccountUID = accountsDbAdapter.getOrCreateImbalanceAccountUID(accountCurrency);
-                    SplitsDbAdapter.getInstance().updateRecords(
-                            DatabaseSchema.SplitEntry.COLUMN_ACCOUNT_UID + "=?",
-                            new String[]{mOriginAccountUID},
-                            DatabaseSchema.SplitEntry.COLUMN_ACCOUNT_UID,
-                            imbalanceAccountUID);
+                    TransactionsDbAdapter.getInstance().deleteTransactionsForAccount(mOriginAccountUID);
                 }
 
                 //now kill them all!!

@@ -24,8 +24,7 @@ import android.util.Log;
 
 import org.gnucash.android.db.adapter.AccountsDbAdapter;
 import org.gnucash.android.model.Account;
-
-import java.util.Currency;
+import org.gnucash.android.model.Commodity;
 
 /**
  * Broadcast receiver responsible for creating {@link Account}s received through intents.
@@ -49,8 +48,7 @@ public class AccountCreator extends BroadcastReceiver {
 		
 		String currencyCode = args.getString(Account.EXTRA_CURRENCY_CODE);				
 		if (currencyCode != null){
-			Currency currency = Currency.getInstance(currencyCode);
-			account.setCurrency(currency);
+			account.setCommodity(Commodity.getInstance(currencyCode));
 		}
 		
 		String uid = args.getString(Intent.EXTRA_UID);

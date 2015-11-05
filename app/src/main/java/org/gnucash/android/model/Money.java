@@ -52,30 +52,18 @@ public final class Money implements Comparable<Money>{
 	/**
 	 * Currency of the account
 	 */
-	private Currency mCurrency;
-	
+	private Commodity mCommodity;
+
 	/**
 	 * Amount value held by this object
 	 */
 	private BigDecimal mAmount;
-	
-	/**
-	 * Default rounding mode for Money objects
-	 * Defaults to {@link RoundingMode#HALF_EVEN}
-	 */
-	private static final RoundingMode DEFAULT_ROUNDING_MODE = RoundingMode.HALF_EVEN;
-	
-	/**
-	 * Number of decimal places to limit the fractions to when performing operations
-	 * Defaults to 2 decimal places
-	 */
-	private static final int DEFAULT_DECIMAL_PLACES = 2;
-	
+
 	/**
 	 * Rounding mode to be applied when performing operations
-	 * Defaults to {@link #DEFAULT_ROUNDING_MODE}
+	 * Defaults to {@link RoundingMode#HALF_EVEN}
 	 */
-	protected RoundingMode ROUNDING_MODE = DEFAULT_ROUNDING_MODE;
+	protected RoundingMode ROUNDING_MODE = RoundingMode.HALF_EVEN;
 
 	/**
 	 * Default currency code (according ISO 4217) 
@@ -96,19 +84,11 @@ public final class Money implements Comparable<Money>{
      */
     public static Money getZeroInstance(){
 		if (sDefaultZero == null) {
-			String currencyCode = Currency.getInstance(GnuCashApplication.getDefaultLocale()).getCurrencyCode();
-			sDefaultZero = new Money(BigDecimal.ZERO, Currency.getInstance(currencyCode));
+			String currencyCode = GnuCashApplication.getDefaultCurrencyCode();
+			sDefaultZero = new Money(BigDecimal.ZERO, Commodity.getInstance(currencyCode));
 		}
 		return sDefaultZero;
     }
-
-	/**
-	 * Default constructor
-	 * Initializes the object with an amount of 0 and currency set to the device default locale
-	 */
-	public Money() {
-		init();
-	}
 
 	public static BigDecimal getBigDecimal(long numerator, long denominator) {
 		int scale;
@@ -127,15 +107,15 @@ public final class Money implements Comparable<Money>{
 	}
 
 	/**
-	 * Overloaded constructor
-	 * @param amount {@link BigDecimal} value of the money instance
-	 * @param currency {@link Currency} associated with the <code>amount</code>
+	 * Creates a new money amount
+	 * @param amount Value of the amount
+	 * @param commodity Commodity of the money
 	 */
-	public Money(BigDecimal amount, Currency currency){
+	public Money(BigDecimal amount, Commodity commodity){
 		this.mAmount = amount;
-		setCurrency(currency);
+		this.mCommodity = commodity;
 	}
-	
+
 	/**
 	 * Overloaded constructor.
 	 * Accepts strings as arguments and parses them to create the Money object
@@ -143,7 +123,7 @@ public final class Money implements Comparable<Money>{
 	 * @param currencyCode Currency code as specified by ISO 4217
 	 */
 	public Money(String amount, String currencyCode){
-		setCurrency(Currency.getInstance(currencyCode));
+		mCommodity = Commodity.getInstance(currencyCode);
 		setAmount(amount);
 	}
 
@@ -156,17 +136,7 @@ public final class Money implements Comparable<Money>{
 	 */
 	public Money(long numerator, long denominator, String currencyCode){
 		mAmount = getBigDecimal(numerator, denominator);
-		setCurrency(Currency.getInstance(currencyCode));
-	}
-
-	/**
-	 * Overloaded constructor. 
-	 * Initializes the currency to that specified by {@link Money#DEFAULT_CURRENCY_CODE}
-	 * @param amount Value associated with this Money object
-	 */
-	public Money(String amount){
-		init();
-		setAmount(parseToDecimal(amount));
+		setCommodity(currencyCode);
 	}
 
     /**
@@ -175,7 +145,7 @@ public final class Money implements Comparable<Money>{
      * @param money Money instance to be cloned
      */
     public Money(Money money){
-		setCurrency(money.getCurrency());
+		setCommodity(money.getCommodity());
 		setAmount(money.asBigDecimal());
     }
 
@@ -184,46 +154,52 @@ public final class Money implements Comparable<Money>{
      * @param currencyCode Currency to use for this money instance
      * @return Money object with value 0 and currency <code>currencyCode</code>
      */
-    public static Money createZeroInstance(String currencyCode){
-        return new Money(BigDecimal.ZERO, Currency.getInstance(currencyCode));
+    public static Money createZeroInstance(@NonNull String currencyCode){
+		Commodity commodity = Commodity.getInstance(currencyCode);
+        return new Money(BigDecimal.ZERO, commodity);
     }
-
-	/**
-	 * Initializes the amount and currency to their default values
-	 * @see {@link Money#DEFAULT_CURRENCY_CODE}, {@link #DEFAULT_ROUNDING_MODE}, {@link #DEFAULT_DECIMAL_PLACES}
-	 */
-	private void init() {
-		mCurrency = Currency.getInstance(Money.DEFAULT_CURRENCY_CODE);
-		mAmount = BigDecimal.ZERO.setScale(DEFAULT_DECIMAL_PLACES, DEFAULT_ROUNDING_MODE);
-	}
 
 	/**
 	 * Returns the currency of the money object
 	 * @return {@link Currency} of the money value
 	 */
 	public Currency getCurrency() {
-		return mCurrency;
+		return Currency.getInstance(mCommodity.getCurrencyCode());
+	}
+
+	/**
+	 * Returns the commodity used by the Money
+	 * @return Instance of commodity
+	 */
+	public Commodity getCommodity(){
+		return mCommodity;
 	}
 
 	/**
 	 * Returns a new <code>Money</code> object the currency specified by <code>currency</code> 
 	 * and the same value as this one. No value exchange between the currencies is performed.
-	 * @param currency {@link Currency} to assign to new <code>Money</code> object
+	 * @param commodity {@link Commodity} to assign to new <code>Money</code> object
 	 * @return {@link Money} object with same value as current object, but with new <code>currency</code>
 	 */
-    public Money withCurrency(Currency currency){
-		return new Money(mAmount, currency);
+    public Money withCurrency(@NonNull Commodity commodity){
+		return new Money(mAmount, commodity);
 	}
-	
+
 	/**
-	 * Sets the currency of the money object.
-	 * No currency value conversion is performed. The old value for the amount is not changed
-	 * This method is only used internally when creating the Money object. 
-	 * Money objects are immutable and hence this method should not be called out of a constructor
-	 * @param currency {@link Currency} to assign to the Money object  
+	 * Sets the commodity for the Money
+	 * <p>No currency conversion is performed</p>
+	 * @param commodity Commodity instance
 	 */
-	private void setCurrency(Currency currency) {
-		this.mCurrency = currency;
+	private void setCommodity(@NonNull Commodity commodity){
+		this.mCommodity = commodity;
+	}
+
+	/**
+	 * Sets the commodity for the Money
+	 * @param currencyCode ISO 4217 currency code
+	 */
+	private void setCommodity(@NonNull String currencyCode){
+		mCommodity = Commodity.getInstance(currencyCode);
 	}
 
 	/**
@@ -235,9 +211,11 @@ public final class Money implements Comparable<Money>{
 		try {
 			return mAmount.scaleByPowerOfTen(getScale()).longValueExact();
 		} catch (ArithmeticException e) {
-			Log.e(getClass().getName(), "Currency " + mCurrency.getCurrencyCode() +
+			String msg = "Currency " + mCommodity.getCurrencyCode() +
 					" with scale " + getScale() +
-					" has amount " + mAmount.toString());
+					" has amount " + mAmount.toString();
+			Crashlytics.log(msg);
+			Log.e(getClass().getName(), msg);
 			throw e;
 		}
 	}
@@ -249,16 +227,14 @@ public final class Money implements Comparable<Money>{
 	 */
 	public long getDenominator() {
 		switch (getScale()) {
-			case 0:
-				return 1;
-			case 1:
-				return 10;
-			case 2:
-				return 100;
-			case 3:
-				return 1000;
-			case 4:
-				return 10000;
+			case 0: return 1;
+			case 1: return 10;
+			case 2: return 100;
+			case 3: return 1000;
+			case 4: return 10000;
+			case 5: return 100000;
+			case 6: return 1000000; //I think GnuCash XML can have gold and silver with this denom
+
 		}
 		throw new RuntimeException("Unsupported number of fraction digits " + getScale());
 	}
@@ -269,7 +245,7 @@ public final class Money implements Comparable<Money>{
 	 * @return Scale of amount as integer
 	 */
 	private int getScale() {
-		int scale = mCurrency.getDefaultFractionDigits();
+		int scale = mCommodity.getSmallestFractionDigits();
 		if (scale < 0) {
 			scale = mAmount.scale();
 		}
@@ -285,7 +261,7 @@ public final class Money implements Comparable<Money>{
 	 * @return {@link BigDecimal} valure of amount in object
 	 */
 	public BigDecimal asBigDecimal() {
-		return mAmount.setScale(mCurrency.getDefaultFractionDigits(), RoundingMode.HALF_EVEN);
+		return mAmount.setScale(mCommodity.getSmallestFractionDigits(), RoundingMode.HALF_EVEN);
 	}
 	
 	/**
@@ -294,16 +270,6 @@ public final class Money implements Comparable<Money>{
 	 */
 	public double asDouble(){
 		return mAmount.doubleValue();
-	}
-
-	/**
-	 * Returns integer value of this Money amount.
-	 * The fractional part is discarded
-	 * @return Integer representation of this amount
-	 * @see BigDecimal#intValue()
-	 */
-	public int intValue(){
-		return mAmount.intValue();
 	}
 
 	/**
@@ -322,10 +288,33 @@ public final class Money implements Comparable<Money>{
 	 * @return String containing formatted Money representation
 	 */
     public String formattedString(Locale locale){
+/*
+//todo: enable this code for 2.1 release. Test better too
+		NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(locale);
+		Currency currency = Currency.getInstance(mCommodity.getCurrencyCode());
+
+		String symbol;
+		if (mCommodity.equals(Commodity.USD) && !locale.equals(Locale.US)) {
+			symbol = "US$";
+		} else if (mCommodity.equals(Commodity.EUR) {
+			symbol = currency.getSymbol(Locale.GERMANY); //euro currency is pretty unique around the world
+		} else {
+			symbol = currency.getSymbol(Locale.US); // US locale has the best symbol formatting table.
+		}
+		DecimalFormatSymbols decimalFormatSymbols = ((DecimalFormat)currencyFormat).getDecimalFormatSymbols();
+		decimalFormatSymbols.setCurrencySymbol(symbol);
+		((DecimalFormat)currencyFormat).setDecimalFormatSymbols(decimalFormatSymbols);
+		currencyFormat.setMinimumFractionDigits(mCommodity.getSmallestFractionDigits());
+		currencyFormat.setMaximumFractionDigits(mCommodity.getSmallestFractionDigits());
+
+		return currencyFormat.format(asDouble());
+*/
+
 		NumberFormat formatter = NumberFormat.getInstance(locale);
-		formatter.setMinimumFractionDigits(mCurrency.getDefaultFractionDigits());
-		formatter.setMaximumFractionDigits(mCurrency.getDefaultFractionDigits());
-		return formatter.format(asDouble()) + " " + mCurrency.getSymbol(locale);
+		formatter.setMinimumFractionDigits(mCommodity.getSmallestFractionDigits());
+		formatter.setMaximumFractionDigits(mCommodity.getSmallestFractionDigits());
+		Currency currency = Currency.getInstance(mCommodity.getCurrencyCode());
+		return formatter.format(asDouble()) + " " + currency.getSymbol(locale);
 	}
 
     /**
@@ -342,15 +331,15 @@ public final class Money implements Comparable<Money>{
 	 * @return Negated <code>Money</code> object
 	 */
     public Money negate(){
-		return new Money(mAmount.negate(), mCurrency);
+		return new Money(mAmount.negate(), mCommodity);
 	}
 	
 	/**
 	 * Sets the amount value of this <code>Money</code> object
 	 * @param amount {@link BigDecimal} amount to be set
 	 */
-	private void setAmount(BigDecimal amount) {
-		mAmount = amount.setScale(mCurrency.getDefaultFractionDigits(), ROUNDING_MODE);
+	private void setAmount(@NonNull BigDecimal amount) {
+		mAmount = amount.setScale(mCommodity.getSmallestFractionDigits(), ROUNDING_MODE);
 	}
 	
 	/**
@@ -371,11 +360,11 @@ public final class Money implements Comparable<Money>{
 	 * @throws CurrencyMismatchException if the <code>Money</code> objects to be added have different Currencies
 	 */
     public Money add(Money addend){
-		if (!mCurrency.equals(addend.mCurrency))
+		if (!mCommodity.equals(addend.mCommodity))
 			throw new CurrencyMismatchException();
 		
 		BigDecimal bigD = mAmount.add(addend.mAmount);
-		return new Money(bigD, mCurrency);
+		return new Money(bigD, mCommodity);
 	}
 
 	/**
@@ -387,11 +376,11 @@ public final class Money implements Comparable<Money>{
 	 * @throws CurrencyMismatchException if the <code>Money</code> objects to be added have different Currencies
 	 */
     public Money subtract(Money subtrahend){
-		if (!mCurrency.equals(subtrahend.mCurrency))
+		if (!mCommodity.equals(subtrahend.mCommodity))
 			throw new CurrencyMismatchException();
 		
 		BigDecimal bigD = mAmount.subtract(subtrahend.mAmount);		
-		return new Money(bigD, mCurrency);
+		return new Money(bigD, mCommodity);
 	}
 	
 	/**
@@ -404,11 +393,11 @@ public final class Money implements Comparable<Money>{
 	 * @throws CurrencyMismatchException if the <code>Money</code> objects to be added have different Currencies
 	 */
     public Money divide(Money divisor){
-		if (!mCurrency.equals(divisor.mCurrency))
+		if (!mCommodity.equals(divisor.mCommodity))
 			throw new CurrencyMismatchException();
 		
-		BigDecimal bigD = mAmount.divide(divisor.mAmount, BigDecimal.ROUND_HALF_EVEN);
-		return new Money(bigD, mCurrency);
+		BigDecimal bigD = mAmount.divide(divisor.mAmount, mCommodity.getSmallestFractionDigits(), ROUNDING_MODE);
+		return new Money(bigD, mCommodity);
 	}
 	
 	/**
@@ -418,7 +407,7 @@ public final class Money implements Comparable<Money>{
 	 * @return Money object whose value is the quotient of this object and <code>divisor</code>
 	 */
     public Money divide(int divisor){
-		Money moneyDiv = new Money(new BigDecimal(divisor), mCurrency);
+		Money moneyDiv = new Money(new BigDecimal(divisor), mCommodity);
 		return divide(moneyDiv);
 	}
 	
@@ -431,11 +420,11 @@ public final class Money implements Comparable<Money>{
 	 * @throws CurrencyMismatchException if the <code>Money</code> objects to be added have different Currencies
 	 */
     public Money multiply(Money money){
-		if (!mCurrency.equals(money.mCurrency))
+		if (!mCommodity.equals(money.mCommodity))
 			throw new CurrencyMismatchException();
 		
 		BigDecimal bigD = mAmount.multiply(money.mAmount);		
-		return new Money(bigD, mCurrency);
+		return new Money(bigD, mCommodity);
 	}
 	
 	/**
@@ -446,7 +435,7 @@ public final class Money implements Comparable<Money>{
 	 * @return Money object whose value is the product of this objects values and <code>multiplier</code>
 	 */
     public Money multiply(int multiplier){
-		Money moneyFactor = new Money(new BigDecimal(multiplier), mCurrency);
+		Money moneyFactor = new Money(new BigDecimal(multiplier), mCommodity);
 		return multiply(moneyFactor);
 	}
 
@@ -456,8 +445,8 @@ public final class Money implements Comparable<Money>{
 	 * @param multiplier Factor to multiply the amount by.
 	 * @return Money object whose value is the product of this objects values and <code>multiplier</code>
 	 */
-	public Money multiply(BigDecimal multiplier){
-		return new Money(mAmount.multiply(multiplier), mCurrency);
+	public Money multiply(@NonNull BigDecimal multiplier){
+		return new Money(mAmount.multiply(multiplier), mCommodity);
 	}
 
 	/**
@@ -474,20 +463,7 @@ public final class Money implements Comparable<Money>{
 	 * @return String representation of the amount (without currency) of the Money object
 	 */
 	public String toPlainString(){
-		return mAmount.setScale(mCurrency.getDefaultFractionDigits(), ROUNDING_MODE).toPlainString();
-	}
-
-	/**
-	 * Returns the formatted amount in the default locale
-	 * <p>This prints the money amount with locale formatting like the decimal separation character</p>
-	 * @return Locale-formatted amount
-	 */
-	public String formattedAmount(){
-		NumberFormat formatter = NumberFormat.getInstance();
-		formatter.setMinimumFractionDigits(mCurrency.getDefaultFractionDigits());
-		formatter.setMaximumFractionDigits(mCurrency.getDefaultFractionDigits());
-		formatter.setGroupingUsed(false);
-		return formatter.format(asDouble());
+		return mAmount.setScale(mCommodity.getSmallestFractionDigits(), ROUNDING_MODE).toPlainString();
 	}
 
 	/**
@@ -505,7 +481,7 @@ public final class Money implements Comparable<Money>{
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + (mAmount.hashCode());
-		result = prime * result + (mCurrency.hashCode());
+		result = prime * result + (mCommodity.hashCode());
 		return result;
 	}
 
@@ -525,14 +501,14 @@ public final class Money implements Comparable<Money>{
 		Money other = (Money) obj;
 		if (!mAmount.equals(other.mAmount))
 			return false;
-		if (!mCurrency.equals(other.mCurrency))
+		if (!mCommodity.equals(other.mCommodity))
 			return false;
 		return true;
 	}
 
 	@Override
 	public int compareTo(@NonNull Money another) {
-		if (!mCurrency.equals(another.mCurrency))
+		if (!mCommodity.equals(another.mCommodity))
 			throw new CurrencyMismatchException();
 		return mAmount.compareTo(another.mAmount);
 	}
@@ -563,7 +539,7 @@ public final class Money implements Comparable<Money>{
      * @return Money object with absolute value of this instance
      */
     public Money abs() {
-        return new Money(mAmount.abs(), mCurrency);
+        return new Money(mAmount.abs(), mCommodity);
     }
 
 	/**

@@ -6,6 +6,14 @@ Version 2.1.0 *(2016-xx-xx)*
 * Improved: Scheduled transactions now have more accurate timestamps
 * Improved: Generate all scheduled transactions even if a scheduled is missed (e.g. device off)
 
+Version 2.0.1 *(2015-11-05)*
+----------------------------
+* Feature: Menu options for moving/duplicating transactions
+* Fixed: Invalid QIF exported, causing crashes when importing on desktop
+* Fixed: Account delete dialog not displaying properly / only partially deleting transactions
+* Fixed: Moving transaction to another account from within the split editor sets the amount to zero
+* Improved: Amounts now use standard commodities & fraction digit on all devices
+
 Version 2.0.0 *(2015-11-01)*
 ----------------------------
 * Feature: Updated app design to use Material Design guidelines

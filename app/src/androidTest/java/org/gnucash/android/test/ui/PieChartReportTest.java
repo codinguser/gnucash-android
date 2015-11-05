@@ -40,6 +40,7 @@ import org.gnucash.android.db.adapter.TransactionsDbAdapter;
 import org.gnucash.android.importer.GncXmlImporter;
 import org.gnucash.android.model.Account;
 import org.gnucash.android.model.AccountType;
+import org.gnucash.android.model.Commodity;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.model.Split;
 import org.gnucash.android.model.Transaction;
@@ -86,7 +87,7 @@ public class PieChartReportTest extends ActivityInstrumentationTestCase2<Reports
     private static final String GIFTS_RECEIVED_INCOME_ACCOUNT_UID = "b01950c0df0890b6543209d51c8e0b0f";
     private static final String GIFTS_RECEIVED_INCOME_ACCOUNT_NAME = "Gifts Received";
 
-    public static final Currency CURRENCY = Currency.getInstance("USD");
+    public static final Commodity CURRENCY = Commodity.getInstance("USD");
 
     private AccountsDbAdapter mAccountsDbAdapter;
     private TransactionsDbAdapter mTransactionsDbAdapter;

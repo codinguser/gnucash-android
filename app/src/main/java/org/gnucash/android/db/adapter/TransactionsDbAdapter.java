@@ -32,6 +32,7 @@ import com.crashlytics.android.Crashlytics;
 
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.model.AccountType;
+import org.gnucash.android.model.Commodity;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.model.Split;
 import org.gnucash.android.model.Transaction;
@@ -180,11 +181,11 @@ public class TransactionsDbAdapter extends DatabaseAdapter<Transaction> {
         mReplaceStatement.bindLong(5, transaction.isExported() ? 1 : 0);
         mReplaceStatement.bindString(6, transaction.getCurrencyCode());
 
-        String commodityUID = transaction.getCommodityUID();
-        if (commodityUID == null)
-            commodityUID = getCommodityUID(transaction.getCurrency().getCurrencyCode());
+        Commodity commodity = transaction.getCommodity();
+        if (commodity == null)
+            commodity = CommoditiesDbAdapter.getInstance().getCommodity(transaction.getCurrencyCode());
 
-        mReplaceStatement.bindString(7, commodityUID);
+        mReplaceStatement.bindString(7, commodity.getUID());
         mReplaceStatement.bindString(8, transaction.getCreatedTimestamp().toString());
 
         if (transaction.getScheduledActionUID() == null)
@@ -412,7 +413,9 @@ public class TransactionsDbAdapter extends DatabaseAdapter<Transaction> {
 		transaction.setNote(c.getString(c.getColumnIndexOrThrow(TransactionEntry.COLUMN_NOTES)));
 		transaction.setExported(c.getInt(c.getColumnIndexOrThrow(TransactionEntry.COLUMN_EXPORTED)) == 1);
 		transaction.setTemplate(c.getInt(c.getColumnIndexOrThrow(TransactionEntry.COLUMN_TEMPLATE)) == 1);
-        transaction.setCurrencyCode(c.getString(c.getColumnIndexOrThrow(TransactionEntry.COLUMN_CURRENCY)));
+        String currencyCode = c.getString(c.getColumnIndexOrThrow(TransactionEntry.COLUMN_CURRENCY));
+        transaction.setCurrencyCode(currencyCode);
+        transaction.setCommodity(CommoditiesDbAdapter.getInstance().getCommodity(currencyCode));
         transaction.setScheduledActionUID(c.getString(c.getColumnIndexOrThrow(TransactionEntry.COLUMN_SCHEDX_ACTION_UID)));
         long transactionID = c.getLong(c.getColumnIndexOrThrow(TransactionEntry._ID));
         transaction.setSplits(mSplitsDbAdapter.getSplitsForTransaction(transactionID));

@@ -55,11 +55,13 @@ import com.codetroopers.betterpickers.recurrencepicker.EventRecurrenceFormatter;
 import com.codetroopers.betterpickers.recurrencepicker.RecurrencePickerDialogFragment;
 
 import org.gnucash.android.R;
+import org.gnucash.android.db.adapter.CommoditiesDbAdapter;
 import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.db.adapter.AccountsDbAdapter;
 import org.gnucash.android.db.adapter.ScheduledActionDbAdapter;
 import org.gnucash.android.db.adapter.TransactionsDbAdapter;
 import org.gnucash.android.model.AccountType;
+import org.gnucash.android.model.Commodity;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.model.ScheduledAction;
 import org.gnucash.android.model.Split;
@@ -267,9 +269,9 @@ public class TransactionFormFragment extends Fragment implements
             return;
 
         BigDecimal amountBigd = mAmountEditText.getValue();
-        if (mSplitQuantity != null || amountBigd.equals(BigDecimal.ZERO))
+        if (amountBigd.equals(BigDecimal.ZERO))
             return;
-        Money amount 	= new Money(amountBigd, fromCurrency).abs();
+        Money amount 	= new Money(amountBigd, Commodity.getInstance(fromCurrency.getCurrencyCode())).abs();
 
         TransferFundsDialogFragment fragment
                 = TransferFundsDialogFragment.getInstance(amount, targetCurrency, this);
@@ -690,7 +692,7 @@ public class TransactionFormFragment extends Fragment implements
 		BigDecimal amountBigd = mAmountEditText.getValue();
 
 		Currency currency = Currency.getInstance(mTransactionsDbAdapter.getAccountCurrencyCode(mAccountUID));
-		Money amount 	= new Money(amountBigd, currency).abs();
+		Money amount 	= new Money(amountBigd, Commodity.getInstance(currency.getCurrencyCode())).abs();
 
         if (mSplitsList.size() == 1){ //means split editor was opened but no split was added
             String transferAcctUID;
@@ -704,7 +706,9 @@ public class TransactionFormFragment extends Fragment implements
         }
 
         //capture any edits which were done directly (not using split editor)
-        if (mSplitsList.size() == 2 && mSplitsList.get(0).isPairOf(mSplitsList.get(1))) {
+        if (mSplitsList.size() == 2 && mSplitsList.get(0).isPairOf(mSplitsList.get(1))
+                //we also check that at least one of the splits belongs to this account, otherwise the account was changed in the splits and the value would be zero
+                && (mSplitsList.get(0).getAccountUID().equals(mAccountUID) || mSplitsList.get(1).getAccountUID().equals(mAccountUID))) {
             //if it is a simple transfer where the editor was not used, then respect the button
             for (Split split : mSplitsList) {
                 if (split.getAccountUID().equals(mAccountUID)){
@@ -761,7 +765,8 @@ public class TransactionFormFragment extends Fragment implements
 
             String currencyCode = mAccountsDbAdapter.getAccountCurrencyCode(mAccountUID);
             mTransaction.setCurrencyCode(currencyCode);
-            mTransaction.setCommodityUID(mAccountsDbAdapter.getCommodityUID(currencyCode));
+            Commodity commodity = CommoditiesDbAdapter.getInstance().getCommodity(currencyCode);
+            mTransaction.setCommodity(commodity);
             mTransaction.setTime(cal.getTimeInMillis());
             mTransaction.setNote(notes);
 

@@ -14,6 +14,7 @@ import org.gnucash.android.db.adapter.TransactionsDbAdapter;
 import org.gnucash.android.importer.GncXmlImporter;
 import org.gnucash.android.model.Account;
 import org.gnucash.android.model.AccountType;
+import org.gnucash.android.model.Commodity;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.model.PeriodType;
 import org.gnucash.android.model.Recurrence;
@@ -261,7 +262,7 @@ public class AccountsDbAdapterTest{
 
     @Test
     public void shouldComputeAccountBalanceCorrectly(){
-        Account account = new Account("Test", Currency.getInstance("USD"));
+        Account account = new Account("Test", Commodity.USD);
         account.setAccountType(AccountType.ASSET); //debit normal account balance
         Account transferAcct = new Account("Transfer");
 
@@ -270,7 +271,7 @@ public class AccountsDbAdapterTest{
 
         Transaction transaction = new Transaction("Test description");
         mTransactionsDbAdapter.addRecord(transaction);
-        Split split = new Split(new Money(BigDecimal.TEN, Currency.getInstance("USD")), account.getUID());
+        Split split = new Split(new Money(BigDecimal.TEN, Commodity.USD), account.getUID());
         split.setTransactionUID(transaction.getUID());
         split.setType(TransactionType.DEBIT);
         mSplitsDbAdapter.addRecord(split);
@@ -385,21 +386,18 @@ public class AccountsDbAdapterTest{
 
     @Test
     public void editingAccountShouldNotDeleteTemplateSplits(){
-        Currency currency = Currency.getInstance("EUR");
-        Account account = new Account("First");
-        account.setCurrency(currency);
-        Account transferAccount = new Account("Transfer");
-        transferAccount.setCurrency(currency);
+        Account account = new Account("First", Commodity.EUR);
+        Account transferAccount = new Account("Transfer", Commodity.EUR);
 
         mAccountsDbAdapter.addRecord(account);
         mAccountsDbAdapter.addRecord(transferAccount);
 
         assertThat(mAccountsDbAdapter.getRecordsCount()).isEqualTo(3); //plus root account
 
-        Money money = new Money(BigDecimal.TEN, currency);
+        Money money = new Money(BigDecimal.TEN, Commodity.EUR);
         Transaction transaction = new Transaction("Template");
         transaction.setTemplate(true);
-        transaction.setCurrencyCode(currency.getCurrencyCode());
+        transaction.setCommodity(Commodity.EUR);
         Split split = new Split(money, account.getUID());
         transaction.addSplit(split);
         transaction.addSplit(split.createPair(transferAccount.getUID()));
@@ -423,11 +421,11 @@ public class AccountsDbAdapterTest{
         List<Currency> currencies = mAccountsDbAdapter.getCurrenciesInUse();
         assertThat(currencies).hasSize(expectedSize);
 
-        Account account = new Account("Dummy", Currency.getInstance("USD"));
+        Account account = new Account("Dummy", Commodity.USD);
         mAccountsDbAdapter.addRecord(account);
         assertThat(mAccountsDbAdapter.getCurrenciesInUse()).hasSize(++expectedSize);
 
-        account = new Account("Dummy", Currency.getInstance("EUR"));
+        account = new Account("Dummy", Commodity.EUR);
         mAccountsDbAdapter.addRecord(account);
         assertThat(mAccountsDbAdapter.getCurrenciesInUse()).hasSize(++expectedSize);
 

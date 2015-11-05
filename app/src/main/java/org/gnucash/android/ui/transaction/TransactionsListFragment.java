@@ -30,6 +30,7 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
+import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -56,8 +57,8 @@ import org.gnucash.android.ui.transaction.dialog.BulkMoveDialogFragment;
 import org.gnucash.android.ui.util.CursorRecyclerAdapter;
 import org.gnucash.android.ui.util.Refreshable;
 import org.gnucash.android.ui.util.widget.EmptyRecyclerView;
-import org.ocpsoft.prettytime.PrettyTime;
 
+import java.text.DateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -220,7 +221,8 @@ public class TransactionsListFragment extends Fragment implements
 
 	public class TransactionRecyclerAdapter extends CursorRecyclerAdapter<TransactionRecyclerAdapter.ViewHolder>{
 
-		private final PrettyTime prettyTime = new PrettyTime();
+		DateFormat simpleDateFormat = DateFormat.getDateInstance(DateFormat.MEDIUM);
+
 		public TransactionRecyclerAdapter(Cursor cursor) {
 			super(cursor);
 		}
@@ -262,7 +264,8 @@ public class TransactionsListFragment extends Fragment implements
 			holder.transactionNote.setText(text);
 
 			long dateMillis = cursor.getLong(cursor.getColumnIndexOrThrow(DatabaseSchema.TransactionEntry.COLUMN_TIMESTAMP));
-			holder.transactionDate.setText(prettyTime.format(new Date(dateMillis)));
+			String dateText = DateUtils.getRelativeTimeSpanString(dateMillis, System.currentTimeMillis(), DateUtils.DAY_IN_MILLIS).toString();
+			holder.transactionDate.setText(dateText);
 
 			final long id = holder.transactionId;
 			holder.itemView.setOnClickListener(new View.OnClickListener() {

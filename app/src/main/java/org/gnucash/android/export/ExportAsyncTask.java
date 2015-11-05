@@ -472,15 +472,19 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
      * @throws IOException if the file could not be copied
      */
     public void copyFile(File src, File dst) throws IOException {
-        //TODO: Make this asynchronous at some time, t in the future.
-        FileChannel inChannel = new FileInputStream(src).getChannel();
-        FileChannel outChannel = new FileOutputStream(dst).getChannel();
-        try {
-            inChannel.transferTo(0, inChannel.size(), outChannel);
-        } finally {
-            if (inChannel != null)
-                inChannel.close();
-            outChannel.close();
+        //TODO: Make this asynchronous at some time, t in the future
+        if (mExportParams.getExportFormat() == ExportFormat.QIF) {
+            QifExporter.splitQIF(src, dst);
+        } else {
+            FileChannel inChannel = new FileInputStream(src).getChannel();
+            FileChannel outChannel = new FileOutputStream(dst).getChannel();
+            try {
+                inChannel.transferTo(0, inChannel.size(), outChannel);
+            } finally {
+                if (inChannel != null)
+                    inChannel.close();
+                outChannel.close();
+            }
         }
     }
 

@@ -37,6 +37,7 @@ import android.widget.TextView;
 import org.gnucash.android.R;
 import org.gnucash.android.db.adapter.CommoditiesDbAdapter;
 import org.gnucash.android.db.adapter.PricesDbAdapter;
+import org.gnucash.android.model.Commodity;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.model.Price;
 import org.gnucash.android.ui.transaction.TransactionFormFragment;
@@ -107,7 +108,8 @@ public class TransferFundsDialogFragment extends DialogFragment {
 
         CommoditiesDbAdapter commoditiesDbAdapter = CommoditiesDbAdapter.getInstance();
         String commodityUID = commoditiesDbAdapter.getCommodityUID(fromCurrency.getCurrencyCode());
-        String currencyUID = commoditiesDbAdapter.getCommodityUID(mTargetCurrency.getCurrencyCode());
+        Commodity currencyCommodity = commoditiesDbAdapter.getCommodity(mTargetCurrency.getCurrencyCode());
+        String currencyUID = currencyCommodity.getUID();
         PricesDbAdapter pricesDbAdapter = PricesDbAdapter.getInstance();
         Pair<Long, Long> price = pricesDbAdapter.getPrice(commodityUID, currencyUID);
 
@@ -116,7 +118,7 @@ public class TransferFundsDialogFragment extends DialogFragment {
             BigDecimal num = new BigDecimal(price.first);
             BigDecimal denom = new BigDecimal(price.second);
             mExchangeRateInput.setText(num.divide(denom, MathContext.DECIMAL32).toString());
-            mConvertedAmountInput.setText(mOriginAmount.asBigDecimal().multiply(num).divide(denom, mTargetCurrency.getDefaultFractionDigits(), BigDecimal.ROUND_HALF_EVEN).toString());
+            mConvertedAmountInput.setText(mOriginAmount.asBigDecimal().multiply(num).divide(denom, currencyCommodity.getSmallestFractionDigits(), BigDecimal.ROUND_HALF_EVEN).toString());
         }
 
         mExchangeRateInput.addTextChangedListener(textChangeListener);
@@ -203,7 +205,7 @@ public class TransferFundsDialogFragment extends DialogFragment {
             }
 
             BigDecimal amount = TransactionFormFragment.parseInputToDecimal(convertedAmount);
-            mConvertedAmount = new Money(amount, mTargetCurrency);
+            mConvertedAmount = new Money(amount, Commodity.getInstance(mTargetCurrency.getCurrencyCode()));
         }
 
         if (mOnTransferFundsListener != null) {

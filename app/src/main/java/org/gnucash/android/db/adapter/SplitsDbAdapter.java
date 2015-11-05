@@ -28,6 +28,7 @@ import android.util.Pair;
 
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.DatabaseSchema;
+import org.gnucash.android.model.Commodity;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.model.Split;
 import org.gnucash.android.model.TransactionType;
@@ -219,21 +220,21 @@ public class SplitsDbAdapter extends DatabaseAdapter<Split> {
             Money total = Money.createZeroInstance(currencyCode);
             CommoditiesDbAdapter commoditiesDbAdapter = null;
             PricesDbAdapter pricesDbAdapter = null;
-            Currency currency = null;
+            Commodity commodity = null;
             String currencyUID = null;
             while (cursor.moveToNext()) {
                 long amount_num = cursor.getLong(0);
                 long amount_denom = cursor.getLong(1);
-                String commodity = cursor.getString(2);
+                String commodityCode = cursor.getString(2);
                 //Log.d(getClass().getName(), commodity + " " + amount_num + "/" + amount_denom);
-                if (commodity.equals("XXX") || amount_num == 0) {
+                if (commodityCode.equals("XXX") || amount_num == 0) {
                     // ignore custom currency
                     continue;
                 }
                 if (!hasDebitNormalBalance) {
                     amount_num = -amount_num;
                 }
-                if (commodity.equals(currencyCode)) {
+                if (commodityCode.equals(currencyCode)) {
                     // currency matches
                     total = total.add(new Money(amount_num, amount_denom, currencyCode));
                     //Log.d(getClass().getName(), "currency " + commodity + " sub - total " + total);
@@ -242,11 +243,11 @@ public class SplitsDbAdapter extends DatabaseAdapter<Split> {
                     if (commoditiesDbAdapter == null) {
                         commoditiesDbAdapter = new CommoditiesDbAdapter(mDb);
                         pricesDbAdapter = new PricesDbAdapter(mDb);
-                        currency = Currency.getInstance(currencyCode);
+                        commodity = commoditiesDbAdapter.getCommodity(currencyCode);
                         currencyUID = commoditiesDbAdapter.getCommodityUID(currencyCode);
                     }
                     // get price
-                    String commodityUID = commoditiesDbAdapter.getCommodityUID(commodity);
+                    String commodityUID = commoditiesDbAdapter.getCommodityUID(commodityCode);
                     Pair<Long, Long> price = pricesDbAdapter.getPrice(commodityUID, currencyUID);
                     if (price.first <= 0 || price.second <= 0) {
                         // no price exists, just ignore it
@@ -254,8 +255,8 @@ public class SplitsDbAdapter extends DatabaseAdapter<Split> {
                     }
                     BigDecimal amount = Money.getBigDecimal(amount_num, amount_denom);
                     BigDecimal amountConverted = amount.multiply(new BigDecimal(price.first))
-                            .divide(new BigDecimal(price.second), currency.getDefaultFractionDigits(), BigDecimal.ROUND_HALF_EVEN);
-                    total = total.add(new Money(amountConverted, currency));
+                            .divide(new BigDecimal(price.second), commodity.getSmallestFractionDigits(), BigDecimal.ROUND_HALF_EVEN);
+                    total = total.add(new Money(amountConverted, commodity));
                     //Log.d(getClass().getName(), "currency " + commodity + " sub - total " + total);
                 }
             }

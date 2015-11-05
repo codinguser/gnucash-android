@@ -23,6 +23,7 @@ import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
 
+import org.gnucash.android.db.adapter.CommoditiesDbAdapter;
 import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.db.adapter.RecurrenceDbAdapter;
 import org.gnucash.android.db.adapter.TransactionsDbAdapter;
@@ -32,6 +33,7 @@ import org.gnucash.android.export.Exporter;
 import org.gnucash.android.model.Account;
 import org.gnucash.android.model.AccountType;
 import org.gnucash.android.model.BaseModel;
+import org.gnucash.android.model.Commodity;
 import org.gnucash.android.model.Budget;
 import org.gnucash.android.model.BudgetAmount;
 import org.gnucash.android.model.Money;
@@ -150,8 +152,9 @@ public class GncXmlExporter extends Exporter{
             xmlSerializer.endTag(null, GncXmlHelper.TAG_COMMODITY_ID);
             xmlSerializer.endTag(null, GncXmlHelper.TAG_ACCT_COMMODITY);
             // commodity scu
+            Commodity commodity = CommoditiesDbAdapter.getInstance().getCommodity(acctCurrencyCode);
             xmlSerializer.startTag(null, GncXmlHelper.TAG_COMMODITY_SCU);
-            xmlSerializer.text(Integer.toString((int) Math.pow(10, Currency.getInstance(acctCurrencyCode).getDefaultFractionDigits())));
+            xmlSerializer.text(Integer.toString(commodity.getSmallestFraction()));
             xmlSerializer.endTag(null, GncXmlHelper.TAG_COMMODITY_SCU);
             // account description
             String description = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.AccountEntry.COLUMN_DESCRIPTION));
@@ -286,7 +289,7 @@ public class GncXmlExporter extends Exporter{
                         TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_TIMESTAMP + " ASC , " +
                         TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_UID + " ASC ");
         String lastTrxUID = "";
-        Currency trxCurrency = null;
+        Commodity trnCommodity = null;
         String denomString = "100";
 
         if (exportTemplates) {
@@ -326,14 +329,14 @@ public class GncXmlExporter extends Exporter{
                 xmlSerializer.text(curTrxUID);
                 xmlSerializer.endTag(null, GncXmlHelper.TAG_TRX_ID);
                 // currency
-                String currency = cursor.getString(cursor.getColumnIndexOrThrow("trans_currency"));
-                trxCurrency = Currency.getInstance(currency);
+                String currencyCode = cursor.getString(cursor.getColumnIndexOrThrow("trans_currency"));
+                trnCommodity = CommoditiesDbAdapter.getInstance().getCommodity(currencyCode);//Currency.getInstance(currencyCode);
                 xmlSerializer.startTag(null, GncXmlHelper.TAG_TRX_CURRENCY);
                 xmlSerializer.startTag(null, GncXmlHelper.TAG_COMMODITY_SPACE);
                 xmlSerializer.text("ISO4217");
                 xmlSerializer.endTag(null, GncXmlHelper.TAG_COMMODITY_SPACE);
                 xmlSerializer.startTag(null, GncXmlHelper.TAG_COMMODITY_ID);
-                xmlSerializer.text(currency);
+                xmlSerializer.text(currencyCode);
                 xmlSerializer.endTag(null, GncXmlHelper.TAG_COMMODITY_ID);
                 xmlSerializer.endTag(null, GncXmlHelper.TAG_TRX_CURRENCY);
                 // date posted, time which user put on the transaction
@@ -464,14 +467,14 @@ public class GncXmlExporter extends Exporter{
                     slotValues.add(GncXmlHelper.formatTemplateSplitAmount(splitAmount));
                     slotKeys.add(GncXmlHelper.KEY_CREDIT_NUMERIC);
                     slotTypes.add(GncXmlHelper.ATTR_VALUE_NUMERIC);
-                    slotValues.add(GncXmlHelper.formatSplitAmount(splitAmount, trxCurrency));
+                    slotValues.add(GncXmlHelper.formatSplitAmount(splitAmount, trnCommodity));
                 } else {
                     slotKeys.add(GncXmlHelper.KEY_DEBIT_FORMULA);
                     slotTypes.add(GncXmlHelper.ATTR_VALUE_STRING);
                     slotValues.add(GncXmlHelper.formatTemplateSplitAmount(splitAmount));
                     slotKeys.add(GncXmlHelper.KEY_DEBIT_NUMERIC);
                     slotTypes.add(GncXmlHelper.ATTR_VALUE_NUMERIC);
-                    slotValues.add(GncXmlHelper.formatSplitAmount(splitAmount, trxCurrency));
+                    slotValues.add(GncXmlHelper.formatSplitAmount(splitAmount, trnCommodity));
                 }
 
                 exportSlots(xmlSerializer, slotKeys, slotTypes, slotValues);

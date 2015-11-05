@@ -6,6 +6,7 @@ import org.gnucash.android.db.adapter.AccountsDbAdapter;
 import org.gnucash.android.db.adapter.SplitsDbAdapter;
 import org.gnucash.android.db.adapter.TransactionsDbAdapter;
 import org.gnucash.android.model.Account;
+import org.gnucash.android.model.Commodity;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.model.Split;
 import org.gnucash.android.model.Transaction;
@@ -30,7 +31,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class TransactionsDbAdapterTest {
 	private static final String ALPHA_ACCOUNT_NAME  = "Alpha";
 	private static final String BRAVO_ACCOUNT_NAME  = "Bravo";
-	private static final Currency DEFAULT_CURRENCY	= Currency.getInstance(Money.DEFAULT_CURRENCY_CODE);
+	private static final Commodity DEFAULT_CURRENCY	= Commodity.getInstance(Money.DEFAULT_CURRENCY_CODE);
 
     private AccountsDbAdapter mAccountsDbAdapter;
     private TransactionsDbAdapter mTransactionsDbAdapter;
@@ -65,7 +66,7 @@ public class TransactionsDbAdapterTest {
 
 		Transaction t2 = new Transaction( "T1000");
 		t2.setTime(System.currentTimeMillis());
-		Split split2 = new Split(new Money("23.50"), bravoAccount.getUID());
+		Split split2 = new Split(new Money("23.50", DEFAULT_CURRENCY.getCurrencyCode()), bravoAccount.getUID());
 		t2.addSplit(split2);
 		t2.addSplit(split2.createPair(alphaAccount.getUID()));
 
@@ -93,7 +94,7 @@ public class TransactionsDbAdapterTest {
 	@Test
 	public void shouldBalanceTransactionsOnSave(){
 		Transaction transaction = new Transaction("Auto balance");
-		Split split = new Split(new Money(BigDecimal.TEN, Currency.getInstance(Money.DEFAULT_CURRENCY_CODE)),
+		Split split = new Split(new Money(BigDecimal.TEN, DEFAULT_CURRENCY),
 				alphaAccount.getUID());
 
 		transaction.addSplit(split);

@@ -49,6 +49,7 @@ import org.gnucash.android.db.adapter.AccountsDbAdapter;
 import org.gnucash.android.db.adapter.BudgetsDbAdapter;
 import org.gnucash.android.model.Budget;
 import org.gnucash.android.model.BudgetAmount;
+import org.gnucash.android.model.Commodity;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.model.ScheduledAction;
 import org.gnucash.android.ui.common.UxArgument;
@@ -155,8 +156,7 @@ public class BudgetFormFragment extends Fragment implements RecurrencePickerDial
             BigDecimal amountValue = viewHolder.amountEditText.getValue();
             if (amountValue == null)
                 continue;
-            Money amount = new Money(amountValue,
-                    Currency.getInstance(Money.DEFAULT_CURRENCY_CODE));
+            Money amount = new Money(amountValue, Commodity.DEFAULT_COMMODITY);
             String accountUID = mAccountsDbAdapter.getUID(viewHolder.budgetAccountSpinner.getSelectedItemId());
             BudgetAmount budgetAmount = new BudgetAmount(amount, accountUID);
             budgetAmounts.add(budgetAmount);

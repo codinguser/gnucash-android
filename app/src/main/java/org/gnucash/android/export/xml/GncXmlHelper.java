@@ -17,6 +17,7 @@
 
 package org.gnucash.android.export.xml;
 
+import org.gnucash.android.model.Commodity;
 import org.gnucash.android.ui.transaction.TransactionFormFragment;
 
 import java.math.BigDecimal;
@@ -24,7 +25,6 @@ import java.math.BigInteger;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Currency;
 import java.util.Date;
 import java.util.Locale;
 
@@ -209,15 +209,12 @@ public abstract class GncXmlHelper {
     /**
      * Formats money amounts for splits in the format 2550/100
      * @param amount Split amount as BigDecimal
-     * @param trxCurrency Currency of the transaction
+     * @param commodity Commodity of the transaction
      * @return Formatted split amount
      * @deprecated Just use the values for numerator and denominator which are saved in the database
      */
-    //todo: do we still need this method in export? Seeing as how the numerator and denominator are already saved separately to the db
-    @Deprecated
-    public static String formatSplitAmount(BigDecimal amount, Currency trxCurrency){
-        int fractionDigits = trxCurrency.getDefaultFractionDigits();
-        int denomInt = (int) Math.pow(10, fractionDigits);
+    public static String formatSplitAmount(BigDecimal amount, Commodity commodity){
+        int denomInt = commodity.getSmallestFraction();
         BigDecimal denom = new BigDecimal(denomInt);
         String denomString = Integer.toString(denomInt);
 

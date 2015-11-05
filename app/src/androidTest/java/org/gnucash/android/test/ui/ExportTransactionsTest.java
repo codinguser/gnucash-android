@@ -17,6 +17,7 @@
 package org.gnucash.android.test.ui;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.content.pm.PackageManager;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
@@ -48,8 +49,10 @@ import org.gnucash.android.model.Transaction;
 import org.gnucash.android.ui.account.AccountsActivity;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.MethodSorters;
 
 import java.io.File;
 import java.util.Currency;
@@ -68,6 +71,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.allOf;
 
 @RunWith(AndroidJUnit4.class)
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class ExportTransactionsTest extends
 		ActivityInstrumentationTestCase2<AccountsActivity> {
 
@@ -136,7 +140,7 @@ public class ExportTransactionsTest extends
 	}
 
 	@Test
-	public void shouldNotOfferXmlExportInSingleEntryMode(){
+	public void whenInSingleEntry_shouldHideXmlExportOption(){
 		PreferenceManager.getDefaultSharedPreferences(mAcccountsActivity)
 				.edit().putBoolean(mAcccountsActivity.getString(R.string.key_use_double_entry), false)
 				.commit();
@@ -174,7 +178,7 @@ public class ExportTransactionsTest extends
 				mAcccountsActivity.requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,
 						Manifest.permission.READ_EXTERNAL_STORAGE}, 0x23);
 
-				onView(withId(android.R.id.button1)).perform(click());
+				onView(withId(AlertDialog.BUTTON_POSITIVE)).perform(click());
 			}
 		}
 
@@ -216,7 +220,7 @@ public class ExportTransactionsTest extends
 	 * Does not work on Travis yet
 	 */
 	@Test
-	public void shouldCreateExportSchedule(){
+	public void testShouldCreateExportSchedule(){
 		onView(withId(R.id.drawer_layout)).perform(DrawerActions.open());
 		onView(withText(R.string.nav_menu_export)).perform(click());
 

@@ -43,6 +43,7 @@ import org.gnucash.android.db.adapter.RecurrenceDbAdapter;
 import org.gnucash.android.db.adapter.ScheduledActionDbAdapter;
 import org.gnucash.android.db.adapter.SplitsDbAdapter;
 import org.gnucash.android.db.adapter.TransactionsDbAdapter;
+import org.gnucash.android.model.Commodity;
 import org.gnucash.android.service.SchedulerService;
 
 import java.util.Currency;
@@ -131,9 +132,11 @@ public class GnuCashApplication extends Application{
         mScheduledActionDbAdapter   = new ScheduledActionDbAdapter(mDb);
         mCommoditiesDbAdapter       = new CommoditiesDbAdapter(mDb);
         mPricesDbAdapter            = new PricesDbAdapter(mDb);
-        mBudgetsDbAdapter = new BudgetsDbAdapter(mDb);
         mBudgetAmountsDbAdapter     = new BudgetAmountsDbAdapter(mDb);
+        mBudgetsDbAdapter           = new BudgetsDbAdapter(mDb);
         mRecurrenceDbAdapter        = new RecurrenceDbAdapter(mDb);
+
+        Commodity.DEFAULT_COMMODITY = mCommoditiesDbAdapter.getCommodity(getDefaultCurrencyCode());
     }
 
     public static AccountsDbAdapter getAccountsDbAdapter() {
@@ -237,12 +240,12 @@ public class GnuCashApplication extends Application{
     }
 
     /**
-     * Returns default application currency.
-     * <p>See {@link #getDefaultCurrencyCode()} for how it is determined</p>
-     * @return Currency instance
+     * Returns the default commodity
+     * @return Default commodity of application
+     * @see #getDefaultCurrencyCode()
      */
-    public static Currency getDefaultCurrency(){
-        return Currency.getInstance(getDefaultCurrencyCode());
+    public static Commodity getDefaultCommodity(){
+        return Commodity.DEFAULT_COMMODITY;
     }
 
     /**

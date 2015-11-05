@@ -33,6 +33,7 @@ import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.model.Account;
 import org.gnucash.android.model.AccountType;
+import org.gnucash.android.model.Commodity;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.model.Split;
 import org.gnucash.android.model.Transaction;
@@ -109,9 +110,8 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
 		if (account.getAccountType() != AccountType.ROOT){
             //update the fully qualified account name
             updateRecord(accountUID, AccountEntry.COLUMN_FULL_NAME, getFullyQualifiedAccountName(accountUID));
-            String commodityUID = getCommodityUID(account.getCurrency().getCurrencyCode());
             for (Transaction t : account.getTransactions()) {
-                t.setCommodityUID(commodityUID);
+                t.setCommodity(account.getCommodity());
 		        mTransactionsAdapter.addRecord(t);
 			}
             for (Transaction transaction : templateTransactions) {
@@ -185,11 +185,11 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
         mReplaceStatement.bindLong(9, account.isPlaceholderAccount() ? 1 : 0);
         mReplaceStatement.bindString(10, account.getCreatedTimestamp().toString());
         mReplaceStatement.bindLong(11, account.isHidden() ? 1 : 0);
-        String commodityUID = account.getCommodityUID();
-        if (commodityUID == null)
-            commodityUID = CommoditiesDbAdapter.getInstance().getCommodityUID(account.getCurrency().getCurrencyCode());
+        Commodity commodity = account.getCommodity();
+        if (commodity == null)
+            commodity = CommoditiesDbAdapter.getInstance().getCommodity(account.getCurrency().getCurrencyCode());
 
-        mReplaceStatement.bindString(12, commodityUID);
+        mReplaceStatement.bindString(12, commodity.getUID());
 
         String parentAccountUID = account.getParentUID();
         if (parentAccountUID == null && account.getAccountType() != AccountType.ROOT) {
@@ -399,7 +399,7 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
         account.setParentUID(c.getString(c.getColumnIndexOrThrow(AccountEntry.COLUMN_PARENT_ACCOUNT_UID)));
         account.setAccountType(AccountType.valueOf(c.getString(c.getColumnIndexOrThrow(AccountEntry.COLUMN_TYPE))));
         Currency currency = Currency.getInstance(c.getString(c.getColumnIndexOrThrow(AccountEntry.COLUMN_CURRENCY)));
-        account.setCurrency(currency);
+        account.setCommodity(CommoditiesDbAdapter.getInstance().getCommodity(currency.getCurrencyCode()));
         account.setPlaceHolderFlag(c.getInt(c.getColumnIndexOrThrow(AccountEntry.COLUMN_PLACEHOLDER)) == 1);
         account.setDefaultTransferAccountUID(c.getString(c.getColumnIndexOrThrow(AccountEntry.COLUMN_DEFAULT_TRANSFER_ACCOUNT_UID)));
         account.setColorCode(c.getString(c.getColumnIndexOrThrow(AccountEntry.COLUMN_COLOR_CODE)));
@@ -543,9 +543,10 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
      */
     public String getOrCreateImbalanceAccountUID(Currency currency){
         String imbalanceAccountName = getImbalanceAccountName(currency);
+        Commodity commodity = CommoditiesDbAdapter.getInstance().getCommodity(currency.getCurrencyCode());
         String uid = findAccountUidByFullName(imbalanceAccountName);
         if (uid == null){
-            Account account = new Account(imbalanceAccountName, currency);
+            Account account = new Account(imbalanceAccountName, commodity);
             account.setAccountType(AccountType.BANK);
             account.setParentUID(getOrCreateGnuCashRootAccountUID());
             account.setHidden(!GnuCashApplication.isDoubleEntryEnabled());

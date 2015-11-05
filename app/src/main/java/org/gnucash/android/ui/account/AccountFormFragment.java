@@ -61,16 +61,15 @@ import org.gnucash.android.model.Account;
 import org.gnucash.android.model.AccountType;
 import org.gnucash.android.model.Commodity;
 import org.gnucash.android.model.Money;
-import org.gnucash.android.ui.common.UxArgument;
 import org.gnucash.android.ui.colorpicker.ColorPickerDialog;
 import org.gnucash.android.ui.colorpicker.ColorPickerSwatch;
 import org.gnucash.android.ui.colorpicker.ColorSquare;
+import org.gnucash.android.ui.common.UxArgument;
 import org.gnucash.android.util.CommoditiesCursorAdapter;
 import org.gnucash.android.util.QualifiedAccountNameCursorAdapter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Currency;
 import java.util.HashMap;
 import java.util.List;
 
@@ -771,8 +770,7 @@ public class AccountFormFragment extends Fragment {
 
         long commodityId = mCurrencySpinner.getSelectedItemId();
         Commodity commodity = CommoditiesDbAdapter.getInstance().getRecord(commodityId);
-        mAccount.setCommodityUID(commodity.getUID());
-        mAccount.setCurrency(Currency.getInstance(commodity.getMnemonic()));
+        mAccount.setCommodity(commodity);
 
         AccountType selectedAccountType = getSelectedAccountType();
         mAccount.setAccountType(selectedAccountType);
