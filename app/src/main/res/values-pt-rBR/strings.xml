@@ -554,9 +554,9 @@ Neste processo não serão recolhidas informações do utilizador!</string>
   <string name="title_translate_gnucash">Traduzir GnuCash</string>
   <string name="summary_google_plus">Compartilhe ideias, discuta alterações ou reporte problemas</string>
   <string name="summary_translate_gnucash">Traduza ou corrija as traduções no Crowdln</string>
-  <string name="toast_no_compatible_apps_to_receive_export">No compatible apps to receive the exported transactions!</string>
-  <string name="menu_move_transaction">Move...</string>
-  <string name="menu_duplicate_transaction">Duplicate</string>
+  <string name="toast_no_compatible_apps_to_receive_export">Não existem apps compatíveis para receber as transações exportadas!</string>
+  <string name="menu_move_transaction">Mover...</string>
+  <string name="menu_duplicate_transaction">Duplicar</string>
   <string-array name="report_time_range">
     <item>Mês atual</item>
     <item>Last 3 meses</item>

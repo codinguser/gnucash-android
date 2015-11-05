@@ -37,6 +37,8 @@ import net.objecthunter.exp4j.ExpressionBuilder;
 
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
+import org.gnucash.android.db.CommoditiesDbAdapter;
+import org.gnucash.android.model.Commodity;
 import org.gnucash.android.ui.common.FormActivity;
 
 import java.math.BigDecimal;
@@ -317,7 +319,15 @@ public class CalculatorEditText extends EditText {
         String amountString = getCleanString();
         if (amountString.isEmpty())
             return null;
-        return new BigDecimal(amountString);
+        try { //catch any exceptions in the conversion e.g. if a string with only "-" is entered
+            return new BigDecimal(amountString);
+        } catch (Exception e){
+            String msg = "Error parsing amount string " + amountString + " from CalculatorEditText";
+            Log.i(getClass().getSimpleName(), msg, e);
+            Crashlytics.log(msg);
+            Crashlytics.logException(e);
+            return null;
+        }
     }
 
     /**
@@ -327,11 +337,12 @@ public class CalculatorEditText extends EditText {
      * @param amount BigDecimal amount
      */
     public void setValue(BigDecimal amount){
-        BigDecimal newAmount = amount.setScale(mCurrency.getDefaultFractionDigits(), BigDecimal.ROUND_HALF_EVEN);
+        Commodity commodity = CommoditiesDbAdapter.getInstance().getCommodity(mCurrency.getCurrencyCode());
+        BigDecimal newAmount = amount.setScale(commodity.getSmallestFractionDigits(), BigDecimal.ROUND_HALF_EVEN);
 
         DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance(Locale.getDefault());
         formatter.setMinimumFractionDigits(0);
-        formatter.setMaximumFractionDigits(mCurrency.getDefaultFractionDigits());
+        formatter.setMaximumFractionDigits(commodity.getSmallestFractionDigits());
         formatter.setGroupingUsed(false);
         String resultString = formatter.format(newAmount.doubleValue());
 

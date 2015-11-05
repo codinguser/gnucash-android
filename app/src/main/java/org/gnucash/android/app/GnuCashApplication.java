@@ -40,6 +40,7 @@ import org.gnucash.android.db.PricesDbAdapter;
 import org.gnucash.android.db.ScheduledActionDbAdapter;
 import org.gnucash.android.db.SplitsDbAdapter;
 import org.gnucash.android.db.TransactionsDbAdapter;
+import org.gnucash.android.model.Commodity;
 import org.gnucash.android.service.SchedulerService;
 
 import java.util.Currency;
@@ -122,6 +123,8 @@ public class GnuCashApplication extends Application{
         mScheduledActionDbAdapter   = new ScheduledActionDbAdapter(mDb);
         mCommoditiesDbAdapter       = new CommoditiesDbAdapter(mDb);
         mPricesDbAdapter            = new PricesDbAdapter(mDb);
+
+        Commodity.DEFAULT_COMMODITY = mCommoditiesDbAdapter.getCommodity(getDefaultCurrencyCode());
     }
 
     public static AccountsDbAdapter getAccountsDbAdapter() {
@@ -210,6 +213,15 @@ public class GnuCashApplication extends Application{
             currencyCode = prefs.getString(context.getString(R.string.key_default_currency), currencyCode);
         }
         return currencyCode;
+    }
+
+    /**
+     * Returns the default commodity
+     * @return Default commodity of application
+     * @see #getDefaultCurrencyCode()
+     */
+    public static Commodity getDefaultCommodity(){
+        return Commodity.DEFAULT_COMMODITY;
     }
 
     /**

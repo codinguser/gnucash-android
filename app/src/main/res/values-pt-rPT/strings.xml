@@ -303,7 +303,7 @@
   <string name="toast_no_account_name_entered">Introduza o nome da conta a criar</string>
   <string name="label_account_currency">Moeda</string>
   <string name="label_parent_account">Conta progenitora</string>
-  <string name="title_xml_ofx_header">-use um cabeçalho XML OFX</string>
+  <string name="title_xml_ofx_header">Use um cabeçalho XML OFX</string>
   <string name="summary_xml_ofx_header">Active esta opção quando fizer exportações para outras aplicações que não seja o GnuCash para Desktop</string>
   <string name="title_whats_new">O que há de novo</string>
   <string name="whats_new">
@@ -340,10 +340,10 @@
   <string name="title_default_export_format">Formato de Exportação padrão</string>
   <string name="summary_default_export_format">Formato de ficheiro usado por defeito quando é feita uma exportação de transações</string>
   <string name="menu_export_transactions">Exportar transações</string>
-  <string name="label_recurring_transaction">Recorrente</string>
+  <string name="label_recurring_transaction">Agendadas</string>
   <string name="imbalance_account_name">Desequilíbrio</string>
   <string name="title_progress_exporting_transactions">Exportando transações</string>
-  <string name="label_no_recurring_transactions">Não existem transações recorrentes para mostrar</string>
+  <string name="label_no_recurring_transactions">Não existem transações agendadas para mostrar.</string>
   <string name="toast_recurring_transaction_deleted">Transações recorrentes apagadas com sucesso</string>
   <string name="label_placeholder_account">Conta não editável</string>
   <string name="label_default_transfer_account">Conta para transferências padrão</string>
@@ -527,7 +527,7 @@ Neste processo não serão recolhidas informações do utilizador!</string>
   <string name="title_transfer_funds">Transferências</string>
   <string name="nav_menu_help"><![CDATA[Ajuda & Feedback]]></string>
   <string name="label_select_pie_slice_to_see_details">Escolha uma secção para ver os detalhes</string>
-  <string name="label_report_period">Perडodo:</string>
+  <string name="label_report_period">Período:</string>
   <string name="label_convert_from">De:</string>
   <string name="label_convert_to">Para:</string>
   <string name="msg_provide_exchange_rate">Forneça o montante convertido ou a taxa de câmbio para a transferência</string>
@@ -554,9 +554,9 @@ Neste processo não serão recolhidas informações do utilizador!</string>
   <string name="title_translate_gnucash">Traduza o GnuCash</string>
   <string name="summary_google_plus">Partilhe ideias, discuta alterações ou reporte problemas</string>
   <string name="summary_translate_gnucash">Traduza ou reveja em Crowdin</string>
-  <string name="toast_no_compatible_apps_to_receive_export">No compatible apps to receive the exported transactions!</string>
-  <string name="menu_move_transaction">Move...</string>
-  <string name="menu_duplicate_transaction">Duplicate</string>
+  <string name="toast_no_compatible_apps_to_receive_export">Não existem aplicações compatíveis para receber as transações exportadas!</string>
+  <string name="menu_move_transaction">Mover...</string>
+  <string name="menu_duplicate_transaction">Duplicar</string>
   <string-array name="report_time_range">
     <item>Mês actual</item>
     <item>Últimos 3 meses</item>
