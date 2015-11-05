@@ -84,8 +84,7 @@ public final class Money implements Comparable<Money>{
      */
     public static Money getZeroInstance(){
 		if (sDefaultZero == null) {
-			String currencyCode = GnuCashApplication.getDefaultCurrencyCode();
-			sDefaultZero = new Money(BigDecimal.ZERO, Commodity.getInstance(currencyCode));
+			sDefaultZero = new Money(BigDecimal.ZERO, Commodity.DEFAULT_COMMODITY);
 		}
 		return sDefaultZero;
     }
