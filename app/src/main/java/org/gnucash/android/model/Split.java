@@ -2,7 +2,6 @@ package org.gnucash.android.model;
 
 
 import android.support.annotation.NonNull;
-import android.util.Log;
 
 import org.gnucash.android.db.AccountsDbAdapter;
 
@@ -91,6 +90,7 @@ public class Split extends BaseModel{
         this.mValue         = new Money(sourceSplit.mValue);
         this.mQuantity      = new Money(sourceSplit.mQuantity);
 
+        //todo: clone reconciled status
         if (generateUID){
             generateUID();
         } else {

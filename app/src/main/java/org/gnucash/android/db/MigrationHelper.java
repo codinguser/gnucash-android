@@ -53,7 +53,6 @@ import java.nio.channels.FileChannel;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
@@ -853,7 +852,7 @@ public class MigrationHelper {
                     + CommodityEntry.COLUMN_MNEMONIC    + " varchar(255) not null, "
                     + CommodityEntry.COLUMN_LOCAL_SYMBOL+ " varchar(255) not null default '', "
                     + CommodityEntry.COLUMN_CUSIP       + " varchar(255), "
-                    + CommodityEntry.COLUMN_FRACTION    + " integer not null, "
+                    + CommodityEntry.COLUMN_SMALLEST_FRACTION + " integer not null, "
                     + CommodityEntry.COLUMN_QUOTE_FLAG  + " integer not null, "
                     + CommodityEntry.COLUMN_CREATED_AT  + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
                     + CommodityEntry.COLUMN_MODIFIED_AT + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP "
@@ -958,7 +957,7 @@ public class MigrationHelper {
             String query = "SELECT " + "A." + AccountEntry.COLUMN_UID + " AS account_uid "
                     + " FROM " + AccountEntry.TABLE_NAME + " AS A, " + CommodityEntry.TABLE_NAME + " AS C "
                     + " WHERE A." + AccountEntry.COLUMN_CURRENCY + " = C." + CommodityEntry.COLUMN_MNEMONIC
-                    + " AND C." + CommodityEntry.COLUMN_FRACTION + "= 1";
+                    + " AND C." + CommodityEntry.COLUMN_SMALLEST_FRACTION + "= 1";
 
             Cursor cursor = db.rawQuery(query, null);
 
@@ -1007,7 +1006,7 @@ public class MigrationHelper {
             query = "SELECT " + "A." + AccountEntry.COLUMN_UID + " AS account_uid "
                     + " FROM " + AccountEntry.TABLE_NAME + " AS A, " + CommodityEntry.TABLE_NAME + " AS C "
                     + " WHERE A." + AccountEntry.COLUMN_CURRENCY + " = C." + CommodityEntry.COLUMN_MNEMONIC
-                    + " AND C." + CommodityEntry.COLUMN_FRACTION + "= 1000";
+                    + " AND C." + CommodityEntry.COLUMN_SMALLEST_FRACTION + "= 1000";
 
             cursor = db.rawQuery(query, null);
 

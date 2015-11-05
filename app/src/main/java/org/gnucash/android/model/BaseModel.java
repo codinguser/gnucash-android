@@ -108,6 +108,11 @@ public abstract class BaseModel {
         this.mModifiedTimestamp = modifiedTimestamp;
     }
 
+    /**
+     * Two instances are considered equal if their GUID's are the same
+     * @param o BaseModel instance to compare
+     * @return {@code true} if both instances are equal, {@code false} otherwise
+     */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -115,12 +120,12 @@ public abstract class BaseModel {
 
         BaseModel baseModel = (BaseModel) o;
 
-        return mUID.equals(baseModel.mUID);
+        return getUID().equals(baseModel.getUID());
 
     }
 
     @Override
     public int hashCode() {
-        return mUID.hashCode();
+        return getUID().hashCode();
     }
 }

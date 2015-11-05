@@ -33,9 +33,9 @@ import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.ui.common.UxArgument;
+import org.gnucash.android.ui.homescreen.WidgetConfigurationActivity;
 import org.gnucash.android.ui.transaction.TransactionsActivity;
 import org.gnucash.android.ui.util.Refreshable;
-import org.gnucash.android.ui.homescreen.WidgetConfigurationActivity;
 import org.gnucash.android.util.QualifiedAccountNameCursorAdapter;
 
 /**
@@ -69,6 +69,21 @@ public class BulkMoveDialogFragment extends DialogFragment {
 	 */
 	String mOriginAccountUID = null;
 
+	/**
+	 * Create new instance of the bulk move dialog
+	 * @param transactionIds Array of transaction database record IDs
+	 * @param originAccountUID Account from which to move the transactions
+	 * @return BulkMoveDialogFragment instance with arguments set
+	 */
+	public static BulkMoveDialogFragment newInstance(long[] transactionIds, String originAccountUID){
+		Bundle args = new Bundle();
+		args.putLongArray(UxArgument.SELECTED_TRANSACTION_IDS, transactionIds);
+		args.putString(UxArgument.ORIGIN_ACCOUNT_UID, originAccountUID);
+		BulkMoveDialogFragment bulkMoveDialogFragment = new BulkMoveDialogFragment();
+		bulkMoveDialogFragment.setArguments(args);
+		return bulkMoveDialogFragment;
+	}
+
     /**
 	 * Creates the view and retrieves references to the dialog elements
 	 */
@@ -84,7 +99,13 @@ public class BulkMoveDialogFragment extends DialogFragment {
 		mCancelButton = (Button) v.findViewById(R.id.btn_cancel);
 		return v;
 	}
-	
+
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setStyle(DialogFragment.STYLE_NORMAL, R.style.CustomDialog);
+	}
+
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
@@ -97,22 +118,15 @@ public class BulkMoveDialogFragment extends DialogFragment {
 		String title = getActivity().getString(R.string.title_move_transactions, 
 				mTransactionIds.length);
 		getDialog().setTitle(title);
-		
-		/*
-	  Accounts database adapter
-	 */
-		//FIXME: move only to accounts which have the same currency as this one
+
         AccountsDbAdapter accountsDbAdapter = AccountsDbAdapter.getInstance();
         String conditions = "(" + DatabaseSchema.AccountEntry.COLUMN_UID    + " != ? AND "
                 + DatabaseSchema.AccountEntry.COLUMN_CURRENCY               + " = ? AND "
-                + DatabaseSchema.AccountEntry.COLUMN_UID         + " != ? AND "
+                + DatabaseSchema.AccountEntry.COLUMN_HIDDEN         + " = 0 AND "
                 + DatabaseSchema.AccountEntry.COLUMN_PLACEHOLDER + " = 0"
                 + ")";
 		Cursor cursor = accountsDbAdapter.fetchAccountsOrderedByFullName(conditions,
-                new String[]{mOriginAccountUID,
-                        accountsDbAdapter.getCurrencyCode(mOriginAccountUID),
-                        "" + accountsDbAdapter.getOrCreateGnuCashRootAccountUID()
-                });
+                new String[]{mOriginAccountUID, accountsDbAdapter.getCurrencyCode(mOriginAccountUID)});
 
 		SimpleCursorAdapter mCursorAdapter = new QualifiedAccountNameCursorAdapter(getActivity(), cursor);
 		mDestinationAccountSpinner.setAdapter(mCursorAdapter);
@@ -132,34 +146,29 @@ public class BulkMoveDialogFragment extends DialogFragment {
 		});
 		
 		mOkButton.setOnClickListener(new View.OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
-				if (mTransactionIds == null){
+				if (mTransactionIds == null) {
 					dismiss();
 				}
-				
+
 				long dstAccountId = mDestinationAccountSpinner.getSelectedItemId();
 				TransactionsDbAdapter trxnAdapter = TransactionsDbAdapter.getInstance();
-				if (!trxnAdapter.getAccountCurrencyCode(dstAccountId).equals(trxnAdapter.getAccountCurrencyCode(mOriginAccountUID))){
+				if (!trxnAdapter.getAccountCurrencyCode(dstAccountId).equals(trxnAdapter.getAccountCurrencyCode(mOriginAccountUID))) {
 					Toast.makeText(getActivity(), R.string.toast_incompatible_currency, Toast.LENGTH_LONG).show();
 					return;
 				}
-                String srcAccountUID    = ((TransactionsActivity)getActivity()).getCurrentAccountUID();
-                String dstAccountUID    = AccountsDbAdapter.getInstance().getUID(dstAccountId);
+				String srcAccountUID = ((TransactionsActivity) getActivity()).getCurrentAccountUID();
+				String dstAccountUID = AccountsDbAdapter.getInstance().getUID(dstAccountId);
 				for (long trxnId : mTransactionIds) {
 					trxnAdapter.moveTransaction(trxnAdapter.getUID(trxnId), srcAccountUID, dstAccountUID);
 				}
 
 				WidgetConfigurationActivity.updateAllWidgets(getActivity());
-				((Refreshable)getTargetFragment()).refresh();
+				((Refreshable) getTargetFragment()).refresh();
 				dismiss();
-			}			
+			}
 		});
-	}
-
-	@Override
-	public void onDestroyView() {
-		super.onDestroyView();
 	}
 }
