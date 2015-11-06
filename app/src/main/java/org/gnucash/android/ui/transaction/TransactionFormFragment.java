@@ -63,6 +63,7 @@ import org.gnucash.android.db.adapter.TransactionsDbAdapter;
 import org.gnucash.android.model.AccountType;
 import org.gnucash.android.model.Commodity;
 import org.gnucash.android.model.Money;
+import org.gnucash.android.model.Recurrence;
 import org.gnucash.android.model.ScheduledAction;
 import org.gnucash.android.model.Split;
 import org.gnucash.android.model.Transaction;
@@ -808,32 +809,28 @@ public class TransactionFormFragment extends Fragment implements
     private void scheduleRecurringTransaction(String transactionUID) {
         ScheduledActionDbAdapter scheduledActionDbAdapter = ScheduledActionDbAdapter.getInstance();
 
-        List<ScheduledAction> events = RecurrenceParser.parse(mEventRecurrence,
-                ScheduledAction.ActionType.TRANSACTION);
+        Recurrence recurrence = RecurrenceParser.parse(mEventRecurrence);
+
+        ScheduledAction scheduledAction = new ScheduledAction(ScheduledAction.ActionType.TRANSACTION);
+        scheduledAction.setRecurrence(recurrence);
 
         String scheduledActionUID = getArguments().getString(UxArgument.SCHEDULED_ACTION_UID);
 
         if (scheduledActionUID != null) { //if we are editing an existing schedule
-            if ( events.size() == 1) {
-                ScheduledAction scheduledAction = events.get(0);
+            if (recurrence == null){
+                scheduledActionDbAdapter.deleteRecord(scheduledActionUID);
+            } else {
                 scheduledAction.setUID(scheduledActionUID);
                 scheduledActionDbAdapter.updateRecurrenceAttributes(scheduledAction);
                 Toast.makeText(getActivity(), "Updated transaction schedule", Toast.LENGTH_SHORT).show();
-                return;
-            } else {
-                //if user changed scheduled action so that more than one new schedule would be saved,
-                // then remove the old one
-                ScheduledActionDbAdapter.getInstance().deleteRecord(scheduledActionUID);
+            }
+        } else {
+            if (recurrence != null) {
+                scheduledAction.setActionUID(transactionUID);
+                scheduledActionDbAdapter.addRecord(scheduledAction);
+                Toast.makeText(getActivity(), R.string.toast_scheduled_recurring_transaction, Toast.LENGTH_SHORT).show();
             }
         }
-
-        for (ScheduledAction event : events) {
-            event.setActionUID(transactionUID);
-            scheduledActionDbAdapter.addRecord(event);
-
-            Log.i("TransactionFormFragment", event.toString());
-        }
-        Toast.makeText(getActivity(), R.string.toast_scheduled_recurring_transaction, Toast.LENGTH_SHORT).show();
 
     }
 

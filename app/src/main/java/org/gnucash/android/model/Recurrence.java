@@ -20,6 +20,7 @@ import android.support.annotation.NonNull;
 
 import org.gnucash.android.ui.util.RecurrenceParser;
 import org.joda.time.Days;
+import org.joda.time.Hours;
 import org.joda.time.LocalDate;
 import org.joda.time.Months;
 import org.joda.time.Weeks;
@@ -37,7 +38,22 @@ import java.util.Locale;
 public class Recurrence extends BaseModel {
 
     private PeriodType mPeriodType;
+
+    /**
+     * Start time of the recurrence
+     */
     private Timestamp mPeriodStart;
+
+    /**
+     * End time of this recurrence
+     * <p>This value is not persisted to the database</p>
+     */
+    private Timestamp mPeriodEnd;
+
+    /**
+     * Describes which day on which to run the recurrence
+     */
+    private String mByDay;
 
     public Recurrence(@NonNull PeriodType periodType){
         setPeriodType(periodType);
@@ -151,7 +167,7 @@ public class Recurrence extends BaseModel {
      * Return the number of days left in this period
      * @return Number of days left in period
      */
-    public int getDaysLeft(){
+    public int getDaysLeftInCurrentPeriod(){
         LocalDate startDate = new LocalDate(System.currentTimeMillis());
         int interval = mPeriodType.getMultiplier() - 1;
         LocalDate endDate = null;
@@ -220,4 +236,88 @@ public class Recurrence extends BaseModel {
         return "Period " + periodNum;
     }
 
+    /**
+     * Sets the string which determines on which day the recurrence will be run
+     * @param byDay Byday string of recurrence rule (RFC 2445)
+     */
+    public void setByDay(String byDay){
+        this.mByDay = byDay;
+    }
+
+    /**
+     * Return the byDay string of recurrence rule (RFC 2445)
+     * @return String with by day specification
+     */
+    public String getByDay(){
+        return mByDay;
+    }
+
+    /**
+     * Computes the number of occurrences of this recurrences between start and end date
+     * <p>If there is no end date, it returns -1</p>
+     * @return Number of occurrences, or -1 if there is no end date
+     */
+    public int getCount(){
+        int count = 0;
+        LocalDate startDate = new LocalDate(mPeriodStart.getTime());
+        LocalDate endDate = new LocalDate(mPeriodEnd.getTime());
+        switch (mPeriodType){
+            case DAY:
+                count = Days.daysBetween(startDate, endDate).getDays();
+                break;
+            case WEEK:
+                count = Weeks.weeksBetween(startDate, endDate).getWeeks();
+                break;
+            case MONTH:
+                count = Months.monthsBetween(startDate, endDate).getMonths();
+                break;
+            case YEAR:
+                count = Years.yearsBetween(startDate, endDate).getYears();
+                break;
+        }
+        return count;
+    }
+
+    /**
+     * Sets the end time of this recurrence by specifying the number of occurences
+     * @param numberOfOccurences Number of occurences from the start time
+     */
+    public void setPeriodEnd(int numberOfOccurences){
+        LocalDate localDate = new LocalDate(mPeriodStart.getTime());
+        LocalDate endDate;
+        switch (mPeriodType){
+            case DAY:
+                endDate = localDate.dayOfWeek().withMaximumValue().plusDays(numberOfOccurences);
+                break;
+            case WEEK:
+                endDate = localDate.dayOfWeek().withMaximumValue().plusWeeks(numberOfOccurences);
+                break;
+            case MONTH:
+                endDate = localDate.dayOfMonth().withMaximumValue().plusMonths(numberOfOccurences);
+                break;
+            case YEAR:
+                endDate = localDate.monthOfYear().withMaximumValue().plusYears(numberOfOccurences);
+                break;
+            default: //default to monthly
+                endDate = localDate.dayOfMonth().withMaximumValue().plusMonths(numberOfOccurences);
+                break;
+        }
+        mPeriodEnd = new Timestamp(endDate.toDate().getTime());
+    }
+
+    /**
+     * Return the end date of the period in milliseconds
+     * @return End date of the recurrence period
+     */
+    public Timestamp getPeriodEnd(){
+        return mPeriodEnd;
+    }
+
+    /**
+     * Set period end date
+     * @param endTimestamp End time in milliseconds
+     */
+    public void setPeriodEnd(Timestamp endTimestamp){
+        mPeriodEnd = endTimestamp;
+    }
 }

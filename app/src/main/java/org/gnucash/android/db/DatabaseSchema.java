@@ -237,6 +237,8 @@ public class DatabaseSchema {
         public static final String COLUMN_MULTIPLIER    = "recurrence_mult";
         public static final String COLUMN_PERIOD_TYPE   = "recurrence_period_type";
         public static final String COLUMN_PERIOD_START  = "recurrence_period_start";
+        public static final String COLUMN_PERIOD_END    = "recurrence_period_end";
+        public static final String COLUMN_BYDAY         = "recurrence_byday";
 
         public static final String INDEX_UID = "recurrence_uid_index";
     }

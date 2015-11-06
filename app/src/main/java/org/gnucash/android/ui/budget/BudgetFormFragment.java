@@ -232,6 +232,14 @@ public class BudgetFormFragment extends Fragment implements RecurrencePickerDial
             }
         }
 
+        if (mEventRecurrence.until != null && mEventRecurrence.until.length() > 0
+                || mEventRecurrence.count <= 0){
+            Toast.makeText(getActivity(),
+                    "Set a number periods in the recurrence dialog to save the budget",
+                    Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
         String budgetName = mBudgetNameInput.getText().toString();
         boolean canSave = mRecurrenceRule != null
                 && !budgetName.isEmpty();
@@ -272,12 +280,7 @@ public class BudgetFormFragment extends Fragment implements RecurrencePickerDial
 
         mBudget.setDescription(mDescriptionInput.getText().toString().trim());
 
-        List<ScheduledAction> events = RecurrenceParser.parse(mEventRecurrence,
-                ScheduledAction.ActionType.TRANSACTION);
-
-        if (!events.isEmpty()){
-            mBudget.setRecurrence(events.get(0).getRecurrence());
-        }
+        mBudget.setRecurrence(RecurrenceParser.parse(mEventRecurrence));
 
         mBudgetsDbAdapter.addRecord(mBudget);
         getActivity().finish();

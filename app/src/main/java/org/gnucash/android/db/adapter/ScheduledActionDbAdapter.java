@@ -85,7 +85,14 @@ public class ScheduledActionDbAdapter extends DatabaseAdapter<ScheduledAction> {
      * @return Database record ID of the edited scheduled action
      */
     public long updateRecurrenceAttributes(ScheduledAction scheduledAction){
-        RecurrenceDbAdapter.getInstance().addRecord(scheduledAction.getRecurrence());
+        //since we are updating, first fetch the existing recurrence UID and set it to the object
+        //so that it will be updated and not a new one created
+        RecurrenceDbAdapter recurrenceDbAdapter = RecurrenceDbAdapter.getInstance();
+        String recurrenceUID = recurrenceDbAdapter.getAttribute(scheduledAction.getUID(), ScheduledActionEntry.COLUMN_RECURRENCE_UID);
+
+        Recurrence recurrence = scheduledAction.getRecurrence();
+        recurrence.setUID(recurrenceUID);
+        recurrenceDbAdapter.addRecord(recurrence);
 
         ContentValues contentValues = new ContentValues();
         extractBaseModelAttributes(contentValues, scheduledAction);

@@ -1093,7 +1093,9 @@ public class MigrationHelper {
                     + RecurrenceEntry.COLUMN_UID            + " varchar(255) not null UNIQUE, "
                     + RecurrenceEntry.COLUMN_MULTIPLIER     + " integer not null default 1, "
                     + RecurrenceEntry.COLUMN_PERIOD_TYPE    + " varchar(255) not null, "
-                    + RecurrenceEntry.COLUMN_PERIOD_START   + " varchar(255) not null, "
+                    + RecurrenceEntry.COLUMN_BYDAY          + " varchar(255), "
+                    + RecurrenceEntry.COLUMN_PERIOD_START   + " timestamp not null, "
+                    + RecurrenceEntry.COLUMN_PERIOD_END   + " timestamp, "
                     + RecurrenceEntry.COLUMN_CREATED_AT     + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
                     + RecurrenceEntry.COLUMN_MODIFIED_AT    + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP); "
                     + DatabaseHelper.createUpdatedAtTrigger(RecurrenceEntry.TABLE_NAME));

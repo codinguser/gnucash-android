@@ -42,7 +42,6 @@
                 android:id="@+id/currency_symbol"
                 style="@style/FormIcon"
                 android:gravity="center"
-                android:textColor="@color/debit_red"
                 android:textSize="22sp"
                 android:text="$" />
 
@@ -55,7 +54,6 @@
                 android:inputType="none"
                 android:nextFocusDown="@+id/input_description"
                 android:background="@android:color/transparent"
-                android:textColor="@color/debit_red"
                 android:textSize="20sp"
                 app:keyboardKeysLayout="@xml/calculator_keyboard"/>
             <ImageView

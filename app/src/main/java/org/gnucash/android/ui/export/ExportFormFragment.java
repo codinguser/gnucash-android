@@ -236,13 +236,11 @@ public class
 		exportParameters.setExportTarget(mExportTarget);
 		exportParameters.setDeleteTransactionsAfterExport(mDeleteAllCheckBox.isChecked());
 
-		List<ScheduledAction> scheduledActions = RecurrenceParser.parse(mEventRecurrence,
-				ScheduledAction.ActionType.BACKUP);
-		for (ScheduledAction scheduledAction : scheduledActions) {
-			scheduledAction.setTag(exportParameters.toCsv());
-			scheduledAction.setActionUID(BaseModel.generateUID());
-			ScheduledActionDbAdapter.getInstance().addRecord(scheduledAction);
-		}
+		ScheduledAction scheduledAction = new ScheduledAction(ScheduledAction.ActionType.BACKUP);
+		scheduledAction.setRecurrence(RecurrenceParser.parse(mEventRecurrence));
+		scheduledAction.setTag(exportParameters.toCsv());
+		scheduledAction.setActionUID(BaseModel.generateUID());
+		ScheduledActionDbAdapter.getInstance().addRecord(scheduledAction);
 
 		Log.i(TAG, "Commencing async export of transactions");
 		new ExportAsyncTask(getActivity()).execute(exportParameters);

@@ -212,6 +212,9 @@ public class ScheduledAction extends BaseModel{
      */
     public void setEndTime(long endDate) {
         this.mEndDate = endDate;
+        if (mRecurrence != null){
+            mRecurrence.setPeriodStart(new Timestamp(mEndDate));
+        }
     }
 
     /**
@@ -429,10 +432,18 @@ public class ScheduledAction extends BaseModel{
      */
     public void setRecurrence(Recurrence recurrence) {
         this.mRecurrence = recurrence;
+        //if we were parsing XML and parsed the start and end date from the scheduled action first,
+        //then use those over the values which might be gotten from the recurrence
         if (mStartDate > 0){
             mRecurrence.setPeriodStart(new Timestamp(mStartDate));
         } else {
             mStartDate = mRecurrence.getPeriodStart().getTime();
+        }
+
+        if (mEndDate > 0){
+            mRecurrence.setPeriodEnd(new Timestamp(mEndDate));
+        } else if (mRecurrence.getPeriodEnd() != null){
+            mEndDate = mRecurrence.getPeriodEnd().getTime();
         }
     }
 
