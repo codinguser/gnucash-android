@@ -39,6 +39,7 @@ import org.gnucash.android.model.Transaction;
 import org.gnucash.android.model.TransactionType;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Currency;
 import java.util.HashMap;
@@ -503,12 +504,11 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
     }
 	/**
 	 * Returns a list of accounts which have transactions that have not been exported yet
+     * @param lastExportTimeStamp Timestamp after which to any transactions created/modified should be exported
 	 * @return List of {@link Account}s with unexported transactions
-     * @deprecated This uses the exported flag in the database which is no longer supported.
 	 */
-    @Deprecated
-    public List<Account> getExportableAccounts(){
-        LinkedList<Account> accountsList = new LinkedList<Account>();
+    public List<Account> getExportableAccounts(Timestamp lastExportTimeStamp){
+        LinkedList<Account> accountsList = new LinkedList<>();
         Cursor cursor = mDb.query(
                 TransactionEntry.TABLE_NAME + " , " + SplitEntry.TABLE_NAME +
                         " ON " + TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_UID + " = " +
@@ -517,8 +517,8 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
                         AccountEntry.COLUMN_UID + " = " + SplitEntry.TABLE_NAME + "." +
                         SplitEntry.COLUMN_ACCOUNT_UID,
                 new String[]{AccountEntry.TABLE_NAME + ".*"},
-                TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_EXPORTED + " == 0",
-                null,
+                TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_MODIFIED_AT + " > ?",
+                new String[]{lastExportTimeStamp.toString()},
                 AccountEntry.TABLE_NAME + "." + AccountEntry.COLUMN_UID,
                 null,
                 null

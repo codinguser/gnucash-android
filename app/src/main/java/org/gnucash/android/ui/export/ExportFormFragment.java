@@ -21,6 +21,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -28,6 +29,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.SwitchCompat;
 import android.text.format.Time;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -39,13 +41,18 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.codetroopers.betterpickers.calendardatepicker.CalendarDatePickerDialog;
+import com.codetroopers.betterpickers.radialtimepicker.RadialTimePickerDialog;
 import com.codetroopers.betterpickers.recurrencepicker.EventRecurrence;
 import com.codetroopers.betterpickers.recurrencepicker.EventRecurrenceFormatter;
 import com.codetroopers.betterpickers.recurrencepicker.RecurrencePickerDialog;
+import com.crashlytics.android.Crashlytics;
 import com.dropbox.sync.android.DbxAccountManager;
 
 import org.gnucash.android.R;
@@ -54,17 +61,26 @@ import org.gnucash.android.db.ScheduledActionDbAdapter;
 import org.gnucash.android.export.ExportAsyncTask;
 import org.gnucash.android.export.ExportFormat;
 import org.gnucash.android.export.ExportParams;
+import org.gnucash.android.export.Exporter;
 import org.gnucash.android.model.BaseModel;
 import org.gnucash.android.model.ScheduledAction;
 import org.gnucash.android.ui.account.AccountsActivity;
 import org.gnucash.android.ui.common.UxArgument;
 import org.gnucash.android.ui.settings.SettingsActivity;
+import org.gnucash.android.ui.transaction.TransactionFormFragment;
 import org.gnucash.android.ui.util.RecurrenceParser;
 
+import java.sql.Timestamp;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+
 
 /**
  * Dialog fragment for exporting accounts and transactions in various formats
@@ -72,8 +88,10 @@ import butterknife.ButterKnife;
  * to the {@link org.gnucash.android.export.Exporter} responsible for exporting</p>
  * @author Ngewi Fet <ngewif@gmail.com>
  */
-public class
-		ExportFormFragment extends Fragment implements RecurrencePickerDialog.OnRecurrenceSetListener {
+public class ExportFormFragment extends Fragment implements
+		RecurrencePickerDialog.OnRecurrenceSetListener,
+		CalendarDatePickerDialog.OnDateSetListener,
+		RadialTimePickerDialog.OnTimeSetListener {
 		
 	/**
 	 * Spinner for selecting destination for the exported file.
@@ -81,12 +99,6 @@ public class
 	 * accepts files, like Google Drive.
 	 */
 	@Bind(R.id.spinner_export_destination) Spinner mDestinationSpinner;
-	
-	/**
-	 * Checkbox indicating that all transactions should be exported,
-	 * regardless of whether they have been exported previously or not
-	 */
-	@Bind(R.id.checkbox_export_all) CheckBox mExportAllCheckBox;
 	
 	/**
 	 * Checkbox for deleting all transactions after exporting them
@@ -104,6 +116,24 @@ public class
 	@Bind(R.id.input_recurrence) TextView mRecurrenceTextView;
 
 	/**
+	 * Text view displaying start date to export from
+	 */
+	@Bind(R.id.export_start_date) TextView mExportStartDate;
+
+	@Bind(R.id.export_start_time) TextView mExportStartTime;
+
+	/**
+	 * Switch toggling whether to export all transactions or not
+	 */
+	@Bind(R.id.switch_export_all) SwitchCompat mExportAllSwitch;
+
+	@Bind(R.id.export_date_layout) LinearLayout mExportDateLayout;
+
+	@Bind(R.id.radio_ofx_format) RadioButton mOfxRadioButton;
+	@Bind(R.id.radio_qif_format) RadioButton mQifRadioButton;
+	@Bind(R.id.radio_xml_format) RadioButton mXmlRadioButton;
+
+	/**
 	 * Event recurrence options
 	 */
 	EventRecurrence mEventRecurrence = new EventRecurrence();
@@ -112,6 +142,8 @@ public class
 	 * Recurrence rule
 	 */
 	String mRecurrenceRule;
+
+	Calendar mExportStartCalendar = Calendar.getInstance();
 
 	/**
 	 * Tag for logging
@@ -126,7 +158,7 @@ public class
 	private ExportParams.ExportTarget mExportTarget = ExportParams.ExportTarget.SD_CARD;
 
 
-    public void onRadioButtonClicked(View view){
+	public void onRadioButtonClicked(View view){
         switch (view.getId()){
             case R.id.radio_ofx_format:
                 mExportFormat = ExportFormat.OFX;
@@ -136,6 +168,7 @@ public class
                 } else {
                     mExportWarningTextView.setVisibility(View.GONE);
                 }
+				mExportDateLayout.setVisibility(View.VISIBLE);
                 break;
 
             case R.id.radio_qif_format:
@@ -147,12 +180,13 @@ public class
                 } else {
                     mExportWarningTextView.setVisibility(View.GONE);
                 }
+				mExportDateLayout.setVisibility(View.VISIBLE);
 				break;
 
 			case R.id.radio_xml_format:
 				mExportFormat = ExportFormat.XML;
 				mExportWarningTextView.setText(R.string.export_warning_xml);
-
+				mExportDateLayout.setVisibility(View.GONE);
 				break;
         }
     }
@@ -161,15 +195,13 @@ public class
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.fragment_export_form, container, false);
+
 		ButterKnife.bind(this, view);
+
+		bindViewListeners();
+
 		return view;
 	}
-
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-	}
-
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 		inflater.inflate(R.menu.default_save_actions, menu);
@@ -196,7 +228,7 @@ public class
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {		
 		super.onActivityCreated(savedInstanceState);
-        bindViews();
+
 		ActionBar supportActionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
 		assert supportActionBar != null;
 		supportActionBar.setTitle(R.string.title_export_dialog);
@@ -233,7 +265,13 @@ public class
 	 */
 	private void startExport(){
 		ExportParams exportParameters = new ExportParams(mExportFormat);
-		exportParameters.setExportAllTransactions(mExportAllCheckBox.isChecked());
+
+		if (mExportAllSwitch.isChecked()){
+			exportParameters.setExportStartTime(Timestamp.valueOf(Exporter.TIMESTAMP_ZERO));
+		} else {
+			exportParameters.setExportStartTime(new Timestamp(mExportStartCalendar.getTimeInMillis()));
+		}
+
 		exportParameters.setExportTarget(mExportTarget);
 		exportParameters.setDeleteTransactionsAfterExport(mDeleteAllCheckBox.isChecked());
 
@@ -253,7 +291,8 @@ public class
 		//getActivity().finish();
 	}
 
-	private void bindViews(){
+	private void bindViewListeners(){
+		// export destination bindings
 		ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getActivity(),
 		        R.array.export_destinations, android.R.layout.simple_spinner_item);
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);		
@@ -300,9 +339,77 @@ public class
 
 			}
 		});
+
+
+		//**************** export start time bindings ******************
+		String lastExportTimeStamp = PreferenceManager.getDefaultSharedPreferences(getActivity())
+				.getString(Exporter.PREF_LAST_EXPORT_TIME, Exporter.TIMESTAMP_ZERO);
+		Timestamp timestamp = Timestamp.valueOf(lastExportTimeStamp);
+		mExportStartCalendar.setTimeInMillis(timestamp.getTime());
+
+		Date date = new Date(timestamp.getTime());
+		mExportStartDate.setText(TransactionFormFragment.DATE_FORMATTER.format(date));
+		mExportStartTime.setText(TransactionFormFragment.TIME_FORMATTER.format(date));
+
+		mExportStartDate.setOnClickListener(new View.OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				long dateMillis = 0;
+				try {
+					Date date = TransactionFormFragment.DATE_FORMATTER.parse(mExportStartDate.getText().toString());
+					dateMillis = date.getTime();
+				} catch (ParseException e) {
+					Log.e(getTag(), "Error converting input time to Date object");
+				}
+				Calendar calendar = Calendar.getInstance();
+				calendar.setTimeInMillis(dateMillis);
+
+				int year = calendar.get(Calendar.YEAR);
+				int monthOfYear = calendar.get(Calendar.MONTH);
+				int dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
+				CalendarDatePickerDialog datePickerDialog = CalendarDatePickerDialog.newInstance(
+						ExportFormFragment.this,
+						year, monthOfYear, dayOfMonth);
+				datePickerDialog.show(getFragmentManager(), "date_picker_fragment");
+			}
+		});
+
+		mExportStartTime.setOnClickListener(new View.OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				long timeMillis = 0;
+				try {
+					Date date = TransactionFormFragment.TIME_FORMATTER.parse(mExportStartTime.getText().toString());
+					timeMillis = date.getTime();
+				} catch (ParseException e) {
+					Log.e(getTag(), "Error converting input time to Date object");
+				}
+
+				Calendar calendar = Calendar.getInstance();
+				calendar.setTimeInMillis(timeMillis);
+
+				RadialTimePickerDialog timePickerDialog = RadialTimePickerDialog.newInstance(
+						ExportFormFragment.this, calendar.get(Calendar.HOUR_OF_DAY),
+						calendar.get(Calendar.MINUTE), true);
+				timePickerDialog.show(getFragmentManager(), "time_picker_dialog_fragment");
+			}
+		});
+
 		SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
-		mExportAllCheckBox.setChecked(sharedPrefs.getBoolean(getString(R.string.key_export_all_transactions), false));
-		
+		mExportAllSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+			@Override
+			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+				mExportStartDate.setEnabled(!isChecked);
+				mExportStartTime.setEnabled(!isChecked);
+				int color = isChecked ? android.R.color.darker_gray : android.R.color.black;
+				mExportStartDate.setTextColor(getResources().getColor(color));
+				mExportStartTime.setTextColor(getResources().getColor(color));
+			}
+		});
+
+		mExportAllSwitch.setChecked(sharedPrefs.getBoolean(getString(R.string.key_export_all_transactions), false));
 		mDeleteAllCheckBox.setChecked(sharedPrefs.getBoolean(getString(R.string.key_delete_transactions_after_export), false));
 
 		mRecurrenceTextView.setOnClickListener(new View.OnClickListener() {
@@ -334,7 +441,7 @@ public class
         String defaultExportFormat = sharedPrefs.getString(getString(R.string.key_default_export_format), ExportFormat.QIF.name());
         mExportFormat = ExportFormat.valueOf(defaultExportFormat);
 
-        View.OnClickListener clickListener = new View.OnClickListener() {
+        View.OnClickListener radioClickListener = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 onRadioButtonClicked(view);
@@ -344,28 +451,21 @@ public class
 		View v = getView();
 		assert v != null;
 
-        RadioButton ofxRadioButton = (RadioButton) v.findViewById(R.id.radio_ofx_format);
-        ofxRadioButton.setOnClickListener(clickListener);
-        if (defaultExportFormat.equalsIgnoreCase(ExportFormat.OFX.name())) {
-            ofxRadioButton.performClick();
-        }
+		mOfxRadioButton.setOnClickListener(radioClickListener);
+		mQifRadioButton.setOnClickListener(radioClickListener);
+		mXmlRadioButton.setOnClickListener(radioClickListener);
 
-        RadioButton qifRadioButton = (RadioButton) v.findViewById(R.id.radio_qif_format);
-        qifRadioButton.setOnClickListener(clickListener);
-        if (defaultExportFormat.equalsIgnoreCase(ExportFormat.QIF.name())){
-            qifRadioButton.performClick();
-        }
-
-		RadioButton xmlRadioButton = (RadioButton) v.findViewById(R.id.radio_xml_format);
-		xmlRadioButton.setOnClickListener(clickListener);
-		if (defaultExportFormat.equalsIgnoreCase(ExportFormat.XML.name())){
-			xmlRadioButton.performClick();
+		ExportFormat defaultFormat = ExportFormat.valueOf(defaultExportFormat.toUpperCase());
+		switch (defaultFormat){
+			case QIF: mQifRadioButton.performClick(); break;
+			case OFX: mOfxRadioButton.performClick(); break;
+			case XML: mXmlRadioButton.performClick(); break;
 		}
 
 		if (GnuCashApplication.isDoubleEntryEnabled()){
-			ofxRadioButton.setVisibility(View.GONE);
+			mOfxRadioButton.setVisibility(View.GONE);
 		} else {
-			xmlRadioButton.setVisibility(View.GONE);
+			mXmlRadioButton.setVisibility(View.GONE);
 		}
 
 	}
@@ -393,5 +493,21 @@ public class
 		}
 	}
 
+	@Override
+	public void onDateSet(CalendarDatePickerDialog dialog, int year, int monthOfYear, int dayOfMonth) {
+		Calendar cal = new GregorianCalendar(year, monthOfYear, dayOfMonth);
+		mExportStartDate.setText(TransactionFormFragment.DATE_FORMATTER.format(cal.getTime()));
+		mExportStartCalendar.set(Calendar.YEAR, year);
+		mExportStartCalendar.set(Calendar.MONTH, monthOfYear);
+		mExportStartCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+	}
+
+	@Override
+	public void onTimeSet(RadialTimePickerDialog dialog, int hourOfDay, int minute) {
+		Calendar cal = new GregorianCalendar(0, 0, 0, hourOfDay, minute);
+		mExportStartTime.setText(TransactionFormFragment.TIME_FORMATTER.format(cal.getTime()));
+		mExportStartCalendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
+		mExportStartCalendar.set(Calendar.MINUTE, minute);
+	}
 }
 

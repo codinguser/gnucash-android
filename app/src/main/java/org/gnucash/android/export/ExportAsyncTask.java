@@ -143,7 +143,7 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
             }
 
         try {
-            File file = new File(mExportParams.getTargetFilepath());
+            File file = new File(mExportParams.getInternalExportPath());
             BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), "UTF-8"));
             try {
                 // FIXME: detect if there aren't transactions to export and inform the user
@@ -366,11 +366,11 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
     private List<String> getExportedFiles() throws IOException {
         List<String> exportedFilePaths;
         if (mExportParams.getExportFormat() == ExportFormat.QIF) {
-            String path = mExportParams.getTargetFilepath();
+            String path = mExportParams.getInternalExportPath();
             exportedFilePaths = QifExporter.splitQIF(new File(path));
         } else {
             exportedFilePaths = new ArrayList<>();
-            exportedFilePaths.add(mExportParams.getTargetFilepath());
+            exportedFilePaths.add(mExportParams.getInternalExportPath());
         }
         return exportedFilePaths;
     }
@@ -382,7 +382,7 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
      */
     private File moveExportToSDCard() {
         Log.i(TAG, "Moving exported file to external storage");
-        File src = new File(mExportParams.getTargetFilepath());
+        File src = new File(mExportParams.getInternalExportPath());
         File dst = Exporter.createExportFile(mExportParams.getExportFormat());
 
         try {
