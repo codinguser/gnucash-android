@@ -21,19 +21,18 @@ import android.database.Cursor;
 import android.preference.PreferenceManager;
 
 import org.gnucash.android.db.AccountsDbAdapter;
-import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.export.ExportParams;
 import org.gnucash.android.export.Exporter;
-import org.gnucash.android.model.Transaction;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.Writer;
+import java.io.OutputStreamWriter;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -57,7 +56,7 @@ public class QifExporter extends Exporter{
     }
 
     @Override
-    public void generateExport(Writer writer) throws ExporterException {
+    public void generateExport() throws ExporterException {
         final String newLine = "\n";
         TransactionsDbAdapter transactionsDbAdapter = mTransactionsDbAdapter;
         try {
@@ -95,6 +94,10 @@ public class QifExporter extends Exporter{
                     // trans_uid ASC  : put splits from the same transaction together
                    "acct1_currency ASC, trans_time ASC, trans_uid ASC"
                     );
+
+            File file = new File(mParameters.getInternalExportPath());
+            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), "UTF-8"));
+
             try {
                 String currentCurrencyCode = "";
                 String currentAccountUID = "";
@@ -202,10 +205,12 @@ public class QifExporter extends Exporter{
                     // end last transaction
                     writer.append(QifHelper.ENTRY_TERMINATOR).append(newLine);
                 }
-            }
-            finally {
+                writer.flush();
+            } finally {
                 cursor.close();
+                writer.close();
             }
+
             ContentValues contentValues = new ContentValues();
             contentValues.put(TransactionEntry.COLUMN_EXPORTED, 1);
             transactionsDbAdapter.updateTransaction(contentValues, null, null);

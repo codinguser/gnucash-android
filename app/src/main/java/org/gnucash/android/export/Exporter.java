@@ -198,10 +198,9 @@ public abstract class Exporter {
 
     /**
      * Generates the export output
-     * @param writer A Writer to export result to
      * @throws ExporterException if an error occurs during export
      */
-    public abstract void generateExport(Writer writer) throws ExporterException;
+    public abstract void generateExport() throws ExporterException;
 
     public static class ExporterException extends RuntimeException{
 

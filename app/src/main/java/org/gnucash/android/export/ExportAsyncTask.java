@@ -143,17 +143,8 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
             }
 
         try {
-            File file = new File(mExportParams.getInternalExportPath());
-            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), "UTF-8"));
-            try {
-                // FIXME: detect if there aren't transactions to export and inform the user
-                mExporter.generateExport(writer);
-                writer.flush();
-            }
-            finally {
-                writer.close();
-            }
-
+            // FIXME: detect if there aren't transactions to export and inform the user
+            mExporter.generateExport();
         } catch (final Exception e) {
             Log.e(TAG, "Error exporting: " + e.getMessage());
             Crashlytics.logException(e);

@@ -34,7 +34,11 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.ProcessingInstruction;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.sql.Timestamp;
@@ -107,7 +111,8 @@ public class OfxExporter extends Exporter{
 		}
 	}
 
-    public String generateExport() throws ExporterException {
+    // FIXME: Move code to generateExport()
+    private String generateOfxExport() throws ExporterException {
         mAccountsList = mAccountsDbAdapter.getExportableAccounts(mParameters.getExportStartTime());
 
         DocumentBuilderFactory docFactory = DocumentBuilderFactory
@@ -153,12 +158,23 @@ public class OfxExporter extends Exporter{
     }
 
     @Override
-    public void generateExport(Writer writer) throws ExporterException {
+    public void generateExport() throws ExporterException {
+        BufferedWriter writer = null;
+
         try {
-            writer.write(generateExport());
-        }
-        catch (IOException e) {
+            File file = new File(mParameters.getInternalExportPath());
+            writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), "UTF-8"));
+            writer.write(generateOfxExport());
+        } catch (IOException e) {
             throw new ExporterException(mParameters, e);
+        } finally {
+            if (writer != null) {
+                try {
+                    writer.close();
+                } catch (IOException e) {
+                    throw new ExporterException(mParameters, e);
+                }
+            }
         }
     }
 

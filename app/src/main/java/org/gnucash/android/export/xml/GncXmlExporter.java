@@ -44,7 +44,6 @@ import java.io.BufferedOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.io.Writer;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -53,7 +52,6 @@ import java.util.Currency;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.UUID;
 import java.util.zip.GZIPOutputStream;
 
 import static org.gnucash.android.db.DatabaseSchema.ScheduledActionEntry;
@@ -695,16 +693,23 @@ public class GncXmlExporter extends Exporter{
     }
 
     @Override
-    public void generateExport(Writer writer) throws ExporterException{
+    public void generateExport() throws ExporterException {
+        OutputStreamWriter writer = null;
+
         try {
-            String[] namespaces = new String[] {"gnc", "act", "book", "cd", "cmdty", "price", "slot",
+            String[] namespaces = new String[]{"gnc", "act", "book", "cd", "cmdty", "price", "slot",
                     "split", "trn", "ts", "sx", "recurrence"};
+            FileOutputStream fileOutputStream = new FileOutputStream(Exporter.buildBackupFile());
+            BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(fileOutputStream);
+            GZIPOutputStream gzipOutputStream = new GZIPOutputStream(bufferedOutputStream);
+            writer = new OutputStreamWriter(gzipOutputStream);
+
             XmlSerializer xmlSerializer = XmlPullParserFactory.newInstance().newSerializer();
             xmlSerializer.setOutput(writer);
             xmlSerializer.startDocument("utf-8", true);
             // root tag
             xmlSerializer.startTag(null, GncXmlHelper.TAG_ROOT);
-            for(String ns : namespaces) {
+            for (String ns : namespaces) {
                 xmlSerializer.attribute(null, "xmlns:" + ns, "http://www.gnucash.org/XML/" + ns);
             }
             // book count
@@ -722,7 +727,7 @@ public class GncXmlExporter extends Exporter{
             xmlSerializer.endTag(null, GncXmlHelper.TAG_BOOK_ID);
             //commodity count
             List<Currency> currencies = mAccountsDbAdapter.getCurrenciesInUse();
-            for (int i = 0; i< currencies.size();i++) {
+            for (int i = 0; i < currencies.size(); i++) {
                 if (currencies.get(i).getCurrencyCode().equals("XXX")) {
                     currencies.remove(i);
                 }
@@ -775,8 +780,17 @@ public class GncXmlExporter extends Exporter{
         } catch (Exception e) {
             Crashlytics.logException(e);
             throw new ExporterException(mParameters, e);
+        } finally {
+            if (writer != null) {
+                try {
+                    writer.close();
+                } catch (IOException e) {
+                    throw new ExporterException(mParameters, e);
+                }
+            }
         }
     }
+
     /**
      * Creates a backup of current database contents to the default backup location
      * @return {@code true} if backup was successful, {@code false} otherwise
@@ -784,14 +798,9 @@ public class GncXmlExporter extends Exporter{
     public static boolean createBackup(){
         ExportParams params = new ExportParams(ExportFormat.XML);
         try {
-            FileOutputStream fileOutputStream = new FileOutputStream(Exporter.buildBackupFile());
-            BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(fileOutputStream);
-            GZIPOutputStream gzipOutputStream = new GZIPOutputStream(bufferedOutputStream);
-            OutputStreamWriter outputStreamWriter = new OutputStreamWriter(gzipOutputStream);
-            new GncXmlExporter(params).generateExport(outputStreamWriter);
-            outputStreamWriter.close();
+            new GncXmlExporter(params).generateExport();
             return true;
-        } catch (IOException e) {
+        } catch (ExporterException e) {
             Crashlytics.logException(e);
             Log.e("GncXmlExporter", "Error creating backup", e);
             return false;
