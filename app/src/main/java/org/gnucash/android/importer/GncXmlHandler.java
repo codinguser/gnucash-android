@@ -18,13 +18,11 @@
 package org.gnucash.android.importer;
 
 import android.database.sqlite.SQLiteDatabase;
-import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
 
-import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.CommoditiesDbAdapter;
@@ -378,14 +376,14 @@ public class GncXmlHandler extends DefaultHandler {
                 String currencyCode = mISO4217Currency ? characterString : NO_CURRENCY_CODE;
                 if (mAccount != null) {
                     mAccount.setCurrencyCode(currencyCode);
-                }
-                if (mTransaction != null) {
-                    mTransaction.setCurrencyCode(currencyCode);
                     if (mCurrencyCount.containsKey(currencyCode)) {
                         mCurrencyCount.put(currencyCode, mCurrencyCount.get(currencyCode) + 1);
                     } else {
                         mCurrencyCount.put(currencyCode, 1);
                     }
+                }
+                if (mTransaction != null) {
+                    mTransaction.setCurrencyCode(currencyCode);
                 }
                 if (mPrice != null) {
                     if (mPriceCommodity) {
@@ -865,8 +863,7 @@ public class GncXmlHandler extends DefaultHandler {
             }
         }
         if (mostCurrencyAppearance > 0) {
-            PreferenceManager.getDefaultSharedPreferences(GnuCashApplication.getAppContext()).edit().putString(GnuCashApplication.getAppContext().getString(R.string.key_default_currency), mostAppearedCurrency).apply();
-            Money.DEFAULT_CURRENCY_CODE = mostAppearedCurrency;
+            GnuCashApplication.setDefaultCurrencyCode(mostAppearedCurrency);
         }
     }
 
@@ -881,7 +878,7 @@ public class GncXmlHandler extends DefaultHandler {
             return mAccountMap.get(accountUID).getCommodity();
         } catch (Exception e) {
             Crashlytics.logException(e);
-            return Commodity.getInstance(Money.DEFAULT_CURRENCY_CODE);
+            return Commodity.DEFAULT_COMMODITY;
         }
     }
 
