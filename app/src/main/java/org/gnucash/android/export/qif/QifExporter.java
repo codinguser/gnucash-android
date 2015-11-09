@@ -87,9 +87,7 @@ public class QifExporter extends Exporter{
                             // or if the transaction has only one split (the whole transaction would be lost if it is not selected)
                             "trans_split_count == 1 )" +
                             (
-                            mParameters.shouldExportAllTransactions() ?
-                                    //"" : " AND " + TransactionEntry.TABLE_NAME + "_" + TransactionEntry.COLUMN_EXPORTED + "== 0"
-                                    "" : " AND " + TransactionEntry.TABLE_NAME + "_" + DatabaseSchema.CommonColumns.COLUMN_MODIFIED_AT + " > \"" + lastExportTimeStamp + "\""
+                                    " AND " + TransactionEntry.TABLE_NAME + "_" + TransactionEntry.COLUMN_MODIFIED_AT + " > \"" + lastExportTimeStamp + "\""
                             ),
                     null,
                     // trans_time ASC : put transactions in time order

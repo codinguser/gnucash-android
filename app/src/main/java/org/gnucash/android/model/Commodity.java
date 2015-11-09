@@ -15,6 +15,7 @@
  */
 package org.gnucash.android.model;
 
+import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.adapter.CommoditiesDbAdapter;
 
 /**
@@ -29,6 +30,8 @@ public class Commodity extends BaseModel {
 
     /**
      * Default commodity for device locale
+     * <p>This value is set when a new application instance is created in {@link GnuCashApplication#onCreate()}.
+     * The value initialized here is just a placeholder for unit tests</p>
      */
     public static Commodity DEFAULT_COMMODITY = new Commodity("US Dollars", "USD", 100); //this value is a stub. Will be overwritten when the app is launched
 

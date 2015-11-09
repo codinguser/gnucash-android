@@ -56,8 +56,8 @@ import java.util.Locale;
  */
 public class CalculatorEditText extends EditText {
     CalculatorKeyboard mCalculatorKeyboard;
-    //use the Money variable so that we can inflate layouts statically
-    private Currency mCurrency = Currency.getInstance(Money.DEFAULT_CURRENCY_CODE); //Currency.getInstance(GnuCashApplication.getDefaultCurrencyCode());
+
+    private Commodity mCommodity = Commodity.DEFAULT_COMMODITY;
     private Context mContext;
 
     /**
@@ -240,17 +240,17 @@ public class CalculatorEditText extends EditText {
      * Returns the currency used for computations
      * @return ISO 4217 currency
      */
-    public Currency getCurrency() {
-        return mCurrency;
+    public Commodity getCommodity() {
+        return mCommodity;
     }
 
     /**
-     * Sets the currency to use for calculations
-     * The currency determines the number of decimal places used
-     * @param currency ISO 4217 currency
+     * Sets the commodity to use for calculations
+     * The commodity determines the number of decimal places used
+     * @param commodity ISO 4217 currency
      */
-    public void setCurrency(Currency currency) {
-        this.mCurrency = currency;
+    public void setCommodity(Commodity commodity) {
+        this.mCommodity = commodity;
     }
 
     /**
@@ -339,12 +339,11 @@ public class CalculatorEditText extends EditText {
      * @param amount BigDecimal amount
      */
     public void setValue(BigDecimal amount){
-        Commodity commodity = CommoditiesDbAdapter.getInstance().getCommodity(mCurrency.getCurrencyCode());
-        BigDecimal newAmount = amount.setScale(commodity.getSmallestFractionDigits(), BigDecimal.ROUND_HALF_EVEN);
+        BigDecimal newAmount = amount.setScale(mCommodity.getSmallestFractionDigits(), BigDecimal.ROUND_HALF_EVEN);
 
         DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance(Locale.getDefault());
         formatter.setMinimumFractionDigits(0);
-        formatter.setMaximumFractionDigits(commodity.getSmallestFractionDigits());
+        formatter.setMaximumFractionDigits(mCommodity.getSmallestFractionDigits());
         formatter.setGroupingUsed(false);
         String resultString = formatter.format(newAmount.doubleValue());
 

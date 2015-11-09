@@ -44,6 +44,7 @@ import org.gnucash.android.db.adapter.ScheduledActionDbAdapter;
 import org.gnucash.android.db.adapter.SplitsDbAdapter;
 import org.gnucash.android.db.adapter.TransactionsDbAdapter;
 import org.gnucash.android.model.Commodity;
+import org.gnucash.android.model.Money;
 import org.gnucash.android.service.SchedulerService;
 
 import java.util.Currency;
@@ -136,7 +137,7 @@ public class GnuCashApplication extends Application{
         mBudgetsDbAdapter           = new BudgetsDbAdapter(mDb);
         mRecurrenceDbAdapter        = new RecurrenceDbAdapter(mDb);
 
-        Commodity.DEFAULT_COMMODITY = mCommoditiesDbAdapter.getCommodity(getDefaultCurrencyCode());
+        setDefaultCurrencyCode(getDefaultCurrencyCode());
     }
 
     public static AccountsDbAdapter getAccountsDbAdapter() {
@@ -240,12 +241,21 @@ public class GnuCashApplication extends Application{
     }
 
     /**
-     * Returns the default commodity
-     * @return Default commodity of application
+     * Sets the default currency for the application in all relevant places:
+     * <ul>
+     *     <li>Shared preferences</li>
+     *     <li>{@link Money#DEFAULT_CURRENCY_CODE}</li>
+     *     <li>{@link Commodity#DEFAULT_COMMODITY}</li>
+     * </ul>
+     * @param currencyCode ISO 4217 currency code
      * @see #getDefaultCurrencyCode()
      */
-    public static Commodity getDefaultCommodity(){
-        return Commodity.DEFAULT_COMMODITY;
+    public static void setDefaultCurrencyCode(String currencyCode){
+        PreferenceManager.getDefaultSharedPreferences(getAppContext()).edit()
+                .putString(getAppContext().getString(R.string.key_default_currency), currencyCode)
+                .apply();
+        Money.DEFAULT_CURRENCY_CODE = currencyCode;
+        Commodity.DEFAULT_COMMODITY = mCommoditiesDbAdapter.getCommodity(currencyCode);
     }
 
     /**

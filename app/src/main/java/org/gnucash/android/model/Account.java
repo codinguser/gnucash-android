@@ -472,8 +472,9 @@ public class Account extends BaseModel{
 	 * Converts this account's transactions into XML and adds them to the DOM document
 	 * @param doc XML DOM document for the OFX data
 	 * @param parent Parent node to which to add this account's transactions in XML
+	 * @param exportStartTime Time from which to export transactions which are created/modified after
 	 */
-	public void toOfx(Document doc, Element parent, boolean exportAllTransactions){
+	public void toOfx(Document doc, Element parent, Timestamp exportStartTime){
 		Element currency = doc.createElement(OfxHelper.TAG_CURRENCY_DEF);
 		currency.appendChild(doc.createTextNode(mCommodity.getCurrencyCode()));
 		
@@ -529,9 +530,8 @@ public class Account extends BaseModel{
 		bankTransactionsList.appendChild(dtstart);
 		bankTransactionsList.appendChild(dtend);
 
-		Timestamp lastExportedTimestamp = Timestamp.valueOf(PreferenceManager.getDefaultSharedPreferences(GnuCashApplication.getAppContext()).getString(Exporter.PREF_LAST_EXPORT_TIME, Exporter.TIMESTAMP_ZERO));
 		for (Transaction transaction : mTransactionsList) {
-			if (!exportAllTransactions && /*transaction.isExported()*/ transaction.getModifiedTimestamp().before(lastExportedTimestamp))
+			if (transaction.getModifiedTimestamp().before(exportStartTime))
 				continue;
             bankTransactionsList.appendChild(transaction.toOFX(doc, getUID()));
 		}		

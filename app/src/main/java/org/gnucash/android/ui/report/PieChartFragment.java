@@ -33,8 +33,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.PieChart;
-import com.github.mikephil.charting.components.Legend.LegendForm;
-import com.github.mikephil.charting.components.Legend.LegendPosition;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
@@ -56,6 +54,9 @@ import java.util.Locale;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+
+import static com.github.mikephil.charting.components.Legend.LegendForm;
+import static com.github.mikephil.charting.components.Legend.LegendPosition;
 
 /**
  * Activity used for drawing a pie chart
@@ -132,8 +133,10 @@ public class PieChartFragment extends Fragment implements OnChartValueSelectedLi
 
         mChart.setCenterTextSize(CENTER_TEXT_SIZE);
         mChart.setDescription("");
-        mChart.getLegend().setWordWrapEnabled(true);
         mChart.setOnChartValueSelectedListener(this);
+        mChart.getLegend().setForm(LegendForm.CIRCLE);
+        mChart.getLegend().setWordWrapEnabled(true);
+        mChart.getLegend().setPosition(LegendPosition.BELOW_CHART_CENTER);
 
         ReportsActivity reportsActivity = (ReportsActivity) getActivity();
         mReportStartTime = reportsActivity.getReportStartTime();
@@ -193,8 +196,8 @@ public class PieChartFragment extends Fragment implements OnChartValueSelectedLi
                     && account.getCurrency() == Currency.getInstance(mCurrencyCode)) {
 
                 double balance = mAccountsDbAdapter.getAccountsBalance(Collections.singletonList(account.getUID()),
-                        mReportStartTime, mReportEndTime).abs().asDouble();
-                if (balance != 0) {
+                        mReportStartTime, mReportEndTime).asDouble();
+                if (balance > 0) {
                     dataSet.addEntry(new Entry((float) balance, dataSet.getEntryCount()));
                     colors.add(mUseAccountColor && account.getColorHexCode() != null
                             ? Color.parseColor(account.getColorHexCode())
@@ -278,7 +281,6 @@ public class PieChartFragment extends Fragment implements OnChartValueSelectedLi
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.chart_actions, menu);
-        menu.findItem(R.id.menu_toggle_legend).setChecked(false);
     }
 
     @Override
@@ -303,8 +305,6 @@ public class PieChartFragment extends Fragment implements OnChartValueSelectedLi
             }
             case R.id.menu_toggle_legend: {
                 mChart.getLegend().setEnabled(!mChart.getLegend().isEnabled());
-                mChart.getLegend().setForm(LegendForm.CIRCLE);
-                mChart.getLegend().setPosition(LegendPosition.RIGHT_OF_CHART_CENTER);
                 mChart.notifyDataSetChanged();
                 mChart.invalidate();
                 return true;
@@ -366,7 +366,7 @@ public class PieChartFragment extends Fragment implements OnChartValueSelectedLi
         if (e == null) return;
         String label = mChart.getData().getXVals().get(e.getXIndex());
         float value = e.getVal();
-        float percent = value / mChart.getYValueSum() * 100;
+        float percent = value / mChart.getData().getYValueSum() * 100;
         mSelectedValueTextView.setText(String.format(SELECTED_VALUE_PATTERN, label, value, percent));
     }
 

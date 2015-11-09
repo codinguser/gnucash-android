@@ -24,6 +24,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Environment;
+import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -32,6 +33,8 @@ import com.crashlytics.android.Crashlytics;
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.adapter.AccountsDbAdapter;
+import org.gnucash.android.export.ExportFormat;
+import org.gnucash.android.export.ExportParams;
 import org.gnucash.android.export.Exporter;
 import org.gnucash.android.importer.CommoditiesXmlHandler;
 import org.gnucash.android.model.AccountType;
@@ -40,6 +43,7 @@ import org.gnucash.android.model.Commodity;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.model.PeriodType;
 import org.gnucash.android.model.Recurrence;
+import org.gnucash.android.model.ScheduledAction;
 import org.gnucash.android.model.Transaction;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -1069,7 +1073,59 @@ public class MigrationHelper {
     }
 
     /**
-     * Upgrades the database to version 10.
+     * Upgrades the database to version 10
+     * <p>This method converts all saved scheduled export parameters to the new format using the
+     * timestamp of last export</p>
+     * @param db SQLite database
+     * @return New version number
+     */
+    static int upgradeDbToVersion10(SQLiteDatabase db){
+        Log.i(DatabaseHelper.LOG_TAG, "Upgrading database to version 9");
+        int oldVersion = 9;
+
+        db.beginTransaction();
+        try {
+            Cursor cursor = db.query(ScheduledActionEntry.TABLE_NAME,
+                    new String[]{ScheduledActionEntry.COLUMN_UID, ScheduledActionEntry.COLUMN_TAG},
+                    ScheduledActionEntry.COLUMN_TYPE + " = ?",
+                    new String[]{ScheduledAction.ActionType.BACKUP.name()},
+                    null, null, null);
+
+            ContentValues contentValues = new ContentValues();
+            while (cursor.moveToNext()){
+                String paramString = cursor.getString(cursor.getColumnIndexOrThrow(ScheduledActionEntry.COLUMN_TAG));
+                String[] tokens = paramString.split(";");
+                ExportParams params = new ExportParams(ExportFormat.valueOf(tokens[0]));
+                params.setExportTarget(ExportParams.ExportTarget.valueOf(tokens[1]));
+                params.setDeleteTransactionsAfterExport(Boolean.parseBoolean(tokens[3]));
+
+                boolean exportAll = Boolean.parseBoolean(tokens[2]);
+                if (exportAll){
+                    params.setExportStartTime(Timestamp.valueOf(Exporter.TIMESTAMP_ZERO));
+                } else {
+                    String lastExportTimeStamp = PreferenceManager.getDefaultSharedPreferences(GnuCashApplication.getAppContext())
+                            .getString(Exporter.PREF_LAST_EXPORT_TIME, Exporter.TIMESTAMP_ZERO);
+                    Timestamp timestamp = Timestamp.valueOf(lastExportTimeStamp);
+                    params.setExportStartTime(timestamp);
+                }
+
+                String uid = cursor.getString(cursor.getColumnIndexOrThrow(ScheduledActionEntry.COLUMN_UID));
+                contentValues.clear();
+                contentValues.put(ScheduledActionEntry.COLUMN_UID, uid);
+                contentValues.put(ScheduledActionEntry.COLUMN_TAG, params.toCsv());
+                db.insert(ScheduledActionEntry.TABLE_NAME, null, contentValues);
+            }
+
+            db.setTransactionSuccessful();
+            oldVersion = 10;
+        } finally {
+            db.endTransaction();
+        }
+        return oldVersion;
+    }
+
+    /**
+     * Upgrades the database to version 11.
      * <p>This migration makes the following changes to the database:
      * <ul>
      *     <li>Adds a table for budgets</li>
@@ -1080,11 +1136,11 @@ public class MigrationHelper {
      * </ul>
      * </p>
      * @param db SQlite database to be upgraded
-     * @return New database version, 10 if migration succeeds, 9 otherwise
+     * @return New database version, 11 if migration succeeds, 10 otherwise
      */
-    static int upgradeDbToVersion10(SQLiteDatabase db){
+    static int upgradeDbToVersion11(SQLiteDatabase db){
         Log.i(DatabaseHelper.LOG_TAG, "Upgrading database to version 9");
-        int oldVersion = 9;
+        int oldVersion = 10;
 
         db.beginTransaction();
         try {
@@ -1235,7 +1291,7 @@ public class MigrationHelper {
                     + " ADD COLUMN " + SplitEntry.COLUMN_RECONCILE_DATE + " timestamp not null default CURRENT_TIMESTAMP ");
 
             db.setTransactionSuccessful();
-            oldVersion = 10;
+            oldVersion = 11;
         } finally {
             db.endTransaction();
         }
