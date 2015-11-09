@@ -90,6 +90,7 @@ android {
         }
         debug {
             debuggable true
+            testCoverageEnabled true
             signingConfig signingConfigs.debug
         }
     }
