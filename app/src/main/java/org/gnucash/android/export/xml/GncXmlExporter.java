@@ -693,7 +693,7 @@ public class GncXmlExporter extends Exporter{
     }
 
     @Override
-    public void generateExport() throws ExporterException {
+    public List<String> generateExport() throws ExporterException {
         OutputStreamWriter writer = null;
 
         try {
@@ -789,6 +789,12 @@ public class GncXmlExporter extends Exporter{
                 }
             }
         }
+
+        List<String> exportedFiles = new ArrayList<>();
+        // FIXME: this looks weird
+        exportedFiles.add(Exporter.buildBackupFile().getAbsolutePath());
+
+        return exportedFiles;
     }
 
     /**

@@ -56,7 +56,7 @@ public class QifExporter extends Exporter{
     }
 
     @Override
-    public void generateExport() throws ExporterException {
+    public List<String> generateExport() throws ExporterException {
         final String newLine = "\n";
         TransactionsDbAdapter transactionsDbAdapter = mTransactionsDbAdapter;
         try {
@@ -214,15 +214,14 @@ public class QifExporter extends Exporter{
             ContentValues contentValues = new ContentValues();
             contentValues.put(TransactionEntry.COLUMN_EXPORTED, 1);
             transactionsDbAdapter.updateTransaction(contentValues, null, null);
-        }
-        catch (IOException e)
-        {
+
+            /// export successful
+            String timeStamp = new Timestamp(System.currentTimeMillis()).toString();
+            PreferenceManager.getDefaultSharedPreferences(mContext).edit().putString(Exporter.PREF_LAST_EXPORT_TIME, timeStamp).apply();
+            return splitQIF(file);
+        } catch (IOException e) {
             throw new ExporterException(mParameters, e);
         }
-
-        /// export successful
-        String timeStamp = new Timestamp(System.currentTimeMillis()).toString();
-        PreferenceManager.getDefaultSharedPreferences(mContext).edit().putString(Exporter.PREF_LAST_EXPORT_TIME, timeStamp).apply();
     }
 
     /**
@@ -232,7 +231,7 @@ public class QifExporter extends Exporter{
      * @return a list of paths of the newly created Qif files.
      * @throws IOException if something went wrong while splitting the file.
      */
-    public static List<String> splitQIF(File file) throws IOException {
+    public List<String> splitQIF(File file) throws IOException {
         // split only at the last dot
         String[] pathParts = file.getPath().split("(?=\\.[^\\.]+$)");
         ArrayList<String> splitFiles = new ArrayList<>();

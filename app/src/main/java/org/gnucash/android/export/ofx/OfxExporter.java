@@ -42,6 +42,7 @@ import java.io.OutputStreamWriter;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -158,7 +159,7 @@ public class OfxExporter extends Exporter{
     }
 
     @Override
-    public void generateExport() throws ExporterException {
+    public List<String> generateExport() throws ExporterException {
         BufferedWriter writer = null;
 
         try {
@@ -176,6 +177,11 @@ public class OfxExporter extends Exporter{
                 }
             }
         }
+
+        List<String> exportedFiles = new ArrayList<>();
+        exportedFiles.add(mParameters.getInternalExportPath());
+
+        return exportedFiles;
     }
 
     /**

@@ -41,6 +41,7 @@ import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -200,7 +201,7 @@ public abstract class Exporter {
      * Generates the export output
      * @throws ExporterException if an error occurs during export
      */
-    public abstract void generateExport() throws ExporterException;
+    public abstract List<String> generateExport() throws ExporterException;
 
     public static class ExporterException extends RuntimeException{
 
