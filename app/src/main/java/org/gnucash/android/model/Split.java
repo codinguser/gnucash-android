@@ -336,11 +336,11 @@ public class Split extends BaseModel{
             }
             return split;
         } else {
-            int valueNum = Integer.parseInt(tokens[1]);
-            int valueDenom = Integer.parseInt(tokens[2]);
+            long valueNum = Long.parseLong(tokens[1]);
+            long valueDenom = Long.parseLong(tokens[2]);
             String valueCurrencyCode = tokens[3];
-            int quantityNum = Integer.parseInt(tokens[4]);
-            int quantityDenom = Integer.parseInt(tokens[5]);
+            long quantityNum = Long.parseLong(tokens[4]);
+            long quantityDenom = Long.parseLong(tokens[5]);
             String qtyCurrencyCode = tokens[6];
 
             Money value = new Money(valueNum, valueDenom, valueCurrencyCode);

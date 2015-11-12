@@ -90,19 +90,19 @@ public final class Money implements Comparable<Money>{
 		return sDefaultZero;
     }
 
+	/**
+	 * Returns the {@link BigDecimal} from the {@code numerator} and {@code denominator}
+	 * @param numerator Number of the fraction
+	 * @param denominator Denominator of the fraction
+	 * @return BigDecimal representation of the number
+	 */
 	public static BigDecimal getBigDecimal(long numerator, long denominator) {
 		int scale;
 		if (numerator == 0 && denominator == 0) {
 			denominator = 1;
 		}
-		switch ((int)denominator) {
-			case 1: scale = 0; break;
-			case 10: scale = 1; break;
-			case 100: scale = 2; break;
-			case 1000: scale = 3; break;
-			default:
-				throw new InvalidParameterException("invalid denominator " + denominator);
-		}
+
+		scale = Integer.numberOfTrailingZeros((int)denominator);
 		return new BigDecimal(BigInteger.valueOf(numerator), scale);
 	}
 
@@ -112,8 +112,8 @@ public final class Money implements Comparable<Money>{
 	 * @param commodity Commodity of the money
 	 */
 	public Money(BigDecimal amount, Commodity commodity){
-		this.mAmount = amount;
 		this.mCommodity = commodity;
+		setAmount(amount); //commodity has to be set first. Because we use it's scale
 	}
 
 	/**
@@ -123,6 +123,7 @@ public final class Money implements Comparable<Money>{
 	 * @param currencyCode Currency code as specified by ISO 4217
 	 */
 	public Money(String amount, String currencyCode){
+		//commodity has to be set first
 		mCommodity = Commodity.getInstance(currencyCode);
 		setAmount(amount);
 	}
@@ -226,22 +227,17 @@ public final class Money implements Comparable<Money>{
 	 * @return GnuCash format denominator
 	 */
 	public long getDenominator() {
-		switch (getScale()) {
-			case 0: return 1;
-			case 1: return 10;
-			case 2: return 100;
-			case 3: return 1000;
-			case 4: return 10000;
-			case 5: return 100000;
-			case 6: return 1000000; //I think GnuCash XML can have gold and silver with this denom
-
+		int scale = getScale();
+		if (scale == 0){
+			return 0;
+		} else {
+			return Integer.numberOfTrailingZeros(scale);
 		}
-		throw new RuntimeException("Unsupported number of fraction digits " + getScale());
 	}
 
 	/**
 	 * Returns the scale (precision) used for the decimal places of this amount.
-	 * <p>The scale used depends on the currency</p>
+	 * <p>The scale used depends on the commodity</p>
 	 * @return Scale of amount as integer
 	 */
 	private int getScale() {

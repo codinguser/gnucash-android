@@ -286,6 +286,11 @@ public class ExportFormFragment extends Fragment implements
 		Log.i(TAG, "Commencing async export of transactions");
 		new ExportAsyncTask(getActivity()).execute(exportParameters);
 
+		int position = mDestinationSpinner.getSelectedItemPosition();
+		PreferenceManager.getDefaultSharedPreferences(getActivity())
+				.edit().putInt(getString(R.string.key_last_export_destination), position)
+				.apply();
+
 		// finish the activity will cause the progress dialog to be leaked
 		// which would throw an exception
 		//getActivity().finish();
@@ -340,6 +345,9 @@ public class ExportFormFragment extends Fragment implements
 			}
 		});
 
+		int position = PreferenceManager.getDefaultSharedPreferences(getActivity())
+				.getInt(getString(R.string.key_last_export_destination), 0);
+		mDestinationSpinner.setSelection(position);
 
 		//**************** export start time bindings ******************
 		String lastExportTimeStamp = PreferenceManager.getDefaultSharedPreferences(getActivity())

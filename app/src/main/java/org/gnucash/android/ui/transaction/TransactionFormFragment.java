@@ -726,6 +726,12 @@ public class TransactionFormFragment extends Fragment implements
 		String notes = mNotesEditText.getText().toString();
 		BigDecimal amountBigd = mAmountEditText.getValue();
 
+        if (amountBigd == null){ //if for whatever reason we cannot process the amount
+            Toast.makeText(getActivity(), R.string.toast_transanction_amount_required,
+                    Toast.LENGTH_SHORT).show();
+            return;
+        }
+
 		Currency currency = Currency.getInstance(mTransactionsDbAdapter.getAccountCurrencyCode(mAccountUID));
 		Money amount 	= new Money(amountBigd, Commodity.getInstance(currency.getCurrencyCode())).absolute();
 
