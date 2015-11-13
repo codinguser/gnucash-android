@@ -359,13 +359,15 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
      */
     private File moveExportToSDCard() {
         Log.i(TAG, "Moving exported file to external storage");
-        File src = new File(mExportParams.getInternalExportPath());
-        File dst = Exporter.createExportFile(mExportParams.getExportFormat());
+        new File(Exporter.EXPORT_FOLDER_PATH).mkdirs();
+        String src = mExportParams.getInternalExportPath();
+        String dst = Exporter.EXPORT_FOLDER_PATH
+                + Exporter.buildExportFilename(mExportParams.getExportFormat());
 
         try {
             copyFile(src, dst);
-            src.delete();
-            return dst;
+            (new File(src)).delete();
+            return new File(dst);
         } catch (IOException e) {
             Crashlytics.logException(e);
             Log.e(TAG, e.getMessage());
@@ -448,10 +450,10 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
      * @param dst Absolute path to the destination file
      * @throws IOException if the file could not be copied
      */
-    public void copyFile(File src, File dst) throws IOException {
+    public void copyFile(String src, String dst) throws IOException {
         //TODO: Make this asynchronous at some time, t in the future.
-        FileChannel inChannel = new FileInputStream(src).getChannel();
-        FileChannel outChannel = new FileOutputStream(dst).getChannel();
+        FileChannel inChannel = new FileInputStream(new File(src)).getChannel();
+        FileChannel outChannel = new FileOutputStream(new File(dst)).getChannel();
         try {
             inChannel.transferTo(0, inChannel.size(), outChannel);
         } finally {
