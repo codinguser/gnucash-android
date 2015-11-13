@@ -125,7 +125,7 @@ public final class Money implements Comparable<Money>{
 	public Money(String amount, String currencyCode){
 		//commodity has to be set first
 		mCommodity = Commodity.getInstance(currencyCode);
-		setAmount(amount);
+		setAmount(new BigDecimal(amount));
 	}
 
 	/**
@@ -228,11 +228,7 @@ public final class Money implements Comparable<Money>{
 	 */
 	public long getDenominator() {
 		int scale = getScale();
-		if (scale == 0){
-			return 0;
-		} else {
-			return Integer.numberOfTrailingZeros(scale);
-		}
+		return BigDecimal.ONE.scaleByPowerOfTen(scale).longValueExact();
 	}
 
 	/**
@@ -291,7 +287,7 @@ public final class Money implements Comparable<Money>{
 		String symbol;
 		if (mCommodity.equals(Commodity.USD) && !locale.equals(Locale.US)) {
 			symbol = "US$";
-		} else if (mCommodity.equals(Commodity.EUR) {
+		} else if (mCommodity.equals(Commodity.EUR)) {
 			symbol = currency.getSymbol(Locale.GERMANY); //euro currency is pretty unique around the world
 		} else {
 			symbol = currency.getSymbol(Locale.US); // US locale has the best symbol formatting table.
@@ -336,16 +332,7 @@ public final class Money implements Comparable<Money>{
 	private void setAmount(@NonNull BigDecimal amount) {
 		mAmount = amount.setScale(mCommodity.getSmallestFractionDigits(), ROUNDING_MODE);
 	}
-	
-	/**
-	 * Sets the amount value of this <code>Money</code> object
-	 * The <code>amount</code> is parsed by the {@link BigDecimal} constructor
-	 * @param amount {@link String} amount to be set
-	 */
-	private void setAmount(String amount){
-		setAmount(parseToDecimal(amount));
-	}	
-	
+
 	/**
 	 * Returns a new <code>Money</code> object whose value is the sum of the values of 
 	 * this object and <code>addend</code>.
@@ -505,27 +492,6 @@ public final class Money implements Comparable<Money>{
 		if (!mCommodity.equals(another.mCommodity))
 			throw new IllegalArgumentException("Cannot compare different currencies yet");
 		return mAmount.compareTo(another.mAmount);
-	}
-
-	/**
-	 * Parses a Locale specific string into a number using format for {@link Locale#US}
-	 * @param amountString Formatted String amount
-	 * @return String amount formatted in the default locale
-	 */
-    public static BigDecimal parseToDecimal(String amountString){
-		char separator = new DecimalFormatSymbols(Locale.US).getGroupingSeparator();
-		amountString = amountString.replace(Character.toString(separator), "");
-		NumberFormat formatter = NumberFormat.getInstance(Locale.US);		
-		if (formatter instanceof DecimalFormat) {
-		     ((DecimalFormat)formatter).setParseBigDecimal(true);		     
-		}
-		BigDecimal result = new BigDecimal(0);
-		try {
-			result = (BigDecimal) formatter.parse(amountString);
-		} catch (ParseException e) {
-			Crashlytics.logException(e);
-		}
-        return result;
 	}
 
     /**
