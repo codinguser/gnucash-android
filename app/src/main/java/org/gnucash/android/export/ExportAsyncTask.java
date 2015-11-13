@@ -166,8 +166,8 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
 
         switch (mExportParams.getExportTarget()) {
             case SHARING:
-                File output = moveExportToSDCard();
-                shareFile(output.getAbsolutePath());
+                List<String> sdCardExportedFiles = moveExportToSDCard();
+                shareFile(sdCardExportedFiles);
                 return true;
 
             case DROPBOX:
@@ -351,25 +351,33 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
 
 
     /**
-     * Moves the exported file from the internal storage where it is generated to external storage
-     * which is accessible to the user.
-     * @return File to which the export was moved.
+     * Moves the exported files from the internal storage where they are generated to
+     * external storage, which is accessible to the user.
+     * @return The list of files moved to the SD card.
      */
-    private File moveExportToSDCard() {
+    private List<String> moveExportToSDCard() {
         Log.i(TAG, "Moving exported file to external storage");
         new File(Exporter.EXPORT_FOLDER_PATH).mkdirs();
-        String src = mExportParams.getInternalExportPath();
-        String dst = Exporter.EXPORT_FOLDER_PATH
-                + Exporter.buildExportFilename(mExportParams.getExportFormat());
+        List<String> dstFiles = new ArrayList<>();
 
-        try {
-            moveFile(src, dst);
-            return new File(dst);
-        } catch (IOException e) {
-            Crashlytics.logException(e);
-            Log.e(TAG, e.getMessage());
-            throw new Exporter.ExporterException(mExportParams, e);
+        for (String src: mExportedFiles) {
+            String dst = Exporter.EXPORT_FOLDER_PATH + stripPathPart(src);
+            try {
+                moveFile(src, dst);
+                dstFiles.add(dst);
+            } catch (IOException e) {
+                Crashlytics.logException(e);
+                Log.e(TAG, e.getMessage());
+                throw new Exporter.ExporterException(mExportParams, e);
+            }
         }
+
+        return dstFiles;
+    }
+
+    // "/some/path/filename.ext" -> "filename.ext"
+    private String stripPathPart(String fullPathName) {
+        return (new File(fullPathName)).getName();
     }
 
     /**
