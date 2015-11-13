@@ -59,13 +59,11 @@ import org.gnucash.android.ui.account.AccountsListFragment;
 import org.gnucash.android.ui.settings.SettingsActivity;
 import org.gnucash.android.ui.transaction.TransactionsActivity;
 
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.nio.channels.FileChannel;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -365,8 +363,7 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
                 + Exporter.buildExportFilename(mExportParams.getExportFormat());
 
         try {
-            copyFile(src, dst);
-            (new File(src)).delete();
+            moveFile(src, dst);
             return new File(dst);
         } catch (IOException e) {
             Crashlytics.logException(e);
@@ -445,15 +442,17 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
     }
 
     /**
-     * Copies a file from <code>src</code> to <code>dst</code>
+     * Moves a file from <code>src</code> to <code>dst</code>
      * @param src Absolute path to the source file
      * @param dst Absolute path to the destination file
-     * @throws IOException if the file could not be copied
+     * @throws IOException if the file could not be moved.
      */
-    public void copyFile(String src, String dst) throws IOException {
+    public void moveFile(String src, String dst) throws IOException {
         //TODO: Make this asynchronous at some time, t in the future.
-        FileChannel inChannel = new FileInputStream(new File(src)).getChannel();
-        FileChannel outChannel = new FileOutputStream(new File(dst)).getChannel();
+        File srcFile = new File(src);
+        File dstFile = new File(dst);
+        FileChannel inChannel = new FileInputStream(srcFile).getChannel();
+        FileChannel outChannel = new FileOutputStream(dstFile).getChannel();
         try {
             inChannel.transferTo(0, inChannel.size(), outChannel);
         } finally {
@@ -461,6 +460,7 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
                 inChannel.close();
             outChannel.close();
         }
+        srcFile.delete();
     }
 
 }
