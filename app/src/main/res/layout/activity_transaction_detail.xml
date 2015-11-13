@@ -64,6 +64,7 @@
                     android:gravity="bottom"
                     android:layout_gravity="bottom"
                     android:maxLines="1"
+                    android:singleLine="true"
                     android:ellipsize="start"
                     android:textStyle="italic"
                     android:textColor="@android:color/white"

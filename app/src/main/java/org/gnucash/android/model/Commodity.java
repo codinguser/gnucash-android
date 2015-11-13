@@ -164,17 +164,10 @@ public class Commodity extends BaseModel {
      * @see #getSmallestFraction()
      */
     public int getSmallestFractionDigits(){
-        switch (mSmallestFraction) {
-            case 1:     return 0;
-            case 10:    return 1;
-            case 100:   return 2;
-            case 1000:  return 3;
-            case 10000: return 4;
-            case 100000: return 5;
-            case 1000000: return 6;
-            default:
-                return 2;
-                //throw new UnsupportedOperationException("Invalid fraction digits in commodity with fraction: " + mSmallestFraction);
+        if (mSmallestFraction == 0){
+            return 0;
+        } else {
+            return Integer.numberOfTrailingZeros(mSmallestFraction);
         }
     }
 
@@ -186,12 +179,7 @@ public class Commodity extends BaseModel {
      * @throws IllegalArgumentException if the smallest fraction is not a power of 10
      */
     public void setSmallestFraction(int smallestFraction) {
-        if (smallestFraction != 1 && smallestFraction != 10 && smallestFraction != 100
-                && smallestFraction != 1000 && smallestFraction != 10000
-                && smallestFraction != 1000000 ) //make sure we are not getting digits
-            this.mSmallestFraction = 100;
-        else
-            this.mSmallestFraction = smallestFraction;
+        this.mSmallestFraction = smallestFraction;
     }
 
     public int getQuoteFlag() {

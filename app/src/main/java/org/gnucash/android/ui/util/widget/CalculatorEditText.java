@@ -323,7 +323,7 @@ public class CalculatorEditText extends EditText {
             return null;
         try { //catch any exceptions in the conversion e.g. if a string with only "-" is entered
             return new BigDecimal(amountString);
-        } catch (Exception e){
+        } catch (NumberFormatException e){
             String msg = "Error parsing amount string " + amountString + " from CalculatorEditText";
             Log.i(getClass().getSimpleName(), msg, e);
             Crashlytics.log(msg);
