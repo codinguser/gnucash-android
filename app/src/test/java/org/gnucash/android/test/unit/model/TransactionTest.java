@@ -1,19 +1,28 @@
 package org.gnucash.android.test.unit.model;
 
+import org.gnucash.android.BuildConfig;
+import org.gnucash.android.model.Commodity;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.model.Split;
 import org.gnucash.android.model.Transaction;
+import org.gnucash.android.test.unit.util.GnucashTestRunner;
+import org.gnucash.android.test.unit.util.ShadowCrashlytics;
+import org.gnucash.android.test.unit.util.ShadowUserVoice;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.annotation.Config;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@RunWith(GnucashTestRunner.class)
+@Config(constants = BuildConfig.class, sdk = 21, packageName = "org.gnucash.android", shadows = {ShadowCrashlytics.class, ShadowUserVoice.class})
 public class TransactionTest {
 
 	@Test
 	public void testCloningTransaction(){
 		Transaction transaction = new Transaction("Bobba Fett");
 		assertThat(transaction.getUID()).isNotNull();
-		assertThat(transaction.getCurrencyCode()).isEqualTo(Money.DEFAULT_CURRENCY_CODE);
+		assertThat(transaction.getCurrencyCode()).isEqualTo(Commodity.DEFAULT_COMMODITY.getCurrencyCode());
 
 		Transaction clone1 = new Transaction(transaction, false);
 		assertThat(transaction.getUID()).isEqualTo(clone1.getUID());
@@ -34,7 +43,7 @@ public class TransactionTest {
 	@Test
 	public void addingSplitsShouldSetTransactionUID(){
 		Transaction transaction = new Transaction("");
-		assertThat(transaction.getCurrencyCode()).isEqualTo(Money.DEFAULT_CURRENCY_CODE);
+		assertThat(transaction.getCurrencyCode()).isEqualTo(Commodity.DEFAULT_COMMODITY.getCurrencyCode());
 
 		Split split = new Split(Money.getZeroInstance(), "test-account");
 		assertThat(split.getTransactionUID()).isEmpty();

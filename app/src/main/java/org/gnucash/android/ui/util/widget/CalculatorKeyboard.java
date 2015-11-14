@@ -29,6 +29,7 @@ import android.content.Context;
 import android.inputmethodservice.Keyboard;
 import android.inputmethodservice.KeyboardView;
 import android.inputmethodservice.KeyboardView.OnKeyboardActionListener;
+import android.provider.Settings;
 import android.support.annotation.XmlRes;
 import android.text.Editable;
 import android.view.HapticFeedbackConstants;
@@ -69,6 +70,7 @@ public class CalculatorKeyboard {
         @Override
         public void onKey(int primaryCode, int[] keyCodes) {
             View focusCurrent = ((Activity)mContext).getWindow().getCurrentFocus();
+            assert focusCurrent != null;
 
             /*
             if (focusCurrent == null || focusCurrent.getClass() != EditText.class)
@@ -125,9 +127,8 @@ public class CalculatorKeyboard {
         }
 
         @Override
-        public void onPress(int arg0) {
-            // vibrate if haptic feedback is enabled:
-            if (hapticFeedback && arg0 != 0)
+        public void onPress(int primaryCode) {
+            if (isHapticFeedbackEnabled() && primaryCode != 0)
                 mKeyboardView.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
         }
 
@@ -138,6 +139,17 @@ public class CalculatorKeyboard {
         @Override public void swipeDown() { }
         @Override public void swipeUp() { }
     };
+
+    /**
+     * Returns true if the haptic feedback is enabled.
+     *
+     * @return true if the haptic feedback is enabled in the system settings.
+     */
+    private boolean isHapticFeedbackEnabled() {
+        int value = Settings.System.getInt(mKeyboardView.getContext().getContentResolver(),
+                                           Settings.System.HAPTIC_FEEDBACK_ENABLED, 0);
+        return value != 0;
+    }
 
     /**
      * Create a custom keyboard, that uses the KeyboardView (with resource id <var>viewid</var>) of the <var>host</var> activity,
@@ -184,15 +196,6 @@ public class CalculatorKeyboard {
     public void hideCustomKeyboard() {
         mKeyboardView.setVisibility(View.GONE);
         mKeyboardView.setEnabled(false);
-    }
-
-    /**
-     * Enables or disables the Haptic feedback on keyboard touches
-     * @param goEnabled true if you want haptic feedback, falso otherwise
-     */
-    public void enableHapticFeedback(boolean goEnabled) {
-        mKeyboardView.setHapticFeedbackEnabled(goEnabled);
-        hapticFeedback = goEnabled;
     }
 
     public boolean onBackPressed() {

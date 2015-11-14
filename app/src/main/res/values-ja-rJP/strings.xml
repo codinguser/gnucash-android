@@ -16,10 +16,10 @@
  limitations under the License.
 -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-  <string name="title_create_account">Create Account</string>
-  <string name="title_edit_account">Edit Account</string>
-  <string name="info_details">Info</string>
-  <string name="menu_export">Export&#8230;</string>
+  <string name="title_create_account">勘定を作成</string>
+  <string name="title_edit_account">勘定の編集</string>
+  <string name="info_details">情報</string>
+  <string name="menu_export">ｴｸｽﾎﾟｰﾄ&#8230;</string>
   <string name="description_add_transaction_icon">Add a new transaction to an account</string>
   <string name="label_no_accounts">No accounts to display</string>
   <string name="label_account_name">Account name</string>
@@ -555,6 +555,8 @@
   <string name="summary_google_plus">Share ideas, discuss changes or report problems</string>
   <string name="summary_translate_gnucash">Translate or proof-read on CrowdIn</string>
   <string name="toast_no_compatible_apps_to_receive_export">No compatible apps to receive the exported transactions!</string>
+  <string name="menu_move_transaction">Move...</string>
+  <string name="menu_duplicate_transaction">Duplicate</string>
   <string-array name="report_time_range">
     <item>Current month</item>
     <item>Last 3 months</item>
