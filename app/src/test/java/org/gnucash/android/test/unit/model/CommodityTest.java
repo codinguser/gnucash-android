@@ -27,7 +27,7 @@ public class CommodityTest {
 
     @Test
     public void setSmallestFraction_shouldNotUseDigits(){
-        Commodity commodity = new Commodity("Test", "USD", 4);
+        Commodity commodity = new Commodity("Test", "USD", 100);
         assertThat(commodity.getSmallestFraction()).isEqualTo(100);
 
         commodity.setSmallestFraction(1000);
@@ -36,7 +36,7 @@ public class CommodityTest {
 
     @Test
     public void testSmallestFractionDigits(){
-        Commodity commodity = new Commodity("Test", "USD", 4);
+        Commodity commodity = new Commodity("Test", "USD", 100);
         assertThat(commodity.getSmallestFractionDigits()).isEqualTo(2);
 
         commodity.setSmallestFraction(10);

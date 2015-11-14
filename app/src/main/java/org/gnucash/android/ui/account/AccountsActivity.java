@@ -40,11 +40,11 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.util.SparseArray;
@@ -61,11 +61,10 @@ import com.kobakei.ratethisapp.RateThisApp;
 import org.gnucash.android.BuildConfig;
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
-import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.DatabaseSchema;
+import org.gnucash.android.db.adapter.AccountsDbAdapter;
 import org.gnucash.android.export.xml.GncXmlExporter;
 import org.gnucash.android.importer.ImportAsyncTask;
-import org.gnucash.android.model.Money;
 import org.gnucash.android.ui.common.BaseDrawerActivity;
 import org.gnucash.android.ui.common.FormActivity;
 import org.gnucash.android.ui.common.UxArgument;
@@ -77,7 +76,6 @@ import org.gnucash.android.ui.wizard.FirstRunWizardActivity;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
-import java.util.ArrayList;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -152,12 +150,12 @@ public class AccountsActivity extends BaseDrawerActivity implements OnAccountCli
     /**
      * Configuration for rating the app
      */
-    public static RateThisApp.Config rateAppConfig = new RateThisApp.Config(14, 100);
+    public static RateThisApp.Config rateAppConfig = new RateThisApp.Config(30, 100);
 
     /**
      * Adapter for managing the sub-account and transaction fragment pages in the accounts view
      */
-    private class AccountViewPagerAdapter extends FragmentStatePagerAdapter {
+    private class AccountViewPagerAdapter extends FragmentPagerAdapter {
 
         public AccountViewPagerAdapter(FragmentManager fm){
             super(fm);
@@ -380,8 +378,6 @@ public class AccountsActivity extends BaseDrawerActivity implements OnAccountCli
     private void init() {
         PreferenceManager.setDefaultValues(this, R.xml.fragment_transaction_preferences, false);
 
-        Money.DEFAULT_CURRENCY_CODE = GnuCashApplication.getDefaultCurrencyCode();
-
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         boolean firstRun = prefs.getBoolean(getString(R.string.key_first_run), true);
 
@@ -457,7 +453,7 @@ public class AccountsActivity extends BaseDrawerActivity implements OnAccountCli
     /**
      * Displays the dialog for exporting transactions
      */
-    public static void openExportFragment(FragmentActivity activity) {
+    public static void openExportFragment(AppCompatActivity activity) {
         Intent intent = new Intent(activity, FormActivity.class);
         intent.putExtra(UxArgument.FORM_TYPE, FormActivity.FormType.EXPORT.name());
         activity.startActivity(intent);

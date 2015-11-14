@@ -1,11 +1,9 @@
-package org.gnucash.android.db;
+package org.gnucash.android.db.adapter;
 
-import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteStatement;
 import android.support.annotation.NonNull;
-import android.util.Log;
 import android.util.Pair;
 
 import org.gnucash.android.app.GnuCashApplication;

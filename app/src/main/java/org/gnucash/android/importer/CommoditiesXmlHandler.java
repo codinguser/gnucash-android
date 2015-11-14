@@ -18,7 +18,7 @@ package org.gnucash.android.importer;
 import android.database.sqlite.SQLiteDatabase;
 
 import org.gnucash.android.app.GnuCashApplication;
-import org.gnucash.android.db.CommoditiesDbAdapter;
+import org.gnucash.android.db.adapter.CommoditiesDbAdapter;
 import org.gnucash.android.model.Commodity;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;

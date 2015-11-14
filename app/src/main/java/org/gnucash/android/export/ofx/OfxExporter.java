@@ -24,7 +24,7 @@ import com.crashlytics.android.Crashlytics;
 
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
-import org.gnucash.android.db.AccountsDbAdapter;
+import org.gnucash.android.db.adapter.AccountsDbAdapter;
 import org.gnucash.android.export.ExportParams;
 import org.gnucash.android.export.Exporter;
 import org.gnucash.android.model.Account;
@@ -99,7 +99,7 @@ public class OfxExporter extends Exporter{
 
 
 			//add account details (transactions) to the XML document			
-			account.toOfx(doc, statementTransactionResponse, mParameters.shouldExportAllTransactions());
+			account.toOfx(doc, statementTransactionResponse, mParameters.getExportStartTime());
 			
 			//mark as exported
 			accountsDbAdapter.markAsExported(account.getUID());
@@ -108,8 +108,7 @@ public class OfxExporter extends Exporter{
 	}
 
     public String generateExport() throws ExporterException {
-        mAccountsList = mParameters.shouldExportAllTransactions() ?
-                mAccountsDbAdapter.getAllRecords() : mAccountsDbAdapter.getExportableAccounts();
+        mAccountsList = mAccountsDbAdapter.getExportableAccounts(mParameters.getExportStartTime());
 
         DocumentBuilderFactory docFactory = DocumentBuilderFactory
                 .newInstance();

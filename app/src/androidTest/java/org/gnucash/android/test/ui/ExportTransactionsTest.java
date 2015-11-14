@@ -33,11 +33,11 @@ import android.widget.CompoundButton;
 
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
-import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.DatabaseHelper;
-import org.gnucash.android.db.ScheduledActionDbAdapter;
-import org.gnucash.android.db.SplitsDbAdapter;
-import org.gnucash.android.db.TransactionsDbAdapter;
+import org.gnucash.android.db.adapter.AccountsDbAdapter;
+import org.gnucash.android.db.adapter.ScheduledActionDbAdapter;
+import org.gnucash.android.db.adapter.SplitsDbAdapter;
+import org.gnucash.android.db.adapter.TransactionsDbAdapter;
 import org.gnucash.android.export.ExportFormat;
 import org.gnucash.android.export.Exporter;
 import org.gnucash.android.model.Account;
@@ -190,7 +190,7 @@ public class ExportTransactionsTest extends
 			file.delete();
 		}
 
-		DrawerActions.openDrawer(R.id.drawer_layout);
+		onView(withId(R.id.drawer_layout)).perform(DrawerActions.open());
 		onView(withText(R.string.nav_menu_export)).perform(click());
 		onView(withText(format.name())).perform(click());
 
@@ -221,7 +221,7 @@ public class ExportTransactionsTest extends
 	 */
 	@Test
 	public void testShouldCreateExportSchedule(){
-		DrawerActions.openDrawer(R.id.drawer_layout);
+		onView(withId(R.id.drawer_layout)).perform(DrawerActions.open());
 		onView(withText(R.string.nav_menu_export)).perform(click());
 
 		onView(withText(ExportFormat.XML.name())).perform(click());
@@ -229,7 +229,7 @@ public class ExportTransactionsTest extends
 
 		//switch on recurrence dialog
 		onView(allOf(isAssignableFrom(CompoundButton.class), isDisplayed(), isEnabled())).perform(click());
-		onView(withText("Done")).perform(click());
+		onView(withText("OK")).perform(click());
 
 		onView(withId(R.id.menu_save)).perform(click());
 		ScheduledActionDbAdapter scheduledactionDbAdapter = new ScheduledActionDbAdapter(mDb);
@@ -239,7 +239,7 @@ public class ExportTransactionsTest extends
 				.extracting("mActionType").contains(ScheduledAction.ActionType.BACKUP);
 
 		ScheduledAction action = scheduledActions.get(0);
-		assertThat(action.getPeriodType()).isEqualTo(PeriodType.WEEK);
+		assertThat(action.getRecurrence().getPeriodType()).isEqualTo(PeriodType.WEEK);
 		assertThat(action.getEndTime()).isEqualTo(0);
 	}
 

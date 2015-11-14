@@ -45,8 +45,8 @@ import com.github.mikephil.charting.utils.LargeValueFormatter;
 
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
-import org.gnucash.android.db.AccountsDbAdapter;
-import org.gnucash.android.db.TransactionsDbAdapter;
+import org.gnucash.android.db.adapter.AccountsDbAdapter;
+import org.gnucash.android.db.adapter.TransactionsDbAdapter;
 import org.gnucash.android.model.Account;
 import org.gnucash.android.model.AccountType;
 import org.joda.time.LocalDate;
@@ -148,6 +148,7 @@ public class BarChartFragment extends Fragment implements OnChartValueSelectedLi
 //        mChart.setDrawValuesForWholeStack(false);
         mChart.getXAxis().setDrawGridLines(false);
         mChart.getAxisRight().setEnabled(false);
+        mChart.getAxisLeft().setStartAtZero(false);
         mChart.getAxisLeft().enableGridDashedLine(4.0f, 4.0f, 0);
         mChart.getAxisLeft().setValueFormatter(new LargeValueFormatter(mCurrency.getSymbol(Locale.getDefault())));
         Legend chartLegend = mChart.getLegend();
@@ -464,8 +465,16 @@ public class BarChartFragment extends Fragment implements OnChartValueSelectedLi
         String stackLabels = entry.getData().toString();
         String label = mChart.getData().getXVals().get(entry.getXIndex()) + ", "
                 + stackLabels.substring(1, stackLabels.length() - 1).split(",")[index];
-        double value = entry.getVals()[index];
-        double sum = mTotalPercentageMode ? mChart.getData().getDataSetByIndex(dataSetIndex).getYValueSum() : entry.getVal();
+        double value = Math.abs(entry.getVals()[index]);
+        double sum = 0;
+        if (mTotalPercentageMode) {
+            for (BarEntry barEntry : mChart.getData().getDataSetByIndex(dataSetIndex).getYVals()) {
+                sum += barEntry.getNegativeSum() + barEntry.getPositiveSum();
+            }
+        } else {
+            sum = entry.getNegativeSum() + entry.getPositiveSum();
+        }
+        Log.w(TAG, "sum2 = " + sum);
         selectedValueTextView.setText(String.format(SELECTED_VALUE_PATTERN, label, value, value / sum * 100));
     }
 

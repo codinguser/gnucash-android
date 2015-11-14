@@ -23,9 +23,10 @@ import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
 
-import org.gnucash.android.db.CommoditiesDbAdapter;
+import org.gnucash.android.db.adapter.CommoditiesDbAdapter;
 import org.gnucash.android.db.DatabaseSchema;
-import org.gnucash.android.db.TransactionsDbAdapter;
+import org.gnucash.android.db.adapter.RecurrenceDbAdapter;
+import org.gnucash.android.db.adapter.TransactionsDbAdapter;
 import org.gnucash.android.export.ExportFormat;
 import org.gnucash.android.export.ExportParams;
 import org.gnucash.android.export.Exporter;
@@ -33,8 +34,11 @@ import org.gnucash.android.model.Account;
 import org.gnucash.android.model.AccountType;
 import org.gnucash.android.model.BaseModel;
 import org.gnucash.android.model.Commodity;
+import org.gnucash.android.model.Budget;
+import org.gnucash.android.model.BudgetAmount;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.model.PeriodType;
+import org.gnucash.android.model.Recurrence;
 import org.gnucash.android.model.ScheduledAction;
 import org.gnucash.android.model.TransactionType;
 import org.xmlpull.v1.XmlPullParserFactory;
@@ -53,7 +57,6 @@ import java.util.Currency;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.UUID;
 import java.util.zip.GZIPOutputStream;
 
 import static org.gnucash.android.db.DatabaseSchema.ScheduledActionEntry;
@@ -125,21 +128,21 @@ public class GncXmlExporter extends Exporter{
             xmlSerializer.startTag(null, GncXmlHelper.TAG_ACCOUNT);
             xmlSerializer.attribute(null, GncXmlHelper.ATTR_KEY_VERSION, GncXmlHelper.BOOK_VERSION);
             // account name
-            xmlSerializer.startTag(null, GncXmlHelper.TAG_NAME);
+            xmlSerializer.startTag(null, GncXmlHelper.TAG_ACCT_NAME);
             xmlSerializer.text(cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.AccountEntry.COLUMN_NAME)));
-            xmlSerializer.endTag(null, GncXmlHelper.TAG_NAME);
+            xmlSerializer.endTag(null, GncXmlHelper.TAG_ACCT_NAME);
             // account guid
             xmlSerializer.startTag(null, GncXmlHelper.TAG_ACCT_ID);
             xmlSerializer.attribute(null, GncXmlHelper.ATTR_KEY_TYPE, GncXmlHelper.ATTR_VALUE_GUID);
             xmlSerializer.text(cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.AccountEntry.COLUMN_UID)));
             xmlSerializer.endTag(null, GncXmlHelper.TAG_ACCT_ID);
             // account type
-            xmlSerializer.startTag(null, GncXmlHelper.TAG_TYPE);
+            xmlSerializer.startTag(null, GncXmlHelper.TAG_ACCT_TYPE);
             String acct_type = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.AccountEntry.COLUMN_TYPE));
             xmlSerializer.text(acct_type);
-            xmlSerializer.endTag(null, GncXmlHelper.TAG_TYPE);
+            xmlSerializer.endTag(null, GncXmlHelper.TAG_ACCT_TYPE);
             // commodity
-            xmlSerializer.startTag(null, GncXmlHelper.TAG_ACCOUNT_COMMODITY);
+            xmlSerializer.startTag(null, GncXmlHelper.TAG_ACCT_COMMODITY);
             xmlSerializer.startTag(null, GncXmlHelper.TAG_COMMODITY_SPACE);
             xmlSerializer.text("ISO4217");
             xmlSerializer.endTag(null, GncXmlHelper.TAG_COMMODITY_SPACE);
@@ -147,7 +150,7 @@ public class GncXmlExporter extends Exporter{
             String acctCurrencyCode = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.AccountEntry.COLUMN_CURRENCY));
             xmlSerializer.text(acctCurrencyCode);
             xmlSerializer.endTag(null, GncXmlHelper.TAG_COMMODITY_ID);
-            xmlSerializer.endTag(null, GncXmlHelper.TAG_ACCOUNT_COMMODITY);
+            xmlSerializer.endTag(null, GncXmlHelper.TAG_ACCT_COMMODITY);
             // commodity scu
             Commodity commodity = CommoditiesDbAdapter.getInstance().getCommodity(acctCurrencyCode);
             xmlSerializer.startTag(null, GncXmlHelper.TAG_COMMODITY_SCU);
@@ -186,9 +189,9 @@ public class GncXmlExporter extends Exporter{
             slotType.add(GncXmlHelper.ATTR_VALUE_STRING);
             slotValue.add(Boolean.toString(cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseSchema.AccountEntry.COLUMN_FAVORITE)) != 0));
 
-            xmlSerializer.startTag(null, GncXmlHelper.TAG_ACT_SLOTS);
+            xmlSerializer.startTag(null, GncXmlHelper.TAG_ACCT_SLOTS);
             exportSlots(xmlSerializer, slotKey, slotType, slotValue);
-            xmlSerializer.endTag(null, GncXmlHelper.TAG_ACT_SLOTS);
+            xmlSerializer.endTag(null, GncXmlHelper.TAG_ACCT_SLOTS);
 
             // parent uid
             String parentUID = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.AccountEntry.COLUMN_PARENT_ACCOUNT_UID));
@@ -217,20 +220,20 @@ public class GncXmlExporter extends Exporter{
             xmlSerializer.startTag(null, GncXmlHelper.TAG_ACCOUNT);
             xmlSerializer.attribute(null, GncXmlHelper.ATTR_KEY_VERSION, GncXmlHelper.BOOK_VERSION);
             // account name
-            xmlSerializer.startTag(null, GncXmlHelper.TAG_NAME);
+            xmlSerializer.startTag(null, GncXmlHelper.TAG_ACCT_NAME);
             xmlSerializer.text(account.getName());
-            xmlSerializer.endTag(null, GncXmlHelper.TAG_NAME);
+            xmlSerializer.endTag(null, GncXmlHelper.TAG_ACCT_NAME);
             // account guid
             xmlSerializer.startTag(null, GncXmlHelper.TAG_ACCT_ID);
             xmlSerializer.attribute(null, GncXmlHelper.ATTR_KEY_TYPE, GncXmlHelper.ATTR_VALUE_GUID);
             xmlSerializer.text(account.getUID());
             xmlSerializer.endTag(null, GncXmlHelper.TAG_ACCT_ID);
             // account type
-            xmlSerializer.startTag(null, GncXmlHelper.TAG_TYPE);
+            xmlSerializer.startTag(null, GncXmlHelper.TAG_ACCT_TYPE);
             xmlSerializer.text(account.getAccountType().name());
-            xmlSerializer.endTag(null, GncXmlHelper.TAG_TYPE);
+            xmlSerializer.endTag(null, GncXmlHelper.TAG_ACCT_TYPE);
             // commodity
-            xmlSerializer.startTag(null, GncXmlHelper.TAG_ACCOUNT_COMMODITY);
+            xmlSerializer.startTag(null, GncXmlHelper.TAG_ACCT_COMMODITY);
             xmlSerializer.startTag(null, GncXmlHelper.TAG_COMMODITY_SPACE);
             xmlSerializer.text("template");
             xmlSerializer.endTag(null, GncXmlHelper.TAG_COMMODITY_SPACE);
@@ -238,7 +241,7 @@ public class GncXmlExporter extends Exporter{
             String acctCurrencyCode = "template";
             xmlSerializer.text(acctCurrencyCode);
             xmlSerializer.endTag(null, GncXmlHelper.TAG_COMMODITY_ID);
-            xmlSerializer.endTag(null, GncXmlHelper.TAG_ACCOUNT_COMMODITY);
+            xmlSerializer.endTag(null, GncXmlHelper.TAG_ACCT_COMMODITY);
             // commodity scu
             xmlSerializer.startTag(null, GncXmlHelper.TAG_COMMODITY_SCU);
             xmlSerializer.text("1");
@@ -293,6 +296,9 @@ public class GncXmlExporter extends Exporter{
             mRootTemplateAccount = new Account("Template Root");
             mRootTemplateAccount.setAccountType(AccountType.ROOT);
             mTransactionToTemplateAccountMap.put(" ", mRootTemplateAccount);
+
+            //FIXME: Retrieve the template account GUIDs from the scheduled action table and create accounts with that
+            //this will allow use to maintain the template account GUID when we import from the desktop and also use the same for the splits
             while (cursor.moveToNext()) {
                 Account account = new Account(BaseModel.generateUID());
                 account.setAccountType(AccountType.BANK);
@@ -306,6 +312,7 @@ public class GncXmlExporter extends Exporter{
             cursor.moveToPrevious();
         }
 
+        //// FIXME: 12.10.2015 export split reconciled_state and reconciled_date to the export
         while (cursor.moveToNext()){
             String curTrxUID = cursor.getString(cursor.getColumnIndexOrThrow("trans_uid"));
             if (!lastTrxUID.equals(curTrxUID)) { // new transaction starts
@@ -400,8 +407,9 @@ public class GncXmlExporter extends Exporter{
             }
             // reconciled
             xmlSerializer.startTag(null, GncXmlHelper.TAG_RECONCILED_STATE);
-            xmlSerializer.text("n");
+            xmlSerializer.text("n"); //fixme: retrieve reconciled state from the split in the db
             xmlSerializer.endTag(null, GncXmlHelper.TAG_RECONCILED_STATE);
+            //todo: if split is reconciled, add reconciled date
             // value, in the transaction's currency
             String trxType = cursor.getString(cursor.getColumnIndexOrThrow("split_type"));
             int splitValueNum = cursor.getInt(cursor.getColumnIndexOrThrow("split_value_num"));
@@ -493,10 +501,11 @@ public class GncXmlExporter extends Exporter{
     private void exportScheduledTransactions(XmlSerializer xmlSerializer) throws IOException{
         //for now we will export only scheduled transactions to XML
         Cursor cursor = mScheduledActionDbAdapter.fetchAllRecords(
-                ScheduledActionEntry.COLUMN_TYPE + "=?", new String[]{ScheduledAction.ActionType.TRANSACTION.name()});
+                ScheduledActionEntry.COLUMN_TYPE + "=?", new String[]{ScheduledAction.ActionType.TRANSACTION.name()}, null);
 
         while (cursor.moveToNext()) {
-            String actionUID = cursor.getString(cursor.getColumnIndexOrThrow(ScheduledActionEntry.COLUMN_ACTION_UID));
+            ScheduledAction scheduledAction = mScheduledActionDbAdapter.buildModelInstance(cursor);
+            String actionUID = scheduledAction.getActionUID();
             Account accountUID = mTransactionToTemplateAccountMap.get(actionUID);
 
             if (accountUID == null) //if the action UID does not belong to a transaction we've seen before, skip it
@@ -512,7 +521,7 @@ public class GncXmlExporter extends Exporter{
             xmlSerializer.endTag(null, GncXmlHelper.TAG_SX_ID);
             xmlSerializer.startTag(null, GncXmlHelper.TAG_SX_NAME);
 
-            ScheduledAction.ActionType actionType = ScheduledAction.ActionType.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(ScheduledActionEntry.COLUMN_TYPE)));
+            ScheduledAction.ActionType actionType = scheduledAction.getActionType();
             if (actionType == ScheduledAction.ActionType.TRANSACTION) {
                 String description = TransactionsDbAdapter.getInstance().getAttribute(actionUID, TransactionEntry.COLUMN_DESCRIPTION);
                 xmlSerializer.text(description);
@@ -521,20 +530,19 @@ public class GncXmlExporter extends Exporter{
             }
             xmlSerializer.endTag(null, GncXmlHelper.TAG_SX_NAME);
             xmlSerializer.startTag(null, GncXmlHelper.TAG_SX_ENABLED);
-            boolean enabled = cursor.getShort(cursor.getColumnIndexOrThrow(ScheduledActionEntry.COLUMN_ENABLED)) > 0;
-            xmlSerializer.text(enabled ? "y" : "n");
+            xmlSerializer.text(scheduledAction.isEnabled() ? "y" : "n");
             xmlSerializer.endTag(null, GncXmlHelper.TAG_SX_ENABLED);
             xmlSerializer.startTag(null, GncXmlHelper.TAG_SX_AUTO_CREATE);
-            xmlSerializer.text("n"); //we do not want transactions auto-created on the desktop.
+            xmlSerializer.text(scheduledAction.shouldAutoCreate() ? "y" : "n");
             xmlSerializer.endTag(null, GncXmlHelper.TAG_SX_AUTO_CREATE);
             xmlSerializer.startTag(null, GncXmlHelper.TAG_SX_AUTO_CREATE_NOTIFY);
-            xmlSerializer.text("n"); //TODO: if we ever support notifying before creating a scheduled transaction, then update this
+            xmlSerializer.text(scheduledAction.shouldAutoNotify() ? "y" : "n");
             xmlSerializer.endTag(null, GncXmlHelper.TAG_SX_AUTO_CREATE_NOTIFY);
             xmlSerializer.startTag(null, GncXmlHelper.TAG_SX_ADVANCE_CREATE_DAYS);
-            xmlSerializer.text("0");
+            xmlSerializer.text(Integer.toString(scheduledAction.getAdvanceCreateDays()));
             xmlSerializer.endTag(null, GncXmlHelper.TAG_SX_ADVANCE_CREATE_DAYS);
             xmlSerializer.startTag(null, GncXmlHelper.TAG_SX_ADVANCE_REMIND_DAYS);
-            xmlSerializer.text("0");
+            xmlSerializer.text(Integer.toString(scheduledAction.getAdvanceNotifyDays()));
             xmlSerializer.endTag(null, GncXmlHelper.TAG_SX_ADVANCE_REMIND_DAYS);
             xmlSerializer.startTag(null, GncXmlHelper.TAG_SX_INSTANCE_COUNT);
             String scheduledActionUID = cursor.getString(cursor.getColumnIndexOrThrow(ScheduledActionEntry.COLUMN_UID));
@@ -581,22 +589,15 @@ public class GncXmlExporter extends Exporter{
             xmlSerializer.text(accountUID.getUID());
             xmlSerializer.endTag(null, GncXmlHelper.TAG_SX_TEMPL_ACCOUNT);
 
+            //// FIXME: 11.10.2015 Retrieve the information for this section from the recurrence table
             xmlSerializer.startTag(null, GncXmlHelper.TAG_SX_SCHEDULE);
-            xmlSerializer.startTag(null, GncXmlHelper.TAG_RECURRENCE);
+            xmlSerializer.startTag(null, GncXmlHelper.TAG_GNC_RECURRENCE);
             xmlSerializer.attribute(null, GncXmlHelper.ATTR_KEY_VERSION, GncXmlHelper.RECURRENCE_VERSION);
-            long period = cursor.getLong(cursor.getColumnIndexOrThrow(ScheduledActionEntry.COLUMN_PERIOD));
-            PeriodType periodType = ScheduledAction.getPeriodType(period);
-            xmlSerializer.startTag(null, GncXmlHelper.TAG_RX_MULT);
-            xmlSerializer.text(String.valueOf(periodType.getMultiplier()));
-            xmlSerializer.endTag(null, GncXmlHelper.TAG_RX_MULT);
-            xmlSerializer.startTag(null, GncXmlHelper.TAG_RX_PERIOD_TYPE);
-            xmlSerializer.text(periodType.name().toLowerCase());
-            xmlSerializer.endTag(null, GncXmlHelper.TAG_RX_PERIOD_TYPE);
 
-            long recurrenceStartTime = cursor.getLong(cursor.getColumnIndexOrThrow(ScheduledActionEntry.COLUMN_START_TIME));
-            serializeDate(xmlSerializer, GncXmlHelper.TAG_RX_START, recurrenceStartTime);
-
-            xmlSerializer.endTag(null, GncXmlHelper.TAG_RECURRENCE);
+            String recurrenceUID = cursor.getString(cursor.getColumnIndexOrThrow(ScheduledActionEntry.COLUMN_RECURRENCE_UID));
+            Recurrence recurrence = RecurrenceDbAdapter.getInstance().getRecord(recurrenceUID);
+            exportRecurrence(xmlSerializer, recurrence);
+            xmlSerializer.endTag(null, GncXmlHelper.TAG_GNC_RECURRENCE);
             xmlSerializer.endTag(null, GncXmlHelper.TAG_SX_SCHEDULE);
 
             xmlSerializer.endTag(null, GncXmlHelper.TAG_SCHEDULED_ACTION);
@@ -619,10 +620,10 @@ public class GncXmlExporter extends Exporter{
         xmlSerializer.endTag(null, tag);
     }
 
-    private void exportCommodity(XmlSerializer xmlSerializer, List<Currency> currencies) throws IOException {
+    private void exportCommodities(XmlSerializer xmlSerializer, List<Currency> currencies) throws IOException {
         for (Currency currency : currencies) {
             xmlSerializer.startTag(null, GncXmlHelper.TAG_COMMODITY);
-            xmlSerializer.attribute(null, GncXmlHelper.ATTR_KEY_VERSION, "2.0.0");
+            xmlSerializer.attribute(null, GncXmlHelper.ATTR_KEY_VERSION, GncXmlHelper.BOOK_VERSION);
             xmlSerializer.startTag(null, GncXmlHelper.TAG_COMMODITY_SPACE);
             xmlSerializer.text("ISO4217");
             xmlSerializer.endTag(null, GncXmlHelper.TAG_COMMODITY_SPACE);
@@ -694,11 +695,90 @@ public class GncXmlExporter extends Exporter{
         xmlSerializer.endTag(null, GncXmlHelper.TAG_PRICEDB);
     }
 
+    /**
+     * Exports the recurrence to GnuCash XML, except the recurrence tags itself i.e. the actual recurrence attributes only
+     * <p>This is because there are different recurrence start tags for transactions and budgets.<br>
+     *     So make sure to write the recurrence start/closing tags before/after calling this method.</p>
+     * @param xmlSerializer XML serializer
+     * @param recurrence Recurrence object
+     */
+    private void exportRecurrence(XmlSerializer xmlSerializer, Recurrence recurrence) throws IOException{
+        PeriodType periodType = recurrence.getPeriodType();
+        xmlSerializer.startTag(null, GncXmlHelper.TAG_RX_MULT);
+        xmlSerializer.text(String.valueOf(periodType.getMultiplier()));
+        xmlSerializer.endTag(null, GncXmlHelper.TAG_RX_MULT);
+        xmlSerializer.startTag(null, GncXmlHelper.TAG_RX_PERIOD_TYPE);
+        xmlSerializer.text(periodType.name().toLowerCase());
+        xmlSerializer.endTag(null, GncXmlHelper.TAG_RX_PERIOD_TYPE);
+
+        long recurrenceStartTime = recurrence.getPeriodStart().getTime();
+        serializeDate(xmlSerializer, GncXmlHelper.TAG_RX_START, recurrenceStartTime);
+    }
+
+    private void exportBudgets(XmlSerializer xmlSerializer) throws IOException {
+        Cursor cursor = mBudgetsDbAdapter.fetchAllRecords();
+        while(cursor.moveToNext()) {
+            Budget budget = mBudgetsDbAdapter.buildModelInstance(cursor);
+            xmlSerializer.startTag(null,    GncXmlHelper.TAG_BUDGET);
+            xmlSerializer.attribute(null,   GncXmlHelper.ATTR_KEY_VERSION, GncXmlHelper.BOOK_VERSION);
+            xmlSerializer.startTag(null,    GncXmlHelper.TAG_BUDGET_ID);
+            xmlSerializer.attribute(null,   GncXmlHelper.ATTR_KEY_TYPE, GncXmlHelper.ATTR_VALUE_GUID);
+            xmlSerializer.text(budget.getUID());
+            xmlSerializer.endTag(null,      GncXmlHelper.TAG_BUDGET_ID);
+            xmlSerializer.startTag(null,    GncXmlHelper.TAG_BUDGET_NAME);
+            xmlSerializer.text(budget.getName());
+            xmlSerializer.endTag(null,      GncXmlHelper.TAG_BUDGET_NAME);
+            xmlSerializer.startTag(null,    GncXmlHelper.TAG_BUDGET_DESCRIPTION);
+            xmlSerializer.text(budget.getDescription() == null ? "" : budget.getDescription());
+            xmlSerializer.endTag(null,      GncXmlHelper.TAG_BUDGET_DESCRIPTION);
+            xmlSerializer.startTag(null,    GncXmlHelper.TAG_BUDGET_NUM_PERIODS);
+            xmlSerializer.text(Long.toString(budget.getNumberOfPeriods()));
+            xmlSerializer.endTag(null,      GncXmlHelper.TAG_BUDGET_NUM_PERIODS);
+            xmlSerializer.startTag(null,    GncXmlHelper.TAG_BUDGET_RECURRENCE);
+            exportRecurrence(xmlSerializer, budget.getRecurrence());
+            xmlSerializer.endTag(null,      GncXmlHelper.TAG_BUDGET_RECURRENCE);
+
+            //export budget slots
+            ArrayList<String> slotKey = new ArrayList<>();
+            ArrayList<String> slotType = new ArrayList<>();
+            ArrayList<String> slotValue = new ArrayList<>();
+
+            xmlSerializer.startTag(null, GncXmlHelper.TAG_BUDGET_SLOTS);
+            for (BudgetAmount budgetAmount : budget.getExpandedBudgetAmounts()) {
+                xmlSerializer.startTag(null, GncXmlHelper.TAG_SLOT);
+                xmlSerializer.startTag(null, GncXmlHelper.TAG_SLOT_KEY);
+                xmlSerializer.text(budgetAmount.getAccountUID());
+                xmlSerializer.endTag(null, GncXmlHelper.TAG_SLOT_KEY);
+
+                Money amount = budgetAmount.getAmount();
+                slotKey.clear();
+                slotType.clear();
+                slotValue.clear();
+                for (int period = 0; period < budget.getNumberOfPeriods(); period++) {
+                    slotKey.add(String.valueOf(period));
+                    slotType.add(GncXmlHelper.ATTR_VALUE_NUMERIC);
+                    slotValue.add(amount.getNumerator() + "/" + amount.getDenominator());
+                }
+                //budget slots
+
+                xmlSerializer.startTag(null, GncXmlHelper.TAG_SLOT_VALUE);
+                xmlSerializer.attribute(null, GncXmlHelper.ATTR_KEY_TYPE, GncXmlHelper.ATTR_VALUE_FRAME);
+                exportSlots(xmlSerializer, slotKey, slotType, slotValue);
+                xmlSerializer.endTag(null, GncXmlHelper.TAG_SLOT_VALUE);
+                xmlSerializer.endTag(null, GncXmlHelper.TAG_SLOT);
+            }
+
+            xmlSerializer.endTag(null, GncXmlHelper.TAG_BUDGET_SLOTS);
+            xmlSerializer.endTag(null, GncXmlHelper.TAG_BUDGET);
+        }
+        cursor.close();
+    }
+
     @Override
     public void generateExport(Writer writer) throws ExporterException{
         try {
             String[] namespaces = new String[] {"gnc", "act", "book", "cd", "cmdty", "price", "slot",
-                    "split", "trn", "ts", "sx", "recurrence"};
+                    "split", "trn", "ts", "sx", "bgt", "recurrence"};
             XmlSerializer xmlSerializer = XmlPullParserFactory.newInstance().newSerializer();
             xmlSerializer.setOutput(writer);
             xmlSerializer.startDocument("utf-8", true);
@@ -750,7 +830,7 @@ public class GncXmlExporter extends Exporter{
                 xmlSerializer.endTag(null, GncXmlHelper.TAG_COUNT_DATA);
             }
             // export the commodities used in the DB
-            exportCommodity(xmlSerializer, currencies);
+            exportCommodities(xmlSerializer, currencies);
             // prices
             if (priceCount > 0) {
                 exportPrices(xmlSerializer);
@@ -768,6 +848,9 @@ public class GncXmlExporter extends Exporter{
             }
             //scheduled actions
             exportScheduledTransactions(xmlSerializer);
+
+            //budgets
+            exportBudgets(xmlSerializer);
 
             xmlSerializer.endTag(null, GncXmlHelper.TAG_BOOK);
             xmlSerializer.endTag(null, GncXmlHelper.TAG_ROOT);

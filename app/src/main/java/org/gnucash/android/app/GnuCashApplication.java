@@ -33,14 +33,18 @@ import com.uservoice.uservoicesdk.Config;
 import com.uservoice.uservoicesdk.UserVoice;
 
 import org.gnucash.android.R;
-import org.gnucash.android.db.AccountsDbAdapter;
-import org.gnucash.android.db.CommoditiesDbAdapter;
 import org.gnucash.android.db.DatabaseHelper;
-import org.gnucash.android.db.PricesDbAdapter;
-import org.gnucash.android.db.ScheduledActionDbAdapter;
-import org.gnucash.android.db.SplitsDbAdapter;
-import org.gnucash.android.db.TransactionsDbAdapter;
+import org.gnucash.android.db.adapter.AccountsDbAdapter;
+import org.gnucash.android.db.adapter.BudgetAmountsDbAdapter;
+import org.gnucash.android.db.adapter.BudgetsDbAdapter;
+import org.gnucash.android.db.adapter.CommoditiesDbAdapter;
+import org.gnucash.android.db.adapter.PricesDbAdapter;
+import org.gnucash.android.db.adapter.RecurrenceDbAdapter;
+import org.gnucash.android.db.adapter.ScheduledActionDbAdapter;
+import org.gnucash.android.db.adapter.SplitsDbAdapter;
+import org.gnucash.android.db.adapter.TransactionsDbAdapter;
 import org.gnucash.android.model.Commodity;
+import org.gnucash.android.model.Money;
 import org.gnucash.android.service.SchedulerService;
 
 import java.util.Currency;
@@ -83,6 +87,12 @@ public class GnuCashApplication extends Application{
 
     private static PricesDbAdapter mPricesDbAdapter;
 
+    private static BudgetsDbAdapter mBudgetsDbAdapter;
+
+    private static BudgetAmountsDbAdapter mBudgetAmountsDbAdapter;
+
+    private static RecurrenceDbAdapter mRecurrenceDbAdapter;
+
     /**
      * Returns darker version of specified <code>color</code>.
      * Use for theming the status bar color when setting the color of the actionBar
@@ -123,8 +133,11 @@ public class GnuCashApplication extends Application{
         mScheduledActionDbAdapter   = new ScheduledActionDbAdapter(mDb);
         mCommoditiesDbAdapter       = new CommoditiesDbAdapter(mDb);
         mPricesDbAdapter            = new PricesDbAdapter(mDb);
+        mBudgetAmountsDbAdapter     = new BudgetAmountsDbAdapter(mDb);
+        mBudgetsDbAdapter           = new BudgetsDbAdapter(mDb);
+        mRecurrenceDbAdapter        = new RecurrenceDbAdapter(mDb);
 
-        Commodity.DEFAULT_COMMODITY = mCommoditiesDbAdapter.getCommodity(getDefaultCurrencyCode());
+        setDefaultCurrencyCode(getDefaultCurrencyCode());
     }
 
     public static AccountsDbAdapter getAccountsDbAdapter() {
@@ -149,6 +162,18 @@ public class GnuCashApplication extends Application{
 
     public static PricesDbAdapter getPricesDbAdapter(){
         return mPricesDbAdapter;
+    }
+
+    public static BudgetsDbAdapter getBudgetDbAdapter() {
+        return mBudgetsDbAdapter;
+    }
+
+    public static RecurrenceDbAdapter getRecurrenceDbAdapter() {
+        return mRecurrenceDbAdapter;
+    }
+
+    public static BudgetAmountsDbAdapter getBudgetAmountsDbAdapter(){
+        return mBudgetAmountsDbAdapter;
     }
 
     /**
@@ -216,12 +241,21 @@ public class GnuCashApplication extends Application{
     }
 
     /**
-     * Returns the default commodity
-     * @return Default commodity of application
+     * Sets the default currency for the application in all relevant places:
+     * <ul>
+     *     <li>Shared preferences</li>
+     *     <li>{@link Money#DEFAULT_CURRENCY_CODE}</li>
+     *     <li>{@link Commodity#DEFAULT_COMMODITY}</li>
+     * </ul>
+     * @param currencyCode ISO 4217 currency code
      * @see #getDefaultCurrencyCode()
      */
-    public static Commodity getDefaultCommodity(){
-        return Commodity.DEFAULT_COMMODITY;
+    public static void setDefaultCurrencyCode(String currencyCode){
+        PreferenceManager.getDefaultSharedPreferences(getAppContext()).edit()
+                .putString(getAppContext().getString(R.string.key_default_currency), currencyCode)
+                .apply();
+        Money.DEFAULT_CURRENCY_CODE = currencyCode;
+        Commodity.DEFAULT_COMMODITY = mCommoditiesDbAdapter.getCommodity(currencyCode);
     }
 
     /**

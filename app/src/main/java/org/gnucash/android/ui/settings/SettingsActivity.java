@@ -50,13 +50,12 @@ import com.google.android.gms.drive.MetadataChangeSet;
 
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
-import org.gnucash.android.db.AccountsDbAdapter;
+import org.gnucash.android.db.adapter.AccountsDbAdapter;
 import org.gnucash.android.db.DatabaseSchema;
-import org.gnucash.android.db.TransactionsDbAdapter;
+import org.gnucash.android.db.adapter.TransactionsDbAdapter;
 import org.gnucash.android.export.Exporter;
 import org.gnucash.android.export.xml.GncXmlExporter;
 import org.gnucash.android.importer.ImportAsyncTask;
-import org.gnucash.android.model.Money;
 import org.gnucash.android.model.Transaction;
 import org.gnucash.android.ui.account.AccountsActivity;
 import org.gnucash.android.ui.common.UxArgument;
@@ -66,7 +65,6 @@ import org.gnucash.android.ui.passcode.PasscodePreferenceActivity;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.InputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -253,7 +251,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity
 	@Override
  	public boolean onPreferenceChange(Preference preference, Object newValue) {
 		if (preference.getKey().equals(getString(R.string.key_default_currency))){
-			Money.DEFAULT_CURRENCY_CODE = newValue.toString();
+			GnuCashApplication.setDefaultCurrencyCode(newValue.toString());
             preference.setSummary(newValue.toString());
 		} else if (preference.getKey().equals(getString(R.string.key_enable_passcode))) {
             if ((Boolean) newValue) {
@@ -293,11 +291,9 @@ public class SettingsActivity extends AppCompatPreferenceActivity
     }
 
     private void setDefaultCurrencyListener() {
-		SharedPreferences manager = PreferenceManager.getDefaultSharedPreferences(this);
-		String defaultCurrency = manager.getString(getString(R.string.key_default_currency), Money.DEFAULT_CURRENCY_CODE);
 		@SuppressWarnings("deprecation")
 		Preference pref = findPreference(getString(R.string.key_default_currency));
-		pref.setSummary(defaultCurrency);
+		pref.setSummary(GnuCashApplication.getDefaultCurrencyCode());
 		pref.setOnPreferenceChangeListener(this);
 	}
 

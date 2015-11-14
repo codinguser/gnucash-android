@@ -20,15 +20,13 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
-import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 
 import org.gnucash.android.R;
+import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.ui.account.AccountsActivity;
 
@@ -59,8 +57,8 @@ public class AccountPreferencesFragment extends PreferenceFragment {
     @Override
     public void onResume() {
         super.onResume();
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        String defaultCurrency = sharedPreferences.getString(getString(R.string.key_default_currency), Money.DEFAULT_CURRENCY_CODE);
+
+        String defaultCurrency = GnuCashApplication.getDefaultCurrencyCode();
         Preference pref = findPreference(getString(R.string.key_default_currency));
         pref.setSummary(defaultCurrency);
         pref.setOnPreferenceChangeListener((SettingsActivity)getActivity());

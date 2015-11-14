@@ -34,7 +34,16 @@ import java.lang.reflect.Method;
 
 import javax.xml.parsers.ParserConfigurationException;
 
-import static org.gnucash.android.db.DatabaseSchema.*;
+import static org.gnucash.android.db.DatabaseSchema.AccountEntry;
+import static org.gnucash.android.db.DatabaseSchema.BudgetAmountEntry;
+import static org.gnucash.android.db.DatabaseSchema.BudgetEntry;
+import static org.gnucash.android.db.DatabaseSchema.CommodityEntry;
+import static org.gnucash.android.db.DatabaseSchema.CommonColumns;
+import static org.gnucash.android.db.DatabaseSchema.PriceEntry;
+import static org.gnucash.android.db.DatabaseSchema.RecurrenceEntry;
+import static org.gnucash.android.db.DatabaseSchema.ScheduledActionEntry;
+import static org.gnucash.android.db.DatabaseSchema.SplitEntry;
+import static org.gnucash.android.db.DatabaseSchema.TransactionEntry;
 /**
  * Helper class for managing the SQLite database.
  * Creates the database and handles upgrades
@@ -110,28 +119,36 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + SplitEntry.COLUMN_QUANTITY_DENOM  + " integer not null, "
             + SplitEntry.COLUMN_ACCOUNT_UID 	+ " varchar(255) not null, "
             + SplitEntry.COLUMN_TRANSACTION_UID + " varchar(255) not null, "
-            + SplitEntry.COLUMN_CREATED_AT       + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
-            + SplitEntry.COLUMN_MODIFIED_AT      + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
+            + SplitEntry.COLUMN_RECONCILE_STATE + " varchar(1) not null default 'n', "
+            + SplitEntry.COLUMN_RECONCILE_DATE  + " timestamp not null default current_timestamp, "
+            + SplitEntry.COLUMN_CREATED_AT      + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
+            + SplitEntry.COLUMN_MODIFIED_AT     + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
             + "FOREIGN KEY (" 	+ SplitEntry.COLUMN_ACCOUNT_UID + ") REFERENCES " + AccountEntry.TABLE_NAME + " (" + AccountEntry.COLUMN_UID + ") ON DELETE CASCADE, "
             + "FOREIGN KEY (" 	+ SplitEntry.COLUMN_TRANSACTION_UID + ") REFERENCES " + TransactionEntry.TABLE_NAME + " (" + TransactionEntry.COLUMN_UID + ") ON DELETE CASCADE "
             + ");" + createUpdatedAtTrigger(SplitEntry.TABLE_NAME);
 
 
     public static final String SCHEDULED_ACTIONS_TABLE_CREATE = "CREATE TABLE " + ScheduledActionEntry.TABLE_NAME + " ("
-            + ScheduledActionEntry._ID                   + " integer primary key autoincrement, "
-            + ScheduledActionEntry.COLUMN_UID            + " varchar(255) not null UNIQUE, "
-            + ScheduledActionEntry.COLUMN_ACTION_UID     + " varchar(255) not null, "
-            + ScheduledActionEntry.COLUMN_TYPE           + " varchar(255) not null, "
-            + ScheduledActionEntry.COLUMN_PERIOD         + " integer not null, "
-            + ScheduledActionEntry.COLUMN_LAST_RUN       + " integer default 0, "
-            + ScheduledActionEntry.COLUMN_START_TIME     + " integer not null, "
-            + ScheduledActionEntry.COLUMN_END_TIME       + " integer default 0, "
-            + ScheduledActionEntry.COLUMN_TAG            + " text, "
-            + ScheduledActionEntry.COLUMN_ENABLED        + " tinyint default 1, " //enabled by default
-            + ScheduledActionEntry.COLUMN_TOTAL_FREQUENCY + " integer default 0, "
-            + ScheduledActionEntry.COLUMN_EXECUTION_COUNT+ " integer default 0, "
-            + ScheduledActionEntry.COLUMN_CREATED_AT     + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
-            + ScheduledActionEntry.COLUMN_MODIFIED_AT    + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP "
+            + ScheduledActionEntry._ID                      + " integer primary key autoincrement, "
+            + ScheduledActionEntry.COLUMN_UID               + " varchar(255) not null UNIQUE, "
+            + ScheduledActionEntry.COLUMN_ACTION_UID        + " varchar(255) not null, "
+            + ScheduledActionEntry.COLUMN_TYPE              + " varchar(255) not null, "
+            + ScheduledActionEntry.COLUMN_RECURRENCE_UID    + " varchar(255) not null, "
+            + ScheduledActionEntry.COLUMN_TEMPLATE_ACCT_UID + " varchar(255) not null, "
+            + ScheduledActionEntry.COLUMN_LAST_RUN          + " integer default 0, "
+            + ScheduledActionEntry.COLUMN_START_TIME        + " integer not null, "
+            + ScheduledActionEntry.COLUMN_END_TIME          + " integer default 0, "
+            + ScheduledActionEntry.COLUMN_TAG               + " text, "
+            + ScheduledActionEntry.COLUMN_ENABLED           + " tinyint default 1, " //enabled by default
+            + ScheduledActionEntry.COLUMN_AUTO_CREATE       + " tinyint default 1, "
+            + ScheduledActionEntry.COLUMN_AUTO_NOTIFY       + " tinyint default 0, "
+            + ScheduledActionEntry.COLUMN_ADVANCE_CREATION  + " integer default 0, "
+            + ScheduledActionEntry.COLUMN_ADVANCE_NOTIFY    + " integer default 0, "
+            + ScheduledActionEntry.COLUMN_TOTAL_FREQUENCY   + " integer default 0, "
+            + ScheduledActionEntry.COLUMN_EXECUTION_COUNT   + " integer default 0, "
+            + ScheduledActionEntry.COLUMN_CREATED_AT        + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
+            + ScheduledActionEntry.COLUMN_MODIFIED_AT       + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
+            + "FOREIGN KEY (" 	+ ScheduledActionEntry.COLUMN_RECURRENCE_UID + ") REFERENCES " + RecurrenceEntry.TABLE_NAME + " (" + RecurrenceEntry.COLUMN_UID + ") "
             + ");" + createUpdatedAtTrigger(ScheduledActionEntry.TABLE_NAME);
 
     public static final String COMMODITIES_TABLE_CREATE = "CREATE TABLE " + DatabaseSchema.CommodityEntry.TABLE_NAME + " ("
@@ -167,6 +184,47 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + "FOREIGN KEY (" 	+ PriceEntry.COLUMN_COMMODITY_UID + ") REFERENCES " + CommodityEntry.TABLE_NAME + " (" + CommodityEntry.COLUMN_UID + ") ON DELETE CASCADE, "
             + "FOREIGN KEY (" 	+ PriceEntry.COLUMN_CURRENCY_UID + ") REFERENCES " + CommodityEntry.TABLE_NAME + " (" + CommodityEntry.COLUMN_UID + ") ON DELETE CASCADE "
             + ");" + createUpdatedAtTrigger(PriceEntry.TABLE_NAME);
+
+
+    private static final String BUDGETS_TABLE_CREATE = "CREATE TABLE " + BudgetEntry.TABLE_NAME + " ("
+            + BudgetEntry._ID                   + " integer primary key autoincrement, "
+            + BudgetEntry.COLUMN_UID            + " varchar(255) not null UNIQUE, "
+            + BudgetEntry.COLUMN_NAME           + " varchar(255) not null, "
+            + BudgetEntry.COLUMN_DESCRIPTION    + " varchar(255), "
+            + BudgetEntry.COLUMN_RECURRENCE_UID + " varchar(255) not null, "
+            + BudgetEntry.COLUMN_NUM_PERIODS    + " integer, "
+            + BudgetEntry.COLUMN_CREATED_AT     + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
+            + BudgetEntry.COLUMN_MODIFIED_AT    + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
+            + "FOREIGN KEY (" 	+ BudgetEntry.COLUMN_RECURRENCE_UID + ") REFERENCES " + RecurrenceEntry.TABLE_NAME + " (" + RecurrenceEntry.COLUMN_UID + ") "
+            + ");" + createUpdatedAtTrigger(BudgetEntry.TABLE_NAME);
+
+    private static final String BUDGET_AMOUNTS_TABLE_CREATE = "CREATE TABLE " + BudgetAmountEntry.TABLE_NAME + " ("
+            + BudgetAmountEntry._ID                   + " integer primary key autoincrement, "
+            + BudgetAmountEntry.COLUMN_UID            + " varchar(255) not null UNIQUE, "
+            + BudgetAmountEntry.COLUMN_BUDGET_UID     + " varchar(255) not null, "
+            + BudgetAmountEntry.COLUMN_ACCOUNT_UID    + " varchar(255) not null, "
+            + BudgetAmountEntry.COLUMN_AMOUNT_NUM     + " integer not null, "
+            + BudgetAmountEntry.COLUMN_AMOUNT_DENOM   + " integer not null, "
+            + BudgetAmountEntry.COLUMN_PERIOD_NUM     + " integer not null, "
+            + BudgetAmountEntry.COLUMN_CREATED_AT     + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
+            + BudgetAmountEntry.COLUMN_MODIFIED_AT    + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
+            + "FOREIGN KEY (" 	+ BudgetAmountEntry.COLUMN_ACCOUNT_UID + ") REFERENCES " + AccountEntry.TABLE_NAME + " (" + AccountEntry.COLUMN_UID + ") ON DELETE CASCADE, "
+            + "FOREIGN KEY (" 	+ BudgetAmountEntry.COLUMN_BUDGET_UID + ") REFERENCES " + BudgetEntry.TABLE_NAME + " (" + BudgetEntry.COLUMN_UID + ") ON DELETE CASCADE "
+            + ");" + createUpdatedAtTrigger(BudgetAmountEntry.TABLE_NAME);
+
+
+    private static final String RECURRENCE_TABLE_CREATE = "CREATE TABLE " + RecurrenceEntry.TABLE_NAME + " ("
+            + RecurrenceEntry._ID                   + " integer primary key autoincrement, "
+            + RecurrenceEntry.COLUMN_UID            + " varchar(255) not null UNIQUE, "
+            + RecurrenceEntry.COLUMN_MULTIPLIER     + " integer not null default 1, "
+            + RecurrenceEntry.COLUMN_PERIOD_TYPE    + " varchar(255) not null, "
+            + RecurrenceEntry.COLUMN_BYDAY          + " varchar(255), "
+            + RecurrenceEntry.COLUMN_PERIOD_START   + " timestamp not null, "
+            + RecurrenceEntry.COLUMN_PERIOD_END   + " timestamp, "
+            + RecurrenceEntry.COLUMN_CREATED_AT     + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
+            + RecurrenceEntry.COLUMN_MODIFIED_AT    + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP); "
+            + createUpdatedAtTrigger(RecurrenceEntry.TABLE_NAME);
+
 
     /**
 	 * Constructor
@@ -212,8 +270,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         /*
         * NOTE: In order to modify the database, create a new static method in the MigrationHelper class
         * called upgradeDbToVersion<#>, e.g. int upgradeDbToVersion10(SQLiteDatabase) in order to upgrade to version 10.
-        * The upgrade method should return the current database version as the return value.
-        * Then all you need to do is incremend the DatabaseSchema.DATABASE_VERSION to the appropriate number.
+        * The upgrade method should return the new (upgraded) database version as the return value.
+        * Then all you need to do is increment the DatabaseSchema.DATABASE_VERSION to the appropriate number to trigger an upgrade.
         */
 		if (oldVersion > newVersion) {
             throw new IllegalArgumentException("Database downgrades are not supported at the moment");
@@ -246,7 +304,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 
     /**
-     * Creates the tables in the database
+     * Creates the tables in the database and import default commodities into the database
      * @param db Database instance
      */
     private void createDatabaseTables(SQLiteDatabase db) {
@@ -257,6 +315,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(SCHEDULED_ACTIONS_TABLE_CREATE);
         db.execSQL(COMMODITIES_TABLE_CREATE);
         db.execSQL(PRICES_TABLE_CREATE);
+        db.execSQL(RECURRENCE_TABLE_CREATE);
+        db.execSQL(BUDGETS_TABLE_CREATE);
+        db.execSQL(BUDGET_AMOUNTS_TABLE_CREATE);
+
 
         String createAccountUidIndex = "CREATE UNIQUE INDEX '" + AccountEntry.INDEX_UID + "' ON "
                 + AccountEntry.TABLE_NAME + "(" + AccountEntry.COLUMN_UID + ")";
@@ -276,12 +338,24 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         String createPriceUidIndex = "CREATE UNIQUE INDEX '" + PriceEntry.INDEX_UID
                 + "' ON " + PriceEntry.TABLE_NAME + "(" + PriceEntry.COLUMN_UID + ")";
 
+        String createBudgetUidIndex = "CREATE UNIQUE INDEX '" + BudgetEntry.INDEX_UID
+                + "' ON " + BudgetEntry.TABLE_NAME + "(" + BudgetEntry.COLUMN_UID + ")";
+
+        String createBudgetAmountUidIndex = "CREATE UNIQUE INDEX '" + BudgetAmountEntry.INDEX_UID
+                + "' ON " + BudgetAmountEntry.TABLE_NAME + "(" + BudgetAmountEntry.COLUMN_UID + ")";
+
+        String createRecurrenceUidIndex = "CREATE UNIQUE INDEX '" + RecurrenceEntry.INDEX_UID
+                + "' ON " + RecurrenceEntry.TABLE_NAME + "(" + RecurrenceEntry.COLUMN_UID + ")";
+
         db.execSQL(createAccountUidIndex);
         db.execSQL(createTransactionUidIndex);
         db.execSQL(createSplitUidIndex);
         db.execSQL(createScheduledEventUidIndex);
         db.execSQL(createCommodityUidIndex);
         db.execSQL(createPriceUidIndex);
+        db.execSQL(createBudgetUidIndex);
+        db.execSQL(createRecurrenceUidIndex);
+        db.execSQL(createBudgetAmountUidIndex);
 
         try {
             MigrationHelper.importCommodities(db);

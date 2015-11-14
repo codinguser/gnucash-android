@@ -4,15 +4,20 @@ import org.assertj.core.data.Index;
 import org.gnucash.android.BuildConfig;
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
-import org.gnucash.android.db.AccountsDbAdapter;
-import org.gnucash.android.db.ScheduledActionDbAdapter;
-import org.gnucash.android.db.SplitsDbAdapter;
-import org.gnucash.android.db.TransactionsDbAdapter;
+import org.gnucash.android.db.adapter.AccountsDbAdapter;
+import org.gnucash.android.db.adapter.BudgetsDbAdapter;
+import org.gnucash.android.db.adapter.CommoditiesDbAdapter;
+import org.gnucash.android.db.adapter.PricesDbAdapter;
+import org.gnucash.android.db.adapter.ScheduledActionDbAdapter;
+import org.gnucash.android.db.adapter.SplitsDbAdapter;
+import org.gnucash.android.db.adapter.TransactionsDbAdapter;
 import org.gnucash.android.importer.GncXmlImporter;
 import org.gnucash.android.model.Account;
 import org.gnucash.android.model.AccountType;
 import org.gnucash.android.model.Commodity;
 import org.gnucash.android.model.Money;
+import org.gnucash.android.model.PeriodType;
+import org.gnucash.android.model.Recurrence;
 import org.gnucash.android.model.ScheduledAction;
 import org.gnucash.android.model.Split;
 import org.gnucash.android.model.Transaction;
@@ -221,6 +226,7 @@ public class AccountsDbAdapterTest{
 
         ScheduledAction scheduledAction = new ScheduledAction(ScheduledAction.ActionType.BACKUP);
         scheduledAction.setActionUID("Test-uid");
+        scheduledAction.setRecurrence(new Recurrence(PeriodType.WEEK));
         ScheduledActionDbAdapter scheduledActionDbAdapter = ScheduledActionDbAdapter.getInstance();
 
         scheduledActionDbAdapter.addRecord(scheduledAction);
@@ -231,6 +237,9 @@ public class AccountsDbAdapterTest{
         assertThat(mTransactionsDbAdapter.getRecordsCount()).isZero();
         assertThat(mSplitsDbAdapter.getRecordsCount()).isZero();
         assertThat(scheduledActionDbAdapter.getRecordsCount()).isZero();
+        assertThat(PricesDbAdapter.getInstance().getRecordsCount()).isZero();
+        assertThat(BudgetsDbAdapter.getInstance().getRecordsCount()).isZero();
+        assertThat(CommoditiesDbAdapter.getInstance().getRecordsCount()).isGreaterThan(50); //commodities should remain
     }
 
     @Test
@@ -375,10 +384,82 @@ public class AccountsDbAdapterTest{
         assertThat(mAccountsDbAdapter.getRecordsCount()).isEqualTo(2);
     }
 
+    @Test
+    public void editingAccountShouldNotDeleteTemplateSplits(){
+        Account account = new Account("First", Commodity.EUR);
+        Account transferAccount = new Account("Transfer", Commodity.EUR);
+
+        mAccountsDbAdapter.addRecord(account);
+        mAccountsDbAdapter.addRecord(transferAccount);
+
+        assertThat(mAccountsDbAdapter.getRecordsCount()).isEqualTo(3); //plus root account
+
+        Money money = new Money(BigDecimal.TEN, Commodity.EUR);
+        Transaction transaction = new Transaction("Template");
+        transaction.setTemplate(true);
+        transaction.setCommodity(Commodity.EUR);
+        Split split = new Split(money, account.getUID());
+        transaction.addSplit(split);
+        transaction.addSplit(split.createPair(transferAccount.getUID()));
+
+        mTransactionsDbAdapter.addRecord(transaction);
+        List<Transaction> transactions = mTransactionsDbAdapter.getAllRecords();
+
+        assertThat(mTransactionsDbAdapter.getScheduledTransactionsForAccount(account.getUID())).hasSize(1);
+
+        //edit the account
+        account.setName("Edited account");
+        mAccountsDbAdapter.addRecord(account);
+
+        assertThat(mTransactionsDbAdapter.getScheduledTransactionsForAccount(account.getUID())).hasSize(1);
+        assertThat(mSplitsDbAdapter.getSplitsForTransaction(transaction.getUID())).hasSize(2);
+    }
+
+    @Test
+    public void testGetCurrenciesInUse(){
+        int expectedSize = 0;
+        List<Currency> currencies = mAccountsDbAdapter.getCurrenciesInUse();
+        assertThat(currencies).hasSize(expectedSize);
+
+        Account account = new Account("Dummy", Commodity.USD);
+        mAccountsDbAdapter.addRecord(account);
+        assertThat(mAccountsDbAdapter.getCurrenciesInUse()).hasSize(++expectedSize);
+
+        account = new Account("Dummy", Commodity.EUR);
+        mAccountsDbAdapter.addRecord(account);
+        assertThat(mAccountsDbAdapter.getCurrenciesInUse()).hasSize(++expectedSize);
+
+    }
+
+    /**
+     * Opening an XML file should set the default currency to that used by the most accounts in the file
+     */
+    @Test
+    public void importingXml_shouldSetDefaultCurrency(){
+        GnuCashApplication.setDefaultCurrencyCode("JPY");
+
+        assertThat(GnuCashApplication.getDefaultCurrencyCode()).isEqualTo("JPY");
+        assertThat(Commodity.DEFAULT_COMMODITY).isEqualTo(Commodity.JPY);
+
+        mAccountsDbAdapter.deleteAllRecords();
+        loadDefaultAccounts();
+
+        assertThat(GnuCashApplication.getDefaultCurrencyCode()).isNotEqualTo("JPY");
+
+        Currency currency = Currency.getInstance(GnuCashApplication.getDefaultLocale());
+        String expectedCode = currency.getCurrencyCode();
+        Commodity expectedDefaultCommodity = CommoditiesDbAdapter.getInstance().getCommodity(expectedCode);
+
+        assertThat(GnuCashApplication.getDefaultCurrencyCode()).isEqualTo(expectedCode);
+        assertThat(Commodity.DEFAULT_COMMODITY).isEqualTo(expectedDefaultCommodity);
+
+        System.out.println("Default currency is now: " + expectedCode);
+    }
+
     /**
      * Loads the default accounts from file resource
      */
-    private void loadDefaultAccounts(){
+    public static void loadDefaultAccounts(){
         try {
             GncXmlImporter.parse(GnuCashApplication.getAppContext().getResources().openRawResource(R.raw.default_accounts));
         } catch (ParserConfigurationException | SAXException | IOException e) {

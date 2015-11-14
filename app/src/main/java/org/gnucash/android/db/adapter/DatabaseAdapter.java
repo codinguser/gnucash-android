@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.gnucash.android.db;
+package org.gnucash.android.db.adapter;
 
 import android.content.ContentValues;
 import android.database.Cursor;
@@ -23,6 +23,7 @@ import android.database.sqlite.SQLiteStatement;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
+import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.db.DatabaseSchema.AccountEntry;
 import org.gnucash.android.db.DatabaseSchema.CommonColumns;
 import org.gnucash.android.db.DatabaseSchema.SplitEntry;
@@ -69,6 +70,7 @@ public abstract class DatabaseAdapter<Model extends BaseModel> {
         if (mDb.getVersion() >= 9) {
             createTempView();
         }
+        LOG_TAG = getClass().getSimpleName();
     }
 
     private void createTempView() {
@@ -81,6 +83,8 @@ public abstract class DatabaseAdapter<Model extends BaseModel> {
         //
         // create a temporary view, combining accounts, transactions and splits, as this is often used
         // in the queries
+
+        //todo: would it be useful to add the split reconciled_state and reconciled_date to this view?
         mDb.execSQL("CREATE TEMP VIEW IF NOT EXISTS trans_split_acct AS SELECT "
                         + TransactionEntry.TABLE_NAME + "." + CommonColumns.COLUMN_MODIFIED_AT + " AS "
                         + TransactionEntry.TABLE_NAME + "_" + CommonColumns.COLUMN_MODIFIED_AT + " , "
@@ -227,11 +231,11 @@ public abstract class DatabaseAdapter<Model extends BaseModel> {
 
     /**
      * Builds an instance of the model from the database record entry
-     * <p>This method should not modify the cursor in any way</p>
+     * <p>When implementing this method, remember to call {@link #populateBaseModelAttributes(Cursor, BaseModel)}</p>
      * @param cursor Cursor pointing to the record
-     * @return
+     * @return New instance of the model from database record
      */
-    protected abstract Model buildModelInstance(@NonNull final Cursor cursor);
+    public abstract Model buildModelInstance(@NonNull final Cursor cursor);
 
     /**
      * Generates an {@link SQLiteStatement} with values from the {@code model}.
@@ -259,7 +263,7 @@ public abstract class DatabaseAdapter<Model extends BaseModel> {
                 return buildModelInstance(cursor);
             }
             else {
-                throw new IllegalArgumentException("Record with " + uid + " does not exist");
+                throw new IllegalArgumentException(LOG_TAG + ": Record with " + uid + " does not exist");
             }
         } finally {
             cursor.close();
@@ -294,12 +298,12 @@ public abstract class DatabaseAdapter<Model extends BaseModel> {
     }
 
     /**
-     * Adds the attributes of the base model to the ContentValues object provided
+     * Extracts the attributes of the base model and adds them to the ContentValues object provided
      * @param contentValues Content values to which to add attributes
      * @param model {@link org.gnucash.android.model.BaseModel} from which to extract values
      * @return {@link android.content.ContentValues} with the data to be inserted into the db
      */
-    protected ContentValues populateBaseModelAttributes(@NonNull ContentValues contentValues, @NonNull Model model){
+    protected ContentValues extractBaseModelAttributes(@NonNull ContentValues contentValues, @NonNull Model model){
         contentValues.put(CommonColumns.COLUMN_UID, model.getUID());
         contentValues.put(CommonColumns.COLUMN_CREATED_AT, model.getCreatedTimestamp().toString());
         //there is a trigger in the database for updated the modified_at column
@@ -350,17 +354,18 @@ public abstract class DatabaseAdapter<Model extends BaseModel> {
 	 * @return {@link Cursor} to all records in table <code>tableName</code>
 	 */
 	public Cursor fetchAllRecords(){
-		return fetchAllRecords(null, null);
+		return fetchAllRecords(null, null, null);
 	}
 
     /**
      * Fetch all records from database matching conditions
      * @param where SQL where clause
      * @param whereArgs String arguments for where clause
+     * @param orderBy SQL orderby clause
      * @return Cursor to records matching conditions
      */
-    public Cursor fetchAllRecords(String where, String[] whereArgs){
-        return mDb.query(mTableName, null, where, whereArgs, null, null, null);
+    public Cursor fetchAllRecords(String where, String[] whereArgs, String orderBy){
+        return mDb.query(mTableName, null, where, whereArgs, null, null, orderBy);
     }
 
 	/**
@@ -423,7 +428,7 @@ public abstract class DatabaseAdapter<Model extends BaseModel> {
             if (cursor.moveToFirst()) {
                 uid = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.CommonColumns.COLUMN_UID));
             } else {
-                throw new IllegalArgumentException("Account record ID " + id + " does not exist in the db");
+                throw new IllegalArgumentException("Record with ID " + id + " does not exist in the db");
             }
         } finally {
             cursor.close();

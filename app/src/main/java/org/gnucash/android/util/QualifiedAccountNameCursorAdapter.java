@@ -18,12 +18,14 @@ package org.gnucash.android.util;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.support.annotation.NonNull;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.TextView;
 
 import org.gnucash.android.db.DatabaseSchema;
+import org.gnucash.android.db.adapter.AccountsDbAdapter;
 
 /**
  * Cursor adapter which looks up the fully qualified account name and returns that instead of just the simple name.
@@ -45,5 +47,20 @@ public class QualifiedAccountNameCursorAdapter extends SimpleCursorAdapter {
         super.bindView(view, context, cursor);
         TextView textView = (TextView) view.findViewById(android.R.id.text1);
         textView.setEllipsize(TextUtils.TruncateAt.MIDDLE);
+    }
+
+    /**
+     * Returns the position of a given account in the adapter
+     * @param accountUID GUID of the account
+     * @return Position of the account or -1 if the account is not found
+     */
+    public int getPosition(@NonNull String accountUID){
+        long accountId = AccountsDbAdapter.getInstance().getID(accountUID);
+        for (int pos = 0; pos < getCount(); pos++) {
+            if (getItemId(pos) == accountId){
+                return pos;
+            }
+        }
+        return -1;
     }
 }

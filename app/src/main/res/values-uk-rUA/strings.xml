@@ -563,6 +563,7 @@
   <string name="toast_no_compatible_apps_to_receive_export">No compatible apps to receive the exported transactions!</string>
   <string name="menu_move_transaction">Move...</string>
   <string name="menu_duplicate_transaction">Duplicate</string>
+  <string name="nav_menu_budgets">Budgets</string>
   <string-array name="report_time_range">
     <item>Поточний місяць</item>
     <item>Останній квартал</item>

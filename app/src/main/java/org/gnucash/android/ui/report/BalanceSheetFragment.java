@@ -30,7 +30,7 @@ import android.widget.TableLayout;
 import android.widget.TextView;
 
 import org.gnucash.android.R;
-import org.gnucash.android.db.AccountsDbAdapter;
+import org.gnucash.android.db.adapter.AccountsDbAdapter;
 import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.model.AccountType;
 import org.gnucash.android.model.Money;

@@ -46,20 +46,28 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import org.gnucash.android.R;
-import org.gnucash.android.db.AccountsDbAdapter;
+import org.gnucash.android.app.GnuCashApplication;
+
 import org.gnucash.android.db.DatabaseCursorLoader;
 import org.gnucash.android.db.DatabaseSchema;
+import org.gnucash.android.db.adapter.AccountsDbAdapter;
+import org.gnucash.android.db.adapter.BudgetsDbAdapter;
 import org.gnucash.android.model.Account;
+import org.gnucash.android.model.Budget;
+import org.gnucash.android.model.Money;
 import org.gnucash.android.ui.common.FormActivity;
 import org.gnucash.android.ui.common.UxArgument;
 import org.gnucash.android.ui.util.AccountBalanceTask;
 import org.gnucash.android.ui.util.CursorRecyclerAdapter;
-import org.gnucash.android.ui.util.widget.EmptyRecyclerView;
 import org.gnucash.android.ui.util.OnAccountClickedListener;
 import org.gnucash.android.ui.util.Refreshable;
+import org.gnucash.android.ui.util.widget.EmptyRecyclerView;
+
+import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -256,8 +264,9 @@ public class AccountsListFragment extends Fragment implements
         else {
             inflater.inflate(R.menu.account_actions, menu);
             // Associate searchable configuration with the SearchView
+
             SearchManager searchManager =
-                    (SearchManager) getActivity().getSystemService(Context.SEARCH_SERVICE);
+                    (SearchManager) GnuCashApplication.getAppContext().getSystemService(Context.SEARCH_SERVICE);
             mSearchView = (android.support.v7.widget.SearchView)
                 MenuItemCompat.getActionView(menu.findItem(R.id.menu_search));
             if (mSearchView == null)
@@ -466,7 +475,7 @@ public class AccountsListFragment extends Fragment implements
 
             // add a summary of transactions to the account view
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                // Make sure the balance task is truely multithread
+                // Make sure the balance task is truly multithread
                 new AccountBalanceTask(holder.accountBalance).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, accountUID);
             } else {
                 new AccountBalanceTask(holder.accountBalance).execute(accountUID);
@@ -491,6 +500,20 @@ public class AccountsListFragment extends Fragment implements
                     }
                 });
             }
+
+            List<Budget> budgets = BudgetsDbAdapter.getInstance().getAccountBudgets(accountUID);
+            //TODO: include fetch only active budgets
+            if (budgets.size() == 1){
+                Budget budget = budgets.get(0);
+                Money balance = mAccountsDbAdapter.getAccountBalance(accountUID, budget.getStartofCurrentPeriod(), budget.getEndOfCurrentPeriod());
+                double budgetProgress = balance.divide(budget.getAmount(accountUID)).asBigDecimal().doubleValue() * 100;
+
+                holder.budgetIndicator.setVisibility(View.VISIBLE);
+                holder.budgetIndicator.setProgress((int) budgetProgress);
+            } else {
+                holder.budgetIndicator.setVisibility(View.GONE);
+            }
+
 
             if (mAccountsDbAdapter.isFavoriteAccount(accountUID)){
                 holder.favoriteStatus.setImageResource(R.drawable.ic_star_black_24dp);
@@ -532,6 +555,7 @@ public class AccountsListFragment extends Fragment implements
             @Bind(R.id.favorite_status) ImageView favoriteStatus;
             @Bind(R.id.options_menu) ImageView optionsMenu;
             @Bind(R.id.account_color_strip) View colorStripView;
+            @Bind(R.id.budget_indicator) ProgressBar budgetIndicator;
             long accoundId;
 
             public AccountViewHolder(View itemView) {

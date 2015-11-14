@@ -51,8 +51,8 @@ import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.DatabaseCursorLoader;
 import org.gnucash.android.db.DatabaseSchema;
-import org.gnucash.android.db.ScheduledActionDbAdapter;
-import org.gnucash.android.db.TransactionsDbAdapter;
+import org.gnucash.android.db.adapter.ScheduledActionDbAdapter;
+import org.gnucash.android.db.adapter.TransactionsDbAdapter;
 import org.gnucash.android.export.ExportParams;
 import org.gnucash.android.model.ScheduledAction;
 import org.gnucash.android.model.Transaction;
@@ -470,7 +470,7 @@ public class ScheduledActionsListFragment extends ListFragment implements
             if (endTime > 0 && endTime < System.currentTimeMillis()){
                 ((TextView)view.findViewById(R.id.primary_text)).setTextColor(getResources().getColor(android.R.color.darker_gray));
                 descriptionTextView.setText(getString(R.string.label_scheduled_action_ended,
-                        DateFormat.getInstance().format(new Date(scheduledAction.getLastRun()))));
+                        DateFormat.getInstance().format(new Date(scheduledAction.getLastRunTime()))));
             } else {
                 descriptionTextView.setText(scheduledAction.getRepeatString());
             }
@@ -565,7 +565,7 @@ public class ScheduledActionsListFragment extends ListFragment implements
             if (endTime > 0 && endTime < System.currentTimeMillis()){
                 ((TextView)view.findViewById(R.id.primary_text)).setTextColor(getResources().getColor(android.R.color.darker_gray));
                 descriptionTextView.setText(getString(R.string.label_scheduled_action_ended,
-                        DateFormat.getInstance().format(new Date(scheduledAction.getLastRun()))));
+                        DateFormat.getInstance().format(new Date(scheduledAction.getLastRunTime()))));
             } else {
                 descriptionTextView.setText(scheduledAction.getRepeatString());
             }
@@ -610,7 +610,7 @@ public class ScheduledActionsListFragment extends ListFragment implements
 
             Cursor c = mDatabaseAdapter.fetchAllRecords(
                     DatabaseSchema.ScheduledActionEntry.COLUMN_TYPE + "=?",
-                    new String[]{ScheduledAction.ActionType.BACKUP.name()});
+                    new String[]{ScheduledAction.ActionType.BACKUP.name()}, null);
 
             registerContentObserver(c);
             return c;

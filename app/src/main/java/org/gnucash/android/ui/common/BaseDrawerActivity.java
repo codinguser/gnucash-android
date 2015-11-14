@@ -32,6 +32,7 @@ import com.uservoice.uservoicesdk.UserVoice;
 
 import org.gnucash.android.R;
 import org.gnucash.android.ui.account.AccountsActivity;
+import org.gnucash.android.ui.budget.BudgetsActivity;
 import org.gnucash.android.ui.passcode.PasscodeLockActivity;
 import org.gnucash.android.ui.report.ReportsActivity;
 import org.gnucash.android.ui.settings.SettingsActivity;
@@ -133,6 +134,7 @@ public class BaseDrawerActivity extends PasscodeLockActivity {
      * Handler for the navigation drawer items
      * */
     protected void onDrawerMenuItemClicked(int itemId) {
+        mNavigationView.getMenu().findItem(itemId).setChecked(true);
         switch (itemId){
             case R.id.nav_item_open: { //Open... files
                 AccountsActivity.startXmlFileChooser(this);
@@ -150,6 +152,10 @@ public class BaseDrawerActivity extends PasscodeLockActivity {
 
             case R.id.nav_item_reports:
                 startActivity(new Intent(this, ReportsActivity.class));
+                break;
+
+            case R.id.nav_item_budgets:
+                startActivity(new Intent(this, BudgetsActivity.class));
                 break;
 
             case R.id.nav_item_scheduled_actions: { //show scheduled transactions
@@ -180,12 +186,15 @@ public class BaseDrawerActivity extends PasscodeLockActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == Activity.RESULT_CANCELED){
-            return;
+            super.onActivityResult(requestCode, resultCode, data);
         }
 
         switch (requestCode) {
             case AccountsActivity.REQUEST_PICK_ACCOUNTS_FILE:
                 AccountsActivity.importXmlFileFromIntent(this, data);
+                break;
+            default:
+                super.onActivityResult(requestCode, resultCode, data);
                 break;
         }
     }
