@@ -439,7 +439,9 @@ public class BarChartFragment extends Fragment implements OnChartValueSelectedLi
                 Legend legend = mChart.getLegend();
                 if (!legend.isLegendCustom()) {
                     Toast.makeText(getActivity(), R.string.toast_legend_too_long, Toast.LENGTH_LONG).show();
+                    item.setChecked(false);
                 } else {
+                    item.setChecked(!mChart.getLegend().isEnabled());
                     legend.setEnabled(!mChart.getLegend().isEnabled());
                     mChart.invalidate();
                 }
