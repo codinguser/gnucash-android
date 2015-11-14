@@ -176,7 +176,7 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
                 return true;
 
             case GOOGLE_DRIVE:
-                copyExportToGoogleDrive();
+                moveExportToGoogleDrive();
                 return true;
 
             case SD_CARD:
@@ -243,7 +243,7 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
         }
     }
 
-    private void copyExportToGoogleDrive(){
+    private void moveExportToGoogleDrive(){
         Log.i(TAG, "Moving exported file to Google Drive");
         final GoogleApiClient googleApiClient = SettingsActivity.getGoogleApiClient(GnuCashApplication.getAppContext());
         googleApiClient.blockingConnect();
@@ -251,11 +251,10 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
                 ResultCallback<DriveFolder.DriveFileResult>() {
                     @Override
                     public void onResult(DriveFolder.DriveFileResult result) {
-                        if (!result.getStatus().isSuccess()) {
+                        if (!result.getStatus().isSuccess())
                             Log.e(TAG, "Error while trying to sync to Google Drive");
-                            return;
-                        }
-                        Log.i(TAG, "Created a file with content: " + result.getDriveFile().getDriveId());
+                        else
+                            Log.i(TAG, "Created a file with content: " + result.getDriveFile().getDriveId());
                     }
                 };
 
@@ -270,12 +269,11 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
                 try {
                     // write content to DriveContents
                     OutputStream outputStream = driveContents.getOutputStream();
-                    List<String> exportedFilePaths = getExportedFiles();
-                    for (String exportedFilePath : exportedFilePaths) {
+                    for (String exportedFilePath : mExportedFiles) {
                         File exportedFile = new File(exportedFilePath);
                         FileInputStream fileInputStream = new FileInputStream(exportedFile);
                         byte[] buffer = new byte[1024];
-                        int count = 0;
+                        int count;
 
                         while ((count = fileInputStream.read(buffer)) >= 0) {
                             outputStream.write(buffer, 0, count);
