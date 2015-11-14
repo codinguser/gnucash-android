@@ -172,7 +172,7 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
                 return true;
 
             case DROPBOX:
-                copyExportToDropbox();
+                moveExportToDropbox();
                 return true;
 
             case GOOGLE_DRIVE:
@@ -320,7 +320,7 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
         }
     }
 
-    private void copyExportToDropbox() {
+    private void moveExportToDropbox() {
         Log.i(TAG, "Copying exported file to DropBox");
         String dropboxAppKey = mContext.getString(R.string.dropbox_app_key, SettingsActivity.DROPBOX_APP_KEY);
         String dropboxAppSecret = mContext.getString(R.string.dropbox_app_secret, SettingsActivity.DROPBOX_APP_SECRET);
@@ -329,8 +329,7 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
         DbxFile dbExportFile = null;
         try {
             DbxFileSystem dbxFileSystem = DbxFileSystem.forAccount(mDbxAcctMgr.getLinkedAccount());
-            List<String> exportedFilePaths = getExportedFiles();
-            for (String exportedFilePath : exportedFilePaths) {
+            for (String exportedFilePath : mExportedFiles) {
                 File exportedFile = new File(exportedFilePath);
                 dbExportFile = dbxFileSystem.create(new DbxPath(exportedFile.getName()));
                 dbExportFile.writeFromExistingFile(exportedFile, false);
