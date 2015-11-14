@@ -28,6 +28,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -167,7 +168,7 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
         switch (mExportParams.getExportTarget()) {
             case SHARING:
                 List<String> sdCardExportedFiles = moveExportToSDCard();
-                shareFile(sdCardExportedFiles);
+                shareFiles(sdCardExportedFiles);
                 return true;
 
             case DROPBOX:
@@ -402,37 +403,25 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
 
     /**
      * Starts an intent chooser to allow the user to select an activity to receive
-     * the exported OFX file
-     * @param path String path to the file on disk
+     * the exported files.
+     * @param paths list of full paths of the files to send to the activity.
      */
-    private void shareFile(String path) {
-        String defaultEmail = PreferenceManager.getDefaultSharedPreferences(mContext)
-                .getString(mContext.getString(R.string.key_default_export_email), null);
+    private void shareFiles(List<String> paths) {
         Intent shareIntent = new Intent(Intent.ACTION_SEND_MULTIPLE);
         shareIntent.setType("text/xml");
-        ArrayList<Uri> exportFiles = new ArrayList<>();
-        if (mExportParams.getExportFormat() == ExportFormat.QIF) {
-            try {
-                List<String> splitFiles = QifExporter.splitQIF(new File(path));
-                for (String file : splitFiles) {
-                    exportFiles.add(Uri.parse("file://" + file));
-                }
-            } catch (IOException e) {
-                Log.e(TAG, "Error split up files in shareFile. " + e.getMessage());
-                Crashlytics.logException(e);
-                return;
-            }
-        } else {
-            exportFiles.add(Uri.parse("file://" + path));
-        }
+
+        ArrayList<Uri> exportFiles = convertPathsToUris(paths);
         shareIntent.putExtra(Intent.EXTRA_STREAM, exportFiles);
+
         shareIntent.putExtra(Intent.EXTRA_SUBJECT, mContext.getString(R.string.title_export_email,
                 mExportParams.getExportFormat().name()));
-        if (defaultEmail != null && defaultEmail.trim().length() > 0) {
-            shareIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{defaultEmail});
-        }
-        SimpleDateFormat formatter = (SimpleDateFormat) SimpleDateFormat.getDateTimeInstance();
 
+        String defaultEmail = PreferenceManager.getDefaultSharedPreferences(mContext)
+                .getString(mContext.getString(R.string.key_default_export_email), null);
+        if (defaultEmail != null && defaultEmail.trim().length() > 0)
+            shareIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{defaultEmail});
+
+        SimpleDateFormat formatter = (SimpleDateFormat) SimpleDateFormat.getDateTimeInstance();
         ArrayList<CharSequence> extraText = new ArrayList<>();
         extraText.add(mContext.getString(R.string.description_export_email)
                 + " " + formatter.format(new Date(System.currentTimeMillis())));
@@ -441,12 +430,24 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
         if (mContext instanceof Activity) {
             List<ResolveInfo> activities = mContext.getPackageManager().queryIntentActivities(shareIntent, 0);
             if (activities != null && !activities.isEmpty()) {
-                mContext.startActivity(Intent.createChooser(shareIntent, mContext.getString(R.string.title_select_export_destination)));
+                mContext.startActivity(Intent.createChooser(shareIntent,
+                        mContext.getString(R.string.title_select_export_destination)));
             } else {
                 Toast.makeText(mContext, R.string.toast_no_compatible_apps_to_receive_export,
                         Toast.LENGTH_LONG).show();
             }
         }
+    }
+
+    // /some/path/file.ext -> file:///some/path/file.ext
+    @NonNull
+    private ArrayList<Uri> convertPathsToUris(List<String> paths) {
+        ArrayList<Uri> exportFiles = new ArrayList<>();
+
+        for (String file : paths)
+            exportFiles.add(Uri.parse("file://" + file));
+
+        return exportFiles;
     }
 
     /**
