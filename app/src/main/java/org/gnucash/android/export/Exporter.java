@@ -34,9 +34,6 @@ import org.gnucash.android.db.ScheduledActionDbAdapter;
 import org.gnucash.android.db.SplitsDbAdapter;
 import org.gnucash.android.db.TransactionsDbAdapter;
 
-import java.io.File;
-import java.io.FileFilter;
-import java.io.Writer;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -93,7 +90,7 @@ public abstract class Exporter {
     protected TransactionsDbAdapter mTransactionsDbAdapter;
     protected SplitsDbAdapter mSplitsDbAdapter;
     protected ScheduledActionDbAdapter mScheduledActionDbAdapter;
-    protected PricesDbAdapter mPricesDbAdpater;
+    protected PricesDbAdapter mPricesDbAdapter;
     protected CommoditiesDbAdapter mCommoditiesDbAdapter;
     protected Context mContext;
 
@@ -105,14 +102,14 @@ public abstract class Exporter {
             mTransactionsDbAdapter = TransactionsDbAdapter.getInstance();
             mSplitsDbAdapter = SplitsDbAdapter.getInstance();
             mScheduledActionDbAdapter = ScheduledActionDbAdapter.getInstance();
-            mPricesDbAdpater = PricesDbAdapter.getInstance();
+            mPricesDbAdapter = PricesDbAdapter.getInstance();
             mCommoditiesDbAdapter = CommoditiesDbAdapter.getInstance();
         } else {
             mSplitsDbAdapter = new SplitsDbAdapter(db);
             mTransactionsDbAdapter = new TransactionsDbAdapter(db, mSplitsDbAdapter);
             mAccountsDbAdapter = new AccountsDbAdapter(db, mTransactionsDbAdapter);
             mScheduledActionDbAdapter = new ScheduledActionDbAdapter(db);
-            mPricesDbAdpater = new PricesDbAdapter(db);
+            mPricesDbAdapter = new PricesDbAdapter(db);
             mCommoditiesDbAdapter = new CommoditiesDbAdapter(db);
         }
     }
@@ -122,10 +119,8 @@ public abstract class Exporter {
      * @return String containing the file name
      */
     public static String buildExportFilename(ExportFormat format) {
-        String filename = EXPORT_FILENAME_DATE_FORMAT.format(
-                new Date(System.currentTimeMillis()))
+        return EXPORT_FILENAME_DATE_FORMAT.format(new Date(System.currentTimeMillis()))
                 + "_gnucash_export" + format.getExtension();
-        return filename;
     }
 
     /**
@@ -147,43 +142,6 @@ public abstract class Exporter {
             Crashlytics.logException(e);
         }
         return timeMillis;
-    }
-
-    /**
-     * Builds a file (creating folders where necessary) for saving the exported data
-     * @param format Export format which determines the file extension
-     * @return File for export
-     * @see #EXPORT_FOLDER_PATH
-     */
-    public static File createExportFile(ExportFormat format){
-        new File(EXPORT_FOLDER_PATH).mkdirs();
-        return new File(EXPORT_FOLDER_PATH + buildExportFilename(format));
-    }
-
-    /**
-     * Returns the most recent backup file from the backup folder
-     * @return Last modified file from backup folder
-     * @see #BACKUP_FOLDER_PATH
-     */
-    public static File getMostRecentBackupFile(){
-        File backupFolder = new File(BACKUP_FOLDER_PATH);
-        if (!backupFolder.exists())
-            return null;
-
-        File[] files = backupFolder.listFiles(new FileFilter() {
-            public boolean accept(File file) {
-                return file.isFile();
-            }
-        });
-        long lastMod = Long.MIN_VALUE;
-        File backupFile = null;
-        for (File file : files) {
-            if (file.lastModified() > lastMod) {
-                backupFile = file;
-                lastMod = file.lastModified();
-            }
-        }
-        return backupFile;
     }
 
     /**

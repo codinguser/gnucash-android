@@ -147,14 +147,9 @@ public class OfxExporter extends Exporter{
             return stringWriter.toString();
         } else {
             Node ofxNode = document.getElementsByTagName("OFX").item(0);
-
             write(ofxNode, stringWriter, true);
-
-            StringBuffer stringBuffer = new StringBuffer(OfxHelper.OFX_SGML_HEADER);
-            stringBuffer.append('\n');
-            stringBuffer.append(stringWriter.toString());
             PreferenceManager.getDefaultSharedPreferences(mContext).edit().putString(Exporter.PREF_LAST_EXPORT_TIME, timeStamp).apply();
-            return stringBuffer.toString();
+            return OfxHelper.OFX_SGML_HEADER + '\n' + stringWriter.toString();
         }
     }
 
