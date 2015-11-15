@@ -700,7 +700,8 @@ public class GncXmlExporter extends Exporter{
         try {
             String[] namespaces = new String[]{"gnc", "act", "book", "cd", "cmdty", "price", "slot",
                     "split", "trn", "ts", "sx", "recurrence"};
-            FileOutputStream fileOutputStream = new FileOutputStream(buildBackupFile());
+            new File(BACKUP_FOLDER_PATH).mkdirs();
+            FileOutputStream fileOutputStream = new FileOutputStream(getBackupFilePath());
             BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(fileOutputStream);
             GZIPOutputStream gzipOutputStream = new GZIPOutputStream(bufferedOutputStream);
             writer = new OutputStreamWriter(gzipOutputStream);
@@ -793,7 +794,7 @@ public class GncXmlExporter extends Exporter{
 
         List<String> exportedFiles = new ArrayList<>();
         // FIXME: this looks weird
-        exportedFiles.add(buildBackupFile().getAbsolutePath());
+        exportedFiles.add(getBackupFilePath());
 
         return exportedFiles;
     }
@@ -815,13 +816,12 @@ public class GncXmlExporter extends Exporter{
     }
 
     /**
-     * Builds a file for backups of the database (in XML) format.
-     * Backups are usually zipped and have extension ".zip"
-     * @return File for saving backups
+     * Returns the full path of a file to make database backup.
+     * Backups are done in XML format and are zipped (with ".zip" extension).
+     * @return the file path for backups of the database.
      * @see #BACKUP_FOLDER_PATH
      */
-    private static File buildBackupFile(){
-        new File(BACKUP_FOLDER_PATH).mkdirs();
-        return new File(BACKUP_FOLDER_PATH + buildExportFilename(ExportFormat.XML) + ".zip");
+    private static String getBackupFilePath(){
+        return BACKUP_FOLDER_PATH + buildExportFilename(ExportFormat.XML) + ".zip";
     }
 }
