@@ -161,17 +161,6 @@ public abstract class Exporter {
     }
 
     /**
-     * Builds a file for backups of the database (in XML) format.
-     * Backups are usually zipped and have extension ".zip"
-     * @return File for saving backups
-     * @see #BACKUP_FOLDER_PATH
-     */
-    public static File buildBackupFile(){
-        new File(BACKUP_FOLDER_PATH).mkdirs();
-        return new File(BACKUP_FOLDER_PATH + buildExportFilename(ExportFormat.XML) + ".zip");
-    }
-
-    /**
      * Returns the most recent backup file from the backup folder
      * @return Last modified file from backup folder
      * @see #BACKUP_FOLDER_PATH
