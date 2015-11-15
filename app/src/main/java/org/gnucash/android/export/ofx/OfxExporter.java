@@ -210,4 +210,12 @@ public class OfxExporter extends Exporter{
             Crashlytics.logException(tfException);
         }
     }
+
+    /**
+     * Returns the MIME type for this exporter.
+     * @return MIME type as string
+     */
+    public String getExportMimeType(){
+        return "text/xml";
+    }
 }

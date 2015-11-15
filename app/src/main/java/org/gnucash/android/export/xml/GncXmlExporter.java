@@ -800,6 +800,14 @@ public class GncXmlExporter extends Exporter{
     }
 
     /**
+     * Returns the MIME type for this exporter.
+     * @return MIME type as string
+     */
+    public String getExportMimeType(){
+        return "text/xml";
+    }
+
+    /**
      * Creates a backup of current database contents to the default backup location
      * @return {@code true} if backup was successful, {@code false} otherwise
      */

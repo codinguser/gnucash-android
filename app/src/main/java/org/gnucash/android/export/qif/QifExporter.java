@@ -263,4 +263,12 @@ public class QifExporter extends Exporter{
         }
         return splitFiles;
     }
+
+    /**
+     * Returns the mime type for this Exporter.
+     * @return MIME type as string
+     */
+    public String getExportMimeType(){
+        return "text/plain";
+    }
 }

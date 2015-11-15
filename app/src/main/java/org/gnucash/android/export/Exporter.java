@@ -192,6 +192,14 @@ public abstract class Exporter {
      */
     public abstract List<String> generateExport() throws ExporterException;
 
+    /**
+     * Returns the MIME type for this exporter.
+     * @return MIME type as string
+     */
+    public String getExportMimeType(){
+        return "text/plain";
+    }
+
     public static class ExporterException extends RuntimeException{
 
         public ExporterException(ExportParams params){
