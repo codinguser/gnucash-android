@@ -41,10 +41,10 @@ import org.xmlpull.v1.XmlPullParserFactory;
 import org.xmlpull.v1.XmlSerializer;
 
 import java.io.BufferedOutputStream;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.io.Writer;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -53,7 +53,6 @@ import java.util.Currency;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.UUID;
 import java.util.zip.GZIPOutputStream;
 
 import static org.gnucash.android.db.DatabaseSchema.ScheduledActionEntry;
@@ -426,7 +425,7 @@ public class GncXmlExporter extends Exporter{
             // account guid
             xmlSerializer.startTag(null, GncXmlHelper.TAG_SPLIT_ACCOUNT);
             xmlSerializer.attribute(null, GncXmlHelper.ATTR_KEY_TYPE, GncXmlHelper.ATTR_VALUE_GUID);
-            String splitAccountUID = null;
+            String splitAccountUID;
             if (exportTemplates){
                 //get the UID of the template account
                  splitAccountUID = mTransactionToTemplateAccountMap.get(curTrxUID).getUID();
@@ -636,7 +635,7 @@ public class GncXmlExporter extends Exporter{
     private void exportPrices(XmlSerializer xmlSerializer) throws IOException {
         xmlSerializer.startTag(null, GncXmlHelper.TAG_PRICEDB);
         xmlSerializer.attribute(null, GncXmlHelper.ATTR_KEY_VERSION, "1");
-        Cursor cursor = mPricesDbAdpater.fetchAllRecords();
+        Cursor cursor = mPricesDbAdapter.fetchAllRecords();
         try {
             while(cursor.moveToNext()) {
                 xmlSerializer.startTag(null, GncXmlHelper.TAG_PRICE);
@@ -650,7 +649,7 @@ public class GncXmlExporter extends Exporter{
                 xmlSerializer.startTag(null, GncXmlHelper.TAG_COMMODITY_SPACE);
                 xmlSerializer.text("ISO4217");
                 xmlSerializer.endTag(null, GncXmlHelper.TAG_COMMODITY_SPACE);
-                xmlSerializer.startTag(null, GncXmlHelper.TAG_COMMODITY_ID);;
+                xmlSerializer.startTag(null, GncXmlHelper.TAG_COMMODITY_ID);
                 xmlSerializer.text(mCommoditiesDbAdapter.getCurrencyCode(cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.PriceEntry.COLUMN_COMMODITY_UID))));
                 xmlSerializer.endTag(null, GncXmlHelper.TAG_COMMODITY_ID);
                 xmlSerializer.endTag(null, GncXmlHelper.TAG_PRICE_COMMODITY);
@@ -659,7 +658,7 @@ public class GncXmlExporter extends Exporter{
                 xmlSerializer.startTag(null, GncXmlHelper.TAG_COMMODITY_SPACE);
                 xmlSerializer.text("ISO4217");
                 xmlSerializer.endTag(null, GncXmlHelper.TAG_COMMODITY_SPACE);
-                xmlSerializer.startTag(null, GncXmlHelper.TAG_COMMODITY_ID);;
+                xmlSerializer.startTag(null, GncXmlHelper.TAG_COMMODITY_ID);
                 xmlSerializer.text(mCommoditiesDbAdapter.getCurrencyCode(cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.PriceEntry.COLUMN_CURRENCY_UID))));
                 xmlSerializer.endTag(null, GncXmlHelper.TAG_COMMODITY_ID);
                 xmlSerializer.endTag(null, GncXmlHelper.TAG_PRICE_CURRENCY);
@@ -695,16 +694,24 @@ public class GncXmlExporter extends Exporter{
     }
 
     @Override
-    public void generateExport(Writer writer) throws ExporterException{
+    public List<String> generateExport() throws ExporterException {
+        OutputStreamWriter writer = null;
+
         try {
-            String[] namespaces = new String[] {"gnc", "act", "book", "cd", "cmdty", "price", "slot",
+            String[] namespaces = new String[]{"gnc", "act", "book", "cd", "cmdty", "price", "slot",
                     "split", "trn", "ts", "sx", "recurrence"};
+            new File(BACKUP_FOLDER_PATH).mkdirs();
+            FileOutputStream fileOutputStream = new FileOutputStream(getBackupFilePath());
+            BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(fileOutputStream);
+            GZIPOutputStream gzipOutputStream = new GZIPOutputStream(bufferedOutputStream);
+            writer = new OutputStreamWriter(gzipOutputStream);
+
             XmlSerializer xmlSerializer = XmlPullParserFactory.newInstance().newSerializer();
             xmlSerializer.setOutput(writer);
             xmlSerializer.startDocument("utf-8", true);
             // root tag
             xmlSerializer.startTag(null, GncXmlHelper.TAG_ROOT);
-            for(String ns : namespaces) {
+            for (String ns : namespaces) {
                 xmlSerializer.attribute(null, "xmlns:" + ns, "http://www.gnucash.org/XML/" + ns);
             }
             // book count
@@ -722,7 +729,7 @@ public class GncXmlExporter extends Exporter{
             xmlSerializer.endTag(null, GncXmlHelper.TAG_BOOK_ID);
             //commodity count
             List<Currency> currencies = mAccountsDbAdapter.getCurrenciesInUse();
-            for (int i = 0; i< currencies.size();i++) {
+            for (int i = 0; i < currencies.size(); i++) {
                 if (currencies.get(i).getCurrencyCode().equals("XXX")) {
                     currencies.remove(i);
                 }
@@ -742,7 +749,7 @@ public class GncXmlExporter extends Exporter{
             xmlSerializer.text(mTransactionsDbAdapter.getRecordsCount() + "");
             xmlSerializer.endTag(null, GncXmlHelper.TAG_COUNT_DATA);
             //price count
-            long priceCount = mPricesDbAdpater.getRecordsCount();
+            long priceCount = mPricesDbAdapter.getRecordsCount();
             if (priceCount > 0) {
                 xmlSerializer.startTag(null, GncXmlHelper.TAG_COUNT_DATA);
                 xmlSerializer.attribute(null, GncXmlHelper.ATTR_KEY_CD_TYPE, "price");
@@ -775,8 +782,31 @@ public class GncXmlExporter extends Exporter{
         } catch (Exception e) {
             Crashlytics.logException(e);
             throw new ExporterException(mParameters, e);
+        } finally {
+            if (writer != null) {
+                try {
+                    writer.close();
+                } catch (IOException e) {
+                    throw new ExporterException(mParameters, e);
+                }
+            }
         }
+
+        List<String> exportedFiles = new ArrayList<>();
+        // FIXME: this looks weird
+        exportedFiles.add(getBackupFilePath());
+
+        return exportedFiles;
     }
+
+    /**
+     * Returns the MIME type for this exporter.
+     * @return MIME type as string
+     */
+    public String getExportMimeType(){
+        return "text/xml";
+    }
+
     /**
      * Creates a backup of current database contents to the default backup location
      * @return {@code true} if backup was successful, {@code false} otherwise
@@ -784,17 +814,22 @@ public class GncXmlExporter extends Exporter{
     public static boolean createBackup(){
         ExportParams params = new ExportParams(ExportFormat.XML);
         try {
-            FileOutputStream fileOutputStream = new FileOutputStream(Exporter.buildBackupFile());
-            BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(fileOutputStream);
-            GZIPOutputStream gzipOutputStream = new GZIPOutputStream(bufferedOutputStream);
-            OutputStreamWriter outputStreamWriter = new OutputStreamWriter(gzipOutputStream);
-            new GncXmlExporter(params).generateExport(outputStreamWriter);
-            outputStreamWriter.close();
+            new GncXmlExporter(params).generateExport();
             return true;
-        } catch (IOException e) {
+        } catch (ExporterException e) {
             Crashlytics.logException(e);
             Log.e("GncXmlExporter", "Error creating backup", e);
             return false;
         }
+    }
+
+    /**
+     * Returns the full path of a file to make database backup.
+     * Backups are done in XML format and are zipped (with ".zip" extension).
+     * @return the file path for backups of the database.
+     * @see #BACKUP_FOLDER_PATH
+     */
+    private static String getBackupFilePath(){
+        return BACKUP_FOLDER_PATH + buildExportFilename(ExportFormat.XML) + ".zip";
     }
 }

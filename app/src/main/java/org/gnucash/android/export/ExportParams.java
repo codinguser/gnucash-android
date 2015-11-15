@@ -166,11 +166,10 @@ public class ExportParams {
      */
     public String toCsv(){
         String separator = ";";
-        String csv = mExportFormat.name() + separator + mExportTarget.name() + separator
+
+        return mExportFormat.name() + separator + mExportTarget.name() + separator
                 + mExportStartTime.toString() + separator
                 + Boolean.toString(mDeleteTransactionsAfterExport);
-
-        return csv;
     }
 
     /**
