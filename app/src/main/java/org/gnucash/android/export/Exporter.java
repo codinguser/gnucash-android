@@ -34,6 +34,7 @@ import org.gnucash.android.db.ScheduledActionDbAdapter;
 import org.gnucash.android.db.SplitsDbAdapter;
 import org.gnucash.android.db.TransactionsDbAdapter;
 
+import java.io.File;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -72,7 +73,16 @@ public abstract class Exporter {
     /**
      * Export options
      */
-    protected ExportParams mParameters;
+    protected ExportParams mExportParams;
+
+    /**
+     * Cache directory to which files will be first exported before moved to final destination.
+     * <p>There is a different cache dir per export format, which has the name of the export format.<br/>
+     *    The cache dir is cleared every time a new {@link Exporter} is instantiated.
+     *    The files created here are only accessible within this application, and should be copied to SD card before they can be shared
+     * </p>
+     */
+    protected File mCacheDir;
 
     private static final SimpleDateFormat EXPORT_FILENAME_DATE_FORMAT = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US);
 
@@ -95,7 +105,7 @@ public abstract class Exporter {
     protected Context mContext;
 
     public Exporter(ExportParams params, SQLiteDatabase db) {
-        this.mParameters = params;
+        this.mExportParams = params;
         mContext = GnuCashApplication.getAppContext();
         if (db == null) {
             mAccountsDbAdapter = AccountsDbAdapter.getInstance();
@@ -112,6 +122,10 @@ public abstract class Exporter {
             mPricesDbAdapter = new PricesDbAdapter(db);
             mCommoditiesDbAdapter = new CommoditiesDbAdapter(db);
         }
+
+        mCacheDir = new File(mContext.getCacheDir(), params.getExportFormat().name());
+        mCacheDir.mkdir();
+        purgeDirectory(mCacheDir);
     }
 
     /**
@@ -149,6 +163,32 @@ public abstract class Exporter {
      * @throws ExporterException if an error occurs during export
      */
     public abstract List<String> generateExport() throws ExporterException;
+
+    /**
+     * Recursively delete all files in a directory
+     * @param directory File descriptor for directory
+     */
+    private void purgeDirectory(File directory){
+        for (File file : directory.listFiles()) {
+            if (file.isDirectory())
+                purgeDirectory(file);
+            else
+                file.delete();
+        }
+    }
+
+    /**
+     * Returns the path to the file where the exporter should save the export during generation
+     * <p>This path is a temporary cache file whose file extension matches the export format.<br>
+     *     This file is deleted every time a new export is started</p>
+     * @return Absolute path to file
+     */
+    protected String getExportCacheFilePath(){
+        String cachePath = mCacheDir.getAbsolutePath();
+        if (!cachePath.endsWith("/"))
+            cachePath += "/";
+        return cachePath + buildExportFilename(mExportParams.getExportFormat());
+    }
 
     /**
      * Returns the MIME type for this exporter.

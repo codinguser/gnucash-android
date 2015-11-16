@@ -104,7 +104,7 @@ public class OfxExporter extends Exporter{
 
 
 			//add account details (transactions) to the XML document			
-			account.toOfx(doc, statementTransactionResponse, mParameters.getExportStartTime());
+			account.toOfx(doc, statementTransactionResponse, mExportParams.getExportStartTime());
 			
 			//mark as exported
 			accountsDbAdapter.markAsExported(account.getUID());
@@ -114,7 +114,7 @@ public class OfxExporter extends Exporter{
 
     // FIXME: Move code to generateExport()
     private String generateOfxExport() throws ExporterException {
-        mAccountsList = mAccountsDbAdapter.getExportableAccounts(mParameters.getExportStartTime());
+        mAccountsList = mAccountsDbAdapter.getExportableAccounts(mExportParams.getExportStartTime());
 
         DocumentBuilderFactory docFactory = DocumentBuilderFactory
                 .newInstance();
@@ -122,7 +122,7 @@ public class OfxExporter extends Exporter{
         try {
             docBuilder = docFactory.newDocumentBuilder();
         } catch (ParserConfigurationException e) {
-            throw new ExporterException(mParameters, e);
+            throw new ExporterException(mExportParams, e);
         }
 
         Document document = docBuilder.newDocument();
@@ -158,23 +158,23 @@ public class OfxExporter extends Exporter{
         BufferedWriter writer = null;
 
         try {
-            File file = new File(mParameters.getInternalExportPath());
+            File file = new File(getExportCacheFilePath());
             writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), "UTF-8"));
             writer.write(generateOfxExport());
         } catch (IOException e) {
-            throw new ExporterException(mParameters, e);
+            throw new ExporterException(mExportParams, e);
         } finally {
             if (writer != null) {
                 try {
                     writer.close();
                 } catch (IOException e) {
-                    throw new ExporterException(mParameters, e);
+                    throw new ExporterException(mExportParams, e);
                 }
             }
         }
 
         List<String> exportedFiles = new ArrayList<>();
-        exportedFiles.add(mParameters.getInternalExportPath());
+        exportedFiles.add(getExportCacheFilePath());
 
         return exportedFiles;
     }

@@ -45,6 +45,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -696,16 +697,41 @@ public class GncXmlExporter extends Exporter{
     @Override
     public List<String> generateExport() throws ExporterException {
         OutputStreamWriter writer = null;
+        String outputFile = getExportCacheFilePath();
+        try {
+            FileOutputStream fileOutputStream = new FileOutputStream(outputFile);
+            BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(fileOutputStream);
+            writer = new OutputStreamWriter(bufferedOutputStream);
 
+            generateExport(writer);
+        } catch (IOException ex){
+            Crashlytics.log("Error exporting XML");
+            Crashlytics.logException(ex);
+        } finally {
+            if (writer != null) {
+                try {
+                    writer.close();
+                } catch (IOException e) {
+                    throw new ExporterException(mExportParams, e);
+                }
+            }
+        }
+
+        List<String> exportedFiles = new ArrayList<>();
+        exportedFiles.add(outputFile);
+
+        return exportedFiles;
+    }
+
+    /**
+     * Generates an XML export of the database and writes it to the {@code writer} output stream
+     * @param writer Output stream
+     * @throws ExporterException
+     */
+    public void generateExport(Writer writer) throws ExporterException {
         try {
             String[] namespaces = new String[]{"gnc", "act", "book", "cd", "cmdty", "price", "slot",
                     "split", "trn", "ts", "sx", "recurrence"};
-            new File(BACKUP_FOLDER_PATH).mkdirs();
-            FileOutputStream fileOutputStream = new FileOutputStream(getBackupFilePath());
-            BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(fileOutputStream);
-            GZIPOutputStream gzipOutputStream = new GZIPOutputStream(bufferedOutputStream);
-            writer = new OutputStreamWriter(gzipOutputStream);
-
             XmlSerializer xmlSerializer = XmlPullParserFactory.newInstance().newSerializer();
             xmlSerializer.setOutput(writer);
             xmlSerializer.startDocument("utf-8", true);
@@ -779,24 +805,11 @@ public class GncXmlExporter extends Exporter{
             xmlSerializer.endTag(null, GncXmlHelper.TAG_BOOK);
             xmlSerializer.endTag(null, GncXmlHelper.TAG_ROOT);
             xmlSerializer.endDocument();
+            xmlSerializer.flush();
         } catch (Exception e) {
             Crashlytics.logException(e);
-            throw new ExporterException(mParameters, e);
-        } finally {
-            if (writer != null) {
-                try {
-                    writer.close();
-                } catch (IOException e) {
-                    throw new ExporterException(mParameters, e);
-                }
-            }
+            throw new ExporterException(mExportParams, e);
         }
-
-        List<String> exportedFiles = new ArrayList<>();
-        // FIXME: this looks weird
-        exportedFiles.add(getBackupFilePath());
-
-        return exportedFiles;
     }
 
     /**
@@ -808,17 +821,23 @@ public class GncXmlExporter extends Exporter{
     }
 
     /**
-     * Creates a backup of current database contents to the default backup location
+     * Creates a backup of current database contents to the directory {@link Exporter#BACKUP_FOLDER_PATH}
      * @return {@code true} if backup was successful, {@code false} otherwise
      */
     public static boolean createBackup(){
-        ExportParams params = new ExportParams(ExportFormat.XML);
         try {
-            new GncXmlExporter(params).generateExport();
+            new File(BACKUP_FOLDER_PATH).mkdirs();
+            FileOutputStream fileOutputStream = new FileOutputStream(getBackupFilePath());
+            BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(fileOutputStream);
+            GZIPOutputStream gzipOutputStream = new GZIPOutputStream(bufferedOutputStream);
+            OutputStreamWriter writer = new OutputStreamWriter(gzipOutputStream);
+
+            ExportParams params = new ExportParams(ExportFormat.XML);
+            new GncXmlExporter(params).generateExport(writer);
             return true;
-        } catch (ExporterException e) {
+        } catch (IOException | ExporterException e) {
             Crashlytics.logException(e);
-            Log.e("GncXmlExporter", "Error creating backup", e);
+            Log.e("GncXmlExporter", "Error creating XML  backup", e);
             return false;
         }
     }

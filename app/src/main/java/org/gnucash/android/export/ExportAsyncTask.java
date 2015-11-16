@@ -393,8 +393,9 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
         Intent shareIntent = new Intent(Intent.ACTION_SEND_MULTIPLE);
         shareIntent.setType("text/xml");
 
-        ArrayList<Uri> exportFiles = convertPathsToUris(paths);
-        shareIntent.putExtra(Intent.EXTRA_STREAM, exportFiles);
+        ArrayList<Uri> exportFiles = convertFilePathsToUris(paths);
+//        shareIntent.putExtra(Intent.EXTRA_STREAM, exportFiles);
+        shareIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, exportFiles);
 
         shareIntent.putExtra(Intent.EXTRA_SUBJECT, mContext.getString(R.string.title_export_email,
                 mExportParams.getExportFormat().name()));
@@ -422,14 +423,24 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
         }
     }
 
-    // /some/path/file.ext -> file:///some/path/file.ext
+    //
+
+    /**
+     * Convert file paths to URIs by adding the file// prefix
+     * <p>e.g. /some/path/file.ext --> file:///some/path/file.ext</p>
+     * @param paths List of file paths to convert
+     * @return List of file URIs
+     */
     @NonNull
-    private ArrayList<Uri> convertPathsToUris(List<String> paths) {
+    private ArrayList<Uri> convertFilePathsToUris(List<String> paths) {
         ArrayList<Uri> exportFiles = new ArrayList<>();
 
-        for (String file : paths)
-            exportFiles.add(Uri.parse("file://" + file));
-
+        for (String path : paths) {
+            File file = new File(path);
+            file.setReadable(true, false);
+            exportFiles.add(Uri.fromFile(file));
+//            exportFiles.add(Uri.parse("file://" + file));
+        }
         return exportFiles;
     }
 

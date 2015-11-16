@@ -60,7 +60,7 @@ public class QifExporter extends Exporter{
         final String newLine = "\n";
         TransactionsDbAdapter transactionsDbAdapter = mTransactionsDbAdapter;
         try {
-            String lastExportTimeStamp = PreferenceManager.getDefaultSharedPreferences(mContext).getString(Exporter.PREF_LAST_EXPORT_TIME, Exporter.TIMESTAMP_ZERO);
+            String lastExportTimeStamp = mExportParams.getExportStartTime().toString();
             Cursor cursor = transactionsDbAdapter.fetchTransactionsWithSplitsWithTransactionAccount(
                     new String[]{
                             TransactionEntry.TABLE_NAME + "_" + TransactionEntry.COLUMN_UID + " AS trans_uid",
@@ -95,7 +95,7 @@ public class QifExporter extends Exporter{
                    "acct1_currency ASC, trans_time ASC, trans_uid ASC"
                     );
 
-            File file = new File(mParameters.getInternalExportPath());
+            File file = new File(getExportCacheFilePath());
             BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), "UTF-8"));
 
             try {
@@ -190,7 +190,7 @@ public class QifExporter extends Exporter{
                             precision = 3;
                             break;
                         default:
-                            throw new ExporterException(mParameters, "split quantity has illegal denominator: "+ quantity_denom);
+                            throw new ExporterException(mExportParams, "split quantity has illegal denominator: "+ quantity_denom);
                     }
                     Double quantity = 0.0;
                     if (quantity_denom != 0) {
@@ -220,7 +220,7 @@ public class QifExporter extends Exporter{
             PreferenceManager.getDefaultSharedPreferences(mContext).edit().putString(Exporter.PREF_LAST_EXPORT_TIME, timeStamp).apply();
             return splitQIF(file);
         } catch (IOException e) {
-            throw new ExporterException(mParameters, e);
+            throw new ExporterException(mExportParams, e);
         }
     }
 
