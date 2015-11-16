@@ -1,5 +1,16 @@
 Change Log
 ===============================================================================
+Version 2.0.2 *(2015-11-20)*
+----------------------------
+* Fixed: Exporting to external service does not work in some devices
+* Fixed: Bar chart does not display negative amounts
+* Fixed: Crash when saving transaction with invalid amount expression
+* Fixed: Crashes when importing some GnuCash XML files with select currencies
+* Improved: Remember last export destination
+* Improved: Set default commodity to the one used by imported file
+* Improved: Add support for unlimited fractional digits in commodities
+* Improved: Option to select date from which to export transactions
+
 Version 2.0.1 *(2015-11-05)*
 ----------------------------
 * Feature: Menu options for moving/duplicating transactions
