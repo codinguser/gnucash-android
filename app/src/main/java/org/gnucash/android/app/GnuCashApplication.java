@@ -25,6 +25,7 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
@@ -226,7 +227,7 @@ public class GnuCashApplication extends Application{
      * @param currencyCode ISO 4217 currency code
      * @see #getDefaultCurrencyCode()
      */
-    public static void setDefaultCurrencyCode(String currencyCode){
+    public static void setDefaultCurrencyCode(@NonNull String currencyCode){
         PreferenceManager.getDefaultSharedPreferences(getAppContext()).edit()
                 .putString(getAppContext().getString(R.string.key_default_currency), currencyCode)
                 .apply();

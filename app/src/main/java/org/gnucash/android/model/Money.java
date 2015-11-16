@@ -279,8 +279,7 @@ public final class Money implements Comparable<Money>{
 	 * @return String containing formatted Money representation
 	 */
     public String formattedString(Locale locale){
-/*
-//todo: enable this code for 2.1 release. Test better too
+
 		NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(locale);
 		Currency currency = Currency.getInstance(mCommodity.getCurrencyCode());
 
@@ -299,13 +298,14 @@ public final class Money implements Comparable<Money>{
 		currencyFormat.setMaximumFractionDigits(mCommodity.getSmallestFractionDigits());
 
 		return currencyFormat.format(asDouble());
-*/
-
+/*
+// 	old currency formatting code
 		NumberFormat formatter = NumberFormat.getInstance(locale);
 		formatter.setMinimumFractionDigits(mCommodity.getSmallestFractionDigits());
 		formatter.setMaximumFractionDigits(mCommodity.getSmallestFractionDigits());
 		Currency currency = Currency.getInstance(mCommodity.getCurrencyCode());
 		return formatter.format(asDouble()) + " " + currency.getSymbol(locale);
+*/
 	}
 
     /**

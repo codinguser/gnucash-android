@@ -491,6 +491,7 @@ public class AccountsActivity extends BaseDrawerActivity implements OnAccountCli
                 @Override
                 public void onTaskComplete() {
                     AccountsDbAdapter.getInstance().updateAllAccounts(DatabaseSchema.AccountEntry.COLUMN_CURRENCY, currencyCode);
+                    GnuCashApplication.setDefaultCurrencyCode(currencyCode);
                 }
             };
         }

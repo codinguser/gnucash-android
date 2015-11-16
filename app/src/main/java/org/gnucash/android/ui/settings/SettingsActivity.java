@@ -26,9 +26,11 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
+import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.PreferenceManager;
@@ -51,6 +53,7 @@ import com.google.android.gms.drive.MetadataChangeSet;
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.AccountsDbAdapter;
+import org.gnucash.android.db.CommoditiesDbAdapter;
 import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.export.Exporter;
@@ -248,7 +251,8 @@ public class SettingsActivity extends AppCompatPreferenceActivity
  	public boolean onPreferenceChange(Preference preference, Object newValue) {
 		if (preference.getKey().equals(getString(R.string.key_default_currency))){
 			GnuCashApplication.setDefaultCurrencyCode(newValue.toString());
-            preference.setSummary(newValue.toString());
+            String fullname = CommoditiesDbAdapter.getInstance().getCommodity(newValue.toString()).getFullname();
+            preference.setSummary(fullname);
 		} else if (preference.getKey().equals(getString(R.string.key_enable_passcode))) {
             if ((Boolean) newValue) {
                 startActivityForResult(new Intent(this, PasscodePreferenceActivity.class),
@@ -274,6 +278,10 @@ public class SettingsActivity extends AppCompatPreferenceActivity
                 || AboutPreferenceFragment.class.getName().equals(fragmentName);
     }
 
+    /**
+     * Hide all imbalance accounts when double-entry mode is disabled
+     * @param useDoubleEntry flag if double entry is enabled or not
+     */
     public void setImbalanceAccountsHidden(boolean useDoubleEntry) {
         String isHidden = useDoubleEntry ? "0" : "1";
         AccountsDbAdapter accountsDbAdapter = AccountsDbAdapter.getInstance();
@@ -286,11 +294,34 @@ public class SettingsActivity extends AppCompatPreferenceActivity
         }
     }
 
+    /**
+     * Load the commodities from the database and set the options on the list preference
+     * Also sets this activity as a listener for preference changes
+     */
     private void setDefaultCurrencyListener() {
+        CommoditiesDbAdapter commoditiesDbAdapter = CommoditiesDbAdapter.getInstance();
+        List<CharSequence> currencyEntries = new ArrayList<>((int)commoditiesDbAdapter.getRecordsCount());
+        List<CharSequence> currencyEntryValues = new ArrayList<>((int)commoditiesDbAdapter.getRecordsCount());
+        Cursor cursor = commoditiesDbAdapter.fetchAllRecords(DatabaseSchema.CommodityEntry.COLUMN_MNEMONIC + " ASC");
+        while(cursor.moveToNext()){
+            String code = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.CommodityEntry.COLUMN_MNEMONIC));
+            String name = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.CommodityEntry.COLUMN_FULLNAME));
+
+            currencyEntries.add(code + " - " + name);
+            currencyEntryValues.add(code);
+        }
+        cursor.close();
+
+        CharSequence[] entries = new CharSequence[currencyEntries.size()];
+        CharSequence[] entryValues = new CharSequence[currencyEntryValues.size()];
+
 		@SuppressWarnings("deprecation")
 		Preference pref = findPreference(getString(R.string.key_default_currency));
 		pref.setSummary(GnuCashApplication.getDefaultCurrencyCode());
 		pref.setOnPreferenceChangeListener(this);
+
+        ((ListPreference) pref).setEntries(currencyEntries.toArray(entries));
+        ((ListPreference) pref).setEntryValues(currencyEntryValues.toArray(entryValues));
 	}
 
     @Override
