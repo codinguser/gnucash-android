@@ -27,6 +27,7 @@ import android.content.Intent;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
@@ -565,15 +566,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 File backupFile = sortedBackupFiles[which];
-
-                try {
-                    FileInputStream inputStream = new FileInputStream(backupFile);
-                    new ImportAsyncTask(SettingsActivity.this).execute(inputStream);
-                } catch (FileNotFoundException e) {
-                    Crashlytics.logException(e);
-                    Log.e(LOG_TAG, "Error restoring backup: " + backupFile.getName());
-                    Toast.makeText(SettingsActivity.this, R.string.toast_error_importing_accounts, Toast.LENGTH_LONG).show();
-                }
+                new ImportAsyncTask(SettingsActivity.this).execute(Uri.fromFile(backupFile));
             }
         });
 

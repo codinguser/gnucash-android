@@ -212,8 +212,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         /*
         * NOTE: In order to modify the database, create a new static method in the MigrationHelper class
         * called upgradeDbToVersion<#>, e.g. int upgradeDbToVersion10(SQLiteDatabase) in order to upgrade to version 10.
-        * The upgrade method should return the current database version as the return value.
-        * Then all you need to do is incremend the DatabaseSchema.DATABASE_VERSION to the appropriate number.
+        * The upgrade method should return the upgraded database version as the return value.
+        * Then all you need to do is increment the DatabaseSchema.DATABASE_VERSION to the appropriate number.
         */
 		if (oldVersion > newVersion) {
             throw new IllegalArgumentException("Database downgrades are not supported at the moment");
