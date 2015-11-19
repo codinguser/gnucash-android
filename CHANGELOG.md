@@ -5,8 +5,10 @@ Version 2.0.2 *(2015-11-20)*
 * Fixed: Exporting to external service does not work in some devices
 * Fixed: Bar chart does not display negative amounts
 * Fixed: Crash when saving transaction with invalid amount expression
-* Fixed: Crashes when importing some GnuCash XML files with select currencies
+* Fixed: Crash when displaying bar chart legend with accounts of same name
+* Fixed: Crashes when importing some GnuCash XML files on some devices
 * Improved: Remember last export destination
+* Improved: Display current imbalance in split editor
 * Improved: Set default commodity to the one used by imported file
 * Improved: Add support for unlimited fractional digits in commodities
 * Improved: Option to select date from which to export transactions
