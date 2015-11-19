@@ -56,7 +56,9 @@ import java.math.BigDecimal;
 import java.nio.channels.FileChannel;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
@@ -1068,7 +1070,7 @@ public class MigrationHelper {
      * <p>This method converts all saved scheduled export parameters to the new format using the
      * timestamp of last export</p>
      * @param db SQLite database
-     * @return New version number
+     * @return 10 if upgrade was successful, 9 otherwise
      */
     static int upgradeDbToVersion10(SQLiteDatabase db){
         Log.i(DatabaseHelper.LOG_TAG, "Upgrading database to version 9");
@@ -1107,8 +1109,62 @@ public class MigrationHelper {
                 db.insert(ScheduledActionEntry.TABLE_NAME, null, contentValues);
             }
 
+            cursor.close();
+
             db.setTransactionSuccessful();
             oldVersion = 10;
+        } finally {
+            db.endTransaction();
+        }
+        return oldVersion;
+    }
+
+    /**
+     * Upgrade database to version 11
+     * <p>
+     *     Migrate scheduled backups and update export parameters to the new format
+     * </p>
+     * @param db SQLite database
+     * @return 11 if upgrade was successful, 10 otherwise
+     */
+    static int upgradeDbToVersion11(SQLiteDatabase db){
+        Log.i(DatabaseHelper.LOG_TAG, "Upgrading database to version 9");
+        int oldVersion = 10;
+
+        db.beginTransaction();
+        try {
+            Cursor cursor = db.query(ScheduledActionEntry.TABLE_NAME, null,
+                    ScheduledActionEntry.COLUMN_TYPE + "= ?",
+                    new String[]{ScheduledAction.ActionType.BACKUP.name()}, null, null, null);
+
+            Map<String, String> uidToTagMap = new HashMap<>();
+            while (cursor.moveToNext()) {
+                String uid = cursor.getString(cursor.getColumnIndexOrThrow(ScheduledActionEntry.COLUMN_UID));
+                String tag = cursor.getString(cursor.getColumnIndexOrThrow(ScheduledActionEntry.COLUMN_TAG));
+                String[] tokens = tag.split(";");
+                try {
+                    Timestamp timestamp = Timestamp.valueOf(tokens[2]);
+                } catch (IllegalArgumentException ex) {
+                    tokens[2] = PreferenceManager.getDefaultSharedPreferences(GnuCashApplication.getAppContext())
+                            .getString(Exporter.PREF_LAST_EXPORT_TIME, Exporter.TIMESTAMP_ZERO);
+                } finally {
+                    tag = TextUtils.join(";", tokens);
+                }
+                uidToTagMap.put(uid, tag);
+            }
+
+            cursor.close();
+
+            ContentValues contentValues = new ContentValues();
+            for (Map.Entry<String, String> entry : uidToTagMap.entrySet()) {
+                contentValues.clear();
+                contentValues.put(ScheduledActionEntry.COLUMN_TAG, entry.getValue());
+                db.update(ScheduledActionEntry.TABLE_NAME, contentValues,
+                        ScheduledActionEntry.COLUMN_UID + " = ?", new String[]{entry.getKey()});
+            }
+
+            db.setTransactionSuccessful();
+            oldVersion = 11;
         } finally {
             db.endTransaction();
         }

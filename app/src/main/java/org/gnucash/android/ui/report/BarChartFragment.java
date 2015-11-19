@@ -210,6 +210,22 @@ public class BarChartFragment extends Fragment implements OnChartValueSelectedLi
                     double balance = mAccountsDbAdapter.getAccountsBalance(
                             Collections.singletonList(account.getUID()), start, end).asDouble();
                     if (balance != 0) {
+                        stack.add((float) balance);
+
+                        String accountName = account.getName();
+                        while (labels.contains(accountName)) {
+                            if (!accountToColorMap.containsKey(account.getUID())) {
+                                for (String label : labels) {
+                                    if (label.equals(accountName)) {
+                                        accountName += " ";
+                                    }
+                                }
+                            } else {
+                                break;
+                            }
+                        }
+                        labels.add(accountName);
+
                         if (!accountToColorMap.containsKey(account.getUID())) {
                             Integer color;
                             if (mUseAccountColor) {
@@ -221,10 +237,8 @@ public class BarChartFragment extends Fragment implements OnChartValueSelectedLi
                             }
                             accountToColorMap.put(account.getUID(), color);
                         }
-
-                        stack.add((float) balance);
-                        labels.add(account.getName());
                         colors.add(accountToColorMap.get(account.getUID()));
+
                         Log.d(TAG, mAccountType + tmpDate.toString(" MMMM yyyy ") + account.getName() + " = " + stack.get(stack.size() - 1));
                     }
                 }
@@ -439,7 +453,9 @@ public class BarChartFragment extends Fragment implements OnChartValueSelectedLi
                 Legend legend = mChart.getLegend();
                 if (!legend.isLegendCustom()) {
                     Toast.makeText(getActivity(), R.string.toast_legend_too_long, Toast.LENGTH_LONG).show();
+                    item.setChecked(false);
                 } else {
+                    item.setChecked(!mChart.getLegend().isEnabled());
                     legend.setEnabled(!mChart.getLegend().isEnabled());
                     mChart.invalidate();
                 }
@@ -474,8 +490,7 @@ public class BarChartFragment extends Fragment implements OnChartValueSelectedLi
         } else {
             sum = entry.getNegativeSum() + entry.getPositiveSum();
         }
-        Log.w(TAG, "sum2 = " + sum);
-        selectedValueTextView.setText(String.format(SELECTED_VALUE_PATTERN, label, value, value / sum * 100));
+        selectedValueTextView.setText(String.format(SELECTED_VALUE_PATTERN, label.trim(), value, value / sum * 100));
     }
 
     @Override

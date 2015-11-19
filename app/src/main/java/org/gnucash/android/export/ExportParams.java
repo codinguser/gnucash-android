@@ -16,6 +16,11 @@
 
 package org.gnucash.android.export;
 
+import android.preference.PreferenceManager;
+
+import org.gnucash.android.BuildConfig;
+import org.gnucash.android.R;
+import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.ui.export.ExportFormFragment;
 
 import java.sql.Timestamp;

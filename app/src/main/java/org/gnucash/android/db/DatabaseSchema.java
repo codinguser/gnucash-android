@@ -28,7 +28,7 @@ public class DatabaseSchema {
      * Database version.
      * With any change to the database schema, this number must increase
      */
-    public static final int DATABASE_VERSION = 10;
+    public static final int DATABASE_VERSION = 11;
 
     /**
      * Database version where Splits were introduced
