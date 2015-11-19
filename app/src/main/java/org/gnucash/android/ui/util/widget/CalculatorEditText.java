@@ -37,14 +37,12 @@ import net.objecthunter.exp4j.ExpressionBuilder;
 
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
-import org.gnucash.android.db.CommoditiesDbAdapter;
 import org.gnucash.android.model.Commodity;
 import org.gnucash.android.ui.common.FormActivity;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.util.Currency;
 import java.util.Locale;
 
 /**

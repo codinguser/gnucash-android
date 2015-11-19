@@ -44,7 +44,9 @@
                     android:singleLine="true"
                     android:nextFocusDown="@+id/input_transaction_amount"
                     android:background="@android:color/transparent"
-                    android:textSize="22sp" />
+                    android:textSize="22sp">
+                    <requestFocus/>
+                    </AutoCompleteTextView>
             </TableRow>
 
             <View style="@style/Divider" android:layout_marginLeft="0dp" />
