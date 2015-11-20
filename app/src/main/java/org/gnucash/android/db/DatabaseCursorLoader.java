@@ -21,11 +21,13 @@ import android.database.Cursor;
 import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
 
+import org.gnucash.android.db.adapter.DatabaseAdapter;
+
 /**
  * Abstract base class for asynchronously loads records from a database and manages the cursor.
  * In order to use this class, you must subclass it and implement the
  * {@link #loadInBackground()} method to load the particular records from the database.
- * Ideally, the database has {@link DatabaseAdapter} which is used for managing access to the 
+ * Ideally, the database has {@link DatabaseAdapter} which is used for managing access to the
  * records from the database
  * @author Ngewi Fet <ngewif@gmail.com>
  * @see DatabaseAdapter

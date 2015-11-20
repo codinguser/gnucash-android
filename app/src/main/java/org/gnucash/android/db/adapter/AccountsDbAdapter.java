@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.gnucash.android.db;
+package org.gnucash.android.db.adapter;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -30,6 +30,7 @@ import android.util.Log;
 
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
+import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.model.Account;
 import org.gnucash.android.model.AccountType;
 import org.gnucash.android.model.Commodity;
@@ -932,6 +933,7 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
         rootAccount.setAccountType(AccountType.ROOT);
         rootAccount.setFullName(ROOT_ACCOUNT_FULL_NAME);
         rootAccount.setHidden(true);
+        rootAccount.setPlaceHolderFlag(true);
         ContentValues contentValues = new ContentValues();
         contentValues.put(AccountEntry.COLUMN_UID, rootAccount.getUID());
         contentValues.put(AccountEntry.COLUMN_NAME, rootAccount.getName());
@@ -1102,7 +1104,7 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
                 transaction.setCurrencyCode(currencyCode);
                 TransactionType transactionType = Transaction.getTypeForBalance(getAccountType(accountUID),
                         balance.isNegative());
-                Split split = new Split(balance.absolute(), accountUID);
+                Split split = new Split(balance.abs(), accountUID);
                 split.setType(transactionType);
                 transaction.addSplit(split);
                 transaction.addSplit(split.createPair(getOrCreateOpeningBalanceAccountUID()));

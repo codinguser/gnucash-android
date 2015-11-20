@@ -27,8 +27,8 @@ import com.crashlytics.android.Crashlytics;
 
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.DatabaseSchema;
-import org.gnucash.android.db.ScheduledActionDbAdapter;
-import org.gnucash.android.db.TransactionsDbAdapter;
+import org.gnucash.android.db.adapter.ScheduledActionDbAdapter;
+import org.gnucash.android.db.adapter.TransactionsDbAdapter;
 import org.gnucash.android.export.ExportAsyncTask;
 import org.gnucash.android.export.ExportParams;
 import org.gnucash.android.model.ScheduledAction;
@@ -69,20 +69,20 @@ public class SchedulerService extends IntentService {
         List<ScheduledAction> scheduledActions = scheduledActionDbAdapter.getAllEnabledScheduledActions();
 
         for (ScheduledAction scheduledAction : scheduledActions) {
-            long lastRun    = scheduledAction.getLastRun();
-            long period     = scheduledAction.getPeriod();
             long endTime    = scheduledAction.getEndTime();
-
-            long now = System.currentTimeMillis();
-
-            if (((endTime > 0 && now < endTime) //if and endTime is set and we did not reach it yet
-                    || (scheduledAction.getExecutionCount() < scheduledAction.getTotalFrequency()) //or the number of scheduled runs
-                    || (endTime == 0 && scheduledAction.getTotalFrequency() == 0)) //or the action is to run forever
-                    && ((lastRun + period) <= now)  //one period has passed since last execution
-                    && scheduledAction.getStartTime() <= now
-                    && scheduledAction.isEnabled()){ //the start time has arrived
-                executeScheduledEvent(scheduledAction);
-            }
+            long now        = System.currentTimeMillis();
+            long nextRunTime;
+            do { //loop so that we can add transactions which were missed while device was off
+                nextRunTime = scheduledAction.computeNextRunTime();
+                if (((endTime > 0 && now < endTime) //if and endTime is set and we did not reach it yet
+                        || (scheduledAction.getExecutionCount() < scheduledAction.getTotalFrequency()) //or the number of scheduled runs
+                        || (endTime == 0 && scheduledAction.getTotalFrequency() == 0)) //or the action is to run forever
+                        && (nextRunTime <= now)  //one period has passed since last execution
+                        && scheduledAction.getStartTime() <= now
+                        && scheduledAction.isEnabled()) { //the start time has arrived
+                    executeScheduledEvent(scheduledAction);
+                }
+            } while (nextRunTime <= now && scheduledAction.getActionType() == ScheduledAction.ActionType.TRANSACTION);
         }
 
         Log.i(LOG_TAG, "Completed service @ " + SystemClock.elapsedRealtime());
@@ -95,6 +95,7 @@ public class SchedulerService extends IntentService {
      * @param scheduledAction ScheduledEvent to be executed
      */
     private void executeScheduledEvent(ScheduledAction scheduledAction){
+        Log.i(LOG_TAG, "Executing scheduled action: " + scheduledAction.toString());
         switch (scheduledAction.getActionType()){
             case TRANSACTION:
                 String eventUID = scheduledAction.getActionUID();
@@ -104,12 +105,7 @@ public class SchedulerService extends IntentService {
 
                 //we may be executing scheduled action significantly after scheduled time (depending on when Android fires the alarm)
                 //so compute the actual transaction time from pre-known values
-                long transactionTime; //default
-                if (scheduledAction.getLastRun() > 0){
-                    transactionTime = scheduledAction.getLastRun() + scheduledAction.getPeriod();
-                } else {
-                    transactionTime = scheduledAction.getStartTime() + scheduledAction.getPeriod();
-                }
+                long transactionTime = scheduledAction.computeNextRunTime(); //default
                 recurringTrxn.setTime(transactionTime);
                 recurringTrxn.setCreatedTimestamp(new Timestamp(transactionTime));
                 transactionsDbAdapter.addRecord(recurringTrxn);
@@ -129,10 +125,15 @@ public class SchedulerService extends IntentService {
                 break;
         }
 
+        long lastRun = scheduledAction.computeNextRunTime();
+        int executionCount = scheduledAction.getExecutionCount() + 1;
         //update the last run time and execution count
         ContentValues contentValues = new ContentValues();
-        contentValues.put(DatabaseSchema.ScheduledActionEntry.COLUMN_LAST_RUN, System.currentTimeMillis());
-        contentValues.put(DatabaseSchema.ScheduledActionEntry.COLUMN_EXECUTION_COUNT, scheduledAction.getExecutionCount()+1);
+        contentValues.put(DatabaseSchema.ScheduledActionEntry.COLUMN_LAST_RUN, lastRun);
+        contentValues.put(DatabaseSchema.ScheduledActionEntry.COLUMN_EXECUTION_COUNT, executionCount);
         ScheduledActionDbAdapter.getInstance().updateRecord(scheduledAction.getUID(), contentValues);
+
+        scheduledAction.setLastRun(lastRun);
+        scheduledAction.setExecutionCount(executionCount);
     }
 }

@@ -37,6 +37,8 @@ import net.objecthunter.exp4j.ExpressionBuilder;
 
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
+import org.gnucash.android.model.Money;
+import org.gnucash.android.db.adapter.CommoditiesDbAdapter;
 import org.gnucash.android.model.Commodity;
 import org.gnucash.android.ui.common.FormActivity;
 
@@ -150,7 +152,7 @@ public class CalculatorEditText extends EditText {
         setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                if (v != null)
+                if (v != null && !isInEditMode())
                     ((InputMethodManager) GnuCashApplication.getAppContext()
                             .getSystemService(Activity.INPUT_METHOD_SERVICE))
                             .hideSoftInputFromWindow(v.getWindowToken(), 0);

@@ -24,20 +24,24 @@ import android.util.Log;
 import com.crashlytics.android.Crashlytics;
 
 import org.gnucash.android.app.GnuCashApplication;
-import org.gnucash.android.db.AccountsDbAdapter;
-import org.gnucash.android.db.CommoditiesDbAdapter;
-import org.gnucash.android.db.PricesDbAdapter;
-import org.gnucash.android.db.ScheduledActionDbAdapter;
-import org.gnucash.android.db.SplitsDbAdapter;
-import org.gnucash.android.db.TransactionsDbAdapter;
+import org.gnucash.android.db.adapter.AccountsDbAdapter;
+import org.gnucash.android.db.adapter.BudgetsDbAdapter;
+import org.gnucash.android.db.adapter.CommoditiesDbAdapter;
+import org.gnucash.android.db.adapter.PricesDbAdapter;
+import org.gnucash.android.db.adapter.ScheduledActionDbAdapter;
+import org.gnucash.android.db.adapter.SplitsDbAdapter;
+import org.gnucash.android.db.adapter.TransactionsDbAdapter;
 import org.gnucash.android.export.xml.GncXmlHelper;
 import org.gnucash.android.model.Account;
 import org.gnucash.android.model.AccountType;
 import org.gnucash.android.model.BaseModel;
 import org.gnucash.android.model.Commodity;
+import org.gnucash.android.model.Budget;
+import org.gnucash.android.model.BudgetAmount;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.model.PeriodType;
 import org.gnucash.android.model.Price;
+import org.gnucash.android.model.Recurrence;
 import org.gnucash.android.model.ScheduledAction;
 import org.gnucash.android.model.Split;
 import org.gnucash.android.model.Transaction;
@@ -180,6 +184,13 @@ public class GncXmlHandler extends DefaultHandler {
      */
     List<ScheduledAction> mScheduledActionsList;
 
+    /**
+     * List of budgets which have been parsed from XML
+     */
+    List<Budget> mBudgetList;
+    Budget mBudget;
+    Recurrence mRecurrence;
+    BudgetAmount mBudgetAmount;
 
     boolean mInColorSlot        = false;
     boolean mInPlaceHolderSlot  = false;
@@ -198,6 +209,15 @@ public class GncXmlHandler extends DefaultHandler {
     boolean mIsScheduledEnd     = false;
     boolean mIsLastRun          = false;
     boolean mIsRecurrenceStart  = false;
+    boolean mInBudgetSlot       = false;
+
+    /**
+     * Saves the attribute of the slot tag
+     * Used for determining where we are in the budget amounts
+     */
+    String mSlotTagAttribute = null;
+
+    String mBudgetAmountAccountUID = null;
 
     /**
      * Multiplier for the recurrence period type. e.g. period type of week and multiplier of 2 means bi-weekly
@@ -233,6 +253,8 @@ public class GncXmlHandler extends DefaultHandler {
 
     private Map<String, Integer> mCurrencyCount;
 
+    private BudgetsDbAdapter mBudgetsDbAdapter;
+
     /**
      * Creates a handler for handling XML stream events when parsing the XML backup file
      */
@@ -256,12 +278,14 @@ public class GncXmlHandler extends DefaultHandler {
             mScheduledActionsDbAdapter = ScheduledActionDbAdapter.getInstance();
             mCommoditiesDbAdapter = CommoditiesDbAdapter.getInstance();
             mPricesDbAdapter = PricesDbAdapter.getInstance();
+            mBudgetsDbAdapter = BudgetsDbAdapter.getInstance();
         } else {
             mTransactionsDbAdapter = new TransactionsDbAdapter(db, new SplitsDbAdapter(db));
             mAccountsDbAdapter = new AccountsDbAdapter(db, mTransactionsDbAdapter);
             mScheduledActionsDbAdapter = new ScheduledActionDbAdapter(db);
             mCommoditiesDbAdapter = new CommoditiesDbAdapter(db);
             mPricesDbAdapter = new PricesDbAdapter(db);
+            mBudgetsDbAdapter = new BudgetsDbAdapter(db);
         }
 
         mContent = new StringBuilder();
@@ -270,6 +294,7 @@ public class GncXmlHandler extends DefaultHandler {
         mAccountMap = new HashMap<>();
         mTransactionList = new ArrayList<>();
         mScheduledActionsList = new ArrayList<>();
+        mBudgetList = new ArrayList<>();
 
         mTemplatAccountList = new ArrayList<>();
         mTemplateTransactions = new ArrayList<>();
@@ -335,11 +360,33 @@ public class GncXmlHandler extends DefaultHandler {
                 mPriceCommodity = true;
                 mISO4217Currency = false;
                 break;
+
+            case GncXmlHelper.TAG_BUDGET:
+                mBudget = new Budget();
+                break;
+
+            case GncXmlHelper.TAG_GNC_RECURRENCE:
+            case GncXmlHelper.TAG_BUDGET_RECURRENCE:
+                mRecurrenceMultiplier = 1;
+                mRecurrence = new Recurrence(PeriodType.MONTH);
+                break;
+            case GncXmlHelper.TAG_BUDGET_SLOTS:
+                mInBudgetSlot = true;
+                break;
+            case GncXmlHelper.TAG_SLOT:
+                if (mInBudgetSlot){
+                    mBudgetAmount = new BudgetAmount(mBudget.getUID(), mBudgetAmountAccountUID);
+                }
+                break;
+            case GncXmlHelper.TAG_SLOT_VALUE:
+                mSlotTagAttribute = attributes.getValue(GncXmlHelper.ATTR_KEY_TYPE);
+                break;
         }
     }
 
     @Override
     public void endElement(String uri, String localName, String qualifiedName) throws SAXException {
+        // FIXME: 22.10.2015 First parse the number of accounts/transactions and use the numer to init the array lists
         String characterString = mContent.toString().trim();
 
         if (mIgnoreElement != null) {
@@ -352,14 +399,14 @@ public class GncXmlHandler extends DefaultHandler {
         }
 
         switch (qualifiedName) {
-            case GncXmlHelper.TAG_NAME:
+            case GncXmlHelper.TAG_ACCT_NAME:
                 mAccount.setName(characterString);
                 mAccount.setFullName(characterString);
                 break;
             case GncXmlHelper.TAG_ACCT_ID:
                 mAccount.setUID(characterString);
                 break;
-            case GncXmlHelper.TAG_TYPE:
+            case GncXmlHelper.TAG_ACCT_TYPE:
                 AccountType accountType = AccountType.valueOf(characterString);
                 mAccount.setAccountType(accountType);
                 mAccount.setHidden(accountType == AccountType.ROOT); //flag root account as hidden
@@ -420,6 +467,8 @@ public class GncXmlHandler extends DefaultHandler {
                     mISO4217Currency = false;
                 }
                 break;
+            case GncXmlHelper.TAG_SLOT:
+                break;
             case GncXmlHelper.TAG_SLOT_KEY:
                 switch (characterString) {
                     case GncXmlHelper.KEY_PLACEHOLDER:
@@ -449,6 +498,12 @@ public class GncXmlHandler extends DefaultHandler {
                     case GncXmlHelper.KEY_DEBIT_NUMERIC:
                         mInDebitNumericSlot = true;
                         break;
+                }
+                if (mInBudgetSlot && mBudgetAmountAccountUID == null){
+                    mBudgetAmountAccountUID = characterString;
+                    mBudgetAmount.setAccountUID(characterString);
+                } else if (mInBudgetSlot){
+                    mBudgetAmount.setPeriodNum(Long.parseLong(characterString));
                 }
                 break;
             case GncXmlHelper.TAG_SLOT_VALUE:
@@ -498,8 +553,29 @@ public class GncXmlHandler extends DefaultHandler {
                     handleEndOfTemplateNumericSlot(characterString, TransactionType.CREDIT);
                 } else if (mInTemplates && mInDebitNumericSlot) {
                     handleEndOfTemplateNumericSlot(characterString, TransactionType.DEBIT);
+                } else if (mInBudgetSlot){
+                    if (mSlotTagAttribute.equals(GncXmlHelper.ATTR_VALUE_NUMERIC)) {
+                        try {
+                            BigDecimal bigDecimal = GncXmlHelper.parseSplitAmount(characterString);
+                            //currency doesn't matter since we don't persist it in the budgets table
+                            mBudgetAmount.setAmount(new Money(bigDecimal, Commodity.DEFAULT_COMMODITY));
+                        } catch (ParseException e) {
+                            mBudgetAmount.setAmount(Money.getZeroInstance()); //just put zero, in case it was a formula we couldnt parse
+                            e.printStackTrace();
+                        } finally {
+                            mBudget.addBudgetAmount(mBudgetAmount);
+                        }
+                        mSlotTagAttribute = GncXmlHelper.ATTR_VALUE_FRAME;
+                    } else {
+                        mBudgetAmountAccountUID = null;
+                    }
                 }
                 break;
+
+            case GncXmlHelper.TAG_BUDGET_SLOTS:
+                mInBudgetSlot = false;
+                break;
+
             //================  PROCESSING OF TRANSACTION TAGS =====================================
             case GncXmlHelper.TAG_TRX_ID:
                 mTransaction.setUID(characterString);
@@ -583,6 +659,7 @@ public class GncXmlHandler extends DefaultHandler {
                         mTemplateAccountToTransactionMap.put(characterString, mTransaction.getUID());
                 }
                 break;
+            //todo: import split reconciled state and date
             case GncXmlHelper.TAG_TRN_SPLIT:
                 mTransaction.addSplit(mSplit);
                 break;
@@ -627,6 +704,7 @@ public class GncXmlHandler extends DefaultHandler {
             case GncXmlHelper.TAG_SX_AUTO_CREATE:
                 mScheduledAction.setAutoCreate(characterString.equals("y"));
                 break;
+            //todo: export auto_notify, advance_create, advance_notify
             case GncXmlHelper.TAG_SX_NUM_OCCUR:
                 mScheduledAction.setTotalFrequency(Integer.parseInt(characterString));
                 break;
@@ -637,8 +715,7 @@ public class GncXmlHandler extends DefaultHandler {
                 try {
                     PeriodType periodType = PeriodType.valueOf(characterString.toUpperCase());
                     periodType.setMultiplier(mRecurrenceMultiplier);
-                    if (mScheduledAction != null) //there might be recurrence tags for bugdets and other stuff
-                        mScheduledAction.setPeriod(periodType);
+                    mRecurrence.setPeriodType(periodType);
                 } catch (IllegalArgumentException ex){ //the period type constant is not supported
                     String msg = "Unsupported period constant: " + characterString;
                     Log.e(LOG_TAG, msg);
@@ -665,7 +742,7 @@ public class GncXmlHandler extends DefaultHandler {
                     }
 
                     if (mIsRecurrenceStart && mScheduledAction != null){
-                        mScheduledAction.setStartTime(date);
+                        mRecurrence.setPeriodStart(new Timestamp(date));
                         mIsRecurrenceStart = false;
                     }
                 } catch (ParseException e) {
@@ -683,13 +760,18 @@ public class GncXmlHandler extends DefaultHandler {
                     mScheduledAction.setActionUID(BaseModel.generateUID());
                 }
                 break;
+            case GncXmlHelper.TAG_GNC_RECURRENCE:
+                if (mScheduledAction != null){
+                    mScheduledAction.setRecurrence(mRecurrence);
+                }
+                break;
+
             case GncXmlHelper.TAG_SCHEDULED_ACTION:
                 if (mScheduledAction.getActionUID() != null && !mIgnoreScheduledAction) {
                     mScheduledActionsList.add(mScheduledAction);
                     int count = generateMissedScheduledTransactions(mScheduledAction);
                     Log.i(LOG_TAG, String.format("Generated %d transactions from scheduled action", count));
                 }
-                mRecurrenceMultiplier = 1; //reset it, even though it will be parsed from XML each time
                 mIgnoreScheduledAction = false;
                 break;
             // price table
@@ -728,6 +810,28 @@ public class GncXmlHandler extends DefaultHandler {
                     mPrice = null;
                 }
                 break;
+
+            case GncXmlHelper.TAG_BUDGET:
+                if (mBudget.getBudgetAmounts().size() > 0) //ignore if no budget amounts exist for the budget
+                    mBudgetList.add(mBudget);
+                break;
+
+            case GncXmlHelper.TAG_BUDGET_NAME:
+                mBudget.setName(characterString);
+                break;
+
+            case GncXmlHelper.TAG_BUDGET_DESCRIPTION:
+                mBudget.setDescription(characterString);
+                break;
+
+            case GncXmlHelper.TAG_BUDGET_NUM_PERIODS:
+                mBudget.setNumberOfPeriods(Long.parseLong(characterString));
+                break;
+
+            case GncXmlHelper.TAG_BUDGET_RECURRENCE:
+                mBudget.setRecurrence(mRecurrence);
+                break;
+
         }
 
         //reset the accumulated characters
@@ -846,6 +950,9 @@ public class GncXmlHandler extends DefaultHandler {
             long nPrices = mPricesDbAdapter.bulkAddRecords(mPriceList);
             Log.d(getClass().getSimpleName(), String.format("%d prices inserted", nPrices));
 
+            long nBudgets = mBudgetsDbAdapter.bulkAddRecords(mBudgetList);
+            Log.d(getClass().getSimpleName(), String.format("%d budgets inserted", nBudgets));
+
             long endTime = System.nanoTime();
             Log.d(getClass().getSimpleName(), String.format("bulk insert time: %d", endTime - startTime));
 
@@ -891,7 +998,7 @@ public class GncXmlHandler extends DefaultHandler {
         try {
             BigDecimal amountBigD = GncXmlHelper.parseSplitAmount(characterString);
             Money amount = new Money(amountBigD, getCommodityForAccount(mSplit.getAccountUID()));
-            mSplit.setValue(amount.absolute());
+            mSplit.setValue(amount.abs());
             mSplit.setType(splitType);
             mIgnoreTemplateTransaction = false; //we have successfully parsed an amount
         } catch (NumberFormatException | ParseException e) {
@@ -922,8 +1029,8 @@ public class GncXmlHandler extends DefaultHandler {
         }
 
         long lastRuntime = scheduledAction.getStartTime();
-        if (scheduledAction.getLastRun() > 0){
-            lastRuntime = scheduledAction.getLastRun();
+        if (scheduledAction.getLastRunTime() > 0){
+            lastRuntime = scheduledAction.getLastRunTime();
         }
 
         int generatedTransactionCount = 0;

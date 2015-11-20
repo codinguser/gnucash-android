@@ -1,4 +1,4 @@
-package org.gnucash.android.db;
+package org.gnucash.android.db.adapter;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -6,6 +6,7 @@ import android.database.sqlite.SQLiteStatement;
 import android.support.annotation.NonNull;
 
 import org.gnucash.android.app.GnuCashApplication;
+import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.model.Commodity;
 
 import static org.gnucash.android.db.DatabaseSchema.CommodityEntry;
@@ -107,7 +108,7 @@ public class CommoditiesDbAdapter extends DatabaseAdapter<Commodity> {
      * @return Commodity associated with code or null if none is found
      */
     public Commodity getCommodity(String currencyCode){
-        Cursor cursor = fetchAllRecords(CommodityEntry.COLUMN_MNEMONIC + "=?", new String[]{currencyCode});
+        Cursor cursor = fetchAllRecords(CommodityEntry.COLUMN_MNEMONIC + "=?", new String[]{currencyCode}, null);
         Commodity commodity = null;
         if (cursor.moveToNext()){
             commodity = buildModelInstance(cursor);

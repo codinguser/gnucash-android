@@ -34,13 +34,16 @@ import com.uservoice.uservoicesdk.Config;
 import com.uservoice.uservoicesdk.UserVoice;
 
 import org.gnucash.android.R;
-import org.gnucash.android.db.AccountsDbAdapter;
-import org.gnucash.android.db.CommoditiesDbAdapter;
 import org.gnucash.android.db.DatabaseHelper;
-import org.gnucash.android.db.PricesDbAdapter;
-import org.gnucash.android.db.ScheduledActionDbAdapter;
-import org.gnucash.android.db.SplitsDbAdapter;
-import org.gnucash.android.db.TransactionsDbAdapter;
+import org.gnucash.android.db.adapter.AccountsDbAdapter;
+import org.gnucash.android.db.adapter.BudgetAmountsDbAdapter;
+import org.gnucash.android.db.adapter.BudgetsDbAdapter;
+import org.gnucash.android.db.adapter.CommoditiesDbAdapter;
+import org.gnucash.android.db.adapter.PricesDbAdapter;
+import org.gnucash.android.db.adapter.RecurrenceDbAdapter;
+import org.gnucash.android.db.adapter.ScheduledActionDbAdapter;
+import org.gnucash.android.db.adapter.SplitsDbAdapter;
+import org.gnucash.android.db.adapter.TransactionsDbAdapter;
 import org.gnucash.android.model.Commodity;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.service.SchedulerService;
@@ -85,6 +88,12 @@ public class GnuCashApplication extends Application{
 
     private static PricesDbAdapter mPricesDbAdapter;
 
+    private static BudgetsDbAdapter mBudgetsDbAdapter;
+
+    private static BudgetAmountsDbAdapter mBudgetAmountsDbAdapter;
+
+    private static RecurrenceDbAdapter mRecurrenceDbAdapter;
+
     /**
      * Returns darker version of specified <code>color</code>.
      * Use for theming the status bar color when setting the color of the actionBar
@@ -125,6 +134,9 @@ public class GnuCashApplication extends Application{
         mScheduledActionDbAdapter   = new ScheduledActionDbAdapter(mDb);
         mCommoditiesDbAdapter       = new CommoditiesDbAdapter(mDb);
         mPricesDbAdapter            = new PricesDbAdapter(mDb);
+        mBudgetAmountsDbAdapter     = new BudgetAmountsDbAdapter(mDb);
+        mBudgetsDbAdapter           = new BudgetsDbAdapter(mDb);
+        mRecurrenceDbAdapter        = new RecurrenceDbAdapter(mDb);
 
         setDefaultCurrencyCode(getDefaultCurrencyCode());
     }
@@ -151,6 +163,18 @@ public class GnuCashApplication extends Application{
 
     public static PricesDbAdapter getPricesDbAdapter(){
         return mPricesDbAdapter;
+    }
+
+    public static BudgetsDbAdapter getBudgetDbAdapter() {
+        return mBudgetsDbAdapter;
+    }
+
+    public static RecurrenceDbAdapter getRecurrenceDbAdapter() {
+        return mRecurrenceDbAdapter;
+    }
+
+    public static BudgetAmountsDbAdapter getBudgetAmountsDbAdapter(){
+        return mBudgetAmountsDbAdapter;
     }
 
     /**

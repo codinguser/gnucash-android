@@ -43,8 +43,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import org.gnucash.android.R;
-import org.gnucash.android.db.AccountsDbAdapter;
-import org.gnucash.android.db.CommoditiesDbAdapter;
+import org.gnucash.android.db.adapter.AccountsDbAdapter;
+import org.gnucash.android.db.adapter.CommoditiesDbAdapter;
 import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.model.AccountType;
 import org.gnucash.android.model.BaseModel;
@@ -379,7 +379,7 @@ public class SplitEditorFragment extends Fragment {
             split.setType(viewHolder.splitTypeSwitch.getTransactionType());
             split.setUID(viewHolder.splitUidTextView.getText().toString().trim());
             if (viewHolder.quantity != null)
-                split.setQuantity(viewHolder.quantity.absolute());
+                split.setQuantity(viewHolder.quantity.abs());
             splitList.add(split);
         }
         return splitList;

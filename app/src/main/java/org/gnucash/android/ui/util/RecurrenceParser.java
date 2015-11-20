@@ -20,8 +20,11 @@ import android.text.format.Time;
 
 import com.codetroopers.betterpickers.recurrencepicker.EventRecurrence;
 
+import org.gnucash.android.model.PeriodType;
+import org.gnucash.android.model.Recurrence;
 import org.gnucash.android.model.ScheduledAction;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -40,98 +43,61 @@ public class RecurrenceParser {
     public static final long MONTH_MILLIS   = 30*DAY_MILLIS;
     public static final long YEAR_MILLIS    = 12*MONTH_MILLIS;
 
-
     /**
-     * Parses an event recurrence to produce {@link org.gnucash.android.model.ScheduledAction}s for each recurrence.
-     * <p>Each {@link org.gnucash.android.model.ScheduledAction} represents just one simple repeating schedule, e.g. every Monday.
-     * If there are multiple schedules in the recurrence e.g. every Monday and Tuesday, then two ScheduledEvents will be generated</p>
-     * @param eventRecurrence Event recurrence pattern obtained from dialog
-     * @param actionType Type of event recurrence
-     * @return List of ScheduledEvents
+     * Parse an {@link EventRecurrence} into a {@link Recurrence} object
+     * @param eventRecurrence EventRecurrence object
+     * @return Recurrence object
      */
-    public static List<ScheduledAction> parse(EventRecurrence eventRecurrence, ScheduledAction.ActionType actionType){
-        long period;
-        List<ScheduledAction> scheduledActionList = new ArrayList<ScheduledAction>();
+    public static Recurrence parse(EventRecurrence eventRecurrence){
         if (eventRecurrence == null)
-            return scheduledActionList;
+            return null;
 
+        PeriodType periodType;
         switch(eventRecurrence.freq){
-            case EventRecurrence.DAILY: {
-                if (eventRecurrence.interval == 0) //I assume this is a bug from the picker library
-                    period = DAY_MILLIS;
-                else
-                    period = eventRecurrence.interval * DAY_MILLIS;
-
-                ScheduledAction scheduledAction = new ScheduledAction(actionType);
-                scheduledAction.setPeriod(period);
-                parseEndTime(eventRecurrence, scheduledAction);
-                scheduledActionList.add(scheduledAction);
-            }
+            case EventRecurrence.DAILY:
+                periodType = PeriodType.DAY;
                 break;
 
-            case EventRecurrence.WEEKLY: {
-                if (eventRecurrence.interval == 0)
-                    period = WEEK_MILLIS;
-                else
-                    period = eventRecurrence.interval * WEEK_MILLIS;
-                for (int day : eventRecurrence.byday) {
-                    ScheduledAction scheduledAction = new ScheduledAction(actionType);
-                    scheduledAction.setPeriod(period);
-
-                    scheduledAction.setStartTime(nextDayOfWeek(day2CalendarDay(day)).getTimeInMillis());
-                    parseEndTime(eventRecurrence, scheduledAction);
-                    scheduledActionList.add(scheduledAction);
-                }
-            }
-            break;
-
-            case EventRecurrence.MONTHLY: {
-                if (eventRecurrence.interval == 0)
-                    period = MONTH_MILLIS;
-                else
-                    period = eventRecurrence.interval * MONTH_MILLIS;
-                ScheduledAction event = new ScheduledAction(actionType);
-                event.setPeriod(period);
-                Calendar now = Calendar.getInstance();
-                now.add(Calendar.MONTH, 1);
-                event.setStartTime(now.getTimeInMillis());
-                parseEndTime(eventRecurrence, event);
-
-                scheduledActionList.add(event);
-            }
+            case EventRecurrence.WEEKLY:
+                periodType = PeriodType.WEEK;
                 break;
 
-            case EventRecurrence.YEARLY: {
-                if (eventRecurrence.interval == 0)
-                    period = YEAR_MILLIS;
-                else
-                    period = eventRecurrence.interval * YEAR_MILLIS;
-                ScheduledAction event = new ScheduledAction(actionType);
-                event.setPeriod(period);
-                Calendar now = Calendar.getInstance();
-                now.add(Calendar.YEAR, 1);
-                event.setStartTime(now.getTimeInMillis());
-                parseEndTime(eventRecurrence, event);
-                scheduledActionList.add(event);
-            }
+            case EventRecurrence.MONTHLY:
+                periodType = PeriodType.MONTH;
+                break;
+
+            case EventRecurrence.YEARLY:
+                periodType = PeriodType.YEAR;
+                break;
+
+            default:
+                periodType = PeriodType.MONTH;
                 break;
         }
-        return scheduledActionList;
+
+        int interval = eventRecurrence.interval == 0 ? 1 : eventRecurrence.interval; //bug from betterpickers library sometimes returns 0 as the interval
+        periodType.setMultiplier(interval);
+        Recurrence recurrence = new Recurrence(periodType);
+        parseEndTime(eventRecurrence, recurrence);
+        recurrence.setByDay(parseByDay(eventRecurrence.byday));
+        recurrence.setPeriodStart(new Timestamp(eventRecurrence.startDate.toMillis(false)));
+
+        return recurrence;
     }
 
     /**
      * Parses the end time from an EventRecurrence object and sets it to the <code>scheduledEvent</code>.
      * The end time is specified in the dialog either by number of occurences or a date.
      * @param eventRecurrence Event recurrence pattern obtained from dialog
-     * @param scheduledAction ScheduledEvent to be to updated
+     * @param recurrence Recurrence event to set the end period to
      */
-    private static void parseEndTime(EventRecurrence eventRecurrence, ScheduledAction scheduledAction) {
+    private static void parseEndTime(EventRecurrence eventRecurrence, Recurrence recurrence) {
         if (eventRecurrence.until != null && eventRecurrence.until.length() > 0) {
             Time endTime = new Time();
             endTime.parse(eventRecurrence.until);
-            scheduledAction.setEndTime(endTime.toMillis(false));
+            recurrence.setPeriodEnd(new Timestamp(endTime.toMillis(false)));
         } else if (eventRecurrence.count > 0){
-            scheduledAction.setTotalFrequency(eventRecurrence.count);
+            recurrence.setPeriodEnd(eventRecurrence.count);
         }
     }
 
@@ -148,6 +114,51 @@ public class RecurrenceParser {
         }
         date.add(Calendar.DAY_OF_MONTH, diff);
         return date;
+    }
+
+    /**
+     * Parses an array of byday values to return the string concatenation of days of the week.
+     * <p>Currently only supports byDay values for weeks</p>
+     * @param byday Array of byday values
+     * @return String concat of days of the week or null if {@code byday} was empty
+     */
+    private static String parseByDay(int[] byday){
+        if (byday == null || byday.length == 0){
+            return null;
+        }
+        //todo: parse for month and year as well, when our dialog supports those
+        StringBuilder builder = new StringBuilder();
+        for (int day : byday) {
+            switch (day)
+            {
+                case EventRecurrence.SU:
+                    builder.append("SU");
+                    break;
+                case EventRecurrence.MO:
+                    builder.append("MO");
+                    break;
+                case EventRecurrence.TU:
+                    builder.append("TU");
+                    break;
+                case EventRecurrence.WE:
+                    builder.append("WE");
+                    break;
+                case EventRecurrence.TH:
+                    builder.append("TH");
+                    break;
+                case EventRecurrence.FR:
+                    builder.append("FR");
+                    break;
+                case EventRecurrence.SA:
+                    builder.append("SA");
+                    break;
+                default:
+                    throw new RuntimeException("bad day of week: " + day);
+            }
+            builder.append(",");
+        }
+        builder.deleteCharAt(builder.length());
+        return builder.toString();
     }
 
     /**

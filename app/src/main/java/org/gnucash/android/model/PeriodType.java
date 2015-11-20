@@ -20,6 +20,7 @@ import android.content.res.Resources;
 
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
+import org.gnucash.android.ui.util.RecurrenceParser;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -31,9 +32,47 @@ import java.util.Locale;
  * @see org.gnucash.android.model.ScheduledAction
 */
 public enum PeriodType {
-    DAY, WEEK, MONTH, YEAR;
+    DAY, WEEK, MONTH, YEAR; // TODO: 22.10.2015 add support for hourly
 
     int mMultiplier = 1; //multiplier for the period type
+
+    /**
+     * Computes the {@link PeriodType} for a given {@code period}
+     * @param period Period in milliseconds since Epoch
+     * @return PeriodType corresponding to the period
+     */
+    public static PeriodType parse(long period){
+        PeriodType periodType = DAY;
+        int result = (int) (period/ RecurrenceParser.YEAR_MILLIS);
+        if (result > 0) {
+            periodType = YEAR;
+            periodType.setMultiplier(result);
+            return periodType;
+        }
+
+        result = (int) (period/RecurrenceParser.MONTH_MILLIS);
+        if (result > 0) {
+            periodType = MONTH;
+            periodType.setMultiplier(result);
+            return periodType;
+        }
+
+        result = (int) (period/RecurrenceParser.WEEK_MILLIS);
+        if (result > 0) {
+            periodType = WEEK;
+            periodType.setMultiplier(result);
+            return periodType;
+        }
+
+        result = (int) (period/RecurrenceParser.DAY_MILLIS);
+        if (result > 0) {
+            periodType = DAY;
+            periodType.setMultiplier(result);
+            return periodType;
+        }
+
+        return periodType;
+    }
 
     /**
      * Sets the multiplier for this period type
@@ -79,7 +118,7 @@ public enum PeriodType {
      */
     public String getFrequencyRepeatString(){
         Resources res = GnuCashApplication.getAppContext().getResources();
-
+        //todo: take multiplier into account here
         switch (this) {
             case DAY:
                 return res.getQuantityString(R.plurals.label_every_x_days, mMultiplier, mMultiplier);

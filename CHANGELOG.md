@@ -1,5 +1,11 @@
 Change Log
 ===============================================================================
+Version 2.1.0 *(2016-xx-xx)*
+----------------------------
+* Feature: Budgets
+* Improved: Scheduled transactions now have more accurate timestamps
+* Improved: Generate all scheduled transactions even if a scheduled is missed (e.g. device off)
+
 Version 2.0.2 *(2015-11-20)*
 ----------------------------
 * Fixed: Exporting to external service does not work in some devices

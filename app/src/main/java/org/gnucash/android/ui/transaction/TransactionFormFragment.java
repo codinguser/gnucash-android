@@ -26,12 +26,10 @@ import android.inputmethodservice.KeyboardView;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.text.format.DateUtils;
-import android.text.format.Time;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -51,22 +49,23 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.codetroopers.betterpickers.calendardatepicker.CalendarDatePickerDialog;
-import com.codetroopers.betterpickers.radialtimepicker.RadialTimePickerDialog;
+import com.codetroopers.betterpickers.calendardatepicker.CalendarDatePickerDialogFragment;
+import com.codetroopers.betterpickers.radialtimepicker.RadialTimePickerDialogFragment;
 import com.codetroopers.betterpickers.recurrencepicker.EventRecurrence;
 import com.codetroopers.betterpickers.recurrencepicker.EventRecurrenceFormatter;
-import com.codetroopers.betterpickers.recurrencepicker.RecurrencePickerDialog;
+import com.codetroopers.betterpickers.recurrencepicker.RecurrencePickerDialogFragment;
 
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
-import org.gnucash.android.db.AccountsDbAdapter;
-import org.gnucash.android.db.CommoditiesDbAdapter;
+import org.gnucash.android.db.adapter.CommoditiesDbAdapter;
 import org.gnucash.android.db.DatabaseSchema;
-import org.gnucash.android.db.ScheduledActionDbAdapter;
-import org.gnucash.android.db.TransactionsDbAdapter;
+import org.gnucash.android.db.adapter.AccountsDbAdapter;
+import org.gnucash.android.db.adapter.ScheduledActionDbAdapter;
+import org.gnucash.android.db.adapter.TransactionsDbAdapter;
 import org.gnucash.android.model.AccountType;
 import org.gnucash.android.model.Commodity;
 import org.gnucash.android.model.Money;
+import org.gnucash.android.model.Recurrence;
 import org.gnucash.android.model.ScheduledAction;
 import org.gnucash.android.model.Split;
 import org.gnucash.android.model.Transaction;
@@ -77,6 +76,7 @@ import org.gnucash.android.ui.homescreen.WidgetConfigurationActivity;
 import org.gnucash.android.ui.transaction.dialog.TransferFundsDialogFragment;
 import org.gnucash.android.ui.util.OnTransferFundsListener;
 import org.gnucash.android.ui.util.RecurrenceParser;
+import org.gnucash.android.ui.util.RecurrenceViewClickListener;
 import org.gnucash.android.ui.util.widget.CalculatorEditText;
 import org.gnucash.android.ui.util.widget.TransactionTypeSwitch;
 import org.gnucash.android.util.QualifiedAccountNameCursorAdapter;
@@ -101,10 +101,9 @@ import butterknife.ButterKnife;
  * @author Ngewi Fet <ngewif@gmail.com>
  */
 public class TransactionFormFragment extends Fragment implements
-        CalendarDatePickerDialog.OnDateSetListener, RadialTimePickerDialog.OnTimeSetListener,
-        RecurrencePickerDialog.OnRecurrenceSetListener, OnTransferFundsListener {
+        CalendarDatePickerDialogFragment.OnDateSetListener, RadialTimePickerDialogFragment.OnTimeSetListener,
+        RecurrencePickerDialogFragment.OnRecurrenceSetListener, OnTransferFundsListener {
 
-    private static final String FRAGMENT_TAG_RECURRENCE_PICKER  = "recurrence_picker";
     private static final int REQUEST_SPLIT_EDITOR = 0x11;
 
     /**
@@ -120,7 +119,7 @@ public class TransactionFormFragment extends Fragment implements
 	/**
 	 * Adapter for transfer account spinner
 	 */
-	private SimpleCursorAdapter mCursorAdapter;
+	private QualifiedAccountNameCursorAdapter mAccountCursorAdapter;
 
 	/**
 	 * Cursor for transfer account spinner
@@ -275,7 +274,7 @@ public class TransactionFormFragment extends Fragment implements
         BigDecimal amountBigd = mAmountEditText.getValue();
         if (amountBigd.equals(BigDecimal.ZERO))
             return;
-        Money amount 	= new Money(amountBigd, Commodity.getInstance(fromCurrency.getCurrencyCode())).absolute();
+        Money amount 	= new Money(amountBigd, Commodity.getInstance(fromCurrency.getCurrencyCode())).abs();
 
         TransferFundsDialogFragment fragment
                 = TransferFundsDialogFragment.getInstance(amount, targetCurrency, this);
@@ -574,8 +573,8 @@ public class TransactionFormFragment extends Fragment implements
         }
 		mCursor = mAccountsDbAdapter.fetchAccountsOrderedByFullName(conditions, new String[]{mAccountUID, AccountType.ROOT.name()});
 
-        mCursorAdapter = new QualifiedAccountNameCursorAdapter(getActivity(), mCursor);
-		mTransferAccountSpinner.setAdapter(mCursorAdapter);
+        mAccountCursorAdapter = new QualifiedAccountNameCursorAdapter(getActivity(), mCursor);
+		mTransferAccountSpinner.setAdapter(mAccountCursorAdapter);
 	}
 
     /**
@@ -638,7 +637,7 @@ public class TransactionFormFragment extends Fragment implements
                 int year = calendar.get(Calendar.YEAR);
                 int monthOfYear = calendar.get(Calendar.MONTH);
                 int dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
-                CalendarDatePickerDialog datePickerDialog = CalendarDatePickerDialog.newInstance(
+                CalendarDatePickerDialogFragment datePickerDialog = CalendarDatePickerDialogFragment.newInstance(
                         TransactionFormFragment.this,
                         year, monthOfYear, dayOfMonth);
                 datePickerDialog.show(getFragmentManager(), "date_picker_fragment");
@@ -660,37 +659,14 @@ public class TransactionFormFragment extends Fragment implements
                 Calendar calendar = Calendar.getInstance();
                 calendar.setTimeInMillis(timeMillis);
 
-                RadialTimePickerDialog timePickerDialog = RadialTimePickerDialog.newInstance(
+                RadialTimePickerDialogFragment timePickerDialog = RadialTimePickerDialogFragment.newInstance(
                         TransactionFormFragment.this, calendar.get(Calendar.HOUR_OF_DAY),
                         calendar.get(Calendar.MINUTE), true);
                 timePickerDialog.show(getFragmentManager(), "time_picker_dialog_fragment");
             }
         });
 
-        mRecurrenceTextView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                FragmentManager fm = getActivity().getSupportFragmentManager();
-                Bundle b = new Bundle();
-                Time t = new Time();
-                t.setToNow();
-                b.putLong(RecurrencePickerDialog.BUNDLE_START_TIME_MILLIS, t.toMillis(false));
-                b.putString(RecurrencePickerDialog.BUNDLE_TIME_ZONE, t.timezone);
-
-                // may be more efficient to serialize and pass in EventRecurrence
-                b.putString(RecurrencePickerDialog.BUNDLE_RRULE, mRecurrenceRule);
-
-                RecurrencePickerDialog rpd = (RecurrencePickerDialog) fm.findFragmentByTag(
-                        FRAGMENT_TAG_RECURRENCE_PICKER);
-                if (rpd != null) {
-                    rpd.dismiss();
-                }
-                rpd = new RecurrencePickerDialog();
-                rpd.setArguments(b);
-                rpd.setOnRecurrenceSetListener(TransactionFormFragment.this);
-                rpd.show(fm, FRAGMENT_TAG_RECURRENCE_PICKER);
-            }
-        });
+        mRecurrenceTextView.setOnClickListener(new RecurrenceViewClickListener((AppCompatActivity) getActivity(), mRecurrenceRule, this));
 	}
 
     /**
@@ -698,18 +674,9 @@ public class TransactionFormFragment extends Fragment implements
      * @param accountId Database ID of the transfer account
      */
 	private void setSelectedTransferAccount(long accountId){
-		for (int pos = 0; pos < mCursorAdapter.getCount(); pos++) {
-			if (mCursorAdapter.getItemId(pos) == accountId){
-                final int position = pos;
-                mTransferAccountSpinner.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        mTransferAccountSpinner.setSelection(position);
-                    }
-                }, 100);
-				break;
-			}
-		}
+        int position = mAccountCursorAdapter.getPosition(mAccountsDbAdapter.getUID(accountId));
+        if (position >= 0)
+            mTransferAccountSpinner.setSelection(position);
 	}
 
 	/**
@@ -736,7 +703,7 @@ public class TransactionFormFragment extends Fragment implements
         }
 
 		Currency currency = Currency.getInstance(mTransactionsDbAdapter.getAccountCurrencyCode(mAccountUID));
-		Money amount 	= new Money(amountBigd, Commodity.getInstance(currency.getCurrencyCode())).absolute();
+		Money amount 	= new Money(amountBigd, Commodity.getInstance(currency.getCurrencyCode())).abs();
 
         if (mSplitsList.size() == 1){ //means split editor was opened but no split was added
             String transferAcctUID;
@@ -852,32 +819,28 @@ public class TransactionFormFragment extends Fragment implements
     private void scheduleRecurringTransaction(String transactionUID) {
         ScheduledActionDbAdapter scheduledActionDbAdapter = ScheduledActionDbAdapter.getInstance();
 
-        List<ScheduledAction> events = RecurrenceParser.parse(mEventRecurrence,
-                ScheduledAction.ActionType.TRANSACTION);
+        Recurrence recurrence = RecurrenceParser.parse(mEventRecurrence);
+
+        ScheduledAction scheduledAction = new ScheduledAction(ScheduledAction.ActionType.TRANSACTION);
+        scheduledAction.setRecurrence(recurrence);
 
         String scheduledActionUID = getArguments().getString(UxArgument.SCHEDULED_ACTION_UID);
 
         if (scheduledActionUID != null) { //if we are editing an existing schedule
-            if ( events.size() == 1) {
-                ScheduledAction scheduledAction = events.get(0);
+            if (recurrence == null){
+                scheduledActionDbAdapter.deleteRecord(scheduledActionUID);
+            } else {
                 scheduledAction.setUID(scheduledActionUID);
                 scheduledActionDbAdapter.updateRecurrenceAttributes(scheduledAction);
                 Toast.makeText(getActivity(), "Updated transaction schedule", Toast.LENGTH_SHORT).show();
-                return;
-            } else {
-                //if user changed scheduled action so that more than one new schedule would be saved,
-                // then remove the old one
-                ScheduledActionDbAdapter.getInstance().deleteRecord(scheduledActionUID);
+            }
+        } else {
+            if (recurrence != null) {
+                scheduledAction.setActionUID(transactionUID);
+                scheduledActionDbAdapter.addRecord(scheduledAction);
+                Toast.makeText(getActivity(), R.string.toast_scheduled_recurring_transaction, Toast.LENGTH_SHORT).show();
             }
         }
-
-        for (ScheduledAction event : events) {
-            event.setActionUID(transactionUID);
-            scheduledActionDbAdapter.addRecord(event);
-
-            Log.i("TransactionFormFragment", event.toString());
-        }
-        Toast.makeText(getActivity(), R.string.toast_scheduled_recurring_transaction, Toast.LENGTH_SHORT).show();
 
     }
 
@@ -970,7 +933,7 @@ public class TransactionFormFragment extends Fragment implements
 	}
 
     @Override
-    public void onDateSet(CalendarDatePickerDialog calendarDatePickerDialog, int year, int monthOfYear, int dayOfMonth) {
+    public void onDateSet(CalendarDatePickerDialogFragment calendarDatePickerDialog, int year, int monthOfYear, int dayOfMonth) {
         Calendar cal = new GregorianCalendar(year, monthOfYear, dayOfMonth);
         mDateTextView.setText(DATE_FORMATTER.format(cal.getTime()));
         mDate.set(Calendar.YEAR, year);
@@ -979,7 +942,7 @@ public class TransactionFormFragment extends Fragment implements
     }
 
     @Override
-    public void onTimeSet(RadialTimePickerDialog radialTimePickerDialog, int hourOfDay, int minute) {
+    public void onTimeSet(RadialTimePickerDialogFragment radialTimePickerDialog, int hourOfDay, int minute) {
         Calendar cal = new GregorianCalendar(0, 0, 0, hourOfDay, minute);
         mTimeTextView.setText(TIME_FORMATTER.format(cal.getTime()));
         mTime.set(Calendar.HOUR_OF_DAY, hourOfDay);

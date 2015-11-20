@@ -90,6 +90,7 @@ android {
         }
         debug {
             debuggable true
+            testCoverageEnabled true
             signingConfig signingConfigs.debug
         }
     }
@@ -146,8 +147,8 @@ def adb = android.getAdbExe().toString()
 
 afterEvaluate {
     initCrashlyticsPropertiesIfNeeded()
-
-    task grantAnimationPermissionDevel(type: Exec, dependsOn: 'installDevelopmentDebug') { // or install{productFlavour}{buildType}
+    
+    task grantTestPermissionsDevel(type: Exec, dependsOn: 'installDevelopmentDebug') { // or install{productFlavour}{buildType}
         commandLine "$adb", 'devices'
         standardOutput = new ByteArrayOutputStream()
 
@@ -159,7 +160,7 @@ afterEvaluate {
         }
     }
 
-    task grantAnimationPermissionProduction(type: Exec, dependsOn: 'installProductionDebug'){
+    task grantTestPermissionsProduction(type: Exec, dependsOn: 'installProductionDebug'){
         commandLine "$adb -e shell pm grant $android.defaultConfig.applicationId android.permission.SET_ANIMATION_SCALE".split(' ')
         commandLine "$adb -e shell pm grant $android.defaultConfig.applicationId android.permission.WRITE_EXTERNAL_STORAGE".split(' ')
     }
@@ -167,18 +168,18 @@ afterEvaluate {
     // get called directly, not the install* versions
     tasks.each { task ->
         if (task.name.startsWith('assembleDevelopmentDebugAndroidTest')){
-            task.dependsOn grantAnimationPermissionDevel
+            task.dependsOn grantTestPermissionsDevel
         } else if (task.name.startsWith('assembleBetaDebugAndroidTest')){
-            task.dependsOn grantAnimationPermissionProduction
+            task.dependsOn grantTestPermissionsProduction
         } else if (task.name.startsWith('assembleProductionDebugAndroidTest')){
-            task.dependsOn grantAnimationPermissionProduction
+            task.dependsOn grantTestPermissionsProduction
         }
     }
 }
 
-def androidSupportVersion       = "22.2.1"
-def androidEspressoVersion      = "2.2"
-def androidSupportTestVersion   = "0.3"
+def androidSupportVersion       = "23.1.0"
+def androidEspressoVersion      = "2.2.1"
+def androidSupportTestVersion   = "0.4.1"
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
@@ -188,7 +189,7 @@ dependencies {
             'com.android.support:cardview-v7:'      + androidSupportVersion,
             'com.android.support:recyclerview-v7:'  + androidSupportVersion,
             'com.viewpagerindicator:library:2.4.1@aar',
-            'com.code-troopers.betterpickers:library:2.0.3',
+            'com.code-troopers.betterpickers:library:2.1.2',
             'org.jraf:android-switch-backport:2.0.1@aar',
             'com.github.PhilJay:MPAndroidChart:v2.1.3',
             'joda-time:joda-time:2.7',
@@ -223,7 +224,7 @@ dependencies {
         exclude module: 'recyclerview-v7'
     }
 
-    androidTestCompile('com.squareup.assertj:assertj-android:1.1.0'){
+    androidTestCompile('com.squareup.assertj:assertj-android:1.1.1'){
         exclude group: 'com.android.support', module:'support-annotations'
     }
 }
