@@ -23,6 +23,7 @@ import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
 
+import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.CommoditiesDbAdapter;
 import org.gnucash.android.db.PricesDbAdapter;
@@ -33,6 +34,7 @@ import org.gnucash.android.export.xml.GncXmlHelper;
 import org.gnucash.android.model.Account;
 import org.gnucash.android.model.AccountType;
 import org.gnucash.android.model.BaseModel;
+import org.gnucash.android.model.Commodity;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.model.PeriodType;
 import org.gnucash.android.model.Price;
@@ -48,12 +50,10 @@ import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Currency;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
-import java.util.UUID;
 import java.util.regex.Pattern;
 
 /**
@@ -231,6 +231,8 @@ public class GncXmlHandler extends DefaultHandler {
 
     private PricesDbAdapter mPricesDbAdapter;
 
+    private Map<String, Integer> mCurrencyCount;
+
     /**
      * Creates a handler for handling XML stream events when parsing the XML backup file
      */
@@ -276,6 +278,7 @@ public class GncXmlHandler extends DefaultHandler {
         mAutoBalanceSplits = new ArrayList<>();
 
         mPriceList = new ArrayList<>();
+        mCurrencyCount = new HashMap<>();
     }
 
     @Override
@@ -372,7 +375,12 @@ public class GncXmlHandler extends DefaultHandler {
             case GncXmlHelper.TAG_COMMODITY_ID:
                 String currencyCode = mISO4217Currency ? characterString : NO_CURRENCY_CODE;
                 if (mAccount != null) {
-                    mAccount.setCurrency(Currency.getInstance(currencyCode));
+                    mAccount.setCurrencyCode(currencyCode);
+                    if (mCurrencyCount.containsKey(currencyCode)) {
+                        mCurrencyCount.put(currencyCode, mCurrencyCount.get(currencyCode) + 1);
+                    } else {
+                        mCurrencyCount.put(currencyCode, 1);
+                    }
                 }
                 if (mTransaction != null) {
                     mTransaction.setCurrencyCode(currencyCode);
@@ -566,9 +574,9 @@ public class GncXmlHandler extends DefaultHandler {
                     //this is intentional: GnuCash XML formats split amounts, credits are negative, debits are positive.
                     mSplit.setType(mNegativeQuantity ? TransactionType.CREDIT : TransactionType.DEBIT);
                     //the split amount uses the account currency
-                    mSplit.setQuantity(new Money(mQuantity, getCurrencyForAccount(characterString)));
+                    mSplit.setQuantity(new Money(mQuantity, getCommodityForAccount(characterString)));
                     //the split value uses the transaction currency
-                    mSplit.setValue(new Money(mValue, mTransaction.getCurrency()));
+                    mSplit.setValue(new Money(mValue, Commodity.getInstance(mTransaction.getCurrency().getCurrencyCode())));
                     mSplit.setAccountUID(characterString);
                 } else {
                     if (!mIgnoreTemplateTransaction)
@@ -767,7 +775,7 @@ public class GncXmlHandler extends DefaultHandler {
             String currencyCode = split.getAccountUID();
             Account imbAccount = mapImbalanceAccount.get(currencyCode);
             if (imbAccount == null) {
-                imbAccount = new Account(imbalancePrefix + currencyCode, Currency.getInstance(currencyCode));
+                imbAccount = new Account(imbalancePrefix + currencyCode, Commodity.getInstance(currencyCode));
                 imbAccount.setParentUID(mRootAccount.getUID());
                 imbAccount.setAccountType(AccountType.BANK);
                 mapImbalanceAccount.put(currencyCode, imbAccount);
@@ -845,20 +853,32 @@ public class GncXmlHandler extends DefaultHandler {
         } finally {
             mAccountsDbAdapter.endTransaction();
         }
+
+        String mostAppearedCurrency = "";
+        int mostCurrencyAppearance = 0;
+        for (Map.Entry<String, Integer> entry : mCurrencyCount.entrySet()) {
+            if (entry.getValue() > mostCurrencyAppearance) {
+                mostCurrencyAppearance = entry.getValue();
+                mostAppearedCurrency = entry.getKey();
+            }
+        }
+        if (mostCurrencyAppearance > 0) {
+            GnuCashApplication.setDefaultCurrencyCode(mostAppearedCurrency);
+        }
     }
 
     /**
      * Returns the currency for an account which has been parsed (but not yet saved to the db)
      * <p>This is used when parsing splits to assign the right currencies to the splits</p>
      * @param accountUID GUID of the account
-     * @return Currency of the account
+     * @return Commodity of the account
      */
-    private Currency getCurrencyForAccount(String accountUID){
+    private Commodity getCommodityForAccount(String accountUID){
         try {
-            return mAccountMap.get(accountUID).getCurrency();
+            return mAccountMap.get(accountUID).getCommodity();
         } catch (Exception e) {
             Crashlytics.logException(e);
-            return Currency.getInstance(Money.DEFAULT_CURRENCY_CODE);
+            return Commodity.DEFAULT_COMMODITY;
         }
     }
 
@@ -870,7 +890,7 @@ public class GncXmlHandler extends DefaultHandler {
     private void handleEndOfTemplateNumericSlot(String characterString, TransactionType splitType) {
         try {
             BigDecimal amountBigD = GncXmlHelper.parseSplitAmount(characterString);
-            Money amount = new Money(amountBigD, getCurrencyForAccount(mSplit.getAccountUID()));
+            Money amount = new Money(amountBigD, getCommodityForAccount(mSplit.getAccountUID()));
             mSplit.setValue(amount.absolute());
             mSplit.setType(splitType);
             mIgnoreTemplateTransaction = false; //we have successfully parsed an amount

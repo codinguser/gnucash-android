@@ -35,12 +35,11 @@ import org.gnucash.android.db.SplitsDbAdapter;
 import org.gnucash.android.db.TransactionsDbAdapter;
 
 import java.io.File;
-import java.io.FileFilter;
-import java.io.Writer;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -74,7 +73,16 @@ public abstract class Exporter {
     /**
      * Export options
      */
-    protected ExportParams mParameters;
+    protected ExportParams mExportParams;
+
+    /**
+     * Cache directory to which files will be first exported before moved to final destination.
+     * <p>There is a different cache dir per export format, which has the name of the export format.<br/>
+     *    The cache dir is cleared every time a new {@link Exporter} is instantiated.
+     *    The files created here are only accessible within this application, and should be copied to SD card before they can be shared
+     * </p>
+     */
+    protected File mCacheDir;
 
     private static final SimpleDateFormat EXPORT_FILENAME_DATE_FORMAT = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US);
 
@@ -92,28 +100,32 @@ public abstract class Exporter {
     protected TransactionsDbAdapter mTransactionsDbAdapter;
     protected SplitsDbAdapter mSplitsDbAdapter;
     protected ScheduledActionDbAdapter mScheduledActionDbAdapter;
-    protected PricesDbAdapter mPricesDbAdpater;
+    protected PricesDbAdapter mPricesDbAdapter;
     protected CommoditiesDbAdapter mCommoditiesDbAdapter;
     protected Context mContext;
 
     public Exporter(ExportParams params, SQLiteDatabase db) {
-        this.mParameters = params;
+        this.mExportParams = params;
         mContext = GnuCashApplication.getAppContext();
         if (db == null) {
             mAccountsDbAdapter = AccountsDbAdapter.getInstance();
             mTransactionsDbAdapter = TransactionsDbAdapter.getInstance();
             mSplitsDbAdapter = SplitsDbAdapter.getInstance();
             mScheduledActionDbAdapter = ScheduledActionDbAdapter.getInstance();
-            mPricesDbAdpater = PricesDbAdapter.getInstance();
+            mPricesDbAdapter = PricesDbAdapter.getInstance();
             mCommoditiesDbAdapter = CommoditiesDbAdapter.getInstance();
         } else {
             mSplitsDbAdapter = new SplitsDbAdapter(db);
             mTransactionsDbAdapter = new TransactionsDbAdapter(db, mSplitsDbAdapter);
             mAccountsDbAdapter = new AccountsDbAdapter(db, mTransactionsDbAdapter);
             mScheduledActionDbAdapter = new ScheduledActionDbAdapter(db);
-            mPricesDbAdpater = new PricesDbAdapter(db);
+            mPricesDbAdapter = new PricesDbAdapter(db);
             mCommoditiesDbAdapter = new CommoditiesDbAdapter(db);
         }
+
+        mCacheDir = new File(mContext.getCacheDir(), params.getExportFormat().name());
+        mCacheDir.mkdir();
+        purgeDirectory(mCacheDir);
     }
 
     /**
@@ -121,10 +133,8 @@ public abstract class Exporter {
      * @return String containing the file name
      */
     public static String buildExportFilename(ExportFormat format) {
-        String filename = EXPORT_FILENAME_DATE_FORMAT.format(
-                new Date(System.currentTimeMillis()))
+        return EXPORT_FILENAME_DATE_FORMAT.format(new Date(System.currentTimeMillis()))
                 + "_gnucash_export" + format.getExtension();
-        return filename;
     }
 
     /**
@@ -149,59 +159,44 @@ public abstract class Exporter {
     }
 
     /**
-     * Builds a file (creating folders where necessary) for saving the exported data
-     * @param format Export format which determines the file extension
-     * @return File for export
-     * @see #EXPORT_FOLDER_PATH
-     */
-    public static File createExportFile(ExportFormat format){
-        new File(EXPORT_FOLDER_PATH).mkdirs();
-        return new File(EXPORT_FOLDER_PATH + buildExportFilename(format));
-    }
-
-    /**
-     * Builds a file for backups of the database (in XML) format.
-     * Backups are usually zipped and have extension ".zip"
-     * @return File for saving backups
-     * @see #BACKUP_FOLDER_PATH
-     */
-    public static File buildBackupFile(){
-        new File(BACKUP_FOLDER_PATH).mkdirs();
-        return new File(BACKUP_FOLDER_PATH + buildExportFilename(ExportFormat.XML) + ".zip");
-    }
-
-    /**
-     * Returns the most recent backup file from the backup folder
-     * @return Last modified file from backup folder
-     * @see #BACKUP_FOLDER_PATH
-     */
-    public static File getMostRecentBackupFile(){
-        File backupFolder = new File(BACKUP_FOLDER_PATH);
-        if (!backupFolder.exists())
-            return null;
-
-        File[] files = backupFolder.listFiles(new FileFilter() {
-            public boolean accept(File file) {
-                return file.isFile();
-            }
-        });
-        long lastMod = Long.MIN_VALUE;
-        File backupFile = null;
-        for (File file : files) {
-            if (file.lastModified() > lastMod) {
-                backupFile = file;
-                lastMod = file.lastModified();
-            }
-        }
-        return backupFile;
-    }
-
-    /**
      * Generates the export output
-     * @param writer A Writer to export result to
      * @throws ExporterException if an error occurs during export
      */
-    public abstract void generateExport(Writer writer) throws ExporterException;
+    public abstract List<String> generateExport() throws ExporterException;
+
+    /**
+     * Recursively delete all files in a directory
+     * @param directory File descriptor for directory
+     */
+    private void purgeDirectory(File directory){
+        for (File file : directory.listFiles()) {
+            if (file.isDirectory())
+                purgeDirectory(file);
+            else
+                file.delete();
+        }
+    }
+
+    /**
+     * Returns the path to the file where the exporter should save the export during generation
+     * <p>This path is a temporary cache file whose file extension matches the export format.<br>
+     *     This file is deleted every time a new export is started</p>
+     * @return Absolute path to file
+     */
+    protected String getExportCacheFilePath(){
+        String cachePath = mCacheDir.getAbsolutePath();
+        if (!cachePath.endsWith("/"))
+            cachePath += "/";
+        return cachePath + buildExportFilename(mExportParams.getExportFormat());
+    }
+
+    /**
+     * Returns the MIME type for this exporter.
+     * @return MIME type as string
+     */
+    public String getExportMimeType(){
+        return "text/plain";
+    }
 
     public static class ExporterException extends RuntimeException{
 

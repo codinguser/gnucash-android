@@ -1,6 +1,23 @@
+/*
+ * Copyright (c) 2014 - 2015 Ngewi Fet <ngewif@gmail.com>
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.gnucash.android.test.unit.export;
 
 import org.gnucash.android.export.xml.GncXmlHelper;
+import org.gnucash.android.model.Commodity;
 import org.junit.Test;
 
 import java.math.BigDecimal;
@@ -34,13 +51,16 @@ public class GncXmlHelperTest {
 
     @Test
     public void testFormatSplitAmount(){
+        Commodity usdCommodity = new Commodity("US Dollars", "USD", 100);
+        Commodity euroCommodity = new Commodity("Euro", "EUR", 100);
+
         BigDecimal bigDecimal = new BigDecimal("45.90");
-        String amount = GncXmlHelper.formatSplitAmount(bigDecimal, Currency.getInstance("USD"));
+        String amount = GncXmlHelper.formatSplitAmount(bigDecimal, usdCommodity);
         assertThat(amount).isEqualTo("4590/100");
 
 
         bigDecimal = new BigDecimal("350");
-        amount = GncXmlHelper.formatSplitAmount(bigDecimal, Currency.getInstance("EUR"));
+        amount = GncXmlHelper.formatSplitAmount(bigDecimal, euroCommodity);
         assertThat(amount).isEqualTo("35000/100");
     }
 }

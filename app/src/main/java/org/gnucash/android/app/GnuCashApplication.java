@@ -25,6 +25,7 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
@@ -40,6 +41,8 @@ import org.gnucash.android.db.PricesDbAdapter;
 import org.gnucash.android.db.ScheduledActionDbAdapter;
 import org.gnucash.android.db.SplitsDbAdapter;
 import org.gnucash.android.db.TransactionsDbAdapter;
+import org.gnucash.android.model.Commodity;
+import org.gnucash.android.model.Money;
 import org.gnucash.android.service.SchedulerService;
 
 import java.util.Currency;
@@ -122,6 +125,8 @@ public class GnuCashApplication extends Application{
         mScheduledActionDbAdapter   = new ScheduledActionDbAdapter(mDb);
         mCommoditiesDbAdapter       = new CommoditiesDbAdapter(mDb);
         mPricesDbAdapter            = new PricesDbAdapter(mDb);
+
+        setDefaultCurrencyCode(getDefaultCurrencyCode());
     }
 
     public static AccountsDbAdapter getAccountsDbAdapter() {
@@ -210,6 +215,24 @@ public class GnuCashApplication extends Application{
             currencyCode = prefs.getString(context.getString(R.string.key_default_currency), currencyCode);
         }
         return currencyCode;
+    }
+
+    /**
+     * Sets the default currency for the application in all relevant places:
+     * <ul>
+     *     <li>Shared preferences</li>
+     *     <li>{@link Money#DEFAULT_CURRENCY_CODE}</li>
+     *     <li>{@link Commodity#DEFAULT_COMMODITY}</li>
+     * </ul>
+     * @param currencyCode ISO 4217 currency code
+     * @see #getDefaultCurrencyCode()
+     */
+    public static void setDefaultCurrencyCode(@NonNull String currencyCode){
+        PreferenceManager.getDefaultSharedPreferences(getAppContext()).edit()
+                .putString(getAppContext().getString(R.string.key_default_currency), currencyCode)
+                .apply();
+        Money.DEFAULT_CURRENCY_CODE = currencyCode;
+        Commodity.DEFAULT_COMMODITY = mCommoditiesDbAdapter.getCommodity(currencyCode);
     }
 
     /**

@@ -64,6 +64,7 @@
                     android:gravity="bottom"
                     android:layout_gravity="bottom"
                     android:maxLines="1"
+                    android:singleLine="true"
                     android:ellipsize="start"
                     android:textStyle="italic"
                     android:textColor="@android:color/white"
@@ -132,17 +133,6 @@
                     style="@style/TransactionInfo" />
             </TableRow>
 
-            <TableRow android:id="@+id/row_trn_recurrence"
-                style="@style/FormRow">
-
-                <ImageView style="@style/FormIcon"
-                    android:src="@drawable/ic_action_rotate_right"/>
-
-                <TextView android:id="@+id/trn_recurrence"
-                    style="@style/TransactionInfo" />
-
-            </TableRow>
-
             <TableRow android:id="@+id/row_trn_notes"
                 style="@style/FormRow">
                 <ImageView style="@style/FormIcon"
@@ -152,6 +142,15 @@
                     style="@style/TransactionInfo" />
             </TableRow>
 
+            <TableRow android:id="@+id/row_trn_recurrence"
+                style="@style/FormRow">
+
+                <ImageView style="@style/FormIcon"
+                    android:src="@drawable/ic_action_rotate_right"/>
+
+                <TextView android:id="@+id/trn_recurrence"
+                    style="@style/TransactionInfo" />
+            </TableRow>
 
         </TableLayout>
     </LinearLayout>

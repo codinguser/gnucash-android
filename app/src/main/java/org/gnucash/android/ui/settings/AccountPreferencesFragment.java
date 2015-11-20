@@ -20,17 +20,23 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.os.Bundle;
+import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
-import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 
 import org.gnucash.android.R;
+import org.gnucash.android.app.GnuCashApplication;
+import org.gnucash.android.db.CommoditiesDbAdapter;
+import org.gnucash.android.db.DatabaseSchema;
+import org.gnucash.android.model.Commodity;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.ui.account.AccountsActivity;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Account settings fragment inside the Settings activity
@@ -41,7 +47,10 @@ import org.gnucash.android.ui.account.AccountsActivity;
 @TargetApi(11)
 public class AccountPreferencesFragment extends PreferenceFragment {
 
-    private Activity activity;
+    private Activity mActivity;
+
+    List<CharSequence> mCurrencyEntries = new ArrayList<>();
+    List<CharSequence> mCurrencyEntryValues = new ArrayList<>();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -53,17 +62,32 @@ public class AccountPreferencesFragment extends PreferenceFragment {
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setTitle(R.string.title_account_preferences);
 
-        activity = getActivity();
+        mActivity = getActivity();
+
+        Cursor cursor = CommoditiesDbAdapter.getInstance().fetchAllRecords(DatabaseSchema.CommodityEntry.COLUMN_MNEMONIC + " ASC");
+        while(cursor.moveToNext()){
+            String code = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.CommodityEntry.COLUMN_MNEMONIC));
+            String name = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.CommodityEntry.COLUMN_FULLNAME));
+            mCurrencyEntries.add(code + " - " + name);
+            mCurrencyEntryValues.add(code);
+        }
+        cursor.close();
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        String defaultCurrency = sharedPreferences.getString(getString(R.string.key_default_currency), Money.DEFAULT_CURRENCY_CODE);
+
+        String defaultCurrency = GnuCashApplication.getDefaultCurrencyCode();
         Preference pref = findPreference(getString(R.string.key_default_currency));
-        pref.setSummary(defaultCurrency);
-        pref.setOnPreferenceChangeListener((SettingsActivity)getActivity());
+        String currencyName = CommoditiesDbAdapter.getInstance().getCommodity(defaultCurrency).getFullname();
+        pref.setSummary(currencyName);
+        pref.setOnPreferenceChangeListener((SettingsActivity) getActivity());
+
+        CharSequence[] entries = new CharSequence[mCurrencyEntries.size()];
+        CharSequence[] entryValues = new CharSequence[mCurrencyEntryValues.size()];
+        ((ListPreference) pref).setEntries(mCurrencyEntries.toArray(entries));
+        ((ListPreference) pref).setEntryValues(mCurrencyEntryValues.toArray(entryValues));
 
         Preference preference = findPreference(getString(R.string.key_import_accounts));
         preference.setOnPreferenceClickListener((SettingsActivity)getActivity());
@@ -88,7 +112,7 @@ public class AccountPreferencesFragment extends PreferenceFragment {
                         .setPositiveButton(R.string.btn_create_accounts, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-                                AccountsActivity.createDefaultAccounts(Money.DEFAULT_CURRENCY_CODE, activity);
+                                AccountsActivity.createDefaultAccounts(Money.DEFAULT_CURRENCY_CODE, mActivity);
                             }
                         })
                         .setNegativeButton(R.string.btn_cancel, new DialogInterface.OnClickListener() {

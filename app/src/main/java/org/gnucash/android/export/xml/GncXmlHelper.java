@@ -19,6 +19,8 @@ package org.gnucash.android.export.xml;
 
 import android.support.annotation.NonNull;
 
+import org.gnucash.android.db.CommoditiesDbAdapter;
+import org.gnucash.android.model.Commodity;
 import org.gnucash.android.ui.transaction.TransactionFormFragment;
 
 import java.math.BigDecimal;
@@ -194,12 +196,11 @@ public abstract class GncXmlHelper {
     /**
      * Formats money amounts for splits in the format 2550/100
      * @param amount Split amount as BigDecimal
-     * @param trxCurrency Currency of the transaction
+     * @param commodity Commodity of the transaction
      * @return Formatted split amount
      */
-    public static String formatSplitAmount(BigDecimal amount, Currency trxCurrency){
-        int fractionDigits = trxCurrency.getDefaultFractionDigits();
-        int denomInt = (int) Math.pow(10, fractionDigits);
+    public static String formatSplitAmount(BigDecimal amount, Commodity commodity){
+        int denomInt = commodity.getSmallestFraction();
         BigDecimal denom = new BigDecimal(denomInt);
         String denomString = Integer.toString(denomInt);
 

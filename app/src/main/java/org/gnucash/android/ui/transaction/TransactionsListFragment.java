@@ -30,6 +30,7 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
+import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -42,20 +43,22 @@ import android.widget.TextView;
 
 import org.gnucash.android.R;
 import org.gnucash.android.db.AccountsDbAdapter;
-import org.gnucash.android.ui.util.CursorRecyclerAdapter;
 import org.gnucash.android.db.DatabaseCursorLoader;
 import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.db.SplitsDbAdapter;
 import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.model.Split;
+import org.gnucash.android.model.Transaction;
 import org.gnucash.android.ui.common.FormActivity;
 import org.gnucash.android.ui.common.UxArgument;
-import org.gnucash.android.ui.util.widget.EmptyRecyclerView;
-import org.gnucash.android.ui.util.Refreshable;
 import org.gnucash.android.ui.homescreen.WidgetConfigurationActivity;
-import org.ocpsoft.prettytime.PrettyTime;
+import org.gnucash.android.ui.transaction.dialog.BulkMoveDialogFragment;
+import org.gnucash.android.ui.util.CursorRecyclerAdapter;
+import org.gnucash.android.ui.util.Refreshable;
+import org.gnucash.android.ui.util.widget.EmptyRecyclerView;
 
+import java.text.DateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -218,7 +221,8 @@ public class TransactionsListFragment extends Fragment implements
 
 	public class TransactionRecyclerAdapter extends CursorRecyclerAdapter<TransactionRecyclerAdapter.ViewHolder>{
 
-		private final PrettyTime prettyTime = new PrettyTime();
+		DateFormat simpleDateFormat = DateFormat.getDateInstance(DateFormat.MEDIUM);
+
 		public TransactionRecyclerAdapter(Cursor cursor) {
 			super(cursor);
 		}
@@ -260,7 +264,8 @@ public class TransactionsListFragment extends Fragment implements
 			holder.transactionNote.setText(text);
 
 			long dateMillis = cursor.getLong(cursor.getColumnIndexOrThrow(DatabaseSchema.TransactionEntry.COLUMN_TIMESTAMP));
-			holder.transactionDate.setText(prettyTime.format(new Date(dateMillis)));
+			String dateText = DateUtils.getRelativeTimeSpanString(dateMillis, System.currentTimeMillis(), DateUtils.DAY_IN_MILLIS).toString();
+			holder.transactionDate.setText(dateText);
 
 			final long id = holder.transactionId;
 			holder.itemView.setOnClickListener(new View.OnClickListener() {
@@ -317,6 +322,21 @@ public class TransactionsListFragment extends Fragment implements
 						mTransactionsDbAdapter.deleteRecord(transactionId);
 						WidgetConfigurationActivity.updateAllWidgets(getActivity());
 						refresh();
+						return true;
+
+					case R.id.context_menu_duplicate_transaction:
+						Transaction transaction = mTransactionsDbAdapter.getRecord(transactionId);
+						Transaction duplicate = new Transaction(transaction, true);
+						duplicate.setTime(System.currentTimeMillis());
+						mTransactionsDbAdapter.addRecord(duplicate);
+						refresh();
+						return true;
+
+					case R.id.context_menu_move_transaction:
+						long[] ids = new long[]{transactionId};
+						BulkMoveDialogFragment fragment = BulkMoveDialogFragment.newInstance(ids, mAccountUID);
+						fragment.show(getActivity().getSupportFragmentManager(), "bulk_move_transactions");
+						fragment.setTargetFragment(TransactionsListFragment.this, 0);
 						return true;
 
 					default:

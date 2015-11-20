@@ -16,8 +16,14 @@
 
 package org.gnucash.android.export;
 
+import android.preference.PreferenceManager;
+
+import org.gnucash.android.BuildConfig;
+import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.ui.export.ExportFormFragment;
+
+import java.sql.Timestamp;
 
 /**
  * Encapsulation of the parameters used for exporting transactions.
@@ -42,10 +48,9 @@ public class ExportParams {
     private ExportFormat mExportFormat      = ExportFormat.QIF;
 
     /**
-     * Flag to determine if all transactions (including previously exported ones) should be exported
-     * By default only new transactions since the last export will be exported.
+     * All transactions created after this date will be exported
      */
-    private boolean mExportAllTransactions  = false;
+    private Timestamp mExportStartTime = Timestamp.valueOf(Exporter.TIMESTAMP_ZERO);
 
     /**
      * Flag to determine if all transactions should be deleted after exporting is complete
@@ -57,11 +62,6 @@ public class ExportParams {
      * Destination for the exported transactions
      */
     private ExportTarget mExportTarget      = ExportTarget.SHARING;
-
-    /**
-     * File path for the internal saving of transactions before determining export destination.
-     */
-    private String mTargetFilepath;
 
     /**
      * Creates a new set of paramters and specifies the export format
@@ -85,24 +85,23 @@ public class ExportParams {
      */
     public void setExportFormat(ExportFormat exportFormat) {
         this.mExportFormat = exportFormat;
-        this.mTargetFilepath = GnuCashApplication.getAppContext().getFilesDir() + "/"
-                            + Exporter.buildExportFilename(mExportFormat);
     }
 
     /**
-     * Returns flag whether all transactions should be exported, or only new ones since last export
-     * @return <code>true</code> if all transactions should be exported, <code>false</code> otherwise
+     * Return date from which to start exporting transactions
+     * <p>Transactions created or modified after this timestamp will be exported</p>
+     * @return Timestamp from which to export
      */
-    public boolean shouldExportAllTransactions() {
-        return mExportAllTransactions;
+    public Timestamp getExportStartTime(){
+        return mExportStartTime;
     }
 
     /**
-     * Sets flag for exporting all transactions or only new transactions since last export
-     * @param exportAll Boolean flag
+     * Set the timestamp after which all transactions created/modified will be exported
+     * @param exportStartTime Timestamp
      */
-    public void setExportAllTransactions(boolean exportAll) {
-        this.mExportAllTransactions = exportAll;
+    public void setExportStartTime(Timestamp exportStartTime){
+        this.mExportStartTime = exportStartTime;
     }
 
     /**
@@ -137,19 +136,10 @@ public class ExportParams {
         this.mExportTarget = mExportTarget;
     }
 
-    /**
-     * Returns the internal target file path for the exported transactions.
-     * This file path is not accessible outside the context of the application
-     * @return String path to exported transactions
-     */
-    public String getTargetFilepath() {
-        return mTargetFilepath;
-    }
-
     @Override
     public String toString() {
-        return "Export " + mExportFormat.name() + " to " + mExportTarget.name() + " at "
-                + mTargetFilepath;
+        return "Export all transactions created since " + mExportStartTime.toString()
+                + " as "+ mExportFormat.name() + " to " + mExportTarget.name();
     }
 
     /**
@@ -159,11 +149,10 @@ public class ExportParams {
      */
     public String toCsv(){
         String separator = ";";
-        String csv = mExportFormat.name() + separator + mExportTarget.name() + separator
-                + Boolean.toString(mExportAllTransactions) + separator
-                + Boolean.toString(mDeleteTransactionsAfterExport);
 
-        return csv;
+        return mExportFormat.name() + separator + mExportTarget.name() + separator
+                + mExportStartTime.toString() + separator
+                + Boolean.toString(mDeleteTransactionsAfterExport);
     }
 
     /**
@@ -175,7 +164,7 @@ public class ExportParams {
         String[] tokens = csvParams.split(";");
         ExportParams params = new ExportParams(ExportFormat.valueOf(tokens[0]));
         params.setExportTarget(ExportTarget.valueOf(tokens[1]));
-        params.setExportAllTransactions(Boolean.parseBoolean(tokens[2]));
+        params.setExportStartTime(Timestamp.valueOf(tokens[2]));
         params.setDeleteTransactionsAfterExport(Boolean.parseBoolean(tokens[3]));
 
         return params;

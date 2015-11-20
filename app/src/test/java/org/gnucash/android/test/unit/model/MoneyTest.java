@@ -16,17 +16,27 @@
 
 package org.gnucash.android.test.unit.model;
 
+import org.gnucash.android.BuildConfig;
+import org.gnucash.android.model.Commodity;
+import org.gnucash.android.model.Money;
+import org.gnucash.android.test.unit.util.GnucashTestRunner;
+import org.gnucash.android.test.unit.util.ShadowCrashlytics;
+import org.gnucash.android.test.unit.util.ShadowUserVoice;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.annotation.Config;
+
 import java.math.BigDecimal;
 import java.util.Currency;
 import java.util.Locale;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import org.gnucash.android.model.Money;
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotSame;
 
-import static org.junit.Assert.*;
-
+@RunWith(GnucashTestRunner.class)
+@Config(constants = BuildConfig.class, sdk = 21, packageName = "org.gnucash.android", shadows = {ShadowCrashlytics.class, ShadowUserVoice.class})
 public class MoneyTest{
 
 	private static final String CURRENCY_CODE = "EUR";
@@ -36,7 +46,7 @@ public class MoneyTest{
 
 	@Before
 	public void setUp() throws Exception {
-		mMoneyInEur = new Money(new BigDecimal(amountString), Currency.getInstance(CURRENCY_CODE));
+		mMoneyInEur = new Money(new BigDecimal(amountString), Commodity.getInstance(CURRENCY_CODE));
 		mHashcode = mMoneyInEur.hashCode();
 	}
 
@@ -45,21 +55,17 @@ public class MoneyTest{
 		Locale.setDefault(Locale.US);
 		String amount = "12.25";		
 		
-		Money temp = new Money(amount);
+		Money temp = new Money(amount, CURRENCY_CODE);
 		assertThat("12.25").isEqualTo(temp.toPlainString());
-		assertThat(Money.DEFAULT_CURRENCY_CODE).isEqualTo(temp.getCurrency().getCurrencyCode());
+		assertThat(temp.getNumerator()).isEqualTo(1225L);
+		assertThat(temp.getDenominator()).isEqualTo(100L);
 
-		Currency currency = Currency.getInstance(CURRENCY_CODE);
-		temp = new Money(BigDecimal.TEN, currency);
+		Commodity commodity = Commodity.getInstance(CURRENCY_CODE);
+		temp = new Money(BigDecimal.TEN, commodity);
 		
-		assertEquals("10", temp.asBigDecimal().toPlainString());
-		assertEquals(currency, temp.getCurrency());
-
-		//test only Locale.US parsing even under different locale
-		Locale.setDefault(Locale.GERMANY);
-		amount = "12,25";
-		temp = new Money(amount);
-		assertEquals("1225.00", temp.toPlainString());
+		assertEquals("10.00", temp.asBigDecimal().toPlainString()); //decimal places for EUR currency
+		assertEquals(commodity, temp.getCommodity());
+		assertThat("10").isNotEqualTo(temp.asBigDecimal().toPlainString());
 	}
 
 	@Test
@@ -92,7 +98,7 @@ public class MoneyTest{
 
 	@Test
 	public void testMultiplication(){
-		Money result = mMoneyInEur.multiply(new Money(BigDecimal.TEN, Currency.getInstance(CURRENCY_CODE)));
+		Money result = mMoneyInEur.multiply(new Money(BigDecimal.TEN, Commodity.getInstance(CURRENCY_CODE)));
 		assertThat("157.50").isEqualTo(result.toPlainString());
 		assertThat(result).isNotEqualTo(mMoneyInEur);
 		validateImmutability();
@@ -126,18 +132,40 @@ public class MoneyTest{
 	}
 
 	@Test
+	public void testFractionParts(){
+		Money money = new Money("14.15", "USD");
+		assertThat(money.getNumerator()).isEqualTo(1415L);
+		assertThat(money.getDenominator()).isEqualTo(100L);
+
+		money = new Money("125", "JPY");
+		assertThat(money.getNumerator()).isEqualTo(125L);
+		assertThat(money.getDenominator()).isEqualTo(1L);
+	}
+
+	@Test
+	public void nonMatchingCommodityFraction_shouldThrowException(){
+		Money money = new Money("12.345", "JPY");
+		assertThat(money.getNumerator()).isEqualTo(12L);
+		assertThat(money.getDenominator()).isEqualTo(1);
+	}
+
+	@Test
 	public void testPrinting(){
 		assertEquals(mMoneyInEur.asString(), mMoneyInEur.toPlainString());
 		assertEquals(amountString, mMoneyInEur.asString());
-		
+
 		// the unicode for Euro symbol is \u20AC
-		String symbol = Currency.getInstance("EUR").getSymbol(Locale.GERMAN);
-		String symbolUS = Currency.getInstance("EUR").getSymbol(Locale.US);
-		assertEquals("15,75 " + symbol, mMoneyInEur.formattedString(Locale.GERMAN));
-		assertEquals("15.75 " + symbolUS, mMoneyInEur.formattedString(Locale.US));
+
+		String symbol = Currency.getInstance("EUR").getSymbol(Locale.GERMANY);
+		String actualOuputDE = mMoneyInEur.formattedString(Locale.GERMANY);
+		assertThat(actualOuputDE).isEqualTo("15,75 " + symbol);
+
+		symbol = Currency.getInstance("EUR").getSymbol(Locale.GERMANY);
+		String actualOuputUS = mMoneyInEur.formattedString(Locale.US);
+		assertThat(actualOuputUS).isEqualTo(symbol + "15.75");
 		
 		//always prints with 2 decimal places only
-		Money some = new Money("9.7469");
+		Money some = new Money("9.7469", CURRENCY_CODE);
 		assertEquals("9.75", some.asString());
 	}
 

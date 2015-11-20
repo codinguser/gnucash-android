@@ -37,12 +37,12 @@ import net.objecthunter.exp4j.ExpressionBuilder;
 
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
+import org.gnucash.android.model.Commodity;
 import org.gnucash.android.ui.common.FormActivity;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.util.Currency;
 import java.util.Locale;
 
 /**
@@ -53,7 +53,8 @@ import java.util.Locale;
  */
 public class CalculatorEditText extends EditText {
     CalculatorKeyboard mCalculatorKeyboard;
-    private Currency mCurrency = Currency.getInstance(GnuCashApplication.getDefaultCurrencyCode());
+
+    private Commodity mCommodity = Commodity.DEFAULT_COMMODITY;
     private Context mContext;
 
     /**
@@ -236,17 +237,17 @@ public class CalculatorEditText extends EditText {
      * Returns the currency used for computations
      * @return ISO 4217 currency
      */
-    public Currency getCurrency() {
-        return mCurrency;
+    public Commodity getCommodity() {
+        return mCommodity;
     }
 
     /**
-     * Sets the currency to use for calculations
-     * The currency determines the number of decimal places used
-     * @param currency ISO 4217 currency
+     * Sets the commodity to use for calculations
+     * The commodity determines the number of decimal places used
+     * @param commodity ISO 4217 currency
      */
-    public void setCurrency(Currency currency) {
-        this.mCurrency = currency;
+    public void setCommodity(Commodity commodity) {
+        this.mCommodity = commodity;
     }
 
     /**
@@ -317,7 +318,15 @@ public class CalculatorEditText extends EditText {
         String amountString = getCleanString();
         if (amountString.isEmpty())
             return null;
-        return new BigDecimal(amountString);
+        try { //catch any exceptions in the conversion e.g. if a string with only "-" is entered
+            return new BigDecimal(amountString);
+        } catch (NumberFormatException e){
+            String msg = "Error parsing amount string " + amountString + " from CalculatorEditText";
+            Log.i(getClass().getSimpleName(), msg, e);
+            Crashlytics.log(msg);
+            Crashlytics.logException(e);
+            return null;
+        }
     }
 
     /**
@@ -327,11 +336,11 @@ public class CalculatorEditText extends EditText {
      * @param amount BigDecimal amount
      */
     public void setValue(BigDecimal amount){
-        BigDecimal newAmount = amount.setScale(mCurrency.getDefaultFractionDigits(), BigDecimal.ROUND_HALF_EVEN);
+        BigDecimal newAmount = amount.setScale(mCommodity.getSmallestFractionDigits(), BigDecimal.ROUND_HALF_EVEN);
 
         DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance(Locale.getDefault());
         formatter.setMinimumFractionDigits(0);
-        formatter.setMaximumFractionDigits(mCurrency.getDefaultFractionDigits());
+        formatter.setMaximumFractionDigits(mCommodity.getSmallestFractionDigits());
         formatter.setGroupingUsed(false);
         String resultString = formatter.format(newAmount.doubleValue());
 

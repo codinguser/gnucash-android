@@ -23,6 +23,7 @@ import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
 
+import org.gnucash.android.db.CommoditiesDbAdapter;
 import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.export.ExportFormat;
@@ -31,6 +32,7 @@ import org.gnucash.android.export.Exporter;
 import org.gnucash.android.model.Account;
 import org.gnucash.android.model.AccountType;
 import org.gnucash.android.model.BaseModel;
+import org.gnucash.android.model.Commodity;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.model.PeriodType;
 import org.gnucash.android.model.ScheduledAction;
@@ -39,6 +41,7 @@ import org.xmlpull.v1.XmlPullParserFactory;
 import org.xmlpull.v1.XmlSerializer;
 
 import java.io.BufferedOutputStream;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -51,7 +54,6 @@ import java.util.Currency;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.UUID;
 import java.util.zip.GZIPOutputStream;
 
 import static org.gnucash.android.db.DatabaseSchema.ScheduledActionEntry;
@@ -147,8 +149,9 @@ public class GncXmlExporter extends Exporter{
             xmlSerializer.endTag(null, GncXmlHelper.TAG_COMMODITY_ID);
             xmlSerializer.endTag(null, GncXmlHelper.TAG_ACCOUNT_COMMODITY);
             // commodity scu
+            Commodity commodity = CommoditiesDbAdapter.getInstance().getCommodity(acctCurrencyCode);
             xmlSerializer.startTag(null, GncXmlHelper.TAG_COMMODITY_SCU);
-            xmlSerializer.text(Integer.toString((int) Math.pow(10, Currency.getInstance(acctCurrencyCode).getDefaultFractionDigits())));
+            xmlSerializer.text(Integer.toString(commodity.getSmallestFraction()));
             xmlSerializer.endTag(null, GncXmlHelper.TAG_COMMODITY_SCU);
             // account description
             String description = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.AccountEntry.COLUMN_DESCRIPTION));
@@ -283,7 +286,7 @@ public class GncXmlExporter extends Exporter{
                         TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_TIMESTAMP + " ASC , " +
                         TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_UID + " ASC ");
         String lastTrxUID = "";
-        Currency trxCurrency = null;
+        Commodity trnCommodity = null;
         String denomString = "100";
 
         if (exportTemplates) {
@@ -319,14 +322,14 @@ public class GncXmlExporter extends Exporter{
                 xmlSerializer.text(curTrxUID);
                 xmlSerializer.endTag(null, GncXmlHelper.TAG_TRX_ID);
                 // currency
-                String currency = cursor.getString(cursor.getColumnIndexOrThrow("trans_currency"));
-                trxCurrency = Currency.getInstance(currency);
+                String currencyCode = cursor.getString(cursor.getColumnIndexOrThrow("trans_currency"));
+                trnCommodity = CommoditiesDbAdapter.getInstance().getCommodity(currencyCode);//Currency.getInstance(currencyCode);
                 xmlSerializer.startTag(null, GncXmlHelper.TAG_TRX_CURRENCY);
                 xmlSerializer.startTag(null, GncXmlHelper.TAG_COMMODITY_SPACE);
                 xmlSerializer.text("ISO4217");
                 xmlSerializer.endTag(null, GncXmlHelper.TAG_COMMODITY_SPACE);
                 xmlSerializer.startTag(null, GncXmlHelper.TAG_COMMODITY_ID);
-                xmlSerializer.text(currency);
+                xmlSerializer.text(currencyCode);
                 xmlSerializer.endTag(null, GncXmlHelper.TAG_COMMODITY_ID);
                 xmlSerializer.endTag(null, GncXmlHelper.TAG_TRX_CURRENCY);
                 // date posted, time which user put on the transaction
@@ -423,7 +426,7 @@ public class GncXmlExporter extends Exporter{
             // account guid
             xmlSerializer.startTag(null, GncXmlHelper.TAG_SPLIT_ACCOUNT);
             xmlSerializer.attribute(null, GncXmlHelper.ATTR_KEY_TYPE, GncXmlHelper.ATTR_VALUE_GUID);
-            String splitAccountUID = null;
+            String splitAccountUID;
             if (exportTemplates){
                 //get the UID of the template account
                  splitAccountUID = mTransactionToTemplateAccountMap.get(curTrxUID).getUID();
@@ -456,14 +459,14 @@ public class GncXmlExporter extends Exporter{
                     slotValues.add(GncXmlHelper.formatTemplateSplitAmount(splitAmount));
                     slotKeys.add(GncXmlHelper.KEY_CREDIT_NUMERIC);
                     slotTypes.add(GncXmlHelper.ATTR_VALUE_NUMERIC);
-                    slotValues.add(GncXmlHelper.formatSplitAmount(splitAmount, trxCurrency));
+                    slotValues.add(GncXmlHelper.formatSplitAmount(splitAmount, trnCommodity));
                 } else {
                     slotKeys.add(GncXmlHelper.KEY_DEBIT_FORMULA);
                     slotTypes.add(GncXmlHelper.ATTR_VALUE_STRING);
                     slotValues.add(GncXmlHelper.formatTemplateSplitAmount(splitAmount));
                     slotKeys.add(GncXmlHelper.KEY_DEBIT_NUMERIC);
                     slotTypes.add(GncXmlHelper.ATTR_VALUE_NUMERIC);
-                    slotValues.add(GncXmlHelper.formatSplitAmount(splitAmount, trxCurrency));
+                    slotValues.add(GncXmlHelper.formatSplitAmount(splitAmount, trnCommodity));
                 }
 
                 exportSlots(xmlSerializer, slotKeys, slotTypes, slotValues);
@@ -633,7 +636,7 @@ public class GncXmlExporter extends Exporter{
     private void exportPrices(XmlSerializer xmlSerializer) throws IOException {
         xmlSerializer.startTag(null, GncXmlHelper.TAG_PRICEDB);
         xmlSerializer.attribute(null, GncXmlHelper.ATTR_KEY_VERSION, "1");
-        Cursor cursor = mPricesDbAdpater.fetchAllRecords();
+        Cursor cursor = mPricesDbAdapter.fetchAllRecords();
         try {
             while(cursor.moveToNext()) {
                 xmlSerializer.startTag(null, GncXmlHelper.TAG_PRICE);
@@ -647,7 +650,7 @@ public class GncXmlExporter extends Exporter{
                 xmlSerializer.startTag(null, GncXmlHelper.TAG_COMMODITY_SPACE);
                 xmlSerializer.text("ISO4217");
                 xmlSerializer.endTag(null, GncXmlHelper.TAG_COMMODITY_SPACE);
-                xmlSerializer.startTag(null, GncXmlHelper.TAG_COMMODITY_ID);;
+                xmlSerializer.startTag(null, GncXmlHelper.TAG_COMMODITY_ID);
                 xmlSerializer.text(mCommoditiesDbAdapter.getCurrencyCode(cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.PriceEntry.COLUMN_COMMODITY_UID))));
                 xmlSerializer.endTag(null, GncXmlHelper.TAG_COMMODITY_ID);
                 xmlSerializer.endTag(null, GncXmlHelper.TAG_PRICE_COMMODITY);
@@ -656,7 +659,7 @@ public class GncXmlExporter extends Exporter{
                 xmlSerializer.startTag(null, GncXmlHelper.TAG_COMMODITY_SPACE);
                 xmlSerializer.text("ISO4217");
                 xmlSerializer.endTag(null, GncXmlHelper.TAG_COMMODITY_SPACE);
-                xmlSerializer.startTag(null, GncXmlHelper.TAG_COMMODITY_ID);;
+                xmlSerializer.startTag(null, GncXmlHelper.TAG_COMMODITY_ID);
                 xmlSerializer.text(mCommoditiesDbAdapter.getCurrencyCode(cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.PriceEntry.COLUMN_CURRENCY_UID))));
                 xmlSerializer.endTag(null, GncXmlHelper.TAG_COMMODITY_ID);
                 xmlSerializer.endTag(null, GncXmlHelper.TAG_PRICE_CURRENCY);
@@ -692,16 +695,49 @@ public class GncXmlExporter extends Exporter{
     }
 
     @Override
-    public void generateExport(Writer writer) throws ExporterException{
+    public List<String> generateExport() throws ExporterException {
+        OutputStreamWriter writer = null;
+        String outputFile = getExportCacheFilePath();
         try {
-            String[] namespaces = new String[] {"gnc", "act", "book", "cd", "cmdty", "price", "slot",
+            FileOutputStream fileOutputStream = new FileOutputStream(outputFile);
+            BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(fileOutputStream);
+            writer = new OutputStreamWriter(bufferedOutputStream);
+
+            generateExport(writer);
+        } catch (IOException ex){
+            Crashlytics.log("Error exporting XML");
+            Crashlytics.logException(ex);
+        } finally {
+            if (writer != null) {
+                try {
+                    writer.close();
+                } catch (IOException e) {
+                    throw new ExporterException(mExportParams, e);
+                }
+            }
+        }
+
+        List<String> exportedFiles = new ArrayList<>();
+        exportedFiles.add(outputFile);
+
+        return exportedFiles;
+    }
+
+    /**
+     * Generates an XML export of the database and writes it to the {@code writer} output stream
+     * @param writer Output stream
+     * @throws ExporterException
+     */
+    public void generateExport(Writer writer) throws ExporterException {
+        try {
+            String[] namespaces = new String[]{"gnc", "act", "book", "cd", "cmdty", "price", "slot",
                     "split", "trn", "ts", "sx", "recurrence"};
             XmlSerializer xmlSerializer = XmlPullParserFactory.newInstance().newSerializer();
             xmlSerializer.setOutput(writer);
             xmlSerializer.startDocument("utf-8", true);
             // root tag
             xmlSerializer.startTag(null, GncXmlHelper.TAG_ROOT);
-            for(String ns : namespaces) {
+            for (String ns : namespaces) {
                 xmlSerializer.attribute(null, "xmlns:" + ns, "http://www.gnucash.org/XML/" + ns);
             }
             // book count
@@ -719,7 +755,7 @@ public class GncXmlExporter extends Exporter{
             xmlSerializer.endTag(null, GncXmlHelper.TAG_BOOK_ID);
             //commodity count
             List<Currency> currencies = mAccountsDbAdapter.getCurrenciesInUse();
-            for (int i = 0; i< currencies.size();i++) {
+            for (int i = 0; i < currencies.size(); i++) {
                 if (currencies.get(i).getCurrencyCode().equals("XXX")) {
                     currencies.remove(i);
                 }
@@ -739,7 +775,7 @@ public class GncXmlExporter extends Exporter{
             xmlSerializer.text(mTransactionsDbAdapter.getRecordsCount() + "");
             xmlSerializer.endTag(null, GncXmlHelper.TAG_COUNT_DATA);
             //price count
-            long priceCount = mPricesDbAdpater.getRecordsCount();
+            long priceCount = mPricesDbAdapter.getRecordsCount();
             if (priceCount > 0) {
                 xmlSerializer.startTag(null, GncXmlHelper.TAG_COUNT_DATA);
                 xmlSerializer.attribute(null, GncXmlHelper.ATTR_KEY_CD_TYPE, "price");
@@ -769,29 +805,50 @@ public class GncXmlExporter extends Exporter{
             xmlSerializer.endTag(null, GncXmlHelper.TAG_BOOK);
             xmlSerializer.endTag(null, GncXmlHelper.TAG_ROOT);
             xmlSerializer.endDocument();
+            xmlSerializer.flush();
         } catch (Exception e) {
             Crashlytics.logException(e);
-            throw new ExporterException(mParameters, e);
+            throw new ExporterException(mExportParams, e);
         }
     }
+
     /**
-     * Creates a backup of current database contents to the default backup location
+     * Returns the MIME type for this exporter.
+     * @return MIME type as string
+     */
+    public String getExportMimeType(){
+        return "text/xml";
+    }
+
+    /**
+     * Creates a backup of current database contents to the directory {@link Exporter#BACKUP_FOLDER_PATH}
      * @return {@code true} if backup was successful, {@code false} otherwise
      */
     public static boolean createBackup(){
-        ExportParams params = new ExportParams(ExportFormat.XML);
         try {
-            FileOutputStream fileOutputStream = new FileOutputStream(Exporter.buildBackupFile());
+            new File(BACKUP_FOLDER_PATH).mkdirs();
+            FileOutputStream fileOutputStream = new FileOutputStream(getBackupFilePath());
             BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(fileOutputStream);
             GZIPOutputStream gzipOutputStream = new GZIPOutputStream(bufferedOutputStream);
-            OutputStreamWriter outputStreamWriter = new OutputStreamWriter(gzipOutputStream);
-            new GncXmlExporter(params).generateExport(outputStreamWriter);
-            outputStreamWriter.close();
+            OutputStreamWriter writer = new OutputStreamWriter(gzipOutputStream);
+
+            ExportParams params = new ExportParams(ExportFormat.XML);
+            new GncXmlExporter(params).generateExport(writer);
             return true;
-        } catch (IOException e) {
+        } catch (IOException | ExporterException e) {
             Crashlytics.logException(e);
-            Log.e("GncXmlExporter", "Error creating backup", e);
+            Log.e("GncXmlExporter", "Error creating XML  backup", e);
             return false;
         }
+    }
+
+    /**
+     * Returns the full path of a file to make database backup.
+     * Backups are done in XML format and are zipped (with ".zip" extension).
+     * @return the file path for backups of the database.
+     * @see #BACKUP_FOLDER_PATH
+     */
+    private static String getBackupFilePath(){
+        return BACKUP_FOLDER_PATH + buildExportFilename(ExportFormat.XML) + ".zip";
     }
 }

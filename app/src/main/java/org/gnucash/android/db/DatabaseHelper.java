@@ -31,7 +31,6 @@ import org.xml.sax.SAXException;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Locale;
 
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -143,7 +142,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + CommodityEntry.COLUMN_MNEMONIC    + " varchar(255) not null, "
             + CommodityEntry.COLUMN_LOCAL_SYMBOL+ " varchar(255) not null default '', "
             + CommodityEntry.COLUMN_CUSIP       + " varchar(255), "
-            + CommodityEntry.COLUMN_FRACTION    + " integer not null, "
+            + CommodityEntry.COLUMN_SMALLEST_FRACTION + " integer not null, "
             + CommodityEntry.COLUMN_QUOTE_FLAG  + " integer not null, "
             + CommodityEntry.COLUMN_CREATED_AT  + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
             + CommodityEntry.COLUMN_MODIFIED_AT + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP "
@@ -213,8 +212,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         /*
         * NOTE: In order to modify the database, create a new static method in the MigrationHelper class
         * called upgradeDbToVersion<#>, e.g. int upgradeDbToVersion10(SQLiteDatabase) in order to upgrade to version 10.
-        * The upgrade method should return the current database version as the return value.
-        * Then all you need to do is incremend the DatabaseSchema.DATABASE_VERSION to the appropriate number.
+        * The upgrade method should return the upgraded database version as the return value.
+        * Then all you need to do is increment the DatabaseSchema.DATABASE_VERSION to the appropriate number.
         */
 		if (oldVersion > newVersion) {
             throw new IllegalArgumentException("Database downgrades are not supported at the moment");

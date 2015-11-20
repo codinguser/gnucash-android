@@ -28,7 +28,7 @@ public class DatabaseSchema {
      * Database version.
      * With any change to the database schema, this number must increase
      */
-    public static final int DATABASE_VERSION = 9;
+    public static final int DATABASE_VERSION = 11;
 
     /**
      * Database version where Splits were introduced
@@ -160,7 +160,7 @@ public class DatabaseSchema {
         /**
          * The fraction is the number of sub-units that the basic commodity can be divided into
          */
-        public static final String COLUMN_FRACTION      = "fraction";
+        public static final String COLUMN_SMALLEST_FRACTION = "fraction";
 
         /**
          * A CUSIP is a nine-character alphanumeric code that identifies a North American financial security

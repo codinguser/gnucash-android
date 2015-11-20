@@ -26,9 +26,12 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
+import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.PreferenceManager;
@@ -51,12 +54,12 @@ import com.google.android.gms.drive.MetadataChangeSet;
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.AccountsDbAdapter;
+import org.gnucash.android.db.CommoditiesDbAdapter;
 import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.export.Exporter;
 import org.gnucash.android.export.xml.GncXmlExporter;
 import org.gnucash.android.importer.ImportAsyncTask;
-import org.gnucash.android.model.Money;
 import org.gnucash.android.model.Transaction;
 import org.gnucash.android.ui.account.AccountsActivity;
 import org.gnucash.android.ui.common.UxArgument;
@@ -66,7 +69,6 @@ import org.gnucash.android.ui.passcode.PasscodePreferenceActivity;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.InputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -249,8 +251,9 @@ public class SettingsActivity extends AppCompatPreferenceActivity
 	@Override
  	public boolean onPreferenceChange(Preference preference, Object newValue) {
 		if (preference.getKey().equals(getString(R.string.key_default_currency))){
-			Money.DEFAULT_CURRENCY_CODE = newValue.toString();
-            preference.setSummary(newValue.toString());
+			GnuCashApplication.setDefaultCurrencyCode(newValue.toString());
+            String fullname = CommoditiesDbAdapter.getInstance().getCommodity(newValue.toString()).getFullname();
+            preference.setSummary(fullname);
 		} else if (preference.getKey().equals(getString(R.string.key_enable_passcode))) {
             if ((Boolean) newValue) {
                 startActivityForResult(new Intent(this, PasscodePreferenceActivity.class),
@@ -276,6 +279,10 @@ public class SettingsActivity extends AppCompatPreferenceActivity
                 || AboutPreferenceFragment.class.getName().equals(fragmentName);
     }
 
+    /**
+     * Hide all imbalance accounts when double-entry mode is disabled
+     * @param useDoubleEntry flag if double entry is enabled or not
+     */
     public void setImbalanceAccountsHidden(boolean useDoubleEntry) {
         String isHidden = useDoubleEntry ? "0" : "1";
         AccountsDbAdapter accountsDbAdapter = AccountsDbAdapter.getInstance();
@@ -288,13 +295,34 @@ public class SettingsActivity extends AppCompatPreferenceActivity
         }
     }
 
+    /**
+     * Load the commodities from the database and set the options on the list preference
+     * Also sets this activity as a listener for preference changes
+     */
     private void setDefaultCurrencyListener() {
-		SharedPreferences manager = PreferenceManager.getDefaultSharedPreferences(this);
-		String defaultCurrency = manager.getString(getString(R.string.key_default_currency), Money.DEFAULT_CURRENCY_CODE);
+        CommoditiesDbAdapter commoditiesDbAdapter = CommoditiesDbAdapter.getInstance();
+        List<CharSequence> currencyEntries = new ArrayList<>((int)commoditiesDbAdapter.getRecordsCount());
+        List<CharSequence> currencyEntryValues = new ArrayList<>((int)commoditiesDbAdapter.getRecordsCount());
+        Cursor cursor = commoditiesDbAdapter.fetchAllRecords(DatabaseSchema.CommodityEntry.COLUMN_MNEMONIC + " ASC");
+        while(cursor.moveToNext()){
+            String code = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.CommodityEntry.COLUMN_MNEMONIC));
+            String name = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.CommodityEntry.COLUMN_FULLNAME));
+
+            currencyEntries.add(code + " - " + name);
+            currencyEntryValues.add(code);
+        }
+        cursor.close();
+
+        CharSequence[] entries = new CharSequence[currencyEntries.size()];
+        CharSequence[] entryValues = new CharSequence[currencyEntryValues.size()];
+
 		@SuppressWarnings("deprecation")
 		Preference pref = findPreference(getString(R.string.key_default_currency));
-		pref.setSummary(defaultCurrency);
+		pref.setSummary(GnuCashApplication.getDefaultCurrencyCode());
 		pref.setOnPreferenceChangeListener(this);
+
+        ((ListPreference) pref).setEntries(currencyEntries.toArray(entries));
+        ((ListPreference) pref).setEntryValues(currencyEntryValues.toArray(entryValues));
 	}
 
     @Override
@@ -538,15 +566,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 File backupFile = sortedBackupFiles[which];
-
-                try {
-                    FileInputStream inputStream = new FileInputStream(backupFile);
-                    new ImportAsyncTask(SettingsActivity.this).execute(inputStream);
-                } catch (FileNotFoundException e) {
-                    Crashlytics.logException(e);
-                    Log.e(LOG_TAG, "Error restoring backup: " + backupFile.getName());
-                    Toast.makeText(SettingsActivity.this, R.string.toast_error_importing_accounts, Toast.LENGTH_LONG).show();
-                }
+                new ImportAsyncTask(SettingsActivity.this).execute(Uri.fromFile(backupFile));
             }
         });
 

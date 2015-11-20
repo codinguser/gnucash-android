@@ -85,183 +85,6 @@
   <string name="label_display_account">Mostrar conta</string>
   <string name="btn_create_accounts">Criar Contas</string>
   <string name="title_default_accounts">Escolha as contas a criar</string>
-  <string-array name="currency_names">
-    <item>Afegão</item>
-    <item>Dinar argelino</item>
-    <item>Peso argentino</item>
-    <item>Dram armênio</item>
-    <item>Florin de Aruba</item>
-    <item>Dólar australiano</item>
-    <item>Manat do Arzebeijão</item>
-    <item>Dólar das Bahamas</item>
-    <item>Dinar do Bahrein</item>
-    <item>Baht</item>
-    <item>Balboa</item>
-    <item>Dólar de Barbados</item>
-    <item>Ruble de Bielorrussia</item>
-    <item>Dólar de Belize</item>
-    <item>Dólar das Bermudas</item>
-    <item>Bolivar Fuerte</item>
-    <item>Boliviano</item>
-    <item>Real brasileiro</item>
-    <item>Dólar de Brunei</item>
-    <item>Lev Búlgaro</item>
-    <item>Franco de Burundi</item>
-    <item>Dólar canadiano</item>
-    <item>Escudo de Cabo Verde</item>
-    <item>Dólar das Ilhas Caimão</item>
-    <item>Franco CFA BCEAO</item>
-    <item>Franco CFA BEAC</item>
-    <item>Franco do CFP</item>
-    <item>Peso chileno</item>
-    <item>Moeda de teste</item>
-    <item>Peso colombiano</item>
-    <item>Franco das Comoros</item>
-    <item>Franco congolês</item>
-    <item>Marco conversível</item>
-    <item>Córdoba de ouro</item>
-    <item>Colon da Costa Rica</item>
-    <item>Kuna Croata</item>
-    <item>Peso cubano convertível</item>
-    <item>Peso cubano</item>
-    <item>Coroa Checa</item>
-    <item>Dalasi</item>
-    <item>Coroa dinamarquesa</item>
-    <item>Denar</item>
-    <item>Franco do Djibuti</item>
-    <item>Dobra</item>
-    <item>Peso dominicano</item>
-    <item>Dong</item>
-    <item>Dólar das Caraíbas Orientais</item>
-    <item>Libra egípcia</item>
-    <item>Colon de El Salvador</item>
-    <item>Birr etíope</item>
-    <item>Euro</item>
-    <item>Libra das Malvinas</item>
-    <item>Dólar das Fiji</item>
-    <item>Forint húngaro</item>
-    <item>Cedi Gana</item>
-    <item>Libra de Gibraltar</item>
-    <item>Ouro</item>
-    <item>Gourde</item>
-    <item>Guarani</item>
-    <item>Franco do Guinea</item>
-    <item>Dólar da Guiana</item>
-    <item>Dólar de Hong Kong</item>
-    <item>Hryvnia</item>
-    <item>Coroa islandesa</item>
-    <item>Rupia indiana</item>
-    <item>Rial iraniano</item>
-    <item>Dinar iraquiano</item>
-    <item>Dólar jamaicano</item>
-    <item>Dinar jordaniano</item>
-    <item>Xelim queniano</item>
-    <item>Kina</item>
-    <item>Kip</item>
-    <item>Dinar do Kuwait</item>
-    <item>Kwacha</item>
-    <item>Kwanza</item>
-    <item>Kyat</item>
-    <item>Lari</item>
-    <item>Lats Letão</item>
-    <item>Libra libanesa</item>
-    <item>Lek</item>
-    <item>Lempira</item>
-    <item>Leoa</item>
-    <item>Dólar da Libéria</item>
-    <item>Dinar Líbio</item>
-    <item>Lilangeni</item>
-    <item>Litas lituana</item>
-    <item>Loti</item>
-    <item>Ariary malgaxe</item>
-    <item>Ringgit da Malásia</item>
-    <item>Rupia das Maurícias</item>
-    <item>Peso mexicano</item>
-    <item>Unidade de inversão mexicana (UDI)</item>
-    <item>Leu da Moldávia</item>
-    <item>Dirham marroquino</item>
-    <item>Metical de Moçambique</item>
-    <item>Mvdol</item>
-    <item>Naira</item>
-    <item>Nakfa</item>
-    <item>Dólar de Namíbia</item>
-    <item>Rupia nepalesa</item>
-    <item>Florim das Antilhas Holandesas</item>
-    <item>Novo Shequel israelita</item>
-    <item>Novo Leu romeno</item>
-    <item>Novo Dólar de Taiwan</item>
-    <item>Dólar da Nova Zelândia</item>
-    <item>Ngultrum</item>
-    <item>Won norte-coreano</item>
-    <item>Coroa norueguesa</item>
-    <item>Novo Sol</item>
-    <item>Ouguiya</item>
-    <item>Pa\'anga</item>
-    <item>Rupia paquistanesa</item>
-    <item>Paládio</item>
-    <item>Pataca</item>
-    <item>Peso filipino</item>
-    <item>Platina</item>
-    <item>Libra Esterlina</item>
-    <item>Pula</item>
-    <item>Rial do Qatar</item>
-    <item>Quetzal</item>
-    <item>Rand</item>
-    <item>Rial Omani</item>
-    <item>Riel</item>
-    <item>Rufiyaa</item>
-    <item>Rupia</item>
-    <item>Rublo Russo</item>
-    <item>Franco de Rwanda</item>
-    <item>Libra de Santa Helena</item>
-    <item>Rial saudita</item>
-    <item>SDR (direito especial de saque)</item>
-    <item>Dinar sérvio</item>
-    <item>Rupia das Seychelles</item>
-    <item>Prata</item>
-    <item>Dólar de Singapura</item>
-    <item>Dólar das Ilhas Salomão</item>
-    <item>Som</item>
-    <item>Xelim somali</item>
-    <item>Somoni</item>
-    <item>Libra do Sudão do Sul</item>
-    <item>Rúpia do Sri Lanka</item>
-    <item>Açúcar</item>
-    <item>Libra sudanesa</item>
-    <item>Dólar de Surinam</item>
-    <item>Coroa Sueca</item>
-    <item>Franco suíço</item>
-    <item>Libra Síria</item>
-    <item>Taka</item>
-    <item>Tala</item>
-    <item>Xelim da Tanzânia</item>
-    <item>Tenge</item>
-    <item>Nenhuma moeda</item>
-    <item>Dólar de Trinidad e Tobago</item>
-    <item>Tugrik da Mongólia</item>
-    <item>Dinar tunisino</item>
-    <item>Lira turca</item>
-    <item>Novo Manat do Turcomenistão</item>
-    <item>Dirham dos UAE</item>
-    <item>Xelim de Uganda</item>
-    <item>UIC-Franco</item>
-    <item>Unidade de Valor Real</item>
-    <item>Unidade de fomento</item>
-    <item>Peso do uruguai em unidades indexadas (URUIURUI)</item>
-    <item>Peso uruguaio</item>
-    <item>Dólar dos USA</item>
-    <item>Sum do Usbequistão</item>
-    <item>Vatu</item>
-    <item>Euro WIR</item>
-    <item>Franco WIR</item>
-    <item>Won</item>
-    <item>Rial iemenita</item>
-    <item>Iene</item>
-    <item>Yuan Renminbi</item>
-    <item>Kwacha da Zâmbia</item>
-    <item>Dólar de Zimbabwe</item>
-    <item>Zloty</item>
-  </string-array>
   <string name="error_no_accounts">Não existem contas no GnuCash.\nCrie uma conta antes de adicionar um widget</string>
   <string name="title_build_version">Versão</string>
   <string name="title_license">Licensa</string>
@@ -303,7 +126,7 @@
   <string name="toast_no_account_name_entered">Introduza o nome da conta a criar</string>
   <string name="label_account_currency">Moeda</string>
   <string name="label_parent_account">Conta progenitora</string>
-  <string name="title_xml_ofx_header">-use um cabeçalho XML OFX</string>
+  <string name="title_xml_ofx_header">Use um cabeçalho XML OFX</string>
   <string name="summary_xml_ofx_header">Active esta opção quando fizer exportações para outras aplicações que não seja o GnuCash para Desktop</string>
   <string name="title_whats_new">O que há de novo</string>
   <string name="whats_new">
@@ -340,10 +163,10 @@
   <string name="title_default_export_format">Formato de Exportação padrão</string>
   <string name="summary_default_export_format">Formato de ficheiro usado por defeito quando é feita uma exportação de transações</string>
   <string name="menu_export_transactions">Exportar transações</string>
-  <string name="label_recurring_transaction">Recorrente</string>
+  <string name="label_recurring_transaction">Agendadas</string>
   <string name="imbalance_account_name">Desequilíbrio</string>
   <string name="title_progress_exporting_transactions">Exportando transações</string>
-  <string name="label_no_recurring_transactions">Não existem transações recorrentes para mostrar</string>
+  <string name="label_no_recurring_transactions">Não existem transações agendadas para mostrar.</string>
   <string name="toast_recurring_transaction_deleted">Transações recorrentes apagadas com sucesso</string>
   <string name="label_placeholder_account">Conta não editável</string>
   <string name="label_default_transfer_account">Conta para transferências padrão</string>
@@ -527,7 +350,7 @@ Neste processo não serão recolhidas informações do utilizador!</string>
   <string name="title_transfer_funds">Transferências</string>
   <string name="nav_menu_help"><![CDATA[Ajuda & Feedback]]></string>
   <string name="label_select_pie_slice_to_see_details">Escolha uma secção para ver os detalhes</string>
-  <string name="label_report_period">Perडodo:</string>
+  <string name="label_report_period">Período:</string>
   <string name="label_convert_from">De:</string>
   <string name="label_convert_to">Para:</string>
   <string name="msg_provide_exchange_rate">Forneça o montante convertido ou a taxa de câmbio para a transferência</string>
@@ -554,7 +377,9 @@ Neste processo não serão recolhidas informações do utilizador!</string>
   <string name="title_translate_gnucash">Traduza o GnuCash</string>
   <string name="summary_google_plus">Partilhe ideias, discuta alterações ou reporte problemas</string>
   <string name="summary_translate_gnucash">Traduza ou reveja em Crowdin</string>
-  <string name="toast_no_compatible_apps_to_receive_export">No compatible apps to receive the exported transactions!</string>
+  <string name="toast_no_compatible_apps_to_receive_export">Não existem aplicações compatíveis para receber as transações exportadas!</string>
+  <string name="menu_move_transaction">Mover...</string>
+  <string name="menu_duplicate_transaction">Duplicar</string>
   <string-array name="report_time_range">
     <item>Mês actual</item>
     <item>Últimos 3 meses</item>

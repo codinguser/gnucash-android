@@ -1,5 +1,26 @@
 Change Log
 ===============================================================================
+Version 2.0.2 *(2015-11-20)*
+----------------------------
+* Fixed: Exporting to external service does not work in some devices
+* Fixed: Bar chart does not display negative amounts
+* Fixed: Crash when saving transaction with invalid amount expression
+* Fixed: Crash when displaying bar chart legend with accounts of same name
+* Fixed: Crashes when importing some GnuCash XML files on some devices
+* Improved: Remember last export destination
+* Improved: Display current imbalance in split editor
+* Improved: Set default commodity to the one used by imported file
+* Improved: Add support for unlimited fractional digits in commodities
+* Improved: Option to select date from which to export transactions
+
+Version 2.0.1 *(2015-11-05)*
+----------------------------
+* Feature: Menu options for moving/duplicating transactions
+* Fixed: Invalid QIF exported, causing crashes when importing on desktop
+* Fixed: Account delete dialog not displaying properly / only partially deleting transactions
+* Fixed: Moving transaction to another account from within the split editor sets the amount to zero
+* Improved: Amounts now use standard commodities & fraction digit on all devices
+
 Version 2.0.0 *(2015-11-01)*
 ----------------------------
 * Feature: Updated app design to use Material Design guidelines

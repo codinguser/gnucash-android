@@ -24,6 +24,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Environment;
+import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -31,12 +32,15 @@ import com.crashlytics.android.Crashlytics;
 
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
+import org.gnucash.android.export.ExportFormat;
+import org.gnucash.android.export.ExportParams;
 import org.gnucash.android.export.Exporter;
 import org.gnucash.android.importer.CommoditiesXmlHandler;
 import org.gnucash.android.model.AccountType;
 import org.gnucash.android.model.BaseModel;
 import org.gnucash.android.model.Commodity;
 import org.gnucash.android.model.Money;
+import org.gnucash.android.model.ScheduledAction;
 import org.gnucash.android.model.Transaction;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -52,8 +56,9 @@ import java.math.BigDecimal;
 import java.nio.channels.FileChannel;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.UUID;
+import java.util.Map;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
@@ -853,7 +858,7 @@ public class MigrationHelper {
                     + CommodityEntry.COLUMN_MNEMONIC    + " varchar(255) not null, "
                     + CommodityEntry.COLUMN_LOCAL_SYMBOL+ " varchar(255) not null default '', "
                     + CommodityEntry.COLUMN_CUSIP       + " varchar(255), "
-                    + CommodityEntry.COLUMN_FRACTION    + " integer not null, "
+                    + CommodityEntry.COLUMN_SMALLEST_FRACTION + " integer not null, "
                     + CommodityEntry.COLUMN_QUOTE_FLAG  + " integer not null, "
                     + CommodityEntry.COLUMN_CREATED_AT  + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
                     + CommodityEntry.COLUMN_MODIFIED_AT + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP "
@@ -958,7 +963,7 @@ public class MigrationHelper {
             String query = "SELECT " + "A." + AccountEntry.COLUMN_UID + " AS account_uid "
                     + " FROM " + AccountEntry.TABLE_NAME + " AS A, " + CommodityEntry.TABLE_NAME + " AS C "
                     + " WHERE A." + AccountEntry.COLUMN_CURRENCY + " = C." + CommodityEntry.COLUMN_MNEMONIC
-                    + " AND C." + CommodityEntry.COLUMN_FRACTION + "= 1";
+                    + " AND C." + CommodityEntry.COLUMN_SMALLEST_FRACTION + "= 1";
 
             Cursor cursor = db.rawQuery(query, null);
 
@@ -1007,7 +1012,7 @@ public class MigrationHelper {
             query = "SELECT " + "A." + AccountEntry.COLUMN_UID + " AS account_uid "
                     + " FROM " + AccountEntry.TABLE_NAME + " AS A, " + CommodityEntry.TABLE_NAME + " AS C "
                     + " WHERE A." + AccountEntry.COLUMN_CURRENCY + " = C." + CommodityEntry.COLUMN_MNEMONIC
-                    + " AND C." + CommodityEntry.COLUMN_FRACTION + "= 1000";
+                    + " AND C." + CommodityEntry.COLUMN_SMALLEST_FRACTION + "= 1000";
 
             cursor = db.rawQuery(query, null);
 
@@ -1054,6 +1059,112 @@ public class MigrationHelper {
 
             db.setTransactionSuccessful();
             oldVersion = 9;
+        } finally {
+            db.endTransaction();
+        }
+        return oldVersion;
+    }
+
+    /**
+     * Upgrades the database to version 10
+     * <p>This method converts all saved scheduled export parameters to the new format using the
+     * timestamp of last export</p>
+     * @param db SQLite database
+     * @return 10 if upgrade was successful, 9 otherwise
+     */
+    static int upgradeDbToVersion10(SQLiteDatabase db){
+        Log.i(DatabaseHelper.LOG_TAG, "Upgrading database to version 9");
+        int oldVersion = 9;
+
+        db.beginTransaction();
+        try {
+            Cursor cursor = db.query(ScheduledActionEntry.TABLE_NAME,
+                    new String[]{ScheduledActionEntry.COLUMN_UID, ScheduledActionEntry.COLUMN_TAG},
+                    ScheduledActionEntry.COLUMN_TYPE + " = ?",
+                    new String[]{ScheduledAction.ActionType.BACKUP.name()},
+                    null, null, null);
+
+            ContentValues contentValues = new ContentValues();
+            while (cursor.moveToNext()){
+                String paramString = cursor.getString(cursor.getColumnIndexOrThrow(ScheduledActionEntry.COLUMN_TAG));
+                String[] tokens = paramString.split(";");
+                ExportParams params = new ExportParams(ExportFormat.valueOf(tokens[0]));
+                params.setExportTarget(ExportParams.ExportTarget.valueOf(tokens[1]));
+                params.setDeleteTransactionsAfterExport(Boolean.parseBoolean(tokens[3]));
+
+                boolean exportAll = Boolean.parseBoolean(tokens[2]);
+                if (exportAll){
+                    params.setExportStartTime(Timestamp.valueOf(Exporter.TIMESTAMP_ZERO));
+                } else {
+                    String lastExportTimeStamp = PreferenceManager.getDefaultSharedPreferences(GnuCashApplication.getAppContext())
+                            .getString(Exporter.PREF_LAST_EXPORT_TIME, Exporter.TIMESTAMP_ZERO);
+                    Timestamp timestamp = Timestamp.valueOf(lastExportTimeStamp);
+                    params.setExportStartTime(timestamp);
+                }
+
+                String uid = cursor.getString(cursor.getColumnIndexOrThrow(ScheduledActionEntry.COLUMN_UID));
+                contentValues.clear();
+                contentValues.put(ScheduledActionEntry.COLUMN_UID, uid);
+                contentValues.put(ScheduledActionEntry.COLUMN_TAG, params.toCsv());
+                db.insert(ScheduledActionEntry.TABLE_NAME, null, contentValues);
+            }
+
+            cursor.close();
+
+            db.setTransactionSuccessful();
+            oldVersion = 10;
+        } finally {
+            db.endTransaction();
+        }
+        return oldVersion;
+    }
+
+    /**
+     * Upgrade database to version 11
+     * <p>
+     *     Migrate scheduled backups and update export parameters to the new format
+     * </p>
+     * @param db SQLite database
+     * @return 11 if upgrade was successful, 10 otherwise
+     */
+    static int upgradeDbToVersion11(SQLiteDatabase db){
+        Log.i(DatabaseHelper.LOG_TAG, "Upgrading database to version 9");
+        int oldVersion = 10;
+
+        db.beginTransaction();
+        try {
+            Cursor cursor = db.query(ScheduledActionEntry.TABLE_NAME, null,
+                    ScheduledActionEntry.COLUMN_TYPE + "= ?",
+                    new String[]{ScheduledAction.ActionType.BACKUP.name()}, null, null, null);
+
+            Map<String, String> uidToTagMap = new HashMap<>();
+            while (cursor.moveToNext()) {
+                String uid = cursor.getString(cursor.getColumnIndexOrThrow(ScheduledActionEntry.COLUMN_UID));
+                String tag = cursor.getString(cursor.getColumnIndexOrThrow(ScheduledActionEntry.COLUMN_TAG));
+                String[] tokens = tag.split(";");
+                try {
+                    Timestamp timestamp = Timestamp.valueOf(tokens[2]);
+                } catch (IllegalArgumentException ex) {
+                    tokens[2] = PreferenceManager.getDefaultSharedPreferences(GnuCashApplication.getAppContext())
+                            .getString(Exporter.PREF_LAST_EXPORT_TIME, Exporter.TIMESTAMP_ZERO);
+                } finally {
+                    tag = TextUtils.join(";", tokens);
+                }
+                uidToTagMap.put(uid, tag);
+            }
+
+            cursor.close();
+
+            ContentValues contentValues = new ContentValues();
+            for (Map.Entry<String, String> entry : uidToTagMap.entrySet()) {
+                contentValues.clear();
+                contentValues.put(ScheduledActionEntry.COLUMN_TAG, entry.getValue());
+                db.update(ScheduledActionEntry.TABLE_NAME, contentValues,
+                        ScheduledActionEntry.COLUMN_UID + " = ?", new String[]{entry.getKey()});
+            }
+
+            db.setTransactionSuccessful();
+            oldVersion = 11;
         } finally {
             db.endTransaction();
         }
