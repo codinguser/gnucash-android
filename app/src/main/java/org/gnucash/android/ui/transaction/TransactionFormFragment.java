@@ -39,6 +39,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
@@ -57,6 +58,7 @@ import com.codetroopers.betterpickers.recurrencepicker.EventRecurrenceFormatter;
 import com.codetroopers.betterpickers.recurrencepicker.RecurrencePickerDialog;
 
 import org.gnucash.android.R;
+import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.CommoditiesDbAdapter;
 import org.gnucash.android.db.DatabaseSchema;
@@ -354,6 +356,8 @@ public class TransactionFormFragment extends Fragment implements
 			initializeViewsWithTransaction();
             mEditMode = true;
 		}
+
+        getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
 	}
 
     /**
@@ -533,7 +537,7 @@ public class TransactionFormFragment extends Fragment implements
 		String typePref = PreferenceManager.getDefaultSharedPreferences(getActivity()).getString(getString(R.string.key_default_transaction_type), "DEBIT");
         mTransactionTypeSwitch.setChecked(TransactionType.valueOf(typePref));
 
-		String code = Money.DEFAULT_CURRENCY_CODE;
+		String code = GnuCashApplication.getDefaultCurrencyCode();
 		if (mAccountUID != null){
 			code = mTransactionsDbAdapter.getAccountCurrencyCode(mAccountUID);
 		}
@@ -724,6 +728,12 @@ public class TransactionFormFragment extends Fragment implements
 		String description = mDescriptionEditText.getText().toString();
 		String notes = mNotesEditText.getText().toString();
 		BigDecimal amountBigd = mAmountEditText.getValue();
+
+        if (amountBigd == null){ //if for whatever reason we cannot process the amount
+            Toast.makeText(getActivity(), R.string.toast_transanction_amount_required,
+                    Toast.LENGTH_SHORT).show();
+            return;
+        }
 
 		Currency currency = Currency.getInstance(mTransactionsDbAdapter.getAccountCurrencyCode(mAccountUID));
 		Money amount 	= new Money(amountBigd, Commodity.getInstance(currency.getCurrencyCode())).absolute();

@@ -23,6 +23,7 @@ import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
 
+import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.CommoditiesDbAdapter;
 import org.gnucash.android.db.PricesDbAdapter;
@@ -230,6 +231,8 @@ public class GncXmlHandler extends DefaultHandler {
 
     private PricesDbAdapter mPricesDbAdapter;
 
+    private Map<String, Integer> mCurrencyCount;
+
     /**
      * Creates a handler for handling XML stream events when parsing the XML backup file
      */
@@ -275,6 +278,7 @@ public class GncXmlHandler extends DefaultHandler {
         mAutoBalanceSplits = new ArrayList<>();
 
         mPriceList = new ArrayList<>();
+        mCurrencyCount = new HashMap<>();
     }
 
     @Override
@@ -372,6 +376,11 @@ public class GncXmlHandler extends DefaultHandler {
                 String currencyCode = mISO4217Currency ? characterString : NO_CURRENCY_CODE;
                 if (mAccount != null) {
                     mAccount.setCurrencyCode(currencyCode);
+                    if (mCurrencyCount.containsKey(currencyCode)) {
+                        mCurrencyCount.put(currencyCode, mCurrencyCount.get(currencyCode) + 1);
+                    } else {
+                        mCurrencyCount.put(currencyCode, 1);
+                    }
                 }
                 if (mTransaction != null) {
                     mTransaction.setCurrencyCode(currencyCode);
@@ -844,6 +853,18 @@ public class GncXmlHandler extends DefaultHandler {
         } finally {
             mAccountsDbAdapter.endTransaction();
         }
+
+        String mostAppearedCurrency = "";
+        int mostCurrencyAppearance = 0;
+        for (Map.Entry<String, Integer> entry : mCurrencyCount.entrySet()) {
+            if (entry.getValue() > mostCurrencyAppearance) {
+                mostCurrencyAppearance = entry.getValue();
+                mostAppearedCurrency = entry.getKey();
+            }
+        }
+        if (mostCurrencyAppearance > 0) {
+            GnuCashApplication.setDefaultCurrencyCode(mostAppearedCurrency);
+        }
     }
 
     /**
@@ -857,7 +878,7 @@ public class GncXmlHandler extends DefaultHandler {
             return mAccountMap.get(accountUID).getCommodity();
         } catch (Exception e) {
             Crashlytics.logException(e);
-            return Commodity.getInstance(Money.DEFAULT_CURRENCY_CODE);
+            return Commodity.DEFAULT_COMMODITY;
         }
     }
 

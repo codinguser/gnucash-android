@@ -21,9 +21,37 @@ limitations under the License.
     android:layout_height="match_parent"
     tools:context=".ui.FormActivity">
 
+    <LinearLayout android:id="@+id/imbalance_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:padding="@dimen/dialog_padding">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:gravity="center_vertical"
+            android:text="@string/label_imbalance"/>
+
+        <TextView android:id="@+id/imbalance_textview"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:gravity="right|center_vertical"
+            tools:text="$200"/>
+    </LinearLayout>
+
+    <include
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_below="@id/imbalance_layout"
+        layout="@layout/horizontal_line" />
+
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_below="@id/imbalance_layout"
         android:layout_above="@+id/calculator_keyboard"
         android:padding="@dimen/dialog_padding">
         <LinearLayout android:id="@+id/split_list_layout"

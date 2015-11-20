@@ -57,18 +57,15 @@ public class MoneyTest{
 		
 		Money temp = new Money(amount, CURRENCY_CODE);
 		assertThat("12.25").isEqualTo(temp.toPlainString());
+		assertThat(temp.getNumerator()).isEqualTo(1225L);
+		assertThat(temp.getDenominator()).isEqualTo(100L);
 
 		Commodity commodity = Commodity.getInstance(CURRENCY_CODE);
 		temp = new Money(BigDecimal.TEN, commodity);
 		
-		assertEquals("10", temp.asBigDecimal().toPlainString());
+		assertEquals("10.00", temp.asBigDecimal().toPlainString()); //decimal places for EUR currency
 		assertEquals(commodity, temp.getCommodity());
-
-		//test only Locale.US parsing even under different locale
-		Locale.setDefault(Locale.GERMANY);
-		amount = "12,25";
-		temp = new Money(amount, CURRENCY_CODE);
-		assertEquals("1225.00", temp.toPlainString());
+		assertThat("10").isNotEqualTo(temp.asBigDecimal().toPlainString());
 	}
 
 	@Test
@@ -135,6 +132,24 @@ public class MoneyTest{
 	}
 
 	@Test
+	public void testFractionParts(){
+		Money money = new Money("14.15", "USD");
+		assertThat(money.getNumerator()).isEqualTo(1415L);
+		assertThat(money.getDenominator()).isEqualTo(100L);
+
+		money = new Money("125", "JPY");
+		assertThat(money.getNumerator()).isEqualTo(125L);
+		assertThat(money.getDenominator()).isEqualTo(1L);
+	}
+
+	@Test
+	public void nonMatchingCommodityFraction_shouldThrowException(){
+		Money money = new Money("12.345", "JPY");
+		assertThat(money.getNumerator()).isEqualTo(12L);
+		assertThat(money.getDenominator()).isEqualTo(1);
+	}
+
+	@Test
 	public void testPrinting(){
 		assertEquals(mMoneyInEur.asString(), mMoneyInEur.toPlainString());
 		assertEquals(amountString, mMoneyInEur.asString());
@@ -145,9 +160,9 @@ public class MoneyTest{
 		String actualOuputDE = mMoneyInEur.formattedString(Locale.GERMANY);
 		assertThat(actualOuputDE).isEqualTo("15,75 " + symbol);
 
-		symbol = Currency.getInstance("EUR").getSymbol(Locale.US);
+		symbol = Currency.getInstance("EUR").getSymbol(Locale.GERMANY);
 		String actualOuputUS = mMoneyInEur.formattedString(Locale.US);
-		assertThat(actualOuputUS).isEqualTo("15.75 " + symbol);
+		assertThat(actualOuputUS).isEqualTo(symbol + "15.75");
 		
 		//always prints with 2 decimal places only
 		Money some = new Money("9.7469", CURRENCY_CODE);

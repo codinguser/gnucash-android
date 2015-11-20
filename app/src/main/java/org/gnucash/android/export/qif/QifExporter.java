@@ -21,19 +21,18 @@ import android.database.Cursor;
 import android.preference.PreferenceManager;
 
 import org.gnucash.android.db.AccountsDbAdapter;
-import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.export.ExportParams;
 import org.gnucash.android.export.Exporter;
-import org.gnucash.android.model.Transaction;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.Writer;
+import java.io.OutputStreamWriter;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -57,11 +56,11 @@ public class QifExporter extends Exporter{
     }
 
     @Override
-    public void generateExport(Writer writer) throws ExporterException {
+    public List<String> generateExport() throws ExporterException {
         final String newLine = "\n";
         TransactionsDbAdapter transactionsDbAdapter = mTransactionsDbAdapter;
         try {
-            String lastExportTimeStamp = PreferenceManager.getDefaultSharedPreferences(mContext).getString(Exporter.PREF_LAST_EXPORT_TIME, Exporter.TIMESTAMP_ZERO);
+            String lastExportTimeStamp = mExportParams.getExportStartTime().toString();
             Cursor cursor = transactionsDbAdapter.fetchTransactionsWithSplitsWithTransactionAccount(
                     new String[]{
                             TransactionEntry.TABLE_NAME + "_" + TransactionEntry.COLUMN_UID + " AS trans_uid",
@@ -88,15 +87,17 @@ public class QifExporter extends Exporter{
                             // or if the transaction has only one split (the whole transaction would be lost if it is not selected)
                             "trans_split_count == 1 )" +
                             (
-                            mParameters.shouldExportAllTransactions() ?
-                                    //"" : " AND " + TransactionEntry.TABLE_NAME + "_" + TransactionEntry.COLUMN_EXPORTED + "== 0"
-                                    "" : " AND " + TransactionEntry.TABLE_NAME + "_" + DatabaseSchema.CommonColumns.COLUMN_MODIFIED_AT + " > \"" + lastExportTimeStamp + "\""
+                                    " AND " + TransactionEntry.TABLE_NAME + "_" + TransactionEntry.COLUMN_MODIFIED_AT + " > \"" + lastExportTimeStamp + "\""
                             ),
                     null,
                     // trans_time ASC : put transactions in time order
                     // trans_uid ASC  : put splits from the same transaction together
                    "acct1_currency ASC, trans_time ASC, trans_uid ASC"
                     );
+
+            File file = new File(getExportCacheFilePath());
+            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), "UTF-8"));
+
             try {
                 String currentCurrencyCode = "";
                 String currentAccountUID = "";
@@ -189,7 +190,7 @@ public class QifExporter extends Exporter{
                             precision = 3;
                             break;
                         default:
-                            throw new ExporterException(mParameters, "split quantity has illegal denominator: "+ quantity_denom);
+                            throw new ExporterException(mExportParams, "split quantity has illegal denominator: "+ quantity_denom);
                     }
                     Double quantity = 0.0;
                     if (quantity_denom != 0) {
@@ -204,22 +205,23 @@ public class QifExporter extends Exporter{
                     // end last transaction
                     writer.append(QifHelper.ENTRY_TERMINATOR).append(newLine);
                 }
-            }
-            finally {
+                writer.flush();
+            } finally {
                 cursor.close();
+                writer.close();
             }
+
             ContentValues contentValues = new ContentValues();
             contentValues.put(TransactionEntry.COLUMN_EXPORTED, 1);
             transactionsDbAdapter.updateTransaction(contentValues, null, null);
-        }
-        catch (IOException e)
-        {
-            throw new ExporterException(mParameters, e);
-        }
 
-        /// export successful
-        String timeStamp = new Timestamp(System.currentTimeMillis()).toString();
-        PreferenceManager.getDefaultSharedPreferences(mContext).edit().putString(Exporter.PREF_LAST_EXPORT_TIME, timeStamp).apply();
+            /// export successful
+            String timeStamp = new Timestamp(System.currentTimeMillis()).toString();
+            PreferenceManager.getDefaultSharedPreferences(mContext).edit().putString(Exporter.PREF_LAST_EXPORT_TIME, timeStamp).apply();
+            return splitQIF(file);
+        } catch (IOException e) {
+            throw new ExporterException(mExportParams, e);
+        }
     }
 
     /**
@@ -229,16 +231,12 @@ public class QifExporter extends Exporter{
      * @return a list of paths of the newly created Qif files.
      * @throws IOException if something went wrong while splitting the file.
      */
-    public static List<String> splitQIF(File file) throws IOException {
-        return splitQIF(file, file);
-    }
-
-    public static List<String> splitQIF(File src, File dst) throws IOException {
+    public List<String> splitQIF(File file) throws IOException {
         // split only at the last dot
-        String[] pathParts = dst.getPath().split("(?=\\.[^\\.]+$)");
+        String[] pathParts = file.getPath().split("(?=\\.[^\\.]+$)");
         ArrayList<String> splitFiles = new ArrayList<>();
         String line;
-        BufferedReader in = new BufferedReader(new FileReader(src));
+        BufferedReader in = new BufferedReader(new FileReader(file));
         BufferedWriter out = null;
         try {
             while ((line = in.readLine()) != null) {
@@ -252,7 +250,7 @@ public class QifExporter extends Exporter{
                     out = new BufferedWriter(new FileWriter(newFileName));
                 } else {
                     if (out == null) {
-                        throw new IllegalArgumentException(src.getPath() + " format is not correct");
+                        throw new IllegalArgumentException(file.getPath() + " format is not correct");
                     }
                     out.append(line).append('\n');
                 }
@@ -264,5 +262,13 @@ public class QifExporter extends Exporter{
             }
         }
         return splitFiles;
+    }
+
+    /**
+     * Returns the mime type for this Exporter.
+     * @return MIME type as string
+     */
+    public String getExportMimeType(){
+        return "text/plain";
     }
 }

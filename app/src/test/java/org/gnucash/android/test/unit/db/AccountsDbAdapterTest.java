@@ -5,6 +5,7 @@ import org.gnucash.android.BuildConfig;
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.AccountsDbAdapter;
+import org.gnucash.android.db.CommoditiesDbAdapter;
 import org.gnucash.android.db.ScheduledActionDbAdapter;
 import org.gnucash.android.db.SplitsDbAdapter;
 import org.gnucash.android.db.TransactionsDbAdapter;
@@ -375,10 +376,36 @@ public class AccountsDbAdapterTest{
         assertThat(mAccountsDbAdapter.getRecordsCount()).isEqualTo(2);
     }
 
+
+    /**
+     * Opening an XML file should set the default currency to that used by the most accounts in the file
+     */
+    @Test
+    public void importingXml_shouldSetDefaultCurrency(){
+        GnuCashApplication.setDefaultCurrencyCode("JPY");
+
+        assertThat(GnuCashApplication.getDefaultCurrencyCode()).isEqualTo("JPY");
+        assertThat(Commodity.DEFAULT_COMMODITY).isEqualTo(Commodity.JPY);
+
+        mAccountsDbAdapter.deleteAllRecords();
+        loadDefaultAccounts();
+
+        assertThat(GnuCashApplication.getDefaultCurrencyCode()).isNotEqualTo("JPY");
+
+        Currency currency = Currency.getInstance(GnuCashApplication.getDefaultLocale());
+        String expectedCode = currency.getCurrencyCode();
+        Commodity expectedDefaultCommodity = CommoditiesDbAdapter.getInstance().getCommodity(expectedCode);
+
+        assertThat(GnuCashApplication.getDefaultCurrencyCode()).isEqualTo(expectedCode);
+        assertThat(Commodity.DEFAULT_COMMODITY).isEqualTo(expectedDefaultCommodity);
+
+        System.out.println("Default currency is now: " + expectedCode);
+    }
+
     /**
      * Loads the default accounts from file resource
      */
-    private void loadDefaultAccounts(){
+    public static void loadDefaultAccounts(){
         try {
             GncXmlImporter.parse(GnuCashApplication.getAppContext().getResources().openRawResource(R.raw.default_accounts));
         } catch (ParserConfigurationException | SAXException | IOException e) {
