@@ -77,6 +77,10 @@ public class CalculatorKeyboard {
                 return;
             */
 
+            if (!(focusCurrent instanceof CalculatorEditText)){
+                return;
+            }
+
             CalculatorEditText calculatorEditText = (CalculatorEditText) focusCurrent;
             Editable editable = calculatorEditText.getText();
             int start = calculatorEditText.getSelectionStart();

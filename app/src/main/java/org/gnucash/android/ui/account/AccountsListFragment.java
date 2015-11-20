@@ -49,6 +49,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.gnucash.android.R;
+import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.db.DatabaseCursorLoader;
 import org.gnucash.android.db.DatabaseSchema;
@@ -256,8 +257,9 @@ public class AccountsListFragment extends Fragment implements
         else {
             inflater.inflate(R.menu.account_actions, menu);
             // Associate searchable configuration with the SearchView
+
             SearchManager searchManager =
-                    (SearchManager) getActivity().getSystemService(Context.SEARCH_SERVICE);
+                    (SearchManager) GnuCashApplication.getAppContext().getSystemService(Context.SEARCH_SERVICE);
             mSearchView = (android.support.v7.widget.SearchView)
                 MenuItemCompat.getActionView(menu.findItem(R.id.menu_search));
             if (mSearchView == null)

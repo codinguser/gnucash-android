@@ -154,10 +154,9 @@ public class FirstRunWizardActivity extends AppCompatActivity implements
                         }
                     }
 
+                    GnuCashApplication.setDefaultCurrencyCode(mCurrencyCode);
                     SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(FirstRunWizardActivity.this);
                     SharedPreferences.Editor preferenceEditor = preferences.edit();
-                    preferenceEditor.putString(getString(R.string.key_default_currency), mCurrencyCode);
-
 
                     if (feedbackOption.equals(getString(R.string.wizard_option_auto_send_crash_reports))){
                         preferenceEditor.putBoolean(getString(R.string.key_enable_crashlytics), true);

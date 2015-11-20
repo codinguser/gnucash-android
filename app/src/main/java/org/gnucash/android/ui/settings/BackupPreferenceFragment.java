@@ -24,10 +24,9 @@ import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 
 import org.gnucash.android.R;
-import org.gnucash.android.model.Money;
+import org.gnucash.android.app.GnuCashApplication;
 
 
 /**
@@ -96,7 +95,7 @@ public class BackupPreferenceFragment extends PreferenceFragment implements OnPr
 	public boolean onPreferenceChange(Preference preference, Object newValue) {
 		preference.setSummary(newValue.toString());
 		if (preference.getKey().equals(getString(R.string.key_default_currency))){
-			Money.DEFAULT_CURRENCY_CODE = newValue.toString();
+			GnuCashApplication.setDefaultCurrencyCode(newValue.toString());
 		}
 		
 		if (preference.getKey().equals(getString(R.string.key_default_export_email))){
