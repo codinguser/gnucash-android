@@ -24,6 +24,7 @@ import android.content.SharedPreferences;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
+import android.os.Build;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.util.Log;
@@ -33,6 +34,7 @@ import com.crashlytics.android.core.CrashlyticsCore;
 import com.uservoice.uservoicesdk.Config;
 import com.uservoice.uservoicesdk.UserVoice;
 
+import org.gnucash.android.BuildConfig;
 import org.gnucash.android.R;
 import org.gnucash.android.db.DatabaseHelper;
 import org.gnucash.android.db.adapter.AccountsDbAdapter;
@@ -117,6 +119,9 @@ public class GnuCashApplication extends Application{
         Config config = new Config("gnucash.uservoice.com");
         config.setTopicId(107400);
         config.setForumId(320493);
+        config.putUserTrait("app_version_name", BuildConfig.VERSION_NAME);
+        config.putUserTrait("app_version_code", BuildConfig.VERSION_CODE);
+        config.putUserTrait("android_version", Build.VERSION.RELEASE);
         // config.identifyUser("USER_ID", "User Name", "email@example.com");
         UserVoice.init(config, this);
 

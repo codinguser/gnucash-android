@@ -6,6 +6,12 @@ Version 2.1.0 *(2016-xx-xx)*
 * Improved: Scheduled transactions now have more accurate timestamps
 * Improved: Generate all scheduled transactions even if a scheduled is missed (e.g. device off)
 
+Version 2.0.3 *(2015-11-21)*
+----------------------------
+* Fixed: Unable to enter decimal amounts in split editor
+* Fixed: Split editor shows wrong imbalance when editing transaction
+* Fixed: Auto-backups not correctly generated
+
 Version 2.0.2 *(2015-11-20)*
 ----------------------------
 * Fixed: Exporting to external service does not work in some devices
