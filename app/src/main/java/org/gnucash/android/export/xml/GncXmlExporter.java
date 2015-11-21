@@ -360,16 +360,10 @@ public class GncXmlExporter extends Exporter{
                 ArrayList<String> slotValue = new ArrayList<>();
 
                 String notes = cursor.getString(cursor.getColumnIndexOrThrow("trans_notes"));
-                boolean exported = cursor.getInt(cursor.getColumnIndexOrThrow("trans_exported")) == 1;
                 if (notes != null && notes.length() > 0) {
                     slotKey.add(GncXmlHelper.KEY_NOTES);
                     slotType.add(GncXmlHelper.ATTR_VALUE_STRING);
                     slotValue.add(notes);
-                }
-                if (!exported) {
-                    slotKey.add(GncXmlHelper.KEY_EXPORTED);
-                    slotType.add(GncXmlHelper.ATTR_VALUE_STRING);
-                    slotValue.add("false");
                 }
 
                 String scheduledActionUID = cursor.getString(cursor.getColumnIndexOrThrow("trans_from_sched_action"));
@@ -826,7 +820,6 @@ public class GncXmlExporter extends Exporter{
      */
     public static boolean createBackup(){
         try {
-            new File(BACKUP_FOLDER_PATH).mkdirs();
             FileOutputStream fileOutputStream = new FileOutputStream(getBackupFilePath());
             BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(fileOutputStream);
             GZIPOutputStream gzipOutputStream = new GZIPOutputStream(bufferedOutputStream);
@@ -834,6 +827,7 @@ public class GncXmlExporter extends Exporter{
 
             ExportParams params = new ExportParams(ExportFormat.XML);
             new GncXmlExporter(params).generateExport(writer);
+            writer.close();
             return true;
         } catch (IOException | ExporterException e) {
             Crashlytics.logException(e);
@@ -849,6 +843,7 @@ public class GncXmlExporter extends Exporter{
      * @see #BACKUP_FOLDER_PATH
      */
     private static String getBackupFilePath(){
+        new File(BACKUP_FOLDER_PATH).mkdirs();
         return BACKUP_FOLDER_PATH + buildExportFilename(ExportFormat.XML) + ".zip";
     }
 }

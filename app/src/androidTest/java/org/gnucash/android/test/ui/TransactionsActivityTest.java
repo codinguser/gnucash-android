@@ -380,14 +380,6 @@ public class TransactionsActivityTest extends
 
 		onView(withId(R.id.fab_create_transaction)).perform(click());
 		onView(withId(R.id.input_transaction_type)).check(matches(allOf(isChecked(), withText(R.string.label_spend))));
-		Espresso.pressBack();
-		//now validate the other case
-
-		setDefaultTransactionType(TransactionType.DEBIT);
-
-		onView(withId(R.id.fab_create_transaction)).perform(click());
-		onView(withId(R.id.input_transaction_type)).check(matches(allOf(not(isChecked()), withText(R.string.label_receive))));
-		Espresso.pressBack();
 	}
 
 	private void setDefaultTransactionType(TransactionType type) {

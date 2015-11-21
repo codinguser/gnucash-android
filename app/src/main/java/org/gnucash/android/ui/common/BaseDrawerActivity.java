@@ -121,10 +121,13 @@ public class BaseDrawerActivity extends PasscodeLockActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (!mDrawerLayout.isDrawerOpen(mNavigationView))
-            mDrawerLayout.openDrawer(mNavigationView);
-        else
-            mDrawerLayout.closeDrawer(mNavigationView);
+        if (item.getItemId() == android.R.id.home){
+            if (!mDrawerLayout.isDrawerOpen(mNavigationView))
+                mDrawerLayout.openDrawer(mNavigationView);
+            else
+                mDrawerLayout.closeDrawer(mNavigationView);
+            return true;
+        }
 
         return super.onOptionsItemSelected(item);
     }
@@ -133,6 +136,7 @@ public class BaseDrawerActivity extends PasscodeLockActivity {
      * Handler for the navigation drawer items
      * */
     protected void onDrawerMenuItemClicked(int itemId) {
+
         switch (itemId){
             case R.id.nav_item_open: { //Open... files
                 AccountsActivity.startXmlFileChooser(this);
@@ -148,8 +152,13 @@ public class BaseDrawerActivity extends PasscodeLockActivity {
             }
                 break;
 
-            case R.id.nav_item_reports:
-                startActivity(new Intent(this, ReportsActivity.class));
+            case R.id.nav_item_reports: {
+                if (!(this instanceof AccountsActivity) || !(this instanceof ReportsActivity))
+                    this.finish();
+                Intent intent = new Intent(this, ReportsActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                startActivity(intent);
+            }
                 break;
 
             case R.id.nav_item_scheduled_actions: { //show scheduled transactions
@@ -159,9 +168,8 @@ public class BaseDrawerActivity extends PasscodeLockActivity {
             }
                 break;
 
-            case R.id.nav_item_export:{
+            case R.id.nav_item_export:
                 AccountsActivity.openExportFragment(this);
-            }
                 break;
 
             case R.id.nav_item_settings: //Settings activity
