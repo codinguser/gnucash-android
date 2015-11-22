@@ -22,12 +22,9 @@ import com.codetroopers.betterpickers.recurrencepicker.EventRecurrence;
 
 import org.gnucash.android.model.PeriodType;
 import org.gnucash.android.model.Recurrence;
-import org.gnucash.android.model.ScheduledAction;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.List;
 
 /**
  * Parses {@link EventRecurrence}s to generate
@@ -80,7 +77,8 @@ public class RecurrenceParser {
         Recurrence recurrence = new Recurrence(periodType);
         parseEndTime(eventRecurrence, recurrence);
         recurrence.setByDay(parseByDay(eventRecurrence.byday));
-        recurrence.setPeriodStart(new Timestamp(eventRecurrence.startDate.toMillis(false)));
+        if (eventRecurrence.startDate != null)
+            recurrence.setPeriodStart(new Timestamp(eventRecurrence.startDate.toMillis(false)));
 
         return recurrence;
     }

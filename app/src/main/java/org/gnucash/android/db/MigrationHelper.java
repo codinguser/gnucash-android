@@ -1343,8 +1343,9 @@ public class MigrationHelper {
 
             db.execSQL(" ALTER TABLE " + SplitEntry.TABLE_NAME
                     + " ADD COLUMN " + SplitEntry.COLUMN_RECONCILE_STATE + " varchar(1) not null default 'n' ");
+            //// FIXME: 22.11.15 Cannot add a column with non-constant default. Create new structure and migrate whole table
             db.execSQL(" ALTER TABLE " + SplitEntry.TABLE_NAME
-                    + " ADD COLUMN " + SplitEntry.COLUMN_RECONCILE_DATE + " timestamp not null default CURRENT_TIMESTAMP ");
+                    + " ADD COLUMN " + SplitEntry.COLUMN_RECONCILE_DATE + " timestamp not null default '' ");
 
             db.setTransactionSuccessful();
             oldVersion = 12;
