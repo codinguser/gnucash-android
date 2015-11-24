@@ -140,6 +140,7 @@ public class ReportSummaryFragment extends Fragment {
 
         mChart.setCenterTextSize(PieChartFragment.CENTER_TEXT_SIZE);
         mChart.setDescription("");
+        mChart.setDrawSliceText(false);
         mChart.getLegend().setEnabled(true);
         mChart.getLegend().setWordWrapEnabled(true);
         mChart.getLegend().setForm(LegendForm.CIRCLE);

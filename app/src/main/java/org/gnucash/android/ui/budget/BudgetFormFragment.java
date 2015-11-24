@@ -24,6 +24,7 @@ import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -39,6 +40,7 @@ import android.widget.TableLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.codetroopers.betterpickers.calendardatepicker.CalendarDatePickerDialogFragment;
 import com.codetroopers.betterpickers.recurrencepicker.EventRecurrence;
 import com.codetroopers.betterpickers.recurrencepicker.EventRecurrenceFormatter;
 import com.codetroopers.betterpickers.recurrencepicker.RecurrencePickerDialogFragment;
@@ -51,25 +53,32 @@ import org.gnucash.android.model.Budget;
 import org.gnucash.android.model.BudgetAmount;
 import org.gnucash.android.model.Commodity;
 import org.gnucash.android.model.Money;
-import org.gnucash.android.model.ScheduledAction;
+import org.gnucash.android.model.Recurrence;
 import org.gnucash.android.ui.common.UxArgument;
+import org.gnucash.android.ui.transaction.TransactionFormFragment;
 import org.gnucash.android.ui.util.RecurrenceParser;
 import org.gnucash.android.ui.util.RecurrenceViewClickListener;
 import org.gnucash.android.ui.util.widget.CalculatorEditText;
 import org.gnucash.android.util.QualifiedAccountNameCursorAdapter;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
+import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Currency;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 /**
  * Fragment for creating or editing Budgets
  */
-public class BudgetFormFragment extends Fragment implements RecurrencePickerDialogFragment.OnRecurrenceSetListener {
+public class BudgetFormFragment extends Fragment implements RecurrencePickerDialogFragment.OnRecurrenceSetListener, CalendarDatePickerDialogFragment.OnDateSetListener {
 
     @Bind(R.id.input_budget_name)   EditText mBudgetNameInput;
     @Bind(R.id.input_description)   EditText mDescriptionInput;
@@ -78,6 +87,7 @@ public class BudgetFormFragment extends Fragment implements RecurrencePickerDial
     @Bind(R.id.calculator_keyboard)     KeyboardView mKeyboardView;
     @Bind(R.id.budget_amount_table_layout) TableLayout mBudgetAmountTableLayout;
     @Bind(R.id.btn_add_budget_amount)   Button mAddBudgetAmount;
+    @Bind(R.id.input_start_date)        TextView mStartDateInput;
 
     EventRecurrence mEventRecurrence = new EventRecurrence();
     String mRecurrenceRule;
@@ -90,6 +100,8 @@ public class BudgetFormFragment extends Fragment implements RecurrencePickerDial
     private QualifiedAccountNameCursorAdapter mAccountCursorAdapter;
 
     private List<View> mBudgetAmountViews = new ArrayList<>();
+
+    private Calendar mStartDate;
 
     @Nullable
     @Override
@@ -107,6 +119,7 @@ public class BudgetFormFragment extends Fragment implements RecurrencePickerDial
                 addBudgetAmountView(null);
             }
         });
+        mStartDateInput.setText(TransactionFormFragment.DATE_FORMATTER.format(mStartDate.getTime()));
         return view;
     }
 
@@ -115,6 +128,7 @@ public class BudgetFormFragment extends Fragment implements RecurrencePickerDial
         super.onCreate(savedInstanceState);
         mAccountsDbAdapter = AccountsDbAdapter.getInstance();
         mBudgetsDbAdapter = BudgetsDbAdapter.getInstance();
+        mStartDate = Calendar.getInstance();
     }
 
     @Override
@@ -280,7 +294,9 @@ public class BudgetFormFragment extends Fragment implements RecurrencePickerDial
 
         mBudget.setDescription(mDescriptionInput.getText().toString().trim());
 
-        mBudget.setRecurrence(RecurrenceParser.parse(mEventRecurrence));
+        Recurrence recurrence = RecurrenceParser.parse(mEventRecurrence);
+        recurrence.setPeriodStart(new Timestamp(mStartDate.getTimeInMillis()));
+        mBudget.setRecurrence(recurrence);
 
         mBudgetsDbAdapter.addRecord(mBudget);
         getActivity().finish();
@@ -301,6 +317,27 @@ public class BudgetFormFragment extends Fragment implements RecurrencePickerDial
         return false;
     }
 
+    @OnClick(R.id.input_start_date)
+    public void onClick(View v) {
+        long dateMillis = 0;
+        try {
+            Date date = TransactionFormFragment.DATE_FORMATTER.parse(((TextView) v).getText().toString());
+            dateMillis = date.getTime();
+        } catch (ParseException e) {
+            Log.e(getTag(), "Error converting input time to Date object");
+        }
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(dateMillis);
+
+        int year = calendar.get(Calendar.YEAR);
+        int monthOfYear = calendar.get(Calendar.MONTH);
+        int dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
+        CalendarDatePickerDialogFragment datePickerDialog = CalendarDatePickerDialogFragment.newInstance(
+                BudgetFormFragment.this,
+                year, monthOfYear, dayOfMonth);
+        datePickerDialog.show(getFragmentManager(), "date_picker_fragment");
+    }
+
     @Override
     public void onRecurrenceSet(String rrule) {
         mRecurrenceRule = rrule;
@@ -311,6 +348,15 @@ public class BudgetFormFragment extends Fragment implements RecurrencePickerDial
         }
 
         mRecurrenceInput.setText(repeatString);
+    }
+
+    @Override
+    public void onDateSet(CalendarDatePickerDialogFragment dialog, int year, int monthOfYear, int dayOfMonth) {
+        Calendar cal = new GregorianCalendar(year, monthOfYear, dayOfMonth);
+        mStartDateInput.setText(TransactionFormFragment.DATE_FORMATTER.format(cal.getTime()));
+        mStartDate.set(Calendar.YEAR, year);
+        mStartDate.set(Calendar.MONTH, monthOfYear);
+        mStartDate.set(Calendar.DAY_OF_MONTH, dayOfMonth);
     }
 
     /**

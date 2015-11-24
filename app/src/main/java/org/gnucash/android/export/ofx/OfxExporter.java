@@ -34,10 +34,15 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.ProcessingInstruction;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -99,7 +104,7 @@ public class OfxExporter extends Exporter{
 
 
 			//add account details (transactions) to the XML document			
-			account.toOfx(doc, statementTransactionResponse, mParameters.getExportStartTime());
+			account.toOfx(doc, statementTransactionResponse, mExportParams.getExportStartTime());
 			
 			//mark as exported
 			accountsDbAdapter.markAsExported(account.getUID());
@@ -107,8 +112,9 @@ public class OfxExporter extends Exporter{
 		}
 	}
 
-    public String generateExport() throws ExporterException {
-        mAccountsList = mAccountsDbAdapter.getExportableAccounts(mParameters.getExportStartTime());
+    // FIXME: Move code to generateExport()
+    private String generateOfxExport() throws ExporterException {
+        mAccountsList = mAccountsDbAdapter.getExportableAccounts(mExportParams.getExportStartTime());
 
         DocumentBuilderFactory docFactory = DocumentBuilderFactory
                 .newInstance();
@@ -116,7 +122,7 @@ public class OfxExporter extends Exporter{
         try {
             docBuilder = docFactory.newDocumentBuilder();
         } catch (ParserConfigurationException e) {
-            throw new ExporterException(mParameters, e);
+            throw new ExporterException(mExportParams, e);
         }
 
         Document document = docBuilder.newDocument();
@@ -141,25 +147,36 @@ public class OfxExporter extends Exporter{
             return stringWriter.toString();
         } else {
             Node ofxNode = document.getElementsByTagName("OFX").item(0);
-
             write(ofxNode, stringWriter, true);
-
-            StringBuffer stringBuffer = new StringBuffer(OfxHelper.OFX_SGML_HEADER);
-            stringBuffer.append('\n');
-            stringBuffer.append(stringWriter.toString());
             PreferenceManager.getDefaultSharedPreferences(mContext).edit().putString(Exporter.PREF_LAST_EXPORT_TIME, timeStamp).apply();
-            return stringBuffer.toString();
+            return OfxHelper.OFX_SGML_HEADER + '\n' + stringWriter.toString();
         }
     }
 
     @Override
-    public void generateExport(Writer writer) throws ExporterException {
+    public List<String> generateExport() throws ExporterException {
+        BufferedWriter writer = null;
+
         try {
-            writer.write(generateExport());
+            File file = new File(getExportCacheFilePath());
+            writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), "UTF-8"));
+            writer.write(generateOfxExport());
+        } catch (IOException e) {
+            throw new ExporterException(mExportParams, e);
+        } finally {
+            if (writer != null) {
+                try {
+                    writer.close();
+                } catch (IOException e) {
+                    throw new ExporterException(mExportParams, e);
+                }
+            }
         }
-        catch (IOException e) {
-            throw new ExporterException(mParameters, e);
-        }
+
+        List<String> exportedFiles = new ArrayList<>();
+        exportedFiles.add(getExportCacheFilePath());
+
+        return exportedFiles;
     }
 
     /**
@@ -187,5 +204,13 @@ public class OfxExporter extends Exporter{
             Log.e(LOG_TAG, tfException.getMessage());
             Crashlytics.logException(tfException);
         }
+    }
+
+    /**
+     * Returns the MIME type for this exporter.
+     * @return MIME type as string
+     */
+    public String getExportMimeType(){
+        return "text/xml";
     }
 }

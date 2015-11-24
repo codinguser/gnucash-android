@@ -160,9 +160,9 @@ public class MoneyTest{
 		String actualOuputDE = mMoneyInEur.formattedString(Locale.GERMANY);
 		assertThat(actualOuputDE).isEqualTo("15,75 " + symbol);
 
-		symbol = Currency.getInstance("EUR").getSymbol(Locale.US);
+		symbol = Currency.getInstance("EUR").getSymbol(Locale.GERMANY);
 		String actualOuputUS = mMoneyInEur.formattedString(Locale.US);
-		assertThat(actualOuputUS).isEqualTo("15.75 " + symbol);
+		assertThat(actualOuputUS).isEqualTo(symbol + "15.75");
 		
 		//always prints with 2 decimal places only
 		Money some = new Money("9.7469", CURRENCY_CODE);

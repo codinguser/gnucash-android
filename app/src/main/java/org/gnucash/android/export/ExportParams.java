@@ -17,10 +17,9 @@
 package org.gnucash.android.export;
 
 import android.preference.PreferenceManager;
-import android.util.Log;
 
-import com.crashlytics.android.Crashlytics;
-
+import org.gnucash.android.BuildConfig;
+import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.ui.export.ExportFormFragment;
 
@@ -65,11 +64,6 @@ public class ExportParams {
     private ExportTarget mExportTarget      = ExportTarget.SHARING;
 
     /**
-     * File path for the internal saving of transactions before determining export destination.
-     */
-    private String mTargetFilepath;
-
-    /**
      * Creates a new set of paramters and specifies the export format
      * @param format Format to use when exporting the transactions
      */
@@ -91,8 +85,6 @@ public class ExportParams {
      */
     public void setExportFormat(ExportFormat exportFormat) {
         this.mExportFormat = exportFormat;
-        this.mTargetFilepath = GnuCashApplication.getAppContext().getFilesDir() + "/"
-                            + Exporter.buildExportFilename(mExportFormat);
     }
 
     /**
@@ -144,19 +136,10 @@ public class ExportParams {
         this.mExportTarget = mExportTarget;
     }
 
-    /**
-     * Returns the internal target file path for the exported transactions.
-     * This file path is not accessible outside the context of the application
-     * @return String path to exported transactions
-     */
-    public String getInternalExportPath() {
-        return mTargetFilepath;
-    }
-
     @Override
     public String toString() {
-        return "Export " + mExportFormat.name() + " to " + mExportTarget.name() + " at "
-                + mTargetFilepath;
+        return "Export all transactions created since " + mExportStartTime.toString()
+                + " as "+ mExportFormat.name() + " to " + mExportTarget.name();
     }
 
     /**
@@ -166,11 +149,10 @@ public class ExportParams {
      */
     public String toCsv(){
         String separator = ";";
-        String csv = mExportFormat.name() + separator + mExportTarget.name() + separator
+
+        return mExportFormat.name() + separator + mExportTarget.name() + separator
                 + mExportStartTime.toString() + separator
                 + Boolean.toString(mDeleteTransactionsAfterExport);
-
-        return csv;
     }
 
     /**

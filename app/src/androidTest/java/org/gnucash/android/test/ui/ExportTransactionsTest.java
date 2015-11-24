@@ -61,6 +61,7 @@ import java.util.List;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
+import static android.support.test.espresso.matcher.RootMatchers.withDecorView;
 import static android.support.test.espresso.matcher.ViewMatchers.isAssignableFrom;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.isEnabled;
@@ -69,6 +70,8 @@ import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 
 @RunWith(AndroidJUnit4.class)
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -192,6 +195,11 @@ public class ExportTransactionsTest extends
 
 		onView(withId(R.id.drawer_layout)).perform(DrawerActions.open());
 		onView(withText(R.string.nav_menu_export)).perform(click());
+
+		onView(withId(R.id.spinner_export_destination)).perform(click());
+		String[] destinations = getActivity().getResources().getStringArray(R.array.export_destinations);
+
+		onView(withText(destinations[0])).perform(click());
 		onView(withText(format.name())).perform(click());
 
 		onView(withId(R.id.menu_save)).perform(click());
@@ -241,6 +249,26 @@ public class ExportTransactionsTest extends
 		ScheduledAction action = scheduledActions.get(0);
 		assertThat(action.getRecurrence().getPeriodType()).isEqualTo(PeriodType.WEEK);
 		assertThat(action.getEndTime()).isEqualTo(0);
+	}
+
+	@Test
+	public void testCreateBackup(){
+		DrawerActions.openDrawer(R.id.drawer_layout);
+		onView(withText(R.string.title_settings)).perform(click());
+		onView(withText(R.string.header_backup_and_export_settings)).perform(click());
+
+		onView(withText(R.string.title_create_backup_pref)).perform(click());
+		assertToastDisplayed(R.string.toast_backup_successful);
+	}
+
+	/**
+	 * Checks that a specific toast message is displayed
+	 * @param toastString String that should be displayed
+	 */
+	private void assertToastDisplayed(int toastString) {
+		onView(withText(toastString))
+				.inRoot(withDecorView(not(is(getActivity().getWindow().getDecorView()))))
+				.check(matches(isDisplayed()));
 	}
 
 	//todo: add testing of export flag to unit test

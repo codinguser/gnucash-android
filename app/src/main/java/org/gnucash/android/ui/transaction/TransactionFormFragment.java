@@ -37,6 +37,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
@@ -354,6 +355,8 @@ public class TransactionFormFragment extends Fragment implements
 			initializeViewsWithTransaction();
             mEditMode = true;
 		}
+
+        getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
 	}
 
     /**
@@ -452,7 +455,7 @@ public class TransactionFormFragment extends Fragment implements
             //when autocompleting, only change the amount if the user has not manually changed it already
             mAmountEditText.setValue(mTransaction.getBalance(mAccountUID).asBigDecimal());
         }
-		mCurrencyTextView.setText(mTransaction.getCurrency().getSymbol(Locale.getDefault()));
+		mCurrencyTextView.setText(mTransaction.getCurrency().getSymbol());
 		mNotesEditText.setText(mTransaction.getNote());
 		mDateTextView.setText(DATE_FORMATTER.format(mTransaction.getTimeMillis()));
 		mTimeTextView.setText(TIME_FORMATTER.format(mTransaction.getTimeMillis()));

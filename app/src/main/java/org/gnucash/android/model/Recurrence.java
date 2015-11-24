@@ -20,8 +20,8 @@ import android.support.annotation.NonNull;
 
 import org.gnucash.android.ui.util.RecurrenceParser;
 import org.joda.time.Days;
-import org.joda.time.Hours;
 import org.joda.time.LocalDate;
+import org.joda.time.LocalDateTime;
 import org.joda.time.Months;
 import org.joda.time.Weeks;
 import org.joda.time.Years;
@@ -283,23 +283,23 @@ public class Recurrence extends BaseModel {
      * @param numberOfOccurences Number of occurences from the start time
      */
     public void setPeriodEnd(int numberOfOccurences){
-        LocalDate localDate = new LocalDate(mPeriodStart.getTime());
-        LocalDate endDate;
+        LocalDateTime localDate = new LocalDateTime(mPeriodStart.getTime());
+        LocalDateTime endDate;
         switch (mPeriodType){
             case DAY:
-                endDate = localDate.dayOfWeek().withMaximumValue().plusDays(numberOfOccurences);
+                endDate = localDate.dayOfWeek().getLocalDateTime().plusDays(numberOfOccurences);
                 break;
             case WEEK:
-                endDate = localDate.dayOfWeek().withMaximumValue().plusWeeks(numberOfOccurences);
+                endDate = localDate.dayOfWeek().getLocalDateTime().plusWeeks(numberOfOccurences);
                 break;
             case MONTH:
-                endDate = localDate.dayOfMonth().withMaximumValue().plusMonths(numberOfOccurences);
+                endDate = localDate.dayOfMonth().getLocalDateTime().plusMonths(numberOfOccurences);
                 break;
             case YEAR:
-                endDate = localDate.monthOfYear().withMaximumValue().plusYears(numberOfOccurences);
+                endDate = localDate.monthOfYear().getLocalDateTime().plusYears(numberOfOccurences);
                 break;
             default: //default to monthly
-                endDate = localDate.dayOfMonth().withMaximumValue().plusMonths(numberOfOccurences);
+                endDate = localDate.dayOfMonth().getLocalDateTime().plusMonths(numberOfOccurences);
                 break;
         }
         mPeriodEnd = new Timestamp(endDate.toDate().getTime());

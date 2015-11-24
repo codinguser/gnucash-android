@@ -18,6 +18,7 @@ package org.gnucash.android.importer;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.util.Log;
@@ -35,17 +36,17 @@ import java.io.InputStream;
  * Imports a GnuCash (desktop) account file and displays a progress dialog.
  * The AccountsActivity is opened when importing is done.
  */
-public class ImportAsyncTask extends AsyncTask<InputStream, Void, Boolean> {
-    private final Activity context;
+public class ImportAsyncTask extends AsyncTask<Uri, Void, Boolean> {
+    private final Activity mContext;
     private TaskDelegate mDelegate;
-    private ProgressDialog progressDialog;
+    private ProgressDialog mProgressDialog;
 
     public ImportAsyncTask(Activity context){
-        this.context = context;
+        this.mContext = context;
     }
 
     public ImportAsyncTask(Activity context, TaskDelegate delegate){
-        this.context = context;
+        this.mContext = context;
         this.mDelegate = delegate;
     }
 
@@ -53,34 +54,37 @@ public class ImportAsyncTask extends AsyncTask<InputStream, Void, Boolean> {
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
-        progressDialog = new ProgressDialog(context);
-        progressDialog.setTitle(R.string.title_progress_importing_accounts);
-        progressDialog.setIndeterminate(true);
-        progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-        progressDialog.show();
+        mProgressDialog = new ProgressDialog(mContext);
+        mProgressDialog.setTitle(R.string.title_progress_importing_accounts);
+        mProgressDialog.setIndeterminate(true);
+        mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        mProgressDialog.show();
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.HONEYCOMB){
             //these methods must be called after progressDialog.show()
-            progressDialog.setProgressNumberFormat(null);
-            progressDialog.setProgressPercentFormat(null);
+            mProgressDialog.setProgressNumberFormat(null);
+            mProgressDialog.setProgressPercentFormat(null);
         }
 
     }
 
     @Override
-    protected Boolean doInBackground(InputStream... inputStreams) {
+    protected Boolean doInBackground(Uri... uris) {
         try {
-            GncXmlImporter.parse(inputStreams[0]);
+            InputStream accountInputStream = mContext.getContentResolver().openInputStream(uris[0]);
+            GncXmlImporter.parse(accountInputStream);
         } catch (Exception exception){
             Log.e(ImportAsyncTask.class.getName(), "" + exception.getMessage());
+            Crashlytics.log("Could not open: " + uris[0].toString());
             Crashlytics.logException(exception);
             exception.printStackTrace();
 
             final String err_msg = exception.getLocalizedMessage();
-            context.runOnUiThread(new Runnable() {
+            Crashlytics.log(err_msg);
+            mContext.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    Toast.makeText(context,
-                            context.getString(R.string.toast_error_importing_accounts) + "\n" + err_msg,
+                    Toast.makeText(mContext,
+                            mContext.getString(R.string.toast_error_importing_accounts) + "\n" + err_msg,
                             Toast.LENGTH_LONG).show();
                 }
             });
@@ -96,18 +100,18 @@ public class ImportAsyncTask extends AsyncTask<InputStream, Void, Boolean> {
             mDelegate.onTaskComplete();
 
         try {
-            if (progressDialog != null && progressDialog.isShowing())
-                progressDialog.dismiss();
+            if (mProgressDialog != null && mProgressDialog.isShowing())
+                mProgressDialog.dismiss();
         } catch (IllegalArgumentException ex){
             //TODO: This is a hack to catch "View not attached to window" exceptions
             //FIXME by moving the creation and display of the progress dialog to the Fragment
         } finally {
-            progressDialog = null;
+            mProgressDialog = null;
         }
 
         int message = importSuccess ? R.string.toast_success_importing_accounts : R.string.toast_error_importing_accounts;
-        Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
+        Toast.makeText(mContext, message, Toast.LENGTH_SHORT).show();
 
-        AccountsActivity.start(context);
+        AccountsActivity.start(mContext);
     }
 }

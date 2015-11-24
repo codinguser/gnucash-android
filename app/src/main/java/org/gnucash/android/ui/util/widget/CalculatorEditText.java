@@ -45,7 +45,6 @@ import org.gnucash.android.ui.common.FormActivity;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.util.Currency;
 import java.util.Locale;
 
 /**

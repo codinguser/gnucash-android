@@ -25,6 +25,9 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -32,6 +35,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -39,8 +43,14 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
+
+import net.objecthunter.exp4j.Expression;
+import net.objecthunter.exp4j.ExpressionBuilder;
+
 import org.gnucash.android.R;
 import org.gnucash.android.db.adapter.AccountsDbAdapter;
+import org.gnucash.android.db.adapter.CommoditiesDbAdapter;
 import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.model.AccountType;
 import org.gnucash.android.model.BaseModel;
@@ -60,7 +70,6 @@ import org.gnucash.android.util.QualifiedAccountNameCursorAdapter;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Currency;
 import java.util.List;
 
 import butterknife.Bind;
@@ -75,18 +84,22 @@ public class SplitEditorFragment extends Fragment {
 
     @Bind(R.id.split_list_layout)   LinearLayout mSplitsLinearLayout;
     @Bind(R.id.calculator_keyboard) KeyboardView mKeyboardView;
+    @Bind(R.id.imbalance_textview)  TextView mImbalanceTextView;
 
     private AccountsDbAdapter mAccountsDbAdapter;
     private Cursor mCursor;
     private SimpleCursorAdapter mCursorAdapter;
     private List<View> mSplitItemViewList;
     private String mAccountUID;
+    private Commodity mCommodity;
 
     private BigDecimal mBaseAmount = BigDecimal.ZERO;
 
     private ArrayList<String> mRemovedSplitUIDs = new ArrayList<>();
 
     CalculatorKeyboard mCalculatorKeyboard;
+
+    BalanceTextWatcher mImbalanceWatcher = new BalanceTextWatcher();
 
     /**
      * Create and return a new instance of the fragment with the appropriate paramenters
@@ -133,6 +146,7 @@ public class SplitEditorFragment extends Fragment {
         if (!splitList.isEmpty()) {
             //aha! there are some splits. Let's load those instead
             loadSplitViews(splitList);
+            mImbalanceWatcher.afterTextChanged(null);
         } else {
             final String currencyCode = mAccountsDbAdapter.getAccountCurrencyCode(mAccountUID);
             Split split = new Split(new Money(mBaseAmount.abs(), Commodity.getInstance(currencyCode)), mAccountUID);
@@ -142,7 +156,9 @@ public class SplitEditorFragment extends Fragment {
             View view = addSplitView(split);
             view.findViewById(R.id.input_accounts_spinner).setEnabled(false);
             view.findViewById(R.id.btn_remove_split).setVisibility(View.GONE);
+            TransactionsActivity.displayBalance(mImbalanceTextView, new Money(mBaseAmount.negate(), mCommodity));
         }
+
     }
 
     @Override
@@ -214,6 +230,7 @@ public class SplitEditorFragment extends Fragment {
                 + DatabaseSchema.AccountEntry.COLUMN_PLACEHOLDER + " = 0"
                 + ")";
         mCursor = mAccountsDbAdapter.fetchAccountsOrderedByFullName(conditions, null);
+        mCommodity = CommoditiesDbAdapter.getInstance().getCommodity(mAccountsDbAdapter.getCurrencyCode(mAccountUID));
     }
 
     /**
@@ -226,7 +243,7 @@ public class SplitEditorFragment extends Fragment {
         @Bind(R.id.input_accounts_spinner)  Spinner accountsSpinner;
         @Bind(R.id.split_currency_symbol)   TextView splitCurrencyTextView;
         @Bind(R.id.split_uid)               TextView splitUidTextView;
-        @Bind(R.id.btn_split_type)          TransactionTypeSwitch splitTypeButton;
+        @Bind(R.id.btn_split_type)          TransactionTypeSwitch splitTypeSwitch;
 
         View splitView;
         Money quantity;
@@ -253,15 +270,15 @@ public class SplitEditorFragment extends Fragment {
                     mRemovedSplitUIDs.add(splitUidTextView.getText().toString());
                     mSplitsLinearLayout.removeView(splitView);
                     mSplitItemViewList.remove(splitView);
+                    mImbalanceWatcher.afterTextChanged(null);
                 }
             });
 
             updateTransferAccountsList(accountsSpinner);
 
-            Currency accountCurrency = Currency.getInstance(mAccountsDbAdapter.getCurrencyCode(mAccountUID));
-            splitCurrencyTextView.setText(accountCurrency.getSymbol());
-            splitTypeButton.setAmountFormattingListener(splitAmountEditText, splitCurrencyTextView);
-            splitTypeButton.setChecked(mBaseAmount.signum() > 0);
+            splitCurrencyTextView.setText(mCommodity.getSymbol());
+            splitTypeSwitch.setAmountFormattingListener(splitAmountEditText, splitCurrencyTextView);
+            splitTypeSwitch.setChecked(mBaseAmount.signum() > 0);
             splitUidTextView.setText(BaseModel.generateUID());
 
             if (split != null) {
@@ -272,12 +289,47 @@ public class SplitEditorFragment extends Fragment {
                 splitUidTextView.setText(split.getUID());
                 String splitAccountUID = split.getAccountUID();
                 setSelectedTransferAccount(mAccountsDbAdapter.getID(splitAccountUID), accountsSpinner);
-                splitTypeButton.setAccountType(mAccountsDbAdapter.getAccountType(splitAccountUID));
-                splitTypeButton.setChecked(split.getType());
+                splitTypeSwitch.setAccountType(mAccountsDbAdapter.getAccountType(splitAccountUID));
+                splitTypeSwitch.setChecked(split.getType());
             }
 
-            accountsSpinner.setOnItemSelectedListener(new SplitAccountListener(splitTypeButton, this));
+            accountsSpinner.setOnItemSelectedListener(new SplitAccountListener(splitTypeSwitch, this));
+            splitTypeSwitch.addOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    mImbalanceWatcher.afterTextChanged(null);
+                }
+            });
+            splitAmountEditText.addTextChangedListener(mImbalanceWatcher);
+        }
 
+        /**
+         * Returns the value of the amount in the splitAmountEditText field without setting the value to the view
+         * <p>If the expression in the view is currently incomplete or invalid, null is returned.
+         * This method is used primarily for computing the imbalance</p>
+         * @return Value in the split item amount field, or {@link BigDecimal#ZERO} if the expression is empty or invalid
+         */
+        public BigDecimal getAmountValue(){
+            String amountString = splitAmountEditText.getCleanString();
+            if (amountString.isEmpty())
+                return BigDecimal.ZERO;
+
+            ExpressionBuilder expressionBuilder = new ExpressionBuilder(amountString);
+            Expression expression;
+
+            try {
+                expression = expressionBuilder.build();
+            } catch (RuntimeException e) {
+                return BigDecimal.ZERO;
+            }
+
+            if (expression != null && expression.validate().isValid()) {
+                return new BigDecimal(expression.evaluate());
+            } else {
+                Log.v(SplitEditorFragment.this.getClass().getSimpleName(),
+                        "Incomplete expression for updating imbalance: " + expression);
+                return BigDecimal.ZERO;
+            }
         }
     }
 
@@ -360,13 +412,46 @@ public class SplitEditorFragment extends Fragment {
             String accountUID = mAccountsDbAdapter.getUID(viewHolder.accountsSpinner.getSelectedItemId());
             Split split = new Split(valueAmount, accountUID);
             split.setMemo(viewHolder.splitMemoEditText.getText().toString());
-            split.setType(viewHolder.splitTypeButton.getTransactionType());
+            split.setType(viewHolder.splitTypeSwitch.getTransactionType());
             split.setUID(viewHolder.splitUidTextView.getText().toString().trim());
             if (viewHolder.quantity != null)
                 split.setQuantity(viewHolder.quantity.abs());
             splitList.add(split);
         }
         return splitList;
+    }
+
+    /**
+     * Updates the displayed balance of the accounts when the amount of a split is changed
+     */
+    private class BalanceTextWatcher implements TextWatcher {
+
+        @Override
+        public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+            //nothing to see here, move along
+        }
+
+        @Override
+        public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+            //nothing to see here, move along
+        }
+
+        @Override
+        public void afterTextChanged(Editable editable) {
+            BigDecimal imbalance = BigDecimal.ZERO;
+
+            for (View splitItem : mSplitItemViewList) {
+                SplitViewHolder viewHolder = (SplitViewHolder) splitItem.getTag();
+                BigDecimal amount = viewHolder.getAmountValue().abs();
+                if (viewHolder.splitTypeSwitch.isChecked()) {
+                    imbalance = imbalance.subtract(amount);
+                } else {
+                    imbalance = imbalance.add(amount);
+                }
+            }
+
+            TransactionsActivity.displayBalance(mImbalanceTextView, new Money(imbalance.negate(), mCommodity));
+        }
     }
 
     /**

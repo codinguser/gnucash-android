@@ -295,18 +295,9 @@ public class AccountsActivity extends BaseDrawerActivity implements OnAccountCli
         Uri data = intent.getData();
         if (data != null){
             GncXmlExporter.createBackup();
-
             intent.setData(null);
-            InputStream accountInputStream = null;
-            try {
-                accountInputStream = getContentResolver().openInputStream(data);
-                new ImportAsyncTask(this).execute(accountInputStream);
-            } catch (FileNotFoundException e) {
-                Crashlytics.logException(e);
-                Log.e(LOG_TAG, "Error opening file for import - " + e.getMessage());
-            } finally {
-                removeFirstRunFlag();
-            }
+            new ImportAsyncTask(this).execute(data);
+            removeFirstRunFlag();
         }
     }
 
@@ -491,12 +482,13 @@ public class AccountsActivity extends BaseDrawerActivity implements OnAccountCli
                 @Override
                 public void onTaskComplete() {
                     AccountsDbAdapter.getInstance().updateAllAccounts(DatabaseSchema.AccountEntry.COLUMN_CURRENCY, currencyCode);
+                    GnuCashApplication.setDefaultCurrencyCode(currencyCode);
                 }
             };
         }
 
-        InputStream accountFileInputStream = activity.getResources().openRawResource(R.raw.default_accounts);
-        new ImportAsyncTask(activity, delegate).execute(accountFileInputStream);
+        Uri uri = Uri.parse("android.resource://" + BuildConfig.APPLICATION_ID + "/" + R.raw.default_accounts);
+        new ImportAsyncTask(activity, delegate).execute(uri);
     }
 
     /**
@@ -535,14 +527,8 @@ public class AccountsActivity extends BaseDrawerActivity implements OnAccountCli
      * @param data Intent data containing the XML uri
      */
     public static void importXmlFileFromIntent(Activity context, Intent data) {
-        try {
-            GncXmlExporter.createBackup();
-            InputStream accountInputStream = context.getContentResolver().openInputStream(data.getData());
-            new ImportAsyncTask(context).execute(accountInputStream);
-        } catch (FileNotFoundException e) {
-            Crashlytics.logException(e);
-            Toast.makeText(context, R.string.toast_error_importing_accounts, Toast.LENGTH_SHORT).show();
-        }
+        GncXmlExporter.createBackup();
+        new ImportAsyncTask(context).execute(data.getData());
     }
 
     /**

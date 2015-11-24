@@ -16,6 +16,7 @@
 -->
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:animateLayoutChanges="true"
     android:orientation="vertical"
     android:layout_width="match_parent"
@@ -62,6 +63,7 @@
                 android:inputType="textMultiLine|textCapSentences" />
         </TableRow>
         <View style="@style/Divider" />
+
         <TableRow style="@style/FormRow"
             android:paddingLeft="@dimen/dialog_padding"
             android:paddingRight="@dimen/dialog_padding">
@@ -78,6 +80,28 @@
                 style="@style/Dropdown.TextView" />
 
         </TableRow>
+
+        <TableRow style="@style/FormRow"
+            android:paddingLeft="@dimen/dialog_padding"
+            android:paddingRight="@dimen/dialog_padding">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="2"
+                android:layout_height="wrap_content"
+                android:textAllCaps="true"
+                android:text="START"/>
+
+            <TextView android:id="@+id/input_start_date"
+                android:layout_width="0dp"
+                android:layout_weight="5"
+                android:layout_height="wrap_content"
+                tools:text="29.11.2015"
+                android:clickable="true"
+                android:textColor="@android:color/black"
+                android:gravity="left"      />
+        </TableRow>
+
         <TableRow style="@style/FormRow"
             android:paddingLeft="@dimen/dialog_padding"
             android:layout_marginBottom="@dimen/dialog_padding"

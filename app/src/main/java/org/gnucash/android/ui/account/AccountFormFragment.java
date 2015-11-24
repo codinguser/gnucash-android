@@ -328,7 +328,6 @@ public class AccountFormFragment extends Fragment {
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 
-        Cursor cursor = CommoditiesDbAdapter.getInstance().fetchAllRecords();
         CommoditiesCursorAdapter commoditiesAdapter = new CommoditiesCursorAdapter(
                 getActivity(), android.R.layout.simple_spinner_item);
         commoditiesAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);

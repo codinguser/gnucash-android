@@ -39,10 +39,8 @@ public class RecurrenceTest {
         recurrence.setPeriodStart(new Timestamp(cal.getTimeInMillis()));
         recurrence.setPeriodEnd(3);
 
-        Calendar endDate = Calendar.getInstance();
-        endDate.set(2015, Calendar.DECEMBER, 31);
-
-        assertThat(recurrence.getPeriodEnd().getTime()).isEqualTo(endDate.getTimeInMillis());
+        cal.set(2016, Calendar.JANUARY, 5);
+        assertThat(recurrence.getPeriodEnd().getTime()).isEqualTo(cal.getTimeInMillis());
     }
 
     /**
@@ -50,7 +48,14 @@ public class RecurrenceTest {
      */
     @Test
     public void testRecurrenceCountComputation(){
-        //// TODO: 06.11.2015 implement me
-        assertThat(false).isTrue();
+        Recurrence recurrence = new Recurrence(PeriodType.MONTH);
+        Calendar cal = Calendar.getInstance();
+        cal.set(2015, Calendar.OCTOBER, 5);
+
+        recurrence.setPeriodStart(new Timestamp(cal.getTimeInMillis()));
+        cal.set(2016, Calendar.AUGUST, 5);
+        recurrence.setPeriodEnd(new Timestamp(cal.getTimeInMillis()));
+
+        assertThat(recurrence.getCount()).isEqualTo(10);
     }
 }

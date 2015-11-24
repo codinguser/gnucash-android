@@ -40,10 +40,13 @@ import org.gnucash.android.ui.transaction.ScheduledActionsActivity;
 
 
 /**
- * Base activity implementing the navigation drawer, to be extended by all activities requiring one
- * <p>All subclasses should call the {@link #setUpDrawer()} method in {@link #onCreate(Bundle)}, after the
- * activity layout has been set.<br/>
- * The activity layout of the subclass is expected to contain {@code DrawerLayout} and a {@code NavigationView}</p>
+ * Base activity implementing the navigation drawer, to be extended by all activities requiring one.
+ *
+ * All subclasses should call the {@link #setUpDrawer()} method in {@link #onCreate(Bundle)},
+ * after the activity layout has been set.
+ *
+ * The activity layout of the subclass is expected to contain {@code DrawerLayout} and
+ * a {@code NavigationView}.
  *
  * @author Ngewi Fet <ngewif@gmail.com>
  */
@@ -81,8 +84,8 @@ public class BaseDrawerActivity extends PasscodeLockActivity {
         if (actionBar != null){
             actionBar.setHomeButtonEnabled(true);
             actionBar.setDisplayHomeAsUpEnabled(true);
-
         }
+
         mDrawerLayout   = (DrawerLayout) findViewById(R.id.drawer_layout);
         mNavigationView = (NavigationView) findViewById(R.id.nav_view);
 
@@ -108,6 +111,7 @@ public class BaseDrawerActivity extends PasscodeLockActivity {
 
         mDrawerLayout.setDrawerListener(mDrawerToggle);
     }
+
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
@@ -122,10 +126,13 @@ public class BaseDrawerActivity extends PasscodeLockActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (!mDrawerLayout.isDrawerOpen(mNavigationView))
-            mDrawerLayout.openDrawer(mNavigationView);
-        else
-            mDrawerLayout.closeDrawer(mNavigationView);
+        if (item.getItemId() == android.R.id.home){
+            if (!mDrawerLayout.isDrawerOpen(mNavigationView))
+                mDrawerLayout.openDrawer(mNavigationView);
+            else
+                mDrawerLayout.closeDrawer(mNavigationView);
+            return true;
+        }
 
         return super.onOptionsItemSelected(item);
     }
@@ -150,8 +157,13 @@ public class BaseDrawerActivity extends PasscodeLockActivity {
             }
                 break;
 
-            case R.id.nav_item_reports:
-                startActivity(new Intent(this, ReportsActivity.class));
+            case R.id.nav_item_reports: {
+                if (!(this instanceof AccountsActivity) || !(this instanceof ReportsActivity))
+                    this.finish();
+                Intent intent = new Intent(this, ReportsActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                startActivity(intent);
+            }
                 break;
 
             case R.id.nav_item_budgets:
@@ -165,9 +177,8 @@ public class BaseDrawerActivity extends PasscodeLockActivity {
             }
                 break;
 
-            case R.id.nav_item_export:{
+            case R.id.nav_item_export:
                 AccountsActivity.openExportFragment(this);
-            }
                 break;
 
             case R.id.nav_item_settings: //Settings activity
@@ -185,8 +196,9 @@ public class BaseDrawerActivity extends PasscodeLockActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode == Activity.RESULT_CANCELED){
+        if (resultCode == Activity.RESULT_CANCELED) {
             super.onActivityResult(requestCode, resultCode, data);
+            return;
         }
 
         switch (requestCode) {
