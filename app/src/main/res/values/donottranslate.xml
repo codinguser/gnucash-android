@@ -24,6 +24,11 @@
     <string name="key_restore_backup" translatable="false">restore_backup</string>
     <string name="key_dropbox_sync" translatable="false">dropbox_sync</string>
     <string name="key_owncloud_sync" translatable="false">owncloud_sync</string>
+    <string name="owncloud_sync" translatable="false">owncloud_sync</string>
+    <string name="key_owncloud_server" translatable="false">owncloud_server_address</string>
+    <string name="key_owncloud_dir" translatable="false">owncloud_upload_dir</string>
+    <string name="key_owncloud_username" translatable="false">owncloud_sync_username</string>
+    <string name="key_owncloud_password" translatable="false">owncloud_sync_password</string>
     <string name="key_create_backup" translatable="false">create_backup</string>
     <string name="key_google_drive_sync" translatable="false">google_drive_sync</string>
     <string name="key_google_drive_app_folder_id" translatable="false">google_drive_app_folder</string>

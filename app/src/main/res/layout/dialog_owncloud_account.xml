@@ -19,14 +19,14 @@ android:layout_height="match_parent">
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/owncloud_server_invalid"
+        android:textColor="@color/debit_red"
         android:id="@+id/owncloud_hostname_invalid"
         android:layout_gravity="center_horizontal"
         android:gravity="center" />
 
     <EditText
         android:id="@+id/owncloud_username"
-        android:inputType="textEmailAddress"
+        android:inputType="text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
@@ -34,9 +34,18 @@ android:layout_height="match_parent">
         android:layout_marginRight="4dp"
         android:layout_marginBottom="4dp"
         android:hint="@string/username" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/debit_red"
+        android:id="@+id/owncloud_username_invalid"
+        android:layout_gravity="center_horizontal"
+        android:gravity="center" />
+
     <EditText
         android:id="@+id/owncloud_password"
-        android:inputType="textPassword"
+        android:inputType="textWebPassword"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
@@ -46,11 +55,21 @@ android:layout_height="match_parent">
         android:fontFamily="sans-serif"
         android:hint="@string/password" />
 
+    <EditText
+        android:id="@+id/owncloud_dir"
+        android:inputType="textUri"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginLeft="4dp"
+        android:layout_marginRight="4dp"
+        android:layout_marginBottom="4dp" />
+
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/owncloud_user_invalid"
-        android:id="@+id/owncloud_username_invalid"
+        android:textColor="@color/debit_red"
+        android:id="@+id/owncloud_dir_invalid"
         android:layout_gravity="center_horizontal"
         android:gravity="center" />
 

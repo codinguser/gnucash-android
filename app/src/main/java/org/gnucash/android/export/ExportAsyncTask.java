@@ -46,6 +46,13 @@ import com.google.android.gms.drive.DriveContents;
 import com.google.android.gms.drive.DriveFolder;
 import com.google.android.gms.drive.DriveId;
 import com.google.android.gms.drive.MetadataChangeSet;
+import com.owncloud.android.lib.common.OwnCloudClientFactory;
+import com.owncloud.android.lib.common.OwnCloudClient;
+import com.owncloud.android.lib.common.OwnCloudCredentialsFactory;
+import com.owncloud.android.lib.common.operations.RemoteOperationResult;
+import com.owncloud.android.lib.resources.files.UploadRemoteFileOperation;
+import com.owncloud.android.lib.resources.files.CreateRemoteFolderOperation;
+import com.owncloud.android.lib.resources.files.FileUtils;
 
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
@@ -181,7 +188,7 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
                 return true;
 
             case OWNCLOUD:
-                copyExportToOwncloud();
+                moveExportToOwncloud();
                 return true;
 
             case SD_CARD:
@@ -218,7 +225,17 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
                         targetLocation = "Google Drive -> " + mContext.getString(R.string.app_name);
                         break;
                     case OWNCLOUD:
-                        targetLocation = "Owncloud -> " + mContext.getString(R.string.app_name);
+                        targetLocation = mContext.getSharedPreferences(
+                                mContext.getString(R.string.owncloud_pref),
+                                Context.MODE_PRIVATE).getBoolean(
+                                mContext.getString(R.string.owncloud_sync), false) ?
+
+                                "Owncloud -> " +
+                                mContext.getSharedPreferences(
+                                        mContext.getString(R.string.owncloud_pref),
+                                        Context.MODE_PRIVATE).getString(
+                                        mContext.getString(R.string.key_owncloud_dir), null) :
+                                "Owncloud sync not enabled";
                         break;
                     default:
                         targetLocation = "external service";
@@ -340,6 +357,49 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
         }
     }
 
+    private void moveExportToOwncloud() {
+        Log.i(TAG, "Copying exported file to Owncloud");
+
+        SharedPreferences mPrefs = mContext.getSharedPreferences(mContext.getString(R.string.owncloud_pref), Context.MODE_PRIVATE);
+
+        Boolean mOC_sync = mPrefs.getBoolean(mContext.getString(R.string.owncloud_sync), false);
+
+        if(!mOC_sync){
+            Log.e(TAG, "Owncloud not enabled.");
+            return;
+        }
+
+        String mOC_server = mPrefs.getString(mContext.getString(R.string.key_owncloud_server), null);
+        String mOC_username = mPrefs.getString(mContext.getString(R.string.key_owncloud_username), null);
+        String mOC_password = mPrefs.getString(mContext.getString(R.string.key_owncloud_password), null);
+        String mOC_dir = mPrefs.getString(mContext.getString(R.string.key_owncloud_dir), null);
+
+        Uri serverUri = Uri.parse(mOC_server);
+        OwnCloudClient mClient = OwnCloudClientFactory.createOwnCloudClient(serverUri, this.mContext, true);
+        mClient.setCredentials(
+                OwnCloudCredentialsFactory.newBasicCredentials(mOC_username, mOC_password)
+        );
+
+        if (mOC_dir.length() != 0) {
+            RemoteOperationResult dirResult = new CreateRemoteFolderOperation(
+                    mOC_dir, true).execute(mClient);
+            if (!dirResult.isSuccess())
+                Log.e(TAG, dirResult.getLogMessage(), dirResult.getException());
+        }
+        for (String exportedFilePath : mExportedFiles) {
+            String remotePath = mOC_dir + FileUtils.PATH_SEPARATOR + stripPathPart(exportedFilePath);
+            String mimeType = mExporter.getExportMimeType();
+
+            RemoteOperationResult result = new UploadRemoteFileOperation(
+                    exportedFilePath, remotePath, mimeType).execute(mClient);
+
+            if (!result.isSuccess())
+                Log.e(TAG, result.getLogMessage(), result.getException());
+            else {
+                new File(exportedFilePath).delete();
+            }
+        }
+    }
 
     /**
      * Moves the exported files from the internal storage where they are generated to
@@ -429,8 +489,6 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
             }
         }
     }
-
-    //
 
     /**
      * Convert file paths to URIs by adding the file// prefix

@@ -21,6 +21,7 @@ package org.gnucash.android.ui.settings;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.FragmentManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -358,7 +359,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity
         }
 
         if (key.equals(getString(R.string.key_owncloud_sync))){
-            toggleOwncloudSync();
+            toggleOwncloudSync(preference);
             toggleOwncloudPreference(preference);
         }
 
@@ -449,11 +450,15 @@ public class SettingsActivity extends AppCompatPreferenceActivity
      * Toggles synchronization with Owncloud on or off
      */
     @TargetApi(11)
-    private void toggleOwncloudSync(){
+    private void toggleOwncloudSync(Preference pref){
+        SharedPreferences mPrefs = getSharedPreferences(getString(R.string.owncloud_pref), Context.MODE_PRIVATE);
 
-        OwncloudAccountDialog ocDialog = OwncloudAccountDialog.newInstance();
-        ocDialog.show(getFragmentManager(), "owncloud_dialog");
-
+        if (mPrefs.getBoolean(getString(R.string.owncloud_sync), false))
+            mPrefs.edit().putBoolean(getString(R.string.owncloud_sync), false).apply();
+        else {
+            OwncloudDialogFragment ocDialog = OwncloudDialogFragment.newInstance(pref);
+            ocDialog.show(getFragmentManager(), "owncloud_dialog");
+        }
     }
 
     /**
@@ -469,6 +474,8 @@ public class SettingsActivity extends AppCompatPreferenceActivity
      * @param pref Owncloud Sync preference
      */
     public void toggleOwncloudPreference(Preference pref) {
+        SharedPreferences mPrefs = getSharedPreferences(getString(R.string.owncloud_pref), Context.MODE_PRIVATE);
+        ((CheckBoxPreference)pref).setChecked(mPrefs.getBoolean(getString(R.string.owncloud_sync), false));
     }
 
     /**

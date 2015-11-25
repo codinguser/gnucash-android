@@ -25,6 +25,7 @@
     <string name="label_account_name">Account name</string>
     <string name="btn_cancel">Cancel</string>
     <string name="btn_save">Save</string>
+    <string name="btn_test">Test</string>
     <string name="label_passcode">Enter Passcode</string>
     <string name="toast_wrong_passcode">Wrong passcode, please try again</string>
     <string name="toast_passcode_set">Passcode set</string>
@@ -307,9 +308,14 @@
     <string name="nav_menu_settings">Settings</string>
     <string name="username">User Name</string>
     <string name="password">Password</string>
-    <string name="owncloud_server">Owncloud Address</string>
+    <string name="owncloud_pref">owncloud</string>
+    <string name="owncloud_server">https://</string>
     <string name="owncloud_server_invalid">OC server not found</string>
     <string name="owncloud_user_invalid">OC username/password invalid</string>
+    <string name="owncloud_dir_invalid">Invalid chars: \\ &lt; &gt; : \&quot; | * ? </string>
+    <string name="owncloud_server_ok">OC server OK</string>
+    <string name="owncloud_user_ok">OC username/password OK</string>
+    <string name="owncloud_dir_ok">Dir name OK</string>
     <plurals name="label_every_x_days">
         <item quantity="one">Daily</item>
         <item quantity="other">Every %d days</item>
