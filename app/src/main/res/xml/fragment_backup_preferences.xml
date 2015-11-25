@@ -34,6 +34,12 @@
             android:checked="false"
             android:key="@string/key_google_drive_sync"
             android:icon="@drawable/ic_google_drive" />
+
+        <CheckBoxPreference android:title="@string/title_owncloud_sync_preference"
+            android:summary="@string/summary_owncloud_sync"
+            android:checked="false"
+            android:key="@string/key_owncloud_sync"
+            android:icon="@drawable/ic_owncloud" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/title_export_preference_category">
 
