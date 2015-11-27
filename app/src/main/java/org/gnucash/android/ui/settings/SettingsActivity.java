@@ -21,6 +21,7 @@ package org.gnucash.android.ui.settings;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.FragmentManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -198,6 +199,10 @@ public class SettingsActivity extends AppCompatPreferenceActivity
             pref.setOnPreferenceClickListener(this);
             toggleGoogleDrivePreference(pref);
 
+            pref = findPreference(getString(R.string.key_owncloud_sync));
+            pref.setOnPreferenceClickListener(this);
+            toggleOwncloudPreference(pref);
+
             pref = findPreference(getString(R.string.key_create_backup));
             pref.setOnPreferenceClickListener(this);
 
@@ -353,6 +358,11 @@ public class SettingsActivity extends AppCompatPreferenceActivity
             toggleGoogleDrivePreference(preference);
         }
 
+        if (key.equals(getString(R.string.key_owncloud_sync))){
+            toggleOwncloudSync(preference);
+            toggleOwncloudPreference(preference);
+        }
+
         if (key.equals(getString(R.string.key_create_backup))){
             boolean result = GncXmlExporter.createBackup();
             int msg = result ? R.string.toast_backup_successful : R.string.toast_backup_failed;
@@ -437,11 +447,35 @@ public class SettingsActivity extends AppCompatPreferenceActivity
     }
 
     /**
+     * Toggles synchronization with Owncloud on or off
+     */
+    @TargetApi(11)
+    private void toggleOwncloudSync(Preference pref){
+        SharedPreferences mPrefs = getSharedPreferences(getString(R.string.owncloud_pref), Context.MODE_PRIVATE);
+
+        if (mPrefs.getBoolean(getString(R.string.owncloud_sync), false))
+            mPrefs.edit().putBoolean(getString(R.string.owncloud_sync), false).apply();
+        else {
+            OwncloudDialogFragment ocDialog = OwncloudDialogFragment.newInstance(pref);
+            ocDialog.show(getFragmentManager(), "owncloud_dialog");
+        }
+    }
+
+    /**
      * Toggles the checkbox of the DropBox Sync preference if a DropBox account is linked
      * @param pref DropBox Sync preference
      */
     public void toggleDropboxPreference(Preference pref) {
         ((CheckBoxPreference)pref).setChecked(mDbxAccountManager.hasLinkedAccount());
+    }
+
+    /**
+     * Toggles the checkbox of the Oncloud Sync preference if a Owncloud account is linked
+     * @param pref Owncloud Sync preference
+     */
+    public void toggleOwncloudPreference(Preference pref) {
+        SharedPreferences mPrefs = getSharedPreferences(getString(R.string.owncloud_pref), Context.MODE_PRIVATE);
+        ((CheckBoxPreference)pref).setChecked(mPrefs.getBoolean(getString(R.string.owncloud_sync), false));
     }
 
     /**

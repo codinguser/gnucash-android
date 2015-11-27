@@ -18,6 +18,7 @@ package org.gnucash.android.ui.export;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -62,6 +63,7 @@ import org.gnucash.android.model.BaseModel;
 import org.gnucash.android.model.ScheduledAction;
 import org.gnucash.android.ui.account.AccountsActivity;
 import org.gnucash.android.ui.common.UxArgument;
+import org.gnucash.android.ui.settings.OwncloudDialogFragment;
 import org.gnucash.android.ui.settings.SettingsActivity;
 import org.gnucash.android.ui.transaction.TransactionFormFragment;
 import org.gnucash.android.ui.util.RecurrenceParser;
@@ -322,6 +324,15 @@ public class ExportFormFragment extends Fragment implements
 						SettingsActivity.mGoogleApiClient.connect();
 						break;
 					case 3:
+						recurrenceOptionsView.setVisibility(View.VISIBLE);
+						mExportTarget = ExportParams.ExportTarget.OWNCLOUD;
+						if(!(PreferenceManager.getDefaultSharedPreferences(getActivity())
+								.getBoolean(getString(R.string.key_owncloud_sync), false))) {
+							OwncloudDialogFragment ocDialog = OwncloudDialogFragment.newInstance(null);
+							ocDialog.show(getActivity().getFragmentManager(), "owncloud_dialog");
+						}
+						break;
+					case 4:
 						mExportTarget = ExportParams.ExportTarget.SHARING;
 						recurrenceOptionsView.setVisibility(View.GONE);
 						break;
