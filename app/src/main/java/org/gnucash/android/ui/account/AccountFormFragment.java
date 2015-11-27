@@ -846,7 +846,9 @@ public class AccountFormFragment extends Fragment {
 		if (mAccountsDbAdapter == null)
 			mAccountsDbAdapter = AccountsDbAdapter.getInstance();
         // bulk update, will not update transactions
+        mAccountsDbAdapter.enableForeignKey(false);
 		mAccountsDbAdapter.bulkAddRecords(accountsToUpdate);
+        mAccountsDbAdapter.enableForeignKey(true);
 
 		finishFragment();
 	}
