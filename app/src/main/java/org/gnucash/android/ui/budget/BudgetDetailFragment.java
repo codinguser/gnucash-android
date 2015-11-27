@@ -23,6 +23,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -144,7 +145,9 @@ public class BudgetDetailFragment extends Fragment implements Refreshable {
     public void refresh() {
         bindViews();
         String budgetName = mBudgetsDbAdapter.getAttribute(mBudgetUID, DatabaseSchema.BudgetEntry.COLUMN_NAME);
-        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(budgetName);
+        ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+        assert actionBar != null;
+        actionBar.setTitle("Budget: " + budgetName);
     }
 
     @Override

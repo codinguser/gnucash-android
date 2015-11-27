@@ -125,13 +125,16 @@ public class Recurrence extends BaseModel {
     public String getRepeatString(){
         String dayOfWeek = new SimpleDateFormat("EEEE", Locale.US).format(new Date(mPeriodStart.getTime()));
 
-        StringBuilder ruleBuilder = new StringBuilder(mPeriodType.getFrequencyRepeatString());
+        StringBuilder repeatBuilder = new StringBuilder(mPeriodType.getFrequencyRepeatString());
 
         if (mPeriodType == PeriodType.WEEK) {
-            ruleBuilder.append(" on ").append(dayOfWeek);
+            repeatBuilder.append(" on ").append(dayOfWeek);
         }
 
-        return ruleBuilder.toString();
+        if (mPeriodEnd != null){
+            repeatBuilder.append(" until " + SimpleDateFormat.getDateInstance().format(new Date(mPeriodEnd.getTime())));
+        }
+        return repeatBuilder.toString();
     }
 
         /**
@@ -158,6 +161,8 @@ public class Recurrence extends BaseModel {
 
         ruleBuilder.append("FREQ=").append(mPeriodType.getFrequencyDescription()).append(separator);
         ruleBuilder.append("INTERVAL=").append(mPeriodType.getMultiplier()).append(separator);
+        if (getCount() > 0)
+            ruleBuilder.append("COUNT=").append(getCount()).append(separator);
         ruleBuilder.append(mPeriodType.getByParts(mPeriodStart.getTime())).append(separator);
 
         return ruleBuilder.toString();
@@ -275,7 +280,8 @@ public class Recurrence extends BaseModel {
                 count = Years.yearsBetween(startDate, endDate).getYears();
                 break;
         }
-        return count;
+
+        return count/mPeriodType.getMultiplier();
     }
 
     /**
@@ -285,21 +291,22 @@ public class Recurrence extends BaseModel {
     public void setPeriodEnd(int numberOfOccurences){
         LocalDateTime localDate = new LocalDateTime(mPeriodStart.getTime());
         LocalDateTime endDate;
+        int occurrenceDuration = numberOfOccurences * mPeriodType.getMultiplier();
         switch (mPeriodType){
             case DAY:
-                endDate = localDate.dayOfWeek().getLocalDateTime().plusDays(numberOfOccurences);
+                endDate = localDate.dayOfWeek().getLocalDateTime().plusDays(occurrenceDuration);
                 break;
             case WEEK:
-                endDate = localDate.dayOfWeek().getLocalDateTime().plusWeeks(numberOfOccurences);
+                endDate = localDate.dayOfWeek().getLocalDateTime().plusWeeks(occurrenceDuration);
                 break;
             case MONTH:
-                endDate = localDate.dayOfMonth().getLocalDateTime().plusMonths(numberOfOccurences);
+                endDate = localDate.dayOfMonth().getLocalDateTime().plusMonths(occurrenceDuration);
                 break;
             case YEAR:
-                endDate = localDate.monthOfYear().getLocalDateTime().plusYears(numberOfOccurences);
+                endDate = localDate.monthOfYear().getLocalDateTime().plusYears(occurrenceDuration);
                 break;
             default: //default to monthly
-                endDate = localDate.dayOfMonth().getLocalDateTime().plusMonths(numberOfOccurences);
+                endDate = localDate.dayOfMonth().getLocalDateTime().plusMonths(occurrenceDuration);
                 break;
         }
         mPeriodEnd = new Timestamp(endDate.toDate().getTime());

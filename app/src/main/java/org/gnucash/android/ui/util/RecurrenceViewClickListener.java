@@ -35,7 +35,8 @@ public class RecurrenceViewClickListener implements View.OnClickListener{
     String mRecurrenceRule;
     OnRecurrenceSetListener mRecurrenceSetListener;
 
-    public RecurrenceViewClickListener(AppCompatActivity activity, String recurrenceRule, OnRecurrenceSetListener recurrenceSetListener){
+    public RecurrenceViewClickListener(AppCompatActivity activity, String recurrenceRule,
+                                       OnRecurrenceSetListener recurrenceSetListener){
         this.mActivity = activity;
         this.mRecurrenceRule = recurrenceRule;
         this.mRecurrenceSetListener = recurrenceSetListener;

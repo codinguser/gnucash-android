@@ -163,23 +163,25 @@ public class AccountsActivity extends BaseDrawerActivity implements OnAccountCli
 
         @Override
         public Fragment getItem(int i) {
-            AccountsListFragment currentFragment;
-            switch (i){
-                case INDEX_RECENT_ACCOUNTS_FRAGMENT:
-                    currentFragment = AccountsListFragment.newInstance(AccountsListFragment.DisplayMode.RECENT);
-                    break;
+            AccountsListFragment currentFragment = (AccountsListFragment) mFragmentPageReferenceMap.get(i);
+            if (currentFragment == null) {
+                switch (i) {
+                    case INDEX_RECENT_ACCOUNTS_FRAGMENT:
+                        currentFragment = AccountsListFragment.newInstance(AccountsListFragment.DisplayMode.RECENT);
+                        break;
 
-                case INDEX_FAVORITE_ACCOUNTS_FRAGMENT:
-                    currentFragment = AccountsListFragment.newInstance(AccountsListFragment.DisplayMode.FAVORITES);
-                    break;
+                    case INDEX_FAVORITE_ACCOUNTS_FRAGMENT:
+                        currentFragment = AccountsListFragment.newInstance(AccountsListFragment.DisplayMode.FAVORITES);
+                        break;
 
-                case INDEX_TOP_LEVEL_ACCOUNTS_FRAGMENT:
-                default:
-                    currentFragment = AccountsListFragment.newInstance(AccountsListFragment.DisplayMode.TOP_LEVEL);
-                    break;
+                    case INDEX_TOP_LEVEL_ACCOUNTS_FRAGMENT:
+                    default:
+                        currentFragment = AccountsListFragment.newInstance(AccountsListFragment.DisplayMode.TOP_LEVEL);
+                        break;
+                }
+                mFragmentPageReferenceMap.put(i, currentFragment);
             }
 
-            mFragmentPageReferenceMap.put(i, currentFragment);
             return currentFragment;
         }
 
@@ -259,10 +261,7 @@ public class AccountsActivity extends BaseDrawerActivity implements OnAccountCli
             }
         });
 
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-        int lastTabIndex = preferences.getInt(LAST_OPEN_TAB_INDEX, INDEX_TOP_LEVEL_ACCOUNTS_FRAGMENT);
-        int index = intent.getIntExtra(EXTRA_TAB_INDEX, lastTabIndex);
-        mViewPager.setCurrentItem(index);
+        setCurrentTab();
 
         mFloatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -348,17 +347,19 @@ public class AccountsActivity extends BaseDrawerActivity implements OnAccountCli
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-        int index = intent.getIntExtra(EXTRA_TAB_INDEX, INDEX_TOP_LEVEL_ACCOUNTS_FRAGMENT);
-        setTab(index);
+        setIntent(intent);
+        setCurrentTab();
 
         handleOpenFileIntent(intent);
     }
 
     /**
      * Sets the current tab in the ViewPager
-     * @param index Index of fragment to be loaded
      */
-    public void setTab(int index){
+    public void setCurrentTab(){
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        int lastTabIndex = preferences.getInt(LAST_OPEN_TAB_INDEX, INDEX_TOP_LEVEL_ACCOUNTS_FRAGMENT);
+        int index = getIntent().getIntExtra(EXTRA_TAB_INDEX, lastTabIndex);
         mViewPager.setCurrentItem(index);
     }
 

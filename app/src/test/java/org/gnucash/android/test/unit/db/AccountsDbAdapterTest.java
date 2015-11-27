@@ -5,6 +5,7 @@ import org.gnucash.android.BuildConfig;
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.adapter.AccountsDbAdapter;
+import org.gnucash.android.db.adapter.BudgetAmountsDbAdapter;
 import org.gnucash.android.db.adapter.BudgetsDbAdapter;
 import org.gnucash.android.db.adapter.CommoditiesDbAdapter;
 import org.gnucash.android.db.adapter.PricesDbAdapter;
@@ -14,9 +15,12 @@ import org.gnucash.android.db.adapter.TransactionsDbAdapter;
 import org.gnucash.android.importer.GncXmlImporter;
 import org.gnucash.android.model.Account;
 import org.gnucash.android.model.AccountType;
+import org.gnucash.android.model.Budget;
+import org.gnucash.android.model.BudgetAmount;
 import org.gnucash.android.model.Commodity;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.model.PeriodType;
+import org.gnucash.android.model.Price;
 import org.gnucash.android.model.Recurrence;
 import org.gnucash.android.model.ScheduledAction;
 import org.gnucash.android.model.Split;
@@ -231,14 +235,21 @@ public class AccountsDbAdapterTest{
 
         scheduledActionDbAdapter.addRecord(scheduledAction);
 
+        Budget budget = new Budget("Test");
+        BudgetAmount budgetAmount = new BudgetAmount(Money.getZeroInstance(), account.getUID());
+        budget.addBudgetAmount(budgetAmount);
+        budget.setRecurrence(new Recurrence(PeriodType.MONTH));
+        BudgetsDbAdapter.getInstance().addRecord(budget);
+
         mAccountsDbAdapter.deleteAllRecords();
 
         assertThat(mAccountsDbAdapter.getRecordsCount()).isZero();
         assertThat(mTransactionsDbAdapter.getRecordsCount()).isZero();
         assertThat(mSplitsDbAdapter.getRecordsCount()).isZero();
         assertThat(scheduledActionDbAdapter.getRecordsCount()).isZero();
-        assertThat(PricesDbAdapter.getInstance().getRecordsCount()).isZero();
+        assertThat(BudgetAmountsDbAdapter.getInstance().getRecordsCount()).isZero();
         assertThat(BudgetsDbAdapter.getInstance().getRecordsCount()).isZero();
+        assertThat(PricesDbAdapter.getInstance().getRecordsCount()).isZero(); //prices should remain
         assertThat(CommoditiesDbAdapter.getInstance().getRecordsCount()).isGreaterThan(50); //commodities should remain
     }
 

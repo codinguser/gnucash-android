@@ -17,11 +17,7 @@
 package org.gnucash.android.model;
 
 
-import android.preference.PreferenceManager;
-
 import org.gnucash.android.BuildConfig;
-import org.gnucash.android.app.GnuCashApplication;
-import org.gnucash.android.export.Exporter;
 import org.gnucash.android.export.ofx.OfxHelper;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;

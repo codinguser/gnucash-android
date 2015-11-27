@@ -30,6 +30,7 @@ import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.adapter.AccountsDbAdapter;
 import org.gnucash.android.ui.account.AccountFormFragment;
+import org.gnucash.android.ui.budget.BudgetAmountEditorFragment;
 import org.gnucash.android.ui.budget.BudgetFormFragment;
 import org.gnucash.android.ui.export.ExportFormFragment;
 import org.gnucash.android.ui.passcode.PasscodeLockActivity;
@@ -49,7 +50,7 @@ public class FormActivity extends PasscodeLockActivity {
 
     private CalculatorKeyboard mOnBackListener;
 
-    public enum FormType {ACCOUNT, TRANSACTION, EXPORT, SPLIT_EDITOR, BUDGET}
+    public enum FormType {ACCOUNT, TRANSACTION, EXPORT, SPLIT_EDITOR, BUDGET, BUDGET_AMOUNT_EDITOR}
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,6 +99,10 @@ public class FormActivity extends PasscodeLockActivity {
 
             case BUDGET:
                 showBudgetFormFragment(intent.getExtras());
+                break;
+
+            case BUDGET_AMOUNT_EDITOR:
+                showBudgetAmountEditorFragment(intent.getExtras());
                 break;
 
             default:
@@ -177,6 +182,15 @@ public class FormActivity extends PasscodeLockActivity {
         BudgetFormFragment budgetFormFragment = new BudgetFormFragment();
         budgetFormFragment.setArguments(args);
         showFormFragment(budgetFormFragment);
+    }
+
+    /**
+     * Load the budget amount editor fragment
+     * @param args Arguments
+     */
+    private void showBudgetAmountEditorFragment(Bundle args){
+        BudgetAmountEditorFragment fragment = BudgetAmountEditorFragment.newInstance(args);
+        showFormFragment(fragment);
     }
 
     /**

@@ -1203,14 +1203,18 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
 	 */
     @Override
 	public int deleteAllRecords() {
-        mDb.delete(DatabaseSchema.PriceEntry.TABLE_NAME, null, null);
         // Relies "ON DELETE CASCADE" takes too much time
         // It take more than 300s to complete the deletion on my dataset without
         // clearing the split table first, but only needs a little more that 1s
         // if the split table is cleared first.
+        mDb.delete(DatabaseSchema.PriceEntry.TABLE_NAME, null, null);
         mDb.delete(SplitEntry.TABLE_NAME, null, null);
         mDb.delete(TransactionEntry.TABLE_NAME, null, null);
         mDb.delete(DatabaseSchema.ScheduledActionEntry.TABLE_NAME, null, null);
+        mDb.delete(DatabaseSchema.BudgetAmountEntry.TABLE_NAME, null, null);
+        mDb.delete(DatabaseSchema.BudgetEntry.TABLE_NAME, null, null);
+        mDb.delete(DatabaseSchema.RecurrenceEntry.TABLE_NAME, null, null);
+
         return mDb.delete(AccountEntry.TABLE_NAME, null, null);
     }
 
