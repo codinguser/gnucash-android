@@ -15,21 +15,13 @@
  * limitations under the License.
  */
 
-package org.gnucash.android.ui.report;
+package org.gnucash.android.ui.report.linechart;
 
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.Legend;
@@ -38,25 +30,22 @@ import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.highlight.Highlight;
-import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.github.mikephil.charting.utils.LargeValueFormatter;
 
 import org.gnucash.android.R;
-import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.adapter.AccountsDbAdapter;
 import org.gnucash.android.db.adapter.TransactionsDbAdapter;
 import org.gnucash.android.model.Account;
 import org.gnucash.android.model.AccountType;
+import org.gnucash.android.ui.report.BaseReportFragment;
+import org.gnucash.android.ui.report.ReportType;
 import org.gnucash.android.ui.report.ReportsActivity.GroupInterval;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
-import org.joda.time.Months;
-import org.joda.time.Years;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Currency;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -64,7 +53,6 @@ import java.util.Locale;
 import java.util.Map;
 
 import butterknife.Bind;
-import butterknife.ButterKnife;
 
 /**
  * Fragment for line chart reports
@@ -72,14 +60,10 @@ import butterknife.ButterKnife;
  * @author Oleksandr Tyshkovets <olexandr.tyshkovets@gmail.com>
  * @author Ngewi Fet <ngewif@gmail.com>
  */
-public class LineChartFragment extends Fragment implements OnChartValueSelectedListener,
-    ReportOptionsListener{
+public class LineChartFragment extends BaseReportFragment {
 
-    private static final String TAG = "LineChartFragment";
     private static final String X_AXIS_PATTERN = "MMM YY";
-    private static final String SELECTED_VALUE_PATTERN = "%s - %.2f (%.2f %%)";
     private static final int ANIMATION_DURATION = 3000;
-    private static final int NO_DATA_COLOR = Color.GRAY;
     private static final int NO_DATA_BAR_COUNTS = 5;
     private static final int[] COLORS = {
             Color.parseColor("#68F1AF"), Color.parseColor("#cc1f09"), Color.parseColor("#EE8600"),
@@ -96,43 +80,22 @@ public class LineChartFragment extends Fragment implements OnChartValueSelectedL
     private long mEarliestTransactionTimestamp;
     private long mLatestTransactionTimestamp;
     private boolean mChartDataPresent = true;
-    private Currency mCurrency;
-
-    private GroupInterval mGroupInterval = GroupInterval.MONTH;
-
-    /**
-     * Reporting period start time
-     */
-    private long mReportStartTime = -1;
-
-    /**
-     * Reporting period end time
-     */
-    private long mReportEndTime = -1;
 
     @Bind(R.id.line_chart) LineChart mChart;
-    @Bind(R.id.selected_chart_slice) TextView mChartSliceInfo;
 
-    @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_line_chart, container, false);
-        ButterKnife.bind(this, view);
-        return view;
+    public int getLayoutResource() {
+        return R.layout.fragment_line_chart;
+    }
+
+    @Override
+    public int getTitle() {
+        return R.string.title_line_chart;
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
-        ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(R.string.title_line_chart);
-        setHasOptionsMenu(true);
-
-        mCurrency = Currency.getInstance(GnuCashApplication.getDefaultCurrencyCode());
-
-        ReportsActivity reportsActivity = (ReportsActivity) getActivity();
-        mReportStartTime = reportsActivity.getReportStartTime();
-        mReportEndTime = reportsActivity.getReportEndTime();
 
         mChart.setOnChartValueSelectedListener(this);
         mChart.setDescription("");
@@ -141,30 +104,22 @@ public class LineChartFragment extends Fragment implements OnChartValueSelectedL
         mChart.getAxisLeft().enableGridDashedLine(4.0f, 4.0f, 0);
         mChart.getAxisLeft().setValueFormatter(new LargeValueFormatter(mCurrency.getSymbol(Locale.getDefault())));
 
-        // below we can add/remove displayed account's types
-        mChart.setData(getData(new ArrayList<>(Arrays.asList(AccountType.INCOME, AccountType.EXPENSE))));
-
         Legend legend = mChart.getLegend();
         legend.setPosition(Legend.LegendPosition.BELOW_CHART_CENTER);
         legend.setTextSize(16);
         legend.setForm(Legend.LegendForm.CIRCLE);
 
-        if (!mChartDataPresent) {
-            mChart.getAxisLeft().setAxisMaxValue(10);
-            mChart.getAxisLeft().setDrawLabels(false);
-            mChart.getXAxis().setDrawLabels(false);
-            mChart.setTouchEnabled(false);
-            mChartSliceInfo.setText(getResources().getString(R.string.label_chart_no_data));
-        } else {
-            mChart.animateX(ANIMATION_DURATION);
-        }
-        mChart.invalidate();
+        refresh();
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        ((ReportsActivity)getActivity()).setAppBarColor(R.color.account_blue);
+    public int getTitleColor() {
+        return R.color.account_blue;
+    }
+
+    @Override
+    public ReportType getReportType() {
+        return ReportType.LINE_CHART;
     }
 
     /**
@@ -231,35 +186,6 @@ public class LineChartFragment extends Fragment implements OnChartValueSelectedL
     }
 
     /**
-     * Calculates difference between two date values accordingly to {@code mGroupInterval}
-     * @param start start date
-     * @param end end date
-     * @return difference between two dates or {@code -1}
-     */
-    private int getDateDiff(LocalDateTime start, LocalDateTime end) {
-        switch (mGroupInterval) {
-            case QUARTER:
-                int y = Years.yearsBetween(start.withDayOfYear(1).withMillisOfDay(0), end.withDayOfYear(1).withMillisOfDay(0)).getYears();
-                return (getQuarter(end) - getQuarter(start) + y * 4);
-            case MONTH:
-                return Months.monthsBetween(start.withDayOfMonth(1).withMillisOfDay(0), end.withDayOfMonth(1).withMillisOfDay(0)).getMonths();
-            case YEAR:
-                return Years.yearsBetween(start.withDayOfYear(1).withMillisOfDay(0), end.withDayOfYear(1).withMillisOfDay(0)).getYears();
-            default:
-                return -1;
-        }
-    }
-
-    /**
-     * Returns a quarter of the specified date
-     * @param date date
-     * @return a quarter
-     */
-    private int getQuarter(LocalDateTime date) {
-        return ((date.getMonthOfYear() - 1) / 3 + 1);
-    }
-
-    /**
      * Returns a data object that represents situation when no user data available
      * @return a {@code LineData} instance for situation when no user data available
      */
@@ -289,7 +215,7 @@ public class LineChartFragment extends Fragment implements OnChartValueSelectedL
         for (Account account : mAccountsDbAdapter.getSimpleAccountList()) {
             if (account.getAccountType() == accountType
                     && !account.isPlaceholderAccount()
-                    && account.getCurrency() == mCurrency) {
+                    && account.getCurrency().equals(mCurrency)) {
                 accountUIDList.add(account.getUID());
             }
         }
@@ -378,6 +304,36 @@ public class LineChartFragment extends Fragment implements OnChartValueSelectedL
     }
 
     @Override
+    public boolean requiresAccountTypeOptions() {
+        return false;
+    }
+
+    @Override
+    protected void generateReport() {
+        LineData lineData = getData(new ArrayList<>(Arrays.asList(AccountType.INCOME, AccountType.EXPENSE)));
+        if (lineData != null) {
+            mChart.setData(lineData);
+            mChartDataPresent = true;
+        } else {
+            mChartDataPresent = false;
+        }
+    }
+
+    @Override
+    protected void displayReport() {
+        if (!mChartDataPresent) {
+            mChart.getAxisLeft().setAxisMaxValue(10);
+            mChart.getAxisLeft().setDrawLabels(false);
+            mChart.getXAxis().setDrawLabels(false);
+            mChart.setTouchEnabled(false);
+            mSelectedValueTextView.setText(getResources().getString(R.string.label_chart_no_data));
+        } else {
+            mChart.animateX(ANIMATION_DURATION);
+        }
+        mChart.invalidate();
+    }
+
+    @Override
     public void onTimeRangeUpdated(long start, long end) {
         if (mReportStartTime != start || mReportEndTime != end) {
             mReportStartTime = start;
@@ -394,16 +350,6 @@ public class LineChartFragment extends Fragment implements OnChartValueSelectedL
             mChart.setData(getData(new ArrayList<>(Arrays.asList(AccountType.INCOME, AccountType.EXPENSE))));
             mChart.invalidate();
         }
-    }
-
-    @Override
-    public void onAccountTypeUpdated(AccountType accountType) {
-        //nothing to see here, line chart shows both income and expense
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.chart_actions, menu);
     }
 
     @Override
@@ -451,11 +397,7 @@ public class LineChartFragment extends Fragment implements OnChartValueSelectedL
         String label = mChart.getData().getXVals().get(e.getXIndex());
         double value = e.getVal();
         double sum = mChart.getData().getDataSetByIndex(dataSetIndex).getYValueSum();
-        mChartSliceInfo.setText(String.format(SELECTED_VALUE_PATTERN, label, value, value / sum * 100));
+        mSelectedValueTextView.setText(String.format(SELECTED_VALUE_PATTERN, label, value, value / sum * 100));
     }
 
-    @Override
-    public void onNothingSelected() {
-        mChartSliceInfo.setText("");
-    }
 }

@@ -502,4 +502,5 @@ Neste processo n&#227;o ser&#227;o recolhidas informa&#231;&#245;es do utilizado
     <string name="label_no_scheduled_exports_to_display">N&#227;o existem exporta&#231;&#245;es agendadas para mostrar</string>
     <string name="title_create_export_schedule">Criar uma exporta&#231;&#227;o agendada</string>
     <string name="toast_exported_to">Exportado para : %1$s</string>
+    <string name="title_cash_flow_report">Cash Flow</string>
 </resources>

@@ -61,7 +61,7 @@ import butterknife.ButterKnife;
 public class ReportsActivity extends BaseDrawerActivity implements AdapterView.OnItemSelectedListener,
         DatePickerDialog.OnDateSetListener, DateRangePickerDialogFragment.OnDateRangeSetListener{
 
-    static final int[] COLORS = {
+    public static final int[] COLORS = {
             Color.parseColor("#17ee4e"), Color.parseColor("#cc1f09"), Color.parseColor("#3940f7"),
             Color.parseColor("#f9cd04"), Color.parseColor("#5f33a8"), Color.parseColor("#e005b6"),
             Color.parseColor("#17d6ed"), Color.parseColor("#e4a9a2"), Color.parseColor("#8fe6cd"),
@@ -73,9 +73,11 @@ public class ReportsActivity extends BaseDrawerActivity implements AdapterView.O
 
     @Bind(R.id.time_range_spinner) Spinner mTimeRangeSpinner;
     @Bind(R.id.report_account_type_spinner) Spinner mAccountTypeSpinner;
+    @Bind(R.id.report_type_spinner) Spinner mReportTypeSpinner;
 
     private TransactionsDbAdapter mTransactionsDbAdapter;
     private AccountType mAccountType = AccountType.EXPENSE;
+    private ReportType mReportType = ReportType.NONE;
 
     public enum GroupInterval {WEEK, MONTH, QUARTER, YEAR, ALL}
 
@@ -84,6 +86,25 @@ public class ReportsActivity extends BaseDrawerActivity implements AdapterView.O
     private long mReportEndTime = new LocalDate().plusDays(1).toDate().getTime();
 
     private GroupInterval mReportGroupInterval = GroupInterval.MONTH;
+    private boolean mSkipNextReportTypeSelectedRun = false;
+
+    AdapterView.OnItemSelectedListener mReportTypeSelectedListener = new AdapterView.OnItemSelectedListener() {
+
+        @Override
+        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+            if (mSkipNextReportTypeSelectedRun){
+                mSkipNextReportTypeSelectedRun = false;
+            } else {
+                String reportName = parent.getItemAtPosition(position).toString();
+                loadFragment(mReportType.getFragment(reportName));
+            }
+        }
+
+        @Override
+        public void onNothingSelected(AdapterView<?> parent) {
+            //nothing to see here, move along
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -128,38 +149,43 @@ public class ReportsActivity extends BaseDrawerActivity implements AdapterView.O
             }
         });
 
-        if (savedInstanceState == null) {
-            FragmentManager fragmentManager = getSupportFragmentManager();
-            FragmentTransaction fragmentTransaction = fragmentManager
-                    .beginTransaction();
+        mReportTypeSpinner.setOnItemSelectedListener(mReportTypeSelectedListener);
 
-            fragmentTransaction.replace(R.id.fragment_container, new ReportSummaryFragment());
-            fragmentTransaction.commit();
+        if (savedInstanceState == null) {
+            loadFragment(new ReportSummaryFragment());
         }
     }
 
-    @Override
-    public void onAttachFragment(Fragment fragment) {
-        super.onAttachFragment(fragment);
-        View timeRangeLayout = findViewById(R.id.time_range_layout);
-        View dateRangeDivider = findViewById(R.id.date_range_divider);
-        if (timeRangeLayout != null && dateRangeDivider != null) {
-            if (fragment instanceof ReportSummaryFragment || fragment instanceof BalanceSheetFragment) {
-                timeRangeLayout.setVisibility(View.GONE);
-                dateRangeDivider.setVisibility(View.GONE);
-            } else {
-                timeRangeLayout.setVisibility(View.VISIBLE);
-                dateRangeDivider.setVisibility(View.VISIBLE);
-            }
+    private void loadFragment(BaseReportFragment fragment) {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager
+                .beginTransaction();
+
+        fragmentTransaction.replace(R.id.fragment_container, fragment);
+        fragmentTransaction.commit();
+    }
+
+    /**
+     * Update the report type spinner
+     */
+    public void updateReportTypeSpinner(ReportType reportType) {
+        mReportType = reportType;
+        ActionBar actionBar = getSupportActionBar();
+        assert actionBar != null;
+        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(actionBar.getThemedContext(),
+                android.R.layout.simple_list_item_1,
+                mReportType.getReportNames());
+        mSkipNextReportTypeSelectedRun = true;
+        mReportTypeSpinner.setOnItemSelectedListener(mReportTypeSelectedListener);
+        mReportTypeSpinner.setAdapter(arrayAdapter);
+
+
+        if (arrayAdapter.isEmpty() || mReportType == ReportType.NONE){
+            mReportTypeSpinner.setVisibility(View.GONE);
+        } else {
+            mReportTypeSpinner.setVisibility(View.VISIBLE);
         }
-        View accountTypeSpinner = findViewById(R.id.report_account_type_spinner);
-        if (accountTypeSpinner != null) {
-            if (fragment instanceof LineChartFragment) {
-                accountTypeSpinner.setVisibility(View.GONE);
-            } else {
-                accountTypeSpinner.setVisibility(View.VISIBLE);
-            }
-        }
+        actionBar.setDisplayShowTitleEnabled(mReportType == ReportType.NONE);
     }
 
     /**

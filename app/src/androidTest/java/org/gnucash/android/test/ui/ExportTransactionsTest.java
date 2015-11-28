@@ -24,6 +24,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
 import android.preference.PreferenceManager;
 import android.support.test.InstrumentationRegistry;
+import android.support.test.espresso.ViewAction;
 import android.support.test.espresso.contrib.DrawerActions;
 import android.support.test.espresso.matcher.ViewMatchers;
 import android.support.test.runner.AndroidJUnit4;
@@ -253,7 +254,7 @@ public class ExportTransactionsTest extends
 
 	@Test
 	public void testCreateBackup(){
-		DrawerActions.openDrawer(R.id.drawer_layout);
+		onView(withId(R.id.drawer_layout)).perform(DrawerActions.open());
 		onView(withText(R.string.title_settings)).perform(click());
 		onView(withText(R.string.header_backup_and_export_settings)).perform(click());
 

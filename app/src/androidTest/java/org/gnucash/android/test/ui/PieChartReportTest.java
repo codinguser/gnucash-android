@@ -45,7 +45,8 @@ import org.gnucash.android.model.Money;
 import org.gnucash.android.model.Split;
 import org.gnucash.android.model.Transaction;
 import org.gnucash.android.model.TransactionType;
-import org.gnucash.android.ui.report.PieChartFragment;
+import org.gnucash.android.ui.report.BaseReportFragment;
+import org.gnucash.android.ui.report.piechart.PieChartFragment;
 import org.gnucash.android.ui.report.ReportsActivity;
 import org.joda.time.LocalDateTime;
 import org.junit.After;
@@ -54,7 +55,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.math.BigDecimal;
-import java.util.Currency;
 
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
@@ -180,7 +180,7 @@ public class PieChartReportTest extends ActivityInstrumentationTestCase2<Reports
 
         onView(withId(R.id.pie_chart)).perform(clickXY(Position.BEGIN, Position.MIDDLE));
         float percent = (float) (TRANSACTION_AMOUNT / (TRANSACTION_AMOUNT + TRANSACTION2_AMOUNT) * 100);
-        String selectedText = String.format(PieChartFragment.SELECTED_VALUE_PATTERN, DINING_EXPENSE_ACCOUNT_NAME, TRANSACTION_AMOUNT, percent);
+        String selectedText = String.format(BaseReportFragment.SELECTED_VALUE_PATTERN, DINING_EXPENSE_ACCOUNT_NAME, TRANSACTION_AMOUNT, percent);
         onView(withId(R.id.selected_chart_slice)).check(matches(withText(selectedText)));
     }
 

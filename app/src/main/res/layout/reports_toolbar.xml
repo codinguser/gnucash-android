@@ -14,7 +14,6 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-
 <FrameLayout xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
@@ -37,5 +36,10 @@
         app:layout_scrollFlags="enterAlways"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-        tools:showIn="@layout/activity_form" />
+        tools:showIn="@layout/activity_form">
+        <Spinner android:id="@+id/report_type_spinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
+    </android.support.v7.widget.Toolbar>
 </FrameLayout>

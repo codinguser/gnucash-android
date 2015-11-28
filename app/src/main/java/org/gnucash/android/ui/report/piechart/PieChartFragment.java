@@ -15,45 +15,35 @@
  * limitations under the License.
  */
 
-package org.gnucash.android.ui.report;
+package org.gnucash.android.ui.report.piechart;
 
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v7.app.AppCompatActivity;
-import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.highlight.Highlight;
-import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 
 import org.gnucash.android.R;
-import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.adapter.AccountsDbAdapter;
-import org.gnucash.android.db.adapter.TransactionsDbAdapter;
 import org.gnucash.android.model.Account;
-import org.gnucash.android.model.AccountType;
+import org.gnucash.android.ui.report.BaseReportFragment;
+import org.gnucash.android.ui.report.ReportType;
+import org.gnucash.android.ui.report.ReportsActivity;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Currency;
 import java.util.List;
 import java.util.Locale;
 
 import butterknife.Bind;
-import butterknife.ButterKnife;
 
 import static com.github.mikephil.charting.components.Legend.LegendForm;
 import static com.github.mikephil.charting.components.Legend.LegendPosition;
@@ -64,13 +54,10 @@ import static com.github.mikephil.charting.components.Legend.LegendPosition;
  * @author Oleksandr Tyshkovets <olexandr.tyshkovets@gmail.com>
  * @author Ngewi Fet <ngewif@gmail.com>
  */
-public class PieChartFragment extends Fragment implements OnChartValueSelectedListener,
-        ReportOptionsListener {
+public class PieChartFragment extends BaseReportFragment {
 
-    public static final String SELECTED_VALUE_PATTERN = "%s - %.2f (%.2f %%)";
     public static final String TOTAL_VALUE_LABEL_PATTERN = "%s\n%.2f %s";
     private static final int ANIMATION_DURATION = 1800;
-    public static final int NO_DATA_COLOR = Color.LTGRAY;
     public static final int CENTER_TEXT_SIZE = 18;
     /**
      * The space in degrees between the chart slices
@@ -82,12 +69,8 @@ public class PieChartFragment extends Fragment implements OnChartValueSelectedLi
     private static final double GROUPING_SMALLER_SLICES_THRESHOLD = 5;
 
     @Bind(R.id.pie_chart) PieChart mChart;
-    @Bind(R.id.selected_chart_slice) TextView mSelectedValueTextView;
 
     private AccountsDbAdapter mAccountsDbAdapter;
-    private TransactionsDbAdapter mTransactionsDbAdapter;
-
-    private AccountType mAccountType;
 
     private boolean mChartDataPresent = true;
 
@@ -95,41 +78,15 @@ public class PieChartFragment extends Fragment implements OnChartValueSelectedLi
 
     private boolean mGroupSmallerSlices = true;
 
-    private String mCurrencyCode;
-
-    /**
-     * Start time for reporting period in millis
-     */
-    private long mReportStartTime = -1;
-
-    /**
-     * End time for reporting period in millis
-     */
-    private long mReportEndTime = -1;
-
-
-    @Nullable
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_pie_chart, container, false);
-        ButterKnife.bind(this, view);
-        return view;
-    }
-
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
-        ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(R.string.title_pie_chart);
-        setHasOptionsMenu(true);
 
         mUseAccountColor = PreferenceManager.getDefaultSharedPreferences(getActivity())
                 .getBoolean(getString(R.string.key_use_account_color), false);
 
         mAccountsDbAdapter = AccountsDbAdapter.getInstance();
-        mTransactionsDbAdapter = TransactionsDbAdapter.getInstance();
 
-        mCurrencyCode = GnuCashApplication.getDefaultCurrencyCode();
 
         mChart.setCenterTextSize(CENTER_TEXT_SIZE);
         mChart.setDescription("");
@@ -138,47 +95,55 @@ public class PieChartFragment extends Fragment implements OnChartValueSelectedLi
         mChart.getLegend().setWordWrapEnabled(true);
         mChart.getLegend().setPosition(LegendPosition.BELOW_CHART_CENTER);
 
-        ReportsActivity reportsActivity = (ReportsActivity) getActivity();
-        mReportStartTime = reportsActivity.getReportStartTime();
-        mReportEndTime = reportsActivity.getReportEndTime();
-        mAccountType = reportsActivity.getAccountType();
-
-        displayChart();
+        refresh();
     }
 
-    /**
-     * Sets the app bar color
-     */
     @Override
-    public void onResume() {
-        super.onResume();
-        ((ReportsActivity)getActivity()).setAppBarColor(R.color.account_green);
+    public int getTitleColor() {
+        return R.color.account_green;
     }
 
-    /**
-     * Manages all actions about displaying the pie chart
-     */
-    private void displayChart() {
-        mSelectedValueTextView.setText(R.string.label_select_pie_slice_to_see_details);
-        mChart.highlightValues(null);
-        mChart.clear();
+    @Override
+    public int getTitle() {
+        return R.string.title_pie_chart;
+    }
 
+    @Override
+    public ReportType getReportType() {
+        return ReportType.PIE_CHART;
+    }
+
+    @Override
+    public int getLayoutResource() {
+        return R.layout.fragment_pie_chart;
+    }
+
+    @Override
+    protected void generateReport() {
         PieData pieData = getData();
         if (pieData != null && pieData.getYValCount() != 0) {
             mChartDataPresent = true;
             mChart.setData(mGroupSmallerSlices ? groupSmallerSlices(pieData, getActivity()) : pieData);
             float sum = mChart.getData().getYValueSum();
             String total = getResources().getString(R.string.label_chart_total);
-            String currencySymbol = Currency.getInstance(mCurrencyCode).getSymbol(Locale.getDefault());
+            String currencySymbol = mCurrency.getSymbol(Locale.getDefault());
             mChart.setCenterText(String.format(TOTAL_VALUE_LABEL_PATTERN, total, sum, currencySymbol));
-            mChart.animateXY(ANIMATION_DURATION, ANIMATION_DURATION);
         } else {
             mChartDataPresent = false;
             mChart.setCenterText(getResources().getString(R.string.label_chart_no_data));
             mChart.setData(getEmptyData());
         }
+    }
 
+    @Override
+    protected void displayReport() {
+        if (mChartDataPresent){
+            mChart.animateXY(ANIMATION_DURATION, ANIMATION_DURATION);
+        }
+
+        mSelectedValueTextView.setText(R.string.label_select_pie_slice_to_see_details);
         mChart.setTouchEnabled(mChartDataPresent);
+        mChart.highlightValues(null);
         mChart.invalidate();
     }
 
@@ -193,7 +158,7 @@ public class PieChartFragment extends Fragment implements OnChartValueSelectedLi
         for (Account account : mAccountsDbAdapter.getSimpleAccountList()) {
             if (account.getAccountType() == mAccountType
                     && !account.isPlaceholderAccount()
-                    && account.getCurrency() == Currency.getInstance(mCurrencyCode)) {
+                    && account.getCurrency() == mCurrency) {
 
                 double balance = mAccountsDbAdapter.getAccountsBalance(Collections.singletonList(account.getUID()),
                         mReportStartTime, mReportEndTime).asDouble();
@@ -211,27 +176,6 @@ public class PieChartFragment extends Fragment implements OnChartValueSelectedLi
         return new PieData(labels, dataSet);
     }
 
-    @Override
-    public void onTimeRangeUpdated(long start, long end) {
-        if (mReportStartTime != start || mReportEndTime != end) {
-            mReportStartTime = start;
-            mReportEndTime = end;
-            displayChart();
-        }
-    }
-
-    @Override
-    public void onGroupingUpdated(ReportsActivity.GroupInterval groupInterval) {
-        //nothing to see here, this doesn't make sense for a pie chart
-    }
-
-    @Override
-    public void onAccountTypeUpdated(AccountType accountType) {
-        if (mAccountType != accountType) {
-            mAccountType = accountType;
-            displayChart();
-        }
-    }
 
     /**
      * Returns a data object that represents situation when no user data available
@@ -279,11 +223,6 @@ public class PieChartFragment extends Fragment implements OnChartValueSelectedLi
     }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.chart_actions, menu);
-    }
-
-    @Override
     public void onPrepareOptionsMenu(Menu menu) {
         menu.findItem(R.id.menu_order_by_size).setVisible(mChartDataPresent);
         menu.findItem(R.id.menu_toggle_labels).setVisible(mChartDataPresent);
@@ -317,7 +256,7 @@ public class PieChartFragment extends Fragment implements OnChartValueSelectedLi
             }
             case R.id.menu_group_other_slice: {
                 mGroupSmallerSlices = !mGroupSmallerSlices;
-                displayChart();
+                refresh();
                 return true;
             }
 
@@ -368,10 +307,5 @@ public class PieChartFragment extends Fragment implements OnChartValueSelectedLi
         float value = e.getVal();
         float percent = value / mChart.getData().getYValueSum() * 100;
         mSelectedValueTextView.setText(String.format(SELECTED_VALUE_PATTERN, label, value, percent));
-    }
-
-    @Override
-    public void onNothingSelected() {
-        mSelectedValueTextView.setText("");
     }
 }

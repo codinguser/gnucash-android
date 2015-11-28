@@ -24,16 +24,14 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatButton;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.PieChart;
+import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.Legend.LegendForm;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.PieData;
@@ -45,6 +43,10 @@ import org.gnucash.android.db.adapter.AccountsDbAdapter;
 import org.gnucash.android.model.Account;
 import org.gnucash.android.model.AccountType;
 import org.gnucash.android.model.Money;
+import org.gnucash.android.ui.report.barchart.BarChartFragment;
+import org.gnucash.android.ui.report.linechart.LineChartFragment;
+import org.gnucash.android.ui.report.piechart.PieChartFragment;
+import org.gnucash.android.ui.report.sheet.BalanceSheetFragment;
 import org.gnucash.android.ui.transaction.TransactionsActivity;
 import org.joda.time.LocalDate;
 
@@ -55,7 +57,7 @@ import java.util.List;
 import java.util.Locale;
 
 import butterknife.Bind;
-import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 import static com.github.mikephil.charting.components.Legend.LegendPosition;
 
@@ -63,7 +65,7 @@ import static com.github.mikephil.charting.components.Legend.LegendPosition;
  * Shows a summary of reports
  * @author Ngewi Fet <ngewif@gmail.com>
  */
-public class ReportSummaryFragment extends Fragment {
+public class ReportSummaryFragment extends BaseReportFragment {
 
     public static final int LEGEND_TEXT_SIZE = 14;
 
@@ -78,6 +80,10 @@ public class ReportSummaryFragment extends Fragment {
     @Bind(R.id.net_worth) TextView mNetWorth;
 
     private AccountsDbAdapter mAccountsDbAdapter;
+    private Money mAssetsBalance;
+    private Money mLiabilitiesBalance;
+
+    private boolean mChartHasData = false;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -85,67 +91,46 @@ public class ReportSummaryFragment extends Fragment {
         mAccountsDbAdapter = AccountsDbAdapter.getInstance();
     }
 
-    @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_report_summary, container, false);
-        ButterKnife.bind(this, view);
-
-        mPieChartButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                loadFragment(new PieChartFragment());
-            }
-        });
-
-        mLineChartButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                loadFragment(new LineChartFragment());
-            }
-        });
-
-        mBarChartButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                loadFragment(new BarChartFragment());
-            }
-        });
-
-        mBalanceSheetButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                loadFragment(new BalanceSheetFragment());
-            }
-        });
-
-        return view;
+    public int getLayoutResource() {
+        return R.layout.fragment_report_summary;
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(R.string.title_reports);
-        ((ReportsActivity)getActivity()).setAppBarColor(R.color.theme_primary);
+    public int getTitle() {
+        return R.string.title_reports;
+    }
 
-        getActivity().findViewById(R.id.time_range_layout).setVisibility(View.GONE);
-        getActivity().findViewById(R.id.date_range_divider).setVisibility(View.GONE);
+    @Override
+    public ReportType getReportType() {
+        return ReportType.NONE;
+    }
+
+    @Override
+    public boolean requiresAccountTypeOptions() {
+        return false;
+    }
+
+    @Override
+    public boolean requiresTimeRangeOptions() {
+        return false;
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        setHasOptionsMenu(true);
+        setHasOptionsMenu(false);
 
         mChart.setCenterTextSize(PieChartFragment.CENTER_TEXT_SIZE);
         mChart.setDescription("");
         mChart.setDrawSliceText(false);
-        mChart.getLegend().setEnabled(true);
-        mChart.getLegend().setWordWrapEnabled(true);
-        mChart.getLegend().setForm(LegendForm.CIRCLE);
-        mChart.getLegend().setPosition(LegendPosition.RIGHT_OF_CHART_CENTER);
-        mChart.getLegend().setTextSize(LEGEND_TEXT_SIZE);
+        Legend legend = mChart.getLegend();
+        legend.setEnabled(true);
+        legend.setWordWrapEnabled(true);
+        legend.setForm(LegendForm.CIRCLE);
+        legend.setPosition(LegendPosition.RIGHT_OF_CHART_CENTER);
+        legend.setTextSize(LEGEND_TEXT_SIZE);
 
         ColorStateList csl = new ColorStateList(new int[][]{new int[0]}, new int[]{getResources().getColor(R.color.account_green)});
         setButtonTint(mPieChartButton, csl);
@@ -156,28 +141,41 @@ public class ReportSummaryFragment extends Fragment {
         csl = new ColorStateList(new int[][]{new int[0]}, new int[]{getResources().getColor(R.color.account_purple)});
         setButtonTint(mBalanceSheetButton, csl);
 
-
-        List<AccountType> accountTypes = new ArrayList<>();
-        accountTypes.add(AccountType.ASSET);
-        accountTypes.add(AccountType.CASH);
-        accountTypes.add(AccountType.BANK);
-        Money assetsBalance = mAccountsDbAdapter.getAccountBalance(accountTypes, -1, System.currentTimeMillis());
-
-        accountTypes.clear();
-        accountTypes.add(AccountType.LIABILITY);
-        accountTypes.add(AccountType.CREDIT);
-        Money liabilitiesBalance = mAccountsDbAdapter.getAccountBalance(accountTypes, -1, System.currentTimeMillis());
-
-        TransactionsActivity.displayBalance(mTotalAssets, assetsBalance);
-        TransactionsActivity.displayBalance(mTotalLiabilities, liabilitiesBalance);
-        TransactionsActivity.displayBalance(mNetWorth, assetsBalance.subtract(liabilitiesBalance));
-
-        displayChart();
+        refresh();
     }
 
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
         menu.findItem(R.id.menu_group_reports_by).setVisible(false);
+    }
+
+    @Override
+    protected void generateReport() {
+        PieData pieData = PieChartFragment.groupSmallerSlices(getData(), getActivity());
+        if (pieData != null && pieData.getYValCount() != 0) {
+            mChart.setData(pieData);
+            float sum = mChart.getData().getYValueSum();
+            String total = getResources().getString(R.string.label_chart_total);
+            String currencySymbol = Currency.getInstance(GnuCashApplication.getDefaultCurrencyCode()).getSymbol(Locale.getDefault());
+            mChart.setCenterText(String.format(PieChartFragment.TOTAL_VALUE_LABEL_PATTERN, total, sum, currencySymbol));
+            mChartHasData = true;
+        } else {
+            mChart.setData(getEmptyData());
+            mChart.setCenterText(getResources().getString(R.string.label_chart_no_data));
+            mChart.getLegend().setEnabled(false);
+            mChartHasData = false;
+        }
+
+        List<AccountType> accountTypes = new ArrayList<>();
+        accountTypes.add(AccountType.ASSET);
+        accountTypes.add(AccountType.CASH);
+        accountTypes.add(AccountType.BANK);
+        mAssetsBalance = mAccountsDbAdapter.getAccountBalance(accountTypes, -1, System.currentTimeMillis());
+
+        accountTypes.clear();
+        accountTypes.add(AccountType.LIABILITY);
+        accountTypes.add(AccountType.CREDIT);
+        mLiabilitiesBalance = mAccountsDbAdapter.getAccountBalance(accountTypes, -1, System.currentTimeMillis());
     }
 
     /**
@@ -212,30 +210,20 @@ public class ReportSummaryFragment extends Fragment {
         return new PieData(labels, dataSet);
     }
 
-    /**
-     * Manages all actions about displaying the pie chart
-     */
-    private void displayChart() {
-        mChart.highlightValues(null);
-        mChart.clear();
-
-        PieData pieData = PieChartFragment.groupSmallerSlices(getData(), getActivity());
-        if (pieData != null && pieData.getYValCount() != 0) {
-            mChart.setData(pieData);
-            float sum = mChart.getData().getYValueSum();
-            String total = getResources().getString(R.string.label_chart_total);
-            String currencySymbol = Currency.getInstance(GnuCashApplication.getDefaultCurrencyCode()).getSymbol(Locale.getDefault());
-            mChart.setCenterText(String.format(PieChartFragment.TOTAL_VALUE_LABEL_PATTERN, total, sum, currencySymbol));
+    @Override
+    protected void displayReport() {
+        if (mChartHasData){
             mChart.animateXY(1800, 1800);
             mChart.setTouchEnabled(true);
         } else {
-            mChart.setData(getEmptyData());
-            mChart.setCenterText(getResources().getString(R.string.label_chart_no_data));
-            mChart.getLegend().setEnabled(false);
             mChart.setTouchEnabled(false);
         }
-
+        mChart.highlightValues(null);
         mChart.invalidate();
+
+        TransactionsActivity.displayBalance(mTotalAssets, mAssetsBalance);
+        TransactionsActivity.displayBalance(mTotalLiabilities, mLiabilitiesBalance);
+        TransactionsActivity.displayBalance(mNetWorth, mAssetsBalance.subtract(mLiabilitiesBalance));
     }
 
     /**
@@ -250,6 +238,28 @@ public class ReportSummaryFragment extends Fragment {
         return new PieData(Collections.singletonList(""), dataSet);
     }
 
+    @OnClick({R.id.btn_bar_chart, R.id.btn_pie_chart, R.id.btn_line_chart, R.id.btn_balance_sheet})
+    public void onClickChartTypeButton(View view){
+        BaseReportFragment fragment;
+        switch (view.getId()){
+            case R.id.btn_pie_chart:
+                fragment = new PieChartFragment();
+                break;
+            case R.id.btn_bar_chart:
+                fragment = new BarChartFragment();
+                break;
+            case R.id.btn_line_chart:
+                fragment = new LineChartFragment();
+                break;
+            case R.id.btn_balance_sheet:
+                fragment = new BalanceSheetFragment();
+                break;
+            default:
+                fragment = this;
+                break;
+        }
+        loadFragment(fragment);
+    }
 
     public void setButtonTint(Button button, ColorStateList tint) {
         if (Build.VERSION.SDK_INT == Build.VERSION_CODES.LOLLIPOP && button instanceof AppCompatButton) {

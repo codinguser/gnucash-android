@@ -15,22 +15,15 @@
  * limitations under the License.
  */
 
-package org.gnucash.android.ui.report;
+package org.gnucash.android.ui.report.barchart;
 
 import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.github.mikephil.charting.charts.BarChart;
@@ -40,24 +33,21 @@ import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.highlight.Highlight;
-import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.github.mikephil.charting.utils.LargeValueFormatter;
 
 import org.gnucash.android.R;
-import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.adapter.AccountsDbAdapter;
 import org.gnucash.android.db.adapter.TransactionsDbAdapter;
 import org.gnucash.android.model.Account;
 import org.gnucash.android.model.AccountType;
+import org.gnucash.android.ui.report.BaseReportFragment;
+import org.gnucash.android.ui.report.ReportType;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
-import org.joda.time.Months;
-import org.joda.time.Years;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Currency;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -65,10 +55,8 @@ import java.util.Locale;
 import java.util.Map;
 
 import butterknife.Bind;
-import butterknife.ButterKnife;
 
 import static org.gnucash.android.ui.report.ReportsActivity.COLORS;
-import static org.gnucash.android.ui.report.ReportsActivity.GroupInterval;
 
 /**
  * Activity used for drawing a bar chart
@@ -76,72 +64,49 @@ import static org.gnucash.android.ui.report.ReportsActivity.GroupInterval;
  * @author Oleksandr Tyshkovets <olexandr.tyshkovets@gmail.com>
  * @author Ngewi Fet <ngewif@gmail.com>
  */
-public class BarChartFragment extends Fragment implements OnChartValueSelectedListener,
-    ReportOptionsListener {
+public class BarChartFragment extends BaseReportFragment {
 
-    private static final String TAG = "BarChartFragment";
     private static final String X_AXIS_MONTH_PATTERN = "MMM YY";
     private static final String X_AXIS_QUARTER_PATTERN = "Q%d %s";
     private static final String X_AXIS_YEAR_PATTERN = "YYYY";
-    private static final String SELECTED_VALUE_PATTERN = "%s - %.2f (%.2f %%)";
+
     private static final int ANIMATION_DURATION = 2000;
-    private static final int NO_DATA_COLOR = Color.LTGRAY;
     private static final int NO_DATA_BAR_COUNTS = 3;
 
     private AccountsDbAdapter mAccountsDbAdapter = AccountsDbAdapter.getInstance();
 
-    @Bind(R.id.selected_chart_slice) TextView selectedValueTextView;
     @Bind(R.id.bar_chart) BarChart mChart;
-
-    private Currency mCurrency;
-
-    private AccountType mAccountType;
 
     private boolean mUseAccountColor = true;
     private boolean mTotalPercentageMode = true;
     private boolean mChartDataPresent = true;
 
-    /**
-     * Reporting period start time
-     */
-    private long mReportStartTime = -1;
-    /**
-     * Reporting period end time
-     */
-    private long mReportEndTime = -1;
-
-    private GroupInterval mGroupInterval = GroupInterval.MONTH;
-
-    @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_bar_chart, container, false);
-        ButterKnife.bind(this, view);
-        return view;
+    public int getTitleColor() {
+        return R.color.account_red;
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        ((ReportsActivity)getActivity()).setAppBarColor(R.color.account_red);
+    public int getTitle() {
+        return R.string.title_bar_chart;
+    }
+
+    @Override
+    public int getLayoutResource() {
+        return R.layout.fragment_bar_chart;
+    }
+
+    @Override
+    public ReportType getReportType() {
+        return ReportType.BAR_CHART;
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(R.string.title_bar_chart);
-        setHasOptionsMenu(true);
-
         mUseAccountColor = PreferenceManager.getDefaultSharedPreferences(getActivity())
                 .getBoolean(getString(R.string.key_use_account_color), false);
-
-        mCurrency = Currency.getInstance(GnuCashApplication.getDefaultCurrencyCode());
-
-        ReportsActivity reportsActivity = (ReportsActivity) getActivity();
-        mReportStartTime = reportsActivity.getReportStartTime();
-        mReportEndTime = reportsActivity.getReportEndTime();
-        mAccountType = reportsActivity.getAccountType();
 
         mChart.setOnChartValueSelectedListener(this);
         mChart.setDescription("");
@@ -156,8 +121,7 @@ public class BarChartFragment extends Fragment implements OnChartValueSelectedLi
         chartLegend.setPosition(Legend.LegendPosition.BELOW_CHART_CENTER);
         chartLegend.setWordWrapEnabled(true);
 
-        mChart.setData(getData());
-        displayChart();
+        refresh();
     }
 
 
@@ -165,7 +129,7 @@ public class BarChartFragment extends Fragment implements OnChartValueSelectedLi
      * Returns a data object that represents a user data of the specified account types
      * @return a {@code BarData} instance that represents a user data
      */
-    private BarData getData() {
+    protected BarData getData() {
         List<BarEntry> values = new ArrayList<>();
         List<String> labels = new ArrayList<>();
         List<Integer> colors = new ArrayList<>();
@@ -318,35 +282,6 @@ public class BarChartFragment extends Fragment implements OnChartValueSelectedLi
     }
 
     /**
-     * Calculates difference between two date values accordingly to {@code mGroupInterval}
-     * @param start start date
-     * @param end end date
-     * @return difference between two dates or {@code -1}
-     */
-    private int getDateDiff(LocalDateTime start, LocalDateTime end) {
-        switch (mGroupInterval) {
-            case QUARTER:
-                int y = Years.yearsBetween(start.withDayOfYear(1).withMillisOfDay(0), end.withDayOfYear(1).withMillisOfDay(0)).getYears();
-                return (getQuarter(end) - getQuarter(start) + y * 4);
-            case MONTH:
-                return Months.monthsBetween(start.withDayOfMonth(1).withMillisOfDay(0), end.withDayOfMonth(1).withMillisOfDay(0)).getMonths();
-            case YEAR:
-                return Years.yearsBetween(start.withDayOfYear(1).withMillisOfDay(0), end.withDayOfYear(1).withMillisOfDay(0)).getYears();
-            default:
-                return -1;
-        }
-    }
-
-    /**
-     * Returns a quarter of the specified date
-     * @param date date
-     * @return a quarter
-     */
-    private int getQuarter(LocalDateTime date) {
-        return ((date.getMonthOfYear() - 1) / 3 + 1);
-    }
-
-    /**
      * Converts the specified list of floats to an array
      * @param list a list of floats
      * @return a float array
@@ -359,25 +294,26 @@ public class BarChartFragment extends Fragment implements OnChartValueSelectedLi
         return array;
     }
 
-    /**
-     * Displays the stacked bar chart
-     */
-    private void displayChart() {
-        mChart.highlightValues(null);
+
+    @Override
+    public void generateReport() {
+        mChart.setData(getData());
         setCustomLegend();
-        mChart.notifyDataSetChanged();
 
         mChart.getAxisLeft().setDrawLabels(mChartDataPresent);
         mChart.getXAxis().setDrawLabels(mChartDataPresent);
         mChart.setTouchEnabled(mChartDataPresent);
+    }
 
-        selectedValueTextView.setText("");
-
+    @Override
+    protected void displayReport() {
+        mChart.notifyDataSetChanged();
+        mChart.highlightValues(null);
         if (mChartDataPresent) {
             mChart.animateY(ANIMATION_DURATION);
         } else {
             mChart.clearAnimation();
-            selectedValueTextView.setText(getResources().getString(R.string.label_chart_no_data));
+            mSelectedValueTextView.setText(R.string.label_chart_no_data);
         }
 
         mChart.invalidate();
@@ -398,40 +334,6 @@ public class BarChartFragment extends Fragment implements OnChartValueSelectedLi
             return;
         }
         legend.setEnabled(false);
-    }
-
-    @Override
-    public void onTimeRangeUpdated(long start, long end) {
-        if (mReportStartTime != start || mReportEndTime != end) {
-            mReportStartTime = start;
-            mReportEndTime = end;
-
-            mChart.setData(getData());
-            displayChart();
-        }
-    }
-
-    @Override
-    public void onGroupingUpdated(GroupInterval groupInterval) {
-        if (mGroupInterval != groupInterval) {
-            mGroupInterval = groupInterval;
-            mChart.setData(getData());
-            displayChart();
-        }
-    }
-
-    @Override
-    public void onAccountTypeUpdated(AccountType accountType) {
-        if (mAccountType != accountType) {
-            mAccountType = accountType;
-            mChart.setData(getData());
-            displayChart();
-        }
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.chart_actions, menu);
     }
 
     @Override
@@ -490,11 +392,7 @@ public class BarChartFragment extends Fragment implements OnChartValueSelectedLi
         } else {
             sum = entry.getNegativeSum() + entry.getPositiveSum();
         }
-        selectedValueTextView.setText(String.format(SELECTED_VALUE_PATTERN, label.trim(), value, value / sum * 100));
+        mSelectedValueTextView.setText(String.format(SELECTED_VALUE_PATTERN, label.trim(), value, value / sum * 100));
     }
 
-    @Override
-    public void onNothingSelected() {
-        selectedValueTextView.setText(R.string.label_select_bar_to_view_details);
-    }
 }

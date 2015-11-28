@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.gnucash.android.ui.report;
+package org.gnucash.android.ui.report.sheet;
 
 import android.database.Cursor;
 import android.graphics.Typeface;
@@ -34,6 +34,8 @@ import org.gnucash.android.db.adapter.AccountsDbAdapter;
 import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.model.AccountType;
 import org.gnucash.android.model.Money;
+import org.gnucash.android.ui.report.BaseReportFragment;
+import org.gnucash.android.ui.report.ReportType;
 import org.gnucash.android.ui.transaction.TransactionsActivity;
 
 import java.util.ArrayList;
@@ -46,7 +48,7 @@ import butterknife.ButterKnife;
  * Fragment report as text
  * @author Ngewi Fet <ngewif@gmail.com>
  */
-public class BalanceSheetFragment extends Fragment {
+public class BalanceSheetFragment extends BaseReportFragment {
 
     @Bind(R.id.table_assets) TableLayout mAssetsTableLayout;
     @Bind(R.id.table_liabilities) TableLayout mLiabilitiesTableLayout;
@@ -54,47 +56,74 @@ public class BalanceSheetFragment extends Fragment {
 
     @Bind(R.id.total_liability_and_equity) TextView mNetWorth;
 
-
     AccountsDbAdapter mAccountsDbAdapter = AccountsDbAdapter.getInstance();
 
-    @Nullable
+    private Money mAssetsBalance;
+    private Money mLiabilitiesBalance;
+    private List<AccountType> mAssetAccountTypes;
+    private List<AccountType> mLiabilityAccountTypes;
+    private List<AccountType> mEquityAccountTypes;
+
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_text_report, container, false);
-        ButterKnife.bind(this, view);
-        return view;
+    public int getLayoutResource() {
+        return R.layout.fragment_text_report;
+    }
+
+    @Override
+    public int getTitleColor() {
+        return R.color.account_purple;
+    }
+
+    @Override
+    public int getTitle() {
+        return R.string.title_balance_sheet_report;
+    }
+
+    @Override
+    public ReportType getReportType() {
+        return ReportType.TEXT;
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(R.string.title_balance_sheet_report);
-        setHasOptionsMenu(true);
+        mAssetAccountTypes = new ArrayList<>();
+        mAssetAccountTypes.add(AccountType.ASSET);
+        mAssetAccountTypes.add(AccountType.CASH);
+        mAssetAccountTypes.add(AccountType.BANK);
 
-        List<AccountType> accountTypes = new ArrayList<>();
-        accountTypes.add(AccountType.ASSET);
-        accountTypes.add(AccountType.CASH);
-        accountTypes.add(AccountType.BANK);
-        loadAccountViews(accountTypes, mAssetsTableLayout);
-        Money assetsBalance = mAccountsDbAdapter.getAccountBalance(accountTypes, -1, System.currentTimeMillis());
+        mLiabilityAccountTypes = new ArrayList<>();
+        mLiabilityAccountTypes.add(AccountType.LIABILITY);
+        mLiabilityAccountTypes.add(AccountType.CREDIT);
 
-        accountTypes.clear();
-        accountTypes.add(AccountType.LIABILITY);
-        accountTypes.add(AccountType.CREDIT);
-        loadAccountViews(accountTypes, mLiabilitiesTableLayout);
-        Money liabilitiesBalance = mAccountsDbAdapter.getAccountBalance(accountTypes, -1, System.currentTimeMillis());
-
-        accountTypes.clear();
-        accountTypes.add(AccountType.EQUITY);
-        loadAccountViews(accountTypes, mEquityTableLayout);
-
-        TransactionsActivity.displayBalance(mNetWorth, assetsBalance.subtract(liabilitiesBalance));
+        mEquityAccountTypes = new ArrayList<>();
+        mEquityAccountTypes.add(AccountType.EQUITY);
+        refresh();
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        ((ReportsActivity)getActivity()).setAppBarColor(R.color.account_purple);
+    public boolean requiresAccountTypeOptions() {
+        return false;
+    }
+
+    @Override
+    public boolean requiresTimeRangeOptions() {
+        return false;
+    }
+
+    @Override
+    protected void generateReport() {
+        mAssetsBalance = mAccountsDbAdapter.getAccountBalance(mAssetAccountTypes, -1, System.currentTimeMillis());
+        mLiabilitiesBalance = mAccountsDbAdapter.getAccountBalance(mLiabilityAccountTypes, -1, System.currentTimeMillis());
+    }
+
+    @Override
+    protected void displayReport() {
+        loadAccountViews(mAssetAccountTypes, mAssetsTableLayout);
+        loadAccountViews(mLiabilityAccountTypes, mLiabilitiesTableLayout);
+        loadAccountViews(mEquityAccountTypes, mEquityTableLayout);
+
+        TransactionsActivity.displayBalance(mNetWorth, mAssetsBalance.subtract(mLiabilitiesBalance));
     }
 
     @Override

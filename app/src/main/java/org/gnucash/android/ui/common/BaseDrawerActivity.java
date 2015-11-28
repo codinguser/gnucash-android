@@ -158,8 +158,6 @@ public class BaseDrawerActivity extends PasscodeLockActivity {
                 break;
 
             case R.id.nav_item_reports: {
-                if (!(this instanceof AccountsActivity) || !(this instanceof ReportsActivity))
-                    this.finish();
                 Intent intent = new Intent(this, ReportsActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
                 startActivity(intent);
