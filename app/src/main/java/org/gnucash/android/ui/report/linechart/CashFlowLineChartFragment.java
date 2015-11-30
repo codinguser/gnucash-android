@@ -60,7 +60,7 @@ import butterknife.Bind;
  * @author Oleksandr Tyshkovets <olexandr.tyshkovets@gmail.com>
  * @author Ngewi Fet <ngewif@gmail.com>
  */
-public class LineChartFragment extends BaseReportFragment {
+public class CashFlowLineChartFragment extends BaseReportFragment {
 
     private static final String X_AXIS_PATTERN = "MMM YY";
     private static final int ANIMATION_DURATION = 3000;

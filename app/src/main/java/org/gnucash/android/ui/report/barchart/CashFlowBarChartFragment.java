@@ -22,7 +22,7 @@ import org.gnucash.android.ui.report.ReportType;
 /**
  * Cash flow report fragment
  */
-public class CashFlowFragment extends BaseReportFragment {
+public class CashFlowBarChartFragment extends BaseReportFragment {
 
     @Override
     public int getTitle() {

@@ -41,7 +41,7 @@ import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.adapter.TransactionsDbAdapter;
 import org.gnucash.android.model.AccountType;
 import org.gnucash.android.ui.common.BaseDrawerActivity;
-import org.gnucash.android.ui.report.dialog.DateRangePickerDialogFragment;
+import org.gnucash.android.ui.util.dialog.DateRangePickerDialogFragment;
 import org.joda.time.LocalDate;
 
 import java.util.Arrays;
@@ -156,10 +156,17 @@ public class ReportsActivity extends BaseDrawerActivity implements AdapterView.O
         }
     }
 
+    /**
+     * Load the provided fragment into the view replacing the previous one
+     * @param fragment BaseReportFragment instance
+     */
     private void loadFragment(BaseReportFragment fragment) {
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager
                 .beginTransaction();
+        
+        if (fragment.getReportType() != ReportType.NONE)
+            fragmentTransaction.addToBackStack(null);
 
         fragmentTransaction.replace(R.id.fragment_container, fragment);
         fragmentTransaction.commit();

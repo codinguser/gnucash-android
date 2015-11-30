@@ -35,7 +35,7 @@ import org.gnucash.android.db.adapter.TransactionsDbAdapter;
 import org.gnucash.android.ui.common.UxArgument;
 import org.gnucash.android.ui.homescreen.WidgetConfigurationActivity;
 import org.gnucash.android.ui.transaction.TransactionsActivity;
-import org.gnucash.android.ui.util.Refreshable;
+import org.gnucash.android.ui.common.Refreshable;
 import org.gnucash.android.util.QualifiedAccountNameCursorAdapter;
 
 /**

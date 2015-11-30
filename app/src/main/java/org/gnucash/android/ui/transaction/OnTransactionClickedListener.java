@@ -14,21 +14,27 @@
  * limitations under the License.
  */
 
-package org.gnucash.android.ui.util;
+package org.gnucash.android.ui.transaction;
 
 /**
  * Interface for implemented by activities which wish to be notified when
- * an action on account has been requested
+ * an action has been requested on a transaction (either creation or edit)
  * This is typically used for Fragment-to-Activity communication
  * 
  * @author Ngewi Fet <ngewif@gmail.com>
+ *
  */
-public interface OnAccountClickedListener {
+public interface OnTransactionClickedListener {
 
 	/**
-	 * Callback when an account is selected (clicked) from in a list of accounts
-	 * @param accountUID GUID of the selected account
+	 * Callback for creating a new transaction
+	 * @param accountUID GUID of the account in which to create the new transaction
 	 */
-	public void accountSelected(String accountUID);
+	public void createNewTransaction(String accountUID);
 	
+	/**
+	 * Callback request to edit a transaction
+	 * @param transactionUID GUID of the transaction to be edited
+	 */
+	public void editTransaction(String transactionUID);
 }

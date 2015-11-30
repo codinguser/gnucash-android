@@ -56,9 +56,8 @@ import org.gnucash.android.ui.common.UxArgument;
 import org.gnucash.android.ui.account.AccountsActivity;
 import org.gnucash.android.ui.account.AccountsListFragment;
 import org.gnucash.android.ui.util.AccountBalanceTask;
-import org.gnucash.android.ui.util.OnAccountClickedListener;
-import org.gnucash.android.ui.util.OnTransactionClickedListener;
-import org.gnucash.android.ui.util.Refreshable;
+import org.gnucash.android.ui.account.OnAccountClickedListener;
+import org.gnucash.android.ui.common.Refreshable;
 import org.gnucash.android.util.QualifiedAccountNameCursorAdapter;
 
 import java.math.BigDecimal;

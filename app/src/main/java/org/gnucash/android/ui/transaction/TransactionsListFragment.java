@@ -55,11 +55,10 @@ import org.gnucash.android.ui.common.UxArgument;
 import org.gnucash.android.ui.homescreen.WidgetConfigurationActivity;
 import org.gnucash.android.ui.transaction.dialog.BulkMoveDialogFragment;
 import org.gnucash.android.ui.util.CursorRecyclerAdapter;
-import org.gnucash.android.ui.util.Refreshable;
+import org.gnucash.android.ui.common.Refreshable;
 import org.gnucash.android.ui.util.widget.EmptyRecyclerView;
 
 import java.text.DateFormat;
-import java.util.Date;
 import java.util.List;
 
 import butterknife.Bind;

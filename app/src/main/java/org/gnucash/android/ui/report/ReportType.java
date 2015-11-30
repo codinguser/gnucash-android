@@ -21,8 +21,8 @@ import android.content.Context;
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.ui.report.barchart.BarChartFragment;
-import org.gnucash.android.ui.report.barchart.CashFlowFragment;
-import org.gnucash.android.ui.report.linechart.LineChartFragment;
+import org.gnucash.android.ui.report.barchart.CashFlowBarChartFragment;
+import org.gnucash.android.ui.report.linechart.CashFlowLineChartFragment;
 import org.gnucash.android.ui.report.piechart.PieChartFragment;
 import org.gnucash.android.ui.report.sheet.BalanceSheetFragment;
 
@@ -46,11 +46,11 @@ public enum ReportType {
                 mReportTypeMap.put("Pie Chart", PieChartFragment.class);
                 break;
             case 1:
-                mReportTypeMap.put(context.getString(R.string.title_cash_flow_report), CashFlowFragment.class);
+                mReportTypeMap.put(context.getString(R.string.title_cash_flow_report), CashFlowBarChartFragment.class);
                 mReportTypeMap.put("Bar Chart", BarChartFragment.class);
                 break;
             case 2:
-                mReportTypeMap.put("Income/Expense Statement", LineChartFragment.class);
+                mReportTypeMap.put("Income/Expense Statement", CashFlowLineChartFragment.class);
                 break;
             case 3:
                 mReportTypeMap.put("Balance Sheet", BalanceSheetFragment.class);
