@@ -612,7 +612,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity
         switch (requestCode) {
             case AccountsActivity.REQUEST_PICK_ACCOUNTS_FILE:
                 if (resultCode == Activity.RESULT_OK && data != null) {
-                    AccountsActivity.importXmlFileFromIntent(this, data);
+                    AccountsActivity.importXmlFileFromIntent(this, data, null);
                 }
                 break;
             case GeneralPreferenceFragment.PASSCODE_REQUEST_CODE:

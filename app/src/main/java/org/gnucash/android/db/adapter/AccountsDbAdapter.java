@@ -798,8 +798,10 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
     public Money getAccountsBalance(@NonNull  List<String> accountUIDList, long startTimestamp, long endTimestamp) {
         String currencyCode = GnuCashApplication.getDefaultCurrencyCode();
         Money balance = Money.createZeroInstance(currencyCode);
+
         if (accountUIDList.isEmpty())
             return balance;
+
         boolean hasDebitNormalBalance = getAccountType(accountUIDList.get(0)).hasDebitNormalBalance();
 
         SplitsDbAdapter splitsDbAdapter = SplitsDbAdapter.getInstance();

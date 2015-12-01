@@ -57,7 +57,7 @@
   <string name="hint_export_choice">Aanvinken om alle boekingen te exporteren. Anders worden uitsluitend de nieuwe boekingen sinds de laatste export geëxporteerd.</string>
   <string name="toast_export_error">Fout tijdens het exporteren van de %1$s data</string>
   <string name="btn_export">Exporteren</string>
-  <string name="option_delete_after_export">Verwijderen na exporteren</string>
+  <string name="option_delete_after_export">Delete transactions after export</string>
   <string name="hint_delete_after_export">Alle geëxporteerde boekingen zullen verwijderd worden na de export</string>
   <string name="title_settings">Instellingen</string>
   <string-array name="export_destinations">

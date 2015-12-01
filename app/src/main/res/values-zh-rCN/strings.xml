@@ -51,7 +51,7 @@
   <string name="menu_move">移动</string>
   <string name="title_selected">%1$d 已选中</string>
   <string name="label_account_balance">合计：</string>
-  <string name="label_export_destination">Export To:</string>
+  <string name="label_export_destination">导出到：</string>
   <string name="title_export_dialog">导出交易资料</string>
   <string name="option_export_all_transactions">导出所有交易</string>
   <string name="hint_export_choice">默认情况下，自上次导出后新增的交易才会被导出。选择此项后所有的交易都会被导出。</string>
@@ -64,7 +64,7 @@
     <item>SD卡</item>
     <item>DropBox</item>
     <item>Google Drive</item>
-    <item>分享&#8230;</item>
+    <item>Owncloud</item>
   </string-array>
   <string name="btn_move">移动</string>
   <string name="title_move_transactions">移动 %1$d 交易</string>
@@ -88,7 +88,7 @@
   <string name="error_no_accounts">GnuCash里还没有科目信息。\n使用小部件前需要添加科目</string>
   <string name="title_build_version">版本号</string>
   <string name="title_license">授权许可</string>
-  <string name="summary_licence_details">Apache License v2.0，点击查看明细（将打开网页）。</string>
+  <string name="summary_licence_details">Apache License v2.0，点击查看明细（将打开网页）</string>
   <string name="title_general_prefs">通用</string>
   <string name="label_widget_configuration">选择科目</string>
   <string name="toast_no_transactions_to_export">没有需要导出的交易</string>
@@ -98,10 +98,10 @@
   <string name="title_passcode_disabled">没有设置密码</string>
   <string name="title_change_passcode">修改密码</string>
   <string name="title_about_gnucash">关于GnuCash</string>
-  <string name="summary_about_gnucash">A mobile finance management and expense-tracker designed for Android</string>
+  <string name="summary_about_gnucash">Android版财务管理软件</string>
   <string name="title_about">关于</string>
   <string name="toast_format_exported_to">%1$s文件保存到：\n</string>
-  <string name="title_export_email">GnuCash Android %1$s 导出</string>
+  <string name="title_export_email">GnuCash Android %1$s 的导出文件</string>
   <string name="description_export_email">GnuCash Android Export from </string>
   <string name="header_transaction_settings">交易</string>
   <string name="title_transaction_preferences">交易设置</string>
@@ -117,7 +117,7 @@
   <string name="title_export_preference_category">导出设置</string>
   <string name="title_export_all_transactions">导出所有交易</string>
   <string name="title_always_delete_exported_transactions">删除已导出的交易</string>
-  <string name="title_default_export_email">email设置</string>
+  <string name="title_default_export_email">Email设置</string>
   <string name="summary_default_export_email">默认发送导出的OFX文件到这个email地址，当然在导出过程时你仍然可以临时变更。</string>
   <string name="label_double_entry_account">交易科目</string>
   <string name="summary_use_double_entry">所有交易会显示成两行，复式簿记</string>
@@ -130,12 +130,12 @@
   <string name="summary_xml_ofx_header">当导出数据到GnuCash桌面版以外的程序时需要开启这个选项。</string>
   <string name="title_whats_new">新功能</string>
   <string name="whats_new">
-        - New Material app design \n
-        - Multi-currency transactions\n
-        - Calculator to transaction amounts\n
-        - Better reporting options\n
-        - New help &amp; feedback section\n
-        - Multiple bug fixes and improvements\n
+        - 新的界面外观（Material Design） \n
+        - 同时使用多种货币 \n
+        - 使用计算器输入金额 \n
+        - 改进报表的可选参数设计 \n
+        - 新增帮助菜单 \n
+        - 其他一些小问题的修复\n
     </string>
   <string name="label_dismiss">知道了</string>
   <string name="toast_transanction_amount_required">输入金额才能保存交易</string>
@@ -238,8 +238,8 @@
   <string name="label_imbalance">不平衡的：</string>
   <string name="btn_add_split">添加一行</string>
   <string name="menu_title_favorite">收藏</string>
-  <string name="drawer_open">Navigation drawer opened</string>
-  <string name="drawer_close">Navigation drawer closed</string>
+  <string name="drawer_open">打开导航抽屉</string>
+  <string name="drawer_close">关闭导航抽屉</string>
   <string name="title_reports">报表</string>
   <string name="title_pie_chart">饼图</string>
   <string name="title_line_chart">折线图</string>
@@ -250,29 +250,29 @@
   <string name="summary_use_account_color">在饼图中使用科目的颜色</string>
   <string name="header_report_settings">报表</string>
   <string name="menu_order_by_size">按数量排序</string>
-  <string name="menu_toggle_legend">Show legend</string>
-  <string name="menu_toggle_labels">Show labels</string>
-  <string name="menu_toggle_percentage_mode">Show percentage</string>
-  <string name="menu_toggle_average_lines">Show average lines</string>
+  <string name="menu_toggle_legend">显示图例</string>
+  <string name="menu_toggle_labels">显示标签</string>
+  <string name="menu_toggle_percentage_mode">显示占比</string>
+  <string name="menu_toggle_average_lines">显示平均线</string>
   <string name="menu_group_smaller_slices">合并太小的数据</string>
   <string name="label_chart_no_data">没有数据可显示</string>
   <string name="label_chart_overall">全部</string>
   <string name="label_chart_total">总计</string>
   <string name="label_other_slice">其他</string>
-  <string name="toast_chart_percentage_mode_total">The percentage of selected value calculated from the total amount</string>
-  <string name="toast_chart_percentage_mode_current_bar">The percentage of selected value calculated from the current stacked bar amount</string>
+  <string name="toast_chart_percentage_mode_total">百分比按照总金额占比来计算</string>
+  <string name="toast_chart_percentage_mode_current_bar">百分比按照柱状图比例计算</string>
   <string name="label_save_template">保存成模板</string>
   <string name="label_delete_account_transactions_description">科目中包含交易信息。 \n如何处理交易信息</string>
   <string name="label_delete_account_subaccounts_description">还存在子科目。 \n如何处理这些子科目</string>
   <string name="label_delete_transactions">删除交易</string>
   <string name="toast_disable_double_entry_to_save_transaction">请选择一个转账科目，否则在“设置”中关闭双航模式（复式簿记）</string>
-  <string name="label_tap_to_create_schedule">点击然后创建计划交易</string>
+  <string name="label_tap_to_create_schedule">点击然后创建计划任务</string>
   <string name="title_restore_backup">从备份恢复&#8230;</string>
   <string name="header_backup_and_export_settings">备份和导出</string>
-  <string name="title_dropbox_sync_preference">DropBox Sync</string>
+  <string name="title_dropbox_sync_preference">DropBox 同步</string>
   <string name="title_backup_preference_category">备份</string>
   <string name="summary_dropbox_sync">同步到DropBox</string>
-  <string name="title_select_gnucash_xml_file">Select GnuCash XML file</string>
+  <string name="title_select_gnucash_xml_file">选择GnuCash XML文件</string>
   <string name="title_backup_prefs">备份设置</string>
   <string name="title_create_backup_pref">创建备份</string>
   <string name="summary_create_backup_pref">备份会保存到SD卡上</string>
@@ -280,7 +280,7 @@
   <string name="toast_backup_successful">备份成功</string>
   <string name="toast_backup_failed">备份失败</string>
   <string name="export_warning_xml">导出所有科目和交易</string>
-  <string name="title_google_drive_sync_pref">Google Drive Sync</string>
+  <string name="title_google_drive_sync_pref">Google Drive 同步</string>
   <string name="summary_google_drive_sync">同步到Google Drive</string>
   <string name="toast_install_file_manager">你需要安装一个文件管理器</string>
   <string name="title_select_backup_to_restore">选择备份</string>
@@ -303,10 +303,8 @@
     <item quantity="other">每 %d 年</item>
   </plurals>
   <string name="title_enable_crashlytics">启用崩溃日志</string>
-  <string name="msg_enable_crashlytics">Enable to send information about malfunctions to the developers for improvement (recommended).
-No user-identifiable information will be collected as part of this process!
-    </string>
-  <string name="label_export_format">Format</string>
+  <string name="msg_enable_crashlytics">发送崩溃日志给开发者来帮助改进软件，里面没有个人的隐私信息。</string>
+  <string name="label_export_format">文件格式：</string>
   <string name="toast_backup_folder_not_found">找不到备份目录，请确认SD卡正常。</string>
   <string name="label_old_passcode">先输入现在的密码</string>
   <string name="label_new_passcode">请输入新密码</string>
@@ -315,76 +313,76 @@ No user-identifiable information will be collected as part of this process!
   <string name="label_no_scheduled_exports_to_display">没有备份任务</string>
   <string name="title_create_export_schedule">创建定时备份</string>
   <string name="toast_exported_to">导出到：%1$s</string>
-  <string name="toast_legend_too_long">The legend is too long</string>
-  <string name="hint_account_description">Account description</string>
-  <string name="label_no_recent_accounts">No recent accounts</string>
-  <string name="label_no_favorite_accounts">No favorite accounts</string>
-  <string name="nav_menu_scheduled_actions">Scheduled Actions</string>
+  <string name="toast_legend_too_long">图例太多了</string>
+  <string name="hint_account_description">科目描述</string>
+  <string name="label_no_recent_accounts">最近的科目为空</string>
+  <string name="label_no_favorite_accounts">没有加星标的科目</string>
+  <string name="nav_menu_scheduled_actions">定时任务</string>
   <string name="label_scheduled_action_ended">"Ended, last executed on "</string>
-  <string name="label_select_bar_to_view_details">Select a bar to view details</string>
-  <string name="btn_wizard_next">Next</string>
-  <string name="btn_wizard_finish">Done</string>
-  <string name="wizard_title_default_currency">Default Currency</string>
-  <string name="wizard_title_account_setup">Account Setup</string>
-  <string name="wizard_title_select_currency">Select Currency</string>
-  <string name="wizard_title_feedback_options">Feedback Options</string>
-  <string name="wizard_option_create_default_accounts">Create default accounts</string>
-  <string name="wizard_option_import_my_accounts">Import my accounts</string>
-  <string name="wizard_option_let_me_handle_it">Let me handle it</string>
-  <string name="wizard_option_currency_other">Other...</string>
-  <string name="wizard_option_auto_send_crash_reports">Automatically send crash reports</string>
-  <string name="wizard_option_disable_crash_reports">Disable crash reports</string>
-  <string name="wizard_btn_back">Back</string>
-  <string name="title_setup_gnucash">Setup GnuCash</string>
-  <string name="wizard_title_welcome_to_gnucash">Welcome to GnuCash</string>
-  <string name="msg_wizard_welcome_page">Before you dive in, \nlet\'s setup a few things first\n\nTo continue, press Next</string>
-  <string name="title_split_editor">Split Editor</string>
-  <string name="toast_error_check_split_amounts">Check that all splits have valid amounts before saving!</string>
-  <string name="label_error_invalid_expression">Invalid expression!</string>
-  <string name="toast_scheduled_recurring_transaction">Scheduled recurring transaction</string>
-  <string name="error_exchange_rate_required">An exchange rate is required</string>
-  <string name="error_converted_amount_required">The converted amount is required</string>
-  <string name="title_transfer_funds">Transfer Funds</string>
-  <string name="nav_menu_help"><![CDATA[Help & Feedback]]></string>
-  <string name="label_select_pie_slice_to_see_details">Select a slice to see details</string>
-  <string name="label_report_period">Period:</string>
-  <string name="label_convert_from">From:</string>
-  <string name="label_convert_to">To:</string>
-  <string name="msg_provide_exchange_rate">Provide either the converted amount or exchange rate in order to transfer funds</string>
-  <string name="hint_exchange_rate">Exchange rate</string>
-  <string name="btn_fetch_quote">Fetch quote</string>
-  <string name="hint_converted_amount">Converted Amount</string>
-  <string name="title_report_sheet">Sheet</string>
-  <string name="label_last_3_months_expenses">Expenses for last 3 months</string>
-  <string name="label_total_assets">Total Assets</string>
-  <string name="label_total_liabilities">Total Liabilities</string>
-  <string name="label_net_worth">Net Worth</string>
-  <string name="label_assets">Assets</string>
-  <string name="label_liabilities">Liabilities</string>
-  <string name="label_equity">Equity</string>
-  <string name="label_total_liabilities_and_equity"><![CDATA[Total Liabilites & Equity]]></string>
-  <string name="label_move_to">Move to:</string>
-  <string name="menu_group_by">Group By</string>
-  <string name="menu_group_by_month">Month</string>
-  <string name="menu_group_by_quarter">Quarter</string>
-  <string name="menu_group_by_year">Year</string>
-  <string name="title_balance_sheet_report">Balance Sheet</string>
-  <string name="label_balance_sheet_total">Total:</string>
-  <string name="title_google_plus_community">Google+ Community</string>
-  <string name="title_translate_gnucash">Translate GnuCash</string>
-  <string name="summary_google_plus">Share ideas, discuss changes or report problems</string>
-  <string name="summary_translate_gnucash">Translate or proof-read on CrowdIn</string>
-  <string name="toast_no_compatible_apps_to_receive_export">No compatible apps to receive the exported transactions!</string>
-  <string name="menu_move_transaction">Move...</string>
-  <string name="menu_duplicate_transaction">Duplicate</string>
+  <string name="label_select_bar_to_view_details">点击柱状图查看详情</string>
+  <string name="btn_wizard_next">下一步</string>
+  <string name="btn_wizard_finish">完成</string>
+  <string name="wizard_title_default_currency">默认的货币</string>
+  <string name="wizard_title_account_setup">科目设置</string>
+  <string name="wizard_title_select_currency">选择货币</string>
+  <string name="wizard_title_feedback_options">反馈选项</string>
+  <string name="wizard_option_create_default_accounts">创建默认科目</string>
+  <string name="wizard_option_import_my_accounts">导入科目</string>
+  <string name="wizard_option_let_me_handle_it">随后处理</string>
+  <string name="wizard_option_currency_other">其他&#8230;</string>
+  <string name="wizard_option_auto_send_crash_reports">自动发送崩溃报告</string>
+  <string name="wizard_option_disable_crash_reports">禁用自动发送</string>
+  <string name="wizard_btn_back">上一步</string>
+  <string name="title_setup_gnucash">设置GnuCash</string>
+  <string name="wizard_title_welcome_to_gnucash">欢迎使用GnuCash</string>
+  <string name="msg_wizard_welcome_page">在使用之前，需 \n要设置几个参数\n\n请点击“下一步”继续</string>
+  <string name="title_split_editor">拆分交易</string>
+  <string name="toast_error_check_split_amounts">保存之前请检查拆分交易的各项金额有效！</string>
+  <string name="label_error_invalid_expression">算式不完整！</string>
+  <string name="toast_scheduled_recurring_transaction">计划的交易</string>
+  <string name="error_exchange_rate_required">没有填写汇率</string>
+  <string name="error_converted_amount_required">没有填写换算好的金额</string>
+  <string name="title_transfer_funds">转账</string>
+  <string name="nav_menu_help"><![CDATA[帮助与反馈]]></string>
+  <string name="label_select_pie_slice_to_see_details">点击切片查看详情</string>
+  <string name="label_report_period">时间段：</string>
+  <string name="label_convert_from">从：</string>
+  <string name="label_convert_to">到：</string>
+  <string name="msg_provide_exchange_rate">不同货币转账，需要提供汇率或者直接输入金额</string>
+  <string name="hint_exchange_rate">汇率</string>
+  <string name="btn_fetch_quote">查询当下汇率</string>
+  <string name="hint_converted_amount">换算好的金额</string>
+  <string name="title_report_sheet">汇总表</string>
+  <string name="label_last_3_months_expenses">最近三个月的支出情况</string>
+  <string name="label_total_assets">总资产：</string>
+  <string name="label_total_liabilities">总负债：</string>
+  <string name="label_net_worth">净值</string>
+  <string name="label_assets">资产</string>
+  <string name="label_liabilities">负债</string>
+  <string name="label_equity">所有者权益</string>
+  <string name="label_total_liabilities_and_equity"><![CDATA[负债与所有者权益合计]]></string>
+  <string name="label_move_to">移动到：</string>
+  <string name="menu_group_by">分组</string>
+  <string name="menu_group_by_month">月</string>
+  <string name="menu_group_by_quarter">季度</string>
+  <string name="menu_group_by_year">年</string>
+  <string name="title_balance_sheet_report">资产负债表</string>
+  <string name="label_balance_sheet_total">合计：</string>
+  <string name="title_google_plus_community">Google+</string>
+  <string name="title_translate_gnucash">翻译GnuCash</string>
+  <string name="summary_google_plus">在Google+上提交问题和建议</string>
+  <string name="summary_translate_gnucash">可以在CrowdIn网站上帮助改进翻译</string>
+  <string name="toast_no_compatible_apps_to_receive_export">没有合适的应用接受导出的文件</string>
+  <string name="menu_move_transaction">移动…</string>
+  <string name="menu_duplicate_transaction">复制</string>
   <string name="nav_menu_budgets">Budgets</string>
   <string name="title_cash_flow_report">Cash Flow</string>
   <string-array name="report_time_range">
-    <item>Current month</item>
-    <item>Last 3 months</item>
-    <item>Last 6 months</item>
-    <item>Last 12 months</item>
-    <item>All time</item>
-    <item>Custom range&#8230;</item>
+    <item>本月</item>
+    <item>最近3个月</item>
+    <item>最近6个月</item>
+    <item>最近12个月</item>
+    <item>全部时间</item>
+    <item>自定义&#8230;</item>
   </string-array>
 </resources>

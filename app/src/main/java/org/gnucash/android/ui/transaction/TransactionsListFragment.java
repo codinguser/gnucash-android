@@ -21,6 +21,7 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.Loader;
@@ -57,6 +58,7 @@ import org.gnucash.android.ui.transaction.dialog.BulkMoveDialogFragment;
 import org.gnucash.android.ui.util.CursorRecyclerAdapter;
 import org.gnucash.android.ui.common.Refreshable;
 import org.gnucash.android.ui.util.widget.EmptyRecyclerView;
+import org.joda.time.LocalDate;
 
 import java.text.DateFormat;
 import java.util.List;
@@ -195,7 +197,6 @@ public class TransactionsListFragment extends Fragment implements
 		mTransactionRecyclerAdapter.swapCursor(null);
 	}
 
-	
 	/**
 	 * {@link DatabaseCursorLoader} for loading transactions asynchronously from the database
 	 * @author Ngewi Fet <ngewif@gmail.com>
@@ -219,8 +220,6 @@ public class TransactionsListFragment extends Fragment implements
 	}
 
 	public class TransactionRecyclerAdapter extends CursorRecyclerAdapter<TransactionRecyclerAdapter.ViewHolder>{
-
-		DateFormat simpleDateFormat = DateFormat.getDateInstance(DateFormat.MEDIUM);
 
 		public TransactionRecyclerAdapter(Cursor cursor) {
 			super(cursor);
@@ -263,7 +262,8 @@ public class TransactionsListFragment extends Fragment implements
 			holder.transactionNote.setText(text);
 
 			long dateMillis = cursor.getLong(cursor.getColumnIndexOrThrow(DatabaseSchema.TransactionEntry.COLUMN_TIMESTAMP));
-			String dateText = DateUtils.getRelativeTimeSpanString(dateMillis, System.currentTimeMillis(), DateUtils.DAY_IN_MILLIS).toString();
+			String dateText = TransactionsActivity.getPrettyDateFormat(getActivity(), dateMillis);
+
 			holder.transactionDate.setText(dateText);
 
 			final long id = holder.transactionId;
@@ -286,7 +286,6 @@ public class TransactionsListFragment extends Fragment implements
 			});
 
 		}
-
 
 		public class ViewHolder extends RecyclerView.ViewHolder implements PopupMenu.OnMenuItemClickListener{
 			@Bind(R.id.primary_text) 		public TextView transactionDescription;
