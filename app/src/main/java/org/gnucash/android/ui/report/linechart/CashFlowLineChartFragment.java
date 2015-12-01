@@ -90,7 +90,7 @@ public class CashFlowLineChartFragment extends BaseReportFragment {
 
     @Override
     public int getTitle() {
-        return R.string.title_line_chart;
+        return R.string.title_cash_flow_report;
     }
 
     @Override
@@ -109,12 +109,6 @@ public class CashFlowLineChartFragment extends BaseReportFragment {
         legend.setTextSize(16);
         legend.setForm(Legend.LegendForm.CIRCLE);
 
-        refresh();
-    }
-
-    @Override
-    public int getTitleColor() {
-        return R.color.account_blue;
     }
 
     @Override
@@ -133,12 +127,12 @@ public class CashFlowLineChartFragment extends BaseReportFragment {
         // LocalDateTime?
         LocalDate startDate;
         LocalDate endDate;
-        if (mReportStartTime == -1 && mReportEndTime == -1) {
+        if (mReportPeriodStart == -1 && mReportPeriodEnd == -1) {
             startDate = new LocalDate(mEarliestTransactionTimestamp).withDayOfMonth(1);
             endDate = new LocalDate(mLatestTransactionTimestamp).withDayOfMonth(1);
         } else {
-            startDate = new LocalDate(mReportStartTime).withDayOfMonth(1);
-            endDate = new LocalDate(mReportEndTime).withDayOfMonth(1);
+            startDate = new LocalDate(mReportPeriodStart).withDayOfMonth(1);
+            endDate = new LocalDate(mReportPeriodEnd).withDayOfMonth(1);
         }
 
         int count = getDateDiff(new LocalDateTime(startDate.toDate().getTime()), new LocalDateTime(endDate.toDate().getTime()));
@@ -222,12 +216,12 @@ public class CashFlowLineChartFragment extends BaseReportFragment {
 
         LocalDateTime earliest;
         LocalDateTime latest;
-        if (mReportStartTime == -1 && mReportEndTime == -1) {
+        if (mReportPeriodStart == -1 && mReportPeriodEnd == -1) {
             earliest = new LocalDateTime(mEarliestTimestampsMap.get(accountType));
             latest = new LocalDateTime(mLatestTimestampsMap.get(accountType));
         } else {
-            earliest = new LocalDateTime(mReportStartTime);
-            latest = new LocalDateTime(mReportEndTime);
+            earliest = new LocalDateTime(mReportPeriodStart);
+            latest = new LocalDateTime(mReportPeriodEnd);
         }
         Log.d(TAG, "Earliest " + accountType + " date " + earliest.toString("dd MM yyyy"));
         Log.d(TAG, "Latest " + accountType + " date " + latest.toString("dd MM yyyy"));
@@ -273,9 +267,9 @@ public class CashFlowLineChartFragment extends BaseReportFragment {
      * @param accountTypeList account's types which will be processed
      */
     private void calculateEarliestAndLatestTimestamps(List<AccountType> accountTypeList) {
-        if (mReportStartTime != -1 && mReportEndTime != -1) {
-            mEarliestTransactionTimestamp = mReportStartTime;
-            mLatestTransactionTimestamp = mReportEndTime;
+        if (mReportPeriodStart != -1 && mReportPeriodEnd != -1) {
+            mEarliestTransactionTimestamp = mReportPeriodStart;
+            mLatestTransactionTimestamp = mReportPeriodEnd;
             return;
         }
 
@@ -335,9 +329,9 @@ public class CashFlowLineChartFragment extends BaseReportFragment {
 
     @Override
     public void onTimeRangeUpdated(long start, long end) {
-        if (mReportStartTime != start || mReportEndTime != end) {
-            mReportStartTime = start;
-            mReportEndTime = end;
+        if (mReportPeriodStart != start || mReportPeriodEnd != end) {
+            mReportPeriodStart = start;
+            mReportPeriodEnd = end;
             mChart.setData(getData(new ArrayList<>(Arrays.asList(AccountType.INCOME, AccountType.EXPENSE))));
             mChart.invalidate();
         }

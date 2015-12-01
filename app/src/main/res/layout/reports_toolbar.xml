@@ -40,6 +40,7 @@
         <Spinner android:id="@+id/report_type_spinner"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:visibility="gone"
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
     </android.support.v7.widget.Toolbar>
 </FrameLayout>

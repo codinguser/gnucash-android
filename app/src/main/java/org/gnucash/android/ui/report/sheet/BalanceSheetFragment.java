@@ -45,7 +45,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 
 /**
- * Fragment report as text
+ * Balance sheet report fragment
  * @author Ngewi Fet <ngewif@gmail.com>
  */
 public class BalanceSheetFragment extends BaseReportFragment {
@@ -67,11 +67,6 @@ public class BalanceSheetFragment extends BaseReportFragment {
     @Override
     public int getLayoutResource() {
         return R.layout.fragment_text_report;
-    }
-
-    @Override
-    public int getTitleColor() {
-        return R.color.account_purple;
     }
 
     @Override
@@ -98,7 +93,6 @@ public class BalanceSheetFragment extends BaseReportFragment {
 
         mEquityAccountTypes = new ArrayList<>();
         mEquityAccountTypes.add(AccountType.EQUITY);
-        refresh();
     }
 
     @Override

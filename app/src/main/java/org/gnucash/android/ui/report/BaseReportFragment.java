@@ -15,12 +15,10 @@
  */
 package org.gnucash.android.ui.report;
 
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.annotation.ColorRes;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
@@ -54,7 +52,15 @@ import butterknife.ButterKnife;
 
 /**
  * Base class for report fragments.
- * <p>All report fragments should extend this class</p>
+ * <p>All report fragments should extend this class. At the minimum, reports must implement
+ * {@link #getLayoutResource()}, {@link #getReportType()}, {@link #generateReport()}, {@link #displayReport()} and {@link #getTitle()}</p>
+ * <p>Implementing classes should create their own XML layouts and provide it in {@link #getLayoutResource()}.
+ * Then annotate any views in the resource using {@code @Bind} annotation from ButterKnife library.
+ * This base activity will automatically call {@link ButterKnife#bind(View)} for the layout.
+ * </p>
+ * <p>Any custom information to be initialized for the report should be done in {@link #onActivityCreated(Bundle)} in implementing classes.
+ * The report is then generated in {@link #onStart()}
+ * </p>
  * @author Ngewi Fet <ngewif@gmail.com>
  */
 public abstract class BaseReportFragment extends Fragment implements
@@ -70,11 +76,11 @@ public abstract class BaseReportFragment extends Fragment implements
     /**
      * Reporting period start time
      */
-    protected long mReportStartTime = -1;
+    protected long mReportPeriodStart = -1;
     /**
      * Reporting period end time
      */
-    protected long mReportEndTime = -1;
+    protected long mReportPeriodEnd = -1;
 
     /**
      * Account type for which to display reports
@@ -96,15 +102,11 @@ public abstract class BaseReportFragment extends Fragment implements
      */
     public static final String SELECTED_VALUE_PATTERN = "%s - %.2f (%.2f %%)";
 
+    protected ReportsActivity mReportsActivity;
+
     @Nullable @Bind(R.id.selected_chart_slice) protected TextView mSelectedValueTextView;
 
-    /**
-     * Get the color which should use for decorating the app bar for this report
-     * @return Color resource
-     */
-    public @ColorRes int getTitleColor(){
-        return R.color.theme_primary;
-    }
+    private AsyncTask<Void, Void, Void> mReportGenerator;
 
     /**
      * Return the title of this report
@@ -170,7 +172,6 @@ public abstract class BaseReportFragment extends Fragment implements
         return view;
     }
 
-
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -183,17 +184,23 @@ public abstract class BaseReportFragment extends Fragment implements
         mCurrency = Currency.getInstance(GnuCashApplication.getDefaultCurrencyCode());
 
         ReportsActivity reportsActivity = (ReportsActivity) getActivity();
-        mReportStartTime = reportsActivity.getReportStartTime();
-        mReportEndTime = reportsActivity.getReportEndTime();
+        mReportPeriodStart = reportsActivity.getReportPeriodStart();
+        mReportPeriodEnd = reportsActivity.getReportPeriodEnd();
         mAccountType = reportsActivity.getAccountType();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        refresh();
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        ((ReportsActivity)getActivity()).setAppBarColor(getTitleColor());
-        ((ReportsActivity) getActivity()).updateReportTypeSpinner(getReportType());
-        toggleBaseReportingOptions();
+        mReportsActivity.setAppBarColor(getReportType().getTitleColor());
+        mReportsActivity.toggleToolbarTitleVisibility();
+        toggleBaseReportingOptionsVisibility();
     }
 
     @Override
@@ -201,28 +208,29 @@ public abstract class BaseReportFragment extends Fragment implements
         super.onAttach(context);
         if (!(getActivity() instanceof ReportsActivity))
             throw new RuntimeException("Report fragments can only be used with the ReportsActivity");
+        else
+            mReportsActivity = (ReportsActivity) getActivity();
     }
 
-    private void toggleBaseReportingOptions() {
-        final Activity activity = getActivity();
-        View timeRangeLayout = activity.findViewById(R.id.time_range_layout);
-        View dateRangeDivider = activity.findViewById(R.id.date_range_divider);
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        if (mReportGenerator != null)
+            mReportGenerator.cancel(true);
+    }
+
+    private void toggleBaseReportingOptionsVisibility() {
+        View timeRangeLayout = mReportsActivity.findViewById(R.id.time_range_layout);
+        View dateRangeDivider = mReportsActivity.findViewById(R.id.date_range_divider);
         if (timeRangeLayout != null && dateRangeDivider != null) {
-            if (requiresTimeRangeOptions()) {
-                timeRangeLayout.setVisibility(View.VISIBLE);
-                dateRangeDivider.setVisibility(View.VISIBLE);
-            } else {
-                timeRangeLayout.setVisibility(View.GONE);
-                dateRangeDivider.setVisibility(View.GONE);
-            }
+            int visibility = requiresTimeRangeOptions() ? View.VISIBLE : View.GONE;
+            timeRangeLayout.setVisibility(visibility);
+            dateRangeDivider.setVisibility(visibility);
         }
 
-        View accountTypeSpinner = activity.findViewById(R.id.report_account_type_spinner);
-        if (requiresAccountTypeOptions()) {
-            accountTypeSpinner.setVisibility(View.VISIBLE);
-        } else {
-            accountTypeSpinner.setVisibility(View.GONE);
-        }
+        View accountTypeSpinner = mReportsActivity.findViewById(R.id.report_account_type_spinner);
+        int visibility = requiresAccountTypeOptions() ? View.VISIBLE : View.GONE;
+        accountTypeSpinner.setVisibility(visibility);
     }
 
 
@@ -264,10 +272,15 @@ public abstract class BaseReportFragment extends Fragment implements
 
     @Override
     public void refresh() {
-        new AsyncTask<Void, Void, Void>() {
-            ProgressBar progressBar = (ProgressBar) getActivity().findViewById(R.id.progress_indicator);
+        if (mReportGenerator != null)
+            mReportGenerator.cancel(true);
+
+        mReportGenerator = new AsyncTask<Void, Void, Void>() {
+            ProgressBar progressBar;
+
             @Override
             protected void onPreExecute() {
+                progressBar = (ProgressBar) getActivity().findViewById(R.id.progress_indicator);
                 progressBar.setVisibility(View.VISIBLE);
             }
 
@@ -282,7 +295,8 @@ public abstract class BaseReportFragment extends Fragment implements
                 displayReport();
                 progressBar.setVisibility(View.GONE);
             }
-        }.execute();
+        };
+        mReportGenerator.execute();
     }
 
     /**
@@ -306,9 +320,9 @@ public abstract class BaseReportFragment extends Fragment implements
 
     @Override
     public void onTimeRangeUpdated(long start, long end) {
-        if (mReportStartTime != start || mReportEndTime != end) {
-            mReportStartTime = start;
-            mReportEndTime = end;
+        if (mReportPeriodStart != start || mReportPeriodEnd != end) {
+            mReportPeriodStart = start;
+            mReportPeriodEnd = end;
             refresh();
         }
     }

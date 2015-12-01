@@ -95,12 +95,6 @@ public class PieChartFragment extends BaseReportFragment {
         mChart.getLegend().setWordWrapEnabled(true);
         mChart.getLegend().setPosition(LegendPosition.BELOW_CHART_CENTER);
 
-        refresh();
-    }
-
-    @Override
-    public int getTitleColor() {
-        return R.color.account_green;
     }
 
     @Override
@@ -161,7 +155,7 @@ public class PieChartFragment extends BaseReportFragment {
                     && account.getCurrency() == mCurrency) {
 
                 double balance = mAccountsDbAdapter.getAccountsBalance(Collections.singletonList(account.getUID()),
-                        mReportStartTime, mReportEndTime).asDouble();
+                        mReportPeriodStart, mReportPeriodEnd).asDouble();
                 if (balance > 0) {
                     dataSet.addEntry(new Entry((float) balance, dataSet.getEntryCount()));
                     colors.add(mUseAccountColor && account.getColorHexCode() != null

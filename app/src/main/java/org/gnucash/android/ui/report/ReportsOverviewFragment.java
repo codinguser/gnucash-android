@@ -20,9 +20,7 @@ import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.AppCompatButton;
 import android.view.Menu;
@@ -43,7 +41,7 @@ import org.gnucash.android.db.adapter.AccountsDbAdapter;
 import org.gnucash.android.model.Account;
 import org.gnucash.android.model.AccountType;
 import org.gnucash.android.model.Money;
-import org.gnucash.android.ui.report.barchart.BarChartFragment;
+import org.gnucash.android.ui.report.barchart.CashFlowBarChartFragment;
 import org.gnucash.android.ui.report.linechart.CashFlowLineChartFragment;
 import org.gnucash.android.ui.report.piechart.PieChartFragment;
 import org.gnucash.android.ui.report.sheet.BalanceSheetFragment;
@@ -65,7 +63,7 @@ import static com.github.mikephil.charting.components.Legend.LegendPosition;
  * Shows a summary of reports
  * @author Ngewi Fet <ngewif@gmail.com>
  */
-public class ReportSummaryFragment extends BaseReportFragment {
+public class ReportsOverviewFragment extends BaseReportFragment {
 
     public static final int LEGEND_TEXT_SIZE = 14;
 
@@ -140,8 +138,6 @@ public class ReportSummaryFragment extends BaseReportFragment {
         setButtonTint(mLineChartButton, csl);
         csl = new ColorStateList(new int[][]{new int[0]}, new int[]{getResources().getColor(R.color.account_purple)});
         setButtonTint(mBalanceSheetButton, csl);
-
-        refresh();
     }
 
     @Override
@@ -246,7 +242,7 @@ public class ReportSummaryFragment extends BaseReportFragment {
                 fragment = new PieChartFragment();
                 break;
             case R.id.btn_bar_chart:
-                fragment = new BarChartFragment();
+                fragment = new CashFlowBarChartFragment();
                 break;
             case R.id.btn_line_chart:
                 fragment = new CashFlowLineChartFragment();
@@ -258,7 +254,10 @@ public class ReportSummaryFragment extends BaseReportFragment {
                 fragment = this;
                 break;
         }
-        loadFragment(fragment);
+        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+        fragmentManager.beginTransaction()
+                .replace(R.id.fragment_container, fragment)
+                .commit();
     }
 
     public void setButtonTint(Button button, ColorStateList tint) {
@@ -270,12 +269,4 @@ public class ReportSummaryFragment extends BaseReportFragment {
         button.setTextColor(getResources().getColor(android.R.color.white));
     }
 
-    private void loadFragment(Fragment fragment){
-        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-
-        fragmentTransaction.replace(R.id.fragment_container, fragment);
-        fragmentTransaction.addToBackStack(null);
-        fragmentTransaction.commit();
-    }
 }

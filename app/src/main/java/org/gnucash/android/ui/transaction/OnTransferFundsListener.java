@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.gnucash.android.ui.util;
+package org.gnucash.android.ui.transaction;
 
 import org.gnucash.android.model.Money;
 

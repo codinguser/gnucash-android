@@ -74,7 +74,6 @@ import org.gnucash.android.ui.common.FormActivity;
 import org.gnucash.android.ui.common.UxArgument;
 import org.gnucash.android.ui.homescreen.WidgetConfigurationActivity;
 import org.gnucash.android.ui.transaction.dialog.TransferFundsDialogFragment;
-import org.gnucash.android.ui.util.OnTransferFundsListener;
 import org.gnucash.android.ui.util.RecurrenceParser;
 import org.gnucash.android.ui.util.RecurrenceViewClickListener;
 import org.gnucash.android.ui.util.widget.CalculatorEditText;
@@ -91,7 +90,6 @@ import java.util.Currency;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
-import java.util.Locale;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
