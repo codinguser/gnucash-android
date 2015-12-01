@@ -201,11 +201,11 @@ public abstract class Exporter {
     public static class ExporterException extends RuntimeException{
 
         public ExporterException(ExportParams params){
-            super("Failed to generate " + params.getExportFormat().toString());
+            super("Failed to generate export with parameters:  " + params.toString());
         }
 
         public ExporterException(@NonNull ExportParams params, @NonNull String msg) {
-            super("Failed to generate " + params.getExportFormat().toString() + "-" + msg);
+            super("Failed to generate export with parameters: " + params.toString() + " - " + msg);
         }
 
         public ExporterException(ExportParams params, Throwable throwable){
