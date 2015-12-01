@@ -24,6 +24,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -32,6 +33,7 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
+import android.text.format.DateUtils;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.Menu;
@@ -60,8 +62,12 @@ import org.gnucash.android.ui.util.OnAccountClickedListener;
 import org.gnucash.android.ui.util.OnTransactionClickedListener;
 import org.gnucash.android.ui.util.Refreshable;
 import org.gnucash.android.util.QualifiedAccountNameCursorAdapter;
+import org.joda.time.LocalDate;
 
 import java.math.BigDecimal;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -92,6 +98,7 @@ public class TransactionsActivity extends BaseDrawerActivity implements
      * Number of pages to show
      */
     private static final int DEFAULT_NUM_PAGES = 2;
+    private static SimpleDateFormat mDayMonthDateFormat = new SimpleDateFormat("EEE, d MMM");
 
     /**
      * GUID of {@link Account} whose transactions are displayed
@@ -151,7 +158,6 @@ public class TransactionsActivity extends BaseDrawerActivity implements
 	};
 
     private PagerAdapter mPagerAdapter;
-
 
 
     /**
@@ -484,6 +490,29 @@ public class TransactionsActivity extends BaseDrawerActivity implements
         if (balance.asBigDecimal().compareTo(BigDecimal.ZERO) == 0)
             fontColor = context.getResources().getColor(android.R.color.black);
         balanceTextView.setTextColor(fontColor);
+    }
+
+    /**
+     * Formats the date to show the the day of the week if the {@code dateMillis} is within 7 days
+     * of today. Else it shows the actual date formatted as short string. <br>
+     * It also shows "today", "yesterday" or "tomorrow" if the date is on any of those days
+     * @param dateMillis
+     * @return
+     */
+    @NonNull
+    public static String getPrettyDateFormat(Context context, long dateMillis) {
+        LocalDate transactionTime = new LocalDate(dateMillis);
+        LocalDate today = new LocalDate();
+        String prettyDateText = null;
+        if (transactionTime.compareTo(today.minusDays(1)) >= 0 && transactionTime.compareTo(today.plusDays(1)) <= 0){
+            prettyDateText = DateUtils.getRelativeTimeSpanString(dateMillis, System.currentTimeMillis(), DateUtils.DAY_IN_MILLIS).toString();
+        } else if (transactionTime.getYear() == today.getYear()){
+            prettyDateText = mDayMonthDateFormat.format(new Date(dateMillis));
+        } else {
+            prettyDateText = DateUtils.formatDateTime(context, dateMillis, DateUtils.FORMAT_ABBREV_MONTH | DateUtils.FORMAT_SHOW_YEAR);
+        }
+
+        return prettyDateText;
     }
 
 	@Override

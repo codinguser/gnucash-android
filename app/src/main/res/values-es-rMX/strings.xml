@@ -57,7 +57,7 @@
   <string name="hint_export_choice">Por defecto solo las nuevas transacciones desde la última exportación serán exportadas. Seleccione esta opción para exportar todas las transacciones</string>
   <string name="toast_export_error">Error exportando datos %1$s</string>
   <string name="btn_export">Exportar</string>
-  <string name="option_delete_after_export">Borrar después de exportar</string>
+  <string name="option_delete_after_export">Delete transactions after export</string>
   <string name="hint_delete_after_export">Todas las transacciones exportadas serán borradas cuando la exportación haya terminado</string>
   <string name="title_settings">Ajustes</string>
   <string-array name="export_destinations">

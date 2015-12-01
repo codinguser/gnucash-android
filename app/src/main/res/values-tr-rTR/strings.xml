@@ -19,49 +19,49 @@
   <string name="title_create_account">Hesap Oluştur</string>
   <string name="title_edit_account">Hesabı Düzenle</string>
   <string name="info_details">Bilgilendirme</string>
-  <string name="menu_export">Export&#8230;</string>
-  <string name="description_add_transaction_icon">Add a new transaction to an account</string>
+  <string name="menu_export">Dışarı Aktar&#8230;</string>
+  <string name="description_add_transaction_icon">Bir hesaba yeni bir işlem ekle</string>
   <string name="label_no_accounts">No accounts to display</string>
-  <string name="label_account_name">Account name</string>
+  <string name="label_account_name">Hesap adı</string>
   <string name="btn_cancel">İptal</string>
   <string name="btn_save">Kaydet</string>
-  <string name="label_passcode">Enter Passcode</string>
-  <string name="toast_wrong_passcode">Wrong passcode, please try again</string>
-  <string name="toast_passcode_set">Passcode set</string>
-  <string name="label_confirm_passcode">Please confirm your passcode</string>
+  <string name="label_passcode">Şifre girin</string>
+  <string name="toast_wrong_passcode">Yanlış şifre, lütfen tekrar deneyin</string>
+  <string name="toast_passcode_set">Şifre ayarla</string>
+  <string name="label_confirm_passcode">Lütfen, şifreyi onaylayın</string>
   <string name="toast_invalid_passcode_confirmation">Invalid passcode confirmation. Please try again</string>
-  <string name="label_transaction_name">Description</string>
-  <string name="label_transaction_amount">Amount</string>
+  <string name="label_transaction_name">Açıklama</string>
+  <string name="label_transaction_amount">Tutar</string>
   <string name="title_add_transaction">New transaction</string>
   <string name="label_no_transactions">No transactions to display</string>
   <string name="label_timeanddate">DATE &amp; TIME</string>
-  <string name="label_account">Account</string>
+  <string name="label_account">Hesap</string>
   <string name="label_debit">DEBIT</string>
-  <string name="label_credit">CREDIT</string>
-  <string name="title_accounts">Accounts</string>
-  <string name="title_transactions">Transactions</string>
-  <string name="menu_delete">Delete</string>
-  <string name="alert_dialog_ok_delete">Delete</string>
-  <string name="alert_dialog_cancel">Cancel</string>
-  <string name="toast_account_deleted">Account deleted</string>
+  <string name="label_credit">KREDİ</string>
+  <string name="title_accounts">Hesaplar</string>
+  <string name="title_transactions">İşlemler</string>
+  <string name="menu_delete">Sil</string>
+  <string name="alert_dialog_ok_delete">Sil</string>
+  <string name="alert_dialog_cancel">İptal</string>
+  <string name="toast_account_deleted">Silinmiş hesap</string>
   <string name="title_confirm_delete">Confirm delete</string>
   <string name="delete_account_confirmation_message">All transactions in this account will also be deleted</string>
   <string name="title_edit_transaction">Edit Transaction</string>
   <string name="label_transaction_description">Add note</string>
-  <string name="menu_move">MOVE</string>
-  <string name="title_selected">%1$d selected</string>
-  <string name="label_account_balance">Balance:</string>
+  <string name="menu_move">TAŞI</string>
+  <string name="title_selected">%1$d seçildi</string>
+  <string name="label_account_balance">Bakiye:</string>
   <string name="label_export_destination">Export To:</string>
   <string name="title_export_dialog">Export Transactions</string>
   <string name="option_export_all_transactions">Export all transactions</string>
   <string name="hint_export_choice">By default, only new transactions since last export will be exported. Check this option to export all transactions</string>
   <string name="toast_export_error">Error exporting %1$s file</string>
   <string name="btn_export">Export</string>
-  <string name="option_delete_after_export">Delete after export</string>
+  <string name="option_delete_after_export">Delete transactions after export</string>
   <string name="hint_delete_after_export">All exported transactions will be deleted when exporting is completed</string>
-  <string name="title_settings">Settings</string>
+  <string name="title_settings">Ayarlar</string>
   <string-array name="export_destinations">
-    <item>SD Card</item>
+    <item>Hafıza Kartı</item>
     <item>DropBox</item>
     <item>Google Drive</item>
     <item>Send to&#8230;</item>
@@ -69,12 +69,12 @@
   <string name="btn_move">Move</string>
   <string name="title_move_transactions">Move %1$d transaction(s)</string>
   <string name="label_move_destination">Destination Account</string>
-  <string name="permission_access_sdcard">Access SD Card</string>
+  <string name="permission_access_sdcard">SD Kart Erişimi</string>
   <string name="toast_incompatible_currency">Cannot move transactions.\nThe destination account uses a different currency from origin account</string>
-  <string name="header_general_settings">General</string>
-  <string name="header_about_gnucash">About</string>
-  <string name="title_choose_currency">Choose default currency</string>
-  <string name="title_default_currency">Default currency</string>
+  <string name="header_general_settings">Genel</string>
+  <string name="header_about_gnucash">Hakkında</string>
+  <string name="title_choose_currency">Varsayılan para birimini seçin</string>
+  <string name="title_default_currency">Varsayılan para birimi</string>
   <string name="summary_default_currency">Default currency to assign to new accounts</string>
   <string name="label_permission_record_transactions">Enables recording transactions in GnuCash for Android</string>
   <string name="label_permission_create_accounts">Enables creation of accounts in GnuCash for Android</string>
@@ -83,14 +83,14 @@
   <string name="label_permission_record_transaction">Record transactions in GnuCash</string>
   <string name="label_permission_create_account">Create accounts in GnuCash</string>
   <string name="label_display_account">Display account</string>
-  <string name="btn_create_accounts">Create Accounts</string>
+  <string name="btn_create_accounts">Hesap Oluştur</string>
   <string name="title_default_accounts">Select accounts to create</string>
   <string name="error_no_accounts">No accounts exist in GnuCash.\nCreate an account before adding a widget</string>
   <string name="title_build_version">Build version</string>
-  <string name="title_license">License</string>
-  <string name="summary_licence_details">Apache License v2.0. Click for details</string>
-  <string name="title_general_prefs">General Preferences</string>
-  <string name="label_widget_configuration">Select Account</string>
+  <string name="title_license">Lisans</string>
+  <string name="summary_licence_details">Apache Lisansı v2.0. Detaylar için tıklayın</string>
+  <string name="title_general_prefs">Genel Tercihler</string>
+  <string name="label_widget_configuration">Hesap seçin</string>
   <string name="toast_no_transactions_to_export">There are no transactions available to export</string>
   <string name="header_passcode_settings">Passcode</string>
   <string name="title_passcode_preferences">Passcode Preferences</string>
@@ -109,7 +109,7 @@
   <string name="title_default_transaction_type">Default Transaction Type</string>
   <string name="summary_default_transaction_type">The type of transaction to use by default, CREDIT or DEBIT</string>
   <string-array name="transaction_types">
-    <item>CREDIT</item>
+    <item>KREDİ</item>
     <item>DEBIT</item>
   </string-array>
   <string name="msg_delete_all_transactions_confirmation">Are you sure you want to delete ALL transactions?</string>
@@ -122,13 +122,13 @@
   <string name="label_double_entry_account">Transfer Account</string>
   <string name="summary_use_double_entry">All transactions will be a transfer from one account to another</string>
   <string name="title_use_double_entry">Activate Double Entry</string>
-  <string name="account_balance">Balance</string>
+  <string name="account_balance">Bakiye</string>
   <string name="toast_no_account_name_entered">Enter an account name to create an account</string>
-  <string name="label_account_currency">Currency</string>
+  <string name="label_account_currency">Para birimi</string>
   <string name="label_parent_account">Parent account</string>
   <string name="title_xml_ofx_header">Use XML OFX header</string>
   <string name="summary_xml_ofx_header">Enable this option when exporting to third-party application other than GnuCash for desktop</string>
-  <string name="title_whats_new">What\'s New</string>
+  <string name="title_whats_new">Yenilikler</string>
   <string name="whats_new">
         - New Material app design \n
         - Multi-currency transactions\n
@@ -137,7 +137,7 @@
         - New help &amp; feedback section\n
         - Multiple bug fixes and improvements\n
 	</string>
-  <string name="label_dismiss">Dismiss</string>
+  <string name="label_dismiss">Yoksay</string>
   <string name="toast_transanction_amount_required">Enter an amount to save the transaction</string>
   <string name="toast_error_edit_multi_currency_transaction">Multi-currency transactions cannot be modified</string>
   <string name="menu_import_accounts">Import GnuCash Accounts</string>
@@ -150,12 +150,12 @@
         well.
     </string>
   <string name="title_delete_all_accounts">Delete all accounts</string>
-  <string name="header_account_settings">Accounts</string>
+  <string name="header_account_settings">Hesaplar</string>
   <string name="toast_all_accounts_deleted">All accounts have been successfully deleted</string>
   <string name="confirm_delete_all_accounts">Are you sure you want to delete all accounts and transactions?\n\nThis
         operation cannot be undone!
     </string>
-  <string name="label_account_type">Account Type</string>
+  <string name="label_account_type">Hesap Türü</string>
   <string name="summary_delete_all_transactions">All transactions in all accounts will be deleted!</string>
   <string name="title_delete_all_transactions">Delete all transactions</string>
   <string name="toast_all_transactions_deleted">All transactions successfully deleted!</string>
@@ -163,7 +163,7 @@
   <string name="toast_tap_again_to_confirm_delete">Tap again to confirm. ALL entries will be deleted!!</string>
   <string name="section_header_transactions">Transactions</string>
   <string name="section_header_subaccounts">Sub-Accounts</string>
-  <string name="menu_search_accounts">Search</string>
+  <string name="menu_search_accounts">Arama</string>
   <string name="title_default_export_format">Default Export Format</string>
   <string name="summary_default_export_format">File format to use by default when exporting transactions</string>
   <string name="menu_export_transactions">Export transactions&#8230;</string>

@@ -193,7 +193,7 @@ public class BaseDrawerActivity extends PasscodeLockActivity {
 
         switch (requestCode) {
             case AccountsActivity.REQUEST_PICK_ACCOUNTS_FILE:
-                AccountsActivity.importXmlFileFromIntent(this, data);
+                AccountsActivity.importXmlFileFromIntent(this, data, null);
                 break;
         }
     }

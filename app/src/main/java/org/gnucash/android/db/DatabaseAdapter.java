@@ -423,7 +423,7 @@ public abstract class DatabaseAdapter<Model extends BaseModel> {
             if (cursor.moveToFirst()) {
                 uid = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.CommonColumns.COLUMN_UID));
             } else {
-                throw new IllegalArgumentException("Account record ID " + id + " does not exist in the db");
+                throw new IllegalArgumentException(mTableName + " Record ID " + id + " does not exist in the db");
             }
         } finally {
             cursor.close();
@@ -618,6 +618,20 @@ public abstract class DatabaseAdapter<Model extends BaseModel> {
      */
     public void setTransactionSuccessful() {
         mDb.setTransactionSuccessful();
+    }
+
+    /// Foreign key constraits should be enabled in general.
+    /// But if it affects speed (check constraints takes time)
+    /// and the constrained can be assured by the program,
+    /// or if some SQL exec will cause deletion of records
+    /// (like use replace in accounts update will delete all transactions)
+    /// that need not be deleted, then it can be disabled temporarily
+    public void enableForeignKey(boolean enable) {
+        if (enable){
+            mDb.execSQL("PRAGMA foreign_keys=ON");
+        } else {
+            mDb.execSQL("PRAGMA foreign_keys=OFF");
+        }
     }
 
     /**
