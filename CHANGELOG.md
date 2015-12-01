@@ -1,5 +1,11 @@
 Change Log
 ===============================================================================
+Version 2.0.4 *(2015-12-xx)*
+----------------------------
+* Fixed: Transaction export time not always working reliably
+* Fixed: Renaming account causes transactions to be deleted
+
+
 Version 2.0.3 *(2015-11-21)*
 ----------------------------
 * Fixed: Unable to enter decimal amounts in split editor

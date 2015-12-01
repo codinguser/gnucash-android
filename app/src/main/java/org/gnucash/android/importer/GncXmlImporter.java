@@ -21,6 +21,7 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 
 import org.gnucash.android.app.GnuCashApplication;
+import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.export.Exporter;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -93,8 +94,12 @@ public class GncXmlImporter {
         xr.parse(new InputSource(bos));
         long endTime = System.nanoTime();
 
-        String timeStamp = new Timestamp(System.currentTimeMillis()).toString();
-        PreferenceManager.getDefaultSharedPreferences(GnuCashApplication.getAppContext()).edit().putString(Exporter.PREF_LAST_EXPORT_TIME, timeStamp).apply();
+
+        Timestamp timeStamp = TransactionsDbAdapter.getInstance().getTimestampOfLastModification();
+        PreferenceManager.getDefaultSharedPreferences(GnuCashApplication.getAppContext())
+                .edit()
+                .putString(Exporter.PREF_LAST_EXPORT_TIME, timeStamp.toString())
+                .apply();
 
         Log.d(GncXmlImporter.class.getSimpleName(), String.format("%d ns spent on importing the file", endTime-startTime));
     }

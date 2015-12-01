@@ -5,7 +5,7 @@ apply plugin: 'io.fabric'
 
 def versionMajor = 2
 def versionMinor = 0
-def versionPatch = 3
+def versionPatch = 4
 def versionBuild = 0
 
 def buildTime() {
