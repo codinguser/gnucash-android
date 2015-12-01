@@ -525,10 +525,11 @@ public class AccountsActivity extends BaseDrawerActivity implements OnAccountCli
      * <p>This method is usually called in response to {@link AccountsActivity#startXmlFileChooser(Activity)}</p>
      * @param context Activity context
      * @param data Intent data containing the XML uri
+     * @param onFinishTask Task to be executed when import is complete
      */
-    public static void importXmlFileFromIntent(Activity context, Intent data) {
+    public static void importXmlFileFromIntent(Activity context, Intent data, TaskDelegate onFinishTask) {
         GncXmlExporter.createBackup();
-        new ImportAsyncTask(context).execute(data.getData());
+        new ImportAsyncTask(context, onFinishTask).execute(data.getData());
     }
 
     /**

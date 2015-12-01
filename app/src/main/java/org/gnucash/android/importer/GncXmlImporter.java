@@ -94,7 +94,6 @@ public class GncXmlImporter {
         xr.parse(new InputSource(bos));
         long endTime = System.nanoTime();
 
-
         Timestamp timeStamp = TransactionsDbAdapter.getInstance().getTimestampOfLastModification();
         PreferenceManager.getDefaultSharedPreferences(GnuCashApplication.getAppContext())
                 .edit()
