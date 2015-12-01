@@ -115,16 +115,24 @@ public class ScheduledActionsListFragment extends ListFragment implements
             switch (item.getItemId()) {
                 case R.id.context_menu_delete:
                     for (long id : getListView().getCheckedItemIds()) {
-                        Log.i(TAG, "Cancelling scheduled transaction(s)");
-                        String trnUID = mTransactionsDbAdapter.getUID(id);
-                        ScheduledActionDbAdapter scheduledActionDbAdapter = GnuCashApplication.getScheduledEventDbAdapter();
-                        List<ScheduledAction> actions = scheduledActionDbAdapter.getScheduledActionsWithUID(trnUID);
 
-                        if (mTransactionsDbAdapter.deleteRecord(id)){
-                            Toast.makeText(getActivity(), R.string.toast_recurring_transaction_deleted, Toast.LENGTH_SHORT).show();
-                            for (ScheduledAction action : actions) {
-                                scheduledActionDbAdapter.deleteRecord(action.getUID());
+                        if (mActionType == ScheduledAction.ActionType.TRANSACTION) {
+                            Log.i(TAG, "Cancelling scheduled transaction(s)");
+                            String trnUID = mTransactionsDbAdapter.getUID(id);
+                            ScheduledActionDbAdapter scheduledActionDbAdapter = GnuCashApplication.getScheduledEventDbAdapter();
+                            List<ScheduledAction> actions = scheduledActionDbAdapter.getScheduledActionsWithUID(trnUID);
+
+                            if (mTransactionsDbAdapter.deleteRecord(id)) {
+                                Toast.makeText(getActivity(),
+                                        R.string.toast_recurring_transaction_deleted,
+                                        Toast.LENGTH_SHORT).show();
+                                for (ScheduledAction action : actions) {
+                                    scheduledActionDbAdapter.deleteRecord(action.getUID());
+                                }
                             }
+                        } else if (mActionType == ScheduledAction.ActionType.BACKUP){
+                            Log.i(TAG, "Removing scheduled exports");
+                            ScheduledActionDbAdapter.getInstance().deleteRecord(id);
                         }
                     }
                     mode.finish();

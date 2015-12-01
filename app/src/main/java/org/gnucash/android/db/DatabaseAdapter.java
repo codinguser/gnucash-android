@@ -56,10 +56,6 @@ public abstract class DatabaseAdapter<Model extends BaseModel> {
 
     protected SQLiteStatement mReplaceStatement;
 
-    public enum UpdateMethod {
-        insert, update, replace
-    };
-
     /**
      * Opens the database adapter with an existing database
      * @param db SQLiteDatabase object
@@ -427,7 +423,7 @@ public abstract class DatabaseAdapter<Model extends BaseModel> {
             if (cursor.moveToFirst()) {
                 uid = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.CommonColumns.COLUMN_UID));
             } else {
-                throw new IllegalArgumentException("Account record ID " + id + " does not exist in the db");
+                throw new IllegalArgumentException(mTableName + " Record ID " + id + " does not exist in the db");
             }
         } finally {
             cursor.close();
