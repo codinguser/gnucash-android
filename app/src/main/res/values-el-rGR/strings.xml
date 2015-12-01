@@ -57,7 +57,7 @@
   <string name="hint_export_choice">Προεπιλεγμένα, μόνο οι νέες συναλλαγές από τη τελευταία εξαγωγή θα εξαχθούν. Ενεργοποίησε αυτή την επιλογή για την εξαγωγή όλων των συναλλαγών</string>
   <string name="toast_export_error">Σφάλμα εξαγωγής δεδομένων %1$s</string>
   <string name="btn_export">Εξαγωγή</string>
-  <string name="option_delete_after_export">Διαγραφή μετά την εξαγωγή</string>
+  <string name="option_delete_after_export">Delete transactions after export</string>
   <string name="hint_delete_after_export">Όλες οι συναλλαγές που εξάγονται, θα διαγραφούν με την ολοκλήρωση της εξαγωγής</string>
   <string name="title_settings">Ρυθμίσεις</string>
   <string-array name="export_destinations">
