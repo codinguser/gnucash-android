@@ -1,11 +1,12 @@
 Change Log
 ===============================================================================
-Version 2.0.4 *(2015-12-xx)*
+Version 2.0.4 *(2015-12-02)*
 ----------------------------
 * Fixed: Transaction export time not always working reliably
 * Fixed: Renaming account causes transactions to be deleted
 * Fixed: Progress dialog not displayed during initial import
 * Fixed: Unable to finish first-run wizard if choosing to create accounts manually
+* Fixed: Removed inapplicable options in scheduled actions context menu
 
 Version 2.0.3 *(2015-11-21)*
 ----------------------------

@@ -95,7 +95,7 @@ public class ScheduledActionsListFragment extends ListFragment implements
         @Override
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
             MenuInflater inflater = mode.getMenuInflater();
-            inflater.inflate(R.menu.transactions_context_menu, menu);
+            inflater.inflate(R.menu.schedxactions_context_menu, menu);
             return true;
         }
 

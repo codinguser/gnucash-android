@@ -643,12 +643,10 @@ public class TransactionsDbAdapter extends DatabaseAdapter<Transaction> {
                 new String[]{"MAX(" + TransactionEntry.COLUMN_MODIFIED_AT + ")"},
                 null, null, null, null, null);
 
-        Timestamp timestamp = null;
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         if (cursor.moveToFirst()){
             String timeString = cursor.getString(0);
-            if (timeString == null) //in case there were no transactions in the XML file (account structure only)
-                timestamp = new Timestamp(System.currentTimeMillis());
-            else {
+            if (timeString != null){ //in case there were no transactions in the XML file (account structure only)
                 timestamp = Timestamp.valueOf(timeString);
             }
         }
