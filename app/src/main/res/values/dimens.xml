@@ -32,4 +32,5 @@
     <dimen name="color_swatch_margins_large">8dip</dimen>
     <dimen name="color_swatch_margins_small">4dip</dimen>
     <dimen name="card_min_height">80dp</dimen>
+    <dimen name="toolbar_progress_height">2dp</dimen>
 </resources>

@@ -21,12 +21,17 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.LayoutRes;
+import android.support.annotation.StringRes;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ProgressBar;
 
 import com.uservoice.uservoicesdk.UserVoice;
 
@@ -38,23 +43,36 @@ import org.gnucash.android.ui.report.ReportsActivity;
 import org.gnucash.android.ui.settings.SettingsActivity;
 import org.gnucash.android.ui.transaction.ScheduledActionsActivity;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+
 
 /**
  * Base activity implementing the navigation drawer, to be extended by all activities requiring one.
+ * <p>
+ *     Each activity inheriting from this class has an indeterminate progress bar at the top,
+ *     (above the action bar) which can be used to display busy operations. See {@link #getProgressBar()}
+ * </p>
  *
- * All subclasses should call the {@link #setUpDrawer()} method in {@link #onCreate(Bundle)},
- * after the activity layout has been set.
- *
+ * <p>Sub-classes should simply provide their layout using {@link #getContentView()} and then annotate
+ * any variables they wish to use with {@link ButterKnife#bind(Activity)} annotations. The view
+ * binding will be done in this base abstract class.<br>
  * The activity layout of the subclass is expected to contain {@code DrawerLayout} and
- * a {@code NavigationView}.
- *
+ * a {@code NavigationView}.<br>
+ * Sub-class should also consider using the {@code toolbar.xml} or {@code toolbar_with_spinner.xml}
+ * for the action bar in their XML layout. Otherwise provide another which contains widgets for the
+ * toolbar and progress indicator with the IDs {@code R.id.toolbar} and {@code R.id.progress_indicator} respectively.
+ * </p>
  * @author Ngewi Fet <ngewif@gmail.com>
  */
-public class BaseDrawerActivity extends PasscodeLockActivity {
-    protected DrawerLayout  mDrawerLayout;
-    protected NavigationView mNavigationView;
+public abstract class BaseDrawerActivity extends PasscodeLockActivity {
+    @Bind(R.id.drawer_layout) DrawerLayout mDrawerLayout;
+    @Bind(R.id.nav_view) NavigationView mNavigationView;
+    @Bind(R.id.toolbar) Toolbar mToolbar;
+    @Bind(R.id.toolbar_progress) ProgressBar mToolbarProgress;
 
     protected ActionBarDrawerToggle mDrawerToggle;
+
 
     private class DrawerItemClickListener implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -69,26 +87,48 @@ public class BaseDrawerActivity extends PasscodeLockActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-    }
+        setContentView(getContentView());
 
-    /**
-     * Sets up the navigation drawer for this activity.
-     *
-     * This should be called from the activity's
-     * {@link Activity#onCreate(Bundle)} method after calling
-     * {@link Activity#setContentView(int)}.
-     *
-     */
-    protected void setUpDrawer() {
+        ButterKnife.bind(this);
+        setSupportActionBar(mToolbar);
         final ActionBar actionBar = getSupportActionBar();
         if (actionBar != null){
             actionBar.setHomeButtonEnabled(true);
             actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setTitle(getTitleRes());
         }
 
-        mDrawerLayout   = (DrawerLayout) findViewById(R.id.drawer_layout);
-        mNavigationView = (NavigationView) findViewById(R.id.nav_view);
+        setUpNavigationDrawer();
+    }
 
+    /**
+     * Return the layout to inflate for this activity
+     * @return Layout resource identifier
+     */
+    public abstract @LayoutRes int getContentView();
+
+    /**
+     * Return the title for this activity.
+     * This will be displayed in the action bar
+     * @return String resource identifier
+     */
+    public abstract @StringRes int getTitleRes();
+
+    /**
+     * Returns the progress bar for the activity.
+     * <p>This progress bar is displayed above the toolbar and should be used to show busy status
+     * for long operations.<br/>
+     * The progress bar visibility is set to {@link View#GONE} by default. Make visible to use </p>
+     * @return Indeterminate progress bar.
+     */
+    public ProgressBar getProgressBar(){
+        return mToolbarProgress;
+    }
+
+    /**
+     * Sets up the navigation drawer for this activity.
+     */
+    private void setUpNavigationDrawer() {
         mNavigationView.setNavigationItemSelectedListener(new DrawerItemClickListener());
 
         mDrawerToggle = new ActionBarDrawerToggle(

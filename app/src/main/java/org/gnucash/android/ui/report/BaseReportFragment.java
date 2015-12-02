@@ -276,12 +276,10 @@ public abstract class BaseReportFragment extends Fragment implements
             mReportGenerator.cancel(true);
 
         mReportGenerator = new AsyncTask<Void, Void, Void>() {
-            ProgressBar progressBar;
 
             @Override
             protected void onPreExecute() {
-                progressBar = (ProgressBar) getActivity().findViewById(R.id.progress_indicator);
-                progressBar.setVisibility(View.VISIBLE);
+                mReportsActivity.getProgressBar().setVisibility(View.VISIBLE);
             }
 
             @Override
@@ -293,7 +291,7 @@ public abstract class BaseReportFragment extends Fragment implements
             @Override
             protected void onPostExecute(Void aVoid) {
                 displayReport();
-                progressBar.setVisibility(View.GONE);
+                mReportsActivity.getProgressBar().setVisibility(View.GONE);
             }
         };
         mReportGenerator.execute();

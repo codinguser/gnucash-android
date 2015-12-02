@@ -21,9 +21,9 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <ProgressBar android:id="@+id/progress_indicator"
+    <ProgressBar android:id="@+id/toolbar_progress"
         android:layout_width="match_parent"
-        android:layout_height="5dp"
+        android:layout_height="@dimen/toolbar_progress_height"
         style="?android:attr/progressBarStyleHorizontal"
         android:indeterminate="true"
         android:visibility="visible"/>

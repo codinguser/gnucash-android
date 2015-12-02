@@ -21,7 +21,7 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 
 import org.gnucash.android.app.GnuCashApplication;
-import org.gnucash.android.db.TransactionsDbAdapter;
+import org.gnucash.android.db.adapter.TransactionsDbAdapter;
 import org.gnucash.android.export.Exporter;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;

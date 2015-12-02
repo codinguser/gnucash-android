@@ -112,8 +112,9 @@ public class GnuCashApplication extends Application{
         super.onCreate();
         GnuCashApplication.context = getApplicationContext();
 
-        if (isCrashlyticsEnabled())
-            Fabric.with(this, new Crashlytics());
+        Fabric.with(this, new Crashlytics.Builder().core(
+                new CrashlyticsCore.Builder().disabled(!isCrashlyticsEnabled()).build())
+                .build());
 
         // Set this up once when your application launches
         Config config = new Config("gnucash.uservoice.com");

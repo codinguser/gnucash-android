@@ -35,6 +35,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -213,16 +214,19 @@ public class AccountsActivity extends BaseDrawerActivity implements OnAccountCli
         return (AccountsListFragment)(mFragmentPageReferenceMap.get(index));
     }
 
+    @Override
+    public int getContentView() {
+        return R.layout.activity_accounts;
+    }
 
-	@Override
+    @Override
+    public int getTitleRes() {
+        return R.string.title_accounts;
+    }
+
+    @Override
 	public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_accounts);
-        setUpDrawer();
-        ButterKnife.bind(this);
-
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
 
         final Intent intent = getIntent();
         handleOpenFileIntent(intent);
@@ -490,10 +494,10 @@ public class AccountsActivity extends BaseDrawerActivity implements OnAccountCli
 
     /**
      * Starts Intent chooser for selecting a GnuCash accounts file to import.
-     * <p>The {@code activity} is responsible for the actual import of the file and can do so by calling {@link #importXmlFileFromIntent(Activity, Intent)}<br>
+     * <p>The {@code activity} is responsible for the actual import of the file and can do so by calling {@link #importXmlFileFromIntent(Activity, Intent, TaskDelegate)}<br>
      * The calling class should respond to the request code {@link AccountsActivity#REQUEST_PICK_ACCOUNTS_FILE} in its {@link #onActivityResult(int, int, Intent)} method</p>
      * @param activity Activity starting the request and will also handle the response
-     * @see #importXmlFileFromIntent(Activity, Intent)
+     * @see #importXmlFileFromIntent(Activity, Intent, TaskDelegate)
      */
     public static void startXmlFileChooser(Activity activity) {
         Intent pickIntent = new Intent(Intent.ACTION_GET_CONTENT);

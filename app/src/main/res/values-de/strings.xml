@@ -384,6 +384,7 @@ No user-identifiable information will be collected as part of this process!</str
   <string name="menu_duplicate_transaction">Kopieren</string>
   <string name="nav_menu_budgets">Budgets</string>
   <string name="title_cash_flow_report">Cash Flow</string>
+  <string name="title_budgets">Budgets</string>
   <string-array name="report_time_range">
     <item>Aktueller Monat</item>
     <item>Letzte 3 Monate</item>

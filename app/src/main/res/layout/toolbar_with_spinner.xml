@@ -20,12 +20,12 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <ProgressBar android:id="@+id/progress_indicator"
+    <ProgressBar android:id="@+id/toolbar_progress"
         android:layout_width="match_parent"
-        android:layout_height="5dp"
+        android:layout_height="@dimen/toolbar_progress_height"
         style="?android:attr/progressBarStyleHorizontal"
         android:indeterminate="true"
-        android:visibility="visible"/>
+        android:visibility="gone"/>
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
@@ -33,14 +33,13 @@
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         app:elevation="10dp"
-        app:layout_scrollFlags="enterAlways"
+        app:layout_scrollFlags="scroll|enterAlways"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
         tools:showIn="@layout/activity_form">
-        <Spinner android:id="@+id/report_type_spinner"
+        <Spinner android:id="@+id/toolbar_spinner"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:visibility="gone"
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
     </android.support.v7.widget.Toolbar>
 </FrameLayout>

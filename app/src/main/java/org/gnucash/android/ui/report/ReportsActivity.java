@@ -77,7 +77,7 @@ public class ReportsActivity extends BaseDrawerActivity implements AdapterView.O
 
     @Bind(R.id.time_range_spinner) Spinner mTimeRangeSpinner;
     @Bind(R.id.report_account_type_spinner) Spinner mAccountTypeSpinner;
-    @Bind(R.id.report_type_spinner) Spinner mReportTypeSpinner;
+    @Bind(R.id.toolbar_spinner) Spinner mReportTypeSpinner;
 
     private TransactionsDbAdapter mTransactionsDbAdapter;
     private AccountType mAccountType = AccountType.EXPENSE;
@@ -112,22 +112,20 @@ public class ReportsActivity extends BaseDrawerActivity implements AdapterView.O
     };
 
     @Override
+    public int getContentView() {
+        return R.layout.activity_reports;
+    }
+
+    @Override
+    public int getTitleRes() {
+        return R.string.title_reports;
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_reports);
-        setUpDrawer();
-        ButterKnife.bind(this);
-
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-        ActionBar actionBar = getSupportActionBar();
-        assert actionBar != null;
-        actionBar.setTitle(R.string.title_reports);
-        actionBar.setDisplayHomeAsUpEnabled(true);
 
         mTransactionsDbAdapter = TransactionsDbAdapter.getInstance();
-
 
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.report_time_range,
                 android.R.layout.simple_spinner_item);

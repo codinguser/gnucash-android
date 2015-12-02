@@ -40,14 +40,18 @@ public class ScheduledActionsActivity extends BaseDrawerActivity {
     ViewPager mViewPager;
 
     @Override
+    public int getContentView() {
+        return R.layout.activity_scheduled_events;
+    }
+
+    @Override
+    public int getTitleRes() {
+        return R.string.nav_menu_scheduled_actions;
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_scheduled_events);
-        setUpDrawer();
-
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle(R.string.nav_menu_scheduled_actions);
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
         tabLayout.addTab(tabLayout.newTab().setText(R.string.title_scheduled_transactions));

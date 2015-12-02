@@ -37,7 +37,7 @@
                 android:gravity="center_vertical">
 
                 <include android:id="@+id/toolbar_layout"
-                    layout="@layout/reports_toolbar" />
+                    layout="@layout/toolbar_with_spinner" />
 
                 <FrameLayout android:id="@+id/fragment_container"
                     android:orientation="vertical"

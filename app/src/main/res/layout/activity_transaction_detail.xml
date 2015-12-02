@@ -26,7 +26,7 @@
         android:id="@+id/fab_edit_transaction"
         android:layout_height="40dp"
         android:layout_width="40dp"
-        app:layout_anchor="@id/toolbar"
+        app:layout_anchor="@+id/toolbar"
         app:layout_anchorGravity="bottom|left|start"
         android:layout_marginLeft="8dp"
         android:scaleType="center"

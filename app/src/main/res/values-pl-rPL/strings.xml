@@ -385,6 +385,7 @@
   <string name="menu_duplicate_transaction">Duplicate</string>
   <string name="nav_menu_budgets">Budgets</string>
   <string name="title_cash_flow_report">Cash Flow</string>
+  <string name="title_budgets">Budgets</string>
   <string-array name="report_time_range">
     <item>Bieżący miesiąc</item>
     <item>Ostatnie 3 miesiące</item>

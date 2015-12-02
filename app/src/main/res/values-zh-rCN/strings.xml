@@ -377,6 +377,7 @@
   <string name="menu_duplicate_transaction">复制</string>
   <string name="nav_menu_budgets">Budgets</string>
   <string name="title_cash_flow_report">Cash Flow</string>
+  <string name="title_budgets">Budgets</string>
   <string-array name="report_time_range">
     <item>本月</item>
     <item>最近3个月</item>

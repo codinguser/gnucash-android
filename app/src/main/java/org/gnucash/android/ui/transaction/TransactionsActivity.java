@@ -25,6 +25,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -64,7 +65,6 @@ import org.gnucash.android.util.QualifiedAccountNameCursorAdapter;
 import org.joda.time.LocalDate;
 
 import java.math.BigDecimal;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -114,9 +114,9 @@ public class TransactionsActivity extends BaseDrawerActivity implements
      */
     private Cursor mAccountsCursor = null;
 
-    @Bind(R.id.pager) ViewPager mViewPager;
-    @Bind(R.id.spinner_toolbar) Spinner mToolbarSpinner;
-    @Bind(R.id.tab_layout) TabLayout mTabLayout;
+    @Bind(R.id.pager)            ViewPager mViewPager;
+    @Bind(R.id.toolbar_spinner)  Spinner mToolbarSpinner;
+    @Bind(R.id.tab_layout)       TabLayout mTabLayout;
     @Bind(R.id.transactions_sum) TextView mSumTextView;
     @Bind(R.id.fab_create_transaction) FloatingActionButton mCreateFloatingButton;
 
@@ -273,17 +273,21 @@ public class TransactionsActivity extends BaseDrawerActivity implements
         setTitleIndicatorColor();
     }
 
-	@Override
+    @Override
+    public int getContentView() {
+        return R.layout.activity_transactions;
+    }
+
+    @Override
+    public int getTitleRes() {
+        return R.string.title_transactions;
+    }
+
+    @Override
 	protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_transactions);
-        setUpDrawer();
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
-
-        ButterKnife.bind(this);
 
 		mAccountUID = getIntent().getStringExtra(UxArgument.SELECTED_ACCOUNT_UID);
         mAccountsDbAdapter = AccountsDbAdapter.getInstance();
