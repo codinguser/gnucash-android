@@ -41,9 +41,9 @@ public class ScheduledActionDbAdapter extends DatabaseAdapter<ScheduledAction> {
 
     RecurrenceDbAdapter mRecurrenceDbAdapter;
 
-    public ScheduledActionDbAdapter(SQLiteDatabase db){
+    public ScheduledActionDbAdapter(SQLiteDatabase db, RecurrenceDbAdapter recurrenceDbAdapter){
         super(db, ScheduledActionEntry.TABLE_NAME);
-        mRecurrenceDbAdapter = new RecurrenceDbAdapter(db);
+        mRecurrenceDbAdapter = recurrenceDbAdapter;
         LOG_TAG = "ScheduledActionDbAdapter";
     }
 

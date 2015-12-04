@@ -47,10 +47,11 @@ public class BudgetsDbAdapter extends DatabaseAdapter<Budget>{
      *
      * @param db        SQLiteDatabase object
      */
-    public BudgetsDbAdapter(SQLiteDatabase db) {
+    public BudgetsDbAdapter(SQLiteDatabase db, BudgetAmountsDbAdapter budgetAmountsDbAdapter,
+                            RecurrenceDbAdapter recurrenceDbAdapter) {
         super(db, BudgetEntry.TABLE_NAME);
-        mRecurrenceDbAdapter = new RecurrenceDbAdapter(db);
-        mBudgetAmountsDbAdapter = new BudgetAmountsDbAdapter(db);
+        mRecurrenceDbAdapter = recurrenceDbAdapter;
+        mBudgetAmountsDbAdapter = budgetAmountsDbAdapter;
     }
 
     /**

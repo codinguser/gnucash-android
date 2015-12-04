@@ -28,9 +28,11 @@ import com.crashlytics.android.Crashlytics;
 import org.gnucash.android.BuildConfig;
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.adapter.AccountsDbAdapter;
+import org.gnucash.android.db.adapter.BudgetAmountsDbAdapter;
 import org.gnucash.android.db.adapter.BudgetsDbAdapter;
 import org.gnucash.android.db.adapter.CommoditiesDbAdapter;
 import org.gnucash.android.db.adapter.PricesDbAdapter;
+import org.gnucash.android.db.adapter.RecurrenceDbAdapter;
 import org.gnucash.android.db.adapter.ScheduledActionDbAdapter;
 import org.gnucash.android.db.adapter.SplitsDbAdapter;
 import org.gnucash.android.db.adapter.TransactionsDbAdapter;
@@ -125,8 +127,9 @@ public abstract class Exporter {
             mAccountsDbAdapter      = new AccountsDbAdapter(db, mTransactionsDbAdapter);
             mPricesDbAdapter        = new PricesDbAdapter(db);
             mCommoditiesDbAdapter   = new CommoditiesDbAdapter(db);
-            mBudgetsDbAdapter       = new BudgetsDbAdapter(db);
-            mScheduledActionDbAdapter = new ScheduledActionDbAdapter(db);
+            RecurrenceDbAdapter recurrenceDbAdapter = new RecurrenceDbAdapter(db);
+            mBudgetsDbAdapter       = new BudgetsDbAdapter(db, new BudgetAmountsDbAdapter(db), recurrenceDbAdapter);
+            mScheduledActionDbAdapter = new ScheduledActionDbAdapter(db, recurrenceDbAdapter);
             mPricesDbAdapter = new PricesDbAdapter(db);
             mCommoditiesDbAdapter = new CommoditiesDbAdapter(db);
         }

@@ -81,8 +81,8 @@ android {
     buildTypes {
         release {
             minifyEnabled true
-            shrinkResources true
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+//            shrinkResources true
+//            proguardFiles getDefaultProguardFile('proguard-android.txt'), proguard-rules.pro
             if (project.hasProperty("RELEASE_STORE_FILE")){
                 signingConfig signingConfigs.release
             } else {
@@ -121,7 +121,7 @@ android {
 
     }
 
-    
+
     compileOptions { //we want switch with strings during xml parsing
         encoding "UTF-8"
         sourceCompatibility JavaVersion.VERSION_1_7
@@ -148,7 +148,7 @@ def adb = android.getAdbExe().toString()
 
 afterEvaluate {
     initCrashlyticsPropertiesIfNeeded()
-    
+
     task grantTestPermissionsDevel(type: Exec, dependsOn: 'installDevelopmentDebug') { // or install{productFlavour}{buildType}
         commandLine "$adb", 'devices'
         standardOutput = new ByteArrayOutputStream()
@@ -178,7 +178,7 @@ afterEvaluate {
     }
 }
 
-def androidSupportVersion       = "23.1.0"
+def androidSupportVersion       = "23.1.1"
 def androidEspressoVersion      = "2.2.1"
 def androidSupportTestVersion   = "0.4.1"
 

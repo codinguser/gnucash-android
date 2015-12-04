@@ -24,11 +24,32 @@ import android.provider.BaseColumns;
  * @author Ngewi Fet <ngewif@gmail.com>
  */
 public class DatabaseSchema {
+
     /**
-     * Database version.
+     * Name of database storing information about the books in the application
+     */
+    public static final String BOOK_DATABASE_NAME = "gnucash_books.db";
+
+    /**
+     * Version number of database containing information about the books in the application
+     */
+    public static final int BOOK_DATABASE_VERSION = 1;
+
+    /**
+     * Version number of database containing accounts and transactions info.
      * With any change to the database schema, this number must increase
      */
     public static final int DATABASE_VERSION = 12;
+
+    /**
+     * Name of the database
+     * <p>This was used when the application had only one database per instance.
+     * Now there can be multiple databases for each book imported
+     * </p>
+     * @deprecated Each database uses the GUID of the root account as name
+     */
+    @Deprecated
+    public static final String LEGACY_DATABASE_NAME = "gnucash_db";
 
     //no instances are to be instantiated
     private DatabaseSchema(){}
@@ -37,6 +58,16 @@ public class DatabaseSchema {
         public static final String COLUMN_UID           = "uid";
         public static final String COLUMN_CREATED_AT    = "created_at";
         public static final String COLUMN_MODIFIED_AT   = "modified_at";
+    }
+
+    public static abstract class BookEntry implements CommonColumns {
+        public static final String TABLE_NAME = "books";
+
+        public static final String COLUMN_DISPLAY_NAME  = "name";
+        public static final String COLUMN_SOURCE_URI    = "uri";
+        public static final String COLUMN_ROOT_GUID     = "root_account_guid";
+        public static final String COLUMN_TEMPLATE_GUID = "root_template_guid";
+        public static final String COLUMN_ACTIVE        = "is_active";
     }
 
     /**

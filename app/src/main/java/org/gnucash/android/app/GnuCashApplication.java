@@ -36,8 +36,10 @@ import com.uservoice.uservoicesdk.UserVoice;
 
 import org.gnucash.android.BuildConfig;
 import org.gnucash.android.R;
+import org.gnucash.android.db.BookDbHelper;
 import org.gnucash.android.db.DatabaseHelper;
 import org.gnucash.android.db.adapter.AccountsDbAdapter;
+import org.gnucash.android.db.adapter.BooksDbAdapter;
 import org.gnucash.android.db.adapter.BudgetAmountsDbAdapter;
 import org.gnucash.android.db.adapter.BudgetsDbAdapter;
 import org.gnucash.android.db.adapter.CommoditiesDbAdapter;
@@ -74,10 +76,6 @@ public class GnuCashApplication extends Application{
 
     private static Context context;
 
-    private static DatabaseHelper mDbHelper;
-
-    private static SQLiteDatabase mDb;
-
     private static AccountsDbAdapter mAccountsDbAdapter;
 
     private static TransactionsDbAdapter mTransactionsDbAdapter;
@@ -95,6 +93,8 @@ public class GnuCashApplication extends Application{
     private static BudgetAmountsDbAdapter mBudgetAmountsDbAdapter;
 
     private static RecurrenceDbAdapter mRecurrenceDbAdapter;
+
+    private static BooksDbAdapter mBooksDbAdapter;
 
     /**
      * Returns darker version of specified <code>color</code>.
@@ -126,25 +126,40 @@ public class GnuCashApplication extends Application{
         // config.identifyUser("USER_ID", "User Name", "email@example.com");
         UserVoice.init(config, this);
 
-        mDbHelper = new DatabaseHelper(getApplicationContext());
+
+        BookDbHelper bookDbHelper = new BookDbHelper(getApplicationContext());
+        mBooksDbAdapter = new BooksDbAdapter(bookDbHelper.getWritableDatabase());
+
+        initDatabaseAdapters();
+
+        setDefaultCurrencyCode(getDefaultCurrencyCode());
+    }
+
+    /**
+     * Initialize database adapter singletons for use in the application
+     * This method should be called every time a new book is opened
+     */
+    private void initDatabaseAdapters() {
+        DatabaseHelper mDbHelper = new DatabaseHelper(getApplicationContext(),
+                mBooksDbAdapter.getActiveBookUID());
+        SQLiteDatabase mainDb;
         try {
-            mDb = mDbHelper.getWritableDatabase();
+            mainDb = mDbHelper.getWritableDatabase();
         } catch (SQLException e) {
             Crashlytics.logException(e);
             Log.e(getClass().getName(), "Error getting database: " + e.getMessage());
-            mDb = mDbHelper.getReadableDatabase();
+            mainDb = mDbHelper.getReadableDatabase();
         }
-        mSplitsDbAdapter            = new SplitsDbAdapter(mDb);
-        mTransactionsDbAdapter      = new TransactionsDbAdapter(mDb, mSplitsDbAdapter);
-        mAccountsDbAdapter          = new AccountsDbAdapter(mDb, mTransactionsDbAdapter);
-        mScheduledActionDbAdapter   = new ScheduledActionDbAdapter(mDb);
-        mCommoditiesDbAdapter       = new CommoditiesDbAdapter(mDb);
-        mPricesDbAdapter            = new PricesDbAdapter(mDb);
-        mBudgetAmountsDbAdapter     = new BudgetAmountsDbAdapter(mDb);
-        mBudgetsDbAdapter           = new BudgetsDbAdapter(mDb);
-        mRecurrenceDbAdapter        = new RecurrenceDbAdapter(mDb);
 
-        setDefaultCurrencyCode(getDefaultCurrencyCode());
+        mSplitsDbAdapter            = new SplitsDbAdapter(mainDb);
+        mTransactionsDbAdapter      = new TransactionsDbAdapter(mainDb, mSplitsDbAdapter);
+        mAccountsDbAdapter          = new AccountsDbAdapter(mainDb, mTransactionsDbAdapter);
+        mRecurrenceDbAdapter        = new RecurrenceDbAdapter(mainDb);
+        mScheduledActionDbAdapter   = new ScheduledActionDbAdapter(mainDb, mRecurrenceDbAdapter);
+        mPricesDbAdapter            = new PricesDbAdapter(mainDb);
+        mCommoditiesDbAdapter       = new CommoditiesDbAdapter(mainDb);
+        mBudgetAmountsDbAdapter     = new BudgetAmountsDbAdapter(mainDb);
+        mBudgetsDbAdapter           = new BudgetsDbAdapter(mainDb, mBudgetAmountsDbAdapter, mRecurrenceDbAdapter);
     }
 
     public static AccountsDbAdapter getAccountsDbAdapter() {
@@ -181,6 +196,19 @@ public class GnuCashApplication extends Application{
 
     public static BudgetAmountsDbAdapter getBudgetAmountsDbAdapter(){
         return mBudgetAmountsDbAdapter;
+    }
+
+    public static BooksDbAdapter getBooksDbAdapter(){
+        return mBooksDbAdapter;
+    }
+
+    /**
+     * Loads the book with GUID {@code bookUID}
+     * @param bookUID GUID of the book to be loaded
+     */
+    public void loadBook(String bookUID){
+        mBooksDbAdapter.setActive(bookUID);
+        initDatabaseAdapters();
     }
 
     /**
