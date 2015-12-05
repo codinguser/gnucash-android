@@ -416,4 +416,27 @@
         <item>All time</item>
         <item>Custom range…</item>
     </string-array>
+
+    <!-- Passcode lock -->
+    <string name="digit_one">1</string>
+    <string name="digit_one_text">@string/empty</string>
+    <string name="digit_two">2</string>
+    <string name="digit_two_text">ABC</string>
+    <string name="digit_three">3</string>
+    <string name="digit_three_text">DEF</string>
+    <string name="digit_four">4</string>
+    <string name="digit_four_text">GHI</string>
+    <string name="digit_five">5</string>
+    <string name="digit_five_text">JKL</string>
+    <string name="digit_six">6</string>
+    <string name="digit_six_text">MNO</string>
+    <string name="digit_seven">7</string>
+    <string name="digit_seven_text">PQRS</string>
+    <string name="digit_eight">8</string>
+    <string name="digit_eight_text">TUV</string>
+    <string name="digit_nine">9</string>
+    <string name="digit_nine_text">WXYZ</string>
+    <string name="digit_zero">0</string>
+    <string name="digit_zero_text">+</string>
+
 </resources>
