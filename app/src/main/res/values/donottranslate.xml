@@ -36,6 +36,7 @@
     <string name="key_enable_crashlytics" translatable="false">enable_crashlytics</string>
     <string name="key_use_account_color" translatable="false">use_account_color</string>
     <string name="key_last_export_destination">last_export_destination</string>
+    <string name="key_use_compact_list">use_compact_list</string>
 
     <string-array name="key_transaction_type_values" translatable="false">
         <item>CREDIT</item>

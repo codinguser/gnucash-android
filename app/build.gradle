@@ -79,6 +79,7 @@ android {
     }
 
     buildTypes {
+        //todo re-enable proguard and test coverage
         release {
             minifyEnabled true
 //            shrinkResources true
