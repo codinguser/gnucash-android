@@ -103,6 +103,7 @@ public abstract class Exporter {
     protected PricesDbAdapter mPricesDbAdapter;
     protected CommoditiesDbAdapter mCommoditiesDbAdapter;
     protected Context mContext;
+    private String mExportCacheFilePath;
 
     public Exporter(ExportParams params, SQLiteDatabase db) {
         this.mExportParams = params;
@@ -123,6 +124,7 @@ public abstract class Exporter {
             mCommoditiesDbAdapter = new CommoditiesDbAdapter(db);
         }
 
+        mExportCacheFilePath = null;
         mCacheDir = new File(mContext.getCacheDir(), params.getExportFormat().name());
         mCacheDir.mkdir();
         purgeDirectory(mCacheDir);
@@ -184,10 +186,16 @@ public abstract class Exporter {
      * @return Absolute path to file
      */
     protected String getExportCacheFilePath(){
-        String cachePath = mCacheDir.getAbsolutePath();
-        if (!cachePath.endsWith("/"))
-            cachePath += "/";
-        return cachePath + buildExportFilename(mExportParams.getExportFormat());
+        // The file name contains a timestamp, so ensure it doesn't change with multiple calls to
+        // avoid issues like #448
+        if (mExportCacheFilePath == null) {
+            String cachePath = mCacheDir.getAbsolutePath();
+            if (!cachePath.endsWith("/"))
+                cachePath += "/";
+            mExportCacheFilePath = cachePath + buildExportFilename(mExportParams.getExportFormat());
+        }
+
+        return mExportCacheFilePath;
     }
 
     /**
