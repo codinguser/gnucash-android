@@ -36,12 +36,14 @@ import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.DatabaseHelper;
 import org.gnucash.android.db.adapter.AccountsDbAdapter;
+import org.gnucash.android.db.adapter.RecurrenceDbAdapter;
 import org.gnucash.android.db.adapter.ScheduledActionDbAdapter;
 import org.gnucash.android.db.adapter.SplitsDbAdapter;
 import org.gnucash.android.db.adapter.TransactionsDbAdapter;
 import org.gnucash.android.export.ExportFormat;
 import org.gnucash.android.export.Exporter;
 import org.gnucash.android.model.Account;
+import org.gnucash.android.model.BaseModel;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.model.PeriodType;
 import org.gnucash.android.model.ScheduledAction;
@@ -99,7 +101,7 @@ public class ExportTransactionsTest extends
 		AccountsActivityTest.preventFirstRunDialogs(getInstrumentation().getTargetContext());
 		mAcccountsActivity = getActivity();
 
-        mDbHelper = new DatabaseHelper(getActivity());
+        mDbHelper = new DatabaseHelper(getActivity(), BaseModel.generateUID());
         try {
             mDb = mDbHelper.getWritableDatabase();
         } catch (SQLException e) {
@@ -241,7 +243,7 @@ public class ExportTransactionsTest extends
 		onView(withText("OK")).perform(click());
 
 		onView(withId(R.id.menu_save)).perform(click());
-		ScheduledActionDbAdapter scheduledactionDbAdapter = new ScheduledActionDbAdapter(mDb);
+		ScheduledActionDbAdapter scheduledactionDbAdapter = new ScheduledActionDbAdapter(mDb, new RecurrenceDbAdapter(mDb));
 		List<ScheduledAction> scheduledActions = scheduledactionDbAdapter.getAllEnabledScheduledActions();
 		assertThat(scheduledActions)
 				.hasSize(1)

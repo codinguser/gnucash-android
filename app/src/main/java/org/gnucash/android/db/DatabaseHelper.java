@@ -56,13 +56,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	 * Tag for logging
 	 */
 	public static final String LOG_TAG = DatabaseHelper.class.getName();
-	
-	/**
-	 * Name of the database
-	 */
-	private static final String DATABASE_NAME = "gnucash_db";
 
-	/**
+    /**
 	 * SQL statement to create the accounts table in the database
 	 */
 	private static final String ACCOUNTS_TABLE_CREATE = "create table " + AccountEntry.TABLE_NAME + " ("
@@ -229,9 +224,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     /**
 	 * Constructor
 	 * @param context Application context
+     * @param databaseName Name of the database
 	 */
-	public DatabaseHelper(Context context){
-		super(context, DATABASE_NAME, null, DatabaseSchema.DATABASE_VERSION);
+	public DatabaseHelper(Context context, String databaseName){
+		super(context, databaseName, null, DatabaseSchema.DATABASE_VERSION);
 
 	}
 

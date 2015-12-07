@@ -18,6 +18,7 @@
 package org.gnucash.android.importer;
 
 import android.database.sqlite.SQLiteDatabase;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
@@ -25,9 +26,11 @@ import com.crashlytics.android.Crashlytics;
 
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.adapter.AccountsDbAdapter;
+import org.gnucash.android.db.adapter.BudgetAmountsDbAdapter;
 import org.gnucash.android.db.adapter.BudgetsDbAdapter;
 import org.gnucash.android.db.adapter.CommoditiesDbAdapter;
 import org.gnucash.android.db.adapter.PricesDbAdapter;
+import org.gnucash.android.db.adapter.RecurrenceDbAdapter;
 import org.gnucash.android.db.adapter.ScheduledActionDbAdapter;
 import org.gnucash.android.db.adapter.SplitsDbAdapter;
 import org.gnucash.android.db.adapter.TransactionsDbAdapter;
@@ -282,10 +285,11 @@ public class GncXmlHandler extends DefaultHandler {
         } else {
             mTransactionsDbAdapter = new TransactionsDbAdapter(db, new SplitsDbAdapter(db));
             mAccountsDbAdapter = new AccountsDbAdapter(db, mTransactionsDbAdapter);
-            mScheduledActionsDbAdapter = new ScheduledActionDbAdapter(db);
+            RecurrenceDbAdapter recurrenceDbAdapter = new RecurrenceDbAdapter(db);
+            mScheduledActionsDbAdapter = new ScheduledActionDbAdapter(db, recurrenceDbAdapter);
             mCommoditiesDbAdapter = new CommoditiesDbAdapter(db);
             mPricesDbAdapter = new PricesDbAdapter(db);
-            mBudgetsDbAdapter = new BudgetsDbAdapter(db);
+            mBudgetsDbAdapter = new BudgetsDbAdapter(db, new BudgetAmountsDbAdapter(db), recurrenceDbAdapter);
         }
 
         mContent = new StringBuilder();
@@ -972,6 +976,14 @@ public class GncXmlHandler extends DefaultHandler {
         if (mostCurrencyAppearance > 0) {
             GnuCashApplication.setDefaultCurrencyCode(mostAppearedCurrency);
         }
+    }
+
+    /**
+     * Returns the GUID of the root account in the XML book
+     * @return GUID of the root account
+     */
+    public @NonNull String getRootAccountUID() {
+        return mRootAccount.getUID();
     }
 
     /**

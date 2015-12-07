@@ -20,12 +20,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <ProgressBar android:id="@+id/toolbar_progress"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/toolbar_progress_height"
-        style="?android:attr/progressBarStyleHorizontal"
-        android:indeterminate="true"
-        android:visibility="gone"/>
+    <include layout="@layout/actionbar_progress_indicator" />
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"

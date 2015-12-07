@@ -40,6 +40,7 @@ import org.gnucash.android.db.adapter.TransactionsDbAdapter;
 import org.gnucash.android.importer.GncXmlImporter;
 import org.gnucash.android.model.Account;
 import org.gnucash.android.model.AccountType;
+import org.gnucash.android.model.BaseModel;
 import org.gnucash.android.model.Commodity;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.model.Split;
@@ -107,7 +108,7 @@ public class PieChartReportTest extends ActivityInstrumentationTestCase2<Reports
         mReportsActivity = getActivity();
 
         SQLiteDatabase db;
-        DatabaseHelper dbHelper = new DatabaseHelper(getInstrumentation().getTargetContext());
+        DatabaseHelper dbHelper = new DatabaseHelper(mReportsActivity, BaseModel.generateUID());
         try {
             db = dbHelper.getWritableDatabase();
         } catch (SQLException e) {

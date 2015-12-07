@@ -14,23 +14,16 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-
-<FrameLayout xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<!--
+This is a progress indicator that should be displayed above the toolbar.
+See toolbar.xml layout for example of how to include it
+-->
+<ProgressBar xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    style="?android:attr/progressBarStyleHorizontal"
+    android:id="@+id/toolbar_progress"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
-
-    <include layout="@layout/actionbar_progress_indicator" />
-
-    <android.support.v7.widget.Toolbar
-        android:id="@+id/toolbar"
-        android:background="?attr/colorPrimary"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        app:elevation="10dp"
-        app:layout_scrollFlags="enterAlways"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-        tools:showIn="@layout/activity_form" />
-</FrameLayout>
+    android:layout_height="@dimen/toolbar_progress_height"
+    android:indeterminate="true"
+    android:visibility="gone"
+    tools:showIn="@layout/toolbar_with_spinner" />

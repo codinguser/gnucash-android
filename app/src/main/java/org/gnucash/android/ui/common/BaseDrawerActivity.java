@@ -19,23 +19,29 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.StringRes;
-import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.uservoice.uservoicesdk.UserVoice;
 
 import org.gnucash.android.R;
+import org.gnucash.android.app.GnuCashApplication;
+import org.gnucash.android.db.DatabaseSchema;
+import org.gnucash.android.db.adapter.BooksDbAdapter;
 import org.gnucash.android.ui.account.AccountsActivity;
 import org.gnucash.android.ui.budget.BudgetsActivity;
 import org.gnucash.android.ui.passcode.PasscodeLockActivity;
@@ -65,11 +71,14 @@ import butterknife.ButterKnife;
  * </p>
  * @author Ngewi Fet <ngewif@gmail.com>
  */
-public abstract class BaseDrawerActivity extends PasscodeLockActivity {
+public abstract class BaseDrawerActivity extends PasscodeLockActivity implements
+    PopupMenu.OnMenuItemClickListener {
+
     @Bind(R.id.drawer_layout) DrawerLayout mDrawerLayout;
     @Bind(R.id.nav_view) NavigationView mNavigationView;
     @Bind(R.id.toolbar) Toolbar mToolbar;
     @Bind(R.id.toolbar_progress) ProgressBar mToolbarProgress;
+    TextView mBookNameTextView;
 
     protected ActionBarDrawerToggle mDrawerToggle;
 
@@ -98,6 +107,22 @@ public abstract class BaseDrawerActivity extends PasscodeLockActivity {
             actionBar.setTitle(getTitleRes());
         }
 
+        View headerView = mNavigationView.getHeaderView(0);
+        headerView.findViewById(R.id.drawer_title).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onClickAppTitle(v);
+            }
+        });
+
+        mBookNameTextView = (TextView) headerView.findViewById(R.id.book_name);
+        mBookNameTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onClickBook(v);
+            }
+        });
+        mBookNameTextView.setText(BooksDbAdapter.getInstance().getActiveBookDisplayName());
         setUpNavigationDrawer();
     }
 
@@ -249,4 +274,34 @@ public abstract class BaseDrawerActivity extends PasscodeLockActivity {
         }
     }
 
+    @Override
+    public boolean onMenuItemClick(MenuItem item) {
+        long id = item.getItemId();
+        String bookUID = BooksDbAdapter.getInstance().getUID(id);
+        ((GnuCashApplication)getApplication()).loadBook(bookUID);
+        AccountsActivity.start(this);
+        return true;
+    }
+
+    public void onClickAppTitle(View view){
+        AccountsActivity.start(this);
+    }
+
+    public void onClickBook(View view){
+        PopupMenu popup = new PopupMenu(this, view);
+        popup.setOnMenuItemClickListener(this);
+
+        Menu menu = popup.getMenu();
+        int maxRecent = 0;
+        Cursor cursor = BooksDbAdapter.getInstance().fetchAllRecords(null, null,
+                DatabaseSchema.BookEntry.COLUMN_MODIFIED_AT + " ASC");
+        while (cursor.moveToNext() && maxRecent++ < 10) {
+            long id = cursor.getLong(cursor.getColumnIndexOrThrow(DatabaseSchema.BookEntry._ID));
+            String name = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.BookEntry.COLUMN_DISPLAY_NAME));
+
+            menu.add(0, (int)id, maxRecent, name);
+        }
+
+        popup.show();
+    }
 }
