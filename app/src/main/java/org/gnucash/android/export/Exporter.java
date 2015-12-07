@@ -58,7 +58,7 @@ public abstract class Exporter {
     /**
      * Application folder on external storage
      */
-    public static final String BASE_FOLDER_PATH = Environment.getExternalStorageDirectory() + "/" + BuildConfig.APPLICATION_ID;
+    private static final String BASE_FOLDER_PATH = Environment.getExternalStorageDirectory() + "/" + BuildConfig.APPLICATION_ID;
 
     /**
      * Folder where exports like QIF and OFX will be saved for access by external programs
@@ -73,7 +73,7 @@ public abstract class Exporter {
     /**
      * Export options
      */
-    protected ExportParams mExportParams;
+    protected final ExportParams mExportParams;
 
     /**
      * Cache directory to which files will be first exported before moved to final destination.
@@ -82,7 +82,7 @@ public abstract class Exporter {
      *    The files created here are only accessible within this application, and should be copied to SD card before they can be shared
      * </p>
      */
-    protected File mCacheDir;
+    private final File mCacheDir;
 
     private static final SimpleDateFormat EXPORT_FILENAME_DATE_FORMAT = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US);
 
@@ -96,13 +96,14 @@ public abstract class Exporter {
      * Adapter for retrieving accounts to export
      * Subclasses should close this object when they are done with exporting
      */
-    protected AccountsDbAdapter mAccountsDbAdapter;
-    protected TransactionsDbAdapter mTransactionsDbAdapter;
-    protected SplitsDbAdapter mSplitsDbAdapter;
-    protected ScheduledActionDbAdapter mScheduledActionDbAdapter;
-    protected PricesDbAdapter mPricesDbAdapter;
-    protected CommoditiesDbAdapter mCommoditiesDbAdapter;
-    protected Context mContext;
+    protected final AccountsDbAdapter mAccountsDbAdapter;
+    protected final TransactionsDbAdapter mTransactionsDbAdapter;
+    protected final SplitsDbAdapter mSplitsDbAdapter;
+    protected final ScheduledActionDbAdapter mScheduledActionDbAdapter;
+    protected final PricesDbAdapter mPricesDbAdapter;
+    protected final CommoditiesDbAdapter mCommoditiesDbAdapter;
+    protected final Context mContext;
+    private String mExportCacheFilePath;
 
     public Exporter(ExportParams params, SQLiteDatabase db) {
         this.mExportParams = params;
@@ -123,6 +124,7 @@ public abstract class Exporter {
             mCommoditiesDbAdapter = new CommoditiesDbAdapter(db);
         }
 
+        mExportCacheFilePath = null;
         mCacheDir = new File(mContext.getCacheDir(), params.getExportFormat().name());
         mCacheDir.mkdir();
         purgeDirectory(mCacheDir);
@@ -184,10 +186,16 @@ public abstract class Exporter {
      * @return Absolute path to file
      */
     protected String getExportCacheFilePath(){
-        String cachePath = mCacheDir.getAbsolutePath();
-        if (!cachePath.endsWith("/"))
-            cachePath += "/";
-        return cachePath + buildExportFilename(mExportParams.getExportFormat());
+        // The file name contains a timestamp, so ensure it doesn't change with multiple calls to
+        // avoid issues like #448
+        if (mExportCacheFilePath == null) {
+            String cachePath = mCacheDir.getAbsolutePath();
+            if (!cachePath.endsWith("/"))
+                cachePath += "/";
+            mExportCacheFilePath = cachePath + buildExportFilename(mExportParams.getExportFormat());
+        }
+
+        return mExportCacheFilePath;
     }
 
     /**
