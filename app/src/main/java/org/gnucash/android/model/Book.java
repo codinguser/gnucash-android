@@ -31,11 +31,20 @@ public class Book extends BaseModel {
     private boolean mActive;
 
     /**
+     * Default constructor
+     */
+    public Book(){
+        mRootTemplateUID = generateUID();
+        //nothing to see here, move along
+    }
+
+    /**
      * Create a new book instance
      * @param rootAccountUID GUID of root account
      */
     public Book(String rootAccountUID){
         this.mRootAccountUID = rootAccountUID;
+        this.mRootTemplateUID = generateUID();
     }
 
     /**

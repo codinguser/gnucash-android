@@ -77,6 +77,7 @@ public class BookDbHelper extends SQLiteOpenHelper {
             return;
         }
 
+        //todo move this to the DatabaseHelper class
         String sql = "SELECT COUNT(*) FROM " + BookEntry.TABLE_NAME;
         SQLiteStatement statement = db.compileStatement(sql);
         long count = statement.simpleQueryForLong();

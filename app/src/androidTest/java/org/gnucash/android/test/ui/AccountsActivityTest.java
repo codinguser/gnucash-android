@@ -33,12 +33,15 @@ import android.util.Log;
 import com.kobakei.ratethisapp.RateThisApp;
 
 import org.gnucash.android.R;
+import org.gnucash.android.db.BookDbHelper;
 import org.gnucash.android.db.adapter.AccountsDbAdapter;
 import org.gnucash.android.db.DatabaseHelper;
+import org.gnucash.android.db.adapter.BooksDbAdapter;
 import org.gnucash.android.db.adapter.SplitsDbAdapter;
 import org.gnucash.android.db.adapter.TransactionsDbAdapter;
 import org.gnucash.android.model.Account;
 import org.gnucash.android.model.AccountType;
+import org.gnucash.android.model.Book;
 import org.gnucash.android.model.Commodity;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.model.Split;
@@ -101,7 +104,8 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
         preventFirstRunDialogs(getInstrumentation().getTargetContext());
         mAcccountsActivity = getActivity();
 
-        mDbHelper = new DatabaseHelper(mAcccountsActivity);
+        Book book1 = new Book();
+        mDbHelper = new DatabaseHelper(mAcccountsActivity, book1.getUID());
         try {
             mDb = mDbHelper.getWritableDatabase();
         } catch (SQLException e) {
@@ -117,6 +121,13 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
         account.setUID(DUMMY_ACCOUNT_UID);
 		account.setCommodity(Commodity.getInstance(DUMMY_ACCOUNT_CURRENCY_CODE));
 		mAccountsDbAdapter.addRecord(account);
+
+        String rootUID = mAccountsDbAdapter.getOrCreateGnuCashRootAccountUID();
+        book1.setRootAccountUID(rootUID);
+        book1.setActive(true);
+        BooksDbAdapter booksDbAdapter = new BooksDbAdapter(new BookDbHelper(mAcccountsActivity).getWritableDatabase());
+        booksDbAdapter.addRecord(book1);
+
         refreshAccountsList();
 	}
 

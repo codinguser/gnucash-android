@@ -36,6 +36,7 @@ import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.db.adapter.SplitsDbAdapter;
 import org.gnucash.android.db.adapter.TransactionsDbAdapter;
 import org.gnucash.android.model.Account;
+import org.gnucash.android.model.BaseModel;
 import org.gnucash.android.model.Commodity;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.model.Split;
@@ -109,7 +110,7 @@ public class TransactionsActivityTest extends
 		AccountsActivityTest.preventFirstRunDialogs(getInstrumentation().getTargetContext());
 
 
-        mDbHelper = new DatabaseHelper(getInstrumentation().getTargetContext());
+        mDbHelper = new DatabaseHelper(getInstrumentation().getTargetContext(), BaseModel.generateUID());
         try {
             mDb = mDbHelper.getWritableDatabase();
         } catch (SQLException e) {
