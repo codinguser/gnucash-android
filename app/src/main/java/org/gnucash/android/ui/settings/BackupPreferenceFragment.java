@@ -86,7 +86,7 @@ public class BackupPreferenceFragment extends PreferenceFragment implements OnPr
 
 		pref = findPreference(getString(R.string.key_owncloud_sync));
 		pref.setOnPreferenceClickListener((SettingsActivity)getActivity());
-		((SettingsActivity)getActivity()).toggleOwncloudPreference(pref);
+		((SettingsActivity)getActivity()).toggleOwnCloudPreference(pref);
 	}
 
     /**

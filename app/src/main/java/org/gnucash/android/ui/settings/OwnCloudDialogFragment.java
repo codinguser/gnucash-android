@@ -1,6 +1,5 @@
 package org.gnucash.android.ui.settings;
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -8,7 +7,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.preference.CheckBoxPreference;
 import android.preference.Preference;
-import android.preference.PreferenceManager;
 import android.support.v4.app.DialogFragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -30,12 +28,10 @@ import com.owncloud.android.lib.resources.files.FileUtils;
 
 import org.gnucash.android.R;
 
-import java.util.prefs.PreferenceChangeEvent;
-
 /**
- * A fragment for adding an owncloud account.
+ * A fragment for adding an ownCloud account.
  */
-public class OwncloudDialogFragment extends DialogFragment {
+public class OwnCloudDialogFragment extends DialogFragment {
 
     /**
      * Dialog positive button. Ok to save and validade the data
@@ -48,7 +44,7 @@ public class OwncloudDialogFragment extends DialogFragment {
     Button mCancelButton;
 
     /**
-     * Owncloud vars
+     * ownCloud vars
      */
     String mOC_server;
     String mOC_username;
@@ -72,15 +68,15 @@ public class OwncloudDialogFragment extends DialogFragment {
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
-     * @return A new instance of fragment OwncloudDialogFragment.
+     * @return A new instance of fragment OwnCloudDialogFragment.
      */
-    public static OwncloudDialogFragment newInstance(Preference pref) {
-        OwncloudDialogFragment fragment = new OwncloudDialogFragment();
+    public static OwnCloudDialogFragment newInstance(Preference pref) {
+        OwnCloudDialogFragment fragment = new OwnCloudDialogFragment();
         ocCheckBox = pref == null ? null : (CheckBoxPreference) pref;
         return fragment;
     }
 
-    public OwncloudDialogFragment() {
+    public OwnCloudDialogFragment() {
         // Required empty public constructor
     }
 

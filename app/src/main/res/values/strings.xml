@@ -65,7 +65,7 @@
         <item>SD Card</item>
         <item>DropBox</item>
         <item>Google Drive</item>
-        <item>OwnCloud</item>
+        <item>ownCloud</item>
         <item>Send to&#8230;</item>
     </string-array>
     <string name="btn_move">Move</string>
@@ -284,10 +284,10 @@
     <string name="title_restore_backup">Restore Backup…</string>
     <string name="header_backup_and_export_settings">Backup &amp; export</string>
     <string name="title_dropbox_sync_preference">DropBox Sync</string>
-    <string name="title_owncloud_sync_preference">Owncloud Sync</string>
+    <string name="title_owncloud_sync_preference">ownCloud Sync</string>
     <string name="title_backup_preference_category">Backup</string>
     <string name="summary_dropbox_sync">Enable to sync to DropBox</string>
-    <string name="summary_owncloud_sync">Enable to sync to Owncloud</string>
+    <string name="summary_owncloud_sync">Enable to sync to ownCloud</string>
     <string name="title_select_gnucash_xml_file">Select GnuCash XML file</string>
     <string name="title_backup_prefs">Backup Preferences</string>
     <string name="title_create_backup_pref">Create Backup</string>
