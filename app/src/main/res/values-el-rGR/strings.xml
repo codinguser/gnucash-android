@@ -64,6 +64,7 @@
     <item>Κάρτα SD</item>
     <item>DropBox</item>
     <item>Google Drive</item>
+    <item>ownCloud</item>
     <item>Μοίρασμα αρχείου&#8230;</item>
   </string-array>
   <string name="btn_move">Μετακίνηση</string>

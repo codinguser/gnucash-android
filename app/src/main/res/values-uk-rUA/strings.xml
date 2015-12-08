@@ -64,6 +64,7 @@
     <item>Карта пам\'яті</item>
     <item>DropBox</item>
     <item>Google Drive</item>
+    <item>ownCloud</item>
     <item>Відправити файл&#8230;</item>
   </string-array>
   <string name="btn_move">Перенести</string>

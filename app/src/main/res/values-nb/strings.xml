@@ -64,6 +64,7 @@
     <item>SD-kort</item>
     <item>DropBox</item>
     <item>Google Disk</item>
+    <item>ownCloud</item>
     <item>Send til&#8230;</item>
   </string-array>
   <string name="btn_move">Flytt</string>
