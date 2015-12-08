@@ -64,6 +64,7 @@
         <item>Cart&#227;o SD</item>
         <item>DropBox</item>
         <item>Google Drive</item>
+        <item>ownCloud</item>
         <item>Share file&#8230;</item>
     </string-array>
     <string name="btn_move">Mover</string>

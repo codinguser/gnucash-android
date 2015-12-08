@@ -64,6 +64,7 @@
     <item>Tarjeta SD</item>
     <item>DropBox</item>
     <item>Google Drive</item>
+    <item>ownCloud</item>
     <item>Compartir archivo&#8230;</item>
   </string-array>
   <string name="btn_move">Mover</string>

@@ -1,15 +1,13 @@
 package org.gnucash.android.ui.settings;
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.app.DialogFragment;
 import android.preference.CheckBoxPreference;
 import android.preference.Preference;
-import android.preference.PreferenceManager;
+import android.support.v4.app.DialogFragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,58 +28,55 @@ import com.owncloud.android.lib.resources.files.FileUtils;
 
 import org.gnucash.android.R;
 
-import java.util.prefs.PreferenceChangeEvent;
-
 /**
- * A fragment for adding an owncloud account.
+ * A fragment for adding an ownCloud account.
  */
-@TargetApi(11)
-public class OwncloudDialogFragment extends DialogFragment {
+public class OwnCloudDialogFragment extends DialogFragment {
 
     /**
-     * Dialog positive button. Ok to save and validade the data
+     * Dialog positive button. Ok to save and validate the data
      */
-    Button mOkButton;
+    private Button mOkButton;
 
     /**
      * Cancel button
      */
-    Button mCancelButton;
+    private Button mCancelButton;
 
     /**
-     * Owncloud vars
+     * ownCloud vars
      */
-    String mOC_server;
-    String mOC_username;
-    String mOC_password;
-    String mOC_dir;
+    private String mOC_server;
+    private String mOC_username;
+    private String mOC_password;
+    private String mOC_dir;
 
-    EditText mServer;
-    EditText mUsername;
-    EditText mPassword;
-    EditText mDir;
+    private EditText mServer;
+    private EditText mUsername;
+    private EditText mPassword;
+    private EditText mDir;
 
-    TextView mServerError;
-    TextView mUsernameError;
-    TextView mDirError;
+    private TextView mServerError;
+    private TextView mUsernameError;
+    private TextView mDirError;
 
-    SharedPreferences mPrefs;
-    Context mContext;
+    private SharedPreferences mPrefs;
+    private Context mContext;
 
     private static CheckBoxPreference ocCheckBox;
 
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
-     * @return A new instance of fragment OwncloudDialogFragment.
+     * @return A new instance of fragment OwnCloudDialogFragment.
      */
-    public static OwncloudDialogFragment newInstance(Preference pref) {
-        OwncloudDialogFragment fragment = new OwncloudDialogFragment();
+    public static OwnCloudDialogFragment newInstance(Preference pref) {
+        OwnCloudDialogFragment fragment = new OwnCloudDialogFragment();
         ocCheckBox = pref == null ? null : (CheckBoxPreference) pref;
         return fragment;
     }
 
-    public OwncloudDialogFragment() {
+    public OwnCloudDialogFragment() {
         // Required empty public constructor
     }
 
@@ -160,7 +155,7 @@ public class OwncloudDialogFragment extends DialogFragment {
         dismiss();
     }
 
-    private void checkdata() {
+    private void checkData() {
         mServerError.setVisibility(View.GONE);
         mUsernameError.setVisibility(View.GONE);
         mDirError.setVisibility(View.GONE);
@@ -225,7 +220,7 @@ public class OwncloudDialogFragment extends DialogFragment {
     /**
      * Binds click listeners for the dialog buttons
      */
-    protected void setListeners(){
+    private void setListeners(){
 
         mCancelButton.setOnClickListener(new View.OnClickListener() {
 
@@ -248,7 +243,7 @@ public class OwncloudDialogFragment extends DialogFragment {
                         )
                     save();
                 else
-                    checkdata();
+                    checkData();
             }
         });
     }

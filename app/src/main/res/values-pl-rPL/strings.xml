@@ -64,6 +64,7 @@
     <item>Karta SD</item>
     <item>DropBox</item>
     <item>Google Drive</item>
+    <item>ownCloud</item>
     <item>Udostępnij plik&#8230;</item>
   </string-array>
   <string name="btn_move">Przenieś</string>

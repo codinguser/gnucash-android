@@ -64,6 +64,7 @@
     <item>SD-kaart</item>
     <item>Dropbox</item>
     <item>Google Drive</item>
+    <item>ownCloud</item>
     <item>Verzenden&#8230;</item>
   </string-array>
   <string name="btn_move">Verplaatsen</string>

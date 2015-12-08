@@ -64,6 +64,7 @@
     <item>SD卡</item>
     <item>DropBox</item>
     <item>Google Drive</item>
+    <item>ownCloud</item>
     <item>分享&#8230;</item>
   </string-array>
   <string name="btn_move">移动</string>

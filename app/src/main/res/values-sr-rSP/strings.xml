@@ -64,6 +64,7 @@
     <item>SD Картица</item>
     <item>DropBox</item>
     <item>Google диск</item>
+    <item>ownCloud</item>
     <item>Пошаљи у&#8230;</item>
   </string-array>
   <string name="btn_move">Премести</string>

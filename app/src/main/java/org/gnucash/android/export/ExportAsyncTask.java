@@ -188,7 +188,7 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
                 return true;
 
             case OWNCLOUD:
-                moveExportToOwncloud();
+                moveExportToOwnCloud();
                 return true;
 
             case SD_CARD:
@@ -230,12 +230,12 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
                                 Context.MODE_PRIVATE).getBoolean(
                                 mContext.getString(R.string.owncloud_sync), false) ?
 
-                                "Owncloud -> " +
+                                "ownCloud -> " +
                                 mContext.getSharedPreferences(
                                         mContext.getString(R.string.owncloud_pref),
                                         Context.MODE_PRIVATE).getString(
                                         mContext.getString(R.string.key_owncloud_dir), null) :
-                                "Owncloud sync not enabled";
+                                "ownCloud sync not enabled";
                         break;
                     default:
                         targetLocation = "external service";
@@ -357,15 +357,15 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
         }
     }
 
-    private void moveExportToOwncloud() {
-        Log.i(TAG, "Copying exported file to Owncloud");
+    private void moveExportToOwnCloud() {
+        Log.i(TAG, "Copying exported file to ownCloud");
 
         SharedPreferences mPrefs = mContext.getSharedPreferences(mContext.getString(R.string.owncloud_pref), Context.MODE_PRIVATE);
 
         Boolean mOC_sync = mPrefs.getBoolean(mContext.getString(R.string.owncloud_sync), false);
 
         if(!mOC_sync){
-            Log.e(TAG, "Owncloud not enabled.");
+            Log.e(TAG, "ownCloud not enabled.");
             return;
         }
 

@@ -21,7 +21,6 @@ package org.gnucash.android.ui.settings;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.FragmentManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -42,7 +41,6 @@ import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
-import com.crashlytics.android.Crashlytics;
 import com.dropbox.sync.android.DbxAccountManager;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
@@ -68,8 +66,6 @@ import org.gnucash.android.ui.passcode.PasscodeLockScreenActivity;
 import org.gnucash.android.ui.passcode.PasscodePreferenceActivity;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -90,13 +86,13 @@ import java.util.TimerTask;
 public class SettingsActivity extends AppCompatPreferenceActivity
         implements OnPreferenceChangeListener, Preference.OnPreferenceClickListener{
 
-    public static final String LOG_TAG = "SettingsActivity";
+    private static final String LOG_TAG = "SettingsActivity";
 
     /**
      * Allowed delay between two consecutive taps of a setting for it to be considered a double tap
      * Used on Android v2.3.3 or lower devices where dialogs cannot be instantiated easily in settings
      */
-    public static final int DOUBLE_TAP_DELAY = 2000;
+    private static final int DOUBLE_TAP_DELAY = 2000;
 
     /**
      * Testing app key for DropBox API
@@ -111,7 +107,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity
     /**
      * Collects references to the UI elements and binds click listeners
      */
-    public static final int REQUEST_LINK_TO_DBX = 0x11;
+    private static final int REQUEST_LINK_TO_DBX = 0x11;
     public static final int REQUEST_RESOLVE_CONNECTION = 0x12;
 
     /**
@@ -201,7 +197,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity
 
             pref = findPreference(getString(R.string.key_owncloud_sync));
             pref.setOnPreferenceClickListener(this);
-            toggleOwncloudPreference(pref);
+            toggleOwnCloudPreference(pref);
 
             pref = findPreference(getString(R.string.key_create_backup));
             pref.setOnPreferenceClickListener(this);
@@ -359,8 +355,8 @@ public class SettingsActivity extends AppCompatPreferenceActivity
         }
 
         if (key.equals(getString(R.string.key_owncloud_sync))){
-            toggleOwncloudSync(preference);
-            toggleOwncloudPreference(preference);
+            toggleOwnCloudSync(preference);
+            toggleOwnCloudPreference(preference);
         }
 
         if (key.equals(getString(R.string.key_create_backup))){
@@ -392,7 +388,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity
                 Toast.makeText(this, R.string.toast_tap_again_to_confirm_delete, Toast.LENGTH_SHORT).show();
             } else {
                 GncXmlExporter.createBackup(); //create backup before deleting everything
-                List<Transaction> openingBalances = new ArrayList<Transaction>();
+                List<Transaction> openingBalances = new ArrayList<>();
                 boolean preserveOpeningBalances = GnuCashApplication.shouldSaveOpeningBalances(false);
                 if (preserveOpeningBalances) {
                     AccountsDbAdapter accountsDbAdapter = AccountsDbAdapter.getInstance();
@@ -447,16 +443,16 @@ public class SettingsActivity extends AppCompatPreferenceActivity
     }
 
     /**
-     * Toggles synchronization with Owncloud on or off
+     * Toggles synchronization with ownCloud on or off
      */
     @TargetApi(11)
-    private void toggleOwncloudSync(Preference pref){
+    private void toggleOwnCloudSync(Preference pref){
         SharedPreferences mPrefs = getSharedPreferences(getString(R.string.owncloud_pref), Context.MODE_PRIVATE);
 
         if (mPrefs.getBoolean(getString(R.string.owncloud_sync), false))
             mPrefs.edit().putBoolean(getString(R.string.owncloud_sync), false).apply();
         else {
-            OwncloudDialogFragment ocDialog = OwncloudDialogFragment.newInstance(pref);
+            OwnCloudDialogFragment ocDialog = OwnCloudDialogFragment.newInstance(pref);
             ocDialog.show(getFragmentManager(), "owncloud_dialog");
         }
     }
@@ -470,10 +466,10 @@ public class SettingsActivity extends AppCompatPreferenceActivity
     }
 
     /**
-     * Toggles the checkbox of the Oncloud Sync preference if a Owncloud account is linked
-     * @param pref Owncloud Sync preference
+     * Toggles the checkbox of the ownCloud Sync preference if an ownCloud account is linked
+     * @param pref ownCloud Sync preference
      */
-    public void toggleOwncloudPreference(Preference pref) {
+    public void toggleOwnCloudPreference(Preference pref) {
         SharedPreferences mPrefs = getSharedPreferences(getString(R.string.owncloud_pref), Context.MODE_PRIVATE);
         ((CheckBoxPreference)pref).setChecked(mPrefs.getBoolean(getString(R.string.owncloud_sync), false));
     }
@@ -563,7 +559,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity
     /**
      * Opens a dialog for a user to select a backup to restore and then restores the backup
      */
-    public void restoreBackup() {
+    private void restoreBackup() {
         Log.i("Settings", "Opening GnuCash XML backups for restore");
         File[] backupFiles = new File(Exporter.BACKUP_FOLDER_PATH).listFiles();
         if (backupFiles == null){
