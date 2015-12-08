@@ -931,6 +931,9 @@ public class GncXmlHandler extends DefaultHandler {
         mAccountsDbAdapter.beginTransaction();
         Log.d(getClass().getSimpleName(), "bulk insert starts");
         try {
+            // disable foreign key. The database structure should be ensured by the data inserted.
+            // it will make insertion much faster.
+            mAccountsDbAdapter.enableForeignKey(false);
             Log.d(getClass().getSimpleName(), "before clean up db");
             mAccountsDbAdapter.deleteAllRecords();
             Log.d(getClass().getSimpleName(), String.format("deb clean up done %d ns", System.nanoTime()-startTime));
@@ -958,6 +961,7 @@ public class GncXmlHandler extends DefaultHandler {
 
             mAccountsDbAdapter.setTransactionSuccessful();
         } finally {
+            mAccountsDbAdapter.enableForeignKey(true);
             mAccountsDbAdapter.endTransaction();
         }
 

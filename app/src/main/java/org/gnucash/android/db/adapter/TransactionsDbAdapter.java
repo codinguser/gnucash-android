@@ -61,9 +61,18 @@ public class TransactionsDbAdapter extends DatabaseAdapter<Transaction> {
      * @param db SQlite db instance
      */
     public TransactionsDbAdapter(SQLiteDatabase db, SplitsDbAdapter splitsDbAdapter) {
-        super(db, TransactionEntry.TABLE_NAME);
+        super(db, TransactionEntry.TABLE_NAME, new String[]{
+                TransactionEntry.COLUMN_DESCRIPTION,
+                TransactionEntry.COLUMN_NOTES,
+                TransactionEntry.COLUMN_TIMESTAMP,
+                TransactionEntry.COLUMN_EXPORTED,
+                TransactionEntry.COLUMN_CURRENCY,
+                TransactionEntry.COLUMN_COMMODITY_UID,
+                TransactionEntry.COLUMN_CREATED_AT,
+                TransactionEntry.COLUMN_SCHEDX_ACTION_UID,
+                TransactionEntry.COLUMN_TEMPLATE
+        });
         mSplitsDbAdapter = splitsDbAdapter;
-        LOG_TAG = "TransactionsDbAdapter";
     }
 
     /**
@@ -158,43 +167,29 @@ public class TransactionsDbAdapter extends DatabaseAdapter<Transaction> {
     }
 
     @Override
-    protected SQLiteStatement compileReplaceStatement(@NonNull final Transaction transaction) {
-        if (mReplaceStatement == null) {
-            mReplaceStatement = mDb.compileStatement("REPLACE INTO " + TransactionEntry.TABLE_NAME + " ( "
-                    + TransactionEntry.COLUMN_UID + " , "
-                    + TransactionEntry.COLUMN_DESCRIPTION + " , "
-                    + TransactionEntry.COLUMN_NOTES + " , "
-                    + TransactionEntry.COLUMN_TIMESTAMP + " , "
-                    + TransactionEntry.COLUMN_EXPORTED + " , "
-                    + TransactionEntry.COLUMN_CURRENCY + " , "
-                    + TransactionEntry.COLUMN_COMMODITY_UID + " , "
-                    + TransactionEntry.COLUMN_CREATED_AT + " , "
-                    + TransactionEntry.COLUMN_SCHEDX_ACTION_UID + " , "
-                    + TransactionEntry.COLUMN_TEMPLATE + " ) VALUES ( ? , ? , ? , ?, ? , ? , ? , ?, ? , ?)");
-        }
-
-        mReplaceStatement.clearBindings();
-        mReplaceStatement.bindString(1, transaction.getUID());
-        mReplaceStatement.bindString(2, transaction.getDescription());
-        mReplaceStatement.bindString(3, transaction.getNote());
-        mReplaceStatement.bindLong(4,   transaction.getTimeMillis());
-        mReplaceStatement.bindLong(5, transaction.isExported() ? 1 : 0);
-        mReplaceStatement.bindString(6, transaction.getCurrencyCode());
+    protected @NonNull SQLiteStatement setBindings(@NonNull SQLiteStatement stmt, @NonNull Transaction transaction) {
+        stmt.clearBindings();
+        stmt.bindString(1, transaction.getDescription());
+        stmt.bindString(2, transaction.getNote());
+        stmt.bindLong(3, transaction.getTimeMillis());
+        stmt.bindLong(4, transaction.isExported() ? 1 : 0);
+        stmt.bindString(5, transaction.getCurrencyCode());
 
         Commodity commodity = transaction.getCommodity();
         if (commodity == null)
             commodity = CommoditiesDbAdapter.getInstance().getCommodity(transaction.getCurrencyCode());
 
-        mReplaceStatement.bindString(7, commodity.getUID());
-        mReplaceStatement.bindString(8, transaction.getCreatedTimestamp().toString());
+        stmt.bindString(6, commodity.getUID());
+        stmt.bindString(7, transaction.getCreatedTimestamp().toString());
 
         if (transaction.getScheduledActionUID() == null)
-            mReplaceStatement.bindNull(9);
+            stmt.bindNull(8);
         else
-            mReplaceStatement.bindString(9,  transaction.getScheduledActionUID());
-        mReplaceStatement.bindLong(10, transaction.isTemplate() ? 1 : 0);
+            stmt.bindString(8, transaction.getScheduledActionUID());
+        stmt.bindLong(9, transaction.isTemplate() ? 1 : 0);
+        stmt.bindString(10, transaction.getUID());
 
-        return mReplaceStatement;
+        return stmt;
     }
 
     /**

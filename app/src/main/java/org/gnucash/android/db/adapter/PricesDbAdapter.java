@@ -22,7 +22,15 @@ public class PricesDbAdapter extends DatabaseAdapter<Price> {
      * @param db SQLiteDatabase object
      */
     public PricesDbAdapter(SQLiteDatabase db) {
-        super(db, PriceEntry.TABLE_NAME);
+        super(db, PriceEntry.TABLE_NAME, new String[]{
+                PriceEntry.COLUMN_COMMODITY_UID,
+                PriceEntry.COLUMN_CURRENCY_UID,
+                PriceEntry.COLUMN_DATE,
+                PriceEntry.COLUMN_SOURCE,
+                PriceEntry.COLUMN_TYPE,
+                PriceEntry.COLUMN_VALUE_NUM,
+                PriceEntry.COLUMN_VALUE_DENOM
+        });
     }
 
     public static PricesDbAdapter getInstance(){
@@ -30,34 +38,22 @@ public class PricesDbAdapter extends DatabaseAdapter<Price> {
     }
 
     @Override
-    protected SQLiteStatement compileReplaceStatement(@NonNull final Price price) {
-        if (mReplaceStatement == null) {
-            mReplaceStatement = mDb.compileStatement("REPLACE INTO " + PriceEntry.TABLE_NAME + " ( "
-                    + PriceEntry.COLUMN_UID + " , "
-                    + PriceEntry.COLUMN_COMMODITY_UID + " , "
-                    + PriceEntry.COLUMN_CURRENCY_UID + " , "
-                    + PriceEntry.COLUMN_DATE + " , "
-                    + PriceEntry.COLUMN_SOURCE + " , "
-                    + PriceEntry.COLUMN_TYPE + " , "
-                    + PriceEntry.COLUMN_VALUE_NUM + " , "
-                    + PriceEntry.COLUMN_VALUE_DENOM + " ) VALUES ( ? , ? , ? , ? , ? , ? , ? , ? ) ");
-        }
-
-        mReplaceStatement.clearBindings();
-        mReplaceStatement.bindString(1, price.getUID());
-        mReplaceStatement.bindString(2, price.getCommodityUID());
-        mReplaceStatement.bindString(3, price.getCurrencyUID());
-        mReplaceStatement.bindString(4, price.getDate().toString());
+    protected @NonNull SQLiteStatement setBindings(@NonNull SQLiteStatement stmt, @NonNull final Price price) {
+        stmt.clearBindings();
+        stmt.bindString(1, price.getCommodityUID());
+        stmt.bindString(2, price.getCurrencyUID());
+        stmt.bindString(3, price.getDate().toString());
         if (price.getSource() != null) {
-            mReplaceStatement.bindString(5, price.getSource());
+            stmt.bindString(4, price.getSource());
         }
         if (price.getType() != null) {
-            mReplaceStatement.bindString(6, price.getType());
+            stmt.bindString(5, price.getType());
         }
-        mReplaceStatement.bindLong(7,   price.getValueNum());
-        mReplaceStatement.bindLong(8,   price.getValueDenom());
+        stmt.bindLong(6, price.getValueNum());
+        stmt.bindLong(7, price.getValueDenom());
+        stmt.bindString(8, price.getUID());
 
-        return mReplaceStatement;
+        return stmt;
     }
 
     @Override

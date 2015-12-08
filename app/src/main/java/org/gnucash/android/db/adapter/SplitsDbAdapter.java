@@ -52,8 +52,19 @@ import static org.gnucash.android.db.DatabaseSchema.TransactionEntry;
 public class SplitsDbAdapter extends DatabaseAdapter<Split> {
 
     public SplitsDbAdapter(SQLiteDatabase db) {
-        super(db, SplitEntry.TABLE_NAME);
-        LOG_TAG = "SplitsDbAdapter";
+        super(db, SplitEntry.TABLE_NAME, new String[]{
+                SplitEntry.COLUMN_MEMO,
+                SplitEntry.COLUMN_TYPE,
+                SplitEntry.COLUMN_VALUE_NUM,
+                SplitEntry.COLUMN_VALUE_DENOM,
+                SplitEntry.COLUMN_QUANTITY_NUM,
+                SplitEntry.COLUMN_QUANTITY_DENOM,
+                SplitEntry.COLUMN_CREATED_AT,
+                SplitEntry.COLUMN_RECONCILE_STATE,
+                SplitEntry.COLUMN_RECONCILE_DATE,
+                SplitEntry.COLUMN_ACCOUNT_UID,
+                SplitEntry.COLUMN_TRANSACTION_UID
+        });
     }
 
     /**
@@ -84,42 +95,25 @@ public class SplitsDbAdapter extends DatabaseAdapter<Split> {
     }
 
     @Override
-    protected SQLiteStatement compileReplaceStatement(@NonNull final Split split) {
-        if (mReplaceStatement == null) {
-            mReplaceStatement = mDb.compileStatement("REPLACE INTO " + SplitEntry.TABLE_NAME + " ( "
-                    + SplitEntry.COLUMN_UID + " , "
-                    + SplitEntry.COLUMN_MEMO + " , "
-                    + SplitEntry.COLUMN_TYPE + " , "
-                    + SplitEntry.COLUMN_VALUE_NUM + " , "
-                    + SplitEntry.COLUMN_VALUE_DENOM + " , "
-                    + SplitEntry.COLUMN_QUANTITY_NUM + " , "
-                    + SplitEntry.COLUMN_QUANTITY_DENOM + " , "
-                    + SplitEntry.COLUMN_CREATED_AT + " , "
-                    + SplitEntry.COLUMN_RECONCILE_STATE + " , "
-                    + SplitEntry.COLUMN_RECONCILE_DATE + " , "
-                    + SplitEntry.COLUMN_ACCOUNT_UID + " , "
-                    + SplitEntry.COLUMN_TRANSACTION_UID + " ) VALUES ( ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? ) ");
-        }
-
-        mReplaceStatement.clearBindings();
-        mReplaceStatement.bindString(1, split.getUID());
+    protected @NonNull SQLiteStatement setBindings(@NonNull SQLiteStatement stmt, @NonNull final Split split) {
+        stmt.clearBindings();
         if (split.getMemo() != null) {
-            mReplaceStatement.bindString(2, split.getMemo());
+            stmt.bindString(1, split.getMemo());
         }
-        mReplaceStatement.bindString(3, split.getType().name());
-        mReplaceStatement.bindLong(4, split.getValue().getNumerator());
-        mReplaceStatement.bindLong(5,   split.getValue().getDenominator());
-        mReplaceStatement.bindLong(6, split.getQuantity().getNumerator());
-        mReplaceStatement.bindLong(7, split.getQuantity().getDenominator());
-        mReplaceStatement.bindString(8, split.getCreatedTimestamp().toString());
-        mReplaceStatement.bindString(9, String.valueOf(split.getReconcileState()));
-        mReplaceStatement.bindString(10, split.getReconcileDate().toString());
-        mReplaceStatement.bindString(11, split.getAccountUID());
-        mReplaceStatement.bindString(12, split.getTransactionUID());
+        stmt.bindString(2, split.getType().name());
+        stmt.bindLong(3, split.getValue().getNumerator());
+        stmt.bindLong(4, split.getValue().getDenominator());
+        stmt.bindLong(5, split.getQuantity().getNumerator());
+        stmt.bindLong(6, split.getQuantity().getDenominator());
+        stmt.bindString(7, split.getCreatedTimestamp().toString());
+        stmt.bindString(8, String.valueOf(split.getReconcileState()));
+        stmt.bindString(9, split.getReconcileDate().toString());
+        stmt.bindString(10, split.getAccountUID());
+        stmt.bindString(11, split.getTransactionUID());
+        stmt.bindString(12, split.getUID());
 
-        return mReplaceStatement;
+        return stmt;
     }
-
     /**
      * Builds a split instance from the data pointed to by the cursor provided
      * <p>This method will not move the cursor in any way. So the cursor should already by pointing to the correct entry</p>

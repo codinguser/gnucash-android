@@ -41,7 +41,13 @@ public class BudgetAmountsDbAdapter extends DatabaseAdapter<BudgetAmount> {
      * @param db        SQLiteDatabase object
      */
     public BudgetAmountsDbAdapter(SQLiteDatabase db) {
-        super(db, BudgetAmountEntry.TABLE_NAME);
+        super(db, BudgetAmountEntry.TABLE_NAME, new String[] {
+                BudgetAmountEntry.COLUMN_BUDGET_UID   ,
+                BudgetAmountEntry.COLUMN_ACCOUNT_UID  ,
+                BudgetAmountEntry.COLUMN_AMOUNT_NUM   ,
+                BudgetAmountEntry.COLUMN_AMOUNT_DENOM ,
+                BudgetAmountEntry.COLUMN_PERIOD_NUM
+        });
     }
 
     public static BudgetAmountsDbAdapter getInstance(){
@@ -65,26 +71,16 @@ public class BudgetAmountsDbAdapter extends DatabaseAdapter<BudgetAmount> {
     }
 
     @Override
-    protected SQLiteStatement compileReplaceStatement(@NonNull BudgetAmount budgetAmount) {
-        if (mReplaceStatement == null){
-            mReplaceStatement = mDb.compileStatement("REPLACE INTO " + BudgetAmountEntry.TABLE_NAME + " ( "
-                    + BudgetAmountEntry.COLUMN_UID            + " , "
-                    + BudgetAmountEntry.COLUMN_BUDGET_UID     + " , "
-                    + BudgetAmountEntry.COLUMN_ACCOUNT_UID    + " , "
-                    + BudgetAmountEntry.COLUMN_AMOUNT_NUM     + " , "
-                    + BudgetAmountEntry.COLUMN_AMOUNT_DENOM   + " , "
-                    + BudgetAmountEntry.COLUMN_PERIOD_NUM     + " ) VALUES ( ? , ? , ? , ? , ? , ? ) ");
-        }
+    protected @NonNull SQLiteStatement setBindings(@NonNull SQLiteStatement stmt, @NonNull final BudgetAmount budgetAmount) {
+        stmt.clearBindings();
+        stmt.bindString(1, budgetAmount.getBudgetUID());
+        stmt.bindString(2, budgetAmount.getAccountUID());
+        stmt.bindLong(3, budgetAmount.getAmount().getNumerator());
+        stmt.bindLong(4, budgetAmount.getAmount().getDenominator());
+        stmt.bindLong(6, budgetAmount.getPeriodNum());
+        stmt.bindString(7, budgetAmount.getUID());
 
-        mReplaceStatement.clearBindings();
-        mReplaceStatement.bindString(1, budgetAmount.getUID());
-        mReplaceStatement.bindString(2, budgetAmount.getBudgetUID());
-        mReplaceStatement.bindString(3, budgetAmount.getAccountUID());
-        mReplaceStatement.bindLong(4, budgetAmount.getAmount().getNumerator());
-        mReplaceStatement.bindLong(5, budgetAmount.getAmount().getDenominator());
-        mReplaceStatement.bindLong(6, budgetAmount.getPeriodNum());
-
-        return mReplaceStatement;
+        return stmt;
     }
 
     /**

@@ -39,7 +39,13 @@ public class RecurrenceDbAdapter extends DatabaseAdapter<Recurrence> {
      * @param db        SQLiteDatabase object
      */
     public RecurrenceDbAdapter(SQLiteDatabase db) {
-        super(db, RecurrenceEntry.TABLE_NAME);
+        super(db, RecurrenceEntry.TABLE_NAME, new String[]{
+                RecurrenceEntry.COLUMN_MULTIPLIER,
+                RecurrenceEntry.COLUMN_PERIOD_TYPE,
+                RecurrenceEntry.COLUMN_BYDAY,
+                RecurrenceEntry.COLUMN_PERIOD_START,
+                RecurrenceEntry.COLUMN_PERIOD_END
+        });
     }
 
     public static RecurrenceDbAdapter getInstance(){
@@ -69,29 +75,19 @@ public class RecurrenceDbAdapter extends DatabaseAdapter<Recurrence> {
     }
 
     @Override
-    protected SQLiteStatement compileReplaceStatement(@NonNull Recurrence recurrence) {
-        if (mReplaceStatement == null) {
-            mReplaceStatement = mDb.compileStatement("REPLACE INTO " + RecurrenceEntry.TABLE_NAME + " ( "
-                    + RecurrenceEntry.COLUMN_UID + " , "
-                    + RecurrenceEntry.COLUMN_MULTIPLIER + " , "
-                    + RecurrenceEntry.COLUMN_PERIOD_TYPE + " , "
-                    + RecurrenceEntry.COLUMN_BYDAY + " , "
-                    + RecurrenceEntry.COLUMN_PERIOD_START + " , "
-                    + RecurrenceEntry.COLUMN_PERIOD_END + " ) VALUES ( ? , ? , ? , ? , ? , ? ) ");
-        }
-
-        mReplaceStatement.clearBindings();
-        mReplaceStatement.bindString(1, recurrence.getUID());
-        mReplaceStatement.bindLong(2, recurrence.getPeriodType().getMultiplier());
-        mReplaceStatement.bindString(3, recurrence.getPeriodType().name());
+    protected @NonNull SQLiteStatement setBindings(@NonNull SQLiteStatement stmt, @NonNull final Recurrence recurrence) {
+        stmt.clearBindings();
+        stmt.bindLong(1, recurrence.getPeriodType().getMultiplier());
+        stmt.bindString(2, recurrence.getPeriodType().name());
         if (recurrence.getByDay() != null)
-            mReplaceStatement.bindString(4, recurrence.getByDay());
+            stmt.bindString(3, recurrence.getByDay());
         //recurrence should always have a start date
-        mReplaceStatement.bindString(5, recurrence.getPeriodStart().toString());
+        stmt.bindString(4, recurrence.getPeriodStart().toString());
 
         if (recurrence.getPeriodEnd() != null)
-            mReplaceStatement.bindString(6, recurrence.getPeriodEnd().toString());
+            stmt.bindString(5, recurrence.getPeriodEnd().toString());
+        stmt.bindString(6, recurrence.getUID());
 
-        return mReplaceStatement;
+        return stmt;
     }
 }

@@ -21,7 +21,15 @@ public class CommoditiesDbAdapter extends DatabaseAdapter<Commodity> {
      * @param db        SQLiteDatabase object
      */
     public CommoditiesDbAdapter(SQLiteDatabase db) {
-        super(db, CommodityEntry.TABLE_NAME);
+        super(db, CommodityEntry.TABLE_NAME, new String[]{
+                CommodityEntry.COLUMN_FULLNAME,
+                CommodityEntry.COLUMN_NAMESPACE,
+                CommodityEntry.COLUMN_MNEMONIC,
+                CommodityEntry.COLUMN_LOCAL_SYMBOL,
+                CommodityEntry.COLUMN_CUSIP,
+                CommodityEntry.COLUMN_SMALLEST_FRACTION,
+                CommodityEntry.COLUMN_QUOTE_FLAG
+        });
         /**
          * initialize commonly used commodities
          */
@@ -39,30 +47,18 @@ public class CommoditiesDbAdapter extends DatabaseAdapter<Commodity> {
     }
 
     @Override
-    protected SQLiteStatement compileReplaceStatement(@NonNull final Commodity commodity) {
-        if (mReplaceStatement == null) {
-            mReplaceStatement = mDb.compileStatement("REPLACE INTO " + CommodityEntry.TABLE_NAME + " ( "
-                    + CommodityEntry.COLUMN_UID             + " , "
-                    + CommodityEntry.COLUMN_FULLNAME        + " , "
-                    + CommodityEntry.COLUMN_NAMESPACE       + " , "
-                    + CommodityEntry.COLUMN_MNEMONIC        + " , "
-                    + CommodityEntry.COLUMN_LOCAL_SYMBOL    + " , "
-                    + CommodityEntry.COLUMN_CUSIP           + " , "
-                    + CommodityEntry.COLUMN_SMALLEST_FRACTION + " , "
-                    + CommodityEntry.COLUMN_QUOTE_FLAG      + " ) VALUES ( ? , ? , ? , ? , ? , ? , ? , ? ) ");
-        }
+    protected @NonNull SQLiteStatement setBindings(@NonNull SQLiteStatement stmt, @NonNull final Commodity commodity) {
+        stmt.clearBindings();
+        stmt.bindString(1, commodity.getFullname());
+        stmt.bindString(2, commodity.getNamespace().name());
+        stmt.bindString(3, commodity.getMnemonic());
+        stmt.bindString(4, commodity.getLocalSymbol());
+        stmt.bindString(5, commodity.getCusip());
+        stmt.bindLong(6, commodity.getSmallestFraction());
+        stmt.bindLong(7, commodity.getQuoteFlag());
+        stmt.bindString(8, commodity.getUID());
 
-        mReplaceStatement.clearBindings();
-        mReplaceStatement.bindString(1, commodity.getUID());
-        mReplaceStatement.bindString(2, commodity.getFullname());
-        mReplaceStatement.bindString(3, commodity.getNamespace().name());
-        mReplaceStatement.bindString(4, commodity.getMnemonic());
-        mReplaceStatement.bindString(5, commodity.getLocalSymbol());
-        mReplaceStatement.bindString(6, commodity.getCusip());
-        mReplaceStatement.bindLong(7, commodity.getSmallestFraction());
-        mReplaceStatement.bindLong(8, commodity.getQuoteFlag());
-
-        return mReplaceStatement;
+        return stmt;
     }
 
     @Override

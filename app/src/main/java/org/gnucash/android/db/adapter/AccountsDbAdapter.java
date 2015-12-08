@@ -81,9 +81,22 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
      * @param db SQliteDatabase instance
      */
     public AccountsDbAdapter(SQLiteDatabase db, TransactionsDbAdapter transactionsDbAdapter) {
-        super(db, AccountEntry.TABLE_NAME);
+        super(db, AccountEntry.TABLE_NAME, new String[]{
+                AccountEntry.COLUMN_NAME         ,
+                AccountEntry.COLUMN_DESCRIPTION  ,
+                AccountEntry.COLUMN_TYPE         ,
+                AccountEntry.COLUMN_CURRENCY     ,
+                AccountEntry.COLUMN_COLOR_CODE   ,
+                AccountEntry.COLUMN_FAVORITE     ,
+                AccountEntry.COLUMN_FULL_NAME    ,
+                AccountEntry.COLUMN_PLACEHOLDER  ,
+                AccountEntry.COLUMN_CREATED_AT   ,
+                AccountEntry.COLUMN_HIDDEN       ,
+                AccountEntry.COLUMN_COMMODITY_UID,
+                AccountEntry.COLUMN_PARENT_ACCOUNT_UID,
+                AccountEntry.COLUMN_DEFAULT_TRANSFER_ACCOUNT_UID
+        });
         mTransactionsAdapter = transactionsDbAdapter;
-        LOG_TAG = "AccountsDbAdapter";
     }
 
     /**
@@ -151,59 +164,40 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
     }
 
     @Override
-    protected SQLiteStatement compileReplaceStatement(@NonNull final Account account) {
-        if (mReplaceStatement == null){
-            mReplaceStatement = mDb.compileStatement("REPLACE INTO " + AccountEntry.TABLE_NAME + " ( "
-                    + AccountEntry.COLUMN_UID           + " , "
-                    + AccountEntry.COLUMN_NAME          + " , "
-                    + AccountEntry.COLUMN_DESCRIPTION   + " , "
-                    + AccountEntry.COLUMN_TYPE          + " , "
-                    + AccountEntry.COLUMN_CURRENCY      + " , "
-                    + AccountEntry.COLUMN_COLOR_CODE    + " , "
-                    + AccountEntry.COLUMN_FAVORITE      + " , "
-                    + AccountEntry.COLUMN_FULL_NAME     + " , "
-                    + AccountEntry.COLUMN_PLACEHOLDER   + " , "
-                    + AccountEntry.COLUMN_CREATED_AT    + " , "
-                    + AccountEntry.COLUMN_HIDDEN        + " , "
-                    + AccountEntry.COLUMN_COMMODITY_UID + " , "
-                    + AccountEntry.COLUMN_PARENT_ACCOUNT_UID + " , "
-                    + AccountEntry.COLUMN_DEFAULT_TRANSFER_ACCOUNT_UID + " ) VALUES ( ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ?, ?)");
-            //commodity_uid is not forgotten. It will be inserted by a database trigger
-        }
-
-        mReplaceStatement.clearBindings();
-        mReplaceStatement.bindString(1, account.getUID());
-        mReplaceStatement.bindString(2, account.getName());
+    protected @NonNull SQLiteStatement setBindings(@NonNull SQLiteStatement stmt, @NonNull final Account account) {
+        stmt.clearBindings();
+        stmt.bindString(1, account.getName());
         if (account.getDescription() != null)
-            mReplaceStatement.bindString(3, account.getDescription());
-        mReplaceStatement.bindString(4, account.getAccountType().name());
-        mReplaceStatement.bindString(5, account.getCurrency().getCurrencyCode());
+            stmt.bindString(2, account.getDescription());
+        stmt.bindString(3, account.getAccountType().name());
+        stmt.bindString(4, account.getCurrency().getCurrencyCode());
         if (account.getColorHexCode() != null) {
-            mReplaceStatement.bindString(6, account.getColorHexCode());
+            stmt.bindString(5, account.getColorHexCode());
         }
-        mReplaceStatement.bindLong(7, account.isFavorite() ? 1 : 0);
-        mReplaceStatement.bindString(8, account.getFullName());
-        mReplaceStatement.bindLong(9, account.isPlaceholderAccount() ? 1 : 0);
-        mReplaceStatement.bindString(10, account.getCreatedTimestamp().toString());
-        mReplaceStatement.bindLong(11, account.isHidden() ? 1 : 0);
+        stmt.bindLong(6, account.isFavorite() ? 1 : 0);
+        stmt.bindString(7, account.getFullName());
+        stmt.bindLong(8, account.isPlaceholderAccount() ? 1 : 0);
+        stmt.bindString(9, account.getCreatedTimestamp().toString());
+        stmt.bindLong(10, account.isHidden() ? 1 : 0);
         Commodity commodity = account.getCommodity();
         if (commodity == null)
             commodity = CommoditiesDbAdapter.getInstance().getCommodity(account.getCurrency().getCurrencyCode());
 
-        mReplaceStatement.bindString(12, commodity.getUID());
+        stmt.bindString(11, commodity.getUID());
 
         String parentAccountUID = account.getParentUID();
         if (parentAccountUID == null && account.getAccountType() != AccountType.ROOT) {
             parentAccountUID = getOrCreateGnuCashRootAccountUID();
         }
         if (parentAccountUID != null) {
-            mReplaceStatement.bindString(13, parentAccountUID);
+            stmt.bindString(12, parentAccountUID);
         }
         if (account.getDefaultTransferAccountUID() != null) {
-            mReplaceStatement.bindString(14, account.getDefaultTransferAccountUID());
+            stmt.bindString(13, account.getDefaultTransferAccountUID());
         }
+        stmt.bindString(14, account.getUID());
 
-        return mReplaceStatement;
+        return stmt;
     }
 
     /**

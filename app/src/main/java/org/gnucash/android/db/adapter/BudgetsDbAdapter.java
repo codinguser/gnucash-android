@@ -48,7 +48,12 @@ public class BudgetsDbAdapter extends DatabaseAdapter<Budget>{
      * @param db        SQLiteDatabase object
      */
     public BudgetsDbAdapter(SQLiteDatabase db) {
-        super(db, BudgetEntry.TABLE_NAME);
+        super(db, BudgetEntry.TABLE_NAME, new String[]{
+                BudgetEntry.COLUMN_NAME,
+                BudgetEntry.COLUMN_DESCRIPTION,
+                BudgetEntry.COLUMN_RECURRENCE_UID,
+                BudgetEntry.COLUMN_NUM_PERIODS
+        });
         mRecurrenceDbAdapter = new RecurrenceDbAdapter(db);
         mBudgetAmountsDbAdapter = new BudgetAmountsDbAdapter(db);
     }
@@ -118,25 +123,16 @@ public class BudgetsDbAdapter extends DatabaseAdapter<Budget>{
     }
 
     @Override
-    protected SQLiteStatement compileReplaceStatement(@NonNull Budget budget) {
-        if (mReplaceStatement == null){
-            mReplaceStatement = mDb.compileStatement("REPLACE INTO " + BudgetEntry.TABLE_NAME + " ( "
-                    + BudgetEntry.COLUMN_UID            + " , "
-                    + BudgetEntry.COLUMN_NAME           + " , "
-                    + BudgetEntry.COLUMN_DESCRIPTION    + " , "
-                    + BudgetEntry.COLUMN_RECURRENCE_UID + " , "
-                    + BudgetEntry.COLUMN_NUM_PERIODS    + " ) VALUES (? , ? , ? , ? , ? ) ");
-        }
-
-        mReplaceStatement.clearBindings();
-        mReplaceStatement.bindString(1, budget.getUID());
-        mReplaceStatement.bindString(2, budget.getName());
+    protected @NonNull SQLiteStatement setBindings(@NonNull SQLiteStatement stmt, @NonNull final Budge budge) {
+        stmt.clearBindings();
+        stmt.bindString(1, budget.getName());
         if (budget.getDescription() != null)
-            mReplaceStatement.bindString(3, budget.getDescription());
-        mReplaceStatement.bindString(4, budget.getRecurrence().getUID());
-        mReplaceStatement.bindLong(5, budget.getNumberOfPeriods());
+            stmt.bindString(2, budget.getDescription());
+        stmt.bindString(3, budget.getRecurrence().getUID());
+        stmt.bindLong(4, budget.getNumberOfPeriods());
+        stmt.bindString(5, budget.getUID());
 
-        return mReplaceStatement;
+        return stmt;
     }
 
     /**
