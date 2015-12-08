@@ -34,34 +34,34 @@ import org.gnucash.android.R;
 public class OwnCloudDialogFragment extends DialogFragment {
 
     /**
-     * Dialog positive button. Ok to save and validade the data
+     * Dialog positive button. Ok to save and validate the data
      */
-    Button mOkButton;
+    private Button mOkButton;
 
     /**
      * Cancel button
      */
-    Button mCancelButton;
+    private Button mCancelButton;
 
     /**
      * ownCloud vars
      */
-    String mOC_server;
-    String mOC_username;
-    String mOC_password;
-    String mOC_dir;
+    private String mOC_server;
+    private String mOC_username;
+    private String mOC_password;
+    private String mOC_dir;
 
-    EditText mServer;
-    EditText mUsername;
-    EditText mPassword;
-    EditText mDir;
+    private EditText mServer;
+    private EditText mUsername;
+    private EditText mPassword;
+    private EditText mDir;
 
-    TextView mServerError;
-    TextView mUsernameError;
-    TextView mDirError;
+    private TextView mServerError;
+    private TextView mUsernameError;
+    private TextView mDirError;
 
-    SharedPreferences mPrefs;
-    Context mContext;
+    private SharedPreferences mPrefs;
+    private Context mContext;
 
     private static CheckBoxPreference ocCheckBox;
 
@@ -155,7 +155,7 @@ public class OwnCloudDialogFragment extends DialogFragment {
         dismiss();
     }
 
-    private void checkdata() {
+    private void checkData() {
         mServerError.setVisibility(View.GONE);
         mUsernameError.setVisibility(View.GONE);
         mDirError.setVisibility(View.GONE);
@@ -220,7 +220,7 @@ public class OwnCloudDialogFragment extends DialogFragment {
     /**
      * Binds click listeners for the dialog buttons
      */
-    protected void setListeners(){
+    private void setListeners(){
 
         mCancelButton.setOnClickListener(new View.OnClickListener() {
 
@@ -243,7 +243,7 @@ public class OwnCloudDialogFragment extends DialogFragment {
                         )
                     save();
                 else
-                    checkdata();
+                    checkData();
             }
         });
     }

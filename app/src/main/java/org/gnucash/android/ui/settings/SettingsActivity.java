@@ -86,13 +86,13 @@ import java.util.TimerTask;
 public class SettingsActivity extends AppCompatPreferenceActivity
         implements OnPreferenceChangeListener, Preference.OnPreferenceClickListener{
 
-    public static final String LOG_TAG = "SettingsActivity";
+    private static final String LOG_TAG = "SettingsActivity";
 
     /**
      * Allowed delay between two consecutive taps of a setting for it to be considered a double tap
      * Used on Android v2.3.3 or lower devices where dialogs cannot be instantiated easily in settings
      */
-    public static final int DOUBLE_TAP_DELAY = 2000;
+    private static final int DOUBLE_TAP_DELAY = 2000;
 
     /**
      * Testing app key for DropBox API
@@ -107,7 +107,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity
     /**
      * Collects references to the UI elements and binds click listeners
      */
-    public static final int REQUEST_LINK_TO_DBX = 0x11;
+    private static final int REQUEST_LINK_TO_DBX = 0x11;
     public static final int REQUEST_RESOLVE_CONNECTION = 0x12;
 
     /**
@@ -388,7 +388,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity
                 Toast.makeText(this, R.string.toast_tap_again_to_confirm_delete, Toast.LENGTH_SHORT).show();
             } else {
                 GncXmlExporter.createBackup(); //create backup before deleting everything
-                List<Transaction> openingBalances = new ArrayList<Transaction>();
+                List<Transaction> openingBalances = new ArrayList<>();
                 boolean preserveOpeningBalances = GnuCashApplication.shouldSaveOpeningBalances(false);
                 if (preserveOpeningBalances) {
                     AccountsDbAdapter accountsDbAdapter = AccountsDbAdapter.getInstance();
@@ -559,7 +559,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity
     /**
      * Opens a dialog for a user to select a backup to restore and then restores the backup
      */
-    public void restoreBackup() {
+    private void restoreBackup() {
         Log.i("Settings", "Opening GnuCash XML backups for restore");
         File[] backupFiles = new File(Exporter.BACKUP_FOLDER_PATH).listFiles();
         if (backupFiles == null){

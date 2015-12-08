@@ -132,14 +132,14 @@ public class ExportFormFragment extends Fragment implements
 	/**
 	 * Event recurrence options
 	 */
-	EventRecurrence mEventRecurrence = new EventRecurrence();
+	private EventRecurrence mEventRecurrence = new EventRecurrence();
 
 	/**
 	 * Recurrence rule
 	 */
-	String mRecurrenceRule;
+	private String mRecurrenceRule;
 
-	Calendar mExportStartCalendar = Calendar.getInstance();
+	private Calendar mExportStartCalendar = Calendar.getInstance();
 
 	/**
 	 * Tag for logging
@@ -154,7 +154,7 @@ public class ExportFormFragment extends Fragment implements
 	private ExportParams.ExportTarget mExportTarget = ExportParams.ExportTarget.SD_CARD;
 
 
-	public void onRadioButtonClicked(View view){
+	private void onRadioButtonClicked(View view){
         switch (view.getId()){
             case R.id.radio_ofx_format:
                 mExportFormat = ExportFormat.OFX;
