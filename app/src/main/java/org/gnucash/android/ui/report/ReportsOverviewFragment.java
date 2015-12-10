@@ -41,7 +41,7 @@ import org.gnucash.android.db.adapter.AccountsDbAdapter;
 import org.gnucash.android.model.Account;
 import org.gnucash.android.model.AccountType;
 import org.gnucash.android.model.Money;
-import org.gnucash.android.ui.report.barchart.CashFlowBarChartFragment;
+import org.gnucash.android.ui.report.barchart.StackedBarChartFragment;
 import org.gnucash.android.ui.report.linechart.CashFlowLineChartFragment;
 import org.gnucash.android.ui.report.piechart.PieChartFragment;
 import org.gnucash.android.ui.report.sheet.BalanceSheetFragment;
@@ -242,7 +242,7 @@ public class ReportsOverviewFragment extends BaseReportFragment {
                 fragment = new PieChartFragment();
                 break;
             case R.id.btn_bar_chart:
-                fragment = new CashFlowBarChartFragment();
+                fragment = new StackedBarChartFragment();
                 break;
             case R.id.btn_line_chart:
                 fragment = new CashFlowLineChartFragment();

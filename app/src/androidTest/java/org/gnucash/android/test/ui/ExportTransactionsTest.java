@@ -36,6 +36,7 @@ import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.DatabaseHelper;
 import org.gnucash.android.db.adapter.AccountsDbAdapter;
+import org.gnucash.android.db.adapter.CommoditiesDbAdapter;
 import org.gnucash.android.db.adapter.RecurrenceDbAdapter;
 import org.gnucash.android.db.adapter.ScheduledActionDbAdapter;
 import org.gnucash.android.db.adapter.SplitsDbAdapter;
@@ -113,11 +114,11 @@ public class ExportTransactionsTest extends
         mAccountsDbAdapter = new AccountsDbAdapter(mDb, mTransactionsDbAdapter);
 		mAccountsDbAdapter.deleteAllRecords();
 
-		Account account = new Account("Exportable");
+		String currencyCode = GnuCashApplication.getDefaultCurrencyCode();
+		Account account = new Account("Exportable", new CommoditiesDbAdapter(mDb).getCommodity(currencyCode));
 		Transaction transaction = new Transaction("Pizza");
 		transaction.setNote("What up?");
 		transaction.setTime(System.currentTimeMillis());
-		String currencyCode = GnuCashApplication.getDefaultCurrencyCode();
         Split split = new Split(new Money("8.99", currencyCode), account.getUID());
 		split.setMemo("Hawaii is the best!");
 		transaction.addSplit(split);

@@ -74,7 +74,7 @@ public class BooksDbAdapter extends DatabaseAdapter<Book> {
             + BookEntry.COLUMN_ROOT_GUID        + " , "
             + BookEntry.COLUMN_TEMPLATE_GUID    + " , "
             + BookEntry.COLUMN_SOURCE_URI       + " , "
-            + BookEntry.COLUMN_ACTIVE           + " ) VALUES (? , ? , ? , ? , ? , ? ");
+            + BookEntry.COLUMN_ACTIVE           + " ) VALUES (? , ? , ? , ? , ? , ? )");
         }
         mReplaceStatement.clearBindings();
         mReplaceStatement.bindString(1, book.getUID());
@@ -89,11 +89,15 @@ public class BooksDbAdapter extends DatabaseAdapter<Book> {
     }
 
     /**
-     * Sets the book with unique identifier {@code uid} as active
+     * Sets the book with unique identifier {@code uid} as active and all others as inactive
      * @param bookUID Unique identifier of the book
      */
     public void setActive(String bookUID){
         ContentValues contentValues = new ContentValues();
+        contentValues.put(BookEntry.COLUMN_ACTIVE, 0);
+        mDb.update(mTableName, contentValues, null, null); //disable all
+
+        contentValues.clear();
         contentValues.put(BookEntry.COLUMN_ACTIVE, 1);
         mDb.update(mTableName, contentValues, BookEntry.COLUMN_UID + " = ?", new String[]{bookUID});
     }

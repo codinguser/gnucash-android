@@ -28,6 +28,7 @@ import com.crashlytics.android.Crashlytics;
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.DatabaseSchema.BookEntry;
 import org.gnucash.android.db.adapter.AccountsDbAdapter;
+import org.gnucash.android.db.adapter.BooksDbAdapter;
 import org.gnucash.android.db.adapter.SplitsDbAdapter;
 import org.gnucash.android.db.adapter.TransactionsDbAdapter;
 import org.gnucash.android.model.Book;
@@ -51,7 +52,7 @@ public class BookDbHelper extends SQLiteOpenHelper {
             + BookEntry._ID 		         + " integer primary key autoincrement, "
             + BookEntry.COLUMN_UID 		     + " varchar(255) not null UNIQUE, "
             + BookEntry.COLUMN_DISPLAY_NAME  + " varchar(255) not null, "
-            + BookEntry.COLUMN_ROOT_GUID     + " varchar(255) not null UNIQUE, "
+            + BookEntry.COLUMN_ROOT_GUID     + " varchar(255) not null, "
             + BookEntry.COLUMN_TEMPLATE_GUID + " varchar(255), "
             + BookEntry.COLUMN_ACTIVE        + " tinyint default 0, "
             + BookEntry.COLUMN_SOURCE_URI    + " varchar(255), "
@@ -77,7 +78,6 @@ public class BookDbHelper extends SQLiteOpenHelper {
             return;
         }
 
-        //todo move this to the DatabaseHelper class
         String sql = "SELECT COUNT(*) FROM " + BookEntry.TABLE_NAME;
         SQLiteStatement statement = db.compileStatement(sql);
         long count = statement.simpleQueryForLong();
@@ -95,7 +95,7 @@ public class BookDbHelper extends SQLiteOpenHelper {
             contentValues.put(BookEntry.COLUMN_UID, book.getUID());
             contentValues.put(BookEntry.COLUMN_ROOT_GUID, rootAccountUID);
             contentValues.put(BookEntry.COLUMN_TEMPLATE_GUID, Book.generateUID());
-            contentValues.put(BookEntry.COLUMN_DISPLAY_NAME, "Book1");
+            contentValues.put(BookEntry.COLUMN_DISPLAY_NAME, new BooksDbAdapter(db).generateDefaultBookName());
             contentValues.put(BookEntry.COLUMN_ACTIVE, 1);
 
             db.insert(BookEntry.TABLE_NAME, null, contentValues);

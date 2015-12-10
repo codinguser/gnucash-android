@@ -51,6 +51,7 @@ import org.gnucash.android.db.adapter.TransactionsDbAdapter;
 import org.gnucash.android.model.Commodity;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.service.SchedulerService;
+import org.gnucash.android.ui.account.AccountsActivity;
 
 import java.util.Currency;
 import java.util.Locale;
@@ -72,7 +73,7 @@ public class GnuCashApplication extends Application{
     /**
      * Init time of passcode session
      */
-    public static long PASSCODE_SESSION_INIT_TIME = 0l;
+    public static long PASSCODE_SESSION_INIT_TIME = 0L;
 
     private static Context context;
 
@@ -209,6 +210,7 @@ public class GnuCashApplication extends Application{
     public void loadBook(String bookUID){
         mBooksDbAdapter.setActive(bookUID);
         initDatabaseAdapters();
+        AccountsActivity.start(getAppContext());
     }
 
     /**

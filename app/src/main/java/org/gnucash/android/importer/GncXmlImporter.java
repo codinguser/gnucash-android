@@ -16,7 +16,6 @@
  */
 package org.gnucash.android.importer;
 
-import android.database.sqlite.SQLiteDatabase;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
@@ -46,31 +45,9 @@ import javax.xml.parsers.SAXParserFactory;
 public class GncXmlImporter {
 
     /**
-     * Parses XML into an already open database.
-     * <p>This method is used mainly by the {@link org.gnucash.android.db.DatabaseHelper} for database migrations.<br>
-     *     You should probably use {@link #parse(java.io.InputStream)} instead</p>
-     * @param db SQLite Database
-     * @param gncXmlInputStream Input stream of GnuCash XML
-     */
-    public static void parse(SQLiteDatabase db, InputStream gncXmlInputStream) throws Exception {
-        SAXParserFactory spf = SAXParserFactory.newInstance();
-        SAXParser sp = spf.newSAXParser();
-        XMLReader xr = sp.getXMLReader();
-
-        BufferedInputStream bos = new BufferedInputStream(gncXmlInputStream);
-
-        /** Create handler to handle XML Tags ( extends DefaultHandler ) */
-
-        GncXmlHandler handler = new GncXmlHandler(db);
-
-        xr.setContentHandler(handler);
-        xr.parse(new InputSource(bos));
-    }
-
-    /**
      * Parse GnuCash XML input and populates the database
      * @param gncXmlInputStream InputStream source of the GnuCash XML file
-     * @return GUID of the root account from the imported book
+     * @return GUID of the book into which the XML was imported
      */
     public static String parse(InputStream gncXmlInputStream) throws ParserConfigurationException, SAXException, IOException {
         SAXParserFactory spf = SAXParserFactory.newInstance();
@@ -94,6 +71,7 @@ public class GncXmlImporter {
         long startTime = System.nanoTime();
         xr.parse(new InputSource(bos));
         long endTime = System.nanoTime();
+        Log.d(GncXmlImporter.class.getSimpleName(), String.format("%d ns spent on importing the file", endTime-startTime));
 
         Timestamp timeStamp = TransactionsDbAdapter.getInstance().getTimestampOfLastModification();
         PreferenceManager.getDefaultSharedPreferences(GnuCashApplication.getAppContext())
@@ -101,8 +79,6 @@ public class GncXmlImporter {
                 .putString(Exporter.PREF_LAST_EXPORT_TIME, timeStamp.toString())
                 .apply();
 
-        Log.d(GncXmlImporter.class.getSimpleName(), String.format("%d ns spent on importing the file", endTime-startTime));
-
-        return handler.getRootAccountUID();
+        return handler.getBookUID();
     }
 }

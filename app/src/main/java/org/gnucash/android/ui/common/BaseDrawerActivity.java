@@ -78,7 +78,7 @@ public abstract class BaseDrawerActivity extends PasscodeLockActivity implements
     @Bind(R.id.nav_view) NavigationView mNavigationView;
     @Bind(R.id.toolbar) Toolbar mToolbar;
     @Bind(R.id.toolbar_progress) ProgressBar mToolbarProgress;
-    TextView mBookNameTextView;
+    protected TextView mBookNameTextView;
 
     protected ActionBarDrawerToggle mDrawerToggle;
 
@@ -122,8 +122,14 @@ public abstract class BaseDrawerActivity extends PasscodeLockActivity implements
                 onClickBook(v);
             }
         });
-        mBookNameTextView.setText(BooksDbAdapter.getInstance().getActiveBookDisplayName());
+        updateActiveBookName();
         setUpNavigationDrawer();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        updateActiveBookName();
     }
 
     /**
@@ -203,6 +209,13 @@ public abstract class BaseDrawerActivity extends PasscodeLockActivity implements
     }
 
     /**
+     * Update the display name of the currently active book
+     */
+    protected void updateActiveBookName(){
+        mBookNameTextView.setText(BooksDbAdapter.getInstance().getActiveBookDisplayName());
+    }
+
+    /**
      * Handler for the navigation drawer items
      * */
     protected void onDrawerMenuItemClicked(int itemId) {
@@ -279,7 +292,8 @@ public abstract class BaseDrawerActivity extends PasscodeLockActivity implements
         long id = item.getItemId();
         String bookUID = BooksDbAdapter.getInstance().getUID(id);
         ((GnuCashApplication)getApplication()).loadBook(bookUID);
-        AccountsActivity.start(this);
+        finish();
+        AccountsActivity.start(GnuCashApplication.getAppContext());
         return true;
     }
 
@@ -294,11 +308,10 @@ public abstract class BaseDrawerActivity extends PasscodeLockActivity implements
         Menu menu = popup.getMenu();
         int maxRecent = 0;
         Cursor cursor = BooksDbAdapter.getInstance().fetchAllRecords(null, null,
-                DatabaseSchema.BookEntry.COLUMN_MODIFIED_AT + " ASC");
+                DatabaseSchema.BookEntry.COLUMN_MODIFIED_AT + " DESC");
         while (cursor.moveToNext() && maxRecent++ < 10) {
             long id = cursor.getLong(cursor.getColumnIndexOrThrow(DatabaseSchema.BookEntry._ID));
             String name = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.BookEntry.COLUMN_DISPLAY_NAME));
-
             menu.add(0, (int)id, maxRecent, name);
         }
 

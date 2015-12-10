@@ -350,6 +350,8 @@ public class AccountsActivity extends BaseDrawerActivity implements OnAccountCli
         setIntent(intent);
         setCurrentTab();
 
+        getCurrentAccountListFragment().refresh();
+
         handleOpenFileIntent(intent);
     }
 
@@ -500,7 +502,12 @@ public class AccountsActivity extends BaseDrawerActivity implements OnAccountCli
      * @see #importXmlFileFromIntent(Activity, Intent, TaskDelegate)
      */
     public static void startXmlFileChooser(Activity activity) {
-        Intent pickIntent = new Intent(Intent.ACTION_GET_CONTENT);
+        Intent pickIntent;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT){
+            pickIntent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        } else
+            pickIntent = new Intent(Intent.ACTION_GET_CONTENT);
+
 //        ArrayList<String> mimeTypes = new ArrayList<>();
 //        mimeTypes.add("application/*");
 //        mimeTypes.add("file/*");
@@ -509,7 +516,7 @@ public class AccountsActivity extends BaseDrawerActivity implements OnAccountCli
 //        pickIntent.putStringArrayListExtra(Intent.EXTRA_MIME_TYPES, mimeTypes);
         pickIntent.addCategory(Intent.CATEGORY_OPENABLE);
         pickIntent.setType("*/*");
-        Intent chooser = Intent.createChooser(pickIntent, "Select GnuCash account file");
+        Intent chooser = Intent.createChooser(pickIntent, "Select GnuCash account file"); //todo internationalize string
 
         try {
             activity.startActivityForResult(chooser, REQUEST_PICK_ACCOUNTS_FILE);

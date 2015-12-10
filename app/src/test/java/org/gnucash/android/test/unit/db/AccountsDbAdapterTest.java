@@ -1,10 +1,14 @@
 package org.gnucash.android.test.unit.db;
 
+import android.database.sqlite.SQLiteDatabase;
+
 import org.assertj.core.data.Index;
 import org.gnucash.android.BuildConfig;
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
+import org.gnucash.android.db.DatabaseHelper;
 import org.gnucash.android.db.adapter.AccountsDbAdapter;
+import org.gnucash.android.db.adapter.BooksDbAdapter;
 import org.gnucash.android.db.adapter.BudgetAmountsDbAdapter;
 import org.gnucash.android.db.adapter.BudgetsDbAdapter;
 import org.gnucash.android.db.adapter.CommoditiesDbAdapter;
@@ -59,11 +63,28 @@ public class AccountsDbAdapterTest{
 
 	@Before
 	public void setUp() throws Exception {
-
-        mSplitsDbAdapter = SplitsDbAdapter.getInstance();
-        mTransactionsDbAdapter = TransactionsDbAdapter.getInstance();
-        mAccountsDbAdapter = AccountsDbAdapter.getInstance();
+        initAdapters(null);
 	}
+
+    /**
+     * Initialize database adapters for a specific book.
+     * This method should be called everytime a new book is loaded into the database
+     * @param bookUID GUID of the GnuCash book
+     */
+    private void initAdapters(String bookUID){
+        if (bookUID == null){
+            mSplitsDbAdapter = SplitsDbAdapter.getInstance();
+            mTransactionsDbAdapter = TransactionsDbAdapter.getInstance();
+            mAccountsDbAdapter = AccountsDbAdapter.getInstance();
+        } else {
+            DatabaseHelper databaseHelper = new DatabaseHelper(GnuCashApplication.getAppContext(), bookUID);
+            SQLiteDatabase db = databaseHelper.getWritableDatabase();
+            mSplitsDbAdapter = new SplitsDbAdapter(db);
+            mTransactionsDbAdapter = new TransactionsDbAdapter(db, mSplitsDbAdapter);
+            mAccountsDbAdapter = new AccountsDbAdapter(db, mTransactionsDbAdapter);
+            BooksDbAdapter.getInstance().setActive(bookUID);
+        }
+    }
 
     /**
      * Test that the list of accounts is always returned sorted alphabetically
@@ -383,12 +404,12 @@ public class AccountsDbAdapterTest{
 
     @Test
     public void shouldCreateImbalanceAccountOnDemand(){
-        assertThat(mAccountsDbAdapter.getRecordsCount()).isEqualTo(0);
+        assertThat(mAccountsDbAdapter.getRecordsCount()).isEqualTo(1L);
 
         Currency usd = Currency.getInstance("USD");
         String imbalanceUID = mAccountsDbAdapter.getImbalanceAccountUID(usd);
         assertThat(imbalanceUID).isNull();
-        assertThat(mAccountsDbAdapter.getRecordsCount()).isEqualTo(0);
+        assertThat(mAccountsDbAdapter.getRecordsCount()).isEqualTo(1L);
 
         imbalanceUID = mAccountsDbAdapter.getOrCreateImbalanceAccountUID(usd);
         assertThat(imbalanceUID).isNotNull().isNotEmpty();
@@ -428,13 +449,13 @@ public class AccountsDbAdapterTest{
 
     @Test
     public void testGetCurrenciesInUse(){
-        int expectedSize = 0;
+        int expectedSize = 1; //there is already a root account in the database
         List<Currency> currencies = mAccountsDbAdapter.getCurrenciesInUse();
         assertThat(currencies).hasSize(expectedSize);
 
         Account account = new Account("Dummy", Commodity.USD);
-        mAccountsDbAdapter.addRecord(account);
-        assertThat(mAccountsDbAdapter.getCurrenciesInUse()).hasSize(++expectedSize);
+        mAccountsDbAdapter.addRecord(account); //default currency is also USD
+        assertThat(mAccountsDbAdapter.getCurrenciesInUse()).hasSize(expectedSize);
 
         account = new Account("Dummy", Commodity.EUR);
         mAccountsDbAdapter.addRecord(account);
@@ -470,9 +491,10 @@ public class AccountsDbAdapterTest{
     /**
      * Loads the default accounts from file resource
      */
-    public static void loadDefaultAccounts(){
+    private void loadDefaultAccounts(){
         try {
-            GncXmlImporter.parse(GnuCashApplication.getAppContext().getResources().openRawResource(R.raw.default_accounts));
+            String bookUID = GncXmlImporter.parse(GnuCashApplication.getAppContext().getResources().openRawResource(R.raw.default_accounts));
+            initAdapters(bookUID);
         } catch (ParserConfigurationException | SAXException | IOException e) {
             e.printStackTrace();
             throw new RuntimeException("Could not create default accounts");

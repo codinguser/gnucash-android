@@ -32,6 +32,8 @@ public class CommoditiesDbAdapter extends DatabaseAdapter<Commodity> {
         Commodity.CAD = getCommodity("CAD");
         Commodity.JPY = getCommodity("JPY");
         Commodity.AUD = getCommodity("AUD");
+
+        Commodity.DEFAULT_COMMODITY = getCommodity(GnuCashApplication.getDefaultCurrencyCode());
     }
 
     public static CommoditiesDbAdapter getInstance(){

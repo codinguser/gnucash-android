@@ -37,6 +37,7 @@ import org.gnucash.android.db.BookDbHelper;
 import org.gnucash.android.db.adapter.AccountsDbAdapter;
 import org.gnucash.android.db.DatabaseHelper;
 import org.gnucash.android.db.adapter.BooksDbAdapter;
+import org.gnucash.android.db.adapter.CommoditiesDbAdapter;
 import org.gnucash.android.db.adapter.SplitsDbAdapter;
 import org.gnucash.android.db.adapter.TransactionsDbAdapter;
 import org.gnucash.android.model.Account;
@@ -117,14 +118,14 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
         mAccountsDbAdapter = new AccountsDbAdapter(mDb, mTransactionsDbAdapter);
         mAccountsDbAdapter.deleteAllRecords(); //clear the data
 
-		Account account = new Account(DUMMY_ACCOUNT_NAME);
+		Account account = new Account(DUMMY_ACCOUNT_NAME, new CommoditiesDbAdapter(mDb).getCommodity(DUMMY_ACCOUNT_CURRENCY_CODE));
         account.setUID(DUMMY_ACCOUNT_UID);
-		account.setCommodity(Commodity.getInstance(DUMMY_ACCOUNT_CURRENCY_CODE));
 		mAccountsDbAdapter.addRecord(account);
 
         String rootUID = mAccountsDbAdapter.getOrCreateGnuCashRootAccountUID();
         book1.setRootAccountUID(rootUID);
         book1.setActive(true);
+        book1.setDisplayName("Book 1");
         BooksDbAdapter booksDbAdapter = new BooksDbAdapter(new BookDbHelper(mAcccountsActivity).getWritableDatabase());
         booksDbAdapter.addRecord(book1);
 

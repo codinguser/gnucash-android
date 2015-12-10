@@ -41,8 +41,12 @@
         android:gravity="center_vertical"
         android:textColor="@android:color/white"
         android:textSize="@dimen/text_size_medium"
-        android:layout_marginLeft="55dp"
+        android:singleLine="true"
+        android:ellipsize="end"
+        android:layout_marginLeft="@dimen/dialog_padding"
+        android:layout_marginStart="@dimen/dialog_padding"
         android:drawableRight="@drawable/ic_arrow_drop_down_white_24dp"
+        android:drawableEnd="@drawable/ic_arrow_drop_down_white_24dp"
         android:clickable="true"
         tools:text="Current Book Name"/>
 </LinearLayout>

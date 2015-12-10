@@ -25,7 +25,10 @@ import android.util.Log;
 import com.crashlytics.android.Crashlytics;
 
 import org.gnucash.android.app.GnuCashApplication;
+import org.gnucash.android.db.BookDbHelper;
+import org.gnucash.android.db.DatabaseHelper;
 import org.gnucash.android.db.adapter.AccountsDbAdapter;
+import org.gnucash.android.db.adapter.BooksDbAdapter;
 import org.gnucash.android.db.adapter.BudgetAmountsDbAdapter;
 import org.gnucash.android.db.adapter.BudgetsDbAdapter;
 import org.gnucash.android.db.adapter.CommoditiesDbAdapter;
@@ -38,6 +41,7 @@ import org.gnucash.android.export.xml.GncXmlHelper;
 import org.gnucash.android.model.Account;
 import org.gnucash.android.model.AccountType;
 import org.gnucash.android.model.BaseModel;
+import org.gnucash.android.model.Book;
 import org.gnucash.android.model.Commodity;
 import org.gnucash.android.model.Budget;
 import org.gnucash.android.model.BudgetAmount;
@@ -257,40 +261,32 @@ public class GncXmlHandler extends DefaultHandler {
     private Map<String, Integer> mCurrencyCount;
 
     private BudgetsDbAdapter mBudgetsDbAdapter;
+    private Book mBook;
+    private SQLiteDatabase mainDb;
 
     /**
      * Creates a handler for handling XML stream events when parsing the XML backup file
      */
     public GncXmlHandler() {
-        init(null);
+        init();
     }
 
     /**
-     * Overloaded constructor.
-     * Useful when reading XML into an already open database connection e.g. during migration
-     * @param db SQLite database object
+     * Initialize the GnuCash XML handler
      */
-    public GncXmlHandler(SQLiteDatabase db) {
-        init(db);
-    }
+    private void init() {
+        mBook = new Book();
 
-    private void init(@Nullable SQLiteDatabase db) {
-        if (db == null) {
-            mAccountsDbAdapter = AccountsDbAdapter.getInstance();
-            mTransactionsDbAdapter = TransactionsDbAdapter.getInstance();
-            mScheduledActionsDbAdapter = ScheduledActionDbAdapter.getInstance();
-            mCommoditiesDbAdapter = CommoditiesDbAdapter.getInstance();
-            mPricesDbAdapter = PricesDbAdapter.getInstance();
-            mBudgetsDbAdapter = BudgetsDbAdapter.getInstance();
-        } else {
-            mTransactionsDbAdapter = new TransactionsDbAdapter(db, new SplitsDbAdapter(db));
-            mAccountsDbAdapter = new AccountsDbAdapter(db, mTransactionsDbAdapter);
-            RecurrenceDbAdapter recurrenceDbAdapter = new RecurrenceDbAdapter(db);
-            mScheduledActionsDbAdapter = new ScheduledActionDbAdapter(db, recurrenceDbAdapter);
-            mCommoditiesDbAdapter = new CommoditiesDbAdapter(db);
-            mPricesDbAdapter = new PricesDbAdapter(db);
-            mBudgetsDbAdapter = new BudgetsDbAdapter(db, new BudgetAmountsDbAdapter(db), recurrenceDbAdapter);
-        }
+        DatabaseHelper databaseHelper = new DatabaseHelper(GnuCashApplication.getAppContext(), mBook.getUID());
+        mainDb = databaseHelper.getWritableDatabase();
+        mTransactionsDbAdapter = new TransactionsDbAdapter(mainDb, new SplitsDbAdapter(mainDb));
+        mAccountsDbAdapter = new AccountsDbAdapter(mainDb, mTransactionsDbAdapter);
+        RecurrenceDbAdapter recurrenceDbAdapter = new RecurrenceDbAdapter(mainDb);
+        mScheduledActionsDbAdapter = new ScheduledActionDbAdapter(mainDb, recurrenceDbAdapter);
+        mCommoditiesDbAdapter = new CommoditiesDbAdapter(mainDb);
+        mPricesDbAdapter = new PricesDbAdapter(mainDb);
+        mBudgetsDbAdapter = new BudgetsDbAdapter(mainDb, new BudgetAmountsDbAdapter(mainDb), recurrenceDbAdapter);
+
 
         mContent = new StringBuilder();
 
@@ -454,7 +450,7 @@ public class GncXmlHandler extends DefaultHandler {
                 mAccount.setParentUID(characterString);
                 break;
             case GncXmlHelper.TAG_ACCOUNT:
-                if (!mInTemplates) { //we ignore template accounts, we have no use for them
+                if (!mInTemplates) { //we ignore template accounts, we have no use for them. FIXME someday and import the templates too
                     mAccountList.add(mAccount);
                     mAccountMap.put(mAccount.getUID(), mAccount);
                     // check ROOT account
@@ -656,7 +652,7 @@ public class GncXmlHandler extends DefaultHandler {
                     //the split amount uses the account currency
                     mSplit.setQuantity(new Money(mQuantity, getCommodityForAccount(characterString)));
                     //the split value uses the transaction currency
-                    mSplit.setValue(new Money(mValue, Commodity.getInstance(mTransaction.getCurrency().getCurrencyCode())));
+                    mSplit.setValue(new Money(mValue, mCommoditiesDbAdapter.getCommodity(mTransaction.getCurrency().getCurrencyCode())));
                     mSplit.setAccountUID(characterString);
                 } else {
                     if (!mIgnoreTemplateTransaction)
@@ -883,7 +879,7 @@ public class GncXmlHandler extends DefaultHandler {
             String currencyCode = split.getAccountUID();
             Account imbAccount = mapImbalanceAccount.get(currencyCode);
             if (imbAccount == null) {
-                imbAccount = new Account(imbalancePrefix + currencyCode, Commodity.getInstance(currencyCode));
+                imbAccount = new Account(imbalancePrefix + currencyCode, mCommoditiesDbAdapter.getCommodity(currencyCode));
                 imbAccount.setParentUID(mRootAccount.getUID());
                 imbAccount.setAccountType(AccountType.BANK);
                 mapImbalanceAccount.put(currencyCode, imbAccount);
@@ -931,6 +927,31 @@ public class GncXmlHandler extends DefaultHandler {
         for (Account account:mAccountList){
             account.setFullName(mapFullName.get(account.getUID()));
         }
+
+        String mostAppearedCurrency = "";
+        int mostCurrencyAppearance = 0;
+        for (Map.Entry<String, Integer> entry : mCurrencyCount.entrySet()) {
+            if (entry.getValue() > mostCurrencyAppearance) {
+                mostCurrencyAppearance = entry.getValue();
+                mostAppearedCurrency = entry.getKey();
+            }
+        }
+        if (mostCurrencyAppearance > 0) {
+            GnuCashApplication.setDefaultCurrencyCode(mostAppearedCurrency);
+        }
+
+        saveToDatabase();
+    }
+
+    /**
+     * Saves the imported data to the database
+     * @return GUID of the newly created book, or null if not successful
+     */
+    private void saveToDatabase() {
+        BooksDbAdapter booksDbAdapter = BooksDbAdapter.getInstance();
+        mBook.setRootAccountUID(mRootAccount.getUID());
+        mBook.setDisplayName(booksDbAdapter.generateDefaultBookName());
+
         long startTime = System.nanoTime();
         mAccountsDbAdapter.beginTransaction();
         Log.d(getClass().getSimpleName(), "bulk insert starts");
@@ -960,30 +981,21 @@ public class GncXmlHandler extends DefaultHandler {
             long endTime = System.nanoTime();
             Log.d(getClass().getSimpleName(), String.format("bulk insert time: %d", endTime - startTime));
 
+            //if all of the import went smoothly, then add the book to the book db
+            booksDbAdapter.addRecord(mBook);
             mAccountsDbAdapter.setTransactionSuccessful();
         } finally {
             mAccountsDbAdapter.endTransaction();
-        }
-
-        String mostAppearedCurrency = "";
-        int mostCurrencyAppearance = 0;
-        for (Map.Entry<String, Integer> entry : mCurrencyCount.entrySet()) {
-            if (entry.getValue() > mostCurrencyAppearance) {
-                mostCurrencyAppearance = entry.getValue();
-                mostAppearedCurrency = entry.getKey();
-            }
-        }
-        if (mostCurrencyAppearance > 0) {
-            GnuCashApplication.setDefaultCurrencyCode(mostAppearedCurrency);
+            mainDb.close(); //close it after import
         }
     }
 
     /**
-     * Returns the GUID of the root account in the XML book
-     * @return GUID of the root account
+     * Returns the unique identifier of the just-imported book
+     * @return GUID of the newly imported book
      */
-    public @NonNull String getRootAccountUID() {
-        return mRootAccount.getUID();
+    public @NonNull String getBookUID(){
+        return mBook.getUID();
     }
 
     /**

@@ -64,7 +64,7 @@ import static org.gnucash.android.ui.report.ReportsActivity.COLORS;
  * @author Oleksandr Tyshkovets <olexandr.tyshkovets@gmail.com>
  * @author Ngewi Fet <ngewif@gmail.com>
  */
-public class CashFlowBarChartFragment extends BaseReportFragment {
+public class StackedBarChartFragment extends BaseReportFragment {
 
     private static final String X_AXIS_MONTH_PATTERN = "MMM YY";
     private static final String X_AXIS_QUARTER_PATTERN = "Q%d %s";

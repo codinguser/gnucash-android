@@ -453,7 +453,8 @@ public class SettingsActivity extends AppCompatPreferenceActivity
             mPrefs.edit().putBoolean(getString(R.string.owncloud_sync), false).apply();
         else {
             OwnCloudDialogFragment ocDialog = OwnCloudDialogFragment.newInstance(pref);
-            ocDialog.show(getFragmentManager(), "owncloud_dialog");
+            //// TODO: 08.12.2015 show dialog
+//            ocDialog.show(getFragmentManager(), "owncloud_dialog");
         }
     }
 

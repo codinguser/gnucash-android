@@ -21,7 +21,7 @@ import android.support.annotation.ColorRes;
 
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
-import org.gnucash.android.ui.report.barchart.CashFlowBarChartFragment;
+import org.gnucash.android.ui.report.barchart.StackedBarChartFragment;
 import org.gnucash.android.ui.report.linechart.CashFlowLineChartFragment;
 import org.gnucash.android.ui.report.piechart.PieChartFragment;
 import org.gnucash.android.ui.report.sheet.BalanceSheetFragment;
@@ -50,7 +50,7 @@ public enum ReportType {
                 mReportTypeMap.put(context.getString(R.string.title_pie_chart), PieChartFragment.class);
                 break;
             case 1:
-                mReportTypeMap.put(context.getString(R.string.title_cash_flow_report), CashFlowBarChartFragment.class);
+                mReportTypeMap.put(context.getString(R.string.title_bar_chart), StackedBarChartFragment.class);
                 break;
             case 2:
                 mReportTypeMap.put(context.getString(R.string.title_cash_flow_report), CashFlowLineChartFragment.class);

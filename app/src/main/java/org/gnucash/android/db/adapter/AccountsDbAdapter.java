@@ -188,7 +188,7 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
         mReplaceStatement.bindLong(11, account.isHidden() ? 1 : 0);
         Commodity commodity = account.getCommodity();
         if (commodity == null)
-            commodity = CommoditiesDbAdapter.getInstance().getCommodity(account.getCurrency().getCurrencyCode());
+            commodity = new CommoditiesDbAdapter(mDb).getCommodity(account.getCurrency().getCurrencyCode());
 
         mReplaceStatement.bindString(12, commodity.getUID());
 
@@ -933,7 +933,7 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
             cursor.close();
         }
         // No ROOT exits, create a new one
-        Account rootAccount = new Account("ROOT Account");
+        Account rootAccount = new Account("ROOT Account", new CommoditiesDbAdapter(mDb).getCommodity("USD"));
         rootAccount.setAccountType(AccountType.ROOT);
         rootAccount.setFullName(ROOT_ACCOUNT_FULL_NAME);
         rootAccount.setHidden(true);
