@@ -147,7 +147,7 @@ public class AccountsActivity extends BaseDrawerActivity implements OnAccountCli
     /**
      * Configuration for rating the app
      */
-    public static RateThisApp.Config rateAppConfig = new RateThisApp.Config(30, 100);
+    public static RateThisApp.Config rateAppConfig = new RateThisApp.Config(14, 100);
 
     /**
      * Adapter for managing the sub-account and transaction fragment pages in the accounts view
@@ -178,7 +178,6 @@ public class AccountsActivity extends BaseDrawerActivity implements OnAccountCli
                 }
                 mFragmentPageReferenceMap.put(i, currentFragment);
             }
-
             return currentFragment;
         }
 
@@ -252,12 +251,12 @@ public class AccountsActivity extends BaseDrawerActivity implements OnAccountCli
 
             @Override
             public void onTabUnselected(TabLayout.Tab tab) {
-
+                //nothing to see here, move along
             }
 
             @Override
             public void onTabReselected(TabLayout.Tab tab) {
-
+                //nothing to see here, move along
             }
         });
 
@@ -503,9 +502,9 @@ public class AccountsActivity extends BaseDrawerActivity implements OnAccountCli
      */
     public static void startXmlFileChooser(Activity activity) {
         Intent pickIntent;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT){
-            pickIntent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-        } else
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT){
+//            pickIntent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+//        } else
             pickIntent = new Intent(Intent.ACTION_GET_CONTENT);
 
 //        ArrayList<String> mimeTypes = new ArrayList<>();

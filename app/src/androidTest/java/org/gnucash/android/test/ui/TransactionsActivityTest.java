@@ -33,6 +33,8 @@ import org.gnucash.android.R;
 import org.gnucash.android.db.adapter.AccountsDbAdapter;
 import org.gnucash.android.db.DatabaseHelper;
 import org.gnucash.android.db.DatabaseSchema;
+import org.gnucash.android.db.adapter.BooksDbAdapter;
+import org.gnucash.android.db.adapter.CommoditiesDbAdapter;
 import org.gnucash.android.db.adapter.SplitsDbAdapter;
 import org.gnucash.android.db.adapter.TransactionsDbAdapter;
 import org.gnucash.android.model.Account;
@@ -87,6 +89,7 @@ public class TransactionsActivityTest extends
     private static final String TRANSFER_ACCOUNT_NAME   = "Transfer account";
     private static final String TRANSFER_ACCOUNT_UID    = "transfer_account";
     public static final String CURRENCY_CODE = "USD";
+	public static Commodity COMMODITY = Commodity.DEFAULT_COMMODITY;
 
 	private Transaction mTransaction;
 	private long mTransactionTimeMillis;
@@ -109,8 +112,8 @@ public class TransactionsActivityTest extends
 		injectInstrumentation(InstrumentationRegistry.getInstrumentation());
 		AccountsActivityTest.preventFirstRunDialogs(getInstrumentation().getTargetContext());
 
-
-        mDbHelper = new DatabaseHelper(getInstrumentation().getTargetContext(), BaseModel.generateUID());
+		String activeBookUID = BooksDbAdapter.getInstance().getActiveBookUID();
+        mDbHelper = new DatabaseHelper(getInstrumentation().getTargetContext(), activeBookUID);
         try {
             mDb = mDbHelper.getWritableDatabase();
         } catch (SQLException e) {
@@ -122,20 +125,20 @@ public class TransactionsActivityTest extends
         mAccountsDbAdapter = new AccountsDbAdapter(mDb, mTransactionsDbAdapter);
 		mAccountsDbAdapter.deleteAllRecords();
 
-		mTransactionTimeMillis = System.currentTimeMillis();
-        Account account = new Account(DUMMY_ACCOUNT_NAME);
-        account.setUID(DUMMY_ACCOUNT_UID);
-        account.setCommodity(Commodity.getInstance(CURRENCY_CODE));
+		COMMODITY = new CommoditiesDbAdapter(mDb).getCommodity(CURRENCY_CODE);
 
-        Account account2 = new Account(TRANSFER_ACCOUNT_NAME);
+		mTransactionTimeMillis = System.currentTimeMillis();
+        Account account = new Account(DUMMY_ACCOUNT_NAME, COMMODITY);
+        account.setUID(DUMMY_ACCOUNT_UID);
+
+        Account account2 = new Account(TRANSFER_ACCOUNT_NAME, COMMODITY);
         account2.setUID(TRANSFER_ACCOUNT_UID);
-        account2.setCommodity(Commodity.getInstance(CURRENCY_CODE));
 
         mAccountsDbAdapter.addRecord(account);
         mAccountsDbAdapter.addRecord(account2);
 
         mTransaction = new Transaction(TRANSACTION_NAME);
-		mTransaction.setCurrencyCode(CURRENCY_CODE);
+		mTransaction.setCommodity(COMMODITY);
         mTransaction.setNote("What up?");
         mTransaction.setTime(mTransactionTimeMillis);
         Split split = new Split(new Money(TRANSACTION_AMOUNT, CURRENCY_CODE), DUMMY_ACCOUNT_UID);
@@ -584,7 +587,8 @@ public class TransactionsActivityTest extends
 	@Override
 	@After
 	public void tearDown() throws Exception {
-		mTransactionsActivity.finish();
+		if (mTransactionsActivity != null)
+			mTransactionsActivity.finish();
 		super.tearDown();
 	}
 }

@@ -34,6 +34,7 @@ import com.kobakei.ratethisapp.RateThisApp;
 
 import org.gnucash.android.R;
 import org.gnucash.android.db.BookDbHelper;
+import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.db.adapter.AccountsDbAdapter;
 import org.gnucash.android.db.DatabaseHelper;
 import org.gnucash.android.db.adapter.BooksDbAdapter;
@@ -87,6 +88,8 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
     private static final Commodity DUMMY_ACCOUNT_CURRENCY = Commodity.getInstance(DUMMY_ACCOUNT_CURRENCY_CODE);
 	private static final String DUMMY_ACCOUNT_NAME = "Dummy account";
     public static final String  DUMMY_ACCOUNT_UID   = "dummy-account";
+    public static final String TEST_DB_NAME = "test_gnucash_db.sqlite";
+
     private DatabaseHelper mDbHelper;
     private SQLiteDatabase mDb;
     private AccountsDbAdapter mAccountsDbAdapter;
@@ -105,29 +108,22 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
         preventFirstRunDialogs(getInstrumentation().getTargetContext());
         mAcccountsActivity = getActivity();
 
-        Book book1 = new Book();
-        mDbHelper = new DatabaseHelper(mAcccountsActivity, book1.getUID());
+        String activeBookUID = BooksDbAdapter.getInstance().getActiveBookUID();
+        mDbHelper = new DatabaseHelper(mAcccountsActivity, activeBookUID);
         try {
             mDb = mDbHelper.getWritableDatabase();
         } catch (SQLException e) {
             Log.e(getClass().getName(), "Error getting database: " + e.getMessage());
             mDb = mDbHelper.getReadableDatabase();
         }
-        mSplitsDbAdapter = new SplitsDbAdapter(mDb);
-        mTransactionsDbAdapter = new TransactionsDbAdapter(mDb, mSplitsDbAdapter);
-        mAccountsDbAdapter = new AccountsDbAdapter(mDb, mTransactionsDbAdapter);
+        mSplitsDbAdapter        = new SplitsDbAdapter(mDb);
+        mTransactionsDbAdapter  = new TransactionsDbAdapter(mDb, mSplitsDbAdapter);
+        mAccountsDbAdapter      = new AccountsDbAdapter(mDb, mTransactionsDbAdapter);
         mAccountsDbAdapter.deleteAllRecords(); //clear the data
 
 		Account account = new Account(DUMMY_ACCOUNT_NAME, new CommoditiesDbAdapter(mDb).getCommodity(DUMMY_ACCOUNT_CURRENCY_CODE));
         account.setUID(DUMMY_ACCOUNT_UID);
 		mAccountsDbAdapter.addRecord(account);
-
-        String rootUID = mAccountsDbAdapter.getOrCreateGnuCashRootAccountUID();
-        book1.setRootAccountUID(rootUID);
-        book1.setActive(true);
-        book1.setDisplayName("Book 1");
-        BooksDbAdapter booksDbAdapter = new BooksDbAdapter(new BookDbHelper(mAcccountsActivity).getWritableDatabase());
-        booksDbAdapter.addRecord(book1);
 
         refreshAccountsList();
 	}
@@ -157,6 +153,7 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
         mAcccountsActivity.recreate();
 
         refreshAccountsList();
+        sleep(1000);
         onView(withText("Assets")).perform(scrollTo());
         onView(withText("Expenses")).perform(click());
         onView(withText("Books")).perform(scrollTo());

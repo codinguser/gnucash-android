@@ -36,6 +36,7 @@ import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.DatabaseHelper;
 import org.gnucash.android.db.adapter.AccountsDbAdapter;
+import org.gnucash.android.db.adapter.BooksDbAdapter;
 import org.gnucash.android.db.adapter.CommoditiesDbAdapter;
 import org.gnucash.android.db.adapter.RecurrenceDbAdapter;
 import org.gnucash.android.db.adapter.ScheduledActionDbAdapter;
@@ -62,8 +63,11 @@ import java.io.File;
 import java.util.Currency;
 import java.util.List;
 
+import static android.support.test.espresso.Espresso.onData;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
+import static android.support.test.espresso.action.ViewActions.scrollTo;
+import static android.support.test.espresso.action.ViewActions.swipeUp;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.RootMatchers.withDecorView;
 import static android.support.test.espresso.matcher.ViewMatchers.isAssignableFrom;
@@ -102,7 +106,8 @@ public class ExportTransactionsTest extends
 		AccountsActivityTest.preventFirstRunDialogs(getInstrumentation().getTargetContext());
 		mAcccountsActivity = getActivity();
 
-        mDbHelper = new DatabaseHelper(getActivity(), BaseModel.generateUID());
+		String activeBookUID = BooksDbAdapter.getInstance().getActiveBookUID();
+        mDbHelper = new DatabaseHelper(getActivity(), activeBookUID);
         try {
             mDb = mDbHelper.getWritableDatabase();
         } catch (SQLException e) {
@@ -258,6 +263,7 @@ public class ExportTransactionsTest extends
 	@Test
 	public void testCreateBackup(){
 		onView(withId(R.id.drawer_layout)).perform(DrawerActions.open());
+		onView(withId(R.id.nav_view)).perform(swipeUp());
 		onView(withText(R.string.title_settings)).perform(click());
 		onView(withText(R.string.header_backup_and_export_settings)).perform(click());
 

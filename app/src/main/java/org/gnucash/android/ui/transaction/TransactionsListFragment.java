@@ -43,6 +43,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.gnucash.android.R;
+import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.adapter.AccountsDbAdapter;
 import org.gnucash.android.db.DatabaseCursorLoader;
 import org.gnucash.android.db.DatabaseSchema;
@@ -94,10 +95,11 @@ public class TransactionsListFragment extends Fragment implements
 		mAccountUID = args.getString(UxArgument.SELECTED_ACCOUNT_UID);
 
 		mUseCompactView = PreferenceManager.getDefaultSharedPreferences(getActivity())
-				.getBoolean(getActivity().getString(R.string.key_use_compact_list), false);
+				.getBoolean(getActivity().getString(R.string.key_use_compact_list), !GnuCashApplication.isDoubleEntryEnabled());
 		//if there was a local override of the global setting, respect it
 		if (savedInstanceState != null)
 			mUseCompactView = savedInstanceState.getBoolean(getString(R.string.key_use_compact_list), mUseCompactView);
+
 		mTransactionsDbAdapter = TransactionsDbAdapter.getInstance();
 	}
 
@@ -183,6 +185,7 @@ public class TransactionsListFragment extends Fragment implements
 		super.onPrepareOptionsMenu(menu);
 		MenuItem item = menu.findItem(R.id.menu_compact_trn_view);
 		item.setChecked(mUseCompactView);
+		item.setEnabled(GnuCashApplication.isDoubleEntryEnabled()); //always compact for single-entry
 	}
 
 	@Override
@@ -326,7 +329,7 @@ public class TransactionsListFragment extends Fragment implements
 			public ViewHolder(View itemView) {
 				super(itemView);
 				ButterKnife.bind(this, itemView);
-
+				primaryText.setTextSize(18);
 				optionsMenu.setOnClickListener(new View.OnClickListener() {
 					@Override
 					public void onClick(View v) {

@@ -176,8 +176,6 @@ public class AccountsListFragment extends Fragment implements
         Bundle args = getArguments();
         if (args != null)
             mParentAccountUID = args.getString(UxArgument.PARENT_ACCOUNT_UID);
-
-        mAccountsDbAdapter = AccountsDbAdapter.getInstance();
     }
 
     @Override
@@ -194,14 +192,17 @@ public class AccountsListFragment extends Fragment implements
         mAccountRecyclerAdapter = new AccountRecyclerAdapter(null);
         mRecyclerView.setAdapter(mAccountRecyclerAdapter);
 
-        getLoaderManager().initLoader(0, null, this);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        mAccountsDbAdapter = AccountsDbAdapter.getInstance();
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        ActionBar actionbar = ((AppCompatActivity) getActivity()).getSupportActionBar();
-        actionbar.setTitle(R.string.title_accounts);
         refresh();
     }
 
@@ -462,6 +463,7 @@ public class AccountsListFragment extends Fragment implements
         @Override
         public void onBindViewHolderCursor(final AccountViewHolder holder, final Cursor cursor) {
             final String accountUID = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.AccountEntry.COLUMN_UID));
+            mAccountsDbAdapter = AccountsDbAdapter.getInstance();
             holder.accoundId = mAccountsDbAdapter.getID(accountUID);
 
             holder.accountName.setText(cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.AccountEntry.COLUMN_NAME)));

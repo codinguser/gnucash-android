@@ -18,6 +18,7 @@ package org.gnucash.android.importer;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
@@ -114,7 +115,11 @@ public class ImportAsyncTask extends AsyncTask<Uri, Void, Boolean> {
         if (cursor != null && cursor.moveToFirst()) {
             int nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
             String displayName = cursor.getString(nameIndex);
-            BooksDbAdapter.getInstance().updateRecord(bookUID, DatabaseSchema.BookEntry.COLUMN_DISPLAY_NAME, displayName);
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(DatabaseSchema.BookEntry.COLUMN_DISPLAY_NAME, displayName);
+            contentValues.put(DatabaseSchema.BookEntry.COLUMN_SOURCE_URI, uris[0].toString());
+            BooksDbAdapter.getInstance().updateRecord(bookUID, contentValues);
+
             cursor.close();
         }
 

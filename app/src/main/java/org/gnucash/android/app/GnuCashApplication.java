@@ -96,6 +96,7 @@ public class GnuCashApplication extends Application{
     private static RecurrenceDbAdapter mRecurrenceDbAdapter;
 
     private static BooksDbAdapter mBooksDbAdapter;
+    private DatabaseHelper mDbHelper;
 
     /**
      * Returns darker version of specified <code>color</code>.
@@ -141,7 +142,11 @@ public class GnuCashApplication extends Application{
      * This method should be called every time a new book is opened
      */
     private void initDatabaseAdapters() {
-        DatabaseHelper mDbHelper = new DatabaseHelper(getApplicationContext(),
+        if (mDbHelper != null){ //close if open
+            mDbHelper.getReadableDatabase().close();
+        }
+
+        mDbHelper = new DatabaseHelper(getApplicationContext(),
                 mBooksDbAdapter.getActiveBookUID());
         SQLiteDatabase mainDb;
         try {

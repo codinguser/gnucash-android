@@ -74,6 +74,7 @@ import butterknife.ButterKnife;
 public abstract class BaseDrawerActivity extends PasscodeLockActivity implements
     PopupMenu.OnMenuItemClickListener {
 
+    public static final int ID_MANAGE_BOOKS = 0xB00C;
     @Bind(R.id.drawer_layout) DrawerLayout mDrawerLayout;
     @Bind(R.id.nav_view) NavigationView mNavigationView;
     @Bind(R.id.toolbar) Toolbar mToolbar;
@@ -290,9 +291,16 @@ public abstract class BaseDrawerActivity extends PasscodeLockActivity implements
     @Override
     public boolean onMenuItemClick(MenuItem item) {
         long id = item.getItemId();
-        String bookUID = BooksDbAdapter.getInstance().getUID(id);
-        ((GnuCashApplication)getApplication()).loadBook(bookUID);
-        finish();
+        if (id == ID_MANAGE_BOOKS){
+            //// TODO: 11.12.2015 launch activity to manage books
+            return true;
+        }
+        BooksDbAdapter booksDbAdapter = BooksDbAdapter.getInstance();
+        String bookUID = booksDbAdapter.getUID(id);
+        if (!bookUID.equals(booksDbAdapter.getActiveBookUID())){
+            ((GnuCashApplication) getApplication()).loadBook(bookUID);
+            finish();
+        }
         AccountsActivity.start(GnuCashApplication.getAppContext());
         return true;
     }
@@ -309,11 +317,12 @@ public abstract class BaseDrawerActivity extends PasscodeLockActivity implements
         int maxRecent = 0;
         Cursor cursor = BooksDbAdapter.getInstance().fetchAllRecords(null, null,
                 DatabaseSchema.BookEntry.COLUMN_MODIFIED_AT + " DESC");
-        while (cursor.moveToNext() && maxRecent++ < 10) {
+        while (cursor.moveToNext() && maxRecent++ < 5) {
             long id = cursor.getLong(cursor.getColumnIndexOrThrow(DatabaseSchema.BookEntry._ID));
             String name = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.BookEntry.COLUMN_DISPLAY_NAME));
             menu.add(0, (int)id, maxRecent, name);
         }
+        menu.add(0, ID_MANAGE_BOOKS, maxRecent, "Manage Books...");
 
         popup.show();
     }
