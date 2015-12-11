@@ -1,5 +1,10 @@
 Change Log
 ===============================================================================
+Version 2.0.5 *(2015-12-12)*
+----------------------------
+* Fixed: Wrong decimal formatting in multi-currency transactions
+* Improved: Reliability of exports
+
 Version 2.0.4 *(2015-12-02)*
 ----------------------------
 * Fixed: Transaction export time not always working reliably
