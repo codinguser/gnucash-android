@@ -5,7 +5,7 @@ apply plugin: 'io.fabric'
 
 def versionMajor = 2
 def versionMinor = 0
-def versionPatch = 4
+def versionPatch = 5
 def versionBuild = 0
 
 def buildTime() {
@@ -119,7 +119,7 @@ android {
 
     }
 
-    
+
     compileOptions { //we want switch with strings during xml parsing
         encoding "UTF-8"
         sourceCompatibility JavaVersion.VERSION_1_7
