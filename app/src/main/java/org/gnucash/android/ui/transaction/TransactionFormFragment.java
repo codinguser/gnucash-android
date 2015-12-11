@@ -491,6 +491,9 @@ public class TransactionFormFragment extends Fragment implements
 		Currency accountCurrency = Currency.getInstance(currencyCode);
 		mCurrencyTextView.setText(accountCurrency.getSymbol());
 
+        Commodity commodity = Commodity.getInstance(currencyCode);
+        mAmountEditText.setCommodity(commodity);
+
         mSaveTemplateCheckbox.setChecked(mTransaction.isTemplate());
         String scheduledActionUID = getArguments().getString(UxArgument.SCHEDULED_ACTION_UID);
         if (scheduledActionUID != null && !scheduledActionUID.isEmpty()) {
@@ -540,6 +543,9 @@ public class TransactionFormFragment extends Fragment implements
 		}
 		Currency accountCurrency = Currency.getInstance(code);
 		mCurrencyTextView.setText(accountCurrency.getSymbol());
+
+        Commodity commodity = Commodity.getInstance(code);
+        mAmountEditText.setCommodity(commodity);
 
         if (mUseDoubleEntry){
             String currentAccountUID = mAccountUID;
