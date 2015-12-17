@@ -159,14 +159,11 @@ public class CalculatorEditText extends EditText {
             }
         });
 
-        // Although it looks redundant having both onClickListener and OnTouchListener, removing
-        // one of them makes the standard keyboard show up in addition to the calculator one.
+        // Although this handler doesn't make sense, if removed, the standard keyboard
+        // shows up in addition to the calculator one when the EditText gets a touch event.
         setOnTouchListener(new OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                if (!mCalculatorKeyboard.isCustomKeyboardVisible())
-                    mCalculatorKeyboard.showCustomKeyboard(v);
-
                 // XXX: Use dispatchTouchEvent()?
                 onTouchEvent(event);
                 return false;
