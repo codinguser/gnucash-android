@@ -55,6 +55,7 @@ import org.gnucash.android.model.Transaction;
 import org.gnucash.android.ui.common.FormActivity;
 import org.gnucash.android.ui.common.UxArgument;
 import org.gnucash.android.ui.homescreen.WidgetConfigurationActivity;
+import org.gnucash.android.ui.settings.PreferenceActivity;
 import org.gnucash.android.ui.transaction.dialog.BulkMoveDialogFragment;
 import org.gnucash.android.ui.util.CursorRecyclerAdapter;
 import org.gnucash.android.ui.common.Refreshable;
@@ -94,7 +95,7 @@ public class TransactionsListFragment extends Fragment implements
 		Bundle args = getArguments();
 		mAccountUID = args.getString(UxArgument.SELECTED_ACCOUNT_UID);
 
-		mUseCompactView = PreferenceManager.getDefaultSharedPreferences(getActivity())
+		mUseCompactView = PreferenceActivity.getBookSharedPreferences(getActivity())
 				.getBoolean(getActivity().getString(R.string.key_use_compact_list), !GnuCashApplication.isDoubleEntryEnabled());
 		//if there was a local override of the global setting, respect it
 		if (savedInstanceState != null)

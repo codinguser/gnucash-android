@@ -62,8 +62,8 @@ import org.gnucash.android.model.BaseModel;
 import org.gnucash.android.model.ScheduledAction;
 import org.gnucash.android.ui.account.AccountsActivity;
 import org.gnucash.android.ui.common.UxArgument;
-import org.gnucash.android.ui.settings.OwnCloudDialogFragment;
-import org.gnucash.android.ui.settings.SettingsActivity;
+import org.gnucash.android.ui.settings.BackupPreferenceFragment;
+import org.gnucash.android.ui.settings.dialog.OwnCloudDialogFragment;
 import org.gnucash.android.ui.transaction.TransactionFormFragment;
 import org.gnucash.android.ui.util.RecurrenceParser;
 import org.gnucash.android.ui.util.RecurrenceViewClickListener;
@@ -308,8 +308,8 @@ public class ExportFormFragment extends Fragment implements
 					case 1:
 						recurrenceOptionsView.setVisibility(View.VISIBLE);
 						mExportTarget = ExportParams.ExportTarget.DROPBOX;
-						String dropboxAppKey = getString(R.string.dropbox_app_key, SettingsActivity.DROPBOX_APP_KEY);
-						String dropboxAppSecret = getString(R.string.dropbox_app_secret, SettingsActivity.DROPBOX_APP_SECRET);
+						String dropboxAppKey = getString(R.string.dropbox_app_key, BackupPreferenceFragment.DROPBOX_APP_KEY);
+						String dropboxAppSecret = getString(R.string.dropbox_app_secret, BackupPreferenceFragment.DROPBOX_APP_SECRET);
 						DbxAccountManager mDbxAccountManager = DbxAccountManager.getInstance(getActivity().getApplicationContext(),
 								dropboxAppKey, dropboxAppSecret);
 						if (!mDbxAccountManager.hasLinkedAccount()) {
@@ -319,8 +319,8 @@ public class ExportFormFragment extends Fragment implements
 					case 2:
 						recurrenceOptionsView.setVisibility(View.VISIBLE);
 						mExportTarget = ExportParams.ExportTarget.GOOGLE_DRIVE;
-						SettingsActivity.mGoogleApiClient = SettingsActivity.getGoogleApiClient(getActivity());
-						SettingsActivity.mGoogleApiClient.connect();
+						BackupPreferenceFragment.mGoogleApiClient = BackupPreferenceFragment.getGoogleApiClient(getActivity());
+						BackupPreferenceFragment.mGoogleApiClient.connect();
 						break;
 					case 3:
 						recurrenceOptionsView.setVisibility(View.VISIBLE);
@@ -476,8 +476,8 @@ public class ExportFormFragment extends Fragment implements
 	 */
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
-		if (requestCode == SettingsActivity.REQUEST_RESOLVE_CONNECTION && resultCode == Activity.RESULT_OK) {
-			SettingsActivity.mGoogleApiClient.connect();
+		if (requestCode == BackupPreferenceFragment.REQUEST_RESOLVE_CONNECTION && resultCode == Activity.RESULT_OK) {
+			BackupPreferenceFragment.mGoogleApiClient.connect();
 		}
 	}
 

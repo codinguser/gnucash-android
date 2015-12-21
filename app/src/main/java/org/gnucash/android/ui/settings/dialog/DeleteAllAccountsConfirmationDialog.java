@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-package org.gnucash.android.ui.settings;
+package org.gnucash.android.ui.settings.dialog;
 
 import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.DialogFragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.widget.Toast;
 
 import org.gnucash.android.R;

@@ -38,7 +38,7 @@
     <string name="key_last_export_destination">last_export_destination</string>
     <string name="key_use_compact_list">use_compact_list</string>
     <string name="empty"></string>
-
+    <string name="key_prefs_header_general">prefs_header_general</string>
     <string-array name="key_transaction_type_values" translatable="false">
         <item>CREDIT</item>
         <item>DEBIT</item>

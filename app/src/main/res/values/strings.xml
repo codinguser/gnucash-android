@@ -408,6 +408,8 @@
     <string name="nav_menu_budgets">Budgets</string>
     <string name="title_cash_flow_report">Cash Flow</string>
     <string name="title_budgets">Budgets</string>
+    <string name="title_use_compact_list">Enable compact view</string>
+    <string name="summary_use_compact_list">Enable to always use compact view for transactions list</string>
     <string-array name="report_time_range">
         <item>Current month</item>
         <item>Last 3 months</item>

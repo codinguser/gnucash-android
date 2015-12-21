@@ -52,9 +52,9 @@
             android:key="@string/key_default_export_email" 
             android:summary="@string/summary_default_export_email"
             android:inputType="textEmailAddress"/>
-        <CheckBoxPreference android:summary="@string/hint_export_choice" android:key="@string/key_export_all_transactions" android:title="@string/title_export_all_transactions"/>
-        <CheckBoxPreference android:summary="@string/hint_delete_after_export" android:key="@string/key_delete_transactions_after_export" android:title="@string/title_always_delete_exported_transactions"/>
-        <CheckBoxPreference android:key="@string/key_xml_ofx_header" android:summary="@string/summary_xml_ofx_header" android:title="@string/title_xml_ofx_header"/>
+        <android.support.v7.preference.SwitchPreferenceCompat android:summary="@string/hint_export_choice" android:key="@string/key_export_all_transactions" android:title="@string/title_export_all_transactions"/>
+        <android.support.v7.preference.SwitchPreferenceCompat android:summary="@string/hint_delete_after_export" android:key="@string/key_delete_transactions_after_export" android:title="@string/title_always_delete_exported_transactions"/>
+        <android.support.v7.preference.SwitchPreferenceCompat android:key="@string/key_xml_ofx_header" android:summary="@string/summary_xml_ofx_header" android:title="@string/title_xml_ofx_header"/>
     </PreferenceCategory>
 
 </PreferenceScreen>

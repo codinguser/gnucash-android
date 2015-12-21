@@ -52,6 +52,7 @@ import org.gnucash.android.model.Commodity;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.service.SchedulerService;
 import org.gnucash.android.ui.account.AccountsActivity;
+import org.gnucash.android.ui.settings.PreferenceActivity;
 
 import java.util.Currency;
 import java.util.Locale;
@@ -133,6 +134,8 @@ public class GnuCashApplication extends Application{
         mBooksDbAdapter = new BooksDbAdapter(bookDbHelper.getWritableDatabase());
 
         initDatabaseAdapters();
+
+        //TODO: migrate preferences from defaultShared to book
 
         setDefaultCurrencyCode(getDefaultCurrencyCode());
     }
@@ -231,7 +234,6 @@ public class GnuCashApplication extends Application{
      * @return {@code true} if crashlytics is enabled, {@code false} otherwise
      */
     public static boolean isCrashlyticsEnabled(){
-        final Context context = getAppContext();
         return PreferenceManager.getDefaultSharedPreferences(context).getBoolean(context.getString(R.string.key_enable_crashlytics), false);
     }
 
@@ -241,7 +243,7 @@ public class GnuCashApplication extends Application{
      * @return <code>true</code> if double entry is enabled, <code>false</code> otherwise
      */
     public static boolean isDoubleEntryEnabled(){
-        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences sharedPrefs = PreferenceActivity.getBookSharedPreferences(context);
         return sharedPrefs.getBoolean(context.getString(R.string.key_use_double_entry), false);
     }
 
@@ -252,7 +254,7 @@ public class GnuCashApplication extends Application{
      * @return <code>true</code> if opening balances should be saved, <code>false</code> otherwise
      */
     public static boolean shouldSaveOpeningBalances(boolean defaultValue){
-        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences sharedPrefs = PreferenceActivity.getBookSharedPreferences(context);
         return sharedPrefs.getBoolean(context.getString(R.string.key_save_opening_balances), defaultValue);
     }
 
@@ -270,7 +272,7 @@ public class GnuCashApplication extends Application{
         Locale locale = getDefaultLocale();
 
         String currencyCode = "USD"; //start with USD as the default
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences prefs = PreferenceActivity.getBookSharedPreferences(context);
         try { //there are some strange locales out there
             currencyCode = Currency.getInstance(locale).getCurrencyCode();
         } catch (Throwable e) {
@@ -293,7 +295,7 @@ public class GnuCashApplication extends Application{
      * @see #getDefaultCurrencyCode()
      */
     public static void setDefaultCurrencyCode(@NonNull String currencyCode){
-        PreferenceManager.getDefaultSharedPreferences(getAppContext()).edit()
+        PreferenceActivity.getBookSharedPreferences(context).edit()
                 .putString(getAppContext().getString(R.string.key_default_currency), currencyCode)
                 .apply();
         Money.DEFAULT_CURRENCY_CODE = currencyCode;

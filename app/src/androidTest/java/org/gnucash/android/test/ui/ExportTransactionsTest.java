@@ -18,6 +18,7 @@ package org.gnucash.android.test.ui;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
@@ -52,6 +53,7 @@ import org.gnucash.android.model.ScheduledAction;
 import org.gnucash.android.model.Split;
 import org.gnucash.android.model.Transaction;
 import org.gnucash.android.ui.account.AccountsActivity;
+import org.gnucash.android.ui.settings.PreferenceActivity;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
@@ -142,27 +144,27 @@ public class ExportTransactionsTest extends
 	 */
 	@Test
 	public void testOfxExport(){
-		PreferenceManager.getDefaultSharedPreferences(mAcccountsActivity)
-				.edit().putBoolean(mAcccountsActivity.getString(R.string.key_use_double_entry), false)
+		SharedPreferences.Editor prefsEditor = PreferenceActivity.getBookSharedPreferences(mAcccountsActivity)
+				.edit();
+		prefsEditor.putBoolean(mAcccountsActivity.getString(R.string.key_use_double_entry), false)
 				.commit();
         testExport(ExportFormat.OFX);
-		PreferenceManager.getDefaultSharedPreferences(mAcccountsActivity)
-				.edit().putBoolean(mAcccountsActivity.getString(R.string.key_use_double_entry), true)
+		prefsEditor.putBoolean(mAcccountsActivity.getString(R.string.key_use_double_entry), true)
 				.commit();
 	}
 
 	@Test
 	public void whenInSingleEntry_shouldHideXmlExportOption(){
-		PreferenceManager.getDefaultSharedPreferences(mAcccountsActivity)
-				.edit().putBoolean(mAcccountsActivity.getString(R.string.key_use_double_entry), false)
+		SharedPreferences.Editor prefsEditor = PreferenceActivity.getBookSharedPreferences(mAcccountsActivity)
+				.edit();
+		prefsEditor.putBoolean(mAcccountsActivity.getString(R.string.key_use_double_entry), false)
 				.commit();
 
 		DrawerActions.openDrawer(R.id.drawer_layout);
 		onView(withText(R.string.nav_menu_export)).perform(click());
 		onView(withId(R.id.radio_xml_format)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.GONE)));
 
-		PreferenceManager.getDefaultSharedPreferences(mAcccountsActivity)
-				.edit().putBoolean(mAcccountsActivity.getString(R.string.key_use_double_entry), true)
+		prefsEditor.putBoolean(mAcccountsActivity.getString(R.string.key_use_double_entry), true)
 				.commit();
 	}
 
@@ -222,13 +224,13 @@ public class ExportTransactionsTest extends
 	public void testDeleteTransactionsAfterExport(){
 		assertThat(mTransactionsDbAdapter.getRecordsCount()).isGreaterThan(0);
 
-		PreferenceManager.getDefaultSharedPreferences(getActivity()).edit()
+		PreferenceActivity.getBookSharedPreferences(getActivity()).edit()
 				.putBoolean(mAcccountsActivity.getString(R.string.key_delete_transactions_after_export), true).commit();
 
 		testExport(ExportFormat.XML);
 
 		assertThat(mTransactionsDbAdapter.getRecordsCount()).isEqualTo(0);
-		PreferenceManager.getDefaultSharedPreferences(getActivity()).edit()
+		PreferenceActivity.getBookSharedPreferences(getActivity()).edit()
 				.putBoolean(mAcccountsActivity.getString(R.string.key_delete_transactions_after_export), false).commit();
 	}
 

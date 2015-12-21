@@ -51,6 +51,7 @@ import org.gnucash.android.model.TransactionType;
 import org.gnucash.android.ui.report.BaseReportFragment;
 import org.gnucash.android.ui.report.piechart.PieChartFragment;
 import org.gnucash.android.ui.report.ReportsActivity;
+import org.gnucash.android.ui.settings.PreferenceActivity;
 import org.joda.time.LocalDateTime;
 import org.junit.After;
 import org.junit.Before;
@@ -128,7 +129,7 @@ public class PieChartReportTest extends ActivityInstrumentationTestCase2<Reports
 
         CURRENCY = new CommoditiesDbAdapter(db).getCommodity("USD");
 
-        PreferenceManager.getDefaultSharedPreferences(mReportsActivity).edit()
+        PreferenceActivity.getBookSharedPreferences(mReportsActivity).edit()
                 .putString(mReportsActivity.getString(R.string.key_default_currency), CURRENCY.getCurrencyCode())
                 .commit();
 

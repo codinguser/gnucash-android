@@ -46,6 +46,7 @@ import org.gnucash.android.model.Transaction;
 import org.gnucash.android.model.TransactionType;
 import org.gnucash.android.receivers.TransactionRecorder;
 import org.gnucash.android.ui.common.UxArgument;
+import org.gnucash.android.ui.settings.PreferenceActivity;
 import org.gnucash.android.ui.transaction.TransactionFormFragment;
 import org.gnucash.android.ui.transaction.TransactionsActivity;
 import org.junit.After;
@@ -372,7 +373,7 @@ public class TransactionsActivityTest extends
 
 
     private void setDoubleEntryEnabled(boolean enabled){
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        SharedPreferences prefs = PreferenceActivity.getBookSharedPreferences(getActivity());
         Editor editor = prefs.edit();
         editor.putBoolean(getActivity().getString(R.string.key_use_double_entry), enabled);
         editor.commit();
@@ -387,7 +388,7 @@ public class TransactionsActivityTest extends
 	}
 
 	private void setDefaultTransactionType(TransactionType type) {
-		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+		SharedPreferences prefs = PreferenceActivity.getBookSharedPreferences(getActivity());
 		Editor editor = prefs.edit();
 		editor.putString(getActivity().getString(R.string.key_default_transaction_type), type.name());
 		editor.commit();

@@ -46,7 +46,7 @@ import org.gnucash.android.ui.account.AccountsActivity;
 import org.gnucash.android.ui.budget.BudgetsActivity;
 import org.gnucash.android.ui.passcode.PasscodeLockActivity;
 import org.gnucash.android.ui.report.ReportsActivity;
-import org.gnucash.android.ui.settings.SettingsActivity;
+import org.gnucash.android.ui.settings.PreferenceActivity;
 import org.gnucash.android.ui.transaction.ScheduledActionsActivity;
 
 import butterknife.Bind;
@@ -259,7 +259,7 @@ public abstract class BaseDrawerActivity extends PasscodeLockActivity implements
                 break;
 
             case R.id.nav_item_settings: //Settings activity
-                startActivity(new Intent(this, SettingsActivity.class));
+                startActivity(new Intent(this, PreferenceActivity.class));
                 break;
 
             case R.id.nav_item_help:

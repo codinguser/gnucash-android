@@ -32,6 +32,7 @@
         <item name="windowActionModeOverlay">true</item>
         <item name="colorButtonNormal">#FFAB00</item>
         <item name="actionMenuTextAppearance">@style/ActionMenuText</item>
+        <item name="preferenceTheme">@style/PreferenceThemeOverlay</item>
     </style>
 
     <style name="Theme.GnucashTheme.NoActionBar" parent="Theme.AppCompat.Light.NoActionBar">
@@ -47,6 +48,7 @@
         <item name="actionMenuTextAppearance">@style/ActionMenuText</item>
 
         <item name="drawerArrowStyle">@style/DrawerArrowStyle</item>
+        <item name="preferenceTheme">@style/PreferenceThemeOverlay</item>
         <!-- <item name="colorControlNormal">@android:color/white</item> -->
     </style>
 
