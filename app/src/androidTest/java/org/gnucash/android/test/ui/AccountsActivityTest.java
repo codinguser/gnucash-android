@@ -16,11 +16,13 @@
 
 package org.gnucash.android.test.ui;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences.Editor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.Build;
 import android.preference.PreferenceManager;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.Espresso;
@@ -57,7 +59,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.math.BigDecimal;
-import java.util.Currency;
 import java.util.List;
 
 import static android.support.test.espresso.Espresso.onData;
@@ -82,13 +83,14 @@ import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 
+
 @RunWith(AndroidJUnit4.class)
 public class AccountsActivityTest extends ActivityInstrumentationTestCase2<AccountsActivity> {
     private static final String DUMMY_ACCOUNT_CURRENCY_CODE = "USD";
     // Don't add static here, otherwise it gets set to null by super.tearDown()
     private final Commodity DUMMY_ACCOUNT_CURRENCY = Commodity.getInstance(DUMMY_ACCOUNT_CURRENCY_CODE);
 	private static final String DUMMY_ACCOUNT_NAME = "Dummy account";
-    public static final String  DUMMY_ACCOUNT_UID   = "dummy-account";
+    private static final String  DUMMY_ACCOUNT_UID   = "dummy-account";
     public static final String TEST_DB_NAME = "test_gnucash_db.sqlite";
 
     private DatabaseHelper mDbHelper;
@@ -96,7 +98,7 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
     private AccountsDbAdapter mAccountsDbAdapter;
     private TransactionsDbAdapter mTransactionsDbAdapter;
     private SplitsDbAdapter mSplitsDbAdapter;
-    private AccountsActivity mAcccountsActivity;
+    private AccountsActivity mAccountsActivity;
 
     public AccountsActivityTest() {
 		super(AccountsActivity.class);
@@ -107,10 +109,10 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
         super.setUp();
         injectInstrumentation(InstrumentationRegistry.getInstrumentation());
         preventFirstRunDialogs(getInstrumentation().getTargetContext());
-        mAcccountsActivity = getActivity();
+        mAccountsActivity = getActivity();
 
         String activeBookUID = BooksDbAdapter.getInstance().getActiveBookUID();
-        mDbHelper = new DatabaseHelper(mAcccountsActivity, activeBookUID);
+        mDbHelper = new DatabaseHelper(mAccountsActivity, activeBookUID);
         try {
             mDb = mDbHelper.getWritableDatabase();
         } catch (SQLException e) {
@@ -131,7 +133,7 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
 
     @Test
     public void testPreconditions() {
-        assertNotNull(mAcccountsActivity);
+        assertNotNull(mAccountsActivity);
         assertNotNull(mDbHelper);
         assertNotNull(mDb);
         assertNotNull(mSplitsDbAdapter);
@@ -159,9 +161,10 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
     }
 
 
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public void testDisplayAccountsList(){
-        AccountsActivity.createDefaultAccounts("EUR", mAcccountsActivity);
-        mAcccountsActivity.recreate();
+        AccountsActivity.createDefaultAccounts("EUR", mAccountsActivity);
+        mAccountsActivity.recreate();
 
         refreshAccountsList();
         sleep(1000);
@@ -227,7 +230,7 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
         refreshAccountsList();
 
         onView(withText(accountName)).perform(click());
-        openActionBarOverflowOrOptionsMenu(mAcccountsActivity);
+        openActionBarOverflowOrOptionsMenu(mAccountsActivity);
         onView(withText(R.string.title_edit_account)).perform(click());
         onView(withId(R.id.fragment_account_form)).check(matches(isDisplayed()));
         Espresso.closeSoftKeyboard();
@@ -303,7 +306,7 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
 
         Account account = new Account("Transfer Account");
         account.setCommodity(Commodity.getInstance(DUMMY_ACCOUNT_CURRENCY.getCurrencyCode()));
-        Transaction transaction = new Transaction("Simple trxn");
+        Transaction transaction = new Transaction("Simple transaction");
         transaction.setCurrencyCode(DUMMY_ACCOUNT_CURRENCY.getCurrencyCode());
         Split split = new Split(new Money(BigDecimal.TEN, DUMMY_ACCOUNT_CURRENCY), account.getUID());
         transaction.addSplit(split);
@@ -350,7 +353,7 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
 //        onView(withId(R.id.btn_save)).perform(click());
 
         //should throw expected exception
-        mAccountsDbAdapter.getID(DUMMY_ACCOUNT_UID);;
+        mAccountsDbAdapter.getID(DUMMY_ACCOUNT_UID);
     }
 
 	//TODO: Test import of account file
@@ -363,7 +366,7 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
         intent.putExtra(Account.EXTRA_CURRENCY_CODE, "EUR");
         intent.setType(Account.MIME_TYPE);
 
-        new AccountCreator().onReceive(mAcccountsActivity, intent);
+        new AccountCreator().onReceive(mAccountsActivity, intent);
 
 		Account account = mAccountsDbAdapter.getRecord("intent-account");
 		assertThat(account).isNotNull();
@@ -375,28 +378,29 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
     /**
      * Tests that the setup wizard is displayed on first run
      */
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     @Test
     public void shouldShowWizardOnFirstRun() throws Throwable {
-        PreferenceManager.getDefaultSharedPreferences(mAcccountsActivity)
+        PreferenceManager.getDefaultSharedPreferences(mAccountsActivity)
                 .edit()
-                .remove(mAcccountsActivity.getString(R.string.key_first_run))
+                .remove(mAccountsActivity.getString(R.string.key_first_run))
                 .commit();
 
         runTestOnUiThread(new Runnable() {
             @Override
             public void run() {
-                mAcccountsActivity.recreate();
+                mAccountsActivity.recreate();
             }
         });
 
         //check that wizard is shown
-        onView(withText(mAcccountsActivity.getString(R.string.title_setup_gnucash)))
+        onView(withText(mAccountsActivity.getString(R.string.title_setup_gnucash)))
                 .check(matches(isDisplayed()));
     }
 
 	@After
 	public void tearDown() throws Exception {
-        mAcccountsActivity.finish();
+        mAccountsActivity.finish();
 		super.tearDown();
 	}
 
@@ -408,13 +412,12 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
             runTestOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    Fragment fragment = mAcccountsActivity.getCurrentAccountListFragment();
+                    Fragment fragment = mAccountsActivity.getCurrentAccountListFragment();
                     ((AccountsListFragment) fragment).refresh();
                 }
             });
         } catch (Throwable throwable) {
             System.err.println("Failed to refresh fragment");
         }
-
     }
 }
