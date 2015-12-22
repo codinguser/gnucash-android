@@ -89,7 +89,7 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
     private static final String DUMMY_ACCOUNT_CURRENCY_CODE = "USD";
     // Don't add static here, otherwise it gets set to null by super.tearDown()
     private final Commodity DUMMY_ACCOUNT_CURRENCY = Commodity.getInstance(DUMMY_ACCOUNT_CURRENCY_CODE);
-	private static final String DUMMY_ACCOUNT_NAME = "Dummy account";
+    private static final String DUMMY_ACCOUNT_NAME = "Dummy account";
     private static final String  DUMMY_ACCOUNT_UID   = "dummy-account";
     public static final String TEST_DB_NAME = "test_gnucash_db.sqlite";
 
@@ -101,11 +101,11 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
     private AccountsActivity mAccountsActivity;
 
     public AccountsActivityTest() {
-		super(AccountsActivity.class);
-	}
+        super(AccountsActivity.class);
+    }
 
     @Before
-	public void setUp() throws Exception {
+    public void setUp() throws Exception {
         super.setUp();
         injectInstrumentation(InstrumentationRegistry.getInstrumentation());
         preventFirstRunDialogs(getInstrumentation().getTargetContext());
@@ -124,12 +124,12 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
         mAccountsDbAdapter      = new AccountsDbAdapter(mDb, mTransactionsDbAdapter);
         mAccountsDbAdapter.deleteAllRecords(); //clear the data
 
-		Account account = new Account(DUMMY_ACCOUNT_NAME, new CommoditiesDbAdapter(mDb).getCommodity(DUMMY_ACCOUNT_CURRENCY_CODE));
+        Account account = new Account(DUMMY_ACCOUNT_NAME, new CommoditiesDbAdapter(mDb).getCommodity(DUMMY_ACCOUNT_CURRENCY_CODE));
         account.setUID(DUMMY_ACCOUNT_UID);
-		mAccountsDbAdapter.addRecord(account);
+        mAccountsDbAdapter.addRecord(account);
 
         refreshAccountsList();
-	}
+    }
 
     @Test
     public void testPreconditions() {
@@ -195,7 +195,7 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
      * Tests that an account can be created successfully and that the account list is sorted alphabetically.
      */
     @Test
-	public void testCreateAccount(){
+    public void testCreateAccount(){
         onView(allOf(isDisplayed(), withId(R.id.fab_create_account))).perform(click());
 
         String NEW_ACCOUNT_NAME = "A New Account";
@@ -211,15 +211,15 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
 
         onView(withId(R.id.menu_save)).perform(click());
 
-		List<Account> accounts = mAccountsDbAdapter.getAllRecords();
+        List<Account> accounts = mAccountsDbAdapter.getAllRecords();
         assertThat(accounts).isNotNull();
         assertThat(accounts).hasSize(2);
-		Account newestAccount = accounts.get(0); //because of alphabetical sorting
+        Account newestAccount = accounts.get(0); //because of alphabetical sorting
 
-		assertThat(newestAccount.getName()).isEqualTo(NEW_ACCOUNT_NAME);
-		assertThat(newestAccount.getCurrency().getCurrencyCode()).isEqualTo(Money.DEFAULT_CURRENCY_CODE);
+        assertThat(newestAccount.getName()).isEqualTo(NEW_ACCOUNT_NAME);
+        assertThat(newestAccount.getCurrency().getCurrencyCode()).isEqualTo(Money.DEFAULT_CURRENCY_CODE);
         assertThat(newestAccount.isPlaceholderAccount()).isTrue();
-	}
+    }
 
     @Test
     public void testChangeParentAccount() {
@@ -280,8 +280,8 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
     }
 
     @Test
-	public void testEditAccount(){
-		String editedAccountName = "Edited Account";
+    public void testEditAccount(){
+        String editedAccountName = "Edited Account";
         sleep(2000);
         onView(withId(R.id.options_menu)).perform(click());
         onView(withText(R.string.title_edit_account)).perform(click());
@@ -292,12 +292,12 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
 
         onView(withId(R.id.menu_save)).perform(click());
 
-		List<Account> accounts = mAccountsDbAdapter.getAllRecords();
-		Account latest = accounts.get(0);  //will be the first due to alphabetical sorting
+        List<Account> accounts = mAccountsDbAdapter.getAllRecords();
+        Account latest = accounts.get(0);  //will be the first due to alphabetical sorting
 
         assertThat(latest.getName()).isEqualTo(editedAccountName);
         assertThat(latest.getCurrency().getCurrencyCode()).isEqualTo(DUMMY_ACCOUNT_CURRENCY_CODE);
-	}
+    }
 
     @Test
     public void editingAccountShouldNotDeleteTransactions(){
@@ -340,7 +340,7 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
 
     //TODO: Add test for moving content of accounts before deleting it
     @Test(expected = IllegalArgumentException.class)
-	public void testDeleteSimpleAccount() {
+    public void testDeleteSimpleAccount() {
         sleep(2000);
         onView(withId(R.id.options_menu)).perform(click());
         onView(withText(R.string.menu_delete)).perform(click());
@@ -356,11 +356,11 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
         mAccountsDbAdapter.getID(DUMMY_ACCOUNT_UID);
     }
 
-	//TODO: Test import of account file
+    //TODO: Test import of account file
     //TODO: test settings activity
     @Test
-	public void testIntentAccountCreation(){
-		Intent intent = new Intent(Intent.ACTION_INSERT);
+    public void testIntentAccountCreation(){
+        Intent intent = new Intent(Intent.ACTION_INSERT);
         intent.putExtra(Intent.EXTRA_TITLE, "Intent Account");
         intent.putExtra(Intent.EXTRA_UID, "intent-account");
         intent.putExtra(Account.EXTRA_CURRENCY_CODE, "EUR");
@@ -368,12 +368,12 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
 
         new AccountCreator().onReceive(mAccountsActivity, intent);
 
-		Account account = mAccountsDbAdapter.getRecord("intent-account");
-		assertThat(account).isNotNull();
+        Account account = mAccountsDbAdapter.getRecord("intent-account");
+        assertThat(account).isNotNull();
         assertThat(account.getName()).isEqualTo("Intent Account");
         assertThat(account.getUID()).isEqualTo("intent-account");
         assertThat(account.getCurrency().getCurrencyCode()).isEqualTo("EUR");
-	}
+    }
 
     /**
      * Tests that the setup wizard is displayed on first run
@@ -398,11 +398,11 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
                 .check(matches(isDisplayed()));
     }
 
-	@After
-	public void tearDown() throws Exception {
+    @After
+    public void tearDown() throws Exception {
         mAccountsActivity.finish();
-		super.tearDown();
-	}
+        super.tearDown();
+    }
 
     /**
      * Refresh the account list fragment
