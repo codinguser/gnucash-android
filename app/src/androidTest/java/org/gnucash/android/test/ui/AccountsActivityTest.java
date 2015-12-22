@@ -84,8 +84,9 @@ import static org.hamcrest.Matchers.not;
 
 @RunWith(AndroidJUnit4.class)
 public class AccountsActivityTest extends ActivityInstrumentationTestCase2<AccountsActivity> {
-	private static final String DUMMY_ACCOUNT_CURRENCY_CODE = "USD";
-    private static final Commodity DUMMY_ACCOUNT_CURRENCY = Commodity.getInstance(DUMMY_ACCOUNT_CURRENCY_CODE);
+    private static final String DUMMY_ACCOUNT_CURRENCY_CODE = "USD";
+    // Don't add static here, otherwise it gets set to null by super.tearDown()
+    private final Commodity DUMMY_ACCOUNT_CURRENCY = Commodity.getInstance(DUMMY_ACCOUNT_CURRENCY_CODE);
 	private static final String DUMMY_ACCOUNT_NAME = "Dummy account";
     public static final String  DUMMY_ACCOUNT_UID   = "dummy-account";
     public static final String TEST_DB_NAME = "test_gnucash_db.sqlite";
