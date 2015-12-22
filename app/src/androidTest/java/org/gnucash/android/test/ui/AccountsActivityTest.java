@@ -129,6 +129,16 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
         refreshAccountsList();
 	}
 
+    @Test
+    public void testPreconditions() {
+        assertNotNull(mAcccountsActivity);
+        assertNotNull(mDbHelper);
+        assertNotNull(mDb);
+        assertNotNull(mSplitsDbAdapter);
+        assertNotNull(mTransactionsDbAdapter);
+        assertNotNull(DUMMY_ACCOUNT_CURRENCY);
+    }
+
     /**
      * Prevents the first-run dialogs (Whats new, Create accounts etc) from being displayed when testing
      * @param context Application context
