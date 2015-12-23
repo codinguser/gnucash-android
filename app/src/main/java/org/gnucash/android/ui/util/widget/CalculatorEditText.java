@@ -19,7 +19,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.inputmethodservice.KeyboardView;
-import android.support.annotation.XmlRes;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
@@ -47,12 +46,12 @@ import java.util.Locale;
 
 /**
  * A custom EditText which supports computations and uses a custom calculator keyboard.
- * <p>Afer the view is inflated, make sure to call {@link #bindListeners(KeyboardView)}
- * with the view from your layout where the calculator keyboard should be displayed:</p>
+ * <p>After the view is inflated, make sure to call {@link #bindListeners(KeyboardView)}
+ * with the view from your layout where the calculator keyboard should be displayed.</p>
  * @author Ngewi Fet <ngewif@gmail.com>
  */
 public class CalculatorEditText extends EditText {
-    CalculatorKeyboard mCalculatorKeyboard;
+    private CalculatorKeyboard mCalculatorKeyboard;
 
     private Commodity mCommodity = Commodity.DEFAULT_COMMODITY;
     private Context mContext;
@@ -63,7 +62,6 @@ public class CalculatorEditText extends EditText {
     private boolean isContentModified = false;
 
     private int mCalculatorKeysLayout;
-    private KeyboardView mCalculatorKeyboardView;
 
     public CalculatorEditText(Context context) {
         super(context);
@@ -121,7 +119,6 @@ public class CalculatorEditText extends EditText {
         mCalculatorKeyboard = calculatorKeyboard;
         mContext = calculatorKeyboard.getContext();
         setOnFocusChangeListener(new OnFocusChangeListener() {
-            // NOTE By setting the on focus listener, we can show the custom keyboard when the edit box gets focus, but also hide it when the edit box loses focus
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if (hasFocus) {
@@ -159,14 +156,11 @@ public class CalculatorEditText extends EditText {
             }
         });
 
-        // Although it looks redundant having both onClickListener and OnTouchListener, removing
-        // one of them makes the standard keyboard show up in addition to the calculator one.
+        // Although this handler doesn't make sense, if removed, the standard keyboard
+        // shows up in addition to the calculator one when the EditText gets a touch event.
         setOnTouchListener(new OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                if (!mCalculatorKeyboard.isCustomKeyboardVisible())
-                    mCalculatorKeyboard.showCustomKeyboard(v);
-
                 // XXX: Use dispatchTouchEvent()?
                 onTouchEvent(event);
                 return false;
@@ -177,14 +171,14 @@ public class CalculatorEditText extends EditText {
     }
 
     /**
-     * Initializes listeners on the edittext
+     * Initializes listeners on the EditText
      */
     public void bindListeners(KeyboardView keyboardView){
         bindListeners(new CalculatorKeyboard(mContext, keyboardView, mCalculatorKeysLayout));
     }
 
     /**
-     * Returns the calculator keyboard instantiated by this edittext
+     * Returns the calculator keyboard instantiated by this EditText
      * @return CalculatorKeyboard
      */
     public CalculatorKeyboard getCalculatorKeyboard(){
@@ -192,57 +186,7 @@ public class CalculatorEditText extends EditText {
     }
 
     /**
-     * Returns the view Id of the keyboard view
-     * @return Keyboard view
-     */
-    public KeyboardView getCalculatorKeyboardView() {
-        return mCalculatorKeyboardView;
-    }
-
-    /**
-     * Set the keyboard view used for displaying the keyboard
-     * @param calculatorKeyboardView Calculator keyboard view
-     */
-    public void setCalculatorKeyboardView(KeyboardView calculatorKeyboardView) {
-        this.mCalculatorKeyboardView = calculatorKeyboardView;
-        bindListeners(calculatorKeyboardView);
-    }
-
-    /**
-     * Returns the XML resource ID describing the calculator keys layout
-     * @return XML resource ID
-     */
-    public int getCalculatorKeysLayout() {
-        return mCalculatorKeysLayout;
-    }
-
-    /**
-     * Sets the XML resource describing the layout of the calculator keys
-     * @param mCalculatorKeysLayout XML resource ID
-     */
-    public void setCalculatorKeysLayout(@XmlRes int mCalculatorKeysLayout) {
-        this.mCalculatorKeysLayout = mCalculatorKeysLayout;
-        bindListeners(mCalculatorKeyboardView);
-    }
-
-    /**
-     * Sets the calculator keyboard to use for this EditText
-     * @param keyboard Properly intialized calculator keyobard
-     */
-    public void setCalculatorKeyboard(CalculatorKeyboard keyboard){
-        this.mCalculatorKeyboard = keyboard;
-    }
-
-    /**
-     * Returns the currency used for computations
-     * @return ISO 4217 currency
-     */
-    public Commodity getCommodity() {
-        return mCommodity;
-    }
-
-    /**
-     * Sets the commodity to use for calculations
+     * Sets the commodity to use for calculations.
      * The commodity determines the number of decimal places used
      * @param commodity ISO 4217 currency
      */
@@ -251,8 +195,8 @@ public class CalculatorEditText extends EditText {
     }
 
     /**
-     * Evaluates the arithmetic expression in the editText and sets the text property
-     * @return Result of arithmetic evaluation which is same as text displayed in edittext
+     * Evaluates the arithmetic expression in the EditText and sets the text property
+     * @return Result of arithmetic evaluation which is same as text displayed in EditText
      */
     public String evaluate(){
         String amountString = getCleanString();
@@ -330,7 +274,7 @@ public class CalculatorEditText extends EditText {
     }
 
     /**
-     * Set the text to the value of {@code amount} formatted according to the locale
+     * Set the text to the value of {@code amount} formatted according to the locale.
      * <p>The number of decimal places are determined by the currency set to the view, and the
      * decimal separator is determined by the device locale. There are no thousandths separators.</p>
      * @param amount BigDecimal amount
