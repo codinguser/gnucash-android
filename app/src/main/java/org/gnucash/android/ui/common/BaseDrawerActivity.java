@@ -20,6 +20,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.database.Cursor;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.LayoutRes;
@@ -107,6 +109,8 @@ public abstract class BaseDrawerActivity extends PasscodeLockActivity implements
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setTitle(getTitleRes());
         }
+
+        mToolbarProgress.getIndeterminateDrawable().setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN);
 
         View headerView = mNavigationView.getHeaderView(0);
         headerView.findViewById(R.id.drawer_title).setOnClickListener(new View.OnClickListener() {

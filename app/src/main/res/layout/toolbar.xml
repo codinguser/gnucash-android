@@ -28,7 +28,7 @@
         android:background="?attr/colorPrimary"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        app:elevation="10dp"
+        app:elevation="@dimen/elevation_default"
         app:layout_scrollFlags="enterAlways"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
