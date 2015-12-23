@@ -19,6 +19,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.inputmethodservice.KeyboardView;
+import android.support.annotation.XmlRes;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
@@ -62,6 +63,7 @@ public class CalculatorEditText extends EditText {
     private boolean isContentModified = false;
 
     private int mCalculatorKeysLayout;
+    private KeyboardView mCalculatorKeyboardView;
 
     public CalculatorEditText(Context context) {
         super(context);
@@ -186,7 +188,57 @@ public class CalculatorEditText extends EditText {
     }
 
     /**
-     * Sets the commodity to use for calculations.
+     * Returns the view Id of the keyboard view
+     * @return Keyboard view
+     */
+    public KeyboardView getCalculatorKeyboardView() {
+        return mCalculatorKeyboardView;
+    }
+
+    /**
+     * Set the keyboard view used for displaying the keyboard
+     * @param calculatorKeyboardView Calculator keyboard view
+     */
+    public void setCalculatorKeyboardView(KeyboardView calculatorKeyboardView) {
+        this.mCalculatorKeyboardView = calculatorKeyboardView;
+        bindListeners(calculatorKeyboardView);
+    }
+
+    /**
+     * Returns the XML resource ID describing the calculator keys layout
+     * @return XML resource ID
+     */
+    public int getCalculatorKeysLayout() {
+        return mCalculatorKeysLayout;
+    }
+
+    /**
+     * Sets the XML resource describing the layout of the calculator keys
+     * @param mCalculatorKeysLayout XML resource ID
+     */
+    public void setCalculatorKeysLayout(@XmlRes int mCalculatorKeysLayout) {
+        this.mCalculatorKeysLayout = mCalculatorKeysLayout;
+        bindListeners(mCalculatorKeyboardView);
+    }
+
+    /**
+     * Sets the calculator keyboard to use for this EditText
+     * @param keyboard Properly intialized calculator keyobard
+     */
+    public void setCalculatorKeyboard(CalculatorKeyboard keyboard){
+        this.mCalculatorKeyboard = keyboard;
+    }
+
+    /**
+     * Returns the currency used for computations
+     * @return ISO 4217 currency
+     */
+    public Commodity getCommodity() {
+        return mCommodity;
+    }
+
+    /**
+     * Sets the commodity to use for calculations
      * The commodity determines the number of decimal places used
      * @param commodity ISO 4217 currency
      */
