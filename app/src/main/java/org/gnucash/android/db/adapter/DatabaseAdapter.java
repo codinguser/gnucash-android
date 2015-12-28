@@ -252,7 +252,7 @@ public abstract class DatabaseAdapter<Model extends BaseModel> {
      * @return Number of rows inserted
      */
     public long bulkAddRecords(@NonNull List<Model> modelList){
-        return bulkAddRecords(modelList, replace);
+        return bulkAddRecords(modelList, UpdateMethod.replace);
     }
 
     public long bulkAddRecords(@NonNull List<Model> modelList, UpdateMethod updateMethod) {
@@ -348,7 +348,7 @@ public abstract class DatabaseAdapter<Model extends BaseModel> {
         return stmt;
     }
 
-    protected abstract @NotNull SQLiteStatement setBindings(@NonNull SQLiteStatement stmt, @NonNull Model Model);
+    protected abstract @NonNull SQLiteStatement setBindings(@NonNull SQLiteStatement stmt, @NonNull final Model Model);
 
     /**
      * Returns a model instance populated with data from the record with GUID {@code uid}
