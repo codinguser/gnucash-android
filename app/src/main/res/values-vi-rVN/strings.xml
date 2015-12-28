@@ -57,13 +57,14 @@
   <string name="hint_export_choice">By default, only new transactions since last export will be exported. Check this option to export all transactions</string>
   <string name="toast_export_error">Error exporting %1$s file</string>
   <string name="btn_export">Export</string>
-  <string name="option_delete_after_export">Delete after export</string>
+  <string name="option_delete_after_export">Delete transactions after export</string>
   <string name="hint_delete_after_export">All exported transactions will be deleted when exporting is completed</string>
   <string name="title_settings">Settings</string>
   <string-array name="export_destinations">
     <item>SD Card</item>
     <item>DropBox</item>
     <item>Google Drive</item>
+    <item>ownCloud</item>
     <item>Send to&#8230;</item>
   </string-array>
   <string name="btn_move">Move</string>
@@ -381,6 +382,8 @@
   <string name="menu_move_transaction">Move...</string>
   <string name="menu_duplicate_transaction">Duplicate</string>
   <string name="nav_menu_budgets">Budgets</string>
+  <string name="title_cash_flow_report">Cash Flow</string>
+  <string name="title_budgets">Budgets</string>
   <string-array name="report_time_range">
     <item>Current month</item>
     <item>Last 3 months</item>

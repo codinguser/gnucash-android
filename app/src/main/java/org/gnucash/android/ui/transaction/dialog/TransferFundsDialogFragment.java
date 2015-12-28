@@ -44,7 +44,7 @@ import org.gnucash.android.model.Price;
 import org.gnucash.android.ui.transaction.TransactionFormFragment;
 import org.gnucash.android.ui.transaction.TransactionsActivity;
 import org.gnucash.android.ui.util.AmountInputFormatter;
-import org.gnucash.android.ui.util.OnTransferFundsListener;
+import org.gnucash.android.ui.transaction.OnTransferFundsListener;
 
 import java.math.BigDecimal;
 import java.math.MathContext;

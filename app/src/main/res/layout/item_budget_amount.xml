@@ -21,9 +21,6 @@
     app:cardUseCompatPadding="true"
     app:cardPreventCornerOverlap="false"
     app:cardElevation="5dp"
-    android:foreground="?selectableItemBackground"
-    android:focusable="true"
-    android:clickable="true"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
@@ -49,7 +46,7 @@
                 android:id="@+id/input_budget_amount"
                 android:layout_width="0dp"
                 android:layout_weight="3"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:hint="@string/label_transaction_amount"
                 android:inputType="none"
                 android:nextFocusDown="@+id/input_description"

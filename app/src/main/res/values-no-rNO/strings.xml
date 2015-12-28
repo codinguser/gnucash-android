@@ -57,13 +57,14 @@
   <string name="hint_export_choice">Standard eksporteres bare nye transaksjoner siden siste eksport. Merk dette alternativet for å eksportere alle transaksjoner</string>
   <string name="toast_export_error">Feil ved eksport av %1$s</string>
   <string name="btn_export">Eksporter</string>
-  <string name="option_delete_after_export">Slette etter eksport</string>
+  <string name="option_delete_after_export">Delete transactions after export</string>
   <string name="hint_delete_after_export">Alle eksporterte transaksjoner slettes når eksport er fullført</string>
   <string name="title_settings">Innstillinger</string>
   <string-array name="export_destinations">
     <item>SD-kort</item>
     <item>DropBox</item>
     <item>Google Disk</item>
+    <item>ownCloud</item>
     <item>Send til&#8230;</item>
   </string-array>
   <string name="btn_move">Flytt</string>
@@ -377,6 +378,8 @@
   <string name="menu_move_transaction">Move...</string>
   <string name="menu_duplicate_transaction">Duplicate</string>
   <string name="nav_menu_budgets">Budgets</string>
+  <string name="title_cash_flow_report">Cash Flow</string>
+  <string name="title_budgets">Budgets</string>
   <string-array name="report_time_range">
     <item>Gjeldende måned</item>
     <item>Siste 3 måneder</item>

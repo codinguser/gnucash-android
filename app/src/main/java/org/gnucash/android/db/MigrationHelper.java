@@ -1184,6 +1184,7 @@ public class MigrationHelper {
      * Upgrades the database to version 12.
      * <p>This migration makes the following changes to the database:
      * <ul>
+     *     <li>Adds support for multiple database for different books and one extra database for storing book info</li>
      *     <li>Adds a table for budgets</li>
      *     <li>Adds an extra table for recurrences</li>
      *     <li>Migrate scheduled transaction recurrences to own table</li>
@@ -1341,11 +1342,56 @@ public class MigrationHelper {
 
             db.execSQL("DROP TABLE " + ScheduledActionEntry.TABLE_NAME + "_bak");
 
-            db.execSQL(" ALTER TABLE " + SplitEntry.TABLE_NAME
-                    + " ADD COLUMN " + SplitEntry.COLUMN_RECONCILE_STATE + " varchar(1) not null default 'n' ");
-            //// FIXME: 22.11.15 Cannot add a column with non-constant default. Create new structure and migrate whole table
-            db.execSQL(" ALTER TABLE " + SplitEntry.TABLE_NAME
-                    + " ADD COLUMN " + SplitEntry.COLUMN_RECONCILE_DATE + " timestamp not null default '' ");
+
+            //==============  Add RECONCILE_STATE and RECONCILE_DATE to the splits table ==========
+            //We migrate the whole table because we want those columns to have default values
+
+            db.execSQL("ALTER TABLE " + SplitEntry.TABLE_NAME + " RENAME TO " + SplitEntry.TABLE_NAME + "_bak");
+            db.execSQL("CREATE TABLE " + SplitEntry.TABLE_NAME + " ("
+                    + SplitEntry._ID                    + " integer primary key autoincrement, "
+                    + SplitEntry.COLUMN_UID             + " varchar(255) not null UNIQUE, "
+                    + SplitEntry.COLUMN_MEMO 	        + " text, "
+                    + SplitEntry.COLUMN_TYPE            + " varchar(255) not null, "
+                    + SplitEntry.COLUMN_VALUE_NUM       + " integer not null, "
+                    + SplitEntry.COLUMN_VALUE_DENOM     + " integer not null, "
+                    + SplitEntry.COLUMN_QUANTITY_NUM    + " integer not null, "
+                    + SplitEntry.COLUMN_QUANTITY_DENOM  + " integer not null, "
+                    + SplitEntry.COLUMN_ACCOUNT_UID 	+ " varchar(255) not null, "
+                    + SplitEntry.COLUMN_TRANSACTION_UID + " varchar(255) not null, "
+                    + SplitEntry.COLUMN_RECONCILE_STATE + " varchar(1) not null default 'n', "
+                    + SplitEntry.COLUMN_RECONCILE_DATE  + " timestamp not null default current_timestamp, "
+                    + SplitEntry.COLUMN_CREATED_AT      + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
+                    + SplitEntry.COLUMN_MODIFIED_AT     + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
+                    + "FOREIGN KEY (" 	+ SplitEntry.COLUMN_ACCOUNT_UID + ") REFERENCES " + AccountEntry.TABLE_NAME + " (" + AccountEntry.COLUMN_UID + ") ON DELETE CASCADE, "
+                    + "FOREIGN KEY (" 	+ SplitEntry.COLUMN_TRANSACTION_UID + ") REFERENCES " + TransactionEntry.TABLE_NAME + " (" + TransactionEntry.COLUMN_UID + ") ON DELETE CASCADE "
+                    + ");" + DatabaseHelper.createUpdatedAtTrigger(SplitEntry.TABLE_NAME));
+
+            db.execSQL("INSERT INTO " + SplitEntry.TABLE_NAME + " ( "
+                    + SplitEntry._ID                    + " , "
+                    + SplitEntry.COLUMN_UID             + " , "
+                    + SplitEntry.COLUMN_MEMO            + " , "
+                    + SplitEntry.COLUMN_TYPE            + " , "
+                    + SplitEntry.COLUMN_VALUE_NUM       + " , "
+                    + SplitEntry.COLUMN_VALUE_DENOM     + " , "
+                    + SplitEntry.COLUMN_QUANTITY_NUM    + " , "
+                    + SplitEntry.COLUMN_QUANTITY_DENOM  + " , "
+                    + SplitEntry.COLUMN_ACCOUNT_UID     + " , "
+                    + SplitEntry.COLUMN_TRANSACTION_UID
+                    + ")  SELECT "
+                    + SplitEntry.TABLE_NAME + "_bak." + SplitEntry._ID                  + " , "
+                    + SplitEntry.TABLE_NAME + "_bak." + SplitEntry.COLUMN_UID           + " , "
+                    + SplitEntry.TABLE_NAME + "_bak." + SplitEntry.COLUMN_MEMO          + " , "
+                    + SplitEntry.TABLE_NAME + "_bak." + SplitEntry.COLUMN_TYPE          + " , "
+                    + SplitEntry.TABLE_NAME + "_bak." + SplitEntry.COLUMN_VALUE_NUM     + " , "
+                    + SplitEntry.TABLE_NAME + "_bak." + SplitEntry.COLUMN_VALUE_DENOM   + " , "
+                    + SplitEntry.TABLE_NAME + "_bak." + SplitEntry.COLUMN_QUANTITY_NUM  + " , "
+                    + SplitEntry.TABLE_NAME + "_bak." + SplitEntry.COLUMN_QUANTITY_DENOM + " , "
+                    + SplitEntry.TABLE_NAME + "_bak." + SplitEntry.COLUMN_ACCOUNT_UID   + " , "
+                    + SplitEntry.TABLE_NAME + "_bak." + SplitEntry.COLUMN_TRANSACTION_UID
+                    + " FROM " + SplitEntry.TABLE_NAME + "_bak;");
+
+
+            db.execSQL("DROP TABLE " + SplitEntry.TABLE_NAME + "_bak");
 
             db.setTransactionSuccessful();
             oldVersion = 12;

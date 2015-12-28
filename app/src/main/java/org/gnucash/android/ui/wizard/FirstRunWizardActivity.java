@@ -50,8 +50,10 @@ import com.tech.freak.wizardpager.ui.StepPagerStrip;
 
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
+import org.gnucash.android.db.adapter.BooksDbAdapter;
 import org.gnucash.android.importer.ImportAsyncTask;
 import org.gnucash.android.ui.account.AccountsActivity;
+import org.gnucash.android.ui.util.TaskDelegate;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
@@ -208,10 +210,14 @@ public class FirstRunWizardActivity extends AppCompatActivity implements
         AccountsActivity.removeFirstRunFlag();
 
         if (mAccountOptions.equals(getString(R.string.wizard_option_create_default_accounts))){
+            String bookUID = BooksDbAdapter.getInstance().getActiveBookUID();
+            BooksDbAdapter.getInstance().deleteRecord(bookUID); //a default book is usually created
             AccountsActivity.createDefaultAccounts(mCurrencyCode, FirstRunWizardActivity.this);
             finish();
         } else if (mAccountOptions.equals(getString(R.string.wizard_option_import_my_accounts))){
             AccountsActivity.startXmlFileChooser(this);
+        } else {
+            finish();
         }
     }
 
@@ -252,9 +258,13 @@ public class FirstRunWizardActivity extends AppCompatActivity implements
         switch (requestCode){
             case AccountsActivity.REQUEST_PICK_ACCOUNTS_FILE:
                 if (resultCode == Activity.RESULT_OK && data != null) {
-                    AccountsActivity.importXmlFileFromIntent(this, data);
+                    AccountsActivity.importXmlFileFromIntent(this, data, new TaskDelegate() {
+                        @Override
+                        public void onTaskComplete() {
+                            finish();
+                        }
+                    });
                 }
-                finish();
                 break;
         }
     }

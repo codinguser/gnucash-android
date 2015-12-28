@@ -57,13 +57,14 @@
   <string name="hint_export_choice">Por defecto solo las nuevas transacciones desde la última exportación serán exportadas. Seleccione esta opción para exportar todas las transacciones</string>
   <string name="toast_export_error">Error exportando datos %1$s</string>
   <string name="btn_export">Exportar</string>
-  <string name="option_delete_after_export">Borrar después de exportar</string>
+  <string name="option_delete_after_export">Delete transactions after export</string>
   <string name="hint_delete_after_export">Todas las transacciones exportadas serán borradas cuando la exportación haya terminado</string>
   <string name="title_settings">Ajustes</string>
   <string-array name="export_destinations">
     <item>Tarjeta SD</item>
     <item>DropBox</item>
     <item>Google Drive</item>
+    <item>ownCloud</item>
     <item>Compartir archivo&#8230;</item>
   </string-array>
   <string name="btn_move">Mover</string>
@@ -383,6 +384,8 @@ Este proceso solo recoge información que no permite identificar al usuario</str
   <string name="menu_move_transaction">Move...</string>
   <string name="menu_duplicate_transaction">Duplicate</string>
   <string name="nav_menu_budgets">Budgets</string>
+  <string name="title_cash_flow_report">Cash Flow</string>
+  <string name="title_budgets">Budgets</string>
   <string-array name="report_time_range">
     <item>Mes actual</item>
     <item>Últimos 3 meses</item>

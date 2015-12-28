@@ -15,12 +15,19 @@
  */
 package org.gnucash.android.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import org.gnucash.android.app.GnuCashApplication;
+
+import java.math.BigDecimal;
+
 /**
  * Budget amounts for the different accounts.
  * The {@link Money} amounts are absolute values
  * @see Budget
  */
-public class BudgetAmount extends BaseModel {
+public class BudgetAmount extends BaseModel implements Parcelable {
 
     private String mBudgetUID;
     private String mAccountUID;
@@ -101,4 +108,45 @@ public class BudgetAmount extends BaseModel {
     public void setAmount(Money amount) {
         this.mAmount = amount.abs();
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(getUID());
+        dest.writeString(mBudgetUID);
+        dest.writeString(mAccountUID);
+        dest.writeString(mAmount.toPlainString());
+        dest.writeLong(mPeriodNum);
+    }
+
+    public static final Parcelable.Creator<BudgetAmount> CREATOR = new Parcelable.Creator<BudgetAmount>(){
+
+        @Override
+        public BudgetAmount createFromParcel(Parcel source) {
+            return new BudgetAmount(source);
+        }
+
+        @Override
+        public BudgetAmount[] newArray(int size) {
+            return new BudgetAmount[size];
+        }
+    };
+
+    /**
+     * Private constructor for creating new BudgetAmounts from a Parcel
+     * @param source Parcel
+     */
+    private BudgetAmount(Parcel source){
+        setUID(source.readString());
+        mBudgetUID = source.readString();
+        mAccountUID = source.readString();
+        mAmount = new Money(new BigDecimal(source.readString()), Commodity.DEFAULT_COMMODITY);
+        mPeriodNum = source.readLong();
+    }
+
+
 }

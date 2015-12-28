@@ -57,13 +57,14 @@
   <string name="hint_export_choice">Експортувати всі транзакції, а не тільки нові.</string>
   <string name="toast_export_error">Помилка при експорті %1$s</string>
   <string name="btn_export">Експорт</string>
-  <string name="option_delete_after_export">Видалити після експорту</string>
+  <string name="option_delete_after_export">Delete transactions after export</string>
   <string name="hint_delete_after_export">Всі експортовані транзакції будуть видалені по завершенні.</string>
   <string name="title_settings">Налаштування</string>
   <string-array name="export_destinations">
     <item>Карта пам\'яті</item>
     <item>DropBox</item>
     <item>Google Drive</item>
+    <item>ownCloud</item>
     <item>Відправити файл&#8230;</item>
   </string-array>
   <string name="btn_move">Перенести</string>
@@ -387,6 +388,8 @@
   <string name="menu_move_transaction">Move...</string>
   <string name="menu_duplicate_transaction">Duplicate</string>
   <string name="nav_menu_budgets">Budgets</string>
+  <string name="title_cash_flow_report">Cash Flow</string>
+  <string name="title_budgets">Budgets</string>
   <string-array name="report_time_range">
     <item>Поточний місяць</item>
     <item>Останній квартал</item>

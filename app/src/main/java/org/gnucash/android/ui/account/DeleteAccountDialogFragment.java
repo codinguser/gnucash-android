@@ -37,11 +37,10 @@ import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.db.adapter.SplitsDbAdapter;
 import org.gnucash.android.db.adapter.TransactionsDbAdapter;
 import org.gnucash.android.model.AccountType;
-import org.gnucash.android.ui.util.Refreshable;
+import org.gnucash.android.ui.common.Refreshable;
 import org.gnucash.android.ui.homescreen.WidgetConfigurationActivity;
 import org.gnucash.android.util.QualifiedAccountNameCursorAdapter;
 
-import java.util.Currency;
 import java.util.List;
 
 /**

@@ -25,11 +25,9 @@ import com.crashlytics.android.Crashlytics;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
-import java.security.InvalidParameterException;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
-import java.text.ParseException;
 import java.util.Currency;
 import java.util.Locale;
 

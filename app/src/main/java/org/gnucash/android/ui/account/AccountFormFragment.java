@@ -66,6 +66,7 @@ import org.gnucash.android.ui.colorpicker.ColorPickerDialog;
 import org.gnucash.android.ui.colorpicker.ColorPickerSwatch;
 import org.gnucash.android.ui.colorpicker.ColorSquare;
 import org.gnucash.android.ui.common.UxArgument;
+import org.gnucash.android.ui.settings.PreferenceActivity;
 import org.gnucash.android.util.CommoditiesCursorAdapter;
 import org.gnucash.android.util.QualifiedAccountNameCursorAdapter;
 
@@ -247,7 +248,7 @@ public class AccountFormFragment extends Fragment {
 		setHasOptionsMenu(true);
         mAccountsDbAdapter = AccountsDbAdapter.getInstance();
 
-        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        SharedPreferences sharedPrefs = PreferenceActivity.getBookSharedPreferences(getActivity());
         mUseDoubleEntry = sharedPrefs.getBoolean(getString(R.string.key_use_double_entry), true);
 	}
 	
@@ -848,6 +849,7 @@ public class AccountFormFragment extends Fragment {
 			mAccountsDbAdapter = AccountsDbAdapter.getInstance();
         // bulk update, will not update transactions
 		mAccountsDbAdapter.bulkAddRecords(accountsToUpdate, DatabaseAdapter.UpdateMethod.update);
+
 		finishFragment();
 	}
 

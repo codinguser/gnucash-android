@@ -37,6 +37,7 @@ import org.gnucash.android.model.Money;
 import org.gnucash.android.model.Split;
 import org.gnucash.android.model.Transaction;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -630,6 +631,26 @@ public class TransactionsDbAdapter extends DatabaseAdapter<Transaction> {
      */
     public long getTimestampOfLatestTransaction(AccountType type, String currencyCode) {
         return getTimestamp("MAX", type, currencyCode);
+    }
+
+    /**
+     * Returns the most recent `modified_at` timestamp of non-template transactions in the database
+     * @return Last moodified time in milliseconds or current time if there is none in the database
+     */
+    public Timestamp getTimestampOfLastModification(){
+        Cursor cursor = mDb.query(TransactionEntry.TABLE_NAME,
+                new String[]{"MAX(" + TransactionEntry.COLUMN_MODIFIED_AT + ")"},
+                null, null, null, null, null);
+
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        if (cursor.moveToFirst()){
+            String timeString = cursor.getString(0);
+            if (timeString != null){ //in case there were no transactions in the XML file (account structure only)
+                timestamp = Timestamp.valueOf(timeString);
+            }
+        }
+        cursor.close();
+        return timestamp;
     }
 
     /**

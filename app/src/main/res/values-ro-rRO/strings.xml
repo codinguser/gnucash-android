@@ -16,17 +16,17 @@
  limitations under the License.
 -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-  <string name="title_create_account">Create Account</string>
-  <string name="title_edit_account">Edit Account</string>
+  <string name="title_create_account">Creează cont</string>
+  <string name="title_edit_account">Editați contul</string>
   <string name="info_details">Info</string>
   <string name="menu_export">Export&#8230;</string>
-  <string name="description_add_transaction_icon">Add a new transaction to an account</string>
-  <string name="label_no_accounts">No accounts to display</string>
-  <string name="label_account_name">Account name</string>
-  <string name="btn_cancel">Cancel</string>
-  <string name="btn_save">Save</string>
-  <string name="label_passcode">Enter Passcode</string>
-  <string name="toast_wrong_passcode">Wrong passcode, please try again</string>
+  <string name="description_add_transaction_icon">Adăugaţi o nouă tranzacţie într-un cont</string>
+  <string name="label_no_accounts">Nu există conturi pentru a afișa</string>
+  <string name="label_account_name">Numele contului</string>
+  <string name="btn_cancel">Rezilia</string>
+  <string name="btn_save">Salvaţi</string>
+  <string name="label_passcode">Introduceţi parola</string>
+  <string name="toast_wrong_passcode">Greşit parola, vă rugăm să încercaţi din nou</string>
   <string name="toast_passcode_set">Passcode set</string>
   <string name="label_confirm_passcode">Please confirm your passcode</string>
   <string name="toast_invalid_passcode_confirmation">Invalid passcode confirmation. Please try again</string>
@@ -57,13 +57,14 @@
   <string name="hint_export_choice">By default, only new transactions since last export will be exported. Check this option to export all transactions</string>
   <string name="toast_export_error">Error exporting %1$s file</string>
   <string name="btn_export">Export</string>
-  <string name="option_delete_after_export">Delete after export</string>
+  <string name="option_delete_after_export">Delete transactions after export</string>
   <string name="hint_delete_after_export">All exported transactions will be deleted when exporting is completed</string>
   <string name="title_settings">Settings</string>
   <string-array name="export_destinations">
     <item>SD Card</item>
     <item>DropBox</item>
     <item>Google Drive</item>
+    <item>ownCloud</item>
     <item>Send to&#8230;</item>
   </string-array>
   <string name="btn_move">Move</string>
@@ -391,6 +392,8 @@
   <string name="menu_move_transaction">Move...</string>
   <string name="menu_duplicate_transaction">Duplicate</string>
   <string name="nav_menu_budgets">Budgets</string>
+  <string name="title_cash_flow_report">Cash Flow</string>
+  <string name="title_budgets">Budgets</string>
   <string-array name="report_time_range">
     <item>Current month</item>
     <item>Last 3 months</item>

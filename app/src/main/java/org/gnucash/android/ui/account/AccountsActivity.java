@@ -35,6 +35,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -69,13 +70,9 @@ import org.gnucash.android.ui.common.BaseDrawerActivity;
 import org.gnucash.android.ui.common.FormActivity;
 import org.gnucash.android.ui.common.UxArgument;
 import org.gnucash.android.ui.transaction.TransactionsActivity;
-import org.gnucash.android.ui.util.OnAccountClickedListener;
-import org.gnucash.android.ui.util.Refreshable;
+import org.gnucash.android.ui.common.Refreshable;
 import org.gnucash.android.ui.util.TaskDelegate;
 import org.gnucash.android.ui.wizard.FirstRunWizardActivity;
-
-import java.io.FileNotFoundException;
-import java.io.InputStream;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -150,7 +147,7 @@ public class AccountsActivity extends BaseDrawerActivity implements OnAccountCli
     /**
      * Configuration for rating the app
      */
-    public static RateThisApp.Config rateAppConfig = new RateThisApp.Config(30, 100);
+    public static RateThisApp.Config rateAppConfig = new RateThisApp.Config(14, 100);
 
     /**
      * Adapter for managing the sub-account and transaction fragment pages in the accounts view
@@ -163,23 +160,24 @@ public class AccountsActivity extends BaseDrawerActivity implements OnAccountCli
 
         @Override
         public Fragment getItem(int i) {
-            AccountsListFragment currentFragment;
-            switch (i){
-                case INDEX_RECENT_ACCOUNTS_FRAGMENT:
-                    currentFragment = AccountsListFragment.newInstance(AccountsListFragment.DisplayMode.RECENT);
-                    break;
+            AccountsListFragment currentFragment = (AccountsListFragment) mFragmentPageReferenceMap.get(i);
+            if (currentFragment == null) {
+                switch (i) {
+                    case INDEX_RECENT_ACCOUNTS_FRAGMENT:
+                        currentFragment = AccountsListFragment.newInstance(AccountsListFragment.DisplayMode.RECENT);
+                        break;
 
-                case INDEX_FAVORITE_ACCOUNTS_FRAGMENT:
-                    currentFragment = AccountsListFragment.newInstance(AccountsListFragment.DisplayMode.FAVORITES);
-                    break;
+                    case INDEX_FAVORITE_ACCOUNTS_FRAGMENT:
+                        currentFragment = AccountsListFragment.newInstance(AccountsListFragment.DisplayMode.FAVORITES);
+                        break;
 
-                case INDEX_TOP_LEVEL_ACCOUNTS_FRAGMENT:
-                default:
-                    currentFragment = AccountsListFragment.newInstance(AccountsListFragment.DisplayMode.TOP_LEVEL);
-                    break;
+                    case INDEX_TOP_LEVEL_ACCOUNTS_FRAGMENT:
+                    default:
+                        currentFragment = AccountsListFragment.newInstance(AccountsListFragment.DisplayMode.TOP_LEVEL);
+                        break;
+                }
+                mFragmentPageReferenceMap.put(i, currentFragment);
             }
-
-            mFragmentPageReferenceMap.put(i, currentFragment);
             return currentFragment;
         }
 
@@ -215,16 +213,19 @@ public class AccountsActivity extends BaseDrawerActivity implements OnAccountCli
         return (AccountsListFragment)(mFragmentPageReferenceMap.get(index));
     }
 
+    @Override
+    public int getContentView() {
+        return R.layout.activity_accounts;
+    }
 
-	@Override
+    @Override
+    public int getTitleRes() {
+        return R.string.title_accounts;
+    }
+
+    @Override
 	public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_accounts);
-        setUpDrawer();
-        ButterKnife.bind(this);
-
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
 
         final Intent intent = getIntent();
         handleOpenFileIntent(intent);
@@ -250,19 +251,16 @@ public class AccountsActivity extends BaseDrawerActivity implements OnAccountCli
 
             @Override
             public void onTabUnselected(TabLayout.Tab tab) {
-
+                //nothing to see here, move along
             }
 
             @Override
             public void onTabReselected(TabLayout.Tab tab) {
-
+                //nothing to see here, move along
             }
         });
 
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-        int lastTabIndex = preferences.getInt(LAST_OPEN_TAB_INDEX, INDEX_TOP_LEVEL_ACCOUNTS_FRAGMENT);
-        int index = intent.getIntExtra(EXTRA_TAB_INDEX, lastTabIndex);
-        mViewPager.setCurrentItem(index);
+        setCurrentTab();
 
         mFloatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -348,17 +346,21 @@ public class AccountsActivity extends BaseDrawerActivity implements OnAccountCli
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-        int index = intent.getIntExtra(EXTRA_TAB_INDEX, INDEX_TOP_LEVEL_ACCOUNTS_FRAGMENT);
-        setTab(index);
+        setIntent(intent);
+        setCurrentTab();
+
+        getCurrentAccountListFragment().refresh();
 
         handleOpenFileIntent(intent);
     }
 
     /**
      * Sets the current tab in the ViewPager
-     * @param index Index of fragment to be loaded
      */
-    public void setTab(int index){
+    public void setCurrentTab(){
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        int lastTabIndex = preferences.getInt(LAST_OPEN_TAB_INDEX, INDEX_TOP_LEVEL_ACCOUNTS_FRAGMENT);
+        int index = getIntent().getIntExtra(EXTRA_TAB_INDEX, lastTabIndex);
         mViewPager.setCurrentItem(index);
     }
 
@@ -493,13 +495,18 @@ public class AccountsActivity extends BaseDrawerActivity implements OnAccountCli
 
     /**
      * Starts Intent chooser for selecting a GnuCash accounts file to import.
-     * <p>The {@code activity} is responsible for the actual import of the file and can do so by calling {@link #importXmlFileFromIntent(Activity, Intent)}<br>
+     * <p>The {@code activity} is responsible for the actual import of the file and can do so by calling {@link #importXmlFileFromIntent(Activity, Intent, TaskDelegate)}<br>
      * The calling class should respond to the request code {@link AccountsActivity#REQUEST_PICK_ACCOUNTS_FILE} in its {@link #onActivityResult(int, int, Intent)} method</p>
      * @param activity Activity starting the request and will also handle the response
-     * @see #importXmlFileFromIntent(Activity, Intent)
+     * @see #importXmlFileFromIntent(Activity, Intent, TaskDelegate)
      */
     public static void startXmlFileChooser(Activity activity) {
-        Intent pickIntent = new Intent(Intent.ACTION_GET_CONTENT);
+        Intent pickIntent;
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT){
+//            pickIntent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+//        } else
+            pickIntent = new Intent(Intent.ACTION_GET_CONTENT);
+
 //        ArrayList<String> mimeTypes = new ArrayList<>();
 //        mimeTypes.add("application/*");
 //        mimeTypes.add("file/*");
@@ -508,7 +515,7 @@ public class AccountsActivity extends BaseDrawerActivity implements OnAccountCli
 //        pickIntent.putStringArrayListExtra(Intent.EXTRA_MIME_TYPES, mimeTypes);
         pickIntent.addCategory(Intent.CATEGORY_OPENABLE);
         pickIntent.setType("*/*");
-        Intent chooser = Intent.createChooser(pickIntent, "Select GnuCash account file");
+        Intent chooser = Intent.createChooser(pickIntent, "Select GnuCash account file"); //todo internationalize string
 
         try {
             activity.startActivityForResult(chooser, REQUEST_PICK_ACCOUNTS_FILE);
@@ -525,10 +532,11 @@ public class AccountsActivity extends BaseDrawerActivity implements OnAccountCli
      * <p>This method is usually called in response to {@link AccountsActivity#startXmlFileChooser(Activity)}</p>
      * @param context Activity context
      * @param data Intent data containing the XML uri
+     * @param onFinishTask Task to be executed when import is complete
      */
-    public static void importXmlFileFromIntent(Activity context, Intent data) {
+    public static void importXmlFileFromIntent(Activity context, Intent data, TaskDelegate onFinishTask) {
         GncXmlExporter.createBackup();
-        new ImportAsyncTask(context).execute(data.getData());
+        new ImportAsyncTask(context, onFinishTask).execute(data.getData());
     }
 
     /**

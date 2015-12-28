@@ -39,19 +39,18 @@ public class BudgetsActivity extends BaseDrawerActivity {
     public static final int REQUEST_CREATE_BUDGET = 0xA;
 
     @Override
+    public int getContentView() {
+        return R.layout.activity_budgets;
+    }
+
+    @Override
+    public int getTitleRes() {
+        return R.string.title_budgets;
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_budgets);
-        setUpDrawer();
-        ButterKnife.bind(this);
-
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-        final ActionBar actionBar = getSupportActionBar();
-        assert actionBar != null;
-        actionBar.setTitle("Budgets");
-        actionBar.setDisplayHomeAsUpEnabled(true);
 
         if (savedInstanceState == null) {
             FragmentManager fragmentManager = getSupportFragmentManager();

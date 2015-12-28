@@ -144,7 +144,7 @@ public class SplitsDbAdapter extends DatabaseAdapter<Split> {
         split.setType(TransactionType.valueOf(typeName));
         split.setMemo(memo);
         split.setReconcileState(reconcileState.charAt(0));
-        if (reconcileDate != null)
+        if (reconcileDate != null && !reconcileDate.isEmpty())
             split.setReconcileDate(Timestamp.valueOf(reconcileDate));
 
         return split;

@@ -63,7 +63,8 @@ import org.gnucash.android.model.BaseModel;
 import org.gnucash.android.model.ScheduledAction;
 import org.gnucash.android.ui.account.AccountsActivity;
 import org.gnucash.android.ui.common.UxArgument;
-import org.gnucash.android.ui.settings.SettingsActivity;
+import org.gnucash.android.ui.settings.BackupPreferenceFragment;
+import org.gnucash.android.ui.settings.dialog.OwnCloudDialogFragment;
 import org.gnucash.android.ui.transaction.TransactionFormFragment;
 import org.gnucash.android.ui.util.RecurrenceParser;
 import org.gnucash.android.ui.util.RecurrenceViewClickListener;
@@ -132,14 +133,14 @@ public class ExportFormFragment extends Fragment implements
 	/**
 	 * Event recurrence options
 	 */
-	EventRecurrence mEventRecurrence = new EventRecurrence();
+	private EventRecurrence mEventRecurrence = new EventRecurrence();
 
 	/**
 	 * Recurrence rule
 	 */
-	String mRecurrenceRule;
+	private String mRecurrenceRule;
 
-	Calendar mExportStartCalendar = Calendar.getInstance();
+	private Calendar mExportStartCalendar = Calendar.getInstance();
 
 	/**
 	 * Tag for logging
@@ -154,7 +155,7 @@ public class ExportFormFragment extends Fragment implements
 	private ExportParams.ExportTarget mExportTarget = ExportParams.ExportTarget.SD_CARD;
 
 
-	public void onRadioButtonClicked(View view){
+	private void onRadioButtonClicked(View view){
         switch (view.getId()){
             case R.id.radio_ofx_format:
                 mExportFormat = ExportFormat.OFX;
@@ -308,8 +309,8 @@ public class ExportFormFragment extends Fragment implements
 					case 1:
 						recurrenceOptionsView.setVisibility(View.VISIBLE);
 						mExportTarget = ExportParams.ExportTarget.DROPBOX;
-						String dropboxAppKey = getString(R.string.dropbox_app_key, SettingsActivity.DROPBOX_APP_KEY);
-						String dropboxAppSecret = getString(R.string.dropbox_app_secret, SettingsActivity.DROPBOX_APP_SECRET);
+						String dropboxAppKey = getString(R.string.dropbox_app_key, BackupPreferenceFragment.DROPBOX_APP_KEY);
+						String dropboxAppSecret = getString(R.string.dropbox_app_secret, BackupPreferenceFragment.DROPBOX_APP_SECRET);
 						DbxAccountManager mDbxAccountManager = DbxAccountManager.getInstance(getActivity().getApplicationContext(),
 								dropboxAppKey, dropboxAppSecret);
 						if (!mDbxAccountManager.hasLinkedAccount()) {
@@ -319,10 +320,19 @@ public class ExportFormFragment extends Fragment implements
 					case 2:
 						recurrenceOptionsView.setVisibility(View.VISIBLE);
 						mExportTarget = ExportParams.ExportTarget.GOOGLE_DRIVE;
-						SettingsActivity.mGoogleApiClient = SettingsActivity.getGoogleApiClient(getActivity());
-						SettingsActivity.mGoogleApiClient.connect();
+						BackupPreferenceFragment.mGoogleApiClient = BackupPreferenceFragment.getGoogleApiClient(getActivity());
+						BackupPreferenceFragment.mGoogleApiClient.connect();
 						break;
 					case 3:
+						recurrenceOptionsView.setVisibility(View.VISIBLE);
+						mExportTarget = ExportParams.ExportTarget.OWNCLOUD;
+						if(!(PreferenceManager.getDefaultSharedPreferences(getActivity())
+								.getBoolean(getString(R.string.key_owncloud_sync), false))) {
+							OwnCloudDialogFragment ocDialog = OwnCloudDialogFragment.newInstance(null);
+							ocDialog.show(getActivity().getSupportFragmentManager(), "ownCloud dialog");
+						}
+						break;
+					case 4:
 						mExportTarget = ExportParams.ExportTarget.SHARING;
 						recurrenceOptionsView.setVisibility(View.GONE);
 						break;
@@ -467,8 +477,8 @@ public class ExportFormFragment extends Fragment implements
 	 */
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
-		if (requestCode == SettingsActivity.REQUEST_RESOLVE_CONNECTION && resultCode == Activity.RESULT_OK) {
-			SettingsActivity.mGoogleApiClient.connect();
+		if (requestCode == BackupPreferenceFragment.REQUEST_RESOLVE_CONNECTION && resultCode == Activity.RESULT_OK) {
+			BackupPreferenceFragment.mGoogleApiClient.connect();
 		}
 	}
 

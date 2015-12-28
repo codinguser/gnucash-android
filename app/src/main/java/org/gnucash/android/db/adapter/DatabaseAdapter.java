@@ -520,7 +520,7 @@ public abstract class DatabaseAdapter<Model extends BaseModel> {
             if (cursor.moveToFirst()) {
                 result = cursor.getLong(cursor.getColumnIndexOrThrow(DatabaseSchema.CommonColumns._ID));
             } else {
-                throw new IllegalArgumentException("GUID " + uid + " does not exist in the db");
+                throw new IllegalArgumentException(mTableName + " with GUID " + uid + " does not exist in the db");
             }
         } finally {
             cursor.close();
@@ -545,7 +545,7 @@ public abstract class DatabaseAdapter<Model extends BaseModel> {
             if (cursor.moveToFirst()) {
                 uid = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.CommonColumns.COLUMN_UID));
             } else {
-                throw new IllegalArgumentException("Record with ID " + id + " does not exist in the db");
+                throw new IllegalArgumentException(mTableName + " Record ID " + id + " does not exist in the db");
             }
         } finally {
             cursor.close();

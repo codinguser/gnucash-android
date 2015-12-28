@@ -41,8 +41,8 @@ public class ScheduledActionDbAdapter extends DatabaseAdapter<ScheduledAction> {
 
     RecurrenceDbAdapter mRecurrenceDbAdapter;
 
-    public ScheduledActionDbAdapter(SQLiteDatabase db){
-        super(db, ScheduledActionEntry.TABLE_NAME, new String[]{
+    public ScheduledActionDbAdapter(SQLiteDatabase db, RecurrenceDbAdapter recurrenceDbAdapter){
+        super(db, ScheduledActionEntry.TABLE_NAME,  new String[]{
                 ScheduledActionEntry.COLUMN_ACTION_UID        ,
                 ScheduledActionEntry.COLUMN_TYPE              ,
                 ScheduledActionEntry.COLUMN_START_TIME        ,
@@ -60,7 +60,8 @@ public class ScheduledActionDbAdapter extends DatabaseAdapter<ScheduledAction> {
                 ScheduledActionEntry.COLUMN_TEMPLATE_ACCT_UID ,
                 ScheduledActionEntry.COLUMN_EXECUTION_COUNT
         });
-        mRecurrenceDbAdapter = new RecurrenceDbAdapter(db);
+        mRecurrenceDbAdapter = recurrenceDbAdapter;
+        LOG_TAG = "ScheduledActionDbAdapter";
     }
 
     /**

@@ -57,13 +57,14 @@
   <string name="hint_export_choice">Подразумева се да буду извезене само нове трансакције након последњег извоза. Укључите ову опцију ако желите извоз свих трансакција</string>
   <string name="toast_export_error">Грешка при извозу датотеке %1$s</string>
   <string name="btn_export">Извези</string>
-  <string name="option_delete_after_export">Брисање након извоза</string>
+  <string name="option_delete_after_export">Delete transactions after export</string>
   <string name="hint_delete_after_export">Све извезене трансакције ће бити обрисане након завршетка извоза</string>
   <string name="title_settings">Подешавања</string>
   <string-array name="export_destinations">
     <item>SD Картица</item>
     <item>DropBox</item>
     <item>Google диск</item>
+    <item>ownCloud</item>
     <item>Пошаљи у&#8230;</item>
   </string-array>
   <string name="btn_move">Премести</string>
@@ -391,6 +392,8 @@
   <string name="menu_move_transaction">Move...</string>
   <string name="menu_duplicate_transaction">Duplicate</string>
   <string name="nav_menu_budgets">Budgets</string>
+  <string name="title_cash_flow_report">Cash Flow</string>
+  <string name="title_budgets">Budgets</string>
   <string-array name="report_time_range">
     <item>Current month</item>
     <item>Last 3 months</item>

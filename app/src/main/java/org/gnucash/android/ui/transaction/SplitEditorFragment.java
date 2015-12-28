@@ -43,8 +43,6 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.crashlytics.android.Crashlytics;
-
 import net.objecthunter.exp4j.Expression;
 import net.objecthunter.exp4j.ExpressionBuilder;
 
@@ -62,7 +60,6 @@ import org.gnucash.android.model.TransactionType;
 import org.gnucash.android.ui.common.FormActivity;
 import org.gnucash.android.ui.common.UxArgument;
 import org.gnucash.android.ui.transaction.dialog.TransferFundsDialogFragment;
-import org.gnucash.android.ui.util.OnTransferFundsListener;
 import org.gnucash.android.ui.util.widget.CalculatorEditText;
 import org.gnucash.android.ui.util.widget.CalculatorKeyboard;
 import org.gnucash.android.ui.util.widget.TransactionTypeSwitch;

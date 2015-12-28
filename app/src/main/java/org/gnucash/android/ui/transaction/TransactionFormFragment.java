@@ -74,8 +74,8 @@ import org.gnucash.android.model.TransactionType;
 import org.gnucash.android.ui.common.FormActivity;
 import org.gnucash.android.ui.common.UxArgument;
 import org.gnucash.android.ui.homescreen.WidgetConfigurationActivity;
+import org.gnucash.android.ui.settings.PreferenceActivity;
 import org.gnucash.android.ui.transaction.dialog.TransferFundsDialogFragment;
-import org.gnucash.android.ui.util.OnTransferFundsListener;
 import org.gnucash.android.ui.util.RecurrenceParser;
 import org.gnucash.android.ui.util.RecurrenceViewClickListener;
 import org.gnucash.android.ui.util.widget.CalculatorEditText;
@@ -92,7 +92,6 @@ import java.util.Currency;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
-import java.util.Locale;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -293,7 +292,7 @@ public class TransactionFormFragment extends Fragment implements
 		super.onActivityCreated(savedInstanceState);
 		setHasOptionsMenu(true);
 
-		SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+		SharedPreferences sharedPrefs = PreferenceActivity.getBookSharedPreferences(getActivity());
 		mUseDoubleEntry = sharedPrefs.getBoolean(getString(R.string.key_use_double_entry), false);
 		if (!mUseDoubleEntry){
 			mDoubleEntryLayout.setVisibility(View.GONE);
@@ -494,6 +493,9 @@ public class TransactionFormFragment extends Fragment implements
 		Currency accountCurrency = Currency.getInstance(currencyCode);
 		mCurrencyTextView.setText(accountCurrency.getSymbol());
 
+        Commodity commodity = Commodity.getInstance(currencyCode);
+        mAmountEditText.setCommodity(commodity);
+
         mSaveTemplateCheckbox.setChecked(mTransaction.isTemplate());
         String scheduledActionUID = getArguments().getString(UxArgument.SCHEDULED_ACTION_UID);
         if (scheduledActionUID != null && !scheduledActionUID.isEmpty()) {
@@ -534,7 +536,7 @@ public class TransactionFormFragment extends Fragment implements
 		mTime = mDate = Calendar.getInstance();
 
         mTransactionTypeSwitch.setAccountType(mAccountType);
-		String typePref = PreferenceManager.getDefaultSharedPreferences(getActivity()).getString(getString(R.string.key_default_transaction_type), "DEBIT");
+		String typePref = PreferenceActivity.getBookSharedPreferences(getActivity()).getString(getString(R.string.key_default_transaction_type), "DEBIT");
         mTransactionTypeSwitch.setChecked(TransactionType.valueOf(typePref));
 
 		String code = GnuCashApplication.getDefaultCurrencyCode();
@@ -543,6 +545,9 @@ public class TransactionFormFragment extends Fragment implements
 		}
 		Currency accountCurrency = Currency.getInstance(code);
 		mCurrencyTextView.setText(accountCurrency.getSymbol());
+
+        Commodity commodity = Commodity.getInstance(code);
+        mAmountEditText.setCommodity(commodity);
 
         if (mUseDoubleEntry){
             String currentAccountUID = mAccountUID;
@@ -753,8 +758,8 @@ public class TransactionFormFragment extends Fragment implements
                     mTransaction.addSplit(split);
 
                     String transferAcctUID;
-                    if (mUseDoubleEntry) {
-                        long transferAcctId = mTransferAccountSpinner.getSelectedItemId();
+                    long transferAcctId = mTransferAccountSpinner.getSelectedItemId();
+                    if (mUseDoubleEntry || transferAcctId < 0) {
                         transferAcctUID = mAccountsDbAdapter.getUID(transferAcctId);
                     } else {
                         transferAcctUID = mAccountsDbAdapter.getOrCreateImbalanceAccountUID(currency);

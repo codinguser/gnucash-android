@@ -32,15 +32,7 @@
                   android:layout_width="match_parent"
                   android:layout_height="wrap_content">
 
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:background="?attr/colorPrimary"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            app:elevation="0dp"
-            app:layout_scrollFlags="scroll|enterAlways"
-            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-            app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+        <include layout="@layout/toolbar" />
 
         <android.support.design.widget.TabLayout
             android:id="@+id/tab_layout"

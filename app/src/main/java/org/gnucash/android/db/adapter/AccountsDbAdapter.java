@@ -181,7 +181,7 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
         stmt.bindLong(10, account.isHidden() ? 1 : 0);
         Commodity commodity = account.getCommodity();
         if (commodity == null)
-            commodity = CommoditiesDbAdapter.getInstance().getCommodity(account.getCurrency().getCurrencyCode());
+            commodity = new CommoditiesDbAdapter(mDb).getCommodity(account.getCurrency().getCurrencyCode());
 
         stmt.bindString(11, commodity.getUID());
 
@@ -789,9 +789,13 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
      * @param endTimestamp the end timestamp of the time range
      * @return Money balance of account list
      */
-    public Money getAccountsBalance(List<String> accountUIDList, long startTimestamp, long endTimestamp) {
+    public Money getAccountsBalance(@NonNull  List<String> accountUIDList, long startTimestamp, long endTimestamp) {
         String currencyCode = GnuCashApplication.getDefaultCurrencyCode();
         Money balance = Money.createZeroInstance(currencyCode);
+
+        if (accountUIDList.isEmpty())
+            return balance;
+
         boolean hasDebitNormalBalance = getAccountType(accountUIDList.get(0)).hasDebitNormalBalance();
 
         SplitsDbAdapter splitsDbAdapter = SplitsDbAdapter.getInstance();
@@ -923,7 +927,7 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
             cursor.close();
         }
         // No ROOT exits, create a new one
-        Account rootAccount = new Account("ROOT Account");
+        Account rootAccount = new Account("ROOT Account", new CommoditiesDbAdapter(mDb).getCommodity("USD"));
         rootAccount.setAccountType(AccountType.ROOT);
         rootAccount.setFullName(ROOT_ACCOUNT_FULL_NAME);
         rootAccount.setHidden(true);
@@ -1197,14 +1201,18 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
 	 */
     @Override
 	public int deleteAllRecords() {
-        mDb.delete(DatabaseSchema.PriceEntry.TABLE_NAME, null, null);
         // Relies "ON DELETE CASCADE" takes too much time
         // It take more than 300s to complete the deletion on my dataset without
         // clearing the split table first, but only needs a little more that 1s
         // if the split table is cleared first.
+        mDb.delete(DatabaseSchema.PriceEntry.TABLE_NAME, null, null);
         mDb.delete(SplitEntry.TABLE_NAME, null, null);
         mDb.delete(TransactionEntry.TABLE_NAME, null, null);
         mDb.delete(DatabaseSchema.ScheduledActionEntry.TABLE_NAME, null, null);
+        mDb.delete(DatabaseSchema.BudgetAmountEntry.TABLE_NAME, null, null);
+        mDb.delete(DatabaseSchema.BudgetEntry.TABLE_NAME, null, null);
+        mDb.delete(DatabaseSchema.RecurrenceEntry.TABLE_NAME, null, null);
+
         return mDb.delete(AccountEntry.TABLE_NAME, null, null);
     }
 

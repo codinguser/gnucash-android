@@ -57,13 +57,14 @@
   <string name="hint_export_choice">Экспортировать все проводки, а не только новые.</string>
   <string name="toast_export_error">Ошибка при экспорте %1$s</string>
   <string name="btn_export">Экспорт</string>
-  <string name="option_delete_after_export">Удалить после экспорта</string>
+  <string name="option_delete_after_export">Delete transactions after export</string>
   <string name="hint_delete_after_export">Все экспортированные проводки будут удалены по завершении.</string>
   <string name="title_settings">Настройки</string>
   <string-array name="export_destinations">
     <item>Карта памяти</item>
     <item>DropBox</item>
     <item>Google Drive</item>
+    <item>ownCloud</item>
     <item>Отправить файл&#8230;</item>
   </string-array>
   <string name="btn_move">Перенести</string>
@@ -389,6 +390,8 @@
   <string name="menu_move_transaction">Move...</string>
   <string name="menu_duplicate_transaction">Duplicate</string>
   <string name="nav_menu_budgets">Budgets</string>
+  <string name="title_cash_flow_report">Cash Flow</string>
+  <string name="title_budgets">Budgets</string>
   <string-array name="report_time_range">
     <item>Текущий месяц</item>
     <item>Последний квартал</item>

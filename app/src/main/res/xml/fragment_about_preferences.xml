@@ -16,7 +16,6 @@
 -->
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
-    <PreferenceCategory android:title="@string/title_about_gnucash"/>
     <Preference android:key="@string/key_about_gnucash" android:summary="@string/app_version_name"
         android:title="@string/title_about_gnucash"/>
     <Preference android:title="@string/title_google_plus_community"
@@ -35,8 +34,8 @@
         <intent android:action="android.intent.action.VIEW"
             android:data="http://www.apache.org/licenses/LICENSE-2.0.html" />
     </Preference>
-    <CheckBoxPreference android:title="@string/title_enable_crashlytics"
+    <android.support.v7.preference.SwitchPreferenceCompat
+        android:title="@string/title_enable_crashlytics"
         android:summary="@string/msg_enable_crashlytics"
         android:key="@string/key_enable_crashlytics" />
-
 </PreferenceScreen>
