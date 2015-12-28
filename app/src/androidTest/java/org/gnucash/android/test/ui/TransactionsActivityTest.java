@@ -33,6 +33,7 @@ import org.gnucash.android.R;
 import org.gnucash.android.db.adapter.AccountsDbAdapter;
 import org.gnucash.android.db.DatabaseHelper;
 import org.gnucash.android.db.DatabaseSchema;
+import org.gnucash.android.db.adapter.DatabaseAdapter;
 import org.gnucash.android.db.adapter.SplitsDbAdapter;
 import org.gnucash.android.db.adapter.TransactionsDbAdapter;
 import org.gnucash.android.model.Account;
@@ -130,8 +131,8 @@ public class TransactionsActivityTest extends
         account2.setUID(TRANSFER_ACCOUNT_UID);
         account2.setCommodity(Commodity.getInstance(CURRENCY_CODE));
 
-        mAccountsDbAdapter.addRecord(account);
-        mAccountsDbAdapter.addRecord(account2);
+        mAccountsDbAdapter.addRecord(account, DatabaseAdapter.UpdateMethod.insert);
+        mAccountsDbAdapter.addRecord(account2, DatabaseAdapter.UpdateMethod.insert);
 
         mTransaction = new Transaction(TRANSACTION_NAME);
 		mTransaction.setCurrencyCode(CURRENCY_CODE);
@@ -144,7 +145,7 @@ public class TransactionsActivityTest extends
         mTransaction.addSplit(split.createPair(TRANSFER_ACCOUNT_UID));
         account.addTransaction(mTransaction);
 
-        mTransactionsDbAdapter.addRecord(mTransaction);
+        mTransactionsDbAdapter.addRecord(mTransaction, DatabaseAdapter.UpdateMethod.insert);
 
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.putExtra(UxArgument.SELECTED_ACCOUNT_UID, DUMMY_ACCOUNT_UID);
@@ -392,12 +393,12 @@ public class TransactionsActivityTest extends
 	//FIXME: Improve on this test
 	public void childAccountsShouldUseParentTransferAccountSetting(){
 		Account transferAccount = new Account("New Transfer Acct");
-		mAccountsDbAdapter.addRecord(transferAccount);
-		mAccountsDbAdapter.addRecord(new Account("Higher account"));
+		mAccountsDbAdapter.addRecord(transferAccount, DatabaseAdapter.UpdateMethod.insert);
+		mAccountsDbAdapter.addRecord(new Account("Higher account"), DatabaseAdapter.UpdateMethod.insert);
 
 		Account childAccount = new Account("Child Account");
 		childAccount.setParentUID(DUMMY_ACCOUNT_UID);
-		mAccountsDbAdapter.addRecord(childAccount);
+		mAccountsDbAdapter.addRecord(childAccount, DatabaseAdapter.UpdateMethod.insert);
 		ContentValues contentValues = new ContentValues();
 		contentValues.put(DatabaseSchema.AccountEntry.COLUMN_DEFAULT_TRANSFER_ACCOUNT_UID, transferAccount.getUID());
 		mAccountsDbAdapter.updateRecord(DUMMY_ACCOUNT_UID, contentValues);
@@ -474,7 +475,7 @@ public class TransactionsActivityTest extends
 	public void testMoveTransaction(){
 		Account account = new Account("Move account");
 		account.setCommodity(Commodity.getInstance(CURRENCY_CODE));
-		mAccountsDbAdapter.addRecord(account);
+		mAccountsDbAdapter.addRecord(account, DatabaseAdapter.UpdateMethod.insert);
 
 		assertThat(mTransactionsDbAdapter.getAllTransactionsForAccount(account.getUID())).hasSize(0);
 
@@ -495,7 +496,7 @@ public class TransactionsActivityTest extends
 		mTransactionsDbAdapter.deleteAllRecords();
 
 		Account account = new Account("Z Account", Commodity.getInstance(CURRENCY_CODE));
-		mAccountsDbAdapter.addRecord(account);
+		mAccountsDbAdapter.addRecord(account, DatabaseAdapter.UpdateMethod.insert);
 
 		onView(withId(R.id.fab_create_transaction)).perform(click());
 

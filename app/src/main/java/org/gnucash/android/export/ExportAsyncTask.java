@@ -50,6 +50,7 @@ import com.google.android.gms.drive.MetadataChangeSet;
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.adapter.AccountsDbAdapter;
+import org.gnucash.android.db.adapter.DatabaseAdapter;
 import org.gnucash.android.db.adapter.TransactionsDbAdapter;
 import org.gnucash.android.export.ofx.OfxExporter;
 import org.gnucash.android.export.qif.QifExporter;
@@ -380,7 +381,7 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
         transactionsDbAdapter.deleteAllNonTemplateTransactions();
 
         if (preserveOpeningBalances) {
-            transactionsDbAdapter.bulkAddRecords(openingBalances);
+            transactionsDbAdapter.bulkAddRecords(openingBalances, DatabaseAdapter.UpdateMethod.insert);
         }
     }
 

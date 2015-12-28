@@ -35,6 +35,7 @@ import com.kobakei.ratethisapp.RateThisApp;
 import org.gnucash.android.R;
 import org.gnucash.android.db.adapter.AccountsDbAdapter;
 import org.gnucash.android.db.DatabaseHelper;
+import org.gnucash.android.db.adapter.DatabaseAdapter;
 import org.gnucash.android.db.adapter.SplitsDbAdapter;
 import org.gnucash.android.db.adapter.TransactionsDbAdapter;
 import org.gnucash.android.model.Account;
@@ -116,7 +117,7 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
 		Account account = new Account(DUMMY_ACCOUNT_NAME);
         account.setUID(DUMMY_ACCOUNT_UID);
 		account.setCommodity(Commodity.getInstance(DUMMY_ACCOUNT_CURRENCY_CODE));
-		mAccountsDbAdapter.addRecord(account);
+		mAccountsDbAdapter.addRecord(account, DatabaseAdapter.UpdateMethod.insert);
         refreshAccountsList();
 	}
 
@@ -156,7 +157,7 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
 
         Account account = new Account(SEARCH_ACCOUNT_NAME);
         account.setParentUID(DUMMY_ACCOUNT_UID);
-        mAccountsDbAdapter.addRecord(account);
+        mAccountsDbAdapter.addRecord(account, DatabaseAdapter.UpdateMethod.insert);
 
         //enter search query
 //        ActionBarUtils.clickSherlockActionBarItem(mSolo, R.id.menu_search);
@@ -202,7 +203,7 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
     public void testChangeParentAccount() {
         final String accountName = "Euro Account";
         Account account = new Account(accountName, Commodity.EUR);
-        mAccountsDbAdapter.addRecord(account);
+        mAccountsDbAdapter.addRecord(account, DatabaseAdapter.UpdateMethod.insert);
 
         refreshAccountsList();
 
@@ -289,7 +290,7 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
         transaction.addSplit(split);
         transaction.addSplit(split.createPair(DUMMY_ACCOUNT_UID));
         account.addTransaction(transaction);
-        mAccountsDbAdapter.addRecord(account);
+        mAccountsDbAdapter.addRecord(account, DatabaseAdapter.UpdateMethod.insert);
 
         assertThat(mAccountsDbAdapter.getRecord(DUMMY_ACCOUNT_UID).getTransactionCount()).isEqualTo(1);
         assertThat(mSplitsDbAdapter.getSplitsForTransaction(transaction.getUID())).hasSize(2);

@@ -206,10 +206,24 @@ public abstract class DatabaseAdapter<Model extends BaseModel> {
      * So beware of any foreign keys with cascade dependencies which might need to be re-added</p>
      * @param model Model to be saved to the database
      */
-    public void addRecord(@NonNull final Model model){
+    public void addRecord(@NonNull final Model model, UpdateMethod updateMethod){
         Log.d(LOG_TAG, String.format("Adding %s record to database: ", model.getClass().getSimpleName()));
-        synchronized(getReplaceStatement()) {
-            setBindings(getReplaceStatement(), model).execute();
+        switch(updateMethod){
+            case insert:
+                synchronized(getInsertStatement()) {
+                    setBindings(getInsertStatement(), model).execute();
+                }
+                break;
+            case update:
+                synchronized(getUpdateStatement()) {
+                    setBindings(getUpdateStatement(), model).execute();
+                }
+                break;
+            default:
+                synchronized(getReplaceStatement()) {
+                    setBindings(getReplaceStatement(), model).execute();
+                }
+                break;
         }
     }
 
@@ -251,9 +265,9 @@ public abstract class DatabaseAdapter<Model extends BaseModel> {
      * @param modelList List of model records
      * @return Number of rows inserted
      */
-    public long bulkAddRecords(@NonNull List<Model> modelList){
-        return bulkAddRecords(modelList, UpdateMethod.replace);
-    }
+    //public long bulkAddRecords(@NonNull List<Model> modelList){
+    //    return bulkAddRecords(modelList, UpdateMethod.replace);
+    //}
 
     public long bulkAddRecords(@NonNull List<Model> modelList, UpdateMethod updateMethod) {
         if (modelList.isEmpty()) {

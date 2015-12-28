@@ -57,6 +57,7 @@ import org.gnucash.android.R;
 import org.gnucash.android.db.adapter.AccountsDbAdapter;
 import org.gnucash.android.db.adapter.CommoditiesDbAdapter;
 import org.gnucash.android.db.DatabaseSchema;
+import org.gnucash.android.db.adapter.DatabaseAdapter;
 import org.gnucash.android.model.Account;
 import org.gnucash.android.model.AccountType;
 import org.gnucash.android.model.Commodity;
@@ -846,10 +847,7 @@ public class AccountFormFragment extends Fragment {
 		if (mAccountsDbAdapter == null)
 			mAccountsDbAdapter = AccountsDbAdapter.getInstance();
         // bulk update, will not update transactions
-        mAccountsDbAdapter.enableForeignKey(false);
-		mAccountsDbAdapter.bulkAddRecords(accountsToUpdate);
-        mAccountsDbAdapter.enableForeignKey(true);
-
+		mAccountsDbAdapter.bulkAddRecords(accountsToUpdate, DatabaseAdapter.UpdateMethod.update);
 		finishFragment();
 	}
 

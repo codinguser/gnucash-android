@@ -45,6 +45,7 @@ import org.gnucash.android.R;
 import org.gnucash.android.db.adapter.AccountsDbAdapter;
 import org.gnucash.android.db.DatabaseCursorLoader;
 import org.gnucash.android.db.DatabaseSchema;
+import org.gnucash.android.db.adapter.DatabaseAdapter;
 import org.gnucash.android.db.adapter.SplitsDbAdapter;
 import org.gnucash.android.db.adapter.TransactionsDbAdapter;
 import org.gnucash.android.model.Money;
@@ -328,7 +329,7 @@ public class TransactionsListFragment extends Fragment implements
 						Transaction transaction = mTransactionsDbAdapter.getRecord(transactionId);
 						Transaction duplicate = new Transaction(transaction, true);
 						duplicate.setTime(System.currentTimeMillis());
-						mTransactionsDbAdapter.addRecord(duplicate);
+						mTransactionsDbAdapter.addRecord(duplicate, DatabaseAdapter.UpdateMethod.insert);
 						refresh();
 						return true;
 

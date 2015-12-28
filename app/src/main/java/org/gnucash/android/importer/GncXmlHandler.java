@@ -27,6 +27,7 @@ import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.adapter.AccountsDbAdapter;
 import org.gnucash.android.db.adapter.BudgetsDbAdapter;
 import org.gnucash.android.db.adapter.CommoditiesDbAdapter;
+import org.gnucash.android.db.adapter.DatabaseAdapter;
 import org.gnucash.android.db.adapter.PricesDbAdapter;
 import org.gnucash.android.db.adapter.ScheduledActionDbAdapter;
 import org.gnucash.android.db.adapter.SplitsDbAdapter;
@@ -937,23 +938,23 @@ public class GncXmlHandler extends DefaultHandler {
             Log.d(getClass().getSimpleName(), "before clean up db");
             mAccountsDbAdapter.deleteAllRecords();
             Log.d(getClass().getSimpleName(), String.format("deb clean up done %d ns", System.nanoTime()-startTime));
-            long nAccounts = mAccountsDbAdapter.bulkAddRecords(mAccountList);
+            long nAccounts = mAccountsDbAdapter.bulkAddRecords(mAccountList, DatabaseAdapter.UpdateMethod.insert);
             Log.d("Handler:", String.format("%d accounts inserted", nAccounts));
             //We need to add scheduled actions first because there is a foreign key constraint on transactions
             //which are generated from scheduled actions (we do auto-create some transactions during import)
-            long nSchedActions = mScheduledActionsDbAdapter.bulkAddRecords(mScheduledActionsList);
+            long nSchedActions = mScheduledActionsDbAdapter.bulkAddRecords(mScheduledActionsList, DatabaseAdapter.UpdateMethod.insert);
             Log.d("Handler:", String.format("%d scheduled actions inserted", nSchedActions));
 
-            long nTempTransactions = mTransactionsDbAdapter.bulkAddRecords(mTemplateTransactions);
+            long nTempTransactions = mTransactionsDbAdapter.bulkAddRecords(mTemplateTransactions, DatabaseAdapter.UpdateMethod.insert);
             Log.d("Handler:", String.format("%d template transactions inserted", nTempTransactions));
 
-            long nTransactions = mTransactionsDbAdapter.bulkAddRecords(mTransactionList);
+            long nTransactions = mTransactionsDbAdapter.bulkAddRecords(mTransactionList, DatabaseAdapter.UpdateMethod.insert);
             Log.d("Handler:", String.format("%d transactions inserted", nTransactions));
 
-            long nPrices = mPricesDbAdapter.bulkAddRecords(mPriceList);
+            long nPrices = mPricesDbAdapter.bulkAddRecords(mPriceList, DatabaseAdapter.UpdateMethod.insert);
             Log.d(getClass().getSimpleName(), String.format("%d prices inserted", nPrices));
 
-            long nBudgets = mBudgetsDbAdapter.bulkAddRecords(mBudgetList);
+            long nBudgets = mBudgetsDbAdapter.bulkAddRecords(mBudgetList, DatabaseAdapter.UpdateMethod.insert);
             Log.d(getClass().getSimpleName(), String.format("%d budgets inserted", nBudgets));
 
             long endTime = System.nanoTime();

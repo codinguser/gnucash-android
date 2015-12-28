@@ -24,6 +24,7 @@ import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
 
+import org.gnucash.android.db.adapter.DatabaseAdapter;
 import org.gnucash.android.db.adapter.TransactionsDbAdapter;
 import org.gnucash.android.db.adapter.CommoditiesDbAdapter;
 
@@ -104,7 +105,7 @@ public class TransactionRecorder extends BroadcastReceiver {
             }
         }
 
-		TransactionsDbAdapter.getInstance().addRecord(transaction);
+		TransactionsDbAdapter.getInstance().addRecord(transaction, DatabaseAdapter.UpdateMethod.insert);
 		
 		WidgetConfigurationActivity.updateAllWidgets(context);
 	}

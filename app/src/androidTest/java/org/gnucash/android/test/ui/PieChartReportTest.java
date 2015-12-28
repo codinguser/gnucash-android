@@ -35,6 +35,7 @@ import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.adapter.AccountsDbAdapter;
 import org.gnucash.android.db.DatabaseHelper;
+import org.gnucash.android.db.adapter.DatabaseAdapter;
 import org.gnucash.android.db.adapter.SplitsDbAdapter;
 import org.gnucash.android.db.adapter.TransactionsDbAdapter;
 import org.gnucash.android.importer.GncXmlImporter;
@@ -146,7 +147,7 @@ public class PieChartReportTest extends ActivityInstrumentationTestCase2<Reports
 
         Account account = mAccountsDbAdapter.getRecord(DINING_EXPENSE_ACCOUNT_UID);
         account.addTransaction(transaction);
-        mTransactionsDbAdapter.addRecord(transaction);
+        mTransactionsDbAdapter.addRecord(transaction, DatabaseAdapter.UpdateMethod.insert);
     }
 
     private void addTransactionForPreviousMonth(int minusMonths) {
@@ -161,7 +162,7 @@ public class PieChartReportTest extends ActivityInstrumentationTestCase2<Reports
 
         Account account = mAccountsDbAdapter.getRecord(BOOKS_EXPENSE_ACCOUNT_UID);
         account.addTransaction(transaction);
-        mTransactionsDbAdapter.addRecord(transaction);
+        mTransactionsDbAdapter.addRecord(transaction, DatabaseAdapter.UpdateMethod.insert);
     }
 
 
@@ -192,7 +193,7 @@ public class PieChartReportTest extends ActivityInstrumentationTestCase2<Reports
         transaction.addSplit(split.createPair(CASH_IN_WALLET_ASSET_ACCOUNT_UID));
 
         mAccountsDbAdapter.getRecord(GIFTS_RECEIVED_INCOME_ACCOUNT_UID).addTransaction(transaction);
-        mTransactionsDbAdapter.addRecord(transaction);
+        mTransactionsDbAdapter.addRecord(transaction, DatabaseAdapter.UpdateMethod.insert);
 
         getTestActivity();
 

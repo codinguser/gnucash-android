@@ -67,20 +67,20 @@ public class BudgetsDbAdapter extends DatabaseAdapter<Budget>{
     }
 
     @Override
-    public void addRecord(@NonNull Budget budget) {
+    public void addRecord(@NonNull Budget budget, UpdateMethod updateMethod) {
         if (budget.getBudgetAmounts().size() == 0)
             throw new IllegalArgumentException("Budgets must have budget amounts");
 
-        mRecurrenceDbAdapter.addRecord(budget.getRecurrence());
-        super.addRecord(budget);
+        mRecurrenceDbAdapter.addRecord(budget.getRecurrence(), updateMethod);
+        super.addRecord(budget, updateMethod);
         mBudgetAmountsDbAdapter.deleteBudgetAmountsForBudget(budget.getUID());
         for (BudgetAmount budgetAmount : budget.getBudgetAmounts()) {
-            mBudgetAmountsDbAdapter.addRecord(budgetAmount);
+            mBudgetAmountsDbAdapter.addRecord(budgetAmount, updateMethod);
         }
     }
 
     @Override
-    public long bulkAddRecords(@NonNull List<Budget> budgetList) {
+    public long bulkAddRecords(@NonNull List<Budget> budgetList, UpdateMethod updateMethod) {
         List<BudgetAmount> budgetAmountList = new ArrayList<>(budgetList.size()*2);
         for (Budget budget : budgetList) {
             budgetAmountList.addAll(budget.getBudgetAmounts());
@@ -91,14 +91,14 @@ public class BudgetsDbAdapter extends DatabaseAdapter<Budget>{
         for (Budget budget : budgetList) {
             recurrenceList.add(budget.getRecurrence());
         }
-        mRecurrenceDbAdapter.bulkAddRecords(recurrenceList);
+        mRecurrenceDbAdapter.bulkAddRecords(recurrenceList, updateMethod);
 
         //now add the budgets themselves
-        long nRow = super.bulkAddRecords(budgetList);
+        long nRow = super.bulkAddRecords(budgetList, updateMethod);
 
         //then add the budget amounts, they require the budgets to exist
         if (nRow > 0 && !budgetAmountList.isEmpty()){
-            mBudgetAmountsDbAdapter.bulkAddRecords(budgetAmountList);
+            mBudgetAmountsDbAdapter.bulkAddRecords(budgetAmountList, updateMethod);
         }
 
         return nRow;

@@ -19,6 +19,7 @@ import android.database.sqlite.SQLiteDatabase;
 
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.adapter.CommoditiesDbAdapter;
+import org.gnucash.android.db.adapter.DatabaseAdapter;
 import org.gnucash.android.model.Commodity;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -81,6 +82,6 @@ public class CommoditiesXmlHandler extends DefaultHandler {
 
     @Override
     public void endDocument() throws SAXException {
-        mCommoditiesDbAdapter.bulkAddRecords(mCommodities);
+        mCommoditiesDbAdapter.bulkAddRecords(mCommodities, DatabaseAdapter.UpdateMethod.insert);
     }
 }

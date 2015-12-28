@@ -114,11 +114,11 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
 	 * @return Database row ID of the inserted account
 	 */
     @Override
-	public void addRecord(@NonNull Account account){
+	public void addRecord(@NonNull Account account, UpdateMethod updateMethod){
         Log.d(LOG_TAG, "Replace account to db");
         //in-case the account already existed, we want to update the templates based on it as well
         List<Transaction> templateTransactions = mTransactionsAdapter.getScheduledTransactionsForAccount(account.getUID());
-        super.addRecord(account);
+        super.addRecord(account, updateMethod);
         String accountUID = account.getUID();
 		//now add transactions if there are any
 		if (account.getAccountType() != AccountType.ROOT){
@@ -126,10 +126,10 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
             updateRecord(accountUID, AccountEntry.COLUMN_FULL_NAME, getFullyQualifiedAccountName(accountUID));
             for (Transaction t : account.getTransactions()) {
                 t.setCommodity(account.getCommodity());
-		        mTransactionsAdapter.addRecord(t);
+		        mTransactionsAdapter.addRecord(t, updateMethod);
 			}
             for (Transaction transaction : templateTransactions) {
-                mTransactionsAdapter.addRecord(transaction);
+                mTransactionsAdapter.addRecord(transaction, UpdateMethod.update);
             }
         }
 	}
@@ -144,7 +144,7 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
      * @return number of rows inserted
      */
     @Override
-    public long bulkAddRecords(@NonNull List<Account> accountList){
+    public long bulkAddRecords(@NonNull List<Account> accountList, UpdateMethod updateMethod){
         //scheduled transactions are not fetched from the database when getting account transactions
         //so we retrieve those which affect this account and then re-save them later
         //this is necessary because the database has ON DELETE CASCADE between accounts and splits
@@ -155,10 +155,10 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
             transactionList.addAll(account.getTransactions());
             transactionList.addAll(mTransactionsAdapter.getScheduledTransactionsForAccount(account.getUID()));
         }
-        long nRow = super.bulkAddRecords(accountList);
+        long nRow = super.bulkAddRecords(accountList, updateMethod);
 
         if (nRow > 0 && !transactionList.isEmpty()){
-            mTransactionsAdapter.bulkAddRecords(transactionList);
+            mTransactionsAdapter.bulkAddRecords(transactionList, updateMethod);
         }
         return nRow;
     }
@@ -545,7 +545,7 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
             account.setParentUID(getOrCreateGnuCashRootAccountUID());
             account.setHidden(!GnuCashApplication.isDoubleEntryEnabled());
             account.setColorCode("#964B00");
-            addRecord(account);
+            addRecord(account, UpdateMethod.insert);
             uid = account.getUID();
         }
         return uid;
@@ -595,7 +595,7 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
             parentName += ACCOUNT_NAME_SEPARATOR;
         }
         if (accountsList.size() > 0) {
-            bulkAddRecords(accountsList);
+            bulkAddRecords(accountsList, UpdateMethod.insert);
         }
         // if fullName is not empty, loop will be entered and then uid will never be null
         //noinspection ConstantConditions

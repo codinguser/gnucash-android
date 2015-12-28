@@ -94,7 +94,7 @@ public class TransactionsDbAdapter extends DatabaseAdapter<Transaction> {
 	 * @param transaction {@link Transaction} to be inserted to database
 	 */
     @Override
-	public void addRecord(@NonNull Transaction transaction){
+	public void addRecord(@NonNull Transaction transaction, UpdateMethod updateMethod){
         Log.d(LOG_TAG, "Replacing transaction in db");
         mDb.beginTransaction();
         try {
@@ -103,13 +103,17 @@ public class TransactionsDbAdapter extends DatabaseAdapter<Transaction> {
                 String imbalanceAccountUID = AccountsDbAdapter.getInstance().getOrCreateImbalanceAccountUID(transaction.getCurrency());
                 imbalanceSplit.setAccountUID(imbalanceAccountUID);
             }
-            super.addRecord(transaction);
+            super.addRecord(transaction, updateMethod);
 
             Log.d(LOG_TAG, "Adding splits for transaction");
             ArrayList<String> splitUIDs = new ArrayList<>(transaction.getSplits().size());
             for (Split split : transaction.getSplits()) {
                 Log.d(LOG_TAG, "Replace transaction split in db");
-                mSplitsDbAdapter.addRecord(split);
+                if (imbalanceSplit == split) {
+                    mSplitsDbAdapter.addRecord(split, UpdateMethod.insert);
+                } else {
+                    mSplitsDbAdapter.addRecord(split, updateMethod);
+                }
                 splitUIDs.add(split.getUID());
             }
             Log.d(LOG_TAG, transaction.getSplits().size() + " splits added");
@@ -139,9 +143,9 @@ public class TransactionsDbAdapter extends DatabaseAdapter<Transaction> {
      * @return Number of transactions inserted
      */
     @Override
-    public long bulkAddRecords(@NonNull List<Transaction> transactionList){
+    public long bulkAddRecords(@NonNull List<Transaction> transactionList, UpdateMethod updateMethod){
         long start = System.nanoTime();
-        long rowInserted = super.bulkAddRecords(transactionList);
+        long rowInserted = super.bulkAddRecords(transactionList, updateMethod);
         long end = System.nanoTime();
         Log.d(getClass().getSimpleName(), String.format("bulk add transaction time %d ", end - start));
         List<Split> splitList = new ArrayList<>(transactionList.size()*3);
@@ -151,7 +155,7 @@ public class TransactionsDbAdapter extends DatabaseAdapter<Transaction> {
         if (rowInserted != 0 && !splitList.isEmpty()) {
             try {
                 start = System.nanoTime();
-                long nSplits = mSplitsDbAdapter.bulkAddRecords(splitList);
+                long nSplits = mSplitsDbAdapter.bulkAddRecords(splitList, updateMethod);
                 Log.d(LOG_TAG, String.format("%d splits inserted in %d ns", nSplits, System.nanoTime()-start));
             }
             finally {
@@ -459,7 +463,7 @@ public class TransactionsDbAdapter extends DatabaseAdapter<Transaction> {
         for (Split split : splits) {
             split.setAccountUID(dstAccountUID);
         }
-        mSplitsDbAdapter.bulkAddRecords(splits);
+        mSplitsDbAdapter.bulkAddRecords(splits, UpdateMethod.update);
         return splits.size();
 	}
 	

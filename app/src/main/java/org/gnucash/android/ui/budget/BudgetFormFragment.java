@@ -49,6 +49,7 @@ import org.gnucash.android.R;
 import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.db.adapter.AccountsDbAdapter;
 import org.gnucash.android.db.adapter.BudgetsDbAdapter;
+import org.gnucash.android.db.adapter.DatabaseAdapter;
 import org.gnucash.android.model.Budget;
 import org.gnucash.android.model.BudgetAmount;
 import org.gnucash.android.model.Commodity;
@@ -298,7 +299,7 @@ public class BudgetFormFragment extends Fragment implements RecurrencePickerDial
         recurrence.setPeriodStart(new Timestamp(mStartDate.getTimeInMillis()));
         mBudget.setRecurrence(recurrence);
 
-        mBudgetsDbAdapter.addRecord(mBudget);
+        mBudgetsDbAdapter.addRecord(mBudget, DatabaseAdapter.UpdateMethod.insert);
         getActivity().finish();
     }
 

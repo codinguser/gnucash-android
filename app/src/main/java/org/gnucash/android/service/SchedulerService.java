@@ -27,6 +27,7 @@ import com.crashlytics.android.Crashlytics;
 
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.DatabaseSchema;
+import org.gnucash.android.db.adapter.DatabaseAdapter;
 import org.gnucash.android.db.adapter.ScheduledActionDbAdapter;
 import org.gnucash.android.db.adapter.TransactionsDbAdapter;
 import org.gnucash.android.export.ExportAsyncTask;
@@ -108,7 +109,7 @@ public class SchedulerService extends IntentService {
                 long transactionTime = scheduledAction.computeNextRunTime(); //default
                 recurringTrxn.setTime(transactionTime);
                 recurringTrxn.setCreatedTimestamp(new Timestamp(transactionTime));
-                transactionsDbAdapter.addRecord(recurringTrxn);
+                transactionsDbAdapter.addRecord(recurringTrxn, DatabaseAdapter.UpdateMethod.insert);
                 break;
 
             case BACKUP:

@@ -36,6 +36,7 @@ import android.widget.TextView;
 
 import org.gnucash.android.R;
 import org.gnucash.android.db.adapter.CommoditiesDbAdapter;
+import org.gnucash.android.db.adapter.DatabaseAdapter;
 import org.gnucash.android.db.adapter.PricesDbAdapter;
 import org.gnucash.android.model.Commodity;
 import org.gnucash.android.model.Money;
@@ -218,7 +219,7 @@ public class TransferFundsDialogFragment extends DialogFragment {
             price.setValueNum(mConvertedAmount.getNumerator() * mOriginAmount.getDenominator());
             price.setValueDenom(mOriginAmount.getNumerator() * mConvertedAmount.getDenominator());
             price.reduce();
-            pricesDbAdapter.addRecord(price);
+            pricesDbAdapter.addRecord(price, DatabaseAdapter.UpdateMethod.insert);
 
             mOnTransferFundsListener.transferComplete(mConvertedAmount);
         }

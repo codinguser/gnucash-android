@@ -53,6 +53,7 @@ import com.dropbox.sync.android.DbxAccountManager;
 
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
+import org.gnucash.android.db.adapter.DatabaseAdapter;
 import org.gnucash.android.db.adapter.ScheduledActionDbAdapter;
 import org.gnucash.android.export.ExportAsyncTask;
 import org.gnucash.android.export.ExportFormat;
@@ -274,7 +275,7 @@ public class ExportFormFragment extends Fragment implements
 		scheduledAction.setRecurrence(RecurrenceParser.parse(mEventRecurrence));
 		scheduledAction.setTag(exportParameters.toCsv());
 		scheduledAction.setActionUID(BaseModel.generateUID());
-		ScheduledActionDbAdapter.getInstance().addRecord(scheduledAction);
+		ScheduledActionDbAdapter.getInstance().addRecord(scheduledAction, DatabaseAdapter.UpdateMethod.insert);
 
 		Log.i(TAG, "Commencing async export of transactions");
 		new ExportAsyncTask(getActivity()).execute(exportParameters);

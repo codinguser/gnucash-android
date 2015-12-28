@@ -80,9 +80,9 @@ public class SplitsDbAdapter extends DatabaseAdapter<Split> {
      * The transactions belonging to the split are marked as exported
      * @param split {@link org.gnucash.android.model.Split} to be recorded in DB
      */
-    public void addRecord(@NonNull final Split split){
+    public void addRecord(@NonNull final Split split, UpdateMethod updateMethod){
         Log.d(LOG_TAG, "Replace transaction split in db");
-        super.addRecord(split);
+        super.addRecord(split, updateMethod);
 
         long transactionId = getTransactionID(split.getTransactionUID());
         //when a split is updated, we want mark the transaction as not exported

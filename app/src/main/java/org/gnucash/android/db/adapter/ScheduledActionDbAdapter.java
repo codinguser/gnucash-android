@@ -72,23 +72,23 @@ public class ScheduledActionDbAdapter extends DatabaseAdapter<ScheduledAction> {
     }
 
     @Override
-    public void addRecord(@NonNull ScheduledAction scheduledAction) {
-        mRecurrenceDbAdapter.addRecord(scheduledAction.getRecurrence());
-        super.addRecord(scheduledAction);
+    public void addRecord(@NonNull ScheduledAction scheduledAction, UpdateMethod updateMethod) {
+        mRecurrenceDbAdapter.addRecord(scheduledAction.getRecurrence(), updateMethod);
+        super.addRecord(scheduledAction, updateMethod);
     }
 
     @Override
-    public long bulkAddRecords(@NonNull List<ScheduledAction> scheduledActions) {
+    public long bulkAddRecords(@NonNull List<ScheduledAction> scheduledActions, UpdateMethod updateMethod) {
         List<Recurrence> recurrenceList = new ArrayList<>(scheduledActions.size());
         for (ScheduledAction scheduledAction : scheduledActions) {
             recurrenceList.add(scheduledAction.getRecurrence());
         }
 
         //first add the recurrences, they have no dependencies (foreign key constraints)
-        long nRecurrences = mRecurrenceDbAdapter.bulkAddRecords(recurrenceList);
+        long nRecurrences = mRecurrenceDbAdapter.bulkAddRecords(recurrenceList, updateMethod);
         Log.d(LOG_TAG, String.format("Added %d recurrences for scheduled actions", nRecurrences));
 
-        return super.bulkAddRecords(scheduledActions);
+        return super.bulkAddRecords(scheduledActions, updateMethod);
     }
 
     /**
@@ -108,7 +108,7 @@ public class ScheduledActionDbAdapter extends DatabaseAdapter<ScheduledAction> {
 
         Recurrence recurrence = scheduledAction.getRecurrence();
         recurrence.setUID(recurrenceUID);
-        recurrenceDbAdapter.addRecord(recurrence);
+        recurrenceDbAdapter.addRecord(recurrence, UpdateMethod.update);
 
         ContentValues contentValues = new ContentValues();
         extractBaseModelAttributes(contentValues, scheduledAction);
