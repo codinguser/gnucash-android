@@ -208,7 +208,7 @@ public abstract class DatabaseAdapter<Model extends BaseModel> {
      */
     public void addRecord(@NonNull final Model model){
         Log.d(LOG_TAG, String.format("Adding %s record to database: ", model.getClass().getSimpleName()));
-        synchronized(mReplaceStatement) {
+        synchronized(getReplaceStatement()) {
             setBindings(getReplaceStatement(), model).execute();
         }
     }
@@ -218,7 +218,7 @@ public abstract class DatabaseAdapter<Model extends BaseModel> {
         long nRow = 0;
         switch (updateMethod) {
             case update:
-                synchronized(mUpdateStatement) {
+                synchronized(getUpdateStatement()) {
                     for (Model model : modelList) {
                         setBindings(getUpdateStatement(), model).execute();
                         nRow++;
@@ -226,7 +226,7 @@ public abstract class DatabaseAdapter<Model extends BaseModel> {
                 }
                 break;
             case insert:
-                synchronized(mInsertStatement) {
+                synchronized(getInsertStatement()) {
                     for (Model model : modelList) {
                         setBindings(getInsertStatement(), model).execute();
                         nRow++;
@@ -234,7 +234,7 @@ public abstract class DatabaseAdapter<Model extends BaseModel> {
                 }
                 break;
             default:
-                synchronized(mReplaceStatement) {
+                synchronized(getReplaceStatement()) {
                     for (Model model : modelList) {
                         setBindings(getReplaceStatement(), model).execute();
                         nRow++;
@@ -266,7 +266,7 @@ public abstract class DatabaseAdapter<Model extends BaseModel> {
         long nRow = 0;
         try {
             mDb.beginTransaction();
-            doAddModels(modelList, updateMethod);
+            nRow = doAddModels(modelList, updateMethod);
             mDb.setTransactionSuccessful();
         }
         finally {
