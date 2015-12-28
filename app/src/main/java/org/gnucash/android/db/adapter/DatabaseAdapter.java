@@ -750,9 +750,9 @@ public abstract class DatabaseAdapter<Model extends BaseModel> {
     /// that need not be deleted, then it can be disabled temporarily
     public void enableForeignKey(boolean enable) {
         if (enable){
-            mDb.execSQL("PRAGMA foreign_keys=ON");
+            mDb.execSQL("PRAGMA foreign_keys=ON;");
         } else {
-            mDb.execSQL("PRAGMA foreign_keys=OFF");
+            mDb.execSQL("PRAGMA foreign_keys=OFF;");
         }
     }
 

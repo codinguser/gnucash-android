@@ -37,7 +37,13 @@ public class BooksDbAdapter extends DatabaseAdapter<Book> {
      * @param db        SQLiteDatabase object
      */
     public BooksDbAdapter(SQLiteDatabase db) {
-        super(db, BookEntry.TABLE_NAME);
+        super(db, BookEntry.TABLE_NAME, new String[] {
+                BookEntry.COLUMN_DISPLAY_NAME,
+                BookEntry.COLUMN_ROOT_GUID,
+                BookEntry.COLUMN_TEMPLATE_GUID,
+                BookEntry.COLUMN_SOURCE_URI,
+                BookEntry.COLUMN_ACTIVE
+        });
     }
 
     /**
@@ -66,26 +72,16 @@ public class BooksDbAdapter extends DatabaseAdapter<Book> {
     }
 
     @Override
-    protected SQLiteStatement compileReplaceStatement(@NonNull Book book) {
-        if (mReplaceStatement == null){
-            mReplaceStatement = mDb.compileStatement("REPLACE INTO " + BookEntry.TABLE_NAME + " ( "
-            + BookEntry.COLUMN_UID              + " , "
-            + BookEntry.COLUMN_DISPLAY_NAME     + " , "
-            + BookEntry.COLUMN_ROOT_GUID        + " , "
-            + BookEntry.COLUMN_TEMPLATE_GUID    + " , "
-            + BookEntry.COLUMN_SOURCE_URI       + " , "
-            + BookEntry.COLUMN_ACTIVE           + " ) VALUES (? , ? , ? , ? , ? , ? )");
-        }
-        mReplaceStatement.clearBindings();
-        mReplaceStatement.bindString(1, book.getUID());
-        mReplaceStatement.bindString(2, book.getDisplayName());
-        mReplaceStatement.bindString(3, book.getRootAccountUID());
-        mReplaceStatement.bindString(4, book.getRootTemplateUID());
+    protected @NonNull SQLiteStatement setBindings(@NonNull SQLiteStatement stmt, @NonNull final Book book) {
+        stmt.clearBindings();
+        stmt.bindString(1, book.getDisplayName());
+        stmt.bindString(2, book.getRootAccountUID());
+        stmt.bindString(3, book.getRootTemplateUID());
         if (book.getSourceUri() != null)
-            mReplaceStatement.bindString(5, book.getSourceUri().toString());
-        mReplaceStatement.bindLong(6, book.isActive() ? 1L : 0L);
-
-        return mReplaceStatement;
+            stmt.bindString(4, book.getSourceUri().toString());
+        stmt.bindLong(5, book.isActive() ? 1L : 0L);
+        stmt.bindString(6, book.getUID());
+        return stmt;
     }
 
     /**

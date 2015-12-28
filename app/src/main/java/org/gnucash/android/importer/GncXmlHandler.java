@@ -986,7 +986,7 @@ public class GncXmlHandler extends DefaultHandler {
             Log.d(getClass().getSimpleName(), String.format("bulk insert time: %d", endTime - startTime));
 
             //if all of the import went smoothly, then add the book to the book db
-            booksDbAdapter.addRecord(mBook);
+            booksDbAdapter.addRecord(mBook, DatabaseAdapter.UpdateMethod.insert);
             mAccountsDbAdapter.setTransactionSuccessful();
         } finally {
             mAccountsDbAdapter.enableForeignKey(true);

@@ -128,7 +128,6 @@ public class AccountsActivityTest extends ActivityInstrumentationTestCase2<Accou
         Account account = new Account(DUMMY_ACCOUNT_NAME, new CommoditiesDbAdapter(mDb).getCommodity(DUMMY_ACCOUNT_CURRENCY_CODE));
         account.setUID(DUMMY_ACCOUNT_UID);
 		mAccountsDbAdapter.addRecord(account, DatabaseAdapter.UpdateMethod.insert);
-        mAccountsDbAdapter.addRecord(account);
         refreshAccountsList();
     }
 
