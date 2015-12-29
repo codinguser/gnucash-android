@@ -64,7 +64,7 @@
     <item>SD卡</item>
     <item>DropBox</item>
     <item>Google Drive</item>
-    <item>Owncloud</item>
+    <item>分享至</item>
   </string-array>
   <string name="btn_move">移动</string>
   <string name="title_move_transactions">移动 %1$d 交易</string>
