@@ -214,14 +214,14 @@ public class DeleteAccountDialogFragment extends DialogFragment {
 
                 AccountsDbAdapter accountsDbAdapter = AccountsDbAdapter.getInstance();
 
-                if (mMoveTransactionsRadioButton.isChecked()){
+                if ((mTransactionCount > 0) && mMoveTransactionsRadioButton.isChecked()){
                     long targetAccountId = mTransactionsDestinationAccountSpinner.getSelectedItemId();
                     //move all the splits
                     SplitsDbAdapter.getInstance().updateRecords(DatabaseSchema.SplitEntry.COLUMN_ACCOUNT_UID + " = ?",
                             new String[]{mOriginAccountUID}, DatabaseSchema.SplitEntry.COLUMN_ACCOUNT_UID, accountsDbAdapter.getUID(targetAccountId));
                 }
 
-                if (mMoveAccountsRadioButton.isChecked()){
+                if ((mSubAccountCount > 0) && mMoveAccountsRadioButton.isChecked()){
                     long targetAccountId = mAccountsDestinationAccountSpinner.getSelectedItemId();
                     AccountsDbAdapter.getInstance().reassignDescendantAccounts(mOriginAccountUID, accountsDbAdapter.getUID(targetAccountId));
                 }
