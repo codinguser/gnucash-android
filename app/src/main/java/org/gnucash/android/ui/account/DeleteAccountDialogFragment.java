@@ -56,31 +56,29 @@ public class DeleteAccountDialogFragment extends DialogFragment {
     /**
      * Spinner for selecting the account to move the transactions to
      */
-    Spinner mTransactionsDestinationAccountSpinner;
+    private Spinner mTransactionsDestinationAccountSpinner;
 
-    Spinner mAccountsDestinationAccountSpinner;
+    private Spinner mAccountsDestinationAccountSpinner;
 
     /**
      * Dialog positive button. Ok to moving the transactions
      */
-    Button mOkButton;
+    private Button mOkButton;
 
     /**
      * Cancel button
      */
-    Button mCancelButton;
+    private Button mCancelButton;
 
     /**
      * GUID of account from which to move the transactions
      */
-    String mOriginAccountUID = null;
+    private String mOriginAccountUID = null;
 
-    View mAccountOptionsView;
-    View mTransactionOptionsView;
-    RadioButton mMoveAccountsRadioButton;
-    RadioButton mMoveTransactionsRadioButton;
-    RadioButton mDeleteAccountsRadioButton;
-    RadioButton mDeleteTransactionsRadioButton;
+    private RadioButton mMoveAccountsRadioButton;
+    private RadioButton mMoveTransactionsRadioButton;
+    private RadioButton mDeleteAccountsRadioButton;
+    private RadioButton mDeleteTransactionsRadioButton;
 
     private int mTransactionCount;
     private int mSubAccountCount;
@@ -107,24 +105,24 @@ public class DeleteAccountDialogFragment extends DialogFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.dialog_account_delete, container, false);
-        mTransactionOptionsView = view.findViewById(R.id.transactions_options);
-        ((TextView)mTransactionOptionsView.findViewById(R.id.title_content)).setText(R.string.section_header_transactions);
-        ((TextView)mTransactionOptionsView.findViewById(R.id.description)).setText(R.string.label_delete_account_transactions_description);
-        mDeleteTransactionsRadioButton = (RadioButton) mTransactionOptionsView.findViewById(R.id.radio_delete);
+        View transactionOptionsView = view.findViewById(R.id.transactions_options);
+        ((TextView) transactionOptionsView.findViewById(R.id.title_content)).setText(R.string.section_header_transactions);
+        ((TextView) transactionOptionsView.findViewById(R.id.description)).setText(R.string.label_delete_account_transactions_description);
+        mDeleteTransactionsRadioButton = (RadioButton) transactionOptionsView.findViewById(R.id.radio_delete);
         mDeleteTransactionsRadioButton.setText(R.string.label_delete_transactions);
-        mMoveTransactionsRadioButton = ((RadioButton)mTransactionOptionsView.findViewById(R.id.radio_move));
-        mTransactionsDestinationAccountSpinner = (Spinner) mTransactionOptionsView.findViewById(R.id.target_accounts_spinner);
+        mMoveTransactionsRadioButton = ((RadioButton) transactionOptionsView.findViewById(R.id.radio_move));
+        mTransactionsDestinationAccountSpinner = (Spinner) transactionOptionsView.findViewById(R.id.target_accounts_spinner);
 
-        mAccountOptionsView = view.findViewById(R.id.accounts_options);
-        ((TextView)mAccountOptionsView.findViewById(R.id.title_content)).setText(R.string.section_header_subaccounts);
-        ((TextView)mAccountOptionsView.findViewById(R.id.description)).setText(R.string.label_delete_account_subaccounts_description);
-        mDeleteAccountsRadioButton = (RadioButton) mAccountOptionsView.findViewById(R.id.radio_delete);
+        View accountOptionsView = view.findViewById(R.id.accounts_options);
+        ((TextView) accountOptionsView.findViewById(R.id.title_content)).setText(R.string.section_header_subaccounts);
+        ((TextView) accountOptionsView.findViewById(R.id.description)).setText(R.string.label_delete_account_subaccounts_description);
+        mDeleteAccountsRadioButton = (RadioButton) accountOptionsView.findViewById(R.id.radio_delete);
         mDeleteAccountsRadioButton.setText(R.string.label_delete_sub_accounts);
-        mMoveAccountsRadioButton = (RadioButton)mAccountOptionsView.findViewById(R.id.radio_move);
-        mAccountsDestinationAccountSpinner = (Spinner) mAccountOptionsView.findViewById(R.id.target_accounts_spinner);
+        mMoveAccountsRadioButton = (RadioButton) accountOptionsView.findViewById(R.id.radio_move);
+        mAccountsDestinationAccountSpinner = (Spinner) accountOptionsView.findViewById(R.id.target_accounts_spinner);
 
-        mTransactionOptionsView.setVisibility(mTransactionCount > 0 ? View.VISIBLE : View.GONE);
-        mAccountOptionsView.setVisibility(mSubAccountCount > 0 ? View.VISIBLE : View.GONE);
+        transactionOptionsView.setVisibility(mTransactionCount > 0 ? View.VISIBLE : View.GONE);
+        accountOptionsView.setVisibility(mSubAccountCount > 0 ? View.VISIBLE : View.GONE);
 
         mCancelButton = (Button) view.findViewById(R.id.btn_cancel);
         mOkButton = (Button) view.findViewById(R.id.btn_save);
