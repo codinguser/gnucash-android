@@ -26,7 +26,6 @@ import android.content.res.TypedArray;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -248,7 +247,7 @@ public class AccountFormFragment extends Fragment {
 		setHasOptionsMenu(true);
         mAccountsDbAdapter = AccountsDbAdapter.getInstance();
 
-        SharedPreferences sharedPrefs = PreferenceActivity.getBookSharedPreferences(getActivity());
+        SharedPreferences sharedPrefs = PreferenceActivity.getActiveBookSharedPreferences(getActivity());
         mUseDoubleEntry = sharedPrefs.getBoolean(getString(R.string.key_use_double_entry), true);
 	}
 	

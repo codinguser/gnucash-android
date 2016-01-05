@@ -23,9 +23,7 @@ import android.content.pm.PackageManager;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
-import android.preference.PreferenceManager;
 import android.support.test.InstrumentationRegistry;
-import android.support.test.espresso.ViewAction;
 import android.support.test.espresso.contrib.DrawerActions;
 import android.support.test.espresso.matcher.ViewMatchers;
 import android.support.test.runner.AndroidJUnit4;
@@ -47,7 +45,6 @@ import org.gnucash.android.db.adapter.TransactionsDbAdapter;
 import org.gnucash.android.export.ExportFormat;
 import org.gnucash.android.export.Exporter;
 import org.gnucash.android.model.Account;
-import org.gnucash.android.model.BaseModel;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.model.PeriodType;
 import org.gnucash.android.model.ScheduledAction;
@@ -66,10 +63,8 @@ import java.io.File;
 import java.util.Currency;
 import java.util.List;
 
-import static android.support.test.espresso.Espresso.onData;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
-import static android.support.test.espresso.action.ViewActions.scrollTo;
 import static android.support.test.espresso.action.ViewActions.swipeUp;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.RootMatchers.withDecorView;
@@ -145,7 +140,7 @@ public class ExportTransactionsTest extends
 	 */
 	@Test
 	public void testOfxExport(){
-		SharedPreferences.Editor prefsEditor = PreferenceActivity.getBookSharedPreferences(mAcccountsActivity)
+		SharedPreferences.Editor prefsEditor = PreferenceActivity.getActiveBookSharedPreferences(mAcccountsActivity)
 				.edit();
 		prefsEditor.putBoolean(mAcccountsActivity.getString(R.string.key_use_double_entry), false)
 				.commit();
@@ -156,7 +151,7 @@ public class ExportTransactionsTest extends
 
 	@Test
 	public void whenInSingleEntry_shouldHideXmlExportOption(){
-		SharedPreferences.Editor prefsEditor = PreferenceActivity.getBookSharedPreferences(mAcccountsActivity)
+		SharedPreferences.Editor prefsEditor = PreferenceActivity.getActiveBookSharedPreferences(mAcccountsActivity)
 				.edit();
 		prefsEditor.putBoolean(mAcccountsActivity.getString(R.string.key_use_double_entry), false)
 				.commit();
@@ -225,13 +220,13 @@ public class ExportTransactionsTest extends
 	public void testDeleteTransactionsAfterExport(){
 		assertThat(mTransactionsDbAdapter.getRecordsCount()).isGreaterThan(0);
 
-		PreferenceActivity.getBookSharedPreferences(getActivity()).edit()
+		PreferenceActivity.getActiveBookSharedPreferences(getActivity()).edit()
 				.putBoolean(mAcccountsActivity.getString(R.string.key_delete_transactions_after_export), true).commit();
 
 		testExport(ExportFormat.XML);
 
 		assertThat(mTransactionsDbAdapter.getRecordsCount()).isEqualTo(0);
-		PreferenceActivity.getBookSharedPreferences(getActivity()).edit()
+		PreferenceActivity.getActiveBookSharedPreferences(getActivity()).edit()
 				.putBoolean(mAcccountsActivity.getString(R.string.key_delete_transactions_after_export), false).commit();
 	}
 

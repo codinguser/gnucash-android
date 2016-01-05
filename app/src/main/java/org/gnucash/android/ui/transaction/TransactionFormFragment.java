@@ -24,7 +24,6 @@ import android.content.res.Configuration;
 import android.database.Cursor;
 import android.inputmethodservice.KeyboardView;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v7.app.ActionBar;
@@ -292,7 +291,7 @@ public class TransactionFormFragment extends Fragment implements
 		super.onActivityCreated(savedInstanceState);
 		setHasOptionsMenu(true);
 
-		SharedPreferences sharedPrefs = PreferenceActivity.getBookSharedPreferences(getActivity());
+		SharedPreferences sharedPrefs = PreferenceActivity.getActiveBookSharedPreferences(getActivity());
 		mUseDoubleEntry = sharedPrefs.getBoolean(getString(R.string.key_use_double_entry), false);
 		if (!mUseDoubleEntry){
 			mDoubleEntryLayout.setVisibility(View.GONE);
@@ -536,7 +535,7 @@ public class TransactionFormFragment extends Fragment implements
 		mTime = mDate = Calendar.getInstance();
 
         mTransactionTypeSwitch.setAccountType(mAccountType);
-		String typePref = PreferenceActivity.getBookSharedPreferences(getActivity()).getString(getString(R.string.key_default_transaction_type), "DEBIT");
+		String typePref = PreferenceActivity.getActiveBookSharedPreferences(getActivity()).getString(getString(R.string.key_default_transaction_type), "DEBIT");
         mTransactionTypeSwitch.setChecked(TransactionType.valueOf(typePref));
 
 		String code = GnuCashApplication.getDefaultCurrencyCode();

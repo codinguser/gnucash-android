@@ -145,7 +145,7 @@ public class PreferenceActivity extends PasscodeLockActivity implements
      * @param context Application context
      * @return Shared preferences file
      */
-    public static SharedPreferences getBookSharedPreferences(Context context){
+    public static SharedPreferences getActiveBookSharedPreferences(Context context){
         //// TODO: 21.12.2015 optimize the getActiveBookUID retrieval by caching it somewhere
         return context.getSharedPreferences(BooksDbAdapter.getInstance().getActiveBookUID(), Context.MODE_PRIVATE);
     }

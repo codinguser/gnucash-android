@@ -19,7 +19,6 @@ package org.gnucash.android.test.ui;
 import android.content.Intent;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
-import android.preference.PreferenceManager;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.ViewAction;
 import android.support.test.espresso.action.CoordinatesProvider;
@@ -41,9 +40,7 @@ import org.gnucash.android.db.adapter.DatabaseAdapter;
 import org.gnucash.android.db.adapter.SplitsDbAdapter;
 import org.gnucash.android.db.adapter.TransactionsDbAdapter;
 import org.gnucash.android.importer.GncXmlImporter;
-import org.gnucash.android.model.Account;
 import org.gnucash.android.model.AccountType;
-import org.gnucash.android.model.BaseModel;
 import org.gnucash.android.model.Commodity;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.model.Split;
@@ -130,7 +127,7 @@ public class PieChartReportTest extends ActivityInstrumentationTestCase2<Reports
 
         CURRENCY = new CommoditiesDbAdapter(db).getCommodity("USD");
 
-        PreferenceActivity.getBookSharedPreferences(mReportsActivity).edit()
+        PreferenceActivity.getActiveBookSharedPreferences(mReportsActivity).edit()
                 .putString(mReportsActivity.getString(R.string.key_default_currency), CURRENCY.getCurrencyCode())
                 .commit();
 

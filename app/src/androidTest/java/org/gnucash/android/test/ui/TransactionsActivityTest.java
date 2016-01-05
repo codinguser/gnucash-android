@@ -22,9 +22,7 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
-import android.preference.PreferenceManager;
 import android.support.test.InstrumentationRegistry;
-import android.support.test.espresso.Espresso;
 import android.support.test.runner.AndroidJUnit4;
 import android.test.ActivityInstrumentationTestCase2;
 import android.util.Log;
@@ -373,7 +371,7 @@ public class TransactionsActivityTest extends
 
 
     private void setDoubleEntryEnabled(boolean enabled){
-        SharedPreferences prefs = PreferenceActivity.getBookSharedPreferences(getActivity());
+        SharedPreferences prefs = PreferenceActivity.getActiveBookSharedPreferences(getActivity());
         Editor editor = prefs.edit();
         editor.putBoolean(getActivity().getString(R.string.key_use_double_entry), enabled);
         editor.commit();
@@ -388,7 +386,7 @@ public class TransactionsActivityTest extends
 	}
 
 	private void setDefaultTransactionType(TransactionType type) {
-		SharedPreferences prefs = PreferenceActivity.getBookSharedPreferences(getActivity());
+		SharedPreferences prefs = PreferenceActivity.getActiveBookSharedPreferences(getActivity());
 		Editor editor = prefs.edit();
 		editor.putString(getActivity().getString(R.string.key_default_transaction_type), type.name());
 		editor.commit();

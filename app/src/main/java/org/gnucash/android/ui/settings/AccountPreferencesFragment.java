@@ -61,8 +61,6 @@ public class AccountPreferencesFragment extends PreferenceFragmentCompat impleme
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        getPreferenceManager().setSharedPreferencesName(BooksDbAdapter.getInstance().getActiveBookUID());
-
         ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
         actionBar.setTitle(R.string.title_account_preferences);
 

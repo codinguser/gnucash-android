@@ -21,7 +21,6 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
@@ -96,7 +95,7 @@ public class TransactionsListFragment extends Fragment implements
 		Bundle args = getArguments();
 		mAccountUID = args.getString(UxArgument.SELECTED_ACCOUNT_UID);
 
-		mUseCompactView = PreferenceActivity.getBookSharedPreferences(getActivity())
+		mUseCompactView = PreferenceActivity.getActiveBookSharedPreferences(getActivity())
 				.getBoolean(getActivity().getString(R.string.key_use_compact_list), !GnuCashApplication.isDoubleEntryEnabled());
 		//if there was a local override of the global setting, respect it
 		if (savedInstanceState != null)
