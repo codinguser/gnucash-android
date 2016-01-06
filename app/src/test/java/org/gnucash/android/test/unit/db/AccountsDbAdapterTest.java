@@ -12,6 +12,7 @@ import org.gnucash.android.db.adapter.BooksDbAdapter;
 import org.gnucash.android.db.adapter.BudgetAmountsDbAdapter;
 import org.gnucash.android.db.adapter.BudgetsDbAdapter;
 import org.gnucash.android.db.adapter.CommoditiesDbAdapter;
+import org.gnucash.android.db.adapter.DatabaseAdapter;
 import org.gnucash.android.db.adapter.PricesDbAdapter;
 import org.gnucash.android.db.adapter.ScheduledActionDbAdapter;
 import org.gnucash.android.db.adapter.SplitsDbAdapter;
@@ -34,6 +35,7 @@ import org.gnucash.android.test.unit.util.GnucashTestRunner;
 import org.gnucash.android.test.unit.util.ShadowCrashlytics;
 import org.gnucash.android.test.unit.util.ShadowUserVoice;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -436,12 +438,13 @@ public class AccountsDbAdapterTest{
 
         mTransactionsDbAdapter.addRecord(transaction);
         List<Transaction> transactions = mTransactionsDbAdapter.getAllRecords();
+        assertThat(transactions).hasSize(1);
 
         assertThat(mTransactionsDbAdapter.getScheduledTransactionsForAccount(account.getUID())).hasSize(1);
 
         //edit the account
         account.setName("Edited account");
-        mAccountsDbAdapter.addRecord(account);
+        mAccountsDbAdapter.addRecord(account, DatabaseAdapter.UpdateMethod.update);
 
         assertThat(mTransactionsDbAdapter.getScheduledTransactionsForAccount(account.getUID())).hasSize(1);
         assertThat(mSplitsDbAdapter.getSplitsForTransaction(transaction.getUID())).hasSize(2);

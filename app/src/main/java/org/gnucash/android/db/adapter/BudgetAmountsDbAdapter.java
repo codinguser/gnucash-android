@@ -77,8 +77,8 @@ public class BudgetAmountsDbAdapter extends DatabaseAdapter<BudgetAmount> {
         stmt.bindString(2, budgetAmount.getAccountUID());
         stmt.bindLong(3, budgetAmount.getAmount().getNumerator());
         stmt.bindLong(4, budgetAmount.getAmount().getDenominator());
-        stmt.bindLong(6, budgetAmount.getPeriodNum());
-        stmt.bindString(7, budgetAmount.getUID());
+        stmt.bindLong(5, budgetAmount.getPeriodNum());
+        stmt.bindString(6, budgetAmount.getUID());
 
         return stmt;
     }

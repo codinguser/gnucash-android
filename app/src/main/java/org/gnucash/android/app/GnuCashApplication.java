@@ -295,7 +295,7 @@ public class GnuCashApplication extends Application{
      * @see #getDefaultCurrencyCode()
      */
     public static void setDefaultCurrencyCode(@NonNull String currencyCode){
-        PreferenceActivity.getActiveBookSharedPreferences(context).edit()
+        PreferenceManager.getDefaultSharedPreferences(context).edit()
                 .putString(getAppContext().getString(R.string.key_default_currency), currencyCode)
                 .apply();
         Money.DEFAULT_CURRENCY_CODE = currencyCode;

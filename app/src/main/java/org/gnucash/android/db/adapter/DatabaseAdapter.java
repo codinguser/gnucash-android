@@ -209,6 +209,13 @@ public abstract class DatabaseAdapter<Model extends BaseModel> {
     public void addRecord(@NonNull final Model model){
         addRecord(model, UpdateMethod.replace);
     }
+
+    /**
+     * Add a model record to the database.
+     * <p>If unsure about which {@code updateMethod} to use, use {@link UpdateMethod#replace}</p>
+     * @param model Subclass of {@link BaseModel} to be added
+     * @param updateMethod Method to use for adding the record
+     */
     public void addRecord(@NonNull final Model model, UpdateMethod updateMethod){
         Log.d(LOG_TAG, String.format("Adding %s record to database: ", model.getClass().getSimpleName()));
         switch(updateMethod){
@@ -306,10 +313,8 @@ public abstract class DatabaseAdapter<Model extends BaseModel> {
      * This statement can be executed to replace a record in the database.
      * <p>If the {@link #mReplaceStatement} is null, subclasses should create a new statement and return.<br/>
      * If it is not null, the previous bindings will be cleared and replaced with those from the model</p>
-     * @param model Model whose attributes will be used as bindings
      * @return SQLiteStatement for replacing a record in the database
      */
-
     protected final @NonNull SQLiteStatement getReplaceStatement() {
         SQLiteStatement stmt = mReplaceStatement;
         if (stmt == null) {
@@ -365,7 +370,13 @@ public abstract class DatabaseAdapter<Model extends BaseModel> {
         return stmt;
     }
 
-    protected abstract @NonNull SQLiteStatement setBindings(@NonNull SQLiteStatement stmt, @NonNull final Model Model);
+    /**
+     * Binds the values from the model the the SQL statement
+     * @param stmt SQL statement with placeholders
+     * @param model Model from which to read bind attributes
+     * @return SQL statement ready for execution
+     */
+    protected abstract @NonNull SQLiteStatement setBindings(@NonNull SQLiteStatement stmt, @NonNull final Model model);
 
     /**
      * Returns a model instance populated with data from the record with GUID {@code uid}
