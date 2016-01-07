@@ -57,13 +57,14 @@
   <string name="hint_export_choice">By default, only new transactions since last export will be exported. Check this option to export all transactions</string>
   <string name="toast_export_error">Błąd eksportowania pliku %1$s</string>
   <string name="btn_export">Eksportuj</string>
-  <string name="option_delete_after_export">Usuń po eksporcie</string>
+  <string name="option_delete_after_export">Delete transactions after export</string>
   <string name="hint_delete_after_export">Wszystkie eksportowane transakcje będą usunięte po zakończeniu eksportu</string>
   <string name="title_settings">Ustawienia</string>
   <string-array name="export_destinations">
     <item>Karta SD</item>
     <item>DropBox</item>
     <item>Google Drive</item>
+    <item>ownCloud</item>
     <item>Udostępnij plik&#8230;</item>
   </string-array>
   <string name="btn_move">Przenieś</string>
@@ -383,6 +384,9 @@
   <string name="toast_no_compatible_apps_to_receive_export">No compatible apps to receive the exported transactions!</string>
   <string name="menu_move_transaction">Move...</string>
   <string name="menu_duplicate_transaction">Duplicate</string>
+  <string name="nav_menu_budgets">Budgets</string>
+  <string name="title_cash_flow_report">Cash Flow</string>
+  <string name="title_budgets">Budgets</string>
   <string-array name="report_time_range">
     <item>Bieżący miesiąc</item>
     <item>Ostatnie 3 miesiące</item>

@@ -22,7 +22,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
-import org.gnucash.android.db.AccountsDbAdapter;
+import org.gnucash.android.db.adapter.AccountsDbAdapter;
+import org.gnucash.android.db.adapter.DatabaseAdapter;
 import org.gnucash.android.model.Account;
 import org.gnucash.android.model.Commodity;
 
@@ -55,7 +56,7 @@ public class AccountCreator extends BroadcastReceiver {
 		if (uid != null)
 			account.setUID(uid);
 		
-		AccountsDbAdapter.getInstance().addRecord(account);
+		AccountsDbAdapter.getInstance().addRecord(account, DatabaseAdapter.UpdateMethod.insert);
 	}
 
 }

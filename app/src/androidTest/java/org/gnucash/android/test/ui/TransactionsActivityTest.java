@@ -22,19 +22,20 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
-import android.preference.PreferenceManager;
 import android.support.test.InstrumentationRegistry;
-import android.support.test.espresso.Espresso;
 import android.support.test.runner.AndroidJUnit4;
 import android.test.ActivityInstrumentationTestCase2;
 import android.util.Log;
 
 import org.gnucash.android.R;
-import org.gnucash.android.db.AccountsDbAdapter;
+import org.gnucash.android.db.adapter.AccountsDbAdapter;
 import org.gnucash.android.db.DatabaseHelper;
 import org.gnucash.android.db.DatabaseSchema;
-import org.gnucash.android.db.SplitsDbAdapter;
-import org.gnucash.android.db.TransactionsDbAdapter;
+import org.gnucash.android.db.adapter.BooksDbAdapter;
+import org.gnucash.android.db.adapter.CommoditiesDbAdapter;
+import org.gnucash.android.db.adapter.DatabaseAdapter;
+import org.gnucash.android.db.adapter.SplitsDbAdapter;
+import org.gnucash.android.db.adapter.TransactionsDbAdapter;
 import org.gnucash.android.model.Account;
 import org.gnucash.android.model.Commodity;
 import org.gnucash.android.model.Money;
@@ -43,6 +44,7 @@ import org.gnucash.android.model.Transaction;
 import org.gnucash.android.model.TransactionType;
 import org.gnucash.android.receivers.TransactionRecorder;
 import org.gnucash.android.ui.common.UxArgument;
+import org.gnucash.android.ui.settings.PreferenceActivity;
 import org.gnucash.android.ui.transaction.TransactionFormFragment;
 import org.gnucash.android.ui.transaction.TransactionsActivity;
 import org.junit.After;
@@ -86,6 +88,7 @@ public class TransactionsActivityTest extends
     private static final String TRANSFER_ACCOUNT_NAME   = "Transfer account";
     private static final String TRANSFER_ACCOUNT_UID    = "transfer_account";
     public static final String CURRENCY_CODE = "USD";
+	public static Commodity COMMODITY = Commodity.DEFAULT_COMMODITY;
 
 	private Transaction mTransaction;
 	private long mTransactionTimeMillis;
@@ -108,8 +111,8 @@ public class TransactionsActivityTest extends
 		injectInstrumentation(InstrumentationRegistry.getInstrumentation());
 		AccountsActivityTest.preventFirstRunDialogs(getInstrumentation().getTargetContext());
 
-
-        mDbHelper = new DatabaseHelper(getInstrumentation().getTargetContext());
+		String activeBookUID = BooksDbAdapter.getInstance().getActiveBookUID();
+        mDbHelper = new DatabaseHelper(getInstrumentation().getTargetContext(), activeBookUID);
         try {
             mDb = mDbHelper.getWritableDatabase();
         } catch (SQLException e) {
@@ -120,20 +123,20 @@ public class TransactionsActivityTest extends
         mTransactionsDbAdapter = new TransactionsDbAdapter(mDb, mSplitsDbAdapter);
         mAccountsDbAdapter = new AccountsDbAdapter(mDb, mTransactionsDbAdapter);
 
+		COMMODITY = new CommoditiesDbAdapter(mDb).getCommodity(CURRENCY_CODE);
+
 		mTransactionTimeMillis = System.currentTimeMillis();
-        Account account = new Account(DUMMY_ACCOUNT_NAME);
+        Account account = new Account(DUMMY_ACCOUNT_NAME, COMMODITY);
         account.setUID(DUMMY_ACCOUNT_UID);
-        account.setCommodity(Commodity.getInstance(CURRENCY_CODE));
 
-        Account account2 = new Account(TRANSFER_ACCOUNT_NAME);
+        Account account2 = new Account(TRANSFER_ACCOUNT_NAME, COMMODITY);
         account2.setUID(TRANSFER_ACCOUNT_UID);
-        account2.setCommodity(Commodity.getInstance(CURRENCY_CODE));
 
-        mAccountsDbAdapter.addRecord(account);
-        mAccountsDbAdapter.addRecord(account2);
+        mAccountsDbAdapter.addRecord(account, DatabaseAdapter.UpdateMethod.insert);
+        mAccountsDbAdapter.addRecord(account2, DatabaseAdapter.UpdateMethod.insert);
 
         mTransaction = new Transaction(TRANSACTION_NAME);
-		mTransaction.setCurrencyCode(CURRENCY_CODE);
+		mTransaction.setCommodity(COMMODITY);
         mTransaction.setNote("What up?");
         mTransaction.setTime(mTransactionTimeMillis);
         Split split = new Split(new Money(TRANSACTION_AMOUNT, CURRENCY_CODE), DUMMY_ACCOUNT_UID);
@@ -143,7 +146,7 @@ public class TransactionsActivityTest extends
         mTransaction.addSplit(split.createPair(TRANSFER_ACCOUNT_UID));
         account.addTransaction(mTransaction);
 
-        mTransactionsDbAdapter.addRecord(mTransaction);
+        mTransactionsDbAdapter.addRecord(mTransaction, DatabaseAdapter.UpdateMethod.insert);
 
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.putExtra(UxArgument.SELECTED_ACCOUNT_UID, DUMMY_ACCOUNT_UID);
@@ -367,7 +370,7 @@ public class TransactionsActivityTest extends
 
 
     private void setDoubleEntryEnabled(boolean enabled){
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        SharedPreferences prefs = PreferenceActivity.getActiveBookSharedPreferences(getActivity());
         Editor editor = prefs.edit();
         editor.putBoolean(getActivity().getString(R.string.key_use_double_entry), enabled);
         editor.commit();
@@ -379,18 +382,10 @@ public class TransactionsActivityTest extends
 
 		onView(withId(R.id.fab_create_transaction)).perform(click());
 		onView(withId(R.id.input_transaction_type)).check(matches(allOf(isChecked(), withText(R.string.label_spend))));
-		Espresso.pressBack();
-		//now validate the other case
-
-		setDefaultTransactionType(TransactionType.DEBIT);
-
-		onView(withId(R.id.fab_create_transaction)).perform(click());
-		onView(withId(R.id.input_transaction_type)).check(matches(allOf(not(isChecked()), withText(R.string.label_receive))));
-		Espresso.pressBack();
 	}
 
 	private void setDefaultTransactionType(TransactionType type) {
-		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+		SharedPreferences prefs = PreferenceActivity.getActiveBookSharedPreferences(getActivity());
 		Editor editor = prefs.edit();
 		editor.putString(getActivity().getString(R.string.key_default_transaction_type), type.name());
 		editor.commit();
@@ -399,12 +394,12 @@ public class TransactionsActivityTest extends
 	//FIXME: Improve on this test
 	public void childAccountsShouldUseParentTransferAccountSetting(){
 		Account transferAccount = new Account("New Transfer Acct");
-		mAccountsDbAdapter.addRecord(transferAccount);
-		mAccountsDbAdapter.addRecord(new Account("Higher account"));
+		mAccountsDbAdapter.addRecord(transferAccount, DatabaseAdapter.UpdateMethod.insert);
+		mAccountsDbAdapter.addRecord(new Account("Higher account"), DatabaseAdapter.UpdateMethod.insert);
 
 		Account childAccount = new Account("Child Account");
 		childAccount.setParentUID(DUMMY_ACCOUNT_UID);
-		mAccountsDbAdapter.addRecord(childAccount);
+		mAccountsDbAdapter.addRecord(childAccount, DatabaseAdapter.UpdateMethod.insert);
 		ContentValues contentValues = new ContentValues();
 		contentValues.put(DatabaseSchema.AccountEntry.COLUMN_DEFAULT_TRANSFER_ACCOUNT_UID, transferAccount.getUID());
 		mAccountsDbAdapter.updateRecord(DUMMY_ACCOUNT_UID, contentValues);
@@ -481,7 +476,7 @@ public class TransactionsActivityTest extends
 	public void testMoveTransaction(){
 		Account account = new Account("Move account");
 		account.setCommodity(Commodity.getInstance(CURRENCY_CODE));
-		mAccountsDbAdapter.addRecord(account);
+		mAccountsDbAdapter.addRecord(account, DatabaseAdapter.UpdateMethod.insert);
 
 		assertThat(mTransactionsDbAdapter.getAllTransactionsForAccount(account.getUID())).hasSize(0);
 
@@ -502,7 +497,7 @@ public class TransactionsActivityTest extends
 		mTransactionsDbAdapter.deleteAllRecords();
 
 		Account account = new Account("Z Account", Commodity.getInstance(CURRENCY_CODE));
-		mAccountsDbAdapter.addRecord(account);
+		mAccountsDbAdapter.addRecord(account, DatabaseAdapter.UpdateMethod.insert);
 
 		onView(withId(R.id.fab_create_transaction)).perform(click());
 
@@ -590,7 +585,8 @@ public class TransactionsActivityTest extends
 	@Override
 	@After
 	public void tearDown() throws Exception {
-		mTransactionsActivity.finish();
+		if (mTransactionsActivity != null)
+			mTransactionsActivity.finish();
 		super.tearDown();
 	}
 }

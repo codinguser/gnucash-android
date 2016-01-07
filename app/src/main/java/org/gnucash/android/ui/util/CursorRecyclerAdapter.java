@@ -159,7 +159,7 @@ public abstract class CursorRecyclerAdapter<VH
      * closed.
      *
      * @param newCursor The new cursor to be used.
-     * @return Returns the previously set Cursor, or null if there wasa not one.
+     * @return Returns the previously set Cursor, or null if there was not one.
      * If the given new Cursor is the same instance is the previously set
      * Cursor, null is also returned.
      */
@@ -279,7 +279,7 @@ public abstract class CursorRecyclerAdapter<VH
      * @see ContentObserver#onChange(boolean)
      */
     protected void onContentChanged() {
-
+        notifyDataSetChanged();
     }
 
     private class ChangeObserver extends ContentObserver {

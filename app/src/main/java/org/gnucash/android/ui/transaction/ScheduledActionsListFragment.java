@@ -51,8 +51,8 @@ import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.DatabaseCursorLoader;
 import org.gnucash.android.db.DatabaseSchema;
-import org.gnucash.android.db.ScheduledActionDbAdapter;
-import org.gnucash.android.db.TransactionsDbAdapter;
+import org.gnucash.android.db.adapter.ScheduledActionDbAdapter;
+import org.gnucash.android.db.adapter.TransactionsDbAdapter;
 import org.gnucash.android.export.ExportParams;
 import org.gnucash.android.model.ScheduledAction;
 import org.gnucash.android.model.Transaction;
@@ -95,7 +95,7 @@ public class ScheduledActionsListFragment extends ListFragment implements
         @Override
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
             MenuInflater inflater = mode.getMenuInflater();
-            inflater.inflate(R.menu.transactions_context_menu, menu);
+            inflater.inflate(R.menu.schedxactions_context_menu, menu);
             return true;
         }
 
@@ -115,16 +115,24 @@ public class ScheduledActionsListFragment extends ListFragment implements
             switch (item.getItemId()) {
                 case R.id.context_menu_delete:
                     for (long id : getListView().getCheckedItemIds()) {
-                        Log.i(TAG, "Cancelling scheduled transaction(s)");
-                        String trnUID = mTransactionsDbAdapter.getUID(id);
-                        ScheduledActionDbAdapter scheduledActionDbAdapter = GnuCashApplication.getScheduledEventDbAdapter();
-                        List<ScheduledAction> actions = scheduledActionDbAdapter.getScheduledActionsWithUID(trnUID);
 
-                        if (mTransactionsDbAdapter.deleteRecord(id)){
-                            Toast.makeText(getActivity(), R.string.toast_recurring_transaction_deleted, Toast.LENGTH_SHORT).show();
-                            for (ScheduledAction action : actions) {
-                                scheduledActionDbAdapter.deleteRecord(action.getUID());
+                        if (mActionType == ScheduledAction.ActionType.TRANSACTION) {
+                            Log.i(TAG, "Cancelling scheduled transaction(s)");
+                            String trnUID = mTransactionsDbAdapter.getUID(id);
+                            ScheduledActionDbAdapter scheduledActionDbAdapter = GnuCashApplication.getScheduledEventDbAdapter();
+                            List<ScheduledAction> actions = scheduledActionDbAdapter.getScheduledActionsWithUID(trnUID);
+
+                            if (mTransactionsDbAdapter.deleteRecord(id)) {
+                                Toast.makeText(getActivity(),
+                                        R.string.toast_recurring_transaction_deleted,
+                                        Toast.LENGTH_SHORT).show();
+                                for (ScheduledAction action : actions) {
+                                    scheduledActionDbAdapter.deleteRecord(action.getUID());
+                                }
                             }
+                        } else if (mActionType == ScheduledAction.ActionType.BACKUP){
+                            Log.i(TAG, "Removing scheduled exports");
+                            ScheduledActionDbAdapter.getInstance().deleteRecord(id);
                         }
                     }
                     mode.finish();
@@ -470,7 +478,7 @@ public class ScheduledActionsListFragment extends ListFragment implements
             if (endTime > 0 && endTime < System.currentTimeMillis()){
                 ((TextView)view.findViewById(R.id.primary_text)).setTextColor(getResources().getColor(android.R.color.darker_gray));
                 descriptionTextView.setText(getString(R.string.label_scheduled_action_ended,
-                        DateFormat.getInstance().format(new Date(scheduledAction.getLastRun()))));
+                        DateFormat.getInstance().format(new Date(scheduledAction.getLastRunTime()))));
             } else {
                 descriptionTextView.setText(scheduledAction.getRepeatString());
             }
@@ -565,7 +573,7 @@ public class ScheduledActionsListFragment extends ListFragment implements
             if (endTime > 0 && endTime < System.currentTimeMillis()){
                 ((TextView)view.findViewById(R.id.primary_text)).setTextColor(getResources().getColor(android.R.color.darker_gray));
                 descriptionTextView.setText(getString(R.string.label_scheduled_action_ended,
-                        DateFormat.getInstance().format(new Date(scheduledAction.getLastRun()))));
+                        DateFormat.getInstance().format(new Date(scheduledAction.getLastRunTime()))));
             } else {
                 descriptionTextView.setText(scheduledAction.getRepeatString());
             }
@@ -610,7 +618,7 @@ public class ScheduledActionsListFragment extends ListFragment implements
 
             Cursor c = mDatabaseAdapter.fetchAllRecords(
                     DatabaseSchema.ScheduledActionEntry.COLUMN_TYPE + "=?",
-                    new String[]{ScheduledAction.ActionType.BACKUP.name()});
+                    new String[]{ScheduledAction.ActionType.BACKUP.name()}, null);
 
             registerContentObserver(c);
             return c;

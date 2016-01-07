@@ -35,15 +35,16 @@ import android.widget.RadioButton;
 import android.widget.TextView;
 
 import org.gnucash.android.R;
-import org.gnucash.android.db.CommoditiesDbAdapter;
-import org.gnucash.android.db.PricesDbAdapter;
+import org.gnucash.android.db.adapter.CommoditiesDbAdapter;
+import org.gnucash.android.db.adapter.DatabaseAdapter;
+import org.gnucash.android.db.adapter.PricesDbAdapter;
 import org.gnucash.android.model.Commodity;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.model.Price;
 import org.gnucash.android.ui.transaction.TransactionFormFragment;
 import org.gnucash.android.ui.transaction.TransactionsActivity;
 import org.gnucash.android.ui.util.AmountInputFormatter;
-import org.gnucash.android.ui.util.OnTransferFundsListener;
+import org.gnucash.android.ui.transaction.OnTransferFundsListener;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
@@ -218,7 +219,7 @@ public class TransferFundsDialogFragment extends DialogFragment {
             price.setValueNum(mConvertedAmount.getNumerator() * mOriginAmount.getDenominator());
             price.setValueDenom(mOriginAmount.getNumerator() * mConvertedAmount.getDenominator());
             price.reduce();
-            pricesDbAdapter.addRecord(price);
+            pricesDbAdapter.addRecord(price, DatabaseAdapter.UpdateMethod.insert);
 
             mOnTransferFundsListener.transferComplete(mConvertedAmount);
         }

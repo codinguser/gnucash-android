@@ -27,6 +27,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -42,9 +43,12 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import net.objecthunter.exp4j.Expression;
+import net.objecthunter.exp4j.ExpressionBuilder;
+
 import org.gnucash.android.R;
-import org.gnucash.android.db.AccountsDbAdapter;
-import org.gnucash.android.db.CommoditiesDbAdapter;
+import org.gnucash.android.db.adapter.AccountsDbAdapter;
+import org.gnucash.android.db.adapter.CommoditiesDbAdapter;
 import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.model.AccountType;
 import org.gnucash.android.model.BaseModel;
@@ -56,7 +60,6 @@ import org.gnucash.android.model.TransactionType;
 import org.gnucash.android.ui.common.FormActivity;
 import org.gnucash.android.ui.common.UxArgument;
 import org.gnucash.android.ui.transaction.dialog.TransferFundsDialogFragment;
-import org.gnucash.android.ui.util.OnTransferFundsListener;
 import org.gnucash.android.ui.util.widget.CalculatorEditText;
 import org.gnucash.android.ui.util.widget.CalculatorKeyboard;
 import org.gnucash.android.ui.util.widget.TransactionTypeSwitch;
@@ -140,6 +143,7 @@ public class SplitEditorFragment extends Fragment {
         if (!splitList.isEmpty()) {
             //aha! there are some splits. Let's load those instead
             loadSplitViews(splitList);
+            mImbalanceWatcher.afterTextChanged(null);
         } else {
             final String currencyCode = mAccountsDbAdapter.getAccountCurrencyCode(mAccountUID);
             Split split = new Split(new Money(mBaseAmount.abs(), Commodity.getInstance(currencyCode)), mAccountUID);
@@ -149,9 +153,9 @@ public class SplitEditorFragment extends Fragment {
             View view = addSplitView(split);
             view.findViewById(R.id.input_accounts_spinner).setEnabled(false);
             view.findViewById(R.id.btn_remove_split).setVisibility(View.GONE);
+            TransactionsActivity.displayBalance(mImbalanceTextView, new Money(mBaseAmount.negate(), mCommodity));
         }
 
-        TransactionsActivity.displayBalance(mImbalanceTextView, new Money(mBaseAmount.negate(), mCommodity));
     }
 
     @Override
@@ -287,13 +291,42 @@ public class SplitEditorFragment extends Fragment {
             }
 
             accountsSpinner.setOnItemSelectedListener(new SplitAccountListener(splitTypeSwitch, this));
-            splitTypeSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            splitTypeSwitch.addOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                     mImbalanceWatcher.afterTextChanged(null);
                 }
             });
             splitAmountEditText.addTextChangedListener(mImbalanceWatcher);
+        }
+
+        /**
+         * Returns the value of the amount in the splitAmountEditText field without setting the value to the view
+         * <p>If the expression in the view is currently incomplete or invalid, null is returned.
+         * This method is used primarily for computing the imbalance</p>
+         * @return Value in the split item amount field, or {@link BigDecimal#ZERO} if the expression is empty or invalid
+         */
+        public BigDecimal getAmountValue(){
+            String amountString = splitAmountEditText.getCleanString();
+            if (amountString.isEmpty())
+                return BigDecimal.ZERO;
+
+            ExpressionBuilder expressionBuilder = new ExpressionBuilder(amountString);
+            Expression expression;
+
+            try {
+                expression = expressionBuilder.build();
+            } catch (RuntimeException e) {
+                return BigDecimal.ZERO;
+            }
+
+            if (expression != null && expression.validate().isValid()) {
+                return new BigDecimal(expression.evaluate());
+            } else {
+                Log.v(SplitEditorFragment.this.getClass().getSimpleName(),
+                        "Incomplete expression for updating imbalance: " + expression);
+                return BigDecimal.ZERO;
+            }
         }
     }
 
@@ -379,7 +412,7 @@ public class SplitEditorFragment extends Fragment {
             split.setType(viewHolder.splitTypeSwitch.getTransactionType());
             split.setUID(viewHolder.splitUidTextView.getText().toString().trim());
             if (viewHolder.quantity != null)
-                split.setQuantity(viewHolder.quantity.absolute());
+                split.setQuantity(viewHolder.quantity.abs());
             splitList.add(split);
         }
         return splitList;
@@ -406,16 +439,12 @@ public class SplitEditorFragment extends Fragment {
 
             for (View splitItem : mSplitItemViewList) {
                 SplitViewHolder viewHolder = (SplitViewHolder) splitItem.getTag();
-                viewHolder.splitAmountEditText.removeTextChangedListener(this);
-                BigDecimal amount = viewHolder.splitAmountEditText.getValue();
-                if (amount != null) {
-                    if (viewHolder.splitTypeSwitch.isChecked()) {
-                        imbalance = imbalance.subtract(amount);
-                    } else {
-                        imbalance = imbalance.add(amount);
-                    }
+                BigDecimal amount = viewHolder.getAmountValue().abs();
+                if (viewHolder.splitTypeSwitch.isChecked()) {
+                    imbalance = imbalance.subtract(amount);
+                } else {
+                    imbalance = imbalance.add(amount);
                 }
-                viewHolder.splitAmountEditText.addTextChangedListener(this);
             }
 
             TransactionsActivity.displayBalance(mImbalanceTextView, new Money(imbalance.negate(), mCommodity));

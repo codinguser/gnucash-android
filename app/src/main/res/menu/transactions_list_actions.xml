@@ -26,4 +26,9 @@
           android:icon="@drawable/content_edit_holo_dark"
           android:title="@string/title_edit_account"
           app:showAsAction="never|withText" />
+    <item android:id="@+id/menu_compact_trn_view"
+          android:icon="@drawable/content_edit_holo_dark"
+          android:title="Compact View"
+          android:checkable="true"
+          app:showAsAction="never|withText" />
 </menu>

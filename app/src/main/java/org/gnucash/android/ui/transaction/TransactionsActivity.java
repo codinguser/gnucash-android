@@ -24,6 +24,8 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -32,6 +34,7 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
+import android.text.format.DateUtils;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.Menu;
@@ -45,9 +48,9 @@ import android.widget.TextView;
 
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
-import org.gnucash.android.db.AccountsDbAdapter;
+import org.gnucash.android.db.adapter.AccountsDbAdapter;
 import org.gnucash.android.db.DatabaseSchema;
-import org.gnucash.android.db.TransactionsDbAdapter;
+import org.gnucash.android.db.adapter.TransactionsDbAdapter;
 import org.gnucash.android.model.Account;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.ui.common.BaseDrawerActivity;
@@ -56,12 +59,14 @@ import org.gnucash.android.ui.common.UxArgument;
 import org.gnucash.android.ui.account.AccountsActivity;
 import org.gnucash.android.ui.account.AccountsListFragment;
 import org.gnucash.android.ui.util.AccountBalanceTask;
-import org.gnucash.android.ui.util.OnAccountClickedListener;
-import org.gnucash.android.ui.util.OnTransactionClickedListener;
-import org.gnucash.android.ui.util.Refreshable;
+import org.gnucash.android.ui.account.OnAccountClickedListener;
+import org.gnucash.android.ui.common.Refreshable;
 import org.gnucash.android.util.QualifiedAccountNameCursorAdapter;
+import org.joda.time.LocalDate;
 
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -92,6 +97,7 @@ public class TransactionsActivity extends BaseDrawerActivity implements
      * Number of pages to show
      */
     private static final int DEFAULT_NUM_PAGES = 2;
+    private static SimpleDateFormat mDayMonthDateFormat = new SimpleDateFormat("EEE, d MMM");
 
     /**
      * GUID of {@link Account} whose transactions are displayed
@@ -108,9 +114,9 @@ public class TransactionsActivity extends BaseDrawerActivity implements
      */
     private Cursor mAccountsCursor = null;
 
-    @Bind(R.id.pager) ViewPager mViewPager;
-    @Bind(R.id.spinner_toolbar) Spinner mToolbarSpinner;
-    @Bind(R.id.tab_layout) TabLayout mTabLayout;
+    @Bind(R.id.pager)            ViewPager mViewPager;
+    @Bind(R.id.toolbar_spinner)  Spinner mToolbarSpinner;
+    @Bind(R.id.tab_layout)       TabLayout mTabLayout;
     @Bind(R.id.transactions_sum) TextView mSumTextView;
     @Bind(R.id.fab_create_transaction) FloatingActionButton mCreateFloatingButton;
 
@@ -151,7 +157,6 @@ public class TransactionsActivity extends BaseDrawerActivity implements
 	};
 
     private PagerAdapter mPagerAdapter;
-
 
 
     /**
@@ -268,17 +273,21 @@ public class TransactionsActivity extends BaseDrawerActivity implements
         setTitleIndicatorColor();
     }
 
-	@Override
+    @Override
+    public int getContentView() {
+        return R.layout.activity_transactions;
+    }
+
+    @Override
+    public int getTitleRes() {
+        return R.string.title_transactions;
+    }
+
+    @Override
 	protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_transactions);
-        setUpDrawer();
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
-
-        ButterKnife.bind(this);
 
 		mAccountUID = getIntent().getStringExtra(UxArgument.SELECTED_ACCOUNT_UID);
         mAccountsDbAdapter = AccountsDbAdapter.getInstance();
@@ -484,6 +493,29 @@ public class TransactionsActivity extends BaseDrawerActivity implements
         if (balance.asBigDecimal().compareTo(BigDecimal.ZERO) == 0)
             fontColor = context.getResources().getColor(android.R.color.black);
         balanceTextView.setTextColor(fontColor);
+    }
+
+    /**
+     * Formats the date to show the the day of the week if the {@code dateMillis} is within 7 days
+     * of today. Else it shows the actual date formatted as short string. <br>
+     * It also shows "today", "yesterday" or "tomorrow" if the date is on any of those days
+     * @param dateMillis
+     * @return
+     */
+    @NonNull
+    public static String getPrettyDateFormat(Context context, long dateMillis) {
+        LocalDate transactionTime = new LocalDate(dateMillis);
+        LocalDate today = new LocalDate();
+        String prettyDateText = null;
+        if (transactionTime.compareTo(today.minusDays(1)) >= 0 && transactionTime.compareTo(today.plusDays(1)) <= 0){
+            prettyDateText = DateUtils.getRelativeTimeSpanString(dateMillis, System.currentTimeMillis(), DateUtils.DAY_IN_MILLIS).toString();
+        } else if (transactionTime.getYear() == today.getYear()){
+            prettyDateText = mDayMonthDateFormat.format(new Date(dateMillis));
+        } else {
+            prettyDateText = DateUtils.formatDateTime(context, dateMillis, DateUtils.FORMAT_ABBREV_MONTH | DateUtils.FORMAT_SHOW_YEAR);
+        }
+
+        return prettyDateText;
     }
 
 	@Override

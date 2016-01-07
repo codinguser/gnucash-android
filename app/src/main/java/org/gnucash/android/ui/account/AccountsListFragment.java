@@ -46,21 +46,27 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
-import org.gnucash.android.db.AccountsDbAdapter;
+
 import org.gnucash.android.db.DatabaseCursorLoader;
 import org.gnucash.android.db.DatabaseSchema;
+import org.gnucash.android.db.adapter.AccountsDbAdapter;
+import org.gnucash.android.db.adapter.BudgetsDbAdapter;
 import org.gnucash.android.model.Account;
+import org.gnucash.android.model.Budget;
+import org.gnucash.android.model.Money;
 import org.gnucash.android.ui.common.FormActivity;
 import org.gnucash.android.ui.common.UxArgument;
 import org.gnucash.android.ui.util.AccountBalanceTask;
 import org.gnucash.android.ui.util.CursorRecyclerAdapter;
+import org.gnucash.android.ui.common.Refreshable;
 import org.gnucash.android.ui.util.widget.EmptyRecyclerView;
-import org.gnucash.android.ui.util.OnAccountClickedListener;
-import org.gnucash.android.ui.util.Refreshable;
+
+import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -170,8 +176,6 @@ public class AccountsListFragment extends Fragment implements
         Bundle args = getArguments();
         if (args != null)
             mParentAccountUID = args.getString(UxArgument.PARENT_ACCOUNT_UID);
-
-        mAccountsDbAdapter = AccountsDbAdapter.getInstance();
     }
 
     @Override
@@ -188,14 +192,17 @@ public class AccountsListFragment extends Fragment implements
         mAccountRecyclerAdapter = new AccountRecyclerAdapter(null);
         mRecyclerView.setAdapter(mAccountRecyclerAdapter);
 
-        getLoaderManager().initLoader(0, null, this);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        mAccountsDbAdapter = AccountsDbAdapter.getInstance();
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        ActionBar actionbar = ((AppCompatActivity) getActivity()).getSupportActionBar();
-        actionbar.setTitle(R.string.title_accounts);
         refresh();
     }
 
@@ -294,6 +301,7 @@ public class AccountsListFragment extends Fragment implements
     @Override
     public void onDestroy() {
         super.onDestroy();
+        mAccountRecyclerAdapter.swapCursor(null);
     }
 
     /**
@@ -455,6 +463,7 @@ public class AccountsListFragment extends Fragment implements
         @Override
         public void onBindViewHolderCursor(final AccountViewHolder holder, final Cursor cursor) {
             final String accountUID = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.AccountEntry.COLUMN_UID));
+            mAccountsDbAdapter = AccountsDbAdapter.getInstance();
             holder.accoundId = mAccountsDbAdapter.getID(accountUID);
 
             holder.accountName.setText(cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.AccountEntry.COLUMN_NAME)));
@@ -468,7 +477,7 @@ public class AccountsListFragment extends Fragment implements
 
             // add a summary of transactions to the account view
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                // Make sure the balance task is truely multithread
+                // Make sure the balance task is truly multithread
                 new AccountBalanceTask(holder.accountBalance).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, accountUID);
             } else {
                 new AccountBalanceTask(holder.accountBalance).execute(accountUID);
@@ -493,6 +502,20 @@ public class AccountsListFragment extends Fragment implements
                     }
                 });
             }
+
+            List<Budget> budgets = BudgetsDbAdapter.getInstance().getAccountBudgets(accountUID);
+            //TODO: include fetch only active budgets
+            if (budgets.size() == 1){
+                Budget budget = budgets.get(0);
+                Money balance = mAccountsDbAdapter.getAccountBalance(accountUID, budget.getStartofCurrentPeriod(), budget.getEndOfCurrentPeriod());
+                double budgetProgress = balance.divide(budget.getAmount(accountUID)).asBigDecimal().doubleValue() * 100;
+
+                holder.budgetIndicator.setVisibility(View.VISIBLE);
+                holder.budgetIndicator.setProgress((int) budgetProgress);
+            } else {
+                holder.budgetIndicator.setVisibility(View.GONE);
+            }
+
 
             if (mAccountsDbAdapter.isFavoriteAccount(accountUID)){
                 holder.favoriteStatus.setImageResource(R.drawable.ic_star_black_24dp);
@@ -534,6 +557,7 @@ public class AccountsListFragment extends Fragment implements
             @Bind(R.id.favorite_status) ImageView favoriteStatus;
             @Bind(R.id.options_menu) ImageView optionsMenu;
             @Bind(R.id.account_color_strip) View colorStripView;
+            @Bind(R.id.budget_indicator) ProgressBar budgetIndicator;
             long accoundId;
 
             public AccountViewHolder(View itemView) {

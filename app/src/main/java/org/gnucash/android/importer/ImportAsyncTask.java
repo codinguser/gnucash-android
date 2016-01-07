@@ -18,18 +18,28 @@ package org.gnucash.android.importer;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.ContentValues;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.provider.OpenableColumns;
 import android.util.Log;
 import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
 
 import org.gnucash.android.R;
+import org.gnucash.android.app.GnuCashApplication;
+import org.gnucash.android.db.DatabaseHelper;
+import org.gnucash.android.db.DatabaseSchema;
+import org.gnucash.android.db.adapter.AccountsDbAdapter;
+import org.gnucash.android.db.adapter.BooksDbAdapter;
 import org.gnucash.android.ui.account.AccountsActivity;
 import org.gnucash.android.ui.util.TaskDelegate;
 
+import java.io.File;
 import java.io.InputStream;
 
 /**
@@ -69,11 +79,15 @@ public class ImportAsyncTask extends AsyncTask<Uri, Void, Boolean> {
 
     @Override
     protected Boolean doInBackground(Uri... uris) {
+        String bookUID = null;
         try {
             InputStream accountInputStream = mContext.getContentResolver().openInputStream(uris[0]);
-            GncXmlImporter.parse(accountInputStream);
+            bookUID = GncXmlImporter.parse(accountInputStream);
+
+            //// TODO: 08.12.2015 update book name in database table - get name from Uri
         } catch (Exception exception){
             Log.e(ImportAsyncTask.class.getName(), "" + exception.getMessage());
+            Crashlytics.log("Could not open: " + uris[0].toString());
             Crashlytics.logException(exception);
             exception.printStackTrace();
 
@@ -88,8 +102,29 @@ public class ImportAsyncTask extends AsyncTask<Uri, Void, Boolean> {
                 }
             });
 
+            //a database is always created at the beginning of import
+            //if there was an error during import, delete the created database
+            if (bookUID != null) {
+                mContext.deleteDatabase(bookUID);
+            }
+
             return false;
         }
+
+        Cursor cursor = mContext.getContentResolver().query(uris[0], null, null, null, null);
+        if (cursor != null && cursor.moveToFirst()) {
+            int nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
+            String displayName = cursor.getString(nameIndex);
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(DatabaseSchema.BookEntry.COLUMN_DISPLAY_NAME, displayName);
+            contentValues.put(DatabaseSchema.BookEntry.COLUMN_SOURCE_URI, uris[0].toString());
+            BooksDbAdapter.getInstance().updateRecord(bookUID, contentValues);
+
+            cursor.close();
+        }
+
+        ((GnuCashApplication)mContext.getApplication()).loadBook(bookUID);
+
         return true;
     }
 

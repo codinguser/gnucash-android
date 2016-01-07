@@ -21,16 +21,13 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.content.res.Resources;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SwitchCompat;
-import android.text.format.Time;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -47,17 +44,17 @@ import android.widget.RadioButton;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import com.codetroopers.betterpickers.calendardatepicker.CalendarDatePickerDialog;
-import com.codetroopers.betterpickers.radialtimepicker.RadialTimePickerDialog;
+import com.codetroopers.betterpickers.calendardatepicker.CalendarDatePickerDialogFragment;
+import com.codetroopers.betterpickers.radialtimepicker.RadialTimePickerDialogFragment;
 import com.codetroopers.betterpickers.recurrencepicker.EventRecurrence;
 import com.codetroopers.betterpickers.recurrencepicker.EventRecurrenceFormatter;
-import com.codetroopers.betterpickers.recurrencepicker.RecurrencePickerDialog;
-import com.crashlytics.android.Crashlytics;
+import com.codetroopers.betterpickers.recurrencepicker.RecurrencePickerDialogFragment;
 import com.dropbox.sync.android.DbxAccountManager;
 
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
-import org.gnucash.android.db.ScheduledActionDbAdapter;
+import org.gnucash.android.db.adapter.DatabaseAdapter;
+import org.gnucash.android.db.adapter.ScheduledActionDbAdapter;
 import org.gnucash.android.export.ExportAsyncTask;
 import org.gnucash.android.export.ExportFormat;
 import org.gnucash.android.export.ExportParams;
@@ -66,17 +63,17 @@ import org.gnucash.android.model.BaseModel;
 import org.gnucash.android.model.ScheduledAction;
 import org.gnucash.android.ui.account.AccountsActivity;
 import org.gnucash.android.ui.common.UxArgument;
-import org.gnucash.android.ui.settings.SettingsActivity;
+import org.gnucash.android.ui.settings.BackupPreferenceFragment;
+import org.gnucash.android.ui.settings.dialog.OwnCloudDialogFragment;
 import org.gnucash.android.ui.transaction.TransactionFormFragment;
 import org.gnucash.android.ui.util.RecurrenceParser;
+import org.gnucash.android.ui.util.RecurrenceViewClickListener;
 
 import java.sql.Timestamp;
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -89,9 +86,9 @@ import butterknife.ButterKnife;
  * @author Ngewi Fet <ngewif@gmail.com>
  */
 public class ExportFormFragment extends Fragment implements
-		RecurrencePickerDialog.OnRecurrenceSetListener,
-		CalendarDatePickerDialog.OnDateSetListener,
-		RadialTimePickerDialog.OnTimeSetListener {
+		RecurrencePickerDialogFragment.OnRecurrenceSetListener,
+		CalendarDatePickerDialogFragment.OnDateSetListener,
+		RadialTimePickerDialogFragment.OnTimeSetListener {
 		
 	/**
 	 * Spinner for selecting destination for the exported file.
@@ -136,14 +133,14 @@ public class ExportFormFragment extends Fragment implements
 	/**
 	 * Event recurrence options
 	 */
-	EventRecurrence mEventRecurrence = new EventRecurrence();
+	private EventRecurrence mEventRecurrence = new EventRecurrence();
 
 	/**
 	 * Recurrence rule
 	 */
-	String mRecurrenceRule;
+	private String mRecurrenceRule;
 
-	Calendar mExportStartCalendar = Calendar.getInstance();
+	private Calendar mExportStartCalendar = Calendar.getInstance();
 
 	/**
 	 * Tag for logging
@@ -158,7 +155,7 @@ public class ExportFormFragment extends Fragment implements
 	private ExportParams.ExportTarget mExportTarget = ExportParams.ExportTarget.SD_CARD;
 
 
-	public void onRadioButtonClicked(View view){
+	private void onRadioButtonClicked(View view){
         switch (view.getId()){
             case R.id.radio_ofx_format:
                 mExportFormat = ExportFormat.OFX;
@@ -275,13 +272,11 @@ public class ExportFormFragment extends Fragment implements
 		exportParameters.setExportTarget(mExportTarget);
 		exportParameters.setDeleteTransactionsAfterExport(mDeleteAllCheckBox.isChecked());
 
-		List<ScheduledAction> scheduledActions = RecurrenceParser.parse(mEventRecurrence,
-				ScheduledAction.ActionType.BACKUP);
-		for (ScheduledAction scheduledAction : scheduledActions) {
-			scheduledAction.setTag(exportParameters.toCsv());
-			scheduledAction.setActionUID(BaseModel.generateUID());
-			ScheduledActionDbAdapter.getInstance().addRecord(scheduledAction);
-		}
+		ScheduledAction scheduledAction = new ScheduledAction(ScheduledAction.ActionType.BACKUP);
+		scheduledAction.setRecurrence(RecurrenceParser.parse(mEventRecurrence));
+		scheduledAction.setTag(exportParameters.toCsv());
+		scheduledAction.setActionUID(BaseModel.generateUID());
+		ScheduledActionDbAdapter.getInstance().addRecord(scheduledAction, DatabaseAdapter.UpdateMethod.insert);
 
 		Log.i(TAG, "Commencing async export of transactions");
 		new ExportAsyncTask(getActivity()).execute(exportParameters);
@@ -314,8 +309,8 @@ public class ExportFormFragment extends Fragment implements
 					case 1:
 						recurrenceOptionsView.setVisibility(View.VISIBLE);
 						mExportTarget = ExportParams.ExportTarget.DROPBOX;
-						String dropboxAppKey = getString(R.string.dropbox_app_key, SettingsActivity.DROPBOX_APP_KEY);
-						String dropboxAppSecret = getString(R.string.dropbox_app_secret, SettingsActivity.DROPBOX_APP_SECRET);
+						String dropboxAppKey = getString(R.string.dropbox_app_key, BackupPreferenceFragment.DROPBOX_APP_KEY);
+						String dropboxAppSecret = getString(R.string.dropbox_app_secret, BackupPreferenceFragment.DROPBOX_APP_SECRET);
 						DbxAccountManager mDbxAccountManager = DbxAccountManager.getInstance(getActivity().getApplicationContext(),
 								dropboxAppKey, dropboxAppSecret);
 						if (!mDbxAccountManager.hasLinkedAccount()) {
@@ -325,10 +320,19 @@ public class ExportFormFragment extends Fragment implements
 					case 2:
 						recurrenceOptionsView.setVisibility(View.VISIBLE);
 						mExportTarget = ExportParams.ExportTarget.GOOGLE_DRIVE;
-						SettingsActivity.mGoogleApiClient = SettingsActivity.getGoogleApiClient(getActivity());
-						SettingsActivity.mGoogleApiClient.connect();
+						BackupPreferenceFragment.mGoogleApiClient = BackupPreferenceFragment.getGoogleApiClient(getActivity());
+						BackupPreferenceFragment.mGoogleApiClient.connect();
 						break;
 					case 3:
+						recurrenceOptionsView.setVisibility(View.VISIBLE);
+						mExportTarget = ExportParams.ExportTarget.OWNCLOUD;
+						if(!(PreferenceManager.getDefaultSharedPreferences(getActivity())
+								.getBoolean(getString(R.string.key_owncloud_sync), false))) {
+							OwnCloudDialogFragment ocDialog = OwnCloudDialogFragment.newInstance(null);
+							ocDialog.show(getActivity().getSupportFragmentManager(), "ownCloud dialog");
+						}
+						break;
+					case 4:
 						mExportTarget = ExportParams.ExportTarget.SHARING;
 						recurrenceOptionsView.setVisibility(View.GONE);
 						break;
@@ -376,7 +380,7 @@ public class ExportFormFragment extends Fragment implements
 				int year = calendar.get(Calendar.YEAR);
 				int monthOfYear = calendar.get(Calendar.MONTH);
 				int dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
-				CalendarDatePickerDialog datePickerDialog = CalendarDatePickerDialog.newInstance(
+				CalendarDatePickerDialogFragment datePickerDialog = CalendarDatePickerDialogFragment.newInstance(
 						ExportFormFragment.this,
 						year, monthOfYear, dayOfMonth);
 				datePickerDialog.show(getFragmentManager(), "date_picker_fragment");
@@ -398,7 +402,7 @@ public class ExportFormFragment extends Fragment implements
 				Calendar calendar = Calendar.getInstance();
 				calendar.setTimeInMillis(timeMillis);
 
-				RadialTimePickerDialog timePickerDialog = RadialTimePickerDialog.newInstance(
+				RadialTimePickerDialogFragment timePickerDialog = RadialTimePickerDialogFragment.newInstance(
 						ExportFormFragment.this, calendar.get(Calendar.HOUR_OF_DAY),
 						calendar.get(Calendar.MINUTE), true);
 				timePickerDialog.show(getFragmentManager(), "time_picker_dialog_fragment");
@@ -420,30 +424,7 @@ public class ExportFormFragment extends Fragment implements
 		mExportAllSwitch.setChecked(sharedPrefs.getBoolean(getString(R.string.key_export_all_transactions), false));
 		mDeleteAllCheckBox.setChecked(sharedPrefs.getBoolean(getString(R.string.key_delete_transactions_after_export), false));
 
-		mRecurrenceTextView.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				FragmentManager fm = getActivity().getSupportFragmentManager();
-				Bundle b = new Bundle();
-				Time t = new Time();
-				t.setToNow();
-				b.putLong(RecurrencePickerDialog.BUNDLE_START_TIME_MILLIS, t.toMillis(false));
-				b.putString(RecurrencePickerDialog.BUNDLE_TIME_ZONE, t.timezone);
-
-				// may be more efficient to serialize and pass in EventRecurrence
-				b.putString(RecurrencePickerDialog.BUNDLE_RRULE, mRecurrenceRule);
-
-				RecurrencePickerDialog rpd = (RecurrencePickerDialog) fm.findFragmentByTag(
-						"recurrence_picker");
-				if (rpd != null) {
-					rpd.dismiss();
-				}
-				rpd = new RecurrencePickerDialog();
-				rpd.setArguments(b);
-				rpd.setOnRecurrenceSetListener(ExportFormFragment.this);
-				rpd.show(fm, "recurrence_picker");
-			}
-		});
+		mRecurrenceTextView.setOnClickListener(new RecurrenceViewClickListener((AppCompatActivity) getActivity(), mRecurrenceRule, this));
 
 		//this part (setting the export format) must come after the recurrence view bindings above
         String defaultExportFormat = sharedPrefs.getString(getString(R.string.key_default_export_format), ExportFormat.QIF.name());
@@ -496,13 +477,13 @@ public class ExportFormFragment extends Fragment implements
 	 */
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
-		if (requestCode == SettingsActivity.REQUEST_RESOLVE_CONNECTION && resultCode == Activity.RESULT_OK) {
-			SettingsActivity.mGoogleApiClient.connect();
+		if (requestCode == BackupPreferenceFragment.REQUEST_RESOLVE_CONNECTION && resultCode == Activity.RESULT_OK) {
+			BackupPreferenceFragment.mGoogleApiClient.connect();
 		}
 	}
 
 	@Override
-	public void onDateSet(CalendarDatePickerDialog dialog, int year, int monthOfYear, int dayOfMonth) {
+	public void onDateSet(CalendarDatePickerDialogFragment dialog, int year, int monthOfYear, int dayOfMonth) {
 		Calendar cal = new GregorianCalendar(year, monthOfYear, dayOfMonth);
 		mExportStartDate.setText(TransactionFormFragment.DATE_FORMATTER.format(cal.getTime()));
 		mExportStartCalendar.set(Calendar.YEAR, year);
@@ -511,7 +492,7 @@ public class ExportFormFragment extends Fragment implements
 	}
 
 	@Override
-	public void onTimeSet(RadialTimePickerDialog dialog, int hourOfDay, int minute) {
+	public void onTimeSet(RadialTimePickerDialogFragment dialog, int hourOfDay, int minute) {
 		Calendar cal = new GregorianCalendar(0, 0, 0, hourOfDay, minute);
 		mExportStartTime.setText(TransactionFormFragment.TIME_FORMATTER.format(cal.getTime()));
 		mExportStartCalendar.set(Calendar.HOUR_OF_DAY, hourOfDay);

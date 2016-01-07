@@ -57,13 +57,14 @@
   <string name="hint_export_choice">Por defeito, apenas as novas transações após a última exportação serão exportadas. Marque esta opção para exportar todas as transações</string>
   <string name="toast_export_error">Erro ao exportar o ficheiro %1$s</string>
   <string name="btn_export">Exportar</string>
-  <string name="option_delete_after_export">Apagar após exportação</string>
+  <string name="option_delete_after_export">Apagar as transações depois de exportar</string>
   <string name="hint_delete_after_export">Todas as transações exportadas serão apagadas quando a exportação estiver completa</string>
   <string name="title_settings">Configurações</string>
   <string-array name="export_destinations">
     <item>Cartão SD</item>
     <item>DropBox</item>
     <item>Google Drive</item>
+    <item>ownCloud</item>
     <item>Share file&#8230;</item>
   </string-array>
   <string name="btn_move">Mover</string>
@@ -380,6 +381,9 @@ Neste processo não serão recolhidas informações do utilizador!</string>
   <string name="toast_no_compatible_apps_to_receive_export">Não existem aplicações compatíveis para receber as transações exportadas!</string>
   <string name="menu_move_transaction">Mover...</string>
   <string name="menu_duplicate_transaction">Duplicar</string>
+  <string name="nav_menu_budgets">Budgets</string>
+  <string name="title_cash_flow_report">Cash Flow</string>
+  <string name="title_budgets">Budgets</string>
   <string-array name="report_time_range">
     <item>Mês actual</item>
     <item>Últimos 3 meses</item>

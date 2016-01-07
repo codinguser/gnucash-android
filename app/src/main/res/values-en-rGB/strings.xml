@@ -57,13 +57,14 @@
   <string name="hint_export_choice">By default, only new transactions since last export will be exported. Check this option to export all transactions</string>
   <string name="toast_export_error">Error exporting %1$s file</string>
   <string name="btn_export">Export</string>
-  <string name="option_delete_after_export">Delete after export</string>
+  <string name="option_delete_after_export">Delete transactions after export</string>
   <string name="hint_delete_after_export">All exported transactions will be deleted when exporting is completed</string>
   <string name="title_settings">Settings</string>
   <string-array name="export_destinations">
     <item>SD Card</item>
     <item>DropBox</item>
     <item>Google Drive</item>
+    <item>ownCloud</item>
     <item>Send to&#8230;</item>
   </string-array>
   <string name="btn_move">Move</string>
@@ -203,7 +204,7 @@
   <string name="label_account_color_and_type">Account Color &amp; Type</string>
   <string name="label_delete_sub_accounts">Delete sub-accounts</string>
   <string name="title_recent_accounts">Recent</string>
-  <string name="title_favorite_accounts">Favorites</string>
+  <string name="title_favorite_accounts">Favourites</string>
   <string name="title_all_accounts">All</string>
   <string name="summary_create_default_accounts">Creates default GnuCash commonly-used account structure</string>
   <string name="title_create_default_accounts">Create default accounts</string>
@@ -243,7 +244,7 @@
   <string name="title_transaction_splits">Transaction splits</string>
   <string name="label_imbalance">Imbalance:</string>
   <string name="btn_add_split">Add split</string>
-  <string name="menu_title_favorite">Favorite</string>
+  <string name="menu_title_favorite">Favourite</string>
   <string name="drawer_open">Navigation drawer opened</string>
   <string name="drawer_close">Navigation drawer closed</string>
   <string name="title_reports">Reports</string>
@@ -290,7 +291,7 @@
   <string name="summary_google_drive_sync">Enable to sync to Google Drive</string>
   <string name="toast_install_file_manager">Install a file manager to select files</string>
   <string name="title_select_backup_to_restore">Select backup to restore</string>
-  <string name="nav_menu_favorites">Favorites</string>
+  <string name="nav_menu_favorites">Favourites</string>
   <string name="nav_menu_open">Open&#8230;</string>
   <string name="nav_menu_reports">Reports</string>
   <string name="nav_menu_scheduled_transactions">Scheduled Transactions</string>
@@ -326,7 +327,7 @@
   <string name="toast_legend_too_long">The legend is too long</string>
   <string name="hint_account_description">Account description</string>
   <string name="label_no_recent_accounts">No recent accounts</string>
-  <string name="label_no_favorite_accounts">No favorite accounts</string>
+  <string name="label_no_favorite_accounts">No favourite accounts</string>
   <string name="nav_menu_scheduled_actions">Scheduled Actions</string>
   <string name="label_scheduled_action_ended">"Ended, last executed on %1$s"</string>
   <string name="label_select_bar_to_view_details">Select a bar to view details</string>
@@ -385,6 +386,9 @@
   <string name="toast_no_compatible_apps_to_receive_export">No compatible apps to receive the exported transactions!</string>
   <string name="menu_move_transaction">Move...</string>
   <string name="menu_duplicate_transaction">Duplicate</string>
+  <string name="nav_menu_budgets">Budgets</string>
+  <string name="title_cash_flow_report">Cash Flow</string>
+  <string name="title_budgets">Budgets</string>
   <string-array name="report_time_range">
     <item>Current month</item>
     <item>Last 3 months</item>

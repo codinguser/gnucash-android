@@ -39,7 +39,7 @@ public class ExportParams {
      * Options for the destination of the exported transctions file.
      * It could be stored on the {@link #SD_CARD} or exported through another program via {@link #SHARING}
      */
-    public enum ExportTarget {SD_CARD, SHARING, DROPBOX, GOOGLE_DRIVE }
+    public enum ExportTarget {SD_CARD, SHARING, DROPBOX, GOOGLE_DRIVE, OWNCLOUD }
 
     /**
      * Format to use for the exported transactions

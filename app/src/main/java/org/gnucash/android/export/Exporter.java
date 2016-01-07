@@ -27,12 +27,15 @@ import com.crashlytics.android.Crashlytics;
 
 import org.gnucash.android.BuildConfig;
 import org.gnucash.android.app.GnuCashApplication;
-import org.gnucash.android.db.AccountsDbAdapter;
-import org.gnucash.android.db.CommoditiesDbAdapter;
-import org.gnucash.android.db.PricesDbAdapter;
-import org.gnucash.android.db.ScheduledActionDbAdapter;
-import org.gnucash.android.db.SplitsDbAdapter;
-import org.gnucash.android.db.TransactionsDbAdapter;
+import org.gnucash.android.db.adapter.AccountsDbAdapter;
+import org.gnucash.android.db.adapter.BudgetAmountsDbAdapter;
+import org.gnucash.android.db.adapter.BudgetsDbAdapter;
+import org.gnucash.android.db.adapter.CommoditiesDbAdapter;
+import org.gnucash.android.db.adapter.PricesDbAdapter;
+import org.gnucash.android.db.adapter.RecurrenceDbAdapter;
+import org.gnucash.android.db.adapter.ScheduledActionDbAdapter;
+import org.gnucash.android.db.adapter.SplitsDbAdapter;
+import org.gnucash.android.db.adapter.TransactionsDbAdapter;
 
 import java.io.File;
 import java.sql.Timestamp;
@@ -58,7 +61,7 @@ public abstract class Exporter {
     /**
      * Application folder on external storage
      */
-    public static final String BASE_FOLDER_PATH = Environment.getExternalStorageDirectory() + "/" + BuildConfig.APPLICATION_ID;
+    private static final String BASE_FOLDER_PATH = Environment.getExternalStorageDirectory() + "/" + BuildConfig.APPLICATION_ID;
 
     /**
      * Folder where exports like QIF and OFX will be saved for access by external programs
@@ -73,7 +76,7 @@ public abstract class Exporter {
     /**
      * Export options
      */
-    protected ExportParams mExportParams;
+    protected final ExportParams mExportParams;
 
     /**
      * Cache directory to which files will be first exported before moved to final destination.
@@ -82,7 +85,7 @@ public abstract class Exporter {
      *    The files created here are only accessible within this application, and should be copied to SD card before they can be shared
      * </p>
      */
-    protected File mCacheDir;
+    private final File mCacheDir;
 
     private static final SimpleDateFormat EXPORT_FILENAME_DATE_FORMAT = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US);
 
@@ -96,33 +99,40 @@ public abstract class Exporter {
      * Adapter for retrieving accounts to export
      * Subclasses should close this object when they are done with exporting
      */
-    protected AccountsDbAdapter mAccountsDbAdapter;
-    protected TransactionsDbAdapter mTransactionsDbAdapter;
-    protected SplitsDbAdapter mSplitsDbAdapter;
-    protected ScheduledActionDbAdapter mScheduledActionDbAdapter;
-    protected PricesDbAdapter mPricesDbAdapter;
-    protected CommoditiesDbAdapter mCommoditiesDbAdapter;
-    protected Context mContext;
+    protected final AccountsDbAdapter mAccountsDbAdapter;
+    protected final TransactionsDbAdapter mTransactionsDbAdapter;
+    protected final SplitsDbAdapter mSplitsDbAdapter;
+    protected final ScheduledActionDbAdapter mScheduledActionDbAdapter;
+    protected final PricesDbAdapter mPricesDbAdapter;
+    protected final CommoditiesDbAdapter mCommoditiesDbAdapter;
+	protected final BudgetsDbAdapter mBudgetsDbAdapter;
+    protected final Context mContext;
+    private String mExportCacheFilePath;
 
     public Exporter(ExportParams params, SQLiteDatabase db) {
         this.mExportParams = params;
         mContext = GnuCashApplication.getAppContext();
         if (db == null) {
-            mAccountsDbAdapter = AccountsDbAdapter.getInstance();
-            mTransactionsDbAdapter = TransactionsDbAdapter.getInstance();
-            mSplitsDbAdapter = SplitsDbAdapter.getInstance();
+            mAccountsDbAdapter      = AccountsDbAdapter.getInstance();
+            mTransactionsDbAdapter  = TransactionsDbAdapter.getInstance();
+            mSplitsDbAdapter        = SplitsDbAdapter.getInstance();
+            mPricesDbAdapter        = PricesDbAdapter.getInstance();
+            mCommoditiesDbAdapter   = CommoditiesDbAdapter.getInstance();
+            mBudgetsDbAdapter       = BudgetsDbAdapter.getInstance();
             mScheduledActionDbAdapter = ScheduledActionDbAdapter.getInstance();
-            mPricesDbAdapter = PricesDbAdapter.getInstance();
-            mCommoditiesDbAdapter = CommoditiesDbAdapter.getInstance();
+
         } else {
-            mSplitsDbAdapter = new SplitsDbAdapter(db);
-            mTransactionsDbAdapter = new TransactionsDbAdapter(db, mSplitsDbAdapter);
-            mAccountsDbAdapter = new AccountsDbAdapter(db, mTransactionsDbAdapter);
-            mScheduledActionDbAdapter = new ScheduledActionDbAdapter(db);
-            mPricesDbAdapter = new PricesDbAdapter(db);
-            mCommoditiesDbAdapter = new CommoditiesDbAdapter(db);
+            mSplitsDbAdapter        = new SplitsDbAdapter(db);
+            mTransactionsDbAdapter  = new TransactionsDbAdapter(db, mSplitsDbAdapter);
+            mAccountsDbAdapter      = new AccountsDbAdapter(db, mTransactionsDbAdapter);
+            mPricesDbAdapter        = new PricesDbAdapter(db);
+            mCommoditiesDbAdapter   = new CommoditiesDbAdapter(db);
+            RecurrenceDbAdapter recurrenceDbAdapter = new RecurrenceDbAdapter(db);
+            mBudgetsDbAdapter       = new BudgetsDbAdapter(db, new BudgetAmountsDbAdapter(db), recurrenceDbAdapter);
+            mScheduledActionDbAdapter = new ScheduledActionDbAdapter(db, recurrenceDbAdapter);
         }
 
+        mExportCacheFilePath = null;
         mCacheDir = new File(mContext.getCacheDir(), params.getExportFormat().name());
         mCacheDir.mkdir();
         purgeDirectory(mCacheDir);
@@ -184,10 +194,16 @@ public abstract class Exporter {
      * @return Absolute path to file
      */
     protected String getExportCacheFilePath(){
-        String cachePath = mCacheDir.getAbsolutePath();
-        if (!cachePath.endsWith("/"))
-            cachePath += "/";
-        return cachePath + buildExportFilename(mExportParams.getExportFormat());
+        // The file name contains a timestamp, so ensure it doesn't change with multiple calls to
+        // avoid issues like #448
+        if (mExportCacheFilePath == null) {
+            String cachePath = mCacheDir.getAbsolutePath();
+            if (!cachePath.endsWith("/"))
+                cachePath += "/";
+            mExportCacheFilePath = cachePath + buildExportFilename(mExportParams.getExportFormat());
+        }
+
+        return mExportCacheFilePath;
     }
 
     /**
@@ -201,11 +217,11 @@ public abstract class Exporter {
     public static class ExporterException extends RuntimeException{
 
         public ExporterException(ExportParams params){
-            super("Failed to generate " + params.getExportFormat().toString());
+            super("Failed to generate export with parameters:  " + params.toString());
         }
 
         public ExporterException(@NonNull ExportParams params, @NonNull String msg) {
-            super("Failed to generate " + params.getExportFormat().toString() + "-" + msg);
+            super("Failed to generate export with parameters: " + params.toString() + " - " + msg);
         }
 
         public ExporterException(ExportParams params, Throwable throwable){

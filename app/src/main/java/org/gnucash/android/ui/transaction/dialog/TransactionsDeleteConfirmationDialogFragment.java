@@ -24,12 +24,13 @@ import android.support.v4.app.DialogFragment;
 
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
-import org.gnucash.android.db.AccountsDbAdapter;
-import org.gnucash.android.db.TransactionsDbAdapter;
+import org.gnucash.android.db.adapter.AccountsDbAdapter;
+import org.gnucash.android.db.adapter.DatabaseAdapter;
+import org.gnucash.android.db.adapter.TransactionsDbAdapter;
 import org.gnucash.android.export.xml.GncXmlExporter;
 import org.gnucash.android.model.Transaction;
 import org.gnucash.android.ui.common.UxArgument;
-import org.gnucash.android.ui.util.Refreshable;
+import org.gnucash.android.ui.common.Refreshable;
 import org.gnucash.android.ui.homescreen.WidgetConfigurationActivity;
 
 import java.util.ArrayList;
@@ -74,7 +75,7 @@ public class TransactionsDeleteConfirmationDialogFragment extends DialogFragment
                                     transactionsDbAdapter.deleteAllRecords();
 
                                     if (preserveOpeningBalances) {
-                                        transactionsDbAdapter.bulkAddRecords(openingBalances);
+                                        transactionsDbAdapter.bulkAddRecords(openingBalances, DatabaseAdapter.UpdateMethod.insert);
                                     }
                                 } else {
                                     transactionsDbAdapter.deleteRecord(rowId);

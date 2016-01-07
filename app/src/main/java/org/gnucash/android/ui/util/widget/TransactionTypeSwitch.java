@@ -29,6 +29,8 @@ import org.gnucash.android.model.Transaction;
 import org.gnucash.android.model.TransactionType;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A special type of {@link android.widget.ToggleButton} which displays the appropriate CREDIT/DEBIT labels for the
@@ -37,6 +39,8 @@ import java.math.BigDecimal;
  */
 public class TransactionTypeSwitch extends SwitchCompat {
     private AccountType mAccountType = AccountType.EXPENSE;
+
+    List<OnCheckedChangeListener> mOnCheckedChangeListeners = new ArrayList<>();
 
     public TransactionTypeSwitch(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
@@ -114,6 +118,14 @@ public class TransactionTypeSwitch extends SwitchCompat {
     }
 
     /**
+     * Add listeners to be notified when the checked status changes
+     * @param checkedChangeListener Checked change listener
+     */
+    public void addOnCheckedChangeListener(OnCheckedChangeListener checkedChangeListener){
+        mOnCheckedChangeListeners.add(checkedChangeListener);
+    }
+
+    /**
      * Toggles the button checked based on the movement caused by the transaction type for the specified account
      * @param transactionType {@link org.gnucash.android.model.TransactionType} of the split
      */
@@ -123,7 +135,7 @@ public class TransactionTypeSwitch extends SwitchCompat {
 
     /**
      * Returns the account type associated with this button
-     * @return
+     * @return Type of account
      */
     public AccountType getAccountType(){
         return mAccountType;
@@ -172,6 +184,10 @@ public class TransactionTypeSwitch extends SwitchCompat {
                     mAmountEditText.setValue(amount.negate());
                 }
 
+            }
+
+            for (OnCheckedChangeListener listener : mOnCheckedChangeListeners) {
+                listener.onCheckedChanged(compoundButton, isChecked);
             }
         }
     }

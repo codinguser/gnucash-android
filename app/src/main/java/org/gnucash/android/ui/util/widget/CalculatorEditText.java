@@ -19,6 +19,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.inputmethodservice.KeyboardView;
+import android.support.annotation.Nullable;
 import android.support.annotation.XmlRes;
 import android.text.Editable;
 import android.text.InputType;
@@ -29,6 +30,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.crashlytics.android.Crashlytics;
 
@@ -37,6 +39,8 @@ import net.objecthunter.exp4j.ExpressionBuilder;
 
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
+import org.gnucash.android.model.Money;
+import org.gnucash.android.db.adapter.CommoditiesDbAdapter;
 import org.gnucash.android.model.Commodity;
 import org.gnucash.android.ui.common.FormActivity;
 
@@ -150,7 +154,7 @@ public class CalculatorEditText extends EditText {
         setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                if (v != null)
+                if (v != null && !isInEditMode())
                     ((InputMethodManager) GnuCashApplication.getAppContext()
                             .getSystemService(Activity.INPUT_METHOD_SERVICE))
                             .hideSoftInputFromWindow(v.getWindowToken(), 0);
@@ -212,16 +216,16 @@ public class CalculatorEditText extends EditText {
      * Returns the XML resource ID describing the calculator keys layout
      * @return XML resource ID
      */
-    public int getCalculatorKeysLayout() {
+    public @XmlRes int getCalculatorKeysLayout() {
         return mCalculatorKeysLayout;
     }
 
     /**
      * Sets the XML resource describing the layout of the calculator keys
-     * @param mCalculatorKeysLayout XML resource ID
+     * @param calculatorKeysLayout XML resource ID
      */
-    public void setCalculatorKeysLayout(@XmlRes int mCalculatorKeysLayout) {
-        this.mCalculatorKeysLayout = mCalculatorKeysLayout;
+    public void setCalculatorKeysLayout(@XmlRes int calculatorKeysLayout) {
+        this.mCalculatorKeysLayout = calculatorKeysLayout;
         bindListeners(mCalculatorKeyboardView);
     }
 
@@ -313,7 +317,7 @@ public class CalculatorEditText extends EditText {
      * Performs an evaluation of the expression first
      * @return BigDecimal value
      */
-    public BigDecimal getValue(){
+    public @Nullable BigDecimal getValue(){
         evaluate();
         String amountString = getCleanString();
         if (amountString.isEmpty())
@@ -323,8 +327,6 @@ public class CalculatorEditText extends EditText {
         } catch (NumberFormatException e){
             String msg = "Error parsing amount string " + amountString + " from CalculatorEditText";
             Log.i(getClass().getSimpleName(), msg, e);
-            Crashlytics.log(msg);
-            Crashlytics.logException(e);
             return null;
         }
     }
@@ -344,7 +346,7 @@ public class CalculatorEditText extends EditText {
         formatter.setGroupingUsed(false);
         String resultString = formatter.format(newAmount.doubleValue());
 
-        setText(resultString);
+        super.setText(resultString);
         setSelection(resultString.length());
     }
 }

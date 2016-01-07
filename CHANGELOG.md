@@ -1,5 +1,30 @@
 Change Log
 ===============================================================================
+Version 2.1.0 *(2016-xx-xx)*
+----------------------------
+* Feature: Budgets
+* Improved: Scheduled transactions now have more accurate timestamps
+* Improved: Generate all scheduled transactions even if a scheduled is missed (e.g. device off)
+
+Version 2.0.5 *(2015-12-12)*
+----------------------------
+* Fixed: Wrong decimal formatting in multi-currency transactions
+* Improved: Reliability of exports
+
+Version 2.0.4 *(2015-12-02)*
+----------------------------
+* Fixed: Transaction export time not always working reliably
+* Fixed: Renaming account causes transactions to be deleted
+* Fixed: Progress dialog not displayed during initial import
+* Fixed: Unable to finish first-run wizard if choosing to create accounts manually
+* Fixed: Removed inapplicable options in scheduled actions context menu
+
+Version 2.0.3 *(2015-11-21)*
+----------------------------
+* Fixed: Unable to enter decimal amounts in split editor
+* Fixed: Split editor shows wrong imbalance when editing transaction
+* Fixed: Auto-backups not correctly generated
+
 Version 2.0.2 *(2015-11-20)*
 ----------------------------
 * Fixed: Exporting to external service does not work in some devices

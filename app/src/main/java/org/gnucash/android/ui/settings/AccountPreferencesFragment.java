@@ -16,24 +16,26 @@
 
 package org.gnucash.android.ui.settings;
 
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.preference.ListPreference;
-import android.preference.Preference;
-import android.preference.PreferenceFragment;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.preference.ListPreference;
+import android.support.v7.preference.Preference;
+import android.support.v7.preference.PreferenceFragmentCompat;
 
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
-import org.gnucash.android.db.CommoditiesDbAdapter;
 import org.gnucash.android.db.DatabaseSchema;
-import org.gnucash.android.model.Commodity;
+import org.gnucash.android.db.adapter.BooksDbAdapter;
+import org.gnucash.android.db.adapter.CommoditiesDbAdapter;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.ui.account.AccountsActivity;
+import org.gnucash.android.ui.settings.dialog.DeleteAllAccountsConfirmationDialog;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,25 +46,23 @@ import java.util.List;
  * @author Ngewi Fet <ngewi.fet@gmail.com>
  * @author Oleksandr Tyshkovets <olexandr.tyshkovets@gmail.com>
  */
-@TargetApi(11)
-public class AccountPreferencesFragment extends PreferenceFragment {
-
-    private Activity mActivity;
+public class AccountPreferencesFragment extends PreferenceFragmentCompat implements
+        Preference.OnPreferenceChangeListener, Preference.OnPreferenceClickListener{
 
     List<CharSequence> mCurrencyEntries = new ArrayList<>();
     List<CharSequence> mCurrencyEntryValues = new ArrayList<>();
 
     @Override
+    public void onCreatePreferences(Bundle bundle, String s) {
+        addPreferencesFromResource(R.xml.fragment_account_preferences);
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        addPreferencesFromResource(R.xml.fragment_account_preferences);
-        ActionBar actionBar = ((AppCompatPreferenceActivity) getActivity()).getSupportActionBar();
-        actionBar.setHomeButtonEnabled(true);
-        actionBar.setDisplayHomeAsUpEnabled(true);
+        ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
         actionBar.setTitle(R.string.title_account_preferences);
-
-        mActivity = getActivity();
 
         Cursor cursor = CommoditiesDbAdapter.getInstance().fetchAllRecords(DatabaseSchema.CommodityEntry.COLUMN_MNEMONIC + " ASC");
         while(cursor.moveToNext()){
@@ -82,7 +82,7 @@ public class AccountPreferencesFragment extends PreferenceFragment {
         Preference pref = findPreference(getString(R.string.key_default_currency));
         String currencyName = CommoditiesDbAdapter.getInstance().getCommodity(defaultCurrency).getFullname();
         pref.setSummary(currencyName);
-        pref.setOnPreferenceChangeListener((SettingsActivity) getActivity());
+        pref.setOnPreferenceChangeListener(this);
 
         CharSequence[] entries = new CharSequence[mCurrencyEntries.size()];
         CharSequence[] entryValues = new CharSequence[mCurrencyEntryValues.size()];
@@ -90,13 +90,13 @@ public class AccountPreferencesFragment extends PreferenceFragment {
         ((ListPreference) pref).setEntryValues(mCurrencyEntryValues.toArray(entryValues));
 
         Preference preference = findPreference(getString(R.string.key_import_accounts));
-        preference.setOnPreferenceClickListener((SettingsActivity)getActivity());
+        preference.setOnPreferenceClickListener(this);
 
         preference = findPreference(getString(R.string.key_delete_all_accounts));
         preference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                deleteAllAccounts();
+                showDeleteAccountsDialog();
                 return true;
             }
         });
@@ -112,7 +112,7 @@ public class AccountPreferencesFragment extends PreferenceFragment {
                         .setPositiveButton(R.string.btn_create_accounts, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-                                AccountsActivity.createDefaultAccounts(Money.DEFAULT_CURRENCY_CODE, mActivity);
+                                AccountsActivity.createDefaultAccounts(Money.DEFAULT_CURRENCY_CODE, getActivity());
                             }
                         })
                         .setNegativeButton(R.string.btn_cancel, new DialogInterface.OnClickListener() {
@@ -129,9 +129,45 @@ public class AccountPreferencesFragment extends PreferenceFragment {
         });
     }
 
-    public void deleteAllAccounts(){
-        DeleteAllAccountsConfirmationDialog deleteConfirmationDialog = DeleteAllAccountsConfirmationDialog.newInstance();
-        deleteConfirmationDialog.show(getFragmentManager(), "account_settings");
+    @Override
+    public boolean onPreferenceClick(Preference preference) {
+        String key = preference.getKey();
 
+        if (key.equals(getString(R.string.key_import_accounts))){
+            AccountsActivity.startXmlFileChooser(getActivity());
+            return true;
+        }
+
+        return false;
+    }
+
+    @Override
+    public boolean onPreferenceChange(Preference preference, Object newValue) {
+        if (preference.getKey().equals(getString(R.string.key_default_currency))){
+            GnuCashApplication.setDefaultCurrencyCode(newValue.toString());
+            String fullname = CommoditiesDbAdapter.getInstance().getCommodity(newValue.toString()).getFullname();
+            preference.setSummary(fullname);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Show the dialog for deleting accounts
+     */
+    public void showDeleteAccountsDialog(){
+        DeleteAllAccountsConfirmationDialog deleteConfirmationDialog = DeleteAllAccountsConfirmationDialog.newInstance();
+        deleteConfirmationDialog.show(getActivity().getSupportFragmentManager(), "account_settings");
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode){
+            case AccountsActivity.REQUEST_PICK_ACCOUNTS_FILE:
+                if (resultCode == Activity.RESULT_OK && data != null) {
+                    AccountsActivity.importXmlFileFromIntent(getActivity(), data, null);
+                }
+                break;
+        }
     }
 }
