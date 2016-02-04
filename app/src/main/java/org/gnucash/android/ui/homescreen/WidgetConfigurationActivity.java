@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012 Ngewi Fet <ngewif@gmail.com>
+ * Copyright (c) 2012 - 2015 Ngewi Fet <ngewif@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.widget.SimpleCursorAdapter;
@@ -47,6 +48,8 @@ import org.gnucash.android.ui.transaction.TransactionsActivity;
 import org.gnucash.android.util.QualifiedAccountNameCursorAdapter;
 
 import java.util.Locale;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 /**
  * Activity for configuration which account to display on a widget.
@@ -138,12 +141,12 @@ public class WidgetConfigurationActivity extends Activity {
      * @param appWidgetId ID of the widget to be updated
      * @param accountUID GUID of the account tied to the widget
 	 */
-	public static void updateWidget(Context context, int appWidgetId, String accountUID) {
+	public static void updateWidget(final Context context, int appWidgetId, String accountUID) {
 		Log.i("WidgetConfiguration", "Updating widget: " + appWidgetId);
 		AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
 
 		AccountsDbAdapter accountsDbAdapter = AccountsDbAdapter.getInstance();
-		Account account;
+		final Account account;
         try {
             account = accountsDbAdapter.getRecord(accountUID);
         } catch (IllegalArgumentException e) {
@@ -165,16 +168,16 @@ public class WidgetConfigurationActivity extends Activity {
 			return;
 		}
 		
-		RemoteViews views = new RemoteViews(context.getPackageName(),
+		final RemoteViews views = new RemoteViews(context.getPackageName(),
 				R.layout.widget_4x1);
 		views.setTextViewText(R.id.account_name, account.getName());
-        Money accountBalance = accountsDbAdapter.getAccountBalance(accountUID, -1, System.currentTimeMillis());
 
-        views.setTextViewText(R.id.transactions_summary,
+		Money accountBalance = accountsDbAdapter.getAccountBalance(accountUID, -1, System.currentTimeMillis());
+
+		views.setTextViewText(R.id.transactions_summary,
 				accountBalance.formattedString(Locale.getDefault()));
 		int color = account.getBalance().isNegative() ? R.color.debit_red : R.color.credit_green;
 		views.setTextColor(R.id.transactions_summary, context.getResources().getColor(color));
-
 
 
 		Intent accountViewIntent = new Intent(context, TransactionsActivity.class);
@@ -201,20 +204,29 @@ public class WidgetConfigurationActivity extends Activity {
 	 * Updates all widgets belonging to the application
 	 * @param context Application context
 	 */
-	public static void updateAllWidgets(Context context){
+	public static void updateAllWidgets(final Context context){
 		Log.i("WidgetConfiguration", "Updating all widgets");
 		AppWidgetManager widgetManager = AppWidgetManager.getInstance(context);
 		ComponentName componentName = new ComponentName(context, TransactionAppWidgetProvider.class);
-		int[] appWidgetIds = widgetManager.getAppWidgetIds(componentName);
+		final int[] appWidgetIds = widgetManager.getAppWidgetIds(componentName);
 
-        SharedPreferences defaultSharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
-		for (int widgetId : appWidgetIds) {
-			String accountUID = defaultSharedPrefs
-            		.getString(UxArgument.SELECTED_ACCOUNT_UID + widgetId, null);
-            
-			if (accountUID == null)
-				continue;
-			updateWidget(context, widgetId, accountUID);
-		}
+		//update widgets asynchronously so as not to block method which called the update
+		//inside the computation of the account balance
+		new Thread(new Runnable() {
+			SharedPreferences defaultSharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
+
+			@Override
+			public void run() {
+				for (final int widgetId : appWidgetIds) {
+					final String accountUID = defaultSharedPrefs
+							.getString(UxArgument.SELECTED_ACCOUNT_UID + widgetId, null);
+
+					if (accountUID == null)
+						continue;
+
+					updateWidget(context, widgetId, accountUID);
+				}
+			}
+		}).start();
 	}
 }

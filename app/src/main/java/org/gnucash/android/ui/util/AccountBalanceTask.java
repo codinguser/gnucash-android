@@ -17,15 +17,12 @@
 
 package org.gnucash.android.ui.util;
 
-import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.TextView;
 
 import com.crashlytics.android.Crashlytics;
 
-import org.gnucash.android.R;
-import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.AccountsDbAdapter;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.ui.transaction.TransactionsActivity;
@@ -69,7 +66,6 @@ public class AccountBalanceTask extends AsyncTask<String, Void, Money> {
     @Override
     protected void onPostExecute(Money balance) {
         if (accountBalanceTextViewReference.get() != null && balance != null){
-            final Context context = GnuCashApplication.getAppContext();
             final TextView balanceTextView = accountBalanceTextViewReference.get();
             if (balanceTextView != null){
                 TransactionsActivity.displayBalance(balanceTextView, balance);

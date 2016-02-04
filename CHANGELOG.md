@@ -1,5 +1,10 @@
 Change Log
 ===============================================================================
+Version 2.0.6 *(2016-02-29)*
+----------------------------
+* Fixed: Saving transaction gets slower with increase in size of database
+* Fixed: Crash when creating a new transaction with no transfer account
+
 Version 2.0.5 *(2015-12-12)*
 ----------------------------
 * Fixed: Wrong decimal formatting in multi-currency transactions
