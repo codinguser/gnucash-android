@@ -791,7 +791,8 @@ public class AccountFormFragment extends Fragment {
 		}
         mAccount.setParentUID(newParentAccountUID);
 
-        if (mDefaultTransferAccountCheckBox.isChecked()){
+        if (mDefaultTransferAccountCheckBox.isChecked()
+                && mDefaulTransferAccountSpinner.getSelectedItemId() != Spinner.INVALID_ROW_ID){
             long id = mDefaulTransferAccountSpinner.getSelectedItemId();
             mAccount.setDefaultTransferAccountUID(mAccountsDbAdapter.getUID(id));
         } else {

@@ -1,10 +1,11 @@
 Change Log
 ===============================================================================
-Version 2.0.6 *(2016-02-29)*
+Version 2.0.6 *(2016-02-20)*
 ----------------------------
 * Fixed: Saving transaction gets slower with increase in size of database
 * Fixed: Imbalance amount wrongly computed in split editor (for some accounts)
 * Fixed: Amount text boxes in split editor sometimes do not get focus
+* Fixed: Crash when saving account with no transfer account selected
 * Fixed: Crash when creating a new transaction with no transfer account
 
 Version 2.0.5 *(2015-12-12)*

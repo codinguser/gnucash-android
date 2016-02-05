@@ -793,7 +793,7 @@ public class TransactionFormFragment extends Fragment implements
 
                     String transferAcctUID;
                     long transferAcctId = mTransferAccountSpinner.getSelectedItemId();
-                    if (mUseDoubleEntry || transferAcctId < 0) {
+                    if (mUseDoubleEntry && transferAcctId > 0) {
                         transferAcctUID = mAccountsDbAdapter.getUID(transferAcctId);
                     } else {
                         transferAcctUID = mAccountsDbAdapter.getOrCreateImbalanceAccountUID(currency);
