@@ -97,7 +97,6 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
 	 * Adds an account to the database. 
 	 * If an account already exists in the database with the same GUID, it is replaced.
 	 * @param account {@link Account} to be inserted to database
-	 * @return Database row ID of the inserted account
 	 */
     @Override
 	public void addRecord(@NonNull Account account){
@@ -200,7 +199,8 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
         }
         if (account.getDefaultTransferAccountUID() != null) {
             mReplaceStatement.bindString(14, account.getDefaultTransferAccountUID());
-        }
+        } else
+            mReplaceStatement.bindNull(14);
 
         return mReplaceStatement;
     }
@@ -355,11 +355,22 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
             String accountUIDList = "'" + TextUtils.join("','", descendantAccountUIDs) + "'";
 
             // delete accounts
-            mDb.delete(
+            long deletedCount = mDb.delete(
                     AccountEntry.TABLE_NAME,
                     AccountEntry.COLUMN_UID + " IN (" + accountUIDList + ")",
                     null
             );
+
+            //if we delete some accounts, reset the default transfer account to NULL
+            //there is also a database trigger from db version > 12
+            if (deletedCount > 0){
+                ContentValues contentValues = new ContentValues();
+                contentValues.putNull(AccountEntry.COLUMN_DEFAULT_TRANSFER_ACCOUNT_UID);
+                mDb.update(mTableName, contentValues,
+                        AccountEntry.COLUMN_DEFAULT_TRANSFER_ACCOUNT_UID + " IN (" + accountUIDList + ")",
+                        null);
+            }
+
             mDb.setTransactionSuccessful();
             return true;
         }
@@ -1214,6 +1225,19 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
         mDb.delete(TransactionEntry.TABLE_NAME, null, null);
         mDb.delete(DatabaseSchema.ScheduledActionEntry.TABLE_NAME, null, null);
         return mDb.delete(AccountEntry.TABLE_NAME, null, null);
+    }
+
+    @Override
+    public boolean deleteRecord(@NonNull String uid) {
+        boolean result = super.deleteRecord(uid);
+        if (result){
+            ContentValues contentValues = new ContentValues();
+            contentValues.putNull(AccountEntry.COLUMN_DEFAULT_TRANSFER_ACCOUNT_UID);
+            mDb.update(mTableName, contentValues,
+                    AccountEntry.COLUMN_DEFAULT_TRANSFER_ACCOUNT_UID + "=?",
+                    new String[]{uid});
+        }
+        return result;
     }
 
     public int getTransactionMaxSplitNum(@NonNull String accountUID) {
