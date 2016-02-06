@@ -46,7 +46,7 @@ public class PricesDbAdapter extends DatabaseAdapter<Price> {
         mReplaceStatement.bindString(1, price.getUID());
         mReplaceStatement.bindString(2, price.getCommodityUID());
         mReplaceStatement.bindString(3, price.getCurrencyUID());
-        mReplaceStatement.bindString(4, TimestampHelper.getUtcStringForTimestamp(price.getDate()));
+        mReplaceStatement.bindString(4, TimestampHelper.getUtcStringFromTimestamp(price.getDate()));
         if (price.getSource() != null) {
             mReplaceStatement.bindString(5, price.getSource());
         }
@@ -70,7 +70,7 @@ public class PricesDbAdapter extends DatabaseAdapter<Price> {
         long valueDenom   = cursor.getLong(cursor.getColumnIndexOrThrow(PriceEntry.COLUMN_VALUE_DENOM));
 
         Price price = new Price(commodityUID, currencyUID);
-        price.setDate(TimestampHelper.getTimestampForUtcString(dateString));
+        price.setDate(TimestampHelper.getTimestampFromUtcString(dateString));
         price.setSource(source);
         price.setType(type);
         price.setValueNum(valueNum);

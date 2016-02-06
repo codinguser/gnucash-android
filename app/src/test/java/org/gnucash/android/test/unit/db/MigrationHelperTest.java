@@ -48,17 +48,17 @@ public class MigrationHelperTest {
 
         TimeZone timeZone = TimeZone.getTimeZone("GMT-1:00");
         Timestamp result = MigrationHelper.subtractTimeZoneOffset(unixBillenniumTimestamp, timeZone);
-        assertThat(TimestampHelper.getUtcStringForTimestamp(result))
+        assertThat(TimestampHelper.getUtcStringFromTimestamp(result))
                 .isEqualTo(unixBillenniumUtcStringAfterSubtract);
 
         timeZone = TimeZone.getTimeZone("GMT+1:00");
         result = MigrationHelper.subtractTimeZoneOffset(unixBillenniumTimestamp, timeZone);
-        assertThat(TimestampHelper.getUtcStringForTimestamp(result))
+        assertThat(TimestampHelper.getUtcStringFromTimestamp(result))
                 .isEqualTo(unixBillenniumUtcStringAfterSubtract);
 
         timeZone = TimeZone.getTimeZone("GMT+0:00");
         result = MigrationHelper.subtractTimeZoneOffset(unixBillenniumTimestamp, timeZone);
-        assertThat(TimestampHelper.getUtcStringForTimestamp(result))
+        assertThat(TimestampHelper.getUtcStringFromTimestamp(result))
                 .isEqualTo(unixBillenniumUtcString);
     }
 }

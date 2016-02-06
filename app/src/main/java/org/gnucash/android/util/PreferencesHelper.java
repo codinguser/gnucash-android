@@ -48,7 +48,7 @@ public final class PreferencesHelper {
      * @param lastExportTime the last export time to set.
      */
     public static void setLastExportTime(Timestamp lastExportTime) {
-        final String utcString = TimestampHelper.getUtcStringForTimestamp(lastExportTime);
+        final String utcString = TimestampHelper.getUtcStringFromTimestamp(lastExportTime);
         Log.d(LOG_TAG, "Storing '" + utcString + "' as lastExportTime in Android Preferences.");
         PreferenceManager.getDefaultSharedPreferences(GnuCashApplication.getAppContext())
                 .edit()
@@ -66,6 +66,6 @@ public final class PreferencesHelper {
                 .getString(PREFERENCE_LAST_EXPORT_TIME_KEY, PREFERENCE_LAST_EXPORT_TIME_DEFAULT_VALUE);
         Log.d(LOG_TAG, "Retrieving '" + utcString + "' as lastExportTime from Android Preferences.");
         return PREFERENCE_LAST_EXPORT_TIME_DEFAULT_VALUE.equals(utcString) ?
-                TimestampHelper.getTimestampForEpochZero() : TimestampHelper.getTimestampForUtcString(utcString);
+                TimestampHelper.getTimestampFromEpochZero() : TimestampHelper.getTimestampFromUtcString(utcString);
     }
 }

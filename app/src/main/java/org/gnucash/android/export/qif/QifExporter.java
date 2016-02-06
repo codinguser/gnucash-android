@@ -60,7 +60,7 @@ public class QifExporter extends Exporter{
         final String newLine = "\n";
         TransactionsDbAdapter transactionsDbAdapter = mTransactionsDbAdapter;
         try {
-            String lastExportTimeStamp = TimestampHelper.getUtcStringForTimestamp(mExportParams.getExportStartTime());
+            String lastExportTimeStamp = TimestampHelper.getUtcStringFromTimestamp(mExportParams.getExportStartTime());
             Cursor cursor = transactionsDbAdapter.fetchTransactionsWithSplitsWithTransactionAccount(
                     new String[]{
                             TransactionEntry.TABLE_NAME + "_" + TransactionEntry.COLUMN_UID + " AS trans_uid",
@@ -216,7 +216,7 @@ public class QifExporter extends Exporter{
             transactionsDbAdapter.updateTransaction(contentValues, null, null);
 
             /// export successful
-            PreferencesHelper.setLastExportTime(TimestampHelper.getTimestampForNow());
+            PreferencesHelper.setLastExportTime(TimestampHelper.getTimestampFromNow());
             return splitQIF(file);
         } catch (IOException e) {
             throw new ExporterException(mExportParams, e);

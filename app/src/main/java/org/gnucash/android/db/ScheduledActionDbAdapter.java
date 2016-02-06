@@ -103,7 +103,7 @@ public class ScheduledActionDbAdapter extends DatabaseAdapter<ScheduledAction> {
         mReplaceStatement.bindLong(6,   schedxAction.getLastRun());
         mReplaceStatement.bindLong(7,   schedxAction.getPeriod());
         mReplaceStatement.bindLong(8,   schedxAction.isEnabled() ? 1 : 0);
-        mReplaceStatement.bindString(9, TimestampHelper.getUtcStringForTimestamp(schedxAction.getCreatedTimestamp()));
+        mReplaceStatement.bindString(9, TimestampHelper.getUtcStringFromTimestamp(schedxAction.getCreatedTimestamp()));
         if (schedxAction.getTag() == null)
             mReplaceStatement.bindNull(10);
         else

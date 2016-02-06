@@ -42,8 +42,8 @@ public abstract class BaseModel {
      * A unique ID will be generated on demand with a call to {@link #getUID()}</p>
      */
     public BaseModel(){
-        mCreatedTimestamp = TimestampHelper.getTimestampForNow();
-        mModifiedTimestamp = TimestampHelper.getTimestampForNow();
+        mCreatedTimestamp = TimestampHelper.getTimestampFromNow();
+        mModifiedTimestamp = TimestampHelper.getTimestampFromNow();
     }
 
     /**

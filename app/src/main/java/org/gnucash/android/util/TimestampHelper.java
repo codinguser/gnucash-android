@@ -48,14 +48,14 @@ public final class TimestampHelper {
      * @param timestamp The {@link Timestamp} to format.
      * @return The formatted {@link String}.
      */
-    public static String getUtcStringForTimestamp(Timestamp timestamp) {
+    public static String getUtcStringFromTimestamp(Timestamp timestamp) {
         return UTC_DATE_WITH_MILLISECONDS_FORMAT.withZone(UTC_TIME_ZONE).print(timestamp.getTime());
     }
 
     /**
      * @return A {@link Timestamp} with time in milliseconds equals to zero.
      */
-    public static Timestamp getTimestampForEpochZero() {
+    public static Timestamp getTimestampFromEpochZero() {
         return new Timestamp(0);
     }
 
@@ -68,7 +68,7 @@ public final class TimestampHelper {
      * @param utcString A {@link String} in UTC.
      * @return A {@link Timestamp} for given utcString.
      */
-    public static Timestamp getTimestampForUtcString(String utcString) {
+    public static Timestamp getTimestampFromUtcString(String utcString) {
         DateTime dateTime;
         try {
 
@@ -93,7 +93,7 @@ public final class TimestampHelper {
     /**
      * @return A {@link Timestamp} initialized with the system current time.
      */
-    public static Timestamp getTimestampForNow() {
+    public static Timestamp getTimestampFromNow() {
         return new Timestamp(System.currentTimeMillis());
     }
 }

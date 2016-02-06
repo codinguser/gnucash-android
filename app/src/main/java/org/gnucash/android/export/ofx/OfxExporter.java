@@ -138,7 +138,7 @@ public class OfxExporter extends Exporter{
         boolean useXmlHeader = PreferenceManager.getDefaultSharedPreferences(mContext)
                 .getBoolean(mContext.getString(R.string.key_xml_ofx_header), false);
 
-        PreferencesHelper.setLastExportTime(TimestampHelper.getTimestampForNow());
+        PreferencesHelper.setLastExportTime(TimestampHelper.getTimestampFromNow());
 
         StringWriter stringWriter = new StringWriter();
         //if we want SGML OFX headers, write first to string and then prepend header

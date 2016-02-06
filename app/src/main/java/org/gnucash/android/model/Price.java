@@ -23,7 +23,7 @@ public class Price extends BaseModel {
     public static final String SOURCE_USER = "user:xfer-dialog";
 
     public Price(){
-        mDate = TimestampHelper.getTimestampForNow();
+        mDate = TimestampHelper.getTimestampFromNow();
     }
 
     /**
@@ -34,7 +34,7 @@ public class Price extends BaseModel {
     public Price(String commodityUID, String currencyUID){
         this.mCommodityUID = commodityUID;
         this.mCurrencyUID = currencyUID;
-        mDate = TimestampHelper.getTimestampForNow();
+        mDate = TimestampHelper.getTimestampFromNow();
     }
 
     public String getCommodityUID() {

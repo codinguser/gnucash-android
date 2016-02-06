@@ -46,7 +46,7 @@ public class ExportParams {
     /**
      * All transactions created after this date will be exported
      */
-    private Timestamp mExportStartTime = TimestampHelper.getTimestampForEpochZero();
+    private Timestamp mExportStartTime = TimestampHelper.getTimestampFromEpochZero();
 
     /**
      * Flag to determine if all transactions should be deleted after exporting is complete
@@ -134,7 +134,7 @@ public class ExportParams {
 
     @Override
     public String toString() {
-        return "Export all transactions created since " + TimestampHelper.getUtcStringForTimestamp(mExportStartTime) + " UTC"
+        return "Export all transactions created since " + TimestampHelper.getUtcStringFromTimestamp(mExportStartTime) + " UTC"
                 + " as "+ mExportFormat.name() + " to " + mExportTarget.name();
     }
 
@@ -147,7 +147,7 @@ public class ExportParams {
         String separator = ";";
 
         return mExportFormat.name() + separator + mExportTarget.name() + separator
-                + TimestampHelper.getUtcStringForTimestamp(mExportStartTime) + separator
+                + TimestampHelper.getUtcStringFromTimestamp(mExportStartTime) + separator
                 + Boolean.toString(mDeleteTransactionsAfterExport);
     }
 
@@ -160,7 +160,7 @@ public class ExportParams {
         String[] tokens = csvParams.split(";");
         ExportParams params = new ExportParams(ExportFormat.valueOf(tokens[0]));
         params.setExportTarget(ExportTarget.valueOf(tokens[1]));
-        params.setExportStartTime(TimestampHelper.getTimestampForUtcString(tokens[2]));
+        params.setExportStartTime(TimestampHelper.getTimestampFromUtcString(tokens[2]));
         params.setDeleteTransactionsAfterExport(Boolean.parseBoolean(tokens[3]));
 
         return params;
