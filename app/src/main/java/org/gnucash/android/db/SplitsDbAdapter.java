@@ -78,7 +78,7 @@ public class SplitsDbAdapter extends DatabaseAdapter<Split> {
 
         //modifying a split means modifying the accompanying transaction as well
         updateRecord(TransactionEntry.TABLE_NAME, transactionId,
-                TransactionEntry.COLUMN_MODIFIED_AT, TimestampHelper.getUtcStringForTimestamp(TimestampHelper.getTimestampForNow()));
+                TransactionEntry.COLUMN_MODIFIED_AT, TimestampHelper.getUtcStringFromTimestamp(TimestampHelper.getTimestampFromNow()));
     }
 
     @Override
@@ -107,7 +107,7 @@ public class SplitsDbAdapter extends DatabaseAdapter<Split> {
         mReplaceStatement.bindLong(5,   split.getValue().getDenominator());
         mReplaceStatement.bindLong(6,   split.getQuantity().getNumerator());
         mReplaceStatement.bindLong(7,   split.getQuantity().getDenominator());
-        mReplaceStatement.bindString(8, TimestampHelper.getUtcStringForTimestamp(split.getCreatedTimestamp()));
+        mReplaceStatement.bindString(8, TimestampHelper.getUtcStringFromTimestamp(split.getCreatedTimestamp()));
         mReplaceStatement.bindString(9, split.getAccountUID());
         mReplaceStatement.bindString(10, split.getTransactionUID());
 

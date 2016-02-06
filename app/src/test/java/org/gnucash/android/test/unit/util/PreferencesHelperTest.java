@@ -36,7 +36,7 @@ public class PreferencesHelperTest {
     @Test
     public void shouldGetLastExportTimeDefaultValue() {
         final Timestamp lastExportTime = PreferencesHelper.getLastExportTime();
-        assertThat(lastExportTime).isEqualTo(TimestampHelper.getTimestampForEpochZero());
+        assertThat(lastExportTime).isEqualTo(TimestampHelper.getTimestampFromEpochZero());
     }
 
     @Test

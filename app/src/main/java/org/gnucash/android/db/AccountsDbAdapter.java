@@ -183,7 +183,7 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
         mReplaceStatement.bindLong(7, account.isFavorite() ? 1 : 0);
         mReplaceStatement.bindString(8, account.getFullName());
         mReplaceStatement.bindLong(9, account.isPlaceholderAccount() ? 1 : 0);
-        mReplaceStatement.bindString(10, TimestampHelper.getUtcStringForTimestamp(account.getCreatedTimestamp()));
+        mReplaceStatement.bindString(10, TimestampHelper.getUtcStringFromTimestamp(account.getCreatedTimestamp()));
         mReplaceStatement.bindLong(11, account.isHidden() ? 1 : 0);
         Commodity commodity = account.getCommodity();
         if (commodity == null)
@@ -530,7 +530,7 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
                         SplitEntry.COLUMN_ACCOUNT_UID,
                 new String[]{AccountEntry.TABLE_NAME + ".*"},
                 TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_MODIFIED_AT + " > ?",
-                new String[]{TimestampHelper.getUtcStringForTimestamp(lastExportTimeStamp)},
+                new String[]{TimestampHelper.getUtcStringFromTimestamp(lastExportTimeStamp)},
                 AccountEntry.TABLE_NAME + "." + AccountEntry.COLUMN_UID,
                 null,
                 null

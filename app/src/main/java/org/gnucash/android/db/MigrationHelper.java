@@ -647,7 +647,7 @@ public class MigrationHelper {
             //================================ END TABLE MIGRATIONS ================================
 
             // String timestamp to be used for all new created entities in migration
-            String timestamp = TimestampHelper.getUtcStringForTimestamp(TimestampHelper.getTimestampForNow());
+            String timestamp = TimestampHelper.getUtcStringFromTimestamp(TimestampHelper.getTimestampFromNow());
 
             //ScheduledActionDbAdapter scheduledActionDbAdapter = new ScheduledActionDbAdapter(db);
             //SplitsDbAdapter splitsDbAdapter = new SplitsDbAdapter(db);
@@ -698,7 +698,7 @@ public class MigrationHelper {
             while (cursor.moveToNext()){
                 contentValues.clear();
                 Timestamp timestampT = new Timestamp(cursor.getLong(cursor.getColumnIndexOrThrow(TransactionEntry.COLUMN_TIMESTAMP)));
-                contentValues.put(TransactionEntry.COLUMN_CREATED_AT, TimestampHelper.getUtcStringForTimestamp(timestampT));
+                contentValues.put(TransactionEntry.COLUMN_CREATED_AT, TimestampHelper.getUtcStringFromTimestamp(timestampT));
                 long transactionId = cursor.getLong(cursor.getColumnIndexOrThrow(TransactionEntry._ID));
                 db.update(TransactionEntry.TABLE_NAME, contentValues, TransactionEntry._ID + "=" + transactionId, null);
 
@@ -1096,7 +1096,7 @@ public class MigrationHelper {
 
                 boolean exportAll = Boolean.parseBoolean(tokens[2]);
                 if (exportAll){
-                    params.setExportStartTime(TimestampHelper.getTimestampForEpochZero());
+                    params.setExportStartTime(TimestampHelper.getTimestampFromEpochZero());
                 } else {
                     Timestamp timestamp = PreferencesHelper.getLastExportTime();
                     params.setExportStartTime(timestamp);
@@ -1143,9 +1143,9 @@ public class MigrationHelper {
                 String tag = cursor.getString(cursor.getColumnIndexOrThrow(ScheduledActionEntry.COLUMN_TAG));
                 String[] tokens = tag.split(";");
                 try {
-                    Timestamp timestamp = TimestampHelper.getTimestampForUtcString(tokens[2]);
+                    Timestamp timestamp = TimestampHelper.getTimestampFromUtcString(tokens[2]);
                 } catch (IllegalArgumentException ex) {
-                    tokens[2] = TimestampHelper.getUtcStringForTimestamp(PreferencesHelper.getLastExportTime());
+                    tokens[2] = TimestampHelper.getUtcStringFromTimestamp(PreferencesHelper.getLastExportTime());
                 } finally {
                     tag = TextUtils.join(";", tokens);
                 }

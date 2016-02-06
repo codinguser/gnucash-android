@@ -265,7 +265,7 @@ public class ExportFormFragment extends Fragment implements
 		ExportParams exportParameters = new ExportParams(mExportFormat);
 
 		if (mExportAllSwitch.isChecked()){
-			exportParameters.setExportStartTime(TimestampHelper.getTimestampForEpochZero());
+			exportParameters.setExportStartTime(TimestampHelper.getTimestampFromEpochZero());
 		} else {
 			exportParameters.setExportStartTime(new Timestamp(mExportStartCalendar.getTimeInMillis()));
 		}

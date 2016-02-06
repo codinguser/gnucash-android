@@ -188,7 +188,7 @@ public class TransactionsDbAdapter extends DatabaseAdapter<Transaction> {
             commodity = CommoditiesDbAdapter.getInstance().getCommodity(transaction.getCurrencyCode());
 
         mReplaceStatement.bindString(7, commodity.getUID());
-        mReplaceStatement.bindString(8, TimestampHelper.getUtcStringForTimestamp(transaction.getCreatedTimestamp()));
+        mReplaceStatement.bindString(8, TimestampHelper.getUtcStringFromTimestamp(transaction.getCreatedTimestamp()));
 
         if (transaction.getScheduledActionUID() == null)
             mReplaceStatement.bindNull(9);
@@ -644,11 +644,11 @@ public class TransactionsDbAdapter extends DatabaseAdapter<Transaction> {
                 new String[]{"MAX(" + TransactionEntry.COLUMN_MODIFIED_AT + ")"},
                 null, null, null, null, null);
 
-        Timestamp timestamp = TimestampHelper.getTimestampForNow();
+        Timestamp timestamp = TimestampHelper.getTimestampFromNow();
         if (cursor.moveToFirst()){
             String timeString = cursor.getString(0);
             if (timeString != null){ //in case there were no transactions in the XML file (account structure only)
-                timestamp = TimestampHelper.getTimestampForUtcString(timeString);
+                timestamp = TimestampHelper.getTimestampFromUtcString(timeString);
             }
         }
         cursor.close();
