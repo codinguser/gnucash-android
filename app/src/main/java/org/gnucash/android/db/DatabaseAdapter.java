@@ -29,8 +29,8 @@ import org.gnucash.android.db.DatabaseSchema.SplitEntry;
 import org.gnucash.android.db.DatabaseSchema.TransactionEntry;
 import org.gnucash.android.model.AccountType;
 import org.gnucash.android.model.BaseModel;
+import org.gnucash.android.util.TimestampHelper;
 
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -301,7 +301,7 @@ public abstract class DatabaseAdapter<Model extends BaseModel> {
      */
     protected ContentValues populateBaseModelAttributes(@NonNull ContentValues contentValues, @NonNull Model model){
         contentValues.put(CommonColumns.COLUMN_UID, model.getUID());
-        contentValues.put(CommonColumns.COLUMN_CREATED_AT, model.getCreatedTimestamp().toString());
+        contentValues.put(CommonColumns.COLUMN_CREATED_AT, TimestampHelper.getUtcStringForTimestamp(model.getCreatedTimestamp()));
         //there is a trigger in the database for updated the modified_at column
         /* Due to the use of SQL REPLACE syntax, we insert the created_at values each time
         * (maintain the original creation time and not the time of creation of the replacement)
@@ -321,8 +321,8 @@ public abstract class DatabaseAdapter<Model extends BaseModel> {
         String modified= cursor.getString(cursor.getColumnIndexOrThrow(CommonColumns.COLUMN_MODIFIED_AT));
 
         model.setUID(uid);
-        model.setCreatedTimestamp(Timestamp.valueOf(created));
-        model.setModifiedTimestamp(Timestamp.valueOf(modified));
+        model.setCreatedTimestamp(TimestampHelper.getTimestampForUtcString(created));
+        model.setModifiedTimestamp(TimestampHelper.getTimestampForUtcString(modified));
     }
 
 	/**

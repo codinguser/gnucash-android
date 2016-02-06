@@ -16,6 +16,8 @@
 
 package org.gnucash.android.model;
 
+import org.gnucash.android.util.TimestampHelper;
+
 import java.sql.Timestamp;
 import java.util.UUID;
 
@@ -40,8 +42,8 @@ public abstract class BaseModel {
      * A unique ID will be generated on demand with a call to {@link #getUID()}</p>
      */
     public BaseModel(){
-        mCreatedTimestamp = new Timestamp(System.currentTimeMillis());
-        mModifiedTimestamp = new Timestamp(System.currentTimeMillis());
+        mCreatedTimestamp = TimestampHelper.getTimestampForNow();
+        mModifiedTimestamp = TimestampHelper.getTimestampForNow();
     }
 
     /**

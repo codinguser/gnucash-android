@@ -21,7 +21,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.content.res.Resources;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -52,7 +51,6 @@ import com.codetroopers.betterpickers.radialtimepicker.RadialTimePickerDialog;
 import com.codetroopers.betterpickers.recurrencepicker.EventRecurrence;
 import com.codetroopers.betterpickers.recurrencepicker.EventRecurrenceFormatter;
 import com.codetroopers.betterpickers.recurrencepicker.RecurrencePickerDialog;
-import com.crashlytics.android.Crashlytics;
 import com.dropbox.sync.android.DbxAccountManager;
 
 import org.gnucash.android.R;
@@ -61,7 +59,6 @@ import org.gnucash.android.db.ScheduledActionDbAdapter;
 import org.gnucash.android.export.ExportAsyncTask;
 import org.gnucash.android.export.ExportFormat;
 import org.gnucash.android.export.ExportParams;
-import org.gnucash.android.export.Exporter;
 import org.gnucash.android.model.BaseModel;
 import org.gnucash.android.model.ScheduledAction;
 import org.gnucash.android.ui.account.AccountsActivity;
@@ -69,9 +66,10 @@ import org.gnucash.android.ui.common.UxArgument;
 import org.gnucash.android.ui.settings.SettingsActivity;
 import org.gnucash.android.ui.transaction.TransactionFormFragment;
 import org.gnucash.android.ui.util.RecurrenceParser;
+import org.gnucash.android.util.PreferencesHelper;
+import org.gnucash.android.util.TimestampHelper;
 
 import java.sql.Timestamp;
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
@@ -267,7 +265,7 @@ public class ExportFormFragment extends Fragment implements
 		ExportParams exportParameters = new ExportParams(mExportFormat);
 
 		if (mExportAllSwitch.isChecked()){
-			exportParameters.setExportStartTime(Timestamp.valueOf(Exporter.TIMESTAMP_ZERO));
+			exportParameters.setExportStartTime(TimestampHelper.getTimestampForEpochZero());
 		} else {
 			exportParameters.setExportStartTime(new Timestamp(mExportStartCalendar.getTimeInMillis()));
 		}
@@ -350,9 +348,7 @@ public class ExportFormFragment extends Fragment implements
 		mDestinationSpinner.setSelection(position);
 
 		//**************** export start time bindings ******************
-		String lastExportTimeStamp = PreferenceManager.getDefaultSharedPreferences(getActivity())
-				.getString(Exporter.PREF_LAST_EXPORT_TIME, Exporter.TIMESTAMP_ZERO);
-		Timestamp timestamp = Timestamp.valueOf(lastExportTimeStamp);
+		Timestamp timestamp = PreferencesHelper.getLastExportTime();
 		mExportStartCalendar.setTimeInMillis(timestamp.getTime());
 
 		Date date = new Date(timestamp.getTime());

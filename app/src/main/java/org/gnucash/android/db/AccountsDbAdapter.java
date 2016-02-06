@@ -37,6 +37,7 @@ import org.gnucash.android.model.Money;
 import org.gnucash.android.model.Split;
 import org.gnucash.android.model.Transaction;
 import org.gnucash.android.model.TransactionType;
+import org.gnucash.android.util.TimestampHelper;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
@@ -182,7 +183,7 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
         mReplaceStatement.bindLong(7, account.isFavorite() ? 1 : 0);
         mReplaceStatement.bindString(8, account.getFullName());
         mReplaceStatement.bindLong(9, account.isPlaceholderAccount() ? 1 : 0);
-        mReplaceStatement.bindString(10, account.getCreatedTimestamp().toString());
+        mReplaceStatement.bindString(10, TimestampHelper.getUtcStringForTimestamp(account.getCreatedTimestamp()));
         mReplaceStatement.bindLong(11, account.isHidden() ? 1 : 0);
         Commodity commodity = account.getCommodity();
         if (commodity == null)
@@ -529,7 +530,7 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
                         SplitEntry.COLUMN_ACCOUNT_UID,
                 new String[]{AccountEntry.TABLE_NAME + ".*"},
                 TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_MODIFIED_AT + " > ?",
-                new String[]{lastExportTimeStamp.toString()},
+                new String[]{TimestampHelper.getUtcStringForTimestamp(lastExportTimeStamp)},
                 AccountEntry.TABLE_NAME + "." + AccountEntry.COLUMN_UID,
                 null,
                 null

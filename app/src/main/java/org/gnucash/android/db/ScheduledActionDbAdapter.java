@@ -24,6 +24,7 @@ import android.util.Log;
 
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.model.ScheduledAction;
+import org.gnucash.android.util.TimestampHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -102,7 +103,7 @@ public class ScheduledActionDbAdapter extends DatabaseAdapter<ScheduledAction> {
         mReplaceStatement.bindLong(6,   schedxAction.getLastRun());
         mReplaceStatement.bindLong(7,   schedxAction.getPeriod());
         mReplaceStatement.bindLong(8,   schedxAction.isEnabled() ? 1 : 0);
-        mReplaceStatement.bindString(9, schedxAction.getCreatedTimestamp().toString());
+        mReplaceStatement.bindString(9, TimestampHelper.getUtcStringForTimestamp(schedxAction.getCreatedTimestamp()));
         if (schedxAction.getTag() == null)
             mReplaceStatement.bindNull(10);
         else

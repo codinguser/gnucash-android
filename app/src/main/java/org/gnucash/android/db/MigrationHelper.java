@@ -24,7 +24,6 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Environment;
-import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -42,6 +41,8 @@ import org.gnucash.android.model.Commodity;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.model.ScheduledAction;
 import org.gnucash.android.model.Transaction;
+import org.gnucash.android.util.PreferencesHelper;
+import org.gnucash.android.util.TimestampHelper;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
@@ -59,6 +60,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
@@ -645,7 +647,7 @@ public class MigrationHelper {
             //================================ END TABLE MIGRATIONS ================================
 
             // String timestamp to be used for all new created entities in migration
-            String timestamp = (new Timestamp(System.currentTimeMillis())).toString();
+            String timestamp = TimestampHelper.getUtcStringForTimestamp(TimestampHelper.getTimestampForNow());
 
             //ScheduledActionDbAdapter scheduledActionDbAdapter = new ScheduledActionDbAdapter(db);
             //SplitsDbAdapter splitsDbAdapter = new SplitsDbAdapter(db);
@@ -696,7 +698,7 @@ public class MigrationHelper {
             while (cursor.moveToNext()){
                 contentValues.clear();
                 Timestamp timestampT = new Timestamp(cursor.getLong(cursor.getColumnIndexOrThrow(TransactionEntry.COLUMN_TIMESTAMP)));
-                contentValues.put(TransactionEntry.COLUMN_CREATED_AT, timestampT.toString());
+                contentValues.put(TransactionEntry.COLUMN_CREATED_AT, TimestampHelper.getUtcStringForTimestamp(timestampT));
                 long transactionId = cursor.getLong(cursor.getColumnIndexOrThrow(TransactionEntry._ID));
                 db.update(TransactionEntry.TABLE_NAME, contentValues, TransactionEntry._ID + "=" + transactionId, null);
 
@@ -1094,11 +1096,9 @@ public class MigrationHelper {
 
                 boolean exportAll = Boolean.parseBoolean(tokens[2]);
                 if (exportAll){
-                    params.setExportStartTime(Timestamp.valueOf(Exporter.TIMESTAMP_ZERO));
+                    params.setExportStartTime(TimestampHelper.getTimestampForEpochZero());
                 } else {
-                    String lastExportTimeStamp = PreferenceManager.getDefaultSharedPreferences(GnuCashApplication.getAppContext())
-                            .getString(Exporter.PREF_LAST_EXPORT_TIME, Exporter.TIMESTAMP_ZERO);
-                    Timestamp timestamp = Timestamp.valueOf(lastExportTimeStamp);
+                    Timestamp timestamp = PreferencesHelper.getLastExportTime();
                     params.setExportStartTime(timestamp);
                 }
 
@@ -1143,10 +1143,9 @@ public class MigrationHelper {
                 String tag = cursor.getString(cursor.getColumnIndexOrThrow(ScheduledActionEntry.COLUMN_TAG));
                 String[] tokens = tag.split(";");
                 try {
-                    Timestamp timestamp = Timestamp.valueOf(tokens[2]);
+                    Timestamp timestamp = TimestampHelper.getTimestampForUtcString(tokens[2]);
                 } catch (IllegalArgumentException ex) {
-                    tokens[2] = PreferenceManager.getDefaultSharedPreferences(GnuCashApplication.getAppContext())
-                            .getString(Exporter.PREF_LAST_EXPORT_TIME, Exporter.TIMESTAMP_ZERO);
+                    tokens[2] = TimestampHelper.getUtcStringForTimestamp(PreferencesHelper.getLastExportTime());
                 } finally {
                     tag = TextUtils.join(";", tokens);
                 }
@@ -1168,6 +1167,43 @@ public class MigrationHelper {
         } finally {
             db.endTransaction();
         }
+        return oldVersion;
+    }
+
+    public static Timestamp subtractTimeZoneOffset(Timestamp timestamp, TimeZone timeZone) {
+        final long millisecondsToSubtract = Math.abs(timeZone.getOffset(timestamp.getTime()));
+        return new Timestamp(timestamp.getTime() - millisecondsToSubtract);
+    }
+
+    /**
+     * Upgrade database to version 12
+     * <p>
+     *     Change last_export_time Android preference to current value - N
+     *     where N is the absolute timezone offset for current user time zone.
+     *     For details see #467.
+     * </p>
+     * @param db SQLite database
+     * @return 12 if upgrade was successful, 11 otherwise
+     */
+    static int upgradeDbToVersion12(SQLiteDatabase db){
+        Log.i(MigrationHelper.LOG_TAG, "Upgrading database to version 12");
+
+        int oldVersion = 11;
+
+        try {
+
+            final Timestamp currentLastExportTime = PreferencesHelper.getLastExportTime();
+
+            final Timestamp updatedLastExportTime = subtractTimeZoneOffset(
+                    currentLastExportTime, TimeZone.getDefault());
+            PreferencesHelper.setLastExportTime(updatedLastExportTime);
+
+            oldVersion = 12;
+
+        } catch (Exception ignored){
+            // Do nothing: here oldVersion = 11.
+        }
+
         return oldVersion;
     }
 }

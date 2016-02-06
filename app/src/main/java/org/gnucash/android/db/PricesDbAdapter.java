@@ -1,17 +1,14 @@
 package org.gnucash.android.db;
 
-import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteStatement;
 import android.support.annotation.NonNull;
-import android.util.Log;
 import android.util.Pair;
 
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.model.Price;
-
-import java.sql.Timestamp;
+import org.gnucash.android.util.TimestampHelper;
 
 import static org.gnucash.android.db.DatabaseSchema.PriceEntry;
 
@@ -49,7 +46,7 @@ public class PricesDbAdapter extends DatabaseAdapter<Price> {
         mReplaceStatement.bindString(1, price.getUID());
         mReplaceStatement.bindString(2, price.getCommodityUID());
         mReplaceStatement.bindString(3, price.getCurrencyUID());
-        mReplaceStatement.bindString(4, price.getDate().toString());
+        mReplaceStatement.bindString(4, TimestampHelper.getUtcStringForTimestamp(price.getDate()));
         if (price.getSource() != null) {
             mReplaceStatement.bindString(5, price.getSource());
         }
@@ -73,7 +70,7 @@ public class PricesDbAdapter extends DatabaseAdapter<Price> {
         long valueDenom   = cursor.getLong(cursor.getColumnIndexOrThrow(PriceEntry.COLUMN_VALUE_DENOM));
 
         Price price = new Price(commodityUID, currencyUID);
-        price.setDate(Timestamp.valueOf(dateString));
+        price.setDate(TimestampHelper.getTimestampForUtcString(dateString));
         price.setSource(source);
         price.setType(type);
         price.setValueNum(valueNum);

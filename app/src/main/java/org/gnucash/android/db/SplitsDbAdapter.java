@@ -27,16 +27,14 @@ import android.util.Log;
 import android.util.Pair;
 
 import org.gnucash.android.app.GnuCashApplication;
-import org.gnucash.android.model.AccountType;
 import org.gnucash.android.model.Commodity;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.model.Split;
 import org.gnucash.android.model.TransactionType;
+import org.gnucash.android.util.TimestampHelper;
 
 import java.math.BigDecimal;
-import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Currency;
 import java.util.List;
 
 import static org.gnucash.android.db.DatabaseSchema.SplitEntry;
@@ -80,7 +78,7 @@ public class SplitsDbAdapter extends DatabaseAdapter<Split> {
 
         //modifying a split means modifying the accompanying transaction as well
         updateRecord(TransactionEntry.TABLE_NAME, transactionId,
-                TransactionEntry.COLUMN_MODIFIED_AT, new Timestamp(System.currentTimeMillis()).toString());
+                TransactionEntry.COLUMN_MODIFIED_AT, TimestampHelper.getUtcStringForTimestamp(TimestampHelper.getTimestampForNow()));
     }
 
     @Override
@@ -109,7 +107,7 @@ public class SplitsDbAdapter extends DatabaseAdapter<Split> {
         mReplaceStatement.bindLong(5,   split.getValue().getDenominator());
         mReplaceStatement.bindLong(6,   split.getQuantity().getNumerator());
         mReplaceStatement.bindLong(7,   split.getQuantity().getDenominator());
-        mReplaceStatement.bindString(8, split.getCreatedTimestamp().toString());
+        mReplaceStatement.bindString(8, TimestampHelper.getUtcStringForTimestamp(split.getCreatedTimestamp()));
         mReplaceStatement.bindString(9, split.getAccountUID());
         mReplaceStatement.bindString(10, split.getTransactionUID());
 

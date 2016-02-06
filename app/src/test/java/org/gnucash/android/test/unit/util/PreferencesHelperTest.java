@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 Ngewi Fet <ngewif@gmail.com>
+ * Copyright (c) 2016 Alceu Rodrigues Neto <alceurneto@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,54 +13,38 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.gnucash.android.test.unit.export;
+package org.gnucash.android.test.unit.util;
 
 import org.gnucash.android.BuildConfig;
-import org.gnucash.android.export.ExportFormat;
-import org.gnucash.android.export.ExportParams;
-import org.gnucash.android.export.Exporter;
-import org.gnucash.android.export.xml.GncXmlExporter;
-import org.gnucash.android.test.unit.db.AccountsDbAdapterTest;
 import org.gnucash.android.test.unit.testutil.GnucashTestRunner;
 import org.gnucash.android.test.unit.testutil.ShadowCrashlytics;
 import org.gnucash.android.test.unit.testutil.ShadowUserVoice;
-import org.junit.Before;
+import org.gnucash.android.util.PreferencesHelper;
+import org.gnucash.android.util.TimestampHelper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
-import java.io.File;
-import java.util.List;
+import java.sql.Timestamp;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-/**
- * Test backup and restore functionality
- */
 @RunWith(GnucashTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = 21, packageName = "org.gnucash.android", shadows = {ShadowCrashlytics.class, ShadowUserVoice.class})
-public class BackupTest {
+public class PreferencesHelperTest {
 
-    @Before
-    public void setUp(){
-        AccountsDbAdapterTest.loadDefaultAccounts();
+    @Test
+    public void shouldGetLastExportTimeDefaultValue() {
+        final Timestamp lastExportTime = PreferencesHelper.getLastExportTime();
+        assertThat(lastExportTime).isEqualTo(TimestampHelper.getTimestampForEpochZero());
     }
 
     @Test
-    public void shouldCreateBackup(){
-        boolean backupResult = GncXmlExporter.createBackup();
-        assertThat(backupResult).isTrue();
-    }
-
-    @Test
-    public void shouldCreateBackupFileName(){
-        Exporter exporter = new GncXmlExporter(new ExportParams(ExportFormat.XML));
-        List<String> xmlFiles = exporter.generateExport();
-
-        assertThat(xmlFiles).hasSize(1);
-        assertThat(new File(xmlFiles.get(0)))
-                .exists()
-                .hasExtension(ExportFormat.XML.getExtension().substring(1));
-
+    public void shouldGetLastExportTimeCurrentValue() {
+        final long goldenBoyBirthday = 1190136000L * 1000;
+        final Timestamp goldenBoyBirthdayTimestamp = new Timestamp(goldenBoyBirthday);
+        PreferencesHelper.setLastExportTime(goldenBoyBirthdayTimestamp);
+        assertThat(PreferencesHelper.getLastExportTime())
+                .isEqualTo(goldenBoyBirthdayTimestamp);
     }
 }

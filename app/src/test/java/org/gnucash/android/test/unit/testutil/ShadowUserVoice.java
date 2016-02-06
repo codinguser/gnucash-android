@@ -1,4 +1,4 @@
-package org.gnucash.android.test.unit.util;
+package org.gnucash.android.test.unit.testutil;
 
 import android.content.Context;
 

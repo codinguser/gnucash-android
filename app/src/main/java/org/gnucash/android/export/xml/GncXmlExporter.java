@@ -37,6 +37,7 @@ import org.gnucash.android.model.Money;
 import org.gnucash.android.model.PeriodType;
 import org.gnucash.android.model.ScheduledAction;
 import org.gnucash.android.model.TransactionType;
+import org.gnucash.android.util.TimestampHelper;
 import org.xmlpull.v1.XmlPullParserFactory;
 import org.xmlpull.v1.XmlSerializer;
 
@@ -341,7 +342,7 @@ public class GncXmlExporter extends Exporter{
                 xmlSerializer.endTag(null, GncXmlHelper.TAG_DATE_POSTED);
 
                 // date entered, time when the transaction was actually created
-                Timestamp timeEntered = Timestamp.valueOf(cursor.getString(cursor.getColumnIndexOrThrow("trans_date_posted")));
+                Timestamp timeEntered = TimestampHelper.getTimestampForUtcString(cursor.getString(cursor.getColumnIndexOrThrow("trans_date_posted")));
                 String dateEntered = GncXmlHelper.formatDate(timeEntered.getTime());
                 xmlSerializer.startTag(null, GncXmlHelper.TAG_DATE_ENTERED);
                 xmlSerializer.startTag(null, GncXmlHelper.TAG_TS_DATE);
@@ -538,7 +539,7 @@ public class GncXmlExporter extends Exporter{
 
             //start date
             String createdTimestamp = cursor.getString(cursor.getColumnIndexOrThrow(ScheduledActionEntry.COLUMN_CREATED_AT));
-            long scheduleStartTime = Timestamp.valueOf(createdTimestamp).getTime();
+            long scheduleStartTime = TimestampHelper.getTimestampForUtcString(createdTimestamp).getTime();
             serializeDate(xmlSerializer, GncXmlHelper.TAG_SX_START, scheduleStartTime);
 
             long lastRunTime = cursor.getLong(cursor.getColumnIndexOrThrow(ScheduledActionEntry.COLUMN_LAST_RUN));
@@ -658,7 +659,7 @@ public class GncXmlExporter extends Exporter{
                 xmlSerializer.endTag(null, GncXmlHelper.TAG_COMMODITY_ID);
                 xmlSerializer.endTag(null, GncXmlHelper.TAG_PRICE_CURRENCY);
                 // time
-                String strDate = GncXmlHelper.formatDate(Timestamp.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.PriceEntry.COLUMN_DATE))).getTime());
+                String strDate = GncXmlHelper.formatDate(TimestampHelper.getTimestampForUtcString(cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.PriceEntry.COLUMN_DATE))).getTime());
                 xmlSerializer.startTag(null, GncXmlHelper.TAG_PRICE_TIME);
                 xmlSerializer.startTag(null, GncXmlHelper.TAG_TS_DATE);
                 xmlSerializer.text(strDate);
