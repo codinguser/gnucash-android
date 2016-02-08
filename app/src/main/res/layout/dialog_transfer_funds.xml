@@ -92,12 +92,14 @@
                     android:layout_width="0dp"
                     android:layout_weight="2"
                     android:layout_height="wrap_content">
+                    <!-- FIXME: make android:digits locale independent -->
                     <EditText android:id="@+id/input_exchange_rate"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:enabled="false"
                         android:inputType="numberDecimal"
-                        gnucash:keyboardKeysLayout="@xml/calculator_keyboard"
+                        android:digits="0123456789.,"
+                        android:imeOptions="actionDone"
                         android:hint="@string/hint_exchange_rate"/>
                 </android.support.design.widget.TextInputLayout>
 
@@ -110,6 +112,7 @@
                     android:layout_height="wrap_content"
                     android:enabled="false"
                     android:visibility="gone"
+                    android:imeOptions="actionDone"
                     android:text="@string/btn_fetch_quote"/>
             </TableRow>
             <TextView android:id="@+id/label_exchange_rate_example"

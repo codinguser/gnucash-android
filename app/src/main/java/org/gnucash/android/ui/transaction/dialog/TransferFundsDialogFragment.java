@@ -122,7 +122,6 @@ public class TransferFundsDialogFragment extends DialogFragment {
         }
 
         mExchangeRateInput.addTextChangedListener(textChangeListener);
-        mExchangeRateInput.addTextChangedListener(new AmountInputFormatter(mExchangeRateInput));
         mConvertedAmountInput.addTextChangedListener(textChangeListener);
         mConvertedAmountInput.addTextChangedListener(new AmountInputFormatter(mConvertedAmountInput));
 
