@@ -7,6 +7,8 @@ Version 2.0.6 *(2016-02-20)*
 * Fixed: Amount text boxes in split editor sometimes do not get focus
 * Fixed: Crash when saving account with no transfer account selected
 * Fixed: Crash when creating a new transaction with no transfer account
+* Fixed: All transactions are always exported for some time zones
+* Improved: Add translation for Japanese. Updated Italian and Russian
 
 Version 2.0.5 *(2015-12-12)*
 ----------------------------

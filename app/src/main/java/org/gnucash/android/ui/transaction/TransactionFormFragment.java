@@ -939,7 +939,7 @@ public class TransactionFormFragment extends Fragment implements
      */
     private boolean canSave(){
         return (mAmountEditText.isInputValid())
-                || (mUseDoubleEntry && mTransferAccountSpinner.getCount() == 0);
+                || (mUseDoubleEntry && mTransferAccountSpinner.getCount() > 0);
     }
 
     /**
