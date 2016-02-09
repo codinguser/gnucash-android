@@ -47,7 +47,11 @@ import org.gnucash.android.ui.util.OnTransferFundsListener;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.text.ParseException;
 import java.util.Currency;
+import java.util.Locale;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -184,15 +188,18 @@ public class TransferFundsDialogFragment extends DialogFragment {
     /**
      * Converts the currency amount with the given exchange rate and saves the price to the db
      */
-    private void transferFunds(){
+    private void transferFunds() {
         if (mExchangeRateRadioButton.isChecked()){
             String exchangeRateString = mExchangeRateInput.getText().toString();
-            if (exchangeRateString.isEmpty()){
-                mExchangeRateInputLayout.setError(getString(R.string.error_exchange_rate_required));
+            DecimalFormat formatter = (DecimalFormat) NumberFormat.getNumberInstance();
+            formatter.setParseBigDecimal(true);
+            BigDecimal rate;
+            try {
+                rate = (BigDecimal) formatter.parse(exchangeRateString);
+            } catch (ParseException e) {
+                mExchangeRateInputLayout.setError(getString(R.string.error_invalid_exchange_rate));
                 return;
             }
-
-            BigDecimal rate = TransactionFormFragment.parseInputToDecimal(exchangeRateString);
             mConvertedAmount = mOriginAmount.multiply(rate);
         }
 

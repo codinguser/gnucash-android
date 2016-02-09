@@ -382,6 +382,7 @@ Aucune information permettant d\'identifier l\'utilisateur ne sera recueillis da
   <string name="toast_no_compatible_apps_to_receive_export">No compatible apps to receive the exported transactions!</string>
   <string name="menu_move_transaction">Move...</string>
   <string name="menu_duplicate_transaction">Duplicate</string>
+  <string name="error_invalid_exchange_rate">Invalid exchange rate</string>
   <string-array name="report_time_range">
     <item>Mois actuel</item>
     <item>3 derniers mois</item>

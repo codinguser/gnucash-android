@@ -382,6 +382,7 @@ Este proceso solo recoge información que no permite identificar al usuario</str
   <string name="toast_no_compatible_apps_to_receive_export">¡No hay aplicaciones compatibles para recibir las transacciones exportadas!</string>
   <string name="menu_move_transaction">Mover...</string>
   <string name="menu_duplicate_transaction">Duplicar</string>
+  <string name="error_invalid_exchange_rate">Invalid exchange rate</string>
   <string-array name="report_time_range">
     <item>Mes actual</item>
     <item>Últimos 3 meses</item>
