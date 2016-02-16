@@ -119,10 +119,14 @@ public class TransferFundsDialogFragment extends DialogFragment {
 
         if (price.first > 0 && price.second > 0) {
             // a valid price exists
-            BigDecimal num = new BigDecimal(price.first);
-            BigDecimal denom = new BigDecimal(price.second);
-            mExchangeRateInput.setText(num.divide(denom, MathContext.DECIMAL32).toString());
-            mConvertedAmountInput.setText(mOriginAmount.asBigDecimal().multiply(num).divide(denom, currencyCommodity.getSmallestFractionDigits(), BigDecimal.ROUND_HALF_EVEN).toString());
+            BigDecimal numerator = new BigDecimal(price.first);
+            BigDecimal denominator = new BigDecimal(price.second);
+            DecimalFormat formatter = (DecimalFormat) NumberFormat.getNumberInstance();
+            mExchangeRateInput.setText(formatter.format(numerator.divide(denominator, MathContext.DECIMAL32)));
+            // convertedAmount = mOriginAmount * numerator / denominator
+            BigDecimal convertedAmount = mOriginAmount.asBigDecimal().multiply(numerator)
+                .divide(denominator, currencyCommodity.getSmallestFractionDigits(), BigDecimal.ROUND_HALF_EVEN);
+            mConvertedAmountInput.setText(formatter.format(convertedAmount));
         }
 
         mExchangeRateInput.addTextChangedListener(textChangeListener);
