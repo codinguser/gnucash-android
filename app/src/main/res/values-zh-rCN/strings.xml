@@ -15,9 +15,9 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-  <string name="title_create_account">创建科目</string>
-  <string name="title_edit_account">修改科目</string>
+<resources>
+  <string name="title_create_account">创建账户</string>
+  <string name="title_edit_account">编辑账户</string>
   <string name="info_details">信息</string>
   <string name="menu_export">导出...</string>
   <string name="description_add_transaction_icon">为科目增加交易</string>
@@ -62,8 +62,8 @@
   <string name="title_settings">设置</string>
   <string-array name="export_destinations">
     <item>SD卡</item>
-    <item>DropBox</item>
-    <item>Google Drive</item>
+    <item>Dropbox</item>
+    <item>Google 云端硬盘</item>
     <item>Owncloud</item>
   </string-array>
   <string name="btn_move">移动</string>
