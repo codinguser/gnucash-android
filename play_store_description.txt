@@ -2,7 +2,7 @@ GnuCash is a mobile finance expense tracker application for Android.
 
 It is a companion application for GnuCash for the desktop and enables flexible tracking of expenses on-the-go which can be exported to QIF or OFX formats.
 
-Some of feature highligts  include:
+Some of feature highlights  include:
 
 <b>&bull; An easy-to-use interface.</b>
 

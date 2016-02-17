@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 - 2015 Ngewi Fet <ngewif@gmail.com>
+ * Copyright (c) 2014 - 2016 Ngewi Fet <ngewif@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -440,14 +440,25 @@ public class SplitEditorFragment extends Fragment {
             for (View splitItem : mSplitItemViewList) {
                 SplitViewHolder viewHolder = (SplitViewHolder) splitItem.getTag();
                 BigDecimal amount = viewHolder.getAmountValue().abs();
+                long accountId = viewHolder.accountsSpinner.getSelectedItemId();
+                boolean hasDebitNormalBalance = AccountsDbAdapter.getInstance()
+                        .getAccountType(accountId).hasDebitNormalBalance();
+
                 if (viewHolder.splitTypeSwitch.isChecked()) {
-                    imbalance = imbalance.subtract(amount);
+                    if (hasDebitNormalBalance)
+                        imbalance = imbalance.add(amount);
+                    else
+                        imbalance = imbalance.subtract(amount);
                 } else {
-                    imbalance = imbalance.add(amount);
+                    if (hasDebitNormalBalance)
+                        imbalance = imbalance.subtract(amount);
+                    else
+                        imbalance = imbalance.add(amount);
                 }
+
             }
 
-            TransactionsActivity.displayBalance(mImbalanceTextView, new Money(imbalance.negate(), mCommodity));
+            TransactionsActivity.displayBalance(mImbalanceTextView, new Money(imbalance, mCommodity));
         }
     }
 
@@ -473,6 +484,9 @@ public class SplitEditorFragment extends Fragment {
         public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
             AccountType accountType = mAccountsDbAdapter.getAccountType(id);
             mTypeToggleButton.setAccountType(accountType);
+
+            //refresh the imbalance amount if we change the account
+            mImbalanceWatcher.afterTextChanged(null);
 
             String fromCurrencyCode = mAccountsDbAdapter.getCurrencyCode(mAccountUID);
             String targetCurrencyCode = mAccountsDbAdapter.getCurrencyCode(mAccountsDbAdapter.getUID(id));

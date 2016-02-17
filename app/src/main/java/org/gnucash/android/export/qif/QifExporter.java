@@ -18,12 +18,13 @@ package org.gnucash.android.export.qif;
 
 import android.content.ContentValues;
 import android.database.Cursor;
-import android.preference.PreferenceManager;
 
 import org.gnucash.android.db.adapter.AccountsDbAdapter;
 import org.gnucash.android.db.adapter.TransactionsDbAdapter;
 import org.gnucash.android.export.ExportParams;
 import org.gnucash.android.export.Exporter;
+import org.gnucash.android.util.PreferencesHelper;
+import org.gnucash.android.util.TimestampHelper;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -34,7 +35,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.math.BigDecimal;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Currency;
 import java.util.List;
@@ -60,7 +60,7 @@ public class QifExporter extends Exporter{
         final String newLine = "\n";
         TransactionsDbAdapter transactionsDbAdapter = mTransactionsDbAdapter;
         try {
-            String lastExportTimeStamp = mExportParams.getExportStartTime().toString();
+            String lastExportTimeStamp = TimestampHelper.getUtcStringFromTimestamp(mExportParams.getExportStartTime());
             Cursor cursor = transactionsDbAdapter.fetchTransactionsWithSplitsWithTransactionAccount(
                     new String[]{
                             TransactionEntry.TABLE_NAME + "_" + TransactionEntry.COLUMN_UID + " AS trans_uid",
@@ -216,8 +216,7 @@ public class QifExporter extends Exporter{
             transactionsDbAdapter.updateTransaction(contentValues, null, null);
 
             /// export successful
-            String timeStamp = new Timestamp(System.currentTimeMillis()).toString();
-            PreferenceManager.getDefaultSharedPreferences(mContext).edit().putString(Exporter.PREF_LAST_EXPORT_TIME, timeStamp).apply();
+            PreferencesHelper.setLastExportTime(TimestampHelper.getTimestampFromNow());
             return splitQIF(file);
         } catch (IOException e) {
             throw new ExporterException(mExportParams, e);

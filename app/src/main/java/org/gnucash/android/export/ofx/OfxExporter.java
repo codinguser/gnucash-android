@@ -29,6 +29,8 @@ import org.gnucash.android.export.ExportParams;
 import org.gnucash.android.export.Exporter;
 import org.gnucash.android.model.Account;
 import org.gnucash.android.model.Transaction;
+import org.gnucash.android.util.PreferencesHelper;
+import org.gnucash.android.util.TimestampHelper;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -41,7 +43,6 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -137,18 +138,16 @@ public class OfxExporter extends Exporter{
         boolean useXmlHeader = PreferenceManager.getDefaultSharedPreferences(mContext)
                 .getBoolean(mContext.getString(R.string.key_xml_ofx_header), false);
 
-        String timeStamp = new Timestamp(System.currentTimeMillis()).toString();
+        PreferencesHelper.setLastExportTime(TimestampHelper.getTimestampFromNow());
 
         StringWriter stringWriter = new StringWriter();
         //if we want SGML OFX headers, write first to string and then prepend header
         if (useXmlHeader){
             write(document, stringWriter, false);
-            PreferenceManager.getDefaultSharedPreferences(mContext).edit().putString(Exporter.PREF_LAST_EXPORT_TIME, timeStamp).apply();
             return stringWriter.toString();
         } else {
             Node ofxNode = document.getElementsByTagName("OFX").item(0);
             write(ofxNode, stringWriter, true);
-            PreferenceManager.getDefaultSharedPreferences(mContext).edit().putString(Exporter.PREF_LAST_EXPORT_TIME, timeStamp).apply();
             return OfxHelper.OFX_SGML_HEADER + '\n' + stringWriter.toString();
         }
     }

@@ -38,7 +38,6 @@ import org.gnucash.android.db.adapter.SplitsDbAdapter;
 import org.gnucash.android.db.adapter.TransactionsDbAdapter;
 
 import java.io.File;
-import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -89,12 +88,6 @@ public abstract class Exporter {
 
     private static final SimpleDateFormat EXPORT_FILENAME_DATE_FORMAT = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US);
 
-    /**
-     * last export time in preferences
-     */
-    public static final String PREF_LAST_EXPORT_TIME = "last_export_time";
-
-    public static final String TIMESTAMP_ZERO = new Timestamp(0).toString();
     /**
      * Adapter for retrieving accounts to export
      * Subclasses should close this object when they are done with exporting

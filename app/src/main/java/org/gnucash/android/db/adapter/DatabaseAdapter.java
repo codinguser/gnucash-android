@@ -31,8 +31,8 @@ import org.gnucash.android.db.DatabaseSchema.SplitEntry;
 import org.gnucash.android.db.DatabaseSchema.TransactionEntry;
 import org.gnucash.android.model.AccountType;
 import org.gnucash.android.model.BaseModel;
+import org.gnucash.android.util.TimestampHelper;
 
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -324,7 +324,7 @@ public abstract class DatabaseAdapter<Model extends BaseModel> {
                     mReplaceStatement = stmt
                             = mDb.compileStatement("REPLACE INTO " + mTableName + " ( "
                             + TextUtils.join(" , ", mColumns) + " , "
-                            + TransactionEntry.COLUMN_UID
+                            + CommonColumns.COLUMN_UID
                             + " ) VALUES ( "
                             + (new String(new char[mColumns.length]).replace("\0", "? , "))
                             + "?)");
@@ -343,7 +343,7 @@ public abstract class DatabaseAdapter<Model extends BaseModel> {
                     mUpdateStatement = stmt
                             = mDb.compileStatement("UPDATE " + mTableName + " SET "
                             + TextUtils.join(" = ? , ", mColumns) + " = ? WHERE "
-                            + TransactionEntry.COLUMN_UID
+                            + CommonColumns.COLUMN_UID
                             + " = ?");
                 }
             }
@@ -360,7 +360,7 @@ public abstract class DatabaseAdapter<Model extends BaseModel> {
                     mInsertStatement = stmt
                             = mDb.compileStatement("INSERT INTO " + mTableName + " ( "
                             + TextUtils.join(" , ", mColumns) + " , "
-                            + TransactionEntry.COLUMN_UID
+                            + CommonColumns.COLUMN_UID
                             + " ) VALUES ( "
                             + (new String(new char[mColumns.length]).replace("\0", "? , "))
                             + "?)");
@@ -436,7 +436,7 @@ public abstract class DatabaseAdapter<Model extends BaseModel> {
      */
     protected ContentValues extractBaseModelAttributes(@NonNull ContentValues contentValues, @NonNull Model model){
         contentValues.put(CommonColumns.COLUMN_UID, model.getUID());
-        contentValues.put(CommonColumns.COLUMN_CREATED_AT, model.getCreatedTimestamp().toString());
+        contentValues.put(CommonColumns.COLUMN_CREATED_AT, TimestampHelper.getUtcStringFromTimestamp(model.getCreatedTimestamp()));
         //there is a trigger in the database for updated the modified_at column
         /* Due to the use of SQL REPLACE syntax, we insert the created_at values each time
         * (maintain the original creation time and not the time of creation of the replacement)
@@ -456,8 +456,8 @@ public abstract class DatabaseAdapter<Model extends BaseModel> {
         String modified= cursor.getString(cursor.getColumnIndexOrThrow(CommonColumns.COLUMN_MODIFIED_AT));
 
         model.setUID(uid);
-        model.setCreatedTimestamp(Timestamp.valueOf(created));
-        model.setModifiedTimestamp(Timestamp.valueOf(modified));
+        model.setCreatedTimestamp(TimestampHelper.getTimestampFromUtcString(created));
+        model.setModifiedTimestamp(TimestampHelper.getTimestampFromUtcString(modified));
     }
 
 	/**

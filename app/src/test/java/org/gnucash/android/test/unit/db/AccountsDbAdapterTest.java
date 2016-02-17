@@ -31,9 +31,9 @@ import org.gnucash.android.model.ScheduledAction;
 import org.gnucash.android.model.Split;
 import org.gnucash.android.model.Transaction;
 import org.gnucash.android.model.TransactionType;
-import org.gnucash.android.test.unit.util.GnucashTestRunner;
-import org.gnucash.android.test.unit.util.ShadowCrashlytics;
-import org.gnucash.android.test.unit.util.ShadowUserVoice;
+import org.gnucash.android.test.unit.testutil.GnucashTestRunner;
+import org.gnucash.android.test.unit.testutil.ShadowCrashlytics;
+import org.gnucash.android.test.unit.testutil.ShadowUserVoice;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -417,13 +417,13 @@ public class AccountsDbAdapterTest{
         assertThat(imbalanceUID).isNotNull().isNotEmpty();
         assertThat(mAccountsDbAdapter.getRecordsCount()).isEqualTo(2);
     }
-
-    @Test
+    
+    
+	@Test
     public void editingAccountShouldNotDeleteTemplateSplits(){
         Account account = new Account("First", Commodity.EUR);
         Account transferAccount = new Account("Transfer", Commodity.EUR);
-
-        mAccountsDbAdapter.addRecord(account);
+		mAccountsDbAdapter.addRecord(account);
         mAccountsDbAdapter.addRecord(transferAccount);
 
         assertThat(mAccountsDbAdapter.getRecordsCount()).isEqualTo(3); //plus root account
@@ -451,21 +451,36 @@ public class AccountsDbAdapterTest{
     }
 
     @Test
-    public void testGetCurrenciesInUse(){
-        int expectedSize = 1; //there is already a root account in the database
-        List<Currency> currencies = mAccountsDbAdapter.getCurrenciesInUse();
-        assertThat(currencies).hasSize(expectedSize);
+    public void shouldSetDefaultTransferColumnToNull_WhenTheAccountIsDeleted(){
+        mAccountsDbAdapter.deleteAllRecords();
+        assertThat(mAccountsDbAdapter.getRecordsCount()).isZero();
 
-        Account account = new Account("Dummy", Commodity.USD);
-        mAccountsDbAdapter.addRecord(account); //default currency is also USD
-        assertThat(mAccountsDbAdapter.getCurrenciesInUse()).hasSize(expectedSize);
+        Account account1 = new Account("Test");
+        Account account2 = new Account("Transfer Account");
+        account1.setDefaultTransferAccountUID(account2.getUID());
 
-        account = new Account("Dummy", Commodity.EUR);
-        mAccountsDbAdapter.addRecord(account);
-        assertThat(mAccountsDbAdapter.getCurrenciesInUse()).hasSize(++expectedSize);
+        mAccountsDbAdapter.addRecord(account1);
+        mAccountsDbAdapter.addRecord(account2);
 
+        assertThat(mAccountsDbAdapter.getRecordsCount()).isEqualTo(3L); //plus ROOT account
+        mAccountsDbAdapter.deleteRecord(account2.getUID());
+
+        assertThat(mAccountsDbAdapter.getRecordsCount()).isEqualTo(2L);
+        assertThat(mAccountsDbAdapter.getRecord(account1.getUID()).getDefaultTransferAccountUID()).isNull();
+
+        Account account3 = new Account("Sub-test");
+        account3.setParentUID(account1.getUID());
+        Account account4 = new Account("Third-party");
+        account4.setDefaultTransferAccountUID(account3.getUID());
+
+        mAccountsDbAdapter.addRecord(account3);
+        mAccountsDbAdapter.addRecord(account4);
+        assertThat(mAccountsDbAdapter.getRecordsCount()).isEqualTo(4L);
+
+        mAccountsDbAdapter.recursiveDeleteAccount(mAccountsDbAdapter.getID(account1.getUID()));
+        assertThat(mAccountsDbAdapter.getRecordsCount()).isEqualTo(2L);
+        assertThat(mAccountsDbAdapter.getRecord(account4.getUID()).getDefaultTransferAccountUID()).isNull();
     }
-
     /**
      * Opening an XML file should set the default currency to that used by the most accounts in the file
      */

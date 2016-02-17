@@ -26,6 +26,7 @@ import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.model.Recurrence;
 import org.gnucash.android.model.ScheduledAction;
+import org.gnucash.android.util.TimestampHelper;
 
 import java.util.ArrayList;
 import java.util.List;

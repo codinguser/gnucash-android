@@ -16,12 +16,8 @@
 
 package org.gnucash.android.export;
 
-import android.preference.PreferenceManager;
-
-import org.gnucash.android.BuildConfig;
-import org.gnucash.android.R;
-import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.ui.export.ExportFormFragment;
+import org.gnucash.android.util.TimestampHelper;
 
 import java.sql.Timestamp;
 
@@ -50,7 +46,7 @@ public class ExportParams {
     /**
      * All transactions created after this date will be exported
      */
-    private Timestamp mExportStartTime = Timestamp.valueOf(Exporter.TIMESTAMP_ZERO);
+    private Timestamp mExportStartTime = TimestampHelper.getTimestampFromEpochZero();
 
     /**
      * Flag to determine if all transactions should be deleted after exporting is complete
@@ -138,7 +134,7 @@ public class ExportParams {
 
     @Override
     public String toString() {
-        return "Export all transactions created since " + mExportStartTime.toString()
+        return "Export all transactions created since " + TimestampHelper.getUtcStringFromTimestamp(mExportStartTime) + " UTC"
                 + " as "+ mExportFormat.name() + " to " + mExportTarget.name();
     }
 
@@ -151,7 +147,7 @@ public class ExportParams {
         String separator = ";";
 
         return mExportFormat.name() + separator + mExportTarget.name() + separator
-                + mExportStartTime.toString() + separator
+                + TimestampHelper.getUtcStringFromTimestamp(mExportStartTime) + separator
                 + Boolean.toString(mDeleteTransactionsAfterExport);
     }
 
@@ -164,7 +160,7 @@ public class ExportParams {
         String[] tokens = csvParams.split(";");
         ExportParams params = new ExportParams(ExportFormat.valueOf(tokens[0]));
         params.setExportTarget(ExportTarget.valueOf(tokens[1]));
-        params.setExportStartTime(Timestamp.valueOf(tokens[2]));
+        params.setExportStartTime(TimestampHelper.getTimestampFromUtcString(tokens[2]));
         params.setDeleteTransactionsAfterExport(Boolean.parseBoolean(tokens[3]));
 
         return params;
