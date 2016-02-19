@@ -301,24 +301,22 @@ public class AccountsActivity extends BaseDrawerActivity implements OnAccountCli
      */
     @TargetApi(23)
     private void getSDWritePermission(){
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                    != PackageManager.PERMISSION_GRANTED) {
-//                if (shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)){
-                    Snackbar.make(mCoordinatorLayout,
-                            "GnuCash requires permission to access the SD card for backup and restore",
-                            Snackbar.LENGTH_INDEFINITE).setAction("GRANT",
-                            new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
-                                    requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                                            Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_PERMISSION_WRITE_SD_CARD);
-                                }
-                            })
-                            .setActionTextColor(getResources().getColor(R.color.theme_accent))
-                            .show();
-//                }
-            }
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+        		!= PackageManager.PERMISSION_GRANTED) {
+        	//                if (shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)){
+        	Snackbar.make(mCoordinatorLayout,
+        			"GnuCash requires permission to access the SD card for backup and restore",
+        			Snackbar.LENGTH_INDEFINITE).setAction("GRANT",
+        					new View.OnClickListener() {
+        				@Override
+        				public void onClick(View view) {
+        					requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,
+        							Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_PERMISSION_WRITE_SD_CARD);
+        				}
+        			})
+        			.setActionTextColor(getResources().getColor(R.color.theme_accent))
+        			.show();
+        	//                }
         }
     }
 

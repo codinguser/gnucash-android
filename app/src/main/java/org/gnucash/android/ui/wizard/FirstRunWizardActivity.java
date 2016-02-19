@@ -318,11 +318,9 @@ public class FirstRunWizardActivity extends AppCompatActivity implements
 
     @Override
     public void onPageDataChanged(Page page) {
-        if (page.isRequired()) {
-            if (recalculateCutOffPage()) {
-                mPagerAdapter.notifyDataSetChanged();
-                updateBottomBar();
-            }
+        if (page.isRequired() && recalculateCutOffPage()) {
+            mPagerAdapter.notifyDataSetChanged();
+            updateBottomBar();
         }
     }
 

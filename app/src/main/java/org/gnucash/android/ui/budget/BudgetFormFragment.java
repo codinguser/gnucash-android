@@ -332,16 +332,14 @@ public class BudgetFormFragment extends Fragment implements RecurrencePickerDial
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == REQUEST_EDIT_BUDGET_AMOUNTS){
-            if (resultCode == Activity.RESULT_OK){
-                ArrayList<BudgetAmount> budgetAmounts = data.getParcelableArrayListExtra(UxArgument.BUDGET_AMOUNT_LIST);
-                if (budgetAmounts != null){
-                    mBudgetAmounts = budgetAmounts;
-                    toggleAmountInputVisibility();
-                }
-                return;
-            }
-        }
+    	if (requestCode == REQUEST_EDIT_BUDGET_AMOUNTS && resultCode == Activity.RESULT_OK){
+    		ArrayList<BudgetAmount> budgetAmounts = data.getParcelableArrayListExtra(UxArgument.BUDGET_AMOUNT_LIST);
+    		if (budgetAmounts != null){
+    			mBudgetAmounts = budgetAmounts;
+    			toggleAmountInputVisibility();
+    		}
+    		return;
+    	}
         super.onActivityResult(requestCode, resultCode, data);
     }
 

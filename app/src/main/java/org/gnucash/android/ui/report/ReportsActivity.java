@@ -379,12 +379,10 @@ public class ReportsActivity extends BaseDrawerActivity implements AdapterView.O
 
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_BACK){
-            if (mReportType != ReportType.NONE){
-                loadFragment(mReportsOverviewFragment);
-                return true;
-            }
-        }
+    	if (keyCode == KeyEvent.KEYCODE_BACK && mReportType != ReportType.NONE){
+    		loadFragment(mReportsOverviewFragment);
+    		return true;
+    	}
         return super.onKeyUp(keyCode, event);
     }
 }

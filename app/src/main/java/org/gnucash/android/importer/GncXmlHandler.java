@@ -868,10 +868,8 @@ public class GncXmlHandler extends DefaultHandler {
                 account.setParentUID(mRootAccount.getUID());
                 topLevel = true;
             }
-            if (topLevel || (mRootAccount.getUID().equals(account.getParentUID()))) {
-                if (account.getName().startsWith(imbalancePrefix)) {
-                    mapImbalanceAccount.put(account.getName().substring(imbalancePrefix.length()), account);
-                }
+            if ((topLevel || (mRootAccount.getUID().equals(account.getParentUID()))) && account.getName().startsWith(imbalancePrefix)) {
+                  mapImbalanceAccount.put(account.getName().substring(imbalancePrefix.length()), account);
             }
         }
 
