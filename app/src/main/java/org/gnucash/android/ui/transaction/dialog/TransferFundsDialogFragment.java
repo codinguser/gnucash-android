@@ -106,7 +106,9 @@ public class TransferFundsDialogFragment extends DialogFragment {
         mToCurrencyLabel.setText(mTargetCurrency.getCurrencyCode());
         mConvertedAmountCurrencyLabel.setText(mTargetCurrency.getCurrencyCode());
 
-        mSampleExchangeRate.setText("e.g. 1 " + fromCurrency.getCurrencyCode() + " = " + " x.xx " + mTargetCurrency.getCurrencyCode());
+        mSampleExchangeRate.setText(String.format(getString(R.string.sample_exchange_rate),
+                                                  fromCurrency.getCurrencyCode(),
+                                                  mTargetCurrency.getCurrencyCode()));
         final InputLayoutErrorClearer textChangeListener = new InputLayoutErrorClearer();
 
         CommoditiesDbAdapter commoditiesDbAdapter = CommoditiesDbAdapter.getInstance();

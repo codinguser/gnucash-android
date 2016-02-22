@@ -383,6 +383,7 @@
   <string name="menu_move_transaction">Sposta...</string>
   <string name="menu_duplicate_transaction">Duplica</string>
   <string name="error_invalid_exchange_rate">Invalid exchange rate</string>
+  <string name="sample_exchange_rate">e.g. 1 %1$s = x.xx %2$s</string>
   <string-array name="report_time_range">
     <item>Mese corrente</item>
     <item>Ultimi 3 mesi</item>
