@@ -51,7 +51,6 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.Currency;
-import java.util.Locale;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -108,7 +107,7 @@ public class TransferFundsDialogFragment extends DialogFragment {
         mConvertedAmountCurrencyLabel.setText(mTargetCurrency.getCurrencyCode());
 
         mSampleExchangeRate.setText("e.g. 1 " + fromCurrency.getCurrencyCode() + " = " + " x.xx " + mTargetCurrency.getCurrencyCode());
-        final InputWatcher textChangeListener = new InputWatcher();
+        final InputLayoutErrorClearer textChangeListener = new InputLayoutErrorClearer();
 
         CommoditiesDbAdapter commoditiesDbAdapter = CommoditiesDbAdapter.getInstance();
         String commodityUID = commoditiesDbAdapter.getCommodityUID(fromCurrency.getCurrencyCode());
@@ -235,17 +234,16 @@ public class TransferFundsDialogFragment extends DialogFragment {
         dismiss();
     }
 
-    private class InputWatcher implements TextWatcher {
+    /**
+     * Hides the error message from mConvertedAmountInputLayout and mExchangeRateInputLayout
+     * when the user edits their content.
+     */
+    private class InputLayoutErrorClearer implements TextWatcher {
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
 
         @Override
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-        }
-
-        @Override
-        public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-        }
+        public void onTextChanged(CharSequence s, int start, int before, int count) { }
 
         @Override
         public void afterTextChanged(Editable s) {
