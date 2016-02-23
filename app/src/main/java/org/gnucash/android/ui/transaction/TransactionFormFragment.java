@@ -263,7 +263,7 @@ public class TransactionFormFragment extends Fragment implements
     private void startTransferFunds() {
         Currency fromCurrency = Currency.getInstance(mTransactionsDbAdapter.getAccountCurrencyCode(mAccountUID));
         long id = mTransferAccountSpinner.getSelectedItemId();
-        String targetCurrency = mAccountsDbAdapter.getCurrencyCode((mAccountsDbAdapter.getUID(id)));
+        String targetCurrency = mAccountsDbAdapter.getCurrencyCode(mAccountsDbAdapter.getUID(id));
 
         if (fromCurrency.equals(Currency.getInstance(targetCurrency))
                 || !mAmountEditText.isInputModified()

@@ -218,7 +218,7 @@ public class AccountFormFragment extends Fragment {
         @Override
         public void onColorSelected(int color) {
             mColorSquare.setBackgroundColor(color);
-            mSelectedColor = String.format("#%06X", (0xFFFFFF & color));
+            mSelectedColor = String.format("#%06X", 0xFFFFFF & color);
         }
     };
 

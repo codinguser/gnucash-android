@@ -244,7 +244,7 @@ public abstract class BaseReportFragment extends Fragment implements
         switch (mGroupInterval) {
             case QUARTER:
                 int y = Years.yearsBetween(start.withDayOfYear(1).withMillisOfDay(0), end.withDayOfYear(1).withMillisOfDay(0)).getYears();
-                return (getQuarter(end) - getQuarter(start) + y * 4);
+                return getQuarter(end) - getQuarter(start) + y * 4;
             case MONTH:
                 return Months.monthsBetween(start.withDayOfMonth(1).withMillisOfDay(0), end.withDayOfMonth(1).withMillisOfDay(0)).getMonths();
             case YEAR:
@@ -261,7 +261,7 @@ public abstract class BaseReportFragment extends Fragment implements
      * @return a quarter
      */
     protected int getQuarter(LocalDateTime date) {
-        return ((date.getMonthOfYear() - 1) / 3 + 1);
+        return (date.getMonthOfYear() - 1) / 3 + 1;
     }
 
 

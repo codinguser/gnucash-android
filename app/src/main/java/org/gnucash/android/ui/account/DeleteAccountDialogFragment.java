@@ -110,7 +110,7 @@ public class DeleteAccountDialogFragment extends DialogFragment {
         ((TextView) transactionOptionsView.findViewById(R.id.description)).setText(R.string.label_delete_account_transactions_description);
         mDeleteTransactionsRadioButton = (RadioButton) transactionOptionsView.findViewById(R.id.radio_delete);
         mDeleteTransactionsRadioButton.setText(R.string.label_delete_transactions);
-        mMoveTransactionsRadioButton = ((RadioButton) transactionOptionsView.findViewById(R.id.radio_move));
+        mMoveTransactionsRadioButton = (RadioButton) transactionOptionsView.findViewById(R.id.radio_move);
         mTransactionsDestinationAccountSpinner = (Spinner) transactionOptionsView.findViewById(R.id.target_accounts_spinner);
 
         View accountOptionsView = view.findViewById(R.id.accounts_options);
