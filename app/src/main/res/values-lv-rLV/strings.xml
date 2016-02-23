@@ -19,7 +19,7 @@
   <string name="title_create_account">Create Account</string>
   <string name="title_edit_account">Edit Account</string>
   <string name="info_details">Info</string>
-  <string name="menu_export">Export OFX</string>
+  <string name="menu_export">Export&#8230;</string>
   <string name="description_add_transaction_icon">Add a new transaction to an account</string>
   <string name="label_no_accounts">No accounts to display</string>
   <string name="label_account_name">Account name</string>
@@ -30,7 +30,7 @@
   <string name="toast_passcode_set">Passcode set</string>
   <string name="label_confirm_passcode">Please confirm your passcode</string>
   <string name="toast_invalid_passcode_confirmation">Invalid passcode confirmation. Please try again</string>
-  <string name="label_transaction_name">Description</string>
+  <string name="label_transaction_name">Apraksts</string>
   <string name="label_transaction_amount">Amount</string>
   <string name="title_add_transaction">New transaction</string>
   <string name="label_no_transactions">No transactions to display</string>
@@ -40,14 +40,14 @@
   <string name="label_credit">CREDIT</string>
   <string name="title_accounts">Accounts</string>
   <string name="title_transactions">Transactions</string>
-  <string name="menu_delete">DELETE</string>
+  <string name="menu_delete">Delete</string>
   <string name="alert_dialog_ok_delete">Delete</string>
   <string name="alert_dialog_cancel">Cancel</string>
   <string name="toast_account_deleted">Account deleted</string>
   <string name="title_confirm_delete">Confirm delete</string>
   <string name="delete_account_confirmation_message">All transactions in this account will also be deleted</string>
   <string name="title_edit_transaction">Edit Transaction</string>
-  <string name="label_transaction_description">Note</string>
+  <string name="label_transaction_description">Add note</string>
   <string name="menu_move">MOVE</string>
   <string name="title_selected">%1$d selected</string>
   <string name="label_account_balance">Balance:</string>
@@ -55,7 +55,7 @@
   <string name="title_export_dialog">Export Transactions</string>
   <string name="option_export_all_transactions">Export all transactions</string>
   <string name="hint_export_choice">By default, only new transactions since last export will be exported. Check this option to export all transactions</string>
-  <string name="toast_export_error">Error exporting %1$s data</string>
+  <string name="toast_export_error">Error exporting %1$s file</string>
   <string name="btn_export">Export</string>
   <string name="option_delete_after_export">Delete transactions after export</string>
   <string name="hint_delete_after_export">All exported transactions will be deleted when exporting is completed</string>
@@ -64,8 +64,7 @@
     <item>SD Card</item>
     <item>DropBox</item>
     <item>Google Drive</item>
-    <item>ownCloud</item>
-    <item>Share file&#8230;</item>
+    <item>Send to&#8230;</item>
   </string-array>
   <string name="btn_move">Move</string>
   <string name="title_move_transactions">Move %1$d transaction(s)</string>
@@ -102,7 +101,7 @@
   <string name="summary_about_gnucash">A mobile finance management and expense-tracker designed for Android</string>
   <string name="title_about">About</string>
   <string name="toast_format_exported_to">%1$s file exported to:\n</string>
-  <string name="title_export_email">GnuCash %1$s export</string>
+  <string name="title_export_email">GnuCash Android %1$s export</string>
   <string name="description_export_email">GnuCash Android Export from </string>
   <string name="header_transaction_settings">Transactions</string>
   <string name="title_transaction_preferences">Transaction Preferences</string>
@@ -144,16 +143,16 @@
   <string name="menu_import_accounts">Import GnuCash Accounts</string>
   <string name="btn_import_accounts">Import Accounts</string>
   <string name="toast_error_importing_accounts">An error occurred while importing the GnuCash accounts</string>
-  <string name="toast_success_importing_accounts">GnuCash accounts successfully imported</string>
+  <string name="toast_success_importing_accounts">GnuCash Accounts successfully imported</string>
   <string name="summary_import_accounts">Import account structure exported from GnuCash desktop</string>
-  <string name="title_import_accounts">Import GnuCash accounts</string>
+  <string name="title_import_accounts">Import GnuCash XML</string>
   <string name="summary_delete_all_accounts">Delete all accounts in the database. All transactions will be deleted as
         well.
     </string>
   <string name="title_delete_all_accounts">Delete all accounts</string>
   <string name="header_account_settings">Accounts</string>
   <string name="toast_all_accounts_deleted">All accounts have been successfully deleted</string>
-  <string name="confirm_delete_all_accounts">Are you sure you want to delete all accounts and transactions? \nThis
+  <string name="confirm_delete_all_accounts">Are you sure you want to delete all accounts and transactions?\n\nThis
         operation cannot be undone!
     </string>
   <string name="label_account_type">Account Type</string>
@@ -176,6 +175,7 @@
   <string name="label_placeholder_account">Placeholder account</string>
   <string name="label_default_transfer_account">Default Transfer Account</string>
   <plurals name="label_sub_accounts">
+    <item quantity="zero">%d sub-accounts</item>
     <item quantity="one">%d sub-account</item>
     <item quantity="other">%d sub-accounts</item>
   </plurals>
@@ -214,7 +214,7 @@
         a hierarchy of commonly-used accounts, or import your own GnuCash account structure. \n\nBoth options are also
         available in app Settings so you can decide later.
     </string>
-  <string name="title_scheduled_transactions">Scheduled Transactions</string>
+  <string name="title_scheduled_transactions">Transactions</string>
   <string name="title_select_export_destination">Select destination for export</string>
   <string name="hint_split_memo">Memo</string>
   <string name="label_spend">Spend</string>
@@ -234,8 +234,8 @@
   <string name="label_sell">Sell</string>
   <string name="label_repeats">Repeats</string>
   <string name="toast_no_recent_backup">No recent backup found</string>
-  <string name="account_name_opening_balances">Nyitóegyenlegek</string>
-  <string name="account_name_equity">Saját tőke</string>
+  <string name="account_name_opening_balances">Opening Balances</string>
+  <string name="account_name_equity">Equity</string>
   <string name="summary_save_opening_balances">Enable to save the current account balance (before deleting transactions) as new opening balance after deleting transactions
     </string>
   <string name="title_save_opening_balances">Save account opening balances</string>
@@ -292,37 +292,39 @@
   <string name="toast_install_file_manager">Install a file manager to select files</string>
   <string name="title_select_backup_to_restore">Select backup to restore</string>
   <string name="nav_menu_favorites">Favorites</string>
-  <string name="nav_menu_open">Open...</string>
+  <string name="nav_menu_open">Open&#8230;</string>
   <string name="nav_menu_reports">Reports</string>
   <string name="nav_menu_scheduled_transactions">Scheduled Transactions</string>
-  <string name="nav_menu_export">Export...</string>
+  <string name="nav_menu_export">Export&#8230;</string>
   <string name="nav_menu_settings">Settings</string>
   <plurals name="label_every_x_days">
+    <item quantity="zero">Every %d days</item>
     <item quantity="one">Daily</item>
     <item quantity="other">Every %d days</item>
   </plurals>
   <plurals name="label_every_x_weeks">
+    <item quantity="zero">Every %d weeks</item>
     <item quantity="one">Weekly</item>
     <item quantity="other">Every %d weeks</item>
   </plurals>
   <plurals name="label_every_x_months">
+    <item quantity="zero">Every %d months</item>
     <item quantity="one">Monthly</item>
     <item quantity="other">Every %d months</item>
   </plurals>
   <plurals name="label_every_x_years">
+    <item quantity="zero">Every %d years</item>
     <item quantity="one">Yearly</item>
     <item quantity="other">Every %d years</item>
   </plurals>
   <string name="title_enable_crashlytics">Enable Crash Logging</string>
-  <string name="msg_enable_crashlytics">Enable to send information about malfunctions to the developers for improvement (recommended).
-No user-identifiable information will be collected as part of this process!
-    </string>
-  <string name="label_export_format">Format</string>
+  <string name="msg_enable_crashlytics">Automatically send information about app malfunction to the developers.</string>
+  <string name="label_export_format"> Format</string>
   <string name="toast_backup_folder_not_found">Backup folder cannot be found. Make sure the SD Card is mounted!</string>
   <string name="label_old_passcode">Enter your old passcode</string>
   <string name="label_new_passcode">Enter your new passcode</string>
   <string name="nav_menu_scheduled_backups">Scheduled Exports</string>
-  <string name="title_scheduled_exports">Scheduled Exports</string>
+  <string name="title_scheduled_exports">Exports</string>
   <string name="label_no_scheduled_exports_to_display">No scheduled exports to display</string>
   <string name="title_create_export_schedule">Create export schedule</string>
   <string name="toast_exported_to">Exported to: %1$s</string>
@@ -331,7 +333,7 @@ No user-identifiable information will be collected as part of this process!
   <string name="label_no_recent_accounts">No recent accounts</string>
   <string name="label_no_favorite_accounts">No favorite accounts</string>
   <string name="nav_menu_scheduled_actions">Scheduled Actions</string>
-  <string name="label_scheduled_action_ended">"Ended, last executed on "</string>
+  <string name="label_scheduled_action_ended">"Ended, last executed on %1$s"</string>
   <string name="label_select_bar_to_view_details">Select a bar to view details</string>
   <string name="btn_wizard_next">Next</string>
   <string name="btn_wizard_finish">Done</string>
@@ -342,7 +344,7 @@ No user-identifiable information will be collected as part of this process!
   <string name="wizard_option_create_default_accounts">Create default accounts</string>
   <string name="wizard_option_import_my_accounts">Import my accounts</string>
   <string name="wizard_option_let_me_handle_it">Let me handle it</string>
-  <string name="wizard_option_currency_other">Other...</string>
+  <string name="wizard_option_currency_other">Other&#8230;</string>
   <string name="wizard_option_auto_send_crash_reports">Automatically send crash reports</string>
   <string name="wizard_option_disable_crash_reports">Disable crash reports</string>
   <string name="wizard_btn_back">Back</string>
@@ -388,9 +390,6 @@ No user-identifiable information will be collected as part of this process!
   <string name="toast_no_compatible_apps_to_receive_export">No compatible apps to receive the exported transactions!</string>
   <string name="menu_move_transaction">Move...</string>
   <string name="menu_duplicate_transaction">Duplicate</string>
-  <string name="nav_menu_budgets">Budgets</string>
-  <string name="title_cash_flow_report">Cash Flow</string>
-  <string name="title_budgets">Budgets</string>
   <string name="error_invalid_exchange_rate">Invalid exchange rate</string>
   <string name="sample_exchange_rate">e.g. 1 %1$s = x.xx %2$s</string>
   <string-array name="report_time_range">

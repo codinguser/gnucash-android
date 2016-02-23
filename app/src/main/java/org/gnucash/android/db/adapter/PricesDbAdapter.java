@@ -8,8 +8,7 @@ import android.util.Pair;
 
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.model.Price;
-
-import java.sql.Timestamp;
+import org.gnucash.android.util.TimestampHelper;
 
 import static org.gnucash.android.db.DatabaseSchema.PriceEntry;
 
@@ -67,7 +66,7 @@ public class PricesDbAdapter extends DatabaseAdapter<Price> {
         long valueDenom   = cursor.getLong(cursor.getColumnIndexOrThrow(PriceEntry.COLUMN_VALUE_DENOM));
 
         Price price = new Price(commodityUID, currencyUID);
-        price.setDate(Timestamp.valueOf(dateString));
+        price.setDate(TimestampHelper.getTimestampFromUtcString(dateString));
         price.setSource(source);
         price.setType(type);
         price.setValueNum(valueNum);

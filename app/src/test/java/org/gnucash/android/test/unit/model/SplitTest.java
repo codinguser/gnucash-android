@@ -6,15 +6,14 @@ import org.gnucash.android.model.Money;
 import org.gnucash.android.model.Split;
 import org.gnucash.android.model.Transaction;
 import org.gnucash.android.model.TransactionType;
-import org.gnucash.android.test.unit.util.GnucashTestRunner;
-import org.gnucash.android.test.unit.util.ShadowCrashlytics;
-import org.gnucash.android.test.unit.util.ShadowUserVoice;
+import org.gnucash.android.test.unit.testutil.GnucashTestRunner;
+import org.gnucash.android.test.unit.testutil.ShadowCrashlytics;
+import org.gnucash.android.test.unit.testutil.ShadowUserVoice;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
 import java.math.BigDecimal;
-import java.util.Currency;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

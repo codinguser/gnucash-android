@@ -38,6 +38,7 @@ import org.gnucash.android.model.Money;
 import org.gnucash.android.model.Split;
 import org.gnucash.android.model.Transaction;
 import org.gnucash.android.model.TransactionType;
+import org.gnucash.android.util.TimestampHelper;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
@@ -111,7 +112,6 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
 	 * Adds an account to the database. 
 	 * If an account already exists in the database with the same GUID, it is replaced.
 	 * @param account {@link Account} to be inserted to database
-	 * @return Database row ID of the inserted account
 	 */
     @Override
 	public void addRecord(@NonNull Account account, UpdateMethod updateMethod){
@@ -177,7 +177,7 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
         stmt.bindLong(6, account.isFavorite() ? 1 : 0);
         stmt.bindString(7, account.getFullName());
         stmt.bindLong(8, account.isPlaceholderAccount() ? 1 : 0);
-        stmt.bindString(9, account.getCreatedTimestamp().toString());
+        stmt.bindString(9, TimestampHelper.getUtcStringFromTimestamp(account.getCreatedTimestamp()));
         stmt.bindLong(10, account.isHidden() ? 1 : 0);
         Commodity commodity = account.getCommodity();
         if (commodity == null)
@@ -350,11 +350,22 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
             String accountUIDList = "'" + TextUtils.join("','", descendantAccountUIDs) + "'";
 
             // delete accounts
-            mDb.delete(
+            long deletedCount = mDb.delete(
                     AccountEntry.TABLE_NAME,
                     AccountEntry.COLUMN_UID + " IN (" + accountUIDList + ")",
                     null
             );
+
+            //if we delete some accounts, reset the default transfer account to NULL
+            //there is also a database trigger from db version > 12
+            if (deletedCount > 0){
+                ContentValues contentValues = new ContentValues();
+                contentValues.putNull(AccountEntry.COLUMN_DEFAULT_TRANSFER_ACCOUNT_UID);
+                mDb.update(mTableName, contentValues,
+                        AccountEntry.COLUMN_DEFAULT_TRANSFER_ACCOUNT_UID + " IN (" + accountUIDList + ")",
+                        null);
+            }
+
             mDb.setTransactionSuccessful();
             return true;
         }
@@ -513,7 +524,7 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
                         SplitEntry.COLUMN_ACCOUNT_UID,
                 new String[]{AccountEntry.TABLE_NAME + ".*"},
                 TransactionEntry.TABLE_NAME + "." + TransactionEntry.COLUMN_MODIFIED_AT + " > ?",
-                new String[]{lastExportTimeStamp.toString()},
+                new String[]{TimestampHelper.getUtcStringFromTimestamp(lastExportTimeStamp)},
                 AccountEntry.TABLE_NAME + "." + AccountEntry.COLUMN_UID,
                 null,
                 null
@@ -1214,6 +1225,19 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
         mDb.delete(DatabaseSchema.RecurrenceEntry.TABLE_NAME, null, null);
 
         return mDb.delete(AccountEntry.TABLE_NAME, null, null);
+    }
+
+    @Override
+    public boolean deleteRecord(@NonNull String uid) {
+        boolean result = super.deleteRecord(uid);
+        if (result){
+            ContentValues contentValues = new ContentValues();
+            contentValues.putNull(AccountEntry.COLUMN_DEFAULT_TRANSFER_ACCOUNT_UID);
+            mDb.update(mTableName, contentValues,
+                    AccountEntry.COLUMN_DEFAULT_TRANSFER_ACCOUNT_UID + "=?",
+                    new String[]{uid});
+        }
+        return result;
     }
 
     public int getTransactionMaxSplitNum(@NonNull String accountUID) {

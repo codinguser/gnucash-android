@@ -17,7 +17,6 @@
 
 package org.gnucash.android.ui.util;
 
-import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.TextView;
@@ -68,7 +67,6 @@ public class AccountBalanceTask extends AsyncTask<String, Void, Money> {
     @Override
     protected void onPostExecute(Money balance) {
         if (accountBalanceTextViewReference.get() != null && balance != null){
-            final Context context = GnuCashApplication.getAppContext();
             final TextView balanceTextView = accountBalanceTextViewReference.get();
             if (balanceTextView != null){
                 TransactionsActivity.displayBalance(balanceTextView, balance);

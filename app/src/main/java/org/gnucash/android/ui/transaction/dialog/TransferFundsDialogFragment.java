@@ -48,6 +48,9 @@ import org.gnucash.android.ui.transaction.OnTransferFundsListener;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.text.ParseException;
 import java.util.Currency;
 
 import butterknife.Bind;
@@ -104,8 +107,10 @@ public class TransferFundsDialogFragment extends DialogFragment {
         mToCurrencyLabel.setText(mTargetCurrency.getCurrencyCode());
         mConvertedAmountCurrencyLabel.setText(mTargetCurrency.getCurrencyCode());
 
-        mSampleExchangeRate.setText("e.g. 1 " + fromCurrency.getCurrencyCode() + " = " + " x.xx " + mTargetCurrency.getCurrencyCode());
-        final InputWatcher textChangeListener = new InputWatcher();
+        mSampleExchangeRate.setText(String.format(getString(R.string.sample_exchange_rate),
+                                                  fromCurrency.getCurrencyCode(),
+                                                  mTargetCurrency.getCurrencyCode()));
+        final InputLayoutErrorClearer textChangeListener = new InputLayoutErrorClearer();
 
         CommoditiesDbAdapter commoditiesDbAdapter = CommoditiesDbAdapter.getInstance();
         String commodityUID = commoditiesDbAdapter.getCommodityUID(fromCurrency.getCurrencyCode());
@@ -116,14 +121,17 @@ public class TransferFundsDialogFragment extends DialogFragment {
 
         if (price.first > 0 && price.second > 0) {
             // a valid price exists
-            BigDecimal num = new BigDecimal(price.first);
-            BigDecimal denom = new BigDecimal(price.second);
-            mExchangeRateInput.setText(num.divide(denom, MathContext.DECIMAL32).toString());
-            mConvertedAmountInput.setText(mOriginAmount.asBigDecimal().multiply(num).divide(denom, currencyCommodity.getSmallestFractionDigits(), BigDecimal.ROUND_HALF_EVEN).toString());
+            BigDecimal numerator = new BigDecimal(price.first);
+            BigDecimal denominator = new BigDecimal(price.second);
+            DecimalFormat formatter = (DecimalFormat) NumberFormat.getNumberInstance();
+            mExchangeRateInput.setText(formatter.format(numerator.divide(denominator, MathContext.DECIMAL32)));
+            // convertedAmount = mOriginAmount * numerator / denominator
+            BigDecimal convertedAmount = mOriginAmount.asBigDecimal().multiply(numerator)
+                .divide(denominator, currencyCommodity.getSmallestFractionDigits(), BigDecimal.ROUND_HALF_EVEN);
+            mConvertedAmountInput.setText(formatter.format(convertedAmount));
         }
 
         mExchangeRateInput.addTextChangedListener(textChangeListener);
-        mExchangeRateInput.addTextChangedListener(new AmountInputFormatter(mExchangeRateInput));
         mConvertedAmountInput.addTextChangedListener(textChangeListener);
         mConvertedAmountInput.addTextChangedListener(new AmountInputFormatter(mConvertedAmountInput));
 
@@ -186,15 +194,18 @@ public class TransferFundsDialogFragment extends DialogFragment {
     /**
      * Converts the currency amount with the given exchange rate and saves the price to the db
      */
-    private void transferFunds(){
+    private void transferFunds() {
         if (mExchangeRateRadioButton.isChecked()){
             String exchangeRateString = mExchangeRateInput.getText().toString();
-            if (exchangeRateString.isEmpty()){
-                mExchangeRateInputLayout.setError(getString(R.string.error_exchange_rate_required));
+            DecimalFormat formatter = (DecimalFormat) NumberFormat.getNumberInstance();
+            formatter.setParseBigDecimal(true);
+            BigDecimal rate;
+            try {
+                rate = (BigDecimal) formatter.parse(exchangeRateString);
+            } catch (ParseException e) {
+                mExchangeRateInputLayout.setError(getString(R.string.error_invalid_exchange_rate));
                 return;
             }
-
-            BigDecimal rate = TransactionFormFragment.parseInputToDecimal(exchangeRateString);
             mConvertedAmount = mOriginAmount.multiply(rate);
         }
 
@@ -226,17 +237,16 @@ public class TransferFundsDialogFragment extends DialogFragment {
         dismiss();
     }
 
-    private class InputWatcher implements TextWatcher {
+    /**
+     * Hides the error message from mConvertedAmountInputLayout and mExchangeRateInputLayout
+     * when the user edits their content.
+     */
+    private class InputLayoutErrorClearer implements TextWatcher {
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
 
         @Override
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-        }
-
-        @Override
-        public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-        }
+        public void onTextChanged(CharSequence s, int start, int before, int count) { }
 
         @Override
         public void afterTextChanged(Editable s) {

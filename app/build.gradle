@@ -224,6 +224,7 @@ dependencies {
 
     testCompile('org.robolectric:robolectric:3.0',
             'junit:junit:4.12',
+            'joda-time:joda-time:2.7',
             'org.assertj:assertj-core:1.7.1'
     )
     androidTestCompile ('com.android.support:support-annotations:'  + androidSupportVersion,

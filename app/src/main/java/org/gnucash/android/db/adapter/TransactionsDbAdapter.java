@@ -36,6 +36,7 @@ import org.gnucash.android.model.Commodity;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.model.Split;
 import org.gnucash.android.model.Transaction;
+import org.gnucash.android.util.TimestampHelper;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -185,7 +186,7 @@ public class TransactionsDbAdapter extends DatabaseAdapter<Transaction> {
             commodity = CommoditiesDbAdapter.getInstance().getCommodity(transaction.getCurrencyCode());
 
         stmt.bindString(6, commodity.getUID());
-        stmt.bindString(7, transaction.getCreatedTimestamp().toString());
+        stmt.bindString(7, TimestampHelper.getUtcStringFromTimestamp(transaction.getCreatedTimestamp()));
 
         if (transaction.getScheduledActionUID() == null)
             stmt.bindNull(8);
@@ -642,11 +643,11 @@ public class TransactionsDbAdapter extends DatabaseAdapter<Transaction> {
                 new String[]{"MAX(" + TransactionEntry.COLUMN_MODIFIED_AT + ")"},
                 null, null, null, null, null);
 
-        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        Timestamp timestamp = TimestampHelper.getTimestampFromNow();
         if (cursor.moveToFirst()){
             String timeString = cursor.getString(0);
             if (timeString != null){ //in case there were no transactions in the XML file (account structure only)
-                timestamp = Timestamp.valueOf(timeString);
+                timestamp = TimestampHelper.getTimestampFromUtcString(timeString);
             }
         }
         cursor.close();

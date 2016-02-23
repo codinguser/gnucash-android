@@ -32,11 +32,10 @@ import org.gnucash.android.model.Commodity;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.model.Split;
 import org.gnucash.android.model.TransactionType;
+import org.gnucash.android.util.TimestampHelper;
 
 import java.math.BigDecimal;
-import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Currency;
 import java.util.List;
 
 import static org.gnucash.android.db.DatabaseSchema.SplitEntry;
@@ -91,7 +90,7 @@ public class SplitsDbAdapter extends DatabaseAdapter<Split> {
 
         //modifying a split means modifying the accompanying transaction as well
         updateRecord(TransactionEntry.TABLE_NAME, transactionId,
-                TransactionEntry.COLUMN_MODIFIED_AT, new Timestamp(System.currentTimeMillis()).toString());
+                TransactionEntry.COLUMN_MODIFIED_AT, TimestampHelper.getUtcStringFromTimestamp(TimestampHelper.getTimestampFromNow()));
     }
 
     @Override
@@ -145,7 +144,7 @@ public class SplitsDbAdapter extends DatabaseAdapter<Split> {
         split.setMemo(memo);
         split.setReconcileState(reconcileState.charAt(0));
         if (reconcileDate != null && !reconcileDate.isEmpty())
-            split.setReconcileDate(Timestamp.valueOf(reconcileDate));
+            split.setReconcileDate(TimestampHelper.getTimestampFromUtcString(reconcileDate));
 
         return split;
     }

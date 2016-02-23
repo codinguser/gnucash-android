@@ -263,7 +263,7 @@ public class TransactionFormFragment extends Fragment implements
     private void startTransferFunds() {
         Currency fromCurrency = Currency.getInstance(mTransactionsDbAdapter.getAccountCurrencyCode(mAccountUID));
         long id = mTransferAccountSpinner.getSelectedItemId();
-        String targetCurrency = mAccountsDbAdapter.getCurrencyCode((mAccountsDbAdapter.getUID(id)));
+        String targetCurrency = mAccountsDbAdapter.getCurrencyCode(mAccountsDbAdapter.getUID(id));
 
         if (fromCurrency.equals(Currency.getInstance(targetCurrency))
                 || !mAmountEditText.isInputModified()
@@ -295,6 +295,7 @@ public class TransactionFormFragment extends Fragment implements
 		mUseDoubleEntry = sharedPrefs.getBoolean(getString(R.string.key_use_double_entry), false);
 		if (!mUseDoubleEntry){
 			mDoubleEntryLayout.setVisibility(View.GONE);
+            mOpenSplitEditor.setVisibility(View.GONE);
 		}
 
         mAccountUID = getArguments().getString(UxArgument.SELECTED_ACCOUNT_UID);
@@ -758,7 +759,7 @@ public class TransactionFormFragment extends Fragment implements
 
                     String transferAcctUID;
                     long transferAcctId = mTransferAccountSpinner.getSelectedItemId();
-                    if (mUseDoubleEntry || transferAcctId < 0) {
+                    if (mUseDoubleEntry && transferAcctId > 0) {
                         transferAcctUID = mAccountsDbAdapter.getUID(transferAcctId);
                     } else {
                         transferAcctUID = mAccountsDbAdapter.getOrCreateImbalanceAccountUID(currency);
@@ -903,7 +904,7 @@ public class TransactionFormFragment extends Fragment implements
      */
     private boolean canSave(){
         return (mAmountEditText.isInputValid())
-                || (mUseDoubleEntry && mTransferAccountSpinner.getCount() == 0);
+                || (mUseDoubleEntry && mTransferAccountSpinner.getCount() > 0);
     }
 
     /**

@@ -58,7 +58,6 @@ import org.gnucash.android.db.adapter.ScheduledActionDbAdapter;
 import org.gnucash.android.export.ExportAsyncTask;
 import org.gnucash.android.export.ExportFormat;
 import org.gnucash.android.export.ExportParams;
-import org.gnucash.android.export.Exporter;
 import org.gnucash.android.model.BaseModel;
 import org.gnucash.android.model.ScheduledAction;
 import org.gnucash.android.ui.account.AccountsActivity;
@@ -68,6 +67,8 @@ import org.gnucash.android.ui.settings.dialog.OwnCloudDialogFragment;
 import org.gnucash.android.ui.transaction.TransactionFormFragment;
 import org.gnucash.android.ui.util.RecurrenceParser;
 import org.gnucash.android.ui.util.RecurrenceViewClickListener;
+import org.gnucash.android.util.PreferencesHelper;
+import org.gnucash.android.util.TimestampHelper;
 
 import java.sql.Timestamp;
 import java.text.ParseException;
@@ -264,7 +265,7 @@ public class ExportFormFragment extends Fragment implements
 		ExportParams exportParameters = new ExportParams(mExportFormat);
 
 		if (mExportAllSwitch.isChecked()){
-			exportParameters.setExportStartTime(Timestamp.valueOf(Exporter.TIMESTAMP_ZERO));
+			exportParameters.setExportStartTime(TimestampHelper.getTimestampFromEpochZero());
 		} else {
 			exportParameters.setExportStartTime(new Timestamp(mExportStartCalendar.getTimeInMillis()));
 		}
@@ -354,9 +355,7 @@ public class ExportFormFragment extends Fragment implements
 		mDestinationSpinner.setSelection(position);
 
 		//**************** export start time bindings ******************
-		String lastExportTimeStamp = PreferenceManager.getDefaultSharedPreferences(getActivity())
-				.getString(Exporter.PREF_LAST_EXPORT_TIME, Exporter.TIMESTAMP_ZERO);
-		Timestamp timestamp = Timestamp.valueOf(lastExportTimeStamp);
+		Timestamp timestamp = PreferencesHelper.getLastExportTime();
 		mExportStartCalendar.setTimeInMillis(timestamp.getTime());
 
 		Date date = new Date(timestamp.getTime());

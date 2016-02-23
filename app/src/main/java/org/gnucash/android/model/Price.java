@@ -1,5 +1,7 @@
 package org.gnucash.android.model;
 
+import org.gnucash.android.util.TimestampHelper;
+
 import java.sql.Timestamp;
 
 /**
@@ -21,7 +23,7 @@ public class Price extends BaseModel {
     public static final String SOURCE_USER = "user:xfer-dialog";
 
     public Price(){
-        mDate = new Timestamp(System.currentTimeMillis());
+        mDate = TimestampHelper.getTimestampFromNow();
     }
 
     /**
@@ -32,7 +34,7 @@ public class Price extends BaseModel {
     public Price(String commodityUID, String currencyUID){
         this.mCommodityUID = commodityUID;
         this.mCurrencyUID = currencyUID;
-        mDate = new Timestamp(System.currentTimeMillis());
+        mDate = TimestampHelper.getTimestampFromNow();
     }
 
     public String getCommodityUID() {

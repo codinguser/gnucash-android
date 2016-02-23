@@ -1,4 +1,4 @@
-package org.gnucash.android.test.unit.util;
+package org.gnucash.android.test.unit.testutil;
 
 import com.crashlytics.android.Crashlytics;
 import com.uservoice.uservoicesdk.UserVoice;

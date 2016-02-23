@@ -57,13 +57,13 @@
   <string name="hint_export_choice">Экспортировать все проводки, а не только новые.</string>
   <string name="toast_export_error">Ошибка при экспорте %1$s</string>
   <string name="btn_export">Экспорт</string>
-  <string name="option_delete_after_export">Delete transactions after export</string>
+  <string name="option_delete_after_export">Удаление транзакций после экспорта</string>
   <string name="hint_delete_after_export">Все экспортированные проводки будут удалены по завершении.</string>
   <string name="title_settings">Настройки</string>
   <string-array name="export_destinations">
     <item>Карта памяти</item>
     <item>DropBox</item>
-    <item>Google Drive</item>
+    <item>Google Диск</item>
     <item>ownCloud</item>
     <item>Отправить файл&#8230;</item>
   </string-array>
@@ -81,8 +81,8 @@
   <string name="label_permission_create_accounts">Создание счетов в Gnucash для Android</string>
   <string name="label_permission_group">Ваши данные Gnucash</string>
   <string name="description_permission_group">Чтение и модификация данных Gnucash</string>
-  <string name="label_permission_record_transaction">Record transactions in GnuCash</string>
-  <string name="label_permission_create_account">Create accounts in GnuCash</string>
+  <string name="label_permission_record_transaction">Запись транзакций в GnuCash</string>
+  <string name="label_permission_create_account">Создайте учетные записи в GnuCash</string>
   <string name="label_display_account">Показать счёт</string>
   <string name="btn_create_accounts">Создать счета</string>
   <string name="title_default_accounts">Выберите счета для создания</string>
@@ -122,7 +122,7 @@
   <string name="summary_default_export_email">Почтовый ящик по умолчанию для экспорта. Можете менять его в процессе.</string>
   <string name="label_double_entry_account">Трансфертный счёт</string>
   <string name="summary_use_double_entry">Все проводки будут переводами с одного счёта на другой.</string>
-  <string name="title_use_double_entry">Вести двойную бухгалтерию</string>
+  <string name="title_use_double_entry">Вести двойную запись</string>
   <string name="account_balance">Баланс</string>
   <string name="toast_no_account_name_entered">Введите имя создаваемого счёта</string>
   <string name="label_account_currency">Валюта</string>
@@ -205,7 +205,7 @@
   <string name="title_all_accounts">Все</string>
   <string name="summary_create_default_accounts">Создание структуры счетов GnuCash по умолчанию</string>
   <string name="title_create_default_accounts">Создание счетов по умолчанию</string>
-  <string name="msg_confirm_create_default_accounts_setting">All existing accounts and transactions on the device will be deleted.\n\nAre you sure you want to proceed?</string>
+  <string name="msg_confirm_create_default_accounts_setting">Всех существующие счета и транзакции на устройстве будут удалены.\n\nВы уверены, что хотите продолжить?</string>
   <string name="menu_scheduled_transactions">Запланированные проводки</string>
   <string name="msg_confirm_create_default_accounts_first_run">Добро
         пожаловать в GnuCash для Android!\nВы можете как создать структуру
@@ -238,7 +238,7 @@
   <string name="summary_save_opening_balances">Включите чтобы сохранить текущий баланс (перед удалением проводок) как новое начальное сальдо после их удаления
     </string>
   <string name="title_save_opening_balances">Сохранять начальное сальдо счетов</string>
-  <string name="export_warning_ofx">OFX не поддерживает двойную бухгалтерию</string>
+  <string name="export_warning_ofx">OFX не поддерживает двойную запись</string>
   <string name="export_warning_qif">Создаёт на каждую валюту отдельный QIF-файл</string>
   <string name="title_transaction_splits">Части проводки</string>
   <string name="label_imbalance">Дисбаланс:</string>
@@ -271,7 +271,7 @@
   <string name="label_delete_account_transactions_description">На счёте есть проводки.\nЧто с ними делать?</string>
   <string name="label_delete_account_subaccounts_description">Есть вложенные счета.\nЧто с ними делать?</string>
   <string name="label_delete_transactions">Удалить проводки</string>
-  <string name="toast_disable_double_entry_to_save_transaction">Создайте и укажите трансфертный счёт или отключите двойную бухгалтерию в настройках.</string>
+  <string name="toast_disable_double_entry_to_save_transaction">Создайте и укажите трансфертный счёт или отключите двойную запись в настройках</string>
   <string name="label_tap_to_create_schedule">Тыкните, чтобы создать расписание</string>
   <string name="title_restore_backup">Восстановить из резервной копии&#8230;</string>
   <string name="header_backup_and_export_settings">Резервное копирование &amp; экспорт</string>
@@ -386,12 +386,14 @@
   <string name="title_translate_gnucash">Перевести GnuCash</string>
   <string name="summary_google_plus">Поделиться идеями, обсудить изменения или сообщить о проблемах</string>
   <string name="summary_translate_gnucash">Перевести или вычитать на CrowdIn</string>
-  <string name="toast_no_compatible_apps_to_receive_export">No compatible apps to receive the exported transactions!</string>
-  <string name="menu_move_transaction">Move...</string>
-  <string name="menu_duplicate_transaction">Duplicate</string>
+  <string name="toast_no_compatible_apps_to_receive_export">Не совместимых приложений, чтобы получить экспортированные транзакции!</string>
+  <string name="menu_move_transaction">Переместить...</string>
+  <string name="menu_duplicate_transaction">Повтор</string>
   <string name="nav_menu_budgets">Budgets</string>
   <string name="title_cash_flow_report">Cash Flow</string>
   <string name="title_budgets">Budgets</string>
+  <string name="error_invalid_exchange_rate">Invalid exchange rate</string>
+  <string name="sample_exchange_rate">e.g. 1 %1$s = x.xx %2$s</string>
   <string-array name="report_time_range">
     <item>Текущий месяц</item>
     <item>Последний квартал</item>

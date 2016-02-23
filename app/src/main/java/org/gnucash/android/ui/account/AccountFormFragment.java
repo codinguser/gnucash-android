@@ -218,7 +218,7 @@ public class AccountFormFragment extends Fragment {
         @Override
         public void onColorSelected(int color) {
             mColorSquare.setBackgroundColor(color);
-            mSelectedColor = String.format("#%06X", (0xFFFFFF & color));
+            mSelectedColor = String.format("#%06X", 0xFFFFFF & color);
         }
     };
 
@@ -792,7 +792,8 @@ public class AccountFormFragment extends Fragment {
 		}
         mAccount.setParentUID(newParentAccountUID);
 
-        if (mDefaultTransferAccountCheckBox.isChecked()){
+        if (mDefaultTransferAccountCheckBox.isChecked()
+                && mDefaulTransferAccountSpinner.getSelectedItemId() != Spinner.INVALID_ROW_ID){
             long id = mDefaulTransferAccountSpinner.getSelectedItemId();
             mAccount.setDefaultTransferAccountUID(mAccountsDbAdapter.getUID(id));
         } else {

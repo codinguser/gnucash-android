@@ -145,7 +145,7 @@ public class BalanceSheetFragment extends BaseReportFragment {
             Money balance = mAccountsDbAdapter.getAccountBalance(accountUID);
             View view = inflater.inflate(R.layout.row_balance_sheet, tableLayout, false);
             ((TextView)view.findViewById(R.id.account_name)).setText(name);
-            TextView balanceTextView = ((TextView) view.findViewById(R.id.account_balance));
+            TextView balanceTextView = (TextView) view.findViewById(R.id.account_balance);
             TransactionsActivity.displayBalance(balanceTextView, balance);
             tableLayout.addView(view);
         }

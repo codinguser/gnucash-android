@@ -410,6 +410,8 @@
     <string name="title_budgets">Budgets</string>
     <string name="title_use_compact_list">Enable compact view</string>
     <string name="summary_use_compact_list">Enable to always use compact view for transactions list</string>
+    <string name="error_invalid_exchange_rate">Invalid exchange rate</string>
+    <string name="sample_exchange_rate">e.g. 1 %1$s = x.xx %2$s</string>
     <string-array name="report_time_range">
         <item>Current month</item>
         <item>Last 3 months</item>
