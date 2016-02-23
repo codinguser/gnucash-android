@@ -1,8 +1,10 @@
 language: android
-jdk: oraclejdk7
 sudo: false
 env: TARGET="android-21" NAME="android-21"
 
+before_cache:
+  - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
+  
 cache:
   directories:
    - $HOME/.android/avd/
