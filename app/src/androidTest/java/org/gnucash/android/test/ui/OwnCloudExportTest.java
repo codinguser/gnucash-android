@@ -20,7 +20,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
-import android.support.test.InstrumentationRegistry;
+import android.support.test.espresso.contrib.DrawerActions;
+import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.test.ActivityInstrumentationTestCase2;
 import android.util.Log;
@@ -32,41 +33,68 @@ import org.gnucash.android.model.Account;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.model.Split;
 import org.gnucash.android.model.Transaction;
-import org.gnucash.android.ui.settings.PreferenceActivity;
-import org.junit.After;
+import org.gnucash.android.ui.account.AccountsActivity;
 import org.junit.Before;
+import org.junit.FixMethodOrder;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.MethodSorters;
 
 import java.util.Currency;
 
+import static android.support.test.InstrumentationRegistry.getInstrumentation;
 import static android.support.test.espresso.Espresso.onView;
-import static android.support.test.espresso.Espresso.pressBack;
 import static android.support.test.espresso.action.ViewActions.*;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
+import static android.support.test.espresso.matcher.RootMatchers.withDecorView;
 import static android.support.test.espresso.matcher.ViewMatchers.*;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertTrue;
+import static org.gnucash.android.test.ui.AccountsActivityTest.preventFirstRunDialogs;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 
 
 @RunWith(AndroidJUnit4.class)
-public class OwnCloudExportTest extends ActivityInstrumentationTestCase2<PreferenceActivity> {
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
+public class OwnCloudExportTest {
 
-    private PreferenceActivity mPreferenceActivity;
+    private AccountsActivity mAccountsActivity;
     private SharedPreferences mPrefs;
 
-    public OwnCloudExportTest() { super(PreferenceActivity.class); }
+    private String OC_SERVER = "https://demo.owncloud.org";
+    private String OC_USERNAME = "test";
+    private String OC_PASSWORD = "test";
+    private String OC_DIR = "gc_test";
 
-    @Override
-	@Before
-	public void setUp() throws Exception {
-        super.setUp();
-		injectInstrumentation(InstrumentationRegistry.getInstrumentation());
-		AccountsActivityTest.preventFirstRunDialogs(getInstrumentation().getTargetContext());
+    /**
+     * A JUnit {@link Rule @Rule} to launch your activity under test. This is a replacement
+     * for {@link ActivityInstrumentationTestCase2}.
+     * <p>
+     * Rules are interceptors which are executed for each test method and will run before
+     * any of your setup code in the {@link Before @Before} method.
+     * <p>
+     * {@link ActivityTestRule} will create and launch of the activity for you and also expose
+     * the activity under test. To get a reference to the activity you can use
+     * the {@link ActivityTestRule#getActivity()} method.
+     */
+    @Rule
+    public ActivityTestRule<AccountsActivity> mActivityRule = new ActivityTestRule<>(
+            AccountsActivity.class);
 
-        mPreferenceActivity = getActivity();
+    @Before
+    public void setUp() throws Exception {
+
+        mAccountsActivity = mActivityRule.getActivity();
+        mPrefs = mAccountsActivity.getSharedPreferences(
+                mAccountsActivity.getString(R.string.owncloud_pref), Context.MODE_PRIVATE);
+
+        preventFirstRunDialogs(getInstrumentation().getTargetContext());
 
         // creates Account and transaction
         String activeBookUID = BooksDbAdapter.getInstance().getActiveBookUID();
-        DatabaseHelper mDbHelper = new DatabaseHelper(getActivity(), activeBookUID);
+        DatabaseHelper mDbHelper = new DatabaseHelper(mAccountsActivity, activeBookUID);
         SQLiteDatabase mDb;
         try {
             mDb = mDbHelper.getWritableDatabase();
@@ -86,32 +114,31 @@ public class OwnCloudExportTest extends ActivityInstrumentationTestCase2<Prefere
         transaction.setTime(System.currentTimeMillis());
         Split split = new Split(new Money("11.11", currencyCode), account.getUID());
         transaction.addSplit(split);
-        transaction.addSplit(split.createPair(mAccountsDbAdapter.getOrCreateImbalanceAccountUID(Currency.getInstance(currencyCode))));
+        transaction.addSplit(split.createPair(
+                mAccountsDbAdapter.getOrCreateImbalanceAccountUID(Currency.getInstance(currencyCode))));
         account.addTransaction(transaction);
 
         mAccountsDbAdapter.addRecord(account, DatabaseAdapter.UpdateMethod.insert);
 
+
+        SharedPreferences.Editor editor = mPrefs.edit();
+
+        editor.putBoolean(mAccountsActivity.getString(R.string.key_owncloud_sync), false).apply();
+        editor.putInt(mAccountsActivity.getString(R.string.key_last_export_destination), 0);
+        editor.apply();
     }
 
+    /**
+     * It might fail if it takes too long to connect to the server or if there is no network
+     */
     @Test
-    public void OpenOwnCloudDialog() {
-        pressBack(); // The activity automatically opens General Settings. . let's go back first
-        onView(withText("Backup & export")).perform(click());
+    public void OwnCloudCredentials() {
+        onView(withId(R.id.drawer_layout)).perform(DrawerActions.open());
+        onView(withId(R.id.nav_view)).perform(swipeUp());
+        onView(withText(R.string.title_settings)).perform(click());
+        onView(withText(R.string.header_backup_and_export_settings)).perform(click());
         onView(withText("ownCloud Sync")).perform(click());
         onView(withId(R.id.owncloud_hostname)).check(matches(isDisplayed()));
-    }
-
-    @Test
-    public void SetOwnCloudCredentials() {
-        pressBack(); // The activity automatically opens General Settings. . let's go back first
-        onView(withText("Backup & export")).perform(click());
-        onView(withText("ownCloud Sync")).perform(click());
-        onView(withId(R.id.owncloud_hostname)).check(matches(isDisplayed()));
-
-        String OC_SERVER = "https://demo.owncloud.org";
-        String OC_USERNAME = "test";
-        String OC_PASSWORD = "test";
-        String OC_DIR = "gc_test";
 
         onView(withId(R.id.owncloud_hostname)).perform(clearText()).perform(typeText(OC_SERVER), closeSoftKeyboard());
         onView(withId(R.id.owncloud_username)).perform(clearText()).perform(typeText(OC_USERNAME), closeSoftKeyboard());
@@ -121,18 +148,39 @@ public class OwnCloudExportTest extends ActivityInstrumentationTestCase2<Prefere
         sleep(5000);
         onView(withId(R.id.btn_save)).perform(click());
 
-        mPrefs = mPreferenceActivity.getSharedPreferences(mPreferenceActivity.getString(R.string.owncloud_pref), Context.MODE_PRIVATE);
-        assertEquals(mPrefs.getString(mPreferenceActivity.getString(R.string.key_owncloud_server), null), OC_SERVER);
-        assertEquals(mPrefs.getString(mPreferenceActivity.getString(R.string.key_owncloud_username), null), OC_USERNAME);
-        assertEquals(mPrefs.getString(mPreferenceActivity.getString(R.string.key_owncloud_password), null), OC_PASSWORD);
-        assertEquals(mPrefs.getString(mPreferenceActivity.getString(R.string.key_owncloud_dir), null), OC_DIR);
+        assertEquals(mPrefs.getString(mAccountsActivity.getString(R.string.key_owncloud_server), null), OC_SERVER);
+        assertEquals(mPrefs.getString(mAccountsActivity.getString(R.string.key_owncloud_username), null), OC_USERNAME);
+        assertEquals(mPrefs.getString(mAccountsActivity.getString(R.string.key_owncloud_password), null), OC_PASSWORD);
+        assertEquals(mPrefs.getString(mAccountsActivity.getString(R.string.key_owncloud_dir), null), OC_DIR);
 
+        assertTrue(mPrefs.getBoolean(mAccountsActivity.getString(R.string.key_owncloud_sync), false));
     }
 
-    @After
-    public void tearDown() throws Exception {
-        mPreferenceActivity.finish();
-        super.tearDown();
+    @Test
+    public void OwnCloudExport() {
+
+        mPrefs.edit().putBoolean(mAccountsActivity.getString(R.string.key_owncloud_sync), true).commit();
+
+        onView(withId(R.id.drawer_layout)).perform(DrawerActions.open());
+        onView(withText(R.string.nav_menu_export)).perform(click());
+        onView(withId(R.id.spinner_export_destination)).perform(click());
+        String[] destinations = mAccountsActivity.getResources().getStringArray(R.array.export_destinations);
+        onView(withText(destinations[3])).perform(click());
+        onView(withId(R.id.menu_save)).perform(click());
+//        onView(withSpinnerText(
+//                mAccountsActivity.getResources().getStringArray(R.array.export_destinations)[3]))
+//                .perform(click());
+        assertToastDisplayed(String.format(mAccountsActivity.getString(R.string.toast_exported_to), "ownCloud -> " + OC_DIR));
+    }
+
+    /**
+     * Checks that a specific toast message is displayed
+     * @param toastString String that should be displayed
+     */
+    private void assertToastDisplayed(String toastString) {
+        onView(withText(toastString))
+                .inRoot(withDecorView(not(is(mActivityRule.getActivity().getWindow().getDecorView()))))
+                .check(matches(isDisplayed()));
     }
     /**
      * Sleep the thread for a specified period
