@@ -116,17 +116,21 @@ public class TransferFundsDialogFragment extends DialogFragment {
         Commodity currencyCommodity = commoditiesDbAdapter.getCommodity(mTargetCurrency.getCurrencyCode());
         String currencyUID = currencyCommodity.getUID();
         PricesDbAdapter pricesDbAdapter = PricesDbAdapter.getInstance();
-        Pair<Long, Long> price = pricesDbAdapter.getPrice(commodityUID, currencyUID);
+        Pair<Long, Long> pricePair = pricesDbAdapter.getPrice(commodityUID, currencyUID);
 
-        if (price.first > 0 && price.second > 0) {
+        if (pricePair.first > 0 && pricePair.second > 0) {
             // a valid price exists
-            BigDecimal numerator = new BigDecimal(price.first);
-            BigDecimal denominator = new BigDecimal(price.second);
-            DecimalFormat formatter = (DecimalFormat) NumberFormat.getNumberInstance();
-            mExchangeRateInput.setText(formatter.format(numerator.divide(denominator, MathContext.DECIMAL32)));
+            Price price = new Price(commodityUID, currencyUID);
+            price.setValueNum(pricePair.first);
+            price.setValueDenom(pricePair.second);
+            mExchangeRateInput.setText(price.toString());
+
+            BigDecimal numerator = new BigDecimal(pricePair.first);
+            BigDecimal denominator = new BigDecimal(pricePair.second);
             // convertedAmount = mOriginAmount * numerator / denominator
             BigDecimal convertedAmount = mOriginAmount.asBigDecimal().multiply(numerator)
                 .divide(denominator, currencyCommodity.getSmallestFractionDigits(), BigDecimal.ROUND_HALF_EVEN);
+            DecimalFormat formatter = (DecimalFormat) NumberFormat.getNumberInstance();
             mConvertedAmountInput.setText(formatter.format(convertedAmount));
         }
 
@@ -194,17 +198,24 @@ public class TransferFundsDialogFragment extends DialogFragment {
      * Converts the currency amount with the given exchange rate and saves the price to the db
      */
     private void transferFunds() {
+        Price price = null;
+
+        CommoditiesDbAdapter commoditiesDbAdapter = CommoditiesDbAdapter.getInstance();
+        String originCommodityUID = commoditiesDbAdapter.getCommodityUID(mOriginAmount.getCurrency().getCurrencyCode());
+        String targetCommodityUID = commoditiesDbAdapter.getCommodityUID(mTargetCurrency.getCurrencyCode());
+
         if (mExchangeRateRadioButton.isChecked()){
+            BigDecimal rate;
             String exchangeRateString = mExchangeRateInput.getText().toString();
             DecimalFormat formatter = (DecimalFormat) NumberFormat.getNumberInstance();
             formatter.setParseBigDecimal(true);
-            BigDecimal rate;
             try {
                 rate = (BigDecimal) formatter.parse(exchangeRateString);
             } catch (ParseException e) {
                 mExchangeRateInputLayout.setError(getString(R.string.error_invalid_exchange_rate));
                 return;
             }
+            price = new Price(originCommodityUID, targetCommodityUID, rate);
             mConvertedAmount = mOriginAmount.multiply(rate);
         }
 
@@ -217,22 +228,20 @@ public class TransferFundsDialogFragment extends DialogFragment {
 
             BigDecimal amount = TransactionFormFragment.parseInputToDecimal(convertedAmount);
             mConvertedAmount = new Money(amount, Commodity.getInstance(mTargetCurrency.getCurrencyCode()));
-        }
 
-        if (mOnTransferFundsListener != null) {
-            PricesDbAdapter pricesDbAdapter = PricesDbAdapter.getInstance();
-            CommoditiesDbAdapter commoditiesDbAdapter = CommoditiesDbAdapter.getInstance();
-            Price price = new Price(commoditiesDbAdapter.getCommodityUID(mOriginAmount.getCurrency().getCurrencyCode()),
-                    commoditiesDbAdapter.getCommodityUID(mTargetCurrency.getCurrencyCode()));
-            price.setSource(Price.SOURCE_USER);
-            // fractions cannot be exacted represented by BigDecimal.
+            price = new Price(originCommodityUID, targetCommodityUID);
+            // fractions cannot be exactly represented by BigDecimal.
             price.setValueNum(mConvertedAmount.getNumerator() * mOriginAmount.getDenominator());
             price.setValueDenom(mOriginAmount.getNumerator() * mConvertedAmount.getDenominator());
-            price.reduce();
-            pricesDbAdapter.addRecord(price);
-
-            mOnTransferFundsListener.transferComplete(mConvertedAmount);
         }
+
+        price.setSource(Price.SOURCE_USER);
+        price.reduce();
+        PricesDbAdapter.getInstance().addRecord(price);
+
+        if (mOnTransferFundsListener != null)
+            mOnTransferFundsListener.transferComplete(mConvertedAmount);
+
         dismiss();
     }
 

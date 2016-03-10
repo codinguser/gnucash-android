@@ -2,7 +2,11 @@ package org.gnucash.android.model;
 
 import org.gnucash.android.util.TimestampHelper;
 
+
+import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 
 /**
  * Model for commodity prices
@@ -35,6 +39,19 @@ public class Price extends BaseModel {
         this.mCommodityUID = commodityUID;
         this.mCurrencyUID = currencyUID;
         mDate = TimestampHelper.getTimestampFromNow();
+    }
+
+    /**
+     * Create new instance with the GUIDs of the commodities and the specified exchange rate.
+     * @param commodity1UID GUID of the origin commodity
+     * @param commodity2UID GUID of the target commodity
+     * @param exchangeRate exchange rate between the commodities
+     */
+    public Price(String commodity1UID, String commodity2UID, BigDecimal exchangeRate) {
+        this(commodity1UID, commodity2UID);
+        // Store 0.1234 as 1234/10000
+        setValueNum(exchangeRate.unscaledValue().longValue());
+        setValueDenom(BigDecimal.ONE.scaleByPowerOfTen(exchangeRate.scale()).longValue());
     }
 
     public String getCommodityUID() {
@@ -122,5 +139,21 @@ public class Price extends BaseModel {
             mValueNum /= commonDivisor;
             mValueDenom /= commonDivisor;
         }
+    }
+
+    /**
+     * Returns the exchange rate as a string formatted with the default locale.
+     *
+     * <p>It will have up to 6 decimal places.
+     *
+     * <p>Example: "0.123456"
+     */
+    @Override
+    public String toString() {
+        BigDecimal numerator = new BigDecimal(mValueNum);
+        BigDecimal denominator = new BigDecimal(mValueDenom);
+        DecimalFormat formatter = (DecimalFormat) NumberFormat.getNumberInstance();
+        formatter.setMaximumFractionDigits(6);
+        return formatter.format(numerator.divide(denominator));
     }
 }
