@@ -51,4 +51,26 @@ public class PriceTest {
         Price price = new Price("commodity1UID", "commodity2UID", exchangeRate);
         assertThat(price.toString()).isEqualTo("1,234");
     }
+
+    @Test
+    public void getNumerator_shouldReduceAutomatically() {
+        long numerator = 1;
+        long denominator = 3;
+        Price price = new Price();
+
+        price.setValueNum(numerator * 2);
+        price.setValueDenom(denominator * 2);
+        assertThat(price.getValueNum()).isEqualTo(numerator);
+    }
+
+    @Test
+    public void getDenominator_shouldReduceAutomatically() {
+        long numerator = 1;
+        long denominator = 3;
+        Price price = new Price();
+
+        price.setValueNum(numerator * 2);
+        price.setValueDenom(denominator * 2);
+        assertThat(price.getValueDenom()).isEqualTo(denominator);
+    }
 }

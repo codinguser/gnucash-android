@@ -236,7 +236,6 @@ public class TransferFundsDialogFragment extends DialogFragment {
         }
 
         price.setSource(Price.SOURCE_USER);
-        price.reduce();
         PricesDbAdapter.getInstance().addRecord(price);
 
         if (mOnTransferFundsListener != null)

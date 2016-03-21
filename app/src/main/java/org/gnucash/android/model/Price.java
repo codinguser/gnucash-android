@@ -95,6 +95,7 @@ public class Price extends BaseModel {
     }
 
     public long getValueNum() {
+        reduce();
         return mValueNum;
     }
 
@@ -103,6 +104,7 @@ public class Price extends BaseModel {
     }
 
     public long getValueDenom() {
+        reduce();
         return mValueDenom;
     }
 
@@ -110,7 +112,7 @@ public class Price extends BaseModel {
         this.mValueDenom = valueDenom;
     }
 
-    public void reduce() {
+    private void reduce() {
         if (mValueDenom < 0) {
             mValueDenom = -mValueDenom;
             mValueNum = -mValueNum;
