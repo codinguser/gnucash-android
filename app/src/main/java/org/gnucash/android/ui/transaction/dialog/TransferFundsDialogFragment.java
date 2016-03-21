@@ -216,7 +216,9 @@ public class TransferFundsDialogFragment extends DialogFragment {
                 return;
             }
             price = new Price(originCommodityUID, targetCommodityUID, rate);
-            mConvertedAmount = mOriginAmount.multiply(rate);
+
+            Commodity targetCommodity = Commodity.getInstance(mTargetCurrency.getCurrencyCode());
+            mConvertedAmount = mOriginAmount.multiply(rate).withCurrency(targetCommodity);
         }
 
         if (mConvertedAmountRadioButton.isChecked()){
