@@ -42,7 +42,6 @@ import org.gnucash.android.model.Money;
 import org.gnucash.android.model.Price;
 import org.gnucash.android.ui.transaction.TransactionFormFragment;
 import org.gnucash.android.ui.transaction.TransactionsActivity;
-import org.gnucash.android.ui.util.AmountInputFormatter;
 import org.gnucash.android.ui.util.OnTransferFundsListener;
 
 import java.math.BigDecimal;
@@ -135,7 +134,6 @@ public class TransferFundsDialogFragment extends DialogFragment {
 
         mExchangeRateInput.addTextChangedListener(textChangeListener);
         mConvertedAmountInput.addTextChangedListener(textChangeListener);
-        mConvertedAmountInput.addTextChangedListener(new AmountInputFormatter(mConvertedAmountInput));
 
         mConvertedAmountRadioButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
