@@ -40,7 +40,6 @@ import org.gnucash.android.db.PricesDbAdapter;
 import org.gnucash.android.model.Commodity;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.model.Price;
-import org.gnucash.android.ui.transaction.TransactionFormFragment;
 import org.gnucash.android.ui.transaction.TransactionsActivity;
 import org.gnucash.android.ui.util.OnTransferFundsListener;
 
@@ -48,6 +47,7 @@ import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
+import java.text.ParsePosition;
 import java.util.Currency;
 
 import butterknife.Bind;
@@ -201,13 +201,10 @@ public class TransferFundsDialogFragment extends DialogFragment {
         String originCommodityUID = commoditiesDbAdapter.getCommodityUID(mOriginAmount.getCurrency().getCurrencyCode());
         String targetCommodityUID = commoditiesDbAdapter.getCommodityUID(mTargetCurrencyCode);
 
-        if (mExchangeRateRadioButton.isChecked()){
+        if (mExchangeRateRadioButton.isChecked()) {
             BigDecimal rate;
-            String exchangeRateString = mExchangeRateInput.getText().toString();
-            DecimalFormat formatter = (DecimalFormat) NumberFormat.getNumberInstance();
-            formatter.setParseBigDecimal(true);
             try {
-                rate = (BigDecimal) formatter.parse(exchangeRateString);
+                rate = parseAmount(mExchangeRateInput.getText().toString());
             } catch (ParseException e) {
                 mExchangeRateInputLayout.setError(getString(R.string.error_invalid_exchange_rate));
                 return;
@@ -218,14 +215,14 @@ public class TransferFundsDialogFragment extends DialogFragment {
             mConvertedAmount = mOriginAmount.multiply(rate).withCurrency(targetCommodity);
         }
 
-        if (mConvertedAmountRadioButton.isChecked()){
-            String convertedAmount = mConvertedAmountInput.getText().toString();
-            if (convertedAmount.isEmpty()){
-                mConvertedAmountInputLayout.setError(getString(R.string.error_converted_amount_required));
+        if (mConvertedAmountRadioButton.isChecked()) {
+            BigDecimal amount;
+            try {
+                amount = parseAmount(mConvertedAmountInput.getText().toString());
+            } catch (ParseException e) {
+                mConvertedAmountInputLayout.setError(getString(R.string.error_invalid_amount));
                 return;
             }
-
-            BigDecimal amount = TransactionFormFragment.parseInputToDecimal(convertedAmount);
             mConvertedAmount = new Money(amount, Commodity.getInstance(mTargetCurrencyCode));
 
             price = new Price(originCommodityUID, targetCommodityUID);
@@ -241,6 +238,19 @@ public class TransferFundsDialogFragment extends DialogFragment {
             mOnTransferFundsListener.transferComplete(mConvertedAmount);
 
         dismiss();
+    }
+
+    private BigDecimal parseAmount(String amount) throws ParseException {
+        DecimalFormat formatter = (DecimalFormat) NumberFormat.getNumberInstance();
+        formatter.setParseBigDecimal(true);
+        ParsePosition parsePosition = new ParsePosition(0);
+        BigDecimal parsedAmount = (BigDecimal) formatter.parse(amount, parsePosition);
+
+        // Ensure any mistyping by the user is caught instead of partially parsed
+        if (parsePosition.getIndex() < amount.length())
+            throw new ParseException("Parse error", parsePosition.getErrorIndex());
+
+        return parsedAmount;
     }
 
     /**
