@@ -17,6 +17,7 @@
 package org.gnucash.android.model;
 
 
+import android.graphics.Color;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 
@@ -70,7 +71,12 @@ public class Account extends BaseModel{
     //TODO: Allow use of #aarrggbb format as well
     public static final String COLOR_HEX_REGEX = "^#(?:[0-9a-fA-F]{3}){1,2}$";
 
-    /**
+	/**
+	 * Default color, if not set explicitly through {@link #setColorCode(String)}.
+	 */
+	public static final String DEFAULT_COLOR = "#cccccc"; // Color.LT_GRAY
+
+	/**
      * Accounts types which are used by the OFX standard
      */
 	public enum OfxAccountType {CHECKING, SAVINGS, MONEYMRKT, CREDITLINE }
@@ -133,7 +139,7 @@ public class Account extends BaseModel{
     /**
      * Account color field in hex format #rrggbb
      */
-    private String mColorCode;
+    private String mColorCode = DEFAULT_COLOR;
 
     /**
      * Flag which marks this account as a favorite account
@@ -306,10 +312,7 @@ public class Account extends BaseModel{
      * @param colorCode Color code to be set in the format #rrggbb or #rgb
      * @throws java.lang.IllegalArgumentException if the color code is not properly formatted
      */
-    public void setColorCode(String colorCode) {
-        if (colorCode == null)
-            return;
-
+    public void setColorCode(@NonNull String colorCode) {
         if (!Pattern.matches(COLOR_HEX_REGEX, colorCode))
             throw new IllegalArgumentException("Invalid color hex code: " + colorCode);
 

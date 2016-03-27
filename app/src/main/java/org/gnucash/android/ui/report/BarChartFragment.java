@@ -229,9 +229,7 @@ public class BarChartFragment extends Fragment implements OnChartValueSelectedLi
                         if (!accountToColorMap.containsKey(account.getUID())) {
                             Integer color;
                             if (mUseAccountColor) {
-                                color = (account.getColorHexCode() != null)
-                                        ? Color.parseColor(account.getColorHexCode())
-                                        : COLORS[accountToColorMap.size() % COLORS.length];
+                                color = Color.parseColor(account.getColorHexCode());
                             } else {
                                 color = COLORS[accountToColorMap.size() % COLORS.length];
                             }

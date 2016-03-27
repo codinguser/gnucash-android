@@ -203,10 +203,7 @@ public class AccountFormFragment extends Fragment {
      */
     private boolean mUseDoubleEntry;
 
-    /**
-     * Default to transparent
-     */
-    private String mSelectedColor = null;
+    private String mSelectedColor = Account.DEFAULT_COLOR;
 
     /**
      * Trigger for color picker dialog
@@ -417,7 +414,7 @@ public class AccountFormFragment extends Fragment {
         }
 
         mPlaceholderCheckBox.setChecked(account.isPlaceholderAccount());
-        initializeColorSquarePreview(account.getColorHexCode());
+        mColorSquare.setBackgroundColor(Color.parseColor(account.getColorHexCode()));
 
         setAccountTypeSelection(account.getAccountType());
     }
@@ -438,17 +435,6 @@ public class AccountFormFragment extends Fragment {
             setParentAccountSelection(mAccountsDbAdapter.getID(mParentAccountUID));
         }
 
-    }
-
-    /**
-     * Initializes the preview of the color picker (color square) to the specified color
-     * @param colorHex Color of the format #rgb or #rrggbb
-     */
-    private void initializeColorSquarePreview(String colorHex){
-        if (colorHex != null)
-            mColorSquare.setBackgroundColor(Color.parseColor(colorHex));
-        else
-            mColorSquare.setBackgroundColor(Color.LTGRAY);
     }
 
     /**
@@ -549,10 +535,7 @@ public class AccountFormFragment extends Fragment {
         FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
         int currentColor = Color.LTGRAY;
         if (mAccount != null){
-            String accountColor = mAccount.getColorHexCode();
-            if (accountColor != null){
-                currentColor = Color.parseColor(accountColor);
-            }
+            currentColor = Color.parseColor(mAccount.getColorHexCode());
         }
 
         ColorPickerDialog colorPickerDialogFragment = ColorPickerDialog.newInstance(

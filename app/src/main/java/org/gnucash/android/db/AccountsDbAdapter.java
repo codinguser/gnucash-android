@@ -176,7 +176,7 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
         mReplaceStatement.bindString(3, account.getDescription());
         mReplaceStatement.bindString(4, account.getAccountType().name());
         mReplaceStatement.bindString(5, account.getCurrency().getCurrencyCode());
-        if (account.getColorHexCode() != null) {
+        if (account.getColorHexCode() != Account.DEFAULT_COLOR) {
             mReplaceStatement.bindString(6, account.getColorHexCode());
         }
         mReplaceStatement.bindLong(7, account.isFavorite() ? 1 : 0);
@@ -414,7 +414,9 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
         account.setCommodity(CommoditiesDbAdapter.getInstance().getCommodity(currency.getCurrencyCode()));
         account.setPlaceHolderFlag(c.getInt(c.getColumnIndexOrThrow(AccountEntry.COLUMN_PLACEHOLDER)) == 1);
         account.setDefaultTransferAccountUID(c.getString(c.getColumnIndexOrThrow(AccountEntry.COLUMN_DEFAULT_TRANSFER_ACCOUNT_UID)));
-        account.setColorCode(c.getString(c.getColumnIndexOrThrow(AccountEntry.COLUMN_COLOR_CODE)));
+        String color = c.getString(c.getColumnIndexOrThrow(AccountEntry.COLUMN_COLOR_CODE));
+        if (color != null)
+            account.setColorCode(color);
         account.setFavorite(c.getInt(c.getColumnIndexOrThrow(AccountEntry.COLUMN_FAVORITE)) == 1);
         account.setFullName(c.getString(c.getColumnIndexOrThrow(AccountEntry.COLUMN_FULL_NAME)));
         account.setHidden(c.getInt(c.getColumnIndexOrThrow(AccountEntry.COLUMN_HIDDEN)) == 1);

@@ -105,8 +105,9 @@ public class AccountTest{
 	}
 
 	@Test
-	public void newInstance_shouldHaveNonNullDescription() {
+	public void newInstance_shouldReturnNonNullValues() {
 		Account account = new Account("Test account");
 		assertThat(account.getDescription()).isEqualTo("");
+		assertThat(account.getColorHexCode()).isEqualTo(Account.DEFAULT_COLOR);
 	}
 }

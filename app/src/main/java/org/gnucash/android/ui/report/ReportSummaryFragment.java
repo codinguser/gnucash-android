@@ -200,9 +200,7 @@ public class ReportSummaryFragment extends Fragment {
                         Collections.singletonList(account.getUID()), start, end).asDouble();
                 if (balance > 0) {
                     dataSet.addEntry(new Entry((float) balance, dataSet.getEntryCount()));
-                    colors.add(account.getColorHexCode() != null
-                            ? Color.parseColor(account.getColorHexCode())
-                            : ReportsActivity.COLORS[(dataSet.getEntryCount() - 1) % ReportsActivity.COLORS.length]);
+                    colors.add(Color.parseColor(account.getColorHexCode()));
                     labels.add(account.getName());
                 }
             }
