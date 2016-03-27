@@ -18,6 +18,7 @@ package org.gnucash.android.model;
 
 
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 
 import org.gnucash.android.BuildConfig;
 import org.gnucash.android.app.GnuCashApplication;
@@ -88,7 +89,7 @@ public class Account extends BaseModel{
 	/**
 	 * Account description
 	 */
-	private String mDescription;
+	private String mDescription = "";
 
 	/**
 	 * Currency used by transactions in this account
@@ -222,7 +223,7 @@ public class Account extends BaseModel{
 	 * Sets the account mDescription
 	 * @param description String mDescription
 	 */
-	public void setDescription(String description) {
+	public void setDescription(@NonNull String description) {
 		this.mDescription = description;
 	}
 

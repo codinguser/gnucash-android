@@ -173,8 +173,7 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
         mReplaceStatement.clearBindings();
         mReplaceStatement.bindString(1, account.getUID());
         mReplaceStatement.bindString(2, account.getName());
-        if (account.getDescription() != null)
-            mReplaceStatement.bindString(3, account.getDescription());
+        mReplaceStatement.bindString(3, account.getDescription());
         mReplaceStatement.bindString(4, account.getAccountType().name());
         mReplaceStatement.bindString(5, account.getCurrency().getCurrencyCode());
         if (account.getColorHexCode() != null) {
@@ -407,7 +406,8 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
         Account account = new Account(c.getString(c.getColumnIndexOrThrow(AccountEntry.COLUMN_NAME)));
         populateBaseModelAttributes(c, account);
 
-        account.setDescription(c.getString(c.getColumnIndexOrThrow(AccountEntry.COLUMN_DESCRIPTION)));
+        String description = c.getString(c.getColumnIndexOrThrow(AccountEntry.COLUMN_DESCRIPTION));
+        account.setDescription(description == null ? "" : description);
         account.setParentUID(c.getString(c.getColumnIndexOrThrow(AccountEntry.COLUMN_PARENT_ACCOUNT_UID)));
         account.setAccountType(AccountType.valueOf(c.getString(c.getColumnIndexOrThrow(AccountEntry.COLUMN_TYPE))));
         Currency currency = Currency.getInstance(c.getString(c.getColumnIndexOrThrow(AccountEntry.COLUMN_CURRENCY)));

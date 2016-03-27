@@ -395,9 +395,7 @@ public class AccountFormFragment extends Fragment {
 
         mNameEditText.setText(account.getName());
         mNameEditText.setSelection(mNameEditText.getText().length());
-
-        if (account.getDescription() != null)
-            mDescriptionEditText.setText(account.getDescription());
+        mDescriptionEditText.setText(account.getDescription());
 
         if (mUseDoubleEntry) {
             if (account.getDefaultTransferAccountUID() != null) {

@@ -103,4 +103,10 @@ public class AccountTest{
 		assertThat(account.getCommodity()).isEqualTo(Commodity.EUR);
 		assertThat(account.getCurrency()).isEqualTo(Currency.getInstance("USD"));
 	}
+
+	@Test
+	public void newInstance_shouldHaveNonNullDescription() {
+		Account account = new Account("Test account");
+		assertThat(account.getDescription()).isEqualTo("");
+	}
 }
