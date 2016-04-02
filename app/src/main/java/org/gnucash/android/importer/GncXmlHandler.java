@@ -467,7 +467,7 @@ public class GncXmlHandler extends DefaultHandler {
                             color = "#" + color.replaceAll(".(.)?", "$1").replace("null", "");
                         try {
                             if (mAccount != null)
-                                mAccount.setColorCode(color);
+                                mAccount.setColor(color);
                         } catch (IllegalArgumentException ex) {
                             //sometimes the color entry in the account file is "Not set" instead of just blank. So catch!
                             Log.e(LOG_TAG, "Invalid color code '" + color + "' for account " + mAccount.getName());

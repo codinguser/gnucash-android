@@ -203,7 +203,7 @@ public class AccountFormFragment extends Fragment {
      */
     private boolean mUseDoubleEntry;
 
-    private String mSelectedColor = Account.DEFAULT_COLOR;
+    private int mSelectedColor = Account.DEFAULT_COLOR;
 
     /**
      * Trigger for color picker dialog
@@ -214,7 +214,7 @@ public class AccountFormFragment extends Fragment {
         @Override
         public void onColorSelected(int color) {
             mColorSquare.setBackgroundColor(color);
-            mSelectedColor = String.format("#%06X", (0xFFFFFF & color));
+            mSelectedColor = color;
         }
     };
 
@@ -414,7 +414,7 @@ public class AccountFormFragment extends Fragment {
         }
 
         mPlaceholderCheckBox.setChecked(account.isPlaceholderAccount());
-        mColorSquare.setBackgroundColor(Color.parseColor(account.getColorHexCode()));
+        mColorSquare.setBackgroundColor(account.getColor());
 
         setAccountTypeSelection(account.getAccountType());
     }
@@ -535,7 +535,7 @@ public class AccountFormFragment extends Fragment {
         FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
         int currentColor = Color.LTGRAY;
         if (mAccount != null){
-            currentColor = Color.parseColor(mAccount.getColorHexCode());
+            currentColor = mAccount.getColor();
         }
 
         ColorPickerDialog colorPickerDialogFragment = ColorPickerDialog.newInstance(
@@ -757,7 +757,7 @@ public class AccountFormFragment extends Fragment {
 
         mAccount.setDescription(mDescriptionEditText.getText().toString());
         mAccount.setPlaceHolderFlag(mPlaceholderCheckBox.isChecked());
-        mAccount.setColorCode(mSelectedColor);
+        mAccount.setColor(mSelectedColor);
 
         long newParentAccountId;
         String newParentAccountUID;

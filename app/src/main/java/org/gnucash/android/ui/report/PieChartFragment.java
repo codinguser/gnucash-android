@@ -200,7 +200,7 @@ public class PieChartFragment extends Fragment implements OnChartValueSelectedLi
                 if (balance > 0) {
                     dataSet.addEntry(new Entry((float) balance, dataSet.getEntryCount()));
                     colors.add(mUseAccountColor
-                            ? Color.parseColor(account.getColorHexCode())
+                            ? account.getColor()
                             : ReportsActivity.COLORS[(dataSet.getEntryCount() - 1) % ReportsActivity.COLORS.length]);
                     labels.add(account.getName());
                 }

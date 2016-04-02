@@ -18,12 +18,9 @@ package org.gnucash.android.model;
 
 
 import android.graphics.Color;
-import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 
 import org.gnucash.android.BuildConfig;
-import org.gnucash.android.app.GnuCashApplication;
-import org.gnucash.android.export.Exporter;
 import org.gnucash.android.export.ofx.OfxHelper;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -72,9 +69,10 @@ public class Account extends BaseModel{
     public static final String COLOR_HEX_REGEX = "^#(?:[0-9a-fA-F]{3}){1,2}$";
 
 	/**
-	 * Default color, if not set explicitly through {@link #setColorCode(String)}.
+	 * Default color, if not set explicitly through {@link #setColor(String)}.
 	 */
-	public static final String DEFAULT_COLOR = "#cccccc"; // Color.LT_GRAY
+	// TODO: get it from a theme value?
+	public static final int DEFAULT_COLOR = Color.LTGRAY;
 
 	/**
      * Accounts types which are used by the OFX standard
@@ -139,7 +137,7 @@ public class Account extends BaseModel{
     /**
      * Account color field in hex format #rrggbb
      */
-    private String mColorCode = DEFAULT_COLOR;
+    private int mColor = DEFAULT_COLOR;
 
     /**
      * Flag which marks this account as a favorite account
@@ -300,23 +298,35 @@ public class Account extends BaseModel{
 	}
 
     /**
-     * Returns the color code of the account in the format #rrggbb
-     * @return Color code of the account
+     * Returns the color of the account.
+     * @return Color of the account as an int as returned by {@link Color}.
      */
-    public String getColorHexCode() {
-        return mColorCode;
+    public int getColor() {
+        return mColor;
     }
 
+	/**
+	 * Sets the color of the account.
+	 * @param color Color as an int as returned by {@link Color}.
+	 * @throws java.lang.IllegalArgumentException if the color is transparent,
+	 *   which is not supported.
+	 */
+	public void setColor(int color) {
+		if (Color.alpha(color) < 255)
+			throw new IllegalArgumentException("Transparent colors are not supported: " + color);
+		mColor = color;
+	}
+
     /**
-     * Sets the color code of the account.
+     * Sets the color of the account.
      * @param colorCode Color code to be set in the format #rrggbb or #rgb
      * @throws java.lang.IllegalArgumentException if the color code is not properly formatted
      */
-    public void setColorCode(@NonNull String colorCode) {
+    public void setColor(@NonNull String colorCode) {
         if (!Pattern.matches(COLOR_HEX_REGEX, colorCode))
             throw new IllegalArgumentException("Invalid color hex code: " + colorCode);
 
-        this.mColorCode = colorCode;
+        setColor(Color.parseColor(colorCode));
     }
 
     /**

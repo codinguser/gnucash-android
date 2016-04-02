@@ -176,8 +176,8 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
         mReplaceStatement.bindString(3, account.getDescription());
         mReplaceStatement.bindString(4, account.getAccountType().name());
         mReplaceStatement.bindString(5, account.getCurrency().getCurrencyCode());
-        if (account.getColorHexCode() != Account.DEFAULT_COLOR) {
-            mReplaceStatement.bindString(6, account.getColorHexCode());
+        if (account.getColor() != Account.DEFAULT_COLOR) {
+            mReplaceStatement.bindString(6, convertToRGBHexString(account.getColor()));
         }
         mReplaceStatement.bindLong(7, account.isFavorite() ? 1 : 0);
         mReplaceStatement.bindString(8, account.getFullName());
@@ -203,6 +203,10 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
             mReplaceStatement.bindNull(14);
 
         return mReplaceStatement;
+    }
+
+    private String convertToRGBHexString(int color) {
+        return String.format("#%06X", (0xFFFFFF & color));
     }
 
     /**
@@ -416,7 +420,7 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
         account.setDefaultTransferAccountUID(c.getString(c.getColumnIndexOrThrow(AccountEntry.COLUMN_DEFAULT_TRANSFER_ACCOUNT_UID)));
         String color = c.getString(c.getColumnIndexOrThrow(AccountEntry.COLUMN_COLOR_CODE));
         if (color != null)
-            account.setColorCode(color);
+            account.setColor(color);
         account.setFavorite(c.getInt(c.getColumnIndexOrThrow(AccountEntry.COLUMN_FAVORITE)) == 1);
         account.setFullName(c.getString(c.getColumnIndexOrThrow(AccountEntry.COLUMN_FULL_NAME)));
         account.setHidden(c.getInt(c.getColumnIndexOrThrow(AccountEntry.COLUMN_HIDDEN)) == 1);
@@ -563,7 +567,7 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
             account.setAccountType(AccountType.BANK);
             account.setParentUID(getOrCreateGnuCashRootAccountUID());
             account.setHidden(!GnuCashApplication.isDoubleEntryEnabled());
-            account.setColorCode("#964B00");
+            account.setColor("#964B00");
             addRecord(account);
             uid = account.getUID();
         }

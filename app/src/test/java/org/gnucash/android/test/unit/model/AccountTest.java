@@ -15,6 +15,8 @@
  */
 package org.gnucash.android.test.unit.model;
 
+import android.graphics.Color;
+
 import org.gnucash.android.BuildConfig;
 import org.gnucash.android.model.Account;
 import org.gnucash.android.model.Commodity;
@@ -66,7 +68,13 @@ public class AccountTest{
 	@Test(expected = IllegalArgumentException.class)
 	public void testSetInvalidColorCode(){
 		Account account = new Account("Test");
-		account.setColorCode("443859");
+		account.setColor("443859");
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void testSetColorWithAlphaComponent(){
+		Account account = new Account("Test");
+		account.setColor(Color.parseColor("#aa112233"));
 	}
 
 	@Test
@@ -108,6 +116,6 @@ public class AccountTest{
 	public void newInstance_shouldReturnNonNullValues() {
 		Account account = new Account("Test account");
 		assertThat(account.getDescription()).isEqualTo("");
-		assertThat(account.getColorHexCode()).isEqualTo(Account.DEFAULT_COLOR);
+		assertThat(account.getColor()).isEqualTo(Account.DEFAULT_COLOR);
 	}
 }
