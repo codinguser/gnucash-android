@@ -29,7 +29,6 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Currency;
 import java.util.List;
-import java.util.regex.Pattern;
 
 /**
  * An account represents a transaction account in with {@link Transaction}s may be recorded
@@ -49,24 +48,6 @@ public class Account extends BaseModel{
 	 * This is used when sending intents from third-party applications
 	 */
 	public static final String MIME_TYPE = "vnd.android.cursor.item/vnd." + BuildConfig.APPLICATION_ID + ".account";
-
-    /*
-        ^             anchor for start of string
-        #             the literal #
-        (             start of group
-        ?:            indicate a non-capturing group that doesn't generate back-references
-        [0-9a-fA-F]   hexadecimal digit
-        {3}           three times
-        )             end of group
-        {1,2}         repeat either once or twice
-        $             anchor for end of string
-     */
-    /**
-     * Regular expression for validating color code strings.
-     * Accepts #rgb and #rrggbb
-     */
-    //TODO: Allow use of #aarrggbb format as well
-    public static final String COLOR_HEX_REGEX = "^#(?:[0-9a-fA-F]{3}){1,2}$";
 
 	/**
 	 * Default color, if not set explicitly through {@link #setColor(String)}.
@@ -111,7 +92,7 @@ public class Account extends BaseModel{
 	 * Defaults to {@link AccountType#CASH}
 	 */
 	private AccountType mAccountType = AccountType.CASH;
-	
+
 	/**
 	 * List of transactions in this account
 	 */
@@ -153,13 +134,13 @@ public class Account extends BaseModel{
 	 * An extra key for passing the currency code (according ISO 4217) in an intent
 	 */
 	public static final String EXTRA_CURRENCY_CODE 	= "org.gnucash.android.extra.currency_code";
-	
+
 	/**
-	 * Extra key for passing the unique ID of the parent account when creating a 
+	 * Extra key for passing the unique ID of the parent account when creating a
 	 * new account using Intents
 	 */
 	public static final String EXTRA_PARENT_UID 	= "org.gnucash.android.extra.parent_uid";
-	
+
 	/**
 	 * Constructor
 	 * Creates a new account with the default currency and a generated unique ID
@@ -170,7 +151,7 @@ public class Account extends BaseModel{
         this.mFullName  = mName;
 		setCommodity(Commodity.DEFAULT_COMMODITY);
 	}
-	
+
 	/**
 	 * Overloaded constructor
 	 * @param name Name of the account
@@ -256,11 +237,11 @@ public class Account extends BaseModel{
 		transaction.setCommodity(mCommodity);
 		mTransactionsList.add(transaction);
 	}
-	
+
 	/**
 	 * Sets a list of transactions for this account.
 	 * Overrides any previous transactions with those in the list.
-	 * The account UID and currency of the transactions will be set to the unique ID 
+	 * The account UID and currency of the transactions will be set to the unique ID
 	 * and currency of the account respectively
 	 * @param transactionsList List of {@link Transaction}s to be set.
 	 */
@@ -275,7 +256,7 @@ public class Account extends BaseModel{
 	public List<Transaction> getTransactions(){
 		return mTransactionsList;
 	}
-	
+
 	/**
 	 * Returns the number of transactions in this account
 	 * @return Number transactions in account
@@ -319,13 +300,12 @@ public class Account extends BaseModel{
 
     /**
      * Sets the color of the account.
-     * @param colorCode Color code to be set in the format #rrggbb or #rgb
-     * @throws java.lang.IllegalArgumentException if the color code is not properly formatted
+     * @param colorCode Color code to be set in the format #rrggbb
+     * @throws java.lang.IllegalArgumentException if the color code is not properly formatted or
+	 *   the color is transparent.
      */
+	//TODO: Allow use of #aarrggbb format as well
     public void setColor(@NonNull String colorCode) {
-        if (!Pattern.matches(COLOR_HEX_REGEX, colorCode))
-            throw new IllegalArgumentException("Invalid color hex code: " + colorCode);
-
         setColor(Color.parseColor(colorCode));
     }
 
