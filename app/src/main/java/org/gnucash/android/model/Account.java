@@ -197,16 +197,16 @@ public class Account extends BaseModel{
     }
 
 	/**
-	 * Returns the account mDescription
-	 * @return String with mDescription
+	 * Returns the account description
+	 * @return String with description
 	 */
 	public String getDescription() {
 		return mDescription;
 	}
 
 	/**
-	 * Sets the account mDescription
-	 * @param description String mDescription
+	 * Sets the account description
+	 * @param description Account description
 	 */
 	public void setDescription(@NonNull String description) {
 		this.mDescription = description;
@@ -326,7 +326,7 @@ public class Account extends BaseModel{
     }
 
     /**
-	 * @return the mCurrency
+	 * Returns the currency for this account.
 	 */
 	public Currency getCurrency() {
 		return Currency.getInstance(mCurrencyCode);
@@ -342,7 +342,6 @@ public class Account extends BaseModel{
 
 	/**
 	 * Return the commodity for this account
-	 * @return
 	 */
 	public Commodity getCommodity(){
 		return mCommodity;
