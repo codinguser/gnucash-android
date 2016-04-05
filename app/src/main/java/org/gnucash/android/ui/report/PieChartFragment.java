@@ -85,7 +85,6 @@ public class PieChartFragment extends Fragment implements OnChartValueSelectedLi
     @Bind(R.id.selected_chart_slice) TextView mSelectedValueTextView;
 
     private AccountsDbAdapter mAccountsDbAdapter;
-    private TransactionsDbAdapter mTransactionsDbAdapter;
 
     private AccountType mAccountType;
 
@@ -127,7 +126,6 @@ public class PieChartFragment extends Fragment implements OnChartValueSelectedLi
                 .getBoolean(getString(R.string.key_use_account_color), false);
 
         mAccountsDbAdapter = AccountsDbAdapter.getInstance();
-        mTransactionsDbAdapter = TransactionsDbAdapter.getInstance();
 
         mCurrencyCode = GnuCashApplication.getDefaultCurrencyCode();
 

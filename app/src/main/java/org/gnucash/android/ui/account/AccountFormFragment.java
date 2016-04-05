@@ -106,12 +106,6 @@ public class AccountFormFragment extends Fragment {
 	 */
 	private AccountsDbAdapter mAccountsDbAdapter;
 
-	
-	/**
-	 * List of all currency codes (ISO 4217) supported by the app
-	 */
-	private List<String> mCurrencyCodes;
-
     /**
      * GUID of the parent account
      * This value is set to the parent account of the transaction being edited or
@@ -400,10 +394,9 @@ public class AccountFormFragment extends Fragment {
                 setDefaultTransferAccountSelection(doubleDefaultAccountId, true);
             } else {
                 String currentAccountUID = account.getParentUID();
-                long defaultTransferAccountID = 0;
                 String rootAccountUID = mAccountsDbAdapter.getOrCreateGnuCashRootAccountUID();
                 while (!currentAccountUID.equals(rootAccountUID)) {
-                    defaultTransferAccountID = mAccountsDbAdapter.getDefaultTransferAccountID(mAccountsDbAdapter.getID(currentAccountUID));
+                    long defaultTransferAccountID = mAccountsDbAdapter.getDefaultTransferAccountID(mAccountsDbAdapter.getID(currentAccountUID));
                     if (defaultTransferAccountID > 0) {
                         setDefaultTransferAccountSelection(defaultTransferAccountID, false);
                         break; //we found a parent with default transfer setting
@@ -523,7 +516,7 @@ public class AccountFormFragment extends Fragment {
         TypedArray colorTypedArray = res.obtainTypedArray(R.array.account_colors);
         int[] colorOptions = new int[colorTypedArray.length()];
         for (int i = 0; i < colorTypedArray.length(); i++) {
-             int color = colorTypedArray.getColor(i, R.color.title_green);
+             int color = colorTypedArray.getColor(i, getResources().getColor(R.color.title_green));
              colorOptions[i] = color;
         }
         return colorOptions;
@@ -678,7 +671,7 @@ public class AccountFormFragment extends Fragment {
      */
     private List<String> getAccountTypeStringList(){
         String[] accountTypes = Arrays.toString(AccountType.values()).replaceAll("\\[|]", "").split(",");
-        List<String> accountTypesList = new ArrayList<String>();
+        List<String> accountTypesList = new ArrayList<>();
         for (String accountType : accountTypes) {
             accountTypesList.add(accountType.trim());
         }
@@ -690,7 +683,7 @@ public class AccountFormFragment extends Fragment {
      */
     private void loadAccountTypesList(){
         String[] accountTypes = getResources().getStringArray(R.array.account_type_entry_values);
-        ArrayAdapter<String> accountTypesAdapter = new ArrayAdapter<String>(
+        ArrayAdapter<String> accountTypesAdapter = new ArrayAdapter<>(
                 getActivity(), android.R.layout.simple_list_item_1, accountTypes);
 
         accountTypesAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -805,7 +798,7 @@ public class AccountFormFragment extends Fragment {
                             null
                     ));
                 }
-                HashMap<String, Account> mapAccount = new HashMap<String, Account>();
+                HashMap<String, Account> mapAccount = new HashMap<>();
                 for (Account acct : accountsToUpdate) mapAccount.put(acct.getUID(), acct);
                 for (String uid: mDescendantAccountUIDs) {
                     // mAccountsDbAdapter.getDescendantAccountUIDs() will ensure a parent-child order

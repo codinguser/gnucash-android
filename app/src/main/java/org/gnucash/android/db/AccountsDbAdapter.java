@@ -601,7 +601,7 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
         String[] tokens = fullName.trim().split(ACCOUNT_NAME_SEPARATOR);
         String uid = getOrCreateGnuCashRootAccountUID();
         String parentName = "";
-        ArrayList<Account> accountsList = new ArrayList<Account>();
+        ArrayList<Account> accountsList = new ArrayList<>();
         for (String token : tokens) {
             parentName += token;
             String parentUID = findAccountUidByFullName(parentName);
@@ -841,8 +841,8 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
     public List<String> getDescendantAccountUIDs(String accountUID, String where, String[] whereArgs) {
         // accountsList will hold accountUID with all descendant accounts.
         // accountsListLevel will hold descendant accounts of the same level
-        ArrayList<String> accountsList = new ArrayList<String>();
-        ArrayList<String> accountsListLevel = new ArrayList<String>();
+        ArrayList<String> accountsList = new ArrayList<>();
+        ArrayList<String> accountsListLevel = new ArrayList<>();
         accountsListLevel.add(accountUID);
         for (;;) {
             Cursor cursor = mDb.query(AccountEntry.TABLE_NAME,
@@ -1105,14 +1105,14 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
      */
     public List<Transaction> getAllOpeningBalanceTransactions(){
         Cursor cursor = fetchAccounts(null, null, null);
-        List<Transaction> openingTransactions = new ArrayList<Transaction>();
+        List<Transaction> openingTransactions = new ArrayList<>();
         try {
             SplitsDbAdapter splitsDbAdapter = mTransactionsAdapter.getSplitDbAdapter();
             while (cursor.moveToNext()) {
                 long id = cursor.getLong(cursor.getColumnIndexOrThrow(AccountEntry._ID));
                 String accountUID = getUID(id);
                 String currencyCode = getCurrencyCode(accountUID);
-                ArrayList<String> accountList = new ArrayList<String>();
+                ArrayList<String> accountList = new ArrayList<>();
                 accountList.add(accountUID);
                 Money balance = splitsDbAdapter.computeSplitBalance(accountList,
                         currencyCode, getAccountType(accountUID).hasDebitNormalBalance());
