@@ -105,8 +105,8 @@ public class AccountsListFragment extends Fragment implements
      */
     protected static final String TAG = "AccountsListFragment";
 
-	/**
-	 * Tag to save {@link AccountsListFragment#mDisplayMode} to fragment state
+    /**
+     * Tag to save {@link AccountsListFragment#mDisplayMode} to fragment state
      */
     private static final String STATE_DISPLAY_MODE = "mDisplayMode";
 
