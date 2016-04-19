@@ -16,7 +16,6 @@
 package org.gnucash.android.ui.report;
 
 import android.content.res.ColorStateList;
-import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -194,9 +193,7 @@ public class ReportsOverviewFragment extends BaseReportFragment {
                         Collections.singletonList(account.getUID()), start, end).asDouble();
                 if (balance > 0) {
                     dataSet.addEntry(new Entry((float) balance, dataSet.getEntryCount()));
-                    colors.add(account.getColorHexCode() != null
-                            ? Color.parseColor(account.getColorHexCode())
-                            : ReportsActivity.COLORS[(dataSet.getEntryCount() - 1) % ReportsActivity.COLORS.length]);
+                    colors.add(account.getColor());
                     labels.add(account.getName());
                 }
             }

@@ -978,23 +978,6 @@ public class TransactionFormFragment extends Fragment implements
 		return stripped;
 	}
 
-	/**
-	 * Parse an input string into a {@link BigDecimal}
-	 * This method expects the amount including the decimal part
-	 * @param amountString String with amount information
-	 * @return BigDecimal with the amount parsed from <code>amountString</code>
-	 */
-	public static BigDecimal parseInputToDecimal(String amountString){
-		String clean = stripCurrencyFormatting(amountString);
-        if (clean.length() == 0) //empty string
-                return BigDecimal.ZERO;
-		//all amounts are input to 2 decimal places, so after removing decimal separator, divide by 100
-        //TODO: Handle currencies with different kinds of decimal places
-		return new BigDecimal(clean).setScale(2,
-				RoundingMode.HALF_EVEN).divide(new BigDecimal(100), 2,
-				RoundingMode.HALF_EVEN);
-	}
-
     @Override
     public void transferComplete(Money amount) {
         mSplitQuantity = amount;

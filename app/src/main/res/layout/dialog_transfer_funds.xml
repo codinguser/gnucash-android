@@ -138,10 +138,13 @@
                     android:layout_width="0dp"
                     android:layout_weight="2"
                     android:layout_height="wrap_content">
+                    <!-- FIXME: make android:digits locale independent -->
                     <EditText android:id="@+id/input_converted_amount"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:inputType="numberDecimal"
+                        android:digits="0123456789.,"
+                        android:imeOptions="actionDone"
                         android:hint="@string/hint_converted_amount">
                         <requestFocus />
                     </EditText>

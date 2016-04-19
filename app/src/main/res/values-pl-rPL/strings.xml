@@ -51,19 +51,19 @@
   <string name="menu_move">PRZENIEŚ</string>
   <string name="title_selected">%1$d wybranych</string>
   <string name="label_account_balance">Saldo:</string>
-  <string name="label_export_destination">Export To:</string>
+  <string name="label_export_destination">Wyeksportuj do:</string>
   <string name="title_export_dialog">Eksport transakcji</string>
   <string name="option_export_all_transactions">Eksportuj wszystkie transakcje</string>
-  <string name="hint_export_choice">By default, only new transactions since last export will be exported. Check this option to export all transactions</string>
+  <string name="hint_export_choice">Domyślnie tylko nowe transakcje od ostatniego eksportu, zostaną wyeksportowane. Zaznacz tą opcję, aby eksportować wszystkie transakcje</string>
   <string name="toast_export_error">Błąd eksportowania pliku %1$s</string>
   <string name="btn_export">Eksportuj</string>
-  <string name="option_delete_after_export">Delete transactions after export</string>
+  <string name="option_delete_after_export">Usuń transakcje po eksporcie</string>
   <string name="hint_delete_after_export">Wszystkie eksportowane transakcje będą usunięte po zakończeniu eksportu</string>
   <string name="title_settings">Ustawienia</string>
   <string-array name="export_destinations">
     <item>Karta SD</item>
     <item>DropBox</item>
-    <item>Google Drive</item>
+    <item>Dysk Google</item>
     <item>ownCloud</item>
     <item>Udostępnij plik&#8230;</item>
   </string-array>
@@ -71,7 +71,8 @@
   <string name="title_move_transactions">Przenieś %1$d transakcji</string>
   <string name="label_move_destination">Konto docelowe</string>
   <string name="permission_access_sdcard">Dostęp do Karty SD</string>
-  <string name="toast_incompatible_currency">Cannot move transactions.\nThe destination account uses a different currency from origin account</string>
+  <string name="toast_incompatible_currency">Nie można przenieść transakcji.
+Konto docelowe używa innej waluty niż konto wyjściowe</string>
   <string name="header_general_settings">Ogólne</string>
   <string name="header_about_gnucash">O…</string>
   <string name="title_choose_currency">Wybierz domyślna walutę</string>
@@ -99,11 +100,11 @@
   <string name="title_passcode_disabled">Hasło wyłączone</string>
   <string name="title_change_passcode">Zmień hasło</string>
   <string name="title_about_gnucash">O GnuCash</string>
-  <string name="summary_about_gnucash">A mobile finance management and expense-tracker designed for Android</string>
+  <string name="summary_about_gnucash">Mobilny menadżer finansów i agent wydatków stworzony dla Androida</string>
   <string name="title_about">O…</string>
   <string name="toast_format_exported_to">%1$s plik wyeksportowany do:\n</string>
   <string name="title_export_email">GnuCash Android %1$s eksport</string>
-  <string name="description_export_email">GnuCash Android Export from </string>
+  <string name="description_export_email">GnuCash Android eksport z </string>
   <string name="header_transaction_settings">Transakcje</string>
   <string name="title_transaction_preferences">Ustawienia transakcji</string>
   <string name="title_account_preferences">Ustawienia konta</string>
@@ -131,13 +132,12 @@
   <string name="summary_xml_ofx_header">Włącz tę opcję gdy eksportujesz do aplikacji innej ni GnuCash dla desktopa</string>
   <string name="title_whats_new">Co nowego</string>
   <string name="whats_new">
-        - New Material app design \n
-        - Multi-currency transactions\n
-        - Calculator to transaction amounts\n
-        - Better reporting options\n
-        - New help &amp; feedback section\n
-        - Multiple bug fixes and improvements\n
-	</string>
+- Nowy design aplikacji Material
+- Transakcje wielo-walutowe
+- Kalkulator kwot transakcji
+- Ulepszone opcje raportowania
+- Nowe centrum pomocy i feedbacku
+- Wiele naprawionych błędów oraz ulepszeń</string>
   <string name="label_dismiss">Spocznij</string>
   <string name="toast_transanction_amount_required">Wprowadź kwotę by zapisać transakcję</string>
   <string name="toast_error_edit_multi_currency_transaction">Wielowalutowe transakcje nie mogą być modyfikowane</string>
@@ -165,6 +165,7 @@
   <string name="summary_default_export_format">Format pliku użyty w trakcie eksportowania transakcji</string>
   <string name="menu_export_transactions">Eksport transakcji&#8230;</string>
   <string name="label_recurring_transaction">Powtarzająca się</string>
+  <!-- This should be the same name used by GnuCash desktop for imbalance accounts -->
   <string name="imbalance_account_name">Niezbilansowane</string>
   <string name="title_progress_exporting_transactions">Eksport transakcji</string>
   <string name="label_no_recurring_transactions">Brak powtarzających się transakcji do wyświetlenia.</string>
@@ -190,14 +191,17 @@
     <item>WALUTA</item>
     <item>AKCJE</item>
     <item>FUNDUSZ WZAJEMNY</item>
-    <item>TRADING</item>
+    <item>Handlowy</item>
   </string-array>
   <string-array name="export_formats">
     <item>QIF</item>
     <item>OFX</item>
     <item>XML</item>
   </string-array>
+  <!-- Default title for color picker dialog [CHAR LIMIT=30] -->
   <string name="color_picker_default_title">Wybierz kolor</string>
+  <!-- Content description for a color square. -->
+  <!-- Content description for a selected color square. -->
   <string name="label_account_color_and_type">Kolor i typ konta</string>
   <string name="label_delete_sub_accounts">Usuń sub-konta</string>
   <string name="title_recent_accounts">Ostatnie</string>
@@ -235,7 +239,7 @@
   <string name="export_warning_ofx">OFX nie wspiera transakcji double-entry</string>
   <string name="export_warning_qif">Generuje osobne pliki QIF dla każdej waluty</string>
   <string name="title_transaction_splits">Podział transakcji</string>
-  <string name="label_imbalance">Imbalance:</string>
+  <string name="label_imbalance">Niezbilansowanie:</string>
   <string name="btn_add_split">Dodaj podział</string>
   <string name="menu_title_favorite">Ulubione</string>
   <string name="drawer_open">Szuflada nawigacyjna otwarta</string>
@@ -250,10 +254,10 @@
   <string name="summary_use_account_color">Użyj koloru konta w wykresie kołowym/słupkowym</string>
   <string name="header_report_settings">Raporty</string>
   <string name="menu_order_by_size">Sortuj po rozmarze</string>
-  <string name="menu_toggle_legend">Show legend</string>
-  <string name="menu_toggle_labels">Show labels</string>
-  <string name="menu_toggle_percentage_mode">Show percentage</string>
-  <string name="menu_toggle_average_lines">Show average lines</string>
+  <string name="menu_toggle_legend">Pokaż legendę</string>
+  <string name="menu_toggle_labels">Pokaż etykiety</string>
+  <string name="menu_toggle_percentage_mode">Pokaż procenty</string>
+  <string name="menu_toggle_average_lines">Pokaż linie średnich</string>
   <string name="menu_group_smaller_slices">Grupuj mniejsze wycinki</string>
   <string name="label_chart_no_data">Brak danych dla wykresu</string>
   <string name="label_chart_overall">Ogólny</string>
@@ -269,7 +273,7 @@
   <string name="label_tap_to_create_schedule">Stuknij aby zaplanować</string>
   <string name="title_restore_backup">Przywróc kopię zapasową&#8230;</string>
   <string name="header_backup_and_export_settings">Kopia zapasowa i eksport</string>
-  <string name="title_dropbox_sync_preference">DropBox Sync</string>
+  <string name="title_dropbox_sync_preference">Synchronizacja z DropBox</string>
   <string name="title_backup_preference_category">Kopia zapasowa</string>
   <string name="summary_dropbox_sync">Zaznaczy by synchronizowac z DropBox</string>
   <string name="title_select_gnucash_xml_file">Wybierz plik GnuCash XML</string>
@@ -280,7 +284,7 @@
   <string name="toast_backup_successful">Kopia zapasowa utworzona pomyślnie</string>
   <string name="toast_backup_failed">Błąd tworzenia kopii zapasowej</string>
   <string name="export_warning_xml">Wyeksportowano wszystkie konta i transakcje</string>
-  <string name="title_google_drive_sync_pref">Google Drive Sync</string>
+  <string name="title_google_drive_sync_pref">Synchronizacja z Dyskiem Google</string>
   <string name="summary_google_drive_sync">Wybierz aby synchronizować z Google Drive</string>
   <string name="toast_install_file_manager">Zainstaluj managera plików aby wybrać pliki</string>
   <string name="title_select_backup_to_restore">Wybierz kopię zapaswą aby ją przywrócić</string>
@@ -293,22 +297,22 @@
   <plurals name="label_every_x_days">
     <item quantity="one">Codziennie</item>
     <item quantity="few">Co %d dni</item>
-    <item quantity="other">Every %d days</item>
+    <item quantity="other">Każde %d dni</item>
   </plurals>
   <plurals name="label_every_x_weeks">
     <item quantity="one">Co tydzień</item>
-    <item quantity="few">Co %d tygodnie</item>
-    <item quantity="other">Every %d weeks</item>
+    <item quantity="few">Co %d tygodni</item>
+    <item quantity="other">Co %d tygodni</item>
   </plurals>
   <plurals name="label_every_x_months">
     <item quantity="one">Co miesiąc</item>
     <item quantity="few">Co %d miesiące</item>
-    <item quantity="other">Every %d months</item>
+    <item quantity="other">Co %d miesięcy</item>
   </plurals>
   <plurals name="label_every_x_years">
     <item quantity="one">Co rok</item>
     <item quantity="few">Co %d lata</item>
-    <item quantity="other">Every %d years</item>
+    <item quantity="other">Co %d lat</item>
   </plurals>
   <string name="title_enable_crashlytics">Włącz logowanie błędów</string>
   <string name="msg_enable_crashlytics">Włącz by wysyłać inforamcje o błędach do twórców w celu poleszania aplikacji (zalecane).
@@ -377,13 +381,13 @@
   <string name="menu_group_by_year">Roku</string>
   <string name="title_balance_sheet_report">Bilans</string>
   <string name="label_balance_sheet_total">Suma:</string>
-  <string name="title_google_plus_community">Google+ Community</string>
-  <string name="title_translate_gnucash">Translate GnuCash</string>
-  <string name="summary_google_plus">Share ideas, discuss changes or report problems</string>
-  <string name="summary_translate_gnucash">Translate or proof-read on CrowdIn</string>
-  <string name="toast_no_compatible_apps_to_receive_export">No compatible apps to receive the exported transactions!</string>
-  <string name="menu_move_transaction">Move...</string>
-  <string name="menu_duplicate_transaction">Duplicate</string>
+  <string name="title_google_plus_community">Społeczność Google+</string>
+  <string name="title_translate_gnucash">Tłumacz GnuCash</string>
+  <string name="summary_google_plus">Udostępnij pomysły, dyskutuj zmiany, lub zgłoś problem</string>
+  <string name="summary_translate_gnucash">Tłumacz lub sprawdzaj na Crowdin</string>
+  <string name="toast_no_compatible_apps_to_receive_export">Brak kompatybilnych aplikacji do otrzymania eksportowanych transakcji!</string>
+  <string name="menu_move_transaction">Przenieś...</string>
+  <string name="menu_duplicate_transaction">Duplikuj</string>
   <string name="nav_menu_budgets">Budgets</string>
   <string name="title_cash_flow_report">Cash Flow</string>
   <string name="title_budgets">Budgets</string>

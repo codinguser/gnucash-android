@@ -486,6 +486,9 @@ public class AccountsDbAdapterTest{
      */
     @Test
     public void importingXml_shouldSetDefaultCurrency(){
+        String expectedCode = GnuCashApplication.getDefaultCurrencyCode();
+        Commodity expectedDefaultCommodity = CommoditiesDbAdapter.getInstance().getCommodity(expectedCode);
+
         GnuCashApplication.setDefaultCurrencyCode("JPY");
 
         assertThat(GnuCashApplication.getDefaultCurrencyCode()).isEqualTo("JPY");
@@ -495,11 +498,6 @@ public class AccountsDbAdapterTest{
         loadDefaultAccounts();
 
         assertThat(GnuCashApplication.getDefaultCurrencyCode()).isNotEqualTo("JPY");
-
-        Currency currency = Currency.getInstance(GnuCashApplication.getDefaultLocale());
-        String expectedCode = currency.getCurrencyCode();
-        Commodity expectedDefaultCommodity = CommoditiesDbAdapter.getInstance().getCommodity(expectedCode);
-
         assertThat(GnuCashApplication.getDefaultCurrencyCode()).isEqualTo(expectedCode);
         assertThat(Commodity.DEFAULT_COMMODITY).isEqualTo(expectedDefaultCommodity);
 

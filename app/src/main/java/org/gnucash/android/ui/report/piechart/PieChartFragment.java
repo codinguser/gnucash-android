@@ -158,8 +158,8 @@ public class PieChartFragment extends BaseReportFragment {
                         mReportPeriodStart, mReportPeriodEnd).asDouble();
                 if (balance > 0) {
                     dataSet.addEntry(new Entry((float) balance, dataSet.getEntryCount()));
-                    colors.add(mUseAccountColor && account.getColorHexCode() != null
-                            ? Color.parseColor(account.getColorHexCode())
+                    colors.add(mUseAccountColor
+                            ? account.getColor()
                             : ReportsActivity.COLORS[(dataSet.getEntryCount() - 1) % ReportsActivity.COLORS.length]);
                     labels.add(account.getName());
                 }

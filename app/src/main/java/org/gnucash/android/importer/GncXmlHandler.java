@@ -87,6 +87,24 @@ public class GncXmlHandler extends DefaultHandler {
      */
     private static final String LOG_TAG = "GnuCashAccountImporter";
 
+    /*
+        ^             anchor for start of string
+        #             the literal #
+        (             start of group
+        ?:            indicate a non-capturing group that doesn't generate back-references
+        [0-9a-fA-F]   hexadecimal digit
+        {3}           three times
+        )             end of group
+        {2}           repeat twice
+        $             anchor for end of string
+     */
+    /**
+     * Regular expression for validating color code strings.
+     * Accepts #rgb and #rrggbb
+     */
+    //TODO: Allow use of #aarrggbb format as well
+    public static final String ACCOUNT_COLOR_HEX_REGEX = "^#(?:[0-9a-fA-F]{3}){2}$";
+
     /**
      * Adapter for saving the imported accounts
      */
@@ -519,11 +537,11 @@ public class GncXmlHandler extends DefaultHandler {
                     //so we trim the last digit in each block, doesn't affect the color much
                     if (!color.equals("Not Set")) {
                         // avoid known exception, printStackTrace is very time consuming
-                        if (!Pattern.matches(Account.COLOR_HEX_REGEX, color))
+                        if (!Pattern.matches(ACCOUNT_COLOR_HEX_REGEX, color))
                             color = "#" + color.replaceAll(".(.)?", "$1").replace("null", "");
                         try {
                             if (mAccount != null)
-                                mAccount.setColorCode(color);
+                                mAccount.setColor(color);
                         } catch (IllegalArgumentException ex) {
                             //sometimes the color entry in the account file is "Not set" instead of just blank. So catch!
                             Log.e(LOG_TAG, "Invalid color code '" + color + "' for account " + mAccount.getName());

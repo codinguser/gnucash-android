@@ -167,6 +167,7 @@
   <string name="summary_default_export_format">Formato de archivo para usar por defecto al exportar transacciones</string>
   <string name="menu_export_transactions">Exportar transacciones&#8230;</string>
   <string name="label_recurring_transaction">Recurrencia</string>
+  <!-- This should be the same name used by GnuCash desktop for imbalance accounts -->
   <string name="imbalance_account_name">Descuadre</string>
   <string name="title_progress_exporting_transactions">Exportando transacciones</string>
   <string name="label_no_recurring_transactions">No hay transacciones recurrentes que mostrar.</string>
@@ -198,7 +199,10 @@
     <item>OFX</item>
     <item>XML</item>
   </string-array>
+  <!-- Default title for color picker dialog [CHAR LIMIT=30] -->
   <string name="color_picker_default_title">Seleccionar un color</string>
+  <!-- Content description for a color square. -->
+  <!-- Content description for a selected color square. -->
   <string name="label_account_color_and_type">Color y tipo de cuenta</string>
   <string name="label_delete_sub_accounts">Borrar sub-cuentas</string>
   <string name="title_recent_accounts">Reciente</string>
@@ -322,7 +326,7 @@ Este proceso solo recoge información que no permite identificar al usuario</str
   <string name="title_create_export_schedule">Crear programación de exportación</string>
   <string name="toast_exported_to">Exportado a: %1$s</string>
   <string name="toast_legend_too_long">La leyenda es demasiado larga</string>
-  <string name="hint_account_description">Descriptión de la cuenta</string>
+  <string name="hint_account_description">Descripción de la cuenta</string>
   <string name="label_no_recent_accounts">No hay cuentas recientes</string>
   <string name="label_no_favorite_accounts">No hay cuentas favoritas</string>
   <string name="nav_menu_scheduled_actions">Acciones Programadas</string>
