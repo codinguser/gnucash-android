@@ -163,6 +163,7 @@
   <string name="summary_default_export_format">取引のエクスポート時に既定とするファイル形式</string>
   <string name="menu_export_transactions">取引をエクスポートする...</string>
   <string name="label_recurring_transaction">繰り返し</string>
+  <!-- This should be the same name used by GnuCash desktop for imbalance accounts -->
   <string name="imbalance_account_name">Imbalance</string>
   <string name="title_progress_exporting_transactions">取引のエクスポート</string>
   <string name="label_no_recurring_transactions">表示する繰り返し取引がありません</string>
@@ -193,7 +194,10 @@
     <item>OFX</item>
     <item>XML</item>
   </string-array>
+  <!-- Default title for color picker dialog [CHAR LIMIT=30] -->
   <string name="color_picker_default_title">色を選択</string>
+  <!-- Content description for a color square. -->
+  <!-- Content description for a selected color square. -->
   <string name="label_account_color_and_type">勘定科目の色と種類</string>
   <string name="label_delete_sub_accounts">補助科目を削除する</string>
   <string name="title_recent_accounts">履歴</string>
@@ -212,13 +216,13 @@
   <string name="hint_split_memo">Memo</string>
   <string name="label_spend">Spend</string>
   <string name="label_receive">Receive</string>
-  <string name="label_withdrawal">Withdrawal</string>
-  <string name="label_deposit">Deposit</string>
-  <string name="label_payment">Payment</string>
-  <string name="label_charge">Charge</string>
+  <string name="label_withdrawal">出金</string>
+  <string name="label_deposit">入金</string>
+  <string name="label_payment">支払い</string>
+  <string name="label_charge">請求</string>
   <string name="label_decrease">Decrease</string>
   <string name="label_increase">Increase</string>
-  <string name="label_income">Income</string>
+  <string name="label_income">収入</string>
   <string name="label_rebate">Rebate</string>
   <string name="label_expense">Expense</string>
   <string name="label_bill">Bill</string>
@@ -237,15 +241,15 @@
   <string name="title_transaction_splits">Transaction splits</string>
   <string name="label_imbalance">Imbalance:</string>
   <string name="btn_add_split">Add split</string>
-  <string name="menu_title_favorite">Favorite</string>
+  <string name="menu_title_favorite">お気に入り</string>
   <string name="drawer_open">Navigation drawer opened</string>
   <string name="drawer_close">Navigation drawer closed</string>
-  <string name="title_reports">Reports</string>
-  <string name="title_pie_chart">Pie Chart</string>
-  <string name="title_line_chart">Line Chart</string>
-  <string name="title_bar_chart">Bar Chart</string>
+  <string name="title_reports">レポート</string>
+  <string name="title_pie_chart">円グラフ</string>
+  <string name="title_line_chart">線グラフ</string>
+  <string name="title_bar_chart">棒グラフ</string>
   <string name="title_report_prefs">Report Preferences</string>
-  <string name="label_report_currency">Select currency</string>
+  <string name="label_report_currency">通貨を選択</string>
   <string name="title_use_account_color">Account color in reports</string>
   <string name="summary_use_account_color">Use account color in the bar/pie chart</string>
   <string name="header_report_settings">Reports</string>

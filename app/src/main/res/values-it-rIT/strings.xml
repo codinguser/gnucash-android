@@ -15,7 +15,7 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<resources>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
   <string name="title_create_account">Crea conto</string>
   <string name="title_edit_account">Modifica conto</string>
   <string name="info_details">Informazioni</string>
@@ -165,6 +165,7 @@
   <string name="summary_default_export_format">Formato di file predefinito da utilizzare per l\'esportazione delle transazioni</string>
   <string name="menu_export_transactions">Esporta transazioni&#8230;</string>
   <string name="label_recurring_transaction">Ripetizione</string>
+  <!-- This should be the same name used by GnuCash desktop for imbalance accounts -->
   <string name="imbalance_account_name">Sbilancio</string>
   <string name="title_progress_exporting_transactions">Esportazione transazioni in corso</string>
   <string name="label_no_recurring_transactions">Nessuna transazione ricorrente da visualizzare.</string>
@@ -196,7 +197,10 @@
     <item>OFX</item>
     <item>XML</item>
   </string-array>
+  <!-- Default title for color picker dialog [CHAR LIMIT=30] -->
   <string name="color_picker_default_title">Seleziona un colore</string>
+  <!-- Content description for a color square. -->
+  <!-- Content description for a selected color square. -->
   <string name="label_account_color_and_type">Tipo e colore del conto</string>
   <string name="label_delete_sub_accounts">Elimina i sottoconti</string>
   <string name="title_recent_accounts">Recenti</string>
@@ -272,7 +276,7 @@
   <string name="label_tap_to_create_schedule">Tocca per creare una pianificazione</string>
   <string name="title_restore_backup">Ripristina backup&#8230;</string>
   <string name="header_backup_and_export_settings">Backup e esportazione</string>
-  <string name="title_dropbox_sync_preference">Sincronizzazione con Dropbox</string>
+  <string name="title_dropbox_sync_preference">Sincronizzazione Dropbox</string>
   <string name="title_backup_preference_category">Backup</string>
   <string name="summary_dropbox_sync">Abilita la sincronizzazione con Dropbox</string>
   <string name="title_select_gnucash_xml_file">Seleziona un file XML di GnuCash</string>
@@ -283,7 +287,7 @@
   <string name="toast_backup_successful">Backup riuscito</string>
   <string name="toast_backup_failed">Backup non riuscito</string>
   <string name="export_warning_xml">Esporta tutti i conti e tutte le transazioni</string>
-  <string name="title_google_drive_sync_pref">Sincronizzazione con Google Drive</string>
+  <string name="title_google_drive_sync_pref">Sincronizzazione Google Drive</string>
   <string name="summary_google_drive_sync">Abilita la sincronizzazione con Google Drive</string>
   <string name="toast_install_file_manager">Installa un file manager per selezionare i file</string>
   <string name="title_select_backup_to_restore">Seleziona il backup da ripristinare</string>
@@ -382,8 +386,6 @@
   <string name="toast_no_compatible_apps_to_receive_export">Nessuna app compatibile con la ricezione delle transazioni esportate!</string>
   <string name="menu_move_transaction">Sposta...</string>
   <string name="menu_duplicate_transaction">Duplica</string>
-  <string name="error_invalid_exchange_rate">Invalid exchange rate</string>
-  <string name="sample_exchange_rate">e.g. 1 %1$s = x.xx %2$s</string>
   <string-array name="report_time_range">
     <item>Mese corrente</item>
     <item>Ultimi 3 mesi</item>

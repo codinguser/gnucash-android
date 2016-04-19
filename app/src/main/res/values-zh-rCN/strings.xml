@@ -15,9 +15,9 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<resources>
-  <string name="title_create_account">创建账户</string>
-  <string name="title_edit_account">编辑账户</string>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <string name="title_create_account">创建科目</string>
+  <string name="title_edit_account">修改科目</string>
   <string name="info_details">信息</string>
   <string name="menu_export">导出...</string>
   <string name="description_add_transaction_icon">为科目增加交易</string>
@@ -166,6 +166,7 @@
   <string name="summary_default_export_format">导出交易信息时使用的文件格式。</string>
   <string name="menu_export_transactions">导出交易&#8230;</string>
   <string name="label_recurring_transaction">重复</string>
+  <!-- This should be the same name used by GnuCash desktop for imbalance accounts -->
   <string name="imbalance_account_name">不平衡的</string>
   <string name="title_progress_exporting_transactions">正在导出交易信息</string>
   <string name="label_no_recurring_transactions">没有要显示的计划交易</string>
@@ -196,7 +197,10 @@
     <item>OFX</item>
     <item>XML</item>
   </string-array>
+  <!-- Default title for color picker dialog [CHAR LIMIT=30] -->
   <string name="color_picker_default_title">选择一种颜色</string>
+  <!-- Content description for a color square. -->
+  <!-- Content description for a selected color square. -->
   <string name="label_account_color_and_type">科目颜色和类型</string>
   <string name="label_delete_sub_accounts">删除子科目</string>
   <string name="title_recent_accounts">最近的</string>
