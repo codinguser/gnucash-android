@@ -17,11 +17,10 @@
 package org.gnucash.android.model;
 
 
-import android.preference.PreferenceManager;
+import android.graphics.Color;
+import android.support.annotation.NonNull;
 
 import org.gnucash.android.BuildConfig;
-import org.gnucash.android.app.GnuCashApplication;
-import org.gnucash.android.export.Exporter;
 import org.gnucash.android.export.ofx.OfxHelper;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -30,7 +29,6 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Currency;
 import java.util.List;
-import java.util.regex.Pattern;
 
 /**
  * An account represents a transaction account in with {@link Transaction}s may be recorded
@@ -51,25 +49,13 @@ public class Account extends BaseModel{
 	 */
 	public static final String MIME_TYPE = "vnd.android.cursor.item/vnd." + BuildConfig.APPLICATION_ID + ".account";
 
-    /*
-        ^             anchor for start of string
-        #             the literal #
-        (             start of group
-        ?:            indicate a non-capturing group that doesn't generate back-references
-        [0-9a-fA-F]   hexadecimal digit
-        {3}           three times
-        )             end of group
-        {1,2}         repeat either once or twice
-        $             anchor for end of string
-     */
-    /**
-     * Regular expression for validating color code strings.
-     * Accepts #rgb and #rrggbb
-     */
-    //TODO: Allow use of #aarrggbb format as well
-    public static final String COLOR_HEX_REGEX = "^#(?:[0-9a-fA-F]{3}){1,2}$";
+	/**
+	 * Default color, if not set explicitly through {@link #setColor(String)}.
+	 */
+	// TODO: get it from a theme value?
+	public static final int DEFAULT_COLOR = Color.LTGRAY;
 
-    /**
+	/**
      * Accounts types which are used by the OFX standard
      */
 	public enum OfxAccountType {CHECKING, SAVINGS, MONEYMRKT, CREDITLINE }
@@ -88,7 +74,7 @@ public class Account extends BaseModel{
 	/**
 	 * Account description
 	 */
-	private String mDescription;
+	private String mDescription = "";
 
 	/**
 	 * Currency used by transactions in this account
@@ -106,7 +92,7 @@ public class Account extends BaseModel{
 	 * Defaults to {@link AccountType#CASH}
 	 */
 	private AccountType mAccountType = AccountType.CASH;
-	
+
 	/**
 	 * List of transactions in this account
 	 */
@@ -132,7 +118,7 @@ public class Account extends BaseModel{
     /**
      * Account color field in hex format #rrggbb
      */
-    private String mColorCode;
+    private int mColor = DEFAULT_COLOR;
 
     /**
      * Flag which marks this account as a favorite account
@@ -148,13 +134,13 @@ public class Account extends BaseModel{
 	 * An extra key for passing the currency code (according ISO 4217) in an intent
 	 */
 	public static final String EXTRA_CURRENCY_CODE 	= "org.gnucash.android.extra.currency_code";
-	
+
 	/**
-	 * Extra key for passing the unique ID of the parent account when creating a 
+	 * Extra key for passing the unique ID of the parent account when creating a
 	 * new account using Intents
 	 */
 	public static final String EXTRA_PARENT_UID 	= "org.gnucash.android.extra.parent_uid";
-	
+
 	/**
 	 * Constructor
 	 * Creates a new account with the default currency and a generated unique ID
@@ -165,7 +151,7 @@ public class Account extends BaseModel{
         this.mFullName  = mName;
 		setCommodity(Commodity.DEFAULT_COMMODITY);
 	}
-	
+
 	/**
 	 * Overloaded constructor
 	 * @param name Name of the account
@@ -211,18 +197,18 @@ public class Account extends BaseModel{
     }
 
 	/**
-	 * Returns the account mDescription
-	 * @return String with mDescription
+	 * Returns the account description
+	 * @return String with description
 	 */
 	public String getDescription() {
 		return mDescription;
 	}
 
 	/**
-	 * Sets the account mDescription
-	 * @param description String mDescription
+	 * Sets the account description
+	 * @param description Account description
 	 */
-	public void setDescription(String description) {
+	public void setDescription(@NonNull String description) {
 		this.mDescription = description;
 	}
 
@@ -251,11 +237,11 @@ public class Account extends BaseModel{
 		transaction.setCommodity(mCommodity);
 		mTransactionsList.add(transaction);
 	}
-	
+
 	/**
 	 * Sets a list of transactions for this account.
 	 * Overrides any previous transactions with those in the list.
-	 * The account UID and currency of the transactions will be set to the unique ID 
+	 * The account UID and currency of the transactions will be set to the unique ID
 	 * and currency of the account respectively
 	 * @param transactionsList List of {@link Transaction}s to be set.
 	 */
@@ -270,7 +256,7 @@ public class Account extends BaseModel{
 	public List<Transaction> getTransactions(){
 		return mTransactionsList;
 	}
-	
+
 	/**
 	 * Returns the number of transactions in this account
 	 * @return Number transactions in account
@@ -293,26 +279,34 @@ public class Account extends BaseModel{
 	}
 
     /**
-     * Returns the color code of the account in the format #rrggbb
-     * @return Color code of the account
+     * Returns the color of the account.
+     * @return Color of the account as an int as returned by {@link Color}.
      */
-    public String getColorHexCode() {
-        return mColorCode;
+    public int getColor() {
+        return mColor;
     }
 
+	/**
+	 * Sets the color of the account.
+	 * @param color Color as an int as returned by {@link Color}.
+	 * @throws java.lang.IllegalArgumentException if the color is transparent,
+	 *   which is not supported.
+	 */
+	public void setColor(int color) {
+		if (Color.alpha(color) < 255)
+			throw new IllegalArgumentException("Transparent colors are not supported: " + color);
+		mColor = color;
+	}
+
     /**
-     * Sets the color code of the account.
-     * @param colorCode Color code to be set in the format #rrggbb or #rgb
-     * @throws java.lang.IllegalArgumentException if the color code is not properly formatted
+     * Sets the color of the account.
+     * @param colorCode Color code to be set in the format #rrggbb
+     * @throws java.lang.IllegalArgumentException if the color code is not properly formatted or
+	 *   the color is transparent.
      */
-    public void setColorCode(String colorCode) {
-        if (colorCode == null)
-            return;
-
-        if (!Pattern.matches(COLOR_HEX_REGEX, colorCode))
-            throw new IllegalArgumentException("Invalid color hex code: " + colorCode);
-
-        this.mColorCode = colorCode;
+	//TODO: Allow use of #aarrggbb format as well
+    public void setColor(@NonNull String colorCode) {
+        setColor(Color.parseColor(colorCode));
     }
 
     /**
@@ -332,7 +326,7 @@ public class Account extends BaseModel{
     }
 
     /**
-	 * @return the mCurrency
+	 * Returns the currency for this account.
 	 */
 	public Currency getCurrency() {
 		return Currency.getInstance(mCurrencyCode);
@@ -348,7 +342,6 @@ public class Account extends BaseModel{
 
 	/**
 	 * Return the commodity for this account
-	 * @return
 	 */
 	public Commodity getCommodity(){
 		return mCommodity;

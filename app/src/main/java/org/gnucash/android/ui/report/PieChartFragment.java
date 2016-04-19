@@ -85,7 +85,6 @@ public class PieChartFragment extends Fragment implements OnChartValueSelectedLi
     @Bind(R.id.selected_chart_slice) TextView mSelectedValueTextView;
 
     private AccountsDbAdapter mAccountsDbAdapter;
-    private TransactionsDbAdapter mTransactionsDbAdapter;
 
     private AccountType mAccountType;
 
@@ -127,7 +126,6 @@ public class PieChartFragment extends Fragment implements OnChartValueSelectedLi
                 .getBoolean(getString(R.string.key_use_account_color), false);
 
         mAccountsDbAdapter = AccountsDbAdapter.getInstance();
-        mTransactionsDbAdapter = TransactionsDbAdapter.getInstance();
 
         mCurrencyCode = GnuCashApplication.getDefaultCurrencyCode();
 
@@ -199,8 +197,8 @@ public class PieChartFragment extends Fragment implements OnChartValueSelectedLi
                         mReportStartTime, mReportEndTime).asDouble();
                 if (balance > 0) {
                     dataSet.addEntry(new Entry((float) balance, dataSet.getEntryCount()));
-                    colors.add(mUseAccountColor && account.getColorHexCode() != null
-                            ? Color.parseColor(account.getColorHexCode())
+                    colors.add(mUseAccountColor
+                            ? account.getColor()
                             : ReportsActivity.COLORS[(dataSet.getEntryCount() - 1) % ReportsActivity.COLORS.length]);
                     labels.add(account.getName());
                 }
