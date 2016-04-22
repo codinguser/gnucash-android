@@ -55,7 +55,7 @@ the `ANDROID_HOME` environment variable to the location of your SDK. For example
 
 After satisfying those requirements, the build is pretty simple:
 
-* Run `gradlew build installDevelopmentDebug` from the within the project folder.
+* Run `./gradlew build installDevelopmentDebug` from the within the project folder.
 It will build the project for you and install it to the connected Android device or running emulator.
 
 The app is configured to allow you to install a development and production version in parallel on your device.
