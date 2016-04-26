@@ -23,6 +23,7 @@ import java.math.BigDecimal;
 import java.util.Locale;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.fail;
 
 
 public class PriceTest {
@@ -50,6 +51,26 @@ public class PriceTest {
         BigDecimal exchangeRate = new BigDecimal(exchangeRateString);
         Price price = new Price("commodity1UID", "commodity2UID", exchangeRate);
         assertThat(price.toString()).isEqualTo("1,234");
+    }
+
+    /**
+     * BigDecimal throws an ArithmeticException if it can't represent exactly
+     * a result. This can happen with divisions like 1/3 if no precision and
+     * round mode is specified with a MathContext.
+     */
+    @Test
+    public void toString_shouldNotFailForInfinitelyLongDecimalExpansion() {
+        long numerator = 1;
+        long denominator = 3;
+        Price price = new Price();
+
+        price.setValueNum(numerator);
+        price.setValueDenom(denominator);
+        try {
+            price.toString();
+        } catch (ArithmeticException e) {
+            fail("The numerator/denominator division in Price.toString() should not fail.");
+        }
     }
 
     @Test
