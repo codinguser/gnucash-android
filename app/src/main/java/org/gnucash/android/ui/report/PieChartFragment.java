@@ -42,7 +42,6 @@ import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.AccountsDbAdapter;
-import org.gnucash.android.db.TransactionsDbAdapter;
 import org.gnucash.android.model.Account;
 import org.gnucash.android.model.AccountType;
 
@@ -197,9 +196,15 @@ public class PieChartFragment extends Fragment implements OnChartValueSelectedLi
                         mReportStartTime, mReportEndTime).asDouble();
                 if (balance > 0) {
                     dataSet.addEntry(new Entry((float) balance, dataSet.getEntryCount()));
-                    colors.add(mUseAccountColor
-                            ? account.getColor()
-                            : ReportsActivity.COLORS[(dataSet.getEntryCount() - 1) % ReportsActivity.COLORS.length]);
+                    int color;
+                    if (mUseAccountColor) {
+                        color = (account.getColor() != Account.DEFAULT_COLOR)
+                                ? account.getColor()
+                                : ReportsActivity.COLORS[(dataSet.getEntryCount() - 1) % ReportsActivity.COLORS.length];
+                    } else {
+                        color = ReportsActivity.COLORS[(dataSet.getEntryCount() - 1) % ReportsActivity.COLORS.length];
+                    }
+                    colors.add(color);
                     labels.add(account.getName());
                 }
             }
