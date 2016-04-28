@@ -1,4 +1,5 @@
 import java.text.SimpleDateFormat
+import org.apache.tools.ant.taskdefs.condition.Os
 
 apply plugin: 'com.android.application'
 apply plugin: 'io.fabric'
@@ -43,7 +44,7 @@ android {
             resValue "string", "dropbox_app_secret", "h2t9fphj3nr4wkw"
             resValue "string", "manifest_dropbox_app_key", "db-dhjh8ke9wf05948"
         }
-        testInstrumentationRunner "org.gnucash.android.test.ui.GnucashAndroidTestRunner"
+        testInstrumentationRunner "org.gnucash.android.test.ui.util.GnucashAndroidTestRunner"
 
     }
 
@@ -145,27 +146,32 @@ def initCrashlyticsPropertiesIfNeeded() {
     }
 }
 
-def adb = android.getAdbExe().toString()
+def adb = Os.isFamily(Os.FAMILY_WINDOWS) ? "..\\scripts\\adb_all.bat" : "../scripts/adb_all.sh"
+//def adb = android.getAdbExe().toString()
 
 afterEvaluate {
     initCrashlyticsPropertiesIfNeeded()
 
     task grantTestPermissionsDevel(type: Exec, dependsOn: 'installDevelopmentDebug') { // or install{productFlavour}{buildType}
-        commandLine "$adb", 'devices'
-        standardOutput = new ByteArrayOutputStream()
-
-        String output = standardOutput.toString()
-        output.eachLine {
-            def serial = it.split("\\s")[0]
-            commandLine "$adb -s $serial shell pm grant $android.productFlavors.development.applicationId android.permission.SET_ANIMATION_SCALE".split(' ')
-            commandLine "$adb -s $serial shell pm grant $android.productFlavors.development.applicationId android.permission.WRITE_EXTERNAL_STORAGE".split(' ')
+        if (Os.isFamily(Os.FAMILY_WINDOWS)){
+            commandLine "cmd", "/c", "$adb", "shell pm grant $android.productFlavors.development.applicationId android.permission.SET_ANIMATION_SCALE"
+//            commandLine "cmd", "/c", "$adb", "shell pm grant $android.productFlavors.development.applicationId android.permission.WRITE_EXTERNAL_STORAGE"
+        } else {
+            commandLine "$adb shell pm grant $android.productFlavors.development.applicationId android.permission.SET_ANIMATION_SCALE".split(' ')
+//            commandLine "$adb shell pm grant $android.productFlavors.development.applicationId android.permission.WRITE_EXTERNAL_STORAGE".split(' ')
         }
     }
 
     task grantTestPermissionsProduction(type: Exec, dependsOn: 'installProductionDebug'){
-        commandLine "$adb -e shell pm grant $android.defaultConfig.applicationId android.permission.SET_ANIMATION_SCALE".split(' ')
-        commandLine "$adb -e shell pm grant $android.defaultConfig.applicationId android.permission.WRITE_EXTERNAL_STORAGE".split(' ')
+        if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+            commandLine "cmd", "/c", "$adb", "shell pm grant $android.productFlavors.development.applicationId android.permission.SET_ANIMATION_SCALE"
+            commandLine "cmd", "/c", "$adb", "shell pm grant $android.productFlavors.development.applicationId android.permission.WRITE_EXTERNAL_STORAGE"
+        } else {
+            commandLine "$adb shell pm grant $android.defaultConfig.applicationId android.permission.SET_ANIMATION_SCALE".split(' ')
+            commandLine "$adb shell pm grant $android.defaultConfig.applicationId android.permission.WRITE_EXTERNAL_STORAGE".split(' ')
+        }
     }
+
     // When launching individual tests from Android Studio, it seems that only the assemble tasks
     // get called directly, not the install* versions
     tasks.each { task ->
@@ -179,9 +185,9 @@ afterEvaluate {
     }
 }
 
-def androidSupportVersion       = "23.1.1"
-def androidEspressoVersion      = "2.2.1"
-def androidSupportTestVersion   = "0.4.1"
+def androidSupportVersion       = "23.3.0"
+def androidEspressoVersion      = "2.2.2"
+def androidSupportTestVersion   = "0.5"
 
 repositories{
     flatDir{
@@ -199,14 +205,14 @@ dependencies {
             'com.android.support:preference-v7:'    + androidSupportVersion,
             'com.android.support:recyclerview-v7:'  + androidSupportVersion,
             'com.viewpagerindicator:library:2.4.1@aar',
-            'com.code-troopers.betterpickers:library:2.2.1',
+            'com.code-troopers.betterpickers:library:2.5.3',
             'org.jraf:android-switch-backport:2.0.1@aar',
             'com.github.PhilJay:MPAndroidChart:v2.1.3',
             'joda-time:joda-time:2.7',
             'com.google.android.gms:play-services-drive:8.3.0',
             'com.jakewharton:butterknife:7.0.1',
-            'com.kobakei:ratethisapp:0.0.4',
-            'com.squareup:android-times-square:1.6.4@aar',
+            'io.github.kobakei:ratethisapp:1.0.3',
+            'com.squareup:android-times-square:1.6.5@aar',
             'com.github.techfreak:wizardpager:1.0.3',
             'net.objecthunter:exp4j:0.4.5',
             'org.apache.jackrabbit:jackrabbit-webdav:2.11.1'
@@ -230,7 +236,10 @@ dependencies {
     androidTestCompile ('com.android.support:support-annotations:'  + androidSupportVersion,
                         'com.android.support.test:runner:'          + androidSupportTestVersion,
                         'com.android.support.test:rules:'           + androidSupportTestVersion,
-                        'com.android.support.test.espresso:espresso-core:'      + androidEspressoVersion)
+                        'com.android.support.test.espresso:espresso-core:'      + androidEspressoVersion,
+            //the following are only added so that the app and test version both us the same versions
+                        'com.android.support:appcompat-v7:'     + androidSupportVersion,
+                        'com.android.support:design:'           + androidSupportVersion)
     androidTestCompile ('com.android.support.test.espresso:espresso-contrib:'   + androidEspressoVersion) {
         exclude group: 'com.android.support', module: 'support-v4'
         exclude module: 'recyclerview-v7'

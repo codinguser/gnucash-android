@@ -150,6 +150,7 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
         //this is necessary because the database has ON DELETE CASCADE between accounts and splits
         //and all accounts are editing via SQL REPLACE
 
+        //// TODO: 20.04.2016 Investigate if we can safely remove updating the transactions when bulk updating accounts
         List<Transaction> transactionList = new ArrayList<>(accountList.size()*2);
         for (Account account : accountList) {
             transactionList.addAll(account.getTransactions());

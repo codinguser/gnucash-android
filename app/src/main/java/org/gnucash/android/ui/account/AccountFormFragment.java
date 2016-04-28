@@ -725,6 +725,8 @@ public class AccountFormFragment extends Fragment {
      */
 	private void saveAccount() {
         Log.i("AccountFormFragment", "Saving account");
+        if (mAccountsDbAdapter == null)
+            mAccountsDbAdapter = AccountsDbAdapter.getInstance();
         // accounts to update, in case we're updating full names of a sub account tree
         ArrayList<Account> accountsToUpdate = new ArrayList<>();
         boolean nameChanged = false;
@@ -736,6 +738,7 @@ public class AccountFormFragment extends Fragment {
 				return;				
 			}
 			mAccount = new Account(getEnteredName());
+            mAccountsDbAdapter.addRecord(mAccount, DatabaseAdapter.UpdateMethod.insert); //new account, insert it
 		}
 		else {
             nameChanged = !mAccount.getName().equals(getEnteredName());
@@ -794,9 +797,7 @@ public class AccountFormFragment extends Fragment {
                     // parent change, update all full names of descent accounts
                     accountsToUpdate.addAll(mAccountsDbAdapter.getSimpleAccountList(
                             DatabaseSchema.AccountEntry.COLUMN_UID + " IN ('" +
-                                    TextUtils.join("','", mDescendantAccountUIDs) + "')",
-                            null,
-                            null
+                                    TextUtils.join("','", mDescendantAccountUIDs) + "')", null, null
                     ));
                 }
                 HashMap<String, Account> mapAccount = new HashMap<>();
@@ -819,8 +820,7 @@ public class AccountFormFragment extends Fragment {
             }
         }
         accountsToUpdate.add(mAccount);
-		if (mAccountsDbAdapter == null)
-			mAccountsDbAdapter = AccountsDbAdapter.getInstance();
+
         // bulk update, will not update transactions
 		mAccountsDbAdapter.bulkAddRecords(accountsToUpdate, DatabaseAdapter.UpdateMethod.update);
 

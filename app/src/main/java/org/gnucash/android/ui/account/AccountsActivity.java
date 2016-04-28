@@ -145,6 +145,7 @@ public class AccountsActivity extends BaseDrawerActivity implements OnAccountCli
      * Configuration for rating the app
      */
     public static RateThisApp.Config rateAppConfig = new RateThisApp.Config(14, 100);
+    private AccountViewPagerAdapter mPagerAdapter;
 
     /**
      * Adapter for managing the sub-account and transaction fragment pages in the accounts view
@@ -207,7 +208,10 @@ public class AccountsActivity extends BaseDrawerActivity implements OnAccountCli
 
     public AccountsListFragment getCurrentAccountListFragment(){
         int index = mViewPager.getCurrentItem();
-        return (AccountsListFragment)(mFragmentPageReferenceMap.get(index));
+        Fragment fragment = (Fragment) mFragmentPageReferenceMap.get(index);
+        if (fragment == null)
+            fragment = mPagerAdapter.getItem(index);
+        return (AccountsListFragment) fragment;
     }
 
     @Override
@@ -236,7 +240,7 @@ public class AccountsActivity extends BaseDrawerActivity implements OnAccountCli
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
         //show the simple accounts list
-        PagerAdapter mPagerAdapter = new AccountViewPagerAdapter(getSupportFragmentManager());
+        mPagerAdapter = new AccountViewPagerAdapter(getSupportFragmentManager());
         mViewPager.setAdapter(mPagerAdapter);
 
         mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
