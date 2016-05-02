@@ -33,7 +33,8 @@ Features include:
 
 # Installation
 
-There are different ways to get the GnuCash app for Android; through the app store, or building it yourself.
+There are different ways to get the GnuCash app for Android; through
+the app store, from github or building it yourself.
 
 
 ### App Store
@@ -42,6 +43,9 @@ There are different ways to get the GnuCash app for Android; through the app sto
   <img alt="Android app on Google Play" src="http://developer.android.com/images/brand/en_generic_rgb_wo_60.png" />
 </a>
 
+### From GitHub
+
+Download the .apk from https://github.com/codinguser/gnucash-android/releases
 
 ## Building
 
