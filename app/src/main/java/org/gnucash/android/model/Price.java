@@ -4,6 +4,7 @@ import org.gnucash.android.util.TimestampHelper;
 
 
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.sql.Timestamp;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -156,6 +157,6 @@ public class Price extends BaseModel {
         BigDecimal denominator = new BigDecimal(mValueDenom);
         DecimalFormat formatter = (DecimalFormat) NumberFormat.getNumberInstance();
         formatter.setMaximumFractionDigits(6);
-        return formatter.format(numerator.divide(denominator));
+        return formatter.format(numerator.divide(denominator, MathContext.DECIMAL32));
     }
 }

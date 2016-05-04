@@ -193,7 +193,9 @@ public class ReportsOverviewFragment extends BaseReportFragment {
                         Collections.singletonList(account.getUID()), start, end).asDouble();
                 if (balance > 0) {
                     dataSet.addEntry(new Entry((float) balance, dataSet.getEntryCount()));
-                    colors.add(account.getColor());
+                    colors.add(account.getColor() != Account.DEFAULT_COLOR
+                            ? account.getColor()
+                            : ReportsActivity.COLORS[(dataSet.getEntryCount() - 1) % ReportsActivity.COLORS.length]);
                     labels.add(account.getName());
                 }
             }
