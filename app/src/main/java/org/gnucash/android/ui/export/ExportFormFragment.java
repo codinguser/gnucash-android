@@ -63,6 +63,7 @@ import org.gnucash.android.model.ScheduledAction;
 import org.gnucash.android.ui.account.AccountsActivity;
 import org.gnucash.android.ui.common.UxArgument;
 import org.gnucash.android.ui.settings.BackupPreferenceFragment;
+import org.gnucash.android.ui.settings.PreferenceActivity;
 import org.gnucash.android.ui.settings.dialog.OwnCloudDialogFragment;
 import org.gnucash.android.ui.transaction.TransactionFormFragment;
 import org.gnucash.android.ui.util.RecurrenceParser;

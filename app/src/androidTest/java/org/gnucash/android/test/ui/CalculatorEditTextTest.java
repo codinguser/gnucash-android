@@ -19,23 +19,29 @@ package org.gnucash.android.test.ui;
 import android.content.Intent;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
-import android.support.test.InstrumentationRegistry;
+import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
-import android.test.ActivityInstrumentationTestCase2;
 import android.util.Log;
 
 import org.gnucash.android.R;
-import org.gnucash.android.db.DatabaseSchema;
-import org.gnucash.android.db.adapter.AccountsDbAdapter;
+import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.DatabaseHelper;
+import org.gnucash.android.db.adapter.AccountsDbAdapter;
+import org.gnucash.android.db.adapter.BooksDbAdapter;
+import org.gnucash.android.db.adapter.CommoditiesDbAdapter;
 import org.gnucash.android.db.adapter.SplitsDbAdapter;
 import org.gnucash.android.db.adapter.TransactionsDbAdapter;
 import org.gnucash.android.model.Account;
 import org.gnucash.android.model.Commodity;
+import org.gnucash.android.test.ui.util.DisableAnimationsRule;
 import org.gnucash.android.ui.common.UxArgument;
 import org.gnucash.android.ui.transaction.TransactionsActivity;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -49,8 +55,7 @@ import static org.hamcrest.Matchers.not;
 
 // TODO: Find out how to press the keys in the KeyboardView.
 @RunWith(AndroidJUnit4.class)
-public class CalculatorEditTextTest extends
-		ActivityInstrumentationTestCase2<TransactionsActivity> {
+public class CalculatorEditTextTest {
 	private static final String DUMMY_ACCOUNT_UID = "transactions-account";
 	private static final String DUMMY_ACCOUNT_NAME = "Transactions Account";
 
@@ -58,52 +63,68 @@ public class CalculatorEditTextTest extends
     private static final String TRANSFER_ACCOUNT_UID    = "transfer_account";
     public static final String CURRENCY_CODE = "USD";
 
-    private SQLiteDatabase mDb;
-    private DatabaseHelper mDbHelper;
-    private AccountsDbAdapter mAccountsDbAdapter;
-    private TransactionsDbAdapter mTransactionsDbAdapter;
-    private SplitsDbAdapter mSplitsDbAdapter;
+    private static DatabaseHelper mDbHelper;
+    private static AccountsDbAdapter mAccountsDbAdapter;
+    private static TransactionsDbAdapter mTransactionsDbAdapter;
+    private static SplitsDbAdapter mSplitsDbAdapter;
 	private TransactionsActivity mTransactionsActivity;
 
 	public CalculatorEditTextTest() {
-		super(TransactionsActivity.class);
 	}
-	
-	@Override
-	@Before
-	public void setUp() throws Exception {
-		super.setUp();
-		injectInstrumentation(InstrumentationRegistry.getInstrumentation());
-		AccountsActivityTest.preventFirstRunDialogs(getInstrumentation().getTargetContext());
+
+    @ClassRule
+    public static DisableAnimationsRule disableAnimationsRule = new DisableAnimationsRule();
+
+    @Rule
+    public ActivityTestRule<TransactionsActivity> mActivityRule =
+            new ActivityTestRule<>(TransactionsActivity.class, true, false);
 
 
-        mDbHelper = new DatabaseHelper(getInstrumentation().getTargetContext(), DatabaseSchema.LEGACY_DATABASE_NAME);
+    @BeforeClass
+    public static void prepTestCase(){
+        String activeBookUID = BooksDbAdapter.getInstance().getActiveBookUID();
+        mDbHelper = new DatabaseHelper(GnuCashApplication.getAppContext(), activeBookUID);
+
+        SQLiteDatabase mDb;
         try {
             mDb = mDbHelper.getWritableDatabase();
         } catch (SQLException e) {
-            Log.e(getClass().getName(), "Error getting database: " + e.getMessage());
+            Log.e("CalculatorEditTextTest", "Error getting database: " + e.getMessage());
             mDb = mDbHelper.getReadableDatabase();
         }
-        mSplitsDbAdapter = new SplitsDbAdapter(mDb);
-        mTransactionsDbAdapter = new TransactionsDbAdapter(mDb, mSplitsDbAdapter);
-        mAccountsDbAdapter = new AccountsDbAdapter(mDb, mTransactionsDbAdapter);
-		mAccountsDbAdapter.deleteAllRecords();
+//        mSplitsDbAdapter = new SplitsDbAdapter(mDb);
+//        mTransactionsDbAdapter = new TransactionsDbAdapter(mDb, mSplitsDbAdapter);
+//        mAccountsDbAdapter = new AccountsDbAdapter(mDb, mTransactionsDbAdapter);
 
-        Account account = new Account(DUMMY_ACCOUNT_NAME);
+        mSplitsDbAdapter        = SplitsDbAdapter.getInstance();
+        mTransactionsDbAdapter  = TransactionsDbAdapter.getInstance();
+        mAccountsDbAdapter      = AccountsDbAdapter.getInstance();
+
+        AccountsActivityTest.preventFirstRunDialogs(GnuCashApplication.getAppContext());
+    }
+
+    @Before
+	public void setUp() throws Exception {
+
+        mAccountsDbAdapter.deleteAllRecords();
+
+        CommoditiesDbAdapter commoditiesDbAdapter = CommoditiesDbAdapter.getInstance();
+        Commodity commodity = commoditiesDbAdapter.getCommodity(CURRENCY_CODE);
+
+        Account account = new Account(DUMMY_ACCOUNT_NAME, commodity);
         account.setUID(DUMMY_ACCOUNT_UID);
-        account.setCommodity(Commodity.getInstance(CURRENCY_CODE));
 
-        Account account2 = new Account(TRANSFER_ACCOUNT_NAME);
+        Account account2 = new Account(TRANSFER_ACCOUNT_NAME, commodity);
         account2.setUID(TRANSFER_ACCOUNT_UID);
-        account2.setCommodity(Commodity.getInstance(CURRENCY_CODE));
 
         mAccountsDbAdapter.addRecord(account);
         mAccountsDbAdapter.addRecord(account2);
 
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.putExtra(UxArgument.SELECTED_ACCOUNT_UID, DUMMY_ACCOUNT_UID);
-        setActivityIntent(intent);
-		mTransactionsActivity = getActivity();
+        mActivityRule.launchActivity(intent);
+        mTransactionsActivity = mActivityRule.getActivity();
+
 	}
 
     /**
@@ -138,11 +159,15 @@ public class CalculatorEditTextTest extends
 		onView(withId(viewId)).perform(click());
 	}
 
-	@Override
 	@After
 	public void tearDown() throws Exception {
 		if (mTransactionsActivity != null)
             mTransactionsActivity.finish();
-		super.tearDown();
 	}
+
+    @AfterClass
+    public static void cleanup(){
+        if (mDbHelper != null)
+            mDbHelper.close();
+    }
 }

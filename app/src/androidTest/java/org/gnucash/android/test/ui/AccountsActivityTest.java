@@ -24,13 +24,11 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
 import android.preference.PreferenceManager;
-import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.Espresso;
 import android.support.test.espresso.matcher.ViewMatchers;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.support.v4.app.Fragment;
-import android.test.ActivityInstrumentationTestCase2;
 import android.util.Log;
 
 import com.kobakei.ratethisapp.RateThisApp;
@@ -77,7 +75,6 @@ import static android.support.test.espresso.action.ViewActions.typeText;
 import static android.support.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.hasDescendant;
-import static android.support.test.espresso.matcher.ViewMatchers.hasSibling;
 import static android.support.test.espresso.matcher.ViewMatchers.isChecked;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.isEnabled;
@@ -88,8 +85,6 @@ import static android.support.test.espresso.matcher.ViewMatchers.withParent;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.allOf;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
@@ -138,9 +133,9 @@ public class AccountsActivityTest {
             Log.e("AccountsActivityTest", "Error getting database: " + e.getMessage());
             mDb = mDbHelper.getReadableDatabase();
         }
-        mSplitsDbAdapter        = new SplitsDbAdapter(mDb);
-        mTransactionsDbAdapter  = new TransactionsDbAdapter(mDb, mSplitsDbAdapter);
-        mAccountsDbAdapter      = new AccountsDbAdapter(mDb, mTransactionsDbAdapter);
+        mSplitsDbAdapter        = SplitsDbAdapter.getInstance();
+        mTransactionsDbAdapter  = TransactionsDbAdapter.getInstance();
+        mAccountsDbAdapter      = AccountsDbAdapter.getInstance();
         CommoditiesDbAdapter commoditiesDbAdapter = new CommoditiesDbAdapter(mDb); //initialize commodity constants
     }
 
@@ -156,31 +151,7 @@ public class AccountsActivityTest {
         simpleAccount.setCommodity(Commodity.getInstance(ACCOUNTS_CURRENCY_CODE));
         mAccountsDbAdapter.addRecord(simpleAccount, DatabaseAdapter.UpdateMethod.insert);
 
-//        Account rootAccount = new Account(ROOT_ACCOUNT_NAME);
-//        rootAccount.setUID(ROOT_ACCOUNT_UID);
-//        rootAccount.setCommodity(Commodity.getInstance(ACCOUNTS_CURRENCY_CODE));
-//        rootAccount.setPlaceHolderFlag(true);
-//        rootAccount.setAccountType(AccountType.ROOT);
-//        rootAccount.setHidden(true);
-//        mAccountsDbAdapter.addRecord(rootAccount);
-//
-//        Account parentAccount = new Account(PARENT_ACCOUNT_NAME);
-//        parentAccount.setUID(PARENT_ACCOUNT_UID);
-//        parentAccount.setCommodity(Commodity.getInstance(ACCOUNTS_CURRENCY_CODE));
-//        parentAccount.setAccountType(AccountType.LIABILITY);
-//        parentAccount.setParentUID(ROOT_ACCOUNT_UID);
-//        mAccountsDbAdapter.addRecord(parentAccount);
-//
-//        Account childAccount = new Account(CHILD_ACCOUNT_NAME);
-//        childAccount.setUID(CHILD_ACCOUNT_UID);
-//        childAccount.setCommodity(Commodity.getInstance(ACCOUNTS_CURRENCY_CODE));
-//        childAccount.setAccountType(AccountType.LIABILITY);
-//        childAccount.setParentUID(PARENT_ACCOUNT_UID);
-//        mAccountsDbAdapter.addRecord(childAccount);
-//
-//        refreshAccountsList();
-//        List<Account> accounts = mAccountsDbAdapter.getAllRecords();
-//        assertThat(mAccountsDbAdapter.getRecordsCount()).isEqualTo(5L);
+        refreshAccountsList();
     }
 
 
@@ -248,10 +219,6 @@ public class AccountsActivityTest {
         onView(withId(R.id.checkbox_placeholder_account))
                 .check(matches(isNotChecked()))
                 .perform(click());
-
-//        onView(withId(R.id.checkbox_parent_account)).perform(scrollTo())
-//                .check(matches(allOf(isDisplayed(), isNotChecked())))
-//                .perform(click());
 
         onView(withId(R.id.menu_save)).perform(click());
 
@@ -330,14 +297,17 @@ public class AccountsActivityTest {
 
     @Test
     public void testEditAccount(){
-        String editedAccountName = "An Edited Account";
-        sleep(2000);
+        refreshAccountsList();
+
         onView(allOf(withParent(hasDescendant(withText(SIMPLE_ACCOUNT_NAME))),
                      withId(R.id.options_menu))).perform(click());
-        onView(withText(R.string.title_edit_account)).perform(click());
-
+//        onView(withId(R.id.options_menu)).perform(click()); //there should only be one account visible
+        sleep(1000);
+        onView(withText(R.string.title_edit_account)).check(matches(isDisplayed())).perform(click());
+//        onView(withId(R.id.context_menu_edit_accounts)).check(matches(isDisplayed())).perform(click());
         onView(withId(R.id.fragment_account_form)).check(matches(isDisplayed()));
 
+        String editedAccountName = "An Edited Account";
         onView(withId(R.id.input_account_name)).perform(clearText()).perform(typeText(editedAccountName));
 
         onView(withId(R.id.menu_save)).perform(click());
@@ -389,31 +359,30 @@ public class AccountsActivityTest {
         }
     }
 
-    //TODO: Add test for moving content of accounts before deleting it
-    @Test(expected = IllegalArgumentException.class)
     public void testDeleteSimpleAccount() {
-        //sleep(2000);
+        refreshAccountsList();
+        assertThat(mAccountsDbAdapter.getRecordsCount()).isEqualTo(2);
         onView(allOf(withParent(hasDescendant(withText(SIMPLE_ACCOUNT_NAME))),
                 withId(R.id.options_menu))).perform(click());
-//        onView(allOf(hasSibling(withText(SIMPLE_ACCOUNT_NAME)), withId(R.id.options_menu))).perform(click());
 
         onView(withText(R.string.menu_delete)).perform(click());
-        sleep(2000);
-        //the account has no sub-accounts
-//        onView(withId(R.id.accounts_options)).check(matches(not(isDisplayed())));
-//        onView(withId(R.id.transactions_options)).check(matches(isDisplayed()));
 
-//        onView(withText(R.string.label_delete_transactions)).perform(click());
-//        onView(withId(R.id.btn_save)).perform(click());
+        assertThat(mAccountsDbAdapter.getRecordsCount()).isEqualTo(1);
 
-        //should throw expected exception
-        mAccountsDbAdapter.getID(SIMPLE_ACCOUNT_UID);
+        List<Account> accounts = mAccountsDbAdapter.getAllRecords();
+        assertThat(accounts).hasSize(0); //root account is never returned
     }
 
     @Test
     public void testDeleteAccountWithSubaccounts() {
-        sleep(2000);
-        onView(withText(SIMPLE_ACCOUNT_NAME)).perform(click());
+        refreshAccountsList();
+        Account account = new Account("Sub-account");
+        account.setParentUID(SIMPLE_ACCOUNT_UID);
+        account.setUID(CHILD_ACCOUNT_UID);
+        mAccountsDbAdapter.addRecord(account);
+
+        refreshAccountsList();
+
         onView(allOf(withParent(hasDescendant(withText(SIMPLE_ACCOUNT_NAME))),
                      withId(R.id.options_menu))).perform(click());
         onView(withText(R.string.menu_delete)).perform(click());
@@ -422,23 +391,25 @@ public class AccountsActivityTest {
                      withId(R.id.radio_delete))).perform(click());
         onView(withText(R.string.alert_dialog_ok_delete)).perform(click());
 
-        assertThat(!accountExists(PARENT_ACCOUNT_UID)).isTrue();
-        assertThat(!accountExists(CHILD_ACCOUNT_UID)).isTrue();
+        assertThat(accountExists(SIMPLE_ACCOUNT_UID)).isFalse();
+        assertThat(accountExists(CHILD_ACCOUNT_UID)).isFalse();
     }
 
     @Test
     public void testDeleteAccountMovingSubaccounts() {
-        sleep(2000);
+        long accountCount = mAccountsDbAdapter.getRecordsCount();
         Account subAccount = new Account("Child account");
         subAccount.setParentUID(SIMPLE_ACCOUNT_UID);
 
         Account tranferAcct = new Account("Other account");
+        tranferAcct.setCurrencyCode(ACCOUNTS_CURRENCY_CODE);
         mAccountsDbAdapter.addRecord(subAccount, DatabaseAdapter.UpdateMethod.insert);
         mAccountsDbAdapter.addRecord(tranferAcct, DatabaseAdapter.UpdateMethod.insert);
 
+        assertThat(mAccountsDbAdapter.getRecordsCount()).isEqualTo(accountCount+2);
+
         refreshAccountsList();
 
-//        onView(withText(SIMPLE_ACCOUNT_NAME)).perform(click());
         onView(allOf(withParent(hasDescendant(withText(SIMPLE_ACCOUNT_NAME))),
                 withId(R.id.options_menu))).perform(click());
         onView(withText(R.string.menu_delete)).perform(click());
@@ -448,15 +419,21 @@ public class AccountsActivityTest {
 
         onView(withText(R.string.alert_dialog_ok_delete)).perform(click());
 
-        assertThat(!accountExists(SIMPLE_ACCOUNT_UID)).isTrue();
-//        assertTrue("Parent account has not been deleted.", );
+        assertThat(accountExists(SIMPLE_ACCOUNT_UID)).isFalse();
         assertThat(accountExists(subAccount.getUID())).isTrue();
-//        assertTrue("Child account should not have been deleted.", );
+
+        String newParentUID = mAccountsDbAdapter.getParentAccountUID(subAccount.getUID());
+        assertThat(newParentUID).isEqualTo(tranferAcct.getUID());
     }
 
-    private boolean accountExists(String accountId) {
+    /**
+     * Checks if an account exists in the database
+     * @param accountUID GUID of the account
+     * @return {@code true} if the account exists, {@code false} otherwise
+     */
+    private boolean accountExists(String accountUID) {
         try {
-            mAccountsDbAdapter.getID(accountId);
+            mAccountsDbAdapter.getID(accountUID);
             return true;
         } catch (IllegalArgumentException e) {
             return false;

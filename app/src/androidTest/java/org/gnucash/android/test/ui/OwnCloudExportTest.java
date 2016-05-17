@@ -25,11 +25,16 @@ import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.test.ActivityInstrumentationTestCase2;
 import android.util.Log;
+
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.DatabaseHelper;
-import org.gnucash.android.db.adapter.*;
+import org.gnucash.android.db.adapter.AccountsDbAdapter;
+import org.gnucash.android.db.adapter.BooksDbAdapter;
+import org.gnucash.android.db.adapter.CommoditiesDbAdapter;
+import org.gnucash.android.db.adapter.DatabaseAdapter;
 import org.gnucash.android.model.Account;
+import org.gnucash.android.model.Commodity;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.model.Split;
 import org.gnucash.android.model.Transaction;
@@ -45,10 +50,16 @@ import java.util.Currency;
 
 import static android.support.test.InstrumentationRegistry.getInstrumentation;
 import static android.support.test.espresso.Espresso.onView;
-import static android.support.test.espresso.action.ViewActions.*;
+import static android.support.test.espresso.action.ViewActions.clearText;
+import static android.support.test.espresso.action.ViewActions.click;
+import static android.support.test.espresso.action.ViewActions.closeSoftKeyboard;
+import static android.support.test.espresso.action.ViewActions.swipeUp;
+import static android.support.test.espresso.action.ViewActions.typeText;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.RootMatchers.withDecorView;
-import static android.support.test.espresso.matcher.ViewMatchers.*;
+import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static android.support.test.espresso.matcher.ViewMatchers.withId;
+import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 import static org.gnucash.android.test.ui.AccountsActivityTest.preventFirstRunDialogs;
@@ -83,6 +94,7 @@ public class OwnCloudExportTest {
     public ActivityTestRule<AccountsActivity> mActivityRule = new ActivityTestRule<>(
             AccountsActivity.class);
 
+
     @Before
     public void setUp() throws Exception {
 
@@ -102,14 +114,16 @@ public class OwnCloudExportTest {
             Log.e(getClass().getName(), "Error getting database: " + e.getMessage());
             mDb = mDbHelper.getReadableDatabase();
         }
-        SplitsDbAdapter mSplitsDbAdapter;
-        mSplitsDbAdapter = new SplitsDbAdapter(mDb);
-        TransactionsDbAdapter mTransactionsDbAdapter = new TransactionsDbAdapter(mDb, mSplitsDbAdapter);
-        AccountsDbAdapter mAccountsDbAdapter = new AccountsDbAdapter(mDb, mTransactionsDbAdapter);
+
+        @SuppressWarnings("unused") //this call initializes constants in Commodity
+        CommoditiesDbAdapter commoditiesDbAdapter = new CommoditiesDbAdapter(mDb);
+        AccountsDbAdapter mAccountsDbAdapter = AccountsDbAdapter.getInstance();
         mAccountsDbAdapter.deleteAllRecords();
 
         String currencyCode = GnuCashApplication.getDefaultCurrencyCode();
-        Account account = new Account("ownCloud", new CommoditiesDbAdapter(mDb).getCommodity(currencyCode));
+        Commodity.DEFAULT_COMMODITY = CommoditiesDbAdapter.getInstance().getCommodity(currencyCode);
+
+        Account account = new Account("ownCloud");
         Transaction transaction = new Transaction("birds");
         transaction.setTime(System.currentTimeMillis());
         Split split = new Split(new Money("11.11", currencyCode), account.getUID());

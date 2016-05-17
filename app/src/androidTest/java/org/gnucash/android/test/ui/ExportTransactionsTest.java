@@ -27,6 +27,7 @@ import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.contrib.DrawerActions;
 import android.support.test.espresso.matcher.ViewMatchers;
 import android.support.test.runner.AndroidJUnit4;
+import android.support.v7.preference.PreferenceManager;
 import android.test.ActivityInstrumentationTestCase2;
 import android.util.Log;
 import android.widget.CompoundButton;
@@ -38,13 +39,13 @@ import org.gnucash.android.db.adapter.AccountsDbAdapter;
 import org.gnucash.android.db.adapter.BooksDbAdapter;
 import org.gnucash.android.db.adapter.CommoditiesDbAdapter;
 import org.gnucash.android.db.adapter.DatabaseAdapter;
-import org.gnucash.android.db.adapter.RecurrenceDbAdapter;
 import org.gnucash.android.db.adapter.ScheduledActionDbAdapter;
 import org.gnucash.android.db.adapter.SplitsDbAdapter;
 import org.gnucash.android.db.adapter.TransactionsDbAdapter;
 import org.gnucash.android.export.ExportFormat;
 import org.gnucash.android.export.Exporter;
 import org.gnucash.android.model.Account;
+import org.gnucash.android.model.Commodity;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.model.PeriodType;
 import org.gnucash.android.model.ScheduledAction;
@@ -95,7 +96,7 @@ public class ExportTransactionsTest extends
     public ExportTransactionsTest() {
 		super(AccountsActivity.class);
 	}
-	
+
 	@Override
 	@Before
 	public void setUp() throws Exception {
@@ -112,13 +113,20 @@ public class ExportTransactionsTest extends
             Log.e(getClass().getName(), "Error getting database: " + e.getMessage());
             mDb = mDbHelper.getReadableDatabase();
         }
-        mSplitsDbAdapter = new SplitsDbAdapter(mDb);
-        mTransactionsDbAdapter = new TransactionsDbAdapter(mDb, mSplitsDbAdapter);
-        mAccountsDbAdapter = new AccountsDbAdapter(mDb, mTransactionsDbAdapter);
+
+		mSplitsDbAdapter        = SplitsDbAdapter.getInstance();
+		mTransactionsDbAdapter  = TransactionsDbAdapter.getInstance();
+		mAccountsDbAdapter      = AccountsDbAdapter.getInstance();
+
+		//this call initializes the static variables like DEFAULT_COMMODITY which are used implicitly by accounts/transactions
+		@SuppressWarnings("unused")
+		CommoditiesDbAdapter commoditiesDbAdapter = new CommoditiesDbAdapter(mDb);
+		String currencyCode = GnuCashApplication.getDefaultCurrencyCode();
+		Commodity.DEFAULT_COMMODITY = CommoditiesDbAdapter.getInstance().getCommodity(currencyCode);
+
 		mAccountsDbAdapter.deleteAllRecords();
 
-		String currencyCode = GnuCashApplication.getDefaultCurrencyCode();
-		Account account = new Account("Exportable", new CommoditiesDbAdapter(mDb).getCommodity(currencyCode));
+		Account account = new Account("Exportable");
 		Transaction transaction = new Transaction("Pizza");
 		transaction.setNote("What up?");
 		transaction.setTime(System.currentTimeMillis());
@@ -220,14 +228,21 @@ public class ExportTransactionsTest extends
 	public void testDeleteTransactionsAfterExport(){
 		assertThat(mTransactionsDbAdapter.getRecordsCount()).isGreaterThan(0);
 
-		PreferenceActivity.getActiveBookSharedPreferences(getActivity()).edit()
-				.putBoolean(mAcccountsActivity.getString(R.string.key_delete_transactions_after_export), true).commit();
+		SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(getActivity()).edit(); //PreferenceActivity.getActiveBookSharedPreferences(getActivity()).edit();
+		editor.putBoolean(mAcccountsActivity.getString(R.string.key_delete_transactions_after_export), true);
+		editor.commit();
+
+		PreferenceActivity.getActiveBookSharedPreferences(getActivity())
+				.edit()
+				.putBoolean(mAcccountsActivity.getString(R.string.key_use_double_entry), true)
+				.apply();
 
 		testExport(ExportFormat.XML);
 
 		assertThat(mTransactionsDbAdapter.getRecordsCount()).isEqualTo(0);
-		PreferenceActivity.getActiveBookSharedPreferences(getActivity()).edit()
-				.putBoolean(mAcccountsActivity.getString(R.string.key_delete_transactions_after_export), false).commit();
+		List<Transaction> transactions = mTransactionsDbAdapter.getAllTransactions();
+
+		editor.putBoolean(mAcccountsActivity.getString(R.string.key_delete_transactions_after_export), false).commit();
 	}
 
 	/**
@@ -247,7 +262,7 @@ public class ExportTransactionsTest extends
 		onView(withText("OK")).perform(click());
 
 		onView(withId(R.id.menu_save)).perform(click());
-		ScheduledActionDbAdapter scheduledactionDbAdapter = new ScheduledActionDbAdapter(mDb, new RecurrenceDbAdapter(mDb));
+		ScheduledActionDbAdapter scheduledactionDbAdapter = ScheduledActionDbAdapter.getInstance(); //new ScheduledActionDbAdapter(mDb, new RecurrenceDbAdapter(mDb));
 		List<ScheduledAction> scheduledActions = scheduledactionDbAdapter.getAllEnabledScheduledActions();
 		assertThat(scheduledActions)
 				.hasSize(1)
