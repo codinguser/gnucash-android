@@ -178,6 +178,7 @@
   <string name="summary_default_export_format">Μορφή αρχείου για προεπιλεγμένη χρήση κατά την εξαγωγή κινήσεων.</string>
   <string name="menu_export_transactions">Εξαγωγή κινήσεων&#8230;</string>
   <string name="label_recurring_transaction">Επαναλαμβανόμενη</string>
+  <!-- This should be the same name used by GnuCash desktop for imbalance accounts -->
   <string name="imbalance_account_name">Imbalance</string>
   <string name="title_progress_exporting_transactions">Εξαγωγή κινήσεων</string>
   <string name="label_no_recurring_transactions">Δεν υπάρχουν επαναλαμβανόμενες κινήσεις για εμφάνιση.</string>
@@ -209,7 +210,10 @@
     <item>OFX</item>
     <item>XML</item>
   </string-array>
+  <!-- Default title for color picker dialog [CHAR LIMIT=30] -->
   <string name="color_picker_default_title">Επιλογή χρώματος</string>
+  <!-- Content description for a color square. -->
+  <!-- Content description for a selected color square. -->
   <string name="label_account_color_and_type">Χρώμα Λογαριασμού &amp; Τύπος</string>
   <string name="label_delete_sub_accounts">Διαγραφή υπο-λογαριασμών</string>
   <string name="title_recent_accounts">Πρόσφατοι</string>

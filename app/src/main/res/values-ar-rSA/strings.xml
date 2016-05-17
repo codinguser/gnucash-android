@@ -168,6 +168,7 @@
   <string name="summary_default_export_format">File format to use by default when exporting transactions</string>
   <string name="menu_export_transactions">Export transactions&#8230;</string>
   <string name="label_recurring_transaction">Recurrence</string>
+  <!-- This should be the same name used by GnuCash desktop for imbalance accounts -->
   <string name="imbalance_account_name">Imbalance</string>
   <string name="title_progress_exporting_transactions">Exporting transactions</string>
   <string name="label_no_recurring_transactions">No recurring transactions to display.</string>
@@ -203,7 +204,10 @@
     <item>OFX</item>
     <item>XML</item>
   </string-array>
+  <!-- Default title for color picker dialog [CHAR LIMIT=30] -->
   <string name="color_picker_default_title">Select a Color</string>
+  <!-- Content description for a color square. -->
+  <!-- Content description for a selected color square. -->
   <string name="label_account_color_and_type">Account Color &amp; Type</string>
   <string name="label_delete_sub_accounts">Delete sub-accounts</string>
   <string name="title_recent_accounts">Recent</string>

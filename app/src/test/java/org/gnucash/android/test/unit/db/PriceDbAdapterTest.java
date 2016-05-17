@@ -37,7 +37,7 @@ public class PriceDbAdapterTest {
 
         price = pricesDbAdapter.getRecord(price.getUID());
         assertThat(pricesDbAdapter.getRecordsCount()).isEqualTo(1);
-        assertThat(price.getValueNum()).isEqualTo(134);
+        assertThat(price.getValueNum()).isEqualTo(67); //the price is reduced to 57/100 before saving
 
         Price price1 = new Price(commodityUID, currencyUID);
         price1.setValueNum(187);

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.gnucash.android.test.ui;
+package org.gnucash.android.test.ui.util;
 
 import android.content.pm.PackageManager;
 import android.os.Bundle;

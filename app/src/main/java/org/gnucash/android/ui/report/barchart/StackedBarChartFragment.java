@@ -187,8 +187,8 @@ public class StackedBarChartFragment extends BaseReportFragment {
                         if (!accountToColorMap.containsKey(account.getUID())) {
                             Integer color;
                             if (mUseAccountColor) {
-                                color = (account.getColorHexCode() != null)
-                                        ? Color.parseColor(account.getColorHexCode())
+                                color = (account.getColor() != Account.DEFAULT_COLOR)
+                                        ? account.getColor()
                                         : COLORS[accountToColorMap.size() % COLORS.length];
                             } else {
                                 color = COLORS[accountToColorMap.size() % COLORS.length];

@@ -42,6 +42,7 @@ import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.adapter.TransactionsDbAdapter;
 import org.gnucash.android.model.AccountType;
 import org.gnucash.android.ui.common.BaseDrawerActivity;
+import org.gnucash.android.ui.common.Refreshable;
 import org.gnucash.android.ui.util.dialog.DateRangePickerDialogFragment;
 import org.joda.time.LocalDate;
 
@@ -63,7 +64,8 @@ import butterknife.ButterKnife;
  * @author Ngewi Fet <ngewif@gmail.com>
  */
 public class ReportsActivity extends BaseDrawerActivity implements AdapterView.OnItemSelectedListener,
-        DatePickerDialog.OnDateSetListener, DateRangePickerDialogFragment.OnDateRangeSetListener{
+        DatePickerDialog.OnDateSetListener, DateRangePickerDialogFragment.OnDateRangeSetListener,
+        Refreshable{
 
     public static final int[] COLORS = {
             Color.parseColor("#17ee4e"), Color.parseColor("#cc1f09"), Color.parseColor("#3940f7"),
@@ -386,5 +388,23 @@ public class ReportsActivity extends BaseDrawerActivity implements AdapterView.O
             }
         }
         return super.onKeyUp(keyCode, event);
+    }
+
+    @Override
+    public void refresh() {
+        List<Fragment> fragments = getSupportFragmentManager().getFragments();
+        for (Fragment fragment : fragments) {
+            if (fragment instanceof Refreshable){
+                ((Refreshable) fragment).refresh();
+            }
+        }
+    }
+
+    @Override
+    /**
+     * Just another call to refresh
+     */
+    public void refresh(String uid) {
+        refresh();
     }
 }
