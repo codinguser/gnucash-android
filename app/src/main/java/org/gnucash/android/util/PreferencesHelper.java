@@ -15,10 +15,10 @@
  */
 package org.gnucash.android.util;
 
-import android.preference.PreferenceManager;
 import android.util.Log;
 
 import org.gnucash.android.app.GnuCashApplication;
+import org.gnucash.android.ui.settings.PreferenceActivity;
 
 import java.sql.Timestamp;
 
@@ -37,7 +37,10 @@ public final class PreferencesHelper {
      */
     protected static final String LOG_TAG = "PreferencesHelper";
 
-    private static final String PREFERENCE_LAST_EXPORT_TIME_KEY = "last_export_time";
+    /**
+     * Preference key for saving the last export time
+     */
+    public static final String PREFERENCE_LAST_EXPORT_TIME_KEY = "last_export_time";
 
     /**
      * Set the last export time in UTC time zone.
@@ -48,7 +51,7 @@ public final class PreferencesHelper {
     public static void setLastExportTime(Timestamp lastExportTime) {
         final String utcString = TimestampHelper.getUtcStringFromTimestamp(lastExportTime);
         Log.d(LOG_TAG, "Storing '" + utcString + "' as lastExportTime in Android Preferences.");
-        PreferenceManager.getDefaultSharedPreferences(GnuCashApplication.getAppContext())
+        PreferenceActivity.getActiveBookSharedPreferences(GnuCashApplication.getAppContext())
                 .edit()
                 .putString(PREFERENCE_LAST_EXPORT_TIME_KEY, utcString)
                 .apply();
@@ -60,7 +63,7 @@ public final class PreferencesHelper {
      * @return A {@link Timestamp} with the time.
      */
     public static Timestamp getLastExportTime() {
-        final String utcString = PreferenceManager.getDefaultSharedPreferences(GnuCashApplication.getAppContext())
+        final String utcString = PreferenceActivity.getActiveBookSharedPreferences(GnuCashApplication.getAppContext())
                 .getString(PREFERENCE_LAST_EXPORT_TIME_KEY,
                         TimestampHelper.getUtcStringFromTimestamp(TimestampHelper.getTimestampFromEpochZero()));
         Log.d(LOG_TAG, "Retrieving '" + utcString + "' as lastExportTime from Android Preferences.");

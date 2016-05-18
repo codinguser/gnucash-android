@@ -444,4 +444,6 @@
     <string name="digit_zero">0</string>
     <string name="digit_zero_text">+</string>
 
+    <string name="header_manage_books">Manage Books</string>
+    <string name="title_manage_books">Manage Books</string>
 </resources>

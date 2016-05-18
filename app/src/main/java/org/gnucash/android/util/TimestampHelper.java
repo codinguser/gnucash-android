@@ -27,6 +27,8 @@ import java.sql.Timestamp;
  */
 public final class TimestampHelper {
 
+    public static final Timestamp EPOCH_ZERO_TIMESTAMP = new Timestamp(0);
+
     /**
      * Should be not instantiated.
      */
@@ -56,7 +58,7 @@ public final class TimestampHelper {
      * @return A {@link Timestamp} with time in milliseconds equals to zero.
      */
     public static Timestamp getTimestampFromEpochZero() {
-        return new Timestamp(0);
+        return EPOCH_ZERO_TIMESTAMP;
     }
 
     /**

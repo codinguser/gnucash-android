@@ -21,9 +21,11 @@ import android.app.PendingIntent;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Environment;
+import android.support.v7.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -32,6 +34,7 @@ import com.crashlytics.android.Crashlytics;
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.adapter.AccountsDbAdapter;
+import org.gnucash.android.db.adapter.BooksDbAdapter;
 import org.gnucash.android.export.ExportFormat;
 import org.gnucash.android.export.ExportParams;
 import org.gnucash.android.export.Exporter;
@@ -44,6 +47,7 @@ import org.gnucash.android.model.PeriodType;
 import org.gnucash.android.model.Recurrence;
 import org.gnucash.android.model.ScheduledAction;
 import org.gnucash.android.model.Transaction;
+import org.gnucash.android.ui.settings.PreferenceActivity;
 import org.gnucash.android.util.PreferencesHelper;
 import org.gnucash.android.util.TimestampHelper;
 import org.xml.sax.InputSource;
@@ -1226,6 +1230,7 @@ public class MigrationHelper {
      *     <li>Migrate scheduled transaction recurrences to own table</li>
      *     <li>Adds flags for reconciled status to split table</li>
      *     <li>Add flags for auto-/advance- create and notification to scheduled actions</li>
+     *     <li>Migrate old shared preferences into new book-specific preferences</li>
      * </ul>
      * </p>
      * @param db SQlite database to be upgraded
@@ -1428,6 +1433,29 @@ public class MigrationHelper {
 
 
             db.execSQL("DROP TABLE " + SplitEntry.TABLE_NAME + "_bak");
+
+
+            //Migrate book-specific preferences away from shared preferences
+            Context context = GnuCashApplication.getAppContext();
+            String keyUseDoubleEntry = context.getString(R.string.key_use_double_entry);
+            String keySaveOpeningBalance = context.getString(R.string.key_save_opening_balances);
+            String keyLastExportTime = PreferencesHelper.PREFERENCE_LAST_EXPORT_TIME_KEY;
+
+            SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
+            String lastExportTime = sharedPrefs.getString(keyLastExportTime, TimestampHelper.getTimestampFromEpochZero().toString());
+            boolean useDoubleEntry = sharedPrefs.getBoolean(keyUseDoubleEntry, true);
+            boolean saveOpeningBalance = sharedPrefs.getBoolean(keySaveOpeningBalance, false);
+
+
+            SharedPreferences bookPrefs = PreferenceActivity.getActiveBookSharedPreferences(context);
+            bookPrefs.edit()
+                    .putString(keyLastExportTime, lastExportTime)
+                    .putBoolean(keyUseDoubleEntry, useDoubleEntry)
+                    .putBoolean(keySaveOpeningBalance, saveOpeningBalance)
+                    .apply();
+
+
+            //// TODO: 18.05.2016 Move backup files from external storage?
 
             db.setTransactionSuccessful();
             oldVersion = 13;

@@ -18,6 +18,7 @@ package org.gnucash.android.ui.settings;
 
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
@@ -49,6 +50,8 @@ import butterknife.ButterKnife;
 public class PreferenceActivity extends PasscodeLockActivity implements
         PreferenceFragmentCompat.OnPreferenceStartFragmentCallback{
 
+    public static final String ACTION_MANAGE_BOOKS = "org.gnucash.android.intent.action.MANAGE_BOOKS";
+
     @Bind(R.id.slidingpane_layout) SlidingPaneLayout mSlidingPaneLayout;
 
     @Override
@@ -77,8 +80,14 @@ public class PreferenceActivity extends PasscodeLockActivity implements
             }
         });
 
-        mSlidingPaneLayout.openPane();
-        loadFragment(new GeneralPreferenceFragment());
+        String action = getIntent().getAction();
+        if (action != null && action.equals(ACTION_MANAGE_BOOKS)){
+            loadFragment(new BookListFragment());
+            mSlidingPaneLayout.closePane();
+        } else {
+            mSlidingPaneLayout.openPane();
+            loadFragment(new GeneralPreferenceFragment());
+        }
 
         ActionBar actionBar = getSupportActionBar();
         assert actionBar != null;

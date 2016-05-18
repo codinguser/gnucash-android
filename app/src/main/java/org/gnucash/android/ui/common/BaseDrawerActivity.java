@@ -296,7 +296,10 @@ public abstract class BaseDrawerActivity extends PasscodeLockActivity implements
     public boolean onMenuItemClick(MenuItem item) {
         long id = item.getItemId();
         if (id == ID_MANAGE_BOOKS){
-            //// TODO: 11.12.2015 launch activity to manage books
+            Intent intent = new Intent(this, PreferenceActivity.class);
+            intent.setAction(PreferenceActivity.ACTION_MANAGE_BOOKS);
+            startActivity(intent);
+            mDrawerLayout.closeDrawer(mNavigationView);
             return true;
         }
         BooksDbAdapter booksDbAdapter = BooksDbAdapter.getInstance();

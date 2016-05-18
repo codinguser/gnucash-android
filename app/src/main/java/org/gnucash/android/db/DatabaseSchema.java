@@ -68,6 +68,7 @@ public class DatabaseSchema {
         public static final String COLUMN_ROOT_GUID     = "root_account_guid";
         public static final String COLUMN_TEMPLATE_GUID = "root_template_guid";
         public static final String COLUMN_ACTIVE        = "is_active";
+        public static final String COLUMN_LAST_SYNC     = "last_export_time";
     }
 
     /**
