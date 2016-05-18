@@ -353,10 +353,10 @@ public class BackupPreferenceFragment extends PreferenceFragmentCompat implement
 	 */
 	private void restoreBackup() {
 		Log.i("Settings", "Opening GnuCash XML backups for restore");
-		File[] backupFiles = new File(Exporter.BACKUP_FOLDER_PATH).listFiles();
+		File[] backupFiles = new File(Exporter.getBackupFolderPath()).listFiles();
 		if (backupFiles == null){
 			Toast.makeText(getActivity(), R.string.toast_backup_folder_not_found, Toast.LENGTH_LONG).show();
-			new File(Exporter.BACKUP_FOLDER_PATH).mkdirs();
+			new File(Exporter.getBackupFolderPath());
 			return;
 		}
 

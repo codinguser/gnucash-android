@@ -900,7 +900,7 @@ public class GncXmlExporter extends Exporter{
     }
 
     /**
-     * Creates a backup of current database contents to the directory {@link Exporter#BACKUP_FOLDER_PATH}
+     * Creates a backup of current database contents to the directory {@link Exporter#getBackupFolderPath()}
      * @return {@code true} if backup was successful, {@code false} otherwise
      */
     public static boolean createBackup(){
@@ -925,10 +925,9 @@ public class GncXmlExporter extends Exporter{
      * Returns the full path of a file to make database backup.
      * Backups are done in XML format and are zipped (with ".zip" extension).
      * @return the file path for backups of the database.
-     * @see #BACKUP_FOLDER_PATH
+     * @see #getBackupFolderPath()
      */
     private static String getBackupFilePath(){
-        new File(BACKUP_FOLDER_PATH).mkdirs();
-        return BACKUP_FOLDER_PATH + buildExportFilename(ExportFormat.XML) + ".zip";
+        return Exporter.getBackupFolderPath() + buildExportFilename(ExportFormat.XML) + ".zip";
     }
 }

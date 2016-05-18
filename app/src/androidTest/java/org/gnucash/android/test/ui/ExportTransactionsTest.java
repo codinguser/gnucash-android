@@ -200,7 +200,7 @@ public class ExportTransactionsTest extends
 			}
 		}
 
-		File folder = new File(Exporter.EXPORT_FOLDER_PATH);
+		File folder = new File(Exporter.getExportFolderPath());
 		folder.mkdirs();
 		assertThat(folder).exists();
 
