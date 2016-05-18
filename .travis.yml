@@ -37,6 +37,7 @@ android:
 before_script:
   - chmod +x ./avd-test.sh
   - ./avd-test.sh
+  - chmod +x ./scripts/adb_all.sh
   #- mkdir sdcard
   #- mksdcard -l gnucash-sdcard 64M sdcard/gnucash-sdcard.img
   #- echo no | android create avd --force -n test -t android-23 --abi armeabi-v7a
