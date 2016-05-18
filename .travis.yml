@@ -4,11 +4,14 @@ env: TARGET="android-21" NAME="android-21"
 
 before_cache:
   - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
-  
+
 cache:
   directories:
    - $HOME/.android/avd/
    - $HOME/.gradle/caches/
+   - $HOME/.gradle/daemon
+   - $HOME/.gradle/native
+   - $HOME/.gradle/wrapper
 
 android:
   components:
@@ -42,7 +45,7 @@ before_script:
   #- adb shell input keyevent 82 &
 
 script:
-  - ./gradlew build cDDAT cPDAT
+  - ./gradlew build cDDAT cPDAT -PdisablePreDex --continue --stacktrace
 
 after_script:
   - cat ${TRAVIS_BUILD_DIR}/app/build/outputs/androidTest-results/connected/flavors/production/* # show logs
