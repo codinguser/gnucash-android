@@ -237,6 +237,7 @@ dependencies {
                         'com.android.support.test:runner:'          + androidSupportTestVersion,
                         'com.android.support.test:rules:'           + androidSupportTestVersion,
                         'com.android.support.test.espresso:espresso-core:'      + androidEspressoVersion,
+                        'com.android.support.test.espresso:espresso-intents:'   + androidEspressoVersion,
             //the following are only added so that the app and test version both us the same versions
                         'com.android.support:appcompat-v7:'     + androidSupportVersion,
                         'com.android.support:design:'           + androidSupportVersion)

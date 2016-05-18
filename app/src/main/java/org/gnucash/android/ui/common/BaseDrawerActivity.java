@@ -329,7 +329,7 @@ public abstract class BaseDrawerActivity extends PasscodeLockActivity implements
             String name = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseSchema.BookEntry.COLUMN_DISPLAY_NAME));
             menu.add(0, (int)id, maxRecent, name);
         }
-        menu.add(0, ID_MANAGE_BOOKS, maxRecent, "Manage Books...");
+        menu.add(0, ID_MANAGE_BOOKS, maxRecent, R.string.menu_manage_books);
 
         popup.show();
     }

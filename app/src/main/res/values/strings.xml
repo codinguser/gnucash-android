@@ -446,4 +446,5 @@
 
     <string name="header_manage_books">Manage Books</string>
     <string name="title_manage_books">Manage Books</string>
+    <string name="menu_manage_books">Manage Books...</string>
 </resources>

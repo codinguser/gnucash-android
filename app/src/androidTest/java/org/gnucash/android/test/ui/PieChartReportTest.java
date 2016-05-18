@@ -104,8 +104,7 @@ public class PieChartReportTest {
     private ReportsActivity mReportsActivity;
 
     @Rule
-    public ActivityTestRule<ReportsActivity> mActivityRule =
-            new ActivityTestRule<>(ReportsActivity.class, true, false);
+    public ActivityTestRule<ReportsActivity> mActivityRule = new ActivityTestRule<>(ReportsActivity.class);
 
     @ClassRule
     public static DisableAnimationsRule disableAnimationsRule = new DisableAnimationsRule();
@@ -141,18 +140,15 @@ public class PieChartReportTest {
 	@Before
 	public void setUp() throws Exception {
         // creates default accounts
-        mReportsActivity = mActivityRule.launchActivity(new Intent());
+        mReportsActivity = mActivityRule.getActivity();
         assertThat(mAccountsDbAdapter.getRecordsCount()).isGreaterThan(20); //lots of accounts in the default
+        onView(withId(R.id.btn_pie_chart)).perform(click());
 	}
 
     /**
-     * Call this method in every tests after adding data
+     * Add a transaction for the current month in order to test the report view
+     * @throws Exception
      */
-    private void getTestActivity() {
-        onView(withId(R.id.btn_pie_chart)).perform(click());
-        refreshReport();
-    }
-
     private void addTransactionForCurrentMonth() throws Exception {
         Transaction transaction = new Transaction(TRANSACTION_NAME);
         transaction.setTime(System.currentTimeMillis());
@@ -166,6 +162,10 @@ public class PieChartReportTest {
         mTransactionsDbAdapter.addRecord(transaction, DatabaseAdapter.UpdateMethod.insert);
     }
 
+    /**
+     * Add a transactions for the previous month for testing pie chart
+     * @param minusMonths Number of months prior
+     */
     private void addTransactionForPreviousMonth(int minusMonths) {
         Transaction transaction = new Transaction(TRANSACTION2_NAME);
         transaction.setTime(new LocalDateTime().minusMonths(minusMonths).toDate().getTime());
@@ -182,7 +182,6 @@ public class PieChartReportTest {
 
     @Test
     public void testNoData() {
-        getTestActivity();
         onView(withId(R.id.pie_chart)).perform(click());
         onView(withId(R.id.selected_chart_slice)).check(matches(withText(R.string.label_select_pie_slice_to_see_details)));
     }
@@ -191,7 +190,7 @@ public class PieChartReportTest {
     public void testSelectingValue() throws Exception {
         addTransactionForCurrentMonth();
         addTransactionForPreviousMonth(1);
-        getTestActivity();
+        refreshReport();
 
         onView(withId(R.id.pie_chart)).perform(clickXY(Position.BEGIN, Position.MIDDLE));
         float percent = (float) (TRANSACTION_AMOUNT / (TRANSACTION_AMOUNT + TRANSACTION2_AMOUNT) * 100);
@@ -208,7 +207,7 @@ public class PieChartReportTest {
 
         mTransactionsDbAdapter.addRecord(transaction, DatabaseAdapter.UpdateMethod.insert);
 
-        getTestActivity();
+        refreshReport();
 
         Thread.sleep(1000);
 

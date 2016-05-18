@@ -69,7 +69,7 @@ public class BooksDbAdapter extends DatabaseAdapter<Book> {
         Book book = new Book(rootAccountGUID);
         book.setDisplayName(displayName);
         book.setRootTemplateUID(rootTemplateGUID);
-        book.setSourceUri(Uri.parse(uriString));
+        book.setSourceUri(uriString == null ? null : Uri.parse(uriString));
         book.setActive(active > 0);
         book.setLastSync(TimestampHelper.getTimestampFromUtcString(lastSync));
 
@@ -80,7 +80,8 @@ public class BooksDbAdapter extends DatabaseAdapter<Book> {
     @Override
     protected @NonNull SQLiteStatement setBindings(@NonNull SQLiteStatement stmt, @NonNull final Book book) {
         stmt.clearBindings();
-        stmt.bindString(1, book.getDisplayName());
+        String displayName = book.getDisplayName() == null ? generateDefaultBookName() : book.getDisplayName();
+        stmt.bindString(1, displayName);
         stmt.bindString(2, book.getRootAccountUID());
         stmt.bindString(3, book.getRootTemplateUID());
         if (book.getSourceUri() != null)
