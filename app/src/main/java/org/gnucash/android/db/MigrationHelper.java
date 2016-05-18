@@ -21,9 +21,11 @@ import android.app.PendingIntent;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Environment;
+import android.support.v7.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -32,6 +34,7 @@ import com.crashlytics.android.Crashlytics;
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.adapter.AccountsDbAdapter;
+import org.gnucash.android.db.adapter.BooksDbAdapter;
 import org.gnucash.android.export.ExportFormat;
 import org.gnucash.android.export.ExportParams;
 import org.gnucash.android.export.Exporter;
@@ -44,6 +47,7 @@ import org.gnucash.android.model.PeriodType;
 import org.gnucash.android.model.Recurrence;
 import org.gnucash.android.model.ScheduledAction;
 import org.gnucash.android.model.Transaction;
+import org.gnucash.android.ui.settings.PreferenceActivity;
 import org.gnucash.android.util.PreferencesHelper;
 import org.gnucash.android.util.TimestampHelper;
 import org.xml.sax.InputSource;
@@ -192,7 +196,7 @@ public class MigrationHelper {
                 for (File src : oldExportFolder.listFiles()) {
                     if (src.isDirectory())
                         continue;
-                    File dst = new File(Exporter.EXPORT_FOLDER_PATH + "/" + src.getName());
+                    File dst = new File(Exporter.BASE_FOLDER_PATH + "/exports/" + src.getName());
                     try {
                         MigrationHelper.moveFile(src, dst);
                     } catch (IOException e) {
@@ -208,7 +212,7 @@ public class MigrationHelper {
             File oldBackupFolder = new File(oldExportFolder, "backup");
             if (oldBackupFolder.exists()){
                 for (File src : new File(oldExportFolder, "backup").listFiles()) {
-                    File dst = new File(Exporter.BACKUP_FOLDER_PATH + "/" + src.getName());
+                    File dst = new File(Exporter.BASE_FOLDER_PATH + "/backups/" + src.getName());
                     try {
                         MigrationHelper.moveFile(src, dst);
                     } catch (IOException e) {
@@ -223,6 +227,48 @@ public class MigrationHelper {
         }
     };
 
+    /**
+     * Moves all files from one directory  into another.
+     * The destination directory is assumed to already exist
+     */
+    static class RecursiveMoveFiles implements Runnable {
+        File mSource;
+        File mDestination;
+
+        /**
+         * Constructor, specify origin and target directories
+         * @param src Source directory/file. If directory, all files within it will be moved
+         * @param dst Destination directory/file. If directory, it should already exist
+         */
+        RecursiveMoveFiles(File src, File dst){
+            mSource = src;
+            mDestination = dst;
+        }
+
+        private boolean copy(File src, File dst){
+            boolean results = true;
+            if (src.isDirectory()){
+                dst.mkdirs(); //we assume it works everytime. Great, right?
+                for (File file : src.listFiles()) {
+                    File target = new File(dst, file.getName());
+                    results &= copy(file, target);
+                }
+            } else {
+                try {
+                    moveFile(src, dst);
+                } catch (IOException e) {
+                    results = false;
+                    Log.d(LOG_TAG, "Error moving file: " + src.getAbsolutePath());
+                }
+            }
+            return results;
+        }
+
+        @Override
+        public void run() {
+            copy(mSource, mDestination);
+        }
+    }
 
     /**
      * Imports commodities into the database from XML resource file
@@ -489,8 +535,8 @@ public class MigrationHelper {
     static int upgradeDbToVersion8(SQLiteDatabase db) {
         Log.i(DatabaseHelper.LOG_TAG, "Upgrading database to version 8");
         int oldVersion = 7;
-        new File(Exporter.BACKUP_FOLDER_PATH).mkdirs();
-        new File(Exporter.EXPORT_FOLDER_PATH).mkdirs();
+        new File(Exporter.BASE_FOLDER_PATH + "/backups/").mkdirs();
+        new File(Exporter.BASE_FOLDER_PATH + "/exports/").mkdirs();
         //start moving the files in background thread before we do the database stuff
         new Thread(moveExportedFilesToNewDefaultLocation).start();
 
@@ -1226,6 +1272,7 @@ public class MigrationHelper {
      *     <li>Migrate scheduled transaction recurrences to own table</li>
      *     <li>Adds flags for reconciled status to split table</li>
      *     <li>Add flags for auto-/advance- create and notification to scheduled actions</li>
+     *     <li>Migrate old shared preferences into new book-specific preferences</li>
      * </ul>
      * </p>
      * @param db SQlite database to be upgraded
@@ -1434,6 +1481,53 @@ public class MigrationHelper {
         } finally {
             db.endTransaction();
         }
+
+
+        //Migrate book-specific preferences away from shared preferences
+        Log.d(LOG_TAG, "Migrating shared preferences into book preferences");
+        Context context = GnuCashApplication.getAppContext();
+        String keyUseDoubleEntry = context.getString(R.string.key_use_double_entry);
+        String keySaveOpeningBalance = context.getString(R.string.key_save_opening_balances);
+        String keyLastExportTime = PreferencesHelper.PREFERENCE_LAST_EXPORT_TIME_KEY;
+
+        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
+        String lastExportTime = sharedPrefs.getString(keyLastExportTime, TimestampHelper.getTimestampFromEpochZero().toString());
+        boolean useDoubleEntry = sharedPrefs.getBoolean(keyUseDoubleEntry, true);
+        boolean saveOpeningBalance = sharedPrefs.getBoolean(keySaveOpeningBalance, false);
+
+
+        SharedPreferences bookPrefs = PreferenceActivity.getActiveBookSharedPreferences(context);
+        bookPrefs.edit()
+                .putString(keyLastExportTime, lastExportTime)
+                .putBoolean(keyUseDoubleEntry, useDoubleEntry)
+                .putBoolean(keySaveOpeningBalance, saveOpeningBalance)
+                .apply();
+
+        String activeBookUID = BooksDbAdapter.getInstance().getActiveBookUID();
+
+
+        //// TODO: 18.05.2016 Move backup files from external storage?
+        Log.d(LOG_TAG, "Moving export and backup files to book-specific folders");
+        File newBasePath = new File(Exporter.BASE_FOLDER_PATH + "/" + activeBookUID);
+        newBasePath.mkdirs();
+
+        File src = new File(Exporter.BASE_FOLDER_PATH + "/backups/");
+        File dst = new File(Exporter.BASE_FOLDER_PATH + "/" + activeBookUID + "/backups/");
+        new Thread(new RecursiveMoveFiles(src, dst)).start();
+
+        src = new File(Exporter.BASE_FOLDER_PATH + "/exports/");
+        dst = new File(Exporter.BASE_FOLDER_PATH + "/" + activeBookUID + "/exports/");
+        new Thread(new RecursiveMoveFiles(src, dst)).start();
+
+        String activeBookName = BooksDbAdapter.getInstance().getActiveBookDisplayName();
+        File nameFile = new File(newBasePath, activeBookName.replaceAll("[^a-zA-Z0-9.-]", "_"));
+        try {
+            nameFile.createNewFile();
+        } catch (IOException e) {
+            Log.e(LOG_TAG, "Error creating name file for the database: " + nameFile.getName());
+            e.printStackTrace();
+        }
+
         return oldVersion;
     }
 }

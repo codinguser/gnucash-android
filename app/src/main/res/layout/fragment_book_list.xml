@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
  Copyright (c) 2016 Ngewi Fet <ngewif@gmail.com>
 
@@ -17,25 +16,23 @@
 -->
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+              android:orientation="vertical"
+              android:padding="@dimen/dialog_padding"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
 
-    <ListView
-              android:id="@id/android:list"
+    <ListView android:id="@id/android:list"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
-              android:layout_above="@id/account_balance_toolbar"
-              android:listSelector="@drawable/abc_list_selector_holo_light"
-              android:drawSelectorOnTop="false"/>
+              android:divider="@null" />
 
     <TextView android:id="@id/android:empty"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:text="@string/label_no_recurring_transactions"
-            android:layout_gravity="center"
-            android:textAppearance="?android:textAppearanceLarge"
-            style="@style/ListItem"/>
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:gravity="center"
+              android:text="No books in the database"
+              android:layout_gravity="center"
+              android:textAppearance="?android:textAppearanceLarge"
+              style="@style/ListItem"/>
 
 </LinearLayout>

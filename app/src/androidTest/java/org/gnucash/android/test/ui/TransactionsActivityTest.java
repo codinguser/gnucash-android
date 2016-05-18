@@ -21,6 +21,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.support.test.espresso.Espresso;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 
@@ -191,6 +192,9 @@ public class TransactionsActivityTest {
 
 		onView(withId(R.id.menu_save)).perform(click());
 		onView(withText(R.string.title_add_transaction)).check(matches(isDisplayed()));
+
+		Espresso.closeSoftKeyboard();
+		sleep(1000);
 
 		assertToastDisplayed(R.string.toast_transanction_amount_required);
 

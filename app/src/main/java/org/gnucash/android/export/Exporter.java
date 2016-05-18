@@ -28,6 +28,7 @@ import com.crashlytics.android.Crashlytics;
 import org.gnucash.android.BuildConfig;
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.adapter.AccountsDbAdapter;
+import org.gnucash.android.db.adapter.BooksDbAdapter;
 import org.gnucash.android.db.adapter.BudgetAmountsDbAdapter;
 import org.gnucash.android.db.adapter.BudgetsDbAdapter;
 import org.gnucash.android.db.adapter.CommoditiesDbAdapter;
@@ -60,17 +61,7 @@ public abstract class Exporter {
     /**
      * Application folder on external storage
      */
-    private static final String BASE_FOLDER_PATH = Environment.getExternalStorageDirectory() + "/" + BuildConfig.APPLICATION_ID;
-
-    /**
-     * Folder where exports like QIF and OFX will be saved for access by external programs
-     */
-    public static final String EXPORT_FOLDER_PATH =  BASE_FOLDER_PATH + "/exports/";
-
-    /**
-     * Folder where XML backups will be saved
-     */
-    public static final String BACKUP_FOLDER_PATH = BASE_FOLDER_PATH + "/backups/";
+    public static final String BASE_FOLDER_PATH = Environment.getExternalStorageDirectory() + "/" + BuildConfig.APPLICATION_ID;
 
     /**
      * Export options
@@ -198,6 +189,32 @@ public abstract class Exporter {
 
         return mExportCacheFilePath;
     }
+
+    /**
+     * Returns that path to the export folder for the currently active book.
+     * This is the folder where exports like QIF and OFX will be saved for access by external programs
+     * @return Absolute path to export folder for active book
+     */
+    public static String getExportFolderPath(){
+        String path = BASE_FOLDER_PATH + "/" + BooksDbAdapter.getInstance().getActiveBookUID() + "/exports/";
+        File file = new File(path);
+        if (!file.exists())
+            file.mkdirs();
+        return path;
+    }
+
+    /**
+     * Returns the path to the backups folder for the currently active book
+     * @return Absolute path to backup folder for active book
+     */
+    public static String getBackupFolderPath(){
+        String path = BASE_FOLDER_PATH + "/" + BooksDbAdapter.getInstance().getActiveBookUID() + "/backups/";
+        File file = new File(path);
+        if (!file.exists())
+            file.mkdirs();
+        return path;
+    }
+
 
     /**
      * Returns the MIME type for this exporter.

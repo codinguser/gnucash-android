@@ -970,7 +970,8 @@ public class GncXmlHandler extends DefaultHandler {
         BooksDbAdapter booksDbAdapter = BooksDbAdapter.getInstance();
         mBook.setRootAccountUID(mRootAccount.getUID());
         mBook.setDisplayName(booksDbAdapter.generateDefaultBookName());
-
+        //we on purpose do not set the book active. Only import. Caller should handle activation
+        
         long startTime = System.nanoTime();
         mAccountsDbAdapter.beginTransaction();
         Log.d(getClass().getSimpleName(), "bulk insert starts");

@@ -18,6 +18,8 @@ package org.gnucash.android.model;
 
 import android.net.Uri;
 
+import java.sql.Timestamp;
+
 /**
  * Represents a GnuCash book which is made up of accounts and transactions
  * @author Ngewi Fet <ngewif@gmail.com>
@@ -30,12 +32,13 @@ public class Book extends BaseModel {
     private String mRootTemplateUID;
     private boolean mActive;
 
+    private Timestamp mLastSync;
+
     /**
      * Default constructor
      */
     public Book(){
-        mRootTemplateUID = generateUID();
-        //nothing to see here, move along
+        init();
     }
 
     /**
@@ -44,7 +47,15 @@ public class Book extends BaseModel {
      */
     public Book(String rootAccountUID){
         this.mRootAccountUID = rootAccountUID;
+        init();
+    }
+
+    /**
+     * Initialize default values for the book
+     */
+    private void init(){
         this.mRootTemplateUID = generateUID();
+        mLastSync = new Timestamp(System.currentTimeMillis());
     }
 
     /**
@@ -132,5 +143,21 @@ public class Book extends BaseModel {
      */
     public void setDisplayName(String name) {
         this.mDisplayName = name;
+    }
+
+    /**
+     * Get the time of last synchronization of the book
+     * @return Timestamp of last synchronization
+     */
+    public Timestamp getLastSync() {
+        return mLastSync;
+    }
+
+    /**
+     * Set the time of last synchronization of the book
+     * @param lastSync Timestamp of last synchronization
+     */
+    public void setLastSync(Timestamp lastSync) {
+        this.mLastSync = lastSync;
     }
 }

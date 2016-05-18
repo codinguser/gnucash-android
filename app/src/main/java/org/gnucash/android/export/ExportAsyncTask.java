@@ -409,11 +409,11 @@ public class ExportAsyncTask extends AsyncTask<ExportParams, Void, Boolean> {
      */
     private List<String> moveExportToSDCard() {
         Log.i(TAG, "Moving exported file to external storage");
-        new File(Exporter.EXPORT_FOLDER_PATH).mkdirs();
+        new File(Exporter.getExportFolderPath());
         List<String> dstFiles = new ArrayList<>();
 
         for (String src: mExportedFiles) {
-            String dst = Exporter.EXPORT_FOLDER_PATH + stripPathPart(src);
+            String dst = Exporter.getExportFolderPath() + stripPathPart(src);
             try {
                 moveFile(src, dst);
                 dstFiles.add(dst);

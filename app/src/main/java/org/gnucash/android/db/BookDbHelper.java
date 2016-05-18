@@ -56,6 +56,7 @@ public class BookDbHelper extends SQLiteOpenHelper {
             + BookEntry.COLUMN_TEMPLATE_GUID + " varchar(255), "
             + BookEntry.COLUMN_ACTIVE        + " tinyint default 0, "
             + BookEntry.COLUMN_SOURCE_URI    + " varchar(255), "
+            + BookEntry.COLUMN_LAST_SYNC     + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
             + BookEntry.COLUMN_CREATED_AT    + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, "
             + BookEntry.COLUMN_MODIFIED_AT   + " TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP "
             + ");" + DatabaseHelper.createUpdatedAtTrigger(BookEntry.TABLE_NAME);

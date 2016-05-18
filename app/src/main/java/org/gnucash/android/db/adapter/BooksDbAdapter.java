@@ -26,6 +26,7 @@ import android.support.annotation.NonNull;
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.DatabaseSchema.BookEntry;
 import org.gnucash.android.model.Book;
+import org.gnucash.android.util.TimestampHelper;
 
 /**
  * Database adapter for creating/modifying book entries
@@ -42,7 +43,9 @@ public class BooksDbAdapter extends DatabaseAdapter<Book> {
                 BookEntry.COLUMN_ROOT_GUID,
                 BookEntry.COLUMN_TEMPLATE_GUID,
                 BookEntry.COLUMN_SOURCE_URI,
-                BookEntry.COLUMN_ACTIVE
+                BookEntry.COLUMN_ACTIVE,
+                BookEntry.COLUMN_UID,
+                BookEntry.COLUMN_LAST_SYNC
         });
     }
 
@@ -61,26 +64,31 @@ public class BooksDbAdapter extends DatabaseAdapter<Book> {
         String uriString = cursor.getString(cursor.getColumnIndexOrThrow(BookEntry.COLUMN_SOURCE_URI));
         String displayName = cursor.getString(cursor.getColumnIndexOrThrow(BookEntry.COLUMN_DISPLAY_NAME));
         int active = cursor.getInt(cursor.getColumnIndexOrThrow(BookEntry.COLUMN_ACTIVE));
+        String lastSync = cursor.getString(cursor.getColumnIndexOrThrow(BookEntry.COLUMN_LAST_SYNC));
 
         Book book = new Book(rootAccountGUID);
         book.setDisplayName(displayName);
         book.setRootTemplateUID(rootTemplateGUID);
-        book.setSourceUri(Uri.parse(uriString));
+        book.setSourceUri(uriString == null ? null : Uri.parse(uriString));
         book.setActive(active > 0);
+        book.setLastSync(TimestampHelper.getTimestampFromUtcString(lastSync));
 
+        populateBaseModelAttributes(cursor, book);
         return book;
     }
 
     @Override
     protected @NonNull SQLiteStatement setBindings(@NonNull SQLiteStatement stmt, @NonNull final Book book) {
         stmt.clearBindings();
-        stmt.bindString(1, book.getDisplayName());
+        String displayName = book.getDisplayName() == null ? generateDefaultBookName() : book.getDisplayName();
+        stmt.bindString(1, displayName);
         stmt.bindString(2, book.getRootAccountUID());
         stmt.bindString(3, book.getRootTemplateUID());
         if (book.getSourceUri() != null)
             stmt.bindString(4, book.getSourceUri().toString());
         stmt.bindLong(5, book.isActive() ? 1L : 0L);
         stmt.bindString(6, book.getUID());
+        stmt.bindString(7, TimestampHelper.getUtcStringFromTimestamp(book.getLastSync()));
         return stmt;
     }
 
