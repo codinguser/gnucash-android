@@ -17,6 +17,7 @@
 package org.gnucash.android.ui.settings;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -25,10 +26,12 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.PopupMenu;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -38,6 +41,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import org.gnucash.android.R;
+import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.BookDbHelper;
 import org.gnucash.android.db.DatabaseCursorLoader;
 import org.gnucash.android.db.DatabaseSchema;
@@ -47,6 +51,7 @@ import java.text.DateFormat;
 import java.util.Date;
 
 import org.gnucash.android.db.DatabaseSchema.BookEntry;
+import org.gnucash.android.ui.account.AccountsActivity;
 import org.gnucash.android.ui.common.Refreshable;
 import org.w3c.dom.Text;
 
@@ -85,6 +90,7 @@ public class BookListFragment extends ListFragment implements
         actionBar.setHomeButtonEnabled(true);
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setTitle(R.string.title_manage_books);
+        setHasOptionsMenu(true);
 
         getListView().setChoiceMode(ListView.CHOICE_MODE_NONE);
     }
@@ -96,8 +102,26 @@ public class BookListFragment extends ListFragment implements
     }
 
     @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.book_list_actions, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.menu_create_book:
+                AccountsActivity.createDefaultAccounts(GnuCashApplication.getDefaultCurrencyCode(), getActivity());
+                return true;
+
+            default:
+                return false;
+        }
+
+    }
+
+    @Override
     public void refresh() {
-        getLoaderManager().initLoader(0, null, this);
+        getLoaderManager().restartLoader(0, null, this);
     }
 
     @Override
@@ -178,9 +202,26 @@ public class BookListFragment extends ListFragment implements
                 deleteBookBtn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        //// TODO: 18.05.2016 Delete confirmation dialog
-                        BooksDbAdapter.getInstance().deleteRecord(bookUID);
-                        refresh();
+                        //// TODO: extract strings
+                        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
+                        dialogBuilder.setTitle("Confirm delete Book")
+                                .setIcon(R.drawable.ic_close_white_24dp)
+                                .setMessage("Are you sure you want to delete this book.\nThis action cannot be undone!");
+                        dialogBuilder.setPositiveButton("Delete Book", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                BooksDbAdapter.getInstance().deleteRecord(bookUID);
+                                refresh();
+                            }
+                        });
+                        dialogBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        });
+                        dialogBuilder.create().show();
+
                     }
                 });
             }

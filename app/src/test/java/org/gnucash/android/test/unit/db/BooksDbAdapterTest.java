@@ -109,4 +109,28 @@ public class BooksDbAdapterTest {
 
         assertThat(mBooksDbAdapter.generateDefaultBookName()).isEqualTo("Book 3");
     }
+
+    /**
+     * Test that book names never conflict and that the ordinal attached to the book name is
+     * increased irrespective of the order in which books are added to and deleted from the db
+     */
+    @Test
+    public void testGeneratedDisplayNames_shouldBeUnique(){
+        Book book1 = new Book(BaseModel.generateUID());
+        Book book2 = new Book(BaseModel.generateUID());
+        Book book3 = new Book(BaseModel.generateUID());
+
+        mBooksDbAdapter.addRecord(book1);
+        mBooksDbAdapter.addRecord(book2);
+        mBooksDbAdapter.addRecord(book3);
+
+        assertThat(mBooksDbAdapter.getRecordsCount()).isEqualTo(3L);
+
+        mBooksDbAdapter.deleteRecord(book2.getUID());
+        assertThat(mBooksDbAdapter.getRecordsCount()).isEqualTo(2L);
+
+        String generatedName = mBooksDbAdapter.generateDefaultBookName();
+        assertThat(generatedName).isNotEqualTo(book3.getDisplayName());
+        assertThat(generatedName).isEqualTo("Book 4");
+    }
 }

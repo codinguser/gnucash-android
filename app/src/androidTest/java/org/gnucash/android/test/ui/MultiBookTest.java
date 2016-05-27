@@ -94,6 +94,19 @@ public class MultiBookTest {
         assertThat(activeBook.getDisplayName()).isEqualTo("Book " + (booksCount+1));
     }
 
+    @Test
+    public void testCreateNewBook(){
+        long bookCount = mBooksDbAdapter.getRecordsCount();
+
+        shouldOpenBookManager();
+
+        onView(withId(R.id.menu_create_book))
+                .check(matches(isDisplayed()))
+                .perform(click());
+
+        assertThat(mBooksDbAdapter.getRecordsCount()).isEqualTo(bookCount+1);
+    }
+
     private static void sleep(long millis){
         try {
             Thread.sleep(millis);
