@@ -43,10 +43,12 @@ import org.gnucash.android.model.Money;
 import org.gnucash.android.db.adapter.CommoditiesDbAdapter;
 import org.gnucash.android.model.Commodity;
 import org.gnucash.android.ui.common.FormActivity;
+import org.gnucash.android.util.AmountParser;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.text.ParseException;
 import java.util.Locale;
 
 /**
@@ -315,13 +317,10 @@ public class CalculatorEditText extends EditText {
      */
     public @Nullable BigDecimal getValue(){
         evaluate();
-        String amountString = getCleanString();
-        if (amountString.isEmpty())
-            return null;
         try { //catch any exceptions in the conversion e.g. if a string with only "-" is entered
-            return new BigDecimal(amountString);
-        } catch (NumberFormatException e){
-            String msg = "Error parsing amount string " + amountString + " from CalculatorEditText";
+            return AmountParser.parse(getText().toString());
+        } catch (ParseException e){
+            String msg = "Error parsing amount string " + getText() + " from CalculatorEditText";
             Log.i(getClass().getSimpleName(), msg, e);
             return null;
         }
