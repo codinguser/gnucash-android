@@ -501,18 +501,7 @@ public class AccountsActivity extends BaseDrawerActivity implements OnAccountCli
      * @see #importXmlFileFromIntent(Activity, Intent, TaskDelegate)
      */
     public static void startXmlFileChooser(Activity activity) {
-        Intent pickIntent;
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT){
-//            pickIntent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-//        } else
-            pickIntent = new Intent(Intent.ACTION_GET_CONTENT);
-
-//        ArrayList<String> mimeTypes = new ArrayList<>();
-//        mimeTypes.add("application/*");
-//        mimeTypes.add("file/*");
-//        mimeTypes.add("text/*");
-//        mimeTypes.add("application/vnd.google-apps.file");
-//        pickIntent.putStringArrayListExtra(Intent.EXTRA_MIME_TYPES, mimeTypes);
+        Intent pickIntent = new Intent(Intent.ACTION_GET_CONTENT);
         pickIntent.addCategory(Intent.CATEGORY_OPENABLE);
         pickIntent.setType("*/*");
         Intent chooser = Intent.createChooser(pickIntent, "Select GnuCash account file"); //todo internationalize string
@@ -526,6 +515,26 @@ public class AccountsActivity extends BaseDrawerActivity implements OnAccountCli
         }
     }
 
+    /**
+     * Overloaded method.
+     * Starts chooser for selecting a GnuCash account file to import
+     * @param fragment Fragment creating the chooser and which will also handle the result
+     * @see #startXmlFileChooser(Activity)
+     */
+    public static void startXmlFileChooser(Fragment fragment) {
+        Intent pickIntent = new Intent(Intent.ACTION_GET_CONTENT);
+        pickIntent.addCategory(Intent.CATEGORY_OPENABLE);
+        pickIntent.setType("*/*");
+        Intent chooser = Intent.createChooser(pickIntent, "Select GnuCash account file"); //todo internationalize string
+
+        try {
+            fragment.startActivityForResult(chooser, REQUEST_PICK_ACCOUNTS_FILE);
+        } catch (ActivityNotFoundException ex){
+            Crashlytics.log("No file manager for selecting files available");
+            Crashlytics.logException(ex);
+            Toast.makeText(fragment.getActivity(), R.string.toast_install_file_manager, Toast.LENGTH_LONG).show();
+        }
+    }
 
     /**
      * Reads and XML file from an intent and imports it into the database

@@ -237,7 +237,12 @@ public abstract class DatabaseAdapter<Model extends BaseModel> {
         }
     }
 
-    /// This function should be called in a db transaction
+    /**
+     * Persist the model object to the database as records using the {@code updateMethod}
+     * @param modelList List of records
+     * @param updateMethod Method to use when persisting them
+     * @return Number of rows affected in the database
+     */
     private long doAddModels(@NonNull final List<Model> modelList, UpdateMethod updateMethod) {
         long nRow = 0;
         switch (updateMethod) {

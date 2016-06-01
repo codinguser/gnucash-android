@@ -226,7 +226,6 @@ public abstract class BaseDrawerActivity extends PasscodeLockActivity implements
      * Handler for the navigation drawer items
      * */
     protected void onDrawerMenuItemClicked(int itemId) {
-        mNavigationView.getMenu().findItem(itemId).setChecked(true);
         switch (itemId){
             case R.id.nav_item_open: { //Open... files
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT){
@@ -258,10 +257,12 @@ public abstract class BaseDrawerActivity extends PasscodeLockActivity implements
             }
                 break;
 
+/*
+            //todo: Re-enable this when Budget UI is complete
             case R.id.nav_item_budgets:
                 startActivity(new Intent(this, BudgetsActivity.class));
                 break;
-
+*/
             case R.id.nav_item_scheduled_actions: { //show scheduled transactions
                 Intent intent = new Intent(this, ScheduledActionsActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
