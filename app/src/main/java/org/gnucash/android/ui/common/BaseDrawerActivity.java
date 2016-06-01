@@ -22,6 +22,7 @@ import android.content.res.Configuration;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.LayoutRes;
@@ -85,6 +86,7 @@ public abstract class BaseDrawerActivity extends PasscodeLockActivity implements
 
     protected ActionBarDrawerToggle mDrawerToggle;
 
+    public static final int REQUEST_OPEN_DOCUMENT = 0x20;
 
     private class DrawerItemClickListener implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -227,7 +229,16 @@ public abstract class BaseDrawerActivity extends PasscodeLockActivity implements
         mNavigationView.getMenu().findItem(itemId).setChecked(true);
         switch (itemId){
             case R.id.nav_item_open: { //Open... files
-                AccountsActivity.startXmlFileChooser(this);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT){
+                    //use the storage access framework
+                    Intent openDocument = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+                    openDocument.addCategory(Intent.CATEGORY_OPENABLE);
+                    openDocument.setType("*/*");
+                    startActivityForResult(openDocument, REQUEST_OPEN_DOCUMENT);
+
+                } else {
+                    AccountsActivity.startXmlFileChooser(this);
+                }
             }
             break;
 
@@ -286,6 +297,12 @@ public abstract class BaseDrawerActivity extends PasscodeLockActivity implements
             case AccountsActivity.REQUEST_PICK_ACCOUNTS_FILE:
                 AccountsActivity.importXmlFileFromIntent(this, data, null);
                 break;
+            case BaseDrawerActivity.REQUEST_OPEN_DOCUMENT:
+                final int takeFlags = data.getFlags()
+                        & (Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                AccountsActivity.importXmlFileFromIntent(this, data, null);
+                getContentResolver().takePersistableUriPermission(data.getData(), takeFlags);
+                break;
             default:
                 super.onActivityResult(requestCode, resultCode, data);
                 break;
@@ -313,6 +330,7 @@ public abstract class BaseDrawerActivity extends PasscodeLockActivity implements
     }
 
     public void onClickAppTitle(View view){
+        mDrawerLayout.closeDrawer(mNavigationView);
         AccountsActivity.start(this);
     }
 

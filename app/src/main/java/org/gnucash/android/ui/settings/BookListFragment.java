@@ -205,8 +205,8 @@ public class BookListFragment extends ListFragment implements
                         //// TODO: extract strings
                         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
                         dialogBuilder.setTitle("Confirm delete Book")
-                                .setIcon(R.drawable.ic_close_white_24dp)
-                                .setMessage("Are you sure you want to delete this book.\nThis action cannot be undone!");
+                                .setIcon(R.drawable.ic_close_black_24dp)
+                                .setMessage("All accounts and transactions in this book will be deleted!");
                         dialogBuilder.setPositiveButton("Delete Book", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
@@ -214,13 +214,16 @@ public class BookListFragment extends ListFragment implements
                                 refresh();
                             }
                         });
-                        dialogBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        dialogBuilder.setNegativeButton(R.string.btn_cancel, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 dialog.dismiss();
                             }
                         });
-                        dialogBuilder.create().show();
+                        AlertDialog dialog = dialogBuilder.create();
+                        dialog.getButton(AlertDialog.BUTTON_POSITIVE)
+                                .setTextColor(getResources().getColor(R.color.account_red));
+                        dialog.show();
 
                     }
                 });
