@@ -1489,24 +1489,25 @@ public class MigrationHelper {
         String keyUseDoubleEntry = context.getString(R.string.key_use_double_entry);
         String keySaveOpeningBalance = context.getString(R.string.key_save_opening_balances);
         String keyLastExportTime = PreferencesHelper.PREFERENCE_LAST_EXPORT_TIME_KEY;
+        String keyUseCompactView = context.getString(R.string.key_use_compact_list);
 
         SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
         String lastExportTime = sharedPrefs.getString(keyLastExportTime, TimestampHelper.getTimestampFromEpochZero().toString());
         boolean useDoubleEntry = sharedPrefs.getBoolean(keyUseDoubleEntry, true);
         boolean saveOpeningBalance = sharedPrefs.getBoolean(keySaveOpeningBalance, false);
-
+        boolean useCompactTrnView = !GnuCashApplication.isDoubleEntryEnabled();
 
         SharedPreferences bookPrefs = PreferenceActivity.getActiveBookSharedPreferences(context);
         bookPrefs.edit()
                 .putString(keyLastExportTime, lastExportTime)
                 .putBoolean(keyUseDoubleEntry, useDoubleEntry)
                 .putBoolean(keySaveOpeningBalance, saveOpeningBalance)
+                .putBoolean(keyUseCompactView, useCompactTrnView)
                 .apply();
 
         String activeBookUID = BooksDbAdapter.getInstance().getActiveBookUID();
 
 
-        //// TODO: 18.05.2016 Move backup files from external storage?
         Log.d(LOG_TAG, "Moving export and backup files to book-specific folders");
         File newBasePath = new File(Exporter.BASE_FOLDER_PATH + "/" + activeBookUID);
         newBasePath.mkdirs();
