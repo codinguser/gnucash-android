@@ -34,7 +34,6 @@ import com.crashlytics.android.Crashlytics;
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.adapter.AccountsDbAdapter;
-import org.gnucash.android.db.adapter.BooksDbAdapter;
 import org.gnucash.android.export.ExportFormat;
 import org.gnucash.android.export.ExportParams;
 import org.gnucash.android.export.Exporter;
@@ -47,7 +46,6 @@ import org.gnucash.android.model.PeriodType;
 import org.gnucash.android.model.Recurrence;
 import org.gnucash.android.model.ScheduledAction;
 import org.gnucash.android.model.Transaction;
-import org.gnucash.android.ui.settings.PreferenceActivity;
 import org.gnucash.android.util.PreferencesHelper;
 import org.gnucash.android.util.TimestampHelper;
 import org.xml.sax.InputSource;
@@ -226,49 +224,6 @@ public class MigrationHelper {
                 oldExportFolder.delete();
         }
     };
-
-    /**
-     * Moves all files from one directory  into another.
-     * The destination directory is assumed to already exist
-     */
-    static class RecursiveMoveFiles implements Runnable {
-        File mSource;
-        File mDestination;
-
-        /**
-         * Constructor, specify origin and target directories
-         * @param src Source directory/file. If directory, all files within it will be moved
-         * @param dst Destination directory/file. If directory, it should already exist
-         */
-        RecursiveMoveFiles(File src, File dst){
-            mSource = src;
-            mDestination = dst;
-        }
-
-        private boolean copy(File src, File dst){
-            boolean results = true;
-            if (src.isDirectory()){
-                dst.mkdirs(); //we assume it works everytime. Great, right?
-                for (File file : src.listFiles()) {
-                    File target = new File(dst, file.getName());
-                    results &= copy(file, target);
-                }
-            } else {
-                try {
-                    moveFile(src, dst);
-                } catch (IOException e) {
-                    results = false;
-                    Log.d(LOG_TAG, "Error moving file: " + src.getAbsolutePath());
-                }
-            }
-            return results;
-        }
-
-        @Override
-        public void run() {
-            copy(mSource, mDestination);
-        }
-    }
 
     /**
      * Imports commodities into the database from XML resource file
@@ -1495,39 +1450,18 @@ public class MigrationHelper {
         String lastExportTime = sharedPrefs.getString(keyLastExportTime, TimestampHelper.getTimestampFromEpochZero().toString());
         boolean useDoubleEntry = sharedPrefs.getBoolean(keyUseDoubleEntry, true);
         boolean saveOpeningBalance = sharedPrefs.getBoolean(keySaveOpeningBalance, false);
-        boolean useCompactTrnView = !GnuCashApplication.isDoubleEntryEnabled();
+        boolean useCompactTrnView = PreferenceManager.getDefaultSharedPreferences(context)
+                .getBoolean(context.getString(R.string.key_use_double_entry), !useDoubleEntry);
 
-        SharedPreferences bookPrefs = PreferenceActivity.getActiveBookSharedPreferences(context);
+        String rootAccountUID = getGnuCashRootAccountUID(db);
+        SharedPreferences bookPrefs = context.getSharedPreferences(rootAccountUID, Context.MODE_PRIVATE);
+
         bookPrefs.edit()
                 .putString(keyLastExportTime, lastExportTime)
                 .putBoolean(keyUseDoubleEntry, useDoubleEntry)
                 .putBoolean(keySaveOpeningBalance, saveOpeningBalance)
                 .putBoolean(keyUseCompactView, useCompactTrnView)
                 .apply();
-
-        String activeBookUID = BooksDbAdapter.getInstance().getActiveBookUID();
-
-
-        Log.d(LOG_TAG, "Moving export and backup files to book-specific folders");
-        File newBasePath = new File(Exporter.BASE_FOLDER_PATH + "/" + activeBookUID);
-        newBasePath.mkdirs();
-
-        File src = new File(Exporter.BASE_FOLDER_PATH + "/backups/");
-        File dst = new File(Exporter.BASE_FOLDER_PATH + "/" + activeBookUID + "/backups/");
-        new Thread(new RecursiveMoveFiles(src, dst)).start();
-
-        src = new File(Exporter.BASE_FOLDER_PATH + "/exports/");
-        dst = new File(Exporter.BASE_FOLDER_PATH + "/" + activeBookUID + "/exports/");
-        new Thread(new RecursiveMoveFiles(src, dst)).start();
-
-        String activeBookName = BooksDbAdapter.getInstance().getActiveBookDisplayName();
-        File nameFile = new File(newBasePath, activeBookName.replaceAll("[^a-zA-Z0-9.-]", "_"));
-        try {
-            nameFile.createNewFile();
-        } catch (IOException e) {
-            Log.e(LOG_TAG, "Error creating name file for the database: " + nameFile.getName());
-            e.printStackTrace();
-        }
 
         return oldVersion;
     }

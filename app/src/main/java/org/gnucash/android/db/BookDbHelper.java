@@ -31,7 +31,9 @@ import org.gnucash.android.db.adapter.AccountsDbAdapter;
 import org.gnucash.android.db.adapter.BooksDbAdapter;
 import org.gnucash.android.db.adapter.SplitsDbAdapter;
 import org.gnucash.android.db.adapter.TransactionsDbAdapter;
+import org.gnucash.android.export.Exporter;
 import org.gnucash.android.model.Book;
+import org.gnucash.android.util.RecursiveMoveFiles;
 
 import java.io.File;
 import java.io.IOException;
@@ -82,7 +84,7 @@ public class BookDbHelper extends SQLiteOpenHelper {
         String sql = "SELECT COUNT(*) FROM " + BookEntry.TABLE_NAME;
         SQLiteStatement statement = db.compileStatement(sql);
         long count = statement.simpleQueryForLong();
-        if (count == 0) { //there is currently no book in the database
+        if (count == 0) { //there is currently no book in the database, should only be true once, during migration
             DatabaseHelper helper = new DatabaseHelper(GnuCashApplication.getAppContext(),
                     DatabaseSchema.LEGACY_DATABASE_NAME);
             SQLiteDatabase mainDb = helper.getWritableDatabase();
@@ -113,6 +115,37 @@ public class BookDbHelper extends SQLiteOpenHelper {
                 Crashlytics.log(err_msg);
                 Log.e(LOG_TAG, err_msg, e);
             }
+
+            migrateBackupFiles(book.getUID());
+        }
+    }
+
+    /**
+     * Move the backup and export files from the old location (single-book) to the new multi-book
+     * backup folder structure. Each book has its own directory as well as backups and exports.
+     * <p>This method should be called only once during the initial migration to multi-book support</p>
+     * @param activeBookUID GUID of the book for which to migrate the files
+     */
+    private void migrateBackupFiles(String activeBookUID){
+
+        Log.d(LOG_TAG, "Moving export and backup files to book-specific folders");
+        File newBasePath = new File(Exporter.BASE_FOLDER_PATH + "/" + activeBookUID);
+        newBasePath.mkdirs();
+
+        File src = new File(Exporter.BASE_FOLDER_PATH + "/backups/");
+        File dst = new File(Exporter.BASE_FOLDER_PATH + "/" + activeBookUID + "/backups/");
+        new Thread(new RecursiveMoveFiles(src, dst)).start();
+
+        src = new File(Exporter.BASE_FOLDER_PATH + "/exports/");
+        dst = new File(Exporter.BASE_FOLDER_PATH + "/" + activeBookUID + "/exports/");
+        new Thread(new RecursiveMoveFiles(src, dst)).start();
+
+        File nameFile = new File(newBasePath, "Book 1");
+        try {
+            nameFile.createNewFile();
+        } catch (IOException e) {
+            Log.e(LOG_TAG, "Error creating name file for the database: " + nameFile.getName());
+            e.printStackTrace();
         }
     }
 
