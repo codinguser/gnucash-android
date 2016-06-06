@@ -31,7 +31,6 @@ import android.support.v7.preference.PreferenceFragmentCompat;
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.DatabaseSchema;
-import org.gnucash.android.db.adapter.BooksDbAdapter;
 import org.gnucash.android.db.adapter.CommoditiesDbAdapter;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.ui.account.AccountsActivity;
@@ -134,7 +133,7 @@ public class AccountPreferencesFragment extends PreferenceFragmentCompat impleme
         String key = preference.getKey();
 
         if (key.equals(getString(R.string.key_import_accounts))){
-            AccountsActivity.startXmlFileChooser(getActivity());
+            AccountsActivity.startXmlFileChooser(this);
             return true;
         }
 

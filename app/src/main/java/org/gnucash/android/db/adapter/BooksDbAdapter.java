@@ -141,13 +141,13 @@ public class BooksDbAdapter extends DatabaseAdapter<Book> {
         Cursor cursor = mDb.query(mTableName, new String[]{BookEntry.COLUMN_UID},
                 BookEntry.COLUMN_ACTIVE + "= 1", null, null, null, null, "1");
         try{
-            if (cursor.moveToFirst()){
-                return cursor.getString(cursor.getColumnIndexOrThrow(BookEntry.COLUMN_UID));
-            }
+            if (cursor.getCount() == 0)
+                throw new RuntimeException("There is no active book in the app. This should NEVER happen!");
+            cursor.moveToFirst();
+            return cursor.getString(cursor.getColumnIndexOrThrow(BookEntry.COLUMN_UID));
         } finally {
             cursor.close();
         }
-        return null;
     }
 
 

@@ -83,7 +83,7 @@ public class DateRangePickerDialogFragment extends DialogFragment{
                 .inMode(CalendarPickerView.SelectionMode.RANGE)
                 .withSelectedDate(today);
 
-        mDoneButton.setText("Done");
+        mDoneButton.setText(R.string.done_label);
         mDoneButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

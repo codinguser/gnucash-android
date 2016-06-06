@@ -31,7 +31,9 @@ import org.gnucash.android.db.adapter.AccountsDbAdapter;
 import org.gnucash.android.db.adapter.BooksDbAdapter;
 import org.gnucash.android.db.adapter.SplitsDbAdapter;
 import org.gnucash.android.db.adapter.TransactionsDbAdapter;
+import org.gnucash.android.export.Exporter;
 import org.gnucash.android.model.Book;
+import org.gnucash.android.util.RecursiveMoveFiles;
 
 import java.io.File;
 import java.io.IOException;
@@ -45,6 +47,9 @@ import java.io.IOException;
 public class BookDbHelper extends SQLiteOpenHelper {
 
     public static final String LOG_TAG = "BookDbHelper";
+
+    private Context mContext;
+
     /**
      * Create the books table
      */
@@ -63,26 +68,15 @@ public class BookDbHelper extends SQLiteOpenHelper {
 
     public BookDbHelper(Context context) {
         super(context, DatabaseSchema.BOOK_DATABASE_NAME, null, DatabaseSchema.BOOK_DATABASE_VERSION);
+        mContext = context;
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(BOOKS_TABLE_CREATE);
-    }
 
-    @Override
-    public void onOpen(SQLiteDatabase db) {
-        super.onOpen(db);
-
-        if (db.isReadOnly()) {
-            Log.w(LOG_TAG, "Database was opened in read-only mode");
-            return;
-        }
-
-        String sql = "SELECT COUNT(*) FROM " + BookEntry.TABLE_NAME;
-        SQLiteStatement statement = db.compileStatement(sql);
-        long count = statement.simpleQueryForLong();
-        if (count == 0) { //there is currently no book in the database
+        if (mContext.getDatabasePath(DatabaseSchema.LEGACY_DATABASE_NAME).exists()){
+            Log.d(LOG_TAG, "Legacy database found. Migrating to multibook format");
             DatabaseHelper helper = new DatabaseHelper(GnuCashApplication.getAppContext(),
                     DatabaseSchema.LEGACY_DATABASE_NAME);
             SQLiteDatabase mainDb = helper.getWritableDatabase();
@@ -92,14 +86,8 @@ public class BookDbHelper extends SQLiteOpenHelper {
             String rootAccountUID = accountsDbAdapter.getOrCreateGnuCashRootAccountUID();
 
             Book book = new Book(rootAccountUID);
-            ContentValues contentValues = new ContentValues();
-            contentValues.put(BookEntry.COLUMN_UID, book.getUID());
-            contentValues.put(BookEntry.COLUMN_ROOT_GUID, rootAccountUID);
-            contentValues.put(BookEntry.COLUMN_TEMPLATE_GUID, Book.generateUID());
-            contentValues.put(BookEntry.COLUMN_DISPLAY_NAME, new BooksDbAdapter(db).generateDefaultBookName());
-            contentValues.put(BookEntry.COLUMN_ACTIVE, 1);
-
-            db.insert(BookEntry.TABLE_NAME, null, contentValues);
+            book.setActive(true);
+            insertBook(db, book);
 
             String mainDbPath = mainDb.getPath();
             helper.close();
@@ -113,6 +101,71 @@ public class BookDbHelper extends SQLiteOpenHelper {
                 Crashlytics.log(err_msg);
                 Log.e(LOG_TAG, err_msg, e);
             }
+
+            migrateBackupFiles(book.getUID());
+        }
+
+        String sql = "SELECT COUNT(*) FROM " + BookEntry.TABLE_NAME;
+        SQLiteStatement statement = db.compileStatement(sql);
+        long count = statement.simpleQueryForLong();
+        if (count == 0) { //no book in the database, create a default one
+            Log.i(LOG_TAG, "No books found in database, creating default book");
+            Book book = new Book();
+            DatabaseHelper helper = new DatabaseHelper(GnuCashApplication.getAppContext(), book.getUID());
+            SQLiteDatabase mainDb = helper.getWritableDatabase(); //actually create the db
+            AccountsDbAdapter accountsDbAdapter = new AccountsDbAdapter(mainDb,
+                    new TransactionsDbAdapter(mainDb, new SplitsDbAdapter(mainDb)));
+
+            String rootAccountUID = accountsDbAdapter.getOrCreateGnuCashRootAccountUID();
+            book.setRootAccountUID(rootAccountUID);
+            book.setActive(true);
+            insertBook(db, book);
+        }
+
+    }
+
+    /**
+     * Inserts the book into the database
+     * @param db Book database
+     * @param book Book to insert
+     */
+    private void insertBook(SQLiteDatabase db, Book book) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(BookEntry.COLUMN_UID, book.getUID());
+        contentValues.put(BookEntry.COLUMN_ROOT_GUID, book.getRootAccountUID());
+        contentValues.put(BookEntry.COLUMN_TEMPLATE_GUID, Book.generateUID());
+        contentValues.put(BookEntry.COLUMN_DISPLAY_NAME, new BooksDbAdapter(db).generateDefaultBookName());
+        contentValues.put(BookEntry.COLUMN_ACTIVE, book.isActive() ? 1 : 0);
+
+        db.insert(BookEntry.TABLE_NAME, null, contentValues);
+    }
+
+    /**
+     * Move the backup and export files from the old location (single-book) to the new multi-book
+     * backup folder structure. Each book has its own directory as well as backups and exports.
+     * <p>This method should be called only once during the initial migration to multi-book support</p>
+     * @param activeBookUID GUID of the book for which to migrate the files
+     */
+    private void migrateBackupFiles(String activeBookUID){
+
+        Log.d(LOG_TAG, "Moving export and backup files to book-specific folders");
+        File newBasePath = new File(Exporter.BASE_FOLDER_PATH + "/" + activeBookUID);
+        newBasePath.mkdirs();
+
+        File src = new File(Exporter.BASE_FOLDER_PATH + "/backups/");
+        File dst = new File(Exporter.BASE_FOLDER_PATH + "/" + activeBookUID + "/backups/");
+        new Thread(new RecursiveMoveFiles(src, dst)).start();
+
+        src = new File(Exporter.BASE_FOLDER_PATH + "/exports/");
+        dst = new File(Exporter.BASE_FOLDER_PATH + "/" + activeBookUID + "/exports/");
+        new Thread(new RecursiveMoveFiles(src, dst)).start();
+
+        File nameFile = new File(newBasePath, "Book 1");
+        try {
+            nameFile.createNewFile();
+        } catch (IOException e) {
+            Log.e(LOG_TAG, "Error creating name file for the database: " + nameFile.getName());
+            e.printStackTrace();
         }
     }
 

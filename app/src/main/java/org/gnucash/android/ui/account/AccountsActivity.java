@@ -61,6 +61,7 @@ import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.db.adapter.AccountsDbAdapter;
+import org.gnucash.android.db.adapter.BooksDbAdapter;
 import org.gnucash.android.export.xml.GncXmlExporter;
 import org.gnucash.android.importer.ImportAsyncTask;
 import org.gnucash.android.ui.common.BaseDrawerActivity;
@@ -369,7 +370,8 @@ public class AccountsActivity extends BaseDrawerActivity implements OnAccountCli
      * <p>Also handles displaying the What's New dialog</p>
      */
     private void init() {
-        PreferenceManager.setDefaultValues(this, R.xml.fragment_transaction_preferences, false);
+        PreferenceManager.setDefaultValues(this, BooksDbAdapter.getInstance().getActiveBookUID(),
+                Context.MODE_PRIVATE, R.xml.fragment_transaction_preferences, true);
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         boolean firstRun = prefs.getBoolean(getString(R.string.key_first_run), true);
@@ -501,18 +503,7 @@ public class AccountsActivity extends BaseDrawerActivity implements OnAccountCli
      * @see #importXmlFileFromIntent(Activity, Intent, TaskDelegate)
      */
     public static void startXmlFileChooser(Activity activity) {
-        Intent pickIntent;
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT){
-//            pickIntent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-//        } else
-            pickIntent = new Intent(Intent.ACTION_GET_CONTENT);
-
-//        ArrayList<String> mimeTypes = new ArrayList<>();
-//        mimeTypes.add("application/*");
-//        mimeTypes.add("file/*");
-//        mimeTypes.add("text/*");
-//        mimeTypes.add("application/vnd.google-apps.file");
-//        pickIntent.putStringArrayListExtra(Intent.EXTRA_MIME_TYPES, mimeTypes);
+        Intent pickIntent = new Intent(Intent.ACTION_GET_CONTENT);
         pickIntent.addCategory(Intent.CATEGORY_OPENABLE);
         pickIntent.setType("*/*");
         Intent chooser = Intent.createChooser(pickIntent, "Select GnuCash account file"); //todo internationalize string
@@ -526,6 +517,26 @@ public class AccountsActivity extends BaseDrawerActivity implements OnAccountCli
         }
     }
 
+    /**
+     * Overloaded method.
+     * Starts chooser for selecting a GnuCash account file to import
+     * @param fragment Fragment creating the chooser and which will also handle the result
+     * @see #startXmlFileChooser(Activity)
+     */
+    public static void startXmlFileChooser(Fragment fragment) {
+        Intent pickIntent = new Intent(Intent.ACTION_GET_CONTENT);
+        pickIntent.addCategory(Intent.CATEGORY_OPENABLE);
+        pickIntent.setType("*/*");
+        Intent chooser = Intent.createChooser(pickIntent, "Select GnuCash account file"); //todo internationalize string
+
+        try {
+            fragment.startActivityForResult(chooser, REQUEST_PICK_ACCOUNTS_FILE);
+        } catch (ActivityNotFoundException ex){
+            Crashlytics.log("No file manager for selecting files available");
+            Crashlytics.logException(ex);
+            Toast.makeText(fragment.getActivity(), R.string.toast_install_file_manager, Toast.LENGTH_LONG).show();
+        }
+    }
 
     /**
      * Reads and XML file from an intent and imports it into the database

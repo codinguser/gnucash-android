@@ -18,7 +18,6 @@ package org.gnucash.android.ui.settings;
 
 import android.annotation.TargetApi;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
@@ -28,14 +27,11 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.SlidingPaneLayout;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceFragmentCompat;
 import android.support.v7.preference.PreferenceManager;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.FrameLayout;
-import android.widget.Toast;
 
 import org.gnucash.android.R;
 import org.gnucash.android.db.adapter.BooksDbAdapter;
@@ -82,7 +78,7 @@ public class PreferenceActivity extends PasscodeLockActivity implements
 
         String action = getIntent().getAction();
         if (action != null && action.equals(ACTION_MANAGE_BOOKS)){
-            loadFragment(new BookListFragment());
+            loadFragment(new BookManagerFragment());
             mSlidingPaneLayout.closePane();
         } else {
             mSlidingPaneLayout.openPane();

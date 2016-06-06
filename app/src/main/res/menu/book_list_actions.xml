@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
  Copyright (c) 2016 Ngewi Fet <ngewif@gmail.com>
 
@@ -15,13 +14,10 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
       xmlns:app="http://schemas.android.com/apk/res-auto">
-
-    <item android:id="@+id/ctx_menu_sync_book"
-          android:checkable="true"
-          android:title="@string/menu_title_enable_sync"
+    <item android:id="@+id/menu_create_book"
+          android:icon="@drawable/ic_add_white_24dp"
           app:showAsAction="always"
-          android:orderInCategory="1" />
+          android:title="@string/menu_title_new_book"/>
 </menu>

@@ -25,6 +25,7 @@
   <string name="label_account_name">Numele contului</string>
   <string name="btn_cancel">Rezilia</string>
   <string name="btn_save">Salvaţi</string>
+  <string name="btn_test">Test</string>
   <string name="label_passcode">Introduceţi parola</string>
   <string name="toast_wrong_passcode">Greşit parola, vă rugăm să încercaţi din nou</string>
   <string name="toast_passcode_set">Passcode set</string>
@@ -169,6 +170,7 @@
   <string name="summary_default_export_format">File format to use by default when exporting transactions</string>
   <string name="menu_export_transactions">Export transactions&#8230;</string>
   <string name="label_recurring_transaction">Recurrence</string>
+  <!-- This should be the same name used by GnuCash desktop for imbalance accounts -->
   <string name="imbalance_account_name">Imbalance</string>
   <string name="title_progress_exporting_transactions">Exporting transactions</string>
   <string name="label_no_recurring_transactions">No recurring transactions to display.</string>
@@ -201,7 +203,10 @@
     <item>OFX</item>
     <item>XML</item>
   </string-array>
+  <!-- Default title for color picker dialog [CHAR LIMIT=30] -->
   <string name="color_picker_default_title">Select a Color</string>
+  <!-- Content description for a color square. -->
+  <!-- Content description for a selected color square. -->
   <string name="label_account_color_and_type">Account Color &amp; Type</string>
   <string name="label_delete_sub_accounts">Delete sub-accounts</string>
   <string name="title_recent_accounts">Recent</string>
@@ -277,9 +282,11 @@
   <string name="label_tap_to_create_schedule">Tap to create schedule</string>
   <string name="title_restore_backup">Restore Backup&#8230;</string>
   <string name="header_backup_and_export_settings">Backup &amp; export</string>
-  <string name="title_dropbox_sync_preference">DropBox Sync</string>
+  <string name="title_dropbox_sync_preference">Enable DropBox</string>
+  <string name="title_owncloud_sync_preference">Enable ownCloud </string>
   <string name="title_backup_preference_category">Backup</string>
-  <string name="summary_dropbox_sync">Enable to sync to DropBox</string>
+  <string name="summary_dropbox_sync">Enable exporting to DropBox</string>
+  <string name="summary_owncloud_sync">Enable exporting to ownCloud</string>
   <string name="title_select_gnucash_xml_file">Select GnuCash XML file</string>
   <string name="title_backup_prefs">Backup Preferences</string>
   <string name="title_create_backup_pref">Create Backup</string>
@@ -288,8 +295,8 @@
   <string name="toast_backup_successful">Backup successful</string>
   <string name="toast_backup_failed">Backup failed</string>
   <string name="export_warning_xml">Exports all accounts and transactions</string>
-  <string name="title_google_drive_sync_pref">Google Drive Sync</string>
-  <string name="summary_google_drive_sync">Enable to sync to Google Drive</string>
+  <string name="title_google_drive_sync_pref">Enable Google Drive</string>
+  <string name="summary_google_drive_sync">Enable exporting to Google Drive</string>
   <string name="toast_install_file_manager">Install a file manager to select files</string>
   <string name="title_select_backup_to_restore">Select backup to restore</string>
   <string name="nav_menu_favorites">Favorites</string>
@@ -298,6 +305,16 @@
   <string name="nav_menu_scheduled_transactions">Scheduled Transactions</string>
   <string name="nav_menu_export">Export&#8230;</string>
   <string name="nav_menu_settings">Settings</string>
+  <string name="username">User Name</string>
+  <string name="password">Password</string>
+  <string name="owncloud_pref">owncloud</string>
+  <string name="owncloud_server">https://</string>
+  <string name="owncloud_server_invalid">OC server not found</string>
+  <string name="owncloud_user_invalid">OC username/password invalid</string>
+  <string name="owncloud_dir_invalid">Invalid chars: \\ &lt; &gt; : \&quot; | * ? </string>
+  <string name="owncloud_server_ok">OC server OK</string>
+  <string name="owncloud_user_ok">OC username/password OK</string>
+  <string name="owncloud_dir_ok">Dir name OK</string>
   <plurals name="label_every_x_days">
     <item quantity="one">Daily</item>
     <item quantity="few">Every %d days</item>
@@ -389,13 +406,16 @@
   <string name="summary_google_plus">Share ideas, discuss changes or report problems</string>
   <string name="summary_translate_gnucash">Translate or proof-read on CrowdIn</string>
   <string name="toast_no_compatible_apps_to_receive_export">No compatible apps to receive the exported transactions!</string>
-  <string name="menu_move_transaction">Move...</string>
+  <string name="menu_move_transaction">Move&#8230;</string>
   <string name="menu_duplicate_transaction">Duplicate</string>
   <string name="nav_menu_budgets">Budgets</string>
   <string name="title_cash_flow_report">Cash Flow</string>
   <string name="title_budgets">Budgets</string>
+  <string name="title_use_compact_list">Enable compact view</string>
+  <string name="summary_use_compact_list">Enable to always use compact view for transactions list</string>
   <string name="error_invalid_exchange_rate">Invalid exchange rate</string>
   <string name="sample_exchange_rate">e.g. 1 %1$s = x.xx %2$s</string>
+  <string name="error_invalid_amount">Invalid amount</string>
   <string-array name="report_time_range">
     <item>Current month</item>
     <item>Last 3 months</item>
@@ -404,4 +424,37 @@
     <item>All time</item>
     <item>Custom range&#8230;</item>
   </string-array>
+  <!-- Passcode lock -->
+  <string name="digit_one">1</string>
+  <string name="digit_one_text">@string/empty</string>
+  <string name="digit_two">2</string>
+  <string name="digit_two_text">ABC</string>
+  <string name="digit_three">3</string>
+  <string name="digit_three_text">DEF</string>
+  <string name="digit_four">4</string>
+  <string name="digit_four_text">GHI</string>
+  <string name="digit_five">5</string>
+  <string name="digit_five_text">JKL</string>
+  <string name="digit_six">6</string>
+  <string name="digit_six_text">MNO</string>
+  <string name="digit_seven">7</string>
+  <string name="digit_seven_text">PQRS</string>
+  <string name="digit_eight">8</string>
+  <string name="digit_eight_text">TUV</string>
+  <string name="digit_nine">9</string>
+  <string name="digit_nine_text">WXYZ</string>
+  <string name="digit_zero">0</string>
+  <string name="digit_zero_text">+</string>
+  <string name="title_manage_books">Manage Books</string>
+  <string name="menu_manage_books">Manage Books&#8230;</string>
+  <string name="select_chart_to_view_details">Select any part of the chart to view details</string>
+  <string name="title_confirm_delete_book">Confirm delete Book</string>
+  <string name="msg_all_book_data_will_be_deleted">All accounts and transactions in this book will be deleted!</string>
+  <string name="btn_delete_book">Delete Book</string>
+  <string name="label_last_export_time">Last Exported:</string>
+  <string name="menu_title_enable_sync">Enable Sync</string>
+  <string name="menu_title_new_book">New Book</string>
+  <string name="toast_transaction_has_no_splits_and_cannot_open">The selected transaction has no splits and cannot be opened</string>
+  <string name="label_split_count">%1$d splits</string>
+  <string name="label_inside_account_with_name">in %1$s</string>
 </resources>

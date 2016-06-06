@@ -36,19 +36,18 @@ import android.widget.TextView;
 
 import org.gnucash.android.R;
 import org.gnucash.android.db.adapter.CommoditiesDbAdapter;
-import org.gnucash.android.db.adapter.DatabaseAdapter;
 import org.gnucash.android.db.adapter.PricesDbAdapter;
 import org.gnucash.android.model.Commodity;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.model.Price;
 import org.gnucash.android.ui.transaction.TransactionsActivity;
 import org.gnucash.android.ui.transaction.OnTransferFundsListener;
+import org.gnucash.android.util.AmountParser;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
-import java.text.ParsePosition;
 import java.util.Currency;
 
 import butterknife.Bind;
@@ -205,7 +204,7 @@ public class TransferFundsDialogFragment extends DialogFragment {
         if (mExchangeRateRadioButton.isChecked()) {
             BigDecimal rate;
             try {
-                rate = parseAmount(mExchangeRateInput.getText().toString());
+                rate = AmountParser.parse(mExchangeRateInput.getText().toString());
             } catch (ParseException e) {
                 mExchangeRateInputLayout.setError(getString(R.string.error_invalid_exchange_rate));
                 return;
@@ -219,7 +218,7 @@ public class TransferFundsDialogFragment extends DialogFragment {
         if (mConvertedAmountRadioButton.isChecked()) {
             BigDecimal amount;
             try {
-                amount = parseAmount(mConvertedAmountInput.getText().toString());
+                amount = AmountParser.parse(mConvertedAmountInput.getText().toString());
             } catch (ParseException e) {
                 mConvertedAmountInputLayout.setError(getString(R.string.error_invalid_amount));
                 return;
@@ -239,19 +238,6 @@ public class TransferFundsDialogFragment extends DialogFragment {
             mOnTransferFundsListener.transferComplete(mConvertedAmount);
 
         dismiss();
-    }
-
-    private BigDecimal parseAmount(String amount) throws ParseException {
-        DecimalFormat formatter = (DecimalFormat) NumberFormat.getNumberInstance();
-        formatter.setParseBigDecimal(true);
-        ParsePosition parsePosition = new ParsePosition(0);
-        BigDecimal parsedAmount = (BigDecimal) formatter.parse(amount, parsePosition);
-
-        // Ensure any mistyping by the user is caught instead of partially parsed
-        if (parsePosition.getIndex() < amount.length())
-            throw new ParseException("Parse error", parsePosition.getErrorIndex());
-
-        return parsedAmount;
     }
 
     /**

@@ -283,11 +283,11 @@
     <string name="label_tap_to_create_schedule">Tap to create schedule</string>
     <string name="title_restore_backup">Restore Backup…</string>
     <string name="header_backup_and_export_settings">Backup &amp; export</string>
-    <string name="title_dropbox_sync_preference">DropBox Sync</string>
-    <string name="title_owncloud_sync_preference">ownCloud Sync</string>
+    <string name="title_dropbox_sync_preference">Enable DropBox</string>
+    <string name="title_owncloud_sync_preference">Enable ownCloud </string>
     <string name="title_backup_preference_category">Backup</string>
-    <string name="summary_dropbox_sync">Enable to sync to DropBox</string>
-    <string name="summary_owncloud_sync">Enable to sync to ownCloud</string>
+    <string name="summary_dropbox_sync">Enable exporting to DropBox</string>
+    <string name="summary_owncloud_sync">Enable exporting to ownCloud</string>
     <string name="title_select_gnucash_xml_file">Select GnuCash XML file</string>
     <string name="title_backup_prefs">Backup Preferences</string>
     <string name="title_create_backup_pref">Create Backup</string>
@@ -296,8 +296,8 @@
     <string name="toast_backup_successful">Backup successful</string>
     <string name="toast_backup_failed">Backup failed</string>
     <string name="export_warning_xml">Exports all accounts and transactions</string>
-    <string name="title_google_drive_sync_pref">Google Drive Sync</string>
-    <string name="summary_google_drive_sync">Enable to sync to Google Drive</string>
+    <string name="title_google_drive_sync_pref">Enable Google Drive</string>
+    <string name="summary_google_drive_sync">Enable exporting to Google Drive</string>
     <string name="toast_install_file_manager">Install a file manager to select files</string>
     <string name="title_select_backup_to_restore">Select backup to restore</string>
     <string name="nav_menu_favorites">Favorites</string>
@@ -444,7 +444,16 @@
     <string name="digit_zero">0</string>
     <string name="digit_zero_text">+</string>
 
-    <string name="header_manage_books">Manage Books</string>
     <string name="title_manage_books">Manage Books</string>
-    <string name="menu_manage_books">Manage Books...</string>
+    <string name="menu_manage_books">Manage Books…</string>
+    <string name="select_chart_to_view_details">Select any part of the chart to view details</string>
+    <string name="title_confirm_delete_book">Confirm delete Book</string>
+    <string name="msg_all_book_data_will_be_deleted">All accounts and transactions in this book will be deleted!</string>
+    <string name="btn_delete_book">Delete Book</string>
+    <string name="label_last_export_time">Last Exported:</string>
+    <string name="menu_title_enable_sync">Enable Sync</string>
+    <string name="menu_title_new_book">New Book</string>
+    <string name="toast_transaction_has_no_splits_and_cannot_open">The selected transaction has no splits and cannot be opened</string>
+    <string name="label_split_count">%1$d splits</string>
+    <string name="label_inside_account_with_name">in %1$s</string>
 </resources>

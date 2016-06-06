@@ -118,7 +118,7 @@ public class TransactionDetailActivity extends PasscodeLockActivity {
         Transaction transaction = transactionsDbAdapter.getRecord(mTransactionUID);
 
         mTransactionDescription.setText(transaction.getDescription());
-        mTransactionAccount.setText("in " + AccountsDbAdapter.getInstance().getAccountFullName(mAccountUID));
+        mTransactionAccount.setText(getString(R.string.label_inside_account_with_name, AccountsDbAdapter.getInstance().getAccountFullName(mAccountUID)));
 
         AccountsDbAdapter accountsDbAdapter = AccountsDbAdapter.getInstance();
 

@@ -300,7 +300,9 @@ public class AccountsListFragment extends Fragment implements
      */
     @Override
     public void refresh() {
-        getLoaderManager().restartLoader(0, null, this);
+        if (!isDetached()) {
+            getLoaderManager().restartLoader(0, null, this);
+        }
     }
 
     @Override
