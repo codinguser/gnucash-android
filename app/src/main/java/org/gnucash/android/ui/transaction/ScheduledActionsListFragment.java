@@ -267,7 +267,7 @@ public class ScheduledActionsListFragment extends ListFragment implements
 
         //this should actually never happen, but has happened once. So perform check for the future
         if (transaction.getSplits().size() == 0){
-            Toast.makeText(getActivity(), "The selected transaction has no splits and cannot be opened", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), R.string.toast_transaction_has_no_splits_and_cannot_open, Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -466,7 +466,7 @@ public class ScheduledActionsListFragment extends ListFragment implements
                     amountTextView.setText(transaction.getSplits().get(0).getValue().formattedString());
                 }
             } else {
-                amountTextView.setText(transaction.getSplits().size() + " splits");
+                amountTextView.setText(getString(R.string.label_split_count, transaction.getSplits().size()));
             }
             TextView descriptionTextView = (TextView) view.findViewById(R.id.secondary_text);
 

@@ -42,19 +42,13 @@ import android.widget.TextView;
 
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
-import org.gnucash.android.db.BookDbHelper;
 import org.gnucash.android.db.DatabaseCursorLoader;
-import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.db.adapter.BooksDbAdapter;
-
-import java.text.DateFormat;
-import java.util.Date;
 
 import org.gnucash.android.db.DatabaseSchema.BookEntry;
 import org.gnucash.android.ui.account.AccountsActivity;
 import org.gnucash.android.ui.common.Refreshable;
 import org.gnucash.android.util.PreferencesHelper;
-import org.w3c.dom.Text;
 
 /**
  * Fragment for managing the books in the database
@@ -165,7 +159,7 @@ public class BookManagerFragment extends ListFragment implements
             lastSyncText.setText(PreferencesHelper.getLastExportTime().toString());
 
             TextView labelLastSync = (TextView) view.findViewById(R.id.label_last_sync);
-            labelLastSync.setText("Last Export:");
+            labelLastSync.setText(R.string.label_last_export_time);
             ImageView optionsMenu = (ImageView) view.findViewById(R.id.options_menu);
 
             optionsMenu.setOnClickListener(new View.OnClickListener() {
@@ -200,10 +194,10 @@ public class BookManagerFragment extends ListFragment implements
                     public void onClick(View v) {
                         //// TODO: extract strings
                         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
-                        dialogBuilder.setTitle("Confirm delete Book")
+                        dialogBuilder.setTitle(getString(R.string.title_confirm_delete_book))
                                 .setIcon(R.drawable.ic_close_black_24dp)
-                                .setMessage("All accounts and transactions in this book will be deleted!");
-                        dialogBuilder.setPositiveButton("Delete Book", new DialogInterface.OnClickListener() {
+                                .setMessage(getString(R.string.msg_all_book_data_will_be_deleted));
+                        dialogBuilder.setPositiveButton(getString(R.string.btn_delete_book), new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 BooksDbAdapter.getInstance().deleteRecord(bookUID);

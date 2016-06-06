@@ -341,6 +341,6 @@ public abstract class BaseReportFragment extends Fragment implements
     @Override
     public void onNothingSelected() {
         if (mSelectedValueTextView != null)
-            mSelectedValueTextView.setText("Select any part of the chart to view details");
+            mSelectedValueTextView.setText(R.string.select_chart_to_view_details);
     }
 }
