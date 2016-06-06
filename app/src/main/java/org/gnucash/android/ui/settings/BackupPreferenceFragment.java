@@ -354,9 +354,18 @@ public class BackupPreferenceFragment extends PreferenceFragmentCompat implement
 	private void restoreBackup() {
 		Log.i("Settings", "Opening GnuCash XML backups for restore");
 		File[] backupFiles = new File(Exporter.getBackupFolderPath()).listFiles();
-		if (backupFiles == null){
-			Toast.makeText(getActivity(), R.string.toast_backup_folder_not_found, Toast.LENGTH_LONG).show();
-			new File(Exporter.getBackupFolderPath());
+		if (backupFiles == null || backupFiles.length == 0){
+			android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(getActivity())
+					.setTitle("No backups found")
+					.setMessage("There are no existing backup files to restore from")
+					.setNegativeButton(R.string.label_dismiss, new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							dialog.dismiss();
+						}
+					});
+			builder.create().show();
+			Exporter.getBackupFolderPath(); //creates the directory
 			return;
 		}
 

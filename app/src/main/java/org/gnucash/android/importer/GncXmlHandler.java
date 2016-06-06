@@ -19,13 +19,11 @@ package org.gnucash.android.importer;
 
 import android.database.sqlite.SQLiteDatabase;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
 
 import org.gnucash.android.app.GnuCashApplication;
-import org.gnucash.android.db.BookDbHelper;
 import org.gnucash.android.db.DatabaseHelper;
 import org.gnucash.android.db.adapter.AccountsDbAdapter;
 import org.gnucash.android.db.adapter.BooksDbAdapter;
@@ -43,9 +41,9 @@ import org.gnucash.android.model.Account;
 import org.gnucash.android.model.AccountType;
 import org.gnucash.android.model.BaseModel;
 import org.gnucash.android.model.Book;
-import org.gnucash.android.model.Commodity;
 import org.gnucash.android.model.Budget;
 import org.gnucash.android.model.BudgetAmount;
+import org.gnucash.android.model.Commodity;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.model.PeriodType;
 import org.gnucash.android.model.Price;

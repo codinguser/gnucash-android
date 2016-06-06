@@ -56,7 +56,6 @@ public class BooksDbAdapterTest {
 
         assertThat(mBooksDbAdapter.getRecordsCount()).isEqualTo(1);
         assertThat(mBooksDbAdapter.getRecord(book.getUID()).getDisplayName()).isEqualTo("Book 1");
-        assertThat(mBooksDbAdapter.getActiveBookUID()).isNotEqualTo(book.getUID());
     }
 
     @Test(expected = IllegalArgumentException.class)

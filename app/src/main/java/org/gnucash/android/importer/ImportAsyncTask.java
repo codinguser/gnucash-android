@@ -84,7 +84,6 @@ public class ImportAsyncTask extends AsyncTask<Uri, Void, Boolean> {
             InputStream accountInputStream = mContext.getContentResolver().openInputStream(uris[0]);
             bookUID = GncXmlImporter.parse(accountInputStream);
 
-            //// TODO: 08.12.2015 update book name in database table - get name from Uri
         } catch (Exception exception){
             Log.e(ImportAsyncTask.class.getName(), "" + exception.getMessage());
             Crashlytics.log("Could not open: " + uris[0].toString());

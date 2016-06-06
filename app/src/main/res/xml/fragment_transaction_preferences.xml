@@ -28,6 +28,7 @@
 
     <android.support.v7.preference.SwitchPreferenceCompat android:summary="@string/summary_use_double_entry"
         android:key="@string/key_use_double_entry"
+        android:defaultValue="true"
         android:title="@string/title_use_double_entry"/>
     <android.support.v7.preference.SwitchPreferenceCompat android:summary="@string/summary_save_opening_balances"
         android:key="@string/key_save_opening_balances"

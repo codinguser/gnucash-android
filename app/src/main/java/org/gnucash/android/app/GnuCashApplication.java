@@ -244,7 +244,7 @@ public class GnuCashApplication extends Application{
      */
     public static boolean isDoubleEntryEnabled(){
         SharedPreferences sharedPrefs = PreferenceActivity.getActiveBookSharedPreferences(context);
-        return sharedPrefs.getBoolean(context.getString(R.string.key_use_double_entry), false);
+        return sharedPrefs.getBoolean(context.getString(R.string.key_use_double_entry), true);
     }
 
     /**

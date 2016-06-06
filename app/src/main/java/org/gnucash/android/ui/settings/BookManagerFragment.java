@@ -53,15 +53,16 @@ import java.util.Date;
 import org.gnucash.android.db.DatabaseSchema.BookEntry;
 import org.gnucash.android.ui.account.AccountsActivity;
 import org.gnucash.android.ui.common.Refreshable;
+import org.gnucash.android.util.PreferencesHelper;
 import org.w3c.dom.Text;
 
 /**
  * Fragment for managing the books in the database
  */
-public class BookListFragment extends ListFragment implements
+public class BookManagerFragment extends ListFragment implements
         LoaderManager.LoaderCallbacks<Cursor>, Refreshable{
 
-    private static String LOG_TAG = "BookListFragment";
+    private static String LOG_TAG = "BookManagerFragment";
 
     SimpleCursorAdapter mCursorAdapter;
 
@@ -160,16 +161,11 @@ public class BookListFragment extends ListFragment implements
 
             final String bookUID = cursor.getString(cursor.getColumnIndexOrThrow(BookEntry.COLUMN_UID));
 
-            DateFormat dateFormat = DateFormat.getDateTimeInstance();
-            //// TODO: 18.05.2016 Add last export time to the database
-            long lastSyncMillis = cursor.getLong(cursor.getColumnIndexOrThrow(DatabaseSchema.BookEntry.COLUMN_CREATED_AT));
-
             TextView lastSyncText = (TextView) view.findViewById(R.id.last_sync_time);
-            String lastSyncTime = dateFormat.format(new Date(lastSyncMillis));
-            lastSyncText.setText(lastSyncTime);
+            lastSyncText.setText(PreferencesHelper.getLastExportTime().toString());
 
             TextView labelLastSync = (TextView) view.findViewById(R.id.label_last_sync);
-            labelLastSync.setText("Last Sync:");
+            labelLastSync.setText("Last Export:");
             ImageView optionsMenu = (ImageView) view.findViewById(R.id.options_menu);
 
             optionsMenu.setOnClickListener(new View.OnClickListener() {
@@ -221,9 +217,10 @@ public class BookListFragment extends ListFragment implements
                             }
                         });
                         AlertDialog dialog = dialogBuilder.create();
+                        dialog.show(); //must be called before you can access buttons
                         dialog.getButton(AlertDialog.BUTTON_POSITIVE)
                                 .setTextColor(getResources().getColor(R.color.account_red));
-                        dialog.show();
+
 
                     }
                 });

@@ -47,6 +47,9 @@ import java.io.IOException;
 public class BookDbHelper extends SQLiteOpenHelper {
 
     public static final String LOG_TAG = "BookDbHelper";
+
+    private Context mContext;
+
     /**
      * Create the books table
      */
@@ -65,26 +68,15 @@ public class BookDbHelper extends SQLiteOpenHelper {
 
     public BookDbHelper(Context context) {
         super(context, DatabaseSchema.BOOK_DATABASE_NAME, null, DatabaseSchema.BOOK_DATABASE_VERSION);
+        mContext = context;
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(BOOKS_TABLE_CREATE);
-    }
 
-    @Override
-    public void onOpen(SQLiteDatabase db) {
-        super.onOpen(db);
-
-        if (db.isReadOnly()) {
-            Log.w(LOG_TAG, "Database was opened in read-only mode");
-            return;
-        }
-
-        String sql = "SELECT COUNT(*) FROM " + BookEntry.TABLE_NAME;
-        SQLiteStatement statement = db.compileStatement(sql);
-        long count = statement.simpleQueryForLong();
-        if (count == 0) { //there is currently no book in the database, should only be true once, during migration
+        if (mContext.getDatabasePath(DatabaseSchema.LEGACY_DATABASE_NAME).exists()){
+            Log.d(LOG_TAG, "Legacy database found. Migrating to multibook format");
             DatabaseHelper helper = new DatabaseHelper(GnuCashApplication.getAppContext(),
                     DatabaseSchema.LEGACY_DATABASE_NAME);
             SQLiteDatabase mainDb = helper.getWritableDatabase();
@@ -94,14 +86,8 @@ public class BookDbHelper extends SQLiteOpenHelper {
             String rootAccountUID = accountsDbAdapter.getOrCreateGnuCashRootAccountUID();
 
             Book book = new Book(rootAccountUID);
-            ContentValues contentValues = new ContentValues();
-            contentValues.put(BookEntry.COLUMN_UID, book.getUID());
-            contentValues.put(BookEntry.COLUMN_ROOT_GUID, rootAccountUID);
-            contentValues.put(BookEntry.COLUMN_TEMPLATE_GUID, Book.generateUID());
-            contentValues.put(BookEntry.COLUMN_DISPLAY_NAME, new BooksDbAdapter(db).generateDefaultBookName());
-            contentValues.put(BookEntry.COLUMN_ACTIVE, 1);
-
-            db.insert(BookEntry.TABLE_NAME, null, contentValues);
+            book.setActive(true);
+            insertBook(db, book);
 
             String mainDbPath = mainDb.getPath();
             helper.close();
@@ -118,6 +104,40 @@ public class BookDbHelper extends SQLiteOpenHelper {
 
             migrateBackupFiles(book.getUID());
         }
+
+        String sql = "SELECT COUNT(*) FROM " + BookEntry.TABLE_NAME;
+        SQLiteStatement statement = db.compileStatement(sql);
+        long count = statement.simpleQueryForLong();
+        if (count == 0) { //no book in the database, create a default one
+            Log.i(LOG_TAG, "No books found in database, creating default book");
+            Book book = new Book();
+            DatabaseHelper helper = new DatabaseHelper(GnuCashApplication.getAppContext(), book.getUID());
+            SQLiteDatabase mainDb = helper.getWritableDatabase(); //actually create the db
+            AccountsDbAdapter accountsDbAdapter = new AccountsDbAdapter(mainDb,
+                    new TransactionsDbAdapter(mainDb, new SplitsDbAdapter(mainDb)));
+
+            String rootAccountUID = accountsDbAdapter.getOrCreateGnuCashRootAccountUID();
+            book.setRootAccountUID(rootAccountUID);
+            book.setActive(true);
+            insertBook(db, book);
+        }
+
+    }
+
+    /**
+     * Inserts the book into the database
+     * @param db Book database
+     * @param book Book to insert
+     */
+    private void insertBook(SQLiteDatabase db, Book book) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(BookEntry.COLUMN_UID, book.getUID());
+        contentValues.put(BookEntry.COLUMN_ROOT_GUID, book.getRootAccountUID());
+        contentValues.put(BookEntry.COLUMN_TEMPLATE_GUID, Book.generateUID());
+        contentValues.put(BookEntry.COLUMN_DISPLAY_NAME, new BooksDbAdapter(db).generateDefaultBookName());
+        contentValues.put(BookEntry.COLUMN_ACTIVE, book.isActive() ? 1 : 0);
+
+        db.insert(BookEntry.TABLE_NAME, null, contentValues);
     }
 
     /**

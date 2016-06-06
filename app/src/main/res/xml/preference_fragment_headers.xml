@@ -21,7 +21,7 @@
         android:title="@string/header_general_settings"
         app:fragment="org.gnucash.android.ui.settings.GeneralPreferenceFragment"/>
     <Preference android:title="@string/header_manage_books"
-                app:fragment="org.gnucash.android.ui.settings.BookListFragment" />
+                app:fragment="org.gnucash.android.ui.settings.BookManagerFragment" />
     <Preference app:fragment="org.gnucash.android.ui.settings.AccountPreferencesFragment"
         android:title="@string/header_account_settings" />
     <Preference app:fragment="org.gnucash.android.ui.settings.TransactionsPreferenceFragment"
