@@ -25,6 +25,7 @@
   <string name="label_account_name">Account name</string>
   <string name="btn_cancel">Cancel</string>
   <string name="btn_save">Save</string>
+  <string name="btn_test">Test</string>
   <string name="label_passcode">Enter Passcode</string>
   <string name="toast_wrong_passcode">Wrong passcode, please try again</string>
   <string name="toast_passcode_set">Passcode set</string>
@@ -178,6 +179,8 @@
   <string name="label_default_transfer_account">Default Transfer Account</string>
   <plurals name="label_sub_accounts">
     <item quantity="one">%d sub-account</item>
+    <item quantity="two">%d sub-accounts</item>
+    <item quantity="many">%d sub-accounts</item>
     <item quantity="other">%d sub-accounts</item>
   </plurals>
   <string-array name="account_type_entry_values">
@@ -280,9 +283,11 @@
   <string name="label_tap_to_create_schedule">Tap to create schedule</string>
   <string name="title_restore_backup">Restore Backup&#8230;</string>
   <string name="header_backup_and_export_settings">Backup &amp; export</string>
-  <string name="title_dropbox_sync_preference">DropBox Sync</string>
+  <string name="title_dropbox_sync_preference">Enable DropBox</string>
+  <string name="title_owncloud_sync_preference">Enable ownCloud </string>
   <string name="title_backup_preference_category">Backup</string>
-  <string name="summary_dropbox_sync">Enable to sync to DropBox</string>
+  <string name="summary_dropbox_sync">Enable exporting to DropBox</string>
+  <string name="summary_owncloud_sync">Enable exporting to ownCloud</string>
   <string name="title_select_gnucash_xml_file">Select GnuCash XML file</string>
   <string name="title_backup_prefs">Backup Preferences</string>
   <string name="title_create_backup_pref">Create Backup</string>
@@ -291,8 +296,8 @@
   <string name="toast_backup_successful">Backup successful</string>
   <string name="toast_backup_failed">Backup failed</string>
   <string name="export_warning_xml">Exports all accounts and transactions</string>
-  <string name="title_google_drive_sync_pref">Google Drive Sync</string>
-  <string name="summary_google_drive_sync">Enable to sync to Google Drive</string>
+  <string name="title_google_drive_sync_pref">Enable Google Drive</string>
+  <string name="summary_google_drive_sync">Enable exporting to Google Drive</string>
   <string name="toast_install_file_manager">Install a file manager to select files</string>
   <string name="title_select_backup_to_restore">Select backup to restore</string>
   <string name="nav_menu_favorites">Favorites</string>
@@ -301,20 +306,38 @@
   <string name="nav_menu_scheduled_transactions">Scheduled Transactions</string>
   <string name="nav_menu_export">Export&#8230;</string>
   <string name="nav_menu_settings">Settings</string>
+  <string name="username">User Name</string>
+  <string name="password">Password</string>
+  <string name="owncloud_pref">owncloud</string>
+  <string name="owncloud_server">https://</string>
+  <string name="owncloud_server_invalid">OC server not found</string>
+  <string name="owncloud_user_invalid">OC username/password invalid</string>
+  <string name="owncloud_dir_invalid">Invalid chars: \\ &lt; &gt; : \&quot; | * ? </string>
+  <string name="owncloud_server_ok">OC server OK</string>
+  <string name="owncloud_user_ok">OC username/password OK</string>
+  <string name="owncloud_dir_ok">Dir name OK</string>
   <plurals name="label_every_x_days">
     <item quantity="one">Daily</item>
+    <item quantity="two">Every %d days</item>
+    <item quantity="many">Every %d days</item>
     <item quantity="other">Every %d days</item>
   </plurals>
   <plurals name="label_every_x_weeks">
     <item quantity="one">Weekly</item>
+    <item quantity="two">Every %d weeks</item>
+    <item quantity="many">Every %d weeks</item>
     <item quantity="other">Every %d weeks</item>
   </plurals>
   <plurals name="label_every_x_months">
     <item quantity="one">Monthly</item>
+    <item quantity="two">Every %d months</item>
+    <item quantity="many">Every %d months</item>
     <item quantity="other">Every %d months</item>
   </plurals>
   <plurals name="label_every_x_years">
     <item quantity="one">Yearly</item>
+    <item quantity="two">Every %d years</item>
+    <item quantity="many">Every %d years</item>
     <item quantity="other">Every %d years</item>
   </plurals>
   <string name="title_enable_crashlytics">Enable Crash Logging</string>
@@ -388,13 +411,16 @@
   <string name="summary_google_plus">Share ideas, discuss changes or report problems</string>
   <string name="summary_translate_gnucash">Translate or proof-read on CrowdIn</string>
   <string name="toast_no_compatible_apps_to_receive_export">No compatible apps to receive the exported transactions!</string>
-  <string name="menu_move_transaction">Move...</string>
+  <string name="menu_move_transaction">Move&#8230;</string>
   <string name="menu_duplicate_transaction">Duplicate</string>
   <string name="nav_menu_budgets">Budgets</string>
   <string name="title_cash_flow_report">Cash Flow</string>
   <string name="title_budgets">Budgets</string>
+  <string name="title_use_compact_list">Enable compact view</string>
+  <string name="summary_use_compact_list">Enable to always use compact view for transactions list</string>
   <string name="error_invalid_exchange_rate">Invalid exchange rate</string>
   <string name="sample_exchange_rate">e.g. 1 %1$s = x.xx %2$s</string>
+  <string name="error_invalid_amount">Invalid amount</string>
   <string-array name="report_time_range">
     <item>Current month</item>
     <item>Last 3 months</item>
@@ -403,4 +429,37 @@
     <item>All time</item>
     <item>Custom range&#8230;</item>
   </string-array>
+  <!-- Passcode lock -->
+  <string name="digit_one">1</string>
+  <string name="digit_one_text">@string/empty</string>
+  <string name="digit_two">2</string>
+  <string name="digit_two_text">ABC</string>
+  <string name="digit_three">3</string>
+  <string name="digit_three_text">DEF</string>
+  <string name="digit_four">4</string>
+  <string name="digit_four_text">GHI</string>
+  <string name="digit_five">5</string>
+  <string name="digit_five_text">JKL</string>
+  <string name="digit_six">6</string>
+  <string name="digit_six_text">MNO</string>
+  <string name="digit_seven">7</string>
+  <string name="digit_seven_text">PQRS</string>
+  <string name="digit_eight">8</string>
+  <string name="digit_eight_text">TUV</string>
+  <string name="digit_nine">9</string>
+  <string name="digit_nine_text">WXYZ</string>
+  <string name="digit_zero">0</string>
+  <string name="digit_zero_text">+</string>
+  <string name="title_manage_books">Manage Books</string>
+  <string name="menu_manage_books">Manage Books&#8230;</string>
+  <string name="select_chart_to_view_details">Select any part of the chart to view details</string>
+  <string name="title_confirm_delete_book">Confirm delete Book</string>
+  <string name="msg_all_book_data_will_be_deleted">All accounts and transactions in this book will be deleted!</string>
+  <string name="btn_delete_book">Delete Book</string>
+  <string name="label_last_export_time">Last Exported:</string>
+  <string name="menu_title_enable_sync">Enable Sync</string>
+  <string name="menu_title_new_book">New Book</string>
+  <string name="toast_transaction_has_no_splits_and_cannot_open">The selected transaction has no splits and cannot be opened</string>
+  <string name="label_split_count">%1$d splits</string>
+  <string name="label_inside_account_with_name">in %1$s</string>
 </resources>
