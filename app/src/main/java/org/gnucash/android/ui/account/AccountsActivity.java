@@ -61,6 +61,7 @@ import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.db.adapter.AccountsDbAdapter;
+import org.gnucash.android.db.adapter.BooksDbAdapter;
 import org.gnucash.android.export.xml.GncXmlExporter;
 import org.gnucash.android.importer.ImportAsyncTask;
 import org.gnucash.android.ui.common.BaseDrawerActivity;
@@ -369,7 +370,8 @@ public class AccountsActivity extends BaseDrawerActivity implements OnAccountCli
      * <p>Also handles displaying the What's New dialog</p>
      */
     private void init() {
-        PreferenceManager.setDefaultValues(this, R.xml.fragment_transaction_preferences, false);
+        PreferenceManager.setDefaultValues(this, BooksDbAdapter.getInstance().getActiveBookUID(),
+                Context.MODE_PRIVATE, R.xml.fragment_transaction_preferences, true);
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         boolean firstRun = prefs.getBoolean(getString(R.string.key_first_run), true);
