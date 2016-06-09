@@ -70,10 +70,12 @@ public class GncXmlImporter {
         long endTime = System.nanoTime();
         Log.d(GncXmlImporter.class.getSimpleName(), String.format("%d ns spent on importing the file", endTime-startTime));
 
+        String bookUID = handler.getBookUID();
         PreferencesHelper.setLastExportTime(
-                TransactionsDbAdapter.getInstance().getTimestampOfLastModification()
+                TransactionsDbAdapter.getInstance().getTimestampOfLastModification(),
+                bookUID
         );
 
-        return handler.getBookUID();
+        return bookUID;
     }
 }
