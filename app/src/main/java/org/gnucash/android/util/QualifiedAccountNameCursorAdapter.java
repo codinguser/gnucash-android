@@ -24,6 +24,7 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.TextView;
 
+import org.gnucash.android.R;
 import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.db.adapter.AccountsDbAdapter;
 
@@ -36,10 +37,10 @@ import org.gnucash.android.db.adapter.AccountsDbAdapter;
 public class QualifiedAccountNameCursorAdapter extends SimpleCursorAdapter {
 
     public QualifiedAccountNameCursorAdapter(Context context, Cursor cursor) {
-        super(context, android.R.layout.simple_spinner_item, cursor,
+        super(context, R.layout.account_spinner_item, cursor,
                 new String[]{DatabaseSchema.AccountEntry.COLUMN_FULL_NAME},
                 new int[]{android.R.id.text1}, 0);
-        setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        setDropDownViewResource(R.layout.account_spinner_dropdown_item);
     }
 
     @Override
