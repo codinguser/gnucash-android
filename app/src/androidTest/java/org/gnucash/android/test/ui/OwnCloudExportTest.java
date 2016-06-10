@@ -20,6 +20,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.support.test.espresso.contrib.DrawerActions;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
@@ -39,6 +41,7 @@ import org.gnucash.android.model.Money;
 import org.gnucash.android.model.Split;
 import org.gnucash.android.model.Transaction;
 import org.gnucash.android.ui.account.AccountsActivity;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Rule;
@@ -143,15 +146,27 @@ public class OwnCloudExportTest {
     }
 
     /**
+     * Test if there is an active internet connection on the device/emulator
+     * @return {@code true} is an internet connection is available, {@code false} otherwise
+     */
+    public static boolean hasActiveInternetConnection(){
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) GnuCashApplication.getAppContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    }
+
+    /**
      * It might fail if it takes too long to connect to the server or if there is no network
      */
     @Test
     public void OwnCloudCredentials() {
+        Assume.assumeTrue(hasActiveInternetConnection());
         onView(withId(R.id.drawer_layout)).perform(DrawerActions.open());
         onView(withId(R.id.nav_view)).perform(swipeUp());
         onView(withText(R.string.title_settings)).perform(click());
         onView(withText(R.string.header_backup_and_export_settings)).perform(click());
-        onView(withText("ownCloud Sync")).perform(click());
+        onView(withText(R.string.title_owncloud_sync_preference)).perform(click());
         onView(withId(R.id.owncloud_hostname)).check(matches(isDisplayed()));
 
         onView(withId(R.id.owncloud_hostname)).perform(clearText()).perform(typeText(OC_SERVER), closeSoftKeyboard());
@@ -172,7 +187,7 @@ public class OwnCloudExportTest {
 
     @Test
     public void OwnCloudExport() {
-
+        Assume.assumeTrue(hasActiveInternetConnection());
         mPrefs.edit().putBoolean(mAccountsActivity.getString(R.string.key_owncloud_sync), true).commit();
 
         onView(withId(R.id.drawer_layout)).perform(DrawerActions.open());

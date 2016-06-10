@@ -25,27 +25,27 @@
   <string name="label_account_name">Fiók neve</string>
   <string name="btn_cancel">Mégsem</string>
   <string name="btn_save">Mentés</string>
-  <string name="btn_test">Test</string>
+  <string name="btn_test">Teszt</string>
   <string name="label_passcode">Jelszó megadása</string>
   <string name="toast_wrong_passcode">Rossz jelszó, kérjük próbálja meg újra</string>
   <string name="toast_passcode_set">Jelszó beállítása</string>
-  <string name="label_confirm_passcode">Please confirm your passcode</string>
-  <string name="toast_invalid_passcode_confirmation">Invalid passcode confirmation. Please try again</string>
+  <string name="label_confirm_passcode">Kérjük, erősítse meg a jelszavát</string>
+  <string name="toast_invalid_passcode_confirmation">Érvénytelen jelszó-megerősítés. Kérjük, próbálja újra</string>
   <string name="label_transaction_name">Leírás</string>
   <string name="label_transaction_amount">Összeg</string>
   <string name="title_add_transaction">Új tranzakció</string>
   <string name="label_no_transactions">Nincs megjeleníthető tranzakció</string>
-  <string name="label_timeanddate">DATE &amp; TIME</string>
+  <string name="label_timeanddate">DÁTUM &amp; IDŐ</string>
   <string name="label_account">Fiók</string>
   <string name="label_debit">DEBIT</string>
   <string name="label_credit">CREDIT</string>
-  <string name="title_accounts">Accounts</string>
-  <string name="title_transactions">Transactions</string>
+  <string name="title_accounts">Fiókok</string>
+  <string name="title_transactions">Tranzakicók</string>
   <string name="menu_delete">DELETE</string>
-  <string name="alert_dialog_ok_delete">Delete</string>
-  <string name="alert_dialog_cancel">Cancel</string>
-  <string name="toast_account_deleted">Account deleted</string>
-  <string name="title_confirm_delete">Confirm delete</string>
+  <string name="alert_dialog_ok_delete">Törlés</string>
+  <string name="alert_dialog_cancel">Mégsem</string>
+  <string name="toast_account_deleted">Fiók törölve</string>
+  <string name="title_confirm_delete">Törlése megerősítése</string>
   <string name="delete_account_confirmation_message">All transactions in this account will also be deleted</string>
   <string name="title_edit_transaction">Edit Transaction</string>
   <string name="label_transaction_description">Note</string>
@@ -423,7 +423,8 @@ No user-identifiable information will be collected as part of this process!
   </string-array>
   <!-- Passcode lock -->
   <string name="digit_one">1</string>
-  <string name="digit_one_text">@string/empty</string>
+  <!-- In the English locale, digit 1 has no text on it. This is simply empty space. If your locale has text on digit 1, then translate-->
+  <string name="digit_one_text">​</string>
   <string name="digit_two">2</string>
   <string name="digit_two_text">ABC</string>
   <string name="digit_three">3</string>

@@ -97,7 +97,7 @@ public class GnuCashApplication extends Application{
     private static RecurrenceDbAdapter mRecurrenceDbAdapter;
 
     private static BooksDbAdapter mBooksDbAdapter;
-    private DatabaseHelper mDbHelper;
+    private static DatabaseHelper mDbHelper;
 
     /**
      * Returns darker version of specified <code>color</code>.
@@ -144,19 +144,19 @@ public class GnuCashApplication extends Application{
      * Initialize database adapter singletons for use in the application
      * This method should be called every time a new book is opened
      */
-    private void initDatabaseAdapters() {
+    private static void initDatabaseAdapters() {
         if (mDbHelper != null){ //close if open
             mDbHelper.getReadableDatabase().close();
         }
 
-        mDbHelper = new DatabaseHelper(getApplicationContext(),
+        mDbHelper = new DatabaseHelper(getAppContext(),
                 mBooksDbAdapter.getActiveBookUID());
         SQLiteDatabase mainDb;
         try {
             mainDb = mDbHelper.getWritableDatabase();
         } catch (SQLException e) {
             Crashlytics.logException(e);
-            Log.e(getClass().getName(), "Error getting database: " + e.getMessage());
+            Log.e("GnuCashApplication", "Error getting database: " + e.getMessage());
             mainDb = mDbHelper.getReadableDatabase();
         }
 
@@ -215,7 +215,7 @@ public class GnuCashApplication extends Application{
      * Loads the book with GUID {@code bookUID}
      * @param bookUID GUID of the book to be loaded
      */
-    public void loadBook(String bookUID){
+    public static void loadBook(String bookUID){
         mBooksDbAdapter.setActive(bookUID);
         initDatabaseAdapters();
         AccountsActivity.start(getAppContext());

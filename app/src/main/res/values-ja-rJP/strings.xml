@@ -25,7 +25,7 @@
   <string name="label_account_name">勘定科目名</string>
   <string name="btn_cancel">キャンセル</string>
   <string name="btn_save">上書き保存</string>
-  <string name="btn_test">Test</string>
+  <string name="btn_test">テスト</string>
   <string name="label_passcode">パスコードを入力</string>
   <string name="toast_wrong_passcode">パスコードが違います。もう一度入力してください</string>
   <string name="toast_passcode_set">パスコード設定</string>
@@ -66,7 +66,7 @@
     <item>Dropbox</item>
     <item>Google ドライブ</item>
     <item>ownCloud</item>
-    <item>Send to&#8230;</item>
+    <item>&#8230;に送信</item>
   </string-array>
   <string name="btn_move">移動</string>
   <string name="title_move_transactions">%1$d件の取引を移動</string>
@@ -273,11 +273,11 @@
   <string name="label_tap_to_create_schedule">タップすると予定を作成します</string>
   <string name="title_restore_backup">バックアップの復元&#8230;</string>
   <string name="header_backup_and_export_settings">バックアップとエクスポート</string>
-  <string name="title_dropbox_sync_preference">Enable DropBox</string>
-  <string name="title_owncloud_sync_preference">Enable ownCloud </string>
+  <string name="title_dropbox_sync_preference">DropBox を有効にする</string>
+  <string name="title_owncloud_sync_preference">ownCloud を有効にする</string>
   <string name="title_backup_preference_category">バックアップ</string>
-  <string name="summary_dropbox_sync">Enable exporting to DropBox</string>
-  <string name="summary_owncloud_sync">Enable exporting to ownCloud</string>
+  <string name="summary_dropbox_sync">DropBox へのエクスポートを有効にします</string>
+  <string name="summary_owncloud_sync">ownCloud へのエクスポートを有効にします</string>
   <string name="title_select_gnucash_xml_file">GnuCash XML ファイルを選択</string>
   <string name="title_backup_prefs">バックアップ設定</string>
   <string name="title_create_backup_pref">バックアップを作成</string>
@@ -286,8 +286,8 @@
   <string name="toast_backup_successful">バックアップに成功しました</string>
   <string name="toast_backup_failed">バックアップに失敗しました</string>
   <string name="export_warning_xml">すべての勘定と取引をエクスポートします</string>
-  <string name="title_google_drive_sync_pref">Enable Google Drive</string>
-  <string name="summary_google_drive_sync">Enable exporting to Google Drive</string>
+  <string name="title_google_drive_sync_pref">Google ドライブを有効にする</string>
+  <string name="summary_google_drive_sync">Google ドライブへのエクスポートを有効にします</string>
   <string name="toast_install_file_manager">ファイルを選択するために、ファイル マネージャーをインストールします</string>
   <string name="title_select_backup_to_restore">復元するバックアップを選択</string>
   <string name="nav_menu_favorites">お気に入り</string>
@@ -296,16 +296,16 @@
   <string name="nav_menu_scheduled_transactions">予定の取引</string>
   <string name="nav_menu_export">エクスポート&#8230;</string>
   <string name="nav_menu_settings">設定</string>
-  <string name="username">User Name</string>
-  <string name="password">Password</string>
+  <string name="username">ユーザー名</string>
+  <string name="password">パスワード</string>
   <string name="owncloud_pref">owncloud</string>
   <string name="owncloud_server">https://</string>
-  <string name="owncloud_server_invalid">OC server not found</string>
-  <string name="owncloud_user_invalid">OC username/password invalid</string>
-  <string name="owncloud_dir_invalid">Invalid chars: \\ &lt; &gt; : \&quot; | * ? </string>
-  <string name="owncloud_server_ok">OC server OK</string>
-  <string name="owncloud_user_ok">OC username/password OK</string>
-  <string name="owncloud_dir_ok">Dir name OK</string>
+  <string name="owncloud_server_invalid">OC サーバーが見つかりません</string>
+  <string name="owncloud_user_invalid">OC のユーザー名/パスワードが正しくありません</string>
+  <string name="owncloud_dir_invalid">無効な文字: \\ &lt; &gt; : \&quot; | * ? </string>
+  <string name="owncloud_server_ok">OC サーバー OK</string>
+  <string name="owncloud_user_ok">OC ユーザー名/パスワード OK</string>
+  <string name="owncloud_dir_ok">ディレクトリ名 OK</string>
   <plurals name="label_every_x_days">
     <item quantity="other">%d 日ごと</item>
   </plurals>
@@ -389,16 +389,16 @@
   <string name="summary_google_plus">アイデアを共有、変更を議論、または問題を報告</string>
   <string name="summary_translate_gnucash">CrowdIn で翻訳または検証します</string>
   <string name="toast_no_compatible_apps_to_receive_export">エクスポートされた取引を受け取る、互換性のあるアプリがありません!</string>
-  <string name="menu_move_transaction">Move&#8230;</string>
+  <string name="menu_move_transaction">移動&#8230;</string>
   <string name="menu_duplicate_transaction">複製</string>
-  <string name="nav_menu_budgets">Budgets</string>
-  <string name="title_cash_flow_report">Cash Flow</string>
-  <string name="title_budgets">Budgets</string>
-  <string name="title_use_compact_list">Enable compact view</string>
-  <string name="summary_use_compact_list">Enable to always use compact view for transactions list</string>
-  <string name="error_invalid_exchange_rate">Invalid exchange rate</string>
-  <string name="sample_exchange_rate">e.g. 1 %1$s = x.xx %2$s</string>
-  <string name="error_invalid_amount">Invalid amount</string>
+  <string name="nav_menu_budgets">予算</string>
+  <string name="title_cash_flow_report">キャッシュフロー</string>
+  <string name="title_budgets">予算</string>
+  <string name="title_use_compact_list">コンパクト表示を有効にする</string>
+  <string name="summary_use_compact_list">取引リストで常にコンパクト表示を使用します</string>
+  <string name="error_invalid_exchange_rate">為替レートが正しくありません</string>
+  <string name="sample_exchange_rate">例 1 %1$s = x.xx %2$s</string>
+  <string name="error_invalid_amount">金額が正しくありません</string>
   <string-array name="report_time_range">
     <item>今月</item>
     <item>過去 3 ヶ月</item>
@@ -409,7 +409,8 @@
   </string-array>
   <!-- Passcode lock -->
   <string name="digit_one">1</string>
-  <string name="digit_one_text">@string/empty</string>
+  <!-- In the English locale, digit 1 has no text on it. This is simply empty space. If your locale has text on digit 1, then translate-->
+  <string name="digit_one_text">​</string>
   <string name="digit_two">2</string>
   <string name="digit_two_text">ABC</string>
   <string name="digit_three">3</string>
@@ -428,16 +429,16 @@
   <string name="digit_nine_text">WXYZ</string>
   <string name="digit_zero">0</string>
   <string name="digit_zero_text">+</string>
-  <string name="title_manage_books">Manage Books</string>
-  <string name="menu_manage_books">Manage Books&#8230;</string>
-  <string name="select_chart_to_view_details">Select any part of the chart to view details</string>
-  <string name="title_confirm_delete_book">Confirm delete Book</string>
-  <string name="msg_all_book_data_will_be_deleted">All accounts and transactions in this book will be deleted!</string>
-  <string name="btn_delete_book">Delete Book</string>
-  <string name="label_last_export_time">Last Exported:</string>
-  <string name="menu_title_enable_sync">Enable Sync</string>
-  <string name="menu_title_new_book">New Book</string>
-  <string name="toast_transaction_has_no_splits_and_cannot_open">The selected transaction has no splits and cannot be opened</string>
-  <string name="label_split_count">%1$d splits</string>
-  <string name="label_inside_account_with_name">in %1$s</string>
+  <string name="title_manage_books">帳簿の管理</string>
+  <string name="menu_manage_books">帳簿の管理&#8230;</string>
+  <string name="select_chart_to_view_details">グラフの詳細を表示する部分を選択してください</string>
+  <string name="title_confirm_delete_book">帳簿の削除の確認</string>
+  <string name="msg_all_book_data_will_be_deleted">この帳簿のすべての勘定科目と取引が削除されます!</string>
+  <string name="btn_delete_book">帳簿を削除</string>
+  <string name="label_last_export_time">前回のエクスポート:</string>
+  <string name="menu_title_enable_sync">同期を有効にする</string>
+  <string name="menu_title_new_book">新しい帳簿</string>
+  <string name="toast_transaction_has_no_splits_and_cannot_open">選択した取引は分割がありません。開くことはできません</string>
+  <string name="label_split_count">%1$d 分割</string>
+  <string name="label_inside_account_with_name">%1$s 中</string>
 </resources>
