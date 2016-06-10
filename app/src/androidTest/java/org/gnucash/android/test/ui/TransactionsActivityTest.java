@@ -139,9 +139,9 @@ public class TransactionsActivityTest {
 		mAccountsDbAdapter = AccountsDbAdapter.getInstance();
 		COMMODITY = CommoditiesDbAdapter.getInstance().getCommodity(CURRENCY_CODE);
 
-		PreferenceActivity.getActiveBookSharedPreferences(context)
-				.edit().putBoolean(context.getString(R.string.key_use_compact_list), false)
-				.apply();
+//		PreferenceActivity.getActiveBookSharedPreferences(context)
+//				.edit().putBoolean(context.getString(R.string.key_use_compact_list), false)
+//				.apply();
 	}
 
 	@Before

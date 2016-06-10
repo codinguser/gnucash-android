@@ -47,6 +47,7 @@ import org.gnucash.android.model.Split;
 import org.gnucash.android.model.Transaction;
 import org.gnucash.android.model.TransactionType;
 import org.gnucash.android.test.ui.util.DisableAnimationsRule;
+import org.gnucash.android.ui.account.AccountsActivity;
 import org.gnucash.android.ui.report.BaseReportFragment;
 import org.gnucash.android.ui.report.ReportsActivity;
 import org.gnucash.android.ui.report.piechart.PieChartFragment;
@@ -120,14 +121,13 @@ public class PieChartReportTest {
 
     @BeforeClass
     public static void prepareTestCase() throws Exception {
-        mAccountsDbAdapter.deleteAllRecords();
         Context context = GnuCashApplication.getAppContext();
         oldActiveBookUID = BooksDbAdapter.getInstance().getActiveBookUID();
         testBookUID = GncXmlImporter.parse(context.getResources().openRawResource(R.raw.default_accounts));
-        BooksDbAdapter.getInstance().setActive(testBookUID);
 
-        mTransactionsDbAdapter = TransactionsDbAdapter.getInstance(); //new TransactionsDbAdapter(db, new SplitsDbAdapter(db));
-        mAccountsDbAdapter = AccountsDbAdapter.getInstance(); //new AccountsDbAdapter(db, mTransactionsDbAdapter);
+        GnuCashApplication.loadBook(testBookUID);
+        mTransactionsDbAdapter = TransactionsDbAdapter.getInstance();
+        mAccountsDbAdapter = AccountsDbAdapter.getInstance();
 
         CURRENCY = CommoditiesDbAdapter.getInstance().getCommodity("USD");
 
@@ -139,7 +139,7 @@ public class PieChartReportTest {
 
 	@Before
 	public void setUp() throws Exception {
-        // creates default accounts
+        mTransactionsDbAdapter.deleteAllRecords();
         mReportsActivity = mActivityRule.getActivity();
         assertThat(mAccountsDbAdapter.getRecordsCount()).isGreaterThan(20); //lots of accounts in the default
         onView(withId(R.id.btn_pie_chart)).perform(click());
@@ -213,7 +213,7 @@ public class PieChartReportTest {
 
         onView(withId(R.id.report_account_type_spinner)).perform(click());
         onView(withText(AccountType.INCOME.name())).perform(click());
-
+        onView(withId(R.id.pie_chart)).perform(clickXY(Position.BEGIN, Position.MIDDLE));
         String selectedText = String.format(PieChartFragment.SELECTED_VALUE_PATTERN, GIFTS_RECEIVED_INCOME_ACCOUNT_NAME, TRANSACTION3_AMOUNT, 100f);
         onView(withId(R.id.selected_chart_slice)).check(matches(withText(selectedText)));
 
