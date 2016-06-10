@@ -411,7 +411,8 @@
   </string-array>
   <!-- Passcode lock -->
   <string name="digit_one">1</string>
-  <string name="digit_one_text">\@string/空</string>
+  <!-- In the English locale, digit 1 has no text on it. This is simply empty space. If your locale has text on digit 1, then translate-->
+  <string name="digit_one_text">​</string>
   <string name="digit_two">2</string>
   <string name="digit_two_text">ABC</string>
   <string name="digit_three">3</string>

@@ -18,6 +18,7 @@ package org.gnucash.android.util;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.text.TextUtils;
@@ -36,8 +37,27 @@ import org.gnucash.android.db.adapter.AccountsDbAdapter;
  */
 public class QualifiedAccountNameCursorAdapter extends SimpleCursorAdapter {
 
+    /**
+     * Initialize the Cursor adapter for account names using default spinner views
+     * @param context Application context
+     * @param cursor Cursor to accounts
+     */
     public QualifiedAccountNameCursorAdapter(Context context, Cursor cursor) {
-        super(context, R.layout.account_spinner_item, cursor,
+        super(context, android.R.layout.simple_spinner_item, cursor,
+                new String[]{DatabaseSchema.AccountEntry.COLUMN_FULL_NAME},
+                new int[]{android.R.id.text1}, 0);
+        setDropDownViewResource(R.layout.account_spinner_dropdown_item);
+    }
+
+    /**
+     * Overloaded constructor. Specifies the view to use for displaying selected spinner text
+     * @param context Application context
+     * @param cursor Cursor to account data
+     * @param selectedSpinnerItem Layout resource for selected item text
+     */
+    public QualifiedAccountNameCursorAdapter(Context context, Cursor cursor,
+                                             @LayoutRes int selectedSpinnerItem) {
+        super(context, selectedSpinnerItem, cursor,
                 new String[]{DatabaseSchema.AccountEntry.COLUMN_FULL_NAME},
                 new int[]{android.R.id.text1}, 0);
         setDropDownViewResource(R.layout.account_spinner_dropdown_item);

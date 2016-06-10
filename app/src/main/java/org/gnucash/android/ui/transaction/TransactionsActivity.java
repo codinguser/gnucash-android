@@ -384,7 +384,7 @@ public class TransactionsActivity extends BaseDrawerActivity implements
 		mAccountsCursor = mAccountsDbAdapter.fetchAllRecordsOrderedByFullName();
 
         SpinnerAdapter mSpinnerAdapter = new QualifiedAccountNameCursorAdapter(
-                getSupportActionBar().getThemedContext(), mAccountsCursor);
+                getSupportActionBar().getThemedContext(), mAccountsCursor, R.layout.account_spinner_item);
 
         mToolbarSpinner.setAdapter(mSpinnerAdapter);
         mToolbarSpinner.setOnItemSelectedListener(mTransactionListNavigationListener);
