@@ -25,7 +25,7 @@
   <string name="label_account_name">Имя счёта</string>
   <string name="btn_cancel">Отмена</string>
   <string name="btn_save">Сохранить</string>
-  <string name="btn_test">Test</string>
+  <string name="btn_test">Тест</string>
   <string name="label_passcode">Введите пароль</string>
   <string name="toast_wrong_passcode">Неверный пароль, повторите ввод</string>
   <string name="toast_passcode_set">Пароль установлен</string>
@@ -66,7 +66,7 @@
     <item>DropBox</item>
     <item>Google Диск</item>
     <item>ownCloud</item>
-    <item>Send to&#8230;</item>
+    <item>Отправить&#8230;</item>
   </string-array>
   <string name="btn_move">Перенести</string>
   <string name="title_move_transactions">Перенести %1$d проводк(у,и,ок)</string>
@@ -280,11 +280,11 @@
   <string name="label_tap_to_create_schedule">Тыкните, чтобы создать расписание</string>
   <string name="title_restore_backup">Восстановить из резервной копии&#8230;</string>
   <string name="header_backup_and_export_settings">Резервное копирование &amp; экспорт</string>
-  <string name="title_dropbox_sync_preference">Enable DropBox</string>
-  <string name="title_owncloud_sync_preference">Enable ownCloud </string>
+  <string name="title_dropbox_sync_preference">Включить DropBox</string>
+  <string name="title_owncloud_sync_preference">Включить ownCloud </string>
   <string name="title_backup_preference_category">Резервное копирование</string>
-  <string name="summary_dropbox_sync">Enable exporting to DropBox</string>
-  <string name="summary_owncloud_sync">Enable exporting to ownCloud</string>
+  <string name="summary_dropbox_sync">Включить экспорт на DropBox</string>
+  <string name="summary_owncloud_sync">Включить экспорт на ownCloud</string>
   <string name="title_select_gnucash_xml_file">Выберите файл GnuCash XML</string>
   <string name="title_backup_prefs">Резервная копия настроек</string>
   <string name="title_create_backup_pref">Создать резервную копию</string>
@@ -293,8 +293,8 @@
   <string name="toast_backup_successful">Резервная копия создана</string>
   <string name="toast_backup_failed">Не получилось создать резервную копию</string>
   <string name="export_warning_xml">Будут экспортированы все счета и проводки</string>
-  <string name="title_google_drive_sync_pref">Enable Google Drive</string>
-  <string name="summary_google_drive_sync">Enable exporting to Google Drive</string>
+  <string name="title_google_drive_sync_pref">Включить Google Drive</string>
+  <string name="summary_google_drive_sync">Включить синхронизацию с Google Drive</string>
   <string name="toast_install_file_manager">Установите программу для просмотра файловой системы</string>
   <string name="title_select_backup_to_restore">Выберите резервную копию для восстановления</string>
   <string name="nav_menu_favorites">Закладки</string>
@@ -303,35 +303,35 @@
   <string name="nav_menu_scheduled_transactions">Запланированные проводки</string>
   <string name="nav_menu_export">Экспорт...</string>
   <string name="nav_menu_settings">Настройки</string>
-  <string name="username">User Name</string>
-  <string name="password">Password</string>
+  <string name="username">Имя пользователя</string>
+  <string name="password">Пароль</string>
   <string name="owncloud_pref">owncloud</string>
   <string name="owncloud_server">https://</string>
-  <string name="owncloud_server_invalid">OC server not found</string>
-  <string name="owncloud_user_invalid">OC username/password invalid</string>
-  <string name="owncloud_dir_invalid">Invalid chars: \\ &lt; &gt; : \&quot; | * ? </string>
-  <string name="owncloud_server_ok">OC server OK</string>
-  <string name="owncloud_user_ok">OC username/password OK</string>
-  <string name="owncloud_dir_ok">Dir name OK</string>
+  <string name="owncloud_server_invalid">OC сервер не найден</string>
+  <string name="owncloud_user_invalid">OC неверное имя/пароль</string>
+  <string name="owncloud_dir_invalid">Недопустимые символы: \\ &lt; &gt; : \&quot; | * ? </string>
+  <string name="owncloud_server_ok">OC сервер ОК</string>
+  <string name="owncloud_user_ok">OC имя/пароль ОК</string>
+  <string name="owncloud_dir_ok">Имя папки ОК</string>
   <plurals name="label_every_x_days">
     <item quantity="one">Ежедневно</item>
     <item quantity="few">Каждые %d дня</item>
-    <item quantity="other">Every %d days</item>
+    <item quantity="other">Каждые %d дней</item>
   </plurals>
   <plurals name="label_every_x_weeks">
-    <item quantity="one">Ежеденельно</item>
+    <item quantity="one">Еженедельно</item>
     <item quantity="few">Каждые %d недели</item>
-    <item quantity="other">Every %d weeks</item>
+    <item quantity="other">Каждые %d недель</item>
   </plurals>
   <plurals name="label_every_x_months">
     <item quantity="one">Ежемесячно</item>
     <item quantity="few">Каждые %d месяца</item>
-    <item quantity="other">Every %d months</item>
+    <item quantity="other">Каждые %d месяцев</item>
   </plurals>
   <plurals name="label_every_x_years">
     <item quantity="one">Ежегодно</item>
     <item quantity="few">Каждые %d года</item>
-    <item quantity="other">Every %d years</item>
+    <item quantity="other">Каждые %d лет</item>
   </plurals>
   <string name="title_enable_crashlytics">Записывать отказы программы</string>
   <string name="msg_enable_crashlytics">Включить запись отказов программы (рекомендуем). Обещаем не собирать приватную информацию.</string>
@@ -404,16 +404,16 @@
   <string name="summary_google_plus">Поделиться идеями, обсудить изменения или сообщить о проблемах</string>
   <string name="summary_translate_gnucash">Перевести или вычитать на CrowdIn</string>
   <string name="toast_no_compatible_apps_to_receive_export">Не совместимых приложений, чтобы получить экспортированные транзакции!</string>
-  <string name="menu_move_transaction">Move&#8230;</string>
+  <string name="menu_move_transaction">Перемещение&#8230;</string>
   <string name="menu_duplicate_transaction">Повтор</string>
-  <string name="nav_menu_budgets">Budgets</string>
-  <string name="title_cash_flow_report">Cash Flow</string>
-  <string name="title_budgets">Budgets</string>
-  <string name="title_use_compact_list">Enable compact view</string>
-  <string name="summary_use_compact_list">Enable to always use compact view for transactions list</string>
-  <string name="error_invalid_exchange_rate">Invalid exchange rate</string>
-  <string name="sample_exchange_rate">e.g. 1 %1$s = x.xx %2$s</string>
-  <string name="error_invalid_amount">Invalid amount</string>
+  <string name="nav_menu_budgets">Бюджеты</string>
+  <string name="title_cash_flow_report">Денежный поток</string>
+  <string name="title_budgets">Бюджеты</string>
+  <string name="title_use_compact_list">Включить компактный вид</string>
+  <string name="summary_use_compact_list">Разрешить всегда использовать компактный вид для списка транзакций</string>
+  <string name="error_invalid_exchange_rate">Недопустимый валютный курс</string>
+  <string name="sample_exchange_rate">например, 1 %1$s = x.xx %2$s</string>
+  <string name="error_invalid_amount">Неверная сумма</string>
   <string-array name="report_time_range">
     <item>Текущий месяц</item>
     <item>Последний квартал</item>
@@ -426,33 +426,33 @@
   <string name="digit_one">1</string>
   <string name="digit_one_text">@string/empty</string>
   <string name="digit_two">2</string>
-  <string name="digit_two_text">ABC</string>
+  <string name="digit_two_text">АБВГ</string>
   <string name="digit_three">3</string>
-  <string name="digit_three_text">DEF</string>
+  <string name="digit_three_text">ДЕЁЖЗ</string>
   <string name="digit_four">4</string>
-  <string name="digit_four_text">GHI</string>
+  <string name="digit_four_text">ИЙКЛ</string>
   <string name="digit_five">5</string>
-  <string name="digit_five_text">JKL</string>
+  <string name="digit_five_text">МНОП</string>
   <string name="digit_six">6</string>
-  <string name="digit_six_text">MNO</string>
+  <string name="digit_six_text">РСТУ</string>
   <string name="digit_seven">7</string>
-  <string name="digit_seven_text">PQRS</string>
+  <string name="digit_seven_text">ФХЦЧ</string>
   <string name="digit_eight">8</string>
-  <string name="digit_eight_text">TUV</string>
+  <string name="digit_eight_text">ШЩЪЫ</string>
   <string name="digit_nine">9</string>
-  <string name="digit_nine_text">WXYZ</string>
+  <string name="digit_nine_text">ЬЭЮЯ</string>
   <string name="digit_zero">0</string>
   <string name="digit_zero_text">+</string>
-  <string name="title_manage_books">Manage Books</string>
-  <string name="menu_manage_books">Manage Books&#8230;</string>
-  <string name="select_chart_to_view_details">Select any part of the chart to view details</string>
-  <string name="title_confirm_delete_book">Confirm delete Book</string>
-  <string name="msg_all_book_data_will_be_deleted">All accounts and transactions in this book will be deleted!</string>
-  <string name="btn_delete_book">Delete Book</string>
-  <string name="label_last_export_time">Last Exported:</string>
-  <string name="menu_title_enable_sync">Enable Sync</string>
-  <string name="menu_title_new_book">New Book</string>
-  <string name="toast_transaction_has_no_splits_and_cannot_open">The selected transaction has no splits and cannot be opened</string>
-  <string name="label_split_count">%1$d splits</string>
-  <string name="label_inside_account_with_name">in %1$s</string>
+  <string name="title_manage_books">Управление книгами</string>
+  <string name="menu_manage_books">Управление книгами&#8230;</string>
+  <string name="select_chart_to_view_details">Выберите любую часть диаграммы для просмотра деталей</string>
+  <string name="title_confirm_delete_book">Подтвердить удаление книги</string>
+  <string name="msg_all_book_data_will_be_deleted">Все аккаунты и транзакции в книге будут удалены!</string>
+  <string name="btn_delete_book">Удалить книгу</string>
+  <string name="label_last_export_time">Последний экспорт:</string>
+  <string name="menu_title_enable_sync">Включить синхронизацию</string>
+  <string name="menu_title_new_book">Новая книга</string>
+  <string name="toast_transaction_has_no_splits_and_cannot_open">Выбранная транзакция не имеет разрывов и не может быть открыта</string>
+  <string name="label_split_count">%1$d разбивает</string>
+  <string name="label_inside_account_with_name">в %1$s</string>
 </resources>
