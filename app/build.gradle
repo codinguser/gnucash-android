@@ -228,7 +228,7 @@ dependencies {
         transitive = true;
     }
 
-    testCompile('org.robolectric:robolectric:3.0',
+    testCompile('org.robolectric:robolectric:3.1',
             'junit:junit:4.12',
             'joda-time:joda-time:2.7',
             'org.assertj:assertj-core:1.7.1'
