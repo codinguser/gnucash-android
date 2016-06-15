@@ -157,7 +157,7 @@ public class Account extends BaseModel{
 	 * @param name Name of the account
 	 * @param commodity {@link Commodity} to be used by transactions in this account
 	 */
-	public Account(String name, Commodity commodity){
+	public Account(String name, @NonNull Commodity commodity){
 		setName(name);
         this.mFullName  = mName;
 		setCommodity(commodity);
@@ -343,6 +343,7 @@ public class Account extends BaseModel{
 	/**
 	 * Return the commodity for this account
 	 */
+	@NonNull
 	public Commodity getCommodity(){
 		return mCommodity;
 	}
@@ -351,7 +352,7 @@ public class Account extends BaseModel{
 	 * Sets the commodity of this account
 	 * @param commodity Commodity of the account
 	 */
-	public void setCommodity(Commodity commodity){
+	public void setCommodity(@NonNull Commodity commodity){
 		this.mCommodity = commodity;
 		this.mCurrencyCode = commodity.getCurrencyCode();
 		//todo: should we also change commodity of transactions? Transactions can have splits from different accounts
