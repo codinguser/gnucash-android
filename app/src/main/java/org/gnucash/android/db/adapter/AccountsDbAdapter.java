@@ -180,11 +180,7 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
         stmt.bindLong(8, account.isPlaceholderAccount() ? 1 : 0);
         stmt.bindString(9, TimestampHelper.getUtcStringFromTimestamp(account.getCreatedTimestamp()));
         stmt.bindLong(10, account.isHidden() ? 1 : 0);
-        Commodity commodity = account.getCommodity();
-        if (commodity == null)
-            commodity = new CommoditiesDbAdapter(mDb).getCommodity(account.getCurrency().getCurrencyCode());
-
-        stmt.bindString(11, commodity.getUID());
+        stmt.bindString(11, account.getCommodity().getUID());
 
         String parentAccountUID = account.getParentUID();
         if (parentAccountUID == null && account.getAccountType() != AccountType.ROOT) {
