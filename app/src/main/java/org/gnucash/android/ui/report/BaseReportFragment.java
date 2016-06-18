@@ -30,7 +30,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.github.mikephil.charting.data.Entry;
@@ -39,13 +38,13 @@ import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 
 import org.gnucash.android.R;
 import org.gnucash.android.app.GnuCashApplication;
+import org.gnucash.android.db.adapter.CommoditiesDbAdapter;
 import org.gnucash.android.model.AccountType;
+import org.gnucash.android.model.Commodity;
 import org.gnucash.android.ui.common.Refreshable;
 import org.joda.time.LocalDateTime;
 import org.joda.time.Months;
 import org.joda.time.Years;
-
-import java.util.Currency;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -88,9 +87,9 @@ public abstract class BaseReportFragment extends Fragment implements
     protected AccountType mAccountType;
 
     /**
-     * Currency for which to display reports
+     * Commodity for which to display reports
      */
-    protected Currency mCurrency;
+    protected Commodity mCommodity;
 
     /**
      * Intervals in which to group reports
@@ -181,7 +180,8 @@ public abstract class BaseReportFragment extends Fragment implements
         actionBar.setTitle(getTitle());
 
         setHasOptionsMenu(true);
-        mCurrency = Currency.getInstance(GnuCashApplication.getDefaultCurrencyCode());
+        mCommodity = CommoditiesDbAdapter.getInstance()
+                    .getCommodity(GnuCashApplication.getDefaultCurrencyCode());
 
         ReportsActivity reportsActivity = (ReportsActivity) getActivity();
         mReportPeriodStart = reportsActivity.getReportPeriodStart();

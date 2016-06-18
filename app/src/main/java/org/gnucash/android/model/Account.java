@@ -27,7 +27,6 @@ import org.w3c.dom.Element;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Currency;
 import java.util.List;
 
 /**
@@ -75,11 +74,6 @@ public class Account extends BaseModel{
 	 * Account description
 	 */
 	private String mDescription = "";
-
-	/**
-	 * Currency used by transactions in this account
-	 */
-	private String mCurrencyCode;
 
 	/**
 	 * Commodity used by this account
@@ -271,7 +265,7 @@ public class Account extends BaseModel{
 	 * @return {@link Money} aggregate amount of all transactions in account.
 	 */
 	public Money getBalance(){
-		Money balance = Money.createZeroInstance(mCurrencyCode);
+		Money balance = Money.createZeroInstance(mCommodity.getCurrencyCode());
         for (Transaction transaction : mTransactionsList) {
             balance.add(transaction.getBalance(getUID()));
 		}
@@ -325,21 +319,6 @@ public class Account extends BaseModel{
         this.mIsFavorite = isFavorite;
     }
 
-    /**
-	 * Returns the currency for this account.
-	 */
-	public Currency getCurrency() {
-		return Currency.getInstance(mCurrencyCode);
-	}
-
-	/**
-	 * Sets the currency code of this account
-	 * @param currencyCode ISO 4217 3-letter currency code
-	 */
-	public void setCurrencyCode(String currencyCode){
-		this.mCurrencyCode = currencyCode;
-	}
-
 	/**
 	 * Return the commodity for this account
 	 */
@@ -354,7 +333,6 @@ public class Account extends BaseModel{
 	 */
 	public void setCommodity(@NonNull Commodity commodity){
 		this.mCommodity = commodity;
-		this.mCurrencyCode = commodity.getCurrencyCode();
 		//todo: should we also change commodity of transactions? Transactions can have splits from different accounts
 	}
 

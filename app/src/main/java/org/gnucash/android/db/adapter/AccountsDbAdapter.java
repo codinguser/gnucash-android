@@ -171,7 +171,7 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
         if (account.getDescription() != null)
             stmt.bindString(2, account.getDescription());
         stmt.bindString(3, account.getAccountType().name());
-        stmt.bindString(4, account.getCurrency().getCurrencyCode());
+        stmt.bindString(4, account.getCommodity().getCurrencyCode());
         if (account.getColor() != Account.DEFAULT_COLOR) {
             stmt.bindString(5, convertToRGBHexString(account.getColor()));
         }

@@ -439,7 +439,7 @@ public class GncXmlHandler extends DefaultHandler {
             case GncXmlHelper.TAG_COMMODITY_ID:
                 String currencyCode = mISO4217Currency ? characterString : NO_CURRENCY_CODE;
                 if (mAccount != null) {
-                    mAccount.setCurrencyCode(currencyCode);
+                    mAccount.setCommodity(mCommoditiesDbAdapter.getCommodity(currencyCode));
                     if (mCurrencyCount.containsKey(currencyCode)) {
                         mCurrencyCount.put(currencyCode, mCurrencyCount.get(currencyCode) + 1);
                     } else {
@@ -893,6 +893,7 @@ public class GncXmlHandler extends DefaultHandler {
 
         // Set the account for created balancing splits to correct imbalance accounts
         for (Split split: mAutoBalanceSplits) {
+            // XXX: yes, getAccountUID() returns a currency code in this case (see Transaction.getAutoBalanceSplit())
             String currencyCode = split.getAccountUID();
             Account imbAccount = mapImbalanceAccount.get(currencyCode);
             if (imbAccount == null) {
