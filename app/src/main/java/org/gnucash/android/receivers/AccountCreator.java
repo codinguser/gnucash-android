@@ -29,25 +29,26 @@ import org.gnucash.android.model.Commodity;
 
 /**
  * Broadcast receiver responsible for creating {@link Account}s received through intents.
- * In order to create an <code>Account</code>, you need to broadcast an {@link Intent} with arguments 
- * for the name, currency and optionally, a unique identifier for the account (which should be unique to Gnucash) 
+ * In order to create an <code>Account</code>, you need to broadcast an {@link Intent} with arguments
+ * for the name, currency and optionally, a unique identifier for the account (which should be unique to Gnucash)
  * of the Account to be created. Also remember to set the right mime type so that Android can properly route the Intent
- * <b>Note</b> This Broadcast receiver requires the permission "org.gnucash.android.permission.CREATE_ACCOUNT" 
+ * <b>Note</b> This Broadcast receiver requires the permission "org.gnucash.android.permission.CREATE_ACCOUNT"
  * in order to be able to use Intents to create accounts. So remember to declare it in your manifest
+ *
  * @author Ngewi Fet <ngewif@gmail.com>
  * @see {@link Account#EXTRA_CURRENCY_CODE}, {@link Account#MIME_TYPE} {@link Intent#EXTRA_TITLE}, {@link Intent#EXTRA_UID}
  */
 public class AccountCreator extends BroadcastReceiver {
 
-	@Override
-	public void onReceive(Context context, Intent intent) {
-		Log.i("Gnucash", "Received account creation intent");
-		Bundle args = intent.getExtras();		
-		
-		Account account = new Account(args.getString(Intent.EXTRA_TITLE));
-		account.setParentUID(args.getString(Account.EXTRA_PARENT_UID));
-		
-		String currencyCode = args.getString(Account.EXTRA_CURRENCY_CODE);				
+    @Override
+    public void onReceive(Context context, Intent intent) {
+        Log.i("Gnucash", "Received account creation intent");
+        Bundle args = intent.getExtras();
+
+        Account account = new Account(args.getString(Intent.EXTRA_TITLE));
+        account.setParentUID(args.getString(Account.EXTRA_PARENT_UID));
+
+        String currencyCode = args.getString(Account.EXTRA_CURRENCY_CODE);
         if (currencyCode != null) {
             Commodity commodity = Commodity.getInstance(currencyCode);
             if (commodity != null) {
@@ -56,13 +57,13 @@ public class AccountCreator extends BroadcastReceiver {
                 throw new IllegalArgumentException("Commodity with '" + currencyCode
                                         + "' currency code not found in the database");
             }
-		}
-		
-		String uid = args.getString(Intent.EXTRA_UID);
-		if (uid != null)
-			account.setUID(uid);
-		
-		AccountsDbAdapter.getInstance().addRecord(account, DatabaseAdapter.UpdateMethod.insert);
-	}
+        }
+
+        String uid = args.getString(Intent.EXTRA_UID);
+        if (uid != null)
+            account.setUID(uid);
+
+        AccountsDbAdapter.getInstance().addRecord(account, DatabaseAdapter.UpdateMethod.insert);
+    }
 
 }

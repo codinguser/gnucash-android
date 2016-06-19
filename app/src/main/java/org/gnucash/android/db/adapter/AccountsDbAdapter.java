@@ -273,7 +273,7 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
             for (Account account : descendantAccounts)
                 mapAccounts.put(account.getUID(), account);
             String parentAccountFullName;
-            if (newParentAccountUID == null || getAccountType(newParentAccountUID) == AccountType.ROOT) {
+            if (getAccountType(newParentAccountUID) == AccountType.ROOT) {
                 parentAccountFullName = "";
             } else {
                 parentAccountFullName = getAccountFullName(newParentAccountUID);
@@ -756,11 +756,10 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
 
         Log.d(LOG_TAG, "all account list : " + accountUidList.size());
         SplitsDbAdapter splitsDbAdapter = SplitsDbAdapter.getInstance();
-        Money splitSum = (startTimestamp == -1 && endTimestamp == -1)
+
+        return (startTimestamp == -1 && endTimestamp == -1)
                 ? splitsDbAdapter.computeSplitBalance(accountUidList, currencyCode, hasDebitNormalBalance)
                 : splitsDbAdapter.computeSplitBalance(accountUidList, currencyCode, hasDebitNormalBalance, startTimestamp, endTimestamp);
-
-        return splitSum;
     }
 
     /**
