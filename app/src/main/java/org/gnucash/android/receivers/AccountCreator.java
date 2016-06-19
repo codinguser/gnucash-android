@@ -48,8 +48,14 @@ public class AccountCreator extends BroadcastReceiver {
 		account.setParentUID(args.getString(Account.EXTRA_PARENT_UID));
 		
 		String currencyCode = args.getString(Account.EXTRA_CURRENCY_CODE);				
-		if (currencyCode != null){
-			account.setCommodity(Commodity.getInstance(currencyCode));
+        if (currencyCode != null) {
+            Commodity commodity = Commodity.getInstance(currencyCode);
+            if (commodity != null) {
+                account.setCommodity(commodity);
+            } else {
+                throw new IllegalArgumentException("Commodity with '" + currencyCode
+                                        + "' currency code not found in the database");
+            }
 		}
 		
 		String uid = args.getString(Intent.EXTRA_UID);

@@ -439,7 +439,13 @@ public class GncXmlHandler extends DefaultHandler {
             case GncXmlHelper.TAG_COMMODITY_ID:
                 String currencyCode = mISO4217Currency ? characterString : NO_CURRENCY_CODE;
                 if (mAccount != null) {
-                    mAccount.setCommodity(mCommoditiesDbAdapter.getCommodity(currencyCode));
+                    Commodity commodity = mCommoditiesDbAdapter.getCommodity(currencyCode);
+                    if (commodity != null) {
+                        mAccount.setCommodity(commodity);
+                    } else {
+                        throw new SAXException("Commodity with '" + currencyCode
+                                + "' currency code not found in the database");
+                    }
                     if (mCurrencyCount.containsKey(currencyCode)) {
                         mCurrencyCount.put(currencyCode, mCurrencyCount.get(currencyCode) + 1);
                     } else {
