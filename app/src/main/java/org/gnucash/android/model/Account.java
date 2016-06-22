@@ -27,7 +27,6 @@ import org.w3c.dom.Element;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Currency;
 import java.util.List;
 
 /**
@@ -37,33 +36,35 @@ import java.util.List;
  * By default, an account is made an {@link AccountType#CASH} and the default currency is
  * the currency of the Locale of the device on which the software is running. US Dollars is used
  * if the platform locale cannot be determined.
- * 
+ *
  * @author Ngewi Fet <ngewif@gmail.com>
  * @see AccountType
  */
-public class Account extends BaseModel{
+public class Account extends BaseModel {
 
-	/**
-	 * The MIME type for accounts in GnucashMobile
-	 * This is used when sending intents from third-party applications
-	 */
-	public static final String MIME_TYPE = "vnd.android.cursor.item/vnd." + BuildConfig.APPLICATION_ID + ".account";
+    /**
+     * The MIME type for accounts in GnucashMobile
+     * This is used when sending intents from third-party applications
+     */
+    public static final String MIME_TYPE = "vnd.android.cursor.item/vnd." + BuildConfig.APPLICATION_ID + ".account";
 
-	/**
-	 * Default color, if not set explicitly through {@link #setColor(String)}.
-	 */
-	// TODO: get it from a theme value?
-	public static final int DEFAULT_COLOR = Color.LTGRAY;
+    /**
+     * Default color, if not set explicitly through {@link #setColor(String)}.
+     */
+    // TODO: get it from a theme value?
+    public static final int DEFAULT_COLOR = Color.LTGRAY;
 
-	/**
+    /**
      * Accounts types which are used by the OFX standard
      */
-	public enum OfxAccountType {CHECKING, SAVINGS, MONEYMRKT, CREDITLINE }
+    public enum OfxAccountType {
+        CHECKING, SAVINGS, MONEYMRKT, CREDITLINE
+    }
 
-	/**
-	 * Name of this account
-	 */
-	private String mName;
+    /**
+     * Name of this account
+     */
+    private String mName;
 
     /**
      * Fully qualified name of this account including the parent hierarchy.
@@ -71,37 +72,32 @@ public class Account extends BaseModel{
      */
     private String mFullName;
 
-	/**
-	 * Account description
-	 */
-	private String mDescription = "";
+    /**
+     * Account description
+     */
+    private String mDescription = "";
 
-	/**
-	 * Currency used by transactions in this account
-	 */
-	private String mCurrencyCode;
-
-	/**
-	 * Commodity used by this account
-	 */
-	private Commodity mCommodity;
+    /**
+     * Commodity used by this account
+     */
+    private Commodity mCommodity;
 
 
-	/**
-	 * Type of account
-	 * Defaults to {@link AccountType#CASH}
-	 */
-	private AccountType mAccountType = AccountType.CASH;
+    /**
+     * Type of account
+     * Defaults to {@link AccountType#CASH}
+     */
+    private AccountType mAccountType = AccountType.CASH;
 
-	/**
-	 * List of transactions in this account
-	 */
-	private List<Transaction> mTransactionsList = new ArrayList<>();
+    /**
+     * List of transactions in this account
+     */
+    private List<Transaction> mTransactionsList = new ArrayList<>();
 
-	/**
-	 * Account UID of the parent account. Can be null
-	 */
-	private String mParentAccountUID;
+    /**
+     * Account UID of the parent account. Can be null
+     */
+    private String mParentAccountUID;
 
     /**
      * Save UID of a default account for transfers.
@@ -130,54 +126,54 @@ public class Account extends BaseModel{
      */
     private boolean mIsHidden;
 
-	/**
-	 * An extra key for passing the currency code (according ISO 4217) in an intent
-	 */
-	public static final String EXTRA_CURRENCY_CODE 	= "org.gnucash.android.extra.currency_code";
+    /**
+     * An extra key for passing the currency code (according ISO 4217) in an intent
+     */
+    public static final String EXTRA_CURRENCY_CODE = "org.gnucash.android.extra.currency_code";
 
-	/**
-	 * Extra key for passing the unique ID of the parent account when creating a
-	 * new account using Intents
-	 */
-	public static final String EXTRA_PARENT_UID 	= "org.gnucash.android.extra.parent_uid";
+    /**
+     * Extra key for passing the unique ID of the parent account when creating a
+     * new account using Intents
+     */
+    public static final String EXTRA_PARENT_UID = "org.gnucash.android.extra.parent_uid";
 
-	/**
-	 * Constructor
-	 * Creates a new account with the default currency and a generated unique ID
-	 * @param name Name of the account
-	 */
-	public Account(String name) {
-		setName(name);
-        this.mFullName  = mName;
-		setCommodity(Commodity.DEFAULT_COMMODITY);
-	}
+    /**
+     * Constructor
+     * Creates a new account with the default currency and a generated unique ID
+     * @param name Name of the account
+     */
+    public Account(String name) {
+        setName(name);
+        this.mFullName = mName;
+        setCommodity(Commodity.DEFAULT_COMMODITY);
+    }
 
-	/**
-	 * Overloaded constructor
-	 * @param name Name of the account
-	 * @param commodity {@link Commodity} to be used by transactions in this account
-	 */
-	public Account(String name, Commodity commodity){
-		setName(name);
-        this.mFullName  = mName;
-		setCommodity(commodity);
-	}
+    /**
+     * Overloaded constructor
+     * @param name      Name of the account
+     * @param commodity {@link Commodity} to be used by transactions in this account
+     */
+    public Account(String name, @NonNull Commodity commodity) {
+        setName(name);
+        this.mFullName = mName;
+        setCommodity(commodity);
+    }
 
-	/**
-	 * Sets the name of the account
-	 * @param name String name of the account
-	 */
-	public void setName(String name) {
-		this.mName = name.trim();
-	}
+    /**
+     * Sets the name of the account
+     * @param name String name of the account
+     */
+    public void setName(String name) {
+        this.mName = name.trim();
+    }
 
-	/**
-	 * Returns the name of the account
-	 * @return String containing name of the account
-	 */
-	public String getName() {
-		return mName;
-	}
+    /**
+     * Returns the name of the account
+     * @return String containing name of the account
+     */
+    public String getName() {
+        return mName;
+    }
 
     /**
      * Returns the full name of this account.
@@ -196,87 +192,87 @@ public class Account extends BaseModel{
         this.mFullName = fullName;
     }
 
-	/**
-	 * Returns the account description
-	 * @return String with description
-	 */
-	public String getDescription() {
-		return mDescription;
-	}
+    /**
+     * Returns the account description
+     * @return String with description
+     */
+    public String getDescription() {
+        return mDescription;
+    }
 
-	/**
-	 * Sets the account description
-	 * @param description Account description
-	 */
-	public void setDescription(@NonNull String description) {
-		this.mDescription = description;
-	}
+    /**
+     * Sets the account description
+     * @param description Account description
+     */
+    public void setDescription(@NonNull String description) {
+        this.mDescription = description;
+    }
 
-	/**
-	 * Get the type of account
-	 * @return {@link AccountType} type of account
-	 */
-	public AccountType getAccountType() {
-		return mAccountType;
-	}
+    /**
+     * Get the type of account
+     * @return {@link AccountType} type of account
+     */
+    public AccountType getAccountType() {
+        return mAccountType;
+    }
 
-	/**
-	 * Sets the type of account
-	 * @param mAccountType Type of account
-	 * @see AccountType
-	 */
-	public void setAccountType(AccountType mAccountType) {
-		this.mAccountType = mAccountType;
-	}
+    /**
+     * Sets the type of account
+     * @param mAccountType Type of account
+     * @see AccountType
+     */
+    public void setAccountType(AccountType mAccountType) {
+        this.mAccountType = mAccountType;
+    }
 
-	/**
-	 * Adds a transaction to this account
-	 * @param transaction {@link Transaction} to be added to the account
-	 */
-	public void addTransaction(Transaction transaction){
-		transaction.setCommodity(mCommodity);
-		mTransactionsList.add(transaction);
-	}
+    /**
+     * Adds a transaction to this account
+     * @param transaction {@link Transaction} to be added to the account
+     */
+    public void addTransaction(Transaction transaction) {
+        transaction.setCommodity(mCommodity);
+        mTransactionsList.add(transaction);
+    }
 
-	/**
-	 * Sets a list of transactions for this account.
-	 * Overrides any previous transactions with those in the list.
-	 * The account UID and currency of the transactions will be set to the unique ID
-	 * and currency of the account respectively
-	 * @param transactionsList List of {@link Transaction}s to be set.
-	 */
-	public void setTransactions(List<Transaction> transactionsList){
-		this.mTransactionsList = transactionsList;
-	}
+    /**
+     * Sets a list of transactions for this account.
+     * Overrides any previous transactions with those in the list.
+     * The account UID and currency of the transactions will be set to the unique ID
+     * and currency of the account respectively
+     * @param transactionsList List of {@link Transaction}s to be set.
+     */
+    public void setTransactions(List<Transaction> transactionsList) {
+        this.mTransactionsList = transactionsList;
+    }
 
-	/**
-	 * Returns a list of transactions for this account
-	 * @return Array list of transactions for the account
-	 */
-	public List<Transaction> getTransactions(){
-		return mTransactionsList;
-	}
+    /**
+     * Returns a list of transactions for this account
+     * @return Array list of transactions for the account
+     */
+    public List<Transaction> getTransactions() {
+        return mTransactionsList;
+    }
 
-	/**
-	 * Returns the number of transactions in this account
-	 * @return Number transactions in account
-	 */
-	public int getTransactionCount(){
-		return mTransactionsList.size();
-	}
+    /**
+     * Returns the number of transactions in this account
+     * @return Number transactions in account
+     */
+    public int getTransactionCount() {
+        return mTransactionsList.size();
+    }
 
-	/**
-	 * Returns the aggregate of all transactions in this account.
-	 * It takes into account debit and credit amounts, it does not however consider sub-accounts
-	 * @return {@link Money} aggregate amount of all transactions in account.
-	 */
-	public Money getBalance(){
-		Money balance = Money.createZeroInstance(mCurrencyCode);
+    /**
+     * Returns the aggregate of all transactions in this account.
+     * It takes into account debit and credit amounts, it does not however consider sub-accounts
+     * @return {@link Money} aggregate amount of all transactions in account.
+     */
+    public Money getBalance() {
+        Money balance = Money.createZeroInstance(mCommodity.getCurrencyCode());
         for (Transaction transaction : mTransactionsList) {
             balance.add(transaction.getBalance(getUID()));
-		}
-		return balance;
-	}
+        }
+        return balance;
+    }
 
     /**
      * Returns the color of the account.
@@ -286,17 +282,17 @@ public class Account extends BaseModel{
         return mColor;
     }
 
-	/**
-	 * Sets the color of the account.
-	 * @param color Color as an int as returned by {@link Color}.
-	 * @throws java.lang.IllegalArgumentException if the color is transparent,
-	 *   which is not supported.
-	 */
-	public void setColor(int color) {
-		if (Color.alpha(color) < 255)
-			throw new IllegalArgumentException("Transparent colors are not supported: " + color);
-		mColor = color;
-	}
+    /**
+     * Sets the color of the account.
+     * @param color Color as an int as returned by {@link Color}.
+     * @throws java.lang.IllegalArgumentException if the color is transparent,
+     *   which is not supported.
+     */
+    public void setColor(int color) {
+        if (Color.alpha(color) < 255)
+            throw new IllegalArgumentException("Transparent colors are not supported: " + color);
+        mColor = color;
+    }
 
     /**
      * Sets the color of the account.
@@ -304,7 +300,7 @@ public class Account extends BaseModel{
      * @throws java.lang.IllegalArgumentException if the color code is not properly formatted or
 	 *   the color is transparent.
      */
-	//TODO: Allow use of #aarrggbb format as well
+    //TODO: Allow use of #aarrggbb format as well
     public void setColor(@NonNull String colorCode) {
         setColor(Color.parseColor(colorCode));
     }
@@ -326,58 +322,43 @@ public class Account extends BaseModel{
     }
 
     /**
-	 * Returns the currency for this account.
-	 */
-	public Currency getCurrency() {
-		return Currency.getInstance(mCurrencyCode);
-	}
+     * Return the commodity for this account
+     */
+    @NonNull
+    public Commodity getCommodity() {
+        return mCommodity;
+    }
 
-	/**
-	 * Sets the currency code of this account
-	 * @param currencyCode ISO 4217 3-letter currency code
-	 */
-	public void setCurrencyCode(String currencyCode){
-		this.mCurrencyCode = currencyCode;
-	}
+    /**
+     * Sets the commodity of this account
+     * @param commodity Commodity of the account
+     */
+    public void setCommodity(@NonNull Commodity commodity) {
+        this.mCommodity = commodity;
+        //todo: should we also change commodity of transactions? Transactions can have splits from different accounts
+    }
 
-	/**
-	 * Return the commodity for this account
-	 */
-	public Commodity getCommodity(){
-		return mCommodity;
-	}
+    /**
+     * Sets the Unique Account Identifier of the parent account
+     * @param parentUID String Unique ID of parent account
+     */
+    public void setParentUID(String parentUID) {
+        mParentAccountUID = parentUID;
+    }
 
-	/**
-	 * Sets the commodity of this account
-	 * @param commodity Commodity of the account
-	 */
-	public void setCommodity(Commodity commodity){
-		this.mCommodity = commodity;
-		this.mCurrencyCode = commodity.getCurrencyCode();
-		//todo: should we also change commodity of transactions? Transactions can have splits from different accounts
-	}
-
-	/**
-	 * Sets the Unique Account Identifier of the parent account
-	 * @param parentUID String Unique ID of parent account
-	 */
-	public void setParentUID(String parentUID){
-		mParentAccountUID = parentUID;
-	}
-	
-	/**
-	 * Returns the Unique Account Identifier of the parent account
-	 * @return String Unique ID of parent account
-	 */
-	public String getParentUID() {
-		return mParentAccountUID;
-	}
+    /**
+     * Returns the Unique Account Identifier of the parent account
+     * @return String Unique ID of parent account
+     */
+    public String getParentUID() {
+        return mParentAccountUID;
+    }
 
     /**
      * Returns <code>true</code> if this account is a placeholder account, <code>false</code> otherwise.
      * @return <code>true</code> if this account is a placeholder account, <code>false</code> otherwise
      */
-    public boolean isPlaceholderAccount(){
+    public boolean isPlaceholderAccount() {
         return mIsPlaceholderAccount;
     }
 
@@ -386,7 +367,7 @@ public class Account extends BaseModel{
      * <p>Hidden accounts are not visible in the UI</p>
      * @return <code>true</code> if the account is hidden, <code>false</code> otherwise.
      */
-    public boolean isHidden(){
+    public boolean isHidden() {
         return mIsHidden;
     }
 
@@ -395,7 +376,7 @@ public class Account extends BaseModel{
      * <p>Hidden accounts are not visible in the UI</p>
      * @param hidden boolean specifying is hidden or not
      */
-    public void setHidden(boolean hidden){
+    public void setHidden(boolean hidden) {
         this.mIsHidden = hidden;
     }
 
@@ -404,7 +385,7 @@ public class Account extends BaseModel{
      * Placeholder accounts cannot have transactions
      * @param isPlaceholder Boolean flag indicating if the account is a placeholder account or not
      */
-    public void setPlaceHolderFlag(boolean isPlaceholder){
+    public void setPlaceHolderFlag(boolean isPlaceholder) {
         mIsPlaceholderAccount = isPlaceholder;
     }
 
@@ -426,117 +407,117 @@ public class Account extends BaseModel{
 
 
     /**
-	 * Maps the <code>accountType</code> to the corresponding account type.
-	 * <code>accountType</code> have corresponding values to GnuCash desktop
-	 * @param accountType {@link AccountType} of an account
-	 * @return Corresponding {@link OfxAccountType} for the <code>accountType</code>
-	 * @see AccountType
-	 * @see OfxAccountType
-	 */
-    public static OfxAccountType convertToOfxAccountType(AccountType accountType){
-		switch (accountType) {
-		case CREDIT:
-		case LIABILITY:
-			return OfxAccountType.CREDITLINE;
-			
-		case CASH:
-		case INCOME:
-		case EXPENSE:
-		case PAYABLE:
-		case RECEIVABLE:
-			return OfxAccountType.CHECKING;
-			
-		case BANK:
-		case ASSET:
-			return OfxAccountType.SAVINGS;
-			
-		case MUTUAL:
-		case STOCK:
-		case EQUITY:
-		case CURRENCY:
-			return OfxAccountType.MONEYMRKT;
+     * Maps the <code>accountType</code> to the corresponding account type.
+     * <code>accountType</code> have corresponding values to GnuCash desktop
+     * @param accountType {@link AccountType} of an account
+     * @return Corresponding {@link OfxAccountType} for the <code>accountType</code>
+     * @see AccountType
+     * @see OfxAccountType
+     */
+    public static OfxAccountType convertToOfxAccountType(AccountType accountType) {
+        switch (accountType) {
+            case CREDIT:
+            case LIABILITY:
+                return OfxAccountType.CREDITLINE;
 
-		default:
-			return OfxAccountType.CHECKING;
-		}
-	}
-	
-	/**
-	 * Converts this account's transactions into XML and adds them to the DOM document
-	 * @param doc XML DOM document for the OFX data
-	 * @param parent Parent node to which to add this account's transactions in XML
-	 * @param exportStartTime Time from which to export transactions which are created/modified after
-	 */
-	public void toOfx(Document doc, Element parent, Timestamp exportStartTime){
-		Element currency = doc.createElement(OfxHelper.TAG_CURRENCY_DEF);
-		currency.appendChild(doc.createTextNode(mCommodity.getCurrencyCode()));
-		
-		//================= BEGIN BANK ACCOUNT INFO (BANKACCTFROM) =================================
-		
-		Element bankId = doc.createElement(OfxHelper.TAG_BANK_ID);
-		bankId.appendChild(doc.createTextNode(OfxHelper.APP_ID));
-		
-		Element acctId = doc.createElement(OfxHelper.TAG_ACCOUNT_ID);
-		acctId.appendChild(doc.createTextNode(getUID()));
-		
-		Element accttype = doc.createElement(OfxHelper.TAG_ACCOUNT_TYPE);
-		String ofxAccountType = convertToOfxAccountType(mAccountType).toString();
-		accttype.appendChild(doc.createTextNode(ofxAccountType));
-		
-		Element bankFrom = doc.createElement(OfxHelper.TAG_BANK_ACCOUNT_FROM);
-		bankFrom.appendChild(bankId);
-		bankFrom.appendChild(acctId);
-		bankFrom.appendChild(accttype);
-		
-		//================= END BANK ACCOUNT INFO ============================================
-		
-		
-		//================= BEGIN ACCOUNT BALANCE INFO =================================
-		String balance = getBalance().toPlainString();
-		String formattedCurrentTimeString = OfxHelper.getFormattedCurrentTime();
-		
-		Element balanceAmount = doc.createElement(OfxHelper.TAG_BALANCE_AMOUNT);
-		balanceAmount.appendChild(doc.createTextNode(balance));			
-		Element dtasof = doc.createElement(OfxHelper.TAG_DATE_AS_OF);
-		dtasof.appendChild(doc.createTextNode(formattedCurrentTimeString));
-		
-		Element ledgerBalance = doc.createElement(OfxHelper.TAG_LEDGER_BALANCE);
-		ledgerBalance.appendChild(balanceAmount);
-		ledgerBalance.appendChild(dtasof);
-		
-		//================= END ACCOUNT BALANCE INFO =================================
-		
-		
-		//================= BEGIN TIME PERIOD INFO =================================
-		
-		Element dtstart = doc.createElement(OfxHelper.TAG_DATE_START);
-		dtstart.appendChild(doc.createTextNode(formattedCurrentTimeString));
-		
-		Element dtend = doc.createElement(OfxHelper.TAG_DATE_END);
-		dtend.appendChild(doc.createTextNode(formattedCurrentTimeString));
-		
-		//================= END TIME PERIOD INFO =================================
-		
-		
-		//================= BEGIN TRANSACTIONS LIST =================================
-		Element bankTransactionsList = doc.createElement(OfxHelper.TAG_BANK_TRANSACTION_LIST);
-		bankTransactionsList.appendChild(dtstart);
-		bankTransactionsList.appendChild(dtend);
+            case CASH:
+            case INCOME:
+            case EXPENSE:
+            case PAYABLE:
+            case RECEIVABLE:
+                return OfxAccountType.CHECKING;
 
-		for (Transaction transaction : mTransactionsList) {
-			if (transaction.getModifiedTimestamp().before(exportStartTime))
-				continue;
+            case BANK:
+            case ASSET:
+                return OfxAccountType.SAVINGS;
+
+            case MUTUAL:
+            case STOCK:
+            case EQUITY:
+            case CURRENCY:
+                return OfxAccountType.MONEYMRKT;
+
+            default:
+                return OfxAccountType.CHECKING;
+        }
+    }
+
+    /**
+     * Converts this account's transactions into XML and adds them to the DOM document
+     * @param doc             XML DOM document for the OFX data
+     * @param parent          Parent node to which to add this account's transactions in XML
+     * @param exportStartTime Time from which to export transactions which are created/modified after
+     */
+    public void toOfx(Document doc, Element parent, Timestamp exportStartTime) {
+        Element currency = doc.createElement(OfxHelper.TAG_CURRENCY_DEF);
+        currency.appendChild(doc.createTextNode(mCommodity.getCurrencyCode()));
+
+        //================= BEGIN BANK ACCOUNT INFO (BANKACCTFROM) =================================
+
+        Element bankId = doc.createElement(OfxHelper.TAG_BANK_ID);
+        bankId.appendChild(doc.createTextNode(OfxHelper.APP_ID));
+
+        Element acctId = doc.createElement(OfxHelper.TAG_ACCOUNT_ID);
+        acctId.appendChild(doc.createTextNode(getUID()));
+
+        Element accttype = doc.createElement(OfxHelper.TAG_ACCOUNT_TYPE);
+        String ofxAccountType = convertToOfxAccountType(mAccountType).toString();
+        accttype.appendChild(doc.createTextNode(ofxAccountType));
+
+        Element bankFrom = doc.createElement(OfxHelper.TAG_BANK_ACCOUNT_FROM);
+        bankFrom.appendChild(bankId);
+        bankFrom.appendChild(acctId);
+        bankFrom.appendChild(accttype);
+
+        //================= END BANK ACCOUNT INFO ============================================
+
+
+        //================= BEGIN ACCOUNT BALANCE INFO =================================
+        String balance = getBalance().toPlainString();
+        String formattedCurrentTimeString = OfxHelper.getFormattedCurrentTime();
+
+        Element balanceAmount = doc.createElement(OfxHelper.TAG_BALANCE_AMOUNT);
+        balanceAmount.appendChild(doc.createTextNode(balance));
+        Element dtasof = doc.createElement(OfxHelper.TAG_DATE_AS_OF);
+        dtasof.appendChild(doc.createTextNode(formattedCurrentTimeString));
+
+        Element ledgerBalance = doc.createElement(OfxHelper.TAG_LEDGER_BALANCE);
+        ledgerBalance.appendChild(balanceAmount);
+        ledgerBalance.appendChild(dtasof);
+
+        //================= END ACCOUNT BALANCE INFO =================================
+
+
+        //================= BEGIN TIME PERIOD INFO =================================
+
+        Element dtstart = doc.createElement(OfxHelper.TAG_DATE_START);
+        dtstart.appendChild(doc.createTextNode(formattedCurrentTimeString));
+
+        Element dtend = doc.createElement(OfxHelper.TAG_DATE_END);
+        dtend.appendChild(doc.createTextNode(formattedCurrentTimeString));
+
+        //================= END TIME PERIOD INFO =================================
+
+
+        //================= BEGIN TRANSACTIONS LIST =================================
+        Element bankTransactionsList = doc.createElement(OfxHelper.TAG_BANK_TRANSACTION_LIST);
+        bankTransactionsList.appendChild(dtstart);
+        bankTransactionsList.appendChild(dtend);
+
+        for (Transaction transaction : mTransactionsList) {
+            if (transaction.getModifiedTimestamp().before(exportStartTime))
+                continue;
             bankTransactionsList.appendChild(transaction.toOFX(doc, getUID()));
-		}		
-		//================= END TRANSACTIONS LIST =================================
-					
-		Element statementTransactions = doc.createElement(OfxHelper.TAG_STATEMENT_TRANSACTIONS);
-		statementTransactions.appendChild(currency);
-		statementTransactions.appendChild(bankFrom);
-		statementTransactions.appendChild(bankTransactionsList);
-		statementTransactions.appendChild(ledgerBalance);
-		
-		parent.appendChild(statementTransactions);
-				
-	}
+        }
+        //================= END TRANSACTIONS LIST =================================
+
+        Element statementTransactions = doc.createElement(OfxHelper.TAG_STATEMENT_TRANSACTIONS);
+        statementTransactions.appendChild(currency);
+        statementTransactions.appendChild(bankFrom);
+        statementTransactions.appendChild(bankTransactionsList);
+        statementTransactions.appendChild(ledgerBalance);
+
+        parent.appendChild(statementTransactions);
+
+    }
 }

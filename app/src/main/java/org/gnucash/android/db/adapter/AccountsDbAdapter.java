@@ -171,7 +171,7 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
         if (account.getDescription() != null)
             stmt.bindString(2, account.getDescription());
         stmt.bindString(3, account.getAccountType().name());
-        stmt.bindString(4, account.getCurrency().getCurrencyCode());
+        stmt.bindString(4, account.getCommodity().getCurrencyCode());
         if (account.getColor() != Account.DEFAULT_COLOR) {
             stmt.bindString(5, convertToRGBHexString(account.getColor()));
         }
@@ -180,11 +180,7 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
         stmt.bindLong(8, account.isPlaceholderAccount() ? 1 : 0);
         stmt.bindString(9, TimestampHelper.getUtcStringFromTimestamp(account.getCreatedTimestamp()));
         stmt.bindLong(10, account.isHidden() ? 1 : 0);
-        Commodity commodity = account.getCommodity();
-        if (commodity == null)
-            commodity = new CommoditiesDbAdapter(mDb).getCommodity(account.getCurrency().getCurrencyCode());
-
-        stmt.bindString(11, commodity.getUID());
+        stmt.bindString(11, account.getCommodity().getUID());
 
         String parentAccountUID = account.getParentUID();
         if (parentAccountUID == null && account.getAccountType() != AccountType.ROOT) {
@@ -277,7 +273,7 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
             for (Account account : descendantAccounts)
                 mapAccounts.put(account.getUID(), account);
             String parentAccountFullName;
-            if (newParentAccountUID == null || getAccountType(newParentAccountUID) == AccountType.ROOT) {
+            if (getAccountType(newParentAccountUID) == AccountType.ROOT) {
                 parentAccountFullName = "";
             } else {
                 parentAccountFullName = getAccountFullName(newParentAccountUID);
@@ -760,11 +756,10 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
 
         Log.d(LOG_TAG, "all account list : " + accountUidList.size());
         SplitsDbAdapter splitsDbAdapter = SplitsDbAdapter.getInstance();
-        Money splitSum = (startTimestamp == -1 && endTimestamp == -1)
+
+        return (startTimestamp == -1 && endTimestamp == -1)
                 ? splitsDbAdapter.computeSplitBalance(accountUidList, currencyCode, hasDebitNormalBalance)
                 : splitsDbAdapter.computeSplitBalance(accountUidList, currencyCode, hasDebitNormalBalance, startTimestamp, endTimestamp);
-
-        return splitSum;
     }
 
     /**

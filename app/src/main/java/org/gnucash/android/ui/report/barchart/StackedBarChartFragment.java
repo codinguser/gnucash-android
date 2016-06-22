@@ -17,7 +17,6 @@
 
 package org.gnucash.android.ui.report.barchart;
 
-import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
@@ -110,7 +109,7 @@ public class StackedBarChartFragment extends BaseReportFragment {
         mChart.getAxisRight().setEnabled(false);
         mChart.getAxisLeft().setStartAtZero(false);
         mChart.getAxisLeft().enableGridDashedLine(4.0f, 4.0f, 0);
-        mChart.getAxisLeft().setValueFormatter(new LargeValueFormatter(mCurrency.getSymbol(Locale.getDefault())));
+        mChart.getAxisLeft().setValueFormatter(new LargeValueFormatter(mCommodity.getSymbol()));
         Legend chartLegend = mChart.getLegend();
         chartLegend.setForm(Legend.LegendForm.CIRCLE);
         chartLegend.setPosition(Legend.LegendPosition.BELOW_CHART_CENTER);
@@ -163,7 +162,7 @@ public class StackedBarChartFragment extends BaseReportFragment {
             for (Account account : mAccountsDbAdapter.getSimpleAccountList()) {
                 if (account.getAccountType() == mAccountType
                         && !account.isPlaceholderAccount()
-                        && account.getCurrency() == mCurrency) {
+                        && account.getCommodity().equals(mCommodity)) {
 
                     double balance = mAccountsDbAdapter.getAccountsBalance(
                             Collections.singletonList(account.getUID()), start, end).asDouble();
@@ -244,7 +243,7 @@ public class StackedBarChartFragment extends BaseReportFragment {
      */
     private LocalDate getStartDate(AccountType accountType) {
         TransactionsDbAdapter adapter = TransactionsDbAdapter.getInstance();
-        String code = mCurrency.getCurrencyCode();
+        String code = mCommodity.getCurrencyCode();
         LocalDate startDate;
         if (mReportPeriodStart == -1) {
             startDate = new LocalDate(adapter.getTimestampOfEarliestTransaction(accountType, code));
@@ -263,7 +262,7 @@ public class StackedBarChartFragment extends BaseReportFragment {
      */
     private LocalDate getEndDate(AccountType accountType) {
         TransactionsDbAdapter adapter = TransactionsDbAdapter.getInstance();
-        String code = mCurrency.getCurrencyCode();
+        String code = mCommodity.getCurrencyCode();
         LocalDate endDate;
         if (mReportPeriodEnd == -1) {
             endDate = new LocalDate(adapter.getTimestampOfLatestTransaction(accountType, code));

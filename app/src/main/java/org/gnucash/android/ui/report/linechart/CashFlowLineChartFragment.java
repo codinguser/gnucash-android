@@ -102,7 +102,7 @@ public class CashFlowLineChartFragment extends BaseReportFragment {
         mChart.getXAxis().setDrawGridLines(false);
         mChart.getAxisRight().setEnabled(false);
         mChart.getAxisLeft().enableGridDashedLine(4.0f, 4.0f, 0);
-        mChart.getAxisLeft().setValueFormatter(new LargeValueFormatter(mCurrency.getSymbol(Locale.getDefault())));
+        mChart.getAxisLeft().setValueFormatter(new LargeValueFormatter(mCommodity.getSymbol()));
 
         Legend legend = mChart.getLegend();
         legend.setPosition(Legend.LegendPosition.BELOW_CHART_CENTER);
@@ -209,7 +209,7 @@ public class CashFlowLineChartFragment extends BaseReportFragment {
         for (Account account : mAccountsDbAdapter.getSimpleAccountList()) {
             if (account.getAccountType() == accountType
                     && !account.isPlaceholderAccount()
-                    && account.getCurrency().equals(mCurrency)) {
+                    && account.getCommodity().equals(mCommodity)) {
                 accountUIDList.add(account.getUID());
             }
         }
@@ -276,8 +276,8 @@ public class CashFlowLineChartFragment extends BaseReportFragment {
         TransactionsDbAdapter dbAdapter = TransactionsDbAdapter.getInstance();
         for (Iterator<AccountType> iter = accountTypeList.iterator(); iter.hasNext();) {
             AccountType type = iter.next();
-            long earliest = dbAdapter.getTimestampOfEarliestTransaction(type, mCurrency.getCurrencyCode());
-            long latest = dbAdapter.getTimestampOfLatestTransaction(type, mCurrency.getCurrencyCode());
+            long earliest = dbAdapter.getTimestampOfEarliestTransaction(type, mCommodity.getCurrencyCode());
+            long latest = dbAdapter.getTimestampOfLatestTransaction(type, mCommodity.getCurrencyCode());
             if (earliest > 0 && latest > 0) {
                 mEarliestTimestampsMap.put(type, earliest);
                 mLatestTimestampsMap.put(type, latest);
