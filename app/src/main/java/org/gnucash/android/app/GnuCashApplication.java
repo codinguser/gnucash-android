@@ -31,6 +31,7 @@ import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.core.CrashlyticsCore;
+import com.facebook.stetho.Stetho;
 import com.uservoice.uservoicesdk.Config;
 import com.uservoice.uservoicesdk.UserVoice;
 
@@ -138,6 +139,9 @@ public class GnuCashApplication extends Application{
         //TODO: migrate preferences from defaultShared to book
 
         setDefaultCurrencyCode(getDefaultCurrencyCode());
+
+        if (BuildConfig.DEBUG)
+            setUpRemoteDebuggingFromChrome();
     }
 
     /**
@@ -346,5 +350,20 @@ public class GnuCashApplication extends Application{
                 pendingIntent);
 
         context.startService(alarmIntent); //run the service the first time
+    }
+
+    /**
+     * Sets up Stetho to enable remote debugging from Chrome developer tools.
+     *
+     * <p>Among other things, allows access to the database and preferences.
+     * See http://facebook.github.io/stetho/#features</p>
+     */
+    private void setUpRemoteDebuggingFromChrome() {
+        Stetho.Initializer initializer =
+                Stetho.newInitializerBuilder(this)
+                        .enableWebKitInspector(
+                                Stetho.defaultInspectorModulesProvider(this))
+                        .build();
+        Stetho.initialize(initializer);
     }
 }
