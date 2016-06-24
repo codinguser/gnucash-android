@@ -120,16 +120,7 @@ public class GnuCashApplication extends Application{
                 new CrashlyticsCore.Builder().disabled(!isCrashlyticsEnabled()).build())
                 .build());
 
-        // Set this up once when your application launches
-        Config config = new Config("gnucash.uservoice.com");
-        config.setTopicId(107400);
-        config.setForumId(320493);
-        config.putUserTrait("app_version_name", BuildConfig.VERSION_NAME);
-        config.putUserTrait("app_version_code", BuildConfig.VERSION_CODE);
-        config.putUserTrait("android_version", Build.VERSION.RELEASE);
-        // config.identifyUser("USER_ID", "User Name", "email@example.com");
-        UserVoice.init(config, this);
-
+        setUpUserVoice();
 
         BookDbHelper bookDbHelper = new BookDbHelper(getApplicationContext());
         mBooksDbAdapter = new BooksDbAdapter(bookDbHelper.getWritableDatabase());
@@ -350,6 +341,23 @@ public class GnuCashApplication extends Application{
                 pendingIntent);
 
         context.startService(alarmIntent); //run the service the first time
+    }
+
+    /**
+     * Sets up UserVoice.
+     *
+     * <p>Allows users to contact with us and access help topics.</p>
+     */
+    private void setUpUserVoice() {
+        // Set this up once when your application launches
+        Config config = new Config("gnucash.uservoice.com");
+        config.setTopicId(107400);
+        config.setForumId(320493);
+        config.putUserTrait("app_version_name", BuildConfig.VERSION_NAME);
+        config.putUserTrait("app_version_code", BuildConfig.VERSION_CODE);
+        config.putUserTrait("android_version", Build.VERSION.RELEASE);
+        // config.identifyUser("USER_ID", "User Name", "email@example.com");
+        UserVoice.init(config, this);
     }
 
     /**
