@@ -138,7 +138,7 @@ public class ScheduledActionDbAdapter extends DatabaseAdapter<ScheduledAction> {
         if (schedxAction.getTag() == null)
             stmt.bindNull(8);
         else
-            stmt.bindString(9, schedxAction.getTag());
+            stmt.bindString(8, schedxAction.getTag());
         stmt.bindString(9, Integer.toString(schedxAction.getTotalFrequency()));
         stmt.bindString(10, schedxAction.getRecurrence().getUID());
         stmt.bindLong(11,   schedxAction.shouldAutoCreate() ? 1 : 0);
