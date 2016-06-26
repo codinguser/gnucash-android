@@ -26,7 +26,6 @@ import org.gnucash.android.app.GnuCashApplication;
 import org.gnucash.android.db.DatabaseSchema;
 import org.gnucash.android.model.Recurrence;
 import org.gnucash.android.model.ScheduledAction;
-import org.gnucash.android.util.TimestampHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +39,7 @@ import static org.gnucash.android.db.DatabaseSchema.ScheduledActionEntry;
  */
 public class ScheduledActionDbAdapter extends DatabaseAdapter<ScheduledAction> {
 
-    RecurrenceDbAdapter mRecurrenceDbAdapter;
+    private RecurrenceDbAdapter mRecurrenceDbAdapter;
 
     public ScheduledActionDbAdapter(SQLiteDatabase db, RecurrenceDbAdapter recurrenceDbAdapter){
         super(db, ScheduledActionEntry.TABLE_NAME,  new String[]{
@@ -96,7 +95,7 @@ public class ScheduledActionDbAdapter extends DatabaseAdapter<ScheduledAction> {
     /**
      * Updates only the recurrence attributes of the scheduled action.
      * The recurrence attributes are the period, start time, end time and/or total frequency.
-     * All other properties of a scheduled event are only used for interal database tracking and are
+     * All other properties of a scheduled event are only used for internal database tracking and are
      * not central to the recurrence schedule.
      * <p><b>The GUID of the scheduled action should already exist in the database</b></p>
      * @param scheduledAction Scheduled action
@@ -138,7 +137,7 @@ public class ScheduledActionDbAdapter extends DatabaseAdapter<ScheduledAction> {
         if (schedxAction.getTag() == null)
             stmt.bindNull(8);
         else
-            stmt.bindString(9, schedxAction.getTag());
+            stmt.bindString(8, schedxAction.getTag());
         stmt.bindString(9, Integer.toString(schedxAction.getTotalFrequency()));
         stmt.bindString(10, schedxAction.getRecurrence().getUID());
         stmt.bindLong(11,   schedxAction.shouldAutoCreate() ? 1 : 0);
@@ -220,7 +219,7 @@ public class ScheduledActionDbAdapter extends DatabaseAdapter<ScheduledAction> {
 
     /**
      * Returns all enabled scheduled actions in the database
-     * @return List of enalbed scheduled actions
+     * @return List of enabled scheduled actions
      */
     public List<ScheduledAction> getAllEnabledScheduledActions(){
         Cursor cursor = mDb.query(mTableName,
