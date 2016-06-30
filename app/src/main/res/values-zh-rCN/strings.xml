@@ -104,7 +104,7 @@
   <string name="title_about">关于</string>
   <string name="toast_format_exported_to">%1$s文件保存到：\n</string>
   <string name="title_export_email">GnuCash Android %1$s 的导出文件</string>
-  <string name="description_export_email">GnuCash Android Export from </string>
+  <string name="description_export_email">GnuCash 导出的数据 </string>
   <string name="header_transaction_settings">交易</string>
   <string name="title_transaction_preferences">交易设置</string>
   <string name="title_account_preferences">科目设置</string>
@@ -121,7 +121,7 @@
   <string name="title_always_delete_exported_transactions">删除已导出的交易</string>
   <string name="title_default_export_email">Email设置</string>
   <string name="summary_default_export_email">默认发送导出的OFX文件到这个email地址，当然在导出过程时你仍然可以临时变更。</string>
-  <string name="label_double_entry_account">交易科目</string>
+  <string name="label_double_entry_account">过户帐</string>
   <string name="summary_use_double_entry">所有交易会显示成两行，复式簿记</string>
   <string name="title_use_double_entry">使用双行模式</string>
   <string name="account_balance">帐户余额</string>
@@ -435,12 +435,12 @@
   <string name="menu_manage_books">管理账簿</string>
   <string name="select_chart_to_view_details">选择图表的某处以查看详细信息</string>
   <string name="title_confirm_delete_book">确认删除帐簿</string>
-  <string name="msg_all_book_data_will_be_deleted">该帐簿中所有帐目和交易都会被删除！</string>
+  <string name="msg_all_book_data_will_be_deleted">该帐簿中所有科目和交易都会被删除！</string>
   <string name="btn_delete_book">删除帐簿</string>
   <string name="label_last_export_time">最后导出：</string>
   <string name="menu_title_enable_sync">启用同步</string>
   <string name="menu_title_new_book">新建帐簿</string>
-  <string name="toast_transaction_has_no_splits_and_cannot_open">The selected transaction has no splits and cannot be opened</string>
-  <string name="label_split_count">%1$d splits</string>
-  <string name="label_inside_account_with_name">in %1$s</string>
+  <string name="toast_transaction_has_no_splits_and_cannot_open">所选交易没有分割项，无法开启</string>
+  <string name="label_split_count">%1$d 项分割</string>
+  <string name="label_inside_account_with_name">于 %1$s</string>
 </resources>

@@ -25,7 +25,7 @@
   <string name="label_account_name">Nombre de la cuenta</string>
   <string name="btn_cancel">Cancelar</string>
   <string name="btn_save">Guardar</string>
-  <string name="btn_test">Test</string>
+  <string name="btn_test">Probar</string>
   <string name="label_passcode">Introducir contraseña</string>
   <string name="toast_wrong_passcode">Contraseña incorrecta, intentar otra vez</string>
   <string name="toast_passcode_set">Contraseña establecida</string>
@@ -66,7 +66,7 @@
     <item>DropBox</item>
     <item>Google Drive</item>
     <item>ownCloud</item>
-    <item>Send to&#8230;</item>
+    <item>Enviar a&#8230;</item>
   </string-array>
   <string name="btn_move">Mover</string>
   <string name="title_move_transactions">Mover %1$d transacción(es)</string>
@@ -277,11 +277,11 @@
   <string name="label_tap_to_create_schedule">Toque para crear la programación</string>
   <string name="title_restore_backup">Restaurar copia de seguridad&#8230;</string>
   <string name="header_backup_and_export_settings">Copia de seguridad y exportación</string>
-  <string name="title_dropbox_sync_preference">Enable DropBox</string>
-  <string name="title_owncloud_sync_preference">Enable ownCloud </string>
+  <string name="title_dropbox_sync_preference">Habilitar DropBox</string>
+  <string name="title_owncloud_sync_preference">Habilitar ownCloud</string>
   <string name="title_backup_preference_category">Copia de seguridad</string>
-  <string name="summary_dropbox_sync">Enable exporting to DropBox</string>
-  <string name="summary_owncloud_sync">Enable exporting to ownCloud</string>
+  <string name="summary_dropbox_sync">Habilitar exportar a DropBox</string>
+  <string name="summary_owncloud_sync">Habilitar exportar a ownCloud</string>
   <string name="title_select_gnucash_xml_file">Seleccionar archivo XML GnuCash</string>
   <string name="title_backup_prefs">Preferencias de copia de seguridad</string>
   <string name="title_create_backup_pref">Crear copia de seguridad</string>
@@ -290,8 +290,8 @@
   <string name="toast_backup_successful">Copia de seguridad exitosa</string>
   <string name="toast_backup_failed">Copia de seguridad fallida</string>
   <string name="export_warning_xml">Exportar todas las cuentas y transacciones</string>
-  <string name="title_google_drive_sync_pref">Enable Google Drive</string>
-  <string name="summary_google_drive_sync">Enable exporting to Google Drive</string>
+  <string name="title_google_drive_sync_pref">Habilitar Google Drive</string>
+  <string name="summary_google_drive_sync">Habilitar exportar a Google Drive</string>
   <string name="toast_install_file_manager">Instale un gestor de archivos para seleccionar archivos</string>
   <string name="title_select_backup_to_restore">Seleccione la copia de seguridad a restaurar</string>
   <string name="nav_menu_favorites">Favoritos</string>
@@ -300,16 +300,16 @@
   <string name="nav_menu_scheduled_transactions">Transacciones Programadas</string>
   <string name="nav_menu_export">Exportar&#8230;</string>
   <string name="nav_menu_settings">Ajustes</string>
-  <string name="username">User Name</string>
-  <string name="password">Password</string>
-  <string name="owncloud_pref">owncloud</string>
+  <string name="username">Nombre de usuario</string>
+  <string name="password">Contraseña</string>
+  <string name="owncloud_pref">ownCloud</string>
   <string name="owncloud_server">https://</string>
-  <string name="owncloud_server_invalid">OC server not found</string>
-  <string name="owncloud_user_invalid">OC username/password invalid</string>
-  <string name="owncloud_dir_invalid">Invalid chars: \\ &lt; &gt; : \&quot; | * ? </string>
-  <string name="owncloud_server_ok">OC server OK</string>
-  <string name="owncloud_user_ok">OC username/password OK</string>
-  <string name="owncloud_dir_ok">Dir name OK</string>
+  <string name="owncloud_server_invalid">Servidor OC no encontrado</string>
+  <string name="owncloud_user_invalid">Usuario/contraseña OC no válidos</string>
+  <string name="owncloud_dir_invalid">Caracteres inválidos: \\ &lt; &gt; : \&quot; | * ? </string>
+  <string name="owncloud_server_ok">Servidor OC correcto</string>
+  <string name="owncloud_user_ok">Usuario/contraseña OC correctos</string>
+  <string name="owncloud_dir_ok">Nombre del directorio correcto</string>
   <plurals name="label_every_x_days">
     <item quantity="one">Diario</item>
     <item quantity="other">Cada %d días</item>
@@ -398,16 +398,16 @@ Este proceso solo recoge información que no permite identificar al usuario</str
   <string name="summary_google_plus">Compartir ideas, discutir cambios o reportar problemas</string>
   <string name="summary_translate_gnucash">Traducir o revisar en CrowdIn</string>
   <string name="toast_no_compatible_apps_to_receive_export">¡No hay aplicaciones compatibles para recibir las transacciones exportadas!</string>
-  <string name="menu_move_transaction">Move&#8230;</string>
+  <string name="menu_move_transaction">Mover&#8230;</string>
   <string name="menu_duplicate_transaction">Duplicar</string>
-  <string name="nav_menu_budgets">Budgets</string>
-  <string name="title_cash_flow_report">Cash Flow</string>
-  <string name="title_budgets">Budgets</string>
-  <string name="title_use_compact_list">Enable compact view</string>
-  <string name="summary_use_compact_list">Enable to always use compact view for transactions list</string>
-  <string name="error_invalid_exchange_rate">Invalid exchange rate</string>
-  <string name="sample_exchange_rate">e.g. 1 %1$s = x.xx %2$s</string>
-  <string name="error_invalid_amount">Invalid amount</string>
+  <string name="nav_menu_budgets">Presupuesto</string>
+  <string name="title_cash_flow_report">Flujo de efectivo</string>
+  <string name="title_budgets">Presupuestos</string>
+  <string name="title_use_compact_list">Activar la vista compacta</string>
+  <string name="summary_use_compact_list">Activar para usar siempre la vista compacta en la lista de transacciones</string>
+  <string name="error_invalid_exchange_rate">Tipo de cambio no válido</string>
+  <string name="sample_exchange_rate">p.ej. 1 %1$s = x.xx %2$s</string>
+  <string name="error_invalid_amount">Cantidad no válida</string>
   <string-array name="report_time_range">
     <item>Mes actual</item>
     <item>Últimos 3 meses</item>
@@ -438,16 +438,16 @@ Este proceso solo recoge información que no permite identificar al usuario</str
   <string name="digit_nine_text">WXYZ</string>
   <string name="digit_zero">0</string>
   <string name="digit_zero_text">+</string>
-  <string name="title_manage_books">Manage Books</string>
-  <string name="menu_manage_books">Manage Books&#8230;</string>
-  <string name="select_chart_to_view_details">Select any part of the chart to view details</string>
-  <string name="title_confirm_delete_book">Confirm delete Book</string>
-  <string name="msg_all_book_data_will_be_deleted">All accounts and transactions in this book will be deleted!</string>
-  <string name="btn_delete_book">Delete Book</string>
-  <string name="label_last_export_time">Last Exported:</string>
-  <string name="menu_title_enable_sync">Enable Sync</string>
-  <string name="menu_title_new_book">New Book</string>
-  <string name="toast_transaction_has_no_splits_and_cannot_open">The selected transaction has no splits and cannot be opened</string>
-  <string name="label_split_count">%1$d splits</string>
-  <string name="label_inside_account_with_name">in %1$s</string>
+  <string name="title_manage_books">Administrar libros</string>
+  <string name="menu_manage_books">Administrar libros&#8230;</string>
+  <string name="select_chart_to_view_details">Seleccione cualquier parte del gráfico para ver los detalles</string>
+  <string name="title_confirm_delete_book">Confirmar borrar libro</string>
+  <string name="msg_all_book_data_will_be_deleted">¡Se eliminarán todas las cuentas y transacciones en este libro!</string>
+  <string name="btn_delete_book">Borrar el libro</string>
+  <string name="label_last_export_time">Última exportación:</string>
+  <string name="menu_title_enable_sync">Habilitar sincronización</string>
+  <string name="menu_title_new_book">Nuevo libro</string>
+  <string name="toast_transaction_has_no_splits_and_cannot_open">La transacción seleccionada tiene ningún desglose y no se puede abrir</string>
+  <string name="label_split_count">%1$d desglose</string>
+  <string name="label_inside_account_with_name">en %1$s</string>
 </resources>
