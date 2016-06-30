@@ -31,6 +31,7 @@ import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.core.CrashlyticsCore;
+import com.facebook.stetho.Stetho;
 import com.uservoice.uservoicesdk.Config;
 import com.uservoice.uservoicesdk.UserVoice;
 
@@ -119,16 +120,7 @@ public class GnuCashApplication extends Application{
                 new CrashlyticsCore.Builder().disabled(!isCrashlyticsEnabled()).build())
                 .build());
 
-        // Set this up once when your application launches
-        Config config = new Config("gnucash.uservoice.com");
-        config.setTopicId(107400);
-        config.setForumId(320493);
-        config.putUserTrait("app_version_name", BuildConfig.VERSION_NAME);
-        config.putUserTrait("app_version_code", BuildConfig.VERSION_CODE);
-        config.putUserTrait("android_version", Build.VERSION.RELEASE);
-        // config.identifyUser("USER_ID", "User Name", "email@example.com");
-        UserVoice.init(config, this);
-
+        setUpUserVoice();
 
         BookDbHelper bookDbHelper = new BookDbHelper(getApplicationContext());
         mBooksDbAdapter = new BooksDbAdapter(bookDbHelper.getWritableDatabase());
@@ -138,6 +130,9 @@ public class GnuCashApplication extends Application{
         //TODO: migrate preferences from defaultShared to book
 
         setDefaultCurrencyCode(getDefaultCurrencyCode());
+
+        if (BuildConfig.DEBUG)
+            setUpRemoteDebuggingFromChrome();
     }
 
     /**
@@ -346,5 +341,37 @@ public class GnuCashApplication extends Application{
                 pendingIntent);
 
         context.startService(alarmIntent); //run the service the first time
+    }
+
+    /**
+     * Sets up UserVoice.
+     *
+     * <p>Allows users to contact with us and access help topics.</p>
+     */
+    private void setUpUserVoice() {
+        // Set this up once when your application launches
+        Config config = new Config("gnucash.uservoice.com");
+        config.setTopicId(107400);
+        config.setForumId(320493);
+        config.putUserTrait("app_version_name", BuildConfig.VERSION_NAME);
+        config.putUserTrait("app_version_code", BuildConfig.VERSION_CODE);
+        config.putUserTrait("android_version", Build.VERSION.RELEASE);
+        // config.identifyUser("USER_ID", "User Name", "email@example.com");
+        UserVoice.init(config, this);
+    }
+
+    /**
+     * Sets up Stetho to enable remote debugging from Chrome developer tools.
+     *
+     * <p>Among other things, allows access to the database and preferences.
+     * See http://facebook.github.io/stetho/#features</p>
+     */
+    private void setUpRemoteDebuggingFromChrome() {
+        Stetho.Initializer initializer =
+                Stetho.newInitializerBuilder(this)
+                        .enableWebKitInspector(
+                                Stetho.defaultInspectorModulesProvider(this))
+                        .build();
+        Stetho.initialize(initializer);
     }
 }
