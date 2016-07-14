@@ -82,7 +82,6 @@ import org.gnucash.android.ui.util.widget.TransactionTypeSwitch;
 import org.gnucash.android.util.QualifiedAccountNameCursorAdapter;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -712,13 +711,7 @@ public class TransactionFormFragment extends Fragment implements
 		Money amount 	= new Money(amountBigd, Commodity.getInstance(currency.getCurrencyCode())).abs();
 
         if (mSplitsList.size() == 1){ //means split editor was opened but no split was added
-            String transferAcctUID;
-            if (mUseDoubleEntry) {
-                long transferAcctId = mTransferAccountSpinner.getSelectedItemId();
-                transferAcctUID = mAccountsDbAdapter.getUID(transferAcctId);
-            } else {
-                transferAcctUID = mAccountsDbAdapter.getOrCreateImbalanceAccountUID(currency);
-            }
+            String transferAcctUID = getSelectedTransferAccountUID();
             mSplitsList.add(mSplitsList.get(0).createPair(transferAcctUID));
         }
 
@@ -734,7 +727,7 @@ public class TransactionFormFragment extends Fragment implements
                     split.setQuantity(amount);
                 } else {
                     split.setType(mTransactionTypeSwitch.getTransactionType().invert());
-                    if (mSplitQuantity != null)
+                    if (mSplitQuantity != null && hasTransferAccountDifferentCommodity())
                         split.setQuantity(mSplitQuantity);
                     else
                         split.setQuantity(amount);
@@ -765,10 +758,10 @@ public class TransactionFormFragment extends Fragment implements
                         transferAcctUID = mAccountsDbAdapter.getOrCreateImbalanceAccountUID(currency);
                     }
                     Split pair = split.createPair(transferAcctUID);
-                    if (mSplitQuantity != null)
+                    if (mSplitQuantity != null && hasTransferAccountDifferentCommodity())
                         pair.setQuantity(mSplitQuantity);
                     else {
-                        if (!mAccountsDbAdapter.getCurrencyCode(transferAcctUID).equals(currency.getCurrencyCode())){
+                        if (hasTransferAccountDifferentCommodity()){
                             startTransferFunds();
                             mTransaction = null;
                             return;
@@ -820,6 +813,41 @@ public class TransactionFormFragment extends Fragment implements
 
 		finish(Activity.RESULT_OK);
 	}
+
+    /**
+     * Returns true if the selected transfer account has a different commodity
+     * from the transaction's account.
+     *
+     * @return true if the selected transfer account has a different commodity
+     * from the transaction's account.
+     */
+    private boolean hasTransferAccountDifferentCommodity() {
+        String accountCurrencyCode = mTransactionsDbAdapter.getAccountCurrencyCode(mAccountUID);
+        String transferAccountCurrencyCode =
+                mAccountsDbAdapter.getCurrencyCode(getSelectedTransferAccountUID());
+        return !accountCurrencyCode.equals(transferAccountCurrencyCode);
+    }
+
+    /**
+     * Returns the UID of the transaction account selected by the user.
+     *
+     * <p>If not in double entry mode, the UID of the imbalance account is returned instead.</p>
+     *
+     * @return UID of the transaction account selected by the user or of the imbalance
+     * account, if not in double entry mode.
+     */
+    private String getSelectedTransferAccountUID() {
+        String transferAcctUID;
+        if (mUseDoubleEntry) {
+            long transferAcctId = mTransferAccountSpinner.getSelectedItemId();
+            transferAcctUID = mAccountsDbAdapter.getUID(transferAcctId);
+        } else {
+            Currency currency = Currency.getInstance(
+                    mTransactionsDbAdapter.getAccountCurrencyCode(mAccountUID));
+            transferAcctUID = mAccountsDbAdapter.getOrCreateImbalanceAccountUID(currency);
+        }
+        return transferAcctUID;
+    }
 
     /**
      * Schedules a recurring transaction (if necessary) after the transaction has been saved
