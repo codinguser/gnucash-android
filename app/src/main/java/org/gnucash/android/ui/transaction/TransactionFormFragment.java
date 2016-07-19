@@ -346,7 +346,7 @@ public class TransactionFormFragment extends Fragment implements
         assert actionBar != null;
 //        actionBar.setSubtitle(mAccountsDbAdapter.getFullyQualifiedAccountName(mAccountUID));
 
-        if (mTransaction == null) {
+        if (!mEditMode) {
             actionBar.setTitle(R.string.title_add_transaction);
             initalizeViews();
             initTransactionNameAutocomplete();
@@ -433,6 +433,7 @@ public class TransactionFormFragment extends Fragment implements
                     }
                 }
                 mTransaction = null; //we are creating a new transaction after all
+                mEditMode = false;
             }
         });
 
@@ -593,7 +594,7 @@ public class TransactionFormFragment extends Fragment implements
 
         String baseAmountString;
 
-        if (mTransaction == null){ //if we are creating a new transaction (not editing an existing one)
+        if (!mEditMode) {
             BigDecimal enteredAmount = mAmountEditText.getValue();
             baseAmountString = enteredAmount.toPlainString();
         } else {
@@ -738,7 +739,7 @@ public class TransactionFormFragment extends Fragment implements
 
         mAccountsDbAdapter.beginTransaction();
         try {
-            if (mTransaction != null) { //if editing an existing transaction
+            if (mEditMode) {
                 mTransaction.setSplits(mSplitsList);
                 mTransaction.setDescription(description);
             } else {
