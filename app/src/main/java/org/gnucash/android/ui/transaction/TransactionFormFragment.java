@@ -477,10 +477,12 @@ public class TransactionFormFragment extends Fragment implements
         //if there are more than two splits (which is the default for one entry), then
         //disable editing of the transfer account. User should open editor
         if (hasTransactionOnlyDefaultSplits(mSplitsList)) {
-            for (Split split : mTransaction.getSplits()) {
-                //two splits, one belongs to this account and the other to another account
-                if (mUseDoubleEntry && !split.getAccountUID().equals(mAccountUID)) {
-                    setSelectedTransferAccount(mAccountsDbAdapter.getID(split.getAccountUID()));
+            if (mUseDoubleEntry) {
+                for (Split split : mTransaction.getSplits()) {
+                    //two splits, one belongs to this account and the other to another account
+                    if (!split.getAccountUID().equals(mAccountUID)) {
+                        setSelectedTransferAccount(mAccountsDbAdapter.getID(split.getAccountUID()));
+                    }
                 }
             }
         } else {
