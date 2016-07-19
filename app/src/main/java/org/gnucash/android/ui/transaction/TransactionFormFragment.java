@@ -306,6 +306,7 @@ public class TransactionFormFragment extends Fragment implements
 		mTransactionsDbAdapter = TransactionsDbAdapter.getInstance();
 		if (transactionUID != null) {
             mTransaction = mTransactionsDbAdapter.getRecord(transactionUID);
+            mEditMode = true;
         }
 
         setListeners();
@@ -352,7 +353,6 @@ public class TransactionFormFragment extends Fragment implements
         } else {
             actionBar.setTitle(R.string.title_edit_transaction);
 			initializeViewsWithTransaction();
-            mEditMode = true;
 		}
 
         getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
