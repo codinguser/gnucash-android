@@ -432,7 +432,6 @@ public class TransactionFormFragment extends Fragment implements
                         }
                     }
                 }
-                mTransaction = null; //we are creating a new transaction after all
                 mEditMode = false;
             }
         });
@@ -764,7 +763,6 @@ public class TransactionFormFragment extends Fragment implements
                     else {
                         if (hasTransferAccountDifferentCommodity()){
                             startTransferFunds();
-                            mTransaction = null;
                             return;
                         }
                     }
