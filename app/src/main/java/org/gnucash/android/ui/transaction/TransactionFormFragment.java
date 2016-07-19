@@ -323,7 +323,7 @@ public class TransactionFormFragment extends Fragment implements
             public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
                 if (mSplitsList.size() == 2) { //when handling simple transfer to one account
                     for (Split split : mSplitsList) {
-                        if (!split.getAccountUID().equals(mAccountUID)) {
+                        if (!splitBelongsToThisTransactionAccount(split)) {
                             split.setAccountUID(mAccountsDbAdapter.getUID(id));
                         }
                         // else case is handled when saving the transactions
@@ -357,6 +357,10 @@ public class TransactionFormFragment extends Fragment implements
 
         getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
 	}
+
+    private boolean splitBelongsToThisTransactionAccount(Split split) {
+        return split.getAccountUID().equals(mAccountUID);
+    }
 
     /**
      * Extension of SimpleCursorAdapter which is used to populate the fields for the list items
@@ -467,7 +471,7 @@ public class TransactionFormFragment extends Fragment implements
 
         if (mSplitsList.size() == 2){
             for (Split split : mSplitsList) {
-                if (split.getAccountUID().equals(mAccountUID)) {
+                if (splitBelongsToThisTransactionAccount(split)) {
                     if (!split.getQuantity().getCurrency().equals(mTransaction.getCurrency())){
                         mSplitQuantity = split.getQuantity();
                     }
@@ -480,7 +484,7 @@ public class TransactionFormFragment extends Fragment implements
             if (mUseDoubleEntry) {
                 for (Split split : mTransaction.getSplits()) {
                     //two splits, one belongs to this account and the other to another account
-                    if (!split.getAccountUID().equals(mAccountUID)) {
+                    if (!splitBelongsToThisTransactionAccount(split)) {
                         setSelectedTransferAccount(mAccountsDbAdapter.getID(split.getAccountUID()));
                     }
                 }
@@ -735,7 +739,7 @@ public class TransactionFormFragment extends Fragment implements
         if (hasTransactionOnlyDefaultSplits(mSplitsList)) {
             //if it is a simple transfer where the editor was not used, then respect the button
             for (Split split : mSplitsList) {
-                if (split.getAccountUID().equals(mAccountUID)){
+                if (splitBelongsToThisTransactionAccount(split)){
                     split.setType(mTransactionTypeSwitch.getTransactionType());
                     split.setValue(amount);
                     split.setQuantity(amount);
