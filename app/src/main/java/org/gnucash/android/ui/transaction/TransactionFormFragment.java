@@ -416,12 +416,11 @@ public class TransactionFormFragment extends Fragment implements
                 //we check here because next method will modify it and we want to catch user-modification
                 boolean amountEntered = mAmountEditText.isInputModified();
                 initializeViewsWithTransaction();
-                List<Split> splitList = mTransaction.getSplits();
-                boolean isSplitPair = splitList.size() == 2 && splitList.get(0).isPairOf(splitList.get(1));
-                if (isSplitPair){
+                if (hasTransactionOnlyDefaultSplits(mTransaction.getSplits())) {
                     mSplitsList.clear();
                     if (!amountEntered) //if user already entered an amount
-                        mAmountEditText.setValue(splitList.get(0).getValue().asBigDecimal());
+                        mAmountEditText.setValue(
+                                mTransaction.getSplits().get(0).getValue().asBigDecimal());
                 } else {
                     if (amountEntered){ //if user entered own amount, clear loaded splits and use the user value
                         mSplitsList.clear();
@@ -477,7 +476,7 @@ public class TransactionFormFragment extends Fragment implements
         }
         //if there are more than two splits (which is the default for one entry), then
         //disable editing of the transfer account. User should open editor
-        if (mSplitsList.size() == 2 && mSplitsList.get(0).isPairOf(mSplitsList.get(1))) {
+        if (hasTransactionOnlyDefaultSplits(mSplitsList)) {
             for (Split split : mTransaction.getSplits()) {
                 //two splits, one belongs to this account and the other to another account
                 if (mUseDoubleEntry && !split.getAccountUID().equals(mAccountUID)) {
@@ -503,6 +502,21 @@ public class TransactionFormFragment extends Fragment implements
             mEventRecurrence.parse(mRecurrenceRule);
             mRecurrenceTextView.setText(scheduledAction.getRepeatString());
         }
+    }
+
+    /**
+     * Returns true if the transaction only contains default splits.
+     *
+     * <p>A transaction for which the user only has set the amount and hasn't
+     * added splits manually, has always two splits. One for the account where
+     * the transaction has been created and another for the transfer account.</p>
+     *
+     * @param splits list of splits of the transaction
+     * @return true if the transaction only contains default splits.
+     * @see Split#isPairOf(Split)
+     */
+    private boolean hasTransactionOnlyDefaultSplits(List<Split> splits) {
+        return splits.size() == 2 && splits.get(0).isPairOf(splits.get(1));
     }
 
     private void setDoubleEntryViewsVisibility(int visibility) {
@@ -716,9 +730,7 @@ public class TransactionFormFragment extends Fragment implements
         }
 
         //capture any edits which were done directly (not using split editor)
-        if (mSplitsList.size() == 2 && mSplitsList.get(0).isPairOf(mSplitsList.get(1))
-                //we also check that at least one of the splits belongs to this account, otherwise the account was changed in the splits and the value would be zero
-                && (mSplitsList.get(0).getAccountUID().equals(mAccountUID) || mSplitsList.get(1).getAccountUID().equals(mAccountUID))) {
+        if (hasTransactionOnlyDefaultSplits(mSplitsList)) {
             //if it is a simple transfer where the editor was not used, then respect the button
             for (Split split : mSplitsList) {
                 if (split.getAccountUID().equals(mAccountUID)){
