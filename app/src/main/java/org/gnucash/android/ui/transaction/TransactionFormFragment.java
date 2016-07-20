@@ -579,19 +579,26 @@ public class TransactionFormFragment extends Fragment implements
         mAmountEditText.setCommodity(getCommodityForNewTransaction());
 
         if (mUseDoubleEntry){
-            String currentAccountUID = mAccountUID;
-            long defaultTransferAccountID = 0;
-            String rootAccountUID = mAccountsDbAdapter.getOrCreateGnuCashRootAccountUID();
-            do {
-                defaultTransferAccountID = mAccountsDbAdapter.getDefaultTransferAccountID(mAccountsDbAdapter.getID(currentAccountUID));
-                if (defaultTransferAccountID > 0) {
-                    setSelectedTransferAccount(defaultTransferAccountID);
-                    break; //we found a parent with default transfer setting
-                }
-                currentAccountUID = mAccountsDbAdapter.getParentAccountUID(currentAccountUID);
-            } while (!currentAccountUID.equals(rootAccountUID));
+            long transferAccountID = getDefaultTransferAccountIDFromParents(mAccountUID);
+            if (transferAccountID > 0)
+                setSelectedTransferAccount(transferAccountID);
         }
 	}
+
+    private long getDefaultTransferAccountIDFromParents(String accountUID) {
+        long defaultTransferAccountID;
+        String currentAccountUID = accountUID;
+        String rootAccountUID = mAccountsDbAdapter.getOrCreateGnuCashRootAccountUID();
+        do {
+            defaultTransferAccountID = mAccountsDbAdapter.getDefaultTransferAccountID(mAccountsDbAdapter.getID(currentAccountUID));
+            if (defaultTransferAccountID > 0) {
+                return defaultTransferAccountID; //we found a parent with default transfer setting
+            }
+            currentAccountUID = mAccountsDbAdapter.getParentAccountUID(currentAccountUID);
+        } while (!currentAccountUID.equals(rootAccountUID));
+
+        return -1;
+    }
 
     /**
      * Returns the commodity that should be assigned to this transaction.
