@@ -479,11 +479,11 @@ public class TransactionFormFragment extends Fragment implements
             }
         }
 
-        if (hasTransactionOnlyDefaultSplits(mSplitsList)) {
-            if (mUseDoubleEntry) {
-                setSelectedTransferAccount(getTransferAccountIDFromSplits());
-            }
-        } else {
+        if (mUseDoubleEntry && hasTransactionOnlyDefaultSplits(mSplitsList)) {
+            setSelectedTransferAccount(getTransferAccountIDFromSplits());
+        }
+
+        if (!hasTransactionOnlyDefaultSplits(mSplitsList)) {
             //if there are other splits than the default ones, then
             //disable editing of the transfer account. User should open editor
             setDoubleEntryViewsVisibility(View.GONE);
