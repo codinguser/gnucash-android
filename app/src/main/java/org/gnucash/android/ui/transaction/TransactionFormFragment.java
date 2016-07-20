@@ -579,10 +579,9 @@ public class TransactionFormFragment extends Fragment implements
 		if (mAccountUID != null){
 			code = mTransactionsDbAdapter.getAccountCurrencyCode(mAccountUID);
 		}
-		Currency accountCurrency = Currency.getInstance(code);
-		mCurrencyTextView.setText(accountCurrency.getSymbol());
-
         Commodity commodity = Commodity.getInstance(code);
+        mCurrencyTextView.setText(Commodity.getInstance(code).getSymbol());
+
         mAmountEditText.setCommodity(commodity);
 
         if (mUseDoubleEntry){
