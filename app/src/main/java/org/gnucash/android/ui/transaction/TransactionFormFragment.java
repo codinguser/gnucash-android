@@ -604,19 +604,24 @@ public class TransactionFormFragment extends Fragment implements
      * Only accounts with the same currency can be transferred to
      */
 	private void updateTransferAccountsList(){
-		String conditions = "(" + DatabaseSchema.AccountEntry.COLUMN_UID + " != ?"
-                            + " AND " + DatabaseSchema.AccountEntry.COLUMN_TYPE + " != ?"
-                            + " AND " + DatabaseSchema.AccountEntry.COLUMN_PLACEHOLDER + " = 0"
-                            + ")";
-
         if (mCursor != null) {
             mCursor.close();
         }
-		mCursor = mAccountsDbAdapter.fetchAccountsOrderedByFullName(conditions, new String[]{mAccountUID, AccountType.ROOT.name()});
 
+        mCursor = getPossibleTransferAccounts(mAccountUID);
         mAccountCursorAdapter = new QualifiedAccountNameCursorAdapter(getActivity(), mCursor);
 		mTransferAccountSpinner.setAdapter(mAccountCursorAdapter);
 	}
+
+    private Cursor getPossibleTransferAccounts(String accountUID) {
+        String conditions = "(" + DatabaseSchema.AccountEntry.COLUMN_UID + " != ?"
+                + " AND " + DatabaseSchema.AccountEntry.COLUMN_TYPE + " != ?"
+                + " AND " + DatabaseSchema.AccountEntry.COLUMN_PLACEHOLDER + " = 0"
+                + ")";
+
+        return mAccountsDbAdapter.fetchAccountsOrderedByFullName(conditions,
+                new String[]{accountUID, AccountType.ROOT.name()});
+    }
 
     /**
      * Opens the split editor dialog
