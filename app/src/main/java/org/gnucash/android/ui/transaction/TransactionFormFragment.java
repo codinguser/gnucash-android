@@ -608,20 +608,10 @@ public class TransactionFormFragment extends Fragment implements
             mCursor.close();
         }
 
-        mCursor = getPossibleTransferAccounts(mAccountUID);
+        mCursor = mAccountsDbAdapter.getPossibleTransferAccounts(mAccountUID);
         mAccountCursorAdapter = new QualifiedAccountNameCursorAdapter(getActivity(), mCursor);
 		mTransferAccountSpinner.setAdapter(mAccountCursorAdapter);
 	}
-
-    private Cursor getPossibleTransferAccounts(String accountUID) {
-        String conditions = "(" + DatabaseSchema.AccountEntry.COLUMN_UID + " != ?"
-                + " AND " + DatabaseSchema.AccountEntry.COLUMN_TYPE + " != ?"
-                + " AND " + DatabaseSchema.AccountEntry.COLUMN_PLACEHOLDER + " = 0"
-                + ")";
-
-        return mAccountsDbAdapter.fetchAccountsOrderedByFullName(conditions,
-                new String[]{accountUID, AccountType.ROOT.name()});
-    }
 
     /**
      * Opens the split editor dialog

@@ -1292,4 +1292,22 @@ public class AccountsDbAdapter extends DatabaseAdapter<Account> {
 
         return -1;
     }
+
+    /**
+     * Returns possible transfer accounts for a transaction in the account
+     * with UID {@code accountUID}.
+     *
+     * @param accountUID UID of the account where the transaction belongs
+     * @return Cursor with possible transfer accounts for a transaction
+     * in the account with UID {@code accountUID}.
+     */
+    public Cursor getPossibleTransferAccounts(@NonNull String accountUID) {
+        String conditions = "(" + AccountEntry.COLUMN_UID + " != ?"
+                + " AND " + AccountEntry.COLUMN_TYPE + " != ?"
+                + " AND " + AccountEntry.COLUMN_PLACEHOLDER + " = 0"
+                + ")";
+
+        return fetchAccountsOrderedByFullName(conditions,
+                new String[]{accountUID, AccountType.ROOT.name()});
+    }
 }
