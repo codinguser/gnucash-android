@@ -489,12 +489,8 @@ public class TransactionFormFragment extends Fragment implements
             setDoubleEntryViewsVisibility(View.GONE);
         }
 
-		String currencyCode = mTransactionsDbAdapter.getAccountCurrencyCode(mAccountUID);
-		Currency accountCurrency = Currency.getInstance(currencyCode);
-		mCurrencyTextView.setText(accountCurrency.getSymbol());
-
-        Commodity commodity = Commodity.getInstance(currencyCode);
-        mAmountEditText.setCommodity(commodity);
+		mCurrencyTextView.setText(getAccountCommodity().getSymbol());
+        mAmountEditText.setCommodity(getAccountCommodity());
 
         mSaveTemplateCheckbox.setChecked(mTransaction.isTemplate());
         String scheduledActionUID = getArguments().getString(UxArgument.SCHEDULED_ACTION_UID);
@@ -504,6 +500,16 @@ public class TransactionFormFragment extends Fragment implements
             mEventRecurrence.parse(mRecurrenceRule);
             mRecurrenceTextView.setText(scheduledAction.getRepeatString());
         }
+    }
+
+    /**
+     * Returns the commodity of current transaction's account.
+     *
+     * @return commodity of the account to which the current transaction belongs.
+     */
+    private Commodity getAccountCommodity() {
+        String currencyCode = mTransactionsDbAdapter.getAccountCurrencyCode(mAccountUID);
+        return Commodity.getInstance(currencyCode);
     }
 
     /**
