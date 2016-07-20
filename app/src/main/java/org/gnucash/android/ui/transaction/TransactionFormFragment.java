@@ -478,19 +478,15 @@ public class TransactionFormFragment extends Fragment implements
                 }
             }
         }
-        //if there are more than two splits (which is the default for one entry), then
-        //disable editing of the transfer account. User should open editor
+
         if (hasTransactionOnlyDefaultSplits(mSplitsList)) {
             if (mUseDoubleEntry) {
-                for (Split split : mTransaction.getSplits()) {
-                    //two splits, one belongs to this account and the other to another account
-                    if (!splitBelongsToThisTransactionAccount(split)) {
-                        setSelectedTransferAccount(mAccountsDbAdapter.getID(split.getAccountUID()));
-                    }
-                }
+                setSelectedTransferAccount(getTransferAccountIDFromSplits());
             }
         } else {
-                setDoubleEntryViewsVisibility(View.GONE);
+            //if there are other splits than the default ones, then
+            //disable editing of the transfer account. User should open editor
+            setDoubleEntryViewsVisibility(View.GONE);
         }
 
 		String currencyCode = mTransactionsDbAdapter.getAccountCurrencyCode(mAccountUID);
@@ -508,6 +504,21 @@ public class TransactionFormFragment extends Fragment implements
             mEventRecurrence.parse(mRecurrenceRule);
             mRecurrenceTextView.setText(scheduledAction.getRepeatString());
         }
+    }
+
+    /**
+     * Returns the transfer account ID this transaction is using by looking it
+     * up in its splits.
+     *
+     * @return ID of the transfer account for the current transaction or -1 if none found
+     */
+    private long getTransferAccountIDFromSplits() {
+        for (Split split : mTransaction.getSplits()) {
+            if (!splitBelongsToThisTransactionAccount(split)) {
+                return mAccountsDbAdapter.getID(split.getAccountUID());
+            }
+        }
+        return -1;
     }
 
     /**
