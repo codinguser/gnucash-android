@@ -575,14 +575,8 @@ public class TransactionFormFragment extends Fragment implements
 		String typePref = PreferenceActivity.getActiveBookSharedPreferences(getActivity()).getString(getString(R.string.key_default_transaction_type), "DEBIT");
         mTransactionTypeSwitch.setChecked(TransactionType.valueOf(typePref));
 
-		String code = GnuCashApplication.getDefaultCurrencyCode();
-		if (mAccountUID != null){
-			code = mTransactionsDbAdapter.getAccountCurrencyCode(mAccountUID);
-		}
-        Commodity commodity = Commodity.getInstance(code);
-        mCurrencyTextView.setText(Commodity.getInstance(code).getSymbol());
-
-        mAmountEditText.setCommodity(commodity);
+        mCurrencyTextView.setText(getCommodityForNewTransaction().getSymbol());
+        mAmountEditText.setCommodity(getCommodityForNewTransaction());
 
         if (mUseDoubleEntry){
             String currentAccountUID = mAccountUID;
@@ -598,6 +592,19 @@ public class TransactionFormFragment extends Fragment implements
             } while (!currentAccountUID.equals(rootAccountUID));
         }
 	}
+
+    /**
+     * Returns the commodity that should be assigned to this transaction.
+     *
+     * @return commodity that should be assigned to this transaction.
+     */
+    private Commodity getCommodityForNewTransaction() {
+        String code = GnuCashApplication.getDefaultCurrencyCode();
+        if (mAccountUID != null){
+            code = mTransactionsDbAdapter.getAccountCurrencyCode(mAccountUID);
+        }
+        return Commodity.getInstance(code);
+    }
 
     /**
      * Updates the list of possible transfer accounts.
