@@ -740,18 +740,16 @@ public class TransactionFormFragment extends Fragment implements
 	 */
 	private void saveNewTransaction() {
         mAmountEditText.getCalculatorKeyboard().hideCustomKeyboard();
-		String description = mDescriptionEditText.getText().toString();
-		String notes = mNotesEditText.getText().toString();
-		BigDecimal amountBigd = mAmountEditText.getValue();
 
-        if (amountBigd == null){ //if for whatever reason we cannot process the amount
+        if (mAmountEditText.getValue() == null){ //if for whatever reason we cannot process the amount
             Toast.makeText(getActivity(), R.string.toast_transanction_amount_required,
                     Toast.LENGTH_SHORT).show();
             return;
         }
 
 		Currency currency = Currency.getInstance(mTransactionsDbAdapter.getAccountCurrencyCode(mAccountUID));
-		Money amount 	= new Money(amountBigd, Commodity.getInstance(currency.getCurrencyCode())).abs();
+		Money amount = new Money(mAmountEditText.getValue(),
+                                 Commodity.getInstance(currency.getCurrencyCode())).abs();
 
         if (mSplitsList.size() == 1){ //means split editor was opened but no split was added
             String transferAcctUID = getSelectedTransferAccountUID();
@@ -781,9 +779,9 @@ public class TransactionFormFragment extends Fragment implements
         try {
             if (mEditMode) {
                 mTransaction.setSplits(mSplitsList);
-                mTransaction.setDescription(description);
+                mTransaction.setDescription(mDescriptionEditText.getText().toString());
             } else {
-                mTransaction = new Transaction(description);
+                mTransaction = new Transaction(mDescriptionEditText.getText().toString());
 
                 //****************** amount entered in the simple interface (not using splits Editor) ************************
                 if (mSplitsList.isEmpty()) {
@@ -825,7 +823,7 @@ public class TransactionFormFragment extends Fragment implements
                     mTime.get(Calendar.MINUTE),
                     mTime.get(Calendar.SECOND));
             mTransaction.setTime(cal.getTimeInMillis());
-            mTransaction.setNote(notes);
+            mTransaction.setNote(mNotesEditText.getText().toString());
 
             // set as not exported because we have just edited it
             mTransaction.setExported(false);
