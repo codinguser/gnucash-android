@@ -62,7 +62,6 @@ import org.gnucash.android.db.adapter.DatabaseAdapter;
 import org.gnucash.android.db.adapter.ScheduledActionDbAdapter;
 import org.gnucash.android.db.adapter.TransactionsDbAdapter;
 import org.gnucash.android.model.Account;
-import org.gnucash.android.model.Commodity;
 import org.gnucash.android.model.Money;
 import org.gnucash.android.model.Recurrence;
 import org.gnucash.android.model.ScheduledAction;
@@ -218,7 +217,7 @@ public class TransactionFormFragment extends Fragment implements
 
 
     private String mRecurrenceRule;
-    private EventRecurrence mEventRecurrence = new EventRecurrence();
+    private final EventRecurrence mEventRecurrence = new EventRecurrence();
 
     private Account mAccount;
 
@@ -263,9 +262,9 @@ public class TransactionFormFragment extends Fragment implements
             return;
 
         BigDecimal amountBigd = mAmountEditText.getValue();
-        if (amountBigd.equals(BigDecimal.ZERO))
+        if (amountBigd == null || amountBigd.equals(BigDecimal.ZERO))
             return;
-        Money amount 	= new Money(amountBigd, Commodity.getInstance(fromCurrency.getCurrencyCode())).abs();
+        Money amount = new Money(amountBigd, mAccount.getCommodity()).abs();
 
         TransferFundsDialogFragment fragment
                 = TransferFundsDialogFragment.getInstance(amount, targetCurrency, this);
@@ -365,8 +364,8 @@ public class TransactionFormFragment extends Fragment implements
      */
     private class DropDownCursorAdapter extends SimpleCursorAdapter{
 
-        public DropDownCursorAdapter(Context context, int layout, Cursor c, String[] from, int[] to) {
-            super(context, layout, c, from, to, 0);
+        public DropDownCursorAdapter(Context context, Cursor c, String[] from, int[] to) {
+            super(context, R.layout.dropdown_item_2lines, c, from, to, 0);
         }
 
         @Override
@@ -393,7 +392,7 @@ public class TransactionFormFragment extends Fragment implements
         final String[] from = new String[]{DatabaseSchema.TransactionEntry.COLUMN_DESCRIPTION};
 
         SimpleCursorAdapter adapter = new DropDownCursorAdapter(
-                getActivity(), R.layout.dropdown_item_2lines, null, from, to);
+                getActivity(), null, from, to);
 
         adapter.setCursorToStringConverter(new SimpleCursorAdapter.CursorToStringConverter() {
             @Override
@@ -949,7 +948,7 @@ public class TransactionFormFragment extends Fragment implements
      * Called by the split editor fragment to notify of finished editing
      * @param splitList List of splits produced in the fragment
      */
-    public void setSplitList(List<Split> splitList, List<String> removedSplitUIDs){
+    public void setSplitList(List<Split> splitList) {
         mSplitsList = splitList;
         Money balance = Transaction.computeBalance(mAccount.getUID(), mSplitsList);
 
@@ -1048,8 +1047,7 @@ public class TransactionFormFragment extends Fragment implements
             for (String splitCsv : splits) {
                 splitList.add(Split.parseSplit(splitCsv));
             }
-            List<String> removedSplits = data.getStringArrayListExtra(UxArgument.REMOVED_SPLITS);
-            setSplitList(splitList, removedSplits);
+            setSplitList(splitList);
         }
     }
 }
