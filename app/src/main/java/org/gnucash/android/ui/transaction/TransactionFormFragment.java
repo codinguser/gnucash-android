@@ -624,10 +624,10 @@ public class TransactionFormFragment extends Fragment implements
 
         String baseAmountString;
 
-        if (!mEditMode) {
-            baseAmountString = mAmountEditText.getValue().toPlainString();
-        } else {
+        if (mEditMode) {
             baseAmountString = getBiggestSplitAmount().toPlainString();
+        } else {
+            baseAmountString = mAmountEditText.getValue().toPlainString();
         }
 
         Intent intent = new Intent(getActivity(), FormActivity.class);
