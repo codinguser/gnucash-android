@@ -625,8 +625,7 @@ public class TransactionFormFragment extends Fragment implements
         String baseAmountString;
 
         if (!mEditMode) {
-            BigDecimal enteredAmount = mAmountEditText.getValue();
-            baseAmountString = enteredAmount.toPlainString();
+            baseAmountString = mAmountEditText.getValue().toPlainString();
         } else {
             baseAmountString = getBiggestSplitAmount().toPlainString();
         }
