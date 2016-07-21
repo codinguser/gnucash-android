@@ -740,13 +740,6 @@ public class TransactionFormFragment extends Fragment implements
 	 */
 	private void saveNewTransaction() {
         mAmountEditText.getCalculatorKeyboard().hideCustomKeyboard();
-		Calendar cal = new GregorianCalendar(
-				mDate.get(Calendar.YEAR),
-				mDate.get(Calendar.MONTH),
-				mDate.get(Calendar.DAY_OF_MONTH),
-				mTime.get(Calendar.HOUR_OF_DAY),
-				mTime.get(Calendar.MINUTE),
-				mTime.get(Calendar.SECOND));
 		String description = mDescriptionEditText.getText().toString();
 		String notes = mNotesEditText.getText().toString();
 		BigDecimal amountBigd = mAmountEditText.getValue();
@@ -824,6 +817,13 @@ public class TransactionFormFragment extends Fragment implements
             mTransaction.setCurrencyCode(currencyCode);
             Commodity commodity = CommoditiesDbAdapter.getInstance().getCommodity(currencyCode);
             mTransaction.setCommodity(commodity);
+            Calendar cal = new GregorianCalendar(
+                    mDate.get(Calendar.YEAR),
+                    mDate.get(Calendar.MONTH),
+                    mDate.get(Calendar.DAY_OF_MONTH),
+                    mTime.get(Calendar.HOUR_OF_DAY),
+                    mTime.get(Calendar.MINUTE),
+                    mTime.get(Calendar.SECOND));
             mTransaction.setTime(cal.getTimeInMillis());
             mTransaction.setNote(notes);
 
