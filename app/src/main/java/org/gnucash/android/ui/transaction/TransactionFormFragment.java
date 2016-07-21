@@ -24,6 +24,7 @@ import android.content.res.Configuration;
 import android.database.Cursor;
 import android.inputmethodservice.KeyboardView;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v7.app.ActionBar;
@@ -635,13 +636,23 @@ public class TransactionFormFragment extends Fragment implements
         intent.putExtra(UxArgument.SELECTED_ACCOUNT_UID, mAccountUID);
         intent.putExtra(UxArgument.AMOUNT_STRING, baseAmountString);
         if (mSplitsList != null) {
-            ArrayList<String> splitStrings = new ArrayList<>();
-            for (Split split : mSplitsList) {
-                splitStrings.add(split.toCsv());
-            }
-            intent.putStringArrayListExtra(UxArgument.SPLIT_LIST, splitStrings);
+            intent.putStringArrayListExtra(UxArgument.SPLIT_LIST, getSplitsAsCsvList());
         }
         startActivityForResult(intent, REQUEST_SPLIT_EDITOR);
+    }
+
+
+    /**
+     * Returns the list of splits as a new list with the splits converted to CSV.
+     *
+     * @return the list of splits as a new list with the splits converted to CSV.
+     */
+    private @NonNull ArrayList<String> getSplitsAsCsvList() {
+        ArrayList<String> splitStrings = new ArrayList<>();
+        for (Split split : mSplitsList) {
+            splitStrings.add(split.toCsv());
+        }
+        return splitStrings;
     }
 
     /**
