@@ -347,14 +347,14 @@ public class TransactionFormFragment extends Fragment implements
         assert actionBar != null;
 //        actionBar.setSubtitle(mAccountsDbAdapter.getFullyQualifiedAccountName(mAccountUID));
 
-        if (!mEditMode) {
+        if (mEditMode) {
+            actionBar.setTitle(R.string.title_edit_transaction);
+			initializeViewsWithTransaction();
+		} else {
             actionBar.setTitle(R.string.title_add_transaction);
             initalizeViews();
             initTransactionNameAutocomplete();
-        } else {
-            actionBar.setTitle(R.string.title_edit_transaction);
-			initializeViewsWithTransaction();
-		}
+        }
 
         getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
 	}
@@ -423,9 +423,10 @@ public class TransactionFormFragment extends Fragment implements
                 initializeViewsWithTransaction();
                 if (hasTransactionOnlyDefaultSplits(mTransaction.getSplits())) {
                     mSplitsList.clear();
-                    if (!amountEntered) //if user already entered an amount
+                    if (!amountEntered) { //if user already entered an amount
                         mAmountEditText.setValue(
                                 mTransaction.getSplits().get(0).getValue().asBigDecimal());
+                    }
                 } else {
                     if (amountEntered){ //if user entered own amount, clear loaded splits and use the user value
                         mSplitsList.clear();
@@ -833,13 +834,14 @@ public class TransactionFormFragment extends Fragment implements
             mTransactionsDbAdapter.addRecord(mTransaction, DatabaseAdapter.UpdateMethod.replace);
 
             if (mSaveTemplateCheckbox.isChecked()) {//template is automatically checked when a transaction is scheduled
-                if (!mEditMode) { //means it was new transaction, so a new template
+                if (mEditMode) {
+                    scheduleRecurringTransaction(mTransaction.getUID());
+                } else { // it was new transaction, so a new template
                     Transaction templateTransaction = new Transaction(mTransaction, true);
                     templateTransaction.setTemplate(true);
                     mTransactionsDbAdapter.addRecord(templateTransaction, DatabaseAdapter.UpdateMethod.replace);
                     scheduleRecurringTransaction(templateTransaction.getUID());
-                } else
-                    scheduleRecurringTransaction(mTransaction.getUID());
+                }
             } else {
                 String scheduledActionUID = getArguments().getString(UxArgument.SCHEDULED_ACTION_UID);
                 if (scheduledActionUID != null){ //we were editing a schedule and it was turned off
